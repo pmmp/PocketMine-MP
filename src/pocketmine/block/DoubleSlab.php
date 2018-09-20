@@ -72,4 +72,8 @@ class DoubleSlab extends Solid{
 	public function isAffectedBySilkTouch() : bool{
 		return false;
 	}
+
+	public function getPickedItem() : Item{
+		return ItemFactory::get($this->singleId, $this->getVariant());
+	}
 }
