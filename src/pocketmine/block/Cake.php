@@ -36,6 +36,8 @@ class Cake extends Transparent implements FoodSource{
 
 	protected $id = self::CAKE_BLOCK;
 
+	protected $itemId = Item::CAKE;
+
 	public function __construct(int $meta = 0){
 		$this->setDamage($meta);
 	}
