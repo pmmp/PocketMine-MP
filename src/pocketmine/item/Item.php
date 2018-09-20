@@ -953,7 +953,12 @@ class Item implements ItemIds, \JsonSerializable{
 		if($idTag instanceof ShortTag){
 			$item = ItemFactory::get(Binary::unsignShort($idTag->getValue()), $meta, $count);
 		}elseif($idTag instanceof StringTag){ //PC item save format
-			$item = ItemFactory::fromString($idTag->getValue());
+			try{
+				$item = ItemFactory::fromString($idTag->getValue());
+			}catch(\InvalidArgumentException $e){
+				//TODO: improve error handling
+				return ItemFactory::get(Item::AIR, 0, 0);
+			}
 			$item->setDamage($meta);
 			$item->setCount($count);
 		}else{
