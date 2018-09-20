@@ -47,7 +47,7 @@ class FlowerPot extends Flowable{
 		return $this->occupied ? 1 : 0;
 	}
 
-	public function readStateFromMeta(int $meta = 0) : void{
+	public function readStateFromMeta(int $meta) : void{
 		$this->occupied = $meta !== 0;
 	}
 
