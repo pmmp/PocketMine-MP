@@ -396,19 +396,15 @@ class BlockFactory{
 		//TODO: HOPPER_BLOCK
 
 		self::setStateMask(Block::QUARTZ_BLOCK, 0xc); //pillar axis
+		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::NORMAL, "Quartz Block"));
+		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::CHISELED, "Chiseled Quartz Block"));
+		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::PILLAR, "Quartz Pillar"));
+
 		self::setStateMask(Block::PURPUR_BLOCK, 0xc);
-		static $quartzTypes = [
-			Quartz::NORMAL => "",
-			Quartz::CHISELED => "Chiseled ",
-			Quartz::PILLAR => "Pillar "
-		];
-		foreach($quartzTypes as $variant => $prefix){
-			self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, $variant, $prefix . "Quartz Block"));
-			self::registerBlock(new Purpur(Block::PURPUR_BLOCK, $variant, $prefix . "Purpur Block"));
-		}
+		self::registerBlock(new Purpur(Block::PURPUR_BLOCK, Purpur::NORMAL, "Purpur Block"));
+		self::registerBlock(new Purpur(Block::PURPUR_BLOCK, Purpur::PILLAR, "Purpur Pillar"));
 
 		self::registerBlock(new QuartzStairs());
-
 
 		self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
 		self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
