@@ -50,7 +50,8 @@ class RedstoneOre extends Solid{
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
+		$this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
+		return false; //this shouldn't prevent block placement
 	}
 
 	public function onNearbyBlockChange() : void{
