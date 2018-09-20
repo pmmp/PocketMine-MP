@@ -81,7 +81,11 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function __construct(int $id, int $variant = 0, string $name = null, int $itemId = null){
 		$this->id = $id;
-		$this->setVariant($variant);
+
+		if(($variant & $this->getNonVariantBitmask()) !== 0){
+			throw new \InvalidArgumentException("Variant 0x" . dechex($variant) . " collides with non-variant bitmask 0x" . dechex($this->getNonVariantBitmask()));
+		}
+		$this->variant = $variant;
 		$this->fallbackName = $name;
 		$this->itemId = $itemId;
 	}
@@ -143,14 +147,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getVariant() : int{
 		return $this->variant;
-	}
-
-	protected function setVariant(int $variant) : void{
-		if(($variant & $this->getNonVariantBitmask()) !== 0){
-			throw new \InvalidArgumentException("Variant 0x" . dechex($variant) . " collides with non-variant bitmask 0x" . dechex($this->getNonVariantBitmask()));
-		}
-
-		$this->variant = $variant;
 	}
 
 	/**
