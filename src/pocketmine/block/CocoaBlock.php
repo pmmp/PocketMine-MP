@@ -137,9 +137,13 @@ class CocoaBlock extends Transparent{
 		}
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get(Item::DYE, 3, $this->age === 2 ? mt_rand(2, 3) : 1)
 		];
+	}
+
+	public function getPickedItem() : Item{
+		return ItemFactory::get(Item::DYE, 3); //cocoa beans
 	}
 }
