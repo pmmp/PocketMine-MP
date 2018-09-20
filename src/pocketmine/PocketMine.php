@@ -141,11 +141,11 @@ namespace pocketmine {
 
 	$opts = getopt("", ["bootstrap:"]);
 	if(isset($opts["bootstrap"])){
-		$bootstrap = $opts["bootstrap"];
+		$bootstrap = realpath($opts["bootstrap"]) ?: $opts["bootstrap"];
 	}else{
 		$bootstrap = \pocketmine\PATH . 'vendor/autoload.php';
 	}
-	define('pocketmine\COMPOSER_AUTOLOADER_PATH', realpath($bootstrap));
+	define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
 
 	if(\pocketmine\COMPOSER_AUTOLOADER_PATH !== false and is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
 		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
