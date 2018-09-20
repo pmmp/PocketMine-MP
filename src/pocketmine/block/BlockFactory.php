@@ -561,9 +561,10 @@ class BlockFactory{
 
 		if(self::$stateMasks[$id] === null){
 			$variant = 0;
+			$state = $meta;
 		}else{
 			$variant = $meta & ~self::$stateMasks[$id];
-			$meta &= self::$stateMasks[$id];
+			$state = $meta & self::$stateMasks[$id];
 		}
 
 		$index = ($id << 4) | $variant;
@@ -582,14 +583,14 @@ class BlockFactory{
 
 		if($block !== null){
 			try{
-				$block->readStateFromMeta($meta);
+				$block->readStateFromMeta($state);
 			}catch(\InvalidArgumentException $e){
 				$block = null; //TODO: improve invalid state handling
 			}
 		}
 
 		if($block === null){
-			$block = new UnknownBlock($id, $variant | $meta);
+			$block = new UnknownBlock($id, $meta);
 		}
 
 		if($pos !== null){
