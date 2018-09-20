@@ -61,7 +61,7 @@ class SpruceTree extends Tree{
 						continue;
 					}
 
-					if(!BlockFactory::$solid[$level->getBlockIdAt($xx, $yyy, $zz)]){
+					if(!BlockFactory::get($level->getBlockIdAt($xx, $yyy, $zz))->isSolid()){
 						$level->setBlockIdAt($xx, $yyy, $zz, $this->leafBlock);
 						$level->setBlockDataAt($xx, $yyy, $zz, $this->type);
 					}

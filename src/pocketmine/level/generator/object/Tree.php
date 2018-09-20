@@ -109,7 +109,7 @@ abstract class Tree{
 					if($xOff === $mid and $zOff === $mid and ($yOff === 0 or $random->nextBoundedInt(2) === 0)){
 						continue;
 					}
-					if(!BlockFactory::$solid[$level->getBlockIdAt($xx, $yy, $zz)]){
+					if(!BlockFactory::get($level->getBlockIdAt($xx, $yy, $zz))->isSolid()){
 						$level->setBlockIdAt($xx, $yy, $zz, $this->leafBlock);
 						$level->setBlockDataAt($xx, $yy, $zz, $this->type);
 					}
