@@ -91,11 +91,7 @@ class Lever extends Flowable{
 			if($player !== null){
 				$this->facing = Bearing::toFacing(Bearing::opposite($player->getDirection()));
 			}
-			if($face === Facing::DOWN){
-				$this->position = self::BOTTOM;
-			}else{
-				$this->position = self::TOP;
-			}
+			$this->position = $face === Facing::DOWN ? self::BOTTOM : self::TOP;
 		}else{
 			$this->facing = $face;
 			$this->position = self::SIDE;
