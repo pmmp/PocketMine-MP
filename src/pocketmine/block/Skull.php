@@ -79,18 +79,20 @@ class Skull extends Flowable{
 		return false;
 	}
 
-	public function getDropsForCompatibleTool(Item $item) : array{
+	private function getItem() : Item{
 		$tile = $this->level->getTile($this);
-		if($tile instanceof TileSkull){
-			return [
-				ItemFactory::get(Item::SKULL, $tile->getType())
-			];
-		}
+		return ItemFactory::get(Item::SKULL, $tile instanceof TileSkull ? $tile->getType() : 0);
+	}
 
-		return [];
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [$this->getItem()];
 	}
 
 	public function isAffectedBySilkTouch() : bool{
 		return false;
+	}
+
+	public function getPickedItem() : Item{
+		return $this->getItem();
 	}
 }

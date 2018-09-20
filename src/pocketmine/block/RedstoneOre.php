@@ -71,7 +71,7 @@ class RedstoneOre extends Solid{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if(!$this->lit){
 			$this->lit = true;
-			return $this->getLevel()->setBlock($this, $this);
+			$this->getLevel()->setBlock($this, $this); //no return here - this shouldn't prevent block placement
 		}
 		return false;
 	}

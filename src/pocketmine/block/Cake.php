@@ -35,6 +35,7 @@ use pocketmine\Player;
 class Cake extends Transparent implements FoodSource{
 
 	protected $id = self::CAKE_BLOCK;
+	protected $itemId = Item::CAKE;
 
 	/** @var int */
 	protected $bites = 0;
