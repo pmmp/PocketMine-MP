@@ -69,9 +69,85 @@ class CocoaBlock extends Transparent{
 		return BlockToolType::TYPE_AXE;
 	}
 
-	//TODO
-
 	public function isAffectedBySilkTouch() : bool{
 		return false;
+	}
+
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+		static $logDistance = 1 / 16;
+
+		$widthInset = (6 - $this->age) / 16;
+		$faceDistance = (5 + $this->age * 2) / 16;
+
+		$minY = (7 - $this->age * 2) / 16;
+
+		if(Facing::isPositive($this->facing)){
+			$minFacing = $logDistance;
+			$maxFacing = $faceDistance;
+		}else{
+			$minFacing = 1 - $faceDistance;
+			$maxFacing = 1 - $logDistance;
+		}
+
+		if(Facing::axis($this->facing) === Facing::AXIS_Z){
+			$minX = $widthInset;
+			$maxX = 1 - $widthInset;
+
+			$minZ = $minFacing;
+			$maxZ = $maxFacing;
+		}else{
+			$minX = $minFacing;
+			$maxX = $maxFacing;
+
+			$minZ = $widthInset;
+			$maxZ = 1 - $widthInset;
+		}
+
+		return new AxisAlignedBB($minX, $minY, $minZ, $maxX, 0.75, $maxZ);
+	}
+
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		if(Facing::axis($face) !== Facing::AXIS_Y and $blockClicked->getId() === Block::LOG and $blockClicked->getVariant() === Wood::JUNGLE){
+			$this->facing = $face;
+			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}
+
+		return false;
+	}
+
+	public function onActivate(Item $item, Player $player = null) : bool{
+		if($this->age < 2 and $item->getId() === Item::DYE and $item->getDamage() === 15){ //bone meal
+			$this->age++;
+			$this->level->setBlock($this, $this);
+		}
+		return false;
+	}
+
+	public function onNearbyBlockChange() : void{
+		$side = $this->getSide(Facing::opposite($this->facing));
+		if($side->getId() !== Block::LOG or $side->getVariant() !== Wood::JUNGLE){
+			$this->level->useBreakOn($this);
+		}
+	}
+
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function onRandomTick() : void{
+		if($this->age < 2 and mt_rand(1, 5) === 1){
+			$this->age++;
+			$this->level->setBlock($this, $this);
+		}
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(Item::DYE, 3, $this->age === 2 ? mt_rand(2, 3) : 1)
+		];
+	}
+
+	public function getPickedItem() : Item{
+		return ItemFactory::get(Item::DYE, 3); //cocoa beans
 	}
 }
