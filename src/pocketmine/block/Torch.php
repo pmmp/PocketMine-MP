@@ -40,12 +40,12 @@ class Torch extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->facing === Facing::DOWN ? 0 : 6 - $this->facing;
+		return 6 - $this->facing;
 	}
 
 	public function readStateFromMeta(int $meta) : void{
 		if($meta === 0){
-			$this->facing = Facing::DOWN;
+			$this->facing = Facing::UP;
 		}else{
 			$this->facing = 6 - $meta;
 		}
