@@ -51,6 +51,10 @@ class Tripwire extends Flowable{
 		$this->disarmed = ($meta & 0x08) !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function getName() : string{
 		return "Tripwire";
 	}

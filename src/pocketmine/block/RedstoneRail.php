@@ -38,6 +38,10 @@ class RedstoneRail extends BaseRail{
 		$this->powered = ($meta & self::FLAG_POWERED) !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	protected function getConnectionsFromMeta(int $meta) : array{
 		return self::CONNECTIONS[$meta & ~self::FLAG_POWERED] ?? [];
 	}

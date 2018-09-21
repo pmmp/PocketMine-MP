@@ -82,8 +82,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function __construct(int $id, int $variant = 0, string $name = null, int $itemId = null){
 		$this->id = $id;
 
-		if(($variant & $this->getNonVariantBitmask()) !== 0){
-			throw new \InvalidArgumentException("Variant 0x" . dechex($variant) . " collides with non-variant bitmask 0x" . dechex($this->getNonVariantBitmask()));
+		if(($variant & $this->getStateBitmask()) !== 0){
+			throw new \InvalidArgumentException("Variant 0x" . dechex($variant) . " collides with state bitmask 0x" . dechex($this->getStateBitmask()));
 		}
 		$this->variant = $variant;
 		$this->fallbackName = $name;
@@ -127,7 +127,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDamage() : int{
 		$stateMeta = $this->writeStateToMeta();
-		assert(($stateMeta & ~$this->getNonVariantBitmask()) === 0);
+		assert(($stateMeta & ~$this->getStateBitmask()) === 0);
 		return $this->variant | $stateMeta;
 	}
 
@@ -140,25 +140,20 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns a bitmask used to extract state bits from block metadata.
+	 *
+	 * @return int
+	 */
+	public function getStateBitmask() : int{
+		return 0;
+	}
+
+	/**
 	 * Returns the block meta, stripped of non-variant flags.
 	 * @return int
 	 */
 	public function getVariant() : int{
 		return $this->variant;
-	}
-
-	/**
-	 * Returns a bitmask used to remove state bits from block metadata.
-
-	 * Only blocks that use the metadata for variant information need to declare this. This should only mask bits which
-	 * are explicitly state bits.
-	 *
-	 * WARNING: Unused bits SHOULD NOT be covered by this bitmask in case they become variant bits in the future.
-	 *
-	 * @return int
-	 */
-	protected function getNonVariantBitmask() : int{
-		return BlockFactory::$stateMasks[$this->getId()] ?? 0xf; //all bits are considered state bits by default
 	}
 
 	/**

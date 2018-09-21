@@ -50,6 +50,10 @@ class RedMushroomBlock extends Solid{
 		$this->rotationData = $meta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function getName() : string{
 		return "Red Mushroom Block";
 	}

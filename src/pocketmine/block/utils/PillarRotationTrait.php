@@ -47,6 +47,14 @@ trait PillarRotationTrait{
 		$this->readAxisFromMeta($meta);
 	}
 
+	/**
+	 * @see Block::getStateBitmask()
+	 * @return int
+	 */
+	public function getStateBitmask() : int{
+		return 0b1100;
+	}
+
 	protected function readAxisFromMeta(int $meta) : void{
 		static $map = [
 			0 => Facing::AXIS_Y,

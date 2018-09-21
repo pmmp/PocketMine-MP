@@ -45,6 +45,10 @@ abstract class Stair extends Transparent{
 		$this->upsideDown = ($meta & 0x04) !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	protected function recalculateCollisionBoxes() : array{
 		//TODO: handle corners
 

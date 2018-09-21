@@ -51,6 +51,10 @@ class Torch extends Flowable{
 		}
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function getLightLevel() : int{
 		return 14;
 	}

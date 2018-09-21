@@ -50,6 +50,10 @@ class ItemFrame extends Flowable{
 		$this->facing = 5 - $meta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b11;
+	}
+
 	public function getName() : string{
 		return "Item Frame";
 	}

@@ -44,6 +44,10 @@ class StonePressurePlate extends Transparent{
 		$this->powered = $meta !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1;
+	}
+
 	public function getName() : string{
 		return "Stone Pressure Plate";
 	}

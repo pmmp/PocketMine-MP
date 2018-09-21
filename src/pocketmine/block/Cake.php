@@ -52,6 +52,10 @@ class Cake extends Transparent implements FoodSource{
 		$this->bites = $meta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function getHardness() : float{
 		return 0.5;
 	}

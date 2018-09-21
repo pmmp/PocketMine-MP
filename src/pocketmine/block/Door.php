@@ -65,6 +65,10 @@ abstract class Door extends Transparent{
 		}
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	/**
 	 * Copies door properties from the other half of the door, since metadata is split between the two halves.
 	 * TODO: the blockstate should be updated directly on creation so these properties can be detected in advance.

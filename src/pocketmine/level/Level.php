@@ -1005,12 +1005,8 @@ class Level implements ChunkManager, Metadatable{
 
 						$blockId = $subChunk->getBlockId($x, $y, $z);
 						$meta = $subChunk->getBlockData($x, $y, $z);
-						if(BlockFactory::$stateMasks[$blockId] !== null){
-							$variant = $meta & ~BlockFactory::$stateMasks[$blockId];
-						}else{
-							$variant = 0;
-						}
-						if($this->randomTickBlocks[($blockId << 4) | $variant]){
+
+						if($this->randomTickBlocks[($blockId << 4) | ($meta & ~BlockFactory::$stateMasks[$blockId])]){
 							/** @var Block $block */
 							$block = BlockFactory::get($blockId, $meta);
 

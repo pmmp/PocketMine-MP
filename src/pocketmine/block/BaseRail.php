@@ -89,6 +89,10 @@ abstract class BaseRail extends Flowable{
 		$this->connections = $this->getConnectionsFromMeta($meta);
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function getHardness() : float{
 		return 0.7;
 	}

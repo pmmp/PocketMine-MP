@@ -51,6 +51,10 @@ class Chest extends Transparent{
 		$this->facing = $meta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function getHardness() : float{
 		return 2.5;
 	}

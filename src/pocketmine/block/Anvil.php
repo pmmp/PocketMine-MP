@@ -49,6 +49,10 @@ class Anvil extends Fallable{
 		$this->facing = Bearing::toFacing($meta);
 	}
 
+	public function getStateBitmask() : int{
+		return 0b11;
+	}
+
 	public function isTransparent() : bool{
 		return true;
 	}

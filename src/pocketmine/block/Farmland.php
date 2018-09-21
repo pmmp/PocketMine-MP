@@ -47,6 +47,10 @@ class Farmland extends Transparent{
 		$this->wetness = $meta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function getName() : string{
 		return "Farmland";
 	}

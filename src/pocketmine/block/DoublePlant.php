@@ -43,6 +43,10 @@ class DoublePlant extends Flowable{
 		$this->top = ($meta & self::BITFLAG_TOP) !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1000;
+	}
+
 	public function canBeReplaced() : bool{
 		return $this->variant === 2 or $this->variant === 3; //grass or fern
 	}

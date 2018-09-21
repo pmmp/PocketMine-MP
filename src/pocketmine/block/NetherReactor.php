@@ -49,6 +49,10 @@ class NetherReactor extends Solid{
 		$this->state = $meta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b11;
+	}
+
 	public function getName() : string{
 		return "Nether Reactor Core";
 	}

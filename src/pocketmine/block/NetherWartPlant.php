@@ -51,6 +51,10 @@ class NetherWartPlant extends Flowable{
 		$this->age = $meta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b11;
+	}
+
 	public function getName() : string{
 		return "Nether Wart";
 	}

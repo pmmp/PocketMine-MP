@@ -55,6 +55,10 @@ class Leaves extends Transparent{
 		$this->checkDecay = ($meta & 0x08) !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1100;
+	}
+
 	public function getHardness() : float{
 		return 0.2;
 	}

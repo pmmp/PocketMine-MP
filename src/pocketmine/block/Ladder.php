@@ -49,6 +49,10 @@ class Ladder extends Transparent{
 		$this->facing = $meta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function getName() : string{
 		return "Ladder";
 	}

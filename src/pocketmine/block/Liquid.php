@@ -58,6 +58,10 @@ abstract class Liquid extends Transparent{
 		$this->falling = ($meta & 0x08) !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function hasEntityCollision() : bool{
 		return true;
 	}

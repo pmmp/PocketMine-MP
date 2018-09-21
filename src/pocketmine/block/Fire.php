@@ -52,6 +52,10 @@ class Fire extends Flowable{
 		$this->age = $meta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function hasEntityCollision() : bool{
 		return true;
 	}

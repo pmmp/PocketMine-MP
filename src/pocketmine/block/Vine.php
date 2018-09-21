@@ -60,6 +60,10 @@ class Vine extends Flowable{
 		$this->setFaceFromMeta($meta, self::FLAG_EAST, Facing::EAST);
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	private function setFaceFromMeta(int $meta, int $flag, int $face) : void{
 		if(($meta & $flag) !== 0){
 			$this->faces[$face] = true;

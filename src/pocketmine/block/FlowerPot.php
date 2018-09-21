@@ -51,6 +51,10 @@ class FlowerPot extends Flowable{
 		$this->occupied = $meta !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111; //vanilla uses various values, we only care about 1 and 0 for PE
+	}
+
 	public function getName() : string{
 		return "Flower Pot";
 	}

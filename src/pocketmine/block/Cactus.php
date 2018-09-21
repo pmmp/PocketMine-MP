@@ -53,6 +53,10 @@ class Cactus extends Transparent{
 		$this->age = $meta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function getHardness() : float{
 		return 0.4;
 	}

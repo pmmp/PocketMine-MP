@@ -68,11 +68,10 @@ class BlockFactory{
 		self::$diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 256, false));
 		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 256, 0));
 
-		self::$stateMasks = new \SplFixedArray(256);
+		self::$stateMasks = \SplFixedArray::fromArray(array_fill(0, 256, 0));
 
 		self::registerBlock(new Air());
 
-		self::setStateMask(Block::STONE, 0);
 		//TODO: give smooth stone its own class (different drops)
 		self::registerBlock(new Stone(Block::STONE, Stone::NORMAL, "Stone"));
 		self::registerBlock(new Stone(Block::STONE, Stone::GRANITE, "Granite"));
@@ -84,26 +83,18 @@ class BlockFactory{
 
 		self::registerBlock(new Grass());
 
-		self::setStateMask(Block::DIRT, 0);
 		//TODO: split these into separate classes
 		self::registerBlock(new Dirt(Block::DIRT, Dirt::NORMAL, "Dirt"));
 		self::registerBlock(new Dirt(Block::DIRT, Dirt::COARSE, "Coarse Dirt"));
 
 		self::registerBlock(new Cobblestone());
 
-		self::setStateMask(Block::PLANKS, 0);
-		self::setStateMask(Block::SAPLING, 0x8); //ready bitflag
-		self::setStateMask(Block::FENCE, 0);
 		foreach(WoodType::ALL as $type){
 			self::registerBlock(new Planks(Block::PLANKS, $type, WoodType::NAMES[$type] . " Planks"));
 			self::registerBlock(new Sapling(Block::SAPLING, $type, WoodType::NAMES[$type] . " Sapling"));
 			self::registerBlock(new WoodenFence(Block::FENCE, $type, WoodType::NAMES[$type] . " Fence"));
 		}
 
-		self::setStateMask(Block::LOG, 0xc); //axis
-		self::setStateMask(Block::LOG2, 0xc);
-		self::setStateMask(Block::LEAVES, 0xc); //checkdecay/nodecay
-		self::setStateMask(Block::LEAVES2, 0xc);
 		foreach(WoodType::ALL as $type){
 			//TODO: find a better way to deal with this split
 			self::registerBlock(new Wood($type >= 4 ? Block::WOOD2 : Block::WOOD, $type & 0x03, WoodType::NAMES[$type] . " Wood"));
@@ -116,7 +107,6 @@ class BlockFactory{
 		self::registerBlock(new Lava());
 		self::registerBlock(new StillLava());
 
-		self::setStateMask(Block::SAND, 0);
 		self::registerBlock(new Sand(Block::SAND, 0, "Sand"));
 		self::registerBlock(new Sand(Block::SAND, 1, "Red Sand"));
 
@@ -135,8 +125,6 @@ class BlockFactory{
 			Sandstone::CHISELED => "Chiseled ",
 			Sandstone::SMOOTH => "Smooth "
 		];
-		self::setStateMask(Block::SANDSTONE, 0);
-		self::setStateMask(Block::RED_SANDSTONE, 0);
 		foreach($sandstoneTypes as $variant => $prefix){
 			self::registerBlock(new Sandstone(Block::SANDSTONE, $variant, $prefix . "Sandstone"));
 			self::registerBlock(new Sandstone(Block::RED_SANDSTONE, $variant, $prefix . "Red Sandstone"));
@@ -149,7 +137,6 @@ class BlockFactory{
 		//TODO: STICKY_PISTON
 		self::registerBlock(new Cobweb());
 
-		self::setStateMask(Block::TALL_GRASS, 0);
 		self::registerBlock(new TallGrass(Block::TALL_GRASS, 0, "Fern"));
 		self::registerBlock(new TallGrass(Block::TALL_GRASS, 1, "Tall Grass"));
 		self::registerBlock(new TallGrass(Block::TALL_GRASS, 2, "Fern"));
@@ -159,17 +146,6 @@ class BlockFactory{
 		//TODO: PISTON
 		//TODO: PISTONARMCOLLISION
 
-		foreach([
-			Block::WOOL,
-			Block::STAINED_CLAY,
-			Block::STAINED_GLASS,
-			Block::STAINED_GLASS_PANE,
-			Block::CARPET,
-			Block::CONCRETE,
-			Block::CONCRETE_POWDER
-		] as $id){
-			self::setStateMask($id, 0);
-		}
 		foreach(Color::ALL as $color){
 			self::registerBlock(new Wool(Block::WOOL, $color, Color::NAMES[$color] . " Wool"));
 			self::registerBlock(new HardenedClay(Block::STAINED_CLAY, $color, Color::NAMES[$color] . " Stained Clay"));
@@ -182,7 +158,6 @@ class BlockFactory{
 
 		self::registerBlock(new Dandelion());
 
-		self::setStateMask(Block::RED_FLOWER, 0);
 		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_POPPY, "Poppy"));
 		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_BLUE_ORCHID, "Blue Orchid"));
 		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_ALLIUM, "Allium"));
@@ -198,16 +173,6 @@ class BlockFactory{
 		self::registerBlock(new Gold());
 		self::registerBlock(new Iron());
 
-		foreach([
-			Block::STONE_SLAB,
-			Block::STONE_SLAB2,
-			Block::DOUBLE_STONE_SLAB,
-			Block::DOUBLE_STONE_SLAB2,
-			Block::WOODEN_SLAB,
-			Block::DOUBLE_WOODEN_SLAB
-		] as $id){
-			self::setStateMask($id, 0x8);
-		}
 		/** @var Slab[] $slabTypes */
 		$slabTypes = [
 			new StoneSlab(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 0, "Stone"),
@@ -305,7 +270,6 @@ class BlockFactory{
 		self::registerBlock(new Trapdoor());
 		//TODO: MONSTER_EGG
 
-		self::setStateMask(Block::STONE_BRICKS, 0);
 		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::NORMAL, "Stone Bricks"));
 		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::MOSSY, "Mossy Stone Bricks"));
 		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::CRACKED, "Cracked Stone Bricks"));
@@ -359,7 +323,6 @@ class BlockFactory{
 		//TODO: COMMAND_BLOCK
 		//TODO: BEACON
 
-		self::setStateMask(Block::COBBLESTONE_WALL, 0);
 		self::registerBlock(new CobblestoneWall(Block::COBBLESTONE_WALL, CobblestoneWall::NONE_MOSSY_WALL, "Cobblestone Wall"));
 		self::registerBlock(new CobblestoneWall(Block::COBBLESTONE_WALL, CobblestoneWall::MOSSY_WALL, "Mossy Cobblestone Wall"));
 
@@ -369,7 +332,6 @@ class BlockFactory{
 		self::registerBlock(new WoodenButton());
 		self::registerBlock(new Skull());
 
-		self::setStateMask(Block::ANVIL, 0x3); //rotation
 		self::registerBlock(new Anvil(Block::ANVIL, Anvil::TYPE_NORMAL, "Anvil"));
 		self::registerBlock(new Anvil(Block::ANVIL, Anvil::TYPE_SLIGHTLY_DAMAGED, "Slightly Damaged Anvil"));
 		self::registerBlock(new Anvil(Block::ANVIL, Anvil::TYPE_VERY_DAMAGED, "Very Damaged Anvil"));
@@ -392,12 +354,10 @@ class BlockFactory{
 		self::registerBlock(new NetherQuartzOre());
 		//TODO: HOPPER_BLOCK
 
-		self::setStateMask(Block::QUARTZ_BLOCK, 0xc); //pillar axis
 		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::NORMAL, "Quartz Block"));
 		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::CHISELED, "Chiseled Quartz Block"));
 		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::PILLAR, "Quartz Pillar"));
 
-		self::setStateMask(Block::PURPUR_BLOCK, 0xc);
 		self::registerBlock(new Purpur(Block::PURPUR_BLOCK, Purpur::NORMAL, "Purpur Block"));
 		self::registerBlock(new Purpur(Block::PURPUR_BLOCK, Purpur::PILLAR, "Purpur Pillar"));
 
@@ -409,7 +369,6 @@ class BlockFactory{
 
 		self::registerBlock(new IronTrapdoor());
 
-		self::setStateMask(Block::PRISMARINE, 0);
 		self::registerBlock(new Prismarine(Block::PRISMARINE, Prismarine::NORMAL, "Prismarine"));
 		self::registerBlock(new Prismarine(Block::PRISMARINE, Prismarine::DARK, "Dark Prismarine"));
 		self::registerBlock(new Prismarine(Block::PRISMARINE, Prismarine::BRICKS, "Prismarine Bricks"));
@@ -421,7 +380,6 @@ class BlockFactory{
 		self::registerBlock(new Coal());
 		self::registerBlock(new PackedIce());
 
-		self::setStateMask(Block::DOUBLE_PLANT, 0x8); //top flag
 		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 0, "Sunflower"));
 		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 1, "Lilac"));
 		//TODO: double tallgrass and large fern have different behaviour than the others, so they should get their own classes
@@ -500,20 +458,6 @@ class BlockFactory{
 	}
 
 	/**
-	 * Sets the mask used to strip state information from metadata for the given block ID. Used to extract variant
-	 * information from blocks.
-	 *
-	 * Only blocks which declare non-zero variants need to have this set. For any block IDs without variants, all meta
-	 * bits are assumed to be state bits.
-	 *
-	 * @param int $blockId
-	 * @param int $mask
-	 */
-	public static function setStateMask(int $blockId, int $mask) : void{
-		self::$stateMasks[$blockId] = $mask;
-	}
-
-	/**
 	 * Registers a block type into the index. Plugins may use this method to register new block types or override
 	 * existing ones.
 	 *
@@ -532,10 +476,6 @@ class BlockFactory{
 
 		if(!$override and self::isRegistered($id, $variant)){
 			throw new \RuntimeException("Trying to overwrite an already registered block");
-		}
-
-		if(!($block instanceof UnknownBlock) and $variant !== 0 and self::$stateMasks[$id] === null){
-			throw new \InvalidStateException("State bitmask not set for ID " . $id . ". Mask is required to register non-zero variants of blocks.");
 		}
 
 		self::$fullList[($id << 4) | $variant] = clone $block;
@@ -610,6 +550,7 @@ class BlockFactory{
 		self::$lightFilter[$id] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
 		self::$diffusesSkyLight[$id] = $block->diffusesSkyLight();
 		self::$blastResistance[$id] = $block->getBlastResistance();
+		self::$stateMasks[$id] = $block->getStateBitmask();
 	}
 
 	/**

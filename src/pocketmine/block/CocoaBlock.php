@@ -53,6 +53,10 @@ class CocoaBlock extends Transparent{
 		$this->age = $meta >> 2;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function getName() : string{
 		return "Cocoa Block";
 	}

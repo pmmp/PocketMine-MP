@@ -43,6 +43,10 @@ class Sponge extends Solid{
 		$this->wet = $meta !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1;
+	}
+
 	public function getHardness() : float{
 		return 0.6;
 	}

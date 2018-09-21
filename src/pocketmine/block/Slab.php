@@ -49,6 +49,10 @@ abstract class Slab extends Transparent{
 		$this->top = ($meta & 0x08) !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1000;
+	}
+
 	public function getDoubleSlabId() : int{
 		return $this->doubleId;
 	}

@@ -32,10 +32,6 @@ class UnknownBlock extends Transparent{
 		$this->variant = $meta;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		//NOOP - we consider unknown block metadata to be immutable because we don't understand it
-	}
-
 	public function canBePlaced() : bool{
 		return false;
 	}

@@ -44,6 +44,10 @@ class WeightedPressurePlateLight extends Transparent{
 		$this->power = $meta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function getName() : string{
 		return "Weighted Pressure Plate Light";
 	}

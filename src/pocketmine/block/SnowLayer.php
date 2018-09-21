@@ -49,6 +49,10 @@ class SnowLayer extends Flowable{
 		$this->layers = $meta + 1;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function getName() : string{
 		return "Snow Layer";
 	}
