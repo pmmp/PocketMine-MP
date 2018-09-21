@@ -37,6 +37,7 @@ class Attribute{
 	public const ATTACK_DAMAGE = 8;
 	public const EXPERIENCE_LEVEL = 9;
 	public const EXPERIENCE = 10;
+	public const JUMP_STRENGTH = 11;
 
 	private $id;
 	protected $minValue;
@@ -63,6 +64,7 @@ class Attribute{
 		self::addAttribute(self::ATTACK_DAMAGE, "minecraft:attack_damage", 0.00, 340282346638528859811704183484516925440.00, 1.00, false);
 		self::addAttribute(self::EXPERIENCE_LEVEL, "minecraft:player.level", 0.00, 24791.00, 0.00);
 		self::addAttribute(self::EXPERIENCE, "minecraft:player.experience", 0.00, 1.00, 0.00);
+		self::addAttribute(self::JUMP_STRENGTH, "minecraft:horse.jump_strength", 0.00, 2.00, 0.70);
 		//TODO: minecraft:luck (for fishing?)
 		//TODO: minecraft:fall_damage
 	}

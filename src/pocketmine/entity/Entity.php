@@ -48,6 +48,7 @@ use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\passive\Chicken;
 use pocketmine\entity\passive\Cow;
+use pocketmine\entity\passive\Horse;
 use pocketmine\entity\passive\Mooshroom;
 use pocketmine\entity\passive\Pig;
 use pocketmine\entity\passive\Sheep;
@@ -408,6 +409,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(LeashKnot::class, false, [
 			'LeashKnot',
 			'minecraft:leash_knot'
+		]);
+		Entity::registerEntity(Horse::class, false, [
+			'Horse',
+			'minecraft:horse'
 		]);
 
 		Entity::registerEntity(Human::class, true);
