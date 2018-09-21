@@ -136,9 +136,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		if($meta !== 0){
-			throw new \InvalidArgumentException("Unexpected non-zero state meta 0x" . dechex($meta) . " for " . get_class($this));
-		}
+		//NOOP
 	}
 
 	/**

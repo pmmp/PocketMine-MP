@@ -582,14 +582,8 @@ class BlockFactory{
 		}
 
 		if($block !== null){
-			try{
-				$block->readStateFromMeta($state);
-			}catch(\InvalidArgumentException $e){
-				$block = null; //TODO: improve invalid state handling
-			}
-		}
-
-		if($block === null){
+			$block->readStateFromMeta($state);
+		}else{
 			$block = new UnknownBlock($id, $meta);
 		}
 
