@@ -104,7 +104,7 @@ class BlockTest extends TestCase{
 			[Block::GOLD_BLOCK, 0],
 			[Block::WOODEN_PLANKS, 5],
 			[Block::SAND, 0],
-			[Block::GOLD_BLOCK, 5] //invalid
+			[Block::GOLD_BLOCK, 0]
 		];
 	}
 
