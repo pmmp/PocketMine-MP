@@ -34,8 +34,8 @@ class Air extends Transparent{
 
 	protected $id = self::AIR;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function __construct(){
+
 	}
 
 	public function getName() : string{

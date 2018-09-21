@@ -34,41 +34,72 @@ use pocketmine\Player;
 
 
 abstract class Door extends Transparent{
+	/** @var int */
+	protected $facing = Facing::NORTH;
+	/** @var bool */
+	protected $top = false;
+	/** @var bool */
+	protected $hingeRight = false;
+
+	/** @var bool */
+	protected $open = false;
+	/** @var bool */
+	protected $powered = false;
+
+
+	protected function writeStateToMeta() : int{
+		if($this->top){
+			return 0x08 | ($this->hingeRight ? 0x01 : 0) | ($this->powered ? 0x02 : 0);
+		}
+
+		return Bearing::rotate(Bearing::fromFacing($this->facing), 1) | ($this->open ? 0x04 : 0);
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->top = $meta & 0x08;
+		if($this->top){
+			$this->hingeRight = ($meta & 0x01) !== 0;
+			$this->powered = ($meta & 0x02) !== 0;
+		}else{
+			$this->facing = Bearing::toFacing(Bearing::rotate($meta & 0x03, -1));
+			$this->open = ($meta & 0x04) !== 0;
+		}
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
+	/**
+	 * Copies door properties from the other half of the door, since metadata is split between the two halves.
+	 * TODO: the blockstate should be updated directly on creation so these properties can be detected in advance.
+	 */
+	private function updateStateFromOtherHalf() : void{
+		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
+		if($other instanceof Door and $other->getId() === $this->getId()){
+			if($this->top){
+				$this->facing = $other->facing;
+				$this->open = $other->open;
+			}else{
+				$this->hingeRight = $other->hingeRight;
+				$this->powered = $other->powered;
+			}
+		}
+	}
 
 	public function isSolid() : bool{
 		return false;
 	}
 
-	private function getFullDamage(){
-		$damage = $this->getDamage();
-		$isUp = ($damage & 0x08) > 0;
-
-		if($isUp){
-			$down = $this->getSide(Facing::DOWN)->getDamage();
-			$up = $damage;
-		}else{
-			$down = $damage;
-			$up = $this->getSide(Facing::UP)->getDamage();
-		}
-
-		$isRight = ($up & 0x01) > 0;
-
-		return $down & 0x07 | ($isUp ? 8 : 0) | ($isRight ? 0x10 : 0);
-	}
-
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		$f = 0.1875;
-		$damage = $this->getFullDamage();
+		$this->updateStateFromOtherHalf();
 
 		$bb = new AxisAlignedBB(0, 0, 0, 1, 2, 1);
 
-		$j = $damage & 0x03;
-		$isOpen = (($damage & 0x04) > 0);
-		$isRight = (($damage & 0x10) > 0);
-
-		if($j === 0){
-			if($isOpen){
-				if(!$isRight){
+		if($this->facing === Facing::EAST){
+			if($this->open){
+				if(!$this->hingeRight){
 					$bb->setBounds(0, 0, 0, 1, 1, $f);
 				}else{
 					$bb->setBounds(0, 0, 1 - $f, 1, 1, 1);
@@ -76,9 +107,9 @@ abstract class Door extends Transparent{
 			}else{
 				$bb->setBounds(0, 0, 0, $f, 1, 1);
 			}
-		}elseif($j === 1){
-			if($isOpen){
-				if(!$isRight){
+		}elseif($this->facing === Facing::SOUTH){
+			if($this->open){
+				if(!$this->hingeRight){
 					$bb->setBounds(1 - $f, 0, 0, 1, 1, 1);
 				}else{
 					$bb->setBounds(0, 0, 0, $f, 1, 1);
@@ -86,9 +117,9 @@ abstract class Door extends Transparent{
 			}else{
 				$bb->setBounds(0, 0, 0, 1, 1, $f);
 			}
-		}elseif($j === 2){
-			if($isOpen){
-				if(!$isRight){
+		}elseif($this->facing === Facing::WEST){
+			if($this->open){
+				if(!$this->hingeRight){
 					$bb->setBounds(0, 0, 1 - $f, 1, 1, 1);
 				}else{
 					$bb->setBounds(0, 0, 0, 1, 1, $f);
@@ -96,9 +127,9 @@ abstract class Door extends Transparent{
 			}else{
 				$bb->setBounds(1 - $f, 0, 0, 1, 1, 1);
 			}
-		}elseif($j === 3){
-			if($isOpen){
-				if(!$isRight){
+		}elseif($this->facing === Facing::NORTH){
+			if($this->open){
+				if(!$this->hingeRight){
 					$bb->setBounds(0, 0, 0, $f, 1, 1);
 				}else{
 					$bb->setBounds(1 - $f, 0, 0, 1, 1, 1);
@@ -128,19 +159,22 @@ abstract class Door extends Transparent{
 				return false;
 			}
 
-			$ccw = Bearing::toFacing($player instanceof Player ? Bearing::rotate($player->getDirection(), -1) : Bearing::EAST);
-
-			$next = $this->getSide(Facing::opposite($ccw));
-			$next2 = $this->getSide($ccw);
-
-			$metaUp = 0x08;
-			if($next->getId() === $this->getId() or (!$next2->isTransparent() and $next->isTransparent())){ //Door hinge
-				$metaUp |= 0x01;
+			if($player !== null){
+				$this->facing = Bearing::toFacing($player->getDirection());
 			}
 
-			$this->setDamage(Bearing::rotate($player->getDirection(), -1));
+			$next = $this->getSide(Facing::rotate($this->facing, Facing::AXIS_Y, false));
+			$next2 = $this->getSide(Facing::rotate($this->facing, Facing::AXIS_Y, true));
+
+			if($next->getId() === $this->getId() or (!$next2->isTransparent() and $next->isTransparent())){ //Door hinge
+				$this->hingeRight = true;
+			}
+
+			$topHalf = clone $this;
+			$topHalf->top = true;
+
 			parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-			$this->getLevel()->setBlock($blockUp, BlockFactory::get($this->getId(), $metaUp), true); //Top
+			$this->level->setBlock($blockUp, $topHalf, true); //Top
 			return true;
 		}
 
@@ -148,31 +182,23 @@ abstract class Door extends Transparent{
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		if(($this->getDamage() & 0x08) === 0x08){ //Top
-			$down = $this->getSide(Facing::DOWN);
-			if($down->getId() === $this->getId()){
-				$meta = $down->getDamage() ^ 0x04;
-				$this->level->setBlock($down, BlockFactory::get($this->getId(), $meta), true);
-				$this->level->addSound(new DoorSound($this));
-				return true;
-			}
+		$this->updateStateFromOtherHalf();
+		$this->open = !$this->open;
 
-			return false;
-		}else{
-			$this->meta ^= 0x04;
-			$this->level->setBlock($this, $this, true);
-			$this->level->addSound(new DoorSound($this));
+		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
+		if($other instanceof Door and $this->getId() === $other->getId()){
+			$other->open = $this->open;
+			$this->level->setBlock($other, $other, true, true);
 		}
+
+		$this->level->setBlock($this, $this, true, true);
+		$this->level->addSound(new DoorSound($this));
 
 		return true;
 	}
 
-	public function getVariantBitmask() : int{
-		return 0;
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(($this->meta & 0x08) === 0){ //bottom half only
+		if(!$this->top){ //bottom half only
 			return parent::getDropsForCompatibleTool($item);
 		}
 
@@ -184,18 +210,10 @@ abstract class Door extends Transparent{
 	}
 
 	public function getAffectedBlocks() : array{
-		if(($this->getDamage() & 0x08) === 0x08){
-			$down = $this->getSide(Facing::DOWN);
-			if($down->getId() === $this->getId()){
-				return [$this, $down];
-			}
-		}else{
-			$up = $this->getSide(Facing::UP);
-			if($up->getId() === $this->getId()){
-				return [$this, $up];
-			}
+		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
+		if($other->getId() === $this->getId()){
+			return [$this, $other];
 		}
-
 		return parent::getAffectedBlocks();
 	}
 }

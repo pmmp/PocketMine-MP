@@ -30,17 +30,13 @@ class Potato extends Crops{
 
 	protected $id = self::POTATO_BLOCK;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
 	public function getName() : string{
 		return "Potato Block";
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::POTATO, 0, $this->getDamage() >= 0x07 ? mt_rand(1, 4) : 1)
+			ItemFactory::get(Item::POTATO, 0, $this->age >= 7 ? mt_rand(1, 4) : 1)
 		];
 	}
 

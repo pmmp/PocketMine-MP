@@ -36,8 +36,23 @@ class Skull extends Flowable{
 
 	protected $id = self::SKULL_BLOCK;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	/** @var int */
+	protected $facing = Facing::NORTH;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->facing;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->facing = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
 	}
 
 	public function getHardness() : float{
@@ -49,7 +64,7 @@ class Skull extends Flowable{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		//TODO: different bounds depending on attached face (meta)
+		//TODO: different bounds depending on attached face
 		static $f = 0.25;
 		return new AxisAlignedBB($f, 0, $f, 1 - $f, 0.5, 1 - $f);
 	}
@@ -59,7 +74,7 @@ class Skull extends Flowable{
 			return false;
 		}
 
-		$this->meta = $face;
+		$this->facing = $face;
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
 			Tile::createTile(Tile::SKULL, $this->getLevel(), TileSkull::createNBT($this, $face, $item, $player));
 			return true;
@@ -68,18 +83,20 @@ class Skull extends Flowable{
 		return false;
 	}
 
-	public function getDropsForCompatibleTool(Item $item) : array{
+	private function getItem() : Item{
 		$tile = $this->level->getTile($this);
-		if($tile instanceof TileSkull){
-			return [
-				ItemFactory::get(Item::SKULL, $tile->getType())
-			];
-		}
+		return ItemFactory::get(Item::SKULL, $tile instanceof TileSkull ? $tile->getType() : 0);
+	}
 
-		return [];
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [$this->getItem()];
 	}
 
 	public function isAffectedBySilkTouch() : bool{
 		return false;
+	}
+
+	public function getPickedItem() : Item{
+		return $this->getItem();
 	}
 }

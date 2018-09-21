@@ -28,10 +28,6 @@ use pocketmine\math\Facing;
 
 abstract class Fence extends Transparent{
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
 	public function getThickness() : float{
 		return 0.25;
 	}

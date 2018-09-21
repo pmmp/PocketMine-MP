@@ -38,8 +38,23 @@ class SignPost extends Transparent{
 
 	protected $itemId = Item::SIGN;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	/** @var int */
+	protected $rotation = 0;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->rotation;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->rotation = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	public function getHardness() : float{
@@ -58,16 +73,14 @@ class SignPost extends Transparent{
 		return null;
 	}
 
-
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($face !== Facing::DOWN){
 
 			if($face === Facing::UP){
-				$this->meta = $player !== null ? (floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f) : 0;
+				$this->rotation = $player !== null ? ((int) floor((($player->yaw + 180) * 16 / 360) + 0.5)) & 0x0f : 0;
 				$ret = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}else{
-				$this->meta = $face;
-				$ret = $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_SIGN, $this->meta), true);
+				$ret = $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_SIGN, $face), true);
 			}
 
 			if($ret){
@@ -87,9 +100,5 @@ class SignPost extends Transparent{
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_AXE;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

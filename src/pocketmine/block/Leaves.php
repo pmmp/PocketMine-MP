@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\WoodType;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -33,18 +34,30 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Leaves extends Transparent{
-	public const OAK = 0;
-	public const SPRUCE = 1;
-	public const BIRCH = 2;
-	public const JUNGLE = 3;
-	public const ACACIA = 0;
-	public const DARK_OAK = 1;
+	/** @var int */
+	protected $woodType;
 
-	protected $id = self::LEAVES;
-	protected $woodType = self::WOOD;
+	/** @var bool */
+	protected $noDecay = false;
+	/** @var bool */
+	protected $checkDecay = false;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function __construct(int $id, int $variant, int $woodType, ?string $name = null){
+		parent::__construct($id, $variant, $name);
+		$this->woodType = $woodType;
+	}
+
+	protected function writeStateToMeta() : int{
+		return ($this->noDecay ? 0x04 : 0) | ($this->checkDecay ? 0x08 : 0);
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->noDecay = ($meta & 0x04) !== 0;
+		$this->checkDecay = ($meta & 0x08) !== 0;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1100;
 	}
 
 	public function getHardness() : float{
@@ -53,16 +66,6 @@ class Leaves extends Transparent{
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_SHEARS;
-	}
-
-	public function getName() : string{
-		static $names = [
-			self::OAK => "Oak Leaves",
-			self::SPRUCE => "Spruce Leaves",
-			self::BIRCH => "Birch Leaves",
-			self::JUNGLE => "Jungle Leaves"
-		];
-		return $names[$this->getVariant()];
 	}
 
 	public function diffusesSkyLight() : bool{
@@ -77,11 +80,12 @@ class Leaves extends Transparent{
 		}
 		$visited[$index] = true;
 
-		if($pos->getId() === $this->woodType){
+		$id = $pos->getId();
+		if($id === Block::WOOD or $id === Block::WOOD2){
 			return true;
 		}
 
-		if($pos->getId() === $this->id and $distance <= 4){
+		if($pos->getId() === $this->getId() and $distance <= 4){
 			foreach(Facing::ALL as $side){
 				if($this->findLog($pos->getSide($side), $visited, $distance + 1)){
 					return true;
@@ -93,8 +97,8 @@ class Leaves extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(($this->meta & 0b00001100) === 0){
-			$this->meta |= 0x08;
+		if(!$this->noDecay and !$this->checkDecay){
+			$this->checkDecay = true;
 			$this->getLevel()->setBlock($this, $this, true, false);
 		}
 	}
@@ -104,9 +108,7 @@ class Leaves extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if(($this->meta & 0b00001100) === 0x08){
-			$this->meta &= 0x03;
-
+		if(!$this->noDecay and $this->checkDecay){
 			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
 
 			if($ev->isCancelled() or $this->findLog($this)){
@@ -118,12 +120,8 @@ class Leaves extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$this->meta |= 0x04;
+		$this->noDecay = true; //artificial leaves don't decay
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function getVariantBitmask() : int{
-		return 0x03;
 	}
 
 	public function getDrops(Item $item) : array{
@@ -133,21 +131,13 @@ class Leaves extends Transparent{
 
 		$drops = [];
 		if(mt_rand(1, 20) === 1){ //Saplings
-			$drops[] = $this->getSaplingItem();
+			$drops[] = ItemFactory::get(Item::SAPLING, $this->woodType);
 		}
-		if($this->canDropApples() and mt_rand(1, 200) === 1){ //Apples
+		if(($this->woodType === WoodType::OAK or $this->woodType === WoodType::DARK_OAK) and mt_rand(1, 200) === 1){ //Apples
 			$drops[] = ItemFactory::get(Item::APPLE);
 		}
 
 		return $drops;
-	}
-
-	public function getSaplingItem() : Item{
-		return ItemFactory::get(Item::SAPLING, $this->getVariant());
-	}
-
-	public function canDropApples() : bool{
-		return $this->meta === self::OAK;
 	}
 
 	public function getFlameEncouragement() : int{

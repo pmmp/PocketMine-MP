@@ -23,20 +23,52 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\Player;
+
 class TripwireHook extends Flowable{
 
 	protected $id = self::TRIPWIRE_HOOK;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	/** @var int */
+	protected $facing = Facing::NORTH;
+	/** @var bool */
+	protected $connected = false;
+	/** @var bool */
+	protected $powered = false;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return Bearing::fromFacing($this->facing) | ($this->connected ? 0x04 : 0) | ($this->powered ? 0x08 : 0);
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->facing = Bearing::toFacing($meta & 0x03);
+		$this->connected = ($meta & 0x04) !== 0;
+		$this->powered = ($meta & 0x08) !== 0;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	public function getName() : string{
 		return "Tripwire Hook";
 	}
 
-	public function getVariantBitmask() : int{
-		return 0;
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		if(Facing::axis($face) !== Facing::AXIS_Y){
+			//TODO: check face is valid
+			$this->facing = $face;
+			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}
+		return false;
 	}
 
 	//TODO

@@ -24,16 +24,33 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\math\Facing;
+
 class WallSign extends SignPost{
 
 	protected $id = self::WALL_SIGN;
+
+	/** @var int */
+	protected $facing = Facing::NORTH;
+
+	protected function writeStateToMeta() : int{
+		return $this->facing;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->facing = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
 
 	public function getName() : string{
 		return "Wall Sign";
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide($this->meta ^ 0x01)->getId() === self::AIR){
+		if($this->getSide(Facing::opposite($this->facing))->getId() === self::AIR){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}

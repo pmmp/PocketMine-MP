@@ -31,12 +31,6 @@ class StoneBricks extends Solid{
 	public const CRACKED = 2;
 	public const CHISELED = 3;
 
-	protected $id = self::STONE_BRICKS;
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
 	public function getHardness() : float{
 		return 1.5;
 	}
@@ -47,15 +41,5 @@ class StoneBricks extends Solid{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
-	}
-
-	public function getName() : string{
-		static $names = [
-			self::NORMAL => "Stone Bricks",
-			self::MOSSY => "Mossy Stone Bricks",
-			self::CRACKED => "Cracked Stone Bricks",
-			self::CHISELED => "Chiseled Stone Bricks"
-		];
-		return $names[$this->getVariant()] ?? "Unknown";
 	}
 }

@@ -29,8 +29,8 @@ class IronOre extends Solid{
 
 	protected $id = self::IRON_ORE;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function __construct(){
+
 	}
 
 	public function getName() : string{

@@ -23,14 +23,38 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 
 class BrewingStand extends Transparent{
 
 	protected $id = self::BREWING_STAND_BLOCK;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	protected $itemId = Item::BREWING_STAND;
+
+	/** @var bool */
+	protected $eastSlot = false;
+	/** @var bool */
+	protected $northwestSlot = false;
+	/** @var bool */
+	protected $southwestSlot = false;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return ($this->eastSlot ? 0x01 : 0) | ($this->southwestSlot ? 0x02 : 0) | ($this->northwestSlot ? 0x04 : 0);
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->eastSlot = ($meta & 0x01) !== 0;
+		$this->southwestSlot = ($meta & 0x02) !== 0;
+		$this->northwestSlot = ($meta & 0x04) !== 0;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
 	}
 
 	public function getName() : string{
@@ -47,10 +71,6 @@ class BrewingStand extends Transparent{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 
 	//TODO

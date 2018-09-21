@@ -187,12 +187,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "6511fb0dcfeb60705d4169cc0422258b325af5c6"
+                "reference": "e5fd6cf9e71c285ff24bb3a3cbc22a15a8e73ac7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/6511fb0dcfeb60705d4169cc0422258b325af5c6",
-                "reference": "6511fb0dcfeb60705d4169cc0422258b325af5c6",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/e5fd6cf9e71c285ff24bb3a3cbc22a15a8e73ac7",
+                "reference": "e5fd6cf9e71c285ff24bb3a3cbc22a15a8e73ac7",
                 "shasum": ""
             },
             "require": {
@@ -218,7 +218,7 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2018-09-13T18:32:31+00:00"
+            "time": "2018-09-16T16:36:04+00:00"
         },
         {
             "name": "pocketmine/nbt",

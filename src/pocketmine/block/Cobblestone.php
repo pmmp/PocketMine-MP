@@ -29,8 +29,8 @@ class Cobblestone extends Solid{
 
 	protected $id = self::COBBLESTONE;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function __construct(){
+
 	}
 
 	public function getToolType() : int{

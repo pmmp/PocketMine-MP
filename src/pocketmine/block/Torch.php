@@ -33,8 +33,27 @@ class Torch extends Flowable{
 
 	protected $id = self::TORCH;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	/** @var int */
+	protected $facing = Facing::UP;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return 6 - $this->facing;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		if($meta === 0){
+			$this->facing = Facing::UP;
+		}else{
+			$this->facing = 6 - $meta;
+		}
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
 	}
 
 	public function getLightLevel() : int{
@@ -47,17 +66,9 @@ class Torch extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$below = $this->getSide(Facing::DOWN);
-		$side = $this->getDamage();
-		static $faces = [
-			0 => Facing::DOWN,
-			1 => Facing::WEST,
-			2 => Facing::EAST,
-			3 => Facing::NORTH,
-			4 => Facing::SOUTH,
-			5 => Facing::DOWN
-		];
+		$face = Facing::opposite($this->facing);
 
-		if($this->getSide($faces[$side])->isTransparent() and !($side === Facing::DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
+		if($this->getSide($face)->isTransparent() and !($face === Facing::DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}
@@ -66,25 +77,13 @@ class Torch extends Flowable{
 		$below = $this->getSide(Facing::DOWN);
 
 		if(!$blockClicked->isTransparent() and $face !== Facing::DOWN){
-			static $faces = [
-				Facing::UP => 5,
-				Facing::NORTH => 4,
-				Facing::SOUTH => 3,
-				Facing::WEST => 2,
-				Facing::EAST => 1
-			];
-			$this->meta = $faces[$face];
-
+			$this->facing = $face;
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}elseif(!$below->isTransparent() or $below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL){
-			$this->meta = 0;
+			$this->facing = Facing::UP;
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

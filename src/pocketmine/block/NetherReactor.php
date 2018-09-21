@@ -28,19 +28,33 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 
 class NetherReactor extends Solid{
+	protected const STATE_INACTIVE = 0;
+	protected const STATE_ACTIVE = 1;
+	protected const STATE_USED = 2;
+
 	protected $id = Block::NETHER_REACTOR;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	/** @var int */
+	protected $state = self::STATE_INACTIVE;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->state;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->state = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b11;
 	}
 
 	public function getName() : string{
-		static $prefixes = [
-			"",
-			"Active ",
-			"Used "
-		];
-		return ($prefixes[$this->meta] ?? "") . "Nether Reactor Core";
+		return "Nether Reactor Core";
 	}
 
 	public function getToolType() : int{

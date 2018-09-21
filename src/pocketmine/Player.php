@@ -2375,7 +2375,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function continueBreakBlock(Vector3 $pos, int $face) : void{
 		$block = $this->level->getBlock($pos);
-		$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, BlockFactory::toStaticRuntimeId($block->getId(), $block->getDamage()) | ($face << 24));
+		$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $block->getRuntimeId() | ($face << 24));
 
 		//TODO: destroy-progress level event
 	}
@@ -2693,6 +2693,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
 		$tile = $this->level->getTileAt($packet->x, $packet->y, $packet->z);
 		if($tile instanceof ItemFrame){
+			//TODO: use facing blockstate property instead of damage value
 			$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $tile->getBlock(), null, 5 - $tile->getBlock()->getDamage(), PlayerInteractEvent::LEFT_CLICK_BLOCK);
 
 			if($this->isSpectator() or $this->level->checkSpawnProtection($this, $tile)){

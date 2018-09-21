@@ -30,16 +30,12 @@ class Beetroot extends Crops{
 
 	protected $id = self::BEETROOT_BLOCK;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
 	public function getName() : string{
 		return "Beetroot Block";
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if($this->meta >= 0x07){
+		if($this->age >= 7){
 			return [
 				ItemFactory::get(Item::BEETROOT),
 				ItemFactory::get(Item::BEETROOT_SEEDS, 0, mt_rand(0, 3))

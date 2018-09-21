@@ -1,24 +1,23 @@
 <?php
 
 /*
- *               _ _
- *         /\   | | |
- *        /  \  | | |_ __ _ _   _
- *       / /\ \ | | __/ _` | | | |
- *      / ____ \| | || (_| | |_| |
- *     /_/    \_|_|\__\__,_|\__, |
- *                           __/ |
- *                          |___/
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author TuranicTeam
- * @link https://github.com/TuranicTeam/Altay
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
  *
- */
+ *
+*/
 
 declare(strict_types=1);
 
@@ -39,8 +38,23 @@ class Cactus extends Transparent{
 
 	protected $id = self::CACTUS;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	/** @var int */
+	protected $age = 0;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->age;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->age = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	public function getHardness() : float{
@@ -86,7 +100,7 @@ class Cactus extends Transparent{
 
 	public function onRandomTick() : void{
 		if($this->getSide(Facing::DOWN)->getId() !== self::CACTUS){
-			if($this->meta === 0x0f){
+			if($this->age === 15){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
 					if($b->getId() === self::AIR){
@@ -96,10 +110,10 @@ class Cactus extends Transparent{
 						}
 					}
 				}
-				$this->meta = 0;
+				$this->age = 0;
 				$this->getLevel()->setBlock($this, $this);
 			}else{
-				++$this->meta;
+				++$this->age;
 				$this->getLevel()->setBlock($this, $this);
 			}
 		}
@@ -118,9 +132,5 @@ class Cactus extends Transparent{
 		}
 
 		return false;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

@@ -36,8 +36,8 @@ class Noteblock extends Solid{
 
 	protected $id = self::NOTE_BLOCK;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function __construct(){
+
 	}
 
 	public function getHardness() : float{

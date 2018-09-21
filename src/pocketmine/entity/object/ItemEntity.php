@@ -74,6 +74,9 @@ class ItemEntity extends Entity{
 		}
 
 		$this->item = Item::nbtDeserialize($itemTag);
+		if($this->item->isNull()){
+			throw new \UnexpectedValueException("Item for " . get_class($this) . " is invalid");
+		}
 
 
 		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));

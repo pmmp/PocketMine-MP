@@ -30,8 +30,8 @@ class Melon extends Transparent{
 
 	protected $id = self::MELON_BLOCK;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function __construct(){
+
 	}
 
 	public function getName() : string{

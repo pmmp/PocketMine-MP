@@ -24,14 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 class WoodenFence extends Fence{
-	public const FENCE_OAK = 0;
-	public const FENCE_SPRUCE = 1;
-	public const FENCE_BIRCH = 2;
-	public const FENCE_JUNGLE = 3;
-	public const FENCE_ACACIA = 4;
-	public const FENCE_DARKOAK = 5;
-
-	protected $id = self::FENCE;
 
 	public function getHardness() : float{
 		return 2;
@@ -39,18 +31,6 @@ class WoodenFence extends Fence{
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_AXE;
-	}
-
-	public function getName() : string{
-		static $names = [
-			self::FENCE_OAK => "Oak Fence",
-			self::FENCE_SPRUCE => "Spruce Fence",
-			self::FENCE_BIRCH => "Birch Fence",
-			self::FENCE_JUNGLE => "Jungle Fence",
-			self::FENCE_ACACIA => "Acacia Fence",
-			self::FENCE_DARKOAK => "Dark Oak Fence"
-		];
-		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	public function getFuelTime() : int{

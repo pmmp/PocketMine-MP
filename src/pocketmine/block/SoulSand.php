@@ -29,8 +29,8 @@ class SoulSand extends Solid{
 
 	protected $id = self::SOUL_SAND;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function __construct(){
+
 	}
 
 	public function getName() : string{

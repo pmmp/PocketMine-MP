@@ -25,13 +25,35 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\Player;
 
 class EndPortalFrame extends Solid{
 
 	protected $id = self::END_PORTAL_FRAME;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	/** @var int */
+	protected $facing = Facing::NORTH;
+	/** @var bool */
+	protected $eye = false;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return Bearing::fromFacing($this->facing) | ($this->eye ? 0x04 : 0);
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->facing = Bearing::toFacing($meta & 0x03);
+		$this->eye = ($meta & 0x04) !== 0;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
 	}
 
 	public function getLightLevel() : int{
@@ -55,14 +77,20 @@ class EndPortalFrame extends Solid{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-
 		return new AxisAlignedBB(
 			0,
 			0,
 			0,
 			1,
-			(($this->getDamage() & 0x04) > 0 ? 1 : 0.8125),
+			$this->eye ? 1 : 0.8125,
 			1
 		);
+	}
+
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		if($player !== null){
+			$this->facing = Bearing::toFacing(Bearing::opposite($player->getDirection()));
+		}
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 }

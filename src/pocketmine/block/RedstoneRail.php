@@ -26,7 +26,23 @@ namespace pocketmine\block;
 class RedstoneRail extends BaseRail{
 	protected const FLAG_POWERED = 0x08;
 
-	protected function getConnectionsForState() : array{
-		return self::CONNECTIONS[$this->meta & ~self::FLAG_POWERED];
+	/** @var bool */
+	protected $powered = false;
+
+	protected function writeStateToMeta() : int{
+		return parent::writeStateToMeta() | ($this->powered ? self::FLAG_POWERED : 0);
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		parent::readStateFromMeta($meta);
+		$this->powered = ($meta & self::FLAG_POWERED) !== 0;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
+	protected function getConnectionsFromMeta(int $meta) : array{
+		return self::CONNECTIONS[$meta & ~self::FLAG_POWERED] ?? [];
 	}
 }

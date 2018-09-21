@@ -35,8 +35,23 @@ class Ladder extends Transparent{
 
 	protected $id = self::LADDER;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	/** @var int */
+	protected $facing = Facing::NORTH;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->facing;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->facing = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
 	}
 
 	public function getName() : string{
@@ -70,13 +85,13 @@ class Ladder extends Transparent{
 		$minX = $minZ = 0;
 		$maxX = $maxZ = 1;
 
-		if($this->meta === 2){
+		if($this->facing === Facing::NORTH){
 			$minZ = 1 - $f;
-		}elseif($this->meta === 3){
+		}elseif($this->facing === Facing::SOUTH){
 			$maxZ = $f;
-		}elseif($this->meta === 4){
+		}elseif($this->facing === Facing::WEST){
 			$minX = 1 - $f;
-		}elseif($this->meta === 5){
+		}elseif($this->facing === Facing::EAST){
 			$maxX = $f;
 		}
 
@@ -93,7 +108,7 @@ class Ladder extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if(!$blockClicked->isTransparent() and Facing::axis($face) !== Facing::AXIS_Y){
-			$this->meta = $face;
+			$this->facing = $face;
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -101,16 +116,12 @@ class Ladder extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide($this->meta ^ 0x01)->isSolid()){ //Replace with common break method
+		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){ //Replace with common break method
 			$this->level->useBreakOn($this);
 		}
 	}
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_AXE;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

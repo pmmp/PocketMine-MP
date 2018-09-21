@@ -36,8 +36,23 @@ class ItemFrame extends Flowable{
 
 	protected $itemId = Item::ITEM_FRAME;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	/** @var int */
+	protected $facing = Facing::NORTH;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return 5 - $this->facing;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->facing = 5 - $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b11;
 	}
 
 	public function getName() : string{
@@ -60,13 +75,7 @@ class ItemFrame extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$sides = [
-			0 => Facing::WEST,
-			1 => Facing::EAST,
-			2 => Facing::NORTH,
-			3 => Facing::SOUTH
-		];
-		if(!$this->getSide($sides[$this->meta])->isSolid()){
+		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){
 			$this->level->useBreakOn($this);
 		}
 	}
@@ -76,14 +85,7 @@ class ItemFrame extends Flowable{
 			return false;
 		}
 
-		$faces = [
-			Facing::NORTH => 3,
-			Facing::SOUTH => 2,
-			Facing::WEST => 1,
-			Facing::EAST => 0
-		];
-
-		$this->meta = $faces[$face];
+		$this->facing = $face;
 
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
 			Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), TileItemFrame::createNBT($this, $face, $item, $player));
@@ -92,10 +94,6 @@ class ItemFrame extends Flowable{
 
 		return false;
 
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

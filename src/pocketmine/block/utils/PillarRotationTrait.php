@@ -21,50 +21,56 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\item\TieredTool;
+use pocketmine\block\Block;
+use pocketmine\math\Facing;
 
-class StonePressurePlate extends Transparent{
+trait PillarRotationTrait{
 
-	protected $id = self::STONE_PRESSURE_PLATE;
+	/** @var int */
+	protected $axis = Facing::AXIS_Y;
 
-	/** @var bool */
-	protected $powered = false;
-
-	public function __construct(){
-
-	}
-
+	/**
+	 * @see Block::writeStateToMeta()
+	 * @return int
+	 */
 	protected function writeStateToMeta() : int{
-		return $this->powered ? 1 : 0;
+		return $this->writeAxisToMeta();
 	}
 
+	/**
+	 * @see Block::readStateFromMeta()
+	 * @param int $meta
+	 */
 	public function readStateFromMeta(int $meta) : void{
-		$this->powered = $meta !== 0;
+		$this->readAxisFromMeta($meta);
 	}
 
+	/**
+	 * @see Block::getStateBitmask()
+	 * @return int
+	 */
 	public function getStateBitmask() : int{
-		return 0b1;
+		return 0b1100;
 	}
 
-	public function getName() : string{
-		return "Stone Pressure Plate";
+	protected function readAxisFromMeta(int $meta) : void{
+		static $map = [
+			0 => Facing::AXIS_Y,
+			1 => Facing::AXIS_X,
+			2 => Facing::AXIS_Z,
+			3 => Facing::AXIS_Y //TODO: how to deal with all-bark logs?
+		];
+		$this->axis = $map[$meta >> 2];
 	}
 
-	public function isSolid() : bool{
-		return false;
-	}
-
-	public function getHardness() : float{
-		return 0.5;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
+	protected function writeAxisToMeta() : int{
+		static $bits = [
+			Facing::AXIS_Y => 0,
+			Facing::AXIS_Z => 2,
+			Facing::AXIS_X => 1
+		];
+		return $bits[$this->axis] << 2;
 	}
 }

@@ -23,28 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\WoodType;
+
 class WoodenSlab extends Slab{
 
 	protected $id = self::WOODEN_SLAB;
 
-	public function getDoubleSlabId() : int{
-		return self::DOUBLE_WOODEN_SLAB;
+	public function __construct(int $variant = 0){
+		parent::__construct(self::WOODEN_SLAB, self::DOUBLE_WOODEN_SLAB, $variant, WoodType::NAMES[$variant]);
 	}
 
 	public function getHardness() : float{
 		return 2;
-	}
-
-	public function getName() : string{
-		static $names = [
-			0 => "Oak",
-			1 => "Spruce",
-			2 => "Birch",
-			3 => "Jungle",
-			4 => "Acacia",
-			5 => "Dark Oak"
-		];
-		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . ($names[$this->getVariant()] ?? "") . " Wooden Slab";
 	}
 
 	public function getToolType() : int{

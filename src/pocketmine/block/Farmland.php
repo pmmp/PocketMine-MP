@@ -37,8 +37,23 @@ class Farmland extends Transparent{
 
 	protected $id = self::FARMLAND;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	/** @var int */
+	protected $wetness = 0; //"moisture" blockstate property in PC
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->wetness;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->wetness = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
 	}
 
 	public function getName() : string{
@@ -69,14 +84,14 @@ class Farmland extends Transparent{
 
 	public function onRandomTick() : void{
 		if(!$this->canHydrate()){
-			if($this->meta > 0){
-				$this->meta--;
+			if($this->wetness > 0){
+				$this->wetness--;
 				$this->level->setBlock($this, $this, false, false);
 			}else{
 				$this->level->setBlock($this, BlockFactory::get(Block::DIRT), false, true);
 			}
-		}elseif($this->meta < 7){
-			$this->meta = 7;
+		}elseif($this->wetness < 7){
+			$this->wetness = 7;
 			$this->level->setBlock($this, $this, false, false);
 		}
 	}
@@ -112,12 +127,16 @@ class Farmland extends Transparent{
 	public function onEntityFallenUpon(Entity $entity, float $fallDistance) : void{
 		if($entity instanceof Living){
 			if($this->level->random->nextFloat() < ($fallDistance - 0.5)){
-                Server::getInstance()->getPluginManager()->callEvent($ev = new BlockFormEvent($this, BlockFactory::get(Block::DIRT)));
-                //TODO: check game rule
-                if(!$ev->isCancelled()){
-                    $this->level->setBlock($this, $ev->getNewState(), true);
-                }
+				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockFormEvent($this, BlockFactory::get(Block::DIRT)));
+				//TODO: check game rule
+				if(!$ev->isCancelled()){
+					$this->level->setBlock($this, $ev->getNewState(), true);
+				}
 			}
 		}
+	}
+
+	public function getPickedItem() : Item{
+		return ItemFactory::get(Item::DIRT);
 	}
 }

@@ -24,20 +24,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\math\Facing;
 
 class ConcretePowder extends Fallable{
-
-	protected $id = self::CONCRETE_POWDER;
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
-	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Concrete Powder";
-	}
 
 	public function getHardness() : float{
 		return 0.5;
@@ -71,7 +60,7 @@ class ConcretePowder extends Fallable{
 				continue;
 			}
 			if($this->getSide($i) instanceof Water){
-				return BlockFactory::get(Block::CONCRETE, $this->meta);
+				return BlockFactory::get(Block::CONCRETE, $this->variant);
 			}
 		}
 

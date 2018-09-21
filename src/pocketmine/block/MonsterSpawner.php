@@ -35,8 +35,8 @@ class MonsterSpawner extends Transparent{
 
 	protected $id = self::MONSTER_SPAWNER;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function __construct(){
+
 	}
 
 	public function getHardness() : float{

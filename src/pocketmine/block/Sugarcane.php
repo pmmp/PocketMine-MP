@@ -37,8 +37,23 @@ class Sugarcane extends Flowable{
 
 	protected $itemId = Item::SUGARCANE;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	/** @var int */
+	protected $age = 0;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->age;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->age = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	public function getName() : string{
@@ -58,7 +73,7 @@ class Sugarcane extends Flowable{
 						break;
 					}
 				}
-				$this->meta = 0;
+				$this->age = 0;
 				$this->getLevel()->setBlock($this, $this, true);
 			}
 
@@ -83,7 +98,7 @@ class Sugarcane extends Flowable{
 
 	public function onRandomTick() : void{
 		if($this->getSide(Facing::DOWN)->getId() !== self::SUGARCANE_BLOCK){
-			if($this->meta === 0x0F){
+			if($this->age === 15){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
 					if($b->getId() === self::AIR){
@@ -91,10 +106,10 @@ class Sugarcane extends Flowable{
 						break;
 					}
 				}
-				$this->meta = 0;
+				$this->age = 0;
 				$this->getLevel()->setBlock($this, $this, true);
 			}else{
-				++$this->meta;
+				++$this->age;
 				$this->getLevel()->setBlock($this, $this, true);
 			}
 		}
@@ -113,9 +128,5 @@ class Sugarcane extends Flowable{
 		}
 
 		return false;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }
