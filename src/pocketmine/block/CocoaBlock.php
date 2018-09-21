@@ -23,12 +23,38 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Bearing;
+use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\Player;
+
 class CocoaBlock extends Transparent{
 
 	protected $id = self::COCOA_BLOCK;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $facing = Facing::NORTH;
+	/** @var int */
+	protected $age = 0;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return Bearing::fromFacing(Facing::opposite($this->facing)) | ($this->age << 2);
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->facing = Facing::opposite(Bearing::toFacing($meta & 0x03));
+		$this->age = $meta >> 2;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	public function getName() : string{

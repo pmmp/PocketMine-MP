@@ -36,8 +36,23 @@ class NetherWartPlant extends Flowable{
 
 	protected $itemId = Item::NETHER_WART;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $age = 0;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->age;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->age = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b11;
 	}
 
 	public function getName() : string{
@@ -64,9 +79,9 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->meta < 3 and mt_rand(0, 10) === 0){ //Still growing
+		if($this->age < 3 and mt_rand(0, 10) === 0){ //Still growing
 			$block = clone $this;
-			$block->meta++;
+			$block->age++;
 			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 
 			if(!$ev->isCancelled()){
@@ -77,7 +92,7 @@ class NetherWartPlant extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get($this->getItemId(), 0, ($this->getDamage() === 3 ? mt_rand(2, 4) : 1))
+			ItemFactory::get($this->getItemId(), 0, ($this->age === 3 ? mt_rand(2, 4) : 1))
 		];
 	}
 

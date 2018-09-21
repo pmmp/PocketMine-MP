@@ -38,8 +38,36 @@ class Vine extends Flowable{
 
 	protected $id = self::VINE;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var bool[] */
+	protected $faces = [];
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return
+			(isset($this->faces[Facing::SOUTH]) ? self::FLAG_SOUTH : 0) |
+			(isset($this->faces[Facing::WEST]) ? self::FLAG_WEST : 0) |
+			(isset($this->faces[Facing::NORTH]) ? self::FLAG_NORTH : 0) |
+			(isset($this->faces[Facing::EAST]) ? self::FLAG_EAST : 0);
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->setFaceFromMeta($meta, self::FLAG_SOUTH, Facing::SOUTH);
+		$this->setFaceFromMeta($meta, self::FLAG_WEST, Facing::WEST);
+		$this->setFaceFromMeta($meta, self::FLAG_NORTH, Facing::NORTH);
+		$this->setFaceFromMeta($meta, self::FLAG_EAST, Facing::EAST);
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
+	private function setFaceFromMeta(int $meta, int $flag, int $face) : void{
+		if(($meta & $flag) !== 0){
+			$this->faces[$face] = true;
+		}
 	}
 
 	public function getName() : string{
@@ -79,7 +107,7 @@ class Vine extends Flowable{
 		$minY = 0;
 		$hasSide = false;
 
-		if(($this->meta & self::FLAG_WEST) > 0){
+		if(isset($this->faces[Facing::WEST])){
 			$maxX = max($maxX, 0.0625);
 			$minX = 0;
 			$minZ = 0;
@@ -87,7 +115,7 @@ class Vine extends Flowable{
 			$hasSide = true;
 		}
 
-		if(($this->meta & self::FLAG_EAST) > 0){
+		if(isset($this->faces[Facing::EAST])){
 			$minX = min($minX, 0.9375);
 			$maxX = 1;
 			$minZ = 0;
@@ -95,7 +123,7 @@ class Vine extends Flowable{
 			$hasSide = true;
 		}
 
-		if(($this->meta & self::FLAG_SOUTH) > 0){
+		if(isset($this->faces[Facing::SOUTH])){
 			$minZ = min($minZ, 0.9375);
 			$maxZ = 1;
 			$minX = 0;
@@ -103,7 +131,7 @@ class Vine extends Flowable{
 			$hasSide = true;
 		}
 
-		if(($this->meta & self::FLAG_NORTH) > 0){
+		if(isset($this->faces[Facing::NORTH])){
 			$maxZ = max($maxZ, 0.0625);
 			$minZ = 0;
 			$minX = 0;
@@ -123,50 +151,29 @@ class Vine extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if(!$blockClicked->isSolid() or $face === Facing::UP or $face === Facing::DOWN){
+		if(!$blockClicked->isSolid() or Facing::axis($face) === Facing::AXIS_Y){
 			return false;
 		}
 
-		static $faces = [
-			Facing::NORTH => self::FLAG_SOUTH,
-			Facing::SOUTH => self::FLAG_NORTH,
-			Facing::WEST => self::FLAG_EAST,
-			Facing::EAST => self::FLAG_WEST
-		];
-
-		$this->meta = $faces[$face] ?? 0;
-		if($blockReplace->getId() === $this->getId()){
-			$this->meta |= $blockReplace->meta;
-		}
+		$this->faces = $blockReplace instanceof Vine ? $blockReplace->faces : [];
+		$this->faces[Facing::opposite($face)] = true;
 
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		static $sides = [
-			self::FLAG_SOUTH => Facing::SOUTH,
-			self::FLAG_WEST => Facing::WEST,
-			self::FLAG_NORTH => Facing::NORTH,
-			self::FLAG_EAST => Facing::EAST
-		];
-
-		$meta = $this->meta;
-
-		foreach($sides as $flag => $side){
-			if(($meta & $flag) === 0){
-				continue;
-			}
-
-			if(!$this->getSide($side)->isSolid()){
-				$meta &= ~$flag;
+		$changed = false;
+		foreach($this->faces as $face => $bool){
+			if(!$this->getSide($face)->isSolid()){
+				unset($this->faces[$face]);
+				$changed = true;
 			}
 		}
 
-		if($meta !== $this->meta){
-			if($meta === 0){
+		if($changed){
+			if(empty($this->faces)){
 				$this->level->useBreakOn($this);
 			}else{
-				$this->meta = $meta;
 				$this->level->setBlock($this, $this);
 			}
 		}
@@ -178,10 +185,6 @@ class Vine extends Flowable{
 
 	public function onRandomTick() : void{
 		//TODO: vine growth
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 
 	public function getDrops(Item $item) : array{

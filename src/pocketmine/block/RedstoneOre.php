@@ -31,10 +31,17 @@ use pocketmine\Player;
 
 class RedstoneOre extends Solid{
 
-	protected $id = self::REDSTONE_ORE;
+	protected $itemId = self::REDSTONE_ORE;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var bool */
+	protected $lit = false;
+
+	public function __construct(){
+
+	}
+
+	public function getId() : int{
+		return $this->lit ? self::GLOWING_REDSTONE_ORE : self::REDSTONE_ORE;
 	}
 
 	public function getName() : string{
@@ -45,17 +52,46 @@ class RedstoneOre extends Solid{
 		return 3;
 	}
 
+	public function isLit() : bool{
+		return $this->lit;
+	}
+
+	public function setLit(bool $lit = true) : void{
+		$this->lit = $lit;
+	}
+
+	public function getLightLevel() : int{
+		return $this->lit ? 9 : 0;
+	}
+
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		return $this->getLevel()->setBlock($this, $this, true, false);
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
-		return false; //this shouldn't prevent block placement
+		if(!$this->lit){
+			$this->lit = true;
+			$this->getLevel()->setBlock($this, $this); //no return here - this shouldn't prevent block placement
+		}
+		return false;
 	}
 
 	public function onNearbyBlockChange() : void{
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
+		if(!$this->lit){
+			$this->lit = true;
+			$this->getLevel()->setBlock($this, $this);
+		}
+	}
+
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function onRandomTick() : void{
+		if($this->lit){
+			$this->lit = false;
+			$this->level->setBlock($this, $this);
+		}
 	}
 
 	public function getToolType() : int{

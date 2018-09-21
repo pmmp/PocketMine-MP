@@ -37,13 +37,6 @@ abstract class BaseRail extends Flowable{
 	public const ASCENDING_NORTH = 4;
 	public const ASCENDING_SOUTH = 5;
 
-	private const ASCENDING_SIDES = [
-		self::ASCENDING_NORTH => Facing::NORTH,
-		self::ASCENDING_EAST => Facing::EAST,
-		self::ASCENDING_SOUTH => Facing::SOUTH,
-		self::ASCENDING_WEST => Facing::WEST
-	];
-
 	protected const FLAG_ASCEND = 1 << 24; //used to indicate direction-up
 
 	protected const CONNECTIONS = [
@@ -76,8 +69,28 @@ abstract class BaseRail extends Flowable{
 		]
 	];
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int[] */
+	protected $connections = [];
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		if(empty($this->connections)){
+			return self::STRAIGHT_NORTH_SOUTH;
+		}
+		return $this->getMetaForState($this->connections);
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		//on invalid states, this will return an empty array, allowing this rail to transform into any other state
+		//TODO: should this throw instead?
+		$this->connections = $this->getConnectionsFromMeta($meta);
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
 	}
 
 	public function getHardness() : float{
@@ -121,9 +134,11 @@ abstract class BaseRail extends Flowable{
 	/**
 	 * Returns the connection directions of this rail (depending on the current block state)
 	 *
+	 * @param int $meta
+	 *
 	 * @return int[]
 	 */
-	abstract protected function getConnectionsForState() : array;
+	abstract protected function getConnectionsFromMeta(int $meta) : array;
 
 	/**
 	 * Returns all the directions this rail is already connected in.
@@ -135,7 +150,7 @@ abstract class BaseRail extends Flowable{
 		$connections = [];
 
 		/** @var int $connection */
-		foreach($this->getConnectionsForState() as $connection){
+		foreach($this->connections as $connection){
 			$other = $this->getSide($connection & ~self::FLAG_ASCEND);
 			$otherConnection = Facing::opposite($connection & ~self::FLAG_ASCEND);
 
@@ -149,7 +164,7 @@ abstract class BaseRail extends Flowable{
 
 			if(
 				$other instanceof BaseRail and
-				in_array($otherConnection, $other->getConnectionsForState(), true)
+				in_array($otherConnection, $other->connections, true)
 			){
 				$connections[] = $connection;
 			}
@@ -248,20 +263,20 @@ abstract class BaseRail extends Flowable{
 			throw new \InvalidArgumentException("Expected exactly 2 connections, got " . count($connections));
 		}
 
-		$this->meta = $this->getMetaForState($connections);
+		$this->connections = $connections;
 		$this->level->setBlock($this, $this, false, false); //avoid recursion
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent() or (
-			isset(self::ASCENDING_SIDES[$this->meta & 0x07]) and
-			$this->getSide(self::ASCENDING_SIDES[$this->meta & 0x07])->isTransparent()
-		)){
-			$this->getLevel()->useBreakOn($this);
+		if($this->getSide(Facing::DOWN)->isTransparent()){
+			$this->level->useBreakOn($this);
+		}else{
+			foreach($this->connections as $connection){
+				if(($connection & self::FLAG_ASCEND) !== 0 and $this->getSide($connection & ~self::FLAG_ASCEND)->isTransparent()){
+					$this->level->useBreakOn($this);
+					break;
+				}
+			}
 		}
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

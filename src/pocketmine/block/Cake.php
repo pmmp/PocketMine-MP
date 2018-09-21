@@ -38,8 +38,23 @@ class Cake extends Transparent implements FoodSource{
 
 	protected $itemId = Item::CAKE;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $bites = 0;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->bites;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->bites = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
 	}
 
 	public function getHardness() : float{
@@ -51,7 +66,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$f = $this->getDamage() * 0.125; //1 slice width
+		$f = $this->bites * 0.125; //1 slice width
 
 		return new AxisAlignedBB(
 			0.0625 + $f,
@@ -112,8 +127,8 @@ class Cake extends Transparent implements FoodSource{
 	 */
 	public function getResidue(){
 		$clone = clone $this;
-		$clone->meta++;
-		if($clone->meta > 0x06){
+		$clone->bites++;
+		if($clone->bites > 6){
 			$clone = BlockFactory::get(Block::AIR);
 		}
 		return $clone;

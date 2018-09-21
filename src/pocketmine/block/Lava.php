@@ -35,8 +35,8 @@ class Lava extends Liquid{
 
 	protected $id = self::FLOWING_LAVA;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	public function __construct(){
+
 	}
 
 	public function getLightLevel() : int{
@@ -48,11 +48,11 @@ class Lava extends Liquid{
 	}
 
 	public function getStillForm() : Block{
-		return BlockFactory::get(Block::STILL_LAVA, $this->meta);
+		return BlockFactory::get(Block::STILL_LAVA, $this->getDamage());
 	}
 
 	public function getFlowingForm() : Block{
-		return BlockFactory::get(Block::FLOWING_LAVA, $this->meta);
+		return BlockFactory::get(Block::FLOWING_LAVA, $this->getDamage());
 	}
 
 	public function getBucketFillSound() : int{
@@ -85,19 +85,19 @@ class Lava extends Liquid{
 		}
 
 		if($colliding !== null){
-			if($this->getDamage() === 0){
+			if($this->decay === 0){
 				$this->liquidCollide($colliding, BlockFactory::get(Block::OBSIDIAN));
-			}elseif($this->getDamage() <= 4){
+			}elseif($this->decay <= 4){
 				$this->liquidCollide($colliding, BlockFactory::get(Block::COBBLESTONE));
 			}
 		}
 	}
 
-	protected function flowIntoBlock(Block $block, int $newFlowDecay) : void{
+	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling) : void{
 		if($block instanceof Water){
 			$block->liquidCollide($this, BlockFactory::get(Block::STONE));
 		}else{
-			parent::flowIntoBlock($block, $newFlowDecay);
+			parent::flowIntoBlock($block, $newFlowDecay, $falling);
 		}
 	}
 

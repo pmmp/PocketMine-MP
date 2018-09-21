@@ -37,8 +37,23 @@ class Fire extends Flowable{
 
 	protected $id = self::FIRE;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $age = 0;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->age;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->age = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	public function hasEntityCollision() : bool{
@@ -95,22 +110,22 @@ class Fire extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 
 		$result = null;
-		if($this->meta < 15 and mt_rand(0, 2) === 0){
-			$this->meta++;
+		if($this->age < 15 and mt_rand(0, 2) === 0){
+			$this->age++;
 			$result = $this;
 		}
 		$canSpread = true;
 
 		if(!$down->burnsForever()){
 			//TODO: check rain
-			if($this->meta === 15){
+			if($this->age === 15){
 				if(!$down->isFlammable() and mt_rand(0, 3) === 3){ //1/4 chance to extinguish
 					$canSpread = false;
 					$result = BlockFactory::get(Block::AIR);
 				}
 			}elseif(!$this->hasAdjacentFlammableBlocks()){
 				$canSpread = false;
-				if(!$down->isSolid() or $this->meta > 3){ //fire older than 3, or without a solid block below
+				if(!$down->isSolid() or $this->age > 3){
 					$result = BlockFactory::get(Block::AIR);
 				}
 			}
@@ -157,8 +172,10 @@ class Fire extends Flowable{
 			if(!$ev->isCancelled()){
 				$block->onIncinerate();
 
-				if(mt_rand(0, $this->meta + 9) < 5){ //TODO: check rain
-					$this->level->setBlock($block, BlockFactory::get(Block::FIRE, min(15, $this->meta + (mt_rand(0, 4) >> 2))));
+				if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
+					$fire = clone $this;
+					$fire->age = min(15, $fire->age + (mt_rand(0, 4) >> 2));
+					$this->level->setBlock($block, $fire);
 				}else{
 					$this->level->setBlock($block, BlockFactory::get(Block::AIR));
 				}

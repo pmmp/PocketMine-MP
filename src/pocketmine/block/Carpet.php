@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -32,22 +31,12 @@ use pocketmine\Player;
 
 class Carpet extends Flowable{
 
-	protected $id = self::CARPET;
-
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
-	}
-
 	public function getHardness() : float{
 		return 0.1;
 	}
 
 	public function isSolid() : bool{
 		return true;
-	}
-
-	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Carpet";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

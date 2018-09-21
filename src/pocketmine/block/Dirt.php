@@ -28,12 +28,8 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 
 class Dirt extends Solid{
-
-	protected $id = self::DIRT;
-
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
-	}
+	public const NORMAL = 0;
+	public const COARSE = 1;
 
 	public function getHardness() : float{
 		return 0.5;
@@ -43,17 +39,10 @@ class Dirt extends Solid{
 		return BlockToolType::TYPE_SHOVEL;
 	}
 
-	public function getName() : string{
-		if($this->meta === 1){
-			return "Coarse Dirt";
-		}
-		return "Dirt";
-	}
-
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($item instanceof Hoe){
 			$item->applyDamage(1);
-			if($this->meta === 1){
+			if($this->variant === self::COARSE){
 				$this->getLevel()->setBlock($this, BlockFactory::get(Block::DIRT), true);
 			}else{
 				$this->getLevel()->setBlock($this, BlockFactory::get(Block::FARMLAND), true);

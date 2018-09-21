@@ -39,27 +39,6 @@ class Flower extends Flowable{
 	public const TYPE_PINK_TULIP = 7;
 	public const TYPE_OXEYE_DAISY = 8;
 
-	protected $id = self::RED_FLOWER;
-
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
-	}
-
-	public function getName() : string{
-		static $names = [
-			self::TYPE_POPPY => "Poppy",
-			self::TYPE_BLUE_ORCHID => "Blue Orchid",
-			self::TYPE_ALLIUM => "Allium",
-			self::TYPE_AZURE_BLUET => "Azure Bluet",
-			self::TYPE_RED_TULIP => "Red Tulip",
-			self::TYPE_ORANGE_TULIP => "Orange Tulip",
-			self::TYPE_WHITE_TULIP => "White Tulip",
-			self::TYPE_PINK_TULIP => "Pink Tulip",
-			self::TYPE_OXEYE_DAISY => "Oxeye Daisy"
-		];
-		return $names[$this->meta] ?? "Unknown";
-	}
-
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() === Block::GRASS or $down->getId() === Block::DIRT or $down->getId() === Block::FARMLAND){

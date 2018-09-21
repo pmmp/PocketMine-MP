@@ -31,8 +31,8 @@ class LapisOre extends Solid{
 
 	protected $id = self::LAPIS_ORE;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	public function __construct(){
+
 	}
 
 	public function getHardness() : float{

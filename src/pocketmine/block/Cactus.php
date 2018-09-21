@@ -38,8 +38,23 @@ class Cactus extends Transparent{
 
 	protected $id = self::CACTUS;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var int */
+	protected $age = 0;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->age;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->age = $meta;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	public function getHardness() : float{
@@ -85,7 +100,7 @@ class Cactus extends Transparent{
 
 	public function onRandomTick() : void{
 		if($this->getSide(Facing::DOWN)->getId() !== self::CACTUS){
-			if($this->meta === 0x0f){
+			if($this->age === 15){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
 					if($b->getId() === self::AIR){
@@ -95,10 +110,10 @@ class Cactus extends Transparent{
 						}
 					}
 				}
-				$this->meta = 0;
+				$this->age = 0;
 				$this->getLevel()->setBlock($this, $this);
 			}else{
-				++$this->meta;
+				++$this->age;
 				$this->getLevel()->setBlock($this, $this);
 			}
 		}
@@ -117,9 +132,5 @@ class Cactus extends Transparent{
 		}
 
 		return false;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

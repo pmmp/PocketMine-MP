@@ -33,14 +33,26 @@ use pocketmine\tile\Tile;
 
 class FlowerPot extends Flowable{
 
-	public const STATE_EMPTY = 0;
-	public const STATE_FULL = 1;
-
 	protected $id = self::FLOWER_POT_BLOCK;
 	protected $itemId = Item::FLOWER_POT;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	/** @var bool */
+	protected $occupied = false;
+
+	public function __construct(){
+
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->occupied ? 1 : 0;
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->occupied = $meta !== 0;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111; //vanilla uses various values, we only care about 1 and 0 for PE
 	}
 
 	public function getName() : string{
@@ -80,15 +92,11 @@ class FlowerPot extends Flowable{
 			return true;
 		}
 
-		$this->setDamage(self::STATE_FULL); //specific damage value is unnecessary, it just needs to be non-zero to show an item.
+		$this->occupied = true;
 		$this->getLevel()->setBlock($this, $this, true, false);
 		$pot->setItem($item->pop());
 
 		return true;
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

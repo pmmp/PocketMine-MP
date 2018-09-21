@@ -27,8 +27,8 @@ class Pumpkin extends Solid{
 
 	protected $id = self::PUMPKIN;
 
-	public function __construct(int $meta = 0){
-		$this->setDamage($meta);
+	public function __construct(){
+
 	}
 
 	public function getHardness() : float{
@@ -41,9 +41,5 @@ class Pumpkin extends Solid{
 
 	public function getName() : string{
 		return "Pumpkin";
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

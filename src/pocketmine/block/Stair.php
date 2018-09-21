@@ -31,57 +31,64 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 abstract class Stair extends Transparent{
+	/** @var int */
+	protected $facing = Facing::NORTH;
+	/** @var bool */
+	protected $upsideDown = false;
+
+	protected function writeStateToMeta() : int{
+		return (5 - $this->facing) | ($this->upsideDown ? 0x04 : 0);
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->facing = 5 - ($meta & 0x03);
+		$this->upsideDown = ($meta & 0x04) !== 0;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
 
 	protected function recalculateCollisionBoxes() : array{
 		//TODO: handle corners
 
-		$minYSlab = ($this->meta & 0x04) === 0 ? 0 : 0.5;
-		$maxYSlab = $minYSlab + 0.5;
+		$minYSlab = $this->upsideDown ? 0.5 : 0;
 
 		$bbs = [
-			new AxisAlignedBB(0, $minYSlab, 0, 1, $maxYSlab, 1)
+			new AxisAlignedBB(0, $minYSlab, 0, 1, $minYSlab + 0.5, 1)
 		];
 
-		$minY = ($this->meta & 0x04) === 0 ? 0.5 : 0;
-		$maxY = $minY + 0.5;
-
-		$rotationMeta = $this->meta & 0x03;
+		$minY = $this->upsideDown ? 0 : 0.5;
 
 		$minX = $minZ = 0;
 		$maxX = $maxZ = 1;
 
-		switch($rotationMeta){
-			case 0:
+		switch($this->facing){
+			case Facing::EAST:
 				$minX = 0.5;
 				break;
-			case 1:
+			case Facing::WEST:
 				$maxX = 0.5;
 				break;
-			case 2:
+			case Facing::SOUTH:
 				$minZ = 0.5;
 				break;
-			case 3:
+			case Facing::NORTH:
 				$maxZ = 0.5;
 				break;
 		}
 
-		$bbs[] = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+		$bbs[] = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $minY + 0.5, $maxZ);
 
 		return $bbs;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($player !== null){
-			$this->meta = 5 - Bearing::toFacing($player->getDirection());
+			$this->facing = Bearing::toFacing($player->getDirection());
 		}
-		if(($clickVector->y > 0.5 and $face !== Facing::UP) or $face === Facing::DOWN){
-			$this->meta |= 0x04; //Upside-down stairs
-		}
+		$this->upsideDown = (($clickVector->y > 0.5 and $face !== Facing::UP) or $face === Facing::DOWN);
 
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function getVariantBitmask() : int{
-		return 0;
 	}
 }

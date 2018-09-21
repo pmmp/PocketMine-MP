@@ -31,23 +31,8 @@ use pocketmine\Player;
 
 class TallGrass extends Flowable{
 
-	protected $id = self::TALL_GRASS;
-
-	public function __construct(int $meta = 1){
-		$this->setDamage($meta);
-	}
-
 	public function canBeReplaced() : bool{
 		return true;
-	}
-
-	public function getName() : string{
-		static $names = [
-			0 => "Dead Shrub",
-			1 => "Tall Grass",
-			2 => "Fern"
-		];
-		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

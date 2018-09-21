@@ -66,8 +66,8 @@ class Rail extends BaseRail{
 		}
 	}
 
-	protected function getConnectionsForState() : array{
-		return self::CURVE_CONNECTIONS[$this->meta] ?? self::CONNECTIONS[$this->meta];
+	protected function getConnectionsFromMeta(int $meta) : array{
+		return self::CURVE_CONNECTIONS[$meta] ?? self::CONNECTIONS[$meta] ?? [];
 	}
 
 	protected function getPossibleConnectionDirectionsOneConstraint(int $constraint) : array{
