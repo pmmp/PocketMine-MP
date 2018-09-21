@@ -74,6 +74,6 @@ class DoubleSlab extends Solid{
 	}
 
 	public function getPickedItem() : Item{
-		return ItemFactory::get($this->getSlabId(), $this->getVariant());
+		return ItemFactory::get($this->singleId, $this->getVariant());
 	}
 }
