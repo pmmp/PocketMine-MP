@@ -37,7 +37,7 @@ class Quartz extends Solid{
 	public const CHISELED = 1;
 	public const PILLAR = 2;
 
-	public function getHardness() : float{
+    public function getHardness() : float{
 		return 0.8;
 	}
 

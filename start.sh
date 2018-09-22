@@ -26,7 +26,7 @@ if [ "$PHP_BINARY" == "" ]; then
 	elif [[ ! -z $(type php) ]]; then
 		PHP_BINARY=$(type -p php)
 	else
-		echo "Couldn't find a working PHP 7 binary, please use the installer."
+		echo "Couldn't find a working PHP 7.2 binary, please use the installer."
 		exit 1
 	fi
 fi
@@ -52,9 +52,8 @@ if [ "$DO_LOOP" == "yes" ]; then
 			echo "Restarted $LOOPS times"
 		fi
 		"$PHP_BINARY" "$POCKETMINE_FILE" $@
-		echo "To escape the loop, press CTRL+C now. Otherwise, wait 5 seconds for the server to restart."
-		echo ""
-		sleep 5
+		echo "To escape the loop, press CTRL+C now. Otherwise, wait 3 seconds for the server to restart."
+		sleep 3
 		((LOOPS++))
 	done
 else
