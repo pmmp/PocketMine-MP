@@ -33,15 +33,9 @@ use pocketmine\Player;
 class Quartz extends Solid{
 	use PillarRotationTrait;
 
-    protected $id = self::QUARTZ_BLOCK;
-
 	public const NORMAL = 0;
 	public const CHISELED = 1;
 	public const PILLAR = 2;
-
-	public function __construct(){
-
-    }
 
     public function getHardness() : float{
 		return 0.8;
