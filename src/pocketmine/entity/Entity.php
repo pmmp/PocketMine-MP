@@ -1445,10 +1445,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
+	 * Pushes the this entity and other entity
+	 *
 	 * @param Entity $entity
 	 */
 	protected function applyEntityCollision(Entity $entity) : void{
-		if($entity->canBePushed() and !$this->isRiding() and !$entity->isRiding()){
+		if($this->canBePushed() and !$this->isRiding() and !$entity->isRiding()){
 			if(!($entity instanceof Player and $entity->isSpectator()) and !($this instanceof Player and $this->isSpectator())){
 				$d0 = $entity->x - $this->x;
 				$d1 = $entity->z - $this->z;

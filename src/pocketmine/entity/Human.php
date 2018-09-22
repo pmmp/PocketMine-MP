@@ -904,13 +904,18 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * @param Entity $entity
+	 *
+	 * @return bool
 	 */
-	public function onCollideWithEntity(Entity $entity) : void{
-		if(!($entity instanceof Player)){
-			parent::onCollideWithEntity($entity);
-		}
+	public function canCollideWith(Entity $entity) : bool{
+		return !($entity instanceof Human);
 	}
 
+	/**
+	 * @param int $seatNumber
+	 *
+	 * @return Vector3
+	 */
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
 		return new Vector3(-0.4, -0.15, 0.04);
 	}
