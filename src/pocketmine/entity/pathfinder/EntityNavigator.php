@@ -33,6 +33,7 @@ use pocketmine\entity\Mob;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
+use pocketmine\timings\Timings;
 
 class EntityNavigator{
 
@@ -103,6 +104,8 @@ class EntityNavigator{
 	 * @return array
 	 */
 	public function navigate(PathPoint $from, PathPoint $to, ?float $followRange = null) : array{
+		Timings::$mobPathFindingTimer->startTiming();
+
 		if($followRange === null){
 			$followRange = $this->mob->getFollowRange();
 		}
@@ -171,6 +174,8 @@ class EntityNavigator{
 			}
 		}
 
+		Timings::$mobPathFindingTimer->stopTiming();
+
 		return [];
 	}
 
@@ -209,6 +214,9 @@ class EntityNavigator{
 			array_unshift($totalPath, $current);
 		}
 		unset($totalPath[0]);
+
+		Timings::$mobPathFindingTimer->stopTiming();
+
 		return array_values($totalPath);
 	}
 

@@ -653,7 +653,6 @@ class Chunk{
 	 * @return Tile|null
 	 */
 	public function getTile(int $x, int $y, int $z){
-
 		return $this->tiles[Chunk::blockHash($x, $y, $z)] ?? null;
 	}
 

@@ -38,6 +38,7 @@ use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\Player;
+use pocketmine\timings\Timings;
 
 abstract class Mob extends Living{
 
@@ -98,6 +99,9 @@ abstract class Mob extends Living{
 		$this->homePosition = $homePosition;
 	}
 
+	/**
+	 * @param CompoundTag $nbt
+	 */
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
@@ -114,6 +118,9 @@ abstract class Mob extends Living{
 		$this->aiEnabled = boolval($nbt->getByte("aiEnabled", 0));
 	}
 
+	/**
+	 * @return CompoundTag
+	 */
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 		$nbt->setByte("aiEnabled", intval($this->aiEnabled));
@@ -121,6 +128,11 @@ abstract class Mob extends Living{
 		return $nbt;
 	}
 
+	/**
+	 * @param int $diff
+	 *
+	 * @return bool
+	 */
 	public function entityBaseTick(int $diff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($diff);
 
@@ -131,6 +143,8 @@ abstract class Mob extends Living{
 				$this->livingSoundTime -= $this->getTalkInterval();
 				$this->playLivingSound();
 			}
+
+			return $this->hasMovementUpdate() or $hasUpdate;
 		}
 
 		return $hasUpdate;
@@ -160,10 +174,14 @@ abstract class Mob extends Living{
 	}
 
 	protected function onBehaviorUpdate() : void{
+		Timings::$mobBehaviorUpdateTimer->startTiming();
 		$this->targetBehaviorPool->onUpdate();
 		$this->behaviorPool->onUpdate();
+		Timings::$mobBehaviorUpdateTimer->stopTiming();
 
+		Timings::$mobNavigationUpdateTimer->startTiming();
 		$this->navigator->onNavigateUpdate();
+		Timings::$mobNavigationUpdateTimer->stopTiming();
 
 		if($this->getLookPosition() !== null){
 			$this->lookAt($this->getLookPosition(), true);
@@ -171,10 +189,14 @@ abstract class Mob extends Living{
 		}
 
 		$this->handleWaterMovement();
-
 		$this->clearSightCache();
 	}
 
+	/**
+	 * @param Entity $target
+	 *
+	 * @return bool
+	 */
 	public function canSeeEntity(Entity $target) : bool{
 		if(in_array($target->getId(), $this->unseenEntities)){
 			return false;
@@ -199,10 +221,16 @@ abstract class Mob extends Living{
 		$this->unseenEntities = [];
 	}
 
+	/**
+	 * @return null|Vector3
+	 */
 	public function getLookPosition() : ?Vector3{
 		return $this->lookPosition;
 	}
 
+	/**
+	 * @param null|Vector3 $pos
+	 */
 	public function setLookPosition(?Vector3 $pos) : void{
 		$this->lookPosition = $pos;
 	}
@@ -211,14 +239,25 @@ abstract class Mob extends Living{
 
 	}
 
+	/**
+	 * @return BehaviorPool
+	 */
 	public function getBehaviorPool() : BehaviorPool{
 		return $this->behaviorPool;
 	}
 
+	/**
+	 * @return BehaviorPool
+	 */
 	public function getTargetBehaviorPool() : BehaviorPool{
 		return $this->targetBehaviorPool;
 	}
 
+	/**
+	 * @param float $spm
+	 *
+	 * @return bool
+	 */
 	public function moveForward(float $spm) : bool{
 		if($this->jumpCooldown > 0) $this->jumpCooldown--;
 
@@ -259,18 +298,30 @@ abstract class Mob extends Living{
 		return false;
 	}
 
+	/**
+	 * @return EntityNavigator
+	 */
 	public function getNavigator() : EntityNavigator{
 		return $this->navigator;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function canBePushed() : bool{
 		return $this->aiEnabled;
 	}
 
+	/**
+	 * @param float $value
+	 */
 	public function setDefaultMovementSpeed(float $value) : void{
 		$this->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->setDefaultValue($value);
 	}
 
+	/**
+	 * @return float
+	 */
 	public function getDefaultMovementSpeed() : float{
 		return $this->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->getDefaultValue();
 	}
