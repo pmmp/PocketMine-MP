@@ -275,6 +275,9 @@ interface ItemIds{
 	public const STRUCTURE_BLOCK = 252;
 
 	public const RESERVED6 = 255;
+
+	public const BARRIER = -161;
+
 	public const IRON_SHOVEL = 256;
 	public const IRON_PICKAXE = 257;
 	public const IRON_AXE = 258;

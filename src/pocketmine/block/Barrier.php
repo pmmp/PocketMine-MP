@@ -24,15 +24,29 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class UndyedShulkerBox extends ShulkerBox {
+use pocketmine\item\Item;
 
-    protected $id = self::UNDYED_SHULKER_BOX;
+class Barrier extends Transparent{
 
-    public function __construct(){
+	protected $id = self::BARRIER;
 
-    }
+	public function __construct(){
+
+	}
 
 	public function getName() : string{
-		return "Undyed Shulker Box";
+		return "Barrier";
+	}
+
+	public function getHardness() : float{
+		return -1;
+	}
+
+	public function getBlastResistance() : float{
+		return 18000000;
+	}
+
+	public function isBreakable(Item $item) : bool{
+		return false;
 	}
 }

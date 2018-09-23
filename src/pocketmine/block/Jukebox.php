@@ -35,8 +35,22 @@ class Jukebox extends Solid{
 
 	protected $id = self::JUKEBOX;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	protected $has_record = false;
+
+	public function __construct(){
+
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->has_record = intval($meta);
+	}
+
+	public function writeStateToMeta() : int{
+		return intval($this->has_record);
+	}
+
+	public function getStateBitmask() : int{
+		return 2;
 	}
 
 	public function getName() : string{
@@ -66,12 +80,16 @@ class Jukebox extends Solid{
 
 			if($jb->getRecordItem() == null){
 				if($item instanceof Record){
+					$this->has_record = true;
+
 					$jb->setRecordItem($item);
 					$jb->playDisc($player);
 					$player->getInventory()->removeItem($item);
 				}
 			}else{
 				$jb->dropDisc();
+
+				$this->has_record = false;
 			}
 		}
 

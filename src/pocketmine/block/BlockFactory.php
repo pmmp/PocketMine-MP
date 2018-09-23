@@ -154,6 +154,7 @@ class BlockFactory{
 			self::registerBlock(new Carpet(Block::CARPET, $color, Color::NAMES[$color] . " Carpet"));
 			self::registerBlock(new Concrete(Block::CONCRETE, $color, Color::NAMES[$color] . " Concrete"));
 			self::registerBlock(new ConcretePowder(Block::CONCRETE_POWDER, $color, Color::NAMES[$color] . " Concrete Powder"));
+			self::registerBlock(new ShulkerBox(Block::SHULKER_BOX, $color, Color::NAMES[$color] . " Shulker Box"));
 		}
 
 		self::registerBlock(new Dandelion());
@@ -411,7 +412,7 @@ class BlockFactory{
 
 		self::registerBlock(new PurpurStairs());
 
-		//TODO: UNDYED_SHULKER_BOX
+		self::registerBlock(new UndyedShulkerBox());
 		self::registerBlock(new EndStoneBricks());
 		//TODO: FROSTED_ICE
 		self::registerBlock(new EndRod());
@@ -422,7 +423,6 @@ class BlockFactory{
 		self::registerBlock(new NetherBrick(Block::RED_NETHER_BRICK, 0, "Red Nether Bricks"));
 		self::registerBlock(new BoneBlock());
 
-		//TODO: SHULKER_BOX
 		self::registerBlock(new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA, 0, "Purple Glazed Terracotta"));
 		self::registerBlock(new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA, 0, "White Glazed Terracotta"));
 		self::registerBlock(new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA, 0, "Orange Glazed Terracotta"));
@@ -455,6 +455,8 @@ class BlockFactory{
 		//TODO: STRUCTURE_BLOCK
 
 		//TODO: RESERVED6
+
+		self::registerBlock(new Barrier());
 	}
 
 	/**

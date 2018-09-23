@@ -432,7 +432,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function isPassable(Entity $entity, float $maxY = 1.0) : bool{
 		$bb = $this->getBoundingBox();
-		return $this->canPassThrough() or $bb === null or ($bb->maxY - $bb->minY) <= $maxY or $entity->y >= $bb->maxY;
+		return $bb === null or ($bb->maxY - $bb->minY) <= $maxY or $entity->y >= $bb->maxY;
 	}
 
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector) : void{

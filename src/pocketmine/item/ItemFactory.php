@@ -215,6 +215,7 @@ class ItemFactory{
 		self::registerItem(new ItemBlock(Block::JUNGLE_DOOR_BLOCK, 0, Item::JUNGLE_DOOR));
 		self::registerItem(new ItemBlock(Block::ACACIA_DOOR_BLOCK, 0, Item::ACACIA_DOOR));
 		self::registerItem(new ItemBlock(Block::DARK_OAK_DOOR_BLOCK, 0, Item::DARK_OAK_DOOR));
+		self::registerItem(new ItemBlock(Item::BARRIER));
 		self::registerItem(new ChorusFruit());
 		self::registerItem(new Item(Item::CHORUS_FRUIT_POPPED, 0, "Popped Chorus Fruit"));
 
@@ -392,7 +393,7 @@ class ItemFactory{
 	 * @return bool
 	 */
 	public static function isRegistered(int $id) : bool{
-		if($id < 256){
+		if($id < 256 and $id > 0){
 			return BlockFactory::isRegistered($id);
 		}
 		return self::$list[self::getListOffset($id)] !== null;
