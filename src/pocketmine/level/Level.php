@@ -1131,7 +1131,7 @@ class Level implements ChunkManager, Metadatable{
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
 						$block = $this->getBlockAt($x, $y, $z);
-						if(!$block->canPassThrough() and $block->collidesWithBB($bb)){
+						if($block->collidesWithBB($bb)){
 							return [$block];
 						}
 					}
@@ -1142,7 +1142,7 @@ class Level implements ChunkManager, Metadatable{
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
 						$block = $this->getBlockAt($x, $y, $z);
-						if(!$block->canPassThrough() and $block->collidesWithBB($bb)){
+						if($block->collidesWithBB($bb)){
 							$collides[] = $block;
 						}
 					}
@@ -1193,11 +1193,9 @@ class Level implements ChunkManager, Metadatable{
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($y = $minY; $y <= $maxY; ++$y){
 					$block = $this->getBlockAt($x, $y, $z);
-					if(!$block->canPassThrough()){
-						foreach($block->getCollisionBoxes() as $blockBB){
-							if($blockBB->intersectsWith($bb)){
-								$collides[] = $blockBB;
-							}
+					foreach($block->getCollisionBoxes() as $blockBB){
+						if($blockBB->intersectsWith($bb)){
+							$collides[] = $blockBB;
 						}
 					}
 				}
