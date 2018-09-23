@@ -246,6 +246,9 @@ class Level implements ChunkManager, Metadatable{
 	/** @var int */
 	public $tickRateCounter = 0;
 
+	/** @var bool */
+	private $doingTick = false;
+
 	/** @var string|Generator */
 	private $generator;
 
@@ -560,8 +563,12 @@ class Level implements ChunkManager, Metadatable{
 	 * @param bool $force default false, force unload of default level
 	 *
 	 * @return bool
+	 * @throws \InvalidStateException if trying to unload a level during level tick
 	 */
 	public function unload(bool $force = false) : bool{
+		if($this->doingTick and !$force){
+			throw new \InvalidStateException("Cannot unload a level during level tick");
+		}
 
 		$ev = new LevelUnloadEvent($this);
 
@@ -721,7 +728,16 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->timings->doTick->startTiming();
+		$this->doingTick = true;
+		try{
+			$this->actuallyDoTick($currentTick);
+		}finally{
+			$this->doingTick = false;
+			$this->timings->doTick->stopTiming();
+		}
+	}
 
+	protected function actuallyDoTick(int $currentTick) : void{
 		if(!$this->stopTime){
 			$this->time++;
 		}
@@ -847,8 +863,6 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->chunkPackets = [];
-
-		$this->timings->doTick->stopTiming();
 	}
 
 	public function checkSleep(){
@@ -1141,7 +1155,7 @@ class Level implements ChunkManager, Metadatable{
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
 						$block = $this->getBlockAt($x, $y, $z);
-						if(!$block->canPassThrough() and $block->collidesWithBB($bb)){
+						if($block->collidesWithBB($bb)){
 							return [$block];
 						}
 					}
@@ -1152,7 +1166,7 @@ class Level implements ChunkManager, Metadatable{
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
 						$block = $this->getBlockAt($x, $y, $z);
-						if(!$block->canPassThrough() and $block->collidesWithBB($bb)){
+						if($block->collidesWithBB($bb)){
 							$collides[] = $block;
 						}
 					}
@@ -1203,11 +1217,9 @@ class Level implements ChunkManager, Metadatable{
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($y = $minY; $y <= $maxY; ++$y){
 					$block = $this->getBlockAt($x, $y, $z);
-					if(!$block->canPassThrough()){
-						foreach($block->getCollisionBoxes() as $blockBB){
-							if($blockBB->intersectsWith($bb)){
-								$collides[] = $blockBB;
-							}
+					foreach($block->getCollisionBoxes() as $blockBB){
+						if($blockBB->intersectsWith($bb)){
+							$collides[] = $blockBB;
 						}
 					}
 				}

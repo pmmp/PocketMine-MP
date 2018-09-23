@@ -112,7 +112,17 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int
 	 */
 	public function getItemId() : int{
-		return $this->itemId ?? $this->getId();
+		if($this->itemId !== null){
+			return $this->itemId;
+		}
+		if($this->id > 255){
+			return 255 - $this->id;
+		}
+		return $this->id;
+	}
+
+	public function getItem() : Item{
+		return ItemFactory::get($this->getItemId(), $this->getVariant());
 	}
 
 	/**
@@ -122,7 +132,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function getRuntimeId() : int{
 		return BlockFactory::toStaticRuntimeId($this->getId(), $this->getDamage());
 	}
-
 	/**
 	 * @return int
 	 */
@@ -405,10 +414,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	public function canPassThrough() : bool{
-		return false;
-	}
-
 	/**
 	 * Returns whether entities can climb up this block.
 	 * @return bool
@@ -474,9 +479,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Item[]
 	 */
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			ItemFactory::get($this->getItemId(), $this->getVariant())
-		];
+		return [$this->getItem()];
 	}
 
 	/**
@@ -487,9 +490,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Item[]
 	 */
 	public function getSilkTouchDrops(Item $item) : array{
-		return [
-			ItemFactory::get($this->getItemId(), $this->getVariant())
-		];
+		return [$this->getItem()];
 	}
 
 	/**
@@ -531,7 +532,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Item
 	 */
 	public function getPickedItem() : Item{
-		return ItemFactory::get($this->getItemId(), $this->getVariant());
+		return $this->getItem();
 	}
 
 	/**

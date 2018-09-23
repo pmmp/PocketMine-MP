@@ -191,17 +191,13 @@ class Bed extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->isHeadPart()){
-			return [$this->getItem()];
+			return parent::getDropsForCompatibleTool($item);
 		}
 
 		return [];
 	}
 
-	public function getPickedItem() : Item{
-		return $this->getItem();
-	}
-
-	private function getItem() : Item{
+	public function getItem() : Item{
 		$tile = $this->getLevel()->getTile($this);
 		if($tile instanceof TileBed){
 			return ItemFactory::get($this->getItemId(), $tile->getColor());
