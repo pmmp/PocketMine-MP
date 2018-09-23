@@ -131,6 +131,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function getRuntimeId() : int{
 		return BlockFactory::toStaticRuntimeId($this->getId(), $this->getDamage());
 	}
+
 	/**
 	 * @return int
 	 */
