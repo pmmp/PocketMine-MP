@@ -50,8 +50,6 @@ abstract class Stair extends Transparent{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		//TODO: handle corners
-
 		$minYSlab = $this->upsideDown ? 0.5 : 0;
 
 		$bbs = [
@@ -60,27 +58,53 @@ abstract class Stair extends Transparent{
 
 		$minY = $this->upsideDown ? 0 : 0.5;
 
-		$minX = $minZ = 0;
-		$maxX = $maxZ = 1;
+		$topStep = new AxisAlignedBB(0, $minY, 0, 1, $minY + 0.5, 1);
+		self::setBoundsForFacing($topStep, $this->facing);
 
-		switch($this->facing){
-			case Facing::EAST:
-				$minX = 0.5;
-				break;
-			case Facing::WEST:
-				$maxX = 0.5;
-				break;
-			case Facing::SOUTH:
-				$minZ = 0.5;
-				break;
-			case Facing::NORTH:
-				$maxZ = 0.5;
-				break;
+		/** @var Stair $corner */
+		if(($backFacing = $this->getPossibleCornerFacing(false)) !== null){
+			self::setBoundsForFacing($topStep, $backFacing);
+		}elseif(($frontFacing = $this->getPossibleCornerFacing(true)) !== null){
+			//add an extra cube
+			$extraCube = new AxisAlignedBB(0, $minY, 0, 1, $minY + 0.5, 1);
+			self::setBoundsForFacing($extraCube, Facing::opposite($this->facing));
+			self::setBoundsForFacing($extraCube, $frontFacing);
+			$bbs[] = $extraCube;
 		}
 
-		$bbs[] = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $minY + 0.5, $maxZ);
+		$bbs[] = $topStep;
 
 		return $bbs;
+	}
+
+	private function getPossibleCornerFacing(bool $oppositeFacing) : ?int{
+		$side = $this->getSide($oppositeFacing ? Facing::opposite($this->facing) : $this->facing);
+		if($side instanceof Stair and (
+			$side->facing === Facing::rotate($this->facing, Facing::AXIS_Y, true) or
+			$side->facing === Facing::rotate($this->facing, Facing::AXIS_Y, false))
+		){
+			return $side->facing;
+		}
+		return null;
+	}
+
+	private static function setBoundsForFacing(AxisAlignedBB $bb, int $facing) : void{
+		switch($facing){
+			case Facing::EAST:
+				$bb->minX = 0.5;
+				break;
+			case Facing::WEST:
+				$bb->maxX = 0.5;
+				break;
+			case Facing::SOUTH:
+				$bb->minZ = 0.5;
+				break;
+			case Facing::NORTH:
+				$bb->maxZ = 0.5;
+				break;
+			default:
+				throw new \InvalidArgumentException("Facing must be horizontal");
+		}
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
