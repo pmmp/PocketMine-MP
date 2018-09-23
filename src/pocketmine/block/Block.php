@@ -120,6 +120,10 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $this->id;
 	}
 
+	public function getItem() : Item{
+		return ItemFactory::get($this->getItemId(), $this->getVariant());
+	}
+
 	/**
 	 * @internal
 	 * @return int
@@ -127,7 +131,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function getRuntimeId() : int{
 		return BlockFactory::toStaticRuntimeId($this->getId(), $this->getDamage());
 	}
-
 	/**
 	 * @return int
 	 */
@@ -467,9 +470,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Item[]
 	 */
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			ItemFactory::get($this->getItemId(), $this->getVariant())
-		];
+		return [$this->getItem()];
 	}
 
 	/**
@@ -480,9 +481,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Item[]
 	 */
 	public function getSilkTouchDrops(Item $item) : array{
-		return [
-			ItemFactory::get($this->getItemId(), $this->getVariant())
-		];
+		return [$this->getItem()];
 	}
 
 	/**
@@ -524,7 +523,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Item
 	 */
 	public function getPickedItem() : Item{
-		return ItemFactory::get($this->getItemId(), $this->getVariant());
+		return $this->getItem();
 	}
 
 	/**
