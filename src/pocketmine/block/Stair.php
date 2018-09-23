@@ -79,7 +79,7 @@ abstract class Stair extends Transparent{
 
 	private function getPossibleCornerFacing(bool $oppositeFacing) : ?int{
 		$side = $this->getSide($oppositeFacing ? Facing::opposite($this->facing) : $this->facing);
-		if($side instanceof Stair and (
+		if($side instanceof Stair and $side->upsideDown === $this->upsideDown and (
 			$side->facing === Facing::rotate($this->facing, Facing::AXIS_Y, true) or
 			$side->facing === Facing::rotate($this->facing, Facing::AXIS_Y, false))
 		){
