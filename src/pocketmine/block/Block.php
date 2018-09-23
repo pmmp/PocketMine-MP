@@ -111,7 +111,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int
 	 */
 	public function getItemId() : int{
-		return $this->itemId ?? $this->getId();
+		if($this->itemId !== null){
+			return $this->itemId;
+		}
+		if($this->id > 255){
+			return 255 - $this->id;
+		}
+		return $this->id;
 	}
 
 	/**

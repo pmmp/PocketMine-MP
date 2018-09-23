@@ -61,14 +61,14 @@ class BlockFactory{
 	 * this if you need to reset the block factory back to its original defaults for whatever reason.
 	 */
 	public static function init() : void{
-		self::$fullList = new \SplFixedArray(4096);
-		self::$getInterceptors = new \SplFixedArray(4096);
+		self::$fullList = new \SplFixedArray(8192);
+		self::$getInterceptors = new \SplFixedArray(8192);
 
-		self::$lightFilter = \SplFixedArray::fromArray(array_fill(0, 256, 1));
-		self::$diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 256, false));
-		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 256, 0));
+		self::$lightFilter = \SplFixedArray::fromArray(array_fill(0, 512, 1));
+		self::$diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 512, false));
+		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 512, 0));
 
-		self::$stateMasks = \SplFixedArray::fromArray(array_fill(0, 256, 0));
+		self::$stateMasks = \SplFixedArray::fromArray(array_fill(0, 512, 0));
 
 		self::registerBlock(new Air());
 
