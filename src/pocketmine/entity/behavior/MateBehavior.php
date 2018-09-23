@@ -57,13 +57,13 @@ class MateBehavior extends Behavior{
 	}
 
 	public function onTick() : void{
-		if($this->spawnBabyDelay > 60) return;
+		if($this->spawnBabyDelay >= 60) return;
 
 		$this->mob->getNavigator()->tryMoveTo($this->targetMate, $this->speedMultiplier);
 
 		$this->spawnBabyDelay++;
 
-		if($this->spawnBabyDelay >= 60 and $this->mob->distance($this->targetMate) < 9){
+		if($this->spawnBabyDelay === 60 and $this->mob->distance($this->targetMate) < 9){
 			$this->spawnBaby();
 		}
 	}

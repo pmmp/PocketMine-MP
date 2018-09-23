@@ -417,6 +417,18 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
+	/**
+	 * Returns whether entity can jump this block
+	 *
+	 * @param Entity $entity
+	 * @param float  $maxY  Maximum jump height
+	 *
+	 * @return bool
+	 */
+	public function isPassable(Entity $entity, float $maxY = 1.0) : bool{
+		$bb = $this->getBoundingBox();
+		return $this->canPassThrough() or $bb === null or ($bb->maxY - $bb->minY) <= $maxY or $entity->y >= $bb->maxY;
+	}
 
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector) : void{
 

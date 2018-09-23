@@ -30,6 +30,7 @@ use pocketmine\entity\pathfinder\EntityNavigator;
 use pocketmine\item\Lead;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
@@ -268,10 +269,23 @@ abstract class Mob extends Living{
 		$coord = $this->add($dir->multiply($sf)->add($dir->multiply($this->width * 0.5)));
 
 		$block = $this->level->getBlock($coord);
+
+		if($this->isInsideOfSolid()){
+			$block = $this->level->getBlock($this);
+		}
+
 		$blockUp = $block->getSide(Facing::UP);
 		$blockUpUp = $block->getSide(Facing::UP, 2);
 
+		$bb = $block->getBoundingBox();
+
 		$collide = $block->isSolid() or ($this->height >= 1 and $blockUp->isSolid());
+
+		if($collide){
+			if($bb->maxY <= $this->y){
+				$collide = false;
+			}
+		}
 
 		if(!$collide){
 			if(!$this->onGround and $this->jumpCooldown === 0 and !$this->isSwimmer()) return true;
@@ -287,8 +301,20 @@ abstract class Mob extends Living{
 				$this->motion->y = 0.2;
 				$this->jumpCooldown = 20;
 				return true;
-			}elseif((!$blockUp->isSolid() and !($this->height > 1 and $blockUpUp->isSolid())) or $this->isSwimmer()){
-				$this->motion->y = $this->getJumpVelocity();
+			}elseif((!$blockUp->isSolid() and !($this->height > 1 and $blockUpUp->isSolid()) or $block->isPassable($this)) or $this->isSwimmer()){
+				$f = $this->getJumpVelocity() + 0.02;
+				if($bb instanceof AxisAlignedBB){
+					$yDiff = $bb->maxY - $bb->minY;
+					if($yDiff < 1){
+						$f *= $yDiff;
+
+						if($f < 0.1){
+							$f = 0.1 + $this->gravity; // :/
+						}
+					}
+				}
+
+				$this->motion->y = $f;
 				$this->jumpCooldown = 20;
 				return true;
 			}else{

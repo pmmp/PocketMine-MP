@@ -303,7 +303,7 @@ class EntityNavigator{
 					if(!$canMove or $this->isObstructed($blockUp)) continue;
 
 					$cache[$item->getHashCode()] = $blockUp;
-				}else{
+				}elseif($tb->isPassable($this->mob)){
 					$blockUp = $this->mob->level->getBlock($coord->getSide(Facing::UP));
 					if($blockUp->isSolid()){
 						// Can't jump
@@ -313,6 +313,8 @@ class EntityNavigator{
 					if($this->isObstructed($blockUp)) continue;
 
 					$cache[$item->getHashCode()] = $blockUp;
+				}else{
+					continue; // cannot jump
 				}
 			}else{
 				$blockDown = $this->mob->level->getBlock($coord->add(0, -1, 0));
@@ -411,7 +413,7 @@ class EntityNavigator{
 	 */
 	public function isBlocked(Vector3 $coord) : bool{
 		$block = $this->mob->level->getBlock($coord);
-		return $block->isSolid();
+		return !$block->isPassable($this->mob);
 	}
 
 	/**
