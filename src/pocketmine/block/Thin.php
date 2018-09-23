@@ -100,11 +100,7 @@ abstract class Thin extends Transparent{
 		}
 
 		//FIXME: currently there's no proper way to tell if a block is a full-block, so we check the bounding box size
-		$bbs = $block->getCollisionBoxes();
-		if(count($bbs) === 1){
-			return $bbs[0]->getAverageEdgeLength() >= 1;
-		}
-
-		return false;
+		$bb = $block->getBoundingBox();
+		return $bb !== null and $bb->getAverageEdgeLength() >= 1;
 	}
 }
