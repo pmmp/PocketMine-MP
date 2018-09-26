@@ -25,6 +25,7 @@ namespace pocketmine\command;
 
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\Thread;
+use pocketmine\utils\Utils;
 
 class CommandReader extends Thread{
 
@@ -47,9 +48,9 @@ class CommandReader extends Thread{
 		$this->buffer = new \Threaded;
 		$this->notifier = $notifier;
 
-		$opts = getopt("", ["disable-readline"]);
+		$opts = getopt("", ["disable-readline", "enable-readline"]);
 
-		if(extension_loaded("readline") and !isset($opts["disable-readline"]) and !$this->isPipe(STDIN)){
+		if(extension_loaded("readline") and (Utils::getOS() === "win" ? isset($opts["enable-readline"]) : !isset($opts["disable-readline"])) and !$this->isPipe(STDIN)){
 			$this->type = self::TYPE_READLINE;
 		}
 	}
