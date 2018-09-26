@@ -27,6 +27,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\Level;
 use pocketmine\level\SimpleChunkManager;
+use pocketmine\math\Vector3;
 use pocketmine\scheduler\AsyncTask;
 
 class GeneratorRegisterTask extends AsyncTask{
@@ -36,6 +37,10 @@ class GeneratorRegisterTask extends AsyncTask{
 	public $seed;
 	public $levelId;
 	public $worldHeight = Level::Y_MAX;
+	
+    private $spawnX;
+    private $spawnY;
+    private $spawnZ;
 
 	public function __construct(Level $level, string $generatorClass, array $generatorSettings = []){
 		$this->generatorClass = $generatorClass;
@@ -57,5 +62,16 @@ class GeneratorRegisterTask extends AsyncTask{
 		 */
 		$generator = new $this->generatorClass($manager, $this->seed, unserialize($this->settings));
 		$this->saveToThreadStore("generation.level{$this->levelId}.generator", $generator);
+        
+        $spawn = $generator->getSpawn();
+        $this->spawnX = $spawn->getX();
+        $this->spawnY = $spawn->getY();
+        $this->spawnZ = $spawn->getZ();
 	}
+    
+    public function onCompletion(): void{
+        /** @var Level $level */
+        $level = $this->fetchLocal();
+        $level->setSpawnLocation(new Vector3($this->spawnX, $this->spawnY, $this->spawnZ));
+    }
 }
