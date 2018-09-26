@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 abstract class Button extends Flowable{
@@ -59,8 +60,24 @@ abstract class Button extends Flowable{
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
+	abstract protected function getActivationTime() : int;
+
 	public function onActivate(Item $item, Player $player = null) : bool{
-		//TODO
+		if(!$this->powered){
+			$this->powered = true;
+			$this->level->setBlock($this, $this);
+			$this->level->scheduleDelayedBlockUpdate($this, $this->getActivationTime());
+			$this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_POWER_ON);
+		}
+
 		return true;
+	}
+
+	public function onScheduledUpdate() : void{
+		if($this->powered){
+			$this->powered = false;
+			$this->level->setBlock($this, $this);
+			$this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_POWER_OFF);
+		}
 	}
 }

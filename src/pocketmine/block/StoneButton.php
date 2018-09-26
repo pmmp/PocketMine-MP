@@ -38,4 +38,8 @@ class StoneButton extends Button{
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}
+
+	protected function getActivationTime() : int{
+		return 20;
+	}
 }
