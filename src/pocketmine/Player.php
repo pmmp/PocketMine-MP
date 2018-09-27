@@ -122,7 +122,6 @@ use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
-use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\ProcessLoginTask;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -2208,7 +2207,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$blocks = $target->getAllSides();
 		$blocks[] = $target;
 
-		$this->level->sendBlocks([$this], $blocks, UpdateBlockPacket::FLAG_ALL_PRIORITY);
+		$this->level->sendBlocks([$this], $blocks);
 
 		foreach($blocks as $b){
 			$tile = $this->level->getTile($b);
@@ -2255,7 +2254,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		/** @var Block[] $blocks */
 		$blocks = array_merge($target->getAllSides(), $block->getAllSides()); //getAllSides() on each of these will include $target and $block because they are next to each other
 
-		$this->level->sendBlocks([$this], $blocks, UpdateBlockPacket::FLAG_ALL_PRIORITY);
+		$this->level->sendBlocks([$this], $blocks);
 
 		return false;
 	}
