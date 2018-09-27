@@ -23,55 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\math\Facing;
-use pocketmine\Server;
 
-class MelonStem extends Crops{
+class MelonStem extends Stem{
 
 	protected $id = self::MELON_STEM;
+
+	protected $itemId = Item::MELON_SEEDS;
 
 	public function getName() : string{
 		return "Melon Stem";
 	}
 
-	public function onRandomTick() : void{
-		if(mt_rand(0, 2) === 1){
-			if($this->age < 7){
-				$block = clone $this;
-				++$block->age;
-				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
-				if(!$ev->isCancelled()){
-					$this->getLevel()->setBlock($this, $ev->getNewState());
-				}
-			}else{
-				foreach(Facing::HORIZONTAL as $side){
-					$b = $this->getSide($side);
-					if($b->getId() === self::MELON_BLOCK){
-						return;
-					}
-				}
-				$side = $this->getSide(Facing::HORIZONTAL[array_rand(Facing::HORIZONTAL)]);
-				$d = $side->getSide(Facing::DOWN);
-				if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
-					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, BlockFactory::get(Block::MELON_BLOCK)));
-					if(!$ev->isCancelled()){
-						$this->getLevel()->setBlock($side, $ev->getNewState());
-					}
-				}
-			}
-		}
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			ItemFactory::get(Item::MELON_SEEDS, 0, mt_rand(0, 2))
-		];
-	}
-
-	public function getPickedItem() : Item{
-		return ItemFactory::get(Item::MELON_SEEDS);
+	protected function getPlant() : Block{
+		return BlockFactory::get(Block::MELON_BLOCK);
 	}
 }
