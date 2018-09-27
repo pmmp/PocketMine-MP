@@ -66,7 +66,7 @@ abstract class Slab extends Transparent{
 			return true;
 		}
 
-		if($blockReplace instanceof Slab and $blockReplace->getId() === $this->getId() and $blockReplace->getVariant() === $this->variant){
+		if($blockReplace instanceof Slab and $blockReplace->isSameType($this)){
 			if($blockReplace->top){ //Trying to combine with top slab
 				return $clickVector->y <= 0.5 or (!$isClickedBlock and $face === Facing::UP);
 			}else{
@@ -79,11 +79,11 @@ abstract class Slab extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($face === Facing::DOWN){
-			if($blockClicked instanceof Slab and $blockClicked->getId() === $this->getId() and $blockClicked->top and $blockClicked->getVariant() === $this->variant){
+			if($blockClicked instanceof Slab and $blockClicked->isSameType($this) and $blockClicked->top){
 				$this->getLevel()->setBlock($blockClicked, $this->getDouble());
 
 				return true;
-			}elseif($blockReplace->getId() === $this->getId() and $blockReplace->getVariant() === $this->variant){
+			}elseif($blockReplace->isSameType($this)){
 				$this->getLevel()->setBlock($blockReplace, $this->getDouble());
 
 				return true;
@@ -91,11 +91,11 @@ abstract class Slab extends Transparent{
 				$this->top = true;
 			}
 		}elseif($face === Facing::UP){
-			if($blockClicked instanceof Slab and $blockClicked->getId() === $this->getId() and !$blockClicked->top and $blockClicked->getVariant() === $this->variant){
+			if($blockClicked instanceof Slab and $blockClicked->isSameType($this) and !$blockClicked->top){
 				$this->getLevel()->setBlock($blockClicked, $this->getDouble());
 
 				return true;
-			}elseif($blockReplace->getId() === $this->getId() and $blockReplace->getVariant() === $this->variant){
+			}elseif($blockReplace->isSameType($this)){
 				$this->getLevel()->setBlock($blockReplace, $this->getDouble());
 
 				return true;

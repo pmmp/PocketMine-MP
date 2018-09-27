@@ -83,7 +83,7 @@ class Chest extends Transparent{
 			Bearing::toFacing(Bearing::rotate($player->getDirection(), 1))
 		] as $side){
 			$c = $this->getSide($side);
-			if($c instanceof Chest and $c->getId() === $this->getId() and $c->facing === $this->facing){
+			if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
 				$tile = $this->getLevel()->getTile($c);
 				if($tile instanceof TileChest and !$tile->isPaired()){
 					$chest = $tile;

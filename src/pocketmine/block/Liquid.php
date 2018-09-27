@@ -111,7 +111,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function getEffectiveFlowDecay(Block $block) : int{
-		if(!($block instanceof Liquid) or $block->getId() !== $this->getId()){
+		if(!($block instanceof Liquid) or !$block->isSameType($this)){
 			return -1;
 		}
 
@@ -410,7 +410,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	private function getSmallestFlowDecay(Block $block, int $decay) : int{
-		if(!($block instanceof Liquid) or $block->getId() !== $this->getId()){
+		if(!($block instanceof Liquid) or !$block->isSameType($this)){
 			return $decay;
 		}
 

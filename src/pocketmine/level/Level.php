@@ -1671,7 +1671,7 @@ class Level implements ChunkManager, Metadatable{
 					foreach($tag as $v){
 						if($v instanceof StringTag){
 							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getId() > 0 and $entry->getBlock()->getId() === $target->getId()){
+							if($entry->getId() > 0 and $entry->getBlock()->isSameType($target)){
 								$canBreak = true;
 								break;
 							}
@@ -1833,7 +1833,7 @@ class Level implements ChunkManager, Metadatable{
 					foreach($tag as $v){
 						if($v instanceof StringTag){
 							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getId() > 0 and $entry->getBlock()->getId() === $blockClicked->getId()){
+							if($entry->getId() > 0 and $entry->getBlock()->isSameType($blockClicked)){
 								$canPlace = true;
 								break;
 							}

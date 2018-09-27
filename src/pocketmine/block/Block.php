@@ -167,6 +167,17 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns whether the given block has an equivalent type to this one.
+	 *
+	 * @param Block $other
+	 *
+	 * @return bool
+	 */
+	public function isSameType(Block $other) : bool{
+		return $this->getId() === $other->getId() and $this->getVariant() === $other->getVariant();
+	}
+
+	/**
 	 * AKA: Block->isPlaceable
 	 * @return bool
 	 */
