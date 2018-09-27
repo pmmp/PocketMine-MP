@@ -38,7 +38,7 @@ class FlintSteel extends Tool{
 		if($blockReplace->getId() === self::AIR){
 			$level = $player->getLevel();
 			assert($level !== null);
-			$level->setBlock($blockReplace, BlockFactory::get(Block::FIRE), true);
+			$level->setBlock($blockReplace, BlockFactory::get(Block::FIRE));
 			$level->broadcastLevelSoundEvent($blockReplace->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_IGNITE);
 
 			$this->applyDamage(1);

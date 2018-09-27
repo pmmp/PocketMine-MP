@@ -70,7 +70,7 @@ abstract class Crops extends Flowable{
 			Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 
 			if(!$ev->isCancelled()){
-				$this->getLevel()->setBlock($this, $ev->getNewState(), true, true);
+				$this->getLevel()->setBlock($this, $ev->getNewState());
 			}
 
 			$item->count--;
@@ -98,7 +98,7 @@ abstract class Crops extends Flowable{
 			Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 
 			if(!$ev->isCancelled()){
-				$this->getLevel()->setBlock($this, $ev->getNewState(), true, true);
+				$this->getLevel()->setBlock($this, $ev->getNewState());
 			}
 		}
 	}

@@ -61,7 +61,7 @@ class Bucket extends Item implements Consumable{
 				$resultItem = ItemFactory::get(Item::BUCKET, $blockClicked->getFlowingForm()->getId());
 				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem));
 				if(!$ev->isCancelled()){
-					$player->getLevel()->setBlock($blockClicked, BlockFactory::get(Block::AIR), true, true);
+					$player->getLevel()->setBlock($blockClicked, BlockFactory::get(Block::AIR));
 					$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
 					if($player->isSurvival()){
 						if($stack->getCount() === 0){
@@ -82,7 +82,7 @@ class Bucket extends Item implements Consumable{
 		}elseif($resultBlock instanceof Liquid and $blockReplace->canBeReplaced()){
 			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, ItemFactory::get(Item::BUCKET)));
 			if(!$ev->isCancelled()){
-				$player->getLevel()->setBlock($blockReplace, $resultBlock->getFlowingForm(), true, true);
+				$player->getLevel()->setBlock($blockReplace, $resultBlock->getFlowingForm());
 				$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
 
 				if($player->isSurvival()){

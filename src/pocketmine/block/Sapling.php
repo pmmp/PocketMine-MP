@@ -85,7 +85,7 @@ class Sapling extends Flowable{
 				Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->getVariant());
 			}else{
 				$this->ready = true;
-				$this->getLevel()->setBlock($this, $this, true);
+				$this->getLevel()->setBlock($this, $this);
 			}
 		}
 	}

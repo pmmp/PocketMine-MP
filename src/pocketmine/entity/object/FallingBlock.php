@@ -115,7 +115,7 @@ class FallingBlock extends Entity{
 				}else{
 					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, $blockTarget ?? $this->block));
 					if(!$ev->isCancelled()){
-						$this->getLevel()->setBlock($pos, $ev->getTo(), true);
+						$this->getLevel()->setBlock($pos, $ev->getTo());
 					}
 				}
 				$hasUpdate = true;

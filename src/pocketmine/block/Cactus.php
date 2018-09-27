@@ -106,7 +106,7 @@ class Cactus extends Transparent{
 					if($b->getId() === self::AIR){
 						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, BlockFactory::get(Block::CACTUS)));
 						if(!$ev->isCancelled()){
-							$this->getLevel()->setBlock($b, $ev->getNewState(), true);
+							$this->getLevel()->setBlock($b, $ev->getNewState());
 						}
 					}
 				}

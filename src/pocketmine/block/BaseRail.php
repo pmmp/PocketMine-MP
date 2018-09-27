@@ -264,7 +264,7 @@ abstract class BaseRail extends Flowable{
 		}
 
 		$this->connections = $connections;
-		$this->level->setBlock($this, $this, false, false); //avoid recursion
+		$this->level->setBlock($this, $this, false); //avoid recursion
 	}
 
 	public function onNearbyBlockChange() : void{

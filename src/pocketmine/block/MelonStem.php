@@ -44,7 +44,7 @@ class MelonStem extends Crops{
 				++$block->age;
 				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 				if(!$ev->isCancelled()){
-					$this->getLevel()->setBlock($this, $ev->getNewState(), true);
+					$this->getLevel()->setBlock($this, $ev->getNewState());
 				}
 			}else{
 				foreach(Facing::HORIZONTAL as $side){
@@ -58,7 +58,7 @@ class MelonStem extends Crops{
 				if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
 					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, BlockFactory::get(Block::MELON_BLOCK)));
 					if(!$ev->isCancelled()){
-						$this->getLevel()->setBlock($side, $ev->getNewState(), true);
+						$this->getLevel()->setBlock($side, $ev->getNewState());
 					}
 				}
 			}

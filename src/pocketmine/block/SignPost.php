@@ -79,7 +79,7 @@ class SignPost extends Transparent{
 				$this->rotation = $player !== null ? ((int) floor((($player->yaw + 180) * 16 / 360) + 0.5)) & 0x0f : 0;
 				$ret = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}else{
-				$ret = $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_SIGN, $face), true);
+				$ret = $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_SIGN, $face));
 			}
 
 			if($ret){

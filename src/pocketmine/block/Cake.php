@@ -89,7 +89,7 @@ class Cake extends Transparent implements FoodSource{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getId() === self::AIR){ //Replace with common break method
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
+			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR));
 		}
 	}
 

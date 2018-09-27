@@ -143,9 +143,9 @@ abstract class Door extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getId() === self::AIR){ //Replace with common break method
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false);
+			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR));
 			if($this->getSide(Facing::UP) instanceof Door){
-				$this->getLevel()->setBlock($this->getSide(Facing::UP), BlockFactory::get(Block::AIR), false);
+				$this->getLevel()->setBlock($this->getSide(Facing::UP), BlockFactory::get(Block::AIR));
 			}
 		}
 	}
@@ -173,7 +173,7 @@ abstract class Door extends Transparent{
 			$topHalf->top = true;
 
 			parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-			$this->level->setBlock($blockUp, $topHalf, true); //Top
+			$this->level->setBlock($blockUp, $topHalf); //Top
 			return true;
 		}
 
@@ -187,10 +187,10 @@ abstract class Door extends Transparent{
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 		if($other instanceof Door and $this->getId() === $other->getId()){
 			$other->open = $this->open;
-			$this->level->setBlock($other, $other, true, true);
+			$this->level->setBlock($other, $other);
 		}
 
-		$this->level->setBlock($this, $this, true, true);
+		$this->level->setBlock($this, $this);
 		$this->level->addSound(new DoorSound($this));
 
 		return true;

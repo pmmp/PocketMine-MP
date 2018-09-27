@@ -54,10 +54,10 @@ class DoublePlant extends Flowable{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$id = $blockReplace->getSide(Facing::DOWN)->getId();
 		if(($id === Block::GRASS or $id === Block::DIRT) and $blockReplace->getSide(Facing::UP)->canBeReplaced()){
-			$this->getLevel()->setBlock($blockReplace, $this, false, false);
+			$this->getLevel()->setBlock($blockReplace, $this, false);
 			$top = clone $this;
 			$top->top = true;
-			$this->getLevel()->setBlock($blockReplace->getSide(Facing::UP), $top, false, false);
+			$this->getLevel()->setBlock($blockReplace->getSide(Facing::UP), $top, false);
 
 			return true;
 		}

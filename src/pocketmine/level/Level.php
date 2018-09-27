@@ -1475,21 +1475,16 @@ class Level implements ChunkManager, Metadatable{
 	 * Sets on Vector3 the data from a Block object,
 	 * does block updates and puts the changes to the send queue.
 	 *
-	 * If $direct is true, it'll send changes directly to players. if false, it'll be queued
-	 * and the best way to send queued changes will be done in the next tick.
-	 * This way big changes can be sent on a single chunk update packet instead of thousands of packets.
-	 *
 	 * If $update is true, it'll get the neighbour blocks (6 sides) and update them.
 	 * If you are doing big changes, you might want to set this to false, then update manually.
 	 *
 	 * @param Vector3 $pos
 	 * @param Block   $block
-	 * @param bool    $direct @deprecated
 	 * @param bool    $update
 	 *
 	 * @return bool Whether the block has been updated or not
 	 */
-	public function setBlock(Vector3 $pos, Block $block, bool $direct = false, bool $update = true) : bool{
+	public function setBlock(Vector3 $pos, Block $block, bool $update = true) : bool{
 		$pos = $pos->floor();
 		if(!$this->isInWorld($pos->x, $pos->y, $pos->z)){
 			return false;
@@ -1512,16 +1507,10 @@ class Level implements ChunkManager, Metadatable{
 
 			unset($this->blockCache[$chunkHash][$blockHash]);
 
-			if($direct){
-				$this->sendBlocks($this->getChunkPlayers($pos->x >> 4, $pos->z >> 4), [$block]);
-				unset($this->chunkCache[$chunkHash], $this->changedBlocks[$chunkHash][$blockHash]);
-			}else{
-				if(!isset($this->changedBlocks[$chunkHash])){
-					$this->changedBlocks[$chunkHash] = [];
-				}
-
-				$this->changedBlocks[$chunkHash][$blockHash] = $block;
+			if(!isset($this->changedBlocks[$chunkHash])){
+				$this->changedBlocks[$chunkHash] = [];
 			}
+			$this->changedBlocks[$chunkHash][$blockHash] = $block;
 
 			foreach($this->getChunkLoaders($pos->x >> 4, $pos->z >> 4) as $loader){
 				$loader->onBlockChanged($block);

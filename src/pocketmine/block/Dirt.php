@@ -43,9 +43,9 @@ class Dirt extends Solid{
 		if($item instanceof Hoe){
 			$item->applyDamage(1);
 			if($this->variant === self::COARSE){
-				$this->getLevel()->setBlock($this, BlockFactory::get(Block::DIRT), true);
+				$this->getLevel()->setBlock($this, BlockFactory::get(Block::DIRT));
 			}else{
-				$this->getLevel()->setBlock($this, BlockFactory::get(Block::FARMLAND), true);
+				$this->getLevel()->setBlock($this, BlockFactory::get(Block::FARMLAND));
 			}
 
 			return true;

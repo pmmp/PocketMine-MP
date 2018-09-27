@@ -54,7 +54,7 @@ class GrassPath extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::UP)->isSolid()){
-			$this->level->setBlock($this, BlockFactory::get(Block::DIRT), true);
+			$this->level->setBlock($this, BlockFactory::get(Block::DIRT));
 		}
 	}
 
