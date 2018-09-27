@@ -57,6 +57,10 @@ abstract class Slab extends Transparent{
 		return $this->doubleId;
 	}
 
+	protected function getDouble() : Block{
+		return BlockFactory::get($this->doubleId, $this->variant);
+	}
+
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
 		if(parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock)){
 			return true;
@@ -76,11 +80,11 @@ abstract class Slab extends Transparent{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($face === Facing::DOWN){
 			if($blockClicked instanceof Slab and $blockClicked->getId() === $this->getId() and $blockClicked->top and $blockClicked->getVariant() === $this->variant){
-				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->variant));
+				$this->getLevel()->setBlock($blockClicked, $this->getDouble());
 
 				return true;
 			}elseif($blockReplace->getId() === $this->getId() and $blockReplace->getVariant() === $this->variant){
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->variant));
+				$this->getLevel()->setBlock($blockReplace, $this->getDouble());
 
 				return true;
 			}else{
@@ -88,18 +92,18 @@ abstract class Slab extends Transparent{
 			}
 		}elseif($face === Facing::UP){
 			if($blockClicked instanceof Slab and $blockClicked->getId() === $this->getId() and !$blockClicked->top and $blockClicked->getVariant() === $this->variant){
-				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->variant));
+				$this->getLevel()->setBlock($blockClicked, $this->getDouble());
 
 				return true;
 			}elseif($blockReplace->getId() === $this->getId() and $blockReplace->getVariant() === $this->variant){
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->variant));
+				$this->getLevel()->setBlock($blockReplace, $this->getDouble());
 
 				return true;
 			}
 		}else{ //TODO: collision
 			if($blockReplace->getId() === $this->getId()){
 				if($blockReplace->getVariant() === $this->variant){
-					$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->variant));
+					$this->getLevel()->setBlock($blockReplace, $this->getDouble());
 
 					return true;
 				}
