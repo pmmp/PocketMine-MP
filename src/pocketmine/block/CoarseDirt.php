@@ -23,28 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Hoe;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\TieredTool;
+use pocketmine\Player;
 
-class Stone extends Solid{
-	public const NORMAL = 0;
-	public const GRANITE = 1;
-	public const POLISHED_GRANITE = 2;
-	public const DIORITE = 3;
-	public const POLISHED_DIORITE = 4;
-	public const ANDESITE = 5;
-	public const POLISHED_ANDESITE = 6;
+class CoarseDirt extends Dirt{
 
-	public function getHardness() : float{
-		return 1.5;
-	}
+	public function onActivate(Item $item, Player $player = null) : bool{
+		if($item instanceof Hoe){
+			$item->applyDamage(1);
+			$this->getLevel()->setBlock($this, BlockFactory::get(Block::DIRT));
+			return true;
+		}
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
+		return false;
 	}
 }

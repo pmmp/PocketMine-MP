@@ -25,26 +25,27 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\TieredTool;
 
-class Stone extends Solid{
-	public const NORMAL = 0;
-	public const GRANITE = 1;
-	public const POLISHED_GRANITE = 2;
-	public const DIORITE = 3;
-	public const POLISHED_DIORITE = 4;
-	public const ANDESITE = 5;
-	public const POLISHED_ANDESITE = 6;
+class DoubleTallGrass extends DoublePlant{
 
-	public function getHardness() : float{
-		return 1.5;
+	public function canBeReplaced() : bool{
+		return true;
 	}
 
 	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
+		return BlockToolType::TYPE_SHEARS;
 	}
 
 	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
+		return 1;
+	}
+
+	public function getDrops(Item $item) : array{
+		if($this->top and !$this->isCompatibleWithTool($item) and mt_rand(0, 7) === 0){
+			return [
+				ItemFactory::get(Item::SEEDS)
+			];
+		}
+		return parent::getDrops($item);
 	}
 }

@@ -986,7 +986,7 @@ class Level implements ChunkManager, Metadatable{
 						$blockId = $subChunk->getBlockId($x, $y, $z);
 						$meta = $subChunk->getBlockData($x, $y, $z);
 
-						if($this->randomTickBlocks[($blockId << 4) | ($meta & ~BlockFactory::$stateMasks[$blockId])]){
+						if($this->randomTickBlocks[($blockId << 4) | ($meta & ~BlockFactory::getStateMask($blockId))]){
 							/** @var Block $block */
 							$block = BlockFactory::get($blockId, $meta);
 

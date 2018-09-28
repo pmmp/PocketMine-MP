@@ -24,7 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
+use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\Player;
 
 trait PillarRotationTrait{
 
@@ -72,5 +75,23 @@ trait PillarRotationTrait{
 			Facing::AXIS_X => 1
 		];
 		return $bits[$this->axis] << 2;
+	}
+
+	/**
+	 * @see Block::place()
+	 *
+	 * @param Item        $item
+	 * @param Block       $blockReplace
+	 * @param Block       $blockClicked
+	 * @param int         $face
+	 * @param Vector3     $clickVector
+	 * @param Player|null $player
+	 *
+	 * @return bool
+	 */
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		$this->axis = Facing::axis($face);
+		/** @see Block::place() */
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 }

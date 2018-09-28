@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\Color;
+use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\WoodType;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
@@ -45,7 +46,7 @@ class BlockFactory{
 	public static $blastResistance = null;
 
 	/** @var \SplFixedArray|int[] */
-	public static $stateMasks = null;
+	private static $stateMasks = null;
 
 	/** @var int[] */
 	public static $staticRuntimeIdMap = [];
@@ -68,12 +69,12 @@ class BlockFactory{
 		self::$diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 512, false));
 		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 512, 0));
 
-		self::$stateMasks = \SplFixedArray::fromArray(array_fill(0, 512, 0));
+		self::$stateMasks = new \SplFixedArray(512);
 
 		self::registerBlock(new Air());
 
-		//TODO: give smooth stone its own class (different drops)
-		self::registerBlock(new Stone(Block::STONE, Stone::NORMAL, "Stone"));
+		self::registerBlock(new SmoothStone(Block::STONE, Stone::NORMAL, "Stone"));
+
 		self::registerBlock(new Stone(Block::STONE, Stone::GRANITE, "Granite"));
 		self::registerBlock(new Stone(Block::STONE, Stone::POLISHED_GRANITE, "Polished Granite"));
 		self::registerBlock(new Stone(Block::STONE, Stone::DIORITE, "Diorite"));
@@ -83,9 +84,8 @@ class BlockFactory{
 
 		self::registerBlock(new Grass());
 
-		//TODO: split these into separate classes
 		self::registerBlock(new Dirt(Block::DIRT, Dirt::NORMAL, "Dirt"));
-		self::registerBlock(new Dirt(Block::DIRT, Dirt::COARSE, "Coarse Dirt"));
+		self::registerBlock(new CoarseDirt(Block::DIRT, Dirt::COARSE, "Coarse Dirt"));
 
 		self::registerBlock(new Cobblestone());
 
@@ -355,11 +355,17 @@ class BlockFactory{
 		//TODO: HOPPER_BLOCK
 
 		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::NORMAL, "Quartz Block"));
-		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::CHISELED, "Chiseled Quartz Block"));
-		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::PILLAR, "Quartz Pillar"));
+		self::registerBlock(new class(Block::QUARTZ_BLOCK, Quartz::CHISELED, "Chiseled Quartz Block") extends Quartz{
+			use PillarRotationTrait;
+		});
+		self::registerBlock(new class(Block::QUARTZ_BLOCK, Quartz::PILLAR, "Quartz Pillar") extends Quartz{
+			use PillarRotationTrait;
+		});
 
-		self::registerBlock(new Purpur(Block::PURPUR_BLOCK, Purpur::NORMAL, "Purpur Block"));
-		self::registerBlock(new Purpur(Block::PURPUR_BLOCK, Purpur::PILLAR, "Purpur Pillar"));
+		self::registerBlock(new Purpur(Block::PURPUR_BLOCK, 0, "Purpur Block"));
+		self::registerBlock(new class(Block::PURPUR_BLOCK, 2, "Purpur Pillar") extends Purpur{
+			use PillarRotationTrait;
+		});
 
 		self::registerBlock(new QuartzStairs());
 
@@ -382,9 +388,8 @@ class BlockFactory{
 
 		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 0, "Sunflower"));
 		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 1, "Lilac"));
-		//TODO: double tallgrass and large fern have different behaviour than the others, so they should get their own classes
-		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 2, "Double Tallgrass"));
-		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 3, "Large Fern"));
+		self::registerBlock(new DoubleTallGrass(Block::DOUBLE_PLANT, 2, "Double Tallgrass"));
+		self::registerBlock(new DoubleTallGrass(Block::DOUBLE_PLANT, 3, "Large Fern"));
 		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 4, "Rose Bush"));
 		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 5, "Peony"));
 
@@ -478,6 +483,10 @@ class BlockFactory{
 			throw new \RuntimeException("Trying to overwrite an already registered block");
 		}
 
+		if(self::$stateMasks[$id] !== null and self::$stateMasks[$id] !== $block->getStateBitmask()){
+			throw new \InvalidArgumentException("Blocks with the same ID must have the same state bitmask");
+		}
+
 		self::$fullList[($id << 4) | $variant] = clone $block;
 		if($variant === 0){
 			//TODO: allow these to differ for different variants
@@ -499,13 +508,9 @@ class BlockFactory{
 			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
 		}
 
-		if(self::$stateMasks[$id] === null){
-			$variant = 0;
-			$state = $meta;
-		}else{
-			$variant = $meta & ~self::$stateMasks[$id];
-			$state = $meta & self::$stateMasks[$id];
-		}
+		$stateMask = self::getStateMask($id);
+		$variant = $meta & ~$stateMask;
+		$state = $meta & $stateMask;
 
 		$index = ($id << 4) | $variant;
 
@@ -551,6 +556,10 @@ class BlockFactory{
 		self::$diffusesSkyLight[$id] = $block->diffusesSkyLight();
 		self::$blastResistance[$id] = $block->getBlastResistance();
 		self::$stateMasks[$id] = $block->getStateBitmask();
+	}
+
+	public static function getStateMask(int $id) : int{
+		return self::$stateMasks[$id] ?? 0;
 	}
 
 	/**
