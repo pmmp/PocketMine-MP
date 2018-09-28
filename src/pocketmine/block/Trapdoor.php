@@ -58,7 +58,7 @@ class Trapdoor extends Transparent{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		//TODO: in PC the values are reversed (3 - (5 - facing))
+		//TODO: in PC the values are reversed (facing - 2)
 
 		$this->facing = 5 - ($meta & 0x03);
 		$this->top = ($meta & self::MASK_UPPER) !== 0;
