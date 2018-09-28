@@ -76,21 +76,11 @@ class EnderChest extends Chest{
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
-
-			$t = $this->getLevel()->getTile($this);
-			$enderChest = null;
-			if($t instanceof TileEnderChest){
-				$enderChest = $t;
-			}else{
-				$enderChest = Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this));
+			$enderChest = $this->getLevel()->getTile($this);
+			if($enderChest instanceof TileEnderChest and $this->getSide(Facing::UP)->isTransparent()){
+				$player->getEnderChestInventory()->setHolderPosition($enderChest);
+				$player->addWindow($player->getEnderChestInventory());
 			}
-
-			if(!$this->getSide(Facing::UP)->isTransparent()){
-				return true;
-			}
-
-			$player->getEnderChestInventory()->setHolderPosition($enderChest);
-			$player->addWindow($player->getEnderChestInventory());
 		}
 
 		return true;

@@ -60,14 +60,12 @@ class ItemFrame extends Flowable{
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		$tile = $this->level->getTile($this);
-		if(!($tile instanceof TileItemFrame)){
-			$tile = Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), TileItemFrame::createNBT($this));
-		}
-
-		if($tile->hasItem()){
-			$tile->setItemRotation(($tile->getItemRotation() + 1) % 8);
-		}elseif(!$item->isNull()){
-			$tile->setItem($item->pop());
+		if($tile instanceof TileItemFrame){
+			if($tile->hasItem()){
+				$tile->setItemRotation(($tile->getItemRotation() + 1) % 8);
+			}elseif(!$item->isNull()){
+				$tile->setItem($item->pop());
+			}
 		}
 
 		return true;

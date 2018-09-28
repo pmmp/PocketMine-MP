@@ -109,23 +109,18 @@ class Chest extends Transparent{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 
-			$t = $this->getLevel()->getTile($this);
-			$chest = null;
-			if($t instanceof TileChest){
-				$chest = $t;
-			}else{
-				$chest = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this));
-			}
+			$chest = $this->getLevel()->getTile($this);
+			if($chest instanceof TileChest){
+				if(
+					!$this->getSide(Facing::UP)->isTransparent() or
+					($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Facing::UP)->isTransparent()) or
+					!$chest->canOpenWith($item->getCustomName())
+				){
+					return true;
+				}
 
-			if(
-				!$this->getSide(Facing::UP)->isTransparent() or
-				($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Facing::UP)->isTransparent()) or
-				!$chest->canOpenWith($item->getCustomName())
-			){
-				return true;
+				$player->addWindow($chest->getInventory());
 			}
-
-			$player->addWindow($chest->getInventory());
 		}
 
 		return true;
