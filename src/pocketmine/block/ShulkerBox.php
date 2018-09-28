@@ -35,6 +35,20 @@ use pocketmine\tile\Tile;
 
 class ShulkerBox extends Transparent{
 
+	protected $facing = Facing::UP;
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->facing = $meta;
+	}
+
+	public function writeStateToMeta() : int{
+		return $this->facing;
+	}
+
+	public function getStateBitmask() : int{
+		return 15;
+	}
+
 	public function getHardness() : float{
 		return 6;
 	}
@@ -45,13 +59,15 @@ class ShulkerBox extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->getLevel()->setBlock($blockReplace, $this, true, true);
+
+		$this->facing = $face;
+
 		Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), TileShulkerBox::createNBT($this, $face, $item, $player));
 		return true;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
-
 			$t = $this->getLevel()->getTile($this);
 			$sb = null;
 			if($t instanceof TileShulkerBox){
@@ -60,10 +76,7 @@ class ShulkerBox extends Transparent{
 				$sb = Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), TileShulkerBox::createNBT($this));
 			}
 
-			if(
-				!($this->getSide(Facing::UP)->isTransparent()) or
-				!$sb->canOpenWith($item->getCustomName())
-			){
+			if(!($this->getSide(Facing::UP)->isTransparent()) or !$sb->canOpenWith($item->getCustomName())){
 				return true;
 			}
 

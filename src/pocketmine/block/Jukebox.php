@@ -33,13 +33,10 @@ use pocketmine\tile\Tile;
 
 class Jukebox extends Solid{
 
-	protected $id = self::JUKEBOX;
+	public const NO_DISC_INSERTED = 0;
+	public const CONTAINS_A_DISC = 1;
 
 	protected $has_record = false;
-
-	public function __construct(){
-
-	}
 
 	public function readStateFromMeta(int $meta) : void{
 		$this->has_record = intval($meta);

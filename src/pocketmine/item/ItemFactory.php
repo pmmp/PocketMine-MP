@@ -393,7 +393,10 @@ class ItemFactory{
 	 * @return bool
 	 */
 	public static function isRegistered(int $id) : bool{
-		if($id < 256 and $id > 0){
+		if($id < 256){
+			if($id < 0){
+				$id = 255 - $id;
+			}
 			return BlockFactory::isRegistered($id);
 		}
 		return self::$list[self::getListOffset($id)] !== null;

@@ -157,6 +157,8 @@ class BlockFactory{
 			self::registerBlock(new ShulkerBox(Block::SHULKER_BOX, $color, Color::NAMES[$color] . " Shulker Box"));
 		}
 
+		self::registerBlock(new ShulkerBox(Block::UNDYED_SHULKER_BOX, 0, "Shulker Box"));
+
 		self::registerBlock(new Dandelion());
 
 		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_POPPY, "Poppy"));
@@ -256,20 +258,28 @@ class BlockFactory{
 		self::registerBlock(new Cactus());
 		self::registerBlock(new Clay());
 		self::registerBlock(new Sugarcane());
-		//TODO: JUKEBOX
+
+		self::registerBlock(new Jukebox(Block::JUKEBOX, Jukebox::NO_DISC_INSERTED));
+		self::registerBlock(new Jukebox(Block::JUKEBOX, Jukebox::CONTAINS_A_DISC));
 
 		self::registerBlock(new Pumpkin());
 		self::registerBlock(new Netherrack());
 		self::registerBlock(new SoulSand());
 		self::registerBlock(new Glowstone());
-		//TODO: PORTAL
+		self::registerBlock(new Portal());
 		self::registerBlock(new LitPumpkin());
 		self::registerBlock(new Cake());
 		//TODO: REPEATER_BLOCK
 		//TODO: POWERED_REPEATER
-		//TODO: INVISIBLEBEDROCK
+		self::registerBlock(new InvisibleBedrock());
 		self::registerBlock(new Trapdoor());
-		//TODO: MONSTER_EGG
+
+		self::registerBlock(new MonsterEgg(Block::MONSTER_EGG, MonsterEgg::STONE_MONSTER_EGG, "Stone Monster Egg"));
+		self::registerBlock(new MonsterEgg(Block::MONSTER_EGG, MonsterEgg::COBBLESTONE_MONSTER_EGG, "Cobbletone Monster Egg"));
+		self::registerBlock(new MonsterEgg(Block::MONSTER_EGG, MonsterEgg::STONE_BRICK_MONSTER_EGG, "Stone Brick Monster Egg"));
+		self::registerBlock(new MonsterEgg(Block::MONSTER_EGG, MonsterEgg::MOSSY_STONE_BRICK_MONSTER_EGG, "Mossy Stone Brick Monster Egg"));
+		self::registerBlock(new MonsterEgg(Block::MONSTER_EGG, MonsterEgg::CRACKED_STONE_BRICK_MONSTER_EGG, "Cracked Stone Brick Monster Egg"));
+		self::registerBlock(new MonsterEgg(Block::MONSTER_EGG, MonsterEgg::CHISELED_STONE_BRICK_MONSTER_EGG, "Chiseled Stone Brick Monster Egg"));
 
 		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::NORMAL, "Stone Bricks"));
 		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::MOSSY, "Mossy Stone Bricks"));
@@ -296,10 +306,10 @@ class BlockFactory{
 		self::registerBlock(new EnchantingTable());
 		self::registerBlock(new BrewingStand());
 		//TODO: CAULDRON_BLOCK
-		//TODO: END_PORTAL
+		self::registerBlock(new EndPortal());
 		self::registerBlock(new EndPortalFrame());
 		self::registerBlock(new EndStone());
-		//TODO: DRAGON_EGG
+		self::registerBlock(new DragonEgg());
 		self::registerBlock(new RedstoneLamp());
 		self::addGetInterceptor(Block::LIT_REDSTONE_LAMP, 0, function() : Block{
 			$block = self::get(Block::REDSTONE_LAMP);
@@ -322,7 +332,7 @@ class BlockFactory{
 		self::registerBlock(new WoodenStairs(Block::BIRCH_STAIRS, 0, "Birch Stairs"));
 		self::registerBlock(new WoodenStairs(Block::JUNGLE_STAIRS, 0, "Jungle Stairs"));
 		//TODO: COMMAND_BLOCK
-		//TODO: BEACON
+		self::registerBlock(new Beacon());
 
 		self::registerBlock(new CobblestoneWall(Block::COBBLESTONE_WALL, CobblestoneWall::NONE_MOSSY_WALL, "Cobblestone Wall"));
 		self::registerBlock(new CobblestoneWall(Block::COBBLESTONE_WALL, CobblestoneWall::MOSSY_WALL, "Mossy Cobblestone Wall"));
@@ -353,7 +363,7 @@ class BlockFactory{
 
 		self::registerBlock(new Redstone());
 		self::registerBlock(new NetherQuartzOre());
-		//TODO: HOPPER_BLOCK
+		self::registerBlock(new Hopper());
 
 		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::NORMAL, "Quartz Block"));
 		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::CHISELED, "Chiseled Quartz Block"));
@@ -366,7 +376,7 @@ class BlockFactory{
 
 		self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
 		self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
-		//TODO: SLIME
+		self::registerBlock(new Slime());
 
 		self::registerBlock(new IronTrapdoor());
 
@@ -456,7 +466,7 @@ class BlockFactory{
 
 		//TODO: RESERVED6
 
-		self::registerBlock(new Barrier());
+		//self::registerBlock(new Barrier()); INFO: Need new chunk format
 	}
 
 	/**

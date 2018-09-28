@@ -24,15 +24,33 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class UndyedShulkerBox extends ShulkerBox {
+use pocketmine\item\Item;
+use pocketmine\Player;
 
-    protected $id = self::UNDYED_SHULKER_BOX;
+class MonsterEgg extends Solid{
 
-    public function __construct(){
-
-    }
+	public const STONE_MONSTER_EGG = 0;
+	public const COBBLESTONE_MONSTER_EGG = 1;
+	public const STONE_BRICK_MONSTER_EGG = 2;
+	public const MOSSY_STONE_BRICK_MONSTER_EGG = 3;
+	public const CRACKED_STONE_BRICK_MONSTER_EGG = 4;
+	public const CHISELED_STONE_BRICK_MONSTER_EGG = 5;
 
 	public function getName() : string{
-		return "Undyed Shulker Box";
+		return "Infested Block";
+	}
+
+	public function getHardness() : float{
+		return 0.75;
+	}
+
+	public function getDropsForCompatibleTool(Item $item): array{
+		return [];
+	}
+
+	public function onBreak(Item $item, Player $player = null) : bool{
+		// TODO: Spawn silverfish
+
+		return parent::onBreak($item, $player);
 	}
 }

@@ -30,12 +30,12 @@ use pocketmine\level\Level;
 use pocketmine\Player;
 use pocketmine\Server;
 
-class EndPortal extends Solid{
+class EndPortal extends Transparent{
 
 	protected $id = self::END_PORTAL;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function __construct(){
+
 	}
 
 	public function getLightLevel() : int{
@@ -58,21 +58,6 @@ class EndPortal extends Solid{
 		return false;
 	}
 
-	public function hasEntityCollision() : bool{
-		return true;
-	}
-
-	public function canPassThrough() : bool{
-		return true;
-	}
-
-	public function onEntityCollide(Entity $entity) : void{
-		$server = Server::getInstance();
-		if($server->allowEnd){
-			$entity->teleport(self::getTeleportLevel($entity, $server)->getSafeSpawn($entity));
-		}
-	}
-
 	public function onBreak(Item $item, Player $player = null) : bool{
 		$result = parent::onBreak($item, $player);
 
@@ -83,9 +68,5 @@ class EndPortal extends Solid{
 		}
 
 		return $result;
-	}
-
-	private static function getTeleportLevel(Entity $entity, Server $server) : ?Level{
-		return $entity->getLevel()->getDimension() !== Level::DIMENSION_END ? $server->getEndLevel() : $server->getDefaultLevel();
 	}
 }

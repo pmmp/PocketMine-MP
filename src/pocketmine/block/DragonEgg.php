@@ -35,8 +35,8 @@ class DragonEgg extends Fallable{
 
 	protected $id = self::DRAGON_EGG;
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	public function __construct(){
+
 	}
 
 	public function getName() : string{
@@ -60,28 +60,24 @@ class DragonEgg extends Fallable{
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		$attempts = 0;
 		$level = $player->getLevel();
-		while(true){
-			$x = $this->getX() + rand(-15, 15);
-			$y = $this->getY() + rand(-7, 7);
-			$z = $this->getZ() + rand(-15, 15);
-			if($y < Level::Y_MAX && $level->getBlockIdAt($x, $y, $z) == 0){
-				$oldPos = $this->asVector3();
-				$level->setBlock($this, BlockFactory::get(Block::AIR), true, true);
-				$pos = new Position($x, $y, $z, $level);
-				$level->setBlock($pos, $this, true, true);
-				$sub = $pos->subtract($oldPos);
-				$distance = $oldPos->distance($pos);
-				for($c = 0; $c <= $distance; $c++){
-					$progress = $c / $distance;
-					$this->getLevel()->broadcastLevelEvent(new Vector3($oldPos->x + $sub->x * $progress, 1.62 + $oldPos->y + $sub->y * $progress, $oldPos->z + $sub->z * $progress), LevelEventPacket::EVENT_PARTICLE_PORTAL);
+		for($i = 0; $i < 1000; $i++){
+			$x = $this->x + mt_rand(-15, 15);
+			$y = $this->y + mt_rand(-7, 7);
+			$z = $this->z + mt_rand(-15, 15);
+			if($level->getBlockIdAt($x, $y, $z) === Block::AIR and $y < Level::Y_MAX){
+				$source = $this->asVector3();
+				$target = new Vector3($x, $y, $z);
+
+				$level->setBlock($source, BlockFactory::get(Block::AIR));
+				$level->setBlock($target, BlockFactory::get(Block::DRAGON_EGG));
+
+				$dir = $target->subtract($source)->normalize();
+				$max = min(128, $source->distance($target));
+				for($j = 0; $j <= $max; $j++){
+					$this->getLevel()->broadcastLevelEvent($source->add($dir->multiply($j)->add(0, 1.5, 0)), LevelEventPacket::EVENT_PARTICLE_PORTAL);
 				}
 				break;
-			}
-
-			if(++$attempts > 15){
-				return false;
 			}
 		}
 

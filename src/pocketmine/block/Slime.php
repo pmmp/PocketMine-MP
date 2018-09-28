@@ -24,26 +24,29 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
+use pocketmine\entity\Entity;
 
-class MonsterEggBlock extends Solid{
-	protected $id = self::MONSTER_EGG;
+class Slime extends Solid{
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
+	protected $id = self::SLIME_BLOCK;
+
+	public function __construct(){
+
 	}
 
-	public function getName() : string{
-		return "Monster Egg Block";
+	public function hasEntityCollision() : bool{
+		return true;
 	}
 
 	public function getHardness() : float{
-		return 0.75;
+		return 0;
 	}
 
-	public function getDropsForCompatibleTool(Item $item): array{
-		return [];
+	public function getName() : string{
+		return "Slime Block";
 	}
 
-	// TODO : Spawn silverfish
+	public function onEntityCollideUpon(Entity $entity) : void{
+		$entity->resetFallDistance();
+	}
 }

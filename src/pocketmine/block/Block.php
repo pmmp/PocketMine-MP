@@ -674,7 +674,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @param float $fallDistance
+	 * @param Entity $entity
+	 * @param float  $fallDistance
 	 */
 	public function onEntityFallenUpon(Entity $entity, float $fallDistance) : void{
 

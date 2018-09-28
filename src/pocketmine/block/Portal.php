@@ -24,18 +24,25 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
+use pocketmine\Player;
 
-class InvisibleBedrock extends Transparent{
+class Portal extends Flowable{
 
-	protected $id = self::INVISIBLE_BEDROCK;
+	use PillarRotationTrait;
+
+	protected $id = self::PORTAL;
+
+	protected $axis = Facing::AXIS_X;
 
 	public function __construct(){
 
 	}
 
 	public function getName() : string{
-		return "Invisible Bedrock";
+		return "Nether Portal";
 	}
 
 	public function getHardness() : float{
@@ -43,10 +50,26 @@ class InvisibleBedrock extends Transparent{
 	}
 
 	public function getBlastResistance() : float{
-		return 18000000;
+		return 0;
+	}
+
+	public function getLightLevel() : int{
+		return 11;
 	}
 
 	public function isBreakable(Item $item) : bool{
 		return false;
+	}
+
+	public function onBreak(Item $item, Player $player = null) : bool{
+		$result = parent::onBreak($item, $player);
+
+		foreach($this->getAllSides() as $side){
+			if($side instanceof Portal){
+				$side->onBreak($item, $player);
+			}
+		}
+
+		return $result;
 	}
 }
