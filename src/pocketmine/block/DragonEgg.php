@@ -65,7 +65,7 @@ class DragonEgg extends Fallable{
 			$x = $this->x + mt_rand(-15, 15);
 			$y = $this->y + mt_rand(-7, 7);
 			$z = $this->z + mt_rand(-15, 15);
-			if($level->getBlockIdAt($x, $y, $z) === Block::AIR and $y < Level::Y_MAX){
+			if($level->getBlockIdAt($x, $y, $z) === Block::AIR and $y < Level::Y_MAX and $y > 0){
 				$source = $this->asVector3();
 				$target = new Vector3($x, $y, $z);
 

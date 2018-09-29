@@ -24,21 +24,32 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\item\Item;
-use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Portal extends Flowable{
 
-	use PillarRotationTrait;
+	// TODO: Nether teleport
+
+	protected $axis = Facing::AXIS_X;
 
 	protected $id = self::PORTAL;
 
 	public function __construct(){
 
+	}
+
+	public function writeStateToMeta() : int{
+		return $this->axis === Facing::AXIS_X ? 1 : ($this->axis === Facing::AXIS_Z ? 2 : 0);
+	}
+
+	public function readStateFromMeta(int $meta) : void{
+		$this->axis = ($meta & 3) === 2 ? Facing::AXIS_Z : Facing::AXIS_X;
+	}
+
+	public function getStateBitmask() : int{
+		return 2;
 	}
 
 	public function getName() : string{
@@ -59,13 +70,6 @@ class Portal extends Flowable{
 
 	public function isBreakable(Item $item) : bool{
 		return false;
-	}
-
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($player !== null){
-			$this->axis = (Bearing::fromAngle($player->getYaw()) % 2 === 0) ? Facing::AXIS_X : Facing::AXIS_Z;
-		}
-		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onBreak(Item $item, Player $player = null) : bool{

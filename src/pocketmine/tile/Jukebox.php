@@ -119,7 +119,7 @@ class Jukebox extends Spawnable{
 	public function onUpdate() : bool{
 		if($this->hasRecordItem()){
 			if($this->server->getTick() % 30 === 0){
-				$this->level->addParticle(new GenericParticle($this->add(0.5,1.5,0.5), Particle::TYPE_NOTE)); // TODO: Note Particle color
+				$this->level->addParticle(new GenericParticle($this->add(0.5,1.5,0.5), Particle::TYPE_NOTE, mt_rand(0, 24)));
 			}
 			return true;
 		}

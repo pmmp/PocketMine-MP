@@ -25,8 +25,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\NoteBlock as TileNoteBlock;
+use pocketmine\tile\Tile;
 
 class Noteblock extends Solid{
 
@@ -44,6 +46,14 @@ class Noteblock extends Solid{
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_AXE;
+	}
+
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+			Tile::createTile("NoteBlock", $this->level, TileNoteBlock::createNBT($this));
+			return true;
+		}
+		return false;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

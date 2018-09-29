@@ -163,7 +163,7 @@ class NoteBlock extends Spawnable{
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->getByte(self::TAG_NOTE, $this->note, true);
+		$nbt->setByte(self::TAG_NOTE, $this->note, true);
 		$nbt->setByte(self::TAG_POWERED, intval($this->powered));
 	}
 
