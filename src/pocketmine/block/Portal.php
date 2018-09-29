@@ -26,7 +26,9 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\item\Item;
+use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Portal extends Flowable{
@@ -59,6 +61,13 @@ class Portal extends Flowable{
 
 	public function isBreakable(Item $item) : bool{
 		return false;
+	}
+
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		if($player !== null){
+			$this->axis = (Bearing::fromAngle($player->getYaw()) % 2 === 0) ? Facing::AXIS_X : Facing::AXIS_Z;
+		}
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onBreak(Item $item, Player $player = null) : bool{
