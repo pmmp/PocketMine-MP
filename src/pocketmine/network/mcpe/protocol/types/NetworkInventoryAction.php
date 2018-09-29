@@ -126,7 +126,7 @@ class NetworkInventoryAction{
 						$packet->isCraftingPart = true;
 						break;
 					case self::SOURCE_TYPE_ANVIL_RESULT:
-						$packet->isAnvilPart = true;
+						//$packet->isAnvilPart = true;
 						break;
 				}
 				break;
@@ -239,12 +239,18 @@ class NetworkInventoryAction{
 						}
 					case self::SOURCE_TYPE_ANVIL_INPUT:
 						if($window instanceof AnvilInventory){
+							if(!$window->isOutputEmpty()){
+								return null;
+							}
 							return new SlotChangeAction($window, 0, $this->oldItem, $this->newItem);
 						}else{
 							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
 						}
 					case self::SOURCE_TYPE_ANVIL_MATERIAL:
 						if($window instanceof AnvilInventory){
+							if(!$window->isOutputEmpty()){
+								return null;
+							}
 							return new SlotChangeAction($window, 1, $this->oldItem, $this->newItem);
 						}else{
 							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
@@ -252,6 +258,14 @@ class NetworkInventoryAction{
 					case self::SOURCE_TYPE_ANVIL_RESULT:
 						if($window instanceof AnvilInventory){
 							$window->setItem(2, $this->oldItem, false); // HACK!
+							$window->clear(0, true);
+
+							if(!$window->getMaterial()->isNull()){
+								$material = $window->getMaterial();
+								$material->pop();
+
+								$window->setItem(1, $material);
+							}
 
 							return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
 						}else{

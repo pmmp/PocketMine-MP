@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
@@ -47,6 +48,22 @@ class AnvilInventory extends ContainerInventory{
 
 	public function getDefaultSize() : int{
 		return 3; //1 input, 1 material, 1 result
+	}
+
+	public function isOutputEmpty() : bool{
+		return $this->getOutput()->isNull();
+	}
+
+	public function getMaterial() : Item{
+		return $this->getItem(1);
+	}
+
+	public function getInput() : Item{
+		return $this->getItem(0);
+	}
+
+	public function getOutput() : Item{
+		return $this->getItem(2);
 	}
 
 	/**
