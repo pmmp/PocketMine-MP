@@ -37,8 +37,6 @@ class Portal extends Flowable{
 
 	protected $id = self::PORTAL;
 
-	protected $axis = Facing::AXIS_X;
-
 	public function __construct(){
 
 	}
