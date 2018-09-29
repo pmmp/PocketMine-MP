@@ -421,8 +421,7 @@ class BlockFactory{
 		//TODO: CHORUS_FLOWER
 
 		self::registerBlock(new PurpurStairs());
-
-		self::registerBlock(new UndyedShulkerBox());
+		
 		self::registerBlock(new EndStoneBricks());
 		//TODO: FROSTED_ICE
 		self::registerBlock(new EndRod());
