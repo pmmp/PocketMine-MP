@@ -72,8 +72,6 @@ class Potion extends Item implements Consumable{
 	 *
 	 * @param int $id
 	 * @return EffectInstance[]
-	 *
-	 * @throws \InvalidArgumentException if the potion type is unknown
 	 */
 	public static function getPotionEffectsById(int $id) : array{
 		switch($id){
@@ -213,7 +211,7 @@ class Potion extends Item implements Consumable{
 				];
 		}
 
-		throw new \InvalidArgumentException("Unknown potion type $id");
+		return [];
 	}
 
 	public function __construct(int $meta = 0){
