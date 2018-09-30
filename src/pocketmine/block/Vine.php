@@ -31,10 +31,10 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Vine extends Flowable{
-	public const FLAG_SOUTH = 0x01;
-	public const FLAG_WEST = 0x02;
-	public const FLAG_NORTH = 0x04;
-	public const FLAG_EAST = 0x08;
+	private const FLAG_SOUTH = 0x01;
+	private const FLAG_WEST = 0x02;
+	private const FLAG_NORTH = 0x04;
+	private const FLAG_EAST = 0x08;
 
 	protected $id = self::VINE;
 
