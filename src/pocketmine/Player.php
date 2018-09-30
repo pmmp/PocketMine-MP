@@ -3148,7 +3148,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new ServerSettingsResponsePacket();
 		$pk->formId = $id;
 		$pk->formData = json_encode($form);
-		$this->sendDataPacket($pk);
+		if($this->sendDataPacket($pk)){
+			$this->forms[$id] = $form;
+		}
 	}
 
 	public function getServerSettingsForm() : ?ServerSettingsForm{
