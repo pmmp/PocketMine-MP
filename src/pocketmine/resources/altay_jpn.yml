@@ -31,14 +31,6 @@ developer:
   # 有効にすると互換性のないAPIのプラグインを読み込みます
   load-incompatible-api: true
 
-terminal:
-  # コンソールに色文字を使用します。無効にする場合は"false"に設定してください。
-  read-line: true
-
-server:
-  # 有効にするとサーバーの情報を設定画面に表示します
-  allow-server-settings-form: true
-
 level:
   # 有効にすると、mobsは動き回ることができます
   # 注：この機能は、多数のmobが生成されたときにサーバーの遅延を引き起こす可能性があります

@@ -30,13 +30,6 @@ developer:
   # This setting allows the server to load plugins with Incompatible API
   load-incompatible-api: true
 
-terminal:
-  # If console colors are disabled, set it to "false".
-  read-line: true
-
-server:
-  allow-server-settings-form: true
-
 level:
   # If enabled, mobs can move around
   # Note: this feature can be cause lag in your server when lots of mob are spawned

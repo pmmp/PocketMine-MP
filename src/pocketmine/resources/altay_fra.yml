@@ -30,13 +30,6 @@ developer:
   # Ce paramètre permet le chargement de plugin possédant une api inférieure.
   load-incompatible-api: true
 
-terminal:
-  # Si les couleurs dans la console sont désactivé régler ce paramètre en false
-  read-line: true
-
-server:
-  allow-server-settings-form: true
-
 level:
   #Si activé, les foules peuvent se déplacer
   # Note: cette fonctionnalité peut causer des retards dans votre serveur quand beaucoup de mob sont engendrés

@@ -344,13 +344,9 @@ class Server{
 	private $endLevel = null;
 
 	/** ALTAY CONFIG */
-
-	/** @var bool */
-	public static $readLine = false;
+	
 	/** @var bool */
 	public $loadIncompatibleApi = true;
-	/** @var bool */
-	public $allowServerSettingsForm = true;
 	/** @var bool */
 	public $keepInventory = false;
 	/** @var bool */
@@ -365,9 +361,7 @@ class Server{
 	public $mobAiEnabled = true;
 
 	public function loadAltayConfig(){
-		self::$readLine = $this->getAltayProperty("terminal.read-line", true);
 		$this->loadIncompatibleApi = $this->getAltayProperty("developer.load-incompatible-api", true);
-		$this->allowServerSettingsForm = $this->getAltayProperty("server.allow-server-settings-form", true);
 		$this->keepInventory = $this->getAltayProperty("player.keep-inventory", false);
 		$this->keepExperience = $this->getAltayProperty("player.keep-experience", false);
 		$this->allowNether = $this->getAltayProperty("dimensions.nether.active", true);
