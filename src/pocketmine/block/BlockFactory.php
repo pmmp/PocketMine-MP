@@ -146,16 +146,16 @@ class BlockFactory{
 		//TODO: PISTON
 		//TODO: PISTONARMCOLLISION
 
-		foreach(Color::ALL as $color){
-			self::registerBlock(new Wool(Block::WOOL, $color, Color::NAMES[$color] . " Wool"));
-			self::registerBlock(new HardenedClay(Block::STAINED_CLAY, $color, Color::NAMES[$color] . " Stained Clay"));
-			self::registerBlock(new Glass(Block::STAINED_GLASS, $color, Color::NAMES[$color] . " Stained Glass"));
-			self::registerBlock(new GlassPane(Block::STAINED_GLASS_PANE, $color, Color::NAMES[$color] . " Stained Glass Pane"));
-			self::registerBlock(new Carpet(Block::CARPET, $color, Color::NAMES[$color] . " Carpet"));
-			self::registerBlock(new Concrete(Block::CONCRETE, $color, Color::NAMES[$color] . " Concrete"));
-			self::registerBlock(new ConcretePowder(Block::CONCRETE_POWDER, $color, Color::NAMES[$color] . " Concrete Powder"));
-			self::registerBlock(new ShulkerBox(Block::SHULKER_BOX, $color, Color::NAMES[$color] . " Shulker Box"));
-		}
+        foreach(Color::ALL as $color){
+            self::registerBlock(new Wool(Block::WOOL, $color, Color::NAMES[$color]." Wool"));
+            self::registerBlock(new HardenedClay(Block::STAINED_CLAY, $color, Color::NAMES[$color]." Stained Clay"));
+            self::registerBlock(new Glass(Block::STAINED_GLASS, $color, Color::NAMES[$color]." Stained Glass"));
+            self::registerBlock(new GlassPane(Block::STAINED_GLASS_PANE, $color, Color::NAMES[$color]." Stained Glass Pane"));
+            self::registerBlock(new Carpet(Block::CARPET, $color, Color::NAMES[$color]." Carpet"));
+            self::registerBlock(new Concrete(Block::CONCRETE, $color, Color::NAMES[$color]." Concrete"));
+            self::registerBlock(new ConcretePowder(Block::CONCRETE_POWDER, $color, Color::NAMES[$color]." Concrete Powder"));
+            self::registerBlock(new ShulkerBox(Block::SHULKER_BOX, $color, Color::NAMES[$color]." Shulker Box"));
+        }
 
 		self::registerBlock(new ShulkerBox(Block::UNDYED_SHULKER_BOX, 0, "Shulker Box"));
 
@@ -421,7 +421,7 @@ class BlockFactory{
 		//TODO: CHORUS_FLOWER
 
 		self::registerBlock(new PurpurStairs());
-		
+
 		self::registerBlock(new EndStoneBricks());
 		//TODO: FROSTED_ICE
 		self::registerBlock(new EndRod());
