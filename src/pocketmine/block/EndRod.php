@@ -96,21 +96,22 @@ class EndRod extends Flowable{
 				);
 			case Facing::AXIS_Z:
 				return new AxisAlignedBB(
-					0,
-					$width,
-					$width,
-					1,
-					1 - $width,
-					1 - $width
-				);
-			case Facing::AXIS_X:
-				return new AxisAlignedBB(
 					$width,
 					$width,
 					0,
 					1 - $width,
 					1 - $width,
 					1
+				);
+
+			case Facing::AXIS_X:
+				return new AxisAlignedBB(
+					0,
+					$width,
+					$width,
+					1,
+					1 - $width,
+					1 - $width
 				);
 		}
 

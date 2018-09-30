@@ -66,7 +66,7 @@ class RedstoneOre extends Solid{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		return $this->getLevel()->setBlock($this, $this, true, false);
+		return $this->getLevel()->setBlock($this, $this, false);
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

@@ -84,7 +84,7 @@ class SnowLayer extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Facing::DOWN)->isSolid()){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
+			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false);
 		}
 	}
 
@@ -94,7 +94,7 @@ class SnowLayer extends Flowable{
 
 	public function onRandomTick() : void{
 		if($this->level->getBlockLightAt($this->x, $this->y, $this->z) >= 12){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
+			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false);
 		}
 	}
 

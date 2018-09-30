@@ -827,7 +827,7 @@ class Level implements ChunkManager, Metadatable{
 							$p->onChunkChanged($chunk);
 						}
 					}else{
-						$this->sendBlocks($this->getChunkPlayers($chunkX, $chunkZ), $blocks, UpdateBlockPacket::FLAG_ALL);
+						$this->sendBlocks($this->getChunkPlayers($chunkX, $chunkZ), $blocks);
 					}
 				}
 			}else{
@@ -898,62 +898,28 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param Player[]  $target
 	 * @param Vector3[] $blocks
-	 * @param int       $flags
-	 * @param bool      $optimizeRebuilds
 	 */
-	public function sendBlocks(array $target, array $blocks, int $flags = UpdateBlockPacket::FLAG_NONE, bool $optimizeRebuilds = false){
+	public function sendBlocks(array $target, array $blocks){
 		$packets = [];
-		if($optimizeRebuilds){
-			$chunks = [];
-			foreach($blocks as $b){
-				if(!($b instanceof Vector3)){
-					throw new \TypeError("Expected Vector3 in blocks array, got " . (is_object($b) ? get_class($b) : gettype($b)));
-				}
-				$pk = new UpdateBlockPacket();
 
-				$first = false;
-				if(!isset($chunks[$index = Level::chunkHash($b->x >> 4, $b->z >> 4)])){
-					$chunks[$index] = true;
-					$first = true;
-				}
-
-				$pk->x = $b->x;
-				$pk->y = $b->y;
-				$pk->z = $b->z;
-
-				if($b instanceof Block){
-					$pk->blockRuntimeId = $b->getRuntimeId();
-				}else{
-					$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-					$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4,  $fullBlock & 0xf);
-				}
-
-				$pk->flags = $first ? $flags : UpdateBlockPacket::FLAG_NONE;
-
-				$packets[] = $pk;
+		foreach($blocks as $b){
+			if(!($b instanceof Vector3)){
+				throw new \TypeError("Expected Vector3 in blocks array, got " . (is_object($b) ? get_class($b) : gettype($b)));
 			}
-		}else{
-			foreach($blocks as $b){
-				if(!($b instanceof Vector3)){
-					throw new \TypeError("Expected Vector3 in blocks array, got " . (is_object($b) ? get_class($b) : gettype($b)));
-				}
-				$pk = new UpdateBlockPacket();
+			$pk = new UpdateBlockPacket();
 
-				$pk->x = $b->x;
-				$pk->y = $b->y;
-				$pk->z = $b->z;
+			$pk->x = $b->x;
+			$pk->y = $b->y;
+			$pk->z = $b->z;
 
-				if($b instanceof Block){
-					$pk->blockRuntimeId = $b->getRuntimeId();
-				}else{
-					$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-					$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4,  $fullBlock & 0xf);
-				}
-
-				$pk->flags = $flags;
-
-				$packets[] = $pk;
+			if($b instanceof Block){
+				$pk->blockRuntimeId = $b->getRuntimeId();
+			}else{
+				$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
+				$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4,  $fullBlock & 0xf);
 			}
+
+			$packets[] = $pk;
 		}
 
 		$this->server->broadcastPackets($target, $packets);
@@ -1047,7 +1013,7 @@ class Level implements ChunkManager, Metadatable{
 						$blockId = $subChunk->getBlockId($x, $y, $z);
 						$meta = $subChunk->getBlockData($x, $y, $z);
 
-						if($this->randomTickBlocks[($blockId << 4) | ($meta & ~BlockFactory::$stateMasks[$blockId])]){
+						if($this->randomTickBlocks[($blockId << 4) | ($meta & ~BlockFactory::getStateMask($blockId))]){
 							/** @var Block $block */
 							$block = BlockFactory::get($blockId, $meta);
 
@@ -1529,21 +1495,16 @@ class Level implements ChunkManager, Metadatable{
 	 * Sets on Vector3 the data from a Block object,
 	 * does block updates and puts the changes to the send queue.
 	 *
-	 * If $direct is true, it'll send changes directly to players. if false, it'll be queued
-	 * and the best way to send queued changes will be done in the next tick.
-	 * This way big changes can be sent on a single chunk update packet instead of thousands of packets.
-	 *
 	 * If $update is true, it'll get the neighbour blocks (6 sides) and update them.
 	 * If you are doing big changes, you might want to set this to false, then update manually.
 	 *
 	 * @param Vector3 $pos
 	 * @param Block   $block
-	 * @param bool    $direct @deprecated
 	 * @param bool    $update
 	 *
 	 * @return bool Whether the block has been updated or not
 	 */
-	public function setBlock(Vector3 $pos, Block $block, bool $direct = false, bool $update = true) : bool{
+	public function setBlock(Vector3 $pos, Block $block, bool $update = true) : bool{
 		$pos = $pos->floor();
 		if(!$this->isInWorld($pos->x, $pos->y, $pos->z)){
 			return false;
@@ -1566,16 +1527,10 @@ class Level implements ChunkManager, Metadatable{
 
 			unset($this->blockCache[$chunkHash][$blockHash]);
 
-			if($direct){
-				$this->sendBlocks($this->getChunkPlayers($pos->x >> 4, $pos->z >> 4), [$block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
-				unset($this->chunkCache[$chunkHash], $this->changedBlocks[$chunkHash][$blockHash]);
-			}else{
-				if(!isset($this->changedBlocks[$chunkHash])){
-					$this->changedBlocks[$chunkHash] = [];
-				}
-
-				$this->changedBlocks[$chunkHash][$blockHash] = $block;
+			if(!isset($this->changedBlocks[$chunkHash])){
+				$this->changedBlocks[$chunkHash] = [];
 			}
+			$this->changedBlocks[$chunkHash][$blockHash] = $block;
 
 			foreach($this->getChunkLoaders($pos->x >> 4, $pos->z >> 4) as $loader){
 				$loader->onBlockChanged($block);
@@ -1735,7 +1690,7 @@ class Level implements ChunkManager, Metadatable{
 					foreach($tag as $v){
 						if($v instanceof StringTag){
 							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getId() > 0 and $entry->getBlock()->getId() === $target->getId()){
+							if($entry->getId() > 0 and $entry->getBlock()->isSameType($target)){
 								$canBreak = true;
 								break;
 							}
@@ -1897,7 +1852,7 @@ class Level implements ChunkManager, Metadatable{
 					foreach($tag as $v){
 						if($v instanceof StringTag){
 							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getId() > 0 and $entry->getBlock()->getId() === $blockClicked->getId()){
+							if($entry->getId() > 0 and $entry->getBlock()->isSameType($blockClicked)){
 								$canPlace = true;
 								break;
 							}

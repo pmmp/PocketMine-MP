@@ -104,15 +104,9 @@ class Furnace extends Solid{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			$furnace = $this->getLevel()->getTile($this);
-			if(!($furnace instanceof TileFurnace)){
-				$furnace = Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this));
+			if($furnace instanceof TileFurnace and $furnace->canOpenWith($item->getCustomName())){
+				$player->addWindow($furnace->getInventory());
 			}
-
-			if(!$furnace->canOpenWith($item->getCustomName())){
-				return true;
-			}
-
-			$player->addWindow($furnace->getInventory());
 		}
 
 		return true;

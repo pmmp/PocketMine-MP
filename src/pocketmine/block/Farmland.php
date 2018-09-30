@@ -74,7 +74,7 @@ class Farmland extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::UP)->isSolid()){
-			$this->level->setBlock($this, BlockFactory::get(Block::DIRT), true);
+			$this->level->setBlock($this, BlockFactory::get(Block::DIRT));
 		}
 	}
 
@@ -86,13 +86,13 @@ class Farmland extends Transparent{
 		if(!$this->canHydrate()){
 			if($this->wetness > 0){
 				$this->wetness--;
-				$this->level->setBlock($this, $this, false, false);
+				$this->level->setBlock($this, $this, false);
 			}else{
-				$this->level->setBlock($this, BlockFactory::get(Block::DIRT), false, true);
+				$this->level->setBlock($this, BlockFactory::get(Block::DIRT));
 			}
 		}elseif($this->wetness < 7){
 			$this->wetness = 7;
-			$this->level->setBlock($this, $this, false, false);
+			$this->level->setBlock($this, $this, false);
 		}
 	}
 

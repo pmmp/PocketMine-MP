@@ -818,6 +818,17 @@ class Server{
 	}
 
 	/**
+	 * Returns whether the server has stored any saved data for this player.
+	 *
+	 * @param string $name
+	 *
+	 * @return bool
+	 */
+	public function hasOfflinePlayerData(string $name) : bool{
+		return file_exists($this->getDataPath() . "players/$name.dat");
+	}
+
+	/**
 	 * @param string $name
 	 *
 	 * @return CompoundTag

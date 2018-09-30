@@ -97,11 +97,11 @@ class Bed extends Transparent{
 
 	public function setOccupied(bool $occupied = true){
 		$this->occupied = $occupied;
-		$this->level->setBlock($this, $this, false, false);
+		$this->level->setBlock($this, $this, false);
 
 		if(($other = $this->getOtherHalf()) !== null){
 			$other->occupied = $occupied;
-			$this->level->setBlock($other, $other, false, false);
+			$this->level->setBlock($other, $other, false);
 		}
 	}
 
@@ -177,7 +177,7 @@ class Bed extends Transparent{
 				parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				$nextState = clone $this;
 				$nextState->head = true;
-				$this->getLevel()->setBlock($next, $nextState, true, true);
+				$this->getLevel()->setBlock($next, $nextState);
 
 				Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($this, $face, $item, $player));
 				Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($next, $face, $item, $player));

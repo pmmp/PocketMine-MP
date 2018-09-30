@@ -132,6 +132,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function getRuntimeId() : int{
 		return BlockFactory::toStaticRuntimeId($this->getId(), $this->getDamage());
 	}
+
 	/**
 	 * @return int
 	 */
@@ -167,6 +168,17 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns whether the given block has an equivalent type to this one.
+	 *
+	 * @param Block $other
+	 *
+	 * @return bool
+	 */
+	public function isSameType(Block $other) : bool{
+		return $this->getId() === $other->getId() and $this->getVariant() === $other->getVariant();
+	}
+
+	/**
 	 * AKA: Block->isPlaceable
 	 * @return bool
 	 */
@@ -198,7 +210,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
+		return $this->getLevel()->setBlock($blockReplace, $this);
 	}
 
 	/**
@@ -266,7 +278,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function onBreak(Item $item, Player $player = null) : bool{
-		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
+		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR));
 	}
 
 

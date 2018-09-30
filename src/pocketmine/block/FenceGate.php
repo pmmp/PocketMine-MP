@@ -102,7 +102,7 @@ class FenceGate extends Transparent{
 			}
 		}
 
-		$this->getLevel()->setBlock($this, $this, true);
+		$this->getLevel()->setBlock($this, $this);
 		$this->level->addSound(new DoorSound($this));
 		return true;
 	}

@@ -68,13 +68,13 @@ class Sugarcane extends Flowable{
 					if($b->getId() === self::AIR){
 						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, BlockFactory::get(Block::SUGARCANE_BLOCK)));
 						if(!$ev->isCancelled()){
-							$this->getLevel()->setBlock($b, $ev->getNewState(), true);
+							$this->getLevel()->setBlock($b, $ev->getNewState());
 						}
 						break;
 					}
 				}
 				$this->age = 0;
-				$this->getLevel()->setBlock($this, $this, true);
+				$this->getLevel()->setBlock($this, $this);
 			}
 
 			$item->count--;
@@ -102,15 +102,15 @@ class Sugarcane extends Flowable{
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
 					if($b->getId() === self::AIR){
-						$this->getLevel()->setBlock($b, BlockFactory::get(Block::SUGARCANE_BLOCK), true);
+						$this->getLevel()->setBlock($b, BlockFactory::get(Block::SUGARCANE_BLOCK));
 						break;
 					}
 				}
 				$this->age = 0;
-				$this->getLevel()->setBlock($this, $this, true);
+				$this->getLevel()->setBlock($this, $this);
 			}else{
 				++$this->age;
-				$this->getLevel()->setBlock($this, $this, true);
+				$this->getLevel()->setBlock($this, $this);
 			}
 		}
 	}

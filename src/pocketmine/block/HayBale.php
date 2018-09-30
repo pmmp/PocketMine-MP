@@ -24,10 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\PillarRotationTrait;
-use pocketmine\item\Item;
-use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
 
 class HayBale extends Solid{
 	use PillarRotationTrait;
@@ -44,11 +40,6 @@ class HayBale extends Solid{
 
 	public function getHardness() : float{
 		return 0.5;
-	}
-
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$this->axis = Facing::axis($face);
-		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getFlameEncouragement() : int{

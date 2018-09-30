@@ -23,33 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationTrait;
+use pocketmine\item\Hoe;
+use pocketmine\item\Item;
+use pocketmine\Player;
 
-class Wood extends Solid{
-	use PillarRotationTrait;
+class CoarseDirt extends Dirt{
 
-	public const OAK = 0;
-	public const SPRUCE = 1;
-	public const BIRCH = 2;
-	public const JUNGLE = 3;
+	public function onActivate(Item $item, Player $player = null) : bool{
+		if($item instanceof Hoe){
+			$item->applyDamage(1);
+			$this->getLevel()->setBlock($this, BlockFactory::get(Block::DIRT));
+			return true;
+		}
 
-	public function getHardness() : float{
-		return 2;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
-	}
-
-	public function getFuelTime() : int{
-		return 300;
-	}
-
-	public function getFlameEncouragement() : int{
-		return 5;
-	}
-
-	public function getFlammability() : int{
-		return 5;
+		return false;
 	}
 }

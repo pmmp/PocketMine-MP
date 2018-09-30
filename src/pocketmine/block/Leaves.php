@@ -99,7 +99,7 @@ class Leaves extends Transparent{
 	public function onNearbyBlockChange() : void{
 		if(!$this->noDecay and !$this->checkDecay){
 			$this->checkDecay = true;
-			$this->getLevel()->setBlock($this, $this, true, false);
+			$this->getLevel()->setBlock($this, $this, false);
 		}
 	}
 
@@ -112,7 +112,7 @@ class Leaves extends Transparent{
 			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
 
 			if($ev->isCancelled() or $this->findLog($this)){
-				$this->getLevel()->setBlock($this, $this, false, false);
+				$this->getLevel()->setBlock($this, $this, false);
 			}else{
 				$this->getLevel()->useBreakOn($this);
 			}

@@ -94,7 +94,7 @@ class FlowerPot extends Flowable{
 		}
 
 		$this->occupied = true;
-		$this->getLevel()->setBlock($this, $this, true, false);
+		$this->getLevel()->setBlock($this, $this, false);
 		$pot->setItem($item->pop());
 
 		return true;

@@ -71,7 +71,7 @@ abstract class Crops extends Flowable{
 			Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 
 			if(!$ev->isCancelled()){
-				$this->getLevel()->setBlock($this, $ev->getNewState(), true, true);
+				$this->getLevel()->setBlock($this, $ev->getNewState());
 			}
 
 			$item->count--;
@@ -93,15 +93,13 @@ abstract class Crops extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if(mt_rand(0, 2) === 1){
-			if($this->age < 7){
-				$block = clone $this;
-				++$block->age;
-				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
+		if($this->age < 7 and mt_rand(0, 2) === 1){
+			$block = clone $this;
+			++$block->age;
+			Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 
-				if(!$ev->isCancelled()){
-					$this->getLevel()->setBlock($this, $ev->getNewState(), true, true);
-				}
+			if(!$ev->isCancelled()){
+				$this->getLevel()->setBlock($this, $ev->getNewState());
 			}
 		}
 	}

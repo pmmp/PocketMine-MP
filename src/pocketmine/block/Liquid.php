@@ -112,7 +112,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function getEffectiveFlowDecay(Block $block) : int{
-		if(!($block instanceof Liquid) or $block->getId() !== $this->getId()){
+		if(!($block instanceof Liquid) or !$block->isSameType($this)){
 			return -1;
 		}
 
@@ -249,13 +249,13 @@ abstract class Liquid extends Transparent{
 
 			if($newDecay !== $this->decay or $falling !== $this->falling){
 				if(!$falling and $newDecay < 0){
-					$this->level->setBlock($this, BlockFactory::get(Block::AIR), true, true);
+					$this->level->setBlock($this, BlockFactory::get(Block::AIR));
 					return;
 				}
 
 				$this->falling = $falling;
 				$this->decay = $falling ? 0 : $newDecay;
-				$this->level->setBlock($this, $this, true, true); //local block update will cause an update to be scheduled
+				$this->level->setBlock($this, $this); //local block update will cause an update to be scheduled
 			}
 		}
 
@@ -303,7 +303,7 @@ abstract class Liquid extends Transparent{
 			$new = clone $this;
 			$new->falling = $falling;
 			$new->decay = $falling ? 0 : $newFlowDecay;
-			$this->level->setBlock($block, $new, true, true);
+			$this->level->setBlock($block, $new);
 		}
 	}
 
@@ -411,7 +411,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	private function getSmallestFlowDecay(Block $block, int $decay) : int{
-		if(!($block instanceof Liquid) or $block->getId() !== $this->getId()){
+		if(!($block instanceof Liquid) or !$block->isSameType($this)){
 			return $decay;
 		}
 
@@ -433,7 +433,7 @@ abstract class Liquid extends Transparent{
 	protected function liquidCollide(Block $cause, Block $result) : bool{
 		//TODO: add events
 
-		$this->level->setBlock($this, $result, true, true);
+		$this->level->setBlock($this, $result);
 		$this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_FIZZ, (int) ((2.6 + (lcg_value() - lcg_value()) * 0.8) * 1000));
 		return true;
 	}

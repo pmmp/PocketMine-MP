@@ -23,29 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\item\TieredTool;
-use pocketmine\math\Facing;
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
 
 class Quartz extends Solid{
-	use PillarRotationTrait;
 
 	public const NORMAL = 0;
 	public const CHISELED = 1;
 	public const PILLAR = 2;
 
-    public function getHardness() : float{
+	public function getHardness() : float{
 		return 0.8;
-	}
-
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($this->variant !== self::NORMAL){
-			$this->axis = Facing::axis($face);
-		}
-		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getToolType() : int{
@@ -54,5 +41,9 @@ class Quartz extends Solid{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1100; //HACK: needs to be consistent for blocks with the same ID :(
 	}
 }

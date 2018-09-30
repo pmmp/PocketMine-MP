@@ -48,17 +48,13 @@ class DoublePlant extends Flowable{
 		return 0b1000;
 	}
 
-	public function canBeReplaced() : bool{
-		return $this->variant === 2 or $this->variant === 3; //grass or fern
-	}
-
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$id = $blockReplace->getSide(Facing::DOWN)->getId();
 		if(($id === Block::GRASS or $id === Block::DIRT) and $blockReplace->getSide(Facing::UP)->canBeReplaced()){
-			$this->getLevel()->setBlock($blockReplace, $this, false, false);
+			$this->getLevel()->setBlock($blockReplace, $this, false);
 			$top = clone $this;
 			$top->top = true;
-			$this->getLevel()->setBlock($blockReplace->getSide(Facing::UP), $top, false, false);
+			$this->getLevel()->setBlock($blockReplace->getSide(Facing::UP), $top, false);
 
 			return true;
 		}
@@ -75,8 +71,7 @@ class DoublePlant extends Flowable{
 
 		return (
 			$other instanceof DoublePlant and
-			$other->getId() === $this->getId() and
-			$other->getVariant() === $this->variant and
+			$other->isSameType($this) and
 			$other->top !== $this->top
 		);
 	}
@@ -87,28 +82,8 @@ class DoublePlant extends Flowable{
 		}
 	}
 
-	public function getToolType() : int{
-		return ($this->variant === 2 or $this->variant === 3) ? BlockToolType::TYPE_SHEARS : BlockToolType::TYPE_NONE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return ($this->variant === 2 or $this->variant === 3) ? 1 : 0; //only grass or fern require shears
-	}
-
 	public function getDrops(Item $item) : array{
-		if($this->top){
-			if($this->isCompatibleWithTool($item)){
-				return parent::getDrops($item);
-			}
-
-			if(mt_rand(0, 24) === 0){
-				return [
-					ItemFactory::get(Item::SEEDS)
-				];
-			}
-		}
-
-		return [];
+		return $this->top ? parent::getDrops($item) : [];
 	}
 
 	public function getAffectedBlocks() : array{

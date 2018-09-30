@@ -86,7 +86,7 @@ class NetherWartPlant extends Flowable{
 			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
 
 			if(!$ev->isCancelled()){
-				$this->getLevel()->setBlock($this, $ev->getNewState(), false, true);
+				$this->getLevel()->setBlock($this, $ev->getNewState());
 			}
 		}
 	}

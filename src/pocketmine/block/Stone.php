@@ -47,14 +47,4 @@ class Stone extends Solid{
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
 	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		if($this->variant === self::NORMAL){
-			return [
-				ItemFactory::get(Item::COBBLESTONE)
-			];
-		}
-
-		return parent::getDropsForCompatibleTool($item);
-	}
 }

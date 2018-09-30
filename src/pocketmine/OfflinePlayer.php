@@ -35,7 +35,7 @@ class OfflinePlayer implements IPlayer, Metadatable{
 	/** @var Server */
 	private $server;
 	/** @var CompoundTag|null */
-	private $namedtag;
+	private $namedtag = null;
 
 	/**
 	 * @param Server $server
@@ -44,10 +44,8 @@ class OfflinePlayer implements IPlayer, Metadatable{
 	public function __construct(Server $server, string $name){
 		$this->server = $server;
 		$this->name = $name;
-		if(file_exists($this->server->getDataPath() . "players/" . strtolower($this->name) . ".dat")){
+		if($this->server->hasOfflinePlayerData($this->name)){
 			$this->namedtag = $this->server->getOfflinePlayerData($this->name);
-		}else{
-			$this->namedtag = null;
 		}
 	}
 

@@ -28,6 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class Lever extends Flowable{
@@ -117,6 +118,16 @@ class Lever extends Flowable{
 		if(!$this->getSide($face)->isSolid()){
 			$this->level->useBreakOn($this);
 		}
+	}
+
+	public function onActivate(Item $item, Player $player = null) : bool{
+		$this->powered = !$this->powered;
+		$this->level->setBlock($this, $this);
+		$this->level->broadcastLevelSoundEvent(
+			$this->add(0.5, 0.5, 0.5),
+			$this->powered ? LevelSoundEventPacket::SOUND_POWER_ON : LevelSoundEventPacket::SOUND_POWER_OFF
+		);
+		return true;
 	}
 
 	//TODO

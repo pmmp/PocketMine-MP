@@ -38,4 +38,12 @@ class WoodenButton extends Button{
 	public function getToolType() : int{
 		return BlockToolType::TYPE_AXE;
 	}
+
+	protected function getActivationTime() : int{
+		return 30;
+	}
+
+	public function hasEntityCollision() : bool{
+		return false; //TODO: arrows activate wooden buttons
+	}
 }

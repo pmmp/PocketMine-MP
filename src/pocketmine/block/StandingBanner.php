@@ -80,7 +80,7 @@ class StandingBanner extends Transparent{
 				$this->rotation = ((int) floor((($player->yaw + 180) * 16 / 360) + 0.5)) & 0x0f;
 				$ret = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}else{
-				$ret = $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_BANNER, $face), true);
+				$ret = $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_BANNER, $face));
 			}
 
 			if($ret){

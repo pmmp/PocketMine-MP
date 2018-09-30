@@ -70,7 +70,7 @@ class Grass extends Solid{
 			//grass dies
 			$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($this, $this, BlockFactory::get(Block::DIRT)));
 			if(!$ev->isCancelled()){
-				$this->level->setBlock($this, $ev->getNewState(), false, false);
+				$this->level->setBlock($this, $ev->getNewState(), false);
 			}
 		}elseif($lightAbove >= 9){
 			//try grass spread
@@ -89,7 +89,7 @@ class Grass extends Solid{
 
 				$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($b = $this->level->getBlockAt($x, $y, $z), $this, BlockFactory::get(Block::GRASS)));
 				if(!$ev->isCancelled()){
-					$this->level->setBlock($b, $ev->getNewState(), false, false);
+					$this->level->setBlock($b, $ev->getNewState(), false);
 				}
 			}
 		}

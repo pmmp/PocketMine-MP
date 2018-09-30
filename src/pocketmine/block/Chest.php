@@ -83,7 +83,7 @@ class Chest extends Transparent{
 			Bearing::toFacing(Bearing::rotate($player->getDirection(), 1))
 		] as $side){
 			$c = $this->getSide($side);
-			if($c instanceof Chest and $c->getId() === $this->getId() and $c->facing === $this->facing){
+			if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
 				$tile = $this->getLevel()->getTile($c);
 				if($tile instanceof TileChest and !$tile->isPaired()){
 					$chest = $tile;
@@ -109,23 +109,18 @@ class Chest extends Transparent{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 
-			$t = $this->getLevel()->getTile($this);
-			$chest = null;
-			if($t instanceof TileChest){
-				$chest = $t;
-			}else{
-				$chest = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this));
-			}
+			$chest = $this->getLevel()->getTile($this);
+			if($chest instanceof TileChest){
+				if(
+					!$this->getSide(Facing::UP)->isTransparent() or
+					($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Facing::UP)->isTransparent()) or
+					!$chest->canOpenWith($item->getCustomName())
+				){
+					return true;
+				}
 
-			if(
-				!$this->getSide(Facing::UP)->isTransparent() or
-				($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Facing::UP)->isTransparent()) or
-				!$chest->canOpenWith($item->getCustomName())
-			){
-				return true;
+				$player->addWindow($chest->getInventory());
 			}
-
-			$player->addWindow($chest->getInventory());
 		}
 
 		return true;
