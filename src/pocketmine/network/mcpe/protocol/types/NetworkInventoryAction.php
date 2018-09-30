@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pocketmine\block\Anvil;
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\inventory\BeaconInventory;
+use pocketmine\inventory\ContainerInventory;
 use pocketmine\inventory\EnchantInventory;
 use pocketmine\inventory\TradeInventory;
 use pocketmine\inventory\transaction\action\AnvilAction;
@@ -199,7 +200,7 @@ class NetworkInventoryAction{
 
 				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
 			case self::SOURCE_TODO:
-				$window = $player->getFirstContainerWindow();
+				$window = $player->findWindow(ContainerInventory::class);
 
 				switch($this->windowId){
 					case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
@@ -239,7 +240,7 @@ class NetworkInventoryAction{
 						}
 					case self::SOURCE_TYPE_ANVIL_INPUT:
 						if($window instanceof AnvilInventory){
-							if(!$window->isOutputEmpty()){
+							if($window->isResultOutput()){
 								return null;
 							}
 							return new SlotChangeAction($window, 0, $this->oldItem, $this->newItem);
@@ -248,7 +249,7 @@ class NetworkInventoryAction{
 						}
 					case self::SOURCE_TYPE_ANVIL_MATERIAL:
 						if($window instanceof AnvilInventory){
-							if(!$window->isOutputEmpty()){
+							if($window->isResultOutput()){
 								return null;
 							}
 							return new SlotChangeAction($window, 1, $this->oldItem, $this->newItem);
@@ -257,17 +258,12 @@ class NetworkInventoryAction{
 						}
 					case self::SOURCE_TYPE_ANVIL_RESULT:
 						if($window instanceof AnvilInventory){
-							$window->setItem(2, $this->oldItem, false); // HACK!
-							$window->clear(0, true);
-
-							if(!$window->getMaterial()->isNull()){
-								$material = $window->getMaterial();
-								$material->pop();
-
-								$window->setItem(1, $material);
+							if($window->onResult($this->oldItem)){
+								$window->setItem(2, $this->oldItem, false);
+								return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
+							}else{
+								return null;
 							}
-
-							return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
 						}else{
 							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
 						}
@@ -279,9 +275,16 @@ class NetworkInventoryAction{
 							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
 						}
 					case self::SOURCE_TYPE_TRADING_USE_INPUTS:
+						return new SlotChangeAction($window, $window->first($this->newItem, true), $this->oldItem, $this->newItem);
 					case self::SOURCE_TYPE_TRADING_OUTPUT:
 						if($window instanceof TradeInventory){
-							return new TradeAction($this->oldItem, $this->newItem, $window, $this->windowId === self::SOURCE_TYPE_TRADING_OUTPUT);
+							if($window->onResult($this->oldItem)){
+								$window->setItem(2, $this->oldItem, true);
+
+								return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
+							}else{
+								return null;
+							}
 						}else{
 							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
 						}

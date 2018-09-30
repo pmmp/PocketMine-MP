@@ -50,20 +50,26 @@ class AnvilInventory extends ContainerInventory{
 		return 3; //1 input, 1 material, 1 result
 	}
 
-	public function isOutputEmpty() : bool{
-		return $this->getOutput()->isNull();
+	public function isResultOutput() : bool{
+		return !$this->getItem(2)->isNull();
 	}
 
-	public function getMaterial() : Item{
-		return $this->getItem(1);
-	}
+	/**
+	 * @param Item $result
+	 *
+	 * @return bool
+	 */
+	public function onResult(Item $result) : bool{
+		$this->clear(0);
 
-	public function getInput() : Item{
-		return $this->getItem(0);
-	}
+		if(!$this->getItem(1)->isNull()){
+			$material = $this->getItem(1);
+			$material->pop();
 
-	public function getOutput() : Item{
-		return $this->getItem(2);
+			$this->setItem(1, $material);
+		}
+
+		return true; // TODO: check result
 	}
 
 	/**
@@ -72,11 +78,5 @@ class AnvilInventory extends ContainerInventory{
 	 */
 	public function getHolder(){
 		return $this->holder;
-	}
-
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
-		$this->dropContents($this->holder->getLevel(), $this->holder->add(0.5, 0.5, 0.5));
 	}
 }

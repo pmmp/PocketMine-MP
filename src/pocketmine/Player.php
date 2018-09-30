@@ -2151,7 +2151,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->server->broadcastPacket($this->getViewers(), $packet);
 				break;
 			case EntityEventPacket::COMPLETE_TRADE:
-				// TODO
+				var_dump("trade");
 				break;
 			default:
 				return false;
@@ -3620,16 +3620,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * @param int $networkType
+	 * @param string $expectedClass
 	 *
-	 * @return null|ContainerInventory
+	 * @return null|Inventory
 	 */
-	public function getFirstContainerWindow(int $networkType = -1) : ?ContainerInventory{
+	public function findWindow(string $expectedClass) : ?Inventory{
 		foreach($this->windowIndex as $window){
-			if($window instanceof ContainerInventory){
-				if($networkType === -1 or $window->getNetworkType() === $networkType){
-					return $window;
-				}
+			if($window instanceof $expectedClass){
+				return $window;
 			}
 		}
 

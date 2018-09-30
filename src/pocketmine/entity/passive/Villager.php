@@ -35,7 +35,9 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
+use Symfony\Component\Process\Pipes\WindowsPipes;
 
 class Villager extends Mob implements NPC, Ageable{
 	public const NETWORK_ID = self::VILLAGER;
@@ -185,7 +187,7 @@ class Villager extends Mob implements NPC, Ageable{
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
 		if(!$this->isBaby() and $this->offers instanceof CompoundTag and $this->aiEnabled){
-			$player->addWindow($this->getInventory());
+			$player->addWindow($this->getInventory(), WindowTypes::TRADING);
 			return true;
 		}
 		return false;

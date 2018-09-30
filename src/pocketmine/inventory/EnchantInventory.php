@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
@@ -48,17 +49,20 @@ class EnchantInventory extends ContainerInventory{
 		return 2; //1 input, 1 lapis
 	}
 
+	/*public function onResult(Item $result) : bool{
+		if(!$this->getItem(1)->isNull()){
+			$lapis = $this->getItem(1);
+			$lapis->pop();
+			$this->setItem(1, $lapis);
+		}
+		return true; // TODO: check enchants
+	}*/
+
 	/**
 	 * This override is here for documentation and code completion purposes only.
 	 * @return Position
 	 */
 	public function getHolder(){
 		return $this->holder;
-	}
-
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
-		$this->dropContents($this->holder->getLevel(), $this->holder->add(0.5, 0.5, 0.5));
 	}
 }
