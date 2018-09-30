@@ -90,7 +90,7 @@ abstract class BaseRail extends Flowable{
 	}
 
 	public function getStateBitmask() : int{
-		return 0b111;
+		return 0b1111;
 	}
 
 	public function getHardness() : float{
