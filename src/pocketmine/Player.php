@@ -2150,7 +2150,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->server->broadcastPacket($this->getViewers(), $packet);
 				break;
 			case EntityEventPacket::COMPLETE_TRADE:
-				var_dump("trade");
+				// TODO
 				break;
 			default:
 				return false;

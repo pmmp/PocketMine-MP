@@ -300,7 +300,7 @@ class SimpleSessionHandler extends SessionHandler{
 				$this->player->continueBreakBlock($pos, $packet->face);
 				break;
 			case PlayerActionPacket::ACTION_SET_ENCHANTMENT_SEED:
-				var_dump("bbbb");
+				// TODO
 				break;
 			case PlayerActionPacket::ACTION_START_SWIMMING:
 				if(!$this->player->isSwimming()){
