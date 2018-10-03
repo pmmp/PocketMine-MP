@@ -462,66 +462,6 @@ class Chunk{
 	}
 
 	/**
-	 * Returns a column of block IDs from bottom to top at the specified X/Z chunk block coordinates.
-	 * @param int $x 0-15
-	 * @param int $z 0-15
-	 *
-	 * @return string
-	 */
-	public function getBlockIdColumn(int $x, int $z) : string{
-		$result = "";
-		foreach($this->subChunks as $subChunk){
-			$result .= $subChunk->getBlockIdColumn($x, $z);
-		}
-		return $result;
-	}
-
-	/**
-	 * Returns a column of block meta values from bottom to top at the specified X/Z chunk block coordinates.
-	 * @param int $x 0-15
-	 * @param int $z 0-15
-	 *
-	 * @return string
-	 */
-	public function getBlockDataColumn(int $x, int $z) : string{
-		$result = "";
-		foreach($this->subChunks as $subChunk){
-			$result .= $subChunk->getBlockDataColumn($x, $z);
-		}
-		return $result;
-	}
-
-	/**
-	 * Returns a column of sky light values from bottom to top at the specified X/Z chunk block coordinates.
-	 * @param int $x 0-15
-	 * @param int $z 0-15
-	 *
-	 * @return string
-	 */
-	public function getBlockSkyLightColumn(int $x, int $z) : string{
-		$result = "";
-		foreach($this->subChunks as $subChunk){
-			$result .= $subChunk->getBlockSkyLightColumn($x, $z);
-		}
-		return $result;
-	}
-
-	/**
-	 * Returns a column of block light values from bottom to top at the specified X/Z chunk block coordinates.
-	 * @param int $x 0-15
-	 * @param int $z 0-15
-	 *
-	 * @return string
-	 */
-	public function getBlockLightColumn(int $x, int $z) : string{
-		$result = "";
-		foreach($this->subChunks as $subChunk){
-			$result .= $subChunk->getBlockLightColumn($x, $z);
-		}
-		return $result;
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function isLightPopulated() : bool{
