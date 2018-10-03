@@ -206,4 +206,11 @@ interface LevelProvider{
 	 */
 	public function close();
 
+	/**
+	 * Returns a generator which yields all the chunks in this level.
+	 *
+	 * @return \Generator|Chunk[]
+	 */
+	public function getAllChunks() : \Generator;
+
 }

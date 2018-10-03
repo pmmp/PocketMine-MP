@@ -535,4 +535,16 @@ class LevelDB extends BaseLevelProvider{
 	public function close(){
 		$this->db->close();
 	}
+
+	public function getAllChunks() : \Generator{
+		foreach($this->db->getIterator() as $key => $_){
+			if(strlen($key) === 9 and substr($key, -1) === self::TAG_VERSION){
+				$chunkX = Binary::readLInt(substr($key, 0, 4));
+				$chunkZ = Binary::readLInt(substr($key, 4, 4));
+				if(($chunk = $this->loadChunk($chunkX, $chunkZ)) !== null){
+					yield $chunk;
+				}
+			}
+		}
+	}
 }

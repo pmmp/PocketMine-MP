@@ -413,4 +413,29 @@ class McRegion extends BaseLevelProvider{
 
 		$this->getRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->nbtSerialize($chunk));
 	}
+
+	public function getAllChunks() : \Generator{
+		$iterator = new \RegexIterator(
+			new \FilesystemIterator(
+				$this->path . '/region/',
+				\FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
+			),
+			'/\/r\.(-?\d+)\.(-?\d+)\.' . static::REGION_FILE_EXTENSION . '$/',
+			\RegexIterator::GET_MATCH
+		);
+
+		foreach($iterator as $region){
+			$rX = ((int) $region[1]) << 5;
+			$rZ = ((int) $region[2]) << 5;
+
+			for($chunkX = $rX; $chunkX < $rX + 32; ++$chunkX){
+				for($chunkZ = $rZ; $chunkZ < $rZ + 32; ++$chunkZ){
+					$chunk = $this->loadChunk($chunkX, $chunkZ);
+					if($chunk !== null){
+						yield $chunk;
+					}
+				}
+			}
+		}
+	}
 }
