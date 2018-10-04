@@ -87,17 +87,17 @@ abstract class LevelProviderManager{
 	 *
 	 * @param string $path
 	 *
-	 * @return string|null
+	 * @return string[]|LevelProvider[]
 	 */
-	public static function getProvider(string $path){
-		foreach(self::$providers as $provider){
-			/** @var $provider LevelProvider */
+	public static function getMatchingProviders(string $path) : array{
+		$result = [];
+		foreach(self::$providers as $alias => $provider){
+			/** @var LevelProvider|string $provider */
 			if($provider::isValid($path)){
-				return $provider;
+				$result[$alias] = $provider;
 			}
 		}
-
-		return null;
+		return $result;
 	}
 
 	/**

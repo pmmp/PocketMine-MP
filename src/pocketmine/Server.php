@@ -1035,13 +1035,17 @@ class Server{
 
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
 
-		$providerClass = LevelProviderManager::getProvider($path);
-
-		if($providerClass === null){
-			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Cannot identify format of world"]));
-
+		$providers = LevelProviderManager::getMatchingProviders($path);
+		if(count($providers) !== 1){
+			$this->logger->error($this->language->translateString("pocketmine.level.loadError", [
+				$name,
+				empty($providers) ?
+					$this->language->translateString("pocketmine.level.unknownFormat") :
+					$this->language->translateString("pocketmine.level.ambiguousFormat", [implode(", ", array_keys($providers))])
+			]));
 			return false;
 		}
+		$providerClass = array_shift($providers);
 
 		/** @see LevelProvider::__construct() */
 		$level = new Level($this, $name, new $providerClass($path));

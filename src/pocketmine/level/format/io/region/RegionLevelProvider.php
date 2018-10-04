@@ -45,23 +45,16 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 	abstract protected static function getPcWorldFormatVersion() : int;
 
 	public static function isValid(string $path) : bool{
-		$isValid = (file_exists($path . "/level.dat") and is_dir($path . "/region/"));
-
-		if($isValid){
-			$files = array_filter(scandir($path . "/region/", SCANDIR_SORT_NONE), function($file){
-				return substr($file, strrpos($file, ".") + 1, 2) === "mc"; //region file
-			});
-
-			$ext = static::getRegionFileExtension();
-			foreach($files as $f){
-				if(substr($f, strrpos($f, ".") + 1) !== $ext){
-					$isValid = false;
-					break;
+		if(file_exists($path . "/level.dat") and is_dir($path . "/region/")){
+			foreach(scandir($path . "/region/", SCANDIR_SORT_NONE) as $file){
+				if(substr($file, strrpos($file, ".") + 1) === static::getRegionFileExtension()){
+					//we don't care if other region types exist, we only care if this format is possible
+					return true;
 				}
 			}
 		}
 
-		return $isValid;
+		return false;
 	}
 
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []){
