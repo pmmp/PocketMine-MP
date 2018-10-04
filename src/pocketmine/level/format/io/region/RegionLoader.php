@@ -35,7 +35,6 @@ class RegionLoader{
 
 	public const MAX_SECTOR_LENGTH = 256 << 12; //256 sectors, (1 MiB)
 	public const REGION_HEADER_LENGTH = 8192; //4096 location table + 4096 timestamps
-	public const MAX_REGION_FILE_SIZE = 32 * 32 * self::MAX_SECTOR_LENGTH + self::REGION_HEADER_LENGTH; //32 * 32 1MiB chunks + header size
 
 	public static $COMPRESSION_LEVEL = 7;
 
@@ -58,13 +57,8 @@ class RegionLoader{
 		$exists = file_exists($this->filePath);
 		if(!$exists){
 			touch($this->filePath);
-		}else{
-			$fileSize = filesize($this->filePath);
-			if($fileSize > self::MAX_REGION_FILE_SIZE){
-				throw new CorruptedRegionException("Corrupted oversized region file found, should be a maximum of " . self::MAX_REGION_FILE_SIZE . " bytes, got " . $fileSize . " bytes");
-			}elseif($fileSize % 4096 !== 0){
-				throw new CorruptedRegionException("Region file should be padded to a multiple of 4KiB");
-			}
+		}elseif(filesize($this->filePath) % 4096 !== 0){
+			throw new CorruptedRegionException("Region file should be padded to a multiple of 4KiB");
 		}
 
 		$this->filePointer = fopen($this->filePath, "r+b");
