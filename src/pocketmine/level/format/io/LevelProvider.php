@@ -195,6 +195,11 @@ interface LevelProvider{
 	public function doGarbageCollection();
 
 	/**
+	 * Saves information about the level state, such as weather, time, etc.
+	 */
+	public function saveLevelData();
+
+	/**
 	 * Performs cleanups necessary when the level provider is closed and no longer needed.
 	 */
 	public function close();

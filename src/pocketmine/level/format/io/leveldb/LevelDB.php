@@ -532,6 +532,10 @@ class LevelDB extends BaseLevelProvider{
 		return $this->db->get(LevelDB::chunkIndex($chunkX, $chunkZ) . self::TAG_VERSION) !== false;
 	}
 
+	public function doGarbageCollection(){
+
+	}
+
 	public function close(){
 		$this->db->close();
 	}

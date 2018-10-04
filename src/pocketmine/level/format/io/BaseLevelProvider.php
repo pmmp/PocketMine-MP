@@ -26,9 +26,7 @@ namespace pocketmine\level\format\io;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\LevelException;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\StringTag;
 
 abstract class BaseLevelProvider implements LevelProvider{
 	/** @var string */
@@ -46,32 +44,9 @@ abstract class BaseLevelProvider implements LevelProvider{
 		$this->fixLevelData();
 	}
 
-	protected function loadLevelData() : void{
-		$levelDatPath = $this->getPath() . "level.dat";
-		if(!file_exists($levelDatPath)){
-			throw new LevelException("level.dat not found");
-		}
-		$nbt = new BigEndianNBTStream();
-		$levelData = $nbt->readCompressed(file_get_contents($levelDatPath));
+	abstract protected function loadLevelData() : void;
 
-		if(!($levelData instanceof CompoundTag) or !$levelData->hasTag("Data", CompoundTag::class)){
-			throw new LevelException("Invalid level.dat");
-		}
-
-		$this->levelData = $levelData->getCompoundTag("Data");
-	}
-
-	protected function fixLevelData() : void{
-		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
-			$this->levelData->setString("generatorName", "default", true);
-		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($this->levelData->getString("generatorName"))) !== null){
-			$this->levelData->setString("generatorName", $generatorName);
-		}
-
-		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
-			$this->levelData->setString("generatorOptions", "");
-		}
-	}
+	abstract protected function fixLevelData() : void;
 
 	/**
 	 * Hack to fix worlds broken previously by older versions of PocketMine-MP which incorrectly saved classpaths of
@@ -137,23 +112,11 @@ abstract class BaseLevelProvider implements LevelProvider{
 		$this->levelData->setInt("SpawnZ", $pos->getFloorZ());
 	}
 
-	public function doGarbageCollection(){
-
-	}
-
 	/**
 	 * @return CompoundTag
 	 */
 	public function getLevelData() : CompoundTag{
 		return $this->levelData;
-	}
-
-	public function saveLevelData(){
-		$nbt = new BigEndianNBTStream();
-		$buffer = $nbt->writeCompressed(new CompoundTag("", [
-			$this->levelData
-		]));
-		file_put_contents($this->getPath() . "level.dat", $buffer);
 	}
 
 	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{

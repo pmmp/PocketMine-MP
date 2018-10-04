@@ -27,6 +27,7 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
+use pocketmine\level\LevelException;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -109,6 +110,40 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 	/** @var RegionLoader[] */
 	protected $regions = [];
 
+	protected function loadLevelData() : void{
+		$levelDatPath = $this->getPath() . "level.dat";
+		if(!file_exists($levelDatPath)){
+			throw new LevelException("level.dat not found");
+		}
+		$nbt = new BigEndianNBTStream();
+		$levelData = $nbt->readCompressed(file_get_contents($levelDatPath));
+
+		if(!($levelData instanceof CompoundTag) or !$levelData->hasTag("Data", CompoundTag::class)){
+			throw new LevelException("Invalid level.dat");
+		}
+
+		$this->levelData = $levelData->getCompoundTag("Data");
+	}
+
+	protected function fixLevelData() : void{
+		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
+			$this->levelData->setString("generatorName", "default", true);
+		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($this->levelData->getString("generatorName"))) !== null){
+			$this->levelData->setString("generatorName", $generatorName);
+		}
+
+		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
+			$this->levelData->setString("generatorOptions", "");
+		}
+	}
+
+	public function saveLevelData(){
+		$nbt = new BigEndianNBTStream();
+		$buffer = $nbt->writeCompressed(new CompoundTag("", [
+			$this->levelData
+		]));
+		file_put_contents($this->getPath() . "level.dat", $buffer);
+	}
 
 	public function getGenerator() : string{
 		return $this->levelData->getString("generatorName", "DEFAULT");

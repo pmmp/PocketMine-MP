@@ -48,7 +48,6 @@ use pocketmine\level\biome\Biome;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\EmptySubChunk;
-use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
@@ -1025,9 +1024,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->provider->setTime($this->time);
 		$this->saveChunks();
-		if($this->provider instanceof BaseLevelProvider){
-			$this->provider->saveLevelData();
-		}
+		$this->provider->saveLevelData();
 
 		return true;
 	}
