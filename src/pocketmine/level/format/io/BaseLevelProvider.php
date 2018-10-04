@@ -37,18 +37,22 @@ abstract class BaseLevelProvider implements LevelProvider{
 	protected $levelData;
 
 	public function __construct(string $path){
-		$this->path = $path;
-		if(!file_exists($this->path)){
-			mkdir($this->path, 0777, true);
+		if(!file_exists($path)){
+			throw new LevelException("Level does not exist");
 		}
 
+		$this->path = $path;
 		$this->loadLevelData();
 		$this->fixLevelData();
 	}
 
 	protected function loadLevelData() : void{
+		$levelDatPath = $this->getPath() . "level.dat";
+		if(!file_exists($levelDatPath)){
+			throw new LevelException("level.dat not found");
+		}
 		$nbt = new BigEndianNBTStream();
-		$levelData = $nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
+		$levelData = $nbt->readCompressed(file_get_contents($levelDatPath));
 
 		if(!($levelData instanceof CompoundTag) or !$levelData->hasTag("Data", CompoundTag::class)){
 			throw new LevelException("Invalid level.dat");

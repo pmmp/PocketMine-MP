@@ -100,8 +100,12 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	protected function loadLevelData() : void{
+		$levelDatPath = $this->getPath() . "level.dat";
+		if(!file_exists($levelDatPath)){
+			throw new LevelException("level.dat not found");
+		}
 		$nbt = new LittleEndianNBTStream();
-		$levelData = $nbt->read(substr(file_get_contents($this->getPath() . "level.dat"), 8));
+		$levelData = $nbt->read(substr(file_get_contents($levelDatPath), 8));
 		if($levelData instanceof CompoundTag){
 			$this->levelData = $levelData;
 		}else{
