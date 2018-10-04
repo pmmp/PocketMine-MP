@@ -33,8 +33,8 @@ class RegionLoader{
 	public const COMPRESSION_GZIP = 1;
 	public const COMPRESSION_ZLIB = 2;
 
-	public const MAX_SECTOR_LENGTH = 256 << 12; //256 sectors, (1 MiB)
-	public const REGION_HEADER_LENGTH = 8192; //4096 location table + 4096 timestamps
+	private const MAX_SECTOR_LENGTH = 256 << 12; //256 sectors, (1 MiB)
+	private const REGION_HEADER_LENGTH = 8192; //4096 location table + 4096 timestamps
 
 	public static $COMPRESSION_LEVEL = 7;
 

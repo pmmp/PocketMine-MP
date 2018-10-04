@@ -40,30 +40,30 @@ use pocketmine\utils\BinaryStream;
 class LevelDB extends BaseLevelProvider{
 
 	//According to Tomasso, these aren't supposed to be readable anymore. Thankfully he didn't change the readable ones...
-	public const TAG_DATA_2D = "\x2d";
-	public const TAG_DATA_2D_LEGACY = "\x2e";
-	public const TAG_SUBCHUNK_PREFIX = "\x2f";
-	public const TAG_LEGACY_TERRAIN = "0";
-	public const TAG_BLOCK_ENTITY = "1";
-	public const TAG_ENTITY = "2";
-	public const TAG_PENDING_TICK = "3";
-	public const TAG_BLOCK_EXTRA_DATA = "4";
-	public const TAG_BIOME_STATE = "5";
-	public const TAG_STATE_FINALISATION = "6";
+	protected const TAG_DATA_2D = "\x2d";
+	protected const TAG_DATA_2D_LEGACY = "\x2e";
+	protected const TAG_SUBCHUNK_PREFIX = "\x2f";
+	protected const TAG_LEGACY_TERRAIN = "0";
+	protected const TAG_BLOCK_ENTITY = "1";
+	protected const TAG_ENTITY = "2";
+	protected const TAG_PENDING_TICK = "3";
+	protected const TAG_BLOCK_EXTRA_DATA = "4";
+	protected const TAG_BIOME_STATE = "5";
+	protected const TAG_STATE_FINALISATION = "6";
 
-	public const TAG_BORDER_BLOCKS = "8";
-	public const TAG_HARDCODED_SPAWNERS = "9";
+	protected const TAG_BORDER_BLOCKS = "8";
+	protected const TAG_HARDCODED_SPAWNERS = "9";
 
-	public const FINALISATION_NEEDS_INSTATICKING = 0;
-	public const FINALISATION_NEEDS_POPULATION = 1;
-	public const FINALISATION_DONE = 2;
+	protected const FINALISATION_NEEDS_INSTATICKING = 0;
+	protected const FINALISATION_NEEDS_POPULATION = 1;
+	protected const FINALISATION_DONE = 2;
 
-	public const TAG_VERSION = "v";
+	protected const TAG_VERSION = "v";
 
-	public const ENTRY_FLAT_WORLD_LAYERS = "game_flatworldlayers";
+	protected const ENTRY_FLAT_WORLD_LAYERS = "game_flatworldlayers";
 
-	public const CURRENT_LEVEL_CHUNK_VERSION = 7;
-	public const CURRENT_LEVEL_SUBCHUNK_VERSION = 0;
+	protected const CURRENT_LEVEL_CHUNK_VERSION = 7;
+	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = 0;
 
 	/** @var \LevelDB */
 	protected $db;
