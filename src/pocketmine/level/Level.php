@@ -333,11 +333,11 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->provider = $provider;
 
-		$this->displayName = $this->provider->getName();
+		$this->displayName = $this->provider->getLevelData()->getName();
 		$this->worldHeight = $this->provider->getWorldHeight();
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->displayName]));
-		$this->generator = GeneratorManager::getGenerator($this->provider->getGenerator());
+		$this->generator = GeneratorManager::getGenerator($this->provider->getLevelData()->getGenerator());
 
 		$this->folderName = $name;
 
@@ -346,7 +346,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->neighbourBlockUpdateQueue = new \SplQueue();
 
-		$this->time = $this->provider->getTime();
+		$this->time = $this->provider->getLevelData()->getTime();
 
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 4)));
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 40);
@@ -389,7 +389,7 @@ class Level implements ChunkManager, Metadatable{
 
 	public function registerGeneratorToWorker(int $worker) : void{
 		$this->generatorRegisteredWorkers[$worker] = true;
-		$this->server->getAsyncPool()->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getGeneratorOptions()), $worker);
+		$this->server->getAsyncPool()->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getLevelData()->getGeneratorOptions()), $worker);
 	}
 
 	public function unregisterGenerator(){
@@ -1022,9 +1022,9 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->server->getPluginManager()->callEvent(new LevelSaveEvent($this));
 
-		$this->provider->setTime($this->time);
+		$this->provider->getLevelData()->setTime($this->time);
 		$this->saveChunks();
-		$this->provider->saveLevelData();
+		$this->provider->getLevelData()->save();
 
 		return true;
 	}
@@ -2405,7 +2405,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Position
 	 */
 	public function getSpawnLocation() : Position{
-		return Position::fromObject($this->provider->getSpawn(), $this);
+		return Position::fromObject($this->provider->getLevelData()->getSpawn(), $this);
 	}
 
 	/**
@@ -2415,7 +2415,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function setSpawnLocation(Vector3 $pos){
 		$previousSpawn = $this->getSpawnLocation();
-		$this->provider->setSpawn($pos);
+		$this->provider->getLevelData()->setSpawn($pos);
 		$this->server->getPluginManager()->callEvent(new SpawnChangeEvent($this, $previousSpawn));
 	}
 
@@ -2750,7 +2750,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isSpawnChunk(int $X, int $Z) : bool{
-		$spawn = $this->provider->getSpawn();
+		$spawn = $this->getSpawnLocation();
 		$spawnX = $spawn->x >> 4;
 		$spawnZ = $spawn->z >> 4;
 
@@ -2861,7 +2861,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return int
 	 */
 	public function getSeed() : int{
-		return $this->provider->getSeed();
+		return $this->provider->getLevelData()->getSeed();
 	}
 
 	public function getWorldHeight() : int{
@@ -2872,7 +2872,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return int
 	 */
 	public function getDifficulty() : int{
-		return $this->provider->getDifficulty();
+		return $this->provider->getLevelData()->getDifficulty();
 	}
 
 	/**
@@ -2882,7 +2882,7 @@ class Level implements ChunkManager, Metadatable{
 		if($difficulty < 0 or $difficulty > 3){
 			throw new \InvalidArgumentException("Invalid difficulty level $difficulty");
 		}
-		$this->provider->setDifficulty($difficulty);
+		$this->provider->getLevelData()->setDifficulty($difficulty);
 
 		$this->sendDifficulty();
 	}

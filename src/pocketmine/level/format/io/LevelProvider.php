@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\math\Vector3;
 
 interface LevelProvider{
 
@@ -67,18 +66,6 @@ interface LevelProvider{
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []);
 
 	/**
-	 * Returns the generator name
-	 *
-	 * @return string
-	 */
-	public function getGenerator() : string;
-
-	/**
-	 * @return array
-	 */
-	public function getGeneratorOptions() : array;
-
-	/**
 	 * Saves a chunk (usually to disk).
 	 *
 	 * @param Chunk $chunk
@@ -99,100 +86,16 @@ interface LevelProvider{
 	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk;
 
 	/**
-	 * @return string
-	 */
-	public function getName() : string;
-
-	/**
-	 * @return int
-	 */
-	public function getTime() : int;
-
-	/**
-	 * @param int
-	 */
-	public function setTime(int $value);
-
-	/**
-	 * @return int
-	 */
-	public function getSeed() : int;
-
-	/**
-	 * @return Vector3
-	 */
-	public function getSpawn() : Vector3;
-
-	/**
-	 * @param Vector3 $pos
-	 */
-	public function setSpawn(Vector3 $pos);
-
-	/**
-	 * Returns the world difficulty. This will be one of the Level constants.
-	 * @return int
-	 */
-	public function getDifficulty() : int;
-
-	/**
-	 * Sets the world difficulty.
-	 * @param int $difficulty
-	 */
-	public function setDifficulty(int $difficulty);
-
-	/**
-	 * Returns the time in ticks to the next rain level change.
-	 * @return int
-	 */
-	public function getRainTime() : int;
-
-	/**
-	 * Sets the time in ticks to the next rain level change.
-	 * @param int $ticks
-	 */
-	public function setRainTime(int $ticks) : void;
-
-	/**
-	 * @return float 0.0 - 1.0
-	 */
-	public function getRainLevel() : float;
-
-	/**
-	 * @param float $level 0.0 - 1.0
-	 */
-	public function setRainLevel(float $level) : void;
-
-	/**
-	 * Returns the time in ticks to the next lightning level change.
-	 * @return int
-	 */
-	public function getLightningTime() : int;
-
-	/**
-	 * Sets the time in ticks to the next lightning level change.
-	 * @param int $ticks
-	 */
-	public function setLightningTime(int $ticks) : void;
-
-	/**
-	 * @return float 0.0 - 1.0
-	 */
-	public function getLightningLevel() : float;
-
-	/**
-	 * @param float $level 0.0 - 1.0
-	 */
-	public function setLightningLevel(float $level) : void;
-
-	/**
 	 * Performs garbage collection in the level provider, such as cleaning up regions in Region-based worlds.
 	 */
 	public function doGarbageCollection();
 
 	/**
-	 * Saves information about the level state, such as weather, time, etc.
+	 * Returns information about the world
+	 *
+	 * @return LevelData
 	 */
-	public function saveLevelData();
+	public function getLevelData() : LevelData;
 
 	/**
 	 * Performs cleanups necessary when the level provider is closed and no longer needed.

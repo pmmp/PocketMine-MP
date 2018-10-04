@@ -25,13 +25,11 @@ namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
 use pocketmine\level\LevelException;
-use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 
 abstract class BaseLevelProvider implements LevelProvider{
 	/** @var string */
 	protected $path;
-	/** @var CompoundTag */
+	/** @var LevelData */
 	protected $levelData;
 
 	public function __construct(string $path){
@@ -40,13 +38,10 @@ abstract class BaseLevelProvider implements LevelProvider{
 		}
 
 		$this->path = $path;
-		$this->loadLevelData();
-		$this->fixLevelData();
+		$this->levelData = $this->loadLevelData();
 	}
 
-	abstract protected function loadLevelData() : void;
-
-	abstract protected function fixLevelData() : void;
+	abstract protected function loadLevelData() : LevelData;
 
 	/**
 	 * Hack to fix worlds broken previously by older versions of PocketMine-MP which incorrectly saved classpaths of
@@ -66,7 +61,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	 *
 	 * @return null|string Name of the correct generator to replace the broken value
 	 */
-	protected static function hackyFixForGeneratorClasspathInLevelDat(string $className) : ?string{
+	public static function hackyFixForGeneratorClasspathInLevelDat(string $className) : ?string{
 		//THESE ARE DELIBERATELY HARDCODED, DO NOT CHANGE!
 		switch($className){
 			case 'pocketmine\level\generator\normal\Normal':
@@ -82,36 +77,10 @@ abstract class BaseLevelProvider implements LevelProvider{
 		return $this->path;
 	}
 
-	public function getName() : string{
-		return $this->levelData->getString("LevelName");
-	}
-
-	public function getTime() : int{
-		return $this->levelData->getLong("Time", 0, true);
-	}
-
-	public function setTime(int $value){
-		$this->levelData->setLong("Time", $value, true); //some older PM worlds had this in the wrong format
-	}
-
-	public function getSeed() : int{
-		return $this->levelData->getLong("RandomSeed");
-	}
-
-	public function getSpawn() : Vector3{
-		return new Vector3($this->levelData->getInt("SpawnX"), $this->levelData->getInt("SpawnY"), $this->levelData->getInt("SpawnZ"));
-	}
-
-	public function setSpawn(Vector3 $pos){
-		$this->levelData->setInt("SpawnX", $pos->getFloorX());
-		$this->levelData->setInt("SpawnY", $pos->getFloorY());
-		$this->levelData->setInt("SpawnZ", $pos->getFloorZ());
-	}
-
 	/**
-	 * @return CompoundTag
+	 * @return LevelData
 	 */
-	public function getLevelData() : CompoundTag{
+	public function getLevelData() : LevelData{
 		return $this->levelData;
 	}
 

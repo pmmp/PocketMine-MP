@@ -25,16 +25,9 @@ namespace pocketmine\level\format\io\region;
 
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\BaseLevelProvider;
-use pocketmine\level\generator\GeneratorManager;
+use pocketmine\level\format\io\data\JavaLevelData;
+use pocketmine\level\format\io\LevelData;
 use pocketmine\level\Level;
-use pocketmine\level\LevelException;
-use pocketmine\nbt\BigEndianNBTStream;
-use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\LongTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\MainLogger;
 
 abstract class RegionLevelProvider extends BaseLevelProvider{
@@ -79,128 +72,15 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 		if(!file_exists($path . "/region")){
 			mkdir($path . "/region", 0777);
 		}
-		//TODO, add extra details
-		$levelData = new CompoundTag("Data", [
-			new ByteTag("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0),
-			new ByteTag("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))),
-			new ByteTag("initialized", 1),
-			new IntTag("GameType", 0),
-			new IntTag("generatorVersion", 1), //2 in MCPE
-			new IntTag("SpawnX", 256),
-			new IntTag("SpawnY", 70),
-			new IntTag("SpawnZ", 256),
-			new IntTag("version", static::getPcWorldFormatVersion()),
-			new IntTag("DayTime", 0),
-			new LongTag("LastPlayed", (int) (microtime(true) * 1000)),
-			new LongTag("RandomSeed", $seed),
-			new LongTag("SizeOnDisk", 0),
-			new LongTag("Time", 0),
-			new StringTag("generatorName", GeneratorManager::getGeneratorName($generator)),
-			new StringTag("generatorOptions", $options["preset"] ?? ""),
-			new StringTag("LevelName", $name),
-			new CompoundTag("GameRules", [])
-		]);
-		$nbt = new BigEndianNBTStream();
-		$buffer = $nbt->writeCompressed(new CompoundTag("", [
-			$levelData
-		]));
-		file_put_contents($path . "level.dat", $buffer);
+
+		JavaLevelData::generate($path, $name, $seed, $generator, $options, static::getPcWorldFormatVersion());
 	}
 
 	/** @var RegionLoader[] */
 	protected $regions = [];
 
-	protected function loadLevelData() : void{
-		$levelDatPath = $this->getPath() . "level.dat";
-		if(!file_exists($levelDatPath)){
-			throw new LevelException("level.dat not found");
-		}
-		$nbt = new BigEndianNBTStream();
-		$levelData = $nbt->readCompressed(file_get_contents($levelDatPath));
-
-		if(!($levelData instanceof CompoundTag) or !$levelData->hasTag("Data", CompoundTag::class)){
-			throw new LevelException("Invalid level.dat");
-		}
-
-		$this->levelData = $levelData->getCompoundTag("Data");
-	}
-
-	protected function fixLevelData() : void{
-		if(!$this->levelData->hasTag("generatorName", StringTag::class)){
-			$this->levelData->setString("generatorName", "default", true);
-		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($this->levelData->getString("generatorName"))) !== null){
-			$this->levelData->setString("generatorName", $generatorName);
-		}
-
-		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
-			$this->levelData->setString("generatorOptions", "");
-		}
-	}
-
-	public function saveLevelData(){
-		$nbt = new BigEndianNBTStream();
-		$buffer = $nbt->writeCompressed(new CompoundTag("", [
-			$this->levelData
-		]));
-		file_put_contents($this->getPath() . "level.dat", $buffer);
-	}
-
-	public function getGenerator() : string{
-		return $this->levelData->getString("generatorName", "DEFAULT");
-	}
-
-	public function getGeneratorOptions() : array{
-		return ["preset" => $this->levelData->getString("generatorOptions", "")];
-	}
-
-	public function getDifficulty() : int{
-		return $this->levelData->getByte("Difficulty", Level::DIFFICULTY_NORMAL);
-	}
-
-	public function setDifficulty(int $difficulty){
-		$this->levelData->setByte("Difficulty", $difficulty);
-	}
-
-	public function getRainTime() : int{
-		return $this->levelData->getInt("rainTime", 0);
-	}
-
-	public function setRainTime(int $ticks) : void{
-		$this->levelData->setInt("rainTime", $ticks);
-	}
-
-	public function getRainLevel() : float{
-		if($this->levelData->hasTag("rainLevel", FloatTag::class)){ //PocketMine/MCPE
-			return $this->levelData->getFloat("rainLevel");
-		}
-
-		return (float) $this->levelData->getByte("raining", 0); //PC vanilla
-	}
-
-	public function setRainLevel(float $level) : void{
-		$this->levelData->setFloat("rainLevel", $level); //PocketMine/MCPE
-		$this->levelData->setByte("raining", (int) ceil($level)); //PC vanilla
-	}
-
-	public function getLightningTime() : int{
-		return $this->levelData->getInt("thunderTime", 0);
-	}
-
-	public function setLightningTime(int $ticks) : void{
-		$this->levelData->setInt("thunderTime", $ticks);
-	}
-
-	public function getLightningLevel() : float{
-		if($this->levelData->hasTag("lightningLevel", FloatTag::class)){ //PocketMine/MCPE
-			return $this->levelData->getFloat("lightningLevel");
-		}
-
-		return (float) $this->levelData->getByte("thundering", 0); //PC vanilla
-	}
-
-	public function setLightningLevel(float $level) : void{
-		$this->levelData->setFloat("lightningLevel", $level); //PocketMine/MCPE
-		$this->levelData->setByte("thundering", (int) ceil($level)); //PC vanilla
+	protected function loadLevelData() : LevelData{
+		return new JavaLevelData($this->getPath() . "level.dat");
 	}
 
 	public function doGarbageCollection(){
