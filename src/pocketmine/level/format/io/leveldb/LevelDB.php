@@ -68,7 +68,7 @@ class LevelDB extends BaseLevelProvider{
 	/** @var \LevelDB */
 	protected $db;
 
-	private static function checkForLevelDBExtension(){
+	private static function checkForLevelDBExtension() : void{
 		if(!extension_loaded('leveldb')){
 			throw new LevelException("The leveldb PHP extension is required to use this world format");
 		}
@@ -103,7 +103,7 @@ class LevelDB extends BaseLevelProvider{
 		return file_exists($path . "/level.dat") and is_dir($path . "/db/");
 	}
 
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []){
+	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
 		self::checkForLevelDBExtension();
 
 		if(!file_exists($path . "/db")){
@@ -323,7 +323,7 @@ class LevelDB extends BaseLevelProvider{
 	 * @param CompoundTag[] $targets
 	 * @param string        $index
 	 */
-	private function writeTags(array $targets, string $index){
+	private function writeTags(array $targets, string $index) : void{
 		if(!empty($targets)){
 			$nbt = new LittleEndianNBTStream();
 			$this->db->put($index, $nbt->write($targets));
@@ -347,11 +347,11 @@ class LevelDB extends BaseLevelProvider{
 		return $this->db->get(LevelDB::chunkIndex($chunkX, $chunkZ) . self::TAG_VERSION) !== false;
 	}
 
-	public function doGarbageCollection(){
+	public function doGarbageCollection() : void{
 
 	}
 
-	public function close(){
+	public function close() : void{
 		$this->db->close();
 	}
 

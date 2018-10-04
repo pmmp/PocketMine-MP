@@ -63,7 +63,7 @@ interface LevelProvider{
 	 * @param string  $generator
 	 * @param array[] $options
 	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []);
+	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void;
 
 	/**
 	 * Saves a chunk (usually to disk).
@@ -88,7 +88,7 @@ interface LevelProvider{
 	/**
 	 * Performs garbage collection in the level provider, such as cleaning up regions in Region-based worlds.
 	 */
-	public function doGarbageCollection();
+	public function doGarbageCollection() : void;
 
 	/**
 	 * Returns information about the world
@@ -100,7 +100,7 @@ interface LevelProvider{
 	/**
 	 * Performs cleanups necessary when the level provider is closed and no longer needed.
 	 */
-	public function close();
+	public function close() : void;
 
 	/**
 	 * Returns a generator which yields all the chunks in this level.

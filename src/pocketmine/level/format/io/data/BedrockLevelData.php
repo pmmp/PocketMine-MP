@@ -45,7 +45,7 @@ class BedrockLevelData extends BaseNbtLevelData{
 	public const GENERATOR_INFINITE = 1;
 	public const GENERATOR_FLAT = 2;
 
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []){
+	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
 		switch($generator){
 			case Flat::class:
 				$generatorType = self::GENERATOR_FLAT;

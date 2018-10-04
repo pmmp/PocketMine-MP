@@ -35,7 +35,7 @@ use pocketmine\nbt\tag\StringTag;
 
 class JavaLevelData extends BaseNbtLevelData{
 
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = [], int $version = 19133){
+	public static function generate(string $path, string $name, int $seed, string $generator, array $options = [], int $version = 19133) : void{
 		//TODO, add extra details
 		$levelData = new CompoundTag("Data", [
 			new ByteTag("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0),

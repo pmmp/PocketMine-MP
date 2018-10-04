@@ -53,7 +53,7 @@ class RegionLoader{
 		$this->filePath = $filePath;
 	}
 
-	public function open(){
+	public function open() : void{
 		$exists = file_exists($this->filePath);
 		if(!$exists){
 			touch($this->filePath);
@@ -138,7 +138,7 @@ class RegionLoader{
 		return $this->isChunkGenerated(self::getChunkOffset($x, $z));
 	}
 
-	public function writeChunk(int $x, int $z, string $chunkData){
+	public function writeChunk(int $x, int $z, string $chunkData) : void{
 		$this->lastUsed = time();
 
 		$length = strlen($chunkData) + 1;
@@ -167,7 +167,7 @@ class RegionLoader{
 		}
 	}
 
-	public function removeChunk(int $x, int $z){
+	public function removeChunk(int $x, int $z) : void{
 		$index = self::getChunkOffset($x, $z);
 		$this->locationTable[$index][0] = 0;
 		$this->locationTable[$index][1] = 0;
@@ -182,7 +182,7 @@ class RegionLoader{
 	 *
 	 * @param bool $writeHeader
 	 */
-	public function close(bool $writeHeader = true){
+	public function close(bool $writeHeader = true) : void{
 		if(is_resource($this->filePointer)){
 			if($writeHeader){
 				$this->writeLocationTable();
@@ -267,7 +267,7 @@ class RegionLoader{
 		return $shift;
 	}
 
-	protected function loadLocationTable(){
+	protected function loadLocationTable() : void{
 		fseek($this->filePointer, 0);
 		$this->lastSector = 1;
 
@@ -301,7 +301,7 @@ class RegionLoader{
 		fseek($this->filePointer, 0);
 	}
 
-	private function writeLocationTable(){
+	private function writeLocationTable() : void{
 		$write = [];
 
 		for($i = 0; $i < 1024; ++$i){
@@ -314,14 +314,14 @@ class RegionLoader{
 		fwrite($this->filePointer, pack("N*", ...$write), 4096 * 2);
 	}
 
-	protected function writeLocationIndex($index){
+	protected function writeLocationIndex(int $index) : void{
 		fseek($this->filePointer, $index << 2);
 		fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$index][0] << 8) | $this->locationTable[$index][1]), 4);
 		fseek($this->filePointer, 4096 + ($index << 2));
 		fwrite($this->filePointer, Binary::writeInt($this->locationTable[$index][2]), 4);
 	}
 
-	protected function createBlank(){
+	protected function createBlank() : void{
 		fseek($this->filePointer, 0);
 		ftruncate($this->filePointer, 8192); // this fills the file with the null byte
 		$this->lastSector = 1;

@@ -57,7 +57,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 		return false;
 	}
 
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []){
+	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
 		if(!file_exists($path)){
 			mkdir($path, 0777, true);
 		}
@@ -76,7 +76,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 		return new JavaLevelData($this->getPath() . "level.dat");
 	}
 
-	public function doGarbageCollection(){
+	public function doGarbageCollection() : void{
 		$limit = time() - 300;
 		foreach($this->regions as $index => $region){
 			if($region->lastUsed <= $limit){
@@ -92,7 +92,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 	 * @param int &$regionX
 	 * @param int &$regionZ
 	 */
-	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ){
+	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ) : void{
 		$regionX = $chunkX >> 5;
 		$regionZ = $chunkZ >> 5;
 	}
@@ -103,7 +103,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 	 *
 	 * @return RegionLoader|null
 	 */
-	protected function getRegion(int $regionX, int $regionZ){
+	protected function getRegion(int $regionX, int $regionZ) : ?RegionLoader{
 		return $this->regions[Level::chunkHash($regionX, $regionZ)] ?? null;
 	}
 
@@ -123,7 +123,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 	 * @param int $regionX
 	 * @param int $regionZ
 	 */
-	protected function loadRegion(int $regionX, int $regionZ){
+	protected function loadRegion(int $regionX, int $regionZ) : void{
 		if(!isset($this->regions[$index = Level::chunkHash($regionX, $regionZ)])){
 			$path = $this->pathToRegion($regionX, $regionZ);
 
@@ -148,7 +148,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 		}
 	}
 
-	public function close(){
+	public function close() : void{
 		foreach($this->regions as $index => $region){
 			$region->close();
 			unset($this->regions[$index]);
