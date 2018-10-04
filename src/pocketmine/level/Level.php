@@ -2864,15 +2864,6 @@ class Level implements ChunkManager, Metadatable{
 		return $this->provider->getSeed();
 	}
 
-	/**
-	 * Sets the seed for the level
-	 *
-	 * @param int $seed
-	 */
-	public function setSeed(int $seed){
-		$this->provider->setSeed($seed);
-	}
-
 	public function getWorldHeight() : int{
 		return $this->worldHeight;
 	}

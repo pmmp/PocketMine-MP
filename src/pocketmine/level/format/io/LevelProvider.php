@@ -119,11 +119,6 @@ interface LevelProvider{
 	public function getSeed() : int;
 
 	/**
-	 * @param int
-	 */
-	public function setSeed(int $value);
-
-	/**
 	 * @return Vector3
 	 */
 	public function getSpawn() : Vector3;

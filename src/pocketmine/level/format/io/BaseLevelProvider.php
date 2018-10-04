@@ -98,10 +98,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 		return $this->levelData->getLong("RandomSeed");
 	}
 
-	public function setSeed(int $value){
-		$this->levelData->setLong("RandomSeed", $value);
-	}
-
 	public function getSpawn() : Vector3{
 		return new Vector3($this->levelData->getInt("SpawnX"), $this->levelData->getInt("SpawnY"), $this->levelData->getInt("SpawnZ"));
 	}
