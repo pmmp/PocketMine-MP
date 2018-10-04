@@ -78,8 +78,10 @@ abstract class BaseNbtLevelData implements LevelData{
 	protected static function hackyFixForGeneratorClasspathInLevelDat(string $className) : ?string{
 		//THESE ARE DELIBERATELY HARDCODED, DO NOT CHANGE!
 		switch($className){
+			/** @noinspection ClassConstantCanBeUsedInspection */
 			case 'pocketmine\level\generator\normal\Normal':
 				return "normal";
+			/** @noinspection ClassConstantCanBeUsedInspection */
 			case 'pocketmine\level\generator\Flat':
 				return "flat";
 		}
