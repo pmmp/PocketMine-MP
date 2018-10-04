@@ -254,7 +254,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 		if(!isset($this->regions[$index = Level::chunkHash($regionX, $regionZ)])){
 			$path = $this->pathToRegion($regionX, $regionZ);
 
-			$region = new RegionLoader($path, $regionX, $regionZ);
+			$region = new RegionLoader($path);
 			try{
 				$region->open();
 			}catch(CorruptedRegionException $e){
@@ -267,7 +267,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 				rename($path, $backupPath);
 				$logger->error("Corrupted region file has been backed up to " . $backupPath);
 
-				$region = new RegionLoader($path, $regionX, $regionZ);
+				$region = new RegionLoader($path);
 				$region->open(); //this will create a new empty region to replace the corrupted one
 			}
 

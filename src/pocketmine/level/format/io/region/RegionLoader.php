@@ -39,10 +39,6 @@ class RegionLoader{
 
 	public static $COMPRESSION_LEVEL = 7;
 
-	/** @var int */
-	protected $x;
-	/** @var int */
-	protected $z;
 	/** @var string */
 	protected $filePath;
 	/** @var resource */
@@ -54,9 +50,7 @@ class RegionLoader{
 	/** @var int */
 	public $lastUsed = 0;
 
-	public function __construct(string $filePath, int $regionX, int $regionZ){
-		$this->x = $regionX;
-		$this->z = $regionZ;
+	public function __construct(string $filePath){
 		$this->filePath = $filePath;
 	}
 
@@ -338,14 +332,6 @@ class RegionLoader{
 		ftruncate($this->filePointer, 8192); // this fills the file with the null byte
 		$this->lastSector = 1;
 		$this->locationTable = array_fill(0, 1024, [0, 0, 0]);
-	}
-
-	public function getX() : int{
-		return $this->x;
-	}
-
-	public function getZ() : int{
-		return $this->z;
 	}
 
 	public function getFilePath() : string{
