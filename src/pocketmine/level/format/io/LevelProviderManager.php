@@ -32,11 +32,37 @@ use pocketmine\utils\Utils;
 abstract class LevelProviderManager{
 	protected static $providers = [];
 
+	/** @var string|LevelProvider */
+	private static $default = PMAnvil::class;
+
 	public static function init() : void{
 		self::addProvider(Anvil::class);
 		self::addProvider(McRegion::class);
 		self::addProvider(PMAnvil::class);
 		self::addProvider(LevelDB::class);
+	}
+
+	/**
+	 * Returns the default format used to generate new levels.
+	 *
+	 * @return string
+	 */
+	public static function getDefault() : string{
+		return self::$default;
+	}
+
+	/**
+	 * Sets the default format.
+	 *
+	 * @param string $class Class extending LevelProvider
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public static function setDefault(string $class) : void{
+		Utils::testValidInstance($class, LevelProvider::class);
+
+		self::addProvider($class);
+		self::$default = $class;
 	}
 
 	/**
