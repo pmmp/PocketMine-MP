@@ -27,6 +27,8 @@ declare(strict_types=1);
  */
 namespace pocketmine\level\generator;
 
+use pocketmine\entity\CreatureType;
+use pocketmine\level\biome\Biome;
 use pocketmine\level\ChunkManager;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
@@ -76,6 +78,10 @@ abstract class Generator{
 
 	public function getSettings() : array{
 		return $this->options;
+	}
+
+	public function getPossibleCreatures(Vector3 $pos, CreatureType $creatureType) : array{
+		return Biome::getBiome($this->level->getChunk($pos->x >> 4, $pos->z >> 4)->getBiomeId($pos->x & 15, $pos->z & 15))->getSpawnableList($creatureType);
 	}
 
 	abstract public function getName() : string;

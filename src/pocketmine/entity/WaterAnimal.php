@@ -39,4 +39,11 @@ abstract class WaterAnimal extends Creature implements Ageable{
 		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
 		$this->attack($ev);
 	}
+
+	/**
+	 * @return int
+	 */
+	public function getSpawnPlacementType() : int{
+		return SpawnPlacementTypes::PLACEMENT_TYPE_IN_WATER;
+	}
 }

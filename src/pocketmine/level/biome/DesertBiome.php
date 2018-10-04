@@ -31,6 +31,8 @@ class DesertBiome extends SandyBiome{
 
 		$this->temperature = 2;
 		$this->rainfall = 0;
+
+		$this->spawnableCreatureList = [];
 	}
 
 	public function getName() : string{
