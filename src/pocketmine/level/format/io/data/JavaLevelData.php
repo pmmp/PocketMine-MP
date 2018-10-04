@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\data;
 
-use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\nbt\BigEndianNBTStream;
@@ -77,7 +76,7 @@ class JavaLevelData extends BaseNbtLevelData{
 	protected function fix() : void{
 		if(!$this->compoundTag->hasTag("generatorName", StringTag::class)){
 			$this->compoundTag->setString("generatorName", "default", true);
-		}elseif(($generatorName = BaseLevelProvider::hackyFixForGeneratorClasspathInLevelDat($this->compoundTag->getString("generatorName"))) !== null){
+		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($this->compoundTag->getString("generatorName"))) !== null){
 			$this->compoundTag->setString("generatorName", $generatorName);
 		}
 

@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\data;
 
-use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
@@ -133,7 +132,7 @@ class BedrockLevelData extends BaseNbtLevelData{
 			}else{
 				$this->compoundTag->setString("generatorName", "default");
 			}
-		}elseif(($generatorName = BaseLevelProvider::hackyFixForGeneratorClasspathInLevelDat($this->compoundTag->getString("generatorName"))) !== null){
+		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($this->compoundTag->getString("generatorName"))) !== null){
 			$this->compoundTag->setString("generatorName", $generatorName);
 		}
 
