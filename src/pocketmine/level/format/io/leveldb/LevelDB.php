@@ -153,10 +153,6 @@ class LevelDB extends BaseLevelProvider{
 		$db->close();
 	}
 
-	public static function getProviderName() : string{
-		return "leveldb";
-	}
-
 	public function getWorldHeight() : int{
 		return 256;
 	}

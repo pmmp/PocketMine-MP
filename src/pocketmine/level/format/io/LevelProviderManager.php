@@ -36,10 +36,10 @@ abstract class LevelProviderManager{
 	private static $default = PMAnvil::class;
 
 	public static function init() : void{
-		self::addProvider(Anvil::class);
-		self::addProvider(McRegion::class);
-		self::addProvider(PMAnvil::class);
-		self::addProvider(LevelDB::class);
+		self::addProvider(Anvil::class, "anvil");
+		self::addProvider(McRegion::class, "mcregion");
+		self::addProvider(PMAnvil::class, "pmanvil");
+		self::addProvider(LevelDB::class, "leveldb");
 	}
 
 	/**
@@ -61,20 +61,25 @@ abstract class LevelProviderManager{
 	public static function setDefault(string $class) : void{
 		Utils::testValidInstance($class, LevelProvider::class);
 
-		self::addProvider($class);
 		self::$default = $class;
 	}
 
 	/**
 	 * @param string $class
 	 *
-	 * @throws \InvalidArgumentException
+	 * @param string $name
+	 * @param bool   $overwrite
 	 */
-	public static function addProvider(string $class){
+	public static function addProvider(string $class, string $name, bool $overwrite = false) : void{
 		Utils::testValidInstance($class, LevelProvider::class);
 
+		$name = strtolower($name);
+		if(!$overwrite and isset(self::$providers[$name])){
+			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
+		}
+
 		/** @var LevelProvider $class */
-		self::$providers[strtolower($class::getProviderName())] = $class;
+		self::$providers[$name] = $class;
 	}
 
 	/**

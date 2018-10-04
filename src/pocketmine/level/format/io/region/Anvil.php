@@ -49,10 +49,6 @@ class Anvil extends RegionLevelProvider{
 		);
 	}
 
-	public static function getProviderName() : string{
-		return "anvil";
-	}
-
 	protected static function getRegionFileExtension() : string{
 		return "mca";
 	}

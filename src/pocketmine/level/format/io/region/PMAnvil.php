@@ -52,10 +52,6 @@ class PMAnvil extends RegionLevelProvider{
 		);
 	}
 
-	public static function getProviderName() : string{
-		return "pmanvil";
-	}
-
 	protected static function getRegionFileExtension() : string{
 		return "mcapm";
 	}

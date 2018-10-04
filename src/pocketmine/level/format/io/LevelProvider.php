@@ -34,13 +34,6 @@ interface LevelProvider{
 	public function __construct(string $path);
 
 	/**
-	 * Returns the full provider name, like "anvil" or "mcregion", will be used to find the correct format.
-	 *
-	 * @return string
-	 */
-	public static function getProviderName() : string;
-
-	/**
 	 * Gets the build height limit of this world
 	 *
 	 * @return int

@@ -172,10 +172,6 @@ class McRegion extends RegionLevelProvider{
 		return $result;
 	}
 
-	public static function getProviderName() : string{
-		return "mcregion";
-	}
-
 	protected static function getRegionFileExtension() : string{
 		return "mcr";
 	}

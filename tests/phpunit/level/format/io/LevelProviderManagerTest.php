@@ -30,24 +30,24 @@ class LevelProviderManagerTest extends TestCase{
 	public function testAddNonClassProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		LevelProviderManager::addProvider("lol");
+		LevelProviderManager::addProvider("lol", "nope");
 	}
 
 	public function testAddAbstractClassProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		LevelProviderManager::addProvider(AbstractLevelProvider::class);
+		LevelProviderManager::addProvider(AbstractLevelProvider::class, "abstract");
 	}
 
 	public function testAddInterfaceProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		LevelProviderManager::addProvider(InterfaceLevelProvider::class);
+		LevelProviderManager::addProvider(InterfaceLevelProvider::class, "interface");
 	}
 
 	public function testAddWrongClassProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		LevelProviderManager::addProvider(LevelProviderManagerTest::class);
+		LevelProviderManager::addProvider(LevelProviderManagerTest::class, "bad_class");
 	}
 }
