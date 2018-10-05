@@ -826,7 +826,7 @@ class Server{
 		$ev = new PlayerDataSaveEvent($nbtTag, $name);
 		$ev->setCancelled(!$this->shouldSavePlayerData());
 
-		$this->pluginManager->callEvent($ev);
+		$ev->call();
 
 		if(!$ev->isCancelled()){
 			$nbt = new BigEndianNBTStream();
@@ -1052,7 +1052,7 @@ class Server{
 
 		$this->levels[$level->getId()] = $level;
 
-		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
+		(new LevelLoadEvent($level))->call();
 
 		$level->setTickRate($this->baseTickRate);
 
@@ -1096,9 +1096,9 @@ class Server{
 
 		$level->setTickRate($this->baseTickRate);
 
-		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
+		(new LevelInitEvent($level))->call();
 
-		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
+		(new LevelLoadEvent($level))->call();
 
 		$this->getLogger()->notice($this->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
 
@@ -1891,7 +1891,8 @@ class Server{
 			throw new \InvalidArgumentException("Cannot broadcast empty list of packets");
 		}
 
-		$this->pluginManager->callEvent($ev = new DataPacketBroadcastEvent($players, $packets));
+		$ev = new DataPacketBroadcastEvent($players, $packets);
+		$ev->call();
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -2006,7 +2007,8 @@ class Server{
 	 */
 	public function dispatchCommand(CommandSender $sender, string $commandLine, bool $internal = false) : bool{
 		if(!$internal){
-			$this->pluginManager->callEvent($ev = new CommandEvent($sender, $commandLine));
+			$ev = new CommandEvent($sender, $commandLine);
+			$ev->call();
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -2583,7 +2585,7 @@ class Server{
 		}
 
 		if(($this->tickCounter & 0b111111111) === 0){
-			$this->getPluginManager()->callEvent($this->queryRegenerateTask = new QueryRegenerateEvent($this, 5));
+			($this->queryRegenerateTask = new QueryRegenerateEvent($this, 5))->call();
 			if($this->queryHandler !== null){
 				$this->queryHandler->regenerateInfo();
 			}

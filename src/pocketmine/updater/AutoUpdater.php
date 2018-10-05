@@ -66,7 +66,7 @@ class AutoUpdater{
 		$this->updateInfo = $updateInfo;
 		$this->checkUpdate();
 		if($this->hasUpdate()){
-			$this->server->getPluginManager()->callEvent(new UpdateNotifyEvent($this));
+			(new UpdateNotifyEvent($this))->call();
 			if($this->server->getProperty("auto-updater.on-update.warn-console", true)){
 				$this->showConsoleUpdate();
 			}

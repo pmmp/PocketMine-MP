@@ -186,7 +186,7 @@ class Arrow extends Projectile{
 			$ev->setCancelled();
 		}
 
-		$this->server->getPluginManager()->callEvent($ev);
+		$ev->call();
 		if($ev->isCancelled()){
 			return;
 		}

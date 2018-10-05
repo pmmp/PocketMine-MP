@@ -154,7 +154,8 @@ class Explosion{
 		$yield = (1 / $this->size) * 100;
 
 		if($this->what instanceof Entity){
-			$this->level->getServer()->getPluginManager()->callEvent($ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield));
+			$ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield);
+			$ev->call();
 			if($ev->isCancelled()){
 				return false;
 			}else{
@@ -235,7 +236,8 @@ class Explosion{
 					continue;
 				}
 				if(!isset($this->affectedBlocks[$index = Level::blockHash($sideBlock->x, $sideBlock->y, $sideBlock->z)]) and !isset($updateBlocks[$index])){
-					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level->getBlockAt($sideBlock->x, $sideBlock->y, $sideBlock->z)));
+					$ev = new BlockUpdateEvent($this->level->getBlockAt($sideBlock->x, $sideBlock->y, $sideBlock->z));
+					$ev->call();
 					if(!$ev->isCancelled()){
 						foreach($this->level->getNearbyEntities(new AxisAlignedBB($sideBlock->x - 1, $sideBlock->y - 1, $sideBlock->z - 1, $sideBlock->x + 2, $sideBlock->y + 2, $sideBlock->z + 2)) as $entity){
 							$entity->onNearbyBlockChange();

@@ -29,7 +29,6 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\Player;
-use pocketmine\Server;
 
 /**
  * This InventoryTransaction only allows doing Transaction between one / two inventories
@@ -250,7 +249,8 @@ class InventoryTransaction{
 	}
 
 	protected function callExecuteEvent() : bool{
-		Server::getInstance()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
+		$ev = new InventoryTransactionEvent($this);
+		$ev->call();
 		return !$ev->isCancelled();
 	}
 

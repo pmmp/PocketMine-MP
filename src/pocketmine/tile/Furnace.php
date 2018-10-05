@@ -135,8 +135,8 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	protected function checkFuel(Item $fuel){
-		$this->server->getPluginManager()->callEvent($ev = new FurnaceBurnEvent($this, $fuel, $fuel->getFuelTime()));
-
+		$ev = new FurnaceBurnEvent($this, $fuel, $fuel->getFuelTime());
+		$ev->call();
 		if($ev->isCancelled()){
 			return;
 		}
@@ -190,7 +190,8 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 				if($this->cookTime >= 200){ //10 seconds
 					$product = ItemFactory::get($smelt->getResult()->getId(), $smelt->getResult()->getDamage(), $product->getCount() + 1);
 
-					$this->server->getPluginManager()->callEvent($ev = new FurnaceSmeltEvent($this, $raw, $product));
+					$ev = new FurnaceSmeltEvent($this, $raw, $product);
+					$ev->call();
 
 					if(!$ev->isCancelled()){
 						$this->inventory->setResult($ev->getResult());

@@ -201,7 +201,8 @@ abstract class Living extends Entity implements Damageable{
 		if(isset($this->effects[$effectId])){
 			$effect = $this->effects[$effectId];
 			$hasExpired = $effect->hasExpired();
-			$this->server->getPluginManager()->callEvent($ev = new EntityEffectRemoveEvent($this, $effect));
+			$ev = new EntityEffectRemoveEvent($this, $effect);
+			$ev->call();
 			if($ev->isCancelled()){
 				if($hasExpired and !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
 					$this->sendEffectAdd($ev->getEffect(), true);
@@ -274,7 +275,7 @@ abstract class Living extends Entity implements Damageable{
 		$ev = new EntityEffectAddEvent($this, $effect, $oldEffect);
 		$ev->setCancelled($cancelled);
 
-		$this->server->getPluginManager()->callEvent($ev);
+		$ev->call();
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -617,7 +618,8 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	protected function onDeath() : void{
-		$this->server->getPluginManager()->callEvent($ev = new EntityDeathEvent($this, $this->getDrops()));
+		$ev = new EntityDeathEvent($this, $this->getDrops());
+		$ev->call();
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);
 		}
