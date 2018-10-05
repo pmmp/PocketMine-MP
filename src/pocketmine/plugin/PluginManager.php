@@ -698,18 +698,7 @@ class PluginManager{
 						continue;
 					}
 
-					try{
-						$registration->callEvent($event);
-					}catch(\Throwable $e){
-						$this->server->getLogger()->critical(
-							$this->server->getLanguage()->translateString("pocketmine.plugin.eventError", [
-								$event->getEventName(),
-								$registration->getPlugin()->getDescription()->getFullName(),
-								$e->getMessage(),
-								get_class($registration->getListener())
-							]));
-						$this->server->getLogger()->logException($e);
-					}
+					$registration->callEvent($event);
 				}
 
 				$currentList = $currentList->getParent();
