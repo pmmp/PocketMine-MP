@@ -563,7 +563,7 @@ class PluginManager{
 
 				$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
 
-				$this->server->getPluginManager()->callEvent(new PluginEnableEvent($plugin));
+				(new PluginEnableEvent($plugin))->call();
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
 				$this->disablePlugin($plugin);
@@ -640,7 +640,7 @@ class PluginManager{
 	public function disablePlugin(Plugin $plugin){
 		if($plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.disable", [$plugin->getDescription()->getFullName()]));
-			$this->callEvent(new PluginDisableEvent($plugin));
+			(new PluginDisableEvent($plugin))->call();
 
 			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);
 

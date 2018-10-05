@@ -78,7 +78,7 @@ class ItemEntity extends Entity{
 		}
 
 
-		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
+		(new ItemSpawnEvent($this))->call();
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
@@ -96,7 +96,8 @@ class ItemEntity extends Entity{
 
 			$this->age += $tickDiff;
 			if($this->age > 6000){
-				$this->server->getPluginManager()->callEvent($ev = new ItemDespawnEvent($this));
+				$ev = new ItemDespawnEvent($this);
+				$ev->call();
 				if($ev->isCancelled()){
 					$this->age = 0;
 				}else{
@@ -212,7 +213,8 @@ class ItemEntity extends Entity{
 			return;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($playerInventory, $this));
+		$ev = new InventoryPickupItemEvent($playerInventory, $this);
+		$ev->call();
 		if($ev->isCancelled()){
 			return;
 		}

@@ -559,7 +559,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->level->addEntity($this);
 
 		$this->lastUpdate = $this->server->getTick();
-		$this->server->getPluginManager()->callEvent(new EntitySpawnEvent($this));
+		(new EntitySpawnEvent($this))->call();
 
 		$this->scheduleUpdate();
 
@@ -901,7 +901,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param EntityDamageEvent $source
 	 */
 	public function attack(EntityDamageEvent $source) : void{
-		$this->server->getPluginManager()->callEvent($source);
+		$source->call();
 		if($source->isCancelled()){
 			return;
 		}
@@ -915,7 +915,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param EntityRegainHealthEvent $source
 	 */
 	public function heal(EntityRegainHealthEvent $source) : void{
-		$this->server->getPluginManager()->callEvent($source);
+		$source->call();
 		if($source->isCancelled()){
 			return;
 		}
@@ -1837,7 +1837,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function setMotion(Vector3 $motion) : bool{
 		if(!$this->justCreated){
-			$this->server->getPluginManager()->callEvent($ev = new EntityMotionEvent($this, $motion));
+			$ev = new EntityMotionEvent($this, $motion);
+			$ev->call();
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -1870,7 +1871,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 		$from = Position::fromObject($this, $this->level);
 		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getLevel() : $this->level);
-		$this->server->getPluginManager()->callEvent($ev = new EntityTeleportEvent($this, $from, $to));
+		$ev = new EntityTeleportEvent($this, $from, $to);
+		$ev->call();
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -1896,7 +1898,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 
 		if($this->isValid()){
-			$this->server->getPluginManager()->callEvent($ev = new EntityLevelChangeEvent($this, $this->level, $targetLevel));
+			$ev = new EntityLevelChangeEvent($this, $this->level, $targetLevel);
+			$ev->call();
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -2022,7 +2025,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 */
 	public function close() : void{
 		if(!$this->closed){
-			$this->server->getPluginManager()->callEvent(new EntityDespawnEvent($this));
+			(new EntityDespawnEvent($this))->call();
 			$this->closed = true;
 
 			$this->despawnFromAll();

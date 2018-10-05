@@ -69,7 +69,8 @@ class PlayerInventory extends BaseInventory{
 			return false;
 		}
 
-		$this->getHolder()->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $this->getItem($hotbarSlot), $hotbarSlot));
+		$ev = new PlayerItemHeldEvent($this->getHolder(), $this->getItem($hotbarSlot), $hotbarSlot);
+		$ev->call();
 
 		if($ev->isCancelled()){
 			$this->sendHeldItem($this->getHolder());

@@ -544,7 +544,7 @@ class Level implements ChunkManager, Metadatable{
 			$ev->setCancelled(true);
 		}
 
-		$this->server->getPluginManager()->callEvent($ev);
+		$ev->call();
 
 		if(!$force and $ev->isCancelled()){
 			return false;
@@ -748,7 +748,8 @@ class Level implements ChunkManager, Metadatable{
 			$block = $this->getBlockAt($x, $y, $z);
 			$block->clearCaches(); //for blocks like fences, force recalculation of connected AABBs
 
-			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
+			$ev = new BlockUpdateEvent($block);
+			$ev->call();
 			if(!$ev->isCancelled()){
 				$block->onNearbyBlockChange();
 			}
@@ -1049,7 +1050,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		$this->server->getPluginManager()->callEvent(new LevelSaveEvent($this));
+		(new LevelSaveEvent($this))->call();
 
 		$this->provider->setTime($this->time);
 		$this->saveChunks();
@@ -1557,7 +1558,8 @@ class Level implements ChunkManager, Metadatable{
 			if($update){
 				$this->updateAllLight($block);
 
-				$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
+				$ev = new BlockUpdateEvent($block);
+				$ev->call();
 				if(!$ev->isCancelled()){
 					foreach($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
 						$entity->onNearbyBlockChange();
@@ -1720,7 +1722,7 @@ class Level implements ChunkManager, Metadatable{
 				$ev->setCancelled(!$canBreak);
 			}
 
-			$this->server->getPluginManager()->callEvent($ev);
+			$ev->call();
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -1810,7 +1812,7 @@ class Level implements ChunkManager, Metadatable{
 				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
 			}
 
-			$this->server->getPluginManager()->callEvent($ev);
+			$ev->call();
 			if(!$ev->isCancelled()){
 				if(!$player->isSneaking() and $blockClicked->onActivate($item, $player)){
 					return true;
@@ -1882,7 +1884,7 @@ class Level implements ChunkManager, Metadatable{
 				$ev->setCancelled(!$canPlace);
 			}
 
-			$this->server->getPluginManager()->callEvent($ev);
+			$ev->call();
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -2344,7 +2346,7 @@ class Level implements ChunkManager, Metadatable{
 				$oldChunk = $this->getChunk($x, $z, false);
 				$this->setChunk($x, $z, $chunk, false);
 				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
-					$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($this, $chunk));
+					(new ChunkPopulateEvent($this, $chunk))->call();
 
 					foreach($this->getChunkLoaders($x, $z) as $loader){
 						$loader->onChunkPopulated($chunk);
@@ -2472,7 +2474,7 @@ class Level implements ChunkManager, Metadatable{
 	public function setSpawnLocation(Vector3 $pos){
 		$previousSpawn = $this->getSpawnLocation();
 		$this->provider->setSpawn($pos);
-		$this->server->getPluginManager()->callEvent(new SpawnChangeEvent($this, $previousSpawn));
+		(new SpawnChangeEvent($this, $previousSpawn))->call();
 	}
 
 	public function requestChunk(int $x, int $z, Player $player){
@@ -2694,7 +2696,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$chunk->initChunk($this);
 
-		$this->server->getPluginManager()->callEvent(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()));
+		(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()))->call();
 
 		if(!$chunk->isLightPopulated() and $chunk->isPopulated() and $this->getServer()->getProperty("chunk-ticking.light-updates", false)){
 			$this->getServer()->getAsyncPool()->submitTask(new LightPopulationTask($this, $chunk));
@@ -2748,7 +2750,8 @@ class Level implements ChunkManager, Metadatable{
 		$chunk = $this->chunks[$chunkHash] ?? null;
 
 		if($chunk !== null){
-			$this->server->getPluginManager()->callEvent($ev = new ChunkUnloadEvent($this, $chunk));
+			$ev = new ChunkUnloadEvent($this, $chunk);
+			$ev->call();
 			if($ev->isCancelled()){
 				$this->timings->doChunkUnload->stopTiming();
 

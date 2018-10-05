@@ -793,7 +793,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$ev = new PlayerChangeSkinEvent($this, $this->getSkin(), $skin);
-		$this->server->getPluginManager()->callEvent($ev);
+		$ev->call();
 
 		if($ev->isCancelled()){
 			$this->sendSkin([$this]);
@@ -1024,11 +1024,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerJoinEvent($this,
+		$ev = new PlayerJoinEvent($this,
 			new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.joined", [
 				$this->getDisplayName()
 			])
-		));
+		);
+		$ev->call();
 		if(strlen(trim((string) $ev->getJoinMessage())) > 0){
 			$this->server->broadcastMessage($ev->getJoinMessage());
 		}
@@ -1213,7 +1214,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pos = $pos->floor();
 		$b = $this->level->getBlock($pos);
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerBedEnterEvent($this, $b));
+		$ev = new PlayerBedEnterEvent($this, $b);
+		$ev->call();
 		if($ev->isCancelled()){
 			return false;
 		}
@@ -1240,7 +1242,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if($b instanceof Bed){
 				$b->setOccupied(false);
 			}
-			$this->server->getPluginManager()->callEvent($ev = new PlayerBedLeaveEvent($this, $b));
+			(new PlayerBedLeaveEvent($this, $b))->call();
 
 			$this->sleeping = null;
 			$this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
@@ -1280,7 +1282,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					return false;
 				}
 			}
-			$this->server->getPluginManager()->callEvent($ev = new PlayerAchievementAwardedEvent($this, $achievementId));
+			$ev = new PlayerAchievementAwardedEvent($this, $achievementId);
+			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->achievements[$achievementId] = true;
 				Achievement::broadcast($this, $achievementId);
@@ -1343,7 +1346,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerGameModeChangeEvent($this, $gm));
+		$ev = new PlayerGameModeChangeEvent($this, $gm);
+		$ev->call();
 		if($ev->isCancelled()){
 			if($client){ //gamemode change by client in the GUI
 				$this->sendGamemode();
@@ -1560,7 +1564,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$ev = new PlayerIllegalMoveEvent($this, $newPos, new Vector3($this->lastX, $this->lastY, $this->lastZ));
 				$ev->setCancelled($this->allowMovementCheats);
 
-				$this->server->getPluginManager()->callEvent($ev);
+				$ev->call();
 
 				if(!$ev->isCancelled()){
 					$revert = true;
@@ -1590,7 +1594,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$ev = new PlayerMoveEvent($this, $from, $to);
 
-			$this->server->getPluginManager()->callEvent($ev);
+			$ev->call();
 
 			if(!($revert = $ev->isCancelled())){ //Yes, this is intended
 				if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
@@ -1630,7 +1634,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function jump() : void{
-		$this->server->getPluginManager()->callEvent(new PlayerJumpEvent($this));
+		(new PlayerJumpEvent($this))->call();
 		parent::jump();
 	}
 
@@ -1862,7 +1866,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->setSkin($skin);
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
+		$ev = new PlayerPreLoginEvent($this, "Plugin reason");
+		$ev->call();
 		if($ev->isCancelled()){
 			$this->close("", $ev->getKickMessage());
 
@@ -2041,7 +2046,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->level->registerChunkLoader($this, ((int) floor($pos[0])) >> 4, ((int) floor($pos[2])) >> 4, true);
 
 		parent::__construct($this->level, $this->namedtag);
-		$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
+		$ev = new PlayerLoginEvent($this, "Plugin reason");
+		$ev->call();
 		if($ev->isCancelled()){
 			$this->close($this->getLeaveMessage(), $ev->getKickMessage());
 
@@ -2143,8 +2149,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 
 				$ev = new PlayerCommandPreprocessEvent($this, $messagePart);
-
-				$this->server->getPluginManager()->callEvent($ev);
+				$ev->call();
 
 				if($ev->isCancelled()){
 					break;
@@ -2155,7 +2160,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
 					Timings::$playerCommandTimer->stopTiming();
 				}else{
-					$this->server->getPluginManager()->callEvent($ev = new PlayerChatEvent($this, $ev->getMessage()));
+					$ev = new PlayerChatEvent($this, $ev->getMessage());
+					$ev->call();
 					if(!$ev->isCancelled()){
 						$this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [$ev->getPlayer()->getDisplayName(), $ev->getMessage()]), $ev->getRecipients());
 					}
@@ -2411,8 +2417,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$ev->setCancelled();
 						}
 
-						$this->server->getPluginManager()->callEvent($ev);
-
+						$ev->call();
 						if($ev->isCancelled()){
 							$this->inventory->sendHeldItem($this);
 							return true;
@@ -2557,7 +2562,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								if($this->hasItemCooldown($slot)){
 									$ev->setCancelled();
 								}
-								$this->server->getPluginManager()->callEvent($ev);
+								$ev->call();
 
 								if($ev->isCancelled() or !$this->consumeObject($slot)){
 									$this->inventory->sendContents($this);
@@ -2660,7 +2665,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$ev->setCancelled();
 		}
 
-		$this->server->getPluginManager()->callEvent($ev);
+		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->inventory->setItemInHand($ev->getResultItem());
 		}
@@ -2690,7 +2695,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$ev->setCancelled();
 				}
 
-				$this->getServer()->getPluginManager()->callEvent($ev);
+				$ev->call();
 				if($ev->isCancelled()){
 					$this->inventory->sendHeldItem($this);
 					break;
@@ -2769,7 +2774,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function toggleSprint(bool $sprint) : void{
 		$ev = new PlayerToggleSprintEvent($this, $sprint);
-		$this->server->getPluginManager()->callEvent($ev);
+		$ev->call();
 		if($ev->isCancelled()){
 			$this->sendData($this);
 		}else{
@@ -2779,7 +2784,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function toggleSneak(bool $sneak) : void{
 		$ev = new PlayerToggleSneakEvent($this, $sneak);
-		$this->server->getPluginManager()->callEvent($ev);
+		$ev->call();
 		if($ev->isCancelled()){
 			$this->sendData($this);
 		}else{
@@ -2792,7 +2797,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerAnimationEvent($this, $packet->action));
+		$ev = new PlayerAnimationEvent($this, $packet->action);
+		$ev->call();
 		if($ev->isCancelled()){
 			return true;
 		}
@@ -2836,7 +2842,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->doCloseInventory();
 
 		if(isset($this->windowIndex[$packet->windowId])){
-			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this));
+			(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this))->call();
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
 			return true;
 		}elseif($packet->windowId === 255){
@@ -2859,7 +2865,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]));
 			return true;
 		}elseif($isFlying !== $this->isFlying()){
-			$this->server->getPluginManager()->callEvent($ev = new PlayerToggleFlightEvent($this, $isFlying));
+			$ev = new PlayerToggleFlightEvent($this, $isFlying);
+			$ev->call();
 			if($ev->isCancelled()){
 				$this->sendSettings();
 			}else{
@@ -2927,7 +2934,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$ev->setCancelled();
 			}
 
-			$this->server->getPluginManager()->callEvent($ev);
+			$ev->call();
 			if($ev->isCancelled()){
 				$tile->spawnTo($this);
 				return true;
@@ -3000,7 +3007,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				return false;
 		}
 
-		$this->getServer()->getPluginManager()->callEvent($event = new PlayerEditBookEvent($this, $oldBook, $newBook, $packet->type, $modifiedPages));
+		$event = new PlayerEditBookEvent($this, $oldBook, $newBook, $packet->type, $modifiedPages);
+		$event->call();
 		if($event->isCancelled()){
 			return true;
 		}
@@ -3035,7 +3043,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
-		$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
+		$ev = new DataPacketSendEvent($this, $packet);
+		$ev->call();
 		if($ev->isCancelled()){
 			$timings->stopTiming();
 			return false;
@@ -3066,7 +3075,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
-			$this->server->getPluginManager()->callEvent($ev = new DataPacketSendEvent($this, $packet));
+			$ev = new DataPacketSendEvent($this, $packet);
+			$ev->call();
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -3114,8 +3124,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool if transfer was successful.
 	 */
 	public function transfer(string $address, int $port = 19132, string $message = "transfer") : bool{
-		$this->server->getPluginManager()->callEvent($ev = new PlayerTransferEvent($this, $address, $port, $message));
-
+		$ev = new PlayerTransferEvent($this, $address, $port, $message);
+		$ev->call();
 		if(!$ev->isCancelled()){
 			$pk = new TransferPacket();
 			$pk->address = $ev->getAddress();
@@ -3139,7 +3149,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function kick(string $reason = "", bool $isAdmin = true, $quitMessage = null) : bool{
-		$this->server->getPluginManager()->callEvent($ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage()));
+		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
+		$ev->call();
 		if(!$ev->isCancelled()){
 			$reason = $ev->getReason();
 			$message = $reason;
@@ -3384,7 +3395,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->stopSleep();
 
 				if($this->spawned){
-					$this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, $reason));
+					$ev = new PlayerQuitEvent($this, $message, $reason);
+					$ev->call();
 					if($ev->getQuitMessage() != ""){
 						$this->server->broadcastMessage($ev->getQuitMessage());
 					}
@@ -3532,7 +3544,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		//main inventory and drops the rest on the ground.
 		$this->doCloseInventory();
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerDeathEvent($this, $this->getDrops()));
+		$ev = new PlayerDeathEvent($this, $this->getDrops());
+		$ev->call();
 
 		if(!$ev->getKeepInventory()){
 			foreach($ev->getDrops() as $item){
@@ -3567,7 +3580,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return;
 		}
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
+		$ev = new PlayerRespawnEvent($this, $this->getSpawn());
+		$ev->call();
 
 		$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getLevel());
 		$this->teleport($realSpawn);
