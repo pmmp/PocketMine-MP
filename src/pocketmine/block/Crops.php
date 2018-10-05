@@ -28,7 +28,6 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\Server;
 
 abstract class Crops extends Flowable{
 	/** @var int */
@@ -67,8 +66,8 @@ abstract class Crops extends Flowable{
 				$block->age = 7;
 			}
 
-			Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
-
+			$ev = new BlockGrowEvent($this, $block);
+			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->getLevel()->setBlock($this, $ev->getNewState());
 			}
@@ -95,8 +94,8 @@ abstract class Crops extends Flowable{
 		if($this->age < 7 and mt_rand(0, 2) === 1){
 			$block = clone $this;
 			++$block->age;
-			Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
-
+			$ev = new BlockGrowEvent($this, $block);
+			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->getLevel()->setBlock($this, $ev->getNewState());
 			}

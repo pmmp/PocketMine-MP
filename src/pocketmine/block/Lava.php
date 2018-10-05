@@ -29,7 +29,6 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Facing;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\Server;
 
 class Lava extends Liquid{
 
@@ -108,7 +107,7 @@ class Lava extends Liquid{
 		$entity->attack($ev);
 
 		$ev = new EntityCombustByBlockEvent($this, $entity, 15);
-		Server::getInstance()->getPluginManager()->callEvent($ev);
+		$ev->call();
 		if(!$ev->isCancelled()){
 			$entity->setOnFire($ev->getDuration());
 		}

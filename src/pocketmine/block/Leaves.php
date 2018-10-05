@@ -108,8 +108,8 @@ class Leaves extends Transparent{
 
 	public function onRandomTick() : void{
 		if(!$this->noDecay and $this->checkDecay){
-			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
-
+			$ev = new LeavesDecayEvent($this);
+			$ev->call();
 			if($ev->isCancelled() or $this->findLog($this)){
 				$this->getLevel()->setBlock($this, $this, false);
 			}else{
