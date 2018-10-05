@@ -43,7 +43,6 @@ use pocketmine\utils\Utils;
  * Manages all the plugins
  */
 class PluginManager{
-	private const MAX_EVENT_CALL_DEPTH = 50;
 
 	/** @var Server */
 	private $server;
@@ -65,9 +64,6 @@ class PluginManager{
 	 * @var PluginLoader[]
 	 */
 	protected $fileAssociations = [];
-
-	/** @var int */
-	private $eventCallDepth = 0;
 
 	/** @var string|null */
 	private $pluginDataDirectory;
@@ -678,33 +674,13 @@ class PluginManager{
 	/**
 	 * Calls an event
 	 *
+	 * @deprecated
+	 * @see Event::call()
+	 *
 	 * @param Event $event
 	 */
 	public function callEvent(Event $event){
-		if($this->eventCallDepth >= self::MAX_EVENT_CALL_DEPTH){
-			//this exception will be caught by the parent event call if all else fails
-			throw new \RuntimeException("Recursive event call detected (reached max depth of " . self::MAX_EVENT_CALL_DEPTH . " calls)");
-		}
-
-		$handlerList = HandlerList::getHandlerListFor(get_class($event));
-		assert($handlerList !== null, "Called event should have a valid HandlerList");
-
-		++$this->eventCallDepth;
-		foreach(EventPriority::ALL as $priority){
-			$currentList = $handlerList;
-			while($currentList !== null){
-				foreach($currentList->getListenersByPriority($priority) as $registration){
-					if(!$registration->getPlugin()->isEnabled()){
-						continue;
-					}
-
-					$registration->callEvent($event);
-				}
-
-				$currentList = $currentList->getParent();
-			}
-		}
-		--$this->eventCallDepth;
+		$event->call();
 	}
 
 	/**
