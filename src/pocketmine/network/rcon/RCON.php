@@ -97,7 +97,8 @@ class RCON{
 		$response = new RemoteConsoleCommandSender();
 		$command = $this->instance->cmd;
 
-		$this->server->getPluginManager()->callEvent($ev = new RemoteServerCommandEvent($response, $command));
+		$ev = new RemoteServerCommandEvent($response, $command);
+		$ev->call();
 
 		if(!$ev->isCancelled()){
 			$this->server->dispatchCommand($ev->getSender(), $ev->getCommand());

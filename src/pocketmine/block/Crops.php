@@ -27,7 +27,6 @@ use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\Server;
 
 abstract class Crops extends Flowable{
 
@@ -50,8 +49,8 @@ abstract class Crops extends Flowable{
 				$block->meta = 7;
 			}
 
-			Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
-
+			$ev = new BlockGrowEvent($this, $block);
+			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->getLevel()->setBlock($this, $ev->getNewState(), true, true);
 			}
@@ -79,8 +78,8 @@ abstract class Crops extends Flowable{
 			if($this->meta < 0x07){
 				$block = clone $this;
 				++$block->meta;
-				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
-
+				$ev = new BlockGrowEvent($this, $block);
+				$ev->call();
 				if(!$ev->isCancelled()){
 					$this->getLevel()->setBlock($this, $ev->getNewState(), true, true);
 				}

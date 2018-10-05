@@ -98,7 +98,7 @@ class Network{
 				$logger->logException($e);
 			}
 
-			$this->server->getPluginManager()->callEvent(new NetworkInterfaceCrashEvent($interface, $e));
+			(new NetworkInterfaceCrashEvent($interface, $e))->call();
 
 			$interface->emergencyShutdown();
 			$this->unregisterInterface($interface);
@@ -110,7 +110,8 @@ class Network{
 	 * @param SourceInterface $interface
 	 */
 	public function registerInterface(SourceInterface $interface){
-		$this->server->getPluginManager()->callEvent($ev = new NetworkInterfaceRegisterEvent($interface));
+		$ev = new NetworkInterfaceRegisterEvent($interface);
+		$ev->call();
 		if(!$ev->isCancelled()){
 			$interface->start();
 			$this->interfaces[$hash = spl_object_hash($interface)] = $interface;
@@ -126,7 +127,7 @@ class Network{
 	 * @param SourceInterface $interface
 	 */
 	public function unregisterInterface(SourceInterface $interface){
-		$this->server->getPluginManager()->callEvent(new NetworkInterfaceUnregisterEvent($interface));
+		(new NetworkInterfaceUnregisterEvent($interface))->call();
 		unset($this->interfaces[$hash = spl_object_hash($interface)], $this->advancedInterfaces[$hash]);
 	}
 

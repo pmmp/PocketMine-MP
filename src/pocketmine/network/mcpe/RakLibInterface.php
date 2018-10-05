@@ -137,7 +137,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 
 	public function openSession(string $identifier, string $address, int $port, int $clientID) : void{
 		$ev = new PlayerCreationEvent($this, Player::class, Player::class, $address, $port);
-		$this->server->getPluginManager()->callEvent($ev);
+		$ev->call();
 		$class = $ev->getPlayerClass();
 
 		/**

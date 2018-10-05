@@ -147,8 +147,8 @@ class Leaves extends Transparent{
 			$this->meta &= 0x03;
 			$visited = [];
 
-			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
-
+			$ev = new LeavesDecayEvent($this);
+			$ev->call();
 			if($ev->isCancelled() or $this->findLog($this, $visited, 0)){
 				$this->getLevel()->setBlock($this, $this, false, false);
 			}else{

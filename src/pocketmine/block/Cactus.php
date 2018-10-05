@@ -31,7 +31,6 @@ use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\Server;
 
 class Cactus extends Transparent{
 
@@ -95,7 +94,8 @@ class Cactus extends Transparent{
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
 					if($b->getId() === self::AIR){
-						Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($b, BlockFactory::get(Block::CACTUS)));
+						$ev = new BlockGrowEvent($b, BlockFactory::get(Block::CACTUS));
+						$ev->call();
 						if(!$ev->isCancelled()){
 							$this->getLevel()->setBlock($b, $ev->getNewState(), true);
 						}

@@ -31,7 +31,6 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\Server;
 
 class Fire extends Flowable{
 
@@ -69,7 +68,7 @@ class Fire extends Flowable{
 		if($entity instanceof Arrow){
 			$ev->setCancelled();
 		}
-		Server::getInstance()->getPluginManager()->callEvent($ev);
+		$ev->call();
 		if(!$ev->isCancelled()){
 			$entity->setOnFire($ev->getDuration());
 		}
@@ -153,7 +152,8 @@ class Fire extends Flowable{
 
 	private function burnBlock(Block $block, int $chanceBound) : void{
 		if(mt_rand(0, $chanceBound) < $block->getFlammability()){
-			$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockBurnEvent($block, $this));
+			$ev = new BlockBurnEvent($block, $this);
+			$ev->call();
 			if(!$ev->isCancelled()){
 				$block->onIncinerate();
 

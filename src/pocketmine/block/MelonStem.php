@@ -27,7 +27,6 @@ use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
-use pocketmine\Server;
 
 class MelonStem extends Crops{
 
@@ -46,7 +45,8 @@ class MelonStem extends Crops{
 			if($this->meta < 0x07){
 				$block = clone $this;
 				++$block->meta;
-				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
+				$ev = new BlockGrowEvent($this, $block);
+				$ev->call();
 				if(!$ev->isCancelled()){
 					$this->getLevel()->setBlock($this, $ev->getNewState(), true);
 				}
@@ -60,7 +60,8 @@ class MelonStem extends Crops{
 				$side = $this->getSide(mt_rand(2, 5));
 				$d = $side->getSide(Vector3::SIDE_DOWN);
 				if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
-					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, BlockFactory::get(Block::MELON_BLOCK)));
+					$ev = new BlockGrowEvent($side, BlockFactory::get(Block::MELON_BLOCK));
+					$ev->call();
 					if(!$ev->isCancelled()){
 						$this->getLevel()->setBlock($side, $ev->getNewState(), true);
 					}
