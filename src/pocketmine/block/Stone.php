@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
 
 class Stone extends Solid{
