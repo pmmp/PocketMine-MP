@@ -26,9 +26,9 @@ namespace pocketmine\level\biome;
 
 use pocketmine\entity\Living;
 use pocketmine\utils\Utils;
-use pocketmine\utils\WeightedItem;
+use pocketmine\utils\WeightedRandomItem;
 
-class SpawnListEntry extends WeightedItem{
+class SpawnListEntry extends WeightedRandomItem{
 
 	public $entityClass;
 	public $minGroupCount;
@@ -36,8 +36,6 @@ class SpawnListEntry extends WeightedItem{
 
 	public function __construct(string $entityClass, int $itemWeight, int $minGroupCount, int $maxGroupCount){
 		parent::__construct($itemWeight);
-
-		Utils::testValidInstance($entityClass, Living::class);
 
 		$this->entityClass = $entityClass;
 		$this->minGroupCount = $minGroupCount;

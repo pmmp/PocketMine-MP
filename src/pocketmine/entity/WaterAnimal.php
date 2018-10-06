@@ -27,6 +27,8 @@ use pocketmine\event\entity\EntityDamageEvent;
 
 abstract class WaterAnimal extends Creature implements Ageable{
 
+	public const SPAWN_PLACEMENT_TYPE = SpawnPlacementTypes::PLACEMENT_TYPE_IN_WATER;
+
 	public function isBaby() : bool{
 		return $this->getGenericFlag(self::DATA_FLAG_BABY);
 	}
@@ -38,12 +40,5 @@ abstract class WaterAnimal extends Creature implements Ageable{
 	public function onAirExpired() : void{
 		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
 		$this->attack($ev);
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getSpawnPlacementType() : int{
-		return SpawnPlacementTypes::PLACEMENT_TYPE_IN_WATER;
 	}
 }

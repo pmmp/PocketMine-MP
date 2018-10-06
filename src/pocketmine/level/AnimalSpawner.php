@@ -1,247 +1,275 @@
 <?php
 
+/*
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
+ *
+ */
+
+declare(strict_types=1);
+
 namespace pocketmine\level;
 
 use pocketmine\block\Block;
+use pocketmine\block\Leaves;
+use pocketmine\block\Liquid;
+use pocketmine\block\Water;
 use pocketmine\entity\Animal;
 use pocketmine\entity\Creature;
 use pocketmine\entity\CreatureType;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
+use pocketmine\entity\Mob;
 use pocketmine\entity\Monster;
+use pocketmine\entity\SpawnPlacementTypes;
 use pocketmine\entity\WaterAnimal;
+use pocketmine\level\biome\Biome;
+use pocketmine\level\biome\SpawnListEntry;
 use pocketmine\math\Vector3;
+use pocketmine\Player;
+use pocketmine\utils\Random;
+use pocketmine\utils\WeightedRandomItem;
 
 class AnimalSpawner{
 
 	public const MAX_MOBS = 289;
 
-	/** @var int[][] */
-	protected $eligibleChunkCoordinates = [];
 	/** @var CreatureType[] */
 	public static $creatureTypes = [];
 
 	public function __construct(){
-		self::$creatureTypes[] = new CreatureType(Monster::class, 70, Block::AIR, false);
-		self::$creatureTypes[] = new CreatureType(Animal::class, 10, Block::AIR, true);
-		self::$creatureTypes[] = new CreatureType(Creature::class, 15, Block::AIR, false);
-		self::$creatureTypes[] = new CreatureType(WaterAnimal::class, 5, Block::STILL_WATER, false);
+		self::$creatureTypes[Monster::class] = new CreatureType(Monster::class, 70, Block::AIR, false);
+		self::$creatureTypes[Animal::class] = new CreatureType(Animal::class, 10, Block::AIR, true);
+		self::$creatureTypes[Creature::class] = new CreatureType(Creature::class, 15, Block::AIR, false);
+		self::$creatureTypes[WaterAnimal::class] = new CreatureType(WaterAnimal::class, 5, Block::STILL_WATER, false);
 	}
 
-
-	public function findChunksForSpawning(Level $level, bool $spawnHostileMobs, bool $spawnPeacefulMobs, bool $isDayTime){
-		/*if(!$spawnHostileMobs and !$spawnPeacefulMobs){
+	/**
+	 * @param Level $level
+	 * @param bool  $spawnHostileMobs
+	 * @param bool  $spawnPeacefulMobs
+	 * @param bool  $timeReady
+	 * @param array $eligibleChunks
+	 *
+	 * @return int
+	 */
+	public function findChunksForSpawning(Level $level, bool $spawnHostileMobs, bool $spawnPeacefulMobs, bool $timeReady, array $eligibleChunks) : int{
+		if(!$spawnHostileMobs and !$spawnPeacefulMobs){
 			return 0;
 		}else{
-			$this->eligibleChunkCoordinates = [];
 			$i = 0;
+			$i4 = 0;
+			$spawn = $level->getSpawnLocation();
 
-			foreach($level->getPlayers() as $player){
-				if(!$player->isSpectator()){
-					$j = (int) floor($player->x / 16.0);
-					$k = (int) floor($player->z / 16.0);
-					$l = 8;
+			foreach(self::$creatureTypes as $creatureType){
+				if((!$creatureType->isPeacefulCreature() or $spawnPeacefulMobs) and ($creatureType->isPeacefulCreature() or $spawnHostileMobs) and (!$creatureType->getCreatureClass() === Animal::class or $timeReady)){
+					$a = $creatureType->getCreatureClass();
+					$j4 = count(array_filter($level->getEntities(), function(Entity $entity) use ($a){
+						return get_class($entity) == $a;
+					}));
+					$k4 = $creatureType->getMaxSpawn() * $i / self::MAX_MOBS;
 
-					for($i1 = -$l; $i1 <= $l; ++$i1){
-						for($j1 = -$l; $j1 <= $l; ++$j1){
-							$flag = $i1 == -$l or $i1 == $l or $j1 == -$l or $j1 == $l;
-							$hash = Level::blockHash($cX = $i1 + $j, 0, $cZ = $j1 + $k);
+					if($j4 <= $k4){
+						foreach($eligibleChunks as $chunkHash => $v){
+							Level::getXZ($chunkHash, $cx, $cz);
 
-							if(!isset($this->eligibleChunkCoordinates[$hash])){
-								++$i;
+							$pos = self::getRandomChunkPosition($level, $cx, $cz);
+							$k1 = $pos->x;
+							$l1 = $pos->y;
+							$i2 = $pos->z;
+							$block = $level->getBlock($pos);
 
-								if(!$flag and $level->isChunkLoaded($j, $k)){
-									$this->eligibleChunkCoordinates[$hash] = [
-										$cX,
-										$cZ
-									];
+							if(!$block->isSolid()){
+								$j2 = 0;
+
+								for($k2 = 0; $k2 < 3; ++$k2){
+									$l2 = $k1;
+									$i3 = $l1;
+									$j3 = $i2;
+									$k3 = 6;
+
+									for($l3 = 0; $l3 < 4; ++$l3){
+										$l2 += $level->random->nextBoundedInt($k3) - $level->random->nextBoundedInt($k3);
+										$i3 += $level->random->nextBoundedInt(1) - $level->random->nextBoundedInt(1);
+										$j3 += $level->random->nextBoundedInt($k3) - $level->random->nextBoundedInt($k3);
+										$pos1 = new Vector3($l2, $i3, $j3);
+										$f = $l2 + 0.5;
+										$f1 = $j3 + 0.5;
+
+										$nextPos = new Vector3($f, $i3, $f1);
+
+										if($level->getNearestEntity($nextPos, 24, Player::class) === null and $pos1->distanceSquared($spawn) >= 576){
+											$entry = $level->getSpawnListEntryForTypeAt($creatureType, $pos1);
+
+											if($entry === null){
+												break;
+											}
+
+											if(self::canCreatureTypeSpawnAtLocation(Entity::$spawnPlacementTypes[$entry->entityClass] ?? 0, $level, $pos1)){
+												$entity = null;
+												try{
+													$class = $entry->entityClass;
+													/** @var Living $entity */
+													$entity = new $class($level, Entity::createBaseNBT($pos1));
+												}catch(\Exception $e){
+													return $i4;
+												}
+
+												if($entity instanceof Mob){
+													$entity->setAiEnabled(true);
+												}
+
+												$entity->setRotation($level->random->nextFloat() * 360, 0);
+
+												if($entity->canSpawnHere() and count($level->getCollidingEntities($entity->getBoundingBox(), $entity)) === 0){
+													// TODO: implement mob initial spawn
+
+													++$j2;
+													$entity->spawnToAll();
+
+
+													if($j2 >= $entity->getMaxSpawnedInChunk()){
+														continue 3;
+													}
+												}
+
+												$i4 += $j2;
+											}
+										}
+									}
 								}
 							}
 						}
 					}
 				}
 			}
+		}
 
-			$i4 = 0;
-			$spawn = $level->getSpawnLocation();
-
-			foreach(self::$creatureTypes as $creatureType)
-            {
-	            if((!$creatureType->isPeacefulCreature() or $spawnPeacefulMobs) and ($creatureType->isPeacefulCreature() or $spawnHostileMobs) and (!$creatureType->getCreatureClass() === Animal::class or $isDayTime)){
-		            $a = $creatureType->getCreatureClass();
-	            	$j4 = count(array_filter($level->getEntities(), function(Entity $entity) use ($a){
-	            		return get_class($entity) == $a;
-		            }));
-		            $k4 = $creatureType->getMaxSpawn() * $i / self::MAX_MOBS;
-
-		            if($j4 <= $k4){
-		            	switch(1){
-			            case 1:
-
-			            foreach($this->eligibleChunkCoordinates as $coords)
-                        {
-	                        BlockPos blockpos = getRandomChunkPosition($level, chunkcoordintpair1 . chunkXPos, chunkcoordintpair1 . chunkZPos);
-                            $k1 = blockpos . getX();
-                            $l1 = blockpos . getY();
-                            $i2 = blockpos . getZ();
-                            Block block = $level . getBlockState(blockpos) . getBlock();
-
-                            if(!block . isNormalCube()){
-			            $j2 = 0;
-
-			            for($k2 = 0;
-			            k2 < 3;
-			            ++k2){
-			            $l2 = k1;
-			            $i3 = l1;
-			            $j3 = i2;
-			            $k3 = 6;
-			            BiomeGenBase . SpawnListEntry biomegenbase$spawnlistentry = null;
-			            IEntityLivingData ientitylivingdata = null;
-
-			            for($l3 = 0;
-			            l3 < 4;
-			            ++l3){
-			            l2 += $level . rand . nextInt(k3) - $level . rand . nextInt(k3);
-			            i3 += $level . rand . nextInt(1) - $level . rand . nextInt(1);
-			            j3 += $level . rand . nextInt(k3) - $level . rand . nextInt(k3);
-			            BlockPos blockpos1 = new BlockPos(l2, i3, j3);
-			            float f = (float) l2 + 0.5F;
-			            float f1 = (float) j3 + 0.5F;
-
-			            if(!$level . isAnyPlayerWithinRangeAt((double) f, (double) i3, (double) f1, 24.0D) and blockpos2 . distanceSq((double) f, (double) i3, (double) f1) >= 576.0D){
-			            if(biomegenbase$spawnlistentry == null){
-			            biomegenbase$spawnlistentry = $level . getSpawnListEntryForTypeAt(enumcreaturetype, blockpos1);
-
-			            if(biomegenbase$spawnlistentry == null){
-			            break;
-			            }
-		            }
-
-			            if($level . canCreatureTypeSpawnHere(enumcreaturetype, biomegenbase$spawnlistentry, blockpos1) and canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry . getPlacementForEntity(biomegenbase$spawnlistentry . entityClass), $level, blockpos1))
-                                            {
-	                                            EntityLiving entityliving;
-
-                                                try{
-	                                                entityliving = (EntityLiving)biomegenbase$spawnlistentry . entityClass . getConstructor(new Class[]{World .class}).newInstance(new Object[] {$level});
-                                                }catch(Exception exception)
-                                                {
-	                                                exception . printStackTrace();
-	                                                return i4;
-                                                }
-
-                                                entityliving . setLocationAndAngles((double) f, (double) i3, (double) f1, $level . rand . nextFloat() * 360.0F, 0.0F);
-
-                                                if(entityliving . getCanSpawnHere() and entityliving . isNotColliding()){
-	                                                ientitylivingdata = entityliving . onInitialSpawn($level . getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata);
-
-	                                                if(entityliving . isNotColliding()){
-		                                                ++j2;
-		                                                $level . spawnEntityInWorld(entityliving);
-	                                                }
-
-	                                                if(j2 >= entityliving . getMaxSpawnedInChunk()){
-		                                                continue label374;
-	                                                }
-                                                }
-
-                                                i4 += j2;
-                                            }
-                                        }
-                                    }
-                                }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return i4;
-        }*/
+		return $i4;
 	}
 
+	/**
+	 * @param Level $level
+	 * @param int   $x
+	 * @param int   $z
+	 *
+	 * @return Vector3
+	 */
 	public static function getRandomChunkPosition(Level $level, int $x, int $z){
 		$i = $x * 16 + $level->random->nextBoundedInt(16);
 		$j = $z * 16 + $level->random->nextBoundedInt(16);
-		$k = $level->getHighestBlockAt($i, $j);
+		$k = $level->getHighestBlockAt($i, $j) + 1;
 		$l = $level->random->nextBoundedInt($k > 0 ? $k : 256);
 		return new Vector3($i, $l, $j);
 	}
 
-	/*public
-	static canCreatureTypeSpawnAtLocation(EntityLiving . SpawnPlacementType p_180267_0_, World worldIn, BlockPos pos)
-		{
-			if(!worldIn . getWorldBorder() . contains(pos)){
+	/**
+	 * @param int     $spawnPlacementType
+	 * @param Level   $level
+	 * @param Vector3 $pos
+	 *
+	 * @return bool
+	 */
+	public static function canCreatureTypeSpawnAtLocation(int $spawnPlacementType, Level $level, Vector3 $pos){
+		$block = $level->getBlock($pos);
+
+		if($spawnPlacementType === SpawnPlacementTypes::PLACEMENT_TYPE_IN_WATER){
+			return $block instanceof Water and $level->getBlock($pos->down()) instanceof Water and !$level->getBlock($pos->up())->isSolid();
+		}else{
+			$block1 = $level->getBlock($pos->down());
+
+			if(!$block1->isSolid()){
 				return false;
 			}else{
-				Block block = worldIn . getBlockState(pos) . getBlock();
-
-				if(p_180267_0_ == EntityLiving . SpawnPlacementType . IN_WATER){
-					return block . getMaterial() . isLiquid() and worldIn . getBlockState(pos . down()) . getBlock() . getMaterial() . isLiquid() and !worldIn . getBlockState(pos . up()) . getBlock() . isNormalCube();
-				}else{
-					BlockPos blockpos = pos . down();
-
-					if(!World . doesBlockHaveSolidTopSurface(worldIn, blockpos)){
-						return false;
-					}else{
-						Block block1 = worldIn . getBlockState(blockpos) . getBlock();
-						bool flag = block1 != Blocks . bedrock and block1 != Blocks . barrier;
-						return flag and !block . isNormalCube() and !block . getMaterial() . isLiquid() and !worldIn . getBlockState(pos . up()) . getBlock() . isNormalCube();
-					}
-				}
+				$flag = $block1->getId() !== Block::BEDROCK and $block1->getId() !== Block::BARRIER;
+				return $flag and !$block->isSolid() and !($block instanceof Liquid) and !$level->getBlock($pos->up())->isSolid();
 			}
-		}*/
+		}
+	}
 
 	/**
 	 * Called during chunk generation to spawn initial creatures.
+	 *
+	 * @param Level  $level
+	 * @param Biome  $biome
+	 * @param int    $sourceX
+	 * @param int    $sourceZ
+	 * @param int    $xRange
+	 * @param int    $zRange
+	 * @param Random $random
 	 */
-	/*public static void performWorldGenSpawning(World worldIn, BiomeGenBase p_77191_1_, $p_77191_2_, $p_77191_3_, $p_77191_4_, $p_77191_5_, Random p_77191_6_)
-	{
-		List<BiomeGenBase . SpawnListEntry > list = p_77191_1_ . getSpawnableList(EnumCreatureType . CREATURE);
+	public static function performChunkGeneratorSpawning(Level $level, Biome $biome, int $sourceX, int $sourceZ, int $xRange, int $zRange, Random $random){
+		$list = $biome->getSpawnableList(self::$creatureTypes[Animal::class]);
 
-		if(!list.isEmpty()){
-			while(p_77191_6_ . nextFloat() < p_77191_1_ . getSpawningChance()){
-				BiomeGenBase . SpawnListEntry biomegenbase$spawnlistentry = (BiomeGenBase . SpawnListEntry)WeightedRandom . getRandomItem(worldIn . rand, list);
-				$i = biomegenbase$spawnlistentry . minGroupCount + p_77191_6_ . nextInt(1 + biomegenbase$spawnlistentry . maxGroupCount - biomegenbase$spawnlistentry . minGroupCount);
-				IEntityLivingData ientitylivingdata = null;
-				$j = p_77191_2_ + p_77191_6_ . nextInt(p_77191_4_);
-				$k = p_77191_3_ + p_77191_6_ . nextInt(p_77191_5_);
-				$l = j;
-				$i1 = k;
+		if(!empty($list)){
+			while($random->nextFloat() < $biome->getSpawningChance()){
+				/** @var SpawnListEntry $entry */
+				$entry = WeightedRandomItem::getRandomItem($random, $list, WeightedRandomItem::getTotalWeight($list));
+				if($entry === null) continue;
 
-				for($j1 = 0; j1 < i; ++j1)
-				{
-					bool flag = false;
+				$i = $entry->minGroupCount + $random->nextBoundedInt($entry->maxGroupCount - $entry->minGroupCount + 1);
+				$j = $sourceX + $random->nextBoundedInt($xRange);
+				$k = $sourceZ + $random->nextBoundedInt($zRange);
+				$l = $j;
+				$i1 = $k;
 
-					for($k1 = 0; !flag and k1 < 4; ++k1)
-					{
-						BlockPos blockpos = worldIn . getTopSolidOrLiquidBlock(new BlockPos(j, 0, k));
+				for($j1 = 0; $j1 < $i; ++$j1){
+					$flag = false;
 
-						if(canCreatureTypeSpawnAtLocation(EntityLiving . SpawnPlacementType . ON_GROUND, worldIn, blockpos)){
-							EntityLiving entityliving;
+					for($k1 = 0; !$flag and $k1 < 4; ++$k1){
+						$pos = new Vector3($j, $level->getHighestBlockAt($j, $k) + 1, $k);
+
+						for(; $pos->y > 0; $pos->y--){
+							$down = $level->getBlock($pos->down());
+
+							if(!($down instanceof Leaves)){
+								break;
+							}
+						}
+
+						if(self::canCreatureTypeSpawnAtLocation(SpawnPlacementTypes::PLACEMENT_TYPE_ON_GROUND, $level, $pos)){
+							$entity = null;
 
 							try{
-								entityliving = (EntityLiving)biomegenbase$spawnlistentry . entityClass . getConstructor(new Class[]{World .class}).newInstance(new Object[] {worldIn});
-							}catch(Exception exception)
-							{
-								exception . printStackTrace();
+								$class = $entry->entityClass;
+								/** @var Entity $entity */
+								$entity = new $class($level, Entity::createBaseNBT($pos));
+							}catch(\Exception $e){
 								continue;
 							}
 
-							entityliving . setLocationAndAngles((double) ((float) j + 0.5F), (double) blockpos . getY(), (double) ((float) k + 0.5F), p_77191_6_ . nextFloat() * 360.0F, 0.0F);
-							worldIn . spawnEntityInWorld(entityliving);
-							ientitylivingdata = entityliving . onInitialSpawn(worldIn . getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata);
-							flag = true;
+							if($entity instanceof Mob){
+								$entity->setAiEnabled(true);
+							}
+
+							$entity->setRotation($random->nextFloat() * 360, 0);
+							$entity->spawnToAll();
+							// TODO: entity initial spawn
+							$flag = true;
 						}
 
-						j += p_77191_6_ . nextInt(5) - p_77191_6_ . nextInt(5);
+						$j += $random->nextBoundedInt(5) - $random->nextBoundedInt(5);
 
-						for(k += p_77191_6_ . nextInt(5) - p_77191_6_ . nextInt(5); j < p_77191_2_ or j >= p_77191_2_ + p_77191_4_ or k < p_77191_3_ or k >= p_77191_3_ + p_77191_4_; k = i1 + p_77191_6_ . nextInt(5) - p_77191_6_ . nextInt(5)){
-							j = l + p_77191_6_ . nextInt(5) - p_77191_6_ . nextInt(5);
+						for($k += $random->nextBoundedInt(5) - $random->nextBoundedInt(5); $j < $sourceX or $j >= $sourceX + $xRange or $k < $sourceZ or $k >= $sourceZ + $zRange; $k = $i1 + $random->nextBoundedInt(5) - $random->nextBoundedInt(5)){
+							$j = $l + $random->nextBoundedInt(5) - $random->nextBoundedInt(5);
 						}
 					}
 				}
 			}
 		}
-	}*/
+	}
 }

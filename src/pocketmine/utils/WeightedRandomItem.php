@@ -24,7 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-class WeightedItem{
+class WeightedRandomItem{
 
 	/** @var int */
 	public $itemWeight = 0;
@@ -34,7 +34,7 @@ class WeightedItem{
 	}
 
 	/**
-	 * @param WeightedItem[] $weightedItems
+	 * @param WeightedRandomItem[] $weightedItems
 	 *
 	 * @return int
 	 */
@@ -48,26 +48,26 @@ class WeightedItem{
 	}
 
 	/**
-	 * @param Random $random
-	 * @param WeightedItem[]  $items
-	 * @param int    $totalWeight
+	 * @param Random               $random
+	 * @param WeightedRandomItem[] $items
+	 * @param int                  $totalWeight
 	 *
-	 * @return null|WeightedItem
+	 * @return null|WeightedRandomItem
 	 */
-	public static function getRandomItem(Random $random, array $items, int $totalWeight) : ?WeightedItem{
-		Utils::validateObjectArray($items, WeightedItem::class);
+	public static function getRandomItem(Random $random, array $items, int $totalWeight) : ?WeightedRandomItem{
+		Utils::validateObjectArray($items, WeightedRandomItem::class);
 
 		return self::getRandomItemFromCollection($items, $random->nextBoundedInt($totalWeight));
 	}
 
 	/**
-	 * @param WeightedItem[] $collection
-	 * @param int   $weight
+	 * @param WeightedRandomItem[] $collection
+	 * @param int                  $weight
 	 *
-	 * @return null|WeightedItem
+	 * @return null|WeightedRandomItem
 	 */
-	public static function getRandomItemFromCollection(array $collection, int $weight) : ?WeightedItem{
-		Utils::validateObjectArray($collection, WeightedItem::class);
+	public static function getRandomItemFromCollection(array $collection, int $weight) : ?WeightedRandomItem{
+		Utils::validateObjectArray($collection, WeightedRandomItem::class);
 
 		foreach($collection as $item){
 			$weight -= $item->itemWeight;

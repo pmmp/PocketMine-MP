@@ -38,8 +38,6 @@ class CreatureType{
 	protected $peacefulCreature = false;
 
 	public function __construct(string $creatureClass, int $maxSpawn, int $materialIn, bool $peacefulCreature){
-		Utils::testValidInstance($creatureClass, Creature::class);
-
 		$this->creatureClass = $creatureClass;
 		$this->maxSpawn = $maxSpawn;
 		$this->materialIn = $materialIn;

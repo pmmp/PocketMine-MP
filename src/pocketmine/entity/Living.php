@@ -1110,4 +1110,18 @@ abstract class Living extends Entity implements Damageable{
 		}
 		return parent::onInteract($player, $item, $clickPos, $slot);
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function canSpawnHere() : bool{
+		return true;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getMaxSpawnedInChunk() : int{
+		return  4;
+	}
 }

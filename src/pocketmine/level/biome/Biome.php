@@ -234,17 +234,25 @@ abstract class Biome{
 	 * @return SpawnListEntry[]
 	 */
 	public function getSpawnableList(CreatureType $creatureType) : array{
-		switch(true){
-			case ($creatureType === WaterAnimal::class):
+		$entityClass = $creatureType->getCreatureClass();
+		switch($entityClass){
+			case ($entityClass === WaterAnimal::class):
 				return $this->spawnableWaterCreatureList;
-			case ($creatureType === Creature::class):
+			case ($entityClass === Creature::class):
 				return $this->spawnableCaveCreatureList;
-			case ($creatureType === Animal::class):
+			case ($entityClass === Animal::class):
 				return $this->spawnableCreatureList;
-			case ($creatureType === Monster::class):
+			case ($entityClass === Monster::class):
 				return $this->spawnableMonsterList;
 		}
 
 		return [];
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getSpawningChance() : float{
+		return 0.1;
 	}
 }

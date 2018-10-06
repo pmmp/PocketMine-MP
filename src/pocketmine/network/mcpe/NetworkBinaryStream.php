@@ -33,6 +33,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\network\mcpe\protocol\types\GameRules;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
 
@@ -415,7 +416,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 *
 	 * @return array, members are in the structure [name => [type, value]]
 	 */
-	public function getGameRules() : array{
+	public function getGameRules() : GameRules{
 		$count = $this->getUnsignedVarInt();
 		$rules = [];
 		for($i = 0; $i < $count; ++$i){
@@ -423,13 +424,13 @@ class NetworkBinaryStream extends BinaryStream{
 			$type = $this->getUnsignedVarInt();
 			$value = null;
 			switch($type){
-				case 1:
+				case GameRules::RULE_TYPE_BOOL:
 					$value = $this->getBool();
 					break;
-				case 2:
+				case GameRules::RULE_TYPE_INT:
 					$value = $this->getUnsignedVarInt();
 					break;
-				case 3:
+				case GameRules::RULE_TYPE_FLOAT:
 					$value = $this->getLFloat();
 					break;
 			}
@@ -437,28 +438,28 @@ class NetworkBinaryStream extends BinaryStream{
 			$rules[$name] = [$type, $value];
 		}
 
-		return $rules;
+		return new GameRules($rules);
 	}
 
 	/**
 	 * Writes a gamerule array, members should be in the structure [name => [type, value]]
 	 * TODO: implement this properly
 	 *
-	 * @param array $rules
+	 * @param GameRules $rules
 	 */
-	public function putGameRules(array $rules) : void{
-		$this->putUnsignedVarInt(count($rules));
-		foreach($rules as $name => $rule){
+	public function putGameRules(GameRules $rules) : void{
+		$this->putUnsignedVarInt(count($rules->getAll()));
+		foreach($rules->getAll() as $name => $rule){
 			$this->putString($name);
 			$this->putUnsignedVarInt($rule[0]);
 			switch($rule[0]){
-				case 1:
+				case GameRules::RULE_TYPE_BOOL:
 					$this->putBool($rule[1]);
 					break;
-				case 2:
+				case GameRules::RULE_TYPE_INT:
 					$this->putUnsignedVarInt($rule[1]);
 					break;
-				case 3:
+				case GameRules::RULE_TYPE_FLOAT:
 					$this->putLFloat($rule[1]);
 					break;
 			}

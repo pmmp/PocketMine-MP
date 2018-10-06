@@ -385,11 +385,4 @@ abstract class Mob extends Living{
 			}
 		}
 	}
-
-	/**
-	 * @return int
-	 */
-	public function getSpawnPlacementType() : int{
-		return SpawnPlacementTypes::PLACEMENT_TYPE_ON_GROUND;
-	}
 }

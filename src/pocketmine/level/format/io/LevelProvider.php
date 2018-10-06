@@ -26,6 +26,7 @@ namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\types\GameRules;
 
 interface LevelProvider{
 
@@ -196,6 +197,16 @@ interface LevelProvider{
 	 * @param float $level 0.0 - 1.0
 	 */
 	public function setLightningLevel(float $level) : void;
+
+	/**
+	 * @return GameRules
+	 */
+	public function getGameRules() : GameRules;
+
+	/**
+	 * @param GameRules $gameRules
+	 */
+	public function setGameRules(GameRules $gameRules) : void;
 
 	/**
 	 * Performs garbage collection in the level provider, such as cleaning up regions in Region-based worlds.

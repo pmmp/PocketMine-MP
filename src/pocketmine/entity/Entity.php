@@ -273,6 +273,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	private static $knownEntities = [];
 	/** @var string[][] */
 	private static $saveNames = [];
+	/** @var int[][] */
+	public static $spawnPlacementTypes = [];
+
+	public const SPAWN_PLACEMENT_TYPE = SpawnPlacementTypes::PLACEMENT_TYPE_ON_GROUND;
 
 	/**
 	 * Called on server startup to register default entity types.
@@ -476,8 +480,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 
 		self::$saveNames[$className] = $saveNames;
-
-
+		self::$spawnPlacementTypes[$className] = $className::SPAWN_PLACEMENT_TYPE;
 	}
 
 	/**
@@ -640,7 +643,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $uuid;
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		$this->random = new Random();
+		$this->random = new Random($level->random->getSeed() * $level->random->nextInt());
 		$this->constructed = true;
 		$this->timings = Timings::getEntityTimings($this);
 

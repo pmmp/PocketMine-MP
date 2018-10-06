@@ -30,6 +30,7 @@ namespace pocketmine\level;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\UnknownBlock;
+use pocketmine\entity\CreatureType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
@@ -46,6 +47,7 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\biome\Biome;
+use pocketmine\level\biome\SpawnListEntry;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\EmptySubChunk;
@@ -78,6 +80,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
+use pocketmine\network\mcpe\protocol\types\GameRules;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
@@ -88,6 +91,7 @@ use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
+use pocketmine\utils\WeightedRandomItem;
 
 #include <rules/Level.h>
 
@@ -266,6 +270,14 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Random */
 	public $random;
 
+	/** @var AnimalSpawner */
+	private $mobSpawner;
+	/** @var GameRules */
+	private $gameRules;
+
+	private $spawnPeacefulMobs = true;
+	private $spawnHostileMobs = true;
+
 	public static function chunkHash(int $x, int $z) : int{
 		return (($x & 0xFFFFFFFF) << 32) | ($z & 0xFFFFFFFF);
 	}
@@ -399,6 +411,8 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings = new LevelTimings($this);
 		$this->random = new Random();
+		$this->mobSpawner = new AnimalSpawner();
+		$this->gameRules = $this->provider->getGameRules();
 		$this->temporalPosition = new Position(0, 0, 0, $this);
 		$this->temporalVector = new Vector3(0, 0, 0);
 		$this->tickRate = 1;
@@ -988,6 +1002,10 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
+		if($this->gameRules->getBool("doMobSpawning")){
+			$this->mobSpawner->findChunksForSpawning($this, $this->spawnHostileMobs, $this->spawnPeacefulMobs, $this->time % 400 === 0, $this->chunkTickList);
+		}
+
 		foreach($this->chunkTickList as $index => $loaders){
 			Level::getXZ($index, $chunkX, $chunkZ);
 
@@ -1043,7 +1061,6 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function save(bool $force = false) : bool{
-
 		if(!$this->getAutoSave() and !$force){
 			return false;
 		}
@@ -2335,6 +2352,11 @@ class Level implements ChunkManager, Metadatable{
 			if($chunk !== null){
 				$oldChunk = $this->getChunk($x, $z, false);
 				$this->setChunk($x, $z, $chunk, false);
+
+				if($this->gameRules->getBool("doMobSpawning", false)){
+					AnimalSpawner::performChunkGeneratorSpawning($this, $this->getBiome($x, $z), ($x * 16) + 8, ($z * 16) + 8, 16, 16, $this->random);
+				}
+
 				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
 					$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($this, $chunk));
 
@@ -2343,6 +2365,7 @@ class Level implements ChunkManager, Metadatable{
 					}
 				}
 			}
+
 		}elseif(isset($this->chunkPopulationLock[$index])){
 			unset($this->chunkPopulationLock[$index]);
 			if($chunk !== null){
@@ -3041,10 +3064,36 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
+	/**
+	 * @param Vector3 $pos
+	 *
+	 * @return bool
+	 */
 	public function canSeeSky(Vector3 $pos) : bool{
 		return $pos->y >= $this->getHighestBlockAt((int) floor($pos->x), (int) floor($pos->z));
 	}
 
+	/**
+	 * @param CreatureType $creatureType
+	 * @param Vector3      $pos
+	 *
+	 * @return null|SpawnListEntry
+	 */
+	public function getSpawnListEntryForTypeAt(CreatureType $creatureType, Vector3 $pos) : ?SpawnListEntry{
+		$possibleCreatures = $this->getBiome($pos->x >> 4, $pos->z >> 4)->getSpawnableList($creatureType);
+		if(empty($possibleCreatures)){
+			return null;
+		}
+
+		/** @var SpawnListEntry|null $possible */
+		$possible = WeightedRandomItem::getRandomItem($this->random, $possibleCreatures, WeightedRandomItem::getTotalWeight($possibleCreatures));
+
+		return $possible;
+	}
+
+	/**
+	 * @return bool
+	 */
 	public function isDayTime() : bool{
 		return $this->getSunAngleDegrees() < 90 or $this->getSunAngleDegrees() > 270;
 	}
@@ -3063,5 +3112,40 @@ class Level implements ChunkManager, Metadatable{
 
 	public function removeMetadata(string $metadataKey, Plugin $owningPlugin){
 		$this->server->getLevelMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
+	}
+
+	/**
+	 * @return GameRules
+	 */
+	public function getGameRules() : GameRules{
+		return $this->gameRules;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getSpawnPeacefulMobs() : bool{
+		return $this->spawnPeacefulMobs;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getSpawnHostileMobs() : bool{
+		return $this->spawnHostileMobs;
+	}
+
+	/**
+	 * @param bool $spawnPeacefulMobs
+	 */
+	public function setSpawnPeacefulMobs(bool $spawnPeacefulMobs) : void{
+		$this->spawnPeacefulMobs = $spawnPeacefulMobs;
+	}
+
+	/**
+	 * @param bool $spawnHostileMobs
+	 */
+	public function setSpawnHostileMobs(bool $spawnHostileMobs) : void{
+		$this->spawnHostileMobs = $spawnHostileMobs;
 	}
 }
