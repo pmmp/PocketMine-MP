@@ -25,59 +25,64 @@ declare(strict_types=1);
 namespace pocketmine\level\generator;
 
 use pocketmine\block\Block;
+use pocketmine\level\ChunkManager;
 use pocketmine\level\format\Chunk;
 use pocketmine\math\Vector3;
 
-class VoidGenerator extends Generator {
-    /** @var Chunk */
-    private $chunk;
-    /** @var Chunk */
-    private $emptyChunk = null;
+class VoidGenerator extends Generator{
+	/** @var Chunk */
+	private $emptyChunk = null;
 
-    public function getSettings() : array{
-        return [];
-    }
+	public function __construct(ChunkManager $level, int $seed, array $options = []){
+		parent::__construct($level, $seed, $options);
 
-    public function getName() : string{
-        return "Void";
-    }
+		$this->generateEmptyChunk();
+	}
 
-    public function generateChunk(int $chunkX, int $chunkZ) : void{
-        if($this->emptyChunk === null){
-            $this->chunk = clone $this->level->getChunk($chunkX, $chunkZ);
-            $this->chunk->setGenerated();
+	public function getSettings() : array{
+		return [];
+	}
 
-            for($Z = 0; $Z < 16; ++$Z){
-                for($X = 0; $X < 16; ++$X){
-                    $this->chunk->setBiomeId($X, $Z, 1);
-                    for($y = 0; $y < 256; ++$y){
-                        $this->chunk->setBlockId($X, $y, $Z, Block::AIR);
-                    }
-                }
-            }
+	public function getName() : string{
+		return "Void";
+	}
 
-            $spawn = $this->getSpawn();
-            if($spawn->getX() >> 4 === $chunkX and $spawn->getZ() >> 4 === $chunkZ){
-                $this->chunk->setBlockId(0, 64, 0, Block::GRASS);
-            }else{
-                $this->emptyChunk = clone $this->chunk;
-            }
-        }else{
-            $this->chunk = clone $this->emptyChunk;
-        }
+	public function generateEmptyChunk() : void{
+		$chunk = new Chunk(0, 0);
+		$chunk->setGenerated();
 
-        $chunk = clone $this->chunk;
-        $chunk->setX($chunkX);
-        $chunk->setZ($chunkZ);
-        $this->level->setChunk($chunkX, $chunkZ, $chunk);
-    }
+		for($Z = 0; $Z < 16; ++$Z){
+			for($X = 0; $X < 16; ++$X){
+				$chunk->setBiomeId($X, $Z, 1);
+				for($y = 0; $y < 256; ++$y){
+					$chunk->setBlockId($X, $y, $Z, Block::AIR);
+				}
+			}
+		}
 
-    public function populateChunk(int $chunkX, int $chunkZ) : void{
+		$this->emptyChunk = $chunk;
+	}
+
+	public function generateChunk(int $chunkX, int $chunkZ) : void{
+		$chunk = clone $this->emptyChunk;
+
+		$spawn = $this->getSpawn();
+		if(($spawn->x >> 4) === $chunkX and ($spawn->z >> 4) === $chunkZ){
+			//why?
+		}
+
+		$chunk->setX($chunkX);
+		$chunk->setZ($chunkZ);
+
+		$this->level->setChunk($chunkX, $chunkZ, $chunk);
+	}
+
+	public function populateChunk(int $chunkX, int $chunkZ) : void{
 
 	}
 
 	public function getSpawn() : Vector3{
-        return new Vector3(128, 72, 128);
-    }
+		return new Vector3(128, 72, 128);
+	}
 
 }
