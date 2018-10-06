@@ -84,7 +84,6 @@ class RCON{
 	public function stop() : void{
 		$this->instance->close();
 		socket_write($this->ipcMainSocket, "\x00"); //make select() return
-		Server::microSleep(50000);
 		$this->instance->quit();
 
 		@socket_close($this->socket);
