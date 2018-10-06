@@ -123,9 +123,6 @@ class Server{
 	/** @var Server */
 	private static $instance = null;
 
-	/** @var \Threaded */
-	private static $sleeper = null;
-
 	/** @var SleeperHandler */
 	private $tickSleeper;
 
@@ -1402,12 +1399,6 @@ class Server{
 		return self::$instance;
 	}
 
-	public static function microSleep(int $microseconds){
-		Server::$sleeper->synchronized(function(int $ms){
-			Server::$sleeper->wait($ms);
-		}, $microseconds);
-	}
-
 	/**
 	 * @param \ClassLoader              $autoloader
 	 * @param \AttachableThreadedLogger $logger
@@ -1419,7 +1410,7 @@ class Server{
 			throw new \InvalidStateException("Only one server instance can exist at once");
 		}
 		self::$instance = $this;
-		self::$sleeper = new \Threaded;
+
 		$this->tickSleeper = new SleeperHandler();
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
