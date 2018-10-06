@@ -330,6 +330,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
+	 * Returns an array of all registered entity classpaths.
+	 *
+	 * @return string[]
+	 */
+	public static function getKnownEntityTypes() : array{
+		return array_unique(self::$knownEntities);
+	}
+
+	/**
 	 * Helper function which creates minimal NBT needed to spawn an entity.
 	 *
 	 * @param Vector3      $pos

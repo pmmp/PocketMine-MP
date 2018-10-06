@@ -34,16 +34,20 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Bucket extends Item implements Consumable{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::BUCKET, $meta, "Bucket");
+	/** @var int|null */
+	protected $blockId;
+
+	public function __construct(int $id, int $meta, string $name, ?int $blockId){
+		parent::__construct($id, $meta, $name);
+		$this->blockId = $blockId;
 	}
 
 	public function getMaxStackSize() : int{
-		return $this->meta === Block::AIR ? 16 : 1; //empty buckets stack to 16
+		return $this->blockId === Block::AIR ? 16 : 1; //empty buckets stack to 16
 	}
 
 	public function getFuelTime() : int{
-		if($this->meta === Block::LAVA or $this->meta === Block::FLOWING_LAVA){
+		if($this->blockId === Block::LAVA or $this->blockId === Block::FLOWING_LAVA){
 			return 20000;
 		}
 
@@ -51,7 +55,10 @@ class Bucket extends Item implements Consumable{
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
-		$resultBlock = BlockFactory::get($this->meta);
+		if($this->blockId === null){
+			return false;
+		}
+		$resultBlock = BlockFactory::get($this->blockId);
 
 		if($resultBlock instanceof Air){
 			if($blockClicked instanceof Liquid and $blockClicked->isSource()){
@@ -108,7 +115,7 @@ class Bucket extends Item implements Consumable{
 	}
 
 	public function canBeConsumed() : bool{
-		return $this->meta === 1; //Milk
+		return $this->blockId === null; //Milk
 	}
 
 	public function onConsume(Living $consumer){

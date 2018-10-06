@@ -200,7 +200,7 @@ class Item implements ItemIds, \JsonSerializable{
 			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
 		}
 		$this->id = $id;
-		$this->setDamage($meta);
+		$this->meta = $meta !== -1 ? $meta & 0x7FFF : -1;
 		$this->name = $name;
 	}
 
@@ -663,18 +663,8 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @return int
 	 */
-	final public function getDamage() : int{
+	public function getDamage() : int{
 		return $this->meta;
-	}
-
-	/**
-	 * @param int $meta
-	 * @return Item
-	 */
-	public function setDamage(int $meta) : Item{
-		$this->meta = $meta !== -1 ? $meta & 0x7FFF : -1;
-
-		return $this;
 	}
 
 	/**
@@ -856,7 +846,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getDamage()) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
 	}
 
 	/**
@@ -921,7 +911,7 @@ class Item implements ItemIds, \JsonSerializable{
 		$result = new CompoundTag($tagName, [
 			new ShortTag("id", $this->id),
 			new ByteTag("Count", Binary::signByte($this->count)),
-			new ShortTag("Damage", $this->meta)
+			new ShortTag("Damage", $this->getDamage())
 		]);
 
 		if($this->hasCompoundTag()){
@@ -957,12 +947,11 @@ class Item implements ItemIds, \JsonSerializable{
 			$item = ItemFactory::get($idTag->getValue(), $meta, $count);
 		}elseif($idTag instanceof StringTag){ //PC item save format
 			try{
-				$item = ItemFactory::fromString($idTag->getValue());
+				$item = ItemFactory::fromString($idTag->getValue() . ":$meta");
 			}catch(\InvalidArgumentException $e){
 				//TODO: improve error handling
 				return ItemFactory::get(Item::AIR, 0, 0);
 			}
-			$item->setDamage($meta);
 			$item->setCount($count);
 		}else{
 			throw new \InvalidArgumentException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($idTag) . " given");

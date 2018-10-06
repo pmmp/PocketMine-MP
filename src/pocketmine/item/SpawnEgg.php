@@ -29,9 +29,6 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class SpawnEgg extends Item{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::SPAWN_EGG, $meta, "Spawn Egg");
-	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
 		$nbt = Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, lcg_value() * 360, 0);

@@ -28,6 +28,9 @@ use pocketmine\nbt\tag\ByteTag;
 
 abstract class Durable extends Item{
 
+	/** @var int */
+	protected $damage = 0;
+
 	/**
 	 * Returns whether this item will take damage when used.
 	 * @return bool
@@ -57,12 +60,24 @@ abstract class Durable extends Item{
 
 		$amount -= $this->getUnbreakingDamageReduction($amount);
 
-		$this->meta = min($this->meta + $amount, $this->getMaxDurability());
+		$this->damage = min($this->damage + $amount, $this->getMaxDurability());
 		if($this->isBroken()){
 			$this->onBroken();
 		}
 
 		return true;
+	}
+
+	public function getDamage() : int{
+		return $this->damage;
+	}
+
+	public function setDamage(int $meta) : Item{
+		if($meta < 0 or $meta > $this->getMaxDurability()){
+			throw new \InvalidArgumentException("Damage must be in range 0 - " , $this->getMaxDurability());
+		}
+		$this->damage = $meta;
+		return $this;
 	}
 
 	protected function getUnbreakingDamageReduction(int $amount) : int{
@@ -101,6 +116,6 @@ abstract class Durable extends Item{
 	 * @return bool
 	 */
 	public function isBroken() : bool{
-		return $this->meta >= $this->getMaxDurability();
+		return $this->damage >= $this->getMaxDurability();
 	}
 }

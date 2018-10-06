@@ -67,6 +67,46 @@ class Potion extends Item implements Consumable{
 	public const LONG_WEAKNESS = 35;
 	public const WITHER = 36;
 
+	public const ALL = [
+		self::WATER,
+		self::MUNDANE,
+		self::LONG_MUNDANE,
+		self::THICK,
+		self::AWKWARD,
+		self::NIGHT_VISION,
+		self::LONG_NIGHT_VISION,
+		self::INVISIBILITY,
+		self::LONG_INVISIBILITY,
+		self::LEAPING,
+		self::LONG_LEAPING,
+		self::STRONG_LEAPING,
+		self::FIRE_RESISTANCE,
+		self::LONG_FIRE_RESISTANCE,
+		self::SWIFTNESS,
+		self::LONG_SWIFTNESS,
+		self::STRONG_SWIFTNESS,
+		self::SLOWNESS,
+		self::LONG_SLOWNESS,
+		self::WATER_BREATHING,
+		self::LONG_WATER_BREATHING,
+		self::HEALING,
+		self::STRONG_HEALING,
+		self::HARMING,
+		self::STRONG_HARMING,
+		self::POISON,
+		self::LONG_POISON,
+		self::STRONG_POISON,
+		self::REGENERATION,
+		self::LONG_REGENERATION,
+		self::STRONG_REGENERATION,
+		self::STRENGTH,
+		self::LONG_STRENGTH,
+		self::STRONG_STRENGTH,
+		self::WEAKNESS,
+		self::LONG_WEAKNESS,
+		self::WITHER
+	];
+
 	/**
 	 * Returns a list of effects applied by potions with the specified ID.
 	 *
