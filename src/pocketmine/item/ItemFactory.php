@@ -28,6 +28,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\tile\Skull;
 
 /**
  * Manages Item instance creation and registration
@@ -144,11 +145,13 @@ class ItemFactory{
 		for($i = 0; $i < 16; ++$i){
 			//TODO: add colour constants (this is messy)
 			self::registerItem(new Dye($i));
+			self::registerItem(new Bed($i));
+			self::registerItem(new Banner($i));
 		}
 		self::registerItem(new Item(Item::BONE, 0, "Bone"));
 		self::registerItem(new Item(Item::SUGAR, 0, "Sugar"));
 		self::registerItem(new ItemBlock(Block::CAKE_BLOCK, 0, Item::CAKE));
-		self::registerItem(new Bed());
+
 		self::registerItem(new ItemBlock(Block::REPEATER_BLOCK, 0, Item::REPEATER));
 		self::registerItem(new Cookie());
 		//TODO: FILLED_MAP
@@ -202,7 +205,14 @@ class ItemFactory{
 		self::registerItem(new PoisonousPotato());
 		//TODO: EMPTYMAP
 		self::registerItem(new GoldenCarrot());
-		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, 0, Item::SKULL));
+
+		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_SKELETON, Item::SKULL));
+		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_WITHER, Item::SKULL));
+		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_ZOMBIE, Item::SKULL));
+		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_HUMAN, Item::SKULL));
+		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_CREEPER, Item::SKULL));
+		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_DRAGON, Item::SKULL));
+
 		//TODO: CARROTONASTICK
 		self::registerItem(new Item(Item::NETHER_STAR, 0, "Nether Star"));
 		self::registerItem(new PumpkinPie());
@@ -246,7 +256,7 @@ class ItemFactory{
 		//TODO: COMMAND_BLOCK_MINECART
 		//TODO: ELYTRA
 		self::registerItem(new Item(Item::SHULKER_SHELL, 0, "Shulker Shell"));
-		self::registerItem(new Banner());
+
 		//TODO: MEDICINE
 		//TODO: BALLOON
 		//TODO: RAPID_FERTILIZER
