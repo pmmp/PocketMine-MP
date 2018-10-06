@@ -159,11 +159,7 @@ class SimpleSessionHandler extends SessionHandler{
 
 		switch($packet->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
-				if($packet->isAnvilPart){
-					$transaction = new AnvilTransaction($this->player, $actions);
-				}else{
-					$transaction = new InventoryTransaction($this->player, $actions);
-				}
+				$transaction = new InventoryTransaction($this->player, $actions);
 
 				try{
 					$transaction->execute();

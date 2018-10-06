@@ -126,9 +126,6 @@ class NetworkInventoryAction{
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						$packet->isCraftingPart = true;
 						break;
-					case self::SOURCE_TYPE_ANVIL_RESULT:
-						//$packet->isAnvilPart = true;
-						break;
 				}
 				break;
 		}
