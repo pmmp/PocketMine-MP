@@ -42,8 +42,4 @@ class Quartz extends Solid{
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
 	}
-
-	public function getStateBitmask() : int{
-		return 0b1100; //HACK: needs to be consistent for blocks with the same ID :(
-	}
 }

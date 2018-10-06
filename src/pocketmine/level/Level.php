@@ -983,12 +983,11 @@ class Level implements ChunkManager, Metadatable{
 						$y = ($k >> 4) & 0x0f;
 						$z = ($k >> 8) & 0x0f;
 
-						$blockId = $subChunk->getBlockId($x, $y, $z);
-						$meta = $subChunk->getBlockData($x, $y, $z);
+						$state = $subChunk->getFullBlock($x, $y, $z);
 
-						if($this->randomTickBlocks[($blockId << 4) | ($meta & ~BlockFactory::getStateMask($blockId))]){
+						if($this->randomTickBlocks[$state & ~BlockFactory::getStateMask($state >> 4)]){
 							/** @var Block $block */
-							$block = BlockFactory::get($blockId, $meta);
+							$block = BlockFactory::fromFullBlock($state);
 
 							$block->x = $chunkX * 16 + $x;
 							$block->y = ($Y << 4) + $y;

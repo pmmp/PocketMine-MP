@@ -123,13 +123,13 @@ class Explosion{
 								continue;
 							}
 
-							$blockId = $this->subChunkHandler->currentSubChunk->getBlockId($vBlock->x & 0x0f, $vBlock->y & 0x0f, $vBlock->z & 0x0f);
+							$state = $this->subChunkHandler->currentSubChunk->getFullBlock($vBlock->x & 0x0f, $vBlock->y & 0x0f, $vBlock->z & 0x0f);
 
-							if($blockId !== 0){
-								$blastForce -= (BlockFactory::$blastResistance[$blockId] / 5 + 0.3) * $this->stepLen;
+							if($state !== 0){
+								$blastForce -= (BlockFactory::$blastResistance[$state] / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[$index = Level::blockHash($vBlock->x, $vBlock->y, $vBlock->z)])){
-										$this->affectedBlocks[$index] = BlockFactory::get($blockId, $this->subChunkHandler->currentSubChunk->getBlockData($vBlock->x & 0x0f, $vBlock->y & 0x0f, $vBlock->z & 0x0f), $vBlock);
+										$this->affectedBlocks[$index] = BlockFactory::get($state >> 4, $state & 0xf, $vBlock);
 									}
 								}
 							}
