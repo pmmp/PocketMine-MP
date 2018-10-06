@@ -187,12 +187,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "e5fd6cf9e71c285ff24bb3a3cbc22a15a8e73ac7"
+                "reference": "115700a493fc38fe8886739c20c4303eeb1cd182"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/e5fd6cf9e71c285ff24bb3a3cbc22a15a8e73ac7",
-                "reference": "e5fd6cf9e71c285ff24bb3a3cbc22a15a8e73ac7",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/115700a493fc38fe8886739c20c4303eeb1cd182",
+                "reference": "115700a493fc38fe8886739c20c4303eeb1cd182",
                 "shasum": ""
             },
             "require": {
@@ -218,7 +218,7 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2018-09-16T16:36:04+00:00"
+            "time": "2018-09-23T17:50:23+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -337,16 +337,16 @@
         },
         {
             "name": "pocketmine/spl",
-            "version": "0.3.1",
+            "version": "0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "ca3912099543ddc4b4b14f40e258d84ca547dfa5"
+                "reference": "7fd53857cd000491ba69e8db865792a024dd2c49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/ca3912099543ddc4b4b14f40e258d84ca547dfa5",
-                "reference": "ca3912099543ddc4b4b14f40e258d84ca547dfa5",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/7fd53857cd000491ba69e8db865792a024dd2c49",
+                "reference": "7fd53857cd000491ba69e8db865792a024dd2c49",
                 "shasum": ""
             },
             "type": "library",
@@ -365,7 +365,7 @@
             "support": {
                 "source": "https://github.com/pmmp/SPL/tree/master"
             },
-            "time": "2018-06-09T17:30:36+00:00"
+            "time": "2018-08-12T15:17:39+00:00"
         }
     ],
     "packages-dev": [],
