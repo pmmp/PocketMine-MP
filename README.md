@@ -5,9 +5,9 @@ A server software for Minecraft: Bedrock/W10 Edition. Altay is a fork of [pmmp](
 
 ------------       
 
-| Forum | Jenkins | TravisCI | Discord | Twitter |
-| :---: | :---: | :---: | :---: | :---: |
-| [![Forums](https://img.shields.io/badge/Forum-Altay-red.svg?style=flat-square)](https://www.turanic.net/) | [![Build Status](http://entengames.net:8081/job/Altay/badge/icon)](http://entengames.net:8081/job/Altay/) | [![Travis branch](https://img.shields.io/travis/TuranicTeam/Altay/master.svg?style=flat-square)](https://travis-ci.org/TuranicTeam/Altay) | [![Discord](https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.gg/UsuhCFj) | [![Twitter Follow](https://img.shields.io/twitter/follow/TuranicTeam.svg?style=flat-square&logo=twitter&label=Follow)](https://twitter.com/TuranicTeam) |
+| Jenkins | TravisCI | Discord | Twitter |
+| :---: | :---: | :---: | :---: |
+| [![Build Status](http://entengames.net:8181/job/Altay/badge/icon)](http://entengames.net:8181/job/Altay/) | [![Travis branch](https://img.shields.io/travis/TuranicTeam/Altay/master.svg?style=flat-square)](https://travis-ci.org/TuranicTeam/Altay) | [![Discord](https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.gg/UsuhCFj) | [![Twitter Follow](https://img.shields.io/twitter/follow/TuranicTeam.svg?style=flat-square&logo=twitter&label=Follow)](https://twitter.com/TuranicTeam) |
 
 ------------
 
