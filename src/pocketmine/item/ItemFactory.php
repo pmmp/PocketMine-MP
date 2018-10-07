@@ -111,12 +111,13 @@ class ItemFactory{
 		self::registerItem(new GoldenApple());
 		self::registerItem(new Sign());
 		self::registerItem(new ItemBlock(Block::OAK_DOOR_BLOCK, 0, Item::OAK_DOOR));
-		self::registerItem(new Bucket(Item::BUCKET, 0, "Bucket", Block::AIR));
-		self::registerItem(new Bucket(Item::BUCKET, 1, "Milk Bucket", null)); //TODO: this ought to get its own class, it has completely different behaviour
+
 		//TODO: fix metadata for buckets with still liquid in them
 		//the meta values are intentionally hardcoded because block IDs will change in the future
-		self::registerItem(new Bucket(Item::BUCKET, 8, "Water Bucket", Block::FLOWING_WATER));
-		self::registerItem(new Bucket(Item::BUCKET, 10, "Lava Bucket", Block::FLOWING_LAVA));
+		self::registerItem(new Bucket(Item::BUCKET, 0, "Bucket"));
+		self::registerItem(new MilkBucket(Item::BUCKET, 1, "Milk Bucket"));
+		self::registerItem(new LiquidBucket(Item::BUCKET, 8, "Water Bucket", Block::FLOWING_WATER));
+		self::registerItem(new LiquidBucket(Item::BUCKET, 10, "Lava Bucket", Block::FLOWING_LAVA));
 
 		self::registerItem(new Minecart());
 		//TODO: SADDLE

@@ -25,38 +25,49 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\Lava;
 use pocketmine\block\Liquid;
-use pocketmine\event\player\PlayerBucketFillEvent;
+use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class Bucket extends Item{
+class LiquidBucket extends Item{
+	/** @var int|null */
+	protected $liquidId;
+
+	public function __construct(int $id, int $meta, string $name, int $liquidId){
+		parent::__construct($id, $meta, $name);
+		$this->liquidId = $liquidId;
+	}
 
 	public function getMaxStackSize() : int{
-		return 16;
+		return 1;
+	}
+
+	public function getFuelTime() : int{
+		if(BlockFactory::get($this->liquidId) instanceof Lava){
+			return 20000;
+		}
+
+		return 0;
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
-		//TODO: move this to generic placement logic
-		if($blockClicked instanceof Liquid and $blockClicked->isSource()){
-			$stack = clone $this;
-			$stack->pop();
+		if(!$blockReplace->canBeReplaced()){
+			return false;
+		}
 
-			$resultItem = ItemFactory::get(Item::BUCKET, $blockClicked->getFlowingForm()->getId());
-			$ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem);
+		//TODO: move this to generic placement logic
+		$resultBlock = BlockFactory::get($this->liquidId);
+		if($resultBlock instanceof Liquid){
+			$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, ItemFactory::get(Item::BUCKET));
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$player->getLevel()->setBlock($blockClicked, BlockFactory::get(Block::AIR));
-				$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
+				$player->getLevel()->setBlock($blockReplace, $resultBlock->getFlowingForm());
+				$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
+
 				if($player->isSurvival()){
-					if($stack->getCount() === 0){
-						$player->getInventory()->setItemInHand($ev->getItem());
-					}else{
-						$player->getInventory()->setItemInHand($stack);
-						$player->getInventory()->addItem($ev->getItem());
-					}
-				}else{
-					$player->getInventory()->addItem($ev->getItem());
+					$player->getInventory()->setItemInHand($ev->getItem());
 				}
 			}else{
 				$player->getInventory()->sendContents($player);
