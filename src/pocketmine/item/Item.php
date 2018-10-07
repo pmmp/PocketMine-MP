@@ -180,7 +180,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/** @var CompoundTag|null */
 	private $cachedNBT = null;
 	/** @var int */
-	public $count = 1;
+	protected $count = 1;
 	/** @var string */
 	protected $name;
 

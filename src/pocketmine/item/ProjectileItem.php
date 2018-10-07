@@ -55,7 +55,7 @@ abstract class ProjectileItem extends Item{
 			$projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
 		}
 
-		$this->count--;
+		$this->pop();
 
 		if($projectile instanceof Projectile){
 			$projectileEv = new ProjectileLaunchEvent($projectile);

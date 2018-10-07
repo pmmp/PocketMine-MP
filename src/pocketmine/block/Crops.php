@@ -72,7 +72,7 @@ abstract class Crops extends Flowable{
 				$this->getLevel()->setBlock($this, $ev->getNewState());
 			}
 
-			$item->count--;
+			$item->pop();
 
 			return true;
 		}
