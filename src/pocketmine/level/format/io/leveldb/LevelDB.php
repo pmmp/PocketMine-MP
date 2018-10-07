@@ -28,9 +28,9 @@ use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\io\data\BedrockLevelData;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
+use pocketmine\level\format\io\exception\UnsupportedLevelFormatException;
 use pocketmine\level\format\io\LevelData;
 use pocketmine\level\format\SubChunk;
-use pocketmine\level\LevelException;
 use pocketmine\nbt\LittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -70,11 +70,11 @@ class LevelDB extends BaseLevelProvider{
 
 	private static function checkForLevelDBExtension() : void{
 		if(!extension_loaded('leveldb')){
-			throw new LevelException("The leveldb PHP extension is required to use this world format");
+			throw new UnsupportedLevelFormatException("The leveldb PHP extension is required to use this world format");
 		}
 
 		if(!defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
-			throw new LevelException("Given version of php-leveldb doesn't support zlib raw compression");
+			throw new UnsupportedLevelFormatException("Given version of php-leveldb doesn't support zlib raw compression");
 		}
 	}
 

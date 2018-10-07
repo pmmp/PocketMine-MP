@@ -50,6 +50,7 @@ use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\TextContainer;
 use pocketmine\level\biome\Biome;
+use pocketmine\level\format\io\exception\UnsupportedLevelFormatException;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\generator\Generator;
@@ -1044,8 +1045,13 @@ class Server{
 		}
 		$providerClass = array_shift($providers);
 
-		/** @see LevelProvider::__construct() */
-		$level = new Level($this, $name, new $providerClass($path));
+		try{
+			/** @see LevelProvider::__construct() */
+			$level = new Level($this, $name, new $providerClass($path));
+		}catch(UnsupportedLevelFormatException $e){
+			$this->logger->error($this->language->translateString("pocketmine.level.loadError", [$name, $e->getMessage()]));
+			return false;
+		}
 
 		$this->levels[$level->getId()] = $level;
 
