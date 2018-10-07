@@ -92,10 +92,6 @@ abstract class Event{
 			$currentList = $handlerList;
 			while($currentList !== null){
 				foreach($currentList->getListenersByPriority($priority) as $registration){
-					if(!$registration->getPlugin()->isEnabled()){
-						continue;
-					}
-
 					$registration->callEvent($this);
 				}
 
