@@ -154,17 +154,19 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	public function handleEncapsulated(string $identifier, EncapsulatedPacket $packet, int $flags) : void{
 		if(isset($this->players[$identifier])){
 			//get this now for blocking in case the player was closed before the exception was raised
-			$address = $this->players[$identifier]->getAddress();
+			$player = $this->players[$identifier];
+			$address = $player->getAddress();
 			try{
 				if($packet->buffer !== ""){
 					$pk = PacketPool::getPacket($packet->buffer);
-					$this->players[$identifier]->handleDataPacket($pk);
+					$player->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
 				$logger = $this->server->getLogger();
 				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
 				$logger->logException($e);
 
+				$player->close($player->getLeaveMessage(), "Internal server error");
 				$this->interface->blockAddress($address, 5);
 			}
 		}
