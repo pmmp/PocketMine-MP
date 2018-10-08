@@ -445,6 +445,20 @@ class Level implements ChunkManager, Metadatable{
 		$this->generatorRegisteredWorkers = [];
 	}
 
+	public function getGenerator() : ?Generator{
+		$pool = $this->server->getAsyncPool();
+		foreach($pool->getRunningWorkers() as $id){
+			if(isset($this->generatorRegisteredWorkers[$id])){
+				$worker = $pool->getWorkerById($id);
+				if($worker !== null){
+					return $worker->getFromThreadStore("generator.level.{$this->levelId}.generator");
+				}
+			}
+		}
+
+		return null;
+	}
+
 	public function getBlockMetadata() : BlockMetadataStore{
 		return $this->blockMetadata;
 	}
@@ -3080,7 +3094,13 @@ class Level implements ChunkManager, Metadatable{
 	 * @return null|SpawnListEntry
 	 */
 	public function getSpawnListEntryForTypeAt(CreatureType $creatureType, Vector3 $pos) : ?SpawnListEntry{
-		$possibleCreatures = $this->getBiome($pos->x >> 4, $pos->z >> 4)->getSpawnableList($creatureType);
+		$generator = $this->getGenerator();
+		if($generator === null){
+			$possibleCreatures = $this->getBiome($pos->x >> 4, $pos->z >> 4)->getSpawnableList($creatureType);
+		}else{
+			$possibleCreatures = $generator->getPossibleCreatures($pos, $creatureType);
+		}
+
 		if(empty($possibleCreatures)){
 			return null;
 		}

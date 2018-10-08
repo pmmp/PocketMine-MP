@@ -221,7 +221,7 @@ class AnimalSpawner{
 				$entry = WeightedRandomItem::getRandomItem($random, $list, WeightedRandomItem::getTotalWeight($list));
 				if($entry === null) continue;
 
-				$i = $entry->minGroupCount + $random->nextBoundedInt($entry->maxGroupCount - $entry->minGroupCount + 1);
+				$i = $entry->minGroupCount + $random->nextBoundedInt(1 + $entry->maxGroupCount - $entry->minGroupCount);
 				$j = $sourceX + $random->nextBoundedInt($xRange);
 				$k = $sourceZ + $random->nextBoundedInt($zRange);
 				$l = $j;
@@ -264,7 +264,7 @@ class AnimalSpawner{
 
 						$j += $random->nextBoundedInt(5) - $random->nextBoundedInt(5);
 
-						for($k += $random->nextBoundedInt(5) - $random->nextBoundedInt(5); $j < $sourceX or $j >= $sourceX + $xRange or $k < $sourceZ or $k >= $sourceZ + $zRange; $k = $i1 + $random->nextBoundedInt(5) - $random->nextBoundedInt(5)){
+						for($k += $random->nextBoundedInt(5) - $random->nextBoundedInt(5); $j < $sourceX or $j >= $sourceX + $xRange or $k < $sourceZ or $k >= $sourceZ + $xRange; $k = $i1 + $random->nextBoundedInt(5) - $random->nextBoundedInt(5)){
 							$j = $l + $random->nextBoundedInt(5) - $random->nextBoundedInt(5);
 						}
 					}
