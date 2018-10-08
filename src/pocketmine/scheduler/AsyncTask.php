@@ -265,8 +265,8 @@ abstract class AsyncTask extends Collectable{
 
 	final public function __destruct(){
 		$this->reallyDestruct();
-		if(self::$threadLocalStorage !== null){
-			unset(self::$threadLocalStorage[spl_object_hash($this)]);
+		if(self::$threadLocalStorage !== null and isset(self::$threadLocalStorage[$h = spl_object_hash($this)])){
+			unset(self::$threadLocalStorage[$h]);
 			if(self::$threadLocalStorage->count() === 0){
 				self::$threadLocalStorage = null;
 			}
