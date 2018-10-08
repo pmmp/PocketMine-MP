@@ -90,6 +90,9 @@ class AsyncWorker extends Worker{
 	 * @param mixed  $value
 	 */
 	public function saveToThreadStore(string $identifier, $value) : void{
+		if(\Thread::getCurrentThread() !== $this){
+			throw new \InvalidStateException("Thread-local data can only be stored in the thread context");
+		}
 		self::$store[$identifier] = $value;
 	}
 
@@ -105,6 +108,9 @@ class AsyncWorker extends Worker{
 	 * @return mixed
 	 */
 	public function getFromThreadStore(string $identifier){
+		if(\Thread::getCurrentThread() !== $this){
+			throw new \InvalidStateException("Thread-local data can only be fetched in the thread context");
+		}
 		return self::$store[$identifier] ?? null;
 	}
 
@@ -114,6 +120,9 @@ class AsyncWorker extends Worker{
 	 * @param string $identifier
 	 */
 	public function removeFromThreadStore(string $identifier) : void{
+		if(\Thread::getCurrentThread() !== $this){
+			throw new \InvalidStateException("Thread-local data can only be removed in the thread context");
+		}
 		unset(self::$store[$identifier]);
 	}
 }
