@@ -412,7 +412,7 @@ class PluginManager{
 					$permManager->addPermission($perm);
 				}
 				$plugin->getScheduler()->setEnabled(true);
-				$plugin->setEnabled(true);
+				$plugin->onEnableStateChange(true);
 
 				$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
 
@@ -498,7 +498,7 @@ class PluginManager{
 			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);
 
 			try{
-				$plugin->setEnabled(false);
+				$plugin->onEnableStateChange(false);
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
 			}

@@ -51,7 +51,7 @@ interface Plugin extends CommandExecutor{
 	 *
 	 * @param bool $enabled
 	 */
-	public function setEnabled(bool $enabled = true) : void;
+	public function onEnableStateChange(bool $enabled) : void;
 
 	/**
 	 * @return bool

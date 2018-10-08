@@ -110,7 +110,7 @@ abstract class PluginBase implements Plugin{
 	 *
 	 * @param bool $enabled
 	 */
-	final public function setEnabled(bool $enabled = true) : void{
+	final public function onEnableStateChange(bool $enabled) : void{
 		if($this->isEnabled !== $enabled){
 			$this->isEnabled = $enabled;
 			if($this->isEnabled){
