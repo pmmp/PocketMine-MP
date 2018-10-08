@@ -255,14 +255,9 @@ class AsyncPool{
 				if(!$task->hasCancelledRun()){
 					try{
 						$task->onCompletion();
-						if($task->removeDanglingStoredObjects()){
-							$this->logger->notice("AsyncTask " . get_class($task) . " stored local complex data but did not remove them after completion");
-						}
 					}catch(\Throwable $e){
 						$this->logger->critical("Could not execute completion of asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": " . $e->getMessage());
 						$this->logger->logException($e);
-
-						$task->removeDanglingStoredObjects(); //silent
 					}
 				}
 
