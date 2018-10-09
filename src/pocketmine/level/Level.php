@@ -91,7 +91,6 @@ use pocketmine\utils\ReversePriorityQueue;
 class Level implements ChunkManager, Metadatable{
 
 	private static $levelIdCounter = 1;
-	private static $chunkLoaderCounter = 1;
 
 	public const Y_MASK = 0xFF;
 	public const Y_MAX = 0x100; //256
@@ -278,14 +277,6 @@ class Level implements ChunkManager, Metadatable{
 	public static function getXZ(int $hash, ?int &$x, ?int &$z) : void{
 		$x = $hash >> 32;
 		$z = ($hash & 0xFFFFFFFF) << 32 >> 32;
-	}
-
-	public static function generateChunkLoaderId(ChunkLoader $loader) : int{
-		if($loader->getLoaderId() === 0){
-			return self::$chunkLoaderCounter++;
-		}else{
-			throw new \InvalidStateException("ChunkLoader has a loader id already assigned: " . $loader->getLoaderId());
-		}
 	}
 
 	/**
@@ -624,7 +615,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true){
-		$hash = $loader->getLoaderId();
+		$hash = spl_object_id($loader);
 
 		if(!isset($this->chunkLoaders[$index = Level::chunkHash($chunkX, $chunkZ)])){
 			$this->chunkLoaders[$index] = [];
@@ -653,7 +644,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function unregisterChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ){
-		if(isset($this->chunkLoaders[$index = Level::chunkHash($chunkX, $chunkZ)][$hash = $loader->getLoaderId()])){
+		if(isset($this->chunkLoaders[$index = Level::chunkHash($chunkX, $chunkZ)][$hash = spl_object_id($loader)])){
 			unset($this->chunkLoaders[$index][$hash]);
 			unset($this->playerLoaders[$index][$hash]);
 			if(count($this->chunkLoaders[$index]) === 0){

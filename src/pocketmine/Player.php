@@ -214,8 +214,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int */
 	protected $gamemode;
 
-	/** @var int */
-	private $loaderId = 0;
 	/** @var bool[] chunkHash => bool (true = sent, false = needs sending) */
 	public $usedChunks = [];
 	/** @var bool[] chunkHash => dummy */
@@ -664,7 +662,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->networkSession = $session;
 
 		$this->perm = new PermissibleBase($this);
-		$this->loaderId = Level::generateChunkLoaderId($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
 
@@ -3381,9 +3378,5 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function onBlockChanged(Vector3 $block){
 
-	}
-
-	public function getLoaderId() : int{
-		return $this->loaderId;
 	}
 }
