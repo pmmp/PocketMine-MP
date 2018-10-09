@@ -3340,6 +3340,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new ModalFormRequestPacket();
 		$pk->formId = $id;
 		$pk->formData = json_encode($form);
+		if($pk->formData === false){
+			throw new \InvalidArgumentException("Failed to encode form JSON: " . json_last_error_msg());
+		}
 		if($this->dataPacket($pk)){
 			$this->forms[$id] = $form;
 		}

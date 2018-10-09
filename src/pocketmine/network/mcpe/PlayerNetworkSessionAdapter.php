@@ -79,6 +79,10 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleDataPacket(DataPacket $packet){
+		if(!$this->player->isConnected()){
+			return;
+		}
+
 		$timings = Timings::getReceiveDataPacketTimings($packet);
 		$timings->startTiming();
 
