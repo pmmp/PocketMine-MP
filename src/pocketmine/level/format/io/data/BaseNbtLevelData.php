@@ -47,6 +47,7 @@ abstract class BaseNbtLevelData implements LevelData{
 		if($this->compoundTag === null){
 			throw new LevelException("Invalid level data");
 		}
+		$this->fix();
 	}
 
 	/**
