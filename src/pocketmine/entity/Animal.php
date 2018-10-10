@@ -25,6 +25,7 @@ namespace pocketmine\entity;
 
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
 
@@ -85,5 +86,18 @@ abstract class Animal extends Mob implements Ageable{
 
 	public function allowLeashing() : bool{
 		return !$this->isLeashed() and $this->aiEnabled;
+	}
+
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
+
+		$this->inLove = $nbt->getInt("InLove", 0);
+	}
+
+	public function saveNBT() : CompoundTag{
+		$nbt = parent::saveNBT();
+		$nbt->setInt("InLove", $this->inLove);
+
+		return $nbt;
 	}
 }

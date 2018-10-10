@@ -1017,8 +1017,15 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($this->gameRules->getBool("doMobSpawning")){
-			$this->mobSpawner->findChunksForSpawning($this, $this->spawnHostileMobs, $this->spawnPeacefulMobs, $this->time % 400 === 0, $this->chunkTickList);
+			$eligibleChunks = [];
+			foreach($this->players as $player){
+				$eligibleChunks = array_merge($eligibleChunks, array_slice($player->usedChunks, 0, 8, true));
+			}
+
+			$this->mobSpawner->findChunksForSpawning($this, $this->spawnHostileMobs, $this->spawnPeacefulMobs, $this->time % 400 === 0, $eligibleChunks);
 		}
+
+		$this->mobSpawner->despawnMobs($this, $this->time);
 
 		foreach($this->chunkTickList as $index => $loaders){
 			Level::getXZ($index, $chunkX, $chunkZ);
@@ -3096,7 +3103,7 @@ class Level implements ChunkManager, Metadatable{
 	public function getSpawnListEntryForTypeAt(CreatureType $creatureType, Vector3 $pos) : ?SpawnListEntry{
 		$generator = $this->getGenerator();
 		if($generator === null){
-			$possibleCreatures = $this->getBiome($pos->x >> 4, $pos->z >> 4)->getSpawnableList($creatureType);
+			$possibleCreatures = $this->getBiome($pos->x, $pos->z)->getSpawnableList($creatureType);
 		}else{
 			$possibleCreatures = $generator->getPossibleCreatures($pos, $creatureType);
 		}

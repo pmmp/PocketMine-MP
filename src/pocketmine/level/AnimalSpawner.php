@@ -60,6 +60,24 @@ class AnimalSpawner{
 
 	/**
 	 * @param Level $level
+	 * @param int   $tick
+	 */
+	public function despawnMobs(Level $level, int $tick) : void{
+		if($tick % 20 === 0){
+			foreach($level->getEntities() as $entity){
+				if($entity instanceof Mob){
+					if(!$entity->isFlaggedForDespawn() and $entity->canDespawn()){
+						if($level->getNearestEntity($entity, 128, Player::class) === null){
+							$entity->flagForDespawn();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param Level $level
 	 * @param bool  $spawnHostileMobs
 	 * @param bool  $spawnPeacefulMobs
 	 * @param bool  $timeReady
@@ -101,6 +119,7 @@ class AnimalSpawner{
 									$i3 = $l1;
 									$j3 = $i2;
 									$k3 = 6;
+									$entry = null;
 
 									for($l3 = 0; $l3 < 4; ++$l3){
 										$l2 += $level->random->nextBoundedInt($k3) - $level->random->nextBoundedInt($k3);
@@ -113,10 +132,12 @@ class AnimalSpawner{
 										$nextPos = new Vector3($f, $i3, $f1);
 
 										if($level->getNearestEntity($nextPos, 24, Player::class) === null and $pos1->distanceSquared($spawn) >= 576){
-											$entry = $level->getSpawnListEntryForTypeAt($creatureType, $pos1);
-
 											if($entry === null){
-												break;
+												$entry = $level->getSpawnListEntryForTypeAt($creatureType, $pos1);
+
+												if($entry === null){
+													break;
+												}
 											}
 
 											if(self::canCreatureTypeSpawnAtLocation(Entity::$spawnPlacementTypes[$entry->entityClass] ?? 0, $level, $pos1)){
@@ -172,7 +193,10 @@ class AnimalSpawner{
 	public static function getRandomChunkPosition(Level $level, int $x, int $z){
 		$i = $x * 16 + $level->random->nextBoundedInt(16);
 		$j = $z * 16 + $level->random->nextBoundedInt(16);
-		$k = $level->getHighestBlockAt($i, $j) + 1;
+		$k = $level->getHeightMap($i, $j) + 1;
+		if($k % 16 !== 0){
+			$k = $k + 16 - ($k % 16);
+		}
 		$l = $level->random->nextBoundedInt($k > 0 ? $k : 256);
 		return new Vector3($i, $l, $j);
 	}
@@ -221,7 +245,7 @@ class AnimalSpawner{
 				$entry = WeightedRandomItem::getRandomItem($random, $list, WeightedRandomItem::getTotalWeight($list));
 				if($entry === null) continue;
 
-				$i = $entry->minGroupCount + $random->nextBoundedInt(1 + $entry->maxGroupCount - $entry->minGroupCount);
+				$i = $random->nextBoundedInt($entry->minGroupCount + $random->nextBoundedInt(1 + $entry->maxGroupCount - $entry->minGroupCount));
 				$j = $sourceX + $random->nextBoundedInt($xRange);
 				$k = $sourceZ + $random->nextBoundedInt($zRange);
 				$l = $j;
@@ -231,12 +255,12 @@ class AnimalSpawner{
 					$flag = false;
 
 					for($k1 = 0; !$flag and $k1 < 4; ++$k1){
-						$pos = new Vector3($j, $level->getHighestBlockAt($j, $k) + 1, $k);
+						$pos = new Vector3($j, $level->getHeightMap($j, $k) + 1, $k);
 
-						for(; $pos->y > 0; $pos->y--){
+						for(; $pos->y > 0; $pos = $pos->down()){
 							$down = $level->getBlock($pos->down());
 
-							if(!($down instanceof Leaves)){
+							if(!($down instanceof Leaves) and $down->isSolid()){
 								break;
 							}
 						}

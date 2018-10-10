@@ -385,4 +385,11 @@ abstract class Mob extends Living{
 			}
 		}
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function canDespawn() : bool{
+		return $this->aiEnabled and !$this->isLeashed() and $this->getOwningEntityId() === null;
+	}
 }
