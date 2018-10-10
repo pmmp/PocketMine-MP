@@ -40,6 +40,14 @@ use pocketmine\math\Vector3;
 interface ChunkLoader{
 
 	/**
+	 * Returns the ChunkLoader id.
+	 * Call Level::generateChunkLoaderId($this) to generate and save it
+	 *
+	 * @return int
+	 */
+	public function getLoaderId() : int;
+
+	/**
 	 * @return float
 	 */
 	public function getX();
