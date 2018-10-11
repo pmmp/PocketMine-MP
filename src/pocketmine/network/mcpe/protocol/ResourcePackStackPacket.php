@@ -42,20 +42,20 @@ class ResourcePackStackPacket extends DataPacket{
 	public $resourcePackStack = [];
 
 	protected function decodePayload(){
-		/*$this->mustAccept = $this->getBool();
+		$this->mustAccept = $this->getBool();
 		$behaviorPackCount = $this->getUnsignedVarInt();
 		while($behaviorPackCount-- > 0){
-			$packId = $this->getString();
-			$version = $this->getString();
-			$this->behaviorPackStack[] = new ResourcePackInfoEntry($packId, $version);
+			$this->getString();
+			$this->getString();
+			$this->getString();
 		}
 
 		$resourcePackCount = $this->getUnsignedVarInt();
 		while($resourcePackCount-- > 0){
-			$packId = $this->getString();
-			$version = $this->getString();
-			$this->resourcePackStack[] = new ResourcePackInfoEntry($packId, $version);
-		}*/
+			$this->getString();
+			$this->getString();
+			$this->getString();
+		}
 	}
 
 	protected function encodePayload(){
