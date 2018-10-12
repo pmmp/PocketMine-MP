@@ -416,7 +416,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 *
 	 * @return array, members are in the structure [name => [type, value]]
 	 */
-	public function getGameRules() : GameRules{
+	public function getGameRules() : array{
 		$count = $this->getUnsignedVarInt();
 		$rules = [];
 		for($i = 0; $i < $count; ++$i){
@@ -438,18 +438,18 @@ class NetworkBinaryStream extends BinaryStream{
 			$rules[$name] = [$type, $value];
 		}
 
-		return new GameRules($rules);
+		return $rules;
 	}
 
 	/**
 	 * Writes a gamerule array, members should be in the structure [name => [type, value]]
 	 * TODO: implement this properly
 	 *
-	 * @param GameRules $rules
+	 * @param array $rules
 	 */
-	public function putGameRules(GameRules $rules) : void{
-		$this->putUnsignedVarInt(count($rules->getAll()));
-		foreach($rules->getAll() as $name => $rule){
+	public function putGameRules(array $rules) : void{
+		$this->putUnsignedVarInt(count($rules));
+		foreach($rules as $name => $rule){
 			$this->putString($name);
 			$this->putUnsignedVarInt($rule[0]);
 			switch($rule[0]){

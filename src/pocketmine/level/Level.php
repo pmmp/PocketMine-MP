@@ -76,6 +76,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\ChunkRequestTask;
 use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
@@ -735,6 +736,23 @@ class Level implements ChunkManager, Metadatable{
 	public function sendTime(Player ...$targets){
 		$pk = new SetTimePacket();
 		$pk->time = $this->time;
+
+		if(empty($targets)){
+			$this->addGlobalPacket($pk);
+		}else{
+			$this->server->broadcastPacket($targets, $pk);
+		}
+	}
+
+	/**
+	 * WARNING: Do not use this, it's only for internal use.
+	 * Sends game rules to player for client update
+	 *
+	 * @param Player ...$targets
+	 */
+	public function sendGameRules(Player ...$targets) : void{
+		$pk = new GameRulesChangedPacket();
+		$pk->gameRules = $this->gameRules->getAll();
 
 		if(empty($targets)){
 			$this->addGlobalPacket($pk);

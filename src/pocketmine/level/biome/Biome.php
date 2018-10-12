@@ -101,19 +101,19 @@ abstract class Biome{
 
 	public function __construct(){
 		$this->spawnableCreatureList[] = new SpawnListEntry(Sheep::class, 12, 4, 4);
-        //$this->spawnableCreatureList[] = new SpawnListEntry(Rabbit::class, 10, 3, 3);
-        $this->spawnableCreatureList[] = new SpawnListEntry(Pig::class, 10, 4, 4);
-        $this->spawnableCreatureList[] = new SpawnListEntry(Chicken::class, 10, 4, 4);
-        $this->spawnableCreatureList[] = new SpawnListEntry(Cow::class, 8, 4, 4);
-        $this->spawnableMonsterList[] = new SpawnListEntry(Spider::class, 100, 4, 4);
-        $this->spawnableMonsterList[] = new SpawnListEntry(Zombie::class, 100, 4, 4);
-        $this->spawnableMonsterList[] = new SpawnListEntry(Skeleton::class, 100, 4, 4);
-        $this->spawnableMonsterList[] = new SpawnListEntry(Creeper::class, 100, 4, 4);
-        //$this->spawnableMonsterList[] = new SpawnListEntry(Slime::class, 100, 4, 4);
-        //$this->spawnableMonsterList[] = new SpawnListEntry(Enderman::class, 10, 1, 4);
-        //$this->spawnableMonsterList[] = new SpawnListEntry(Witch::class, 5, 1, 1);
-        $this->spawnableWaterCreatureList[] = new SpawnListEntry(Squid::class, 10, 4, 4);
-        //$this->spawnableCaveCreatureList[] = new SpawnListEntry(Bat::class, 10, 8, 8);
+		//$this->spawnableCreatureList[] = new SpawnListEntry(Rabbit::class, 10, 3, 3);
+		$this->spawnableCreatureList[] = new SpawnListEntry(Pig::class, 10, 4, 4);
+		$this->spawnableCreatureList[] = new SpawnListEntry(Chicken::class, 10, 4, 4);
+		$this->spawnableCreatureList[] = new SpawnListEntry(Cow::class, 8, 4, 4);
+		$this->spawnableMonsterList[] = new SpawnListEntry(Spider::class, 100, 4, 4);
+		$this->spawnableMonsterList[] = new SpawnListEntry(Zombie::class, 100, 4, 4);
+		$this->spawnableMonsterList[] = new SpawnListEntry(Skeleton::class, 100, 4, 4);
+		$this->spawnableMonsterList[] = new SpawnListEntry(Creeper::class, 100, 4, 4);
+		//$this->spawnableMonsterList[] = new SpawnListEntry(Slime::class, 100, 4, 4);
+		//$this->spawnableMonsterList[] = new SpawnListEntry(Enderman::class, 10, 1, 4);
+		//$this->spawnableMonsterList[] = new SpawnListEntry(Witch::class, 5, 1, 1);
+		$this->spawnableWaterCreatureList[] = new SpawnListEntry(Squid::class, 10, 4, 4);
+		//$this->spawnableCaveCreatureList[] = new SpawnListEntry(Bat::class, 10, 8, 8);
 	}
 
 	protected static function register(int $id, Biome $biome){

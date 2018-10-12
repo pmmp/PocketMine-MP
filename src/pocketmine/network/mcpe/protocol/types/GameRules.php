@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 class GameRules{
 
-    public const RULE_TYPE_BOOL = 1;
+	public const RULE_TYPE_BOOL = 1;
 	public const RULE_TYPE_INT = 2;
 	public const RULE_TYPE_FLOAT = 3;
 
@@ -39,26 +39,26 @@ class GameRules{
 	 * @param array $rules
 	 */
 	public function __construct(array $rules = []){
-        foreach($rules as $name => $rule){
-        	if(is_string($name)){
-        		if(is_array($rule)){
-        			if(isset($rule[0]) and isset($rule[1])){
-        				switch($rule[0]){
-					        case self::RULE_TYPE_INT:
-						        $this->setInt($name, $rule[0]);
-						        break;
-					        case self::RULE_TYPE_FLOAT:
-						        $this->setFloat($name, $rule[0]);
-						        break;
-					        case self::RULE_TYPE_BOOL:
-						        $this->setBool($name, $rule[0]);
-						        break;
-				        }
-			        }
-		        }
-	        }
-        }
-    }
+		foreach($rules as $name => $rule){
+			if(is_string($name)){
+				if(is_array($rule)){
+					if(isset($rule[0]) and isset($rule[1])){
+						switch($rule[0]){
+							case self::RULE_TYPE_INT:
+								$this->setInt($name, $rule[0]);
+								break;
+							case self::RULE_TYPE_FLOAT:
+								$this->setFloat($name, $rule[0]);
+								break;
+							case self::RULE_TYPE_BOOL:
+								$this->setBool($name, $rule[0]);
+								break;
+						}
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * @param string $name
@@ -66,10 +66,13 @@ class GameRules{
 	 * @param int    $valueType
 	 */
 	public function setRule(string $name, $value, int $valueType) : void{
-    	if($this->checkType($value, $valueType)){
-    		$this->rules[$name] = [$valueType, $value];
-	    }
-    }
+		if($this->checkType($value, $valueType)){
+			$this->rules[$name] = [
+				$valueType,
+				$value
+			];
+		}
+	}
 
 	/**
 	 * @param string $name
@@ -89,7 +92,7 @@ class GameRules{
 			}
 		}
 		return null;
-    }
+	}
 
 	/**
 	 * @param string $name
@@ -98,7 +101,7 @@ class GameRules{
 	 */
 	public function hasRule(string $name) : bool{
 		return isset($this->rules[$name]) and isset($this->rules[$name][0]) and isset($this->rules[$name][1]);
-    }
+	}
 
 	/**
 	 * @param     $input
@@ -107,17 +110,17 @@ class GameRules{
 	 * @return bool
 	 */
 	public function checkType($input, int $wantedType) : bool{
-    	switch($wantedType){
-		    default:
-		    	return false;
-		    case self::RULE_TYPE_INT:
-		    	return is_int($input);
-		    case self::RULE_TYPE_FLOAT:
-		    	return is_float($input);
-		    case self::RULE_TYPE_BOOL:
-		    	return is_bool($input);
-	    }
-    }
+		switch($wantedType){
+			default:
+				return false;
+			case self::RULE_TYPE_INT:
+				return is_int($input);
+			case self::RULE_TYPE_FLOAT:
+				return is_float($input);
+			case self::RULE_TYPE_BOOL:
+				return is_bool($input);
+		}
+	}
 
 	/**
 	 * @param string $name
@@ -125,7 +128,7 @@ class GameRules{
 	 */
 	public function setBool(string $name, bool $value) : void{
 		$this->setRule($name, $value, self::RULE_TYPE_BOOL);
-    }
+	}
 
 	/**
 	 * @param string $name

@@ -31,7 +31,7 @@ use pocketmine\network\mcpe\protocol\types\GameRules;
 class GameRulesChangedPacket extends DataPacket{
     public const NETWORK_ID = ProtocolInfo::GAME_RULES_CHANGED_PACKET;
 
-    /** @var GameRules */
+    /** @var array */
     public $gameRules;
 
     protected function decodePayload() : void{
