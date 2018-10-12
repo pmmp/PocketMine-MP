@@ -435,6 +435,7 @@ abstract class Liquid extends Transparent{
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->level->setBlock($this, $ev->getNewState(), true, true);
+			//TODO: recheck this (it doesn't work in MCPE 1.8)
 			$this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_FIZZ, (int) ((2.6 + (lcg_value() - lcg_value()) * 0.8) * 1000));
 		}
 		return true;

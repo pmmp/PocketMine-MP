@@ -450,7 +450,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	private function playLevelUpSound(int $newLevel) : void{
 		$volume = 0x10000000 * (min(30, $newLevel) / 5); //No idea why such odd numbers, but this works...
-		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEVELUP, 1, (int) $volume);
+		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEVELUP, (int) $volume);
 	}
 
 	/**

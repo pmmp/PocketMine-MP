@@ -120,6 +120,7 @@ use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
+use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -1149,6 +1150,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->loadQueue = $newOrder;
+		if(!empty($this->loadQueue) or !empty($unloadChunks)){
+			$pk = new NetworkChunkPublisherUpdatePacket();
+			$pk->x = $this->getFloorX();
+			$pk->y = $this->getFloorY();
+			$pk->z = $this->getFloorZ();
+			$pk->radius = $this->viewDistance * 16; //blocks, not chunks >.>
+			$this->dataPacket($pk);
+		}
 
 		Timings::$playerChunkOrderTimer->stopTiming();
 	}

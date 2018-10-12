@@ -54,7 +54,7 @@ class PacketPool{
 		static::registerPacket(new UpdateBlockPacket());
 		static::registerPacket(new AddPaintingPacket());
 		static::registerPacket(new ExplodePacket());
-		static::registerPacket(new LevelSoundEventPacket());
+		static::registerPacket(new LevelSoundEventPacketV1());
 		static::registerPacket(new LevelEventPacket());
 		static::registerPacket(new BlockEventPacket());
 		static::registerPacket(new EntityEventPacket());
@@ -147,6 +147,11 @@ class PacketPool{
 		static::registerPacket(new UpdateSoftEnumPacket());
 		static::registerPacket(new NetworkStackLatencyPacket());
 		static::registerPacket(new ScriptCustomEventPacket());
+		static::registerPacket(new SpawnParticleEffectPacket());
+		static::registerPacket(new AvailableEntityIdentifiersPacket());
+		static::registerPacket(new LevelSoundEventPacket());
+		static::registerPacket(new NetworkChunkPublisherUpdatePacket());
+		static::registerPacket(new BiomeDefinitionListPacket());
 
 		static::registerPacket(new BatchPacket());
 	}
@@ -178,4 +183,5 @@ class PacketPool{
 
 		return $pk;
 	}
+
 }
