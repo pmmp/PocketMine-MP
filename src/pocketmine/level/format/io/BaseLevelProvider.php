@@ -29,6 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\protocol\types\GameRules;
 
 abstract class BaseLevelProvider implements LevelProvider{
 	/** @var string */
@@ -121,6 +122,46 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	public function setSeed(int $value){
 		$this->levelData->setLong("RandomSeed", $value);
+	}
+
+	public function getGameRules() : GameRules{
+		$rules = new GameRules();
+		if($this->levelData->hasTag("GameRules", CompoundTag::class)){
+			$tag = $this->levelData->getCompoundTag("GameRules");
+
+			foreach($tag->getValue() as $namedTag){
+				if($namedTag instanceof StringTag){
+					$type = null;
+					$value = null;
+					switch($namedTag->getValue()){ // TODO: check float value
+						case (is_numeric($namedTag->getValue())):
+							$type = GameRules::RULE_TYPE_INT;
+							$value = intval($namedTag->getValue());
+							break;
+						case "false":
+						case "true":
+							$type = GameRules::RULE_TYPE_BOOL;
+							$value = boolval($namedTag->getValue());
+							break;
+					}
+
+					if($type !== null and $value !== null){
+						$rules->setRule($namedTag->getName(), $value, $type);
+					}
+				}
+			}
+		}
+
+		return $rules;
+	}
+
+	public function setGameRules(GameRules $gameRules) : void{
+		$tag = new CompoundTag("GameRules");
+		foreach($gameRules->getAll() as $name => $a){
+			$tag->setString($name, strval($a[1])); // very ridiculous
+		}
+
+		$this->levelData->setTag($tag);
 	}
 
 	public function getSpawn() : Vector3{

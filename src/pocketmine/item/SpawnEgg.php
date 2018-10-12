@@ -41,13 +41,13 @@ class SpawnEgg extends Item{
 			$nbt->setString("CustomName", $this->getCustomName());
 		}
 
-		/** @var Mob $entity */
 		$entity = Entity::createEntity($this->meta, $player->getLevel(), $nbt);
 
 		if($entity instanceof Entity){
 			--$this->count;
 			if($entity instanceof Mob) {
                 $entity->setAiEnabled($player->getServer()->mobAiEnabled);
+                $entity->playLivingSound();
             }
 			$entity->spawnToAll();
 			return true;

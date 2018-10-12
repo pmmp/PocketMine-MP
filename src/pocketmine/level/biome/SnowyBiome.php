@@ -29,6 +29,8 @@ use pocketmine\block\BlockFactory;
 abstract class SnowyBiome extends Biome{
 
 	public function __construct(){
+		parent::__construct();
+
 		$this->setGroundCover([
 			BlockFactory::get(Block::SNOW_LAYER),
 			BlockFactory::get(Block::GRASS),
@@ -36,5 +38,7 @@ abstract class SnowyBiome extends Biome{
 			BlockFactory::get(Block::DIRT),
 			BlockFactory::get(Block::DIRT)
 		]);
+
+		$this->spawnableCreatureList = [];
 	}
 }

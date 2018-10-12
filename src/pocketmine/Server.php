@@ -1827,6 +1827,10 @@ class Server{
 				$this->setDefaultLevel($this->getLevelByName($default));
 			}
 
+			if($this->getAltayProperty("level.doMobSpawning", false)){
+				$this->getDefaultLevel()->getGameRules()->setBool("doMobSpawning", true);
+			}
+
 			if($this->allowNether and $this->getNetherLevel() === null){
 				/** @var string $netherLevelName */
 				$netherLevelName = $this->getAltayProperty("dimensions.nether.level-name", "nether");

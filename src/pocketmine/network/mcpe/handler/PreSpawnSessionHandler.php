@@ -75,6 +75,8 @@ class PreSpawnSessionHandler extends SessionHandler{
 		$pk->commandsEnabled = true;
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
+		$pk->gameRules = $this->player->level->getGameRules();
+
 		$this->session->sendDataPacket($pk);
 
 		$this->player->getLevel()->sendTime($this->player);

@@ -34,3 +34,5 @@ level:
   # If enabled, mobs can move around
   # Note: this feature can be cause lag in your server when lots of mob are spawned
   enable-mob-ai: false
+  # Auto Spawn Mobs
+  doMobSpawning: false

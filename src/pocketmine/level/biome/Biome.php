@@ -24,6 +24,20 @@ declare(strict_types=1);
 namespace pocketmine\level\biome;
 
 use pocketmine\block\Block;
+use pocketmine\entity\Animal;
+use pocketmine\entity\Creature;
+use pocketmine\entity\CreatureType;
+use pocketmine\entity\hostile\Creeper;
+use pocketmine\entity\hostile\Skeleton;
+use pocketmine\entity\hostile\Spider;
+use pocketmine\entity\hostile\Zombie;
+use pocketmine\entity\Monster;
+use pocketmine\entity\passive\Chicken;
+use pocketmine\entity\passive\Cow;
+use pocketmine\entity\passive\Pig;
+use pocketmine\entity\passive\Sheep;
+use pocketmine\entity\passive\Squid;
+use pocketmine\entity\WaterAnimal;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\utils\Random;
@@ -75,6 +89,32 @@ abstract class Biome{
 	protected $rainfall = 0.5;
 	/** @var float */
 	protected $temperature = 0.5;
+
+	/** @var SpawnListEntry[] */
+	protected $spawnableMonsterList = [];
+	/** @var SpawnListEntry[] */
+	protected $spawnableCreatureList = [];
+	/** @var SpawnListEntry[] */
+	protected $spawnableWaterCreatureList = [];
+	/** @var SpawnListEntry[] */
+	protected $spawnableCaveCreatureList = [];
+
+	public function __construct(){
+		$this->spawnableCreatureList[] = new SpawnListEntry(Sheep::class, 12, 4, 4);
+        //$this->spawnableCreatureList[] = new SpawnListEntry(Rabbit::class, 10, 3, 3);
+        $this->spawnableCreatureList[] = new SpawnListEntry(Pig::class, 10, 4, 4);
+        $this->spawnableCreatureList[] = new SpawnListEntry(Chicken::class, 10, 4, 4);
+        $this->spawnableCreatureList[] = new SpawnListEntry(Cow::class, 8, 4, 4);
+        $this->spawnableMonsterList[] = new SpawnListEntry(Spider::class, 100, 4, 4);
+        $this->spawnableMonsterList[] = new SpawnListEntry(Zombie::class, 100, 4, 4);
+        $this->spawnableMonsterList[] = new SpawnListEntry(Skeleton::class, 100, 4, 4);
+        $this->spawnableMonsterList[] = new SpawnListEntry(Creeper::class, 100, 4, 4);
+        //$this->spawnableMonsterList[] = new SpawnListEntry(Slime::class, 100, 4, 4);
+        //$this->spawnableMonsterList[] = new SpawnListEntry(Enderman::class, 10, 1, 4);
+        //$this->spawnableMonsterList[] = new SpawnListEntry(Witch::class, 5, 1, 1);
+        $this->spawnableWaterCreatureList[] = new SpawnListEntry(Squid::class, 10, 4, 4);
+        //$this->spawnableCaveCreatureList[] = new SpawnListEntry(Bat::class, 10, 8, 8);
+	}
 
 	protected static function register(int $id, Biome $biome){
 		self::$biomes[$id] = $biome;
@@ -186,5 +226,33 @@ abstract class Biome{
 
 	public function getRainfall() : float{
 		return $this->rainfall;
+	}
+
+	/**
+	 * @param CreatureType $creatureType
+	 *
+	 * @return SpawnListEntry[]
+	 */
+	public function getSpawnableList(CreatureType $creatureType) : array{
+		$entityClass = $creatureType->getCreatureClass();
+		switch($entityClass){
+			case ($entityClass === WaterAnimal::class):
+				return $this->spawnableWaterCreatureList;
+			case ($entityClass === Creature::class):
+				return $this->spawnableCaveCreatureList;
+			case ($entityClass === Animal::class):
+				return $this->spawnableCreatureList;
+			case ($entityClass === Monster::class):
+				return $this->spawnableMonsterList;
+		}
+
+		return [];
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getSpawningChance() : float{
+		return 0.1;
 	}
 }

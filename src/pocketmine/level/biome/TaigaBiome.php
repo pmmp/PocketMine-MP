@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\biome;
 
 use pocketmine\block\utils\WoodType;
+use pocketmine\entity\passive\Wolf;
 use pocketmine\level\generator\populator\TallGrass;
 use pocketmine\level\generator\populator\Tree;
 
@@ -45,6 +46,8 @@ class TaigaBiome extends SnowyBiome{
 
 		$this->temperature = 0.05;
 		$this->rainfall = 0.8;
+
+		$this->spawnableCreatureList[] = new SpawnListEntry(Wolf::class, 8, 4, 4);
 	}
 
 	public function getName() : string{

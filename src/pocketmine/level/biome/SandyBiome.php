@@ -29,6 +29,8 @@ use pocketmine\block\BlockFactory;
 abstract class SandyBiome extends Biome{
 
 	public function __construct(){
+		parent::__construct();
+
 		$this->setGroundCover([
 			BlockFactory::get(Block::SAND),
 			BlockFactory::get(Block::SAND),

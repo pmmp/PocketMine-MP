@@ -25,6 +25,7 @@ namespace pocketmine\level\generator;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\entity\CreatureType;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\format\Chunk;

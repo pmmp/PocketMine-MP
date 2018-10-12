@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\passive;
 
+use pocketmine\entity\Animal;
 use pocketmine\entity\behavior\FloatBehavior;
 use pocketmine\entity\behavior\FollowParentBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
@@ -32,7 +33,6 @@ use pocketmine\entity\behavior\PanicBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\TemptedBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
-use pocketmine\entity\Tamable;
 use pocketmine\item\Bucket;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -40,7 +40,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
-class Cow extends Tamable{
+class Cow extends Animal{
 
 	public const NETWORK_ID = self::COW;
 
