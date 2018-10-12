@@ -464,6 +464,9 @@ class BlockFactory{
 			throw new \InvalidArgumentException("Block variant collides with state bitmask");
 		}
 
+		if(!$override and self::isRegistered($id, $variant)){
+			throw new \InvalidArgumentException("Block registration conflicts with an existing block");
+		}
 		self::fillStaticArrays(($id << 4) | $variant, $block); //register default state mapped to variant, for blocks which don't use 0 as valid state
 
 		for($m = $variant + 1; $m <= ($variant | $stateMask); ++$m){
