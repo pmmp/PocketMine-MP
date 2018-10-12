@@ -73,16 +73,28 @@ class Torch extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$below = $this->getSide(Facing::DOWN);
-
-		if(!$blockClicked->isTransparent() and $face !== Facing::DOWN){
-			$this->facing = $face;
-			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif(!$below->isTransparent() or $below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL){
+		if($blockClicked->canBeReplaced() and !$blockClicked->getSide(Facing::DOWN)->isTransparent()){
 			$this->facing = Facing::UP;
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}elseif($face !== Facing::DOWN and (!$blockClicked->isTransparent() or ($face === Facing::UP and ($blockClicked->getId() === self::FENCE or $blockClicked->getId() === self::COBBLESTONE_WALL)))){
+			$this->facing = $face;
+			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}else{
+			static $faces = [
+				Facing::SOUTH,
+				Facing::WEST,
+				Facing::NORTH,
+				Facing::EAST,
+				Facing::DOWN,
+			];
+			foreach($faces as $side){
+				$block = $this->getSide($side);
+				if(!$block->isTransparent()){
+					$this->facing = Facing::opposite($side);
+					return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+				}
+			}
 		}
-
 		return false;
 	}
 }
