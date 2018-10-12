@@ -76,6 +76,8 @@ class PreSpawnSessionHandler extends SessionHandler{
 		$pk->worldName = $this->server->getMotd();
 		$this->session->sendDataPacket($pk);
 
+		$this->player->setImmobile(); //HACK: fix client-side falling pre-spawn
+
 		$this->player->getLevel()->sendTime($this->player);
 
 		$this->player->sendAttributes(true);
@@ -99,6 +101,8 @@ class PreSpawnSessionHandler extends SessionHandler{
 	}
 
 	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
+		$this->player->setImmobile(false); //HACK: this is set to prevent client-side falling before spawn
+
 		$this->player->doFirstSpawn();
 
 		return true;
