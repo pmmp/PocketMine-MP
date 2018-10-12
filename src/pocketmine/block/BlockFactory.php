@@ -477,12 +477,13 @@ class BlockFactory{
 
 			$v = clone $block;
 			$v->readStateFromMeta($m & $stateMask);
-
-			self::$fullList[$index] = $v;
-			self::$stateMasks[$index] = $stateMask;
-			self::$lightFilter[$index] = min(15, $v->getLightFilter() + 1); //opacity plus 1 standard light filter
-			self::$diffusesSkyLight[$index] = $v->diffusesSkyLight();
-			self::$blastResistance[$index] = $v->getBlastResistance();
+			if($v->getDamage() === $m){ //don't register anything that isn't the same when we read it back again
+				self::$fullList[$index] = $v;
+				self::$stateMasks[$index] = $stateMask;
+				self::$lightFilter[$index] = min(15, $v->getLightFilter() + 1); //opacity plus 1 standard light filter
+				self::$diffusesSkyLight[$index] = $v->diffusesSkyLight();
+				self::$blastResistance[$index] = $v->getBlastResistance();
+			}
 		}
 	}
 
