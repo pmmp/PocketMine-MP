@@ -85,7 +85,7 @@ class Torch extends Flowable{
 				Facing::WEST,
 				Facing::NORTH,
 				Facing::EAST,
-				Facing::DOWN,
+				Facing::DOWN
 			];
 			foreach($faces as $side){
 				$block = $this->getSide($side);
