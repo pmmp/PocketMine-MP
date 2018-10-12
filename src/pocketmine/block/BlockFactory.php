@@ -464,7 +464,9 @@ class BlockFactory{
 			throw new \InvalidArgumentException("Block variant collides with state bitmask");
 		}
 
-		for($m = $variant; $m <= ($variant | $stateMask); ++$m){
+		self::fillStaticArrays(($id << 4) | $variant, $block); //register default state mapped to variant, for blocks which don't use 0 as valid state
+
+		for($m = $variant + 1; $m <= ($variant | $stateMask); ++$m){
 			if(($m & ~$stateMask) !== $variant){
 				continue;
 			}
@@ -478,13 +480,17 @@ class BlockFactory{
 			$v = clone $block;
 			$v->readStateFromMeta($m & $stateMask);
 			if($v->getDamage() === $m){ //don't register anything that isn't the same when we read it back again
-				self::$fullList[$index] = $v;
-				self::$stateMasks[$index] = $stateMask;
-				self::$lightFilter[$index] = min(15, $v->getLightFilter() + 1); //opacity plus 1 standard light filter
-				self::$diffusesSkyLight[$index] = $v->diffusesSkyLight();
-				self::$blastResistance[$index] = $v->getBlastResistance();
+				self::fillStaticArrays($index, $v);
 			}
 		}
+	}
+
+	private static function fillStaticArrays(int $index, Block $block) : void{
+		self::$fullList[$index] = $block;
+		self::$stateMasks[$index] = $block->getStateBitmask();
+		self::$lightFilter[$index] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
+		self::$diffusesSkyLight[$index] = $block->diffusesSkyLight();
+		self::$blastResistance[$index] = $block->getBlastResistance();
 	}
 
 	/**
