@@ -89,7 +89,7 @@ class Torch extends Flowable{
 			];
 			foreach($faces as $side){
 				$block = $this->getSide($side);
-				if (!$block->isTransparent()){
+				if(!$block->isTransparent()){
 					$this->facing = Facing::opposite($side);
 					return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
