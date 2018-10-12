@@ -1019,7 +1019,7 @@ class Level implements ChunkManager, Metadatable{
 		if($this->gameRules->getBool("doMobSpawning")){
 			$eligibleChunks = [];
 			foreach($this->players as $player){
-				$eligibleChunks = array_merge($eligibleChunks, array_slice($player->usedChunks, 0, 8, true));
+				$eligibleChunks = array_replace($eligibleChunks, array_keys($player->usedChunks));
 			}
 
 			$this->mobSpawner->findChunksForSpawning($this, $this->spawnHostileMobs, $this->spawnPeacefulMobs, $this->time % 400 === 0, $eligibleChunks);
@@ -3116,6 +3116,24 @@ class Level implements ChunkManager, Metadatable{
 		$possible = WeightedRandomItem::getRandomItem($this->random, $possibleCreatures, WeightedRandomItem::getTotalWeight($possibleCreatures));
 
 		return $possible;
+	}
+
+	/**
+	 * @param CreatureType   $creatureType
+	 * @param SpawnListEntry $entry
+	 * @param Vector3        $pos
+	 *
+	 * @return bool
+	 */
+	public function canCreatureTypeSpawnHere(CreatureType $creatureType, SpawnListEntry $entry, Vector3 $pos) : bool{
+		$generator = $this->getGenerator();
+		if($generator === null){
+			$possibleCreatures = $this->getBiome($pos->x, $pos->z)->getSpawnableList($creatureType);
+		}else{
+			$possibleCreatures = $generator->getPossibleCreatures($pos, $creatureType);
+		}
+
+		return empty($possibleCreatures) ? false : in_array($entry, $possibleCreatures);
 	}
 
 	/**

@@ -89,7 +89,6 @@ class AnimalSpawner{
 		if(!$spawnHostileMobs and !$spawnPeacefulMobs){
 			return 0;
 		}else{
-			$i = 0;
 			$i4 = 0;
 			$spawn = $level->getSpawnLocation();
 
@@ -99,10 +98,10 @@ class AnimalSpawner{
 					$j4 = count(array_filter($level->getEntities(), function(Entity $entity) use ($a){
 						return get_class($entity) == $a;
 					}));
-					$k4 = $creatureType->getMaxSpawn() * $i / self::MAX_MOBS;
+					$k4 = $creatureType->getMaxSpawn() * count($eligibleChunks) / self::MAX_MOBS;
 
 					if($j4 <= $k4){
-						foreach($eligibleChunks as $chunkHash => $v){
+						foreach($eligibleChunks as $chunkHash){
 							Level::getXZ($chunkHash, $cx, $cz);
 
 							$pos = self::getRandomChunkPosition($level, $cx, $cz);
@@ -110,8 +109,9 @@ class AnimalSpawner{
 							$l1 = $pos->y;
 							$i2 = $pos->z;
 							$block = $level->getBlock($pos);
+							$chunkEntityCount = count($level->getChunkEntities($cx, $cz));
 
-							if(!$block->isSolid()){
+							if(!$block->isSolid() and $chunkEntityCount === 0){
 								$j2 = 0;
 
 								for($k2 = 0; $k2 < 3; ++$k2){
@@ -120,8 +120,9 @@ class AnimalSpawner{
 									$j3 = $i2;
 									$k3 = 6;
 									$entry = null;
+									$s1 = $level->random->nextBoundedInt(4);
 
-									for($l3 = 0; $l3 < 4; ++$l3){
+									for($l3 = 0; $l3 < $s1; ++$l3){
 										$l2 += $level->random->nextBoundedInt($k3) - $level->random->nextBoundedInt($k3);
 										$i3 += $level->random->nextBoundedInt(1) - $level->random->nextBoundedInt(1);
 										$j3 += $level->random->nextBoundedInt($k3) - $level->random->nextBoundedInt($k3);
@@ -140,12 +141,12 @@ class AnimalSpawner{
 												}
 											}
 
-											if(self::canCreatureTypeSpawnAtLocation(Entity::$spawnPlacementTypes[$entry->entityClass] ?? 0, $level, $pos1)){
+											if($level->canCreatureTypeSpawnHere($creatureType, $entry, $pos1) and self::canCreatureTypeSpawnAtLocation(Entity::$spawnPlacementTypes[$entry->entityClass] ?? 0, $level, $pos1)){
 												$entity = null;
 												try{
 													$class = $entry->entityClass;
 													/** @var Living $entity */
-													$entity = new $class($level, Entity::createBaseNBT($pos1));
+													$entity = new $class($level, Entity::createBaseNBT($pos1->add(0.5, 0, 0.5)));
 												}catch(\Exception $e){
 													return $i4;
 												}
@@ -158,13 +159,11 @@ class AnimalSpawner{
 
 												if($entity->canSpawnHere() and count($level->getCollidingEntities($entity->getBoundingBox(), $entity)) === 0){
 													// TODO: implement mob initial spawn
-
 													++$j2;
 													$entity->spawnToAll();
 
-
 													if($j2 >= $entity->getMaxSpawnedInChunk()){
-														continue 3;
+														continue 4;
 													}
 												}
 
@@ -271,7 +270,7 @@ class AnimalSpawner{
 							try{
 								$class = $entry->entityClass;
 								/** @var Entity $entity */
-								$entity = new $class($level, Entity::createBaseNBT($pos));
+								$entity = new $class($level, Entity::createBaseNBT($pos->add(0.5, 0, 0.5)));
 							}catch(\Exception $e){
 								continue;
 							}
