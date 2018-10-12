@@ -35,55 +35,26 @@ class BlockMetadataStore extends MetadataStore{
 		$this->owningLevel = $owningLevel;
 	}
 
-	public function disambiguate(Metadatable $block, string $metadataKey) : string{
-		if(!($block instanceof Block)){
-			throw new \InvalidArgumentException("Argument must be a Block instance");
+	private function disambiguate(Block $block, string $metadataKey) : string{
+		if($block->getLevel() !== $this->owningLevel){
+			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
 		}
-
 		return $block->x . ":" . $block->y . ":" . $block->z . ":" . $metadataKey;
 	}
 
-	public function getMetadata(Metadatable $subject, string $metadataKey){
-		if(!($subject instanceof Block)){
-			throw new \InvalidArgumentException("Object must be a Block");
-		}
-		if($subject->getLevel() === $this->owningLevel){
-			return parent::getMetadata($subject, $metadataKey);
-		}else{
-			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
-		}
+	public function getMetadata(Block $subject, string $metadataKey){
+		return $this->getMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
 
-	public function hasMetadata(Metadatable $subject, string $metadataKey) : bool{
-		if(!($subject instanceof Block)){
-			throw new \InvalidArgumentException("Object must be a Block");
-		}
-		if($subject->getLevel() === $this->owningLevel){
-			return parent::hasMetadata($subject, $metadataKey);
-		}else{
-			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
-		}
+	public function hasMetadata(Block $subject, string $metadataKey) : bool{
+		return $this->hasMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
 
-	public function removeMetadata(Metadatable $subject, string $metadataKey, Plugin $owningPlugin){
-		if(!($subject instanceof Block)){
-			throw new \InvalidArgumentException("Object must be a Block");
-		}
-		if($subject->getLevel() === $this->owningLevel){
-			parent::removeMetadata($subject, $metadataKey, $owningPlugin);
-		}else{
-			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
-		}
+	public function removeMetadata(Block $subject, string $metadataKey, Plugin $owningPlugin){
+		$this->removeMetadataInternal($this->disambiguate($subject, $metadataKey), $owningPlugin);
 	}
 
-	public function setMetadata(Metadatable $subject, string $metadataKey, MetadataValue $newMetadataValue){
-		if(!($subject instanceof Block)){
-			throw new \InvalidArgumentException("Object must be a Block");
-		}
-		if($subject->getLevel() === $this->owningLevel){
-			parent::setMetadata($subject, $metadataKey, $newMetadataValue);
-		}else{
-			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
-		}
+	public function setMetadata(Block $subject, string $metadataKey, MetadataValue $newMetadataValue){
+		$this->setMetadataInternal($this->disambiguate($subject, $metadataKey), $newMetadataValue);
 	}
 }
