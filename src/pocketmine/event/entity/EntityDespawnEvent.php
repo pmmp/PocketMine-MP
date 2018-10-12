@@ -46,6 +46,7 @@ class EntityDespawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return int
 	 */
 	public function getType() : int{
@@ -53,6 +54,7 @@ class EntityDespawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function isCreature() : bool{
@@ -60,6 +62,7 @@ class EntityDespawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function isHuman() : bool{
@@ -67,6 +70,7 @@ class EntityDespawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function isProjectile() : bool{
@@ -74,6 +78,7 @@ class EntityDespawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function isVehicle() : bool{
@@ -81,6 +86,7 @@ class EntityDespawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function isItem() : bool{

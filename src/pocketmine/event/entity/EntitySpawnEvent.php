@@ -47,6 +47,7 @@ class EntitySpawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return Position
 	 */
 	public function getPosition() : Position{
@@ -54,6 +55,7 @@ class EntitySpawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return int
 	 */
 	public function getType() : int{
@@ -61,6 +63,7 @@ class EntitySpawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function isCreature() : bool{
@@ -68,6 +71,7 @@ class EntitySpawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function isHuman() : bool{
@@ -75,6 +79,7 @@ class EntitySpawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function isProjectile() : bool{
@@ -82,6 +87,7 @@ class EntitySpawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function isVehicle() : bool{
@@ -89,6 +95,7 @@ class EntitySpawnEvent extends EntityEvent{
 	}
 
 	/**
+	 * @deprecated
 	 * @return bool
 	 */
 	public function isItem() : bool{
