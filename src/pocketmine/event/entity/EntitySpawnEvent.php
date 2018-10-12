@@ -35,15 +35,12 @@ use pocketmine\level\Position;
  * Called when a entity is spawned
  */
 class EntitySpawnEvent extends EntityEvent{
-	/** @var int */
-	private $entityType;
 
 	/**
 	 * @param Entity $entity
 	 */
 	public function __construct(Entity $entity){
 		$this->entity = $entity;
-		$this->entityType = $entity::NETWORK_ID;
 	}
 
 	/**
@@ -51,13 +48,6 @@ class EntitySpawnEvent extends EntityEvent{
 	 */
 	public function getPosition() : Position{
 		return $this->entity->getPosition();
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getType() : int{
-		return $this->entityType;
 	}
 
 	/**

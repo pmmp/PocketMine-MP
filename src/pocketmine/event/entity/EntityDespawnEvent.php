@@ -34,22 +34,12 @@ use pocketmine\entity\Vehicle;
  * Called when a entity is despawned
  */
 class EntityDespawnEvent extends EntityEvent{
-	/** @var int */
-	private $entityType;
 
 	/**
 	 * @param Entity $entity
 	 */
 	public function __construct(Entity $entity){
 		$this->entity = $entity;
-		$this->entityType = $entity::NETWORK_ID;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getType() : int{
-		return $this->entityType;
 	}
 
 	/**
