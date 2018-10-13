@@ -111,6 +111,7 @@ class Leaves extends Transparent{
 			$ev = new LeavesDecayEvent($this);
 			$ev->call();
 			if($ev->isCancelled() or $this->findLog($this)){
+				$this->checkDecay = false;
 				$this->getLevel()->setBlock($this, $this, false);
 			}else{
 				$this->getLevel()->useBreakOn($this);
