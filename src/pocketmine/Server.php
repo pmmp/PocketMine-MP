@@ -1142,9 +1142,7 @@ class Server{
 		}
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
 		if(!($this->getLevelByName($name) instanceof Level)){
-			return is_dir($path) and !empty(array_filter(scandir($path, SCANDIR_SORT_NONE), function($v){
-				return $v !== ".." and $v !== ".";
-			}));
+			return !empty(LevelProviderManager::getMatchingProviders($path));
 		}
 
 		return true;
