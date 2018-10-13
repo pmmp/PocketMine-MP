@@ -999,7 +999,7 @@ class Server{
 			throw new \InvalidStateException("The default level cannot be unloaded while running, please switch levels.");
 		}
 
-		return $level->unload($forceUnload);
+		return $level->onUnload($forceUnload);
 	}
 
 	/**

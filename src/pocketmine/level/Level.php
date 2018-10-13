@@ -529,14 +529,12 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @internal DO NOT use this from plugins, it's for internal use only. Use Server->unloadLevel() instead.
 	 *
-	 * Unloads the current level from memory safely
-	 *
 	 * @param bool $force default false, force unload of default level
 	 *
 	 * @return bool
 	 * @throws \InvalidStateException if trying to unload a level during level tick
 	 */
-	public function unload(bool $force = false) : bool{
+	public function onUnload(bool $force = false) : bool{
 		if($this->doingTick and !$force){
 			throw new \InvalidStateException("Cannot unload a level during level tick");
 		}
