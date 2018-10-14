@@ -24,6 +24,28 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\level\Level;
+
 abstract class Monster extends Mob{
+
+	protected function isValidLightLevel() : bool{
+		if($this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) < $this->random->nextBoundedInt(32)){
+			$i = max(
+				$this->level->getBlockLightAt($this->getFloorX(), $this->getFloorY() + 1, $this->getFloorZ()),
+				$this->level->getBlockLightAt($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()),
+				$this->level->getBlockLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ() + 1),
+				$this->level->getBlockLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ() - 1),
+				$this->level->getBlockLightAt($this->getFloorX() + 1, $this->getFloorY(), $this->getFloorZ()),
+				$this->level->getBlockLightAt($this->getFloorX() - 1, $this->getFloorY(), $this->getFloorZ())
+			);
+
+			return $i <= $this->random->nextBoundedInt(8);
+		}
+		return false;
+	}
+
+	public function canSpawnHere() : bool{
+		return $this->level->getDifficulty() !== Level::DIFFICULTY_PEACEFUL and $this->isValidLightLevel();
+	}
 
 }

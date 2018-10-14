@@ -194,4 +194,8 @@ class Creeper extends Monster implements Ageable{
 		}
 		return false;
 	}
+
+	protected function isValidLightLevel() : bool{
+		return true;
+	}
 }
