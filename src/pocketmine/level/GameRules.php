@@ -47,7 +47,7 @@ class GameRules{
 		$this->setRule("doFireTick", true, self::RULE_TYPE_BOOL);
 		$this->setRule("doInsomnia", true, self::RULE_TYPE_BOOL);
 		$this->setRule("doMobLoot", true, self::RULE_TYPE_BOOL);
-		$this->setRule("doMobSpawning", true, self::RULE_TYPE_BOOL);
+		$this->setRule("doMobSpawning", false, self::RULE_TYPE_BOOL);
 		$this->setRule("doTileDrops", true, self::RULE_TYPE_BOOL);
 		$this->setRule("doWeatherCycle", true, self::RULE_TYPE_BOOL);
 		$this->setRule("drowningdamage", true, self::RULE_TYPE_BOOL);
