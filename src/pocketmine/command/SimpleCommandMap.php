@@ -36,6 +36,7 @@ use pocketmine\command\defaults\EffectCommand;
 use pocketmine\command\defaults\EnchantCommand;
 use pocketmine\command\defaults\ExtractPluginCommand;
 use pocketmine\command\defaults\GamemodeCommand;
+use pocketmine\command\defaults\GameRuleCommand;
 use pocketmine\command\defaults\GarbageCollectorCommand;
 use pocketmine\command\defaults\GiveCommand;
 use pocketmine\command\defaults\HelpCommand;
@@ -139,7 +140,8 @@ class SimpleCommandMap implements CommandMap{
 			new VersionCommand("version"),
 			new WhitelistCommand("whitelist"),
 			new WorldCommand("world"),
-			new XpCommand("xp")
+			new XpCommand("xp"),
+			new GameRuleCommand("gamerule")
 		]);
 
 		if($this->server->getAltayProperty("developer.commands", true)){

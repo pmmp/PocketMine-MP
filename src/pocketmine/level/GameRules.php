@@ -67,29 +67,38 @@ class GameRules{
 	 * @param string $name
 	 * @param        $value
 	 * @param int    $valueType
+	 *
+	 * @return bool
 	 */
-	public function setRule(string $name, $value, int $valueType) : void{
+	public function setRule(string $name, $value, int $valueType) : bool{
 		if($this->checkType($value, $valueType)){
 			$this->rules[$name] = $this->dirtyRules[$name] = [
 				$valueType,
 				$value
 			];
+			return true;
 		}
+		return false;
 	}
 
 	/**
 	 * @param string $name
 	 * @param        $value
+	 * @param bool   $force
+	 *
+	 * @return bool
 	 */
-	public function setRuleWithMatching(string $name, $value) : void{
+	public function setRuleWithMatching(string $name, $value, bool $force = false) : bool{
 		if($this->hasRule($name)){
 			$type = $this->rules[$name][0];
 			$value = $this->convertType($value, $type);
 
-			$this->setRule($name, $value, $type);
-		}else{
-			$this->setRule($name, $value, self::RULE_TYPE_UNKNOWN);
+			return $this->setRule($name, $value, $type);
+		}elseif($force){
+			return $this->setRule($name, $value, self::RULE_TYPE_UNKNOWN);
 		}
+
+		return false;
 	}
 
 	/**
@@ -157,7 +166,7 @@ class GameRules{
 			case self::RULE_TYPE_FLOAT:
 				return floatval($input);
 			case self::RULE_TYPE_BOOL:
-				return boolval($input);
+				return strtolower($input) === "true" ? true : false;
 		}
 	}
 
@@ -228,7 +237,7 @@ class GameRules{
 	public function readSaveData(CompoundTag $nbt) : void{
 		foreach($nbt->getValue() as $tag){
 			if($tag instanceof StringTag){
-				$this->setRuleWithMatching($tag->getName(), $tag->getValue());
+				$this->setRuleWithMatching($tag->getName(), $tag->getValue(), true);
 			}
 		}
 
