@@ -26,7 +26,7 @@ namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\types\GameRules;
+use pocketmine\level\GameRules;
 
 interface LevelProvider{
 

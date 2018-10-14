@@ -33,7 +33,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
-use pocketmine\network\mcpe\protocol\types\GameRules;
+use pocketmine\level\GameRules;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
 

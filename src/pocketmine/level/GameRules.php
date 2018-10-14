@@ -22,42 +22,45 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\level;
+
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\StringTag;
 
 class GameRules{
 
+	public const RULE_TYPE_UNKNOWN = 0;
 	public const RULE_TYPE_BOOL = 1;
 	public const RULE_TYPE_INT = 2;
 	public const RULE_TYPE_FLOAT = 3;
 
 	/** @var int[][] */
 	public $rules = [];
+	/** @var int[][] */
+	public $dirtyRules = [];
 
-	/**
-	 * GameRules constructor.
-	 *
-	 * @param array $rules
-	 */
-	public function __construct(array $rules = []){
-		foreach($rules as $name => $rule){
-			if(is_string($name)){
-				if(is_array($rule)){
-					if(isset($rule[0]) and isset($rule[1])){
-						switch($rule[0]){
-							case self::RULE_TYPE_INT:
-								$this->setInt($name, $rule[0]);
-								break;
-							case self::RULE_TYPE_FLOAT:
-								$this->setFloat($name, $rule[0]);
-								break;
-							case self::RULE_TYPE_BOOL:
-								$this->setBool($name, $rule[0]);
-								break;
-						}
-					}
-				}
-			}
-		}
+	public function __construct(){
+		// bedrock edition game rules
+		$this->setRule("commandBlockOutput", true, self::RULE_TYPE_BOOL);
+		$this->setRule("doDaylightCycle", true, self::RULE_TYPE_BOOL);
+		$this->setRule("doEntityDrops", true, self::RULE_TYPE_BOOL);
+		$this->setRule("doFireTick", true, self::RULE_TYPE_BOOL);
+		$this->setRule("doInsomnia", true, self::RULE_TYPE_BOOL);
+		$this->setRule("doMobLoot", true, self::RULE_TYPE_BOOL);
+		$this->setRule("doMobSpawning", true, self::RULE_TYPE_BOOL);
+		$this->setRule("doTileDrops", true, self::RULE_TYPE_BOOL);
+		$this->setRule("doWeatherCycle", true, self::RULE_TYPE_BOOL);
+		$this->setRule("drowningdamage", true, self::RULE_TYPE_BOOL);
+		$this->setRule("falldamage", true, self::RULE_TYPE_BOOL);
+		$this->setRule("firedamage", true, self::RULE_TYPE_BOOL);
+		$this->setRule("keepInventory", false, self::RULE_TYPE_BOOL);
+		$this->setRule("maxCommandChainLength", 65536, self::RULE_TYPE_INT);
+		$this->setRule("mobGriefing", true, self::RULE_TYPE_BOOL);
+		$this->setRule("naturalRegeneration", true, self::RULE_TYPE_BOOL);
+		$this->setRule("pvp", true, self::RULE_TYPE_BOOL);
+		$this->setRule("sendCommandFeedback", true, self::RULE_TYPE_BOOL);
+		$this->setRule("showcoordinates", false, self::RULE_TYPE_BOOL);
+		$this->setRule("tntexplodes", true, self::RULE_TYPE_BOOL);
 	}
 
 	/**
@@ -67,10 +70,25 @@ class GameRules{
 	 */
 	public function setRule(string $name, $value, int $valueType) : void{
 		if($this->checkType($value, $valueType)){
-			$this->rules[$name] = [
+			$this->rules[$name] = $this->dirtyRules[$name] = [
 				$valueType,
 				$value
 			];
+		}
+	}
+
+	/**
+	 * @param string $name
+	 * @param        $value
+	 */
+	public function setRuleWithMatching(string $name, $value) : void{
+		if($this->hasRule($name)){
+			$type = $this->rules[$name][0];
+			$value = $this->convertType($value, $type);
+
+			$this->setRule($name, $value, $type);
+		}else{
+			$this->setRule($name, $value, self::RULE_TYPE_UNKNOWN);
 		}
 	}
 
@@ -119,6 +137,27 @@ class GameRules{
 				return is_float($input);
 			case self::RULE_TYPE_BOOL:
 				return is_bool($input);
+			case self::RULE_TYPE_UNKNOWN:
+				return true;
+		}
+	}
+
+	/**
+	 * @param string $input
+	 * @param int    $wantedType
+	 *
+	 * @return bool|float|int|string
+	 */
+	public function convertType(string $input, int $wantedType){
+		switch($wantedType){
+			default:
+				return $input;
+			case self::RULE_TYPE_INT:
+				return intval($input);
+			case self::RULE_TYPE_FLOAT:
+				return floatval($input);
+			case self::RULE_TYPE_BOOL:
+				return boolval($input);
 		}
 	}
 
@@ -179,7 +218,41 @@ class GameRules{
 	/**
 	 * @return array
 	 */
-	public function getAll() : array{
+	public function getRules() : array{
 		return $this->rules;
+	}
+
+	/**
+	 * @param CompoundTag $nbt
+	 */
+	public function readSaveData(CompoundTag $nbt) : void{
+		foreach($nbt->getValue() as $tag){
+			if($tag instanceof StringTag){
+				$this->setRuleWithMatching($tag->getName(), $tag->getValue());
+			}
+		}
+
+		$this->clearDirtyRules();
+	}
+
+	/**
+	 * @return CompoundTag
+	 */
+	public function writeSaveData() : CompoundTag{
+		$nbt = new CompoundTag("GameRules");
+
+		foreach($this->rules as $name => $rule){
+			$nbt->setString($name, strval($rule[1]));
+		}
+
+		return $nbt;
+	}
+
+	public function clearDirtyRules() : void{
+		$this->dirtyRules = [];
+	}
+
+	public function getDirtyRules() : array{
+		return $this->dirtyRules;
 	}
 }

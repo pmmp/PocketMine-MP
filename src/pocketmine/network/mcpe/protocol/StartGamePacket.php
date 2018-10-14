@@ -91,7 +91,7 @@ class StartGamePacket extends DataPacket{
 	/** @var bool */
 	public $isTexturePacksRequired = true;
 	/** @var array */
-	public $gameRules = []; //TODO: implement this
+	public $gameRules = [];
 	/** @var bool */
 	public $hasBonusChestEnabled = false;
 	/** @var bool */

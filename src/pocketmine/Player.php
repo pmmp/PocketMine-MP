@@ -968,6 +968,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->usedChunks = [];
 			$this->loadQueue = [];
 			$this->level->sendTime($this);
+			$this->level->sendGameRules($this);
 			$this->level->sendDifficulty($this);
 
 			if($oldLevel->getDimension() !== $targetLevel->getDimension()){

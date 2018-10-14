@@ -81,7 +81,6 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
-use pocketmine\network\mcpe\protocol\types\GameRules;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
@@ -745,14 +744,12 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Sends game rules to player for client update
-	 *
-	 * @param Player ...$targets
+	 * @param Player[]      $target
+	 * @param array|null $rules
 	 */
-	public function sendGameRules(Player ...$targets) : void{
+	public function sendGameRules(array $target = [], ?array $rules = null) : void{
 		$pk = new GameRulesChangedPacket();
-		$pk->gameRules = $this->gameRules->getAll();
+		$pk->gameRules = $rules ?? $this->gameRules->getRules();
 
 		if(empty($targets)){
 			$this->addGlobalPacket($pk);
@@ -791,9 +788,14 @@ class Level implements ChunkManager, Metadatable{
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
 		$this->skyLightReduction = $this->computeSkyLightReduction(); //Sky light reduction depends on the sun angle
 
-		if(++$this->sendTimeTicker === 200){
+		if($this->gameRules->getBool("doDaylightCycle", true) and ++$this->sendTimeTicker === 200){
 			$this->sendTime();
 			$this->sendTimeTicker = 0;
+		}
+
+		if(!empty($dirty = $this->gameRules->getDirtyRules())){
+			$this->sendGameRules([], $dirty);
+			$this->gameRules->clearDirtyRules();
 		}
 
 		$this->unloadChunks();
