@@ -88,16 +88,19 @@ abstract class Event{
 		assert($handlerList !== null, "Called event should have a valid HandlerList");
 
 		++self::$eventCallDepth;
-		foreach(EventPriority::ALL as $priority){
-			$currentList = $handlerList;
-			while($currentList !== null){
-				foreach($currentList->getListenersByPriority($priority) as $registration){
-					$registration->callEvent($this);
-				}
+		try{
+			foreach(EventPriority::ALL as $priority){
+				$currentList = $handlerList;
+				while($currentList !== null){
+					foreach($currentList->getListenersByPriority($priority) as $registration){
+						$registration->callEvent($this);
+					}
 
-				$currentList = $currentList->getParent();
+					$currentList = $currentList->getParent();
+				}
 			}
+		}finally{
+			--self::$eventCallDepth;
 		}
-		--self::$eventCallDepth;
 	}
 }
