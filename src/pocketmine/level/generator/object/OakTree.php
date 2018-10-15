@@ -31,9 +31,7 @@ use pocketmine\utils\Random;
 class OakTree extends Tree{
 
 	public function __construct(){
-		$this->trunkBlock = Block::LOG;
-		$this->leafBlock = Block::LEAVES;
-		$this->type = Wood::OAK;
+		parent::__construct(Block::LOG, Block::LEAVES, Wood::OAK);
 	}
 
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random) : void{

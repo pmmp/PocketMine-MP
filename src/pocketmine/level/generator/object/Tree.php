@@ -25,25 +25,30 @@ namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\Leaves;
+use pocketmine\block\Sapling;
 use pocketmine\block\utils\WoodType;
+use pocketmine\block\Wood;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 abstract class Tree{
-	public $overridable = [
-		Block::AIR => true,
-		Block::SAPLING => true,
-		Block::LOG => true,
-		Block::LEAVES => true,
-		Block::SNOW_LAYER => true,
-		Block::LOG2 => true,
-		Block::LEAVES2 => true
-	];
 
-	public $type = 0;
-	public $trunkBlock = Block::LOG;
-	public $leafBlock = Block::LEAVES;
-	public $treeHeight = 7;
+	/** @var int */
+	protected $blockMeta;
+	/** @var int */
+	protected $trunkBlock;
+	/** @var int */
+	protected $leafBlock;
+	/** @var int */
+	protected $treeHeight;
+
+	public function __construct(int $trunkBlock, int $leafBlock, int $blockMeta, int $treeHeight = 7){
+		$this->trunkBlock = $trunkBlock;
+		$this->leafBlock = $leafBlock;
+		$this->blockMeta = $blockMeta;
+		$this->treeHeight = $treeHeight;
+	}
 
 	public static function growTree(ChunkManager $level, int $x, int $y, int $z, Random $random, int $type = WoodType::OAK) : void{
 		switch($type){
@@ -86,7 +91,7 @@ abstract class Tree{
 			}
 			for($xx = -$radiusToCheck; $xx < ($radiusToCheck + 1); ++$xx){
 				for($zz = -$radiusToCheck; $zz < ($radiusToCheck + 1); ++$zz){
-					if(!isset($this->overridable[$level->getBlockIdAt($x + $xx, $y + $yy, $z + $zz)])){
+					if(!$this->canOverride(BlockFactory::get($level->getBlockIdAt($x + $xx, $y + $yy, $z + $zz)))){
 						return false;
 					}
 				}
@@ -111,7 +116,7 @@ abstract class Tree{
 					}
 					if(!BlockFactory::get($level->getBlockIdAt($xx, $yy, $zz))->isSolid()){
 						$level->setBlockIdAt($xx, $yy, $zz, $this->leafBlock);
-						$level->setBlockDataAt($xx, $yy, $zz, $this->type);
+						$level->setBlockDataAt($xx, $yy, $zz, $this->blockMeta);
 					}
 				}
 			}
@@ -124,10 +129,14 @@ abstract class Tree{
 
 		for($yy = 0; $yy < $trunkHeight; ++$yy){
 			$blockId = $level->getBlockIdAt($x, $y + $yy, $z);
-			if(isset($this->overridable[$blockId])){
+			if($this->canOverride(BlockFactory::get($blockId))){
 				$level->setBlockIdAt($x, $y + $yy, $z, $this->trunkBlock);
-				$level->setBlockDataAt($x, $y + $yy, $z, $this->type);
+				$level->setBlockDataAt($x, $y + $yy, $z, $this->blockMeta);
 			}
 		}
+	}
+
+	protected function canOverride(Block $block) : bool{
+		return $block->canBeReplaced() or $block instanceof Wood or $block instanceof Sapling or $block instanceof Leaves;
 	}
 }
