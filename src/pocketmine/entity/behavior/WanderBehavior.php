@@ -29,6 +29,7 @@ use pocketmine\block\Grass;
 use pocketmine\entity\Animal;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Mob;
+use pocketmine\entity\utils\RandomPositionGenerator;
 use pocketmine\math\Vector3;
 
 class WanderBehavior extends Behavior{
@@ -50,7 +51,7 @@ class WanderBehavior extends Behavior{
 
 	public function canStart() : bool{
 		if($this->random->nextBoundedInt($this->chance) === 0){
-			$pos = $this->findRandomTargetBlock($this->mob, 10, 7);
+			$pos = RandomPositionGenerator::findRandomTargetBlock($this->mob, 10, 7);
 
 			if($pos === null) return false;
 
@@ -75,26 +76,5 @@ class WanderBehavior extends Behavior{
 	public function onEnd() : void{
 		$this->targetPos = null;
 		$this->mob->getNavigator()->clearPath();
-	}
-
-	//TODO: add a new class for this
-	public function findRandomTargetBlock(Entity $entity, int $dxz, int $dy) : ?Block{
-		$currentWeight = PHP_INT_MIN;
-		$currentBlock = null;
-		for($i = 0; $i < 10; $i++){
-			$x = $this->random->nextBoundedInt(2 * $dxz + 1) - $dxz;
-			$y = $this->random->nextBoundedInt(2 * $dy + 1) - $dy;
-			$z = $this->random->nextBoundedInt(2 * $dxz + 1) - $dxz;
-
-			$blockCoords = new Vector3($x, $y, $z);
-			$block = $entity->level->getBlock($this->mob->asVector3()->add($blockCoords));
-			$weight = $this->mob->getBlockPathWeight($block->asVector3());
-			if($weight > $currentWeight){
-				$currentWeight = $weight;
-				$currentBlock = $block;
-			}
-		}
-
-		return $currentBlock;
 	}
 }

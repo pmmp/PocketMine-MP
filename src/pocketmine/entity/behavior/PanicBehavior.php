@@ -24,11 +24,13 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
+use pocketmine\entity\utils\RandomPositionGenerator;
+
 class PanicBehavior extends WanderBehavior{
 
 	public function canStart() : bool{
 		if($this->mob->getLastAttacker() !== null or $this->mob->isOnFire()){
-			$this->targetPos = $this->findRandomTargetBlock($this->mob, 5, 4);
+			$this->targetPos = RandomPositionGenerator::findRandomTargetBlock($this->mob, 5, 4);
 
 			if($this->targetPos !== null){
 				$this->followRange = $this->mob->distanceSquared($this->targetPos) + 2;
