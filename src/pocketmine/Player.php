@@ -2077,6 +2077,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 			}
 		}
+		
+		return true;
 	}
 
 	public function handleMoveEntityAbsolute(MoveEntityAbsolutePacket $packet) : bool{
