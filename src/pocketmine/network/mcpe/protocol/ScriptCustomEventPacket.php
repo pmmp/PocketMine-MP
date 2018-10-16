@@ -21,12 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol;
 
-class ScoreboardIdentityPacketEntry{
-	/** @var int */
-	public $scoreboardId;
-	/** @var int|null */
-	public $entityUniqueId;
+#include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\NetworkSession;
+
+class ScriptCustomEventPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::SCRIPT_CUSTOM_EVENT_PACKET;
+
+	/** @var string */
+	public $eventName;
+	/** @var string json data */
+	public $eventData;
+
+	protected function decodePayload(){
+		$this->eventName = $this->getString();
+		$this->eventData = $this->getString();
+	}
+
+	protected function encodePayload(){
+		$this->putString($this->eventName);
+		$this->putString($this->eventData);
+	}
+
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleScriptCustomEvent($this);
+	}
 }
