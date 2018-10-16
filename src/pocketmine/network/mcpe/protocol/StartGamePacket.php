@@ -116,6 +116,8 @@ class StartGamePacket extends DataPacket{
 	public $hasLockedResourcePack = false;
 	/** @var bool */
 	public $isFromLockedWorldTemplate = false;
+	/** @var bool */
+	public $isUsingMsaGamertagsOnly = false;
 
 	/** @var string */
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
@@ -173,6 +175,7 @@ class StartGamePacket extends DataPacket{
 		$this->hasLockedBehaviorPack = $this->getBool();
 		$this->hasLockedResourcePack = $this->getBool();
 		$this->isFromLockedWorldTemplate = $this->getBool();
+		$this->isUsingMsaGamertagsOnly = $this->getBool();
 
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
@@ -232,6 +235,7 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->hasLockedBehaviorPack);
 		$this->putBool($this->hasLockedResourcePack);
 		$this->putBool($this->isFromLockedWorldTemplate);
+		$this->putBool($this->isUsingMsaGamertagsOnly);
 
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
