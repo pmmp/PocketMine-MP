@@ -44,27 +44,20 @@ class ShulkerBox extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
+		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+			Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), TileShulkerBox::createNBT($this, $face, $item, $player));
 
-		Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), TileShulkerBox::createNBT($this, $face, $item, $player));
-		return true;
+			return true;
+		}
+		return false;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
-			$t = $this->getLevel()->getTile($this);
-			$sb = null;
-			if($t instanceof TileShulkerBox){
-				$sb = $t;
-			}else{
-				$sb = Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), TileShulkerBox::createNBT($this));
+			$tile = $this->getLevel()->getTile($this);
+			if($tile instanceof TileShulkerBox){
+				$player->addWindow($tile->getInventory());
 			}
-
-			if(!($this->getSide(Facing::UP)->isTransparent()) or !$sb->canOpenWith($item->getCustomName())){
-				return true;
-			}
-
-			$player->addWindow($sb->getInventory());
 		}
 
 		return true;

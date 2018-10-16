@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io\data;
 
 use pocketmine\level\format\io\LevelData;
+use pocketmine\level\GameRules;
 use pocketmine\level\LevelException;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -129,6 +130,18 @@ abstract class BaseNbtLevelData implements LevelData{
 		$this->compoundTag->setInt("SpawnX", $pos->getFloorX());
 		$this->compoundTag->setInt("SpawnY", $pos->getFloorY());
 		$this->compoundTag->setInt("SpawnZ", $pos->getFloorZ());
+	}
+
+	public function getGameRules() : GameRules{
+		$rules = new GameRules();
+		if($this->compoundTag->hasTag("GameRules", CompoundTag::class)){
+			$rules->readSaveData($this->compoundTag->getCompoundTag("GameRules"));
+		}
+		return $rules;
+	}
+
+	public function setGameRules(GameRules $rules) : void{
+		$this->compoundTag->setTag($rules->writeSaveData());
 	}
 
 }

@@ -55,8 +55,8 @@ class DragonEgg extends Fallable{
 		return 1;
 	}
 
-	public function isBreakable(Item $item) : bool{
-		return false;
+	public function getToolType() : int{
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

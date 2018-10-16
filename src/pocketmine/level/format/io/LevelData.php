@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io;
 
+use pocketmine\level\GameRules;
 use pocketmine\math\Vector3;
 
 interface LevelData{
@@ -133,4 +134,14 @@ interface LevelData{
 	 * @param float $level 0.0 - 1.0
 	 */
 	public function setLightningLevel(float $level) : void;
+
+	/**
+	 * @return GameRules
+	 */
+	public function getGameRules() : GameRules;
+
+	/**
+	 * @param GameRules $rules
+	 */
+	public function setGameRules(GameRules $rules) : void;
 }

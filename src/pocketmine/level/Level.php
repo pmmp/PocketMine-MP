@@ -376,7 +376,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->displayName]));
 		$this->generator = GeneratorManager::getGenerator($this->provider->getLevelData()->getGenerator());
-		$this->dimension = self::getDimensionFromString($this->provider->getGenerator());
+		$this->dimension = self::getDimensionFromString($this->provider->getLevelData()->getGenerator());
 
 		$this->folderName = $name;
 
@@ -411,7 +411,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings = new LevelTimings($this);
 		$this->random = new Random();
 		$this->mobSpawner = new AnimalSpawner();
-		$this->gameRules = $this->provider->getGameRules();
+		$this->gameRules = $this->provider->getLevelData()->getGameRules();
 		$this->temporalPosition = new Position(0, 0, 0, $this);
 		$this->temporalVector = new Vector3(0, 0, 0);
 		$this->tickRate = 1;
@@ -741,7 +741,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @param Player[]      $target
+	 * @param Player[]   $target
 	 * @param array|null $rules
 	 */
 	public function sendGameRules(array $target = [], ?array $rules = null) : void{
@@ -962,7 +962,7 @@ class Level implements ChunkManager, Metadatable{
 				$pk->blockRuntimeId = $b->getRuntimeId();
 			}else{
 				$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-				$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4,  $fullBlock & 0xf);
+				$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf);
 			}
 
 			$packets[] = $pk;
@@ -1071,11 +1071,7 @@ class Level implements ChunkManager, Metadatable{
 
 						if($this->randomTickBlocks[$state & ~BlockFactory::getStateMask($state >> 4)]){
 							/** @var Block $block */
-							$block = BlockFactory::fromFullBlock($state, $this->temporalPosition->setComponents(
-								$chunkX * 16 + $x,
-								($Y << 4) + $y,
-								$chunkZ * 16 + $z
-							));
+							$block = BlockFactory::fromFullBlock($state, $this->temporalPosition->setComponents($chunkX * 16 + $x, ($Y << 4) + $y, $chunkZ * 16 + $z));
 							$block->onRandomTick();
 						}
 					}
@@ -1105,7 +1101,7 @@ class Level implements ChunkManager, Metadatable{
 		(new LevelSaveEvent($this))->call();
 
 		$this->provider->getLevelData()->setTime($this->time);
-		$this->provider->setGameRules($this->gameRules);
+		$this->provider->getLevelData()->setGameRules($this->gameRules);
 		$this->saveChunks();
 		$this->provider->getLevelData()->save();
 
