@@ -34,10 +34,6 @@ class PlayerListEntry{
 	public $entityUniqueId;
 	/** @var string */
 	public $username;
-	/** @var string */
-	public $thirdPartyName = "";
-	/** @var int */
-	public $platform = 0;
 	/** @var Skin */
 	public $skin;
 	/** @var string */
