@@ -102,9 +102,15 @@ abstract class PluginBase implements Plugin{
 	}
 
 	/**
+	 * Called by the plugin manager when the plugin is enabled or disabled to inform the plugin of its enabled state.
+	 *
+	 * @internal This is intended for core use only and should not be used by plugins
+	 * @see PluginManager::enablePlugin()
+	 * @see PluginManager::disablePlugin()
+	 *
 	 * @param bool $enabled
 	 */
-	final public function setEnabled(bool $enabled = true) : void{
+	final public function onEnableStateChange(bool $enabled) : void{
 		if($this->isEnabled !== $enabled){
 			$this->isEnabled = $enabled;
 			if($this->isEnabled){

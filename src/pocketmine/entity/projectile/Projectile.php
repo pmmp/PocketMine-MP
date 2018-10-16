@@ -244,7 +244,7 @@ abstract class Projectile extends Entity{
 			}
 
 			if($ev !== null){
-				$this->server->getPluginManager()->callEvent($ev);
+				$ev->call();
 				$this->onHit($ev);
 
 				if($ev instanceof ProjectileHitEntityEvent){
@@ -318,7 +318,7 @@ abstract class Projectile extends Entity{
 
 			if($this->fireTicks > 0){
 				$ev = new EntityCombustByEntityEvent($this, $entityHit, 5);
-				$this->server->getPluginManager()->callEvent($ev);
+				$ev->call();
 				if(!$ev->isCancelled()){
 					$entityHit->setOnFire($ev->getDuration());
 				}

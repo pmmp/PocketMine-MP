@@ -66,9 +66,10 @@ class Grass extends Solid{
 
 	public function onRandomTick() : void{
 		$lightAbove = $this->level->getFullLightAt($this->x, $this->y + 1, $this->z);
-		if($lightAbove < 4 and BlockFactory::$lightFilter[$this->level->getBlockIdAt($this->x, $this->y + 1, $this->z)] >= 3){ //2 plus 1 standard filter amount
+		if($lightAbove < 4 and BlockFactory::$lightFilter[$this->level->getFullBlock($this->x, $this->y + 1, $this->z)] >= 3){ //2 plus 1 standard filter amount
 			//grass dies
-			$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($this, $this, BlockFactory::get(Block::DIRT)));
+			$ev = new BlockSpreadEvent($this, $this, BlockFactory::get(Block::DIRT));
+			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->level->setBlock($this, $ev->getNewState(), false);
 			}
@@ -82,12 +83,13 @@ class Grass extends Solid{
 					$this->level->getBlockIdAt($x, $y, $z) !== Block::DIRT or
 					$this->level->getBlockDataAt($x, $y, $z) === 1 or
 					$this->level->getFullLightAt($x, $y + 1, $z) < 4 or
-					BlockFactory::$lightFilter[$this->level->getBlockIdAt($x, $y + 1, $z)] >= 3
+					BlockFactory::$lightFilter[$this->level->getFullBlock($x, $y + 1, $z)] >= 3
 				){
 					continue;
 				}
 
-				$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($b = $this->level->getBlockAt($x, $y, $z), $this, BlockFactory::get(Block::GRASS)));
+				$ev = new BlockSpreadEvent($b = $this->level->getBlockAt($x, $y, $z), $this, BlockFactory::get(Block::GRASS));
+				$ev->call();
 				if(!$ev->isCancelled()){
 					$this->level->setBlock($b, $ev->getNewState(), false);
 				}
@@ -97,7 +99,7 @@ class Grass extends Solid{
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){
-			$item->count--;
+			$item->pop();
 			TallGrassObject::growGrass($this->getLevel(), $this, new Random(mt_rand()), 8, 2);
 
 			return true;

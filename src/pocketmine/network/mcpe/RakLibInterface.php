@@ -129,16 +129,18 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	public function handleEncapsulated(string $identifier, EncapsulatedPacket $packet, int $flags) : void{
 		if(isset($this->sessions[$identifier])){
 			//get this now for blocking in case the player was closed before the exception was raised
-			$address = $this->sessions[$identifier]->getIp();
+			$session = $this->sessions[$identifier];
+			$address = $session->getIp();
 			try{
 				if($packet->buffer !== "" and $packet->buffer{0} === self::MCPE_RAKNET_PACKET_ID){ //Batch
-					$this->sessions[$identifier]->handleEncoded(substr($packet->buffer, 1));
+					$session->handleEncoded(substr($packet->buffer, 1));
 				}
 			}catch(\Throwable $e){
 				$logger = $this->server->getLogger();
 				$logger->debug("EncapsulatedPacket 0x" . bin2hex($packet->buffer));
 				$logger->logException($e);
 
+				$session->disconnect("Internal server error");
 				$this->interface->blockAddress($address, 5);
 			}
 		}

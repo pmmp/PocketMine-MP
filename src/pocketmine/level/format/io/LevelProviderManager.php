@@ -30,53 +30,84 @@ use pocketmine\level\format\io\region\PMAnvil;
 use pocketmine\utils\Utils;
 
 abstract class LevelProviderManager{
-    protected static $providers = [];
+	protected static $providers = [];
 
-    public static function init() : void{
-        self::addProvider(Anvil::class);
-        self::addProvider(McRegion::class);
-        self::addProvider(PMAnvil::class);
-        self::addProvider(LevelDB::class);
-    }
+	/** @var string|LevelProvider */
+	private static $default = PMAnvil::class;
+
+	public static function init() : void{
+		self::addProvider(Anvil::class, "anvil");
+		self::addProvider(McRegion::class, "mcregion");
+		self::addProvider(PMAnvil::class, "pmanvil");
+		self::addProvider(LevelDB::class, "leveldb");
+	}
+
+	/**
+	 * Returns the default format used to generate new levels.
+	 *
+	 * @return string
+	 */
+	public static function getDefault() : string{
+		return self::$default;
+	}
+
+	/**
+	 * Sets the default format.
+	 *
+	 * @param string $class Class extending LevelProvider
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public static function setDefault(string $class) : void{
+		Utils::testValidInstance($class, LevelProvider::class);
+
+		self::$default = $class;
+	}
 
 	/**
 	 * @param string $class
 	 *
-	 * @throws \InvalidArgumentException
+	 * @param string $name
+	 * @param bool   $overwrite
 	 */
-	public static function addProvider(string $class){
-		Utils::testValidInstance( $class ,LevelProvider::class);
+	public static function addProvider(string $class, string $name, bool $overwrite = false) : void{
+		Utils::testValidInstance($class, LevelProvider::class);
 
-        /** @var LevelProvider $class */
-        self::$providers[strtolower($class::getProviderName())] = $class;
-    }
+		$name = strtolower($name);
+		if(!$overwrite and isset(self::$providers[$name])){
+			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
+		}
 
-    /**
-     * Returns a LevelProvider class for this path, or null
-     *
-     * @param string $path
-     *
-     * @return string|null
-     */
-    public static function getProvider(string $path){
-        foreach(self::$providers as $provider){
-            /** @var $provider LevelProvider */
-            if($provider::isValid($path)){
-                return $provider;
-            }
-        }
+		/** @var LevelProvider $class */
+		self::$providers[$name] = $class;
+	}
 
-        return null;
-    }
+	/**
+	 * Returns a LevelProvider class for this path, or null
+	 *
+	 * @param string $path
+	 *
+	 * @return string[]|LevelProvider[]
+	 */
+	public static function getMatchingProviders(string $path) : array{
+		$result = [];
+		foreach(self::$providers as $alias => $provider){
+			/** @var LevelProvider|string $provider */
+			if($provider::isValid($path)){
+				$result[$alias] = $provider;
+			}
+		}
+		return $result;
+	}
 
-    /**
-     * Returns a LevelProvider by name, or null if not found
-     *
-     * @param string $name
-     *
-     * @return string|null
-     */
-    public static function getProviderByName(string $name){
-        return self::$providers[trim(strtolower($name))] ?? null;
-    }
+	/**
+	 * Returns a LevelProvider by name, or null if not found
+	 *
+	 * @param string $name
+	 *
+	 * @return string|null
+	 */
+	public static function getProviderByName(string $name){
+		return self::$providers[trim(strtolower($name))] ?? null;
+	}
 }

@@ -35,8 +35,6 @@ use pocketmine\level\Position;
 class BlockFactory{
 	/** @var \SplFixedArray<Block> */
 	private static $fullList = null;
-	/** @var \SplFixedArray|\Closure[] */
-	private static $getInterceptors = null;
 
 	/** @var \SplFixedArray<int> */
 	public static $lightFilter = null;
@@ -63,13 +61,12 @@ class BlockFactory{
 	 */
 	public static function init() : void{
 		self::$fullList = new \SplFixedArray(8192);
-		self::$getInterceptors = new \SplFixedArray(8192);
 
-		self::$lightFilter = \SplFixedArray::fromArray(array_fill(0, 512, 1));
-		self::$diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 512, false));
-		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 512, 0));
+		self::$lightFilter = \SplFixedArray::fromArray(array_fill(0, 8192, 1));
+		self::$diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 8192, false));
+		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 8192, 0));
 
-		self::$stateMasks = new \SplFixedArray(512);
+		self::$stateMasks = new \SplFixedArray(8192);
 
 		self::registerBlock(new Air());
 
@@ -215,13 +212,10 @@ class BlockFactory{
 		self::registerBlock(new Farmland());
 
 		self::registerBlock(new Furnace());
-		self::addGetInterceptor(Block::BURNING_FURNACE, 0, function() : Block{
-			$block = self::get(Block::FURNACE);
-			if($block instanceof Furnace){
-				$block->setLit();
-			}
-			return $block;
-		});
+
+		$furnace = new Furnace();
+		$furnace->setLit();
+		self::registerBlock($furnace); //flattening hack
 
 		self::registerBlock(new SignPost());
 		self::registerBlock(new WoodenDoor(Block::OAK_DOOR_BLOCK, 0, "Oak Door", Item::OAK_DOOR));
@@ -234,22 +228,15 @@ class BlockFactory{
 		self::registerBlock(new IronDoor());
 		self::registerBlock(new WoodenPressurePlate());
 		self::registerBlock(new RedstoneOre());
-		self::addGetInterceptor(Block::GLOWING_REDSTONE_ORE, 0, function() : Block{
-			$block = self::get(Block::REDSTONE_ORE);
-			if($block instanceof RedstoneOre){
-				$block->setLit();
-			}
-			return $block;
-		});
+
+		$litRedstone = new RedstoneOre();
+		$litRedstone->setLit();
+		self::registerBlock($litRedstone); //flattening hack
 
 		self::registerBlock(new RedstoneTorch());
-		self::addGetInterceptor(Block::UNLIT_REDSTONE_TORCH, 0, function() : Block{
-			$block = self::get(Block::REDSTONE_TORCH);
-			if($block instanceof RedstoneTorch){
-				$block->setLit(false); //default state is lit
-			}
-			return $block;
-		});
+		$unlitRedstoneTorch = new RedstoneTorch();
+		$unlitRedstoneTorch->setLit(false);
+		self::registerBlock($unlitRedstoneTorch); //flattening hack
 
 		self::registerBlock(new StoneButton());
 		self::registerBlock(new SnowLayer());
@@ -311,13 +298,9 @@ class BlockFactory{
 		self::registerBlock(new EndStone());
 		self::registerBlock(new DragonEgg());
 		self::registerBlock(new RedstoneLamp());
-		self::addGetInterceptor(Block::LIT_REDSTONE_LAMP, 0, function() : Block{
-			$block = self::get(Block::REDSTONE_LAMP);
-			if($block instanceof RedstoneLamp){
-				$block->setLit();
-			}
-			return $block;
-		});
+		$litLamp = new RedstoneLamp();
+		$litLamp->setLit();
+		self::registerBlock($litLamp); //flattening hack
 
 		//TODO: DROPPER
 		self::registerBlock(new ActivatorRail());
@@ -353,13 +336,9 @@ class BlockFactory{
 		//TODO: COMPARATOR_BLOCK
 		//TODO: POWERED_COMPARATOR
 		self::registerBlock(new DaylightSensor());
-		self::addGetInterceptor(Block::DAYLIGHT_SENSOR_INVERTED, 0, function() : Block{
-			$block = self::get(Block::DAYLIGHT_SENSOR);
-			if($block instanceof DaylightSensor){
-				$block->setInverted();
-			}
-			return $block;
-		});
+		$invertedSensor = new DaylightSensor();
+		$invertedSensor->setInverted();
+		self::registerBlock($invertedSensor); //flattening hack
 
 		self::registerBlock(new Redstone());
 		self::registerBlock(new NetherQuartzOre());
@@ -490,19 +469,42 @@ class BlockFactory{
 		$id = $block->getId();
 		$variant = $block->getVariant();
 
+
+		$stateMask = $block->getStateBitmask();
+		if(($variant & $stateMask) !== 0){
+			throw new \InvalidArgumentException("Block variant collides with state bitmask");
+		}
+
 		if(!$override and self::isRegistered($id, $variant)){
-			throw new \RuntimeException("Trying to overwrite an already registered block");
+			throw new \InvalidArgumentException("Block registration conflicts with an existing block");
 		}
+		self::fillStaticArrays(($id << 4) | $variant, $block); //register default state mapped to variant, for blocks which don't use 0 as valid state
 
-		if(self::$stateMasks[$id] !== null and self::$stateMasks[$id] !== $block->getStateBitmask()){
-			throw new \InvalidArgumentException("Blocks with the same ID must have the same state bitmask");
-		}
+		for($m = $variant + 1; $m <= ($variant | $stateMask); ++$m){
+			if(($m & ~$stateMask) !== $variant){
+				continue;
+			}
 
-		self::$fullList[($id << 4) | $variant] = clone $block;
-		if($variant === 0){
-			//TODO: allow these to differ for different variants
-			self::fillStaticArrays($id, $block);
+			if(!$override and self::isRegistered($id, $m)){
+				throw new \InvalidArgumentException("Block registration " . get_class($block) . " has states which conflict with other blocks");
+			}
+
+			$index = ($id << 4) | $m;
+
+			$v = clone $block;
+			$v->readStateFromMeta($m & $stateMask);
+			if($v->getDamage() === $m){ //don't register anything that isn't the same when we read it back again
+				self::fillStaticArrays($index, $v);
+			}
 		}
+	}
+
+	private static function fillStaticArrays(int $index, Block $block) : void{
+		self::$fullList[$index] = $block;
+		self::$stateMasks[$index] = $block->getStateBitmask();
+		self::$lightFilter[$index] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
+		self::$diffusesSkyLight[$index] = $block->diffusesSkyLight();
+		self::$blastResistance[$index] = $block->getBlastResistance();
 	}
 
 	/**
@@ -519,27 +521,18 @@ class BlockFactory{
 			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
 		}
 
-		$stateMask = self::getStateMask($id);
-		$variant = $meta & ~$stateMask;
-		$state = $meta & $stateMask;
-
-		$index = ($id << 4) | $variant;
-
 		/** @var Block|null $block */
 		$block = null;
 		try{
-			if(self::$getInterceptors[$index] !== null){
-				$block = (self::$getInterceptors[$index])();
-			}elseif(self::$fullList[$index] !== null){
+			$index = ($id << 4) | $meta;
+			if(self::$fullList[$index] !== null){
 				$block = clone self::$fullList[$index];
 			}
 		}catch(\RuntimeException $e){
 			throw new \InvalidArgumentException("Block ID $id is out of bounds");
 		}
 
-		if($block !== null){
-			$block->readStateFromMeta($state);
-		}else{
+		if($block === null){
 			$block = new UnknownBlock($id, $meta);
 		}
 
@@ -553,20 +546,8 @@ class BlockFactory{
 		return $block;
 	}
 
-	public static function addGetInterceptor(int $id, int $variant, \Closure $interceptor) : void{
-		$block = $interceptor();
-		if(!($block instanceof Block)){
-			throw new \InvalidArgumentException("Interceptor must return an instance of " . Block::class);
-		}
-		self::$getInterceptors[($id << 4) | $variant] = $interceptor;
-		self::fillStaticArrays($id, $block);
-	}
-
-	private static function fillStaticArrays(int $id, Block $block) : void{
-		self::$lightFilter[$id] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
-		self::$diffusesSkyLight[$id] = $block->diffusesSkyLight();
-		self::$blastResistance[$id] = $block->getBlastResistance();
-		self::$stateMasks[$id] = $block->getStateBitmask();
+	public static function fromFullBlock(int $fullState, ?Position $pos = null) : Block{
+		return self::get($fullState >> 4, $fullState & 0xf, $pos);
 	}
 
 	public static function getStateMask(int $id) : int{
@@ -574,15 +555,15 @@ class BlockFactory{
 	}
 
 	/**
-	 * Returns whether a specified block ID is already registered in the block factory.
+	 * Returns whether a specified block state is already registered in the block factory.
 	 *
 	 * @param int $id
-	 * @param int $variant
+	 * @param int $meta
 	 *
 	 * @return bool
 	 */
-	public static function isRegistered(int $id, int $variant = 0) : bool{
-		$b = self::$fullList[($id << 4) | $variant];
+	public static function isRegistered(int $id, int $meta = 0) : bool{
+		$b = self::$fullList[($id << 4) | $meta];
 		return $b !== null and !($b instanceof UnknownBlock);
 	}
 

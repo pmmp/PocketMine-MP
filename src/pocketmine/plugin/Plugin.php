@@ -43,9 +43,15 @@ interface Plugin extends CommandExecutor{
 	public function isEnabled() : bool;
 
 	/**
+	 * Called by the plugin manager when the plugin is enabled or disabled to inform the plugin of its enabled state.
+	 *
+	 * @internal This is intended for core use only and should not be used by plugins
+	 * @see PluginManager::enablePlugin()
+	 * @see PluginManager::disablePlugin()
+	 *
 	 * @param bool $enabled
 	 */
-	public function setEnabled(bool $enabled = true) : void;
+	public function onEnableStateChange(bool $enabled) : void;
 
 	/**
 	 * @return bool

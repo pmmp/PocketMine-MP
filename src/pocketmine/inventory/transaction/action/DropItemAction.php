@@ -42,7 +42,8 @@ class DropItemAction extends InventoryAction{
 	}
 
 	public function onPreExecute(Player $source) : bool{
-		$source->getServer()->getPluginManager()->callEvent($ev = new PlayerDropItemEvent($source, $this->targetItem));
+		$ev = new PlayerDropItemEvent($source, $this->targetItem);
+		$ev->call();
 		if($ev->isCancelled()){
 			return false;
 		}

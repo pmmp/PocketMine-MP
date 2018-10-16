@@ -42,8 +42,4 @@ class Purpur extends Solid{
 	public function getBlastResistance() : float{
 		return 30;
 	}
-
-	public function getStateBitmask() : int{
-		return 0b1100; //HACK: needs to be consistent for blocks with the same ID :(
-	}
 }

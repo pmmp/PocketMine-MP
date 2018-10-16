@@ -398,7 +398,8 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function open(Player $who) : bool{
-		$who->getServer()->getPluginManager()->callEvent($ev = new InventoryOpenEvent($this, $who));
+		$ev = new InventoryOpenEvent($this, $who);
+		$ev->call();
 		if($ev->isCancelled()){
 			return false;
 		}

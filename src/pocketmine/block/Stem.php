@@ -27,7 +27,6 @@ use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Facing;
-use pocketmine\Server;
 
 abstract class Stem extends Crops{
 
@@ -38,7 +37,8 @@ abstract class Stem extends Crops{
 			if($this->age < 7){
 				$block = clone $this;
 				++$block->age;
-				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
+				$ev = new BlockGrowEvent($this, $block);
+				$ev->call();
 				if(!$ev->isCancelled()){
 					$this->getLevel()->setBlock($this, $ev->getNewState());
 				}
@@ -53,7 +53,8 @@ abstract class Stem extends Crops{
 				$side = $this->getSide(Facing::HORIZONTAL[array_rand(Facing::HORIZONTAL)]);
 				$d = $side->getSide(Facing::DOWN);
 				if($side->getId() === self::AIR and ($d->getId() === self::FARMLAND or $d->getId() === self::GRASS or $d->getId() === self::DIRT)){
-					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockGrowEvent($side, $grow));
+					$ev = new BlockGrowEvent($side, $grow);
+					$ev->call();
 					if(!$ev->isCancelled()){
 						$this->getLevel()->setBlock($side, $ev->getNewState());
 					}

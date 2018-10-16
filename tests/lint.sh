@@ -2,14 +2,18 @@
 
 PHP_BINARY="php"
 DIR=""
+FIND="find"
 
-while getopts "p:d:" OPTION 2> /dev/null; do
+while getopts "p:d:f:" OPTION 2> /dev/null; do
 	case ${OPTION} in
 		p)
 			PHP_BINARY="$OPTARG"
 			;;
 		d)
 		    DIR="$OPTARG"
+		    ;;
+		f)
+		    FIND="$OPTARG"
 		    ;;
 	esac
 done
@@ -21,7 +25,7 @@ fi
 
 echo Running PHP lint scans on \"$DIR\"...
 
-OUTPUT=`find "$DIR" -name "*.php" -print0 | xargs -0 -n1 -P4 "$PHP_BINARY" -l`
+OUTPUT=`$FIND "$DIR" -name "*.php" -print0 | xargs -0 -n1 -P4 "$PHP_BINARY" -l`
 
 if [ $? -ne 0 ]; then
 	echo $OUTPUT | grep -v "No syntax errors"

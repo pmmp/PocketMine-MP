@@ -83,8 +83,8 @@ class NetherWartPlant extends Flowable{
 		if($this->age < 3 and mt_rand(0, 10) === 0){ //Still growing
 			$block = clone $this;
 			$block->age++;
-			$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new BlockGrowEvent($this, $block));
-
+			$ev = new BlockGrowEvent($this, $block);
+			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->getLevel()->setBlock($this, $ev->getNewState());
 			}

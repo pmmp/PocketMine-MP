@@ -1,32 +1,29 @@
 <?php
 
 /*
- *               _ _
- *         /\   | | |
- *        /  \  | | |_ __ _ _   _
- *       / /\ \ | | __/ _` | | | |
- *      / ____ \| | || (_| | |_| |
- *     /_/    \_|_|\__\__,_|\__, |
- *                           __/ |
- *                          |___/
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author TuranicTeam
- * @link https://github.com/TuranicTeam/Altay
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
  *
- */
+ *
+*/
 
 declare(strict_types=1);
 
 namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\math\Vector3;
-use pocketmine\level\GameRules;
 
 interface LevelProvider{
 
@@ -34,13 +31,6 @@ interface LevelProvider{
 	 * @param string $path
 	 */
 	public function __construct(string $path);
-
-	/**
-	 * Returns the full provider name, like "anvil" or "mcregion", will be used to find the correct format.
-	 *
-	 * @return string
-	 */
-	public static function getProviderName() : string;
 
 	/**
 	 * Gets the build height limit of this world
@@ -73,19 +63,7 @@ interface LevelProvider{
 	 * @param string  $generator
 	 * @param array[] $options
 	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []);
-
-	/**
-	 * Returns the generator name
-	 *
-	 * @return string
-	 */
-	public function getGenerator() : string;
-
-	/**
-	 * @return array
-	 */
-	public function getGeneratorOptions() : array;
+	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void;
 
 	/**
 	 * Saves a chunk (usually to disk).
@@ -108,114 +86,27 @@ interface LevelProvider{
 	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk;
 
 	/**
-	 * @return string
-	 */
-	public function getName() : string;
-
-	/**
-	 * @return int
-	 */
-	public function getTime() : int;
-
-	/**
-	 * @param int
-	 */
-	public function setTime(int $value);
-
-	/**
-	 * @return int
-	 */
-	public function getSeed() : int;
-
-	/**
-	 * @param int
-	 */
-	public function setSeed(int $value);
-
-	/**
-	 * @return Vector3
-	 */
-	public function getSpawn() : Vector3;
-
-	/**
-	 * @param Vector3 $pos
-	 */
-	public function setSpawn(Vector3 $pos);
-
-	/**
-	 * Returns the world difficulty. This will be one of the Level constants.
-	 * @return int
-	 */
-	public function getDifficulty() : int;
-
-	/**
-	 * Sets the world difficulty.
-	 * @param int $difficulty
-	 */
-	public function setDifficulty(int $difficulty);
-
-	/**
-	 * Returns the time in ticks to the next rain level change.
-	 * @return int
-	 */
-	public function getRainTime() : int;
-
-	/**
-	 * Sets the time in ticks to the next rain level change.
-	 * @param int $ticks
-	 */
-	public function setRainTime(int $ticks) : void;
-
-	/**
-	 * @return float 0.0 - 1.0
-	 */
-	public function getRainLevel() : float;
-
-	/**
-	 * @param float $level 0.0 - 1.0
-	 */
-	public function setRainLevel(float $level) : void;
-
-	/**
-	 * Returns the time in ticks to the next lightning level change.
-	 * @return int
-	 */
-	public function getLightningTime() : int;
-
-	/**
-	 * Sets the time in ticks to the next lightning level change.
-	 * @param int $ticks
-	 */
-	public function setLightningTime(int $ticks) : void;
-
-	/**
-	 * @return float 0.0 - 1.0
-	 */
-	public function getLightningLevel() : float;
-
-	/**
-	 * @param float $level 0.0 - 1.0
-	 */
-	public function setLightningLevel(float $level) : void;
-
-	/**
-	 * @return GameRules
-	 */
-	public function getGameRules() : GameRules;
-
-	/**
-	 * @param GameRules $gameRules
-	 */
-	public function setGameRules(GameRules $gameRules) : void;
-
-	/**
 	 * Performs garbage collection in the level provider, such as cleaning up regions in Region-based worlds.
 	 */
-	public function doGarbageCollection();
+	public function doGarbageCollection() : void;
+
+	/**
+	 * Returns information about the world
+	 *
+	 * @return LevelData
+	 */
+	public function getLevelData() : LevelData;
 
 	/**
 	 * Performs cleanups necessary when the level provider is closed and no longer needed.
 	 */
-	public function close();
+	public function close() : void;
+
+	/**
+	 * Returns a generator which yields all the chunks in this level.
+	 *
+	 * @return \Generator|Chunk[]
+	 */
+	public function getAllChunks() : \Generator;
 
 }

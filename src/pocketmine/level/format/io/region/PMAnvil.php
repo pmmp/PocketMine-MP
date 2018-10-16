@@ -31,9 +31,8 @@ use pocketmine\nbt\tag\CompoundTag;
  * This format is exactly the same as the PC Anvil format, with the only difference being that the stored data order
  * is XZY instead of YZX for more performance loading and saving worlds.
  */
-class PMAnvil extends Anvil{
-
-	public const REGION_FILE_EXTENSION = "mcapm";
+class PMAnvil extends RegionLevelProvider{
+	use LegacyAnvilChunkTrait;
 
 	protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag{
 		return new CompoundTag("", [
@@ -53,11 +52,15 @@ class PMAnvil extends Anvil{
 		);
 	}
 
-	public static function getProviderName() : string{
-		return "pmanvil";
+	protected static function getRegionFileExtension() : string{
+		return "mcapm";
 	}
 
-	public static function getPcWorldFormatVersion() : int{
+	protected static function getPcWorldFormatVersion() : int{
 		return -1; //Not a PC format, only PocketMine-MP
+	}
+
+	public function getWorldHeight() : int{
+		return 256;
 	}
 }

@@ -51,7 +51,6 @@ use pocketmine\level\biome\SpawnListEntry;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\EmptySubChunk;
-use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
@@ -372,11 +371,11 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->provider = $provider;
 
-		$this->displayName = $this->provider->getName();
+		$this->displayName = $this->provider->getLevelData()->getName();
 		$this->worldHeight = $this->provider->getWorldHeight();
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->displayName]));
-		$this->generator = GeneratorManager::getGenerator($this->provider->getGenerator());
+		$this->generator = GeneratorManager::getGenerator($this->provider->getLevelData()->getGenerator());
 		$this->dimension = self::getDimensionFromString($this->provider->getGenerator());
 
 		$this->folderName = $name;
@@ -386,7 +385,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->neighbourBlockUpdateQueue = new \SplQueue();
 
-		$this->time = $this->provider->getTime();
+		$this->time = $this->provider->getLevelData()->getTime();
 
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 4)));
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 40);
@@ -432,7 +431,7 @@ class Level implements ChunkManager, Metadatable{
 
 	public function registerGeneratorToWorker(int $worker) : void{
 		$this->generatorRegisteredWorkers[$worker] = true;
-		$this->server->getAsyncPool()->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getGeneratorOptions()), $worker);
+		$this->server->getAsyncPool()->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getLevelData()->getGeneratorOptions()), $worker);
 	}
 
 	public function unregisterGenerator(){
@@ -586,14 +585,12 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @internal DO NOT use this from plugins, it's for internal use only. Use Server->unloadLevel() instead.
 	 *
-	 * Unloads the current level from memory safely
-	 *
 	 * @param bool $force default false, force unload of default level
 	 *
 	 * @return bool
 	 * @throws \InvalidStateException if trying to unload a level during level tick
 	 */
-	public function unload(bool $force = false) : bool{
+	public function onUnload(bool $force = false) : bool{
 		if($this->doingTick and !$force){
 			throw new \InvalidStateException("Cannot unload a level during level tick");
 		}
@@ -604,7 +601,7 @@ class Level implements ChunkManager, Metadatable{
 			$ev->setCancelled(true);
 		}
 
-		$this->server->getPluginManager()->callEvent($ev);
+		$ev->call();
 
 		if(!$force and $ev->isCancelled()){
 			return false;
@@ -822,7 +819,8 @@ class Level implements ChunkManager, Metadatable{
 			$block = $this->getBlockAt($x, $y, $z);
 			$block->clearCaches(); //for blocks like fences, force recalculation of connected AABBs
 
-			$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
+			$ev = new BlockUpdateEvent($block);
+			$ev->call();
 			if(!$ev->isCancelled()){
 				$block->onNearbyBlockChange();
 			}
@@ -1069,17 +1067,15 @@ class Level implements ChunkManager, Metadatable{
 						$y = ($k >> 4) & 0x0f;
 						$z = ($k >> 8) & 0x0f;
 
-						$blockId = $subChunk->getBlockId($x, $y, $z);
-						$meta = $subChunk->getBlockData($x, $y, $z);
+						$state = $subChunk->getFullBlock($x, $y, $z);
 
-						if($this->randomTickBlocks[($blockId << 4) | ($meta & ~BlockFactory::getStateMask($blockId))]){
+						if($this->randomTickBlocks[$state & ~BlockFactory::getStateMask($state >> 4)]){
 							/** @var Block $block */
-							$block = BlockFactory::get($blockId, $meta);
-
-							$block->x = $chunkX * 16 + $x;
-							$block->y = ($Y << 4) + $y;
-							$block->z = $chunkZ * 16 + $z;
-							$block->level = $this;
+							$block = BlockFactory::fromFullBlock($state, $this->temporalPosition->setComponents(
+								$chunkX * 16 + $x,
+								($Y << 4) + $y,
+								$chunkZ * 16 + $z
+							));
 							$block->onRandomTick();
 						}
 					}
@@ -1106,14 +1102,12 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		$this->server->getPluginManager()->callEvent(new LevelSaveEvent($this));
+		(new LevelSaveEvent($this))->call();
 
-		$this->provider->setTime($this->time);
+		$this->provider->getLevelData()->setTime($this->time);
 		$this->provider->setGameRules($this->gameRules);
 		$this->saveChunks();
-		if($this->provider instanceof BaseLevelProvider){
-			$this->provider->saveLevelData();
-		}
+		$this->provider->getLevelData()->save();
 
 		return true;
 	}
@@ -1598,7 +1592,8 @@ class Level implements ChunkManager, Metadatable{
 			if($update){
 				$this->updateAllLight($block);
 
-				$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
+				$ev = new BlockUpdateEvent($block);
+				$ev->call();
 				if(!$ev->isCancelled()){
 					foreach($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
 						$entity->onNearbyBlockChange();
@@ -1749,7 +1744,7 @@ class Level implements ChunkManager, Metadatable{
 					foreach($tag as $v){
 						if($v instanceof StringTag){
 							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getId() > 0 and $entry->getBlock()->isSameType($target)){
+							if($entry->getBlock()->isSameType($target)){
 								$canBreak = true;
 								break;
 							}
@@ -1760,7 +1755,7 @@ class Level implements ChunkManager, Metadatable{
 				$ev->setCancelled(!$canBreak);
 			}
 
-			$this->server->getPluginManager()->callEvent($ev);
+			$ev->call();
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -1850,7 +1845,7 @@ class Level implements ChunkManager, Metadatable{
 				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
 			}
 
-			$this->server->getPluginManager()->callEvent($ev);
+			$ev->call();
 			if(!$ev->isCancelled()){
 				if(!$player->isSneaking() and $blockClicked->onActivate($item, $player)){
 					return true;
@@ -1911,7 +1906,7 @@ class Level implements ChunkManager, Metadatable{
 					foreach($tag as $v){
 						if($v instanceof StringTag){
 							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getId() > 0 and $entry->getBlock()->isSameType($blockClicked)){
+							if($entry->getBlock()->isSameType($blockClicked)){
 								$canPlace = true;
 								break;
 							}
@@ -1922,7 +1917,7 @@ class Level implements ChunkManager, Metadatable{
 				$ev->setCancelled(!$canPlace);
 			}
 
-			$this->server->getPluginManager()->callEvent($ev);
+			$ev->call();
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -2400,7 +2395,7 @@ class Level implements ChunkManager, Metadatable{
 				}
 
 				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
-					$this->server->getPluginManager()->callEvent(new ChunkPopulateEvent($this, $chunk));
+					(new ChunkPopulateEvent($this, $chunk))->call();
 
 					foreach($this->getChunkLoaders($x, $z) as $loader){
 						$loader->onChunkPopulated($chunk);
@@ -2518,7 +2513,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Position
 	 */
 	public function getSpawnLocation() : Position{
-		return Position::fromObject($this->provider->getSpawn(), $this);
+		return Position::fromObject($this->provider->getLevelData()->getSpawn(), $this);
 	}
 
 	/**
@@ -2528,8 +2523,8 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function setSpawnLocation(Vector3 $pos){
 		$previousSpawn = $this->getSpawnLocation();
-		$this->provider->setSpawn($pos);
-		$this->server->getPluginManager()->callEvent(new SpawnChangeEvent($this, $previousSpawn));
+		$this->provider->getLevelData()->setSpawn($pos);
+		(new SpawnChangeEvent($this, $previousSpawn))->call();
 	}
 
 	public function requestChunk(int $x, int $z, Player $player){
@@ -2763,7 +2758,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$chunk->initChunk($this);
 
-		$this->server->getPluginManager()->callEvent(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()));
+		(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()))->call();
 
 		if(!$chunk->isLightPopulated() and $chunk->isPopulated() and $this->getServer()->getProperty("chunk-ticking.light-updates", false)){
 			$this->getServer()->getAsyncPool()->submitTask(new LightPopulationTask($this, $chunk));
@@ -2817,7 +2812,8 @@ class Level implements ChunkManager, Metadatable{
 		$chunk = $this->chunks[$chunkHash] ?? null;
 
 		if($chunk !== null){
-			$this->server->getPluginManager()->callEvent($ev = new ChunkUnloadEvent($this, $chunk));
+			$ev = new ChunkUnloadEvent($this, $chunk);
+			$ev->call();
 			if($ev->isCancelled()){
 				$this->timings->doChunkUnload->stopTiming();
 
@@ -2865,7 +2861,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isSpawnChunk(int $X, int $Z) : bool{
-		$spawn = $this->provider->getSpawn();
+		$spawn = $this->getSpawnLocation();
 		$spawnX = $spawn->x >> 4;
 		$spawnZ = $spawn->z >> 4;
 
@@ -2976,16 +2972,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return int
 	 */
 	public function getSeed() : int{
-		return $this->provider->getSeed();
-	}
-
-	/**
-	 * Sets the seed for the level
-	 *
-	 * @param int $seed
-	 */
-	public function setSeed(int $seed){
-		$this->provider->setSeed($seed);
+		return $this->provider->getLevelData()->getSeed();
 	}
 
 	public function getWorldHeight() : int{
@@ -2996,7 +2983,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return int
 	 */
 	public function getDifficulty() : int{
-		return $this->provider->getDifficulty();
+		return $this->provider->getLevelData()->getDifficulty();
 	}
 
 	/**
@@ -3006,7 +2993,7 @@ class Level implements ChunkManager, Metadatable{
 		if($difficulty < 0 or $difficulty > 3){
 			throw new \InvalidArgumentException("Invalid difficulty level $difficulty");
 		}
-		$this->provider->setDifficulty($difficulty);
+		$this->provider->getLevelData()->setDifficulty($difficulty);
 
 		$this->sendDifficulty();
 	}

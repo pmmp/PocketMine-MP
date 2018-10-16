@@ -90,7 +90,7 @@ abstract class BaseRail extends Flowable{
 	}
 
 	public function getStateBitmask() : int{
-		return 0b111;
+		return 0b1111;
 	}
 
 	public function getHardness() : float{
@@ -98,9 +98,9 @@ abstract class BaseRail extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if(!$blockReplace->getSide(Facing::DOWN)->isTransparent() and parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+		if(!$blockReplace->getSide(Facing::DOWN)->isTransparent()){
 			$this->tryReconnect();
-			return true;
+			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
@@ -240,7 +240,8 @@ abstract class BaseRail extends Flowable{
 
 				if(isset($otherPossible[$otherSide])){
 					$otherConnections[] = $otherSide;
-					$other->updateState($otherConnections);
+					$other->setConnections($otherConnections);
+					$other->level->setBlock($other, $other);
 
 					$changed = true;
 					$thisConnections[] = $thisSide;
@@ -252,11 +253,11 @@ abstract class BaseRail extends Flowable{
 		}while($continue);
 
 		if($changed){
-			$this->updateState($thisConnections);
+			$this->setConnections($thisConnections);
 		}
 	}
 
-	private function updateState(array $connections) : void{
+	private function setConnections(array $connections) : void{
 		if(count($connections) === 1){
 			$connections[] = Facing::opposite($connections[0] & ~self::FLAG_ASCEND);
 		}elseif(count($connections) !== 2){
@@ -264,7 +265,6 @@ abstract class BaseRail extends Flowable{
 		}
 
 		$this->connections = $connections;
-		$this->level->setBlock($this, $this, false); //avoid recursion
 	}
 
 	public function onNearbyBlockChange() : void{

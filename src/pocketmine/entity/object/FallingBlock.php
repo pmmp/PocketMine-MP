@@ -114,7 +114,8 @@ class FallingBlock extends Entity{
 					//FIXME: anvils are supposed to destroy torches
 					$this->getLevel()->dropItem($this, ItemFactory::get($this->getBlock(), $this->getDamage()));
 				}else{
-					$this->server->getPluginManager()->callEvent($ev = new EntityBlockChangeEvent($this, $block, $blockTarget ?? $this->block));
+					$ev = new EntityBlockChangeEvent($this, $block, $blockTarget ?? $this->block);
+					$ev->call();
 					if(!$ev->isCancelled()){
 						$this->getLevel()->setBlock($pos, $ev->getTo());
 					}

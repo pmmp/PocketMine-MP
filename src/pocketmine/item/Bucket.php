@@ -23,93 +23,48 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\Liquid;
-use pocketmine\entity\Living;
-use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class Bucket extends Item implements Consumable{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::BUCKET, $meta, "Bucket");
-	}
+class Bucket extends Item{
 
 	public function getMaxStackSize() : int{
-		return $this->meta === Block::AIR ? 16 : 1; //empty buckets stack to 16
-	}
-
-	public function getFuelTime() : int{
-		if($this->meta === Block::LAVA or $this->meta === Block::FLOWING_LAVA){
-			return 20000;
-		}
-
-		return 0;
+		return 16;
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
-		$resultBlock = BlockFactory::get($this->meta);
+		//TODO: move this to generic placement logic
+		if($blockClicked instanceof Liquid and $blockClicked->isSource()){
+			$stack = clone $this;
+			$stack->pop();
 
-		if($resultBlock instanceof Air){
-			if($blockClicked instanceof Liquid and $blockClicked->isSource()){
-				$stack = clone $this;
-
-				$stack->pop();
-				$resultItem = ItemFactory::get(Item::BUCKET, $blockClicked->getFlowingForm()->getId());
-				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem));
-				if(!$ev->isCancelled()){
-					$player->getLevel()->setBlock($blockClicked, BlockFactory::get(Block::AIR));
-					$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
-					if($player->isSurvival()){
-						if($stack->getCount() === 0){
-							$player->getInventory()->setItemInHand($ev->getItem());
-						}else{
-							$player->getInventory()->setItemInHand($stack);
-							$player->getInventory()->addItem($ev->getItem());
-						}
+			$resultItem = ItemFactory::get(Item::BUCKET, $blockClicked->getFlowingForm()->getId());
+			$ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem);
+			$ev->call();
+			if(!$ev->isCancelled()){
+				$player->getLevel()->setBlock($blockClicked, BlockFactory::get(Block::AIR));
+				$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
+				if($player->isSurvival()){
+					if($stack->getCount() === 0){
+						$player->getInventory()->setItemInHand($ev->getItem());
 					}else{
+						$player->getInventory()->setItemInHand($stack);
 						$player->getInventory()->addItem($ev->getItem());
 					}
-
-					return true;
 				}else{
-					$player->getInventory()->sendContents($player);
+					$player->getInventory()->addItem($ev->getItem());
 				}
-			}
-		}elseif($resultBlock instanceof Liquid and $blockReplace->canBeReplaced()){
-			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, ItemFactory::get(Item::BUCKET)));
-			if(!$ev->isCancelled()){
-				$player->getLevel()->setBlock($blockReplace, $resultBlock->getFlowingForm());
-				$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
-
-				if($player->isSurvival()){
-					$player->getInventory()->setItemInHand($ev->getItem());
-				}
-				return true;
 			}else{
 				$player->getInventory()->sendContents($player);
 			}
+
+			return true;
 		}
 
 		return false;
-	}
-
-	public function getResidue(){
-		return ItemFactory::get(Item::BUCKET, 0, 1);
-	}
-
-	public function getAdditionalEffects() : array{
-		return [];
-	}
-
-	public function canBeConsumed() : bool{
-		return $this->meta === 1; //Milk
-	}
-
-	public function onConsume(Living $consumer){
-		$consumer->removeAllEffects();
 	}
 }

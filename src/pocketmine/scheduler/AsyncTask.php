@@ -44,10 +44,11 @@ use pocketmine\Collectable;
  */
 abstract class AsyncTask extends Collectable{
 	/**
-	 * @var \SplObjectStorage|null
-	 * Used to store objects on the main thread which should not be serialized.
+	 * @var \ArrayObject|mixed[] object hash => mixed data
+	 *
+	 * Used to store objects which are only needed on one thread and should not be serialized.
 	 */
-	private static $localObjectStorage;
+	private static $threadLocalStorage = null;
 
 	/** @var AsyncWorker $worker */
 	public $worker = null;
@@ -208,108 +209,74 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	/**
-	 * Saves mixed data in thread-local storage on the parent thread. You may use this to retain references to objects
-	 * or arrays which you need to access in {@link AsyncTask#onCompletion} which cannot be stored as a property of
-	 * your task (due to them becoming serialized).
+	 * Saves mixed data in thread-local storage. Data stored using this storage is **only accessible from the thread it
+	 * was stored on**. Data stored using this method will **not** be serialized.
+	 * This can be used to store references to variables which you need later on on the same thread, but not others.
+	 *
+	 * For example, plugin references could be stored in the constructor of the async task (which is called on the main
+	 * thread) using this, and then fetched in onCompletion() (which is also called on the main thread), without them
+	 * becoming serialized.
 	 *
 	 * Scalar types can be stored directly in class properties instead of using this storage.
 	 *
-	 * Objects stored in this storage MUST be retrieved through {@link #fetchLocal} when {@link #onCompletion} is called.
-	 * Otherwise, a NOTICE level message will be raised and the reference will be removed after onCompletion exits.
+	 * Objects stored in this storage can be retrieved using fetchLocal() on the same thread that this method was called
+	 * from.
 	 *
-	 * WARNING: Use this method carefully. It might take a long time before an AsyncTask is completed. PocketMine will
-	 * keep a strong reference to objects passed in this method. This may result in a light memory leak. Usually this
-	 * does not cause memory failure, but be aware that the object may be no longer usable when the AsyncTask completes.
+	 * WARNING: Use this method carefully. It might take a long time before an AsyncTask is completed. The thread this
+	 * is called on will keep a strong reference to variables stored using method. This may result in a light memory
+	 * leak. Usually this does not cause memory failure, but be aware that the object may be no longer usable when the
+	 * AsyncTask completes. Since a strong reference is retained, the objects still exist, but the implementation is
+	 * responsible for checking whether these objects are still usable.
 	 * (E.g. a {@link \pocketmine\Level} object is no longer usable because it is unloaded while the AsyncTask is
-	 * executing, or even a plugin might be unloaded). Since PocketMine keeps a strong reference, the objects are still
-	 * valid, but the implementation is responsible for checking whether these objects are still usable.
-	 *
-	 * WARNING: THIS METHOD SHOULD ONLY BE CALLED FROM THE MAIN THREAD!
+	 * executing, or even a plugin might be unloaded).
 	 *
 	 * @param mixed $complexData the data to store
-	 *
 	 */
 	protected function storeLocal($complexData) : void{
-		if($this->worker !== null and $this->worker === \Thread::getCurrentThread()){
-			throw new \BadMethodCallException("Objects can only be stored from the parent thread");
+		if(self::$threadLocalStorage === null){
+			/*
+			 * It's necessary to use an object (not array) here because pthreads is stupid. Non-default array statics
+			 * will be inherited when task classes are copied to the worker thread, which would cause unwanted
+			 * inheritance of primitive thread-locals, which we really don't want for various reasons.
+			 * It won't try to inherit objects though, so this is the easiest solution.
+			 */
+			self::$threadLocalStorage = new \ArrayObject();
 		}
-
-		if(self::$localObjectStorage === null){
-			self::$localObjectStorage = new \SplObjectStorage(); //lazy init
-		}
-
-		if(isset(self::$localObjectStorage[$this])){
-			throw new \InvalidStateException("Already storing complex data for this async task");
-		}
-		self::$localObjectStorage[$this] = $complexData;
+		self::$threadLocalStorage[spl_object_hash($this)] = $complexData;
 	}
 
 	/**
-	 * Returns and removes mixed data in thread-local storage on the parent thread. Call this method from
-	 * {@link AsyncTask#onCompletion} to fetch the data stored in the object store, if any.
+	 * Retrieves data stored in thread-local storage.
 	 *
-	 * If no data was stored in the local store, or if the data was already retrieved by a previous call to fetchLocal,
-	 * do NOT call this method, or an exception will be thrown.
-	 *
-	 * Do not call this method from {@link AsyncTask#onProgressUpdate}, because this method deletes stored data, which
-	 * means that you will not be able to retrieve it again afterwards. Use {@link AsyncTask#peekLocal} instead to
-	 * retrieve stored data without removing it from the store.
-	 *
-	 * WARNING: THIS METHOD SHOULD ONLY BE CALLED FROM THE MAIN THREAD!
+	 * If you used storeLocal(), you can use this on the same thread to fetch data stored. This should be used during
+	 * onProgressUpdate() and onCompletion() to fetch thread-local data stored on the parent thread.
 	 *
 	 * @return mixed
 	 *
-	 * @throws \RuntimeException if no data were stored by this AsyncTask instance.
-	 * @throws \BadMethodCallException if called from any thread except the main thread
+	 * @throws \InvalidArgumentException if no data were stored by this AsyncTask instance.
 	 */
 	protected function fetchLocal(){
-		try{
-			return $this->peekLocal();
-		}finally{
-			if(self::$localObjectStorage !== null){
-				unset(self::$localObjectStorage[$this]);
+		if(self::$threadLocalStorage === null or !isset(self::$threadLocalStorage[spl_object_hash($this)])){
+			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
+		}
+
+		return self::$threadLocalStorage[spl_object_hash($this)];
+	}
+
+	final public function __destruct(){
+		$this->reallyDestruct();
+		if(self::$threadLocalStorage !== null and isset(self::$threadLocalStorage[$h = spl_object_hash($this)])){
+			unset(self::$threadLocalStorage[$h]);
+			if(self::$threadLocalStorage->count() === 0){
+				self::$threadLocalStorage = null;
 			}
 		}
 	}
 
 	/**
-	 * Returns mixed data in thread-local storage on the parent thread **without clearing** it. Call this method from
-	 * {@link AsyncTask#onProgressUpdate} to fetch the data stored if you need to be able to access the data later on,
-	 * such as in another progress update.
-	 *
-	 * Use {@link AsyncTask#fetchLocal} instead from {@link AsyncTask#onCompletion}, because this method does not delete
-	 * the data, and not clearing the data will result in a warning for memory leak after {@link AsyncTask#onCompletion}
-	 * finished executing.
-	 *
-	 * WARNING: THIS METHOD SHOULD ONLY BE CALLED FROM THE MAIN THREAD!
-	 *
-	 * @return mixed
-	 *
-	 * @throws \RuntimeException if no data were stored by this AsyncTask instance
-	 * @throws \BadMethodCallException if called from any thread except the main thread
+	 * Override this to do normal __destruct() cleanup from a child class.
 	 */
-	protected function peekLocal(){
-		if($this->worker !== null and $this->worker === \Thread::getCurrentThread()){
-			throw new \BadMethodCallException("Objects can only be retrieved from the parent thread");
-		}
+	protected function reallyDestruct() : void{
 
-		if(self::$localObjectStorage === null or !isset(self::$localObjectStorage[$this])){
-			throw new \InvalidStateException("No complex data stored for this async task");
-		}
-
-		return self::$localObjectStorage[$this];
-	}
-
-	/**
-	 * @internal Called by the AsyncPool to destroy any leftover stored objects that this task failed to retrieve.
-	 * @return bool
-	 */
-	public function removeDanglingStoredObjects() : bool{
-		if(self::$localObjectStorage !== null and isset(self::$localObjectStorage[$this])){
-			unset(self::$localObjectStorage[$this]);
-			return true;
-		}
-
-		return false;
 	}
 }

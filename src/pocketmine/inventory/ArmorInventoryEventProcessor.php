@@ -27,7 +27,6 @@ namespace pocketmine\inventory;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityArmorChangeEvent;
 use pocketmine\item\Item;
-use pocketmine\Server;
 
 class ArmorInventoryEventProcessor implements InventoryEventProcessor{
 	/** @var Entity */
@@ -38,7 +37,8 @@ class ArmorInventoryEventProcessor implements InventoryEventProcessor{
 	}
 
 	public function onSlotChange(Inventory $inventory, int $slot, Item $oldItem, Item $newItem) : ?Item{
-		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->entity, $oldItem, $newItem, $slot));
+		$ev = new EntityArmorChangeEvent($this->entity, $oldItem, $newItem, $slot);
+		$ev->call();
 		if($ev->isCancelled()){
 			return null;
 		}

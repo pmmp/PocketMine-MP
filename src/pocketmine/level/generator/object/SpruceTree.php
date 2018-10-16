@@ -32,10 +32,7 @@ use pocketmine\utils\Random;
 class SpruceTree extends Tree{
 
 	public function __construct(){
-		$this->trunkBlock = Block::LOG;
-		$this->leafBlock = Block::LEAVES;
-		$this->type = Wood::SPRUCE;
-		$this->treeHeight = 10;
+		parent::__construct(Block::LOG, Block::LEAVES, Wood::SPRUCE, 10);
 	}
 
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random) : void{
@@ -63,7 +60,7 @@ class SpruceTree extends Tree{
 
 					if(!BlockFactory::get($level->getBlockIdAt($xx, $yyy, $zz))->isSolid()){
 						$level->setBlockIdAt($xx, $yyy, $zz, $this->leafBlock);
-						$level->setBlockDataAt($xx, $yyy, $zz, $this->type);
+						$level->setBlockDataAt($xx, $yyy, $zz, $this->blockMeta);
 					}
 				}
 			}

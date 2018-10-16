@@ -54,7 +54,7 @@ class TestAsyncTask extends AsyncTask{
 		usleep(50 * 1000); //1 server tick
 	}
 
-	public function __destruct(){
+	protected function reallyDestruct() : void{
 		self::$destroyed = true;
 	}
 }

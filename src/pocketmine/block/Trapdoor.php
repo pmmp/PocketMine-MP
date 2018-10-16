@@ -32,13 +32,8 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Trapdoor extends Transparent{
-	public const MASK_UPPER = 0x04;
-	public const MASK_OPENED = 0x08;
-	public const MASK_SIDE = 0x03;
-	public const MASK_SIDE_SOUTH = 2;
-	public const MASK_SIDE_NORTH = 3;
-	public const MASK_SIDE_EAST = 0;
-	public const MASK_SIDE_WEST = 1;
+	private const MASK_UPPER = 0x04;
+	private const MASK_OPENED = 0x08;
 
 	protected $id = self::TRAPDOOR;
 

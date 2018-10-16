@@ -47,7 +47,7 @@ class ItemBlock extends Item{
 			$blockId = 255 - $blockId;
 		}
 		$this->blockId = $blockId;
-		$this->setDamage($meta);
+		$this->meta = $meta;
 
 		parent::__construct($itemId ?? $blockId, $meta, $this->getBlock()->getName());
 	}

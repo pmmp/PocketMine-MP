@@ -36,7 +36,7 @@ class BlockTest extends TestCase{
 	 */
 	public function testAccidentalOverrideBlock() : void{
 		$block = new MyCustomBlock();
-		$this->expectException(\RuntimeException::class);
+		$this->expectException(\InvalidArgumentException::class);
 		BlockFactory::registerBlock($block);
 	}
 

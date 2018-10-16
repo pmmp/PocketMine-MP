@@ -86,7 +86,7 @@ class Flat extends Generator{
 		preg_match_all('#^(([0-9]*x|)([0-9]{1,3})(|:[0-9]{0,2}))$#m', str_replace(",", "\n", $layers), $matches);
 		$y = 0;
 		foreach($matches[3] as $i => $b){
-			$b = ItemFactory::fromString($b . $matches[4][$i]);
+			$b = ItemFactory::fromString($b . $matches[4][$i])->getBlock();
 			$cnt = $matches[2][$i] === "" ? 1 : (int) $matches[2][$i];
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
 				$result[$cY] = [
