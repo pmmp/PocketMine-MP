@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\block\Block;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -32,9 +33,14 @@ use pocketmine\Player;
 abstract class Animal extends Mob implements Ageable{
 
 	protected $inLove = 0;
+	protected $spawnableBlock = Block::GRASS;
 
 	public function isBaby() : bool{
 		return $this->getGenericFlag(self::DATA_FLAG_BABY);
+	}
+
+	public function canSpawnHere() : bool{
+		return $this->level->getBlock($this->down())->getId() === $this->spawnableBlock and  $this->level->getFullLight($this) > 8 and parent::canSpawnHere();
 	}
 
 	public function getTalkInterval() : int{

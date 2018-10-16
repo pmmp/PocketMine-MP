@@ -98,6 +98,7 @@ class WanderBehavior extends Behavior{
 		return $currentBlock;
 	}
 
+	// TODO: separate this to own class
 	public function calculateBlockWeight(Entity $entity, Block $block, Block $blockDown) : int{
 		$vec = [
 			$block->getX(),
