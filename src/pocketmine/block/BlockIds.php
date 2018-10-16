@@ -191,7 +191,7 @@ interface BlockIds{
 	public const ACACIA_STAIRS = 163;
 	public const DARK_OAK_STAIRS = 164;
 	public const SLIME = 165, SLIME_BLOCK = 165;
-
+	public const BARRIER = 166;
 	public const IRON_TRAPDOOR = 167;
 	public const PRISMARINE = 168;
 	public const SEALANTERN = 169, SEA_LANTERN = 169;
