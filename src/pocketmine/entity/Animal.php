@@ -95,6 +95,10 @@ abstract class Animal extends Mob implements Ageable{
 		$this->broadcastEntityEvent(EntityEventPacket::EATING_ITEM, $item->getId());
 	}
 
+	public function eatGrassBonus(Vector3 $pos) : void{
+		// for sheep
+	}
+
 	public function allowLeashing() : bool{
 		return !$this->isLeashed() and $this->aiEnabled;
 	}
