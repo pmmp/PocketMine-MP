@@ -77,6 +77,7 @@ class WanderBehavior extends Behavior{
 		$this->mob->getNavigator()->clearPath();
 	}
 
+	//TODO: add a new class for this
 	public function findRandomTargetBlock(Entity $entity, int $dxz, int $dy) : ?Block{
 		$currentWeight = PHP_INT_MIN;
 		$currentBlock = null;
@@ -87,8 +88,7 @@ class WanderBehavior extends Behavior{
 
 			$blockCoords = new Vector3($x, $y, $z);
 			$block = $entity->level->getBlock($this->mob->asVector3()->add($blockCoords));
-			$blockDown = $block->getSide(0);
-			$weight = $this->calculateBlockWeight($entity, $block, $blockDown);
+			$weight = $this->mob->getBlockPathWeight($block->asVector3());
 			if($weight > $currentWeight){
 				$currentWeight = $weight;
 				$currentBlock = $block;
@@ -96,21 +96,5 @@ class WanderBehavior extends Behavior{
 		}
 
 		return $currentBlock;
-	}
-
-	// TODO: separate this to own class
-	public function calculateBlockWeight(Entity $entity, Block $block, Block $blockDown) : int{
-		$vec = [
-			$block->getX(),
-			$block->getY(),
-			$block->getZ()
-		];
-		if($entity instanceof Animal){
-			if($blockDown instanceof Grass) return 20;
-
-			return (int) (max($entity->level->getBlockLightAt(...$vec), $entity->level->getBlockSkyLightAt(...$vec)) - 0.5);
-		}else{
-			return (int) 0.5 - max($entity->level->getBlockLightAt(...$vec), $entity->level->getBlockSkyLightAt(...$vec));
-		}
 	}
 }

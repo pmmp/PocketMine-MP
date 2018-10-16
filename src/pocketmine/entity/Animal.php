@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\block\Grass;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -37,6 +38,10 @@ abstract class Animal extends Mob implements Ageable{
 
 	public function isBaby() : bool{
 		return $this->getGenericFlag(self::DATA_FLAG_BABY);
+	}
+
+	public function getBlockPathWeight(Vector3 $pos) : float{
+		return $this->level->getBlock($pos->down()) instanceof Grass ? 10 : $this->level->getFullLight($pos) - 0.5;
 	}
 
 	public function canSpawnHere() : bool{

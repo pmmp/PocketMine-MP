@@ -37,6 +37,8 @@ class Mooshroom extends Cow{
 
 	public const NETWORK_ID = self::MOOSHROOM;
 
+	protected $spawnableBlock = Block::MYCELIUM;
+
 	public function getName() : string{
 		return "Mooshroom";
 	}

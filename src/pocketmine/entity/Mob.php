@@ -392,4 +392,20 @@ abstract class Mob extends Living{
 	public function canDespawn() : bool{
 		return $this->aiEnabled and !$this->isLeashed() and $this->getOwningEntityId() === null;
 	}
+
+	/**
+	 * @param Vector3 $pos
+	 *
+	 * @return float
+	 */
+	public function getBlockPathWeight(Vector3 $pos) : float{
+		return 0.0;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function canSpawnHere() : bool{
+		return parent::canSpawnHere() and $this->getBlockPathWeight($this) > 0;
+	}
 }

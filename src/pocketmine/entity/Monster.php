@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 
 abstract class Monster extends Mob{
 
@@ -46,6 +47,10 @@ abstract class Monster extends Mob{
 
 	public function canSpawnHere() : bool{
 		return $this->level->getDifficulty() !== Level::DIFFICULTY_PEACEFUL and $this->isValidLightLevel();
+	}
+
+	public function getBlockPathWeight(Vector3 $pos) : float{
+		return 0.5 - $this->level->getFullLight($pos);
 	}
 
 }

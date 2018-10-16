@@ -40,6 +40,7 @@ use pocketmine\Player;
 use Symfony\Component\Process\Pipes\WindowsPipes;
 
 class Villager extends Mob implements NPC, Ageable{
+
 	public const NETWORK_ID = self::VILLAGER;
 
 	public static $names = [
