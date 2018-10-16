@@ -352,6 +352,8 @@ class BlockFactory{
 		self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
 		//TODO: SLIME
 
+		self::registerBlock(new Barrier());
+		
 		self::registerBlock(new IronTrapdoor());
 
 		self::registerBlock(new Prismarine(Block::PRISMARINE, Prismarine::NORMAL, "Prismarine"));
