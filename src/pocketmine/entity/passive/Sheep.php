@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\passive;
 
+use pocketmine\block\utils\Color;
 use pocketmine\entity\Animal;
 use pocketmine\entity\behavior\EatBlockBehavior;
 use pocketmine\entity\behavior\FloatBehavior;
@@ -41,6 +42,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
+use pocketmine\utils\Random;
 
 class Sheep extends Animal{
 
@@ -65,7 +67,7 @@ class Sheep extends Animal{
         $this->setMaxHealth(8);
         $this->setMovementSpeed(0.23000000417232513);
         $this->setFollowRange(10);
-        $this->propertyManager->setByte(self::DATA_COLOR, $nbt->getByte("Color", 0));
+        $this->propertyManager->setByte(self::DATA_COLOR, $nbt->getByte("Color", $this->getRandomColor($this->level->random)));
         $this->setSheared(boolval($nbt->getByte("Sheared", 0)));
 
         parent::initEntity($nbt);
@@ -135,5 +137,28 @@ class Sheep extends Animal{
 
 	public function getLivingSound() : ?string{
 		return "mob.sheep.say";
+	}
+
+	/**
+	 * @param Random $random
+	 *
+	 * @return int
+	 */
+	public function getRandomColor(Random $random) : int{
+    	$i = $random->nextBoundedInt(100);
+
+    	if($i < 5){
+    		return Color::BLACK;
+	    }elseif($i < 10){
+    		return Color::GRAY;
+	    }elseif($i < 15){
+		    return Color::LIGHT_GRAY;
+	    }elseif($i < 18){
+		    return Color::BROWN;
+	    }elseif($random->nextBoundedInt(500) === 0){
+		    return Color::PINK;
+	    }else{
+		    return Color::WHITE;
+	    }
 	}
 }
