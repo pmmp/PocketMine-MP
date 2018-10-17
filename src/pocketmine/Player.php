@@ -78,7 +78,6 @@ use pocketmine\event\player\PlayerInteractEntityEvent;
 use pocketmine\form\ServerSettingsForm;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
-use pocketmine\inventory\ContainerInventory;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
@@ -1718,7 +1717,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function jump() : void{
-		(new PlayerJumpEvent($this))->call();
+        (new PlayerJumpEvent($this))->call();
 		parent::jump();
 	}
 
@@ -2077,7 +2076,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -2556,8 +2555,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$entity->isAlive()){
 			return false;
 		}
-
-		$this->server->getPluginManager()->callEvent($ev = new PlayerInteractEntityEvent($this, $entity, $this->inventory->getItemInHand(), $clickPos, $this->inventory->getHeldItemIndex()));
+        $ev = new PlayerInteractEntityEvent($this, $entity, $this->inventory->getItemInHand(), $clickPos, $this->inventory->getHeldItemIndex());
+		$ev->call();
 
 		if(!$ev->isCancelled()){
 			$oldItem = clone $ev->getItem();
@@ -2605,7 +2604,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function toggleGlide(bool $glide) : void{
 		$ev = new PlayerToggleGlideEvent($this, $glide);
-		$this->server->getPluginManager()->callEvent($ev);
+		$ev->call();
 		if($ev->isCancelled()){
 			$this->sendData($this);
 		}else{
@@ -2615,7 +2614,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function toggleSwim(bool $swimming) : void{
 		$ev = new PlayerToggleSwimEvent($this, $swimming);
-		$this->server->getPluginManager()->callEvent($ev);
+		$ev->call();
 		if($ev->isCancelled()){
 			$this->sendData($this);
 		}else{
@@ -2725,11 +2724,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($packet->originData->type !== CommandOriginData::ORIGIN_PLAYER) return false;
 
 		$command = $packet->command;
-		if($command{0} != "/"){
-			return false;
-		}
+		if($command{0} != "/") return false;
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerCommandPreprocessEvent($this, $command));
+        $ev = new PlayerCommandPreprocessEvent($this, $command);
+		$ev->call();
 		if($ev->isCancelled()){
 			return true;
 		}
