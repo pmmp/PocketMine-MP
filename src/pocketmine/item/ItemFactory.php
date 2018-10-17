@@ -347,8 +347,16 @@ class ItemFactory{
 			$sublist = self::$list[self::getListOffset($id)];
 
 			/** @var Item|null $listed */
-			if($sublist !== null and isset($sublist[$meta])){
-				$item = clone $sublist[$meta];
+			if($sublist !== null){
+				if(isset($sublist[$meta])){
+					$item = clone $sublist[$meta];
+				}elseif(isset($sublist[0]) and $sublist[0] instanceof Durable){
+					/** @var Durable $item */
+					$item = clone $sublist[0];
+					$item->setDamage($meta);
+				}else{
+					throw new \InvalidArgumentException("Unknown variant $meta of item ID $id");
+				}
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 				/* Blocks must have a damage value 0-15, but items can have damage value -1 to indicate that they are
 				 * crafting ingredients with any-damage. */
@@ -363,9 +371,6 @@ class ItemFactory{
 
 		$item->setCount($count);
 		$item->setCompoundTag($tags);
-		if($item instanceof Durable){ //nasty, but necessary for BC reasons
-			$item->setDamage($meta);
-		}
 		return $item;
 	}
 
