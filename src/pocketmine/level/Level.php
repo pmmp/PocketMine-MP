@@ -1251,7 +1251,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function getFullLight(Vector3 $pos) : int{
-		return $this->getFullLightAt($pos->x, $pos->y, $pos->z);
+		return $this->getFullLightAt(intval($pos->x), intval($pos->y), intval($pos->z));
 	}
 
 	public function getFullLightAt(int $x, int $y, int $z) : int{
