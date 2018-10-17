@@ -76,4 +76,12 @@ class ItemTest extends TestCase{
 		self::assertEquals($id, $item->getId());
 		self::assertEquals($meta, $item->getDamage());
 	}
+
+	/**
+	 * Test that durable items are correctly created by the item factory
+	 */
+	public function testGetDurableItem() : void{
+		self::assertInstanceOf(Sword::class, ItemFactory::get(Item::WOODEN_SWORD));
+		self::assertInstanceOf(Sword::class, ItemFactory::get(Item::WOODEN_SWORD, 1));
+	}
 }
