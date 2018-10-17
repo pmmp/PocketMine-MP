@@ -346,25 +346,19 @@ class ItemFactory{
 		/** @var Item $item */
 		$item = null;
 		if($meta !== -1){
-			try{
-				$sublist = self::$list[self::getListOffset($id)];
+			$sublist = self::$list[self::getListOffset($id)];
 
-				/** @var Item|null $listed */
-				if($sublist !== null){
-					if(isset($sublist[$meta])){
-						$item = clone $sublist[$meta];
-					}elseif(isset($sublist[0]) and $sublist[0] instanceof Durable){
-						/** @var Durable $item */
-						$item = clone $sublist[0];
-						$item->setDamage($meta);
-					}
-				}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
-					/* Blocks must have a damage value 0-15, but items can have damage value -1 to indicate that they are
-					 * crafting ingredients with any-damage. */
-					$item = new ItemBlock($id, $meta);
+			/** @var Item|null $listed */
+			if($sublist !== null){
+				if(isset($sublist[$meta])){
+					$item = clone $sublist[$meta];
+				}elseif(isset($sublist[0]) and $sublist[0] instanceof Durable){
+					/** @var Durable $item */
+					$item = clone $sublist[0];
+					$item->setDamage($meta);
 				}
-			}catch(\RuntimeException $e){
-				throw new \InvalidArgumentException("Item ID $id is invalid or out of bounds");
+			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
+				$item = new ItemBlock($id, $meta);
 			}
 		}
 
