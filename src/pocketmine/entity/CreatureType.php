@@ -24,8 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\utils\Utils;
-
 class CreatureType{
 
 	/** @var string */
