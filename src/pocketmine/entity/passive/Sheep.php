@@ -161,4 +161,17 @@ class Sheep extends Animal{
 		    return Color::WHITE;
 	    }
 	}
+
+	/**
+	 * @param Vector3 $pos
+	 */
+	public function eatGrassBonus(Vector3 $pos) : void{
+		if(!$this->isBaby()){
+			if($this->isSheared()){
+				$this->setSheared(false);
+			}
+		}else{
+			// TODO: enlarge baby
+		}
+	}
 }
