@@ -78,6 +78,7 @@ use pocketmine\event\player\PlayerInteractEntityEvent;
 use pocketmine\form\ServerSettingsForm;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
+use pocketmine\inventory\ContainerInventory;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
@@ -1717,7 +1718,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function jump() : void{
-        (new PlayerJumpEvent($this))->call();
+		(new PlayerJumpEvent($this))->call();
 		parent::jump();
 	}
 
@@ -2555,7 +2556,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$entity->isAlive()){
 			return false;
 		}
-        $ev = new PlayerInteractEntityEvent($this, $entity, $this->inventory->getItemInHand(), $clickPos, $this->inventory->getHeldItemIndex());
+		$ev = new PlayerInteractEntityEvent($this, $entity, $this->inventory->getItemInHand(), $clickPos, $this->inventory->getHeldItemIndex());
 		$ev->call();
 
 		if(!$ev->isCancelled()){
@@ -2726,7 +2727,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$command = $packet->command;
 		if($command{0} != "/") return false;
 
-        $ev = new PlayerCommandPreprocessEvent($this, $command);
+		$ev = new PlayerCommandPreprocessEvent($this, $command);
 		$ev->call();
 		if($ev->isCancelled()){
 			return true;
