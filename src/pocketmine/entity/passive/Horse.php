@@ -82,7 +82,7 @@ class Horse extends Animal{
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
-		if($this->aiEnabled){
+		if(!$this->isImmobile()){
 			if($item instanceof Saddle){
 				if(!$this->isSaddled()){
 					$this->setSaddled(true);

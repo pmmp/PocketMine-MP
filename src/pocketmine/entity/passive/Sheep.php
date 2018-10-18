@@ -78,7 +78,7 @@ class Sheep extends Animal{
     }
 
     public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
-    	if($this->aiEnabled){
+    	if(!$this->isImmobile()){
 		    if($item instanceof Shears and !$this->isSheared()){
 			    $this->setSheared(true);
 			    $item->applyDamage(1);

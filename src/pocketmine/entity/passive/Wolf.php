@@ -80,7 +80,7 @@ class Wolf extends Tamable{
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
-		if($this->aiEnabled){
+		if(!$this->isImmobile()){
 			if($this->isTamed()){
 				if($this->getOwningEntityId() == $player->id){
 					$this->setSitting(!$this->isSitting());

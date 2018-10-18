@@ -58,24 +58,8 @@ abstract class Mob extends Living{
 	protected $jumpCooldown = 0;
 	/** @var Vector3 */
 	protected $homePosition;
-	/** @var bool */
-	protected $aiEnabled = false;
 	/** @var int */
 	protected $livingSoundTime = 0;
-
-	/**
-	 * @return bool
-	 */
-	public function isAiEnabled() : bool{
-		return $this->aiEnabled;
-	}
-
-	/**
-	 * @param bool $aiEnabled
-	 */
-	public function setAiEnabled(bool $aiEnabled) : void{
-		$this->aiEnabled = $aiEnabled;
-	}
 
 	/**
 	 * @return Vector3
@@ -106,8 +90,6 @@ abstract class Mob extends Living{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->setImmobile(true);
-
 		$this->targetBehaviorPool = new BehaviorPool();
 		$this->behaviorPool = new BehaviorPool();
 		$this->navigator = new EntityNavigator($this);
@@ -115,8 +97,7 @@ abstract class Mob extends Living{
 		$this->addBehaviors();
 
 		$this->setDefaultMovementSpeed($this->getMovementSpeed());
-
-		$this->aiEnabled = boolval($nbt->getByte("aiEnabled", 0));
+		$this->setImmobile(boolval($nbt->getByte("NoAI", 1)));
 	}
 
 	/**
@@ -124,7 +105,8 @@ abstract class Mob extends Living{
 	 */
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setByte("aiEnabled", intval($this->aiEnabled));
+
+		$nbt->setByte("NoAI", intval($this->isImmobile()));
 
 		return $nbt;
 	}
@@ -137,7 +119,7 @@ abstract class Mob extends Living{
 	public function entityBaseTick(int $diff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($diff);
 
-		if($this->aiEnabled){
+		if(!$this->isImmobile()){
 			$this->onBehaviorUpdate();
 
 			if($this->isAlive() and $this->random->nextBoundedInt(1000) < $this->livingSoundTime++){
@@ -335,7 +317,7 @@ abstract class Mob extends Living{
 	 * @return bool
 	 */
 	public function canBePushed() : bool{
-		return $this->aiEnabled;
+		return !$this->isImmobile();
 	}
 
 	/**
@@ -390,7 +372,7 @@ abstract class Mob extends Living{
 	 * @return bool
 	 */
 	public function canDespawn() : bool{
-		return $this->aiEnabled and !$this->isLeashed() and $this->getOwningEntityId() === null;
+		return !$this->isImmobile() and !$this->isLeashed() and $this->getOwningEntityId() === null;
 	}
 
 	/**

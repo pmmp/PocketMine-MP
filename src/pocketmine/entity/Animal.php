@@ -53,7 +53,7 @@ abstract class Animal extends Mob implements Ageable{
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
-		if($this->isBreedingItem($item) and $this->aiEnabled){
+		if($this->isBreedingItem($item) and !$this->isImmobile()){
 			if(!$this->isBaby() and !$this->isInLove()){
 				$this->setInLove(true);
 
@@ -96,7 +96,7 @@ abstract class Animal extends Mob implements Ageable{
 	}
 
 	public function allowLeashing() : bool{
-		return !$this->isLeashed() and $this->aiEnabled;
+		return !$this->isLeashed() and !$this->isImmobile();
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{

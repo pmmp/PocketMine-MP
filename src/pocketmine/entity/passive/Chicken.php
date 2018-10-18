@@ -117,7 +117,7 @@ class Chicken extends Animal{
 			$this->motion->y *= 0.6;
 		}
 
-		if($this->aiEnabled and !$this->isBaby() and !$this->isChickenJockey() and $this->timeUntilNextEgg-- <= 0){
+		if(!$this->isImmobile() and !$this->isBaby() and !$this->isChickenJockey() and $this->timeUntilNextEgg-- <= 0){
 			$this->level->dropItem($this, ItemFactory::get(Item::EGG));
 			$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LAY_EGG);
 			$this->timeUntilNextEgg = $this->level->random->nextBoundedInt(6000) + 6000;

@@ -260,7 +260,7 @@ class MobSpawner extends Spawnable{
 						if($mob instanceof Entity){
 							if($mob instanceof Mob){
 								if($this->server->mobAiEnabled){
-									$mob->setAiEnabled(true);
+									$mob->setImmobile(false);
 								}
 							}
 							$mob->spawnToAll();

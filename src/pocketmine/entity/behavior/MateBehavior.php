@@ -96,7 +96,7 @@ class MateBehavior extends Behavior{
 		/** @var Mob $baby */
 		$baby = Entity::createEntity($this->mob::NETWORK_ID, $this->mob->level, Entity::createBaseNBT($this->mob));
 		$baby->setBaby(true);
-		$baby->setAiEnabled(true);
+		$baby->setImmobile(false);
 		$baby->spawnToAll();
 	}
 }
