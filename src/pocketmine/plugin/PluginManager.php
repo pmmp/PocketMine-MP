@@ -221,7 +221,7 @@ class PluginManager{
 						$description = $loader->getPluginDescription($file);
 						if($description instanceof PluginDescription){
 							$name = $description->getName();
-							if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
+							if(stripos($name, "pocketmine") !== false || stripos($name, "minecraft") !== false || stripos($name, "mojang") !== false || stripos($name, "altay") !== false){
 								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.restrictedName"]));
 								continue;
 							}elseif(strpos($name, " ") !== false){
@@ -233,13 +233,15 @@ class PluginManager{
 								continue;
 							}
 
-							if(!$this->isCompatibleApi(...$description->getCompatibleApis())){
-								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
-									$name,
-									$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleAPI", [implode(", ", $description->getCompatibleApis())])
-								]));
-								continue;
-							}
+							if(!$this->server->loadIncompatibleApi){
+                                if(!$this->isCompatibleApi(...$description->getCompatibleApis())){
+                                    $this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+                                        $name,
+                                        $this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleAPI", [implode(", ", $description->getCompatibleApis())])
+                                    ]));
+                                    continue;
+                                }
+                            }
 
 							if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
 								$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
