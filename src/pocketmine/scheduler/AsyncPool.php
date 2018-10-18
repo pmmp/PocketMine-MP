@@ -138,17 +138,6 @@ class AsyncPool{
 	}
 
 	/**
-	 * For public use
-	 *
-	 * @param int $id
-	 *
-	 * @return null|AsyncWorker
-	 */
-	public function getWorkerById(int $id) : ?AsyncWorker{
-		return $this->workers[$id] ?? null;
-	}
-
-	/**
 	 * Submits an AsyncTask to an arbitrary worker.
 	 *
 	 * @param AsyncTask $task
