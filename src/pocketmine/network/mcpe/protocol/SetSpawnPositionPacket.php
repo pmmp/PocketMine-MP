@@ -29,36 +29,36 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class SetSpawnPositionPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::SET_SPAWN_POSITION_PACKET;
+	public const NETWORK_ID = ProtocolInfo::SET_SPAWN_POSITION_PACKET;
 
-    public const TYPE_PLAYER_SPAWN = 0;
-    public const TYPE_WORLD_SPAWN = 1;
+	public const TYPE_PLAYER_SPAWN = 0;
+	public const TYPE_WORLD_SPAWN = 1;
 
-    /** @var int */
-    public $spawnType;
-    /** @var int */
-    public $x;
-    /** @var int */
-    public $y;
-    /** @var int */
-    public $z;
-    /** @var bool */
-    public $spawnForced;
+	/** @var int */
+	public $spawnType;
+	/** @var int */
+	public $x;
+	/** @var int */
+	public $y;
+	/** @var int */
+	public $z;
+	/** @var bool */
+	public $spawnForced;
 
-    protected function decodePayload() : void{
-        $this->spawnType = $this->getVarInt();
-        $this->getBlockPosition($this->x, $this->y, $this->z);
-        $this->spawnForced = $this->getBool();
-    }
+	protected function decodePayload() : void{
+		$this->spawnType = $this->getVarInt();
+		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->spawnForced = $this->getBool();
+	}
 
-    protected function encodePayload() : void{
-        $this->putVarInt($this->spawnType);
-        $this->putBlockPosition($this->x, $this->y, $this->z);
-        $this->putBool($this->spawnForced);
-    }
+	protected function encodePayload() : void{
+		$this->putVarInt($this->spawnType);
+		$this->putBlockPosition($this->x, $this->y, $this->z);
+		$this->putBool($this->spawnForced);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleSetSpawnPosition($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleSetSpawnPosition($this);
+	}
 
 }

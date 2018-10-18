@@ -30,24 +30,24 @@ use pocketmine\entity\Attribute;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class UpdateAttributesPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::UPDATE_ATTRIBUTES_PACKET;
+	public const NETWORK_ID = ProtocolInfo::UPDATE_ATTRIBUTES_PACKET;
 
-    /** @var int */
-    public $entityRuntimeId;
-    /** @var Attribute[] */
-    public $entries = [];
+	/** @var int */
+	public $entityRuntimeId;
+	/** @var Attribute[] */
+	public $entries = [];
 
-    protected function decodePayload() : void{
-        $this->entityRuntimeId = $this->getEntityRuntimeId();
-        $this->entries = $this->getAttributeList();
-    }
+	protected function decodePayload() : void{
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->entries = $this->getAttributeList();
+	}
 
-    protected function encodePayload() : void{
-        $this->putEntityRuntimeId($this->entityRuntimeId);
-        $this->putAttributeList(...$this->entries);
-    }
+	protected function encodePayload() : void{
+		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putAttributeList(...$this->entries);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleUpdateAttributes($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleUpdateAttributes($this);
+	}
 }

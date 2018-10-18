@@ -30,20 +30,20 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class MapInfoRequestPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::MAP_INFO_REQUEST_PACKET;
+	public const NETWORK_ID = ProtocolInfo::MAP_INFO_REQUEST_PACKET;
 
-    /** @var int */
-    public $mapId;
+	/** @var int */
+	public $mapId;
 
-    protected function decodePayload() : void{
-        $this->mapId = $this->getEntityUniqueId();
-    }
+	protected function decodePayload() : void{
+		$this->mapId = $this->getEntityUniqueId();
+	}
 
-    protected function encodePayload() : void{
-        $this->putEntityUniqueId($this->mapId);
-    }
+	protected function encodePayload() : void{
+		$this->putEntityUniqueId($this->mapId);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleMapInfoRequest($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleMapInfoRequest($this);
+	}
 }

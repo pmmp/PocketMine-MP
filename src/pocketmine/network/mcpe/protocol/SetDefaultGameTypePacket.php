@@ -28,20 +28,20 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class SetDefaultGameTypePacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::SET_DEFAULT_GAME_TYPE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::SET_DEFAULT_GAME_TYPE_PACKET;
 
-    /** @var int */
-    public $gamemode;
+	/** @var int */
+	public $gamemode;
 
-    protected function decodePayload() : void{
-        $this->gamemode = $this->getVarInt();
-    }
+	protected function decodePayload() : void{
+		$this->gamemode = $this->getVarInt();
+	}
 
-    protected function encodePayload() : void{
-        $this->putUnsignedVarInt($this->gamemode);
-    }
+	protected function encodePayload() : void{
+		$this->putUnsignedVarInt($this->gamemode);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleSetDefaultGameType($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleSetDefaultGameType($this);
+	}
 }

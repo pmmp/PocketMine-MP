@@ -30,43 +30,43 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class MoveEntityAbsolutePacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_ABSOLUTE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_ABSOLUTE_PACKET;
 
-    public const FLAG_GROUND = 0x01;
-    public const FLAG_TELEPORT = 0x02;
+	public const FLAG_GROUND = 0x01;
+	public const FLAG_TELEPORT = 0x02;
 
-    /** @var int */
-    public $entityRuntimeId;
-    /** @var int */
-    public $flags = 0;
-    /** @var Vector3 */
-    public $position;
-    /** @var float */
-    public $xRot;
-    /** @var float */
-    public $yRot;
-    /** @var float */
-    public $zRot;
+	/** @var int */
+	public $entityRuntimeId;
+	/** @var int */
+	public $flags = 0;
+	/** @var Vector3 */
+	public $position;
+	/** @var float */
+	public $xRot;
+	/** @var float */
+	public $yRot;
+	/** @var float */
+	public $zRot;
 
-    protected function decodePayload() : void{
-        $this->entityRuntimeId = $this->getEntityRuntimeId();
-        $this->flags = $this->getByte();
-        $this->position = $this->getVector3();
-        $this->xRot = $this->getByteRotation();
-        $this->yRot = $this->getByteRotation();
-        $this->zRot = $this->getByteRotation();
-    }
+	protected function decodePayload() : void{
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->flags = $this->getByte();
+		$this->position = $this->getVector3();
+		$this->xRot = $this->getByteRotation();
+		$this->yRot = $this->getByteRotation();
+		$this->zRot = $this->getByteRotation();
+	}
 
-    protected function encodePayload() : void{
-        $this->putEntityRuntimeId($this->entityRuntimeId);
-        $this->putByte($this->flags);
-        $this->putVector3($this->position);
-        $this->putByteRotation($this->xRot);
-        $this->putByteRotation($this->yRot);
-        $this->putByteRotation($this->zRot);
-    }
+	protected function encodePayload() : void{
+		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putByte($this->flags);
+		$this->putVector3($this->position);
+		$this->putByteRotation($this->xRot);
+		$this->putByteRotation($this->yRot);
+		$this->putByteRotation($this->zRot);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleMoveEntityAbsolute($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleMoveEntityAbsolute($this);
+	}
 }

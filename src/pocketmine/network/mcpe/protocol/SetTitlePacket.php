@@ -30,43 +30,43 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class SetTitlePacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::SET_TITLE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::SET_TITLE_PACKET;
 
-    public const TYPE_CLEAR_TITLE = 0;
-    public const TYPE_RESET_TITLE = 1;
-    public const TYPE_SET_TITLE = 2;
-    public const TYPE_SET_SUBTITLE = 3;
-    public const TYPE_SET_ACTIONBAR_MESSAGE = 4;
-    public const TYPE_SET_ANIMATION_TIMES = 5;
+	public const TYPE_CLEAR_TITLE = 0;
+	public const TYPE_RESET_TITLE = 1;
+	public const TYPE_SET_TITLE = 2;
+	public const TYPE_SET_SUBTITLE = 3;
+	public const TYPE_SET_ACTIONBAR_MESSAGE = 4;
+	public const TYPE_SET_ANIMATION_TIMES = 5;
 
-    /** @var int */
-    public $type;
-    /** @var string */
-    public $text = "";
-    /** @var int */
-    public $fadeInTime = 0;
-    /** @var int */
-    public $stayTime = 0;
-    /** @var int */
-    public $fadeOutTime = 0;
+	/** @var int */
+	public $type;
+	/** @var string */
+	public $text = "";
+	/** @var int */
+	public $fadeInTime = 0;
+	/** @var int */
+	public $stayTime = 0;
+	/** @var int */
+	public $fadeOutTime = 0;
 
-    protected function decodePayload() : void{
-        $this->type = $this->getVarInt();
-        $this->text = $this->getString();
-        $this->fadeInTime = $this->getVarInt();
-        $this->stayTime = $this->getVarInt();
-        $this->fadeOutTime = $this->getVarInt();
-    }
+	protected function decodePayload() : void{
+		$this->type = $this->getVarInt();
+		$this->text = $this->getString();
+		$this->fadeInTime = $this->getVarInt();
+		$this->stayTime = $this->getVarInt();
+		$this->fadeOutTime = $this->getVarInt();
+	}
 
-    protected function encodePayload() : void{
-        $this->putVarInt($this->type);
-        $this->putString($this->text);
-        $this->putVarInt($this->fadeInTime);
-        $this->putVarInt($this->stayTime);
-        $this->putVarInt($this->fadeOutTime);
-    }
+	protected function encodePayload() : void{
+		$this->putVarInt($this->type);
+		$this->putString($this->text);
+		$this->putVarInt($this->fadeInTime);
+		$this->putVarInt($this->stayTime);
+		$this->putVarInt($this->fadeOutTime);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleSetTitle($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleSetTitle($this);
+	}
 }

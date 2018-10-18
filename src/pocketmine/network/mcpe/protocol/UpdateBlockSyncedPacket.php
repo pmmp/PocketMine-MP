@@ -28,26 +28,26 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class UpdateBlockSyncedPacket extends UpdateBlockPacket{
-    public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_SYNCED_PACKET;
+	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_SYNCED_PACKET;
 
-    /** @var int */
-    public $entityUniqueId = 0;
-    /** @var int */
-    public $uvarint64_2 = 0;
+	/** @var int */
+	public $entityUniqueId = 0;
+	/** @var int */
+	public $uvarint64_2 = 0;
 
-    protected function decodePayload() : void{
-        parent::decodePayload();
-        $this->entityUniqueId = $this->getUnsignedVarLong();
-        $this->uvarint64_2 = $this->getUnsignedVarLong();
-    }
+	protected function decodePayload() : void{
+		parent::decodePayload();
+		$this->entityUniqueId = $this->getUnsignedVarLong();
+		$this->uvarint64_2 = $this->getUnsignedVarLong();
+	}
 
-    protected function encodePayload() : void{
-        parent::encodePayload();
-        $this->putUnsignedVarLong($this->entityUniqueId);
-        $this->putUnsignedVarLong($this->uvarint64_2);
-    }
+	protected function encodePayload() : void{
+		parent::encodePayload();
+		$this->putUnsignedVarLong($this->entityUniqueId);
+		$this->putUnsignedVarLong($this->uvarint64_2);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleUpdateBlockSynced($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleUpdateBlockSynced($this);
+	}
 }

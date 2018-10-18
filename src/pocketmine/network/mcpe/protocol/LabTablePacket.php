@@ -29,34 +29,34 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class LabTablePacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::LAB_TABLE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::LAB_TABLE_PACKET;
 
-    /** @var int */
-    public $uselessByte; //0 for client -> server, 1 for server -> client. Seems useless.
+	/** @var int */
+	public $uselessByte; //0 for client -> server, 1 for server -> client. Seems useless.
 
-    /** @var int */
-    public $x;
-    /** @var int */
-    public $y;
-    /** @var int */
-    public $z;
+	/** @var int */
+	public $x;
+	/** @var int */
+	public $y;
+	/** @var int */
+	public $z;
 
-    /** @var int */
-    public $reactionType;
+	/** @var int */
+	public $reactionType;
 
-    protected function decodePayload() : void{
-        $this->uselessByte = $this->getByte();
-        $this->getSignedBlockPosition($this->x, $this->y, $this->z);
-        $this->reactionType = $this->getByte();
-    }
+	protected function decodePayload() : void{
+		$this->uselessByte = $this->getByte();
+		$this->getSignedBlockPosition($this->x, $this->y, $this->z);
+		$this->reactionType = $this->getByte();
+	}
 
-    protected function encodePayload() : void{
-        $this->putByte($this->uselessByte);
-        $this->putSignedBlockPosition($this->x, $this->y, $this->z);
-        $this->putByte($this->reactionType);
-    }
+	protected function encodePayload() : void{
+		$this->putByte($this->uselessByte);
+		$this->putSignedBlockPosition($this->x, $this->y, $this->z);
+		$this->putByte($this->reactionType);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleLabTable($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleLabTable($this);
+	}
 }

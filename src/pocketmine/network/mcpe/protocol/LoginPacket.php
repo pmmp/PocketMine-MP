@@ -90,7 +90,7 @@ class LoginPacket extends DataPacket{
 			}
 
 			$logger = MainLogger::getLogger();
-			$logger->debug(get_class($e)  . " was thrown while decoding connection request in login (protocol version " . ($this->protocol ?? "unknown") . "): " . $e->getMessage());
+			$logger->debug(get_class($e) . " was thrown while decoding connection request in login (protocol version " . ($this->protocol ?? "unknown") . "): " . $e->getMessage());
 			foreach(Utils::getTrace(0, $e->getTrace()) as $line){
 				$logger->debug($line);
 			}
@@ -134,13 +134,7 @@ class LoginPacket extends DataPacket{
 
 		$this->locale = $this->clientData["LanguageCode"] ?? "en_US";
 
-		$this->skin = new Skin(
-			$this->clientData["SkinId"] ?? "",
-			base64_decode($this->clientData["SkinData"] ?? ""),
-			base64_decode($this->clientData["CapeData"] ?? ""),
-			$this->clientData["SkinGeometryName"] ?? "",
-			base64_decode($this->clientData["SkinGeometry"] ?? "")
-		);
+		$this->skin = new Skin($this->clientData["SkinId"] ?? "", base64_decode($this->clientData["SkinData"] ?? ""), base64_decode($this->clientData["CapeData"] ?? ""), $this->clientData["SkinGeometryName"] ?? "", base64_decode($this->clientData["SkinGeometry"] ?? ""));
 	}
 
 	protected function encodePayload() : void{

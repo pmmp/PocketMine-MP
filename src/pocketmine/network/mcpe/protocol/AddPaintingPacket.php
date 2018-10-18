@@ -28,23 +28,23 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class AddPaintingPacket extends AddHangingEntityPacket{
-    public const NETWORK_ID = ProtocolInfo::ADD_PAINTING_PACKET;
+	public const NETWORK_ID = ProtocolInfo::ADD_PAINTING_PACKET;
 
-    /** @var string */
-    public $title;
+	/** @var string */
+	public $title;
 
-    protected function decodePayload() : void{
-        parent::decodePayload();
-        $this->title = $this->getString();
-    }
+	protected function decodePayload() : void{
+		parent::decodePayload();
+		$this->title = $this->getString();
+	}
 
-    protected function encodePayload() : void{
-        parent::encodePayload();
-        $this->putString($this->title);
-    }
+	protected function encodePayload() : void{
+		parent::encodePayload();
+		$this->putString($this->title);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleAddPainting($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleAddPainting($this);
+	}
 
 }

@@ -29,23 +29,23 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class SimpleEventPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::SIMPLE_EVENT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::SIMPLE_EVENT_PACKET;
 
-    public const TYPE_ENABLE_COMMANDS = 1;
-    public const TYPE_DISABLE_COMMANDS = 2;
+	public const TYPE_ENABLE_COMMANDS = 1;
+	public const TYPE_DISABLE_COMMANDS = 2;
 
-    /** @var int */
-    public $eventType;
+	/** @var int */
+	public $eventType;
 
-    protected function decodePayload() : void{
-        $this->eventType = $this->getLShort();
-    }
+	protected function decodePayload() : void{
+		$this->eventType = $this->getLShort();
+	}
 
-    protected function encodePayload() : void{
-        $this->putLShort($this->eventType);
-    }
+	protected function encodePayload() : void{
+		$this->putLShort($this->eventType);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleSimpleEvent($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleSimpleEvent($this);
+	}
 }

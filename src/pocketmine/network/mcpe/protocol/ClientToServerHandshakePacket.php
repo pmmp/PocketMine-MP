@@ -29,21 +29,21 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ClientToServerHandshakePacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::CLIENT_TO_SERVER_HANDSHAKE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::CLIENT_TO_SERVER_HANDSHAKE_PACKET;
 
-    public function canBeSentBeforeLogin() : bool{
-        return true;
-    }
+	public function canBeSentBeforeLogin() : bool{
+		return true;
+	}
 
-    protected function decodePayload() : void{
-        //No payload
-    }
+	protected function decodePayload() : void{
+		//No payload
+	}
 
-    protected function encodePayload() : void{
-        //No payload
-    }
+	protected function encodePayload() : void{
+		//No payload
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleClientToServerHandshake($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleClientToServerHandshake($this);
+	}
 }

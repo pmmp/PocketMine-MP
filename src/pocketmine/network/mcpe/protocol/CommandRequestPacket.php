@@ -29,28 +29,28 @@ use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 
 class CommandRequestPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::COMMAND_REQUEST_PACKET;
+	public const NETWORK_ID = ProtocolInfo::COMMAND_REQUEST_PACKET;
 
-    /** @var string */
-    public $command;
-    /** @var CommandOriginData */
-    public $originData;
-    /** @var bool */
-    public $isInternal;
+	/** @var string */
+	public $command;
+	/** @var CommandOriginData */
+	public $originData;
+	/** @var bool */
+	public $isInternal;
 
-    protected function decodePayload() : void{
-        $this->command = $this->getString();
-        $this->originData = $this->getCommandOriginData();
-        $this->isInternal = $this->getBool();
-    }
+	protected function decodePayload() : void{
+		$this->command = $this->getString();
+		$this->originData = $this->getCommandOriginData();
+		$this->isInternal = $this->getBool();
+	}
 
-    protected function encodePayload() : void{
-        $this->putString($this->command);
-        $this->putCommandOriginData($this->originData);
-        $this->putBool($this->isInternal);
-    }
+	protected function encodePayload() : void{
+		$this->putString($this->command);
+		$this->putCommandOriginData($this->originData);
+		$this->putBool($this->isInternal);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleCommandRequest($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleCommandRequest($this);
+	}
 }

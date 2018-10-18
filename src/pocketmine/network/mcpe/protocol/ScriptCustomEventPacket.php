@@ -35,7 +35,7 @@ class ScriptCustomEventPacket extends DataPacket{
 	/** @var string json data */
 	public $eventData;
 
-	protected function decodePayload() : void {
+	protected function decodePayload() : void{
 		$this->eventName = $this->getString();
 		$this->eventData = $this->getString();
 	}

@@ -28,32 +28,32 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class NpcRequestPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::NPC_REQUEST_PACKET;
+	public const NETWORK_ID = ProtocolInfo::NPC_REQUEST_PACKET;
 
-    /** @var int */
-    public $entityRuntimeId;
-    /** @var int */
-    public $requestType;
-    /** @var string */
-    public $commandString;
-    /** @var int */
-    public $actionType;
+	/** @var int */
+	public $entityRuntimeId;
+	/** @var int */
+	public $requestType;
+	/** @var string */
+	public $commandString;
+	/** @var int */
+	public $actionType;
 
-    protected function decodePayload() : void{
-        $this->entityRuntimeId = $this->getEntityRuntimeId();
-        $this->requestType = $this->getByte();
-        $this->commandString = $this->getString();
-        $this->actionType = $this->getByte();
-    }
+	protected function decodePayload() : void{
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->requestType = $this->getByte();
+		$this->commandString = $this->getString();
+		$this->actionType = $this->getByte();
+	}
 
-    protected function encodePayload() : void{
-        $this->putEntityRuntimeId($this->entityRuntimeId);
-        $this->putByte($this->requestType);
-        $this->putString($this->commandString);
-        $this->putByte($this->actionType);
-    }
+	protected function encodePayload() : void{
+		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putByte($this->requestType);
+		$this->putString($this->commandString);
+		$this->putByte($this->actionType);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleNpcRequest($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleNpcRequest($this);
+	}
 }

@@ -29,20 +29,20 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ContainerClosePacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::CONTAINER_CLOSE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::CONTAINER_CLOSE_PACKET;
 
-    /** @var int */
-    public $windowId;
+	/** @var int */
+	public $windowId;
 
-    protected function decodePayload() : void{
-        $this->windowId = $this->getByte();
-    }
+	protected function decodePayload() : void{
+		$this->windowId = $this->getByte();
+	}
 
-    protected function encodePayload() : void{
-        $this->putByte($this->windowId);
-    }
+	protected function encodePayload() : void{
+		$this->putByte($this->windowId);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleContainerClose($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleContainerClose($this);
+	}
 }

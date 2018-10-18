@@ -28,24 +28,24 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ModalFormResponsePacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::MODAL_FORM_RESPONSE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::MODAL_FORM_RESPONSE_PACKET;
 
-    /** @var int */
-    public $formId;
-    /** @var string */
-    public $formData; //json
+	/** @var int */
+	public $formId;
+	/** @var string */
+	public $formData; //json
 
-    protected function decodePayload() : void{
-        $this->formId = $this->getUnsignedVarInt();
-        $this->formData = $this->getString();
-    }
+	protected function decodePayload() : void{
+		$this->formId = $this->getUnsignedVarInt();
+		$this->formData = $this->getString();
+	}
 
-    protected function encodePayload() : void{
-        $this->putUnsignedVarInt($this->formId);
-        $this->putString($this->formData);
-    }
+	protected function encodePayload() : void{
+		$this->putUnsignedVarInt($this->formId);
+		$this->putString($this->formData);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleModalFormResponse($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleModalFormResponse($this);
+	}
 }

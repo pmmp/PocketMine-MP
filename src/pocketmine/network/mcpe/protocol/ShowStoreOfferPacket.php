@@ -28,24 +28,24 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ShowStoreOfferPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::SHOW_STORE_OFFER_PACKET;
+	public const NETWORK_ID = ProtocolInfo::SHOW_STORE_OFFER_PACKET;
 
-    /** @var string */
-    public $offerId;
-    /** @var bool */
-    public $showAll;
+	/** @var string */
+	public $offerId;
+	/** @var bool */
+	public $showAll;
 
-    protected function decodePayload() : void{
-        $this->offerId = $this->getString();
-        $this->showAll = $this->getBool();
-    }
+	protected function decodePayload() : void{
+		$this->offerId = $this->getString();
+		$this->showAll = $this->getBool();
+	}
 
-    protected function encodePayload() : void{
-        $this->putString($this->offerId);
-        $this->putBool($this->showAll);
-    }
+	protected function encodePayload() : void{
+		$this->putString($this->offerId);
+		$this->putBool($this->showAll);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleShowStoreOffer($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleShowStoreOffer($this);
+	}
 }

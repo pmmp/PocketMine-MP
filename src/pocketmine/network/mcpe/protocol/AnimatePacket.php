@@ -29,38 +29,38 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class AnimatePacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::ANIMATE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::ANIMATE_PACKET;
 
-    public const ACTION_SWING_ARM = 1;
+	public const ACTION_SWING_ARM = 1;
 
-    public const ACTION_STOP_SLEEP = 3;
-    public const ACTION_CRITICAL_HIT = 4;
+	public const ACTION_STOP_SLEEP = 3;
+	public const ACTION_CRITICAL_HIT = 4;
 
-    /** @var int */
-    public $action;
-    /** @var int */
-    public $entityRuntimeId;
-    /** @var float */
-    public $float = 0.0; //TODO (Boat rowing time?)
+	/** @var int */
+	public $action;
+	/** @var int */
+	public $entityRuntimeId;
+	/** @var float */
+	public $float = 0.0; //TODO (Boat rowing time?)
 
-    protected function decodePayload() : void{
-        $this->action = $this->getVarInt();
-        $this->entityRuntimeId = $this->getEntityRuntimeId();
-        if($this->action & 0x80){
-            $this->float = $this->getLFloat();
-        }
-    }
+	protected function decodePayload() : void{
+		$this->action = $this->getVarInt();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		if($this->action & 0x80){
+			$this->float = $this->getLFloat();
+		}
+	}
 
-    protected function encodePayload() : void{
-        $this->putVarInt($this->action);
-        $this->putEntityRuntimeId($this->entityRuntimeId);
-        if($this->action & 0x80){
-            $this->putLFloat($this->float);
-        }
-    }
+	protected function encodePayload() : void{
+		$this->putVarInt($this->action);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
+		if($this->action & 0x80){
+			$this->putLFloat($this->float);
+		}
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleAnimate($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleAnimate($this);
+	}
 
 }

@@ -28,36 +28,36 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class UpdateEquipPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::UPDATE_EQUIP_PACKET;
+	public const NETWORK_ID = ProtocolInfo::UPDATE_EQUIP_PACKET;
 
-    /** @var int */
-    public $windowId;
-    /** @var int */
-    public $windowType;
-    /** @var int */
-    public $unknownVarint; //TODO: find out what this is (vanilla always sends 0)
-    /** @var int */
-    public $entityUniqueId;
-    /** @var string */
-    public $namedtag;
+	/** @var int */
+	public $windowId;
+	/** @var int */
+	public $windowType;
+	/** @var int */
+	public $unknownVarint; //TODO: find out what this is (vanilla always sends 0)
+	/** @var int */
+	public $entityUniqueId;
+	/** @var string */
+	public $namedtag;
 
-    protected function decodePayload() : void{
-        $this->windowId = $this->getByte();
-        $this->windowType = $this->getByte();
-        $this->unknownVarint = $this->getVarInt();
-        $this->entityUniqueId = $this->getEntityUniqueId();
-        $this->namedtag = $this->getRemaining();
-    }
+	protected function decodePayload() : void{
+		$this->windowId = $this->getByte();
+		$this->windowType = $this->getByte();
+		$this->unknownVarint = $this->getVarInt();
+		$this->entityUniqueId = $this->getEntityUniqueId();
+		$this->namedtag = $this->getRemaining();
+	}
 
-    protected function encodePayload() : void{
-        $this->putByte($this->windowId);
-        $this->putByte($this->windowType);
-        $this->putVarInt($this->unknownVarint);
-        $this->putEntityUniqueId($this->entityUniqueId);
-        $this->put($this->namedtag);
-    }
+	protected function encodePayload() : void{
+		$this->putByte($this->windowId);
+		$this->putByte($this->windowType);
+		$this->putVarInt($this->unknownVarint);
+		$this->putEntityUniqueId($this->entityUniqueId);
+		$this->put($this->namedtag);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleUpdateEquip($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleUpdateEquip($this);
+	}
 }

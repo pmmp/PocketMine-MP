@@ -30,36 +30,36 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class ResourcePackDataInfoPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
+	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
 
-    /** @var string */
-    public $packId;
-    /** @var int */
-    public $maxChunkSize;
-    /** @var int */
-    public $chunkCount;
-    /** @var int */
-    public $compressedPackSize;
-    /** @var string */
-    public $sha256;
+	/** @var string */
+	public $packId;
+	/** @var int */
+	public $maxChunkSize;
+	/** @var int */
+	public $chunkCount;
+	/** @var int */
+	public $compressedPackSize;
+	/** @var string */
+	public $sha256;
 
-    protected function decodePayload() : void{
-        $this->packId = $this->getString();
-        $this->maxChunkSize = $this->getLInt();
-        $this->chunkCount = $this->getLInt();
-        $this->compressedPackSize = $this->getLLong();
-        $this->sha256 = $this->getString();
-    }
+	protected function decodePayload() : void{
+		$this->packId = $this->getString();
+		$this->maxChunkSize = $this->getLInt();
+		$this->chunkCount = $this->getLInt();
+		$this->compressedPackSize = $this->getLLong();
+		$this->sha256 = $this->getString();
+	}
 
-    protected function encodePayload() : void{
-        $this->putString($this->packId);
-        $this->putLInt($this->maxChunkSize);
-        $this->putLInt($this->chunkCount);
-        $this->putLLong($this->compressedPackSize);
-        $this->putString($this->sha256);
-    }
+	protected function encodePayload() : void{
+		$this->putString($this->packId);
+		$this->putLInt($this->maxChunkSize);
+		$this->putLInt($this->chunkCount);
+		$this->putLLong($this->compressedPackSize);
+		$this->putString($this->sha256);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleResourcePackDataInfo($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleResourcePackDataInfo($this);
+	}
 }

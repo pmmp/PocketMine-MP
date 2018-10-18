@@ -31,54 +31,54 @@ use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class UpdateTradePacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::UPDATE_TRADE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::UPDATE_TRADE_PACKET;
 
-    //TODO: find fields
+	//TODO: find fields
 
-    /** @var int */
-    public $windowId;
-    /** @var int */
-    public $windowType = WindowTypes::TRADING; //Mojang hardcoded this -_-
-    /** @var int */
-    public $varint1;
-    /** @var int */
-    public $varint2;
-    /** @var bool */
-    public $isWilling;
-    /** @var int */
-    public $traderEid;
-    /** @var int */
-    public $playerEid;
-    /** @var string */
-    public $displayName;
-    /** @var string */
-    public $offers;
+	/** @var int */
+	public $windowId;
+	/** @var int */
+	public $windowType = WindowTypes::TRADING; //Mojang hardcoded this -_-
+	/** @var int */
+	public $varint1;
+	/** @var int */
+	public $varint2;
+	/** @var bool */
+	public $isWilling;
+	/** @var int */
+	public $traderEid;
+	/** @var int */
+	public $playerEid;
+	/** @var string */
+	public $displayName;
+	/** @var string */
+	public $offers;
 
-    protected function decodePayload() : void{
-        $this->windowId = $this->getByte();
-        $this->windowType = $this->getByte();
-        $this->varint1 = $this->getVarInt();
-        $this->varint2 = $this->getVarInt();
-        $this->isWilling = $this->getBool();
-        $this->traderEid = $this->getEntityUniqueId();
-        $this->playerEid = $this->getEntityUniqueId();
-        $this->displayName = $this->getString();
-        $this->offers = $this->getRemaining();
-    }
+	protected function decodePayload() : void{
+		$this->windowId = $this->getByte();
+		$this->windowType = $this->getByte();
+		$this->varint1 = $this->getVarInt();
+		$this->varint2 = $this->getVarInt();
+		$this->isWilling = $this->getBool();
+		$this->traderEid = $this->getEntityUniqueId();
+		$this->playerEid = $this->getEntityUniqueId();
+		$this->displayName = $this->getString();
+		$this->offers = $this->getRemaining();
+	}
 
-    protected function encodePayload() : void{
-        $this->putByte($this->windowId);
-        $this->putByte($this->windowType);
-        $this->putVarInt($this->varint1);
-        $this->putVarInt($this->varint2);
-        $this->putBool($this->isWilling);
-        $this->putEntityUniqueId($this->traderEid);
-        $this->putEntityUniqueId($this->playerEid);
-        $this->putString($this->displayName);
-        $this->put($this->offers);
-    }
+	protected function encodePayload() : void{
+		$this->putByte($this->windowId);
+		$this->putByte($this->windowType);
+		$this->putVarInt($this->varint1);
+		$this->putVarInt($this->varint2);
+		$this->putBool($this->isWilling);
+		$this->putEntityUniqueId($this->traderEid);
+		$this->putEntityUniqueId($this->playerEid);
+		$this->putString($this->displayName);
+		$this->put($this->offers);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleUpdateTrade($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleUpdateTrade($this);
+	}
 }

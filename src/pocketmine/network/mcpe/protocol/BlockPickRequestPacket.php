@@ -30,32 +30,32 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class BlockPickRequestPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::BLOCK_PICK_REQUEST_PACKET;
+	public const NETWORK_ID = ProtocolInfo::BLOCK_PICK_REQUEST_PACKET;
 
-    /** @var int */
-    public $blockX;
-    /** @var int */
-    public $blockY;
-    /** @var int */
-    public $blockZ;
-    /** @var bool */
-    public $addUserData = false;
-    /** @var int */
-    public $hotbarSlot;
+	/** @var int */
+	public $blockX;
+	/** @var int */
+	public $blockY;
+	/** @var int */
+	public $blockZ;
+	/** @var bool */
+	public $addUserData = false;
+	/** @var int */
+	public $hotbarSlot;
 
-    protected function decodePayload() : void{
-        $this->getSignedBlockPosition($this->blockX, $this->blockY, $this->blockZ);
-        $this->addUserData = $this->getBool();
-        $this->hotbarSlot = $this->getByte();
-    }
+	protected function decodePayload() : void{
+		$this->getSignedBlockPosition($this->blockX, $this->blockY, $this->blockZ);
+		$this->addUserData = $this->getBool();
+		$this->hotbarSlot = $this->getByte();
+	}
 
-    protected function encodePayload() : void{
-        $this->putSignedBlockPosition($this->blockX, $this->blockY, $this->blockZ);
-        $this->putBool($this->addUserData);
-        $this->putByte($this->hotbarSlot);
-    }
+	protected function encodePayload() : void{
+		$this->putSignedBlockPosition($this->blockX, $this->blockY, $this->blockZ);
+		$this->putBool($this->addUserData);
+		$this->putByte($this->hotbarSlot);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleBlockPickRequest($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleBlockPickRequest($this);
+	}
 }

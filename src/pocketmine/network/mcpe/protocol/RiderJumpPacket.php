@@ -30,20 +30,20 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class RiderJumpPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::RIDER_JUMP_PACKET;
+	public const NETWORK_ID = ProtocolInfo::RIDER_JUMP_PACKET;
 
-    /** @var int */
-    public $jumpStrength; //percentage
+	/** @var int */
+	public $jumpStrength; //percentage
 
-    protected function decodePayload() : void{
-        $this->jumpStrength = $this->getVarInt();
-    }
+	protected function decodePayload() : void{
+		$this->jumpStrength = $this->getVarInt();
+	}
 
-    protected function encodePayload() : void{
-        $this->putVarInt($this->jumpStrength);
-    }
+	protected function encodePayload() : void{
+		$this->putVarInt($this->jumpStrength);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleRiderJump($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleRiderJump($this);
+	}
 }

@@ -29,24 +29,24 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class SetEntityDataPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::SET_ENTITY_DATA_PACKET;
+	public const NETWORK_ID = ProtocolInfo::SET_ENTITY_DATA_PACKET;
 
-    /** @var int */
-    public $entityRuntimeId;
-    /** @var array */
-    public $metadata;
+	/** @var int */
+	public $entityRuntimeId;
+	/** @var array */
+	public $metadata;
 
-    protected function decodePayload() : void{
-        $this->entityRuntimeId = $this->getEntityRuntimeId();
-        $this->metadata = $this->getEntityMetadata();
-    }
+	protected function decodePayload() : void{
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->metadata = $this->getEntityMetadata();
+	}
 
-    protected function encodePayload() : void{
-        $this->putEntityRuntimeId($this->entityRuntimeId);
-        $this->putEntityMetadata($this->metadata);
-    }
+	protected function encodePayload() : void{
+		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putEntityMetadata($this->metadata);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleSetEntityData($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleSetEntityData($this);
+	}
 }

@@ -29,20 +29,20 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class RemoveObjectivePacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::REMOVE_OBJECTIVE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::REMOVE_OBJECTIVE_PACKET;
 
-    /** @var string */
-    public $objectiveName;
+	/** @var string */
+	public $objectiveName;
 
-    protected function decodePayload() : void{
-        $this->objectiveName = $this->getString();
-    }
+	protected function decodePayload() : void{
+		$this->objectiveName = $this->getString();
+	}
 
-    protected function encodePayload() : void{
-        $this->putString($this->objectiveName);
-    }
+	protected function encodePayload() : void{
+		$this->putString($this->objectiveName);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleRemoveObjective($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleRemoveObjective($this);
+	}
 }

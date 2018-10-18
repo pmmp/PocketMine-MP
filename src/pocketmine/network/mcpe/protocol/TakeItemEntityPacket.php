@@ -29,23 +29,23 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class TakeItemEntityPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::TAKE_ITEM_ENTITY_PACKET;
+	public const NETWORK_ID = ProtocolInfo::TAKE_ITEM_ENTITY_PACKET;
 
-    /** @var int */
-    public $target;
-    /** @var int */
-    public $eid;
+	/** @var int */
+	public $target;
+	/** @var int */
+	public $eid;
 
-    protected function decodePayload() : void{
+	protected function decodePayload() : void{
 
-    }
+	}
 
-    protected function encodePayload() : void{
-        $this->putEntityRuntimeId($this->target);
-        $this->putEntityRuntimeId($this->eid);
-    }
+	protected function encodePayload() : void{
+		$this->putEntityRuntimeId($this->target);
+		$this->putEntityRuntimeId($this->eid);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleTakeItemEntity($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleTakeItemEntity($this);
+	}
 }

@@ -30,20 +30,20 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class RespawnPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::RESPAWN_PACKET;
+	public const NETWORK_ID = ProtocolInfo::RESPAWN_PACKET;
 
-    /** @var Vector3 */
-    public $position;
+	/** @var Vector3 */
+	public $position;
 
-    protected function decodePayload() : void{
-        $this->position = $this->getVector3();
-    }
+	protected function decodePayload() : void{
+		$this->position = $this->getVector3();
+	}
 
-    protected function encodePayload() : void{
-        $this->putVector3($this->position);
-    }
+	protected function encodePayload() : void{
+		$this->putVector3($this->position);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleRespawn($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleRespawn($this);
+	}
 }

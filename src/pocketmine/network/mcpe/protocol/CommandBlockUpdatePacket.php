@@ -30,76 +30,76 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class CommandBlockUpdatePacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::COMMAND_BLOCK_UPDATE_PACKET;
+	public const NETWORK_ID = ProtocolInfo::COMMAND_BLOCK_UPDATE_PACKET;
 
-    /** @var bool */
-    public $isBlock;
+	/** @var bool */
+	public $isBlock;
 
-    /** @var int */
-    public $x;
-    /** @var int */
-    public $y;
-    /** @var int */
-    public $z;
-    /** @var int */
-    public $commandBlockMode;
-    /** @var bool */
-    public $isRedstoneMode;
-    /** @var bool */
-    public $isConditional;
+	/** @var int */
+	public $x;
+	/** @var int */
+	public $y;
+	/** @var int */
+	public $z;
+	/** @var int */
+	public $commandBlockMode;
+	/** @var bool */
+	public $isRedstoneMode;
+	/** @var bool */
+	public $isConditional;
 
-    /** @var int */
-    public $minecartEid;
+	/** @var int */
+	public $minecartEid;
 
-    /** @var string */
-    public $command;
-    /** @var string */
-    public $lastOutput;
-    /** @var string */
-    public $name;
-    /** @var bool */
-    public $shouldTrackOutput;
+	/** @var string */
+	public $command;
+	/** @var string */
+	public $lastOutput;
+	/** @var string */
+	public $name;
+	/** @var bool */
+	public $shouldTrackOutput;
 
-    protected function decodePayload() : void{
-        $this->isBlock = $this->getBool();
+	protected function decodePayload() : void{
+		$this->isBlock = $this->getBool();
 
-        if($this->isBlock){
-            $this->getBlockPosition($this->x, $this->y, $this->z);
-            $this->commandBlockMode = $this->getUnsignedVarInt();
-            $this->isRedstoneMode = $this->getBool();
-            $this->isConditional = $this->getBool();
-        }else{
-            //Minecart with command block
-            $this->minecartEid = $this->getEntityRuntimeId();
-        }
+		if($this->isBlock){
+			$this->getBlockPosition($this->x, $this->y, $this->z);
+			$this->commandBlockMode = $this->getUnsignedVarInt();
+			$this->isRedstoneMode = $this->getBool();
+			$this->isConditional = $this->getBool();
+		}else{
+			//Minecart with command block
+			$this->minecartEid = $this->getEntityRuntimeId();
+		}
 
-        $this->command = $this->getString();
-        $this->lastOutput = $this->getString();
-        $this->name = $this->getString();
+		$this->command = $this->getString();
+		$this->lastOutput = $this->getString();
+		$this->name = $this->getString();
 
-        $this->shouldTrackOutput = $this->getBool();
-    }
+		$this->shouldTrackOutput = $this->getBool();
+	}
 
-    protected function encodePayload() : void{
-        $this->putBool($this->isBlock);
+	protected function encodePayload() : void{
+		$this->putBool($this->isBlock);
 
-        if($this->isBlock){
-            $this->putBlockPosition($this->x, $this->y, $this->z);
-            $this->putUnsignedVarInt($this->commandBlockMode);
-            $this->putBool($this->isRedstoneMode);
-            $this->putBool($this->isConditional);
-        }else{
-            $this->putEntityRuntimeId($this->minecartEid);
-        }
+		if($this->isBlock){
+			$this->putBlockPosition($this->x, $this->y, $this->z);
+			$this->putUnsignedVarInt($this->commandBlockMode);
+			$this->putBool($this->isRedstoneMode);
+			$this->putBool($this->isConditional);
+		}else{
+			$this->putEntityRuntimeId($this->minecartEid);
+		}
 
-        $this->putString($this->command);
-        $this->putString($this->lastOutput);
-        $this->putString($this->name);
+		$this->putString($this->command);
+		$this->putString($this->lastOutput);
+		$this->putString($this->name);
 
-        $this->putBool($this->shouldTrackOutput);
-    }
+		$this->putBool($this->shouldTrackOutput);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleCommandBlockUpdate($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleCommandBlockUpdate($this);
+	}
 }

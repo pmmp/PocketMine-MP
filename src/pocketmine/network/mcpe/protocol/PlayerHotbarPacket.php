@@ -33,28 +33,28 @@ use pocketmine\network\mcpe\protocol\types\ContainerIds;
  * One of the most useless packets.
  */
 class PlayerHotbarPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::PLAYER_HOTBAR_PACKET;
+	public const NETWORK_ID = ProtocolInfo::PLAYER_HOTBAR_PACKET;
 
-    /** @var int */
-    public $selectedHotbarSlot;
-    /** @var int */
-    public $windowId = ContainerIds::INVENTORY;
-    /** @var bool */
-    public $selectHotbarSlot = true;
+	/** @var int */
+	public $selectedHotbarSlot;
+	/** @var int */
+	public $windowId = ContainerIds::INVENTORY;
+	/** @var bool */
+	public $selectHotbarSlot = true;
 
-    protected function decodePayload() : void{
-        $this->selectedHotbarSlot = $this->getUnsignedVarInt();
-        $this->windowId = $this->getByte();
-        $this->selectHotbarSlot = $this->getBool();
-    }
+	protected function decodePayload() : void{
+		$this->selectedHotbarSlot = $this->getUnsignedVarInt();
+		$this->windowId = $this->getByte();
+		$this->selectHotbarSlot = $this->getBool();
+	}
 
-    protected function encodePayload() : void{
-        $this->putUnsignedVarInt($this->selectedHotbarSlot);
-        $this->putByte($this->windowId);
-        $this->putBool($this->selectHotbarSlot);
-    }
+	protected function encodePayload() : void{
+		$this->putUnsignedVarInt($this->selectedHotbarSlot);
+		$this->putByte($this->windowId);
+		$this->putBool($this->selectHotbarSlot);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handlePlayerHotbar($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handlePlayerHotbar($this);
+	}
 }

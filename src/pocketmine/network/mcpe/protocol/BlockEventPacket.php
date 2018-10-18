@@ -29,33 +29,33 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class BlockEventPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::BLOCK_EVENT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::BLOCK_EVENT_PACKET;
 
-    /** @var int */
-    public $x;
-    /** @var int */
-    public $y;
-    /** @var int */
-    public $z;
-    /** @var int */
-    public $eventType;
-    /** @var int */
-    public $eventData;
+	/** @var int */
+	public $x;
+	/** @var int */
+	public $y;
+	/** @var int */
+	public $z;
+	/** @var int */
+	public $eventType;
+	/** @var int */
+	public $eventData;
 
-    protected function decodePayload() : void{
-        $this->getBlockPosition($this->x, $this->y, $this->z);
-        $this->eventType = $this->getVarInt();
-        $this->eventData = $this->getVarInt();
-    }
+	protected function decodePayload() : void{
+		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->eventType = $this->getVarInt();
+		$this->eventData = $this->getVarInt();
+	}
 
-    protected function encodePayload() : void{
-        $this->putBlockPosition($this->x, $this->y, $this->z);
-        $this->putVarInt($this->eventType);
-        $this->putVarInt($this->eventData);
-    }
+	protected function encodePayload() : void{
+		$this->putBlockPosition($this->x, $this->y, $this->z);
+		$this->putVarInt($this->eventType);
+		$this->putVarInt($this->eventData);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleBlockEvent($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleBlockEvent($this);
+	}
 
 }

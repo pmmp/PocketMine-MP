@@ -28,36 +28,36 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class AddHangingEntityPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::ADD_HANGING_ENTITY_PACKET;
+	public const NETWORK_ID = ProtocolInfo::ADD_HANGING_ENTITY_PACKET;
 
-    /** @var int|null */
-    public $entityUniqueId = null;
-    /** @var int */
-    public $entityRuntimeId;
-    /** @var int */
-    public $x;
-    /** @var int */
-    public $y;
-    /** @var int */
-    public $z;
-    /** @var int */
-    public $direction;
+	/** @var int|null */
+	public $entityUniqueId = null;
+	/** @var int */
+	public $entityRuntimeId;
+	/** @var int */
+	public $x;
+	/** @var int */
+	public $y;
+	/** @var int */
+	public $z;
+	/** @var int */
+	public $direction;
 
-    protected function decodePayload() : void{
-        $this->entityUniqueId = $this->getEntityUniqueId();
-        $this->entityRuntimeId = $this->getEntityRuntimeId();
-        $this->getBlockPosition($this->x, $this->y, $this->z);
-        $this->direction = $this->getVarInt();
-    }
+	protected function decodePayload() : void{
+		$this->entityUniqueId = $this->getEntityUniqueId();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->direction = $this->getVarInt();
+	}
 
-    protected function encodePayload() : void{
-        $this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-        $this->putEntityRuntimeId($this->entityRuntimeId);
-        $this->putBlockPosition($this->x, $this->y, $this->z);
-        $this->putVarInt($this->direction);
-    }
+	protected function encodePayload() : void{
+		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putBlockPosition($this->x, $this->y, $this->z);
+		$this->putVarInt($this->direction);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleAddHangingEntity($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleAddHangingEntity($this);
+	}
 }

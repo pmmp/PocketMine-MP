@@ -30,72 +30,72 @@ use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\CommandOutputMessage;
 
 class CommandOutputPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::COMMAND_OUTPUT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::COMMAND_OUTPUT_PACKET;
 
-    /** @var CommandOriginData */
-    public $originData;
-    /** @var int */
-    public $outputType;
-    /** @var int */
-    public $successCount;
-    /** @var CommandOutputMessage[] */
-    public $messages = [];
-    /** @var string */
-    public $unknownString;
+	/** @var CommandOriginData */
+	public $originData;
+	/** @var int */
+	public $outputType;
+	/** @var int */
+	public $successCount;
+	/** @var CommandOutputMessage[] */
+	public $messages = [];
+	/** @var string */
+	public $unknownString;
 
-    protected function decodePayload() : void{
-        $this->originData = $this->getCommandOriginData();
-        $this->outputType = $this->getByte();
-        $this->successCount = $this->getUnsignedVarInt();
+	protected function decodePayload() : void{
+		$this->originData = $this->getCommandOriginData();
+		$this->outputType = $this->getByte();
+		$this->successCount = $this->getUnsignedVarInt();
 
-        for($i = 0, $size = $this->getUnsignedVarInt(); $i < $size; ++$i){
-            $this->messages[] = $this->getCommandMessage();
-        }
+		for($i = 0, $size = $this->getUnsignedVarInt(); $i < $size; ++$i){
+			$this->messages[] = $this->getCommandMessage();
+		}
 
-        if($this->outputType === 4){
-            $this->unknownString = $this->getString();
-        }
-    }
+		if($this->outputType === 4){
+			$this->unknownString = $this->getString();
+		}
+	}
 
-    protected function getCommandMessage() : CommandOutputMessage{
-        $message = new CommandOutputMessage();
+	protected function getCommandMessage() : CommandOutputMessage{
+		$message = new CommandOutputMessage();
 
-        $message->isInternal = $this->getBool();
-        $message->messageId = $this->getString();
+		$message->isInternal = $this->getBool();
+		$message->messageId = $this->getString();
 
-        for($i = 0, $size = $this->getUnsignedVarInt(); $i < $size; ++$i){
-            $message->parameters[] = $this->getString();
-        }
+		for($i = 0, $size = $this->getUnsignedVarInt(); $i < $size; ++$i){
+			$message->parameters[] = $this->getString();
+		}
 
-        return $message;
-    }
+		return $message;
+	}
 
-    protected function encodePayload() : void{
-        $this->putCommandOriginData($this->originData);
-        $this->putByte($this->outputType);
-        $this->putUnsignedVarInt($this->successCount);
+	protected function encodePayload() : void{
+		$this->putCommandOriginData($this->originData);
+		$this->putByte($this->outputType);
+		$this->putUnsignedVarInt($this->successCount);
 
-        $this->putUnsignedVarInt(count($this->messages));
-        foreach($this->messages as $message){
-            $this->putCommandMessage($message);
-        }
+		$this->putUnsignedVarInt(count($this->messages));
+		foreach($this->messages as $message){
+			$this->putCommandMessage($message);
+		}
 
-        if($this->outputType === 4){
-            $this->putString($this->unknownString);
-        }
-    }
+		if($this->outputType === 4){
+			$this->putString($this->unknownString);
+		}
+	}
 
-    protected function putCommandMessage(CommandOutputMessage $message) : void{
-        $this->putBool($message->isInternal);
-        $this->putString($message->messageId);
+	protected function putCommandMessage(CommandOutputMessage $message) : void{
+		$this->putBool($message->isInternal);
+		$this->putString($message->messageId);
 
-        $this->putUnsignedVarInt(count($message->parameters));
-        foreach($message->parameters as $parameter){
-            $this->putString($parameter);
-        }
-    }
+		$this->putUnsignedVarInt(count($message->parameters));
+		foreach($message->parameters as $parameter){
+			$this->putString($parameter);
+		}
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleCommandOutput($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleCommandOutput($this);
+	}
 }
