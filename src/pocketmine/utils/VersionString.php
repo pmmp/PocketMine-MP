@@ -54,7 +54,7 @@ class VersionString{
 		$this->development = $isDevBuild;
 		$this->build = $buildNumber;
 
-		preg_match('/([0-9]+)\.([0-9]+)\.([0-9]+)(?:-(.*))?$/', $this->baseVersion, $matches);
+		preg_match('/(\d+)\.(\d+)\.(\d+)(?:-(.*))?$/', $this->baseVersion, $matches);
 		if(count($matches) < 4){
 			throw new \InvalidArgumentException("Invalid base version \"$baseVersion\", should contain at least 3 version digits");
 		}

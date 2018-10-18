@@ -348,29 +348,32 @@ class ItemFactory{
 			throw new \TypeError("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
 		}
 
-		try{
+		/** @var Item $item */
+		$item = null;
+		if($meta !== -1){
 			$sublist = self::$list[self::getListOffset($id)];
 
 			/** @var Item|null $listed */
-			if($sublist !== null and isset($sublist[$meta])){
-				$item = clone $sublist[$meta];
+			if($sublist !== null){
+				if(isset($sublist[$meta])){
+					$item = clone $sublist[$meta];
+				}elseif(isset($sublist[0]) and $sublist[0] instanceof Durable){
+					/** @var Durable $item */
+					$item = clone $sublist[0];
+					$item->setDamage($meta);
+				}
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
-				/* Blocks must have a damage value 0-15, but items can have damage value -1 to indicate that they are
-				 * crafting ingredients with any-damage. */
 				$item = new ItemBlock($id, $meta);
-			}else{
-				//negative damage values will fallthru to here, to avoid crazy shit with crafting wildcard hacks
-				$item = new Item($id, $meta);
 			}
-		}catch(\RuntimeException $e){
-			throw new \InvalidArgumentException("Item ID $id is invalid or out of bounds");
+		}
+
+		if($item === null){
+			//negative damage values will fallthru to here, to avoid crazy shit with crafting wildcard hacks
+			$item = new Item($id, $meta);
 		}
 
 		$item->setCount($count);
 		$item->setCompoundTag($tags);
-		if($item instanceof Durable){ //nasty, but necessary for BC reasons
-			$item->setDamage($meta);
-		}
 		return $item;
 	}
 
