@@ -152,7 +152,7 @@ class AnimalSpawner{
 												}
 
 												if($entity instanceof Mob){
-													$entity->setAiEnabled(true);
+													$entity->setImmobile(false);
 												}
 
 												$entity->setRotation($level->random->nextFloat() * 360, 0);
@@ -276,7 +276,7 @@ class AnimalSpawner{
 							}
 
 							if($entity instanceof Mob){
-								$entity->setAiEnabled(true);
+								$entity->setImmobile(false);
 							}
 
 							$entity->setRotation($random->nextFloat() * 360, 0);
