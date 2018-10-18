@@ -444,20 +444,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->generatorRegisteredWorkers = [];
 	}
 
-	public function getGenerator() : ?Generator{
-		$pool = $this->server->getAsyncPool();
-		foreach($pool->getRunningWorkers() as $id){
-			if(isset($this->generatorRegisteredWorkers[$id])){
-				$worker = $pool->getWorkerById($id);
-				if($worker !== null){
-					return $worker->getFromThreadStore("generator.level.{$this->levelId}.generator");
-				}
-			}
-		}
-
-		return null;
-	}
-
 	public function getBlockMetadata() : BlockMetadataStore{
 		return $this->blockMetadata;
 	}
@@ -3101,12 +3087,8 @@ class Level implements ChunkManager, Metadatable{
 	 * @return null|SpawnListEntry
 	 */
 	public function getSpawnListEntryForTypeAt(CreatureType $creatureType, Vector3 $pos) : ?SpawnListEntry{
-		$generator = $this->getGenerator();
-		if($generator === null){
-			$possibleCreatures = $this->getBiome($pos->x, $pos->z)->getSpawnableList($creatureType);
-		}else{
-			$possibleCreatures = $generator->getPossibleCreatures($pos, $creatureType);
-		}
+		// TODO: get level provider's possible creatures
+		$possibleCreatures = $this->getBiome($pos->x, $pos->z)->getSpawnableList($creatureType);
 
 		if(empty($possibleCreatures)){
 			return null;
@@ -3126,12 +3108,8 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function canCreatureTypeSpawnHere(CreatureType $creatureType, SpawnListEntry $entry, Vector3 $pos) : bool{
-		$generator = $this->getGenerator();
-		if($generator === null){
-			$possibleCreatures = $this->getBiome($pos->x, $pos->z)->getSpawnableList($creatureType);
-		}else{
-			$possibleCreatures = $generator->getPossibleCreatures($pos, $creatureType);
-		}
+		// TODO: get level provider's possible creatures
+		$possibleCreatures = $this->getBiome($pos->x, $pos->z)->getSpawnableList($creatureType);
 
 		return empty($possibleCreatures) ? false : in_array($entry, $possibleCreatures);
 	}
