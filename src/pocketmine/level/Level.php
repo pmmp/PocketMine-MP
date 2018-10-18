@@ -764,7 +764,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	protected function actuallyDoTick(int $currentTick) : void{
-		if(!$this->stopTime){
+		if(!$this->stopTime and $this->gameRules->getBool("doDaylightCycle", true)){
 			$this->time++;
 		}
 
@@ -842,6 +842,17 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doTickTiles->startTiming();
 		$this->tickChunks();
 		$this->timings->doTickTiles->stopTiming();
+
+		if($this->gameRules->getBool("doMobSpawning") and $currentTick % 400 === 0){
+			$eligibleChunks = [];
+			foreach($this->players as $player){
+				$eligibleChunks = array_replace($eligibleChunks, array_keys($player->usedChunks));
+			}
+
+			$this->mobSpawner->findChunksForSpawning($this, $this->spawnHostileMobs, $this->spawnPeacefulMobs, array_slice($eligibleChunks, 0, AnimalSpawner::MAX_MOBS, true));
+		}
+
+		$this->mobSpawner->despawnMobs($this, $currentTick);
 
 		$this->executeQueuedLightUpdates();
 
@@ -1019,17 +1030,6 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 		}
-
-		if($this->gameRules->getBool("doMobSpawning")){
-			$eligibleChunks = [];
-			foreach($this->players as $player){
-				$eligibleChunks = array_replace($eligibleChunks, array_keys($player->usedChunks));
-			}
-
-			$this->mobSpawner->findChunksForSpawning($this, $this->spawnHostileMobs, $this->spawnPeacefulMobs, $this->time % 400 === 0, $eligibleChunks);
-		}
-
-		$this->mobSpawner->despawnMobs($this, $this->time);
 
 		foreach($this->chunkTickList as $index => $loaders){
 			Level::getXZ($index, $chunkX, $chunkZ);

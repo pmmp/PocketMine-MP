@@ -85,7 +85,7 @@ class AnimalSpawner{
 	 *
 	 * @return int
 	 */
-	public function findChunksForSpawning(Level $level, bool $spawnHostileMobs, bool $spawnPeacefulMobs, bool $timeReady, array $eligibleChunks) : int{
+	public function findChunksForSpawning(Level $level, bool $spawnHostileMobs, bool $spawnPeacefulMobs, array $eligibleChunks) : int{
 		if(!$spawnHostileMobs and !$spawnPeacefulMobs){
 			return 0;
 		}else{
@@ -93,7 +93,7 @@ class AnimalSpawner{
 			$spawn = $level->getSpawnLocation();
 
 			foreach(self::$creatureTypes as $creatureType){
-				if((!$creatureType->isPeacefulCreature() or $spawnPeacefulMobs) and ($creatureType->isPeacefulCreature() or $spawnHostileMobs) and ($creatureType->getCreatureClass() !== Animal::class or $timeReady)){
+				if((!$creatureType->isPeacefulCreature() or $spawnPeacefulMobs) and ($creatureType->isPeacefulCreature() or $spawnHostileMobs)){
 					$a = $creatureType->getCreatureClass();
 					$j4 = count(array_filter($level->getEntities(), function(Entity $entity) use ($a){
 						return get_class($entity) == $a;
@@ -109,9 +109,8 @@ class AnimalSpawner{
 							$l1 = $pos->y;
 							$i2 = $pos->z;
 							$block = $level->getBlock($pos);
-							$chunkEntityCount = count($level->getChunkEntities($cx, $cz));
 
-							if(!$block->isSolid() and $chunkEntityCount === 0){
+							if(!$block->isSolid() and $level->getNearestEntity($pos, 24, Player::class) === null){
 								$j2 = 0;
 
 								for($k2 = 0; $k2 < 3; ++$k2){
@@ -132,7 +131,7 @@ class AnimalSpawner{
 
 										$nextPos = new Vector3($f, $i3, $f1);
 
-										if($level->getNearestEntity($nextPos, 24, Player::class) === null and $pos1->distanceSquared($spawn) >= 576){
+										if($pos1->distanceSquared($spawn) >= 576){
 											if($entry === null){
 												$entry = $level->getSpawnListEntryForTypeAt($creatureType, $pos1);
 

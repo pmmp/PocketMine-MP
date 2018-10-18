@@ -30,19 +30,31 @@ use pocketmine\math\Vector3;
 abstract class Monster extends Mob{
 
 	protected function isValidLightLevel() : bool{
-		if($this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) < $this->random->nextBoundedInt(32)){
+		if($this->level->getBlockLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) < $this->random->nextBoundedInt(32)){
 			$i = max(
-				$this->level->getBlockLightAt($this->getFloorX(), $this->getFloorY() + 1, $this->getFloorZ()),
-				$this->level->getBlockLightAt($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()),
-				$this->level->getBlockLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ() + 1),
-				$this->level->getBlockLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ() - 1),
-				$this->level->getBlockLightAt($this->getFloorX() + 1, $this->getFloorY(), $this->getFloorZ()),
-				$this->level->getBlockLightAt($this->getFloorX() - 1, $this->getFloorY(), $this->getFloorZ())
+				$this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY() + 1, $this->getFloorZ()),
+				$this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()),
+				$this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ() + 1),
+				$this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ() - 1),
+				$this->level->getBlockSkyLightAt($this->getFloorX() + 1, $this->getFloorY(), $this->getFloorZ()),
+				$this->level->getBlockSkyLightAt($this->getFloorX() - 1, $this->getFloorY(), $this->getFloorZ())
 			);
 
 			return $i <= $this->random->nextBoundedInt(8);
 		}
 		return false;
+	}
+
+	public function entityBaseTick(int $diff = 1) : bool{
+		$hasUpdate = parent::entityBaseTick($diff);
+
+		if($this->isAlive()){
+			if($this->level->getDifficulty() === Level::DIFFICULTY_PEACEFUL){
+				$this->flagForDespawn();
+			}
+		}
+
+		return $hasUpdate;
 	}
 
 	public function canSpawnHere() : bool{

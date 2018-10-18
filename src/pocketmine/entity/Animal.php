@@ -37,11 +37,12 @@ abstract class Animal extends Mob implements Ageable{
 	protected $spawnableBlock = Block::GRASS;
 
 	public function getBlockPathWeight(Vector3 $pos) : float{
-		return $this->level->getBlock($pos->down()) instanceof Grass ? 10 : $this->level->getFullLight($pos) - 0.5;
+		return $this->level->getBlock($pos->down()) instanceof Grass ? 10 : max($this->level->getBlockSkyLightAt($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ()),
+				$this->level->getBlockLightAt($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ())) - 0.5;
 	}
 
 	public function canSpawnHere() : bool{
-		return $this->level->getBlock($this->down())->getId() === $this->spawnableBlock and  $this->level->getFullLight($this) > 8 and parent::canSpawnHere();
+		return $this->level->getBlock($this->down())->getId() === $this->spawnableBlock and  $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) > 8 and parent::canSpawnHere();
 	}
 
 	public function getTalkInterval() : int{
