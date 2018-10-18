@@ -29,20 +29,20 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class HurtArmorPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::HURT_ARMOR_PACKET;
+	public const NETWORK_ID = ProtocolInfo::HURT_ARMOR_PACKET;
 
-    /** @var int */
-    public $health;
+	/** @var int */
+	public $health;
 
-    protected function decodePayload() : void{
-        $this->health = $this->getVarInt();
-    }
+	protected function decodePayload() : void{
+		$this->health = $this->getVarInt();
+	}
 
-    protected function encodePayload() : void{
-        $this->putVarInt($this->health);
-    }
+	protected function encodePayload() : void{
+		$this->putVarInt($this->health);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleHurtArmor($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleHurtArmor($this);
+	}
 }

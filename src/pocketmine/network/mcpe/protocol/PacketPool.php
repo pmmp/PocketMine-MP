@@ -147,6 +147,7 @@ class PacketPool{
 		static::registerPacket(new SetLocalPlayerAsInitializedPacket());
 		static::registerPacket(new UpdateSoftEnumPacket());
 		static::registerPacket(new NetworkStackLatencyPacket());
+		static::registerPacket(new ScriptCustomEventPacket());
 	}
 
 	/**

@@ -45,7 +45,7 @@ class SetScoreboardIdentityPacket extends DataPacket{
 			$entry = new ScoreboardIdentityPacketEntry();
 			$entry->scoreboardId = $this->getVarLong();
 			if($this->type === self::TYPE_REGISTER_IDENTITY){
-				$entry->uuid = $this->getUUID();
+				$entry->entityUniqueId = $this->getEntityUniqueId();
 			}
 
 			$this->entries[] = $entry;
@@ -58,7 +58,7 @@ class SetScoreboardIdentityPacket extends DataPacket{
 		foreach($this->entries as $entry){
 			$this->putVarLong($entry->scoreboardId);
 			if($this->type === self::TYPE_REGISTER_IDENTITY){
-				$this->putUUID($entry->uuid);
+				$this->putEntityUniqueId($entry->entityUniqueId);
 			}
 		}
 	}

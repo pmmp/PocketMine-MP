@@ -29,49 +29,49 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class InteractPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::INTERACT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::INTERACT_PACKET;
 
-    public const ACTION_LEAVE_VEHICLE = 3;
-    public const ACTION_MOUSEOVER = 4;
+	public const ACTION_LEAVE_VEHICLE = 3;
+	public const ACTION_MOUSEOVER = 4;
 
-    public const ACTION_OPEN_INVENTORY = 6;
+	public const ACTION_OPEN_INVENTORY = 6;
 
-    /** @var int */
-    public $action;
-    /** @var int */
-    public $target;
+	/** @var int */
+	public $action;
+	/** @var int */
+	public $target;
 
-    /** @var float */
-    public $x;
-    /** @var float */
-    public $y;
-    /** @var float */
-    public $z;
+	/** @var float */
+	public $x;
+	/** @var float */
+	public $y;
+	/** @var float */
+	public $z;
 
-    protected function decodePayload() : void{
-        $this->action = $this->getByte();
-        $this->target = $this->getEntityRuntimeId();
+	protected function decodePayload() : void{
+		$this->action = $this->getByte();
+		$this->target = $this->getEntityRuntimeId();
 
-        if($this->action === self::ACTION_MOUSEOVER){
-            //TODO: should this be a vector3?
-            $this->x = $this->getLFloat();
-            $this->y = $this->getLFloat();
-            $this->z = $this->getLFloat();
-        }
-    }
+		if($this->action === self::ACTION_MOUSEOVER){
+			//TODO: should this be a vector3?
+			$this->x = $this->getLFloat();
+			$this->y = $this->getLFloat();
+			$this->z = $this->getLFloat();
+		}
+	}
 
-    protected function encodePayload() : void{
-        $this->putByte($this->action);
-        $this->putEntityRuntimeId($this->target);
+	protected function encodePayload() : void{
+		$this->putByte($this->action);
+		$this->putEntityRuntimeId($this->target);
 
-        if($this->action === self::ACTION_MOUSEOVER){
-            $this->putLFloat($this->x);
-            $this->putLFloat($this->y);
-            $this->putLFloat($this->z);
-        }
-    }
+		if($this->action === self::ACTION_MOUSEOVER){
+			$this->putLFloat($this->x);
+			$this->putLFloat($this->y);
+			$this->putLFloat($this->z);
+		}
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleInteract($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleInteract($this);
+	}
 }

@@ -29,28 +29,28 @@ use pocketmine\item\Item;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class InventorySlotPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::INVENTORY_SLOT_PACKET;
+	public const NETWORK_ID = ProtocolInfo::INVENTORY_SLOT_PACKET;
 
-    /** @var int */
-    public $windowId;
-    /** @var int */
-    public $inventorySlot;
-    /** @var Item */
-    public $item;
+	/** @var int */
+	public $windowId;
+	/** @var int */
+	public $inventorySlot;
+	/** @var Item */
+	public $item;
 
-    protected function decodePayload() : void{
-        $this->windowId = $this->getUnsignedVarInt();
-        $this->inventorySlot = $this->getUnsignedVarInt();
-        $this->item = $this->getSlot();
-    }
+	protected function decodePayload() : void{
+		$this->windowId = $this->getUnsignedVarInt();
+		$this->inventorySlot = $this->getUnsignedVarInt();
+		$this->item = $this->getSlot();
+	}
 
-    protected function encodePayload() : void{
-        $this->putUnsignedVarInt($this->windowId);
-        $this->putUnsignedVarInt($this->inventorySlot);
-        $this->putSlot($this->item);
-    }
+	protected function encodePayload() : void{
+		$this->putUnsignedVarInt($this->windowId);
+		$this->putUnsignedVarInt($this->inventorySlot);
+		$this->putSlot($this->item);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleInventorySlot($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleInventorySlot($this);
+	}
 }

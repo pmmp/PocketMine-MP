@@ -23,12 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\utils\UUID;
-
 class ScoreboardIdentityPacketEntry{
 	/** @var int */
 	public $scoreboardId;
-	/** @var UUID|null */
-	public $uuid;
+	/** @var int|null */
+	public $entityUniqueId;
 
 }

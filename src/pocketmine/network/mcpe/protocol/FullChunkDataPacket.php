@@ -29,28 +29,28 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
 class FullChunkDataPacket extends DataPacket{
-    public const NETWORK_ID = ProtocolInfo::FULL_CHUNK_DATA_PACKET;
+	public const NETWORK_ID = ProtocolInfo::FULL_CHUNK_DATA_PACKET;
 
-    /** @var int */
-    public $chunkX;
-    /** @var int */
-    public $chunkZ;
-    /** @var string */
-    public $data;
+	/** @var int */
+	public $chunkX;
+	/** @var int */
+	public $chunkZ;
+	/** @var string */
+	public $data;
 
-    protected function decodePayload() : void{
-        $this->chunkX = $this->getVarInt();
-        $this->chunkZ = $this->getVarInt();
-        $this->data = $this->getString();
-    }
+	protected function decodePayload() : void{
+		$this->chunkX = $this->getVarInt();
+		$this->chunkZ = $this->getVarInt();
+		$this->data = $this->getString();
+	}
 
-    protected function encodePayload() : void{
-        $this->putVarInt($this->chunkX);
-        $this->putVarInt($this->chunkZ);
-        $this->putString($this->data);
-    }
+	protected function encodePayload() : void{
+		$this->putVarInt($this->chunkX);
+		$this->putVarInt($this->chunkZ);
+		$this->putString($this->data);
+	}
 
-    public function handle(SessionHandler $handler) : bool{
-        return $handler->handleFullChunkData($this);
-    }
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleFullChunkData($this);
+	}
 }
