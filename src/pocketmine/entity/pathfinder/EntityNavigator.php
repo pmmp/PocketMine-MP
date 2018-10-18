@@ -287,6 +287,10 @@ class EntityNavigator{
 			$coord = new Vector3((int) $item->x, $block->y, (int) $item->y);
 			$tb = $this->mob->level->getBlock($coord);
 			if($tb->isSolid()){
+				if(!$this->canJumpAt($block)){
+					continue; // can't jump because top block is solid
+				}
+
 				if($this->mob->canClimb() or $this->mob->isSwimmer()){
 					$blockUp = $this->mob->level->getBlock($coord->getSide(Facing::UP));
 					$canMove = false;
@@ -404,6 +408,18 @@ class EntityNavigator{
 		for($i = 1; $i < $this->mob->height; $i++) if($this->isBlocked($coord->add(0, $i, 0))) return true;
 
 		return false;
+	}
+
+	/**
+	 * @param Vector3 $pos
+	 *
+	 * @return bool
+	 */
+	public function canJumpAt(Vector3 $pos) : bool{
+		for($i = 1; $i < $this->mob->height + 1; $i++){
+			if($this->isBlocked($pos->add(0, $i, 0))) return false;
+		}
+		return true;
 	}
 
 	/**
