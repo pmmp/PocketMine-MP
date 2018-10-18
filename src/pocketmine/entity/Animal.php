@@ -36,10 +36,6 @@ abstract class Animal extends Mob implements Ageable{
 	protected $inLove = 0;
 	protected $spawnableBlock = Block::GRASS;
 
-	public function isBaby() : bool{
-		return $this->getGenericFlag(self::DATA_FLAG_BABY);
-	}
-
 	public function getBlockPathWeight(Vector3 $pos) : float{
 		return $this->level->getBlock($pos->down()) instanceof Grass ? 10 : $this->level->getFullLight($pos) - 0.5;
 	}
