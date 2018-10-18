@@ -3108,35 +3108,31 @@ class Level implements ChunkManager, Metadatable{
 		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){
 			return false;
 		}
+		for($xx = -1; $xx <= 1; ++$xx){
+			for($zz = -1; $zz <= 1; ++$zz){
+				if(isset($this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)])){
+					return false;
+				}
+			}
+		}
 
 		$chunk = $this->getChunk($x, $z, true);
 		if(!$chunk->isPopulated()){
 			Timings::$populationTimer->startTiming();
-			$populate = true;
+
+			$this->chunkPopulationQueue[$index] = true;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
-					if(isset($this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)])){
-						$populate = false;
-						break;
-					}
+					$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
 				}
 			}
 
-			if($populate){
-				$this->chunkPopulationQueue[$index] = true;
-				for($xx = -1; $xx <= 1; ++$xx){
-					for($zz = -1; $zz <= 1; ++$zz){
-						$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
-					}
-				}
-
-				$task = new PopulationTask($this, $chunk);
-				$workerId = $this->server->getAsyncPool()->selectWorker();
-				if(!isset($this->generatorRegisteredWorkers[$workerId])){
-					$this->registerGeneratorToWorker($workerId);
-				}
-				$this->server->getAsyncPool()->submitTaskToWorker($task, $workerId);
+			$task = new PopulationTask($this, $chunk);
+			$workerId = $this->server->getAsyncPool()->selectWorker();
+			if(!isset($this->generatorRegisteredWorkers[$workerId])){
+				$this->registerGeneratorToWorker($workerId);
 			}
+			$this->server->getAsyncPool()->submitTaskToWorker($task, $workerId);
 
 			Timings::$populationTimer->stopTiming();
 			return false;
