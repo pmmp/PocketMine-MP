@@ -971,13 +971,20 @@ class Level implements ChunkManager, Metadatable{
 		foreach($this->chunkTickList as $index => $loaders){
 			Level::getXZ($index, $chunkX, $chunkZ);
 
-			if(($chunk = $this->chunks[$index] ?? null) === null){
-				unset($this->chunkTickList[$index]);
-				continue;
-			}elseif($loaders <= 0){
+			for($cx = -1; $cx <= 1; ++$cx){
+				for($cz = -1; $cz <= 1; ++$cz){
+					if(!isset($this->chunks[Level::chunkHash($chunkX + $cx, $chunkZ + $cz)])){
+						unset($this->chunkTickList[$index]);
+						goto skip_to_next; //no "continue 3" thanks!
+					}
+				}
+			}
+
+			if($loaders <= 0){
 				unset($this->chunkTickList[$index]);
 			}
 
+			$chunk = $this->chunks[$index];
 			foreach($chunk->getEntities() as $entity){
 				$entity->scheduleUpdate();
 			}
@@ -1006,6 +1013,8 @@ class Level implements ChunkManager, Metadatable{
 					}
 				}
 			}
+
+			skip_to_next: //dummy label to break out of nested loops
 		}
 
 		if($this->clearChunksOnTick){
