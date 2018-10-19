@@ -69,11 +69,11 @@ class AddEntityPacket extends DataPacket{
 
 		$attrCount = $this->getUnsignedVarInt();
 		for($i = 0; $i < $attrCount; ++$i){
-			$name = $this->getString();
+			$id = $this->getString();
 			$min = $this->getLFloat();
 			$current = $this->getLFloat();
 			$max = $this->getLFloat();
-			$attr = Attribute::getAttributeByName($name);
+			$attr = Attribute::getAttribute($id);
 
 			if($attr !== null){
 				$attr->setMinValue($min);
@@ -81,7 +81,7 @@ class AddEntityPacket extends DataPacket{
 				$attr->setValue($current);
 				$this->attributes[] = $attr;
 			}else{
-				throw new \UnexpectedValueException("Unknown attribute type \"$name\"");
+				throw new \UnexpectedValueException("Unknown attribute type \"$id\"");
 			}
 		}
 
@@ -104,7 +104,7 @@ class AddEntityPacket extends DataPacket{
 
 		$this->putUnsignedVarInt(count($this->attributes));
 		foreach($this->attributes as $attribute){
-			$this->putString($attribute->getName());
+			$this->putString($attribute->getId());
 			$this->putLFloat($attribute->getMinValue());
 			$this->putLFloat($attribute->getValue());
 			$this->putLFloat($attribute->getMaxValue());

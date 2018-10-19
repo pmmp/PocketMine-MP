@@ -44,7 +44,7 @@ class UpdateAttributesPacket extends DataPacket{
 
 	protected function encodePayload() : void{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putAttributeList(...$this->entries);
+		$this->putAttributeList(...array_values($this->entries));
 	}
 
 	public function handle(SessionHandler $handler) : bool{

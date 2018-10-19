@@ -236,9 +236,9 @@ class NetworkBinaryStream extends BinaryStream{
 			$max = $this->getLFloat();
 			$current = $this->getLFloat();
 			$default = $this->getLFloat();
-			$name = $this->getString();
+			$id = $this->getString();
 
-			$attr = Attribute::getAttributeByName($name);
+			$attr = Attribute::getAttribute($id);
 			if($attr !== null){
 				$attr->setMinValue($min);
 				$attr->setMaxValue($max);
@@ -247,7 +247,7 @@ class NetworkBinaryStream extends BinaryStream{
 
 				$list[] = $attr;
 			}else{
-				throw new \UnexpectedValueException("Unknown attribute type \"$name\"");
+				throw new \UnexpectedValueException("Unknown attribute type \"$id\"");
 			}
 		}
 
@@ -266,7 +266,7 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->putLFloat($attribute->getMaxValue());
 			$this->putLFloat($attribute->getValue());
 			$this->putLFloat($attribute->getDefaultValue());
-			$this->putString($attribute->getName());
+			$this->putString($attribute->getId());
 		}
 	}
 
