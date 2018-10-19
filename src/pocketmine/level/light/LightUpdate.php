@@ -109,6 +109,8 @@ abstract class LightUpdate{
 		while(!$this->spreadQueue->isEmpty()){
 			list($x, $y, $z) = $this->spreadQueue->dequeue();
 
+			unset($this->spreadVisited[Level::blockHash($x, $y, $z)]);
+
 			if(!$this->subChunkHandler->moveTo($x, $y, $z)){
 				continue;
 			}
