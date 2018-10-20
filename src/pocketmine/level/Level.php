@@ -2339,6 +2339,18 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Returns the chunk containing the given Vector3 position.
+	 *
+	 * @param Vector3 $pos
+	 * @param bool    $create
+	 *
+	 * @return null|Chunk
+	 */
+	public function getChunkAtPosition(Vector3 $pos, bool $create = false) : ?Chunk{
+		return $this->getChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $create);
+	}
+
+	/**
 	 * Returns the chunks adjacent to the specified chunk.
 	 *
 	 * @param int $x
