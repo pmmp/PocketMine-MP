@@ -253,7 +253,7 @@ class Explosion{
 		$pk->position = $this->source->asVector3();
 		$pk->radius = $this->size;
 		$pk->records = $send;
-		$this->level->addChunkPacket($source->getFloorX() >> 4, $source->getFloorZ() >> 4, $pk);
+		$this->level->broadcastPacketToViewers($source, $pk);
 
 		$this->level->addParticle(new HugeExplodeSeedParticle($source));
 		$this->level->broadcastLevelSoundEvent($source, LevelSoundEventPacket::SOUND_EXPLODE);

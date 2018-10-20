@@ -452,7 +452,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($players === null){
 			foreach($pk as $e){
-				$this->addChunkPacket($sound->getFloorX() >> 4, $sound->getFloorZ() >> 4, $e);
+				$this->broadcastPacketToViewers($sound, $e);
 			}
 		}else{
 			$this->server->batchPackets($players, $pk, false);
@@ -467,7 +467,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($players === null){
 			foreach($pk as $e){
-				$this->addChunkPacket($particle->getFloorX() >> 4, $particle->getFloorZ() >> 4, $e);
+				$this->broadcastPacketToViewers($particle, $e);
 			}
 		}else{
 			$this->server->batchPackets($players, $pk, false);
@@ -487,7 +487,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->data = $data;
 		if($pos !== null){
 			$pk->position = $pos->asVector3();
-			$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $pk);
+			$this->broadcastPacketToViewers($pos, $pk);
 		}else{
 			$pk->position = null;
 			$this->addGlobalPacket($pk);
@@ -512,7 +512,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->isBabyMob = $isBabyMob;
 		$pk->disableRelativeVolume = $disableRelativeVolume;
 		$pk->position = $pos->asVector3();
-		$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $pk);
+		$this->broadcastPacketToViewers($pos, $pk);
 	}
 
 	public function getAutoSave() : bool{
@@ -609,6 +609,16 @@ class Level implements ChunkManager, Metadatable{
 		}else{
 			$this->chunkPackets[$index][] = $packet;
 		}
+	}
+
+	/**
+	 * Broadcasts a packet to every player who has the target position within their view distance.
+	 *
+	 * @param Vector3    $pos
+	 * @param DataPacket $packet
+	 */
+	public function broadcastPacketToViewers(Vector3 $pos, DataPacket $packet) : void{
+		$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $packet);
 	}
 
 	/**

@@ -1149,34 +1149,30 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
-		if($this->chunk !== null){
-			$pk = new MoveEntityAbsolutePacket();
-			$pk->entityRuntimeId = $this->id;
-			$pk->position = $this->getOffsetPosition($this);
+		$pk = new MoveEntityAbsolutePacket();
+		$pk->entityRuntimeId = $this->id;
+		$pk->position = $this->getOffsetPosition($this);
 
-			//this looks very odd but is correct as of 1.5.0.7
-			//for arrows this is actually x/y/z rotation
-			//for mobs x and z are used for pitch and yaw, and y is used for headyaw
-			$pk->xRot = $this->pitch;
-			$pk->yRot = $this->yaw; //TODO: head yaw
-			$pk->zRot = $this->yaw;
+		//this looks very odd but is correct as of 1.5.0.7
+		//for arrows this is actually x/y/z rotation
+		//for mobs x and z are used for pitch and yaw, and y is used for headyaw
+		$pk->xRot = $this->pitch;
+		$pk->yRot = $this->yaw; //TODO: head yaw
+		$pk->zRot = $this->yaw;
 
-			if($teleport){
-				$pk->flags |= MoveEntityAbsolutePacket::FLAG_TELEPORT;
-			}
-
-			$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+		if($teleport){
+			$pk->flags |= MoveEntityAbsolutePacket::FLAG_TELEPORT;
 		}
+
+		$this->level->broadcastPacketToViewers($this, $pk);
 	}
 
 	protected function broadcastMotion() : void{
-		if($this->chunk !== null){
-			$pk = new SetEntityMotionPacket();
-			$pk->entityRuntimeId = $this->id;
-			$pk->motion = $this->getMotion();
+		$pk = new SetEntityMotionPacket();
+		$pk->entityRuntimeId = $this->id;
+		$pk->motion = $this->getMotion();
 
-			$this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
-		}
+		$this->level->broadcastPacketToViewers($this, $pk);
 	}
 
 	protected function applyDragBeforeGravity() : bool{

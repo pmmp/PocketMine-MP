@@ -67,8 +67,7 @@ abstract class Spawnable extends Tile{
 			return;
 		}
 
-		$pk = $this->createSpawnPacket();
-		$this->level->addChunkPacket($this->getFloorX() >> 4, $this->getFloorZ() >> 4, $pk);
+		$this->level->broadcastPacketToViewers($this, $this->createSpawnPacket());
 	}
 
 	/**
