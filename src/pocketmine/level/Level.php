@@ -490,7 +490,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->broadcastPacketToViewers($pos, $pk);
 		}else{
 			$pk->position = null;
-			$this->addGlobalPacket($pk);
+			$this->broadcastGlobalPacket($pk);
 		}
 	}
 
@@ -622,7 +622,17 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Queues a DataPacket to be sent to everyone in the Level at the end of the current tick.
+	 * Broadcasts a packet to every player in the level.
+	 *
+	 * @param DataPacket $packet
+	 */
+	public function broadcastGlobalPacket(DataPacket $packet) : void{
+		$this->globalPackets[] = $packet;
+	}
+
+	/**
+	 * @deprecated
+	 * @see Level::broadcastGlobalPacket()
 	 *
 	 * @param DataPacket $packet
 	 */
