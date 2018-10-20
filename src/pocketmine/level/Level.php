@@ -631,16 +631,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->globalPackets[] = $packet;
 	}
 
-	/**
-	 * @deprecated
-	 * @see Level::broadcastGlobalPacket()
-	 *
-	 * @param DataPacket $packet
-	 */
-	public function addGlobalPacket(DataPacket $packet) : void{
-		$this->globalPackets[] = $packet;
-	}
-
 	public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true){
 		$hash = $loader->getLoaderId();
 
