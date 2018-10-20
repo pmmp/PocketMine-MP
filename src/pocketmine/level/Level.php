@@ -597,6 +597,16 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Returns an array of players who have the target position within their view distance.
+	 * @param Vector3 $pos
+	 *
+	 * @return Player[]
+	 */
+	public function getViewersForPosition(Vector3 $pos) : array{
+		return $this->getChunkPlayers($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
+	}
+
+	/**
 	 * Queues a DataPacket to be sent to all players using the chunk at the specified X/Z coordinates at the end of the
 	 * current tick.
 	 *
@@ -1505,7 +1515,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->setBlock->startTiming();
 
-		if($this->getChunk($pos->x >> 4, $pos->z >> 4, true)->setBlock($pos->x & 0x0f, $pos->y, $pos->z & 0x0f, $block->getId(), $block->getDamage())){
+		if($this->getChunkAtPosition($pos, true)->setBlock($pos->x & 0x0f, $pos->y, $pos->z & 0x0f, $block->getId(), $block->getDamage())){
 			if(!($pos instanceof Position)){
 				$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
 			}
@@ -2269,6 +2279,18 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Returns the chunk containing the given Vector3 position.
+	 *
+	 * @param Vector3 $pos
+	 * @param bool    $create
+	 *
+	 * @return null|Chunk
+	 */
+	public function getChunkAtPosition(Vector3 $pos, bool $create = false) : ?Chunk{
+		return $this->getChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $create);
+	}
+
+	/**
 	 * Returns the chunks adjacent to the specified chunk.
 	 *
 	 * @param int $x
@@ -2787,7 +2809,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$max = $this->worldHeight;
 		$v = $spawn->floor();
-		$chunk = $this->getChunk($v->x >> 4, $v->z >> 4, false);
+		$chunk = $this->getChunkAtPosition($v, false);
 		$x = (int) $v->x;
 		$z = (int) $v->z;
 		if($chunk !== null and $chunk->isGenerated()){

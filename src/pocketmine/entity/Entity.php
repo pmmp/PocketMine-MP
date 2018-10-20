@@ -508,7 +508,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->recalculateBoundingBox();
 
-		$this->chunk = $this->level->getChunk($this->getFloorX() >> 4, $this->getFloorZ() >> 4, false);
+		$this->chunk = $this->level->getChunkAtPosition($this, false);
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
@@ -1772,7 +1772,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->chunk = $this->level->getChunk($chunkX, $chunkZ, true);
 
 			if(!$this->justCreated){
-				$newChunk = $this->level->getChunkPlayers($chunkX, $chunkZ);
+				$newChunk = $this->level->getViewersForPosition($this);
 				foreach($this->hasSpawned as $player){
 					if(!isset($newChunk[$player->getLoaderId()])){
 						$this->despawnFrom($player);
@@ -1919,7 +1919,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player) : void{
-		if(!isset($this->hasSpawned[$player->getLoaderId()]) and $this->chunk !== null and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
+		if(!isset($this->hasSpawned[$player->getLoaderId()])){
 			$this->hasSpawned[$player->getLoaderId()] = $player;
 
 			$this->sendSpawnPacket($player);
@@ -1930,7 +1930,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		if($this->chunk === null or $this->closed){
 			return;
 		}
-		foreach($this->level->getChunkPlayers($this->chunk->getX(), $this->chunk->getZ()) as $player){
+		foreach($this->level->getViewersForPosition($this) as $player){
 			if($player->isOnline()){
 				$this->spawnTo($player);
 			}
