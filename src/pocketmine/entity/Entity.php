@@ -1461,47 +1461,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return $block->isSolid() and !$block->isTransparent() and $block->collidesWithBB($this->getBoundingBox());
 	}
 
-	public function fastMove(float $dx, float $dy, float $dz) : bool{
-		$this->blocksAround = null;
-
-		if($dx == 0 and $dz == 0 and $dy == 0){
-			return true;
-		}
-
-		Timings::$entityMoveTimer->startTiming();
-
-		$newBB = $this->boundingBox->offsetCopy($dx, $dy, $dz);
-
-		$list = $this->level->getCollisionCubes($this, $newBB, false);
-
-		if(count($list) === 0){
-			$this->boundingBox = $newBB;
-		}
-
-		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-		$this->y = $this->boundingBox->minY - $this->ySize;
-		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
-
-		$this->checkChunks();
-
-		if(!$this->onGround or $dy != 0){
-			$bb = clone $this->boundingBox;
-			$bb->minY -= 0.75;
-			$this->onGround = false;
-
-			if(count($this->level->getCollisionBlocks($bb)) > 0){
-				$this->onGround = true;
-			}
-		}
-		$this->isCollided = $this->onGround;
-		$this->updateFallState($dy, $this->onGround);
-
-
-		Timings::$entityMoveTimer->stopTiming();
-
-		return true;
-	}
-
 	public function move(float $dx, float $dy, float $dz) : void{
 		$this->blocksAround = null;
 
