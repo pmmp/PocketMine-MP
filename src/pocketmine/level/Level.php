@@ -455,7 +455,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($players === null){
 			foreach($pk as $e){
-				$this->addChunkPacket($sound->getFloorX() >> 4, $sound->getFloorZ() >> 4, $e);
+				$this->broadcastPacketToViewers($sound, $e);
 			}
 		}else{
 			$this->server->broadcastPackets($players, $pk);
@@ -470,7 +470,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($players === null){
 			foreach($pk as $e){
-				$this->addChunkPacket($particle->getFloorX() >> 4, $particle->getFloorZ() >> 4, $e);
+				$this->broadcastPacketToViewers($particle, $e);
 			}
 		}else{
 			$this->server->broadcastPackets($players, $pk);
@@ -490,10 +490,10 @@ class Level implements ChunkManager, Metadatable{
 		$pk->data = $data;
 		if($pos !== null){
 			$pk->position = $pos->asVector3();
-			$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $pk);
+			$this->broadcastPacketToViewers($pos, $pk);
 		}else{
 			$pk->position = null;
-			$this->addGlobalPacket($pk);
+			$this->broadcastGlobalPacket($pk);
 		}
 	}
 
@@ -515,7 +515,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->isBabyMob = $isBabyMob;
 		$pk->disableRelativeVolume = $disableRelativeVolume;
 		$pk->position = $pos->asVector3();
-		$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $pk);
+		$this->broadcastPacketToViewers($pos, $pk);
 	}
 
 	public function getAutoSave() : bool{
@@ -613,7 +613,27 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Queues a DataPacket to be sent to everyone in the Level at the end of the current tick.
+	 * Broadcasts a packet to every player who has the target position within their view distance.
+	 *
+	 * @param Vector3    $pos
+	 * @param DataPacket $packet
+	 */
+	public function broadcastPacketToViewers(Vector3 $pos, DataPacket $packet) : void{
+		$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $packet);
+	}
+
+	/**
+	 * Broadcasts a packet to every player in the level.
+	 *
+	 * @param DataPacket $packet
+	 */
+	public function broadcastGlobalPacket(DataPacket $packet) : void{
+		$this->globalPackets[] = $packet;
+	}
+
+	/**
+	 * @deprecated
+	 * @see Level::broadcastGlobalPacket()
 	 *
 	 * @param DataPacket $packet
 	 */
