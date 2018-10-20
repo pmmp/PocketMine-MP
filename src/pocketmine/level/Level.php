@@ -596,6 +596,16 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Returns an array of players who have the target position within their view distance.
+	 * @param Vector3 $pos
+	 *
+	 * @return Player[]
+	 */
+	public function getViewersForPosition(Vector3 $pos) : array{
+		return $this->getChunkPlayers($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
+	}
+
+	/**
 	 * Queues a DataPacket to be sent to all players using the chunk at the specified X/Z coordinates at the end of the
 	 * current tick.
 	 *
