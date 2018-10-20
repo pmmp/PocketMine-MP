@@ -698,7 +698,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk->time = $this->time;
 
 		if(empty($targets)){
-			$this->addGlobalPacket($pk);
+			$this->broadcastGlobalPacket($pk);
 		}else{
 			$this->server->broadcastPacket($targets, $pk);
 		}
@@ -2922,7 +2922,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk = new SetDifficultyPacket();
 		$pk->difficulty = $this->getDifficulty();
 		if(empty($targets)){
-			$this->addGlobalPacket($pk);
+			$this->broadcastGlobalPacket($pk);
 		}else{
 			$this->server->broadcastPacket($targets, $pk);
 		}
