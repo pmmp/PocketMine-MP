@@ -29,7 +29,6 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\MainLogger;
 
 class RegionLoader{
-	public const VERSION = 1;
 	public const COMPRESSION_GZIP = 1;
 	public const COMPRESSION_ZLIB = 2;
 
