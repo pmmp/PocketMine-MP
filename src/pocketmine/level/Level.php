@@ -2407,6 +2407,17 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Returns whether the given position is in a loaded area of terrain.
+	 *
+	 * @param Vector3 $pos
+	 *
+	 * @return bool
+	 */
+	public function isInLoadedTerrain(Vector3 $pos) : bool{
+		return $this->isChunkLoaded($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
+	}
+
+	/**
 	 * @param int $x
 	 * @param int $z
 	 *
