@@ -326,6 +326,7 @@ abstract class Living extends Entity implements Damageable{
 
 	/**
 	 * Sends the mob's potion effects to the specified player.
+	 *
 	 * @param Player $player
 	 */
 	public function sendPotionEffects(Player $player) : void{
@@ -769,6 +770,7 @@ abstract class Living extends Entity implements Damageable{
 
 	/**
 	 * Sets the number of air ticks left in the entity's air supply.
+	 *
 	 * @param int $ticks
 	 */
 	public function setAirSupplyTicks(int $ticks) : void{
@@ -785,6 +787,7 @@ abstract class Living extends Entity implements Damageable{
 
 	/**
 	 * Sets the maximum amount of air ticks the air supply can hold.
+	 *
 	 * @param int $ticks
 	 */
 	public function setMaxAirSupplyTicks(int $ticks) : void{

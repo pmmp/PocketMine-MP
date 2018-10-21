@@ -92,6 +92,7 @@ class NetworkInventoryAction{
 
 	/**
 	 * @param InventoryTransactionPacket $packet
+	 *
 	 * @return $this
 	 */
 	public function read(InventoryTransactionPacket $packet) : NetworkInventoryAction{

@@ -95,6 +95,7 @@ class CommandReader extends Thread{
 	 * Checks if the specified stream is a FIFO pipe.
 	 *
 	 * @param resource $stream
+	 *
 	 * @return bool
 	 */
 	private function isPipe($stream) : bool{

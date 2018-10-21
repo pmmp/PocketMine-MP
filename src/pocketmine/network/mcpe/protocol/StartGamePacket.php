@@ -64,7 +64,7 @@ class StartGamePacket extends DataPacket{
 	public $difficulty;
 	/** @var int */
 	public $spawnX;
-	/** @var int*/
+	/** @var int */
 	public $spawnY;
 	/** @var int */
 	public $spawnZ;

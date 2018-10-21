@@ -51,7 +51,7 @@ class Chunk{
 	/** @var bool */
 	protected $isInit = false;
 
-	/** @var bool*/
+	/** @var bool */
 	protected $lightPopulated = false;
 	/** @var bool */
 	protected $terrainGenerated = false;
@@ -325,8 +325,8 @@ class Chunk{
 	/**
 	 * Returns the Y coordinate of the highest non-air block at the specified X/Z chunk block coordinates
 	 *
-	 * @param int  $x 0-15
-	 * @param int  $z 0-15
+	 * @param int $x 0-15
+	 * @param int $z 0-15
 	 *
 	 * @return int 0-255, or -1 if there are no blocks in the column
 	 */
@@ -364,6 +364,7 @@ class Chunk{
 
 	/**
 	 * Returns the heightmap value at the specified X/Z chunk block coordinates
+	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 * @param int $value
@@ -794,8 +795,8 @@ class Chunk{
 			$result .= $this->subChunks[$y]->networkSerialize();
 		}
 		$result .= pack("v*", ...$this->heightMap)
-		        .  $this->biomeIds
-		        .  chr(0); //border block array count
+			. $this->biomeIds
+			. chr(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
 
 		foreach($this->tiles as $tile){

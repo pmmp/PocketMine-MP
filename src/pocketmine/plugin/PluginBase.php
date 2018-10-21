@@ -201,7 +201,7 @@ abstract class PluginBase implements Plugin{
 	 * Saves an embedded resource to its relative location in the data folder
 	 *
 	 * @param string $filename
-	 * @param bool $replace
+	 * @param bool   $replace
 	 *
 	 * @return bool
 	 */

@@ -329,7 +329,7 @@ class AvailableCommandsPacket extends DataPacket{
 			foreach($commandData->overloads as $overload){
 				/**
 				 * @var CommandParameter[] $overload
-				 * @var CommandParameter $parameter
+				 * @var CommandParameter   $parameter
 				 */
 				foreach($overload as $parameter){
 					if($parameter->enum !== null){

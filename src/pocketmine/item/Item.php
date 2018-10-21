@@ -523,6 +523,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * @param string $name
+	 *
 	 * @return NamedTag|null
 	 */
 	public function getNamedTagEntry(string $name) : ?NamedTag{
@@ -557,6 +558,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * Sets the Item's NBT from the supplied CompoundTag object.
+	 *
 	 * @param CompoundTag $tag
 	 *
 	 * @return Item
@@ -589,6 +591,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * @param int $count
+	 *
 	 * @return Item
 	 */
 	public function setCount(int $count) : Item{
@@ -769,6 +772,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * Returns whether the item was changed, for example count decrease or durability change.
 	 *
 	 * @param Player $player
+	 *
 	 * @return bool
 	 */
 	public function onReleaseUsing(Player $player) : bool{
@@ -834,6 +838,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
+	 *
 	 * @param Item $other
 	 *
 	 * @return bool
@@ -878,6 +883,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
 	 *
 	 * @param array $data
+	 *
 	 * @return Item
 	 */
 	final public static function jsonDeserialize(array $data) : Item{

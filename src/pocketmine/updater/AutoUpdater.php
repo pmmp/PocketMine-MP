@@ -105,6 +105,7 @@ class AutoUpdater{
 
 	/**
 	 * Shows a warning to a player to tell them there is an update available
+	 *
 	 * @param Player $player
 	 */
 	public function showPlayerUpdate(Player $player){
