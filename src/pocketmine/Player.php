@@ -1879,7 +1879,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->deviceModel = $packet->clientData["DeviceModel"];
 		$this->deviceOS = $packet->clientData["DeviceOS"];
-		$this->deviceId = $packet->clientData["DeviceId"];
+		if(isset($packet->clientData["DeviceId"])){ //Workaround for Bots
+            $this->deviceId = $packet->clientData["DeviceId"];
+        }
 
 		$this->setSkin($packet->skin);
 
@@ -2150,7 +2152,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->server->broadcastPacket($this->getViewers(), $packet);
 				break;
 			case EntityEventPacket::COMPLETE_TRADE:
-				// TODO
+				//TODO
 				break;
 			default:
 				return false;
@@ -2165,7 +2167,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->inventory->sendContents($this);
 			return false;
 		}
-
 
 		$ev = new PlayerItemHeldEvent($this, $this->inventory->getItem($hotbarSlot), $hotbarSlot);
 		$ev->call();
@@ -2272,12 +2273,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 			}
 
-
 			return false;
 		}finally{
 			$this->setUsingItem(false);
 		}
-
 	}
 
 	public function handleInteract(InteractPacket $packet) : bool{
@@ -3074,7 +3073,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @param string $message
 	 * @param string $subtitle @deprecated
 	 */
-	public function sendPopup(string $message, string $subtitle = ""){
+	public function sendPopup(string $message){
 		$pk = new TextPacket();
 		$pk->type = TextPacket::TYPE_POPUP;
 		$pk->message = $message;
