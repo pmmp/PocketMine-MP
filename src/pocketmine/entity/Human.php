@@ -888,6 +888,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * Wrapper around {@link Entity#getDataFlag} for player-specific data flag reading.
 	 *
 	 * @param int $flagId
+	 *
 	 * @return bool
 	 */
 	public function getPlayerFlag(int $flagId) : bool{

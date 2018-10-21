@@ -27,6 +27,7 @@ interface SubChunkInterface{
 
 	/**
 	 * @param bool $checkLight
+	 *
 	 * @return bool
 	 */
 	public function isEmpty(bool $checkLight = true) : bool;

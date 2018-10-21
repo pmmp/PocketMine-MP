@@ -27,7 +27,7 @@ namespace pocketmine\command;
 interface CommandMap{
 
 	/**
-	 * @param string $fallbackPrefix
+	 * @param string    $fallbackPrefix
 	 * @param Command[] $commands
 	 */
 	public function registerAll(string $fallbackPrefix, array $commands);

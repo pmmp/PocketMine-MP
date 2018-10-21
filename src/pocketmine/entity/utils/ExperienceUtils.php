@@ -31,6 +31,7 @@ abstract class ExperienceUtils{
 	 * Calculates and returns the amount of XP needed to get from level 0 to level $level
 	 *
 	 * @param int $level
+	 *
 	 * @return int
 	 */
 	public static function getXpToReachLevel(int $level) : int{

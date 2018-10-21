@@ -160,6 +160,7 @@ class PacketPool{
 
 	/**
 	 * @param int $pid
+	 *
 	 * @return DataPacket
 	 */
 	public static function getPacketById(int $pid) : DataPacket{
@@ -168,6 +169,7 @@ class PacketPool{
 
 	/**
 	 * @param string $buffer
+	 *
 	 * @return DataPacket
 	 */
 	public static function getPacket(string $buffer) : DataPacket{

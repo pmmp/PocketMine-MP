@@ -102,6 +102,7 @@ class AsyncWorker extends Worker{
 	 * Objects stored in this storage may ONLY be retrieved while the task is running.
 	 *
 	 * @param string $identifier
+	 *
 	 * @return mixed
 	 */
 	public function getFromThreadStore(string $identifier){

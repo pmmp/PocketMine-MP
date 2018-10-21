@@ -73,6 +73,7 @@ class PaintingMotive{
 
 	/**
 	 * @param string $name
+	 *
 	 * @return PaintingMotive|null
 	 */
 	public static function getMotiveByName(string $name) : ?PaintingMotive{
