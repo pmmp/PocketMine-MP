@@ -105,31 +105,23 @@ class AnimalSpawner{
 							Level::getXZ($chunkHash, $cx, $cz);
 
 							$pos = self::getRandomChunkPosition($level, $cx, $cz);
-							$k1 = $pos->x;
-							$l1 = $pos->y;
-							$i2 = $pos->z;
 							$block = $level->getBlock($pos);
 
 							if(!$block->isSolid() and $level->getNearestEntity($pos, 24, Player::class) === null){
 								$j2 = 0;
 
 								for($k2 = 0; $k2 < 3; ++$k2){
-									$l2 = $k1;
-									$i3 = $l1;
-									$j3 = $i2;
-									$k3 = 6;
+									$l2 = $pos->x;
+									$i3 = $pos->y;
+									$j3 = $pos->z;
 									$entry = null;
 									$s1 = $level->random->nextBoundedInt(4);
 
 									for($l3 = 0; $l3 < $s1; ++$l3){
-										$l2 += $level->random->nextBoundedInt($k3) - $level->random->nextBoundedInt($k3);
+										$l2 += $level->random->nextBoundedInt(6) - $level->random->nextBoundedInt(6);
 										$i3 += $level->random->nextBoundedInt(1) - $level->random->nextBoundedInt(1);
-										$j3 += $level->random->nextBoundedInt($k3) - $level->random->nextBoundedInt($k3);
+										$j3 += $level->random->nextBoundedInt(6) - $level->random->nextBoundedInt(6);
 										$pos1 = new Vector3($l2, $i3, $j3);
-										$f = $l2 + 0.5;
-										$f1 = $j3 + 0.5;
-
-										$nextPos = new Vector3($f, $i3, $f1);
 
 										if($pos1->distanceSquared($spawn) >= 576){
 											if($entry === null){
@@ -165,8 +157,6 @@ class AnimalSpawner{
 														continue 4;
 													}
 												}
-
-												$i4 += $j2;
 											}
 										}
 									}
@@ -177,8 +167,6 @@ class AnimalSpawner{
 				}
 			}
 		}
-
-		return $i4;
 	}
 
 	/**
