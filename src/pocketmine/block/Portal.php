@@ -49,7 +49,7 @@ class Portal extends Flowable{
 	}
 
 	public function getStateBitmask() : int{
-		return 2;
+		return 3;
 	}
 
 	public function getName() : string{
