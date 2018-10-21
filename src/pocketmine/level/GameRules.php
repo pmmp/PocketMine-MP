@@ -114,11 +114,9 @@ class GameRules{
 
 			if($this->checkType($rule[1], $expectedType)){
 				return $rule[1];
-			}else{
-				return $defaultValue;
 			}
 		}
-		return null;
+		return $defaultValue;
 	}
 
 	/**

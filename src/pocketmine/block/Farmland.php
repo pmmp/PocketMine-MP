@@ -129,7 +129,7 @@ class Farmland extends Transparent{
 			if($this->level->random->nextFloat() < ($fallDistance - 0.5)){
 				$ev = new BlockFormEvent($this, BlockFactory::get(Block::DIRT));
 
-				if(!$this->level->getGameRules()->getBool("mobGrifeing", true)){
+				if(!$this->level->getGameRules()->getBool("mobGriefing", true)){
 					$ev->setCancelled();
 				}
 				$ev->call();
