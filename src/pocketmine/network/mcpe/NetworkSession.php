@@ -56,7 +56,7 @@ class NetworkSession{
 	/** @var int */
 	private $port;
 	/** @var int */
-	private $ping;
+	private $ping = 0;
 
 	/** @var SessionHandler */
 	private $handler;
