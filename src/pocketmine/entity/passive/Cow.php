@@ -34,6 +34,7 @@ use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\TemptedBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
 use pocketmine\item\Bucket;
+use pocketmine\item\MilkBucket;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
@@ -73,7 +74,8 @@ class Cow extends Animal{
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
 		if(!$this->isImmobile()){
 			if($item instanceof Bucket and $item->getDamage() === 0){
-				$item->setDamage(1);
+				$item->pop();
+				$player->getInventory()->addItem(ItemFactory::get(Item::BUCKET, 1));
 				return true;
 			}
 		}
