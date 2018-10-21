@@ -246,6 +246,7 @@ class Utils{
 
 	/**
 	 * @param bool $recalculate
+	 *
 	 * @return int
 	 */
 	public static function getCoreCount(bool $recalculate = false) : int{
@@ -532,10 +533,10 @@ class Utils{
 	}
 
 	/**
-	 * @param int $severity
+	 * @param int    $severity
 	 * @param string $message
 	 * @param string $file
-	 * @param int $line
+	 * @param int    $line
 	 *
 	 * @return bool
 	 * @throws \ErrorException

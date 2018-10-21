@@ -34,7 +34,7 @@ class DataPacketSendEvent extends ServerEvent implements Cancellable{
 	private $player;
 
 	/**
-	 * @param Player $player
+	 * @param Player     $player
 	 * @param DataPacket $packet
 	 */
 	public function __construct(Player $player, DataPacket $packet){

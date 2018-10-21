@@ -32,6 +32,7 @@ class ZippedResourcePack implements ResourcePack{
 	 * TODO: add more manifest validation
 	 *
 	 * @param \stdClass $manifest
+	 *
 	 * @return bool
 	 */
 	public static function verifyManifest(\stdClass $manifest) : bool{

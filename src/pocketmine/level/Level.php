@@ -292,6 +292,7 @@ class Level implements ChunkManager, Metadatable{
 
 	/**
 	 * @param string $str
+	 *
 	 * @return int
 	 */
 	public static function getDifficultyFromString(string $str) : int{
@@ -927,7 +928,7 @@ class Level implements ChunkManager, Metadatable{
 					$pk->blockRuntimeId = $b->getRuntimeId();
 				}else{
 					$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-					$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4,  $fullBlock & 0xf);
+					$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf);
 				}
 
 				$pk->flags = $first ? $flags : UpdateBlockPacket::FLAG_NONE;
@@ -949,7 +950,7 @@ class Level implements ChunkManager, Metadatable{
 					$pk->blockRuntimeId = $b->getRuntimeId();
 				}else{
 					$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-					$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4,  $fullBlock & 0xf);
+					$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf);
 				}
 
 				$pk->flags = $flags;

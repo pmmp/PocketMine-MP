@@ -137,7 +137,7 @@ class WritableBook extends Item{
 	/**
 	 * Inserts a new page with the given text and moves other pages upwards.
 	 *
-	 * @param int $pageId
+	 * @param int    $pageId
 	 * @param string $pageText
 	 *
 	 * @return bool indicating success

@@ -81,6 +81,7 @@ class EffectInstance{
 
 	/**
 	 * @param int $duration
+	 *
 	 * @throws \InvalidArgumentException
 	 *
 	 * @return $this

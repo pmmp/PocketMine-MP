@@ -47,6 +47,7 @@ class UUID{
 	 *
 	 * @param string $uuid
 	 * @param int    $version
+	 *
 	 * @return UUID
 	 */
 	public static function fromString(string $uuid, int $version = null) : UUID{
@@ -58,6 +59,7 @@ class UUID{
 	 *
 	 * @param string $uuid
 	 * @param int    $version
+	 *
 	 * @return UUID
 	 *
 	 * @throws \InvalidArgumentException
@@ -74,6 +76,7 @@ class UUID{
 	 * Creates an UUIDv3 from binary data or list of binary data
 	 *
 	 * @param string ...$data
+	 *
 	 * @return UUID
 	 */
 	public static function fromData(string ...$data) : UUID{

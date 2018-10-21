@@ -384,6 +384,7 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * Removes the inventory window from all players currently viewing it.
+	 *
 	 * @param bool $force Force removal of permanent windows such as the player's own inventory. Used internally.
 	 */
 	public function removeAllViewers(bool $force = false) : void{

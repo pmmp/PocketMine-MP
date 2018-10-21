@@ -33,9 +33,9 @@ abstract class Populator{
 
 	/**
 	 * @param ChunkManager $level
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 * @param Random $random
+	 * @param int          $chunkX
+	 * @param int          $chunkZ
+	 * @param Random       $random
 	 *
 	 * @return mixed
 	 */

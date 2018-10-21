@@ -411,6 +411,7 @@ class BlockFactory{
 	 * Returns whether a specified block ID is already registered in the block factory.
 	 *
 	 * @param int $id
+	 *
 	 * @return bool
 	 */
 	public static function isRegistered(int $id) : bool{

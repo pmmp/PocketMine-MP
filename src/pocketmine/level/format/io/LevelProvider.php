@@ -148,6 +148,7 @@ interface LevelProvider{
 
 	/**
 	 * Sets the world difficulty.
+	 *
 	 * @param int $difficulty
 	 */
 	public function setDifficulty(int $difficulty);

@@ -27,8 +27,8 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
-use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitBlockEvent;
+use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -151,6 +151,7 @@ class SplashPotion extends Throwable{
 
 	/**
 	 * Sets whether this splash potion will create an area-effect-cloud when it lands.
+	 *
 	 * @param bool $value
 	 */
 	public function setLinger(bool $value = true) : void{

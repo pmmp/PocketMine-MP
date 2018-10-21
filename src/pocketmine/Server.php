@@ -1003,6 +1003,7 @@ class Server{
 
 	/**
 	 * @internal
+	 *
 	 * @param Level $level
 	 */
 	public function removeLevel(Level $level) : void{
