@@ -29,6 +29,8 @@ developer:
   commands: true
   # This setting allows the server to load plugins with Incompatible API
   load-incompatible-api: true
+  # Suppress event exceptions
+  suppress-event-exceptions: false
 
 level:
   # If enabled, mobs can move around

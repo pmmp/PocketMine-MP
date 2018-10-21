@@ -26,6 +26,8 @@ declare(strict_types=1);
  */
 namespace pocketmine\event;
 
+use pocketmine\Server;
+
 abstract class Event{
 	private const MAX_EVENT_CALL_DEPTH = 50;
 	/** @var int */
@@ -98,6 +100,12 @@ abstract class Event{
 
 					$currentList = $currentList->getParent();
 				}
+			}
+		}catch(\Exception $e){
+			if(Server::getInstance()->getAltayProperty("developer.suppress-event-exceptions", false)){
+				Server::getInstance()->getLogger()->logException($e);
+			}else{
+				throw $e;
 			}
 		}finally{
 			--self::$eventCallDepth;
