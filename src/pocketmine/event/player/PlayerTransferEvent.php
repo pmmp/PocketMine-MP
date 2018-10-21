@@ -32,20 +32,16 @@ class PlayerTransferEvent extends PlayerEvent implements Cancellable{
 	protected $address;
 	/** @var int */
 	protected $port = 19132;
-	/** @var string */
-	protected $message;
 
 	/**
 	 * @param Player $player
 	 * @param string $address
 	 * @param int    $port
-	 * @param string $message
 	 */
-	public function __construct(Player $player, string $address, int $port, string $message){
+	public function __construct(Player $player, string $address, int $port){
 		$this->player = $player;
 		$this->address = $address;
 		$this->port = $port;
-		$this->message = $message;
 	}
 
 	/**
@@ -74,19 +70,5 @@ class PlayerTransferEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function setPort(int $port) : void{
 		$this->port = $port;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getMessage() : string{
-		return $this->message;
-	}
-
-	/**
-	 * @param string $message
-	 */
-	public function setMessage(string $message) : void{
-		$this->message = $message;
 	}
 }

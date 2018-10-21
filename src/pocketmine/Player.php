@@ -2824,24 +2824,24 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->sendDataPacket($packet, true);
 	}
 
+
 	/**
-	 * Transfers a player to another server.
+	 * Transfers player to another server
 	 *
-	 * @param string $address The IP address or hostname of the destination server
-	 * @param int    $port The destination port, defaults to 19132
-	 * @param string $message Message to show in the console when closing the player
+	 * @param string $address
+	 * @param int    $port
 	 *
-	 * @return bool if transfer was successful.
+	 * @return bool
+	 * @throws \ReflectionException
 	 */
-	public function transfer(string $address, int $port = 19132, string $message = "transfer") : bool{
-		$ev = new PlayerTransferEvent($this, $address, $port, $message);
+	public function transfer(string $address, int $port = 19132) : bool{
+		$ev = new PlayerTransferEvent($this, $address, $port);
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$pk = new TransferPacket();
 			$pk->address = $ev->getAddress();
 			$pk->port = $ev->getPort();
 			$this->sendDataPacket($pk, true);
-			$this->close("", $ev->getMessage(), false);
 
 			return true;
 		}
