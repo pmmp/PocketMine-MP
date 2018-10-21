@@ -1428,33 +1428,37 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
-		$pk = new MoveEntityAbsolutePacket();
-		$pk->entityRuntimeId = $this->id;
-		$pk->position = $this->getOffsetPosition($this);
+		if($this->isValid()){
+			$pk = new MoveEntityAbsolutePacket();
+			$pk->entityRuntimeId = $this->id;
+			$pk->position = $this->getOffsetPosition($this);
 
-		//this looks very odd but is correct as of 1.5.0.7
-		//for arrows this is actually x/y/z rotation
-		//for mobs x and y are used for pitch and yaw, and z is used for headyaw
-		$pk->xRot = $this->pitch;
-		$pk->yRot = $this->yaw;
-		$pk->zRot = $this->headYaw ?? $this->yaw;
+			//this looks very odd but is correct as of 1.5.0.7
+			//for arrows this is actually x/y/z rotation
+			//for mobs x and y are used for pitch and yaw, and z is used for headyaw
+			$pk->xRot = $this->pitch;
+			$pk->yRot = $this->yaw;
+			$pk->zRot = $this->headYaw ?? $this->yaw;
 
-		if($teleport){
-			$pk->flags |= MoveEntityAbsolutePacket::FLAG_TELEPORT;
+			if($teleport){
+				$pk->flags |= MoveEntityAbsolutePacket::FLAG_TELEPORT;
+			}
+			if($this->onGround){
+				$pk->flags |= MoveEntityAbsolutePacket::FLAG_GROUND;
+			}
+
+			$this->level->broadcastPacketToViewers($this, $pk);
 		}
-		if($this->onGround){
-			$pk->flags |= MoveEntityAbsolutePacket::FLAG_GROUND;
-		}
-
-		$this->level->broadcastPacketToViewers($this, $pk);
 	}
 
 	protected function broadcastMotion() : void{
-		$pk = new SetEntityMotionPacket();
-		$pk->entityRuntimeId = $this->id;
-		$pk->motion = $this->getMotion();
+		if($this->isValid()){
+			$pk = new SetEntityMotionPacket();
+			$pk->entityRuntimeId = $this->id;
+			$pk->motion = $this->getMotion();
 
-		$this->level->broadcastPacketToViewers($this, $pk);
+			$this->level->broadcastPacketToViewers($this, $pk);
+		}
 	}
 
 	/**
