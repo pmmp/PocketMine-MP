@@ -166,4 +166,6 @@ interface ProtocolInfo{
 	public const NETWORK_STACK_LATENCY_PACKET = 0x73;
 	public const SCRIPT_CUSTOM_EVENT_PACKET = 0x75;
 
+	public const SCRIPT_CUSTOM_EVENT_PACKET = 0x75;
+
 }

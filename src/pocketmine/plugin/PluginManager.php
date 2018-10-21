@@ -527,18 +527,6 @@ class PluginManager{
 	}
 
 	/**
-	 * Calls an event
-	 *
-	 * @deprecated
-	 * @see Event::call()
-	 *
-	 * @param Event $event
-	 */
-	public function callEvent(Event $event){
-		$event->call();
-	}
-
-	/**
 	 * Registers all the events in the given Listener class
 	 *
 	 * @param Listener $listener

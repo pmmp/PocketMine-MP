@@ -24,27 +24,27 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 class Attribute{
+	public const MC_PREFIX = "minecraft:";
 
-	public const ABSORPTION = 0;
-	public const SATURATION = 1;
-	public const EXHAUSTION = 2;
-	public const KNOCKBACK_RESISTANCE = 3;
-	public const HEALTH = 4;
-	public const MOVEMENT_SPEED = 5;
-	public const FOLLOW_RANGE = 6;
-	public const HUNGER = 7;
-	public const FOOD = 7;
-	public const ATTACK_DAMAGE = 8;
-	public const EXPERIENCE_LEVEL = 9;
-	public const EXPERIENCE = 10;
-	public const JUMP_STRENGTH = 11;
+	public const ABSORPTION = self::MC_PREFIX . "absorption";
+	public const SATURATION = self::MC_PREFIX . "player.saturation";
+	public const EXHAUSTION = self::MC_PREFIX . "player.exhaustion";
+	public const KNOCKBACK_RESISTANCE = self::MC_PREFIX . "knockback_resistance";
+	public const HEALTH = self::MC_PREFIX . "health";
+	public const MOVEMENT_SPEED = self::MC_PREFIX . "movement";
+	public const FOLLOW_RANGE = self::MC_PREFIX . "follow_range";
+	public const HUNGER = self::MC_PREFIX . "player.hunger";
+	public const FOOD = self::HUNGER;
+	public const ATTACK_DAMAGE = self::MC_PREFIX . "attack_damage";
+	public const EXPERIENCE_LEVEL = self::MC_PREFIX . "player.level";
+	public const EXPERIENCE = self::MC_PREFIX . "player.experience";
+	public const JUMP_STRENGTH = self::MC_PREFIX . "horse.jump_strength";
 
-	private $id;
+	protected $id;
 	protected $minValue;
 	protected $maxValue;
 	protected $defaultValue;
 	protected $currentValue;
-	protected $name;
 	protected $shouldSend;
 
 	protected $desynchronized = true;
@@ -53,25 +53,24 @@ class Attribute{
 	protected static $attributes = [];
 
 	public static function init() : void{
-		self::addAttribute(self::ABSORPTION, "minecraft:absorption", 0.00, 340282346638528859811704183484516925440.00, 0.00);
-		self::addAttribute(self::SATURATION, "minecraft:player.saturation", 0.00, 20.00, 20.00);
-		self::addAttribute(self::EXHAUSTION, "minecraft:player.exhaustion", 0.00, 5.00, 0.0);
-		self::addAttribute(self::KNOCKBACK_RESISTANCE, "minecraft:knockback_resistance", 0.00, 1.00, 0.00);
-		self::addAttribute(self::HEALTH, "minecraft:health", 0.00, 20.00, 20.00);
-		self::addAttribute(self::MOVEMENT_SPEED, "minecraft:movement", 0.00, 340282346638528859811704183484516925440.00, 0.10);
-		self::addAttribute(self::FOLLOW_RANGE, "minecraft:follow_range", 0.00, 2048.00, 16.00, false);
-		self::addAttribute(self::HUNGER, "minecraft:player.hunger", 0.00, 20.00, 20.00);
-		self::addAttribute(self::ATTACK_DAMAGE, "minecraft:attack_damage", 0.00, 340282346638528859811704183484516925440.00, 1.00, false);
-		self::addAttribute(self::EXPERIENCE_LEVEL, "minecraft:player.level", 0.00, 24791.00, 0.00);
-		self::addAttribute(self::EXPERIENCE, "minecraft:player.experience", 0.00, 1.00, 0.00);
-		self::addAttribute(self::JUMP_STRENGTH, "minecraft:horse.jump_strength", 0.00, 2.00, 0.70);
+		self::addAttribute(self::ABSORPTION, 0.00, 340282346638528859811704183484516925440.00, 0.00);
+		self::addAttribute(self::SATURATION, 0.00, 20.00, 20.00);
+		self::addAttribute(self::EXHAUSTION, 0.00, 5.00, 0.0);
+		self::addAttribute(self::KNOCKBACK_RESISTANCE, 0.00, 1.00, 0.00);
+		self::addAttribute(self::HEALTH, 0.00, 20.00, 20.00);
+		self::addAttribute(self::MOVEMENT_SPEED, 0.00, 340282346638528859811704183484516925440.00, 0.10);
+		self::addAttribute(self::FOLLOW_RANGE, 0.00, 2048.00, 16.00, false);
+		self::addAttribute(self::HUNGER, 0.00, 20.00, 20.00);
+		self::addAttribute(self::ATTACK_DAMAGE, 0.00, 340282346638528859811704183484516925440.00, 1.00, false);
+		self::addAttribute(self::EXPERIENCE_LEVEL, 0.00, 24791.00, 0.00);
+		self::addAttribute(self::EXPERIENCE, 0.00, 1.00, 0.00);
+		self::addAttribute(self::JUMP_STRENGTH, 0.00, 2.00, 0.70);
 		//TODO: minecraft:luck (for fishing?)
 		//TODO: minecraft:fall_damage
 	}
 
 	/**
-	 * @param int    $id
-	 * @param string $name
+	 * @param string $id
 	 * @param float  $minValue
 	 * @param float  $maxValue
 	 * @param float  $defaultValue
@@ -81,41 +80,25 @@ class Attribute{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function addAttribute(int $id, string $name, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true) : Attribute{
+	public static function addAttribute(string $id, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true) : Attribute{
 		if($minValue > $maxValue or $defaultValue > $maxValue or $defaultValue < $minValue){
 			throw new \InvalidArgumentException("Invalid ranges: min value: $minValue, max value: $maxValue, $defaultValue: $defaultValue");
 		}
 
-		return self::$attributes[$id] = new Attribute($id, $name, $minValue, $maxValue, $defaultValue, $shouldSend);
+		return self::$attributes[$id] = new Attribute($id, $minValue, $maxValue, $defaultValue, $shouldSend);
 	}
 
 	/**
-	 * @param int $id
+	 * @param string $id
 	 *
 	 * @return Attribute|null
 	 */
-	public static function getAttribute(int $id) : ?Attribute{
+	public static function getAttribute(string $id) : ?Attribute{
 		return isset(self::$attributes[$id]) ? clone self::$attributes[$id] : null;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return Attribute|null
-	 */
-	public static function getAttributeByName(string $name) : ?Attribute{
-		foreach(self::$attributes as $a){
-			if($a->getName() === $name){
-				return clone $a;
-			}
-		}
-
-		return null;
-	}
-
-	private function __construct(int $id, string $name, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true){
+	private function __construct(string $id, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true){
 		$this->id = $id;
-		$this->name = $name;
 		$this->minValue = $minValue;
 		$this->maxValue = $maxValue;
 		$this->defaultValue = $defaultValue;
@@ -205,11 +188,7 @@ class Attribute{
 		return $this;
 	}
 
-	public function getName() : string{
-		return $this->name;
-	}
-
-	public function getId() : int{
+	public function getId() : string{
 		return $this->id;
 	}
 

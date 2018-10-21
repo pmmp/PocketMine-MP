@@ -634,14 +634,6 @@ class Server{
 	}
 
 	/**
-	 * @deprecated
-	 * @return bool
-	 */
-	public function getAllowFlight() : bool{
-		return true;
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function isHardcore() : bool{

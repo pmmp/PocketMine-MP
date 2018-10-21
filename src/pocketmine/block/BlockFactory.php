@@ -478,9 +478,8 @@ class BlockFactory{
 		if(!$override and self::isRegistered($id, $variant)){
 			throw new \InvalidArgumentException("Block registration conflicts with an existing block");
 		}
-		self::fillStaticArrays(($id << 4) | $variant, $block); //register default state mapped to variant, for blocks which don't use 0 as valid state
 
-		for($m = $variant + 1; $m <= ($variant | $stateMask); ++$m){
+		for($m = $variant; $m <= ($variant | $stateMask); ++$m){
 			if(($m & ~$stateMask) !== $variant){
 				continue;
 			}
@@ -496,6 +495,10 @@ class BlockFactory{
 			if($v->getDamage() === $m){ //don't register anything that isn't the same when we read it back again
 				self::fillStaticArrays($index, $v);
 			}
+		}
+
+		if(!self::isRegistered($id, $variant)){
+			self::fillStaticArrays(($id << 4) | $variant, $block); //register default state mapped to variant, for blocks which don't use 0 as valid state
 		}
 	}
 
