@@ -47,6 +47,7 @@ class Color{
 
 	/**
 	 * Sets the alpha (opacity) value of this colour, lower = more transparent
+	 *
 	 * @param int $a
 	 */
 	public function setA(int $a){
@@ -63,6 +64,7 @@ class Color{
 
 	/**
 	 * Sets the red value of this colour.
+	 *
 	 * @param int $r
 	 */
 	public function setR(int $r){
@@ -79,6 +81,7 @@ class Color{
 
 	/**
 	 * Sets the green value of this colour.
+	 *
 	 * @param int $g
 	 */
 	public function setG(int $g){
@@ -95,6 +98,7 @@ class Color{
 
 	/**
 	 * Sets the blue value of this colour.
+	 *
 	 * @param int $b
 	 */
 	public function setB(int $b){
@@ -105,6 +109,7 @@ class Color{
 	 * Mixes the supplied list of colours together to produce a result colour.
 	 *
 	 * @param Color ...$colors
+	 *
 	 * @return Color
 	 */
 	public static function mix(Color ...$colors) : Color{
@@ -127,6 +132,7 @@ class Color{
 
 	/**
 	 * Returns a Color from the supplied RGB colour code (24-bit)
+	 *
 	 * @param int $code
 	 *
 	 * @return Color

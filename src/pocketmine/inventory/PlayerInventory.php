@@ -87,6 +87,7 @@ class PlayerInventory extends BaseInventory{
 
 	/**
 	 * @param int $slot
+	 *
 	 * @throws \InvalidArgumentException
 	 */
 	private function throwIfNotHotbarSlot(int $slot){
@@ -99,6 +100,7 @@ class PlayerInventory extends BaseInventory{
 	 * Returns the item in the specified hotbar slot.
 	 *
 	 * @param int $hotbarSlot
+	 *
 	 * @return Item
 	 *
 	 * @throws \InvalidArgumentException if the hotbar slot index is out of range
@@ -159,6 +161,7 @@ class PlayerInventory extends BaseInventory{
 
 	/**
 	 * Sends the currently-held item to specified targets.
+	 *
 	 * @param Player|Player[] $target
 	 */
 	public function sendHeldItem($target){

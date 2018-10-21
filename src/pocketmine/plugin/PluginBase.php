@@ -190,7 +190,7 @@ abstract class PluginBase implements Plugin{
 
 	/**
 	 * @param string $filename
-	 * @param bool $replace
+	 * @param bool   $replace
 	 *
 	 * @return bool
 	 */

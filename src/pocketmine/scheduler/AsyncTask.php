@@ -129,6 +129,7 @@ abstract class AsyncTask extends Collectable{
 	 * @see AsyncWorker::getFromThreadStore()
 	 *
 	 * @param string $identifier
+	 *
 	 * @return mixed
 	 */
 	public function getFromThreadStore(string $identifier){

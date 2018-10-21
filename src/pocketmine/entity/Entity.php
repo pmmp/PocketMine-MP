@@ -260,8 +260,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(Snowball::class, false, ['Snowball', 'minecraft:snowball']);
 		Entity::registerEntity(SplashPotion::class, false, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
 		Entity::registerEntity(Squid::class, false, ['Squid', 'minecraft:squid']);
-		Entity::registerEntity(Villager::class, false, ['Villager',	'minecraft:villager']);
-		Entity::registerEntity(Zombie::class, false, ['Zombie',	'minecraft:zombie']);
+		Entity::registerEntity(Villager::class, false, ['Villager', 'minecraft:villager']);
+		Entity::registerEntity(Zombie::class, false, ['Zombie', 'minecraft:zombie']);
 
 		Entity::registerEntity(Human::class, true);
 
@@ -342,7 +342,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 *
 	 * @return CompoundTag
 	 */
-	public static function createBaseNBT(Vector3 $pos, ?Vector3 $motion = null , float $yaw = 0.0, float $pitch = 0.0) : CompoundTag{
+	public static function createBaseNBT(Vector3 $pos, ?Vector3 $motion = null, float $yaw = 0.0, float $pitch = 0.0) : CompoundTag{
 		return new CompoundTag("", [
 			new ListTag("Pos", [
 				new DoubleTag("", $pos->x),
@@ -932,6 +932,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * Called to tick entities while dead. Returns whether the entity should be flagged for despawn yet.
 	 *
 	 * @param int $tickDiff
+	 *
 	 * @return bool
 	 */
 	protected function onDeathUpdate(int $tickDiff) : bool{
@@ -1388,7 +1389,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Timings::$timerEntityBaseTick->startTiming();
 		$hasUpdate = $this->entityBaseTick($tickDiff);
 		Timings::$timerEntityBaseTick->stopTiming();
-
 
 
 		$this->timings->stopTiming();
@@ -2071,6 +2071,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * Wrapper around {@link Entity#getDataFlag} for generic data flag reading.
 	 *
 	 * @param int $flagId
+	 *
 	 * @return bool
 	 */
 	public function getGenericFlag(int $flagId) : bool{

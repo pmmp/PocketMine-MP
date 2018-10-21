@@ -173,6 +173,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * Checks a supplied username and checks it is valid.
+	 *
 	 * @param string $name
 	 *
 	 * @return bool
@@ -627,7 +628,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * @param Plugin $plugin
 	 * @param string $name
-	 * @param bool $value
+	 * @param bool   $value
 	 *
 	 * @return PermissionAttachment
 	 */
@@ -1326,6 +1327,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * TODO: remove this when Spectator Mode gets added properly to MCPE
 	 *
 	 * @param int $gamemode
+	 *
 	 * @return int
 	 */
 	public static function getClientFriendlyGamemode(int $gamemode) : int{
@@ -2266,6 +2268,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Don't expect much from this handler. Most of it is roughly hacked and duct-taped together.
 	 *
 	 * @param InventoryTransactionPacket $packet
+	 *
 	 * @return bool
 	 */
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
@@ -2845,6 +2848,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Drops an item on the ground in front of the player. Returns if the item drop was successful.
 	 *
 	 * @param Item $item
+	 *
 	 * @return bool if the item was dropped or if the item was null
 	 */
 	public function dropItem(Item $item) : bool{
@@ -3144,7 +3148,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Transfers a player to another server.
 	 *
 	 * @param string $address The IP address or hostname of the destination server
-	 * @param int    $port    The destination port, defaults to 19132
+	 * @param int    $port The destination port, defaults to 19132
 	 * @param string $message Message to show in the console when closing the player
 	 *
 	 * @return bool if transfer was successful.
@@ -3168,8 +3172,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * Kicks a player from the server
 	 *
-	 * @param string $reason
-	 * @param bool   $isAdmin
+	 * @param string               $reason
+	 * @param bool                 $isAdmin
 	 * @param TextContainer|string $quitMessage
 	 *
 	 * @return bool
@@ -3271,7 +3275,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Internal function used for sending titles.
 	 *
 	 * @param string $title
-	 * @param int $type
+	 * @param int    $type
 	 */
 	protected function sendTitleText(string $title, int $type){
 		$pk = new SetTitlePacket();

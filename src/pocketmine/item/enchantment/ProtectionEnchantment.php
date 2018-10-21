@@ -62,6 +62,7 @@ class ProtectionEnchantment extends Enchantment{
 
 	/**
 	 * Returns the base EPF this enchantment type offers for the given enchantment level.
+	 *
 	 * @param int $level
 	 *
 	 * @return int
@@ -72,6 +73,7 @@ class ProtectionEnchantment extends Enchantment{
 
 	/**
 	 * Returns whether this enchantment type offers protection from the specified damage source's cause.
+	 *
 	 * @param EntityDamageEvent $event
 	 *
 	 * @return bool
