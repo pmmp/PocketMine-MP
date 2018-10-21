@@ -754,10 +754,10 @@ class Level implements ChunkManager, Metadatable{
 		$pk = new GameRulesChangedPacket();
 		$pk->gameRules = $rules ?? $this->gameRules->getRules();
 
-		if(empty($targets)){
-			$this->addGlobalPacket($pk);
+		if(empty($target)){
+			$this->broadcastGlobalPacket($pk);
 		}else{
-			$this->server->broadcastPacket($targets, $pk);
+			$this->server->broadcastPacket($target, $pk);
 		}
 	}
 

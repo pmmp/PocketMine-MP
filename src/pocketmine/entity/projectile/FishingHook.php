@@ -282,7 +282,8 @@ class FishingHook extends Projectile{
 				];
 				$randomFish = $items[mt_rand(0, count($items) - 1)];
 
-				$this->server->getPluginManager()->callEvent($ev = new PlayerFishingEvent($angler, $this, ItemFactory::get($randomFish), $this->random->nextBoundedInt(6) + 1));
+				$ev = new PlayerFishingEvent($angler, $this, ItemFactory::get($randomFish), $this->random->nextBoundedInt(6) + 1);
+				$ev->call();
 
 				if(!$ev->isCancelled()){
 					$nbt = Entity::createBaseNBT($this);

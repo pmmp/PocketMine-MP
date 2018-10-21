@@ -127,8 +127,13 @@ class Farmland extends Transparent{
 	public function onEntityFallenUpon(Entity $entity, float $fallDistance) : void{
 		if($entity instanceof Living){
 			if($this->level->random->nextFloat() < ($fallDistance - 0.5)){
-				Server::getInstance()->getPluginManager()->callEvent($ev = new BlockFormEvent($this, BlockFactory::get(Block::DIRT)));
-				//TODO: check game rule
+				$ev = new BlockFormEvent($this, BlockFactory::get(Block::DIRT));
+
+				if(!$this->level->getGameRules()->getBool("mobGrifeing", true)){
+					$ev->setCancelled();
+				}
+				$ev->call();
+
 				if(!$ev->isCancelled()){
 					$this->level->setBlock($this, $ev->getNewState(), true);
 				}
