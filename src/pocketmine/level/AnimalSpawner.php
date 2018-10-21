@@ -80,16 +80,10 @@ class AnimalSpawner{
 	 * @param Level $level
 	 * @param bool  $spawnHostileMobs
 	 * @param bool  $spawnPeacefulMobs
-	 * @param bool  $timeReady
 	 * @param array $eligibleChunks
-	 *
-	 * @return int
 	 */
-	public function findChunksForSpawning(Level $level, bool $spawnHostileMobs, bool $spawnPeacefulMobs, array $eligibleChunks) : int{
-		if(!$spawnHostileMobs and !$spawnPeacefulMobs){
-			return 0;
-		}else{
-			$i4 = 0;
+	public function findChunksForSpawning(Level $level, bool $spawnHostileMobs, bool $spawnPeacefulMobs, array $eligibleChunks) : void{
+		if($spawnHostileMobs or $spawnPeacefulMobs){
 			$spawn = $level->getSpawnLocation();
 
 			foreach(self::$creatureTypes as $creatureType){
@@ -139,7 +133,7 @@ class AnimalSpawner{
 													/** @var Living $entity */
 													$entity = new $class($level, Entity::createBaseNBT($pos1->add(0.5, 0, 0.5)));
 												}catch(\Exception $e){
-													return $i4;
+													return;
 												}
 
 												if($entity instanceof Mob){
