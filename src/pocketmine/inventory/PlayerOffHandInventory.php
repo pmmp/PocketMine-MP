@@ -77,7 +77,8 @@ class PlayerOffHandInventory extends BaseInventory{
 		if(!empty($target)){
 			$pk = new MobEquipmentPacket();
 			$pk->entityRuntimeId = $this->getHolder()->getId();
-			$pk->inventorySlot = $pk->hotbarSlot = $this->getItem($index);
+			$pk->item = $this->getItem($index);
+			$pk->inventorySlot = $pk->hotbarSlot = $index;
 			$this->holder->getLevel()->getServer()->broadcastPacket($target, $pk);
 		}
 	}
@@ -97,7 +98,8 @@ class PlayerOffHandInventory extends BaseInventory{
 		if(!empty($target)){
 			$pk = new MobEquipmentPacket();
 			$pk->entityRuntimeId = $this->getHolder()->getId();
-			$pk->inventorySlot = $pk->hotbarSlot = $this->getItem(0);
+			$pk->item = $this->getItem(0);
+			$pk->inventorySlot = $pk->hotbarSlot = 0;
 			$this->holder->getLevel()->getServer()->broadcastPacket($target, $pk);
 		}
 	}
