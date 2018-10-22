@@ -313,7 +313,6 @@ abstract class Projectile extends Entity{
 			}else{
 				$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 			}
-			$this->applyDamageModifiers($ev);
 
 			$entityHit->attack($ev);
 
