@@ -65,12 +65,7 @@ class Item implements ItemIds, \JsonSerializable{
 			self::$cachedParser = new LittleEndianNBTStream();
 		}
 
-		$data = self::$cachedParser->read($tag);
-		if(!($data instanceof CompoundTag)){
-			throw new \InvalidArgumentException("Invalid item NBT string given, it could not be deserialized");
-		}
-
-		return $data;
+		return self::$cachedParser->read($tag);
 	}
 
 	private static function writeCompoundTag(CompoundTag $tag) : string{

@@ -2435,10 +2435,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($t instanceof Spawnable){
 			$nbt = new NetworkLittleEndianNBTStream();
 			$compound = $nbt->read($packet->namedtag);
-
-			if(!($compound instanceof CompoundTag)){
-				throw new \InvalidArgumentException("Expected " . CompoundTag::class . " in block entity NBT, got " . (is_object($compound) ? get_class($compound) : gettype($compound)));
-			}
 			if(!$t->updateCompoundTag($compound, $this)){
 				$t->spawnTo($this);
 			}
