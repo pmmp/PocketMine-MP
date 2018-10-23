@@ -1947,7 +1947,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		foreach($this->server->getLoggedInPlayers() as $p){
-			if($p !== $this and ($p->iusername === $this->iusername or $this->getUniqueId()->equals($p->getUniqueId()))){
+			if($p !== $this and ($p->iusername === $this->iusername or $this->getUniqueId()->equals($p->getUniqueId())) and $p->isConnected()){
 				$ev = new PlayerDuplicateLoginEvent($this->networkSession, $p->networkSession);
 				$ev->call();
 				if($ev->isCancelled()){
