@@ -441,6 +441,10 @@ class BlockFactory{
 		//TODO: RESERVED6
 	}
 
+	public static function isInit() : bool{
+		return self::$fullList !== null;
+	}
+
 	/**
 	 * Registers a block type into the index. Plugins may use this method to register new block types or override
 	 * existing ones.
