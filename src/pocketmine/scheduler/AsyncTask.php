@@ -59,8 +59,8 @@ abstract class AsyncTask extends Collectable{
 	private $result = null;
 	private $serialized = false;
 	private $cancelRun = false;
-	/** @var int|null */
-	private $taskId = null;
+	/** @var bool */
+	private $submitted = false;
 
 	private $crashed = false;
 
@@ -114,15 +114,15 @@ abstract class AsyncTask extends Collectable{
 		$this->serialized = $serialize;
 	}
 
-	public function setTaskId(int $taskId) : void{
-		$this->taskId = $taskId;
+	public function setSubmitted() : void{
+		$this->submitted = true;
 	}
 
 	/**
-	 * @return int|null
+	 * @return bool
 	 */
-	public function getTaskId() : ?int{
-		return $this->taskId;
+	public function isSubmitted() : bool{
+		return $this->submitted;
 	}
 
 	/**
