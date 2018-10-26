@@ -188,7 +188,7 @@ class Villager extends Mob implements NPC, Ageable{
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
 		if(!$this->isBaby() and $this->offers instanceof CompoundTag and !$this->isImmobile()){
-			$player->addWindow($this->getInventory(), WindowTypes::TRADING);
+			$player->addWindow($this->getInventory());
 			return true;
 		}
 		return false;
