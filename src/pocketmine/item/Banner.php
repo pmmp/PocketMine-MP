@@ -37,7 +37,7 @@ class Banner extends Item{
 	public const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
 	public const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
-	public function __construct(int $meta = 0){
+	public function __construct(int $meta){
 		parent::__construct(self::BANNER, $meta, "Banner");
 	}
 

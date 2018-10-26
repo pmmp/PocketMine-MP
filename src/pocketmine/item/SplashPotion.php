@@ -27,7 +27,7 @@ use pocketmine\nbt\tag\CompoundTag;
 
 class SplashPotion extends ProjectileItem{
 
-	public function __construct(int $meta = 0){
+	public function __construct(int $meta){
 		parent::__construct(self::SPLASH_POTION, $meta, "Splash Potion");
 	}
 

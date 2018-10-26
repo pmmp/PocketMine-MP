@@ -255,7 +255,7 @@ class Potion extends Item implements Consumable{
 		return [];
 	}
 
-	public function __construct(int $meta = 0){
+	public function __construct(int $meta){
 		parent::__construct(self::POTION, $meta, "Potion");
 	}
 
