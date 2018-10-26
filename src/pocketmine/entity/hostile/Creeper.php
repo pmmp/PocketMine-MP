@@ -141,7 +141,12 @@ class Creeper extends Monster implements Ageable{
 			$f = $this->isPowered() ? 2 : 1;
 			$exp = new Explosion($this, $this->explosionRadius * $f, $this);
 			$this->flagForDespawn();
-			$exp->explode();
+
+			if($this->level->getGameRules()->getBool("mobGriefing", true)){
+				$exp->explode();
+			}else{
+				$exp->explodeB();
+			}
 		}
 	}
 
