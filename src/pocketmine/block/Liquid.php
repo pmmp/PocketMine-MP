@@ -118,8 +118,8 @@ abstract class Liquid extends Transparent{
 		return $block->falling ? 0 : $block->decay;
 	}
 
-	public function clearCaches() : void{
-		parent::clearCaches();
+	public function updateState() : void{
+		parent::updateState();
 		$this->flowVector = null;
 	}
 

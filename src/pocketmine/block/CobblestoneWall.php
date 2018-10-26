@@ -31,6 +31,11 @@ class CobblestoneWall extends Transparent{
 	public const NONE_MOSSY_WALL = 0;
 	public const MOSSY_WALL = 1;
 
+	/** @var bool[] facing => dummy */
+	protected $connections = [];
+	/** @var bool */
+	protected $up = false;
+
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}
@@ -43,17 +48,32 @@ class CobblestoneWall extends Transparent{
 		return 2;
 	}
 
+	public function updateState() : void{
+		parent::updateState();
+
+		foreach(Facing::HORIZONTAL as $facing){
+			$block = $this->getSide($facing);
+			if($block instanceof static or $block instanceof FenceGate or ($block->isSolid() and !$block->isTransparent())){
+				$this->connections[$facing] = true;
+			}else{
+				unset($this->connections[$facing]);
+			}
+		}
+
+		$this->up = $this->getSide(Facing::UP)->getId() !== Block::AIR;
+	}
+
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		//walls don't have any special collision boxes like fences do
 
-		$north = $this->canConnect($this->getSide(Facing::NORTH));
-		$south = $this->canConnect($this->getSide(Facing::SOUTH));
-		$west = $this->canConnect($this->getSide(Facing::WEST));
-		$east = $this->canConnect($this->getSide(Facing::EAST));
+		$north = isset($this->connections[Facing::NORTH]);
+		$south = isset($this->connections[Facing::SOUTH]);
+		$west = isset($this->connections[Facing::WEST]);
+		$east = isset($this->connections[Facing::EAST]);
 
 		$inset = 0.25;
 		if(
-			$this->getSide(Facing::UP)->getId() === Block::AIR and //if there is a block on top, it stays as a post
+			!$this->up and //if there is a block on top, it stays as a post
 			(
 				($north and $south and !$west and !$east) or
 				(!$north and !$south and $west and $east)
@@ -71,9 +91,5 @@ class CobblestoneWall extends Transparent{
 			1.5,
 			1 - ($south ? 0 : $inset)
 		);
-	}
-
-	public function canConnect(Block $block){
-		return $block instanceof static or $block instanceof FenceGate or ($block->isSolid() and !$block->isTransparent());
 	}
 }

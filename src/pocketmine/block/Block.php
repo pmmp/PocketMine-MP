@@ -448,7 +448,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		$this->y = (int) $v->y;
 		$this->z = (int) $v->z;
 		$this->level = $v->level;
-		$this->boundingBox = null;
+		$this->updateState();
 	}
 
 	/**
@@ -718,10 +718,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Clears any cached precomputed objects, such as bounding boxes. This is called on block neighbour update and when
-	 * the block is set into the world to remove any outdated precomputed things such as AABBs and force recalculation.
+	 * Called when this block is created, set, or has a neighbouring block update, to re-detect dynamic properties which
+	 * are not saved on the world.
+	 *
+	 * Clears any cached precomputed objects, such as bounding boxes. Remove any outdated precomputed things such as
+	 * AABBs and force recalculation.
 	 */
-	public function clearCaches() : void{
+	public function updateState() : void{
 		$this->boundingBox = null;
 		$this->collisionBoxes = null;
 	}

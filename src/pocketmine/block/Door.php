@@ -69,11 +69,10 @@ abstract class Door extends Transparent{
 		return 0b1111;
 	}
 
-	/**
-	 * Copies door properties from the other half of the door, since metadata is split between the two halves.
-	 * TODO: the blockstate should be updated directly on creation so these properties can be detected in advance.
-	 */
-	private function updateStateFromOtherHalf() : void{
+	public function updateState() : void{
+		parent::updateState();
+
+		//copy door properties from other half
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 		if($other instanceof Door and $other->isSameType($this)){
 			if($this->top){
@@ -91,8 +90,6 @@ abstract class Door extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$this->updateStateFromOtherHalf();
-
 		return AxisAlignedBB::one()
 			->extend(Facing::UP, 1)
 			->trim($this->open ? Facing::rotate($this->facing, Facing::AXIS_Y, !$this->hingeRight) : $this->facing, 13 / 16);
@@ -135,7 +132,6 @@ abstract class Door extends Transparent{
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		$this->updateStateFromOtherHalf();
 		$this->open = !$this->open;
 
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);

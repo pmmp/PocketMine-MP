@@ -762,7 +762,7 @@ class Level implements ChunkManager, Metadatable{
 			Level::getBlockXYZ($index, $x, $y, $z);
 
 			$block = $this->getBlockAt($x, $y, $z);
-			$block->clearCaches(); //for blocks like fences, force recalculation of connected AABBs
+			$block->updateState(); //for blocks like fences, force recalculation of connected AABBs
 
 			$ev = new BlockUpdateEvent($block);
 			$ev->call();
@@ -1372,6 +1372,7 @@ class Level implements ChunkManager, Metadatable{
 		$block->y = $y;
 		$block->z = $z;
 		$block->level = $this;
+		$block->updateState();
 
 		if($addToCache and $blockHash !== null){
 			$this->blockCache[$chunkHash][$blockHash] = $block;
@@ -1524,7 +1525,6 @@ class Level implements ChunkManager, Metadatable{
 			$block = clone $block;
 
 			$block->position($pos);
-			$block->clearCaches();
 
 			$chunkHash = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
 			$blockHash = Level::blockHash($pos->x, $pos->y, $pos->z);
