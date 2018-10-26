@@ -255,8 +255,8 @@ class Potion extends Item implements Consumable{
 		return [];
 	}
 
-	public function __construct(int $meta){
-		parent::__construct(self::POTION, $meta, "Potion");
+	public function __construct(int $variant){
+		parent::__construct(self::POTION, $variant, "Potion");
 	}
 
 	public function getMaxStackSize() : int{
