@@ -109,7 +109,12 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putVarInt($auxValue);
 
 		$nbt = $item->getCompoundTag();
-		$this->putLShort(strlen($nbt));
+		$nbtLen = strlen($nbt);
+		if($nbtLen > 32767){
+			throw new \InvalidArgumentException("NBT encoded length must be < 32768, got $nbtLen bytes");
+		}
+
+		$this->putLShort($nbtLen);
 		$this->put($nbt);
 
 		$this->putVarInt(0); //CanPlaceOn entry count (TODO)
