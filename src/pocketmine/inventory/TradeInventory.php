@@ -70,6 +70,7 @@ class TradeInventory extends ContainerInventory{
 			$this->holder->getDataPropertyManager()->setLong(Villager::DATA_TRADING_PLAYER_EID, $who->getId());
 
 			$pk = new UpdateTradePacket();
+			$pk->windowId = $who->getWindowId($this);
 			$pk->varint1 = 0;
 			$pk->varint2 = 0;
 			$pk->isWilling = $this->holder->isWilling();
