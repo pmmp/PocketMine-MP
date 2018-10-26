@@ -36,10 +36,10 @@ use pocketmine\tile\Skull;
 class ItemFactory{
 
 	/** @var \SplFixedArray */
-	private static $list = null;
+	private static $list = [];
 
 	public static function init(){
-		self::$list = new \SplFixedArray(65536);
+		self::$list = []; //in case of re-initializing
 
 		self::registerItem(new Shovel(Item::IRON_SHOVEL, "Iron Shovel", TieredTool::TIER_IRON));
 		self::registerItem(new Pickaxe(Item::IRON_PICKAXE, "Iron Pickaxe", TieredTool::TIER_IRON));
@@ -318,13 +318,7 @@ class ItemFactory{
 			throw new \RuntimeException("Trying to overwrite an already registered item");
 		}
 
-		$offset = self::getListOffset($id);
-		$sublist = self::$list[$offset] ?? new \SplFixedArray();
-		if($sublist->getSize() < $variant + 1){
-			$sublist->setSize($variant + 1);
-		}
-		$sublist[$variant] = clone $item;
-		self::$list[$offset] = $sublist;
+		self::$list[self::getListOffset($id, $variant)] = clone $item;
 	}
 
 	/**
@@ -346,17 +340,12 @@ class ItemFactory{
 		/** @var Item $item */
 		$item = null;
 		if($meta !== -1){
-			$sublist = self::$list[self::getListOffset($id)];
-
-			/** @var Item|null $listed */
-			if($sublist !== null){
-				if(isset($sublist[$meta])){
-					$item = clone $sublist[$meta];
-				}elseif(isset($sublist[0]) and $sublist[0] instanceof Durable){
-					/** @var Durable $item */
-					$item = clone $sublist[0];
-					$item->setDamage($meta);
-				}
+			if(isset(self::$list[$offset = self::getListOffset($id, $meta)])){
+				$item = clone self::$list[$offset];
+			}elseif(isset(self::$list[$zero = self::getListOffset($id, 0)]) and self::$list[$zero] instanceof Durable){
+				/** @var Durable $item */
+				$item = clone self::$list[$zero];
+				$item->setDamage($meta);
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 				$item = new ItemBlock($id, $meta);
 			}
@@ -433,14 +422,13 @@ class ItemFactory{
 			return BlockFactory::isRegistered($id);
 		}
 
-		$sublist = self::$list[self::getListOffset($id)];
-		return $sublist !== null and isset($sublist[$variant]);
+		return isset(self::$list[self::getListOffset($id, $variant)]);
 	}
 
-	private static function getListOffset(int $id) : int{
+	private static function getListOffset(int $id, int $variant) : int{
 		if($id < -0x8000 or $id > 0x7fff){
 			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
 		}
-		return $id & 0xffff;
+		return (($id & 0xffff) << 16) | ($variant & 0xffff);
 	}
 }
