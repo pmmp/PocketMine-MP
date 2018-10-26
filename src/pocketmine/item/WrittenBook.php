@@ -34,8 +34,8 @@ class WrittenBook extends WritableBook{
 	public const TAG_AUTHOR = "author"; //TAG_String
 	public const TAG_TITLE = "title"; //TAG_String
 
-	public function __construct(int $meta = 0){
-		Item::__construct(self::WRITTEN_BOOK, $meta, "Written Book");
+	public function __construct(){
+		Item::__construct(self::WRITTEN_BOOK, 0, "Written Book");
 	}
 
 	public function getMaxStackSize() : int{

@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 class FishingRod extends Item{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::FISHING_ROD, $meta, "Fishing Rod");
+	public function __construct(){
+		parent::__construct(self::FISHING_ROD, 0, "Fishing Rod");
 	}
 
 	//TODO

@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 class Steak extends Food{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::STEAK, $meta, "Steak");
+	public function __construct(){
+		parent::__construct(self::STEAK, 0, "Steak");
 	}
 
 	public function getFoodRestore() : int{

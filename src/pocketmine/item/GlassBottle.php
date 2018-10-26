@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 class GlassBottle extends Item{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::GLASS_BOTTLE, $meta, "Glass Bottle");
+	public function __construct(){
+		parent::__construct(self::GLASS_BOTTLE, 0, "Glass Bottle");
 	}
 }

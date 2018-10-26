@@ -30,8 +30,8 @@ use pocketmine\math\Vector3;
 
 class ChorusFruit extends Food{
 
-	public function __construct(int $meta = 0){
-		parent::__construct(self::CHORUS_FRUIT, $meta, "Chorus Fruit");
+	public function __construct(){
+		parent::__construct(self::CHORUS_FRUIT, 0, "Chorus Fruit");
 	}
 
 	public function getFoodRestore() : int{

@@ -25,8 +25,8 @@ namespace pocketmine\item;
 
 
 class LeatherBoots extends Armor{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::LEATHER_BOOTS, $meta, "Leather Boots");
+	public function __construct(){
+		parent::__construct(self::LEATHER_BOOTS, 0, "Leather Boots");
 	}
 
 	public function getDefensePoints() : int{

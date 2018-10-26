@@ -27,8 +27,8 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 
 class Sign extends Item{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::SIGN, $meta, "Sign");
+	public function __construct(){
+		parent::__construct(self::SIGN, 0, "Sign");
 	}
 
 	public function getBlock() : Block{

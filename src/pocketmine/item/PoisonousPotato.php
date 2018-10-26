@@ -27,8 +27,8 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 
 class PoisonousPotato extends Food{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::POISONOUS_POTATO, $meta, "Poisonous Potato");
+	public function __construct(){
+		parent::__construct(self::POISONOUS_POTATO, 0, "Poisonous Potato");
 	}
 
 	public function getFoodRestore() : int{

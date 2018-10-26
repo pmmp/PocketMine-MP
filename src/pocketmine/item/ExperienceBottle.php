@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 class ExperienceBottle extends ProjectileItem{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::EXPERIENCE_BOTTLE, $meta, "Bottle o' Enchanting");
+	public function __construct(){
+		parent::__construct(self::EXPERIENCE_BOTTLE, 0, "Bottle o' Enchanting");
 	}
 
 	public function getProjectileEntityType() : string{
