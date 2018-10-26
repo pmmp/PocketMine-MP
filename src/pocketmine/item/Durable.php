@@ -74,11 +74,11 @@ abstract class Durable extends Item{
 		return $this->damage;
 	}
 
-	public function setDamage(int $meta) : Item{
-		if($meta < 0 or $meta > $this->getMaxDurability()){
+	public function setDamage(int $damage) : Item{
+		if($damage < 0 or $damage > $this->getMaxDurability()){
 			throw new \InvalidArgumentException("Damage must be in range 0 - " , $this->getMaxDurability());
 		}
-		$this->damage = $meta;
+		$this->damage = $damage;
 		return $this;
 	}
 
