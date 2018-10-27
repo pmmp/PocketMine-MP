@@ -197,7 +197,7 @@ class ShapedRecipe implements CraftingRecipe{
 
 				$given = $grid->getIngredient($reverse ? $this->width - $x - 1 : $x, $y);
 				$required = $this->getIngredient($x, $y);
-				if(!$required->equals($given, !$required->hasAnyDamageValue(), $required->hasCompoundTag()) or $required->getCount() > $given->getCount()){
+				if(!$required->equals($given, !$required->hasAnyDamageValue(), $required->hasNamedTag()) or $required->getCount() > $given->getCount()){
 					return false;
 				}
 			}

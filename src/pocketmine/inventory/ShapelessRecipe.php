@@ -81,7 +81,7 @@ class ShapelessRecipe implements CraftingRecipe{
 			if($item->getCount() <= 0){
 				break;
 			}
-			if($ingredient->equals($item, !$item->hasAnyDamageValue(), $item->hasCompoundTag())){
+			if($ingredient->equals($item, !$item->hasAnyDamageValue(), $item->hasNamedTag())){
 				unset($this->ingredients[$index]);
 				$item->pop();
 			}
@@ -124,7 +124,7 @@ class ShapelessRecipe implements CraftingRecipe{
 
 		foreach($this->ingredients as $needItem){
 			foreach($input as $j => $haveItem){
-				if($haveItem->equals($needItem, !$needItem->hasAnyDamageValue(), $needItem->hasCompoundTag()) and $haveItem->getCount() >= $needItem->getCount()){
+				if($haveItem->equals($needItem, !$needItem->hasAnyDamageValue(), $needItem->hasNamedTag()) and $haveItem->getCount() >= $needItem->getCount()){
 					unset($input[$j]);
 					continue 2;
 				}

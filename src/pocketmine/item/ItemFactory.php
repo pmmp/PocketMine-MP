@@ -324,19 +324,15 @@ class ItemFactory{
 	/**
 	 * Returns an instance of the Item with the specified id, meta, count and NBT.
 	 *
-	 * @param int                $id
-	 * @param int                $meta
-	 * @param int                $count
-	 * @param CompoundTag|string $tags
+	 * @param int         $id
+	 * @param int         $meta
+	 * @param int         $count
+	 * @param CompoundTag $tags
 	 *
 	 * @return Item
-	 * @throws \TypeError
+	 * @throws \InvalidArgumentException
 	 */
-	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
-		if(!is_string($tags) and !($tags instanceof CompoundTag)){
-			throw new \TypeError("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
-		}
-
+	public static function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
 		/** @var Item $item */
 		$item = null;
 		if($meta !== -1){
@@ -357,7 +353,9 @@ class ItemFactory{
 		}
 
 		$item->setCount($count);
-		$item->setCompoundTag($tags);
+		if($tags !== null){
+			$item->setNamedTag($tags);
+		}
 		return $item;
 	}
 

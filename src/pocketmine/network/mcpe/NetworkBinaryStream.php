@@ -30,12 +30,15 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\LittleEndianNBTStream;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
 
 class NetworkBinaryStream extends BinaryStream{
+	/** @var LittleEndianNBTStream */
+	private static $itemNbtSerializer = null;
 
 	public function getString() : string{
 		return $this->get($this->getUnsignedVarInt());
@@ -77,10 +80,12 @@ class NetworkBinaryStream extends BinaryStream{
 		$cnt = $auxValue & 0xff;
 
 		$nbtLen = $this->getLShort();
-		$nbt = "";
-
+		$compound = null;
 		if($nbtLen > 0){
-			$nbt = $this->get($nbtLen);
+			if(self::$itemNbtSerializer === null){
+				self::$itemNbtSerializer = new LittleEndianNBTStream();
+			}
+			$compound = self::$itemNbtSerializer->read($this->get($nbtLen));
 		}
 
 		//TODO
@@ -93,7 +98,7 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->getString();
 		}
 
-		return ItemFactory::get($id, $data, $cnt, $nbt);
+		return ItemFactory::get($id, $data, $cnt, $compound);
 	}
 
 
@@ -108,10 +113,17 @@ class NetworkBinaryStream extends BinaryStream{
 		$auxValue = (($item->getDamage() & 0x7fff) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 
-		$nbt = $item->getCompoundTag();
-		$nbtLen = strlen($nbt);
-		if($nbtLen > 32767){
-			throw new \InvalidArgumentException("NBT encoded length must be < 32768, got $nbtLen bytes");
+		$nbt = "";
+		$nbtLen = 0;
+		if($item->hasNamedTag()){
+			if(self::$itemNbtSerializer === null){
+				self::$itemNbtSerializer = new LittleEndianNBTStream();
+			}
+			$nbt = self::$itemNbtSerializer->write($item->getNamedTag());
+			$nbtLen = strlen($nbt);
+			if($nbtLen > 32767){
+				throw new \InvalidArgumentException("NBT encoded length must be < 32768, got $nbtLen bytes");
+			}
 		}
 
 		$this->putLShort($nbtLen);

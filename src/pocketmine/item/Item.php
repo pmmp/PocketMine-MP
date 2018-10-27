@@ -81,14 +81,14 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * This function redirects to {@link ItemFactory#get}.
 	 *
-	 * @param int                $id
-	 * @param int                $meta
-	 * @param int                $count
-	 * @param CompoundTag|string $tags
+	 * @param int         $id
+	 * @param int         $meta
+	 * @param int         $count
+	 * @param CompoundTag $tags
 	 *
 	 * @return Item
 	 */
-	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
+	public static function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
 		return ItemFactory::get($id, $meta, $count, $tags);
 	}
 
@@ -170,10 +170,8 @@ class Item implements ItemIds, \JsonSerializable{
 	protected $id;
 	/** @var int */
 	protected $meta;
-	/** @var string */
-	private $tags = "";
 	/** @var CompoundTag|null */
-	private $cachedNBT = null;
+	private $nbt = null;
 	/** @var int */
 	protected $count = 1;
 	/** @var string */
@@ -197,40 +195,6 @@ class Item implements ItemIds, \JsonSerializable{
 		$this->id = $id;
 		$this->meta = $variant !== -1 ? $variant & 0x7FFF : -1;
 		$this->name = $name;
-	}
-
-	/**
-	 * Sets the Item's NBT
-	 *
-	 * @param CompoundTag|string $tags
-	 *
-	 * @return Item
-	 */
-	public function setCompoundTag($tags) : Item{
-		if($tags instanceof CompoundTag){
-			$this->setNamedTag($tags);
-		}else{
-			$this->tags = (string) $tags;
-			$this->cachedNBT = null;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Returns the serialized NBT of the Item
-	 * @return string
-	 */
-	public function getCompoundTag() : string{
-		return $this->tags;
-	}
-
-	/**
-	 * Returns whether this Item has a non-empty NBT.
-	 * @return bool
-	 */
-	public function hasCompoundTag() : bool{
-		return $this->tags !== "";
 	}
 
 	/**
@@ -538,17 +502,21 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Returns whether this Item has a non-empty NBT.
+	 * @return bool
+	 */
+	public function hasNamedTag() : bool{
+		return $this->nbt !== null and $this->nbt->count() > 0;
+	}
+
+	/**
 	 * Returns a tree of Tag objects representing the Item's NBT. If the item does not have any NBT, an empty CompoundTag
 	 * object is returned to allow the caller to manipulate and apply back to the item.
 	 *
 	 * @return CompoundTag
 	 */
 	public function getNamedTag() : CompoundTag{
-		if(!$this->hasCompoundTag() and $this->cachedNBT === null){
-			$this->cachedNBT = new CompoundTag();
-		}
-
-		return $this->cachedNBT ?? ($this->cachedNBT = self::parseCompoundTag($this->tags));
+		return $this->nbt ?? ($this->nbt = new CompoundTag());
 	}
 
 	/**
@@ -563,8 +531,7 @@ class Item implements ItemIds, \JsonSerializable{
 			return $this->clearNamedTag();
 		}
 
-		$this->cachedNBT = $tag;
-		$this->tags = self::writeCompoundTag($tag);
+		$this->nbt = clone $tag;
 
 		return $this;
 	}
@@ -574,7 +541,8 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Item
 	 */
 	public function clearNamedTag() : Item{
-		return $this->setCompoundTag("");
+		$this->nbt = null;
+		return $this;
 	}
 
 	/**
@@ -817,9 +785,7 @@ class Item implements ItemIds, \JsonSerializable{
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		if($this->id === $item->getId() and (!$checkDamage or $this->getDamage() === $item->getDamage())){
 			if($checkCompound){
-				if($item->getCompoundTag() === $this->getCompoundTag()){
-					return true;
-				}elseif($this->hasCompoundTag() and $item->hasCompoundTag()){
+				if($this->hasNamedTag() and $item->hasNamedTag()){
 					//Serialized NBT didn't match, check the cached object tree.
 					return $this->getNamedTag()->equals($item->getNamedTag());
 				}
@@ -846,7 +812,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getDamage()) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getDamage()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . self::writeCompoundTag($this->nbt) : "");
 	}
 
 	/**
@@ -867,8 +833,8 @@ class Item implements ItemIds, \JsonSerializable{
 			$data["count"] = $this->getCount();
 		}
 
-		if($this->hasCompoundTag()){
-			$data["nbt_b64"] = base64_encode($this->getCompoundTag());
+		if($this->hasNamedTag()){
+			$data["nbt_b64"] = base64_encode(self::writeCompoundTag($this->getNamedTag()));
 		}
 
 		return $data;
@@ -893,10 +859,7 @@ class Item implements ItemIds, \JsonSerializable{
 			$nbt = base64_decode($data["nbt_b64"], true);
 		}
 		return ItemFactory::get(
-			(int) $data["id"],
-			(int) ($data["damage"] ?? 0),
-			(int) ($data["count"] ?? 1),
-			(string) $nbt
+			(int) $data["id"], (int) ($data["damage"] ?? 0), (int) ($data["count"] ?? 1), $nbt !== "" ? self::parseCompoundTag($nbt) : null
 		);
 	}
 
@@ -915,7 +878,7 @@ class Item implements ItemIds, \JsonSerializable{
 			new ShortTag("Damage", $this->getDamage())
 		]);
 
-		if($this->hasCompoundTag()){
+		if($this->hasNamedTag()){
 			$itemNBT = clone $this->getNamedTag();
 			$itemNBT->setName("tag");
 			$result->setTag($itemNBT);
@@ -970,6 +933,8 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	public function __clone(){
-		$this->cachedNBT = null;
+		if($this->nbt !== null){
+			$this->nbt = clone $this->nbt;
+		}
 	}
 }
