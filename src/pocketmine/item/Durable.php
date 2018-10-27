@@ -76,7 +76,7 @@ abstract class Durable extends Item{
 
 	public function setDamage(int $damage) : Item{
 		if($damage < 0 or $damage > $this->getMaxDurability()){
-			throw new \InvalidArgumentException("Damage must be in range 0 - " , $this->getMaxDurability());
+			throw new \InvalidArgumentException("Damage must be in range 0 - " . $this->getMaxDurability());
 		}
 		$this->damage = $damage;
 		return $this;
