@@ -32,7 +32,13 @@ use pocketmine\utils\Random;
  * Stefan Gustavson at
  * http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
  */
-class Simplex extends Perlin{
+class Simplex extends Noise{
+	public static $grad3 = [
+		[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
+		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
+		[0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
+	];
+
 	protected static $SQRT_3;
 	protected static $SQRT_5;
 	protected static $F2;
@@ -66,8 +72,32 @@ class Simplex extends Perlin{
 
 
 	public function __construct(Random $random, $octaves, $persistence, $expansion = 1){
-		parent::__construct($random, $octaves, $persistence, $expansion);
+		$this->octaves = $octaves;
+		$this->persistence = $persistence;
+		$this->expansion = $expansion;
+		$this->offsetX = $random->nextFloat() * 256;
+		$this->offsetY = $random->nextFloat() * 256;
+		$this->offsetZ = $random->nextFloat() * 256;
 		$this->offsetW = $random->nextFloat() * 256;
+
+		for($i = 0; $i < 512; ++$i){
+			$this->perm[$i] = 0;
+		}
+
+		for($i = 0; $i < 256; ++$i){
+			$this->perm[$i] = $random->nextBoundedInt(256);
+		}
+
+		for($i = 0; $i < 256; ++$i){
+			$pos = $random->nextBoundedInt(256 - $i) + $i;
+			$old = $this->perm[$i];
+
+			$this->perm[$i] = $this->perm[$pos];
+			$this->perm[$pos] = $old;
+			$this->perm[$i + 256] = $this->perm[$i];
+		}
+
+
 		self::$SQRT_3 = sqrt(3);
 		self::$SQRT_5 = sqrt(5);
 		self::$F2 = 0.5 * (self::$SQRT_3 - 1);
