@@ -198,7 +198,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var bool[] */
 	private $chunkPopulationQueue = [];
 	/** @var bool[] */
-	private $chunkPopulationLock = [];
+	private $chunkLock = [];
 	/** @var int */
 	private $chunkPopulationQueueSize = 2;
 	/** @var bool[] */
@@ -2314,12 +2314,28 @@ class Level implements ChunkManager, Metadatable{
 		return $result;
 	}
 
+	public function lockChunk(int $chunkX, int $chunkZ) : void{
+		$chunkHash = Level::chunkHash($chunkX, $chunkZ);
+		if(isset($this->chunkLock[$chunkHash])){
+			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ is already locked");
+		}
+		$this->chunkLock[$chunkHash] = true;
+	}
+
+	public function unlockChunk(int $chunkX, int $chunkZ) : void{
+		unset($this->chunkLock[Level::chunkHash($chunkX, $chunkZ)]);
+	}
+
+	public function isChunkLocked(int $chunkX, int $chunkZ) : bool{
+		return isset($this->chunkLock[Level::chunkHash($chunkX, $chunkZ)]);
+	}
+
 	public function generateChunkCallback(int $x, int $z, ?Chunk $chunk){
 		Timings::$generationCallbackTimer->startTiming();
 		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)])){
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
-					unset($this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)]);
+					$this->unlockChunk($x + $xx, $z + $zz);
 				}
 			}
 			unset($this->chunkPopulationQueue[$index]);
@@ -2335,8 +2351,8 @@ class Level implements ChunkManager, Metadatable{
 					}
 				}
 			}
-		}elseif(isset($this->chunkPopulationLock[$index])){
-			unset($this->chunkPopulationLock[$index]);
+		}elseif($this->isChunkLocked($x, $z)){
+			$this->unlockChunk($x, $z);
 			if($chunk !== null){
 				$this->setChunk($x, $z, $chunk, false);
 			}
@@ -2958,7 +2974,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 		for($xx = -1; $xx <= 1; ++$xx){
 			for($zz = -1; $zz <= 1; ++$zz){
-				if(isset($this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)])){
+				if($this->isChunkLocked($x + $xx, $z + $zz)){
 					return false;
 				}
 			}
@@ -2971,7 +2987,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->chunkPopulationQueue[$index] = true;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
-					$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
+					$this->lockChunk($x + $xx, $z + $zz);
 				}
 			}
 
