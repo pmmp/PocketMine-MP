@@ -39,6 +39,10 @@ class Skull extends Flowable{
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
+	protected $type = TileSkull::TYPE_SKELETON;
+	/** @var int */
+	protected $rotation = 0; //TODO: split this into floor skull and wall skull handling
+
 	public function __construct(){
 
 	}
@@ -53,6 +57,15 @@ class Skull extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b111;
+	}
+
+	public function updateState() : void{
+		parent::updateState();
+		$tile = $this->level->getTile($this);
+		if($tile instanceof TileSkull){
+			$this->type = $tile->getType();
+			$this->rotation = $tile->getRotation();
+		}
 	}
 
 	public function getHardness() : float{
@@ -74,8 +87,17 @@ class Skull extends Flowable{
 		}
 
 		$this->facing = $face;
+		$this->type = $item->getDamage(); //TODO: replace this with a proper variant getter
+		if($player !== null and $face === Facing::UP){
+			$this->rotation = ((int) floor(($player->yaw * 16 / 360) + 0.5)) & 0xf;
+		}
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			Tile::createTile(Tile::SKULL, $this->getLevel(), TileSkull::createNBT($this, $face, $item, $player));
+			//TODO: make this automatic on block set
+			$tile = Tile::createTile(Tile::SKULL, $this->getLevel(), TileSkull::createNBT($this));
+			if($tile instanceof TileSkull){
+				$tile->setRotation($this->rotation);
+				$tile->setType($this->type);
+			}
 			return true;
 		}
 
@@ -83,8 +105,7 @@ class Skull extends Flowable{
 	}
 
 	public function getItem() : Item{
-		$tile = $this->level->getTile($this);
-		return ItemFactory::get(Item::SKULL, $tile instanceof TileSkull ? $tile->getType() : 0);
+		return ItemFactory::get(Item::SKULL, $this->type);
 	}
 
 	public function isAffectedBySilkTouch() : bool{

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Color;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
@@ -50,6 +51,8 @@ class Bed extends Transparent{
 	protected $occupied = false;
 	/** @var bool */
 	protected $head = false;
+	/** @var int */
+	protected $color = Color::RED;
 
 	public function __construct(){
 
@@ -69,6 +72,16 @@ class Bed extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
+	}
+
+	public function updateState() : void{
+		parent::updateState();
+		//read extra state information from the tile - this is an ugly hack
+		//TODO: extend this hack to setting block as well so we don't have to deal with tile hacks in the main code
+		$tile = $this->level->getTile($this);
+		if($tile instanceof TileBed){
+			$this->color = $tile->getColor();
+		}
 	}
 
 	public function getHardness() : float{
@@ -161,6 +174,7 @@ class Bed extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		$this->color = $item->getDamage(); //TODO: replace this with a proper colour getter
 		$down = $this->getSide(Facing::DOWN);
 		if(!$down->isTransparent()){
 			$this->facing = $player !== null ? Bearing::toFacing($player->getDirection()) : Facing::NORTH;
@@ -172,8 +186,15 @@ class Bed extends Transparent{
 				$nextState->head = true;
 				$this->getLevel()->setBlock($next, $nextState);
 
-				Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($this, $face, $item, $player));
-				Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($next, $face, $item, $player));
+				//TODO: make this happen automatically on block set
+				$tile1 = Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($this));
+				if($tile1 instanceof TileBed){
+					$tile1->setColor($this->color);
+				}
+				$tile2 = Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($next));
+				if($tile2 instanceof TileBed){
+					$tile2->setColor($this->color);
+				}
 
 				return true;
 			}
@@ -191,12 +212,7 @@ class Bed extends Transparent{
 	}
 
 	public function getItem() : Item{
-		$tile = $this->getLevel()->getTile($this);
-		if($tile instanceof TileBed){
-			return ItemFactory::get($this->getItemId(), $tile->getColor());
-		}
-
-		return ItemFactory::get($this->getItemId(), 14); //Red
+		return ItemFactory::get($this->getItemId(), $this->color);
 	}
 
 	public function isAffectedBySilkTouch() : bool{

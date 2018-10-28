@@ -35,7 +35,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
@@ -183,14 +182,15 @@ abstract class Tile extends Position{
 	/**
 	 * Creates and returns a CompoundTag containing the necessary information to spawn a tile of this type.
 	 *
-	 * @param Vector3     $pos
-	 * @param int|null    $face
-	 * @param Item|null   $item
-	 * @param Player|null $player
+	 * @param Vector3   $pos
+	 * @param Item|null $item
 	 *
 	 * @return CompoundTag
+	 * @throws \BadMethodCallException
+	 * @throws \InvalidArgumentException
+	 * @throws \InvalidStateException
 	 */
-	public static function createNBT(Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : CompoundTag{
+	public static function createNBT(Vector3 $pos, ?Item $item = null) : CompoundTag{
 		if(static::class === self::class){
 			throw new \BadMethodCallException(__METHOD__ . " must be called from the scope of a child class");
 		}
@@ -201,7 +201,7 @@ abstract class Tile extends Position{
 			new IntTag(self::TAG_Z, (int) $pos->z)
 		]);
 
-		static::createAdditionalNBT($nbt, $pos, $face, $item, $player);
+		static::createAdditionalNBT($nbt, $item);
 
 		if($item !== null){
 			$customBlockData = $item->getCustomBlockData();
@@ -217,14 +217,12 @@ abstract class Tile extends Position{
 
 	/**
 	 * Called by createNBT() to allow descendent classes to add their own base NBT using the parameters provided.
+	 * TODO: remove this and add a hook for setting data from items post-place
 	 *
 	 * @param CompoundTag $nbt
-	 * @param Vector3     $pos
-	 * @param int|null    $face
 	 * @param Item|null   $item
-	 * @param Player|null $player
 	 */
-	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
+	protected static function createAdditionalNBT(CompoundTag $nbt, ?Item $item = null) : void{
 
 	}
 

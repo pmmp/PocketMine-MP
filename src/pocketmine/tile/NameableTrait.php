@@ -24,10 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\item\Item;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\Player;
 
 /**
  * This trait implements most methods in the {@link Nameable} interface. It should only be used by Tiles.
@@ -66,7 +64,7 @@ trait NameableTrait{
 		return $this->customName !== null;
 	}
 
-	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
+	protected static function createAdditionalNBT(CompoundTag $nbt, ?Item $item = null) : void{
 		if($item !== null and $item->hasCustomName()){
 			$nbt->setString(Nameable::TAG_CUSTOM_NAME, $item->getCustomName());
 		}

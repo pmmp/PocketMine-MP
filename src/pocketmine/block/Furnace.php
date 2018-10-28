@@ -94,7 +94,7 @@ class Furnace extends Solid{
 			$this->facing = Bearing::toFacing(Bearing::opposite($player->getDirection()));
 		}
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this, $face, $item, $player));
+			Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this, $item));
 			return true;
 		}
 

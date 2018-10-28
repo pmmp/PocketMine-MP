@@ -23,11 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\Player;
 
 class Bed extends Spawnable{
 	public const TAG_COLOR = "color";
@@ -53,11 +49,5 @@ class Bed extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setByte(self::TAG_COLOR, $this->color);
-	}
-
-	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		if($item !== null){
-			$nbt->setByte(self::TAG_COLOR, $item->getDamage());
-		}
 	}
 }

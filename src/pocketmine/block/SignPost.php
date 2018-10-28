@@ -83,7 +83,7 @@ class SignPost extends Transparent{
 			}
 
 			if($ret){
-				Tile::createTile(Tile::SIGN, $this->getLevel(), TileSign::createNBT($this, $face, $item, $player));
+				Tile::createTile(Tile::SIGN, $this->getLevel(), TileSign::createNBT($this, $item));
 				return true;
 			}
 		}

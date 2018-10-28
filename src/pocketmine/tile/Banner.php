@@ -23,13 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\Player;
 
 class Banner extends Spawnable implements Nameable{
 	use NameableTrait {
@@ -268,15 +267,16 @@ class Banner extends Spawnable implements Nameable{
 		return $this->patterns;
 	}
 
-	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
-		$nbt->setInt(self::TAG_BASE, $item !== null ? $item->getDamage() & 0x0f : 0);
+	protected static function createAdditionalNBT(CompoundTag $nbt, ?Item $item = null) : void{
+		if($item instanceof ItemBanner){
+			$nbt->setInt(self::TAG_BASE, $item->getBaseColor());
 
-		if($item !== null){
+			//TODO: clean this mess up
 			if($item->getNamedTag()->hasTag(self::TAG_PATTERNS, ListTag::class)){
 				$nbt->setTag($item->getNamedTag()->getListTag(self::TAG_PATTERNS));
 			}
 
-			self::createNameNBT($nbt, $pos, $face, $item, $player);
+			self::createNameNBT($nbt, $item);
 		}
 	}
 
