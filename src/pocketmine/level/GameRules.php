@@ -29,6 +29,26 @@ use pocketmine\nbt\tag\StringTag;
 
 class GameRules{
 
+	public const RULE_COMMAND_BLOCK_OUTPUT = "commandBlockOutput";
+	public const RULE_DO_DAYLIGHT_CYCLE = "doDaylightCycle";
+	public const RULE_DO_ENTITY_DROPS = "doEntityDrops";
+	public const RULE_DO_FIRE_TICK = "doFireTick";
+	public const RULE_DO_INSOMNIA = "doInsomnia";
+	public const RULE_DO_MOB_LOOT = "doMobLoot";
+	public const RULE_DO_MOB_SPAWNING = "doMobSpawning";
+	public const RULE_DO_TILE_DROPS = "doTileDrops";
+	public const RULE_DO_WEATHER_CYCLE = "doWeatherCycle";
+	public const RULE_DROWNING_DAMAGE = "drowningdamage";
+	public const RULE_FALL_DAMAGE = "falldamage";
+	public const RULE_FIRE_DAMAGE = "firedamage";
+	public const RULE_KEEP_INVENTORY = "keepInventory";
+	public const RULE_MAX_COMMAND_CHAIN_LENGTH = "maxCommandChainLength";
+	public const RULE_MOB_GRIEFING = "mobGriefing";
+	public const RULE_PVP = "pvp";
+	public const RULE_SEND_COMMAND_FEEDBACK = "sendCommandFeedback";
+	public const RULE_SHOW_COORDINATES = "showcoordinates";
+	public const RULE_TNT_EXPLODES = "tntexplodes";
+
 	public const RULE_TYPE_UNKNOWN = 0;
 	public const RULE_TYPE_BOOL = 1;
 	public const RULE_TYPE_INT = 2;
