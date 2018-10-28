@@ -45,10 +45,18 @@ class Simplex extends Noise{
 	protected const F3 = 1.0 / 3.0;
 	protected const G3 = 1.0 / 6.0;
 
-	public function __construct(Random $random, $octaves, $persistence, $expansion = 1){
-		$this->octaves = $octaves;
-		$this->persistence = $persistence;
-		$this->expansion = $expansion;
+	/** @var float */
+	protected $offsetX;
+	/** @var float */
+	protected $offsetZ;
+	/** @var float */
+	protected $offsetY;
+	/** @var int[] */
+	protected $perm = [];
+
+	public function __construct(Random $random, int $octaves, float $persistence, float $expansion){
+		parent::__construct($octaves, $persistence, $expansion);
+
 		$this->offsetX = $random->nextFloat() * 256;
 		$this->offsetY = $random->nextFloat() * 256;
 		$this->offsetZ = $random->nextFloat() * 256;

@@ -28,13 +28,7 @@ namespace pocketmine\level\generator\noise;
 
 
 abstract class Noise{
-	protected $perm = [];
-	protected $offsetX = 0;
-	protected $offsetY = 0;
-	protected $offsetZ = 0;
-	protected $octaves = 8;
-	protected $persistence;
-	protected $expansion;
+
 
 	public static function linearLerp($x, $x1, $x2, $q0, $q1){
 		return (($x2 - $x) / ($x2 - $x1)) * $q0 + (($x - $x1) / ($x2 - $x1)) * $q1;
@@ -70,6 +64,19 @@ abstract class Noise{
 				$dx1 * $q011 + $dx2 * $q111
 			)
 		);
+	}
+
+	/** @var float */
+	protected $persistence;
+	/** @var float */
+	protected $expansion;
+	/** @var int */
+	protected $octaves;
+
+	public function __construct(int $octaves, float $persistence, float $expansion){
+		$this->octaves = $octaves;
+		$this->persistence = $persistence;
+		$this->expansion = $expansion;
 	}
 
 	abstract public function getNoise2D($x, $z);
