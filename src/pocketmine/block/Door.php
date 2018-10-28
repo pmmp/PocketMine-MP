@@ -154,7 +154,7 @@ abstract class Door extends Transparent{
 		if($face === Facing::UP){
 			$blockUp = $this->getSide(Facing::UP);
 			$blockDown = $this->getSide(Facing::DOWN);
-			if(!$blockUp->canBeReplaced() or $blockDown->isTransparent()){
+			if(!$blockUp->canBeReplaced() or $blockDown->isTransparent() or $blockUp->getLevel()->getWorldHeight() <= $blockUp->getY()){
 				return false;
 			}
 
