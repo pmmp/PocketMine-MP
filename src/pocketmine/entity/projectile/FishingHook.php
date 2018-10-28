@@ -307,6 +307,8 @@ class FishingHook extends Projectile{
 	public function applyGravity() : void{
 		if(!$this->isUnderwater()){
 			parent::applyGravity();
+		}else{
+			$this->motion->y += $this->gravity;
 		}
 	}
 }
