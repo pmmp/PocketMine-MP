@@ -140,7 +140,7 @@ class ClearCommand extends VanillaCommand{
     public function getItemCount(Item $item, Inventory $inventory) : int{
         $count = 0;
         $checkDamage = !$item->hasAnyDamageValue();
-        $checkTags = $item->hasCompoundTag();
+        $checkTags = $item->hasNamedTag();
         foreach($inventory->getContents(false) as $index => $i){
             if($item->equals($i, $checkDamage, $checkTags)){
                 $count += $i->getCount();
