@@ -1511,7 +1511,7 @@ class Level implements ChunkManager, Metadatable{
 	public function setBlock(Vector3 $pos, Block $block, bool $update = true) : bool{
 		$pos = $pos->floor();
 		if(!$this->isInWorld($pos->x, $pos->y, $pos->z)){
-			return false;
+			throw new \InvalidArgumentException("Pos x=$pos->x,y=$pos->y,z=$pos->z is outside of the world bounds");
 		}
 
 		$this->timings->setBlock->startTiming();
