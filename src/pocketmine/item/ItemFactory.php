@@ -37,14 +37,14 @@ use pocketmine\tile\Skull;
 class ItemFactory{
 
 	/** @var \SplFixedArray */
-	private static $list = null;
+	private static $list = [];
 
 	public static function init(){
-		self::$list = new \SplFixedArray(65536);
+		self::$list = []; //in case of re-initializing
 
-		self::registerItem(new Shovel(Item::IRON_SHOVEL, 0, "Iron Shovel", TieredTool::TIER_IRON));
-		self::registerItem(new Pickaxe(Item::IRON_PICKAXE, 0, "Iron Pickaxe", TieredTool::TIER_IRON));
-		self::registerItem(new Axe(Item::IRON_AXE, 0, "Iron Axe", TieredTool::TIER_IRON));
+		self::registerItem(new Shovel(Item::IRON_SHOVEL, "Iron Shovel", TieredTool::TIER_IRON));
+		self::registerItem(new Pickaxe(Item::IRON_PICKAXE, "Iron Pickaxe", TieredTool::TIER_IRON));
+		self::registerItem(new Axe(Item::IRON_AXE, "Iron Axe", TieredTool::TIER_IRON));
 		self::registerItem(new FlintSteel());
 		self::registerItem(new Apple());
 		self::registerItem(new Bow());
@@ -54,34 +54,34 @@ class ItemFactory{
 		self::registerItem(new Item(Item::DIAMOND, 0, "Diamond"));
 		self::registerItem(new Item(Item::IRON_INGOT, 0, "Iron Ingot"));
 		self::registerItem(new Item(Item::GOLD_INGOT, 0, "Gold Ingot"));
-		self::registerItem(new Sword(Item::IRON_SWORD, 0, "Iron Sword", TieredTool::TIER_IRON));
-		self::registerItem(new Sword(Item::WOODEN_SWORD, 0, "Wooden Sword", TieredTool::TIER_WOODEN));
-		self::registerItem(new Shovel(Item::WOODEN_SHOVEL, 0, "Wooden Shovel", TieredTool::TIER_WOODEN));
-		self::registerItem(new Pickaxe(Item::WOODEN_PICKAXE, 0, "Wooden Pickaxe", TieredTool::TIER_WOODEN));
-		self::registerItem(new Axe(Item::WOODEN_AXE, 0, "Wooden Axe", TieredTool::TIER_WOODEN));
-		self::registerItem(new Sword(Item::STONE_SWORD, 0, "Stone Sword", TieredTool::TIER_STONE));
-		self::registerItem(new Shovel(Item::STONE_SHOVEL, 0, "Stone Shovel", TieredTool::TIER_STONE));
-		self::registerItem(new Pickaxe(Item::STONE_PICKAXE, 0, "Stone Pickaxe", TieredTool::TIER_STONE));
-		self::registerItem(new Axe(Item::STONE_AXE, 0, "Stone Axe", TieredTool::TIER_STONE));
-		self::registerItem(new Sword(Item::DIAMOND_SWORD, 0, "Diamond Sword", TieredTool::TIER_DIAMOND));
-		self::registerItem(new Shovel(Item::DIAMOND_SHOVEL, 0, "Diamond Shovel", TieredTool::TIER_DIAMOND));
-		self::registerItem(new Pickaxe(Item::DIAMOND_PICKAXE, 0, "Diamond Pickaxe", TieredTool::TIER_DIAMOND));
-		self::registerItem(new Axe(Item::DIAMOND_AXE, 0, "Diamond Axe", TieredTool::TIER_DIAMOND));
+		self::registerItem(new Sword(Item::IRON_SWORD, "Iron Sword", TieredTool::TIER_IRON));
+		self::registerItem(new Sword(Item::WOODEN_SWORD, "Wooden Sword", TieredTool::TIER_WOODEN));
+		self::registerItem(new Shovel(Item::WOODEN_SHOVEL, "Wooden Shovel", TieredTool::TIER_WOODEN));
+		self::registerItem(new Pickaxe(Item::WOODEN_PICKAXE, "Wooden Pickaxe", TieredTool::TIER_WOODEN));
+		self::registerItem(new Axe(Item::WOODEN_AXE, "Wooden Axe", TieredTool::TIER_WOODEN));
+		self::registerItem(new Sword(Item::STONE_SWORD, "Stone Sword", TieredTool::TIER_STONE));
+		self::registerItem(new Shovel(Item::STONE_SHOVEL, "Stone Shovel", TieredTool::TIER_STONE));
+		self::registerItem(new Pickaxe(Item::STONE_PICKAXE, "Stone Pickaxe", TieredTool::TIER_STONE));
+		self::registerItem(new Axe(Item::STONE_AXE, "Stone Axe", TieredTool::TIER_STONE));
+		self::registerItem(new Sword(Item::DIAMOND_SWORD, "Diamond Sword", TieredTool::TIER_DIAMOND));
+		self::registerItem(new Shovel(Item::DIAMOND_SHOVEL, "Diamond Shovel", TieredTool::TIER_DIAMOND));
+		self::registerItem(new Pickaxe(Item::DIAMOND_PICKAXE, "Diamond Pickaxe", TieredTool::TIER_DIAMOND));
+		self::registerItem(new Axe(Item::DIAMOND_AXE, "Diamond Axe", TieredTool::TIER_DIAMOND));
 		self::registerItem(new Stick());
 		self::registerItem(new Bowl());
 		self::registerItem(new MushroomStew());
-		self::registerItem(new Sword(Item::GOLDEN_SWORD, 0, "Gold Sword", TieredTool::TIER_GOLD));
-		self::registerItem(new Shovel(Item::GOLDEN_SHOVEL, 0, "Gold Shovel", TieredTool::TIER_GOLD));
-		self::registerItem(new Pickaxe(Item::GOLDEN_PICKAXE, 0, "Gold Pickaxe", TieredTool::TIER_GOLD));
-		self::registerItem(new Axe(Item::GOLDEN_AXE, 0, "Gold Axe", TieredTool::TIER_GOLD));
+		self::registerItem(new Sword(Item::GOLDEN_SWORD, "Gold Sword", TieredTool::TIER_GOLD));
+		self::registerItem(new Shovel(Item::GOLDEN_SHOVEL, "Gold Shovel", TieredTool::TIER_GOLD));
+		self::registerItem(new Pickaxe(Item::GOLDEN_PICKAXE, "Gold Pickaxe", TieredTool::TIER_GOLD));
+		self::registerItem(new Axe(Item::GOLDEN_AXE, "Gold Axe", TieredTool::TIER_GOLD));
 		self::registerItem(new StringItem());
 		self::registerItem(new Item(Item::FEATHER, 0, "Feather"));
 		self::registerItem(new Item(Item::GUNPOWDER, 0, "Gunpowder"));
-		self::registerItem(new Hoe(Item::WOODEN_HOE, 0, "Wooden Hoe", TieredTool::TIER_WOODEN));
-		self::registerItem(new Hoe(Item::STONE_HOE, 0, "Stone Hoe", TieredTool::TIER_STONE));
-		self::registerItem(new Hoe(Item::IRON_HOE, 0, "Iron Hoe", TieredTool::TIER_IRON));
-		self::registerItem(new Hoe(Item::DIAMOND_HOE, 0, "Diamond Hoe", TieredTool::TIER_DIAMOND));
-		self::registerItem(new Hoe(Item::GOLDEN_HOE, 0, "Golden Hoe", TieredTool::TIER_GOLD));
+		self::registerItem(new Hoe(Item::WOODEN_HOE, "Wooden Hoe", TieredTool::TIER_WOODEN));
+		self::registerItem(new Hoe(Item::STONE_HOE, "Stone Hoe", TieredTool::TIER_STONE));
+		self::registerItem(new Hoe(Item::IRON_HOE, "Iron Hoe", TieredTool::TIER_IRON));
+		self::registerItem(new Hoe(Item::DIAMOND_HOE, "Diamond Hoe", TieredTool::TIER_DIAMOND));
+		self::registerItem(new Hoe(Item::GOLDEN_HOE, "Golden Hoe", TieredTool::TIER_GOLD));
 		self::registerItem(new WheatSeeds());
 		self::registerItem(new Item(Item::WHEAT, 0, "Wheat"));
 		self::registerItem(new Bread());
@@ -323,45 +323,30 @@ class ItemFactory{
 			throw new \RuntimeException("Trying to overwrite an already registered item");
 		}
 
-		$offset = self::getListOffset($id);
-		$sublist = self::$list[$offset] ?? new \SplFixedArray();
-		if($sublist->getSize() < $variant + 1){
-			$sublist->setSize($variant + 1);
-		}
-		$sublist[$variant] = clone $item;
-		self::$list[$offset] = $sublist;
+		self::$list[self::getListOffset($id, $variant)] = clone $item;
 	}
 
 	/**
 	 * Returns an instance of the Item with the specified id, meta, count and NBT.
 	 *
-	 * @param int                $id
-	 * @param int                $meta
-	 * @param int                $count
-	 * @param CompoundTag|string $tags
+	 * @param int         $id
+	 * @param int         $meta
+	 * @param int         $count
+	 * @param CompoundTag $tags
 	 *
 	 * @return Item
-	 * @throws \TypeError
+	 * @throws \InvalidArgumentException
 	 */
-	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
-		if(!is_string($tags) and !($tags instanceof CompoundTag)){
-			throw new \TypeError("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
-		}
-
+	public static function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
 		/** @var Item $item */
 		$item = null;
 		if($meta !== -1){
-			$sublist = self::$list[self::getListOffset($id)];
-
-			/** @var Item|null $listed */
-			if($sublist !== null){
-				if(isset($sublist[$meta])){
-					$item = clone $sublist[$meta];
-				}elseif(isset($sublist[0]) and $sublist[0] instanceof Durable){
-					/** @var Durable $item */
-					$item = clone $sublist[0];
-					$item->setDamage($meta);
-				}
+			if(isset(self::$list[$offset = self::getListOffset($id, $meta)])){
+				$item = clone self::$list[$offset];
+			}elseif(isset(self::$list[$zero = self::getListOffset($id, 0)]) and self::$list[$zero] instanceof Durable){
+				/** @var Durable $item */
+				$item = clone self::$list[$zero];
+				$item->setDamage($meta);
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 				$item = new ItemBlock($id, $meta);
 			}
@@ -373,7 +358,9 @@ class ItemFactory{
 		}
 
 		$item->setCount($count);
-		$item->setCompoundTag($tags);
+		if($tags !== null){
+			$item->setNamedTag($tags);
+		}
 		return $item;
 	}
 
@@ -447,14 +434,13 @@ class ItemFactory{
 			return BlockFactory::isRegistered($id);
 		}
 
-		$sublist = self::$list[self::getListOffset($id)];
-		return $sublist !== null and isset($sublist[$variant]);
+		return isset(self::$list[self::getListOffset($id, $variant)]);
 	}
 
-	private static function getListOffset(int $id) : int{
+	private static function getListOffset(int $id, int $variant) : int{
 		if($id < -0x8000 or $id > 0x7fff){
 			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
 		}
-		return $id & 0xffff;
+		return (($id & 0xffff) << 16) | ($variant & 0xffff);
 	}
 }

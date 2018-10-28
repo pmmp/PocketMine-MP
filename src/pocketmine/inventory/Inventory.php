@@ -244,6 +244,7 @@ interface Inventory{
 	 * Returns whether the specified slot exists in the inventory.
 	 *
 	 * @param int $slot
+	 *
 	 * @return bool
 	 */
 	public function slotExists(int $slot) : bool;

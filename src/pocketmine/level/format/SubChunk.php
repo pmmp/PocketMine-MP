@@ -66,31 +66,22 @@ class SubChunk implements SubChunkInterface{
 	}
 
 	public function getBlockData(int $x, int $y, int $z) : int{
-		$m = ord($this->data{($x << 7) + ($z << 3) + ($y >> 1)});
-		if(($y & 1) === 0){
-			return $m & 0x0f;
-		}else{
-			return $m >> 4;
-		}
+		return (ord($this->data{($x << 7) | ($z << 3) | ($y >> 1)}) >> (($y & 1) << 2)) & 0xf;
 	}
 
 	public function setBlockData(int $x, int $y, int $z, int $data) : bool{
 		$i = ($x << 7) | ($z << 3) | ($y >> 1);
-		if(($y & 1) === 0){
-			$this->data{$i} = chr((ord($this->data{$i}) & 0xf0) | ($data & 0x0f));
-		}else{
-			$this->data{$i} = chr((($data & 0x0f) << 4) | (ord($this->data{$i}) & 0x0f));
-		}
+
+		$shift = ($y & 1) << 2;
+		$byte = ord($this->data{$i});
+		$this->data{$i} = chr(($byte & ~(0xf << $shift)) | (($data & 0xf) << $shift));
+
 		return true;
 	}
 
 	public function getFullBlock(int $x, int $y, int $z) : int{
 		$i = ($x << 8) | ($z << 4) | $y;
-		if(($y & 1) === 0){
-			return (ord($this->ids{$i}) << 4) | (ord($this->data{$i >> 1}) & 0x0f);
-		}else{
-			return (ord($this->ids{$i}) << 4) | (ord($this->data{$i >> 1}) >> 4);
-		}
+		return (ord($this->ids{$i}) << 4) | ((ord($this->data{$i >> 1}) >> (($y & 1) << 2)) & 0xf);
 	}
 
 	public function setBlock(int $x, int $y, int $z, ?int $id = null, ?int $data = null) : bool{
@@ -106,12 +97,11 @@ class SubChunk implements SubChunkInterface{
 
 		if($data !== null){
 			$i >>= 1;
+
+			$shift = ($y & 1) << 2;
 			$byte = ord($this->data{$i});
-			if(($y & 1) === 0){
-				$this->data{$i} = chr(($byte & 0xf0) | ($data & 0x0f));
-			}else{
-				$this->data{$i} = chr((($data & 0x0f) << 4) | ($byte & 0x0f));
-			}
+			$this->data{$i} = chr(($byte & ~(0xf << $shift)) | (($data & 0xf) << $shift));
+
 			if($this->data{$i} !== $byte){
 				$changed = true;
 			}
@@ -121,42 +111,30 @@ class SubChunk implements SubChunkInterface{
 	}
 
 	public function getBlockLight(int $x, int $y, int $z) : int{
-		$byte = ord($this->blockLight{($x << 7) + ($z << 3) + ($y >> 1)});
-		if(($y & 1) === 0){
-			return $byte & 0x0f;
-		}else{
-			return $byte >> 4;
-		}
+		return (ord($this->blockLight{($x << 7) | ($z << 3) | ($y >> 1)}) >> (($y & 1) << 2)) & 0xf;
 	}
 
 	public function setBlockLight(int $x, int $y, int $z, int $level) : bool{
-		$i = ($x << 7) + ($z << 3) + ($y >> 1);
+		$i = ($x << 7) | ($z << 3) | ($y >> 1);
+
+		$shift = ($y & 1) << 2;
 		$byte = ord($this->blockLight{$i});
-		if(($y & 1) === 0){
-			$this->blockLight{$i} = chr(($byte & 0xf0) | ($level & 0x0f));
-		}else{
-			$this->blockLight{$i} = chr((($level & 0x0f) << 4) | ($byte & 0x0f));
-		}
+		$this->blockLight{$i} = chr(($byte & ~(0xf << $shift)) | (($level & 0xf) << $shift));
+
 		return true;
 	}
 
 	public function getBlockSkyLight(int $x, int $y, int $z) : int{
-		$byte = ord($this->skyLight{($x << 7) + ($z << 3) + ($y >> 1)});
-		if(($y & 1) === 0){
-			return $byte & 0x0f;
-		}else{
-			return $byte >> 4;
-		}
+		return (ord($this->skyLight{($x << 7) | ($z << 3) | ($y >> 1)}) >> (($y & 1) << 2)) & 0xf;
 	}
 
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : bool{
-		$i = ($x << 7) + ($z << 3) + ($y >> 1);
+		$i = ($x << 7) | ($z << 3) | ($y >> 1);
+
+		$shift = ($y & 1) << 2;
 		$byte = ord($this->skyLight{$i});
-		if(($y & 1) === 0){
-			$this->skyLight{$i} = chr(($byte & 0xf0) | ($level & 0x0f));
-		}else{
-			$this->skyLight{$i} = chr((($level & 0x0f) << 4) | ($byte & 0x0f));
-		}
+		$this->skyLight{$i} = chr(($byte & ~(0xf << $shift)) | (($level & 0xf) << $shift));
+
 		return true;
 	}
 

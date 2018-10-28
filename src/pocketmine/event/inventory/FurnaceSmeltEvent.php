@@ -39,8 +39,8 @@ class FurnaceSmeltEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * @param Furnace $furnace
-	 * @param Item $source
-	 * @param Item $result
+	 * @param Item    $source
+	 * @param Item    $result
 	 */
 	public function __construct(Furnace $furnace, Item $source, Item $result){
 		parent::__construct($furnace->getBlock());

@@ -220,9 +220,9 @@ class SimpleCommandMap implements CommandMap{
 
 	/**
 	 * @param Command $command
-	 * @param bool $isAlias
-	 * @param string $fallbackPrefix
-	 * @param string $label
+	 * @param bool    $isAlias
+	 * @param string  $fallbackPrefix
+	 * @param string  $label
 	 *
 	 * @return bool
 	 */

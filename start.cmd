@@ -15,7 +15,7 @@ if exist Altay.phar (
 	if exist src\pocketmine\PocketMine.php (
 		set POCKETMINE_FILE=src\pocketmine\PocketMine.php
 	) else (
-		echo "Couldn't find a valid Altay installation"
+		echo Couldn't find a valid Altay installation
 		pause
 		exit 1
 	)

@@ -27,8 +27,8 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 
 class StringItem extends Item{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::STRING, $meta, "String");
+	public function __construct(){
+		parent::__construct(self::STRING, 0, "String");
 	}
 
 	public function getBlock() : Block{

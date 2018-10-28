@@ -1,24 +1,23 @@
 <?php
 
 /*
- *               _ _
- *         /\   | | |
- *        /  \  | | |_ __ _ _   _
- *       / /\ \ | | __/ _` | | | |
- *      / ____ \| | || (_| | |_| |
- *     /_/    \_|_|\__\__,_|\__, |
- *                           __/ |
- *                          |___/
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author TuranicTeam
- * @link https://github.com/TuranicTeam/Altay
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
  *
- */
+ *
+*/
 
 declare(strict_types=1);
 
@@ -34,92 +33,92 @@ use pocketmine\ThreadManager;
  * Big collection of functions
  */
 class Utils{
-    public static $os;
-    /** @var UUID|null */
-    private static $serverUniqueId = null;
+	public static $os;
+	/** @var UUID|null */
+	private static $serverUniqueId = null;
 
-    /**
-     * Generates an unique identifier to a callable
-     *
-     * @param callable $variable
-     *
-     * @return string
-     */
-    public static function getCallableIdentifier(callable $variable){
-        if(is_array($variable)){
-            return sha1(strtolower(spl_object_hash($variable[0])) . "::" . strtolower($variable[1]));
-        }else{
-            return sha1(strtolower($variable));
-        }
-    }
+	/**
+	 * Generates an unique identifier to a callable
+	 *
+	 * @param callable $variable
+	 *
+	 * @return string
+	 */
+	public static function getCallableIdentifier(callable $variable){
+		if(is_array($variable)){
+			return sha1(strtolower(spl_object_hash($variable[0])) . "::" . strtolower($variable[1]));
+		}else{
+			return sha1(strtolower($variable));
+		}
+	}
 
-    /**
-     * Gets this machine / server instance unique ID
-     * Returns a hash, the first 32 characters (or 16 if raw)
-     * will be an identifier that won't change frequently.
-     * The rest of the hash will change depending on other factors.
-     *
-     * @param string $extra optional, additional data to identify the machine
-     *
-     * @return UUID
-     */
-    public static function getMachineUniqueId(string $extra = "") : UUID{
-        if(self::$serverUniqueId !== null and $extra === ""){
-            return self::$serverUniqueId;
-        }
+	/**
+	 * Gets this machine / server instance unique ID
+	 * Returns a hash, the first 32 characters (or 16 if raw)
+	 * will be an identifier that won't change frequently.
+	 * The rest of the hash will change depending on other factors.
+	 *
+	 * @param string $extra optional, additional data to identify the machine
+	 *
+	 * @return UUID
+	 */
+	public static function getMachineUniqueId(string $extra = "") : UUID{
+		if(self::$serverUniqueId !== null and $extra === ""){
+			return self::$serverUniqueId;
+		}
 
-        $machine = php_uname("a");
-        $machine .= file_exists("/proc/cpuinfo") ? implode(preg_grep("/(model name|Processor|Serial)/", file("/proc/cpuinfo"))) : "";
-        $machine .= sys_get_temp_dir();
-        $machine .= $extra;
-        $os = Utils::getOS();
-        if($os === "win"){
-            @exec("ipconfig /ALL", $mac);
-            $mac = implode("\n", $mac);
-            if(preg_match_all("#Physical Address[. ]{1,}: ([0-9A-F\\-]{17})#", $mac, $matches)){
-                foreach($matches[1] as $i => $v){
-                    if($v == "00-00-00-00-00-00"){
-                        unset($matches[1][$i]);
-                    }
-                }
-                $machine .= implode(" ", $matches[1]); //Mac Addresses
-            }
-        }elseif($os === "linux"){
-            if(file_exists("/etc/machine-id")){
-                $machine .= file_get_contents("/etc/machine-id");
-            }else{
-                @exec("ifconfig 2>/dev/null", $mac);
-                $mac = implode("\n", $mac);
-                if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches)){
-                    foreach($matches[1] as $i => $v){
-                        if($v == "00:00:00:00:00:00"){
-                            unset($matches[1][$i]);
-                        }
-                    }
-                    $machine .= implode(" ", $matches[1]); //Mac Addresses
-                }
-            }
-        }elseif($os === "android"){
-            $machine .= @file_get_contents("/system/build.prop");
-        }elseif($os === "mac"){
-            $machine .= `system_profiler SPHardwareDataType | grep UUID`;
-        }
-        $data = $machine . PHP_MAXPATHLEN;
-        $data .= PHP_INT_MAX;
-        $data .= PHP_INT_SIZE;
-        $data .= get_current_user();
-        foreach(get_loaded_extensions() as $ext){
-            $data .= $ext . ":" . phpversion($ext);
-        }
+		$machine = php_uname("a");
+		$machine .= file_exists("/proc/cpuinfo") ? implode(preg_grep("/(model name|Processor|Serial)/", file("/proc/cpuinfo"))) : "";
+		$machine .= sys_get_temp_dir();
+		$machine .= $extra;
+		$os = Utils::getOS();
+		if($os === "win"){
+			@exec("ipconfig /ALL", $mac);
+			$mac = implode("\n", $mac);
+			if(preg_match_all("#Physical Address[. ]{1,}: ([0-9A-F\\-]{17})#", $mac, $matches)){
+				foreach($matches[1] as $i => $v){
+					if($v == "00-00-00-00-00-00"){
+						unset($matches[1][$i]);
+					}
+				}
+				$machine .= implode(" ", $matches[1]); //Mac Addresses
+			}
+		}elseif($os === "linux"){
+			if(file_exists("/etc/machine-id")){
+				$machine .= file_get_contents("/etc/machine-id");
+			}else{
+				@exec("ifconfig 2>/dev/null", $mac);
+				$mac = implode("\n", $mac);
+				if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches)){
+					foreach($matches[1] as $i => $v){
+						if($v == "00:00:00:00:00:00"){
+							unset($matches[1][$i]);
+						}
+					}
+					$machine .= implode(" ", $matches[1]); //Mac Addresses
+				}
+			}
+		}elseif($os === "android"){
+			$machine .= @file_get_contents("/system/build.prop");
+		}elseif($os === "mac"){
+			$machine .= `system_profiler SPHardwareDataType | grep UUID`;
+		}
+		$data = $machine . PHP_MAXPATHLEN;
+		$data .= PHP_INT_MAX;
+		$data .= PHP_INT_SIZE;
+		$data .= get_current_user();
+		foreach(get_loaded_extensions() as $ext){
+			$data .= $ext . ":" . phpversion($ext);
+		}
 
-        $uuid = UUID::fromData($machine, $data);
+		$uuid = UUID::fromData($machine, $data);
 
-        if($extra === ""){
-            self::$serverUniqueId = $uuid;
-        }
+		if($extra === ""){
+			self::$serverUniqueId = $uuid;
+		}
 
-        return $uuid;
-    }
+		return $uuid;
+	}
 
 	/**
 	 * Returns the current Operating System
@@ -159,165 +158,166 @@ class Utils{
 			}
 		}
 
-        return self::$os;
-    }
+		return self::$os;
+	}
 
-    /**
-     * @return int[]
-     */
-    public static function getRealMemoryUsage() : array{
-        $stack = 0;
-        $heap = 0;
+	/**
+	 * @return int[]
+	 */
+	public static function getRealMemoryUsage() : array{
+		$stack = 0;
+		$heap = 0;
 
-        if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-            $mappings = file("/proc/self/maps");
-            foreach($mappings as $line){
-                if(preg_match("#([a-z0-9]+)\\-([a-z0-9]+) [rwxp\\-]{4} [a-z0-9]+ [^\\[]*\\[([a-zA-z0-9]+)\\]#", trim($line), $matches) > 0){
-                    if(strpos($matches[3], "heap") === 0){
-                        $heap += hexdec($matches[2]) - hexdec($matches[1]);
-                    }elseif(strpos($matches[3], "stack") === 0){
-                        $stack += hexdec($matches[2]) - hexdec($matches[1]);
-                    }
-                }
-            }
-        }
+		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
+			$mappings = file("/proc/self/maps");
+			foreach($mappings as $line){
+				if(preg_match("#([a-z0-9]+)\\-([a-z0-9]+) [rwxp\\-]{4} [a-z0-9]+ [^\\[]*\\[([a-zA-z0-9]+)\\]#", trim($line), $matches) > 0){
+					if(strpos($matches[3], "heap") === 0){
+						$heap += hexdec($matches[2]) - hexdec($matches[1]);
+					}elseif(strpos($matches[3], "stack") === 0){
+						$stack += hexdec($matches[2]) - hexdec($matches[1]);
+					}
+				}
+			}
+		}
 
-        return [$heap, $stack];
-    }
+		return [$heap, $stack];
+	}
 
-    /**
-     * @param bool $advanced
-     *
-     * @return int[]|int
-     */
-    public static function getMemoryUsage(bool $advanced = false){
-        $reserved = memory_get_usage();
-        $VmSize = null;
-        $VmRSS = null;
-        if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-            $status = file_get_contents("/proc/self/status");
-            if(preg_match("/VmRSS:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-                $VmRSS = $matches[1] * 1024;
-            }
+	/**
+	 * @param bool $advanced
+	 *
+	 * @return int[]|int
+	 */
+	public static function getMemoryUsage(bool $advanced = false){
+		$reserved = memory_get_usage();
+		$VmSize = null;
+		$VmRSS = null;
+		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
+			$status = file_get_contents("/proc/self/status");
+			if(preg_match("/VmRSS:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
+				$VmRSS = $matches[1] * 1024;
+			}
 
-            if(preg_match("/VmSize:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-                $VmSize = $matches[1] * 1024;
-            }
-        }
+			if(preg_match("/VmSize:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
+				$VmSize = $matches[1] * 1024;
+			}
+		}
 
-        //TODO: more OS
+		//TODO: more OS
 
-        if($VmRSS === null){
-            $VmRSS = memory_get_usage();
-        }
+		if($VmRSS === null){
+			$VmRSS = memory_get_usage();
+		}
 
-        if(!$advanced){
-            return $VmRSS;
-        }
+		if(!$advanced){
+			return $VmRSS;
+		}
 
-        if($VmSize === null){
-            $VmSize = memory_get_usage(true);
-        }
+		if($VmSize === null){
+			$VmSize = memory_get_usage(true);
+		}
 
-        return [$reserved, $VmRSS, $VmSize];
-    }
+		return [$reserved, $VmRSS, $VmSize];
+	}
 
-    public static function getThreadCount() : int{
-        if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-            if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
-                return (int) $matches[1];
-            }
-        }
-        //TODO: more OS
+	public static function getThreadCount() : int{
+		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
+			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
+				return (int) $matches[1];
+			}
+		}
+		//TODO: more OS
 
-        return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
-    }
+		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
+	}
 
-    /**
-     * @param bool $recalculate
-     * @return int
-     */
-    public static function getCoreCount(bool $recalculate = false) : int{
-        static $processors = 0;
+	/**
+	 * @param bool $recalculate
+	 *
+	 * @return int
+	 */
+	public static function getCoreCount(bool $recalculate = false) : int{
+		static $processors = 0;
 
-        if($processors > 0 and !$recalculate){
-            return $processors;
-        }else{
-            $processors = 0;
-        }
+		if($processors > 0 and !$recalculate){
+			return $processors;
+		}else{
+			$processors = 0;
+		}
 
-        switch(Utils::getOS()){
-            case "linux":
-            case "android":
-                if(file_exists("/proc/cpuinfo")){
-                    foreach(file("/proc/cpuinfo") as $l){
-                        if(preg_match('/^processor[ \t]*:[ \t]*[0-9]+$/m', $l) > 0){
-                            ++$processors;
-                        }
-                    }
-                }else{
-                    if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim(@file_get_contents("/sys/devices/system/cpu/present")), $matches) > 0){
-                        $processors = (int) ($matches[2] - $matches[1]);
-                    }
-                }
-                break;
-            case "bsd":
-            case "mac":
-                $processors = (int) `sysctl -n hw.ncpu`;
-                break;
-            case "win":
-                $processors = (int) getenv("NUMBER_OF_PROCESSORS");
-                break;
-        }
-        return $processors;
-    }
+		switch(Utils::getOS()){
+			case "linux":
+			case "android":
+				if(file_exists("/proc/cpuinfo")){
+					foreach(file("/proc/cpuinfo") as $l){
+						if(preg_match('/^processor[ \t]*:[ \t]*[0-9]+$/m', $l) > 0){
+							++$processors;
+						}
+					}
+				}else{
+					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim(@file_get_contents("/sys/devices/system/cpu/present")), $matches) > 0){
+						$processors = (int) ($matches[2] - $matches[1]);
+					}
+				}
+				break;
+			case "bsd":
+			case "mac":
+				$processors = (int) `sysctl -n hw.ncpu`;
+				break;
+			case "win":
+				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
+				break;
+		}
+		return $processors;
+	}
 
-    /**
-     * Returns a prettified hexdump
-     *
-     * @param string $bin
-     *
-     * @return string
-     */
-    public static function hexdump(string $bin) : string{
-        $output = "";
-        $bin = str_split($bin, 16);
-        foreach($bin as $counter => $line){
-            $hex = chunk_split(chunk_split(str_pad(bin2hex($line), 32, " ", STR_PAD_RIGHT), 2, " "), 24, " ");
-            $ascii = preg_replace('#([^\x20-\x7E])#', ".", $line);
-            $output .= str_pad(dechex($counter << 4), 4, "0", STR_PAD_LEFT) . "  " . $hex . " " . $ascii . PHP_EOL;
-        }
+	/**
+	 * Returns a prettified hexdump
+	 *
+	 * @param string $bin
+	 *
+	 * @return string
+	 */
+	public static function hexdump(string $bin) : string{
+		$output = "";
+		$bin = str_split($bin, 16);
+		foreach($bin as $counter => $line){
+			$hex = chunk_split(chunk_split(str_pad(bin2hex($line), 32, " ", STR_PAD_RIGHT), 2, " "), 24, " ");
+			$ascii = preg_replace('#([^\x20-\x7E])#', ".", $line);
+			$output .= str_pad(dechex($counter << 4), 4, "0", STR_PAD_LEFT) . "  " . $hex . " " . $ascii . PHP_EOL;
+		}
 
-        return $output;
-    }
+		return $output;
+	}
 
 
-    /**
-     * Returns a string that can be printed, replaces non-printable characters
-     *
-     * @param mixed $str
-     *
-     * @return string
-     */
-    public static function printable($str) : string{
-        if(!is_string($str)){
-            return gettype($str);
-        }
+	/**
+	 * Returns a string that can be printed, replaces non-printable characters
+	 *
+	 * @param mixed $str
+	 *
+	 * @return string
+	 */
+	public static function printable($str) : string{
+		if(!is_string($str)){
+			return gettype($str);
+		}
 
-        return preg_replace('#([^\x20-\x7E])#', '.', $str);
-    }
+		return preg_replace('#([^\x20-\x7E])#', '.', $str);
+	}
 
-    /*
-    public static function angle3D($pos1, $pos2){
-        $X = $pos1["x"] - $pos2["x"];
-        $Z = $pos1["z"] - $pos2["z"];
-        $dXZ = sqrt(pow($X, 2) + pow($Z, 2));
-        $Y = $pos1["y"] - $pos2["y"];
-        $hAngle = rad2deg(atan2($Z, $X) - M_PI_2);
-        $vAngle = rad2deg(-atan2($Y, $dXZ));
+	/*
+	public static function angle3D($pos1, $pos2){
+		$X = $pos1["x"] - $pos2["x"];
+		$Z = $pos1["z"] - $pos2["z"];
+		$dXZ = sqrt(pow($X, 2) + pow($Z, 2));
+		$Y = $pos1["y"] - $pos2["y"];
+		$hAngle = rad2deg(atan2($Z, $X) - M_PI_2);
+		$vAngle = rad2deg(-atan2($Y, $dXZ));
 
-        return array("yaw" => $hAngle, "pitch" => $vAngle);
-    }*/
+		return array("yaw" => $hAngle, "pitch" => $vAngle);
+	}*/
 
 	public static function javaStringHash(string $string) : int{
 		$hash = 0;
@@ -339,160 +339,150 @@ class Utils{
 	}
 
 
-    /**
-     * @param string      $command Command to execute
-     * @param string|null &$stdout Reference parameter to write stdout to
-     * @param string|null &$stderr Reference parameter to write stderr to
-     *
-     * @return int process exit code
-     */
-    public static function execute(string $command, string &$stdout = null, string &$stderr = null) : int{
-        $process = proc_open($command, [
-            ["pipe", "r"],
-            ["pipe", "w"],
-            ["pipe", "w"]
-        ], $pipes);
+	/**
+	 * @param string      $command Command to execute
+	 * @param string|null &$stdout Reference parameter to write stdout to
+	 * @param string|null &$stderr Reference parameter to write stderr to
+	 *
+	 * @return int process exit code
+	 */
+	public static function execute(string $command, string &$stdout = null, string &$stderr = null) : int{
+		$process = proc_open($command, [
+			["pipe", "r"],
+			["pipe", "w"],
+			["pipe", "w"]
+		], $pipes);
 
-        if($process === false){
-            $stderr = "Failed to open process";
-            $stdout = "";
+		if($process === false){
+			$stderr = "Failed to open process";
+			$stdout = "";
 
-            return -1;
-        }
+			return -1;
+		}
 
-        $stdout = stream_get_contents($pipes[1]);
-        $stderr = stream_get_contents($pipes[2]);
+		$stdout = stream_get_contents($pipes[1]);
+		$stderr = stream_get_contents($pipes[2]);
 
-        foreach($pipes as $p){
-            fclose($p);
-        }
+		foreach($pipes as $p){
+			fclose($p);
+		}
 
-        return proc_close($process);
-    }
+		return proc_close($process);
+	}
 
-    public static function decodeJWT(string $token) : array{
-        list($headB64, $payloadB64, $sigB64) = explode(".", $token);
+	public static function decodeJWT(string $token) : array{
+		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
 
-        return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
-    }
+		return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
+	}
 
-    public static function kill($pid) : void{
-        if(MainLogger::isRegisteredStatic()){
-            MainLogger::getLogger()->syncFlushBuffer();
-        }
-        switch(Utils::getOS()){
-            case "win":
-                exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
-                break;
-            case "mac":
-            case "linux":
-            default:
-                if(function_exists("posix_kill")){
-                    posix_kill($pid, 9); //SIGKILL
-                }else{
-                    exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
-                }
-        }
-    }
+	public static function kill($pid) : void{
+		if(MainLogger::isRegisteredStatic()){
+			MainLogger::getLogger()->syncFlushBuffer();
+		}
+		switch(Utils::getOS()){
+			case "win":
+				exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
+				break;
+			case "mac":
+			case "linux":
+			default:
+				if(function_exists("posix_kill")){
+					posix_kill($pid, 9); //SIGKILL
+				}else{
+					exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
+				}
+		}
+	}
 
-    /**
-     * @param object $value
-     * @param bool   $includeCurrent
-     *
-     * @return int
-     */
-    public static function getReferenceCount($value, bool $includeCurrent = true){
-        ob_start();
-        debug_zval_dump($value);
-        $ret = explode("\n", ob_get_contents());
-        ob_end_clean();
+	/**
+	 * @param object $value
+	 * @param bool   $includeCurrent
+	 *
+	 * @return int
+	 */
+	public static function getReferenceCount($value, bool $includeCurrent = true){
+		ob_start();
+		debug_zval_dump($value);
+		$ret = explode("\n", ob_get_contents());
+		ob_end_clean();
 
-        if(count($ret) >= 1 and preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){
-            return ((int) $m[1]) - ($includeCurrent ? 3 : 4); //$value + zval call + extra call
-        }
-        return -1;
-    }
+		if(count($ret) >= 1 and preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){
+			return ((int) $m[1]) - ($includeCurrent ? 3 : 4); //$value + zval call + extra call
+		}
+		return -1;
+	}
 
-    /**
-     * @param int        $start
-     * @param array|null $trace
-     *
-     * @return array
-     */
-    public static function getTrace($start = 0, $trace = null){
-        if($trace === null){
-            if(function_exists("xdebug_get_function_stack")){
-                $trace = array_reverse(xdebug_get_function_stack());
-            }else{
-                $e = new \Exception();
-                $trace = $e->getTrace();
-            }
-        }
+	/**
+	 * @param int        $start
+	 * @param array|null $trace
+	 *
+	 * @return array
+	 */
+	public static function getTrace($start = 0, $trace = null){
+		if($trace === null){
+			if(function_exists("xdebug_get_function_stack")){
+				$trace = array_reverse(xdebug_get_function_stack());
+			}else{
+				$e = new \Exception();
+				$trace = $e->getTrace();
+			}
+		}
 
-        $messages = [];
-        $j = 0;
-        for($i = (int) $start; isset($trace[$i]); ++$i, ++$j){
-            $params = "";
-            if(isset($trace[$i]["args"]) or isset($trace[$i]["params"])){
-                if(isset($trace[$i]["args"])){
-                    $args = $trace[$i]["args"];
-                }else{
-                    $args = $trace[$i]["params"];
-                }
+		$messages = [];
+		$j = 0;
+		for($i = (int) $start; isset($trace[$i]); ++$i, ++$j){
+			$params = "";
+			if(isset($trace[$i]["args"]) or isset($trace[$i]["params"])){
+				if(isset($trace[$i]["args"])){
+					$args = $trace[$i]["args"];
+				}else{
+					$args = $trace[$i]["params"];
+				}
 
-                $params = implode(", ", array_map(function($value){
-                    return (is_object($value) ? get_class($value) . " object" : gettype($value) . " " . (is_array($value) ? "Array()" : Utils::printable(@strval($value))));
-                }, $args));
-            }
-            $messages[] = "#$j " . (isset($trace[$i]["file"]) ? self::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
-        }
+				$params = implode(", ", array_map(function($value){
+					return (is_object($value) ? get_class($value) . " object" : gettype($value) . " " . (is_array($value) ? "Array()" : Utils::printable(@strval($value))));
+				}, $args));
+			}
+			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? self::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
+		}
 
-        return $messages;
-    }
+		return $messages;
+	}
 
-    public static function cleanPath($path){
-        return str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH)], ["/", "", "", "", ""], $path);
-    }
+	public static function cleanPath($path){
+		return str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH)], ["/", "", "", "", ""], $path);
+	}
 
-    public static function validateObjectArray(array $array, string $class) : bool{
-        foreach($array as $key => $item){
-            if(!($item instanceof $class)){
-                throw new \RuntimeException("\$item[$key] is not an instance of $class");
-            }
-        }
+	/**
+	 * Extracts one-line tags from the doc-comment
+	 *
+	 * @param string $docComment
+	 *
+	 * @return string[] an array of tagName => tag value. If the tag has no value, an empty string is used as the value.
+	 */
+	public static function parseDocComment(string $docComment) : array{
+		preg_match_all('/(*ANYCRLF)^[\t ]*\* @([a-zA-Z]+)(?:[\t ]+(.+))?[\t ]*$/m', $docComment, $matches);
 
-        return true;
-    }
+		return array_combine($matches[1], $matches[2]);
+	}
 
-    /**
-     * Extracts one-line tags from the doc-comment
-     *
-     * @param string $docComment
-     *
-     * @return string[] an array of tagName => tag value. If the tag has no value, an empty string is used as the value.
-     */
-    public static function parseDocComment(string $docComment) : array{
-        preg_match_all('/(*ANYCRLF)^[\t ]*\* @([a-zA-Z]+)(?:[\t ]+(.+))?[\t ]*$/m', $docComment, $matches);
+	/**
+	 * @param int    $severity
+	 * @param string $message
+	 * @param string $file
+	 * @param int    $line
+	 *
+	 * @return bool
+	 * @throws \ErrorException
+	 */
+	public static function errorExceptionHandler(int $severity, string $message, string $file, int $line) : bool{
+		if(error_reporting() & $severity){
+			throw new \ErrorException($message, 0, $severity, $file, $line);
+		}
 
-        return array_combine($matches[1], $matches[2]);
-    }
-
-    /**
-     * @param int $severity
-     * @param string $message
-     * @param string $file
-     * @param int $line
-     *
-     * @return bool
-     * @throws \ErrorException
-     */
-    public static function errorExceptionHandler(int $severity, string $message, string $file, int $line) : bool{
-        if(error_reporting() & $severity){
-            throw new \ErrorException($message, 0, $severity, $file, $line);
-        }
-
-        return true; //stfu operator
-    }
+		return true; //stfu operator
+	}
 
 	public static function testValidInstance(string $className, string $baseName) : void{
 		try{

@@ -102,7 +102,7 @@ class McRegion extends RegionLevelProvider{
 	protected function deserializeChunk(string $data) : Chunk{
 		$nbt = new BigEndianNBTStream();
 		$chunk = $nbt->readCompressed($data);
-		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
+		if(!$chunk->hasTag("Level")){
 			throw new ChunkException("Invalid NBT format");
 		}
 

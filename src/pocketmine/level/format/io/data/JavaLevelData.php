@@ -67,7 +67,7 @@ class JavaLevelData extends BaseNbtLevelData{
 	protected function load() : ?CompoundTag{
 		$nbt = new BigEndianNBTStream();
 		$levelData = $nbt->readCompressed(file_get_contents($this->dataPath));
-		if($levelData instanceof CompoundTag and $levelData->hasTag("Data", CompoundTag::class)){
+		if($levelData->hasTag("Data", CompoundTag::class)){
 			return $levelData->getCompoundTag("Data");
 		}
 		return null;

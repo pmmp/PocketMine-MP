@@ -27,13 +27,12 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\FishingHook;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class FishingRod extends Tool{
 
-	public function __construct(int $meta = 0){
-		parent::__construct(self::FISHING_ROD, $meta, "Fishing Rod");
+	public function __construct(){
+		parent::__construct(self::FISHING_ROD, 0, "Fishing Rod");
 	}
 
 	public function getEnchantability() : int{

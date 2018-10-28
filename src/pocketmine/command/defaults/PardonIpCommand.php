@@ -32,14 +32,11 @@ use pocketmine\network\mcpe\protocol\types\CommandParameter;
 class PardonIpCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.unban.ip.description",
-			"%commands.unbanip.usage",
-            [], [[
-                new CommandParameter("ip", CommandParameter::ARG_TYPE_VALUE, false)
-            ]]
-		);
+		parent::__construct($name, "%pocketmine.command.unban.ip.description", "%commands.unbanip.usage", ["unban-ip"], [
+				[
+					new CommandParameter("ip", CommandParameter::ARG_TYPE_VALUE, false)
+				]
+			]);
 		$this->setPermission("pocketmine.command.unban.ip");
 	}
 

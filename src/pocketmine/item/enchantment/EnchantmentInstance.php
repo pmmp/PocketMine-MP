@@ -69,6 +69,7 @@ class EnchantmentInstance{
 
 	/**
 	 * Sets the level of the enchantment.
+	 *
 	 * @param int $level
 	 *
 	 * @return $this

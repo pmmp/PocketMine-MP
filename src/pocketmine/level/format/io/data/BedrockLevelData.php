@@ -100,15 +100,13 @@ class BedrockLevelData extends BaseNbtLevelData{
 	protected function load() : ?CompoundTag{
 		$nbt = new LittleEndianNBTStream();
 		$levelData = $nbt->read(substr(file_get_contents($this->dataPath), 8));
-		if($levelData instanceof CompoundTag){
-			$version = $levelData->getInt("StorageVersion", INT32_MAX, true);
-			if($version > self::CURRENT_STORAGE_VERSION){
-				throw new UnsupportedLevelFormatException("Specified LevelDB world format version ($version) is not supported by " . \pocketmine\NAME);
-			}
 
-			return $levelData;
+		$version = $levelData->getInt("StorageVersion", INT32_MAX, true);
+		if($version > self::CURRENT_STORAGE_VERSION){
+			throw new UnsupportedLevelFormatException("Specified LevelDB world format version ($version) is not supported by " . \pocketmine\NAME);
 		}
-		return null;
+
+		return $levelData;
 	}
 
 	protected function fix() : void{

@@ -53,7 +53,7 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	/**
 	 * @param string $logFile
-	 * @param bool $logDebug
+	 * @param bool   $logDebug
 	 *
 	 * @throws \RuntimeException
 	 */
