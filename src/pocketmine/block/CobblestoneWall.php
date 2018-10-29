@@ -48,8 +48,8 @@ class CobblestoneWall extends Transparent{
 		return 2;
 	}
 
-	public function updateState() : void{
-		parent::updateState();
+	public function readStateFromWorld() : void{
+		parent::readStateFromWorld();
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);

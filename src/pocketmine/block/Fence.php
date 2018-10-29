@@ -34,8 +34,8 @@ abstract class Fence extends Transparent{
 		return 0.25;
 	}
 
-	public function updateState() : void{
-		parent::updateState();
+	public function readStateFromWorld() : void{
+		parent::readStateFromWorld();
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);

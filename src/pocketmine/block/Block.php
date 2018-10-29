@@ -150,6 +150,22 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Called when this block is created, set, or has a neighbouring block update, to re-detect dynamic properties which
+	 * are not saved on the world.
+	 *
+	 * Clears any cached precomputed objects, such as bounding boxes. Remove any outdated precomputed things such as
+	 * AABBs and force recalculation.
+	 */
+	public function readStateFromWorld() : void{
+		$this->boundingBox = null;
+		$this->collisionBoxes = null;
+	}
+
+	public function writeStateToWorld() : void{
+		$this->level->getChunkAtPosition($this)->setBlock($this->x & 0xf, $this->y, $this->z & 0xf, $this->getId(), $this->getDamage());
+	}
+
+	/**
 	 * Returns a bitmask used to extract state bits from block metadata.
 	 *
 	 * @return int
@@ -448,7 +464,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		$this->y = (int) $v->y;
 		$this->z = (int) $v->z;
 		$this->level = $v->level;
-		$this->updateState();
+		$this->readStateFromWorld();
 	}
 
 	/**
@@ -715,18 +731,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return AxisAlignedBB::one();
-	}
-
-	/**
-	 * Called when this block is created, set, or has a neighbouring block update, to re-detect dynamic properties which
-	 * are not saved on the world.
-	 *
-	 * Clears any cached precomputed objects, such as bounding boxes. Remove any outdated precomputed things such as
-	 * AABBs and force recalculation.
-	 */
-	public function updateState() : void{
-		$this->boundingBox = null;
-		$this->collisionBoxes = null;
 	}
 
 	/**

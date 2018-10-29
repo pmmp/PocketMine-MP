@@ -69,8 +69,8 @@ abstract class Door extends Transparent{
 		return 0b1111;
 	}
 
-	public function updateState() : void{
-		parent::updateState();
+	public function readStateFromWorld() : void{
+		parent::readStateFromWorld();
 
 		//copy door properties from other half
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);

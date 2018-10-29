@@ -74,13 +74,21 @@ class Bed extends Transparent{
 		return 0b1111;
 	}
 
-	public function updateState() : void{
-		parent::updateState();
+	public function readStateFromWorld() : void{
+		parent::readStateFromWorld();
 		//read extra state information from the tile - this is an ugly hack
-		//TODO: extend this hack to setting block as well so we don't have to deal with tile hacks in the main code
 		$tile = $this->level->getTile($this);
 		if($tile instanceof TileBed){
 			$this->color = $tile->getColor();
+		}
+	}
+
+	public function writeStateToWorld() : void{
+		parent::writeStateToWorld();
+		//extra block properties storage hack
+		$tile = Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($this));
+		if($tile instanceof TileBed){
+			$tile->setColor($this->color);
 		}
 	}
 
@@ -185,16 +193,6 @@ class Bed extends Transparent{
 				$nextState = clone $this;
 				$nextState->head = true;
 				$this->getLevel()->setBlock($next, $nextState);
-
-				//TODO: make this happen automatically on block set
-				$tile1 = Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($this));
-				if($tile1 instanceof TileBed){
-					$tile1->setColor($this->color);
-				}
-				$tile2 = Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($next));
-				if($tile2 instanceof TileBed){
-					$tile2->setColor($this->color);
-				}
 
 				return true;
 			}

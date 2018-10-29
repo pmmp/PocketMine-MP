@@ -59,12 +59,21 @@ class Skull extends Flowable{
 		return 0b111;
 	}
 
-	public function updateState() : void{
-		parent::updateState();
+	public function readStateFromWorld() : void{
+		parent::readStateFromWorld();
 		$tile = $this->level->getTile($this);
 		if($tile instanceof TileSkull){
 			$this->type = $tile->getType();
 			$this->rotation = $tile->getRotation();
+		}
+	}
+
+	public function writeStateToWorld() : void{
+		parent::writeStateToWorld();
+		$tile = Tile::createTile(Tile::SKULL, $this->getLevel(), TileSkull::createNBT($this));
+		if($tile instanceof TileSkull){
+			$tile->setRotation($this->rotation);
+			$tile->setType($this->type);
 		}
 	}
 
@@ -91,17 +100,7 @@ class Skull extends Flowable{
 		if($player !== null and $face === Facing::UP){
 			$this->rotation = ((int) floor(($player->yaw * 16 / 360) + 0.5)) & 0xf;
 		}
-		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			//TODO: make this automatic on block set
-			$tile = Tile::createTile(Tile::SKULL, $this->getLevel(), TileSkull::createNBT($this));
-			if($tile instanceof TileSkull){
-				$tile->setRotation($this->rotation);
-				$tile->setType($this->type);
-			}
-			return true;
-		}
-
-		return false;
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getItem() : Item{

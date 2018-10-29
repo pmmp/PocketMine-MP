@@ -762,7 +762,7 @@ class Level implements ChunkManager, Metadatable{
 			Level::getBlockXYZ($index, $x, $y, $z);
 
 			$block = $this->getBlockAt($x, $y, $z);
-			$block->updateState(); //for blocks like fences, force recalculation of connected AABBs
+			$block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
 
 			$ev = new BlockUpdateEvent($block);
 			$ev->call();
@@ -1372,7 +1372,7 @@ class Level implements ChunkManager, Metadatable{
 		$block->y = $y;
 		$block->z = $z;
 		$block->level = $this;
-		$block->updateState();
+		$block->readStateFromWorld();
 
 		if($addToCache and $blockHash !== null){
 			$this->blockCache[$chunkHash][$blockHash] = $block;
@@ -1517,51 +1517,46 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->setBlock->startTiming();
 
-		if($this->getChunkAtPosition($pos, true)->setBlock($pos->x & 0x0f, $pos->y, $pos->z & 0x0f, $block->getId(), $block->getDamage())){
-			if(!($pos instanceof Position)){
-				$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
-			}
+		if(!($pos instanceof Position)){
+			$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
+		}
 
-			$block = clone $block;
+		$block = clone $block;
 
-			$block->position($pos);
+		$block->position($pos);
+		$block->writeStateToWorld();
 
-			$chunkHash = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
-			$blockHash = Level::blockHash($pos->x, $pos->y, $pos->z);
+		$chunkHash = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
+		$blockHash = Level::blockHash($pos->x, $pos->y, $pos->z);
 
-			unset($this->blockCache[$chunkHash][$blockHash]);
+		unset($this->blockCache[$chunkHash][$blockHash]);
 
-			if(!isset($this->changedBlocks[$chunkHash])){
-				$this->changedBlocks[$chunkHash] = [];
-			}
-			$this->changedBlocks[$chunkHash][$blockHash] = $block;
+		if(!isset($this->changedBlocks[$chunkHash])){
+			$this->changedBlocks[$chunkHash] = [];
+		}
+		$this->changedBlocks[$chunkHash][$blockHash] = $block;
 
-			foreach($this->getChunkLoaders($pos->x >> 4, $pos->z >> 4) as $loader){
-				$loader->onBlockChanged($block);
-			}
+		foreach($this->getChunkLoaders($pos->x >> 4, $pos->z >> 4) as $loader){
+			$loader->onBlockChanged($block);
+		}
 
-			if($update){
-				$this->updateAllLight($block);
+		if($update){
+			$this->updateAllLight($block);
 
-				$ev = new BlockUpdateEvent($block);
-				$ev->call();
-				if(!$ev->isCancelled()){
-					foreach($this->getNearbyEntities(AxisAlignedBB::one()->offset($block->x, $block->y, $block->z)->expand(1, 1, 1)) as $entity){
-						$entity->onNearbyBlockChange();
-					}
-					$ev->getBlock()->onNearbyBlockChange();
-					$this->scheduleNeighbourBlockUpdates($pos);
+			$ev = new BlockUpdateEvent($block);
+			$ev->call();
+			if(!$ev->isCancelled()){
+				foreach($this->getNearbyEntities(AxisAlignedBB::one()->offset($block->x, $block->y, $block->z)->expand(1, 1, 1)) as $entity){
+					$entity->onNearbyBlockChange();
 				}
+				$ev->getBlock()->onNearbyBlockChange();
+				$this->scheduleNeighbourBlockUpdates($pos);
 			}
-
-			$this->timings->setBlock->stopTiming();
-
-			return true;
 		}
 
 		$this->timings->setBlock->stopTiming();
 
-		return false;
+		return true;
 	}
 
 	/**
