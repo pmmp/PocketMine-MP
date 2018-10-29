@@ -785,10 +785,11 @@ class Item implements ItemIds, \JsonSerializable{
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		if($this->id === $item->getId() and (!$checkDamage or $this->getDamage() === $item->getDamage())){
 			if($checkCompound){
-				if($this->hasNamedTag() and $item->hasNamedTag()){
-					//Serialized NBT didn't match, check the cached object tree.
+				if($this->hasNamedTag() and $item->hasNamedTag()){ //both items have NBT
 					return $this->getNamedTag()->equals($item->getNamedTag());
 				}
+
+				return (!$this->hasNamedTag() and !$item->hasNamedTag()); //both items must have no NBT
 			}else{
 				return true;
 			}
