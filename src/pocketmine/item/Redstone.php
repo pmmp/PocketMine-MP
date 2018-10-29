@@ -27,8 +27,8 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 
 class Redstone extends Item{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::REDSTONE, $meta, "Redstone");
+	public function __construct(){
+		parent::__construct(self::REDSTONE, 0, "Redstone");
 	}
 
 	public function getBlock() : Block{

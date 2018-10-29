@@ -39,6 +39,7 @@ use pocketmine\item\FlintSteel;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Explosion;
+use pocketmine\level\GameRules;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -141,7 +142,12 @@ class Creeper extends Monster implements Ageable{
 			$f = $this->isPowered() ? 2 : 1;
 			$exp = new Explosion($this, $this->explosionRadius * $f, $this);
 			$this->flagForDespawn();
-			$exp->explode();
+
+			if($this->level->getGameRules()->getBool(GameRules::RULE_MOB_GRIEFING, true)){
+				$exp->explode();
+			}else{
+				$exp->explodeB();
+			}
 		}
 	}
 

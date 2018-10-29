@@ -27,8 +27,8 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 
 class Dye extends Item{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::DYE, $meta, "Dye");
+	public function __construct(int $variant){
+		parent::__construct(self::DYE, $variant, "Dye");
 	}
 
 	public function getBlock() : Block{

@@ -784,14 +784,14 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	protected function actuallyDoTick(int $currentTick) : void{
-		if(!$this->stopTime and $this->gameRules->getBool("doDaylightCycle", true)){
+		if(!$this->stopTime and $this->gameRules->getBool(GameRules::RULE_DO_DAYLIGHT_CYCLE, true)){
 			$this->time++;
 		}
 
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
 		$this->skyLightReduction = $this->computeSkyLightReduction(); //Sky light reduction depends on the sun angle
 
-		if($this->gameRules->getBool("doDaylightCycle", true) and ++$this->sendTimeTicker === 200){
+		if($this->gameRules->getBool(GameRules::RULE_DO_DAYLIGHT_CYCLE, true) and ++$this->sendTimeTicker === 200){
 			$this->sendTime();
 			$this->sendTimeTicker = 0;
 		}
@@ -863,7 +863,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->tickChunks();
 		$this->timings->doTickTiles->stopTiming();
 
-		if($this->server->getAltayProperty("level.generic-auto-mob-spawning", false) and $this->gameRules->getBool("doMobSpawning") and $currentTick % 400 === 0){
+		if($this->server->getAltayProperty("level.generic-auto-mob-spawning", false) and $this->gameRules->getBool(GameRules::RULE_DO_MOB_SPAWNING) and $currentTick % 400 === 0){
 			$eligibleChunks = [];
 			foreach($this->players as $player){
 				$eligibleChunks = array_replace($eligibleChunks, array_keys($player->usedChunks));
@@ -2413,7 +2413,7 @@ class Level implements ChunkManager, Metadatable{
 				$oldChunk = $this->getChunk($x, $z, false);
 				$this->setChunk($x, $z, $chunk, false);
 
-				if($this->gameRules->getBool("doMobSpawning", false)){
+				if($this->gameRules->getBool(GameRules::RULE_DO_MOB_SPAWNING, false)){
 					AnimalSpawner::performChunkGeneratorSpawning($this, $this->getBiome($x, $z), ($x * 16) + 8, ($z * 16) + 8, 16, 16, $this->random);
 				}
 

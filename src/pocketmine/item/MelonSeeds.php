@@ -27,8 +27,8 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 
 class MelonSeeds extends Item{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::MELON_SEEDS, $meta, "Melon Seeds");
+	public function __construct(){
+		parent::__construct(self::MELON_SEEDS, 0, "Melon Seeds");
 	}
 
 	public function getBlock() : Block{

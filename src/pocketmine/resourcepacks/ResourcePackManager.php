@@ -138,6 +138,7 @@ class ResourcePackManager{
 	 * Returns the resource pack matching the specified UUID string, or null if the ID was not recognized.
 	 *
 	 * @param string $id
+	 *
 	 * @return ResourcePack|null
 	 */
 	public function getPackById(string $id){

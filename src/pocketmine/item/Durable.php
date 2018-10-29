@@ -41,6 +41,7 @@ abstract class Durable extends Item{
 
 	/**
 	 * Sets whether the item will take damage when used.
+	 *
 	 * @param bool $value
 	 */
 	public function setUnbreakable(bool $value = true){
@@ -49,6 +50,7 @@ abstract class Durable extends Item{
 
 	/**
 	 * Applies damage to the item.
+	 *
 	 * @param int $amount
 	 *
 	 * @return bool if any damage was applied to the item
@@ -72,11 +74,11 @@ abstract class Durable extends Item{
 		return $this->damage;
 	}
 
-	public function setDamage(int $meta) : Item{
-		if($meta < 0 or $meta > $this->getMaxDurability()){
-			throw new \InvalidArgumentException("Damage must be in range 0 - " , $this->getMaxDurability());
+	public function setDamage(int $damage) : Item{
+		if($damage < 0 or $damage > $this->getMaxDurability()){
+			throw new \InvalidArgumentException("Damage must be in range 0 - " . $this->getMaxDurability());
 		}
-		$this->damage = $meta;
+		$this->damage = $damage;
 		return $this;
 	}
 

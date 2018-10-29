@@ -663,7 +663,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->temporalVector = new Vector3();
 
 		if($this->eyeHeight === null){
-			$this->eyeHeight = $this->height / 2 + 0.1;
+			$this->eyeHeight = $this->height * 0.85;
 		}
 
 		$this->id = Entity::$entityCount++;
@@ -2567,34 +2567,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pk->entityRuntimeId = $this->getId();
 		$pk->metadata = $data ?? $this->propertyManager->getAll();
 
-		// Temporary fix for player custom name tags visible
-		$includeNametag = isset($data[self::DATA_NAMETAG]);
-		if(($isPlayer = $this instanceof Player) and $includeNametag){
-			$remove = new RemoveEntityPacket();
-			$remove->entityUniqueId = $this->getId();
-			$add = new AddPlayerPacket();
-			$add->uuid = $this->getUniqueId();
-			$add->username = $this->getNameTag();
-			$add->entityRuntimeId = $this->getId();
-			$add->position = $this->asVector3();
-			$add->motion = $this->getMotion();
-			$add->yaw = $this->yaw;
-			$add->pitch = $this->pitch;
-			$add->item = $this->getInventory()->getItemInHand();
-			$add->metadata = $this->propertyManager->getAll();
-		}
-
 		foreach($player as $p){
 			if($p === $this){
 				continue;
 			}
 			$p->sendDataPacket(clone $pk);
-
-			// will remove soon
-			if($isPlayer and $includeNametag){
-				$p->sendDataPacket(clone $remove);
-				$p->sendDataPacket(clone $add);
-			}
 		}
 
 		if($this instanceof Player){

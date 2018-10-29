@@ -29,6 +29,7 @@ use pocketmine\entity\Living;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\level\GameRules;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\Server;
@@ -129,7 +130,7 @@ class Farmland extends Transparent{
 			if($this->level->random->nextFloat() < ($fallDistance - 0.5)){
 				$ev = new BlockFormEvent($this, BlockFactory::get(Block::DIRT));
 
-				if(!$this->level->getGameRules()->getBool("mobGriefing", true)){
+				if(!$this->level->getGameRules()->getBool(GameRules::RULE_MOB_GRIEFING, true)){
 					$ev->setCancelled();
 				}
 				$ev->call();

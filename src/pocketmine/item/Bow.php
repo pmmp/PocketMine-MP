@@ -33,8 +33,8 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class Bow extends Tool{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::BOW, $meta, "Bow");
+	public function __construct(){
+		parent::__construct(self::BOW, 0, "Bow");
 	}
 
 	public function getFuelTime() : int{

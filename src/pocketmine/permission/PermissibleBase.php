@@ -28,122 +28,122 @@ use pocketmine\plugin\PluginException;
 use pocketmine\timings\Timings;
 
 class PermissibleBase implements Permissible{
-    /** @var ServerOperator */
-    private $opable;
+	/** @var ServerOperator */
+	private $opable;
 
-    /** @var Permissible */
-    private $parent = null;
+	/** @var Permissible */
+	private $parent = null;
 
-    /**
-     * @var PermissionAttachment[]
-     */
-    private $attachments = [];
+	/**
+	 * @var PermissionAttachment[]
+	 */
+	private $attachments = [];
 
-    /**
-     * @var PermissionAttachmentInfo[]
-     */
-    private $permissions = [];
+	/**
+	 * @var PermissionAttachmentInfo[]
+	 */
+	private $permissions = [];
 
-    /**
-     * @param ServerOperator $opable
-     */
-    public function __construct(ServerOperator $opable){
-        $this->opable = $opable;
-        if($opable instanceof Permissible){
-            $this->parent = $opable;
-        }
-    }
+	/**
+	 * @param ServerOperator $opable
+	 */
+	public function __construct(ServerOperator $opable){
+		$this->opable = $opable;
+		if($opable instanceof Permissible){
+			$this->parent = $opable;
+		}
+	}
 
-    /**
-     * @return bool
-     */
-    public function isOp() : bool{
-        return $this->opable->isOp();
-    }
+	/**
+	 * @return bool
+	 */
+	public function isOp() : bool{
+		return $this->opable->isOp();
+	}
 
-    /**
-     * @param bool $value
-     */
-    public function setOp(bool $value){
-        $this->opable->setOp($value);
-    }
+	/**
+	 * @param bool $value
+	 */
+	public function setOp(bool $value){
+		$this->opable->setOp($value);
+	}
 
-    /**
-     * @param Permission|string $name
-     *
-     * @return bool
-     */
-    public function isPermissionSet($name) : bool{
-        return isset($this->permissions[$name instanceof Permission ? $name->getName() : $name]);
-    }
+	/**
+	 * @param Permission|string $name
+	 *
+	 * @return bool
+	 */
+	public function isPermissionSet($name) : bool{
+		return isset($this->permissions[$name instanceof Permission ? $name->getName() : $name]);
+	}
 
-    /**
-     * @param Permission|string $name
-     *
-     * @return bool
-     */
-    public function hasPermission($name) : bool{
-        if($name instanceof Permission){
-            $name = $name->getName();
-        }
+	/**
+	 * @param Permission|string $name
+	 *
+	 * @return bool
+	 */
+	public function hasPermission($name) : bool{
+		if($name instanceof Permission){
+			$name = $name->getName();
+		}
 
-        if($this->isPermissionSet($name)){
-            return $this->permissions[$name]->getValue();
-        }
+		if($this->isPermissionSet($name)){
+			return $this->permissions[$name]->getValue();
+		}
 
 		if(($perm = PermissionManager::getInstance()->getPermission($name)) !== null){
 			$perm = $perm->getDefault();
 
-            return $perm === Permission::DEFAULT_TRUE or ($this->isOp() and $perm === Permission::DEFAULT_OP) or (!$this->isOp() and $perm === Permission::DEFAULT_NOT_OP);
-        }else{
-            return Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_TRUE or ($this->isOp() and Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_OP) or (!$this->isOp() and Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_NOT_OP);
-        }
+			return $perm === Permission::DEFAULT_TRUE or ($this->isOp() and $perm === Permission::DEFAULT_OP) or (!$this->isOp() and $perm === Permission::DEFAULT_NOT_OP);
+		}else{
+			return Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_TRUE or ($this->isOp() and Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_OP) or (!$this->isOp() and Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_NOT_OP);
+		}
 
-    }
+	}
 
-    /**
-     * //TODO: tick scheduled attachments
-     *
-     * @param Plugin $plugin
-     * @param string $name
-     * @param bool $value
-     *
-     * @return PermissionAttachment
-     */
-    public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
-        if(!$plugin->isEnabled()){
-            throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
-        }
+	/**
+	 * //TODO: tick scheduled attachments
+	 *
+	 * @param Plugin $plugin
+	 * @param string $name
+	 * @param bool   $value
+	 *
+	 * @return PermissionAttachment
+	 */
+	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
+		if(!$plugin->isEnabled()){
+			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
+		}
 
-        $result = new PermissionAttachment($plugin, $this->parent ?? $this);
-        $this->attachments[spl_object_hash($result)] = $result;
-        if($name !== null and $value !== null){
-            $result->setPermission($name, $value);
-        }
+		$result = new PermissionAttachment($plugin, $this->parent ?? $this);
+		$this->attachments[spl_object_hash($result)] = $result;
+		if($name !== null and $value !== null){
+			$result->setPermission($name, $value);
+		}
 
-        $this->recalculatePermissions();
+		$this->recalculatePermissions();
 
-        return $result;
-    }
+		return $result;
+	}
 
-    /**
-     * @param PermissionAttachment $attachment
-     */
-    public function removeAttachment(PermissionAttachment $attachment){
-        if(isset($this->attachments[spl_object_hash($attachment)])){
-            unset($this->attachments[spl_object_hash($attachment)]);
-            if(($ex = $attachment->getRemovalCallback()) !== null){
-                $ex->attachmentRemoved($attachment);
-            }
+	/**
+	 * @param PermissionAttachment $attachment
+	 */
+	public function removeAttachment(PermissionAttachment $attachment){
+		if(isset($this->attachments[spl_object_hash($attachment)])){
+			unset($this->attachments[spl_object_hash($attachment)]);
+			if(($ex = $attachment->getRemovalCallback()) !== null){
+				$ex->attachmentRemoved($attachment);
+			}
 
-            $this->recalculatePermissions();
+			$this->recalculatePermissions();
 
-        }
+		}
 
-    }
+	}
 
-    public function recalculatePermissions(){
-        Timings::$permissibleCalculationTimer->startTiming();
+	public function recalculatePermissions(){
+		Timings::$permissibleCalculationTimer->startTiming();
 
 		$this->clearPermissions();
 		$permManager = PermissionManager::getInstance();
@@ -157,12 +157,12 @@ class PermissibleBase implements Permissible{
 			$this->calculateChildPermissions($perm->getChildren(), false, null);
 		}
 
-        foreach($this->attachments as $attachment){
-            $this->calculateChildPermissions($attachment->getPermissions(), false, $attachment);
-        }
+		foreach($this->attachments as $attachment){
+			$this->calculateChildPermissions($attachment->getPermissions(), false, $attachment);
+		}
 
-        Timings::$permissibleCalculationTimer->stopTiming();
-    }
+		Timings::$permissibleCalculationTimer->stopTiming();
+	}
 
 	public function clearPermissions(){
 		$permManager = PermissionManager::getInstance();
@@ -171,8 +171,8 @@ class PermissibleBase implements Permissible{
 		$permManager->unsubscribeFromDefaultPerms(false, $this->parent ?? $this);
 		$permManager->unsubscribeFromDefaultPerms(true, $this->parent ?? $this);
 
-        $this->permissions = [];
-    }
+		$this->permissions = [];
+	}
 
 	/**
 	 * @param bool[]                    $children
@@ -187,16 +187,16 @@ class PermissibleBase implements Permissible{
 			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent ?? $this, $name, $attachment, $value);
 			$permManager->subscribeToPermission($name, $this->parent ?? $this);
 
-            if($perm instanceof Permission){
-                $this->calculateChildPermissions($perm->getChildren(), !$value, $attachment);
-            }
-        }
-    }
+			if($perm instanceof Permission){
+				$this->calculateChildPermissions($perm->getChildren(), !$value, $attachment);
+			}
+		}
+	}
 
-    /**
-     * @return PermissionAttachmentInfo[]
-     */
-    public function getEffectivePermissions() : array{
-        return $this->permissions;
-    }
+	/**
+	 * @return PermissionAttachmentInfo[]
+	 */
+	public function getEffectivePermissions() : array{
+		return $this->permissions;
+	}
 }

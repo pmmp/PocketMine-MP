@@ -1,3 +1,9 @@
+---
+name: Bug report
+about: Report a bug in PocketMine-MP (not plugins)
+
+---
+
 ### Issue description
 <!---
 THIS ISSUE TRACKER IS FOR BUG REPORTING, NOT FOR HELP & SUPPORT. If you need help, use the links below.

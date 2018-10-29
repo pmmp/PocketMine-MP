@@ -29,6 +29,26 @@ use pocketmine\nbt\tag\StringTag;
 
 class GameRules{
 
+	public const RULE_COMMAND_BLOCK_OUTPUT = "commandBlockOutput";
+	public const RULE_DO_DAYLIGHT_CYCLE = "doDaylightCycle";
+	public const RULE_DO_ENTITY_DROPS = "doEntityDrops";
+	public const RULE_DO_FIRE_TICK = "doFireTick";
+	public const RULE_DO_INSOMNIA = "doInsomnia";
+	public const RULE_DO_MOB_LOOT = "doMobLoot";
+	public const RULE_DO_MOB_SPAWNING = "doMobSpawning";
+	public const RULE_DO_TILE_DROPS = "doTileDrops";
+	public const RULE_DO_WEATHER_CYCLE = "doWeatherCycle";
+	public const RULE_DROWNING_DAMAGE = "drowningdamage";
+	public const RULE_FALL_DAMAGE = "falldamage";
+	public const RULE_FIRE_DAMAGE = "firedamage";
+	public const RULE_KEEP_INVENTORY = "keepInventory";
+	public const RULE_MAX_COMMAND_CHAIN_LENGTH = "maxCommandChainLength";
+	public const RULE_MOB_GRIEFING = "mobGriefing";
+	public const RULE_PVP = "pvp";
+	public const RULE_SEND_COMMAND_FEEDBACK = "sendCommandFeedback";
+	public const RULE_SHOW_COORDINATES = "showcoordinates";
+	public const RULE_TNT_EXPLODES = "tntexplodes";
+
 	public const RULE_TYPE_UNKNOWN = 0;
 	public const RULE_TYPE_BOOL = 1;
 	public const RULE_TYPE_INT = 2;
@@ -41,26 +61,26 @@ class GameRules{
 
 	public function __construct(){
 		// bedrock edition game rules
-		$this->setRule("commandBlockOutput", true, self::RULE_TYPE_BOOL);
-		$this->setRule("doDaylightCycle", true, self::RULE_TYPE_BOOL);
-		$this->setRule("doEntityDrops", true, self::RULE_TYPE_BOOL);
-		$this->setRule("doFireTick", true, self::RULE_TYPE_BOOL);
-		$this->setRule("doInsomnia", true, self::RULE_TYPE_BOOL);
-		$this->setRule("doMobLoot", true, self::RULE_TYPE_BOOL);
-		$this->setRule("doMobSpawning", false, self::RULE_TYPE_BOOL);
-		$this->setRule("doTileDrops", true, self::RULE_TYPE_BOOL);
-		$this->setRule("doWeatherCycle", true, self::RULE_TYPE_BOOL);
-		$this->setRule("drowningdamage", true, self::RULE_TYPE_BOOL);
-		$this->setRule("falldamage", true, self::RULE_TYPE_BOOL);
-		$this->setRule("firedamage", true, self::RULE_TYPE_BOOL);
-		$this->setRule("keepInventory", false, self::RULE_TYPE_BOOL);
-		$this->setRule("maxCommandChainLength", 65536, self::RULE_TYPE_INT);
-		$this->setRule("mobGriefing", true, self::RULE_TYPE_BOOL);
-		$this->setRule("naturalRegeneration", true, self::RULE_TYPE_BOOL);
-		$this->setRule("pvp", true, self::RULE_TYPE_BOOL);
-		$this->setRule("sendCommandFeedback", true, self::RULE_TYPE_BOOL);
-		$this->setRule("showcoordinates", false, self::RULE_TYPE_BOOL);
-		$this->setRule("tntexplodes", true, self::RULE_TYPE_BOOL);
+		$this->setBool("commandBlockOutput", true);
+		$this->setBool("doDaylightCycle", true);
+		$this->setBool("doEntityDrops", true);
+		$this->setBool("doFireTick", true);
+		$this->setBool("doInsomnia", true);
+		$this->setBool("doMobLoot", true);
+		$this->setBool("doMobSpawning", false);
+		$this->setBool("doTileDrops", true);
+		$this->setBool("doWeatherCycle", true);
+		$this->setBool("drowningdamage", true);
+		$this->setBool("falldamage", true);
+		$this->setBool("firedamage", true);
+		$this->setBool("keepInventory", false);
+		$this->setInt("maxCommandChainLength", 65536);
+		$this->setBool("mobGriefing", true);
+		$this->setBool("naturalRegeneration", true);
+		$this->setBool("pvp", true);
+		$this->setBool("sendCommandFeedback", true);
+		$this->setBool("showcoordinates", false);
+		$this->setBool("tntexplodes", true);
 	}
 
 	/**
@@ -169,6 +189,18 @@ class GameRules{
 	}
 
 	/**
+	 * @param $value
+	 *
+	 * @return string
+	 */
+	public function toStringValue($value) : string{
+		if(is_bool($value)){
+			return $value === true ? "true" : "false";
+		}
+		return strval($value);
+	}
+
+	/**
 	 * @param string $name
 	 * @param bool   $value
 	 */
@@ -249,7 +281,7 @@ class GameRules{
 		$nbt = new CompoundTag("GameRules");
 
 		foreach($this->rules as $name => $rule){
-			$nbt->setString($name, strval($rule[1]));
+			$nbt->setString($name, $this->toStringValue($rule[1]));
 		}
 
 		return $nbt;

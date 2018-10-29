@@ -33,8 +33,8 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
 
 class PaintingItem extends Item{
-	public function __construct(int $meta = 0){
-		parent::__construct(self::PAINTING, $meta, "Painting");
+	public function __construct(){
+		parent::__construct(self::PAINTING, 0, "Painting");
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{

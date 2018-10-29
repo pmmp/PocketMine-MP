@@ -824,12 +824,7 @@ class Server{
 			if(file_exists($path . "$name.dat")){
 				try{
 					$nbt = new BigEndianNBTStream();
-					$compound = $nbt->readCompressed(file_get_contents($path . "$name.dat"));
-					if(!($compound instanceof CompoundTag)){
-						throw new \RuntimeException("Invalid data found in \"$name.dat\", expected " . CompoundTag::class . ", got " . (is_object($compound) ? get_class($compound) : gettype($compound)));
-					}
-
-					return $compound;
+					return $nbt->readCompressed(file_get_contents($path . "$name.dat"));
 				}catch(\Throwable $e){ //zlib decode error / corrupt data
 					rename($path . "$name.dat", $path . "$name.dat.bak");
 					$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
@@ -2418,6 +2413,14 @@ class Server{
 
 			if($this->getProperty("auto-report.enabled", true) !== false){
 				$report = true;
+
+				$stamp = $this->getDataPath() . "crashdumps/.last_crash";
+				$crashInterval = 120; //2 minutes
+				if(file_exists($stamp) and !($report = (filemtime($stamp) + $crashInterval < time()))){
+					$this->logger->debug("Not sending crashdump due to last crash less than $crashInterval seconds ago");
+				}
+				@touch($stamp); //update file timestamp
+
 				$plugin = $dump->getData()["plugin"];
 				if(is_string($plugin)){
 					$p = $this->pluginManager->getPlugin($plugin);

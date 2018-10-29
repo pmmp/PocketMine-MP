@@ -28,6 +28,7 @@ use pocketmine\block\Block;
 use pocketmine\block\Grass;
 use pocketmine\block\TallGrass;
 use pocketmine\entity\Animal;
+use pocketmine\level\GameRules;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 
@@ -63,8 +64,8 @@ class EatBlockBehavior extends Behavior{
 			$pos = $this->mob->down();
 
 			if($this->mob->level->getBlock($pos) instanceof Grass){
-				if($this->mob->level->getGameRules()->getBool("mobGriefing")){
-					$this->mob->level->addParticle(new DestroyBlockParticle($pos, Block::get(Block::GRASS)));
+				if($this->mob->level->getGameRules()->getBool(GameRules::RULE_MOB_GRIEFING)){
+					$this->mob->level->addParticle(new DestroyBlockParticle($this->mob->floor(), Block::get(Block::GRASS)));
 					$this->mob->level->setBlock($pos, Block::get(Block::DIRT));
 				}
 
