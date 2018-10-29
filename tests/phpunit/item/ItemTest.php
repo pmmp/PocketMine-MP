@@ -44,6 +44,15 @@ class ItemTest extends TestCase{
 	}
 
 	/**
+	 * Test that same items without NBT are considered equal
+	 */
+	public function testItemEqualsNoNbt() : void{
+		$item1 = ItemFactory::get(Item::DIAMOND_SWORD);
+		$item2 = clone $item1;
+		self::assertTrue($item1->equals($item2));
+	}
+
+	/**
 	 * Tests that blocks are considered to be valid registered items
 	 */
 	public function testItemBlockRegistered() : void{
