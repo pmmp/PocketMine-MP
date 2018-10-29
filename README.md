@@ -5,15 +5,15 @@ A server software for Minecraft: Bedrock/W10 Edition. Altay is a fork of [pmmp](
 
 ------------       
 
-| Jenkins | TravisCI | Discord | Twitter |
+| Jenkins | Discord |
 | :---: | :---: | :---: | :---: |
-| [![Build Status](http://entengames.net:8181/job/Altay/badge/icon)](http://entengames.net:8181/job/Altay/) | [![Travis branch](https://img.shields.io/travis/TuranicTeam/Altay/master.svg?style=flat-square)](https://travis-ci.org/TuranicTeam/Altay) | [![Discord](https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.gg/UsuhCFj) | [![Twitter Follow](https://img.shields.io/twitter/follow/TuranicTeam.svg?style=flat-square&logo=twitter&label=Follow)](https://twitter.com/TuranicTeam) |
+| [![Build Status](Soon) [Discord](https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.gg/YDGCVRU) |
 
 ------------
 
-## Why should I prefer Altay?
+## Why should I prefer NitPMMP?
 
-Because Altay has more features and improvements than PocketMine-MP
+Because NitPMMP has more features and improvements than PocketMine-MP
 
 - Map Items (API only)
 - Fishing
@@ -39,9 +39,9 @@ And more...
 
 Yes, you can.
 
-- **entengames.net:19132**
+- **epicsucht.net:19132**
 - **play.oyungg.net:19132**
 
-#### Do you need help about Altay?
+#### Do you need help about NitPMMP?
 
 Join our Discord group and contact us!
