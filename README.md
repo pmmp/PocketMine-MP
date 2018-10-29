@@ -1,17 +1,16 @@
-<h1>Altay<img src="http://fs1.directupload.net/images/180401/urn5z9ic.png" height="64" width="64" align="left"></img></h1>
+<h1>NitPMMP</h1>
 <br />
 
-A server software for Minecraft: Bedrock/W10 Edition. Altay is a fork of [pmmp](https://github.com/pmmp/PocketMine-MP)
+A server software for Minecraft: Bedrock/W10 Edition. NitPMMP is a fork of [Altay](https://github.com/TuranicTeam/Altay)
 
 ------------       
 
 | Jenkins | Discord |
-| :---: | :---: | :---: | :---: |
-| [![Build Status](Soon) [Discord](https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.gg/YDGCVRU) |
-
+| :---: | :---: |
+| [![Build Status](http://entengames.net:8181/job/Altay/badge/icon)](http://entengames.net:8181/job/Altay/) | [![Discord](https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.gg/YDGCVRU) |
 ------------
 
-## Why should I prefer NitPMMP?
+## Why should I prefer PaperPMMP?
 
 Because NitPMMP has more features and improvements than PocketMine-MP
 
@@ -35,12 +34,9 @@ Because NitPMMP has more features and improvements than PocketMine-MP
 
 And more...
 
-### Can I test this before I download it?
+### What comes new?
 
-Yes, you can.
-
-- **epicsucht.net:19132**
-- **play.oyungg.net:19132**
+- vendor Folder (Not implemented)
 
 #### Do you need help about NitPMMP?
 
