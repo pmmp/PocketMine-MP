@@ -46,6 +46,10 @@ abstract class Task{
 		return -1;
 	}
 
+	public function getName() : string{
+		return get_class($this);
+	}
+
 	/**
 	 * @param TaskHandler|null $taskHandler
 	 */

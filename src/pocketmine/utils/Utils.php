@@ -52,6 +52,11 @@ class Utils{
 		}
 	}
 
+	public static function getClosureIdentifier(\Closure $closure) : string{
+		$func = new \ReflectionFunction($closure);
+		return "closure@" . self::cleanPath($func->getFileName()) . "#L" . $func->getStartLine();
+	}
+
 	/**
 	 * Gets this machine / server instance unique ID
 	 * Returns a hash, the first 32 characters (or 16 if raw)

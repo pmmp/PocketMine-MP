@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use pocketmine\utils\Utils;
+
 /**
  * Task implementation which allows closures to be called by a scheduler.
  *
@@ -42,6 +44,10 @@ class ClosureTask extends Task{
 	 */
 	public function __construct(\Closure $closure){
 		$this->closure = $closure;
+	}
+
+	public function getName() : string{
+		return Utils::getClosureIdentifier($this->closure);
 	}
 
 	public function onRun(int $currentTick){
