@@ -198,9 +198,6 @@ class Server{
 	/** @var ResourcePackManager */
 	private $resourceManager;
 
-	/** @var ConsoleCommandSender */
-	private $consoleSender;
-
 	/** @var int */
 	private $maxPlayers;
 
@@ -1539,10 +1536,22 @@ class Server{
 
 			$this->doTitleTick = ((bool) $this->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
 
+
+			$consoleSender = new ConsoleCommandSender();
+			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
+
 			$consoleNotifier = new SleeperNotifier();
 			$this->console = new CommandReader($consoleNotifier);
-			$this->tickSleeper->addNotifier($consoleNotifier, function() : void{
-				$this->checkConsole();
+			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($consoleSender) : void{
+				Timings::$serverCommandTimer->startTiming();
+				while(($line = $this->console->getLine()) !== null){
+					$ev = new ServerCommandEvent($consoleSender, $line);
+					$ev->call();
+					if(!$ev->isCancelled()){
+						$this->dispatchCommand($ev->getSender(), $ev->getCommand());
+					}
+				}
+				Timings::$serverCommandTimer->stopTiming();
 			});
 			$this->console->start(PTHREADS_INHERIT_NONE);
 
@@ -1618,7 +1627,6 @@ class Server{
 			Timings::init();
 			TimingsHandler::setEnabled((bool) $this->getProperty("settings.enable-profiling", false));
 
-			$this->consoleSender = new ConsoleCommandSender();
 			$this->commandMap = new SimpleCommandMap($this);
 
 			Entity::init();
@@ -1635,7 +1643,6 @@ class Server{
 			$this->resourceManager = new ResourcePackManager($this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR, $this->logger);
 
 			$this->pluginManager = new PluginManager($this, $this->commandMap, ((bool) $this->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR);
-			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
 			$this->profilingTickRate = (float) $this->getProperty("settings.profile-report-trigger", 20);
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
@@ -1932,18 +1939,6 @@ class Server{
 
 	public function disablePlugins(){
 		$this->pluginManager->disablePlugins();
-	}
-
-	public function checkConsole(){
-		Timings::$serverCommandTimer->startTiming();
-		while(($line = $this->console->getLine()) !== null){
-			$ev = new ServerCommandEvent($this->consoleSender, $line);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$this->dispatchCommand($ev->getSender(), $ev->getCommand());
-			}
-		}
-		Timings::$serverCommandTimer->stopTiming();
 	}
 
 	/**
