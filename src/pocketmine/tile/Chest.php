@@ -74,8 +74,13 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 			$this->inventory->removeAllViewers(true);
 
 			if($this->doubleInventory !== null){
-				$this->doubleInventory->removeAllViewers(true);
-				$this->doubleInventory->invalidate();
+				if($this->isPaired() and $this->level->isChunkLoaded($this->pairX >> 4, $this->pairZ >> 4)){
+					$this->doubleInventory->removeAllViewers(true);
+					$this->doubleInventory->invalidate();
+					if(($pair = $this->getPair()) !== null){
+						$pair->doubleInventory = null;
+					}
+				}
 				$this->doubleInventory = null;
 			}
 
@@ -117,9 +122,9 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 					$this->doubleInventory = $pair->doubleInventory;
 				}else{
 					if(($pair->x + ($pair->z << 15)) > ($this->x + ($this->z << 15))){ //Order them correctly
-						$this->doubleInventory = new DoubleChestInventory($pair, $this);
+						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($pair, $this);
 					}else{
-						$this->doubleInventory = new DoubleChestInventory($this, $pair);
+						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($this, $pair);
 					}
 				}
 			}
