@@ -7,7 +7,7 @@ A server software for Minecraft: Bedrock/W10 Edition. TitanWare is a fork of [Po
 
 | Discord |
 | :---: |
-| [Discord] (https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.gg/9KvMuxK) |
+| [Discord] (https://discord.gg/9KvMuxK) |
 ------------
 
 ## Why should I prefer TitanWare?
