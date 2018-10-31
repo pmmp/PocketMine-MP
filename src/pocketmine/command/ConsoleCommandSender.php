@@ -35,6 +35,7 @@ class ConsoleCommandSender implements CommandSender{
 	protected $lineHeight = null;
 
 	public function __construct(){
+		$this->initPermissible();
 	}
 
 	/**
