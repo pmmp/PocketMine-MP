@@ -25,71 +25,17 @@ namespace pocketmine\command;
 
 use pocketmine\lang\TextContainer;
 use pocketmine\permission\PermissibleBase;
-use pocketmine\permission\Permission;
-use pocketmine\permission\PermissionAttachment;
-use pocketmine\permission\PermissionAttachmentInfo;
-use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
 class ConsoleCommandSender implements CommandSender{
-
-	private $perm;
+	use PermissibleBase;
 
 	/** @var int|null */
 	protected $lineHeight = null;
 
 	public function __construct(){
-		$this->perm = new PermissibleBase($this);
-	}
-
-	/**
-	 * @param Permission|string $name
-	 *
-	 * @return bool
-	 */
-	public function isPermissionSet($name) : bool{
-		return $this->perm->isPermissionSet($name);
-	}
-
-	/**
-	 * @param Permission|string $name
-	 *
-	 * @return bool
-	 */
-	public function hasPermission($name) : bool{
-		return $this->perm->hasPermission($name);
-	}
-
-	/**
-	 * @param Plugin $plugin
-	 * @param string $name
-	 * @param bool   $value
-	 *
-	 * @return PermissionAttachment
-	 */
-	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
-		return $this->perm->addAttachment($plugin, $name, $value);
-	}
-
-	/**
-	 * @param PermissionAttachment $attachment
-	 *
-	 * @return void
-	 */
-	public function removeAttachment(PermissionAttachment $attachment){
-		$this->perm->removeAttachment($attachment);
-	}
-
-	public function recalculatePermissions(){
-		$this->perm->recalculatePermissions();
-	}
-
-	/**
-	 * @return PermissionAttachmentInfo[]
-	 */
-	public function getEffectivePermissions() : array{
-		return $this->perm->getEffectivePermissions();
+		$this->initPermissible();
 	}
 
 	/**
