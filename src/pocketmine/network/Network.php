@@ -33,7 +33,7 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\Server;
 
-class Network{
+final class Network{
 	/** @var Server */
 	private $server;
 

@@ -29,8 +29,8 @@ use pocketmine\level\format\io\region\McRegion;
 use pocketmine\level\format\io\region\PMAnvil;
 use pocketmine\utils\Utils;
 
-abstract class LevelProviderManager{
-	protected static $providers = [];
+final class LevelProviderManager{
+	private static $providers = [];
 
 	/** @var string|LevelProvider */
 	private static $default = PMAnvil::class;

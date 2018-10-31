@@ -29,7 +29,7 @@ use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Utils;
 
-class MemoryManager{
+final class MemoryManager{
 
 	/** @var Server */
 	private $server;

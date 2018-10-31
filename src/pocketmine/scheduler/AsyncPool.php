@@ -27,7 +27,7 @@ namespace pocketmine\scheduler;
  * Manages general-purpose worker threads used for processing asynchronous tasks, and the tasks submitted to those
  * workers.
  */
-class AsyncPool{
+final class AsyncPool{
 	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI | PTHREADS_INHERIT_CONSTANTS;
 
 	/** @var \ClassLoader */
@@ -35,7 +35,7 @@ class AsyncPool{
 	/** @var \ThreadedLogger */
 	private $logger;
 	/** @var int */
-	protected $size;
+	private $size;
 	/** @var int */
 	private $workerMemoryLimit;
 

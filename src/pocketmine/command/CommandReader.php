@@ -37,7 +37,7 @@ class CommandReader extends Thread{
 	private static $stdin;
 
 	/** @var \Threaded */
-	protected $buffer;
+	private $buffer;
 	private $shutdown = false;
 	private $type = self::TYPE_STREAM;
 

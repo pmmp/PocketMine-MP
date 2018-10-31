@@ -25,7 +25,7 @@ namespace pocketmine\permission;
 
 use pocketmine\timings\Timings;
 
-class PermissionManager{
+final class PermissionManager{
 	/** @var PermissionManager|null */
 	private static $instance = null;
 
@@ -38,17 +38,17 @@ class PermissionManager{
 	}
 
 	/** @var Permission[] */
-	protected $permissions = [];
+	private $permissions = [];
 	/** @var Permission[] */
-	protected $defaultPerms = [];
+	private $defaultPerms = [];
 	/** @var Permission[] */
-	protected $defaultPermsOp = [];
+	private $defaultPermsOp = [];
 	/** @var Permissible[][] */
-	protected $permSubs = [];
+	private $permSubs = [];
 	/** @var Permissible[] */
-	protected $defSubs = [];
+	private $defSubs = [];
 	/** @var Permissible[] */
-	protected $defSubsOp = [];
+	private $defSubsOp = [];
 
 	/**
 	 * @param string $name

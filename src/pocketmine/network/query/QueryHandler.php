@@ -31,7 +31,7 @@ use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 
-class QueryHandler{
+final class QueryHandler{
 	private $server, $lastToken, $token, $longData, $shortData, $timeout;
 
 	public const HANDSHAKE = 9;

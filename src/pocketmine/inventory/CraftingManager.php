@@ -31,13 +31,13 @@ use pocketmine\network\mcpe\PacketStream;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\timings\Timings;
 
-class CraftingManager{
+final class CraftingManager{
 	/** @var ShapedRecipe[][] */
-	protected $shapedRecipes = [];
+	private $shapedRecipes = [];
 	/** @var ShapelessRecipe[][] */
-	protected $shapelessRecipes = [];
+	private $shapelessRecipes = [];
 	/** @var FurnaceRecipe[] */
-	protected $furnaceRecipes = [];
+	private $furnaceRecipes = [];
 
 	/** @var CompressBatchPromise */
 	private $craftingDataCache;

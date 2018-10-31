@@ -40,7 +40,7 @@ use pocketmine\utils\Utils;
 /**
  * Manages all the plugins
  */
-class PluginManager{
+final class PluginManager{
 
 	/** @var Server */
 	private $server;
@@ -51,17 +51,17 @@ class PluginManager{
 	/**
 	 * @var Plugin[]
 	 */
-	protected $plugins = [];
+	private $plugins = [];
 
 	/**
 	 * @var Plugin[]
 	 */
-	protected $enabledPlugins = [];
+	private $enabledPlugins = [];
 
 	/**
 	 * @var PluginLoader[]
 	 */
-	protected $fileAssociations = [];
+	private $fileAssociations = [];
 
 	/** @var string|null */
 	private $pluginDataDirectory;
@@ -430,7 +430,7 @@ class PluginManager{
 	 *
 	 * @return PluginCommand[]
 	 */
-	protected function parseYamlCommands(Plugin $plugin) : array{
+	private function parseYamlCommands(Plugin $plugin) : array{
 		$pluginCmds = [];
 
 		foreach($plugin->getDescription()->getCommands() as $key => $data){

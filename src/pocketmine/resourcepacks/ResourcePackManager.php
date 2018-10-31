@@ -26,7 +26,7 @@ namespace pocketmine\resourcepacks;
 
 use pocketmine\utils\Config;
 
-class ResourcePackManager{
+final class ResourcePackManager{
 
 	/** @var string */
 	private $path;

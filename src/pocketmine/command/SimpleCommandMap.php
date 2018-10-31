@@ -69,12 +69,12 @@ use pocketmine\lang\TranslationContainer;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
-class SimpleCommandMap implements CommandMap{
+final class SimpleCommandMap implements CommandMap{
 
 	/**
 	 * @var Command[]
 	 */
-	protected $knownCommands = [];
+	private $knownCommands = [];
 
 	/** @var Server */
 	private $server;
