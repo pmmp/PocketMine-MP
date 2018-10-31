@@ -53,6 +53,23 @@ class Utils{
 	}
 
 	/**
+	 * Returns a readable identifier for the class of the given object. Sanitizes class names for closures.
+	 *
+	 * @param object $obj
+	 *
+	 * @return string
+	 * @throws \ReflectionException
+	 */
+	public static function getNiceClassName(object $obj) : string{
+		$reflect = new \ReflectionClass($obj);
+		if($reflect->isAnonymous()){
+			return "anonymous@" . self::cleanPath($reflect->getFileName()) . "#L" . $reflect->getStartLine();
+		}
+
+		return $reflect->getName();
+	}
+
+	/**
 	 * Gets this machine / server instance unique ID
 	 * Returns a hash, the first 32 characters (or 16 if raw)
 	 * will be an identifier that won't change frequently.
