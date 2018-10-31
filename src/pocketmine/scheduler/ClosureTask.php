@@ -30,6 +30,7 @@ use pocketmine\utils\Utils;
  *
  * Example usage:
  *
+ * ```
  * TaskScheduler->scheduleTask(new ClosureTask(function(int $currentTick) : void{
  *     echo "HI on $currentTick\n";
  * });
