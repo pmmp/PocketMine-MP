@@ -14,7 +14,7 @@ while getopts "p:t:" OPTION 2> /dev/null; do
 	esac
 done
 
-./tests/lint.sh -p "$PHP_BINARY" -d ./src/pocketmine
+./tests/lint.sh -p "$PHP_BINARY" -d ./src/
 
 if [ $? -ne 0 ]; then
 	echo Lint scan failed!
@@ -36,7 +36,7 @@ cd tests/plugins/PocketMine-DevTools
 "$PHP_BINARY" -dphar.readonly=0 ./src/DevTools/ConsoleScript.php --make ./ --relative ./ --out ../../../DevTools.phar
 cd ../../..
 
-"$PHP_BINARY" -dphar.readonly=0 DevTools.phar --make src,vendor,resources --relative ./ --entry src/pocketmine/PocketMine.php --out PocketMine-MP.phar
+"$PHP_BINARY" -dphar.readonly=0 DevTools.phar --make src,vendor,resources --relative ./ --entry src/PocketMine.php --out PocketMine-MP.phar
 if [ -f PocketMine-MP.phar ]; then
 	echo Server phar created successfully.
 else
