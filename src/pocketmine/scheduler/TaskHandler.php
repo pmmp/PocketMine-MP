@@ -66,7 +66,7 @@ class TaskHandler{
 		$this->taskId = $taskId;
 		$this->delay = $delay;
 		$this->period = $period;
-		$this->taskName = get_class($task);
+		$this->taskName = $task->getName();
 		$this->ownerName = $ownerName ?? "Unknown";
 		$this->timings = Timings::getScheduledTaskTimings($this, $period);
 		$this->task->setHandler($this);
