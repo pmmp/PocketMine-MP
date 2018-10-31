@@ -34,6 +34,7 @@ use pocketmine\utils\Utils;
  * TaskScheduler->scheduleTask(new ClosureTask(function(int $currentTick) : void{
  *     echo "HI on $currentTick\n";
  * });
+ * ```
  */
 class ClosureTask extends Task{
 
