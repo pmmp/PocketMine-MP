@@ -147,6 +147,7 @@ use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\VerifyLoginTask;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
+use pocketmine\permission\PermissibleTrait;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
 use pocketmine\permission\PermissionManager;
@@ -164,6 +165,10 @@ use pocketmine\utils\UUID;
  * Main class that handles networking, recovery, and packet sending to the server part
  */
 class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
+	use PermissibleTrait {
+		hasPermission as private _hasPermission;
+		recalculatePermissions as private _recalculatePermissions;
+	}
 
 	public const SURVIVAL = 0;
 	public const CREATIVE = 1;
@@ -306,9 +311,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $allowFlight = false;
 	/** @var bool */
 	protected $flying = false;
-
-	/** @var PermissibleBase */
-	private $perm = null;
 
 	/** @var int|null */
 	protected $lineHeight = null;
@@ -599,15 +601,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @param permission\Permission|string $name
 	 *
 	 * @return bool
-	 */
-	public function isPermissionSet($name) : bool{
-		return $this->perm->isPermissionSet($name);
-	}
-
-	/**
-	 * @param permission\Permission|string $name
-	 *
-	 * @return bool
 	 *
 	 * @throws \InvalidStateException if the player is closed
 	 */
@@ -615,25 +608,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->closed){
 			throw new \InvalidStateException("Trying to get permissions of closed player");
 		}
-		return $this->perm->hasPermission($name);
-	}
-
-	/**
-	 * @param Plugin $plugin
-	 * @param string $name
-	 * @param bool   $value
-	 *
-	 * @return PermissionAttachment
-	 */
-	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
-		return $this->perm->addAttachment($plugin, $name, $value);
-	}
-
-	/**
-	 * @param PermissionAttachment $attachment
-	 */
-	public function removeAttachment(PermissionAttachment $attachment){
-		$this->perm->removeAttachment($attachment);
+		return $this->_hasPermission($name);
 	}
 
 	public function recalculatePermissions(){
@@ -641,11 +616,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$permManager->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 		$permManager->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 
-		if($this->perm === null){
-			return;
-		}
-
-		$this->perm->recalculatePermissions();
+		$this->_recalculatePermissions();
 
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
 			$permManager->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
@@ -657,13 +628,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->spawned){
 			$this->sendCommandData();
 		}
-	}
-
-	/**
-	 * @return PermissionAttachmentInfo[]
-	 */
-	public function getEffectivePermissions() : array{
-		return $this->perm->getEffectivePermissions();
 	}
 
 	public function sendCommandData(){
@@ -710,7 +674,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function __construct(SourceInterface $interface, string $ip, int $port){
 		$this->interface = $interface;
-		$this->perm = new PermissibleBase($this);
+		$this->initPermissible();
 		$this->namedtag = new CompoundTag();
 		$this->server = Server::getInstance();
 		$this->ip = $ip;
@@ -3457,10 +3421,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				$this->spawnPosition = null;
 
-				if($this->perm !== null){
-					$this->perm->clearPermissions();
-					$this->perm = null;
-				}
+				$this->destroyPermissible();
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
 			}finally{
