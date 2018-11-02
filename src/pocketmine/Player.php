@@ -2854,7 +2854,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				$this->spawnPosition = null;
 
-				$this->clearPermissions();
+				$this->destroyPermissible();
 			}catch(\Throwable $e){
 				$this->server->getLogger()->logException($e);
 			}finally{

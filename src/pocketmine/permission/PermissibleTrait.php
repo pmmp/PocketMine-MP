@@ -150,8 +150,6 @@ trait PermissibleTrait{
 		$permManager->unsubscribeFromDefaultPerms(true, $this->this);
 
 		$this->permissions = [];
-
-		$this->this = null;
 	}
 
 	/**
@@ -178,5 +176,10 @@ trait PermissibleTrait{
 	 */
 	public function getEffectivePermissions() : array{
 		return $this->permissions;
+	}
+
+	public function destroyPermissible() : void{
+		$this->clearPermissions();
+		$this->this = null;
 	}
 }
