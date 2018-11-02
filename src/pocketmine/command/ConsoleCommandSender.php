@@ -24,12 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\lang\TextContainer;
-use pocketmine\permission\PermissibleBase;
+use pocketmine\permission\PermissibleTrait;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
 class ConsoleCommandSender implements CommandSender{
-	use PermissibleBase;
+	use PermissibleTrait;
 
 	/** @var int|null */
 	protected $lineHeight = null;

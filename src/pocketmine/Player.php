@@ -123,7 +123,7 @@ use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\ProcessLoginTask;
-use pocketmine\permission\PermissibleBase;
+use pocketmine\permission\PermissibleTrait;
 use pocketmine\permission\PermissionManager;
 use pocketmine\plugin\Plugin;
 use pocketmine\tile\ItemFrame;
@@ -138,7 +138,7 @@ use pocketmine\utils\UUID;
  * Main class that handles networking, recovery, and packet sending to the server part
  */
 class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
-	use PermissibleBase {
+	use PermissibleTrait {
 		hasPermission as private _hasPermission;
 		recalculatePermissions as private _recalculatePermissions;
 	}

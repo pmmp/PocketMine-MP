@@ -27,7 +27,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
 use pocketmine\timings\Timings;
 
-trait PermissibleBase{
+trait PermissibleTrait{
 	/** @var Permissible */
 	private $this = null;
 
@@ -43,7 +43,7 @@ trait PermissibleBase{
 
 	public function initPermissible() : void{
 		$this->this = $this;
-		assert($this->this instanceof Permissible, "PermissibleBase can only be used by Permissibles");
+		assert($this->this instanceof Permissible, "PermissibleTrait can only be used by Permissibles");
 	}
 
 	/**
