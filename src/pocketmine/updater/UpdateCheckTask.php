@@ -58,7 +58,7 @@ class UpdateCheckTask extends AsyncTask{
 					isset($response["download_url"])
 				){
 					$response["details_url"] = $response["details_url"] ?? null;
-					$this->setResult($response, true);
+					$this->setResult($response);
 				}elseif(isset($response["error"])){
 					$this->error = $response["error"];
 				}else{

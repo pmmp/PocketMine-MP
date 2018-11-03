@@ -107,11 +107,9 @@ abstract class AsyncTask extends Collectable{
 
 	/**
 	 * @param mixed $result
-	 * @param bool  $serialize
 	 */
-	public function setResult($result, bool $serialize = true) : void{
-		$this->result = $serialize ? serialize($result) : $result;
-		$this->serialized = $serialize;
+	public function setResult($result) : void{
+		$this->result = ($this->serialized = !is_scalar($result)) ? serialize($result) : $result;
 	}
 
 	public function setSubmitted() : void{
