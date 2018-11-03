@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe;
 use pocketmine\level\format\Chunk;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\tile\Spawnable;
 
 class ChunkRequestTask extends AsyncTask{
 	/** @var string */
@@ -35,38 +34,24 @@ class ChunkRequestTask extends AsyncTask{
 	protected $chunkX;
 	/** @var int */
 	protected $chunkZ;
-	/** @var string */
-	protected $tiles;
-	/** @var int */
+
 	protected $compressionLevel;
 
 	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise){
 		$this->compressionLevel = NetworkCompression::$LEVEL;
 
-		$this->chunk = $chunk->fastSerialize();
+		$this->chunk = $chunk->networkSerialize();
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
-
-		//TODO: serialize tiles with chunks
-		$tiles = "";
-		foreach($chunk->getTiles() as $tile){
-			if($tile instanceof Spawnable){
-				$tiles .= $tile->getSerializedSpawnCompound();
-			}
-		}
-
-		$this->tiles = $tiles;
 
 		$this->storeLocal($promise);
 	}
 
 	public function onRun() : void{
-		$chunk = Chunk::fastDeserialize($this->chunk);
-
 		$pk = new FullChunkDataPacket();
 		$pk->chunkX = $this->chunkX;
 		$pk->chunkZ = $this->chunkZ;
-		$pk->data = $chunk->networkSerialize() . $this->tiles;
+		$pk->data = $this->chunk;
 
 		$stream = new PacketStream();
 		$stream->putPacket($pk);
