@@ -135,10 +135,6 @@ class TaskHandler{
 		return $this->period;
 	}
 
-	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 */
 	public function cancel(){
 		try{
 			if(!$this->isCancelled()){
