@@ -200,23 +200,6 @@ class SubChunk implements SubChunkInterface{
 		return "\x00" . $this->ids . $this->data;
 	}
 
-	public function fastSerialize() : string{
-		return
-			$this->ids .
-			$this->data .
-			$this->skyLight .
-			$this->blockLight;
-	}
-
-	public static function fastDeserialize(string $data) : SubChunk{
-		return new SubChunk(
-			substr($data,    0, 4096), //ids
-			substr($data, 4096, 2048), //data
-			substr($data, 6144, 2048), //sky light
-			substr($data, 8192, 2048)  //block light
-		);
-	}
-
 	public function __debugInfo(){
 		return [];
 	}
