@@ -126,8 +126,4 @@ class EmptySubChunk implements SubChunkInterface{
 	public function networkSerialize() : string{
 		return "\x00" . str_repeat("\x00", 6144);
 	}
-
-	public function fastSerialize() : string{
-		throw new \BadMethodCallException("Should not try to serialize empty subchunks");
-	}
 }

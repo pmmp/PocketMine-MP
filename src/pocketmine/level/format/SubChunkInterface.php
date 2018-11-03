@@ -202,9 +202,4 @@ interface SubChunkInterface{
 	 * @return string
 	 */
 	public function networkSerialize() : string;
-
-	/**
-	 * @return string
-	 */
-	public function fastSerialize() : string;
 }
