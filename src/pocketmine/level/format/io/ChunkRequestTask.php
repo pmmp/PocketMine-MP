@@ -60,7 +60,7 @@ class ChunkRequestTask extends AsyncTask{
 		$batch->setCompressionLevel($this->compressionLevel);
 		$batch->encode();
 
-		$this->setResult($batch->buffer, false);
+		$this->setResult($batch->buffer);
 	}
 
 	public function onCompletion(Server $server){
