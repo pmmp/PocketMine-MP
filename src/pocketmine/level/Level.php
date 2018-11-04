@@ -1782,7 +1782,7 @@ class Level implements ChunkManager, Metadatable{
 			$clickVector = new Vector3(0.0, 0.0, 0.0);
 		}
 
-		if($blockReplace->y >= $this->worldHeight or $blockReplace->y < 0){
+		if(!$this->isInWorld($blockReplace->x, $blockReplace->y, $blockReplace->z)){
 			//TODO: build height limit messages for custom world heights and mcregion cap
 			return false;
 		}
