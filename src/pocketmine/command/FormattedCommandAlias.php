@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
-use pocketmine\lang\TranslationContainer;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
@@ -49,11 +48,6 @@ class FormattedCommandAlias extends Command{
 				$commands[] = $this->buildCommand($formatString, $args);
 			}catch(\InvalidArgumentException $e){
 				$sender->sendMessage(TextFormat::RED . $e->getMessage());
-				return false;
-			}catch(\Throwable $e){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.exception"));
-				$sender->getServer()->getLogger()->logException($e);
-
 				return false;
 			}
 		}
