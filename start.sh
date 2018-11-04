@@ -34,8 +34,6 @@ fi
 if [ "$POCKETMINE_FILE" == "" ]; then
 	if [ -f ./PocketMine-MP.phar ]; then
 		POCKETMINE_FILE="./PocketMine-MP.phar"
-	elif [ -f ./src/pocketmine/PocketMine.php ]; then
-		POCKETMINE_FILE="./src/pocketmine/PocketMine.php"
 	else
 		echo "Couldn't find a valid PocketMine-MP installation"
 		exit 1
