@@ -53,7 +53,7 @@ class Utils{
 	}
 
 	/**
-	 * Returns a readable identifier for the class of the given object. Sanitizes class names for closures.
+	 * Returns a readable identifier for the class of the given object. Sanitizes class names for anonymous classes.
 	 *
 	 * @param object $obj
 	 *
