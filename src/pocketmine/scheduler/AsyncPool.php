@@ -226,22 +226,17 @@ class AsyncPool{
 					if($task->isCrashed()){
 						$this->logger->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
 					}elseif(!$task->hasCancelledRun()){
-						try{
-							/*
-							 * It's possible for a task to submit a progress update and then finish before the progress
-							 * update is detected by the parent thread, so here we consume any missed updates.
-							 *
-							 * When this happens, it's possible for a progress update to arrive between the previous
-							 * checkProgressUpdates() call and the next isGarbage() call, causing progress updates to be
-							 * lost. Thus, it's necessary to do one last check here to make sure all progress updates have
-							 * been consumed before completing.
-							 */
-							$task->checkProgressUpdates();
-							$task->onCompletion();
-						}catch(\Throwable $e){
-							$this->logger->critical("Could not execute completion of asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": " . $e->getMessage());
-							$this->logger->logException($e);
-						}
+						/*
+						 * It's possible for a task to submit a progress update and then finish before the progress
+						 * update is detected by the parent thread, so here we consume any missed updates.
+						 *
+						 * When this happens, it's possible for a progress update to arrive between the previous
+						 * checkProgressUpdates() call and the next isGarbage() call, causing progress updates to be
+						 * lost. Thus, it's necessary to do one last check here to make sure all progress updates have
+						 * been consumed before completing.
+						 */
+						$task->checkProgressUpdates();
+						$task->onCompletion();
 					}
 				}else{
 					break; //current task is still running, skip to next worker
