@@ -53,10 +53,9 @@ class TaskScheduler{
 	protected $currentTick = 0;
 
 	/**
-	 * @param \Logger     $logger @deprecated
 	 * @param null|string $owner
 	 */
-	public function __construct(\Logger $logger, ?string $owner = null){
+	public function __construct(?string $owner = null){
 		$this->owner = $owner;
 		$this->queue = new ReversePriorityQueue();
 	}
