@@ -12,13 +12,9 @@ if exist bin\php\php.exe (
 if exist PocketMine-MP.phar (
 	set POCKETMINE_FILE=PocketMine-MP.phar
 ) else (
-	if exist src\pocketmine\PocketMine.php (
-		set POCKETMINE_FILE=src\pocketmine\PocketMine.php
-	) else (
-		echo Couldn't find a valid PocketMine-MP installation
-		pause
-		exit 1
-	)
+	echo Couldn't find a valid PocketMine-MP installation
+	pause
+	exit 1
 )
 
 if exist bin\mintty.exe (
