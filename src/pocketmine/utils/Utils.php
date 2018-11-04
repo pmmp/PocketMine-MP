@@ -52,7 +52,15 @@ class Utils{
 		}
 	}
 
-	public static function getClosureIdentifier(\Closure $closure) : string{
+	/**
+	 * Returns a readable identifier for the given Closure, including file and line.
+	 *
+	 * @param \Closure $closure
+	 *
+	 * @return string
+	 * @throws \ReflectionException
+	 */
+	public static function getNiceClosureName(\Closure $closure) : string{
 		$func = new \ReflectionFunction($closure);
 		return "closure@" . self::cleanPath($func->getFileName()) . "#L" . $func->getStartLine();
 	}

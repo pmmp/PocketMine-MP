@@ -49,7 +49,7 @@ class ClosureTask extends Task{
 	}
 
 	public function getName() : string{
-		return Utils::getClosureIdentifier($this->closure);
+		return Utils::getNiceClosureName($this->closure);
 	}
 
 	public function onRun(int $currentTick){
