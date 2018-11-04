@@ -147,13 +147,9 @@ class SendUsageTask extends AsyncTask{
 	}
 
 	public function onRun(){
-		try{
-			Internet::postURL($this->endpoint, $this->data, 5, [
-				"Content-Type: application/json",
-				"Content-Length: " . strlen($this->data)
-			]);
-		}catch(\Throwable $e){
-
-		}
+		Internet::postURL($this->endpoint, $this->data, 5, [
+			"Content-Type: application/json",
+			"Content-Length: " . strlen($this->data)
+		]);
 	}
 }
