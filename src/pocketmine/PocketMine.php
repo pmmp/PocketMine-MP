@@ -181,7 +181,7 @@ namespace pocketmine {
 	ini_set("memory_limit", '-1');
 	define('pocketmine\START_TIME', microtime(true));
 
-	define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'pocketmine' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR);
+	define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'resources' . DIRECTORY_SEPARATOR);
 
 	$opts = getopt("", ["data:", "plugins:", "no-wizard"]);
 

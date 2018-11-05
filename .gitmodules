@@ -8,5 +8,5 @@
 	path = tests/plugins/PocketMine-DevTools
 	url = https://github.com/pmmp/PocketMine-DevTools.git
 [submodule "src/pocketmine/resources/vanilla"]
-	path = src/pocketmine/resources/vanilla
+	path = resources/vanilla
 	url = https://github.com/pmmp/BedrockData.git
