@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pocketmine\Collectable;
-
 /**
  * Class used to run async tasks in other threads.
  *
@@ -42,7 +40,7 @@ use pocketmine\Collectable;
  *
  * WARNING: Do not call PocketMine-MP API methods from other Threads!!
  */
-abstract class AsyncTask extends Collectable{
+abstract class AsyncTask extends \Threaded{
 	/**
 	 * @var \ArrayObject|mixed[] object hash => mixed data
 	 *
@@ -63,6 +61,8 @@ abstract class AsyncTask extends Collectable{
 	private $submitted = false;
 
 	private $crashed = false;
+	/** @var bool */
+	private $finished = false;
 
 	public function run() : void{
 		$this->result = null;
@@ -76,11 +76,21 @@ abstract class AsyncTask extends Collectable{
 			}
 		}
 
-		$this->setGarbage();
+		$this->finished = true;
 	}
 
 	public function isCrashed() : bool{
 		return $this->crashed or $this->isTerminated();
+	}
+
+	/**
+	 * Returns whether this task has finished executing, whether successfully or not. This differs from isRunning()
+	 * because it is not true prior to task execution.
+	 *
+	 * @return bool
+	 */
+	public function isFinished() : bool{
+		return $this->finished or $this->isCrashed();
 	}
 
 	/**
@@ -131,7 +141,7 @@ abstract class AsyncTask extends Collectable{
 	 * @return mixed
 	 */
 	public function getFromThreadStore(string $identifier){
-		if($this->worker === null or $this->isGarbage()){
+		if($this->worker === null or $this->isFinished()){
 			throw new \BadMethodCallException("Objects stored in AsyncWorker thread-local storage can only be retrieved during task execution");
 		}
 		return $this->worker->getFromThreadStore($identifier);
@@ -144,7 +154,7 @@ abstract class AsyncTask extends Collectable{
 	 * @param mixed  $value
 	 */
 	public function saveToThreadStore(string $identifier, $value) : void{
-		if($this->worker === null or $this->isGarbage()){
+		if($this->worker === null or $this->isFinished()){
 			throw new \BadMethodCallException("Objects can only be added to AsyncWorker thread-local storage during task execution");
 		}
 		$this->worker->saveToThreadStore($identifier, $value);
@@ -156,7 +166,7 @@ abstract class AsyncTask extends Collectable{
 	 * @param string $identifier
 	 */
 	public function removeFromThreadStore(string $identifier) : void{
-		if($this->worker === null or $this->isGarbage()){
+		if($this->worker === null or $this->isFinished()){
 			throw new \BadMethodCallException("Objects can only be removed from AsyncWorker thread-local storage during task execution");
 		}
 		$this->worker->removeFromThreadStore($identifier);

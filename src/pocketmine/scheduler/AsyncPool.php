@@ -219,7 +219,7 @@ class AsyncPool{
 				/** @var AsyncTask $task */
 				$task = $queue->bottom();
 				$task->checkProgressUpdates();
-				if(!$task->isRunning() and $task->isGarbage()){ //make sure the task actually executed before trying to collect
+				if($task->isFinished()){ //make sure the task actually executed before trying to collect
 					$doGC = true;
 					$queue->dequeue();
 
