@@ -1,5 +1,5 @@
 [submodule "src/pocketmine/lang/locale"]
-	path = src/pocketmine/lang/locale
+	path = resources/locale
 	url = https://github.com/pmmp/PocketMine-Language.git
 [submodule "tests/preprocessor"]
 	path = tests/preprocessor
