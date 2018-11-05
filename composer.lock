@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "28f054aefede2c0dc4f220d5c4a918a0",
+    "content-hash": "d6cbb4a2c58dae0906bf9c13ef4a1f2c",
     "packages": [
         {
             "name": "fgrosse/phpasn1",
@@ -262,16 +262,16 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.12.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "922da28efd828e2af6c19db1676ea9b6a267071c"
+                "reference": "a92e0508b13386e938a8092201ddfd3da17b8dd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/922da28efd828e2af6c19db1676ea9b6a267071c",
-                "reference": "922da28efd828e2af6c19db1676ea9b6a267071c",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/a92e0508b13386e938a8092201ddfd3da17b8dd0",
+                "reference": "a92e0508b13386e938a8092201ddfd3da17b8dd0",
                 "shasum": ""
             },
             "require": {
@@ -283,7 +283,7 @@
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "^0.1.0",
                 "pocketmine/snooze": "^0.1.0",
-                "pocketmine/spl": "^0.3.0"
+                "pocketmine/spl": "dev-master"
             },
             "type": "library",
             "autoload": {
@@ -296,10 +296,10 @@
             ],
             "description": "A RakNet server implementation written in PHP",
             "support": {
-                "source": "https://github.com/pmmp/RakLib/tree/0.12.0",
+                "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-06-13T10:06:14+00:00"
+            "time": "2018-11-05T21:18:34+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -337,16 +337,16 @@
         },
         {
             "name": "pocketmine/spl",
-            "version": "0.3.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "7fd53857cd000491ba69e8db865792a024dd2c49"
+                "reference": "985e212ac528412ec00ddd3b88c5fc11549a2fe0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/7fd53857cd000491ba69e8db865792a024dd2c49",
-                "reference": "7fd53857cd000491ba69e8db865792a024dd2c49",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/985e212ac528412ec00ddd3b88c5fc11549a2fe0",
+                "reference": "985e212ac528412ec00ddd3b88c5fc11549a2fe0",
                 "shasum": ""
             },
             "type": "library",
@@ -365,7 +365,7 @@
             "support": {
                 "source": "https://github.com/pmmp/SPL/tree/master"
             },
-            "time": "2018-08-12T15:17:39+00:00"
+            "time": "2018-10-21T17:32:00+00:00"
         }
     ],
     "packages-dev": [],
@@ -373,6 +373,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "ext-pthreads": 20,
+        "pocketmine/raklib": 20,
+        "pocketmine/spl": 20,
         "pocketmine/nbt": 20,
         "pocketmine/math": 20
     },
