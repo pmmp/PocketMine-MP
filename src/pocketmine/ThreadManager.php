@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
-use pocketmine\utils\MainLogger;
-
 class ThreadManager extends \Volatile{
 
 	/** @var ThreadManager */
@@ -72,7 +70,7 @@ class ThreadManager extends \Volatile{
 	}
 
 	public function stopAll() : int{
-		$logger = MainLogger::getLogger();
+		$logger = \GlobalLogger::get();
 
 		$erroredThreads = 0;
 

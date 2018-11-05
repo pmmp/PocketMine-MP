@@ -44,7 +44,6 @@ class Main extends PluginBase implements Listener{
 
 		$this->waitingTests = [
 			new tests\AsyncTaskMemoryLeakTest($this),
-			new tests\AsyncTaskMainLoggerTest($this),
 			new tests\AsyncTaskPublishProgressRaceTest($this)
 		];
 	}

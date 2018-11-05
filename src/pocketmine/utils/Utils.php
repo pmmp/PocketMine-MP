@@ -407,8 +407,9 @@ class Utils{
 	}
 
 	public static function kill($pid) : void{
-		if(MainLogger::isRegisteredStatic()){
-			MainLogger::getLogger()->syncFlushBuffer();
+		$logger = \GlobalLogger::get();
+		if($logger instanceof MainLogger){
+			$logger->syncFlushBuffer();
 		}
 		switch(Utils::getOS()){
 			case "win":

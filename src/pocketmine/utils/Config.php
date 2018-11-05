@@ -525,7 +525,7 @@ class Config{
 						break;
 				}
 				if(isset($this->config[$k])){
-					MainLogger::getLogger()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
+					\GlobalLogger::get()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
 				}
 				$this->config[$k] = $v;
 			}
