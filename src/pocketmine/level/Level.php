@@ -3015,6 +3015,7 @@ class Level implements ChunkManager, Metadatable{
 					$this->unloadChunkRequest($X, $Z, true);
 				}
 			}
+			$chunk->collectGarbage();
 		}
 
 		$this->provider->doGarbageCollection();
