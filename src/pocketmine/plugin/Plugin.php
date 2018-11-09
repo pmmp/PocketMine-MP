@@ -26,14 +26,13 @@ declare(strict_types=1);
  */
 namespace pocketmine\plugin;
 
-use pocketmine\command\CommandExecutor;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 
 /**
  * It is recommended to use PluginBase for the actual plugin
  */
-interface Plugin extends CommandExecutor{
+interface Plugin{
 
 	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file);
 

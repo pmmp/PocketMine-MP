@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use pocketmine\command\PluginCommand;
-use pocketmine\command\SimpleCommandMap;
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
 use pocketmine\event\HandlerList;
@@ -45,9 +43,6 @@ class PluginManager{
 	/** @var Server */
 	private $server;
 
-	/** @var SimpleCommandMap */
-	private $commandMap;
-
 	/**
 	 * @var Plugin[]
 	 */
@@ -67,13 +62,11 @@ class PluginManager{
 	private $pluginDataDirectory;
 
 	/**
-	 * @param Server           $server
-	 * @param SimpleCommandMap $commandMap
-	 * @param null|string      $pluginDataDirectory
+	 * @param Server      $server
+	 * @param null|string $pluginDataDirectory
 	 */
-	public function __construct(Server $server, SimpleCommandMap $commandMap, ?string $pluginDataDirectory){
+	public function __construct(Server $server, ?string $pluginDataDirectory){
 		$this->server = $server;
-		$this->commandMap = $commandMap;
 		$this->pluginDataDirectory = $pluginDataDirectory;
 		if($this->pluginDataDirectory !== null){
 			if(!file_exists($this->pluginDataDirectory)){
@@ -166,12 +159,6 @@ class PluginManager{
 						 */
 						$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed);
 						$this->plugins[$plugin->getDescription()->getName()] = $plugin;
-
-						$pluginCommands = $this->parseYamlCommands($plugin);
-
-						if(count($pluginCommands) > 0){
-							$this->commandMap->registerAll($plugin->getDescription()->getName(), $pluginCommands);
-						}
 
 						return $plugin;
 					}catch(\Throwable $e){
@@ -423,63 +410,6 @@ class PluginManager{
 				$this->disablePlugin($plugin);
 			}
 		}
-	}
-
-	/**
-	 * @param Plugin $plugin
-	 *
-	 * @return PluginCommand[]
-	 */
-	protected function parseYamlCommands(Plugin $plugin) : array{
-		$pluginCmds = [];
-
-		foreach($plugin->getDescription()->getCommands() as $key => $data){
-			if(strpos($key, ":") !== false){
-				$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.commandError", [$key, $plugin->getDescription()->getFullName()]));
-				continue;
-			}
-			if(is_array($data)){
-				$newCmd = new PluginCommand($key, $plugin);
-				if(isset($data["description"])){
-					$newCmd->setDescription($data["description"]);
-				}
-
-				if(isset($data["usage"])){
-					$newCmd->setUsage($data["usage"]);
-				}
-
-				if(isset($data["aliases"]) and is_array($data["aliases"])){
-					$aliasList = [];
-					foreach($data["aliases"] as $alias){
-						if(strpos($alias, ":") !== false){
-							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.aliasError", [$alias, $plugin->getDescription()->getFullName()]));
-							continue;
-						}
-						$aliasList[] = $alias;
-					}
-
-					$newCmd->setAliases($aliasList);
-				}
-
-				if(isset($data["permission"])){
-					if(is_bool($data["permission"])){
-						$newCmd->setPermission($data["permission"] ? "true" : "false");
-					}elseif(is_string($data["permission"])){
-						$newCmd->setPermission($data["permission"]);
-					}else{
-						throw new \InvalidArgumentException("Permission must be a string or boolean, " . gettype($data["permission"]) . " given");
-					}
-				}
-
-				if(isset($data["permission-message"])){
-					$newCmd->setPermissionMessage($data["permission-message"]);
-				}
-
-				$pluginCmds[] = $newCmd;
-			}
-		}
-
-		return $pluginCmds;
 	}
 
 	public function disablePlugins(){
