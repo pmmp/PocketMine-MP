@@ -476,6 +476,24 @@ class PluginManager{
 					continue;
 				}
 
+				$parameters = $method->getParameters();
+				if(count($parameters) !== 1){
+					continue;
+				}
+				try{
+					$eventClass = $parameters[0]->getClass();
+				}catch(\ReflectionException $e){ //class doesn't exist
+					if(isset($tags["softDepend"]) && !isset($this->plugins[$tags["softDepend"]])){
+						$this->server->getLogger()->debug("Not registering @softDepend listener " . get_class($listener) . "::" . $method->getName() . "(" . $parameters[0]->getType()->getName() . ") because plugin \"" . $tags["softDepend"] . "\" not found");
+						continue;
+					}
+
+					throw $e;
+				}
+				if($eventClass === null or !$eventClass->isSubclassOf(Event::class)){
+					continue;
+				}
+
 				try{
 					$priority = isset($tags["priority"]) ? EventPriority::fromString($tags["priority"]) : EventPriority::NORMAL;
 				}catch(\InvalidArgumentException $e){
@@ -497,21 +515,7 @@ class PluginManager{
 					}
 				}
 
-				$parameters = $method->getParameters();
-				try{
-					$isHandler = count($parameters) === 1 && $parameters[0]->getClass() instanceof \ReflectionClass && is_subclass_of($parameters[0]->getClass()->getName(), Event::class);
-				}catch(\ReflectionException $e){
-					if(isset($tags["softDepend"]) && !isset($this->plugins[$tags["softDepend"]])){
-						$this->server->getLogger()->debug("Not registering @softDepend listener " . get_class($listener) . "::" . $method->getName() . "(" . $parameters[0]->getType()->getName() . ") because plugin \"" . $tags["softDepend"] . "\" not found");
-						continue;
-					}
-
-					throw $e;
-				}
-				if($isHandler){
-					$class = $parameters[0]->getClass()->getName();
-					$this->registerEvent($class, $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
-				}
+				$this->registerEvent($eventClass->getName(), $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
 			}
 		}
 	}
