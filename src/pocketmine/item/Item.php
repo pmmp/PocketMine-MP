@@ -305,7 +305,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 		$this->setNamedTagEntry($ench);
 		
-		return $this
+		return $this;
 	}
 
 	/**
