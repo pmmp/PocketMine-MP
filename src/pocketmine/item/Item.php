@@ -292,7 +292,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public function removeEnchantment(int $id, int $level = -1) : Item{
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
-			return;
+			return $this;
 		}
 
 		/** @var CompoundTag $entry */
