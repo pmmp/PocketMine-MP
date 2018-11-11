@@ -140,7 +140,7 @@ class HandlerList{
 			foreach($this->handlerSlots as $priority => $list){
 				foreach($list as $hash => $listener){
 					if(($object instanceof Plugin and $listener->getPlugin() === $object)
-						or ($object instanceof Listener and $listener->getListener() === $object)
+						or ($object instanceof Listener and (new \ReflectionFunction($listener->getHandler()))->getClosureThis() === $object) //this doesn't even need to be a listener :D
 					){
 						unset($this->handlerSlots[$priority][$hash]);
 					}
