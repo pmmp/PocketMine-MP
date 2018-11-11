@@ -62,6 +62,21 @@ class Utils{
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
 		$func = new \ReflectionFunction($closure);
+		if($func->getName() !== "{closure}"){
+			//closure wraps a named function, can be done with reflection or fromCallable()
+			//isClosure() is useless here because it just tells us if $func is reflecting a Closure object
+
+			$scope = $func->getClosureScopeClass();
+			if($scope !== null){ //class method
+				return
+					$scope->getName() .
+					($func->getClosureThis() !== null ? "->" : "::") .
+					$func->getName(); //name doesn't include class in this case
+			}
+
+			//non-class function
+			return $func->getName();
+		}
 		return "closure@" . self::cleanPath($func->getFileName()) . "#L" . $func->getStartLine();
 	}
 
