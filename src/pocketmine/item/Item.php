@@ -308,6 +308,9 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this
 	}
 
+	/**
+	* @return Item
+	*/
 	public function removeEnchantments() : Item{
 		$this->removeNamedTagEntry(self::TAG_ENCH);
 		
