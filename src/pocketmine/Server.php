@@ -1458,6 +1458,7 @@ class Server{
 				$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error2"));
 				$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error3"));
 				$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error4", ["settings.enable-dev-builds"]));
+				$this->logger->emergency($this->baseLang->translateString("pocketmine.server.devBuild.error5", ["https://github.com/pmmp/PocketMine-MP/releases"]));
 				$this->forceShutdown();
 				return;
 			}
