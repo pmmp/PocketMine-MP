@@ -25,22 +25,18 @@ namespace pocketmine\plugin;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
-use pocketmine\event\Listener;
 use pocketmine\timings\TimingsHandler;
 
 class RegisteredListener{
 
-	/** @var Listener */
-	private $listener;
+	/** @var \Closure */
+	private $handler;
 
 	/** @var int */
 	private $priority;
 
 	/** @var Plugin */
 	private $plugin;
-
-	/** @var EventExecutor */
-	private $executor;
 
 	/** @var bool */
 	private $ignoreCancelled;
@@ -50,27 +46,22 @@ class RegisteredListener{
 
 
 	/**
-	 * @param Listener       $listener
-	 * @param EventExecutor  $executor
+	 * @param \Closure       $handler
 	 * @param int            $priority
 	 * @param Plugin         $plugin
 	 * @param bool           $ignoreCancelled
 	 * @param TimingsHandler $timings
 	 */
-	public function __construct(Listener $listener, EventExecutor $executor, int $priority, Plugin $plugin, bool $ignoreCancelled, TimingsHandler $timings){
-		$this->listener = $listener;
+	public function __construct(\Closure $handler, int $priority, Plugin $plugin, bool $ignoreCancelled, TimingsHandler $timings){
+		$this->handler = $handler;
 		$this->priority = $priority;
 		$this->plugin = $plugin;
-		$this->executor = $executor;
 		$this->ignoreCancelled = $ignoreCancelled;
 		$this->timings = $timings;
 	}
 
-	/**
-	 * @return Listener
-	 */
-	public function getListener() : Listener{
-		return $this->listener;
+	public function getHandler() : \Closure{
+		return $this->handler;
 	}
 
 	/**
@@ -95,7 +86,7 @@ class RegisteredListener{
 			return;
 		}
 		$this->timings->startTiming();
-		$this->executor->execute($this->listener, $event);
+		($this->handler)($event);
 		$this->timings->stopTiming();
 	}
 
