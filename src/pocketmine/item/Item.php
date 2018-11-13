@@ -286,11 +286,13 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param int $id
 	 * @param int $level
+	 *
+	 * @return Item
 	 */
-	public function removeEnchantment(int $id, int $level = -1) : void{
+	public function removeEnchantment(int $id, int $level = -1) : Item{
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
-			return;
+			return $this;
 		}
 
 		/** @var CompoundTag $entry */
@@ -302,16 +304,25 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		$this->setNamedTagEntry($ench);
+
+		return $this;
 	}
 
-	public function removeEnchantments() : void{
+	/**
+	 * @return Item
+	 */
+	public function removeEnchantments() : Item{
 		$this->removeNamedTagEntry(self::TAG_ENCH);
+
+		return $this;
 	}
 
 	/**
 	 * @param EnchantmentInstance $enchantment
+	 *
+	 * @return Item
 	 */
-	public function addEnchantment(EnchantmentInstance $enchantment) : void{
+	public function addEnchantment(EnchantmentInstance $enchantment) : Item{
 		$found = false;
 
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
@@ -339,6 +350,8 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		$this->setNamedTagEntry($ench);
+
+		return $this;
 	}
 
 	/**
