@@ -29,54 +29,49 @@ abstract class Timezone{
 		return ini_get('date.timezone');
 	}
 
-	public static function init() : array{
-		$messages = [];
-		do{
-			$timezone = ini_get("date.timezone");
-			if($timezone !== ""){
-				/*
-				 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
-				 * an incorrect timezone abbreviation in php.ini apparently.
-				 */
-				if(strpos($timezone, "/") === false){
-					$default_timezone = timezone_name_from_abbr($timezone);
-					if($default_timezone !== false){
-						ini_set("date.timezone", $default_timezone);
-						date_default_timezone_set($default_timezone);
-						break;
-					}else{
-						//Bad php.ini value, try another method to detect timezone
-						$messages[] = "Timezone \"$timezone\" could not be parsed as a valid timezone from php.ini, falling back to auto-detection";
-					}
-				}else{
-					date_default_timezone_set($timezone);
-					break;
+	public static function init() : void{
+		$timezone = ini_get("date.timezone");
+		if($timezone !== ""){
+			/*
+			 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
+			 * an incorrect timezone abbreviation in php.ini apparently.
+			 */
+			if(strpos($timezone, "/") === false){
+				$default_timezone = timezone_name_from_abbr($timezone);
+				if($default_timezone !== false){
+					ini_set("date.timezone", $default_timezone);
+					date_default_timezone_set($default_timezone);
+					return;
 				}
+
+				//Bad php.ini value, try another method to detect timezone
+				\GlobalLogger::get()->warning("Timezone \"$timezone\" could not be parsed as a valid timezone from php.ini, falling back to auto-detection");
+			}else{
+				date_default_timezone_set($timezone);
+				return;
 			}
+		}
 
-			if(($timezone = self::detectSystemTimezone()) and date_default_timezone_set($timezone)){
-				//Success! Timezone has already been set and validated in the if statement.
-				//This here is just for redundancy just in case some program wants to read timezone data from the ini.
-				ini_set("date.timezone", $timezone);
-				break;
-			}
+		if(($timezone = self::detectSystemTimezone()) and date_default_timezone_set($timezone)){
+			//Success! Timezone has already been set and validated in the if statement.
+			//This here is just for redundancy just in case some program wants to read timezone data from the ini.
+			ini_set("date.timezone", $timezone);
+			return;
+		}
 
-			if($response = Internet::getURL("http://ip-api.com/json") //If system timezone detection fails or timezone is an invalid value.
-				and $ip_geolocation_data = json_decode($response, true)
-				and $ip_geolocation_data['status'] !== 'fail'
-				and date_default_timezone_set($ip_geolocation_data['timezone'])
-			){
-				//Again, for redundancy.
-				ini_set("date.timezone", $ip_geolocation_data['timezone']);
-				break;
-			}
+		if($response = Internet::getURL("http://ip-api.com/json") //If system timezone detection fails or timezone is an invalid value.
+			and $ip_geolocation_data = json_decode($response, true)
+			and $ip_geolocation_data['status'] !== 'fail'
+			and date_default_timezone_set($ip_geolocation_data['timezone'])
+		){
+			//Again, for redundancy.
+			ini_set("date.timezone", $ip_geolocation_data['timezone']);
+			return;
+		}
 
-			ini_set("date.timezone", "UTC");
-			date_default_timezone_set("UTC");
-			$messages[] = "Timezone could not be automatically determined or was set to an invalid value. An incorrect timezone will result in incorrect timestamps on console logs. It has been set to \"UTC\" by default. You can change it on the php.ini file.";
-		}while(false);
-
-		return $messages;
+		ini_set("date.timezone", "UTC");
+		date_default_timezone_set("UTC");
+		\GlobalLogger::get()->warning("Timezone could not be automatically determined or was set to an invalid value. An incorrect timezone will result in incorrect timestamps on console logs. It has been set to \"UTC\" by default. You can change it on the php.ini file.");
 	}
 
 	public static function detectSystemTimezone(){

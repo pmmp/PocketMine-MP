@@ -193,15 +193,11 @@ namespace pocketmine {
 	}
 
 	//Logger has a dependency on timezone
-	$tzError = Timezone::init();
+	Timezone::init();
 
 	$logger = new MainLogger(\pocketmine\DATA . "server.log");
 	$logger->registerStatic();
-
-	foreach($tzError as $e){
-		$logger->warning($e);
-	}
-	unset($tzError);
+	\GlobalLogger::set($logger);
 
 	if(extension_loaded("xdebug")){
 		$logger->warning(PHP_EOL . PHP_EOL . PHP_EOL . "\tYou are running " . \pocketmine\NAME . " with xdebug enabled. This has a major impact on performance." . PHP_EOL . PHP_EOL);

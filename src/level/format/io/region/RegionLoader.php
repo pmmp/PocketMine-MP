@@ -26,7 +26,6 @@ namespace pocketmine\level\format\io\region;
 use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\utils\Binary;
-use pocketmine\utils\MainLogger;
 
 class RegionLoader{
 	public const COMPRESSION_GZIP = 1;
@@ -117,7 +116,7 @@ class RegionLoader{
 		}
 
 		if($length > ($this->locationTable[$index][1] << 12)){ //Invalid chunk, bigger than defined number of sectors
-			MainLogger::getLogger()->error("Corrupted bigger chunk detected (bigger than number of sectors given in header)");
+			\GlobalLogger::get()->error("Corrupted bigger chunk detected (bigger than number of sectors given in header)");
 			$this->locationTable[$index][1] = $length >> 12;
 			$this->writeLocationIndex($index);
 		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){

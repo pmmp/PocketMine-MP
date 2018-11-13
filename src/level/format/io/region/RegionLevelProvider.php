@@ -28,7 +28,6 @@ use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\data\JavaLevelData;
 use pocketmine\level\format\io\LevelData;
 use pocketmine\level\Level;
-use pocketmine\utils\MainLogger;
 
 abstract class RegionLevelProvider extends BaseLevelProvider{
 
@@ -131,7 +130,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 			try{
 				$region->open();
 			}catch(CorruptedRegionException $e){
-				$logger = MainLogger::getLogger();
+				$logger = \GlobalLogger::get();
 				$logger->error("Corrupted region file detected: " . $e->getMessage());
 
 				$region->close(false); //Do not write anything to the file

@@ -29,7 +29,6 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\entity\Skin;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\utils\BinaryStream;
-use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
 
 class LoginPacket extends DataPacket{
@@ -89,7 +88,7 @@ class LoginPacket extends DataPacket{
 				throw $e;
 			}
 
-			$logger = MainLogger::getLogger();
+			$logger = \GlobalLogger::get();
 			$logger->debug(get_class($e) . " was thrown while decoding connection request in login (protocol version " . ($this->protocol ?? "unknown") . "): " . $e->getMessage());
 			foreach(Utils::getTrace(0, $e->getTrace()) as $line){
 				$logger->debug($line);

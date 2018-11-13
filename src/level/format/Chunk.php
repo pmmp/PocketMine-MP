@@ -767,18 +767,13 @@ class Chunk{
 	}
 
 	/**
-	 * Disposes of empty subchunks
+	 * Disposes of empty subchunks and frees data where possible
 	 */
-	public function pruneEmptySubChunks(){
+	public function collectGarbage() : void{
 		foreach($this->subChunks as $y => $subChunk){
-			if($subChunk instanceof EmptySubChunk){
-				continue;
-			}elseif($subChunk->isEmpty()){ //normal subchunk full of air, remove it and replace it with an empty stub
+			if(!($subChunk instanceof EmptySubChunk) and $subChunk->isEmpty()){ //normal subchunk full of air, remove it and replace it with an empty stub
 				$this->subChunks[$y] = $this->emptySubChunk;
-			}else{
-				continue; //do not set changed
 			}
-			$this->hasChanged = true;
 		}
 	}
 
