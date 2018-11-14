@@ -747,13 +747,13 @@ class PluginManager{
 				}
 				try{
 					$eventClass = $parameters[0]->getClass();
-				}catch(\ReflectionException $e){ //class doesn't exist
-					if(isset($tags["softDepend"]) && !isset($this->plugins[$tags["softDepend"]])){
-						$this->server->getLogger()->debug("Not registering @softDepend listener " . get_class($listener) . "::" . $method->getName() . "(" . $parameters[0]->getType()->getName() . ") because plugin \"" . $tags["softDepend"] . "\" not found");
-						continue;
-					}
-
-					throw $e;
+				}catch(\ReflectionException $e){
+					//class doesn't exist, skip it
+					//we don't emit an error here because we don't know if the parameter is an Event subclass or not
+					//for consistency, we shouldn't be choking on functions that have bad single parameters, since we
+					//won't choke on functions that have more than 1 parameter since they are skipped by the above check.
+					$plugin->getLogger()->debug("Skipping candidate event handler " . get_class($listener) . "->" . $method->getName() . "(): parameter class does not exist");
+					continue;
 				}
 				if($eventClass === null or !$eventClass->isSubclassOf(Event::class)){
 					continue;

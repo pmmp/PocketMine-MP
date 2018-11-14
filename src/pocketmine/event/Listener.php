@@ -43,9 +43,6 @@ use pocketmine\plugin\PluginManager;
  * Functions which meet the criteria can have the following annotations in their doc comments:
  *
  * - `@notHandler`: Marks a function as NOT being an event handler. Only needed if the function meets the above criteria.
- * - `@softDepend [PluginName]`: Handler WILL NOT be registered if its event doesn't exist. Useful for soft-depending
- *     on plugin events. Plugin name is optional.
- *     Example: `@softDepend SimpleAuth`
  * - `@ignoreCancelled`: Cancelled events WILL NOT be passed to this handler.
  * - `@priority <PRIORITY>`: Sets the priority at which this event handler will receive events.
  *     Example: `@priority HIGHEST`
