@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format;
 
-class SubChunk implements SubChunkInterface{
+define(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY', str_repeat("\x00", 2048));
 
+class SubChunk implements SubChunkInterface{
 	protected $ids;
 	protected $data;
 	protected $blockLight;
@@ -44,6 +45,7 @@ class SubChunk implements SubChunkInterface{
 		self::assignData($this->data, $data, 2048);
 		self::assignData($this->skyLight, $skyLight, 2048, "\xff");
 		self::assignData($this->blockLight, $blockLight, 2048);
+		$this->collectGarbage();
 	}
 
 	public function isEmpty(bool $checkLight = true) : bool{
@@ -51,7 +53,7 @@ class SubChunk implements SubChunkInterface{
 			substr_count($this->ids, "\x00") === 4096 and
 			(!$checkLight or (
 				substr_count($this->skyLight, "\xff") === 2048 and
-				substr_count($this->blockLight, "\x00") === 2048
+				$this->blockLight === ZERO_NIBBLE_ARRAY
 			))
 		);
 	}
@@ -224,5 +226,22 @@ class SubChunk implements SubChunkInterface{
 
 	public function __debugInfo(){
 		return [];
+	}
+
+	public function collectGarbage() : void{
+		/*
+		 * This strange looking code is designed to exploit PHP's copy-on-write behaviour. Assigning will copy a
+		 * reference to the const instead of duplicating the whole string. The string will only be duplicated when
+		 * modified, which is perfect for this purpose.
+		 */
+		if($this->data === ZERO_NIBBLE_ARRAY){
+			$this->data = ZERO_NIBBLE_ARRAY;
+		}
+		if($this->skyLight === ZERO_NIBBLE_ARRAY){
+			$this->skyLight = ZERO_NIBBLE_ARRAY;
+		}
+		if($this->blockLight === ZERO_NIBBLE_ARRAY){
+			$this->blockLight = ZERO_NIBBLE_ARRAY;
+		}
 	}
 }
