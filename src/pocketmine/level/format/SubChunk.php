@@ -23,7 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format;
 
-define(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY', str_repeat("\x00", 2048));
+$name = __NAMESPACE__ . '\ZERO_NIBBLE_ARRAY';
+if(!defined($name)){
+	define($name, str_repeat("\x00", 2048));
+}
+unset($name);
 
 class SubChunk implements SubChunkInterface{
 	protected $ids;
