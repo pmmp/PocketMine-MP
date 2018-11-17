@@ -771,8 +771,12 @@ class Chunk{
 	 */
 	public function collectGarbage() : void{
 		foreach($this->subChunks as $y => $subChunk){
-			if(!($subChunk instanceof EmptySubChunk) and $subChunk->isEmpty()){ //normal subchunk full of air, remove it and replace it with an empty stub
-				$this->subChunks[$y] = $this->emptySubChunk;
+			if($subChunk instanceof SubChunk){
+				if($subChunk->isEmpty()){
+					$this->subChunks[$y] = $this->emptySubChunk;
+				}else{
+					$subChunk->collectGarbage();
+				}
 			}
 		}
 	}
