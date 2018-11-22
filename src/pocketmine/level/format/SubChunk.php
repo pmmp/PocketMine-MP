@@ -106,13 +106,14 @@ class SubChunk implements SubChunkInterface{
 
 		if($data !== null){
 			$i >>= 1;
-			$byte = ord($this->data{$i});
+			$oldPair = ord($this->data{$i});
 			if(($y & 1) === 0){
-				$this->data{$i} = chr(($byte & 0xf0) | ($data & 0x0f));
+				$newPair = ($oldPair & 0xf0) | ($data & 0x0f);
 			}else{
-				$this->data{$i} = chr((($data & 0x0f) << 4) | ($byte & 0x0f));
+				$newPair = (($data & 0x0f) << 4) | ($oldPair & 0x0f);
 			}
-			if($this->data{$i} !== $byte){
+			if($newPair !== $oldPair){
+				$this->data{$i} = chr($newPair);
 				$changed = true;
 			}
 		}
