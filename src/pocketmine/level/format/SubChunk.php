@@ -83,6 +83,7 @@ class SubChunk implements SubChunkInterface{
 			$changed = true;
 		}
 
+		$i >>= 1;
 		$shift = ($y & 1) << 2;
 		$oldPair = ord($this->data{$i});
 		$newPair = ($oldPair & ~(0xf << $shift)) | (($data & 0xf) << $shift);
