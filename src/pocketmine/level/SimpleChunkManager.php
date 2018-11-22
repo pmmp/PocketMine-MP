@@ -58,20 +58,6 @@ class SimpleChunkManager implements ChunkManager{
 	}
 
 	/**
-	 * Sets the raw block id.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $id 0-255
-	 */
-	public function setBlockIdAt(int $x, int $y, int $z, int $id){
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			$chunk->setBlockId($x & 0xf, $y, $z & 0xf, $id);
-		}
-	}
-
-	/**
 	 * Gets the raw block metadata
 	 *
 	 * @param int $x
@@ -87,17 +73,9 @@ class SimpleChunkManager implements ChunkManager{
 		return 0;
 	}
 
-	/**
-	 * Sets the raw block metadata.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $data 0-15
-	 */
-	public function setBlockDataAt(int $x, int $y, int $z, int $data){
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			$chunk->setBlockData($x & 0xf, $y, $z & 0xf, $data);
+	public function setBlockIdAndDataAt(int $x, int $y, int $z, int $id, int $data) : void{
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
+			$chunk->setBlock($x & 0xf, $y & 0xf, $z & 0xf, $id, $data);
 		}
 	}
 

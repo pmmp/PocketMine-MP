@@ -115,8 +115,7 @@ abstract class Tree{
 						continue;
 					}
 					if(!BlockFactory::get($level->getBlockIdAt($xx, $yy, $zz))->isSolid()){
-						$level->setBlockIdAt($xx, $yy, $zz, $this->leafBlock);
-						$level->setBlockDataAt($xx, $yy, $zz, $this->blockMeta);
+						$level->setBlockIdAndDataAt($xx, $yy, $zz, $this->leafBlock, $this->blockMeta);
 					}
 				}
 			}
@@ -125,13 +124,12 @@ abstract class Tree{
 
 	protected function placeTrunk(ChunkManager $level, int $x, int $y, int $z, Random $random, int $trunkHeight) : void{
 		// The base dirt block
-		$level->setBlockIdAt($x, $y - 1, $z, Block::DIRT);
+		$level->setBlockIdAndDataAt($x, $y - 1, $z, Block::DIRT, 0);
 
 		for($yy = 0; $yy < $trunkHeight; ++$yy){
 			$blockId = $level->getBlockIdAt($x, $y + $yy, $z);
 			if($this->canOverride(BlockFactory::get($blockId))){
-				$level->setBlockIdAt($x, $y + $yy, $z, $this->trunkBlock);
-				$level->setBlockDataAt($x, $y + $yy, $z, $this->blockMeta);
+				$level->setBlockIdAndDataAt($x, $y + $yy, $z, $this->trunkBlock, $this->blockMeta);
 			}
 		}
 	}

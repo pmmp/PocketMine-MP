@@ -184,8 +184,8 @@ class Chunk{
 	 *
 	 * @return bool
 	 */
-	public function setBlock(int $x, int $y, int $z, ?int $blockId = null, ?int $meta = null) : bool{
-		if($this->getSubChunk($y >> 4, true)->setBlock($x, $y & 0x0f, $z, $blockId !== null ? ($blockId & 0xff) : null, $meta !== null ? ($meta & 0x0f) : null)){
+	public function setBlock(int $x, int $y, int $z, int $blockId, int $meta) : bool{
+		if($this->getSubChunk($y >> 4, true)->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f)){
 			$this->hasChanged = true;
 			return true;
 		}
@@ -206,20 +206,6 @@ class Chunk{
 	}
 
 	/**
-	 * Sets the block ID at the specified chunk block coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $y
-	 * @param int $z 0-15
-	 * @param int $id 0-255
-	 */
-	public function setBlockId(int $x, int $y, int $z, int $id){
-		if($this->getSubChunk($y >> 4, true)->setBlockId($x, $y & 0x0f, $z, $id)){
-			$this->hasChanged = true;
-		}
-	}
-
-	/**
 	 * Returns the block meta value at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
@@ -230,20 +216,6 @@ class Chunk{
 	 */
 	public function getBlockData(int $x, int $y, int $z) : int{
 		return $this->getSubChunk($y >> 4)->getBlockData($x, $y & 0x0f, $z);
-	}
-
-	/**
-	 * Sets the block meta value at the specified chunk block coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $y
-	 * @param int $z 0-15
-	 * @param int $data 0-15
-	 */
-	public function setBlockData(int $x, int $y, int $z, int $data){
-		if($this->getSubChunk($y >> 4, true)->setBlockData($x, $y & 0x0f, $z, $data)){
-			$this->hasChanged = true;
-		}
 	}
 
 	/**

@@ -45,30 +45,10 @@ interface SubChunkInterface{
 	 * @param int $x
 	 * @param int $y
 	 * @param int $z
-	 * @param int $id
-	 *
-	 * @return bool
-	 */
-	public function setBlockId(int $x, int $y, int $z, int $id) : bool;
-
-	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
 	 *
 	 * @return int
 	 */
 	public function getBlockData(int $x, int $y, int $z) : int;
-
-	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $data
-	 *
-	 * @return bool
-	 */
-	public function setBlockData(int $x, int $y, int $z, int $data) : bool;
 
 	/**
 	 * @param int $x
@@ -80,15 +60,15 @@ interface SubChunkInterface{
 	public function getFullBlock(int $x, int $y, int $z) : int;
 
 	/**
-	 * @param int      $x
-	 * @param int      $y
-	 * @param int      $z
-	 * @param int|null $id
-	 * @param int|null $data
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 * @param int $id
+	 * @param int $data
 	 *
 	 * @return bool
 	 */
-	public function setBlock(int $x, int $y, int $z, ?int $id = null, ?int $data = null) : bool;
+	public function setBlock(int $x, int $y, int $z, int $id, int $data) : bool;
 
 	/**
 	 * @param int $x

@@ -212,8 +212,7 @@ class Explosion{
 				}
 			}
 
-			$this->level->setBlockIdAt($block->x, $block->y, $block->z, 0);
-			$this->level->setBlockDataAt($block->x, $block->y, $block->z, 0);
+			$this->level->setBlockIdAndDataAt($block->x, $block->y, $block->z, 0, 0);
 
 			$t = $this->level->getTileAt($block->x, $block->y, $block->z);
 			if($t instanceof Tile){

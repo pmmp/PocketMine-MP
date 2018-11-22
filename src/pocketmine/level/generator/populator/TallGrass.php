@@ -50,8 +50,7 @@ class TallGrass extends Populator{
 			$y = $this->getHighestWorkableBlock($x, $z);
 
 			if($y !== -1 and $this->canTallGrassStay($x, $y, $z)){
-				$this->level->setBlockIdAt($x, $y, $z, Block::TALL_GRASS);
-				$this->level->setBlockDataAt($x, $y, $z, 1);
+				$this->level->setBlockIdAndDataAt($x, $y, $z, Block::TALL_GRASS, 1);
 			}
 		}
 	}

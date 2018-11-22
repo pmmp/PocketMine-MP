@@ -61,11 +61,8 @@ class GroundCover extends Populator{
 						if($b->canBeFlowedInto() and BlockFactory::get($id) instanceof Liquid){
 							continue;
 						}
-						if($b->getDamage() === 0){
-							$chunk->setBlockId($x, $y, $z, $b->getId());
-						}else{
-							$chunk->setBlock($x, $y, $z, $b->getId(), $b->getDamage());
-						}
+
+						$chunk->setBlock($x, $y, $z, $b->getId(), $b->getDamage());
 					}
 				}
 			}

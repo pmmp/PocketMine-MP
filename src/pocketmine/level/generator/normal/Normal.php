@@ -208,15 +208,15 @@ class Normal extends Generator{
 
 				for($y = 0; $y < 128; ++$y){
 					if($y === 0){
-						$chunk->setBlockId($x, $y, $z, Block::BEDROCK);
+						$chunk->setBlock($x, $y, $z, Block::BEDROCK, 0);
 						continue;
 					}
 					$noiseValue = $noise[$x][$z][$y] - 1 / $smoothHeight * ($y - $smoothHeight - $minSum);
 
 					if($noiseValue > 0){
-						$chunk->setBlockId($x, $y, $z, Block::STONE);
+						$chunk->setBlock($x, $y, $z, Block::STONE, 0);
 					}elseif($y <= $this->waterHeight){
-						$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
+						$chunk->setBlock($x, $y, $z, Block::STILL_WATER, 0);
 					}
 				}
 			}

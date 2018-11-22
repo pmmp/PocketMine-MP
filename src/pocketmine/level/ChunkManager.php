@@ -38,16 +38,6 @@ interface ChunkManager{
 	public function getBlockIdAt(int $x, int $y, int $z) : int;
 
 	/**
-	 * Sets the raw block id.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $id 0-255
-	 */
-	public function setBlockIdAt(int $x, int $y, int $z, int $id);
-
-	/**
 	 * Gets the raw block metadata
 	 *
 	 * @param int $x
@@ -58,15 +48,7 @@ interface ChunkManager{
 	 */
 	public function getBlockDataAt(int $x, int $y, int $z) : int;
 
-	/**
-	 * Sets the raw block metadata.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $data 0-15
-	 */
-	public function setBlockDataAt(int $x, int $y, int $z, int $data);
+	public function setBlockIdAndDataAt(int $x, int $y, int $z, int $id, int $data) : void;
 
 	/**
 	 * Returns the raw block light level

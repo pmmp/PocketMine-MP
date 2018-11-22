@@ -85,10 +85,7 @@ class Ore{
 								$sizeZ *= $sizeZ;
 
 								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->getBlockIdAt($x, $y, $z) === Block::STONE){
-									$level->setBlockIdAt($x, $y, $z, $this->type->material->getId());
-									if($this->type->material->getDamage() !== 0){
-										$level->setBlockDataAt($x, $y, $z, $this->type->material->getDamage());
-									}
+									$level->setBlockIdAndDataAt($x, $y, $z, $this->type->material->getId(), $this->type->material->getDamage());
 								}
 							}
 						}

@@ -64,23 +64,8 @@ class SubChunk implements SubChunkInterface{
 		return ord($this->ids{($x << 8) | ($z << 4) | $y});
 	}
 
-	public function setBlockId(int $x, int $y, int $z, int $id) : bool{
-		$this->ids{($x << 8) | ($z << 4) | $y} = chr($id);
-		return true;
-	}
-
 	public function getBlockData(int $x, int $y, int $z) : int{
 		return (ord($this->data{($x << 7) | ($z << 3) | ($y >> 1)}) >> (($y & 1) << 2)) & 0xf;
-	}
-
-	public function setBlockData(int $x, int $y, int $z, int $data) : bool{
-		$i = ($x << 7) | ($z << 3) | ($y >> 1);
-
-		$shift = ($y & 1) << 2;
-		$byte = ord($this->data{$i});
-		$this->data{$i} = chr(($byte & ~(0xf << $shift)) | (($data & 0xf) << $shift));
-
-		return true;
 	}
 
 	public function getFullBlock(int $x, int $y, int $z) : int{
@@ -88,27 +73,22 @@ class SubChunk implements SubChunkInterface{
 		return (ord($this->ids{$i}) << 4) | ((ord($this->data{$i >> 1}) >> (($y & 1) << 2)) & 0xf);
 	}
 
-	public function setBlock(int $x, int $y, int $z, ?int $id = null, ?int $data = null) : bool{
+	public function setBlock(int $x, int $y, int $z, int $id, int $data) : bool{
 		$i = ($x << 8) | ($z << 4) | $y;
 		$changed = false;
-		if($id !== null){
-			$block = chr($id);
-			if($this->ids{$i} !== $block){
-				$this->ids{$i} = $block;
-				$changed = true;
-			}
+
+		$block = chr($id);
+		if($this->ids{$i} !== $block){
+			$this->ids{$i} = $block;
+			$changed = true;
 		}
 
-		if($data !== null){
-			$i >>= 1;
-
-			$shift = ($y & 1) << 2;
-			$oldPair = ord($this->data{$i});
-			$newPair = ($oldPair & ~(0xf << $shift)) | (($data & 0xf) << $shift);
-			if($newPair !== $oldPair){
-				$this->data{$i} = chr($newPair);
-				$changed = true;
-			}
+		$shift = ($y & 1) << 2;
+		$oldPair = ord($this->data{$i});
+		$newPair = ($oldPair & ~(0xf << $shift)) | (($data & 0xf) << $shift);
+		if($newPair !== $oldPair){
+			$this->data{$i} = chr($newPair);
+			$changed = true;
 		}
 
 		return $changed;
