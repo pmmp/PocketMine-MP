@@ -176,11 +176,11 @@ class Chunk{
 	/**
 	 * Sets block ID and meta in one call at the specified chunk block coordinates
 	 *
-	 * @param int      $x 0-15
-	 * @param int      $y
-	 * @param int      $z 0-15
-	 * @param int|null $blockId 0-255 if null, does not change
-	 * @param int|null $meta 0-15 if null, does not change
+	 * @param int $x 0-15
+	 * @param int $y
+	 * @param int $z 0-15
+	 * @param int $blockId 0-255
+	 * @param int $meta 0-15
 	 *
 	 * @return bool
 	 */
