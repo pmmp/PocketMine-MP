@@ -31,10 +31,18 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 abstract class Stair extends Transparent{
+	private const SHAPE_STRAIGHT = "straight";
+	private const SHAPE_INNER_LEFT = "inner_left";
+	private const SHAPE_INNER_RIGHT = "inner_right";
+	private const SHAPE_OUTER_LEFT = "outer_left";
+	private const SHAPE_OUTER_RIGHT = "outer_right";
+
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $upsideDown = false;
+	/** @var string */
+	protected $shape = self::SHAPE_STRAIGHT;
 
 	protected function writeStateToMeta() : int{
 		return (5 - $this->facing) | ($this->upsideDown ? 0x04 : 0);
@@ -49,6 +57,19 @@ abstract class Stair extends Transparent{
 		return 0b111;
 	}
 
+	public function readStateFromWorld() : void{
+		parent::readStateFromWorld();
+
+		$clockwise = Facing::rotate($this->facing, Facing::AXIS_Y, true);
+		if(($backFacing = $this->getPossibleCornerFacing(false)) !== null){
+			$this->shape = $backFacing === $clockwise ? self::SHAPE_OUTER_RIGHT : self::SHAPE_OUTER_LEFT;
+		}elseif(($frontFacing = $this->getPossibleCornerFacing(true)) !== null){
+			$this->shape = $frontFacing === $clockwise ? self::SHAPE_INNER_RIGHT : self::SHAPE_INNER_LEFT;
+		}else{
+			$this->shape = self::SHAPE_STRAIGHT;
+		}
+	}
+
 	protected function recalculateCollisionBoxes() : array{
 		$minYSlab = $this->upsideDown ? 0.5 : 0;
 
@@ -61,15 +82,14 @@ abstract class Stair extends Transparent{
 		$topStep = new AxisAlignedBB(0, $minY, 0, 1, $minY + 0.5, 1);
 		$topStep->trim(Facing::opposite($this->facing), 0.5);
 
-		/** @var Stair $corner */
-		if(($backFacing = $this->getPossibleCornerFacing(false)) !== null){
-			$topStep->trim(Facing::opposite($backFacing), 0.5);
-		}elseif(($frontFacing = $this->getPossibleCornerFacing(true)) !== null){
+		if($this->shape === self::SHAPE_OUTER_LEFT or $this->shape === self::SHAPE_OUTER_RIGHT){
+			$topStep->trim(Facing::rotate($this->facing, Facing::AXIS_Y, $this->shape === self::SHAPE_OUTER_LEFT), 0.5);
+		}elseif($this->shape === self::SHAPE_INNER_LEFT or $this->shape === self::SHAPE_INNER_RIGHT){
 			//add an extra cube
 			$extraCube = new AxisAlignedBB(0, $minY, 0, 1, $minY + 0.5, 1);
 			$bbs[] = $extraCube
-				->trim($this->facing, 0.5)
-				->trim(Facing::opposite($frontFacing), 0.5);
+				->trim($this->facing, 0.5) //avoid overlapping with main step
+				->trim(Facing::rotate($this->facing, Facing::AXIS_Y, $this->shape === self::SHAPE_INNER_LEFT), 0.5);
 		}
 
 		$bbs[] = $topStep;
@@ -79,13 +99,11 @@ abstract class Stair extends Transparent{
 
 	private function getPossibleCornerFacing(bool $oppositeFacing) : ?int{
 		$side = $this->getSide($oppositeFacing ? Facing::opposite($this->facing) : $this->facing);
-		if($side instanceof Stair and $side->upsideDown === $this->upsideDown and (
-			$side->facing === Facing::rotate($this->facing, Facing::AXIS_Y, true) or
-			$side->facing === Facing::rotate($this->facing, Facing::AXIS_Y, false))
-		){
-			return $side->facing;
-		}
-		return null;
+		return (
+			$side instanceof Stair and
+			$side->upsideDown === $this->upsideDown and
+			Facing::axis($side->facing) !== Facing::axis($this->facing) //perpendicular
+		) ? $side->facing : null;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
