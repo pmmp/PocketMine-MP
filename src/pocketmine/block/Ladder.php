@@ -79,29 +79,8 @@ class Ladder extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$f = 0.1875;
-
-		$minX = $minZ = 0;
-		$maxX = $maxZ = 1;
-
-		if($this->facing === Facing::NORTH){
-			$minZ = 1 - $f;
-		}elseif($this->facing === Facing::SOUTH){
-			$maxZ = $f;
-		}elseif($this->facing === Facing::WEST){
-			$minX = 1 - $f;
-		}elseif($this->facing === Facing::EAST){
-			$maxX = $f;
-		}
-
-		return new AxisAlignedBB(
-			$minX,
-			0,
-			$minZ,
-			$maxX,
-			1,
-			$maxZ
-		);
+		$bb = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+		return $bb->trim($this->facing, 13 / 16);
 	}
 
 

@@ -76,11 +76,8 @@ class Anvil extends Fallable{
 	public function recalculateBoundingBox() : ?AxisAlignedBB{
 		$inset = 0.125;
 
-		if(Facing::axis($this->facing) === Facing::AXIS_X){
-			return new AxisAlignedBB(0, 0, $inset, 1, 1, 1 - $inset);
-		}else{
-			return new AxisAlignedBB($inset, 0, 0, 1 - $inset, 1, 1);
-		}
+		$bb = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+		return $bb->squash(Facing::axis(Facing::rotate($this->facing, Facing::AXIS_Y, false)), $inset);
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

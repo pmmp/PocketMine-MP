@@ -81,40 +81,15 @@ class EndRod extends Flowable{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$m = Facing::axis($this->facing);
-		$width = 0.375;
+		$myAxis = Facing::axis($this->facing);
 
-		switch($m){
-			case Facing::AXIS_Y:
-				return new AxisAlignedBB(
-					$width,
-					0,
-					$width,
-					1 - $width,
-					1,
-					1 - $width
-				);
-			case Facing::AXIS_Z:
-				return new AxisAlignedBB(
-					$width,
-					$width,
-					0,
-					1 - $width,
-					1 - $width,
-					1
-				);
-
-			case Facing::AXIS_X:
-				return new AxisAlignedBB(
-					0,
-					$width,
-					$width,
-					1,
-					1 - $width,
-					1 - $width
-				);
+		$bb = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+		foreach([Facing::AXIS_Y, Facing::AXIS_Z, Facing::AXIS_X] as $axis){
+			if($axis === $myAxis){
+				continue;
+			}
+			$bb->squash($axis, 6 / 16);
 		}
-
-		return null;
+		return $bb;
 	}
 }

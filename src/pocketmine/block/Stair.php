@@ -59,17 +59,17 @@ abstract class Stair extends Transparent{
 		$minY = $this->upsideDown ? 0 : 0.5;
 
 		$topStep = new AxisAlignedBB(0, $minY, 0, 1, $minY + 0.5, 1);
-		self::setBoundsForFacing($topStep, $this->facing);
+		$topStep->trim(Facing::opposite($this->facing), 0.5);
 
 		/** @var Stair $corner */
 		if(($backFacing = $this->getPossibleCornerFacing(false)) !== null){
-			self::setBoundsForFacing($topStep, $backFacing);
+			$topStep->trim(Facing::opposite($backFacing), 0.5);
 		}elseif(($frontFacing = $this->getPossibleCornerFacing(true)) !== null){
 			//add an extra cube
 			$extraCube = new AxisAlignedBB(0, $minY, 0, 1, $minY + 0.5, 1);
-			self::setBoundsForFacing($extraCube, Facing::opposite($this->facing));
-			self::setBoundsForFacing($extraCube, $frontFacing);
-			$bbs[] = $extraCube;
+			$bbs[] = $extraCube
+				->trim($this->facing, 0.5)
+				->trim(Facing::opposite($frontFacing), 0.5);
 		}
 
 		$bbs[] = $topStep;
@@ -86,25 +86,6 @@ abstract class Stair extends Transparent{
 			return $side->facing;
 		}
 		return null;
-	}
-
-	private static function setBoundsForFacing(AxisAlignedBB $bb, int $facing) : void{
-		switch($facing){
-			case Facing::EAST:
-				$bb->minX = 0.5;
-				break;
-			case Facing::WEST:
-				$bb->maxX = 0.5;
-				break;
-			case Facing::SOUTH:
-				$bb->minZ = 0.5;
-				break;
-			case Facing::NORTH:
-				$bb->maxZ = 0.5;
-				break;
-			default:
-				throw new \InvalidArgumentException("Facing must be horizontal");
-		}
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

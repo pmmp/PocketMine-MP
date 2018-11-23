@@ -64,25 +64,8 @@ class FenceGate extends Transparent{
 			return null;
 		}
 
-		if(Facing::axis($this->facing) === Facing::AXIS_Z){
-			return new AxisAlignedBB(
-				0,
-				0,
-				0.375,
-				1,
-				1.5,
-				0.625
-			);
-		}else{
-			return new AxisAlignedBB(
-				0.375,
-				0,
-				0,
-				0.625,
-				1.5,
-				1
-			);
-		}
+		$bb = new AxisAlignedBB(0, 0, 0, 1, 1.5, 1);
+		return $bb->squash(Facing::axis($this->facing), 6 / 16);
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

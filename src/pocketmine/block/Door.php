@@ -91,54 +91,10 @@ abstract class Door extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$f = 0.1875;
 		$this->updateStateFromOtherHalf();
 
 		$bb = new AxisAlignedBB(0, 0, 0, 1, 2, 1);
-
-		if($this->facing === Facing::EAST){
-			if($this->open){
-				if(!$this->hingeRight){
-					$bb->setBounds(0, 0, 0, 1, 1, $f);
-				}else{
-					$bb->setBounds(0, 0, 1 - $f, 1, 1, 1);
-				}
-			}else{
-				$bb->setBounds(0, 0, 0, $f, 1, 1);
-			}
-		}elseif($this->facing === Facing::SOUTH){
-			if($this->open){
-				if(!$this->hingeRight){
-					$bb->setBounds(1 - $f, 0, 0, 1, 1, 1);
-				}else{
-					$bb->setBounds(0, 0, 0, $f, 1, 1);
-				}
-			}else{
-				$bb->setBounds(0, 0, 0, 1, 1, $f);
-			}
-		}elseif($this->facing === Facing::WEST){
-			if($this->open){
-				if(!$this->hingeRight){
-					$bb->setBounds(0, 0, 1 - $f, 1, 1, 1);
-				}else{
-					$bb->setBounds(0, 0, 0, 1, 1, $f);
-				}
-			}else{
-				$bb->setBounds(1 - $f, 0, 0, 1, 1, 1);
-			}
-		}elseif($this->facing === Facing::NORTH){
-			if($this->open){
-				if(!$this->hingeRight){
-					$bb->setBounds(0, 0, 0, $f, 1, 1);
-				}else{
-					$bb->setBounds(1 - $f, 0, 0, 1, 1, 1);
-				}
-			}else{
-				$bb->setBounds(0, 0, 1 - $f, 1, 1, 1);
-			}
-		}
-
-		return $bb;
+		return $bb->trim($this->open ? Facing::rotate($this->facing, Facing::AXIS_Y, !$this->hingeRight) : $this->facing, 13 / 16);
 	}
 
 	public function onNearbyBlockChange() : void{
