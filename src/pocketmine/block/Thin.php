@@ -45,7 +45,7 @@ abstract class Thin extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$bb = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+		$bb = AxisAlignedBB::one();
 		foreach(Facing::HORIZONTAL as $facing){
 			if(!isset($this->connections[$facing])){
 				$bb->trim($facing, 7 / 16);
@@ -61,8 +61,7 @@ abstract class Thin extends Transparent{
 		$bbs = [];
 
 		if(isset($this->connections[Facing::WEST]) or isset($this->connections[Facing::EAST])){
-			$bb = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
-			$bb->squash(Facing::AXIS_Z, $inset);
+			$bb = AxisAlignedBB::one()->squash(Facing::AXIS_Z, $inset);
 
 			if(!isset($this->connections[Facing::WEST])){
 				$bb->trim(Facing::WEST, $inset);
@@ -73,8 +72,7 @@ abstract class Thin extends Transparent{
 		}
 
 		if(isset($this->connections[Facing::NORTH]) or isset($this->connections[Facing::SOUTH])){
-			$bb = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
-			$bb->squash(Facing::AXIS_X, $inset);
+			$bb = AxisAlignedBB::one()->squash(Facing::AXIS_X, $inset);
 
 			if(!isset($this->connections[Facing::NORTH])){
 				$bb->trim(Facing::NORTH, $inset);
@@ -86,9 +84,8 @@ abstract class Thin extends Transparent{
 
 		if(empty($bbs)){
 			//centre post AABB (only needed if not connected on any axis - other BBs overlapping will do this if any connections are made)
-			$bb = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
 			return [
-				$bb->contract($inset, 0, $inset)
+				AxisAlignedBB::one()->contract($inset, 0, $inset)
 			];
 		}
 
