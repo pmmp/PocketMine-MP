@@ -27,6 +27,7 @@ use pocketmine\inventory\EnchantInventory;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\EnchantTable as TileEnchantTable;
@@ -70,7 +71,7 @@ class EnchantingTable extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return new AxisAlignedBB(0, 0, 0, 1, 0.75, 1);
+		return AxisAlignedBB::one()->trim(Facing::UP, 0.25);
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

@@ -79,8 +79,7 @@ class Ladder extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$bb = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
-		return $bb->trim($this->facing, 13 / 16);
+		return AxisAlignedBB::one()->trim($this->facing, 13 / 16);
 	}
 
 

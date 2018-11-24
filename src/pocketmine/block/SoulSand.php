@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 
 class SoulSand extends Solid{
 
@@ -46,6 +47,6 @@ class SoulSand extends Solid{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return new AxisAlignedBB(0, 0, 0, 1, 1 - 0.125, 1);
+		return AxisAlignedBB::one()->trim(Facing::UP, 1 / 8);
 	}
 }

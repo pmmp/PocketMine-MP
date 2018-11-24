@@ -69,7 +69,7 @@ class Chest extends Transparent{
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		//these are slightly bigger than in PC
-		return new AxisAlignedBB(0.025, 0, 0.025, 0.975, 0.95, 0.975);
+		return AxisAlignedBB::one()->contract(0.025, 0, 0.025)->trim(Facing::UP, 0.05);
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

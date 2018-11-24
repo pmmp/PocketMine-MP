@@ -101,10 +101,6 @@ abstract class Slab extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		if($this->top){
-			return new AxisAlignedBB(0, 0.5, 0, 1, 1, 1);
-		}else{
-			return new AxisAlignedBB(0, 0, 0, 1, 0.5, 1);
-		}
+		return AxisAlignedBB::one()->trim($this->top ? Facing::DOWN : Facing::UP, 0.5);
 	}
 }

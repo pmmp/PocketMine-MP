@@ -69,8 +69,8 @@ class Cactus extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		static $shrinkSize = 0.0625;
-		return new AxisAlignedBB($shrinkSize, $shrinkSize, $shrinkSize, 1 - $shrinkSize, 1 - $shrinkSize, 1 - $shrinkSize);
+		static $shrinkSize = 1 / 16;
+		return AxisAlignedBB::one()->contract($shrinkSize, 0, $shrinkSize)->trim(Facing::UP, $shrinkSize);
 	}
 
 	public function onEntityCollide(Entity $entity) : void{

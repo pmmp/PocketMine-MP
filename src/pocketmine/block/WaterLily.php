@@ -46,8 +46,7 @@ class WaterLily extends Flowable{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		static $f = 0.0625;
-		return new AxisAlignedBB($f, 0, $f, 1 - $f, 0.015625, 1 - $f);
+		return AxisAlignedBB::one()->contract(1 / 16, 0, 1 / 16)->trim(Facing::UP, 63 / 64);
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

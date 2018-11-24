@@ -66,16 +66,10 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$f = $this->bites * 0.125; //1 slice width
-
-		return new AxisAlignedBB(
-			0.0625 + $f,
-			0,
-			0.0625,
-			1 - 0.0625,
-			0.5,
-			1 - 0.0625
-		);
+		return AxisAlignedBB::one()
+			->contract(1 / 16, 0, 1 / 16)
+			->trim(Facing::UP, 0.5)
+			->trim(Facing::WEST, $this->bites / 8);
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

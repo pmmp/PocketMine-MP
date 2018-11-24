@@ -83,7 +83,7 @@ class EndRod extends Flowable{
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		$myAxis = Facing::axis($this->facing);
 
-		$bb = new AxisAlignedBB(0, 0, 0, 1, 1, 1);
+		$bb = AxisAlignedBB::one();
 		foreach([Facing::AXIS_Y, Facing::AXIS_Z, Facing::AXIS_X] as $axis){
 			if($axis === $myAxis){
 				continue;

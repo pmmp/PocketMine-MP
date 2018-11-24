@@ -1546,7 +1546,7 @@ class Level implements ChunkManager, Metadatable{
 				$ev = new BlockUpdateEvent($block);
 				$ev->call();
 				if(!$ev->isCancelled()){
-					foreach($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
+					foreach($this->getNearbyEntities(AxisAlignedBB::one()->offset($block->x, $block->y, $block->z)->expand(1, 1, 1)) as $entity){
 						$entity->onNearbyBlockChange();
 					}
 					$ev->getBlock()->onNearbyBlockChange();
