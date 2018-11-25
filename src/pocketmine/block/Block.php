@@ -194,6 +194,17 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns whether the given block has the same type and properties as this block.
+	 *
+	 * @param Block $other
+	 *
+	 * @return bool
+	 */
+	public function isSameState(Block $other) : bool{
+		return $this->isSameType($other) and $this->writeStateToMeta() === $other->writeStateToMeta();
+	}
+
+	/**
 	 * AKA: Block->isPlaceable
 	 * @return bool
 	 */
