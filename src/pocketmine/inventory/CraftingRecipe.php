@@ -25,7 +25,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 
-interface CraftingRecipe extends Recipe{
+interface CraftingRecipe{
 	/**
 	 * Returns a list of items needed to craft this recipe. This MUST NOT include Air items or items with a zero count.
 	 *

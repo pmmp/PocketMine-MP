@@ -109,10 +109,6 @@ class ShapelessRecipe implements CraftingRecipe{
 		return $count;
 	}
 
-	public function registerToCraftingManager(CraftingManager $manager) : void{
-		$manager->registerShapelessRecipe($this);
-	}
-
 	/**
 	 * @param CraftingGrid $grid
 	 *

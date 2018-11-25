@@ -25,7 +25,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 
-class FurnaceRecipe implements Recipe{
+class FurnaceRecipe{
 
 	/** @var Item */
 	private $output;
@@ -61,9 +61,5 @@ class FurnaceRecipe implements Recipe{
 	 */
 	public function getResult() : Item{
 		return clone $this->output;
-	}
-
-	public function registerToCraftingManager(CraftingManager $manager) : void{
-		$manager->registerFurnaceRecipe($this);
 	}
 }

@@ -52,13 +52,13 @@ class CraftingManager{
 		foreach($recipes as $recipe){
 			switch($recipe["type"]){
 				case 0:
-					$this->registerRecipe(new ShapelessRecipe(
+					$this->registerShapelessRecipe(new ShapelessRecipe(
 						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]),
 						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
 					));
 					break;
 				case 1:
-					$this->registerRecipe(new ShapedRecipe(
+					$this->registerShapedRecipe(new ShapedRecipe(
 						$recipe["shape"],
 						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]),
 						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
@@ -68,7 +68,7 @@ class CraftingManager{
 				case 3:
 					$result = $recipe["output"];
 					$resultItem = Item::jsonDeserialize($result);
-					$this->registerRecipe(new FurnaceRecipe($resultItem, ItemFactory::get($recipe["inputId"], $recipe["inputDamage"] ?? -1, 1)));
+					$this->registerFurnaceRecipe(new FurnaceRecipe($resultItem, ItemFactory::get($recipe["inputId"], $recipe["inputDamage"] ?? -1, 1)));
 					break;
 				default:
 					break;
@@ -281,12 +281,5 @@ class CraftingManager{
 	 */
 	public function matchFurnaceRecipe(Item $input) : ?FurnaceRecipe{
 		return $this->furnaceRecipes[$input->getId() . ":" . $input->getDamage()] ?? $this->furnaceRecipes[$input->getId() . ":?"] ?? null;
-	}
-
-	/**
-	 * @param Recipe $recipe
-	 */
-	public function registerRecipe(Recipe $recipe) : void{
-		$recipe->registerToCraftingManager($this);
 	}
 }
