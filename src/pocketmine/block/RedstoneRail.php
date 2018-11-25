@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class RedstoneRail extends BaseRail{
+abstract class RedstoneRail extends BaseRail{
 	protected const FLAG_POWERED = 0x08;
 
 	/** @var bool */
