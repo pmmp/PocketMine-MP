@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use pocketmine\Server;
-
-
 /**
  * Config Class for simple config manipulation of multiple formats.
  */
@@ -189,36 +186,28 @@ class Config{
 	 */
 	public function save() : bool{
 		if($this->correct){
-			try{
-				$content = null;
-				switch($this->type){
-					case Config::PROPERTIES:
-						$content = $this->writeProperties();
-						break;
-					case Config::JSON:
-						$content = json_encode($this->config, $this->jsonOptions);
-						break;
-					case Config::YAML:
-						$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
-						break;
-					case Config::SERIALIZED:
-						$content = serialize($this->config);
-						break;
-					case Config::ENUM:
-						$content = implode("\r\n", array_keys($this->config));
-						break;
-					default:
-						throw new \InvalidStateException("Config type is unknown, has not been set or not detected");
-				}
-
-				file_put_contents($this->file, $content);
-			}catch(\Throwable $e){
-				$logger = Server::getInstance()->getLogger();
-				$logger->critical("Could not save Config " . $this->file . ": " . $e->getMessage());
-				if(\pocketmine\DEBUG > 1){
-					$logger->logException($e);
-				}
+			$content = null;
+			switch($this->type){
+				case Config::PROPERTIES:
+					$content = $this->writeProperties();
+					break;
+				case Config::JSON:
+					$content = json_encode($this->config, $this->jsonOptions);
+					break;
+				case Config::YAML:
+					$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
+					break;
+				case Config::SERIALIZED:
+					$content = serialize($this->config);
+					break;
+				case Config::ENUM:
+					$content = implode("\r\n", array_keys($this->config));
+					break;
+				default:
+					throw new \InvalidStateException("Config type is unknown, has not been set or not detected");
 			}
+
+			file_put_contents($this->file, $content);
 
 			$this->changed = false;
 
