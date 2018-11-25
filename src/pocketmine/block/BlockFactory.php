@@ -94,7 +94,8 @@ class BlockFactory{
 
 		foreach(WoodType::ALL as $type){
 			//TODO: find a better way to deal with this split
-			self::registerBlock(new Wood($type >= 4 ? Block::WOOD2 : Block::WOOD, $type & 0x03, WoodType::NAMES[$type] . " Wood"));
+			self::registerBlock(new Log($type >= 4 ? Block::WOOD2 : Block::WOOD, $type & 0x03, WoodType::NAMES[$type] . " Log"));
+			self::registerBlock(new Wood($type >= 4 ? Block::WOOD2 : Block::WOOD, ($type & 0x03) | 0b1100, WoodType::NAMES[$type] . " Wood"));
 			self::registerBlock(new Leaves($type >= 4 ? Block::LEAVES2 : Block::LEAVES, $type & 0x03, $type, WoodType::NAMES[$type] . " Leaves"));
 		}
 
