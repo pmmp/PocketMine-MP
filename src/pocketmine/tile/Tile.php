@@ -69,8 +69,6 @@ abstract class Tile extends Position{
 	public $name;
 	/** @var bool */
 	public $closed = false;
-	/** @var Server */
-	protected $server;
 	/** @var TimingsHandler */
 	protected $timings;
 
@@ -140,7 +138,6 @@ abstract class Tile extends Position{
 	public function __construct(Level $level, CompoundTag $nbt){
 		$this->timings = Timings::getTileEntityTimings($this);
 
-		$this->server = $level->getServer();
 		$this->name = "";
 
 		parent::__construct($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z), $level);

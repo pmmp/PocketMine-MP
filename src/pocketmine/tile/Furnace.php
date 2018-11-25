@@ -174,7 +174,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		$fuel = $this->inventory->getFuel();
 		$raw = $this->inventory->getSmelting();
 		$product = $this->inventory->getResult();
-		$smelt = $this->server->getCraftingManager()->matchFurnaceRecipe($raw);
+		$smelt = $this->level->getServer()->getCraftingManager()->matchFurnaceRecipe($raw);
 		$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product) and $product->getCount() < $product->getMaxStackSize()) or $product->isNull()));
 
 		if($this->burnTime <= 0 and $canSmelt and $fuel->getFuelTime() > 0 and $fuel->getCount() > 0){
