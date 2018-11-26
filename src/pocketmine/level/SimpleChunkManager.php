@@ -75,7 +75,7 @@ class SimpleChunkManager implements ChunkManager{
 
 	public function setBlockIdAndDataAt(int $x, int $y, int $z, int $id, int $data) : void{
 		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
-			$chunk->setBlock($x & 0xf, $y & 0xf, $z & 0xf, $id, $data);
+			$chunk->setBlock($x & 0xf, $y, $z & 0xf, $id, $data);
 		}
 	}
 
