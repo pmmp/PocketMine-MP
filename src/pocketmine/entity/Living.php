@@ -653,11 +653,11 @@ abstract class Living extends Entity implements Damageable{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->doEffectsTick($tickDiff)){
-			$hasUpdate = true;
-		}
-
 		if($this->isAlive()){
+			if($this->doEffectsTick($tickDiff)){
+				$hasUpdate = true;
+			}
+
 			if($this->isInsideOfSolid()){
 				$hasUpdate = true;
 				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
