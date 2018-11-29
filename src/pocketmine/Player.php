@@ -2920,11 +2920,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * Handles player data saving
 	 *
-	 * @param bool $async
-	 *
 	 * @throws \InvalidStateException if the player is closed
 	 */
-	public function save(bool $async = false){
+	public function save(){
 		if($this->closed){
 			throw new \InvalidStateException("Tried to save closed player");
 		}
@@ -2961,7 +2959,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$nbt->setLong("firstPlayed", $this->firstPlayed);
 		$nbt->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 
-		$this->server->saveOfflinePlayerData($this->username, $nbt, $async);
+		$this->server->saveOfflinePlayerData($this->username, $nbt);
 	}
 
 	public function kill() : void{
