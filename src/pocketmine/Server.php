@@ -814,9 +814,8 @@ class Server{
 	/**
 	 * @param string      $name
 	 * @param CompoundTag $nbtTag
-	 * @param bool        $async
 	 */
-	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag, bool $async = false){
+	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag){
 		$ev = new PlayerDataSaveEvent($nbtTag, $name);
 		$ev->setCancelled(!$this->shouldSavePlayerData());
 
@@ -825,11 +824,7 @@ class Server{
 		if(!$ev->isCancelled()){
 			$nbt = new BigEndianNBTStream();
 			try{
-				if($async){
-					$this->asyncPool->submitTask(new FileWriteTask($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData())));
-				}else{
-					file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData()));
-				}
+				file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData()));
 			}catch(\Throwable $e){
 				$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
 				$this->logger->logException($e);
@@ -2412,7 +2407,7 @@ class Server{
 			Timings::$worldSaveTimer->startTiming();
 			foreach($this->players as $index => $player){
 				if($player->spawned){
-					$player->save(true);
+					$player->save();
 				}elseif(!$player->isConnected()){
 					$this->removePlayer($player);
 				}
