@@ -32,26 +32,12 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class Lava extends Liquid{
 
-	protected $id = self::FLOWING_LAVA;
-
 	public function __construct(){
-
+		parent::__construct(self::FLOWING_LAVA, self::STILL_LAVA, "Lava");
 	}
 
 	public function getLightLevel() : int{
 		return 15;
-	}
-
-	public function getName() : string{
-		return "Lava";
-	}
-
-	public function getStillForm() : Block{
-		return BlockFactory::get(Block::STILL_LAVA, $this->getDamage());
-	}
-
-	public function getFlowingForm() : Block{
-		return BlockFactory::get(Block::FLOWING_LAVA, $this->getDamage());
 	}
 
 	public function getBucketFillSound() : int{

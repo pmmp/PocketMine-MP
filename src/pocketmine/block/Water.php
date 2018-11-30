@@ -28,26 +28,12 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class Water extends Liquid{
 
-	protected $id = self::FLOWING_WATER;
-
 	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Water";
+		parent::__construct(self::FLOWING_WATER, self::STILL_WATER, "Water");
 	}
 
 	public function getLightFilter() : int{
 		return 2;
-	}
-
-	public function getStillForm() : Block{
-		return BlockFactory::get(Block::STILL_WATER, $this->getDamage());
-	}
-
-	public function getFlowingForm() : Block{
-		return BlockFactory::get(Block::FLOWING_WATER, $this->getDamage());
 	}
 
 	public function getBucketFillSound() : int{

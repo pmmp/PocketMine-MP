@@ -31,6 +31,8 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 abstract class Liquid extends Transparent{
+	/** @var int */
+	private $stillId;
 
 	public $adjacentSources = 0;
 
@@ -48,6 +50,17 @@ abstract class Liquid extends Transparent{
 	protected $falling = false;
 	/** @var int */
 	protected $decay = 0; //PC "level" property
+	/** @var bool */
+	protected $still = false;
+
+	public function __construct(int $id, int $stillId, string $name){
+		parent::__construct($id, 0, $name);
+		$this->stillId = $stillId;
+	}
+
+	public function getId() : int{
+		return $this->still ? $this->stillId : parent::getId();
+	}
 
 	protected function writeStateToMeta() : int{
 		return $this->decay | ($this->falling ? 0x08 : 0);
@@ -94,9 +107,17 @@ abstract class Liquid extends Transparent{
 		return [];
 	}
 
-	abstract public function getStillForm() : Block;
+	public function getStillForm() : Block{
+		$b = clone $this;
+		$b->still = true;
+		return $b;
+	}
 
-	abstract public function getFlowingForm() : Block;
+	public function getFlowingForm() : Block{
+		$b = clone $this;
+		$b->still = false;
+		return $b;
+	}
 
 	abstract public function getBucketFillSound() : int;
 
@@ -108,6 +129,14 @@ abstract class Liquid extends Transparent{
 
 	public function getFluidHeightPercent(){
 		return (($this->falling ? 0 : $this->decay) + 1) / 9;
+	}
+
+	public function isStill() : bool{
+		return $this->still;
+	}
+
+	public function setStill(bool $still = true) : void{
+		$this->still = $still;
 	}
 
 	protected function getEffectiveFlowDecay(Block $block) : int{

@@ -101,9 +101,13 @@ class BlockFactory{
 
 		self::registerBlock(new Bedrock());
 		self::registerBlock(new Water());
-		self::registerBlock(new StillWater());
+		$b = new Water();
+		$b->setStill();
+		self::registerBlock($b); //flattening hack
 		self::registerBlock(new Lava());
-		self::registerBlock(new StillLava());
+		$b = new Lava();
+		$b->setStill();
+		self::registerBlock($b); //flattening hack
 
 		self::registerBlock(new Sand(Block::SAND, 0, "Sand"));
 		self::registerBlock(new Sand(Block::SAND, 1, "Red Sand"));
