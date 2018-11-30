@@ -65,7 +65,7 @@ abstract class Tile extends Position{
 	private static $saveNames = [];
 
 	/** @var string */
-	public $name;
+	public $name = "";
 	/** @var bool */
 	public $closed = false;
 	/** @var TimingsHandler */
@@ -94,9 +94,16 @@ abstract class Tile extends Position{
 	 */
 	public static function createTile($type, Level $level, CompoundTag $nbt, ...$args) : ?Tile{
 		if(isset(self::$knownTiles[$type])){
+			$pos = new Vector3($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z));
 			$class = self::$knownTiles[$type];
-			/** @see Tile::__construct() */
-			return new $class($level, $nbt, ...$args);
+			/**
+			 * @var Tile $tile
+			 * @see Tile::__construct()
+			 */
+			$tile = new $class($level, $pos);
+			$tile->readSaveData($nbt);
+			$level->addTile($tile);
+			return $tile;
 		}
 
 		return null;
@@ -134,15 +141,9 @@ abstract class Tile extends Position{
 		return current(self::$saveNames[static::class]);
 	}
 
-	public function __construct(Level $level, CompoundTag $nbt){
+	public function __construct(Level $level, Vector3 $pos){
 		$this->timings = Timings::getTileEntityTimings($this);
-
-		$this->name = "";
-
-		parent::__construct($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z), $level);
-		$this->readSaveData($nbt);
-
-		$this->getLevel()->addTile($this);
+		parent::__construct($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $level);
 	}
 
 	/**

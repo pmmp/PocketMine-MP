@@ -33,7 +33,6 @@ use pocketmine\inventory\InventoryEventProcessor;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 
@@ -55,13 +54,6 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	private $cookTime;
 	/** @var int */
 	private $maxTime;
-
-	public function __construct(Level $level, CompoundTag $nbt){
-		parent::__construct($level, $nbt);
-		if($this->burnTime > 0){
-			$this->scheduleUpdate();
-		}
-	}
 
 	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->burnTime = max(0, $nbt->getShort(self::TAG_BURN_TIME, 0, true));

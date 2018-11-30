@@ -82,6 +82,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Container;
+use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
 use pocketmine\utils\ReversePriorityQueue;
@@ -2611,7 +2612,11 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->tiles[Level::blockHash($tile->x, $tile->y, $tile->z)] = $tile;
-		$this->clearChunkCache($chunkX, $chunkZ);
+		$tile->scheduleUpdate();
+		if($tile instanceof Spawnable){
+			$this->clearChunkCache($chunkX, $chunkZ);
+			$tile->spawnToAll();
+		}
 	}
 
 	/**

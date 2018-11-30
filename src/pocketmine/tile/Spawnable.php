@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-use pocketmine\level\Level;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -55,11 +54,6 @@ abstract class Spawnable extends Tile{
 		$player->sendDataPacket($this->createSpawnPacket());
 
 		return true;
-	}
-
-	public function __construct(Level $level, CompoundTag $nbt){
-		parent::__construct($level, $nbt);
-		$this->spawnToAll();
 	}
 
 	public function spawnToAll(){
