@@ -134,4 +134,12 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 		return $data;
 	}
+
+	public function __get($name){
+		throw new \Error("Cannot read non-existing field \"$name\"");
+	}
+
+	public function __set($name, $value){
+		throw new \Error("Cannot write non-existing field \"$name\"");
+	}
 }

@@ -68,6 +68,10 @@ class SetupWizard{
 			}
 		}while($lang === null);
 
+		$config = new Config(\pocketmine\DATA . "server.properties", Config::PROPERTIES);
+		$config->set("language", $lang);
+		$config->save();
+
 		$this->lang = new Language($lang);
 
 		$this->message($this->lang->get("language_has_been_selected"));

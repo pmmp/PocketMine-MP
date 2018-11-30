@@ -4,9 +4,6 @@
 # New settings/defaults won't appear automatically in this file when upgrading.
 
 settings:
- #Three-letter language code for server-side localization
- #Check your language code on https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
- language: "eng"
  #Whether to send all strings translated to server locale or let the device handle them
  force-language: false
  shutdown-message: "Server closed"
