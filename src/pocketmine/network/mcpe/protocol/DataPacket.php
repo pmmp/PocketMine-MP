@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\CachedEncapsulatedPacket;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\Utils;
@@ -35,6 +36,8 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	/** @var bool */
 	public $isEncoded = false;
+	/** @var CachedEncapsulatedPacket */
+	public $__encapsulatedPacket = null;
 
 	/** @var int */
 	public $senderSubId = 0;
