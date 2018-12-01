@@ -183,7 +183,8 @@ class PermissibleBase implements Permissible{
 		$permManager = PermissionManager::getInstance();
 		foreach($children as $name => $v){
 			$perm = $permManager->getPermission($name);
-			$this->permissions[$name] = ($v xor $invert);
+			$value = ($v xor $invert);
+			$this->permissions[$name] = $value;
 			$permManager->subscribeToPermission($name, $this->parent ?? $this);
 
 			if($perm instanceof Permission){
