@@ -40,7 +40,7 @@ class PermissibleBase implements Permissible{
 	private $attachments = [];
 
 	/**
-	 * @var PermissionAttachmentInfo[]
+	 * @var bool[]
 	 */
 	private $permissions = [];
 
@@ -88,7 +88,7 @@ class PermissibleBase implements Permissible{
 		}
 
 		if($this->isPermissionSet($name)){
-			return $this->permissions[$name]->getValue();
+			return $this->permissions[$name];
 		}
 
 		if(($perm = PermissionManager::getInstance()->getPermission($name)) !== null){
@@ -152,7 +152,7 @@ class PermissibleBase implements Permissible{
 
 		foreach($defaults as $perm){
 			$name = $perm->getName();
-			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent ?? $this, $name, null, true);
+			$this->permissions[$name] = true;
 			$permManager->subscribeToPermission($name, $this->parent ?? $this);
 			$this->calculateChildPermissions($perm->getChildren(), false, null);
 		}
@@ -183,8 +183,7 @@ class PermissibleBase implements Permissible{
 		$permManager = PermissionManager::getInstance();
 		foreach($children as $name => $v){
 			$perm = $permManager->getPermission($name);
-			$value = ($v xor $invert);
-			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent ?? $this, $name, $attachment, $value);
+			$this->permissions[$name] = ($v xor $invert);
 			$permManager->subscribeToPermission($name, $this->parent ?? $this);
 
 			if($perm instanceof Permission){
@@ -194,7 +193,7 @@ class PermissibleBase implements Permissible{
 	}
 
 	/**
-	 * @return PermissionAttachmentInfo[]
+	 * @return bool[]
 	 */
 	public function getEffectivePermissions() : array{
 		return $this->permissions;

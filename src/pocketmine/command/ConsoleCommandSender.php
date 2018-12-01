@@ -27,7 +27,6 @@ use pocketmine\lang\TextContainer;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionAttachment;
-use pocketmine\permission\PermissionAttachmentInfo;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
@@ -86,7 +85,7 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	/**
-	 * @return PermissionAttachmentInfo[]
+	 * @return bool[]
 	 */
 	public function getEffectivePermissions() : array{
 		return $this->perm->getEffectivePermissions();

@@ -125,7 +125,6 @@ use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\ProcessLoginTask;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
-use pocketmine\permission\PermissionAttachmentInfo;
 use pocketmine\permission\PermissionManager;
 use pocketmine\plugin\Plugin;
 use pocketmine\tile\ItemFrame;
@@ -613,7 +612,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * @return PermissionAttachmentInfo[]
+	 * @return bool[]
 	 */
 	public function getEffectivePermissions() : array{
 		return $this->perm->getEffectivePermissions();

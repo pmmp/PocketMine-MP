@@ -68,7 +68,7 @@ interface Permissible extends ServerOperator{
 	public function recalculatePermissions();
 
 	/**
-	 * @return PermissionAttachmentInfo[]
+	 * @return bool[]
 	 */
 	public function getEffectivePermissions() : array;
 
