@@ -54,7 +54,7 @@ class Attribute{
 	public static function init() : void{
 		self::addAttribute(self::ABSORPTION, 0.00, 340282346638528859811704183484516925440.00, 0.00);
 		self::addAttribute(self::SATURATION, 0.00, 20.00, 20.00);
-		self::addAttribute(self::EXHAUSTION, 0.00, 5.00, 0.0);
+		self::addAttribute(self::EXHAUSTION, 0.00, 5.00, 0.0, false);
 		self::addAttribute(self::KNOCKBACK_RESISTANCE, 0.00, 1.00, 0.00);
 		self::addAttribute(self::HEALTH, 0.00, 20.00, 20.00);
 		self::addAttribute(self::MOVEMENT_SPEED, 0.00, 340282346638528859811704183484516925440.00, 0.10);
