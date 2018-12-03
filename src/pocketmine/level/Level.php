@@ -1368,11 +1368,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$block = BlockFactory::get($id, $meta);
-
-		$block->x = $x;
-		$block->y = $y;
-		$block->z = $z;
-		$block->level = $this;
+		$block->position($this, $x, $y, $z);
 
 		static $dynamicStateRead = false;
 

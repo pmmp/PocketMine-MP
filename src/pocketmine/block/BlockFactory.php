@@ -538,10 +538,7 @@ class BlockFactory{
 		}
 
 		if($pos !== null){
-			$block->x = $pos->getFloorX();
-			$block->y = $pos->getFloorY();
-			$block->z = $pos->getFloorZ();
-			$block->level = $pos->level;
+			$block->position($pos->getLevel(), $pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
 		}
 
 		return $block;

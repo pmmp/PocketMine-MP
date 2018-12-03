@@ -51,7 +51,7 @@ class PaintingItem extends Item{
 				continue;
 			}
 
-			if(Painting::canFit($player->level, $blockReplace, $face, true, $motive)){
+			if(Painting::canFit($player->getLevel(), $blockReplace, $face, true, $motive)){
 				if($currentTotalDimension > $totalDimension){
 					$totalDimension = $currentTotalDimension;
 					/*
