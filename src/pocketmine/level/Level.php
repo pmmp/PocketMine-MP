@@ -1530,13 +1530,9 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->setBlock->startTiming();
 
-		if(!($pos instanceof Position)){
-			$pos = $this->temporalPosition->setComponents($pos->x, $pos->y, $pos->z);
-		}
-
 		$block = clone $block;
 
-		$block->position($pos);
+		$block->position($this, $pos->x, $pos->y, $pos->z);
 		$block->writeStateToWorld();
 
 		$chunkHash = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
@@ -1823,14 +1819,14 @@ class Level implements ChunkManager, Metadatable{
 
 		if($item->canBePlaced()){
 			$hand = $item->getBlock();
-			$hand->position($blockReplace);
+			$hand->position($this, $blockReplace->x, $blockReplace->y, $blockReplace->z);
 		}else{
 			return false;
 		}
 
 		if($hand->canBePlacedAt($blockClicked, $clickVector, $face, true)){
 			$blockReplace = $blockClicked;
-			$hand->position($blockReplace);
+			$hand->position($this, $blockReplace->x, $blockReplace->y, $blockReplace->z);
 		}elseif(!$hand->canBePlacedAt($blockReplace, $clickVector, $face, false)){
 			return false;
 		}

@@ -29,7 +29,6 @@ use pocketmine\block\Fallable;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\level\Position;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -95,9 +94,9 @@ class FallingBlock extends Entity{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if(!$this->isFlaggedForDespawn()){
-			$pos = Position::fromObject($this->add(-$this->width / 2, $this->height, -$this->width / 2)->floor(), $this->getLevel());
+			$pos = $this->add(-$this->width / 2, $this->height, -$this->width / 2)->floor();
 
-			$this->block->position($pos);
+			$this->block->position($this->level, $pos->x, $pos->y, $pos->z);
 
 			$blockTarget = null;
 			if($this->block instanceof Fallable){

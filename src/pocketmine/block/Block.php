@@ -30,6 +30,7 @@ use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -466,15 +467,18 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Sets the block position to a new Position object
+	 * @internal
 	 *
-	 * @param Position $v
+	 * @param Level $level
+	 * @param int   $x
+	 * @param int   $y
+	 * @param int   $z
 	 */
-	final public function position(Position $v) : void{
-		$this->x = (int) $v->x;
-		$this->y = (int) $v->y;
-		$this->z = (int) $v->z;
-		$this->level = $v->level;
+	final public function position(Level $level, int $x, int $y, int $z) : void{
+		$this->x = $x;
+		$this->y = $y;
+		$this->z = $z;
+		$this->level = $level;
 		$this->readStateFromWorld();
 	}
 
