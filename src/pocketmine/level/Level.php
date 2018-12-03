@@ -2120,6 +2120,9 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function setBlockIdAndDataAt(int $x, int $y, int $z, int $id, int $data) : void{
+		if(!$this->isInWorld($x, $y, $z)){ //TODO: bad hack but fixing this requires BC breaks to do properly :(
+			return;
+		}
 		unset($this->blockCache[$chunkHash = Level::chunkHash($x >> 4, $z >> 4)][$blockHash = Level::blockHash($x, $y, $z)]);
 
 		$this->getChunk($x >> 4, $z >> 4, true)->setBlock($x & 0x0f, $y, $z & 0x0f, $id, $data);
