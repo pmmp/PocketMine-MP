@@ -76,19 +76,20 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.2.2",
+            "version": "0.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "474f0cf0a47656d0122b4f3f71302e694ed6977b"
+                "reference": "291bf5cc2a94500eada1edbda51d15bed25a1e1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/474f0cf0a47656d0122b4f3f71302e694ed6977b",
-                "reference": "474f0cf0a47656d0122b4f3f71302e694ed6977b",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/291bf5cc2a94500eada1edbda51d15bed25a1e1c",
+                "reference": "291bf5cc2a94500eada1edbda51d15bed25a1e1c",
                 "shasum": ""
             },
             "require": {
+                "ext-zlib": "*",
                 "php": ">=7.2.0",
                 "php-64bit": "*",
                 "pocketmine/binaryutils": "^0.1.0"
@@ -109,10 +110,10 @@
             ],
             "description": "PHP library for working with Named Binary Tags",
             "support": {
-                "source": "https://github.com/pmmp/NBT/tree/0.2.2",
+                "source": "https://github.com/pmmp/NBT/tree/0.2.3",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2018-10-12T08:26:44+00:00"
+            "time": "2018-12-03T16:08:28+00:00"
         },
         {
             "name": "pocketmine/raklib",
