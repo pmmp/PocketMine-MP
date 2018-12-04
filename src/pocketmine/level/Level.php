@@ -1506,33 +1506,51 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Sets on Vector3 the data from a Block object,
-	 * does block updates and puts the changes to the send queue.
-	 *
-	 * If $update is true, it'll get the neighbour blocks (6 sides) and update them.
-	 * If you are doing big changes, you might want to set this to false, then update manually.
+	 * Sets the block at the given Vector3 coordinates.
+	 * @see Level::setBlockAt()
 	 *
 	 * @param Vector3 $pos
 	 * @param Block   $block
 	 * @param bool    $update
 	 *
 	 * @return bool Whether the block has been updated or not
+	 *
+	 * @throws \InvalidArgumentException if the position is out of the world bounds
 	 */
 	public function setBlock(Vector3 $pos, Block $block, bool $update = true) : bool{
-		$pos = $pos->floor();
-		if(!$this->isInWorld($pos->x, $pos->y, $pos->z)){
-			throw new \InvalidArgumentException("Pos x=$pos->x,y=$pos->y,z=$pos->z is outside of the world bounds");
+		return $this->setBlockAt((int) floor($pos->x), (int) floor($pos->y), (int) floor($pos->z), $block, $update);
+	}
+
+	/**
+	 * Sets the block at the given coordinates.
+	 *
+	 * If $update is true, it'll get the neighbour blocks (6 sides) and update them, and also update local lighting.
+	 * If you are doing big changes, you might want to set this to false, then update manually.
+	 *
+	 * @param int   $x
+	 * @param int   $y
+	 * @param int   $z
+	 * @param Block $block
+	 * @param bool  $update
+	 *
+	 * @return bool Whether the block has been updated or not
+	 *
+	 * @throws \InvalidArgumentException if the position is out of the world bounds
+	 */
+	public function setBlockAt(int $x, int $y, int $z, Block $block, bool $update = true) : bool{
+		if(!$this->isInWorld($x, $y, $z)){
+			throw new \InvalidArgumentException("Pos x=$x,y=$y,z=$z is outside of the world bounds");
 		}
 
 		$this->timings->setBlock->startTiming();
 
 		$block = clone $block;
 
-		$block->position($this, $pos->x, $pos->y, $pos->z);
+		$block->position($this, $x, $y, $z);
 		$block->writeStateToWorld();
 
-		$chunkHash = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
-		$blockHash = Level::blockHash($pos->x, $pos->y, $pos->z);
+		$chunkHash = Level::chunkHash($x >> 4, $z >> 4);
+		$blockHash = Level::blockHash($x, $y, $z);
 
 		unset($this->blockCache[$chunkHash][$blockHash]);
 
@@ -1541,7 +1559,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 		$this->changedBlocks[$chunkHash][$blockHash] = $block;
 
-		foreach($this->getChunkLoaders($pos->x >> 4, $pos->z >> 4) as $loader){
+		foreach($this->getChunkLoaders($x >> 4, $z >> 4) as $loader){
 			$loader->onBlockChanged($block);
 		}
 
@@ -1555,7 +1573,7 @@ class Level implements ChunkManager, Metadatable{
 					$entity->onNearbyBlockChange();
 				}
 				$ev->getBlock()->onNearbyBlockChange();
-				$this->scheduleNeighbourBlockUpdates($pos);
+				$this->scheduleNeighbourBlockUpdates($block);
 			}
 		}
 
