@@ -32,7 +32,8 @@
       "pocketmine/binaryutils": "^0.1.0",
       "pocketmine/nbt": "dev-master",
       "pocketmine/math": "dev-master",
-      "pocketmine/snooze": "^0.1.0"
+      "pocketmine/snooze": "^0.1.0",
+      "daverandom/callback-validator": "dev-master"
    },
    "autoload": {
       "psr-4": {

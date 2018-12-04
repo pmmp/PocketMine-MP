@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use pocketmine\utils\Utils;
+
 /**
  * Manages general-purpose worker threads used for processing asynchronous tasks, and the tasks submitted to those
  * workers.
@@ -84,6 +86,7 @@ class AsyncPool{
 	 * @param \Closure $hook
 	 */
 	public function addWorkerStartHook(\Closure $hook) : void{
+		Utils::validateCallableSignature(function(int $worker) : void{}, $hook);
 		$this->workerStartHooks[spl_object_hash($hook)] = $hook;
 		foreach($this->workers as $i => $worker){
 			$hook($i);

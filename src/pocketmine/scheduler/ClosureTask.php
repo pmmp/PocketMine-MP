@@ -45,6 +45,7 @@ class ClosureTask extends Task{
 	 * @param \Closure $closure Must accept only ONE parameter, $currentTick
 	 */
 	public function __construct(\Closure $closure){
+		Utils::validateCallableSignature(function(int $currentTick) : void{}, $closure);
 		$this->closure = $closure;
 	}
 
