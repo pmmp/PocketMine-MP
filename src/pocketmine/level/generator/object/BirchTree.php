@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\Wood;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
@@ -33,7 +34,7 @@ class BirchTree extends Tree{
 	protected $superBirch = false;
 
 	public function __construct(bool $superBirch = false){
-		parent::__construct(Block::LOG, Block::LEAVES, Wood::BIRCH);
+		parent::__construct(BlockFactory::get(Block::LOG, Wood::BIRCH), BlockFactory::get(Block::LEAVES, Wood::BIRCH));
 		$this->superBirch = $superBirch;
 	}
 

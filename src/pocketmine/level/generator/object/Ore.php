@@ -44,7 +44,7 @@ class Ore{
 	}
 
 	public function canPlaceObject(ChunkManager $level, int $x, int $y, int $z) : bool{
-		return $level->getBlockIdAt($x, $y, $z) === Block::STONE;
+		return $level->getBlockAt($x, $y, $z)->getId() === Block::STONE;
 	}
 
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z) : void{
@@ -84,8 +84,8 @@ class Ore{
 								$sizeZ = ($z + 0.5 - $seedZ) / $size;
 								$sizeZ *= $sizeZ;
 
-								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->getBlockIdAt($x, $y, $z) === Block::STONE){
-									$level->setBlockIdAndDataAt($x, $y, $z, $this->type->material->getId(), $this->type->material->getDamage());
+								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->getBlockAt($x, $y, $z)->getId() === Block::STONE){
+									$level->setBlockAt($x, $y, $z, $this->type->material);
 								}
 							}
 						}

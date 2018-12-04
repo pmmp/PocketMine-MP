@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\Wood;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
@@ -31,7 +32,7 @@ use pocketmine\utils\Random;
 class OakTree extends Tree{
 
 	public function __construct(){
-		parent::__construct(Block::LOG, Block::LEAVES, Wood::OAK);
+		parent::__construct(BlockFactory::get(Block::LOG, Wood::OAK), BlockFactory::get(Block::LEAVES, Wood::OAK));
 	}
 
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random) : void{

@@ -23,32 +23,33 @@ declare(strict_types=1);
 
 namespace pocketmine\level;
 
+use pocketmine\block\Block;
 use pocketmine\level\format\Chunk;
 
 interface ChunkManager{
+
 	/**
-	 * Gets the raw block id.
+	 * Returns a Block object representing the block state at the given coordinates.
 	 *
 	 * @param int $x
 	 * @param int $y
 	 * @param int $z
 	 *
-	 * @return int 0-255
+	 * @return Block
 	 */
-	public function getBlockIdAt(int $x, int $y, int $z) : int;
+	public function getBlockAt(int $x, int $y, int $z) : Block;
 
 	/**
-	 * Gets the raw block metadata
+	 * Sets the block at the given coordinates to the block state specified.
 	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
+	 * @param int   $x
+	 * @param int   $y
+	 * @param int   $z
+	 * @param Block $block
 	 *
-	 * @return int 0-15
+	 * @return bool TODO: remove
 	 */
-	public function getBlockDataAt(int $x, int $y, int $z) : int;
-
-	public function setBlockIdAndDataAt(int $x, int $y, int $z, int $id, int $data) : void;
+	public function setBlockAt(int $x, int $y, int $z, Block $block) : bool;
 
 	/**
 	 * Returns the raw block light level

@@ -65,7 +65,7 @@ class Tree extends Populator{
 
 	private function getHighestWorkableBlock(int $x, int $z) : int{
 		for($y = 127; $y > 0; --$y){
-			$b = $this->level->getBlockIdAt($x, $y, $z);
+			$b = $this->level->getBlockAt($x, $y, $z)->getId();
 			if($b === Block::DIRT or $b === Block::GRASS){
 				break;
 			}elseif($b !== Block::AIR and $b !== Block::SNOW_LAYER){

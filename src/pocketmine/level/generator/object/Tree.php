@@ -33,20 +33,18 @@ use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 abstract class Tree{
-
-	/** @var int */
-	protected $blockMeta;
-	/** @var int */
+	/** @var Block */
 	protected $trunkBlock;
-	/** @var int */
+	/** @var Block */
 	protected $leafBlock;
+
 	/** @var int */
 	protected $treeHeight;
 
-	public function __construct(int $trunkBlock, int $leafBlock, int $blockMeta, int $treeHeight = 7){
+	public function __construct(Block $trunkBlock, Block $leafBlock, int $treeHeight = 7){
 		$this->trunkBlock = $trunkBlock;
 		$this->leafBlock = $leafBlock;
-		$this->blockMeta = $blockMeta;
+
 		$this->treeHeight = $treeHeight;
 	}
 
@@ -91,7 +89,7 @@ abstract class Tree{
 			}
 			for($xx = -$radiusToCheck; $xx < ($radiusToCheck + 1); ++$xx){
 				for($zz = -$radiusToCheck; $zz < ($radiusToCheck + 1); ++$zz){
-					if(!$this->canOverride(BlockFactory::get($level->getBlockIdAt($x + $xx, $y + $yy, $z + $zz)))){
+					if(!$this->canOverride($level->getBlockAt($x + $xx, $y + $yy, $z + $zz))){
 						return false;
 					}
 				}
@@ -114,8 +112,8 @@ abstract class Tree{
 					if($xOff === $mid and $zOff === $mid and ($yOff === 0 or $random->nextBoundedInt(2) === 0)){
 						continue;
 					}
-					if(!BlockFactory::get($level->getBlockIdAt($xx, $yy, $zz))->isSolid()){
-						$level->setBlockIdAndDataAt($xx, $yy, $zz, $this->leafBlock, $this->blockMeta);
+					if(!$level->getBlockAt($xx, $yy, $zz)->isSolid()){
+						$level->setBlockAt($xx, $yy, $zz, $this->leafBlock);
 					}
 				}
 			}
@@ -124,12 +122,11 @@ abstract class Tree{
 
 	protected function placeTrunk(ChunkManager $level, int $x, int $y, int $z, Random $random, int $trunkHeight) : void{
 		// The base dirt block
-		$level->setBlockIdAndDataAt($x, $y - 1, $z, Block::DIRT, 0);
+		$level->setBlockAt($x, $y - 1, $z, BlockFactory::get(Block::DIRT));
 
 		for($yy = 0; $yy < $trunkHeight; ++$yy){
-			$blockId = $level->getBlockIdAt($x, $y + $yy, $z);
-			if($this->canOverride(BlockFactory::get($blockId))){
-				$level->setBlockIdAndDataAt($x, $y + $yy, $z, $this->trunkBlock, $this->blockMeta);
+			if($this->canOverride($level->getBlockAt($x, $y + $yy, $z))){
+				$level->setBlockAt($x, $y + $yy, $z, $this->trunkBlock);
 			}
 		}
 	}

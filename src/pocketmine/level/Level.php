@@ -2101,49 +2101,6 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Gets the raw block id.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int 0-255
-	 */
-	public function getBlockIdAt(int $x, int $y, int $z) : int{
-		return $this->getChunk($x >> 4, $z >> 4, true)->getBlockId($x & 0x0f, $y, $z & 0x0f);
-	}
-
-	/**
-	 * Gets the raw block metadata
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int 0-15
-	 */
-	public function getBlockDataAt(int $x, int $y, int $z) : int{
-		return $this->getChunk($x >> 4, $z >> 4, true)->getBlockData($x & 0x0f, $y, $z & 0x0f);
-	}
-
-	public function setBlockIdAndDataAt(int $x, int $y, int $z, int $id, int $data) : void{
-		if(!$this->isInWorld($x, $y, $z)){ //TODO: bad hack but fixing this requires BC breaks to do properly :(
-			return;
-		}
-		unset($this->blockCache[$chunkHash = Level::chunkHash($x >> 4, $z >> 4)][$blockHash = Level::blockHash($x, $y, $z)]);
-
-		$this->getChunk($x >> 4, $z >> 4, true)->setBlock($x & 0x0f, $y, $z & 0x0f, $id, $data);
-
-		if(!isset($this->changedBlocks[$chunkHash])){
-			$this->changedBlocks[$chunkHash] = [];
-		}
-		$this->changedBlocks[$chunkHash][$blockHash] = $v = new Vector3($x, $y, $z);
-		foreach($this->getChunkLoaders($x >> 4, $z >> 4) as $loader){
-			$loader->onBlockChanged($v);
-		}
-	}
-
-	/**
 	 * Gets the raw block skylight level
 	 *
 	 * @param int $x

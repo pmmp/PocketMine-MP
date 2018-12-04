@@ -98,8 +98,7 @@ class Farmland extends Transparent{
 		for($y = $start->y; $y <= $end->y; ++$y){
 			for($z = $start->z; $z <= $end->z; ++$z){
 				for($x = $start->x; $x <= $end->x; ++$x){
-					$id = $this->level->getBlockIdAt($x, $y, $z);
-					if($id === Block::STILL_WATER or $id === Block::FLOWING_WATER){
+					if($this->level->getBlockAt($x, $y, $z) instanceof Water){
 						return true;
 					}
 				}

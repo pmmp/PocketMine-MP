@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\level;
 
+use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\level\format\Chunk;
 
 class SimpleChunkManager implements ChunkManager{
@@ -41,42 +43,18 @@ class SimpleChunkManager implements ChunkManager{
 		$this->worldHeight = $worldHeight;
 	}
 
-	/**
-	 * Gets the raw block id.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int 0-255
-	 */
-	public function getBlockIdAt(int $x, int $y, int $z) : int{
+	public function getBlockAt(int $x, int $y, int $z) : Block{
 		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			return $chunk->getBlockId($x & 0xf, $y, $z & 0xf);
+			return BlockFactory::fromFullBlock($chunk->getFullBlock($x & 0xf, $y, $z & 0xf));
 		}
-		return 0;
+		return BlockFactory::get(Block::AIR);
 	}
 
-	/**
-	 * Gets the raw block metadata
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int 0-15
-	 */
-	public function getBlockDataAt(int $x, int $y, int $z) : int{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			return $chunk->getBlockData($x & 0xf, $y, $z & 0xf);
-		}
-		return 0;
-	}
-
-	public function setBlockIdAndDataAt(int $x, int $y, int $z, int $id, int $data) : void{
+	public function setBlockAt(int $x, int $y, int $z, Block $block) : bool{
 		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
-			$chunk->setBlock($x & 0xf, $y, $z & 0xf, $id, $data);
+			return $chunk->setBlock($x & 0xf, $y, $z & 0xf, $block->getId(), $block->getDamage());
 		}
+		return false;
 	}
 
 	public function getBlockLightAt(int $x, int $y, int $z) : int{

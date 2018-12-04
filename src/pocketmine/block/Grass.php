@@ -78,16 +78,18 @@ class Grass extends Solid{
 				$x = mt_rand($this->x - 1, $this->x + 1);
 				$y = mt_rand($this->y - 3, $this->y + 1);
 				$z = mt_rand($this->z - 1, $this->z + 1);
+
+				$b = $this->level->getBlockAt($x, $y, $z);
 				if(
-					$this->level->getBlockIdAt($x, $y, $z) !== Block::DIRT or
-					$this->level->getBlockDataAt($x, $y, $z) === 1 or
+					$b->getId() !== Block::DIRT or
+					$b->getDamage() === 1 or //coarse dirt
 					$this->level->getFullLightAt($x, $y + 1, $z) < 4 or
 					BlockFactory::$lightFilter[$this->level->getFullBlock($x, $y + 1, $z)] >= 3
 				){
 					continue;
 				}
 
-				$ev = new BlockSpreadEvent($b = $this->level->getBlockAt($x, $y, $z), $this, BlockFactory::get(Block::GRASS));
+				$ev = new BlockSpreadEvent($b, $this, BlockFactory::get(Block::GRASS));
 				$ev->call();
 				if(!$ev->isCancelled()){
 					$this->level->setBlock($b, $ev->getNewState(), false);
