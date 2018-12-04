@@ -4,8 +4,48 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3536995c56bfc3dbd6ccc0994e88a636",
+    "content-hash": "2d120a3dd7d68958809c3662d1cb7c99",
     "packages": [
+        {
+            "name": "daverandom/callback-validator",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DaveRandom/CallbackValidator.git",
+                "reference": "d87a08cddbc6099816ed01e50ce25cdfc43b542f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DaveRandom/CallbackValidator/zipball/d87a08cddbc6099816ed01e50ce25cdfc43b542f",
+                "reference": "d87a08cddbc6099816ed01e50ce25cdfc43b542f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-reflection": "*",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DaveRandom\\CallbackValidator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chris Wright",
+                    "email": "cw@daverandom.com"
+                }
+            ],
+            "description": "Tools for validating callback signatures",
+            "time": "2017-04-03T15:22:41+00:00"
+        },
         {
             "name": "pocketmine/binaryutils",
             "version": "0.1.1",
@@ -227,7 +267,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ext-pthreads": 20
+        "ext-pthreads": 20,
+        "daverandom/callback-validator": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

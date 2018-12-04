@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use DaveRandom\CallbackValidator\CallbackType;
 use pocketmine\ThreadManager;
 
 /**
@@ -592,5 +593,42 @@ class Utils{
 		}
 
 		return true; //stfu operator
+	}
+
+	public static function testValidInstance(string $className, string $baseName) : void{
+		try{
+			$base = new \ReflectionClass($baseName);
+		}catch(\ReflectionException $e){
+			throw new \InvalidArgumentException("Base class $baseName does not exist");
+		}
+
+		try{
+			$class = new \ReflectionClass($className);
+		}catch(\ReflectionException $e){
+			throw new \InvalidArgumentException("Class $className does not exist");
+		}
+
+		if(!$class->isSubclassOf($baseName)){
+			throw new \InvalidArgumentException("Class $className does not " . ($base->isInterface() ? "implement" : "extend") . " " . $baseName);
+		}
+		if(!$class->isInstantiable()){
+			throw new \InvalidArgumentException("Class $className cannot be constructed");
+		}
+	}
+
+	/**
+	 * Verifies that the given callable is compatible with the desired signature. Throws a TypeError if they are
+	 * incompatible.
+	 *
+	 * @param callable $signature Dummy callable with the required parameters and return type
+	 * @param callable $subject Callable to check the signature of
+	 *
+	 * @throws \DaveRandom\CallbackValidator\InvalidCallbackException
+	 * @throws \TypeError
+	 */
+	public static function validateCallableSignature(callable $signature, callable $subject) : void{
+		if(!($sigType = CallbackType::createFromCallable($signature))->isSatisfiedBy($subject)){
+			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $sigType . "`");
+		}
 	}
 }
