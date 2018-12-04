@@ -1345,8 +1345,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Block
 	 */
 	public function getBlockAt(int $x, int $y, int $z, bool $cached = true, bool $addToCache = true) : Block{
-		$id = 0;
-		$meta = 0;
+		$fullState = 0;
 		$blockHash = null;
 		$chunkHash = Level::chunkHash($x >> 4, $z >> 4);
 
@@ -1360,14 +1359,12 @@ class Level implements ChunkManager, Metadatable{
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if($chunk !== null){
 				$fullState = $chunk->getFullBlock($x & 0x0f, $y, $z & 0x0f);
-				$id = $fullState >> 4;
-				$meta = $fullState & 0xf;
 			}else{
 				$addToCache = false;
 			}
 		}
 
-		$block = BlockFactory::get($id, $meta);
+		$block = BlockFactory::fromFullBlock($fullState);
 		$block->position($this, $x, $y, $z);
 
 		static $dynamicStateRead = false;
