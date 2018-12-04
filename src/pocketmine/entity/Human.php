@@ -26,11 +26,12 @@ namespace pocketmine\entity;
 use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
-use pocketmine\inventory\EntityInventoryEventProcessor;
+use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Consumable;
@@ -613,8 +614,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$inventoryTag = $nbt->getListTag("Inventory");
 		if($inventoryTag !== null){
-			$armorListener = $this->armorInventory->getEventProcessor();
-			$this->armorInventory->setEventProcessor(null);
+			$armorListener = $this->armorInventory->getSlotChangeListener();
+			$this->armorInventory->setSlotChangeListener(null);
 
 			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
@@ -628,7 +629,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 
-			$this->armorInventory->setEventProcessor($armorListener);
+			$this->armorInventory->setSlotChangeListener($armorListener);
 		}
 
 		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");
@@ -641,7 +642,15 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0), false);
 
-		$this->inventory->setEventProcessor(new EntityInventoryEventProcessor($this));
+		$this->inventory->setSlotChangeListener(function(Inventory $inventory, int $slot, Item $oldItem, Item $newItem) : ?Item{
+			$ev = new EntityInventoryChangeEvent($this, $oldItem, $newItem, $slot);
+			$ev->call();
+			if($ev->isCancelled()){
+				return null;
+			}
+
+			return $ev->getNewItem();
+		});
 
 		$this->setFood((float) $nbt->getInt("foodLevel", (int) $this->getFood(), true));
 		$this->setExhaustion($nbt->getFloat("foodExhaustionLevel", $this->getExhaustion(), true));

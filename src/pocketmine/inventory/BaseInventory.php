@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
+use pocketmine\utils\Utils;
 
 abstract class BaseInventory implements Inventory{
 
@@ -45,8 +46,8 @@ abstract class BaseInventory implements Inventory{
 	protected $slots = [];
 	/** @var Player[] */
 	protected $viewers = [];
-	/** @var InventoryEventProcessor */
-	protected $eventProcessor;
+	/** @var \Closure */
+	protected $slotChangeListener;
 
 	/**
 	 * @param Item[] $items
@@ -163,8 +164,8 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		$oldItem = $this->getItem($index);
-		if($this->eventProcessor !== null){
-			$newItem = $this->eventProcessor->onSlotChange($this, $index, $oldItem, $item);
+		if($this->slotChangeListener !== null){
+			$newItem = ($this->slotChangeListener)($this, $index, $oldItem, $item);
 			if($newItem === null){
 				return false;
 			}
@@ -476,11 +477,14 @@ abstract class BaseInventory implements Inventory{
 		return $slot >= 0 and $slot < $this->slots->getSize();
 	}
 
-	public function getEventProcessor() : ?InventoryEventProcessor{
-		return $this->eventProcessor;
+	public function getSlotChangeListener() : ?\Closure{
+		return $this->slotChangeListener;
 	}
 
-	public function setEventProcessor(?InventoryEventProcessor $eventProcessor) : void{
-		$this->eventProcessor = $eventProcessor;
+	public function setSlotChangeListener(?\Closure $eventProcessor) : void{
+		if($eventProcessor !== null){
+			Utils::validateCallableSignature(function(Inventory $inventory, int $slot, Item $oldItem, Item $newItem) : ?Item{}, $eventProcessor);
+		}
+		$this->slotChangeListener = $eventProcessor;
 	}
 }

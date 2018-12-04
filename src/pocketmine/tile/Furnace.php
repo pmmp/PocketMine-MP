@@ -29,7 +29,6 @@ use pocketmine\event\inventory\FurnaceSmeltEvent;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\Inventory;
-use pocketmine\inventory\InventoryEventProcessor;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -73,18 +72,9 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		$this->inventory = new FurnaceInventory($this);
 		$this->loadItems($nbt);
 
-		$this->inventory->setEventProcessor(new class($this) implements InventoryEventProcessor{
-			/** @var Furnace */
-			private $furnace;
-
-			public function __construct(Furnace $furnace){
-				$this->furnace = $furnace;
-			}
-
-			public function onSlotChange(Inventory $inventory, int $slot, Item $oldItem, Item $newItem) : ?Item{
-				$this->furnace->scheduleUpdate();
-				return $newItem;
-			}
+		$this->inventory->setSlotChangeListener(function(Inventory $inventory, int $slot, Item $oldItem, Item $newItem) : ?Item{
+			$this->scheduleUpdate();
+			return $newItem;
 		});
 	}
 

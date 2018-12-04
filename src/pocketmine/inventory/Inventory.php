@@ -250,12 +250,12 @@ interface Inventory{
 	public function slotExists(int $slot) : bool;
 
 	/**
-	 * @return null|InventoryEventProcessor
+	 * @return null|\Closure
 	 */
-	public function getEventProcessor() : ?InventoryEventProcessor;
+	public function getSlotChangeListener() : ?\Closure;
 
 	/**
-	 * @param null|InventoryEventProcessor $eventProcessor
+	 * @param \Closure|null $eventProcessor
 	 */
-	public function setEventProcessor(?InventoryEventProcessor $eventProcessor) : void;
+	public function setSlotChangeListener(?\Closure $eventProcessor) : void;
 }
