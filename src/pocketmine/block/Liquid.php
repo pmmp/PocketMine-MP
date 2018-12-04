@@ -326,17 +326,18 @@ abstract class Liquid extends Transparent{
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling) : void{
 		if($this->canFlowInto($block) and !($block instanceof Liquid)){
-			$ev = new BlockSpreadEvent($block, $this, BlockFactory::get($this->getId(), $newFlowDecay));
+			$new = clone $this;
+			$new->falling = $falling;
+			$new->decay = $falling ? 0 : $newFlowDecay;
+
+			$ev = new BlockSpreadEvent($block, $this, $new);
 			$ev->call();
 			if(!$ev->isCancelled()){
 				if($block->getId() > 0){
 					$this->level->useBreakOn($block);
 				}
 
-				$new = clone $this;
-				$new->falling = $falling;
-				$new->decay = $falling ? 0 : $newFlowDecay;
-				$this->level->setBlock($block, $new);
+				$this->level->setBlock($block, $ev->getNewState());
 			}
 		}
 	}
