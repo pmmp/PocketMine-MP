@@ -225,7 +225,7 @@ class BlockFactory{
 		self::registerBlock(new RedstoneOre());
 		self::registerBlock((new RedstoneOre())->setLit()); //flattening hack
 		self::registerBlock(new RedstoneTorch());
-		self::registerBlock((new RedstoneTorch())->setLit()); //flattening hack
+		self::registerBlock((new RedstoneTorch())->setLit(false)); //flattening hack
 		self::registerBlock(new StoneButton());
 		self::registerBlock(new SnowLayer());
 		self::registerBlock(new Ice());
