@@ -62,8 +62,14 @@ class DaylightSensor extends Transparent{
 		return $this->inverted;
 	}
 
-	public function setInverted(bool $inverted = true) : void{
+	/**
+	 * @param bool $inverted
+	 *
+	 * @return $this
+	 */
+	public function setInverted(bool $inverted = true) : self{
 		$this->inverted = $inverted;
+		return $this;
 	}
 
 	public function getName() : string{

@@ -101,13 +101,9 @@ class BlockFactory{
 
 		self::registerBlock(new Bedrock());
 		self::registerBlock(new Water());
-		$b = new Water();
-		$b->setStill();
-		self::registerBlock($b); //flattening hack
+		self::registerBlock((new Water())->setStill()); //flattening hack
 		self::registerBlock(new Lava());
-		$b = new Lava();
-		$b->setStill();
-		self::registerBlock($b); //flattening hack
+		self::registerBlock((new Lava())->setStill()); //flattening hack
 
 		self::registerBlock(new Sand(Block::SAND, 0, "Sand"));
 		self::registerBlock(new Sand(Block::SAND, 1, "Red Sand"));
@@ -214,10 +210,7 @@ class BlockFactory{
 		self::registerBlock(new Farmland());
 
 		self::registerBlock(new Furnace());
-
-		$furnace = new Furnace();
-		$furnace->setLit();
-		self::registerBlock($furnace); //flattening hack
+		self::registerBlock((new Furnace())->setLit()); //flattening hack
 
 		self::registerBlock(new SignPost());
 		self::registerBlock(new WoodenDoor(Block::OAK_DOOR_BLOCK, 0, "Oak Door", Item::OAK_DOOR));
@@ -230,16 +223,9 @@ class BlockFactory{
 		self::registerBlock(new IronDoor());
 		self::registerBlock(new WoodenPressurePlate());
 		self::registerBlock(new RedstoneOre());
-
-		$litRedstone = new RedstoneOre();
-		$litRedstone->setLit();
-		self::registerBlock($litRedstone); //flattening hack
-
+		self::registerBlock((new RedstoneOre())->setLit()); //flattening hack
 		self::registerBlock(new RedstoneTorch());
-		$unlitRedstoneTorch = new RedstoneTorch();
-		$unlitRedstoneTorch->setLit(false);
-		self::registerBlock($unlitRedstoneTorch); //flattening hack
-
+		self::registerBlock((new RedstoneTorch())->setLit()); //flattening hack
 		self::registerBlock(new StoneButton());
 		self::registerBlock(new SnowLayer());
 		self::registerBlock(new Ice());
@@ -292,10 +278,7 @@ class BlockFactory{
 		self::registerBlock(new EndStone());
 		//TODO: DRAGON_EGG
 		self::registerBlock(new RedstoneLamp());
-		$litLamp = new RedstoneLamp();
-		$litLamp->setLit();
-		self::registerBlock($litLamp); //flattening hack
-
+		self::registerBlock((new RedstoneLamp())->setLit()); //flattening hack
 		//TODO: DROPPER
 		self::registerBlock(new ActivatorRail());
 		self::registerBlock(new CocoaBlock());
@@ -330,9 +313,7 @@ class BlockFactory{
 		//TODO: COMPARATOR_BLOCK
 		//TODO: POWERED_COMPARATOR
 		self::registerBlock(new DaylightSensor());
-		$invertedSensor = new DaylightSensor();
-		$invertedSensor->setInverted();
-		self::registerBlock($invertedSensor); //flattening hack
+		self::registerBlock((new DaylightSensor())->setInverted()); //flattening hack
 
 		self::registerBlock(new Redstone());
 		self::registerBlock(new NetherQuartzOre());

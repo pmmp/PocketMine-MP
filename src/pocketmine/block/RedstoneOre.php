@@ -56,8 +56,14 @@ class RedstoneOre extends Solid{
 		return $this->lit;
 	}
 
-	public function setLit(bool $lit = true) : void{
+	/**
+	 * @param bool $lit
+	 *
+	 * @return $this
+	 */
+	public function setLit(bool $lit = true) : self{
 		$this->lit = $lit;
+		return $this;
 	}
 
 	public function getLightLevel() : int{

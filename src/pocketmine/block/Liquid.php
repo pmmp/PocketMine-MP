@@ -137,8 +137,14 @@ abstract class Liquid extends Transparent{
 		return $this->still;
 	}
 
-	public function setStill(bool $still = true) : void{
+	/**
+	 * @param bool $still
+	 *
+	 * @return $this
+	 */
+	public function setStill(bool $still = true) : self{
 		$this->still = $still;
+		return $this;
 	}
 
 	protected function getEffectiveFlowDecay(Block $block) : int{
