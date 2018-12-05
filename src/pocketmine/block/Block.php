@@ -479,7 +479,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		$this->y = $y;
 		$this->z = $z;
 		$this->level = $level;
-		$this->readStateFromWorld();
 	}
 
 	/**
