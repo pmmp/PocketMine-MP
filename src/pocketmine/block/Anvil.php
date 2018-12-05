@@ -87,7 +87,7 @@ class Anvil extends Fallable{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($player !== null){
-			$this->facing = Bearing::toFacing(Bearing::rotate($player->getDirection(), 1));
+			$this->facing = Facing::rotate($player->getHorizontalFacing(), Facing::AXIS_Y, true);
 		}
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}

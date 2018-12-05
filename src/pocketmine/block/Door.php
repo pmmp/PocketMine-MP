@@ -110,7 +110,7 @@ abstract class Door extends Transparent{
 			}
 
 			if($player !== null){
-				$this->facing = Bearing::toFacing($player->getDirection());
+				$this->facing = $player->getHorizontalFacing();
 			}
 
 			$next = $this->getSide(Facing::rotate($this->facing, Facing::AXIS_Y, false));

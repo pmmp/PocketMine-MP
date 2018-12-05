@@ -185,7 +185,7 @@ class Bed extends Transparent{
 		$this->color = $item->getDamage(); //TODO: replace this with a proper colour getter
 		$down = $this->getSide(Facing::DOWN);
 		if(!$down->isTransparent()){
-			$this->facing = $player !== null ? Bearing::toFacing($player->getDirection()) : Facing::NORTH;
+			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;
 
 			$next = $this->getSide($this->getOtherHalfSide());
 			if($next->canBeReplaced() and !$next->getSide(Facing::DOWN)->isTransparent()){
