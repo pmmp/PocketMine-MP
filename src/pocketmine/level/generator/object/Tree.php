@@ -29,6 +29,7 @@ use pocketmine\block\Leaves;
 use pocketmine\block\Sapling;
 use pocketmine\block\utils\WoodType;
 use pocketmine\block\Wood;
+use pocketmine\level\BlockWriteBatch;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
@@ -100,8 +101,29 @@ abstract class Tree{
 	}
 
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random) : void{
-		$this->placeTrunk($level, $x, $y, $z, $random, $this->treeHeight - 1);
+		$write = new BlockWriteBatch();
+		$this->placeTrunk($level, $x, $y, $z, $random, $this->generateChunkHeight($random), $write);
+		$this->placeCanopy($level, $x, $y, $z, $random, $write);
 
+		$write->apply($level); //TODO: handle return value on failure
+	}
+
+	protected function generateChunkHeight(Random $random) : int{
+		return $this->treeHeight - 1;
+	}
+
+	protected function placeTrunk(ChunkManager $level, int $x, int $y, int $z, Random $random, int $trunkHeight, BlockWriteBatch $write) : void{
+		// The base dirt block
+		$write->addBlockAt($x, $y - 1, $z, BlockFactory::get(Block::DIRT));
+
+		for($yy = 0; $yy < $trunkHeight; ++$yy){
+			if($this->canOverride($level->getBlockAt($x, $y + $yy, $z))){
+				$write->addBlockAt($x, $y + $yy, $z, $this->trunkBlock);
+			}
+		}
+	}
+
+	protected function placeCanopy(ChunkManager $level, int $x, int $y, int $z, Random $random, BlockWriteBatch $write) : void{
 		for($yy = $y - 3 + $this->treeHeight; $yy <= $y + $this->treeHeight; ++$yy){
 			$yOff = $yy - ($y + $this->treeHeight);
 			$mid = (int) (1 - $yOff / 2);
@@ -113,20 +135,9 @@ abstract class Tree{
 						continue;
 					}
 					if(!$level->getBlockAt($xx, $yy, $zz)->isSolid()){
-						$level->setBlockAt($xx, $yy, $zz, $this->leafBlock);
+						$write->addBlockAt($xx, $yy, $zz, $this->leafBlock);
 					}
 				}
-			}
-		}
-	}
-
-	protected function placeTrunk(ChunkManager $level, int $x, int $y, int $z, Random $random, int $trunkHeight) : void{
-		// The base dirt block
-		$level->setBlockAt($x, $y - 1, $z, BlockFactory::get(Block::DIRT));
-
-		for($yy = 0; $yy < $trunkHeight; ++$yy){
-			if($this->canOverride($level->getBlockAt($x, $y + $yy, $z))){
-				$level->setBlockAt($x, $y + $yy, $z, $this->trunkBlock);
 			}
 		}
 	}
