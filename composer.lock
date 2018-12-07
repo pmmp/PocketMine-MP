@@ -117,16 +117,16 @@
         },
         {
             "name": "mdanter/ecc",
-            "version": "v0.5.1",
+            "version": "v0.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpecc/phpecc.git",
-                "reference": "9a3aca17c6dfc04bdaad2e7ddab3b8df656ffc5b"
+                "reference": "b95f25cc1bacc83a9f0ccd375900b7cfd343029e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpecc/phpecc/zipball/9a3aca17c6dfc04bdaad2e7ddab3b8df656ffc5b",
-                "reference": "9a3aca17c6dfc04bdaad2e7ddab3b8df656ffc5b",
+                "url": "https://api.github.com/repos/phpecc/phpecc/zipball/b95f25cc1bacc83a9f0ccd375900b7cfd343029e",
+                "reference": "b95f25cc1bacc83a9f0ccd375900b7cfd343029e",
                 "shasum": ""
             },
             "require": {
@@ -185,7 +185,7 @@
                 "secp256k1",
                 "secp256r1"
             ],
-            "time": "2018-12-01T23:35:23+00:00"
+            "time": "2018-12-03T18:17:01+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -227,12 +227,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "5bb6facf8c46212bdb78d6bb1be6fbd2891b200d"
+                "reference": "a162c02be87fd49abd195a7330e61be9d4b8e766"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/5bb6facf8c46212bdb78d6bb1be6fbd2891b200d",
-                "reference": "5bb6facf8c46212bdb78d6bb1be6fbd2891b200d",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/a162c02be87fd49abd195a7330e61be9d4b8e766",
+                "reference": "a162c02be87fd49abd195a7330e61be9d4b8e766",
                 "shasum": ""
             },
             "require": {
@@ -258,7 +258,7 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2018-12-02T11:40:31+00:00"
+            "time": "2018-12-07T10:47:16+00:00"
         },
         {
             "name": "pocketmine/nbt",
