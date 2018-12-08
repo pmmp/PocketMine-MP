@@ -33,6 +33,14 @@ use raklib\RakLib;
 
 class CrashDump{
 
+	/**
+	 * Crashdump data format version, used by the crash archive to decide how to decode the crashdump
+	 * This should be incremented when backwards incompatible changes are introduced, such as fields being removed or
+	 * having their content changed, version format changing, etc.
+	 * It is not necessary to increase this when adding new fields.
+	 */
+	private const FORMAT_VERSION = 1;
+
 	/** @var Server */
 	private $server;
 	private $fp;
@@ -54,6 +62,7 @@ class CrashDump{
 		if(!is_resource($this->fp)){
 			throw new \RuntimeException("Could not create Crash Dump");
 		}
+		$this->data["format_version"] = self::FORMAT_VERSION;
 		$this->data["time"] = $this->time;
 		$this->addLine($this->server->getName() . " Crash Dump " . date("D M j H:i:s T Y", $this->time));
 		$this->addLine();
@@ -232,10 +241,10 @@ class CrashDump{
 		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
 		$this->data["general"] = [];
 		$this->data["general"]["name"] = $this->server->getName();
-		$this->data["general"]["version"] = $version->getFullVersion(false);
-		$this->data["general"]["build"] = $version->getBuild();
+		$this->data["general"]["base_version"] = \pocketmine\BASE_VERSION;
+		$this->data["general"]["build"] = \pocketmine\BUILD_NUMBER;
+		$this->data["general"]["is_dev"] = \pocketmine\IS_DEVELOPMENT_BUILD;
 		$this->data["general"]["protocol"] = ProtocolInfo::CURRENT_PROTOCOL;
-		$this->data["general"]["api"] = \pocketmine\BASE_VERSION;
 		$this->data["general"]["git"] = \pocketmine\GIT_COMMIT;
 		$this->data["general"]["raklib"] = RakLib::VERSION;
 		$this->data["general"]["uname"] = php_uname("a");
