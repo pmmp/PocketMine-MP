@@ -684,6 +684,13 @@ class Server{
 	}
 
 	/**
+	 * @return CommandReader
+	 */
+	public function getCommandReader() : CommandReader{
+		return $this->console;
+	}
+
+	/**
 	 * @return SimpleCommandMap
 	 */
 	public function getCommandMap(){
