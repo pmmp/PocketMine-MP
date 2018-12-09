@@ -33,10 +33,8 @@ abstract class Tree{
 	public $overridable = [
 		Block::AIR => true,
 		Block::SAPLING => true,
-		Block::LOG => true,
 		Block::LEAVES => true,
 		Block::SNOW_LAYER => true,
-		Block::LOG2 => true,
 		Block::LEAVES2 => true
 	];
 
