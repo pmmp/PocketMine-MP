@@ -132,6 +132,6 @@ abstract class Tree{
 	}
 
 	protected function canOverride(Block $block) : bool{
-		return $block->canBeReplaced() or $block instanceof Wood or $block instanceof Sapling or $block instanceof Leaves;
+		return $block->canBeReplaced() or $block instanceof Sapling or $block instanceof Leaves;
 	}
 }
