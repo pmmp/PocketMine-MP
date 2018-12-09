@@ -25,10 +25,20 @@ namespace pocketmine\level;
 
 use pocketmine\block\Block;
 use pocketmine\math\Vector3;
+use pocketmine\utils\Utils;
 
 class BlockWriteBatch{
 	/** @var Block[][][] */
 	private $blocks = [];
+
+	/** @var \Closure[] */
+	private $validators = [];
+
+	public function __construct(){
+		$this->addValidator(function(ChunkManager $world, int $x, int $y, int $z, Block $candidate) : bool{
+			return $world->isInWorld($x, $y, $z);
+		});
+	}
 
 	/**
 	 * Adds a block to the batch at the given position.
@@ -67,8 +77,10 @@ class BlockWriteBatch{
 	 */
 	public function apply(ChunkManager $world) : bool{
 		foreach($this->getBlocks() as [$x, $y, $z, $block]){
-			if(!$this->validate($world, $x, $y, $z, $block)){
-				return false;
+			foreach($this->validators as $validator){
+				if(!$validator($world, $x, $y, $z, $block)){
+					return false;
+				}
 			}
 		}
 		foreach($this->getBlocks() as [$x, $y, $z, $block]){
@@ -91,19 +103,32 @@ class BlockWriteBatch{
 	}
 
 	/**
+	 * Add a validation predicate which will be used to validate every block.
+	 * The callable signature should be the same as the below dummy function.
+	 * @see BlockWriteBatch::dummyValidator()
+	 *
+	 * @param callable $validator
+	 */
+	public function addValidator(callable $validator) : void{
+		Utils::validateCallableSignature([$this, 'dummyValidator'], $validator);
+		$this->validators[] = $validator;
+	}
+
+	/**
+	 * Dummy function demonstrating the required closure signature for validators.
+	 * @see BlockWriteBatch::addValidator()
+	 *
+	 * @dummy
+	 *
 	 * @param ChunkManager $world
 	 * @param int          $x
 	 * @param int          $y
 	 * @param int          $z
-	 * @param Block        $state
+	 * @param Block        $candidate
 	 *
 	 * @return bool
 	 */
-	private function validate(ChunkManager $world, int $x, int $y, int $z, Block $state) : bool{
-		if(!$world->isInWorld($x, $y, $z)){
-			return false;
-		}
-		//TODO: add ability to inject extra validity checks
+	public function dummyValidator(ChunkManager $world, int $x, int $y, int $z, Block $candidate) : bool{
 		return true;
 	}
 }
