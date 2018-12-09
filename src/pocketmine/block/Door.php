@@ -93,7 +93,7 @@ abstract class Door extends Transparent{
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return AxisAlignedBB::one()
 			->extend(Facing::UP, 1)
-			->trim($this->open ? Facing::rotate($this->facing, Facing::AXIS_Y, !$this->hingeRight) : $this->facing, 13 / 16);
+			->trim($this->open ? Facing::rotateY($this->facing, !$this->hingeRight) : $this->facing, 13 / 16);
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -114,8 +114,8 @@ abstract class Door extends Transparent{
 				$this->facing = $player->getHorizontalFacing();
 			}
 
-			$next = $this->getSide(Facing::rotate($this->facing, Facing::AXIS_Y, false));
-			$next2 = $this->getSide(Facing::rotate($this->facing, Facing::AXIS_Y, true));
+			$next = $this->getSide(Facing::rotateY($this->facing, false));
+			$next2 = $this->getSide(Facing::rotateY($this->facing, true));
 
 			if($next->isSameType($this) or (!$next2->isTransparent() and $next->isTransparent())){ //Door hinge
 				$this->hingeRight = true;

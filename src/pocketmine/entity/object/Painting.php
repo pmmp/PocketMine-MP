@@ -240,7 +240,7 @@ class Painting extends Entity{
 		$horizontalStart = (int) (ceil($width / 2) - 1);
 		$verticalStart = (int) (ceil($height / 2) - 1);
 
-		$rotatedFace = Facing::rotate($facing, Facing::AXIS_Y, false);
+		$rotatedFace = Facing::rotateY($facing, false);
 
 		$oppositeSide = Facing::opposite($facing);
 

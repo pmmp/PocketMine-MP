@@ -75,7 +75,7 @@ class CocoaBlock extends Transparent{
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return AxisAlignedBB::one()
-			->squash(Facing::axis(Facing::rotate($this->facing, Facing::AXIS_Y, true)), (6 - $this->age) / 16) //sides
+			->squash(Facing::axis(Facing::rotateY($this->facing, true)), (6 - $this->age) / 16) //sides
 			->trim(Facing::DOWN, (7 - $this->age * 2) / 16)
 			->trim(Facing::UP, 0.25)
 			->trim(Facing::opposite($this->facing), 1 / 16) //gap between log and pod

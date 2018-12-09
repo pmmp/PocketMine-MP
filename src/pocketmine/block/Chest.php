@@ -78,8 +78,8 @@ class Chest extends Transparent{
 		}
 
 		foreach([
-			Facing::rotate($player->getHorizontalFacing(), Facing::AXIS_Y, false),
-			Facing::rotate($player->getHorizontalFacing(), Facing::AXIS_Y, true)
+			Facing::rotateY($player->getHorizontalFacing(), false),
+			Facing::rotateY($player->getHorizontalFacing(), true)
 		] as $side){
 			$c = $this->getSide($side);
 			if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
