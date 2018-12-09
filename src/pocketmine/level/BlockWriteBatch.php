@@ -35,7 +35,7 @@ class BlockWriteBatch{
 	private $validators = [];
 
 	public function __construct(){
-		$this->addValidator(function(ChunkManager $world, int $x, int $y, int $z, Block $candidate) : bool{
+		$this->addValidator(function(ChunkManager $world, int $x, int $y, int $z) : bool{
 			return $world->isInWorld($x, $y, $z);
 		});
 	}
@@ -76,9 +76,9 @@ class BlockWriteBatch{
 	 * @return bool if the application was successful
 	 */
 	public function apply(ChunkManager $world) : bool{
-		foreach($this->getBlocks() as [$x, $y, $z, $block]){
+		foreach($this->getBlocks() as [$x, $y, $z, $_]){
 			foreach($this->validators as $validator){
-				if(!$validator($world, $x, $y, $z, $block)){
+				if(!$validator($world, $x, $y, $z)){
 					return false;
 				}
 			}
@@ -124,11 +124,10 @@ class BlockWriteBatch{
 	 * @param int          $x
 	 * @param int          $y
 	 * @param int          $z
-	 * @param Block        $candidate
 	 *
 	 * @return bool
 	 */
-	public function dummyValidator(ChunkManager $world, int $x, int $y, int $z, Block $candidate) : bool{
+	public function dummyValidator(ChunkManager $world, int $x, int $y, int $z) : bool{
 		return true;
 	}
 }
