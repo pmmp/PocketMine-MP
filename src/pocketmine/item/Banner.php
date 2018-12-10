@@ -206,6 +206,20 @@ class Banner extends Item{
 		return $this->getNamedTag()->getListTag(self::TAG_PATTERNS)->count();
 	}
 
+	/**
+	 * @return ListTag|null
+	 */
+	public function getPatterns() : ?ListTag{
+		return $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
+	}
+
+	/**
+	 * @param ListTag $patterns
+	 */
+	public function setPatterns(ListTag $patterns) : void{
+		$this->setNamedTagEntry(clone $patterns);
+	}
+
 	public function correctNBT() : void{
 		$tag = $this->getNamedTag();
 		if(!$tag->hasTag(self::TAG_BASE, IntTag::class)){

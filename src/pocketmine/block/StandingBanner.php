@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
@@ -83,7 +84,17 @@ class StandingBanner extends Transparent{
 			}
 
 			if($ret){
-				Tile::createTile(Tile::BANNER, $this->getLevel(), TileBanner::createNBT($this, $item));
+				$tile = Tile::createFromItem(Tile::BANNER, $this->getLevel(), $this->asVector3(), $item);
+				if($tile !== null){
+					if($tile instanceof TileBanner and $item instanceof ItemBanner){
+						$tile->setBaseColor($item->getBaseColor());
+						if(($patterns = $item->getPatterns()) !== null){
+							$tile->setPatterns($patterns);
+						}
+					}
+
+					$this->level->addTile($tile);
+				}
 				return true;
 			}
 		}
@@ -105,8 +116,8 @@ class StandingBanner extends Transparent{
 		$tile = $this->level->getTile($this);
 
 		$drop = ItemFactory::get(Item::BANNER, ($tile instanceof TileBanner ? $tile->getBaseColor() : 0));
-		if($tile instanceof TileBanner and !($patterns = $tile->getPatterns())->empty()){
-			$drop->setNamedTagEntry(clone $patterns);
+		if($tile instanceof TileBanner and $drop instanceof ItemBanner and !($patterns = $tile->getPatterns())->empty()){
+			$drop->setPatterns($patterns);
 		}
 
 		return [$drop];

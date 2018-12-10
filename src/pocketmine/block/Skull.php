@@ -70,10 +70,13 @@ class Skull extends Flowable{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = Tile::createTile(Tile::SKULL, $this->getLevel(), TileSkull::createNBT($this));
-		if($tile instanceof TileSkull){
-			$tile->setRotation($this->rotation);
-			$tile->setType($this->type);
+		$tile = Tile::create(Tile::SKULL, $this->getLevel(), $this->asVector3());
+		if($tile !== null){
+			if($tile instanceof TileSkull){
+				$tile->setRotation($this->rotation);
+				$tile->setType($this->type);
+			}
+			$this->level->addTile($tile);
 		}
 	}
 

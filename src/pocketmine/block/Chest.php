@@ -92,7 +92,10 @@ class Chest extends Transparent{
 		}
 
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			$tile = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this, $item));
+			$tile = Tile::createFromItem(Tile::CHEST, $this->getLevel(), $this->asVector3(), $item);
+			if($tile !== null){
+				$this->level->addTile($tile);
+			}
 
 			if($chest instanceof TileChest and $tile instanceof TileChest){
 				$chest->pairWith($tile);

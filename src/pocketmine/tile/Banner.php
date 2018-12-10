@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-use pocketmine\item\Banner as ItemBanner;
-use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -35,7 +33,6 @@ use pocketmine\nbt\tag\StringTag;
 class Banner extends Spawnable implements Nameable{
 	use NameableTrait {
 		addAdditionalSpawnData as addNameSpawnData;
-		createAdditionalNBT as createNameNBT;
 	}
 
 	public const TAG_BASE = "Base";
@@ -274,17 +271,9 @@ class Banner extends Spawnable implements Nameable{
 		return $this->patterns;
 	}
 
-	protected static function createAdditionalNBT(CompoundTag $nbt, ?Item $item = null) : void{
-		if($item instanceof ItemBanner){
-			$nbt->setInt(self::TAG_BASE, $item->getBaseColor());
-
-			//TODO: clean this mess up
-			if($item->getNamedTag()->hasTag(self::TAG_PATTERNS, ListTag::class)){
-				$nbt->setTag($item->getNamedTag()->getListTag(self::TAG_PATTERNS));
-			}
-
-			self::createNameNBT($nbt, $item);
-		}
+	public function setPatterns(ListTag $patterns) : void{
+		$this->patterns = clone $patterns;
+		$this->onChanged();
 	}
 
 	public function getDefaultName() : string{

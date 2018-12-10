@@ -30,7 +30,6 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\tile\EnchantTable as TileEnchantTable;
 use pocketmine\tile\Tile;
 
 class EnchantingTable extends Transparent{
@@ -43,7 +42,9 @@ class EnchantingTable extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			Tile::createTile(Tile::ENCHANT_TABLE, $this->getLevel(), TileEnchantTable::createNBT($this, $item));
+			if(($tile = Tile::createFromItem(Tile::ENCHANT_TABLE, $this->getLevel(), $this->asVector3(), $item)) !== null){
+				$this->level->addTile($tile);
+			}
 			return true;
 		}
 

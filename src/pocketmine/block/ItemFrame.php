@@ -85,7 +85,9 @@ class ItemFrame extends Flowable{
 		$this->facing = $face;
 
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), TileItemFrame::createNBT($this, $item));
+			if(($tile = Tile::createFromItem(Tile::ITEM_FRAME, $this->getLevel(), $this->asVector3(), $item)) !== null){
+				$this->level->addTile($tile);
+			}
 			return true;
 		}
 

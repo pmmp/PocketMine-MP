@@ -33,8 +33,6 @@ use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
@@ -88,21 +86,52 @@ abstract class Tile extends Position{
 	 * @param string      $type
 	 * @param Level       $level
 	 * @param CompoundTag $nbt
-	 * @param             $args
 	 *
 	 * @return Tile|null
 	 */
-	public static function createTile($type, Level $level, CompoundTag $nbt, ...$args) : ?Tile{
+	public static function createFromData($type, Level $level, CompoundTag $nbt) : ?Tile{
+		$tile = self::create($type, $level, new Vector3($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z)));
+		if($tile !== null){
+			$tile->readSaveData($nbt);
+		}
+		return $tile;
+	}
+
+	/**
+	 * @param string  $type
+	 * @param Level   $level
+	 * @param Vector3 $pos
+	 * @param Item    $item
+	 *
+	 * @return Tile|null
+	 */
+	public static function createFromItem(string $type, Level $level, Vector3 $pos, Item $item) : ?Tile{
+		$tile = self::create($type, $level, $pos);
+		if($tile !== null and $item->hasCustomBlockData()){
+			$tile->readSaveData($item->getCustomBlockData());
+		}
+		if($tile instanceof Nameable and $item->hasCustomName()){ //this should take precedence over saved NBT
+			$tile->setName($item->getCustomName());
+		}
+
+		return $tile;
+	}
+
+	/**
+	 * @param string  $type
+	 * @param Level   $level
+	 * @param Vector3 $pos
+	 *
+	 * @return Tile|null
+	 */
+	public static function create(string $type, Level $level, Vector3 $pos) : ?Tile{
 		if(isset(self::$knownTiles[$type])){
-			$pos = new Vector3($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z));
 			$class = self::$knownTiles[$type];
 			/**
 			 * @var Tile $tile
 			 * @see Tile::__construct()
 			 */
 			$tile = new $class($level, $pos);
-			$tile->readSaveData($nbt);
-			$level->addTile($tile);
 			return $tile;
 		}
 
@@ -174,53 +203,6 @@ abstract class Tile extends Position{
 	public function getCleanedNBT() : ?CompoundTag{
 		$this->writeSaveData($tag = new CompoundTag());
 		return $tag->getCount() > 0 ? $tag : null;
-	}
-
-	/**
-	 * Creates and returns a CompoundTag containing the necessary information to spawn a tile of this type.
-	 *
-	 * @param Vector3   $pos
-	 * @param Item|null $item
-	 *
-	 * @return CompoundTag
-	 * @throws \BadMethodCallException
-	 * @throws \InvalidArgumentException
-	 * @throws \InvalidStateException
-	 */
-	public static function createNBT(Vector3 $pos, ?Item $item = null) : CompoundTag{
-		if(static::class === self::class){
-			throw new \BadMethodCallException(__METHOD__ . " must be called from the scope of a child class");
-		}
-		$nbt = new CompoundTag("", [
-			new StringTag(self::TAG_ID, static::getSaveId()),
-			new IntTag(self::TAG_X, (int) $pos->x),
-			new IntTag(self::TAG_Y, (int) $pos->y),
-			new IntTag(self::TAG_Z, (int) $pos->z)
-		]);
-
-		static::createAdditionalNBT($nbt, $item);
-
-		if($item !== null){
-			$customBlockData = $item->getCustomBlockData();
-			if($customBlockData !== null){
-				foreach($customBlockData as $customBlockDataTag){
-					$nbt->setTag(clone $customBlockDataTag);
-				}
-			}
-		}
-
-		return $nbt;
-	}
-
-	/**
-	 * Called by createNBT() to allow descendent classes to add their own base NBT using the parameters provided.
-	 * TODO: remove this and add a hook for setting data from items post-place
-	 *
-	 * @param CompoundTag $nbt
-	 * @param Item|null   $item
-	 */
-	protected static function createAdditionalNBT(CompoundTag $nbt, ?Item $item = null) : void{
-
 	}
 
 	/**

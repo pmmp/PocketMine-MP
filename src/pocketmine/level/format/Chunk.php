@@ -618,7 +618,9 @@ class Chunk{
 							continue;
 						}
 
-						if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){
+						if(($tile = Tile::createFromData($nbt->getString(Tile::TAG_ID), $level, $nbt)) !== null){
+							$level->addTile($tile);
+						}else{
 							$changed = true;
 							continue;
 						}
