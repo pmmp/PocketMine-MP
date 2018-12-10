@@ -39,13 +39,13 @@ class Skull extends Spawnable{
 	public const TAG_MOUTH_TICK_COUNT = "MouthTickCount"; //TAG_Int
 
 	/** @var int */
-	private $skullType;
+	private $skullType = self::TYPE_SKELETON;
 	/** @var int */
-	private $skullRotation;
+	private $skullRotation = 0;
 
 	protected function readSaveData(CompoundTag $nbt) : void{
-		$this->skullType = $nbt->getByte(self::TAG_SKULL_TYPE, self::TYPE_SKELETON, true);
-		$this->skullRotation = $nbt->getByte(self::TAG_ROT, 0, true);
+		$this->skullType = $nbt->getByte(self::TAG_SKULL_TYPE, $this->skullType, true);
+		$this->skullRotation = $nbt->getByte(self::TAG_ROT, $this->skullRotation, true);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{

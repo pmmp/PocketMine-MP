@@ -26,6 +26,7 @@ namespace pocketmine\tile;
 use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\DoubleChestInventory;
 use pocketmine\inventory\InventoryHolder;
+use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -50,14 +51,17 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	/** @var int|null */
 	private $pairZ;
 
+	public function __construct(Level $level, Vector3 $pos){
+		$this->inventory = new ChestInventory($this);
+		parent::__construct($level, $pos);
+	}
+
 	protected function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_PAIRX, IntTag::class) and $nbt->hasTag(self::TAG_PAIRZ, IntTag::class)){
 			$this->pairX = $nbt->getInt(self::TAG_PAIRX);
 			$this->pairZ = $nbt->getInt(self::TAG_PAIRZ);
 		}
 		$this->loadName($nbt);
-
-		$this->inventory = new ChestInventory($this);
 		$this->loadItems($nbt);
 	}
 

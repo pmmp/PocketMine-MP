@@ -25,6 +25,8 @@ namespace pocketmine\tile;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 
 class ItemFrame extends Spawnable{
@@ -35,18 +37,21 @@ class ItemFrame extends Spawnable{
 	/** @var Item */
 	private $item;
 	/** @var int */
-	private $itemRotation;
+	private $itemRotation = 0;
 	/** @var float */
-	private $itemDropChance;
+	private $itemDropChance = 1.0;
+
+	public function __construct(Level $level, Vector3 $pos){
+		$this->item = ItemFactory::get(Item::AIR, 0, 0);
+		parent::__construct($level, $pos);
+	}
 
 	protected function readSaveData(CompoundTag $nbt) : void{
 		if(($itemTag = $nbt->getCompoundTag(self::TAG_ITEM)) !== null){
 			$this->item = Item::nbtDeserialize($itemTag);
-		}else{
-			$this->item = ItemFactory::get(Item::AIR, 0, 0);
 		}
-		$this->itemRotation = $nbt->getByte(self::TAG_ITEM_ROTATION, 0, true);
-		$this->itemDropChance = $nbt->getFloat(self::TAG_ITEM_DROP_CHANCE, 1.0, true);
+		$this->itemRotation = $nbt->getByte(self::TAG_ITEM_ROTATION, $this->itemRotation, true);
+		$this->itemDropChance = $nbt->getFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance, true);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{

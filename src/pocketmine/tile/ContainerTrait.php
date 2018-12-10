@@ -35,7 +35,7 @@ use pocketmine\nbt\tag\StringTag;
  */
 trait ContainerTrait{
 	/** @var string|null */
-	private $lock;
+	private $lock = null;
 
 	/**
 	 * @return Inventory
@@ -47,10 +47,14 @@ trait ContainerTrait{
 			$inventoryTag = $tag->getListTag(Container::TAG_ITEMS);
 
 			$inventory = $this->getRealInventory();
+			$slotChangeListener = $inventory->getSlotChangeListener();
+			$inventory->setSlotChangeListener(null); //prevent any events being fired by initialization
+			$inventory->clearAll();
 			/** @var CompoundTag $itemNBT */
 			foreach($inventoryTag as $itemNBT){
 				$inventory->setItem($itemNBT->getByte("Slot"), Item::nbtDeserialize($itemNBT));
 			}
+			$inventory->setSlotChangeListener($slotChangeListener);
 		}
 
 		if($tag->hasTag(Container::TAG_LOCK, StringTag::class)){

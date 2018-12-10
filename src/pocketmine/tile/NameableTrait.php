@@ -32,7 +32,7 @@ use pocketmine\nbt\tag\StringTag;
  */
 trait NameableTrait{
 	/** @var string|null */
-	private $customName;
+	private $customName = null;
 
 	/**
 	 * @return string

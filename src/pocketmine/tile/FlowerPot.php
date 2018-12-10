@@ -25,7 +25,11 @@ namespace pocketmine\tile;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ShortTag;
 
 class FlowerPot extends Spawnable{
 	public const TAG_ITEM = "item";
@@ -34,8 +38,15 @@ class FlowerPot extends Spawnable{
 	/** @var Item */
 	private $item;
 
+	public function __construct(Level $level, Vector3 $pos){
+		$this->item = ItemFactory::get(Item::AIR, 0, 0);
+		parent::__construct($level, $pos);
+	}
+
 	protected function readSaveData(CompoundTag $nbt) : void{
-		$this->item = ItemFactory::get($nbt->getShort(self::TAG_ITEM, 0, true), $nbt->getInt(self::TAG_ITEM_DATA, 0, true), 1);
+		if($nbt->hasTag(self::TAG_ITEM, ShortTag::class) and $nbt->hasTag(self::TAG_ITEM_DATA, IntTag::class)){
+			$this->item = ItemFactory::get($nbt->getShort(self::TAG_ITEM, 0), $nbt->getInt(self::TAG_ITEM_DATA, 0), 1);
+		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
