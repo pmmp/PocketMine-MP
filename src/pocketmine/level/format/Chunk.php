@@ -30,7 +30,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
@@ -613,12 +612,7 @@ class Chunk{
 				$level->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 				foreach($this->NBTtiles as $nbt){
 					if($nbt instanceof CompoundTag){
-						if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
-							$changed = true;
-							continue;
-						}
-
-						if(($tile = Tile::createFromData($nbt->getString(Tile::TAG_ID), $level, $nbt)) !== null){
+						if(($tile = Tile::createFromData($level, $nbt)) !== null){
 							$level->addTile($tile);
 						}else{
 							$changed = true;

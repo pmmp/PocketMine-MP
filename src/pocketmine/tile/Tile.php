@@ -83,13 +83,16 @@ abstract class Tile extends Position{
 	}
 
 	/**
-	 * @param string      $type
 	 * @param Level       $level
 	 * @param CompoundTag $nbt
 	 *
 	 * @return Tile|null
 	 */
-	public static function createFromData($type, Level $level, CompoundTag $nbt) : ?Tile{
+	public static function createFromData(Level $level, CompoundTag $nbt) : ?Tile{
+		$type = $nbt->getString(self::TAG_ID, "", true);
+		if($type === ""){
+			return null;
+		}
 		$tile = self::create($type, $level, new Vector3($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z)));
 		if($tile !== null){
 			$tile->readSaveData($nbt);
