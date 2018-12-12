@@ -25,23 +25,33 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 
-class NetworkStackLatencyPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::NETWORK_STACK_LATENCY_PACKET;
+class SpawnParticleEffectPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::SPAWN_PARTICLE_EFFECT_PACKET;
 
 	/** @var int */
-	public $timestamp;
+	public $dimensionId = DimensionIds::OVERWORLD; //wtf mojang
+	/** @var Vector3 */
+	public $position;
+	/** @var string */
+	public $particleName;
 
 	protected function decodePayload() : void{
-		$this->timestamp = $this->getLLong();
+		$this->dimensionId = $this->getByte();
+		$this->position = $this->getVector3();
+		$this->particleName = $this->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putLLong($this->timestamp);
+		$this->putByte($this->dimensionId);
+		$this->putVector3($this->position);
+		$this->putString($this->particleName);
 	}
 
 	public function handle(SessionHandler $handler) : bool{
-		return $handler->handleNetworkStackLatency($this);
+		return $handler->handleSpawnParticleEffect($this);
 	}
 }

@@ -27,21 +27,29 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class NetworkStackLatencyPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::NETWORK_STACK_LATENCY_PACKET;
+class NetworkChunkPublisherUpdatePacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET;
 
 	/** @var int */
-	public $timestamp;
+	public $x;
+	/** @var int */
+	public $y;
+	/** @var int */
+	public $z;
+	/** @var int */
+	public $radius;
 
 	protected function decodePayload() : void{
-		$this->timestamp = $this->getLLong();
+		$this->getSignedBlockPosition($this->x, $this->y, $this->z);
+		$this->radius = $this->getUnsignedVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putLLong($this->timestamp);
+		$this->putSignedBlockPosition($this->x, $this->y, $this->z);
+		$this->putUnsignedVarInt($this->radius);
 	}
 
 	public function handle(SessionHandler $handler) : bool{
-		return $handler->handleNetworkStackLatency($this);
+		return $handler->handleNetworkChunkPublisherUpdate($this);
 	}
 }

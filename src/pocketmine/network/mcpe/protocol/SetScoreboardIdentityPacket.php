@@ -63,7 +63,7 @@ class SetScoreboardIdentityPacket extends DataPacket{
 		}
 	}
 
-	public function handle(SessionHandler $session) : bool{
-		return $session->handleSetScoreboardIdentity($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleSetScoreboardIdentity($this);
 	}
 }

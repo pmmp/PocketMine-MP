@@ -27,21 +27,21 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class NetworkStackLatencyPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::NETWORK_STACK_LATENCY_PACKET;
+class BiomeDefinitionListPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::BIOME_DEFINITION_LIST_PACKET;
 
-	/** @var int */
-	public $timestamp;
+	/** @var string */
+	public $namedtag;
 
 	protected function decodePayload() : void{
-		$this->timestamp = $this->getLLong();
+		$this->namedtag = $this->getRemaining();
 	}
 
 	protected function encodePayload() : void{
-		$this->putLLong($this->timestamp);
+		$this->put($this->namedtag);
 	}
 
 	public function handle(SessionHandler $handler) : bool{
-		return $handler->handleNetworkStackLatency($this);
+		return $handler->handleBiomeDefinitionList($this);
 	}
 }

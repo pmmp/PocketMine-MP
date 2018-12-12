@@ -58,7 +58,7 @@ class UpdateSoftEnumPacket extends DataPacket{
 		$this->putByte($this->type);
 	}
 
-	public function handle(SessionHandler $session) : bool{
-		return $session->handleUpdateSoftEnum($this);
+	public function handle(SessionHandler $handler) : bool{
+		return $handler->handleUpdateSoftEnum($this);
 	}
 }

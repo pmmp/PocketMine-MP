@@ -36,6 +36,7 @@ class NetworkInventoryAction{
 
 	public const SOURCE_WORLD = 2; //drop/pickup item entity
 	public const SOURCE_CREATIVE = 3;
+	public const SOURCE_CRAFTING_GRID = 100;
 	public const SOURCE_TODO = 99999;
 
 	/**
@@ -47,8 +48,8 @@ class NetworkInventoryAction{
 	 *
 	 * Expect these to change in the future.
 	 */
-	public const SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = -2;
-	public const SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = -3;
+	public const SOURCE_TYPE_CRAFTING_USELESS_MAGIC_NUMBER = -2;
+
 	public const SOURCE_TYPE_CRAFTING_RESULT = -4;
 	public const SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
 
@@ -80,7 +81,7 @@ class NetworkInventoryAction{
 	/** @var int */
 	public $sourceType;
 	/** @var int */
-	public $windowId = ContainerIds::NONE;
+	public $windowId;
 	/** @var int */
 	public $sourceFlags = 0;
 	/** @var int */
@@ -107,6 +108,12 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
+			case self::SOURCE_CRAFTING_GRID:
+				$dummy = $packet->getVarInt();
+				if($dummy !== self::SOURCE_TYPE_CRAFTING_USELESS_MAGIC_NUMBER){
+					throw new \UnexpectedValueException("Useless magic number for crafting-grid type was $dummy, expected " . self::SOURCE_TYPE_CRAFTING_USELESS_MAGIC_NUMBER);
+				}
+				break;
 			case self::SOURCE_TODO:
 				$this->windowId = $packet->getVarInt();
 				switch($this->windowId){
@@ -118,6 +125,8 @@ class NetworkInventoryAction{
 						break;
 				}
 				break;
+			default:
+				throw new \UnexpectedValueException("Unknown inventory action source type $this->sourceType");
 		}
 
 		$this->inventorySlot = $packet->getUnsignedVarInt();
@@ -142,9 +151,14 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
+			case self::SOURCE_CRAFTING_GRID:
+				$packet->putVarInt(self::SOURCE_TYPE_CRAFTING_USELESS_MAGIC_NUMBER);
+				break;
 			case self::SOURCE_TODO:
 				$packet->putVarInt($this->windowId);
 				break;
+			default:
+				throw new \UnexpectedValueException("Unknown inventory action source type $this->sourceType");
 		}
 
 		$packet->putUnsignedVarInt($this->inventorySlot);
@@ -186,13 +200,11 @@ class NetworkInventoryAction{
 				}
 
 				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
+			case self::SOURCE_CRAFTING_GRID:
+				return new SlotChangeAction($player->getCraftingGrid(), $this->inventorySlot, $this->oldItem, $this->newItem);
 			case self::SOURCE_TODO:
 				//These types need special handling.
 				switch($this->windowId){
-					case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
-					case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
-						$window = $player->getCraftingGrid();
-						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 					case self::SOURCE_TYPE_CRAFTING_RESULT:
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						return null;

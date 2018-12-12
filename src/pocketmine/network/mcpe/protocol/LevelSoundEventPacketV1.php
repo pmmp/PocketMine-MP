@@ -25,23 +25,47 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class NetworkStackLatencyPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::NETWORK_STACK_LATENCY_PACKET;
+/**
+ * Useless leftover from a 1.8 refactor, does nothing
+ */
+class LevelSoundEventPacketV1 extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::LEVEL_SOUND_EVENT_PACKET_V1;
 
 	/** @var int */
-	public $timestamp;
+	public $sound;
+	/** @var Vector3 */
+	public $position;
+	/** @var int */
+	public $extraData = 0;
+	/** @var int */
+	public $entityType = 1;
+	/** @var bool */
+	public $isBabyMob = false; //...
+	/** @var bool */
+	public $disableRelativeVolume = false;
 
 	protected function decodePayload() : void{
-		$this->timestamp = $this->getLLong();
+		$this->sound = $this->getByte();
+		$this->position = $this->getVector3();
+		$this->extraData = $this->getVarInt();
+		$this->entityType = $this->getVarInt();
+		$this->isBabyMob = $this->getBool();
+		$this->disableRelativeVolume = $this->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putLLong($this->timestamp);
+		$this->putByte($this->sound);
+		$this->putVector3($this->position);
+		$this->putVarInt($this->extraData);
+		$this->putVarInt($this->entityType);
+		$this->putBool($this->isBabyMob);
+		$this->putBool($this->disableRelativeVolume);
 	}
 
 	public function handle(SessionHandler $handler) : bool{
-		return $handler->handleNetworkStackLatency($this);
+		return $handler->handleLevelSoundEventPacketV1($this);
 	}
 }

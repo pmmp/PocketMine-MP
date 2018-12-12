@@ -43,6 +43,8 @@ class UpdateTradePacket extends DataPacket{
 	public $varint1;
 	/** @var int */
 	public $varint2;
+	/** @var int */
+	public $varint3;
 	/** @var bool */
 	public $isWilling;
 	/** @var int */
@@ -59,6 +61,7 @@ class UpdateTradePacket extends DataPacket{
 		$this->windowType = $this->getByte();
 		$this->varint1 = $this->getVarInt();
 		$this->varint2 = $this->getVarInt();
+		$this->varint3 = $this->getVarInt();
 		$this->isWilling = $this->getBool();
 		$this->traderEid = $this->getEntityUniqueId();
 		$this->playerEid = $this->getEntityUniqueId();
@@ -71,6 +74,7 @@ class UpdateTradePacket extends DataPacket{
 		$this->putByte($this->windowType);
 		$this->putVarInt($this->varint1);
 		$this->putVarInt($this->varint2);
+		$this->putVarInt($this->varint3);
 		$this->putBool($this->isWilling);
 		$this->putEntityUniqueId($this->traderEid);
 		$this->putEntityUniqueId($this->playerEid);

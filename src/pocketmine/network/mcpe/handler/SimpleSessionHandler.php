@@ -46,6 +46,7 @@ use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
@@ -92,8 +93,8 @@ class SimpleSessionHandler extends SessionHandler{
 		return $this->player->handleMovePlayer($packet);
 	}
 
-	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
-		return $this->player->handleLevelSoundEvent($packet);
+	public function handleLevelSoundEventPacketV1(LevelSoundEventPacketV1 $packet) : bool{
+		return true; //useless leftover from 1.8
 	}
 
 	public function handleEntityEvent(EntityEventPacket $packet) : bool{
@@ -237,6 +238,13 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleInteract(InteractPacket $packet) : bool{
+		if($packet->action === InteractPacket::ACTION_MOUSEOVER and $packet->target === 0){
+			//TODO HACK: silence useless spam (MCPE 1.8)
+			//this packet is EXPECTED to only be sent when interacting with an entity, but due to some messy Mojang
+			//hacks, it also sends it when changing the held item now, which causes us to think the inventory was closed
+			//when it wasn't.
+			return true;
+		}
 		return false; //TODO
 	}
 
@@ -430,5 +438,9 @@ class SimpleSessionHandler extends SessionHandler{
 
 	public function handleLabTable(LabTablePacket $packet) : bool{
 		return false; //TODO
+	}
+
+	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
+		return $this->player->handleLevelSoundEvent($packet);
 	}
 }
