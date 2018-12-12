@@ -118,6 +118,8 @@ class NetworkInventoryAction{
 						break;
 				}
 				break;
+			default:
+				throw new \UnexpectedValueException("Unknown inventory action source type $this->sourceType");
 		}
 
 		$this->inventorySlot = $packet->getUnsignedVarInt();
@@ -145,6 +147,8 @@ class NetworkInventoryAction{
 			case self::SOURCE_TODO:
 				$packet->putVarInt($this->windowId);
 				break;
+			default:
+				throw new \UnexpectedValueException("Unknown inventory action source type $this->sourceType");
 		}
 
 		$packet->putUnsignedVarInt($this->inventorySlot);
