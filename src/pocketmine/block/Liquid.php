@@ -28,9 +28,9 @@ use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\level\sound\FizzSound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 abstract class Liquid extends Transparent{
 
@@ -435,8 +435,7 @@ abstract class Liquid extends Transparent{
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->level->setBlock($this, $ev->getNewState(), true, true);
-			//TODO: recheck this (it doesn't work in MCPE 1.8)
-			$this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_FIZZ, (int) ((2.6 + (lcg_value() - lcg_value()) * 0.8) * 1000));
+			$this->level->addSound(new FizzSound($this->add(0.5, 0.5, 0.5), 2.6 + (lcg_value() - lcg_value()) * 0.8));
 		}
 		return true;
 	}
