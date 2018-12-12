@@ -249,7 +249,7 @@ class LevelSoundEventPacket extends DataPacket{
 	/** @var Vector3 */
 	public $position;
 	/** @var int */
-	public $extraData = 0;
+	public $extraData = -1;
 	/** @var string */
 	public $entityType = ":"; //???
 	/** @var bool */
