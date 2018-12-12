@@ -81,7 +81,7 @@ class NetworkInventoryAction{
 	/** @var int */
 	public $sourceType;
 	/** @var int */
-	public $windowId = ContainerIds::NONE;
+	public $windowId;
 	/** @var int */
 	public $sourceFlags = 0;
 	/** @var int */
