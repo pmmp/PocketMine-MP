@@ -36,6 +36,7 @@ class NetworkInventoryAction{
 
 	public const SOURCE_WORLD = 2; //drop/pickup item entity
 	public const SOURCE_CREATIVE = 3;
+	public const SOURCE_CRAFTING_GRID = 100;
 	public const SOURCE_TODO = 99999;
 
 	/**
@@ -107,6 +108,7 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
+			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				$this->windowId = $packet->getVarInt();
 				switch($this->windowId){
@@ -144,6 +146,7 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
+			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				$packet->putVarInt($this->windowId);
 				break;
@@ -190,27 +193,17 @@ class NetworkInventoryAction{
 				}
 
 				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
+			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				//These types need special handling.
 				switch($this->windowId){
 					case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
 					case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
-						$window = $player->getCraftingGrid();
-						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS: //TODO: this type applies to all fake windows, not just crafting
+						return new SlotChangeAction($player->getCraftingGrid(), $this->inventorySlot, $this->oldItem, $this->newItem);
 					case self::SOURCE_TYPE_CRAFTING_RESULT:
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						return null;
-
-					case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS:
-						//TODO: this type applies to all fake windows, not just crafting
-						$window = $player->getCraftingGrid();
-
-						//DROP_CONTENTS doesn't bother telling us what slot the item is in, so we find it ourselves
-						$inventorySlot = $window->first($this->oldItem, true);
-						if($inventorySlot === -1){
-							throw new \InvalidStateException("Fake container " . get_class($window) . " for " . $player->getName() . " does not contain $this->oldItem");
-						}
-						return new SlotChangeAction($window, $inventorySlot, $this->oldItem, $this->newItem);
 				}
 
 				//TODO: more stuff
