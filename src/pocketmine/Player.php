@@ -278,7 +278,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int */
 	protected $spawnThreshold;
 	/** @var int */
-	protected $chunkLoadCount = 0;
+	protected $spawnChunkLoadCount = 0;
 	/** @var int */
 	protected $chunksPerTick;
 
@@ -964,8 +964,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
-		$this->chunkLoadCount++;
-
 		$this->dataPacket($payload);
 
 		if($this->spawned){
@@ -976,8 +974,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 		}
 
-		if($this->chunkLoadCount >= $this->spawnThreshold and !$this->spawned){
-			$this->doFirstSpawn();
+		if($this->spawnChunkLoadCount !== -1 and ++$this->spawnChunkLoadCount >= $this->spawnThreshold){
+			$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
+			$this->spawnChunkLoadCount = -1;
 		}
 	}
 
@@ -1015,10 +1014,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		Timings::$playerChunkSendTimer->stopTiming();
 	}
 
-	protected function doFirstSpawn(){
+	public function doFirstSpawn(){
+		if($this->spawned){
+			return; //avoid player spawning twice (this can only happen on 3.x with a custom malicious client)
+		}
 		$this->spawned = true;
-
-		$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
 
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);

@@ -59,6 +59,7 @@ use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
+use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
@@ -280,6 +281,11 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
 		return false; //TODO: GUI stuff
+	}
+
+	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
+		$this->player->doFirstSpawn();
+		return true;
 	}
 
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
