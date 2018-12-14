@@ -455,13 +455,14 @@ class Level implements ChunkManager, Metadatable{
 		if(!is_array($pk)){
 			$pk = [$pk];
 		}
-
-		if($players === null){
-			foreach($pk as $e){
-				$this->broadcastPacketToViewers($sound, $e);
+		if(!empty($pk)){
+			if($players === null){
+				foreach($pk as $e){
+					$this->broadcastPacketToViewers($sound, $e);
+				}
+			}else{
+				$this->server->broadcastPackets($players, $pk);
 			}
-		}else{
-			$this->server->broadcastPackets($players, $pk);
 		}
 	}
 
@@ -470,13 +471,14 @@ class Level implements ChunkManager, Metadatable{
 		if(!is_array($pk)){
 			$pk = [$pk];
 		}
-
-		if($players === null){
-			foreach($pk as $e){
-				$this->broadcastPacketToViewers($particle, $e);
+		if(!empty($pk)){
+			if($players === null){
+				foreach($pk as $e){
+					$this->broadcastPacketToViewers($particle, $e);
+				}
+			}else{
+				$this->server->broadcastPackets($players, $pk);
 			}
-		}else{
-			$this->server->broadcastPackets($players, $pk);
 		}
 	}
 

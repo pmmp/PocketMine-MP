@@ -629,6 +629,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param float $value
 	 */
 	public function setScale(float $value) : void{
+		if($value <= 0){
+			throw new \InvalidArgumentException("Scale must be greater than 0");
+		}
 		$multiplier = $value / $this->getScale();
 
 		$this->width *= $multiplier;

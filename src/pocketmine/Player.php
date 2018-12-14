@@ -230,7 +230,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int */
 	protected $spawnThreshold;
 	/** @var int */
-	protected $chunkLoadCount = 0;
+	protected $spawnChunkLoadCount = 0;
 	/** @var int */
 	protected $chunksPerTick;
 
@@ -904,7 +904,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
-		$this->chunkLoadCount++;
 
 		$this->networkSession->queueCompressed($promise);
 
@@ -914,7 +913,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$entity->spawnTo($this);
 				}
 			}
-		}elseif($this->chunkLoadCount >= $this->spawnThreshold){
+		}elseif(++$this->spawnChunkLoadCount >= $this->spawnThreshold){
+			$this->spawnChunkLoadCount = -1;
 			$this->spawned = true;
 
 			foreach($this->usedChunks as $index => $c){
