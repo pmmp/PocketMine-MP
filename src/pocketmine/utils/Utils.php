@@ -538,6 +538,7 @@ class Utils{
 				$e = new \Exception();
 				$trace = $e->getTrace();
 			}
+			++$start; //skip this frame
 		}
 
 		$messages = [];
