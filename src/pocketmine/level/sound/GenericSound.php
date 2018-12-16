@@ -33,8 +33,7 @@ class GenericSound extends Sound{
 	/** @var float */
 	protected $pitch = 0;
 
-	public function __construct(Vector3 $pos, int $id, float $pitch = 0){
-		parent::__construct($pos->x, $pos->y, $pos->z);
+	public function __construct(int $id, float $pitch = 0){
 		$this->id = $id;
 		$this->pitch = $pitch * 1000;
 	}
@@ -47,10 +46,10 @@ class GenericSound extends Sound{
 		$this->pitch = $pitch * 1000;
 	}
 
-	public function encode(){
+	public function encode(Vector3 $pos){
 		$pk = new LevelEventPacket;
 		$pk->evid = $this->id;
-		$pk->position = $this->asVector3();
+		$pk->position = $pos;
 		$pk->data = (int) $this->pitch;
 
 		return $pk;

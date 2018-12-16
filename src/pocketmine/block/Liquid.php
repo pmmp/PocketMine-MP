@@ -476,7 +476,7 @@ abstract class Liquid extends Transparent{
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->level->setBlock($this, $ev->getNewState());
-			$this->level->addSound(new FizzSound($this->add(0.5, 0.5, 0.5), 2.6 + (lcg_value() - lcg_value()) * 0.8));
+			$this->level->addSound($this->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
 		}
 		return true;
 	}

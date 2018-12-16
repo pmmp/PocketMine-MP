@@ -60,9 +60,9 @@ class EnderPearl extends Throwable{
 			//TODO: spawn endermites at origin
 
 			$this->level->broadcastLevelEvent($owner, LevelEventPacket::EVENT_PARTICLE_ENDERMAN_TELEPORT);
-			$this->level->addSound(new EndermanTeleportSound($owner));
-			$owner->teleport($event->getRayTraceResult()->getHitVector());
-			$this->level->addSound(new EndermanTeleportSound($owner));
+			$this->level->addSound($owner, new EndermanTeleportSound());
+			$owner->teleport($target = $event->getRayTraceResult()->getHitVector());
+			$this->level->addSound($target, new EndermanTeleportSound());
 
 			$owner->attack(new EntityDamageEvent($owner, EntityDamageEvent::CAUSE_FALL, 5));
 		}

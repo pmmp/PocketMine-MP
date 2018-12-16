@@ -23,11 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\level\sound;
 
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class AnvilFallSound extends GenericSound{
-	public function __construct(Vector3 $pos, float $pitch = 0){
-		parent::__construct($pos, LevelEventPacket::EVENT_SOUND_ANVIL_FALL, $pitch);
+	public function __construct(float $pitch = 0){
+		parent::__construct(LevelEventPacket::EVENT_SOUND_ANVIL_FALL, $pitch);
 	}
 }

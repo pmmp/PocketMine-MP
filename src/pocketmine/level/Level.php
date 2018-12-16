@@ -450,15 +450,15 @@ class Level implements ChunkManager, Metadatable{
 		$this->closed = true;
 	}
 
-	public function addSound(Sound $sound, array $players = null){
-		$pk = $sound->encode();
+	public function addSound(Vector3 $pos, Sound $sound, array $players = null){
+		$pk = $sound->encode($pos);
 		if(!is_array($pk)){
 			$pk = [$pk];
 		}
 		if(!empty($pk)){
 			if($players === null){
 				foreach($pk as $e){
-					$this->broadcastPacketToViewers($sound, $e);
+					$this->broadcastPacketToViewers($pos, $e);
 				}
 			}else{
 				$this->server->broadcastPackets($players, $pk);

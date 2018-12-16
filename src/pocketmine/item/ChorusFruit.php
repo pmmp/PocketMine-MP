@@ -77,9 +77,9 @@ class ChorusFruit extends Food{
 			}
 
 			//Sounds are broadcasted at both source and destination
-			$level->addSound(new EndermanTeleportSound($consumer->asVector3()));
-			$consumer->teleport(new Vector3($x + 0.5, $y + 1, $z + 0.5));
-			$level->addSound(new EndermanTeleportSound($consumer->asVector3()));
+			$level->addSound($consumer->asVector3(), new EndermanTeleportSound());
+			$consumer->teleport($target = new Vector3($x + 0.5, $y + 1, $z + 0.5));
+			$level->addSound($target, new EndermanTeleportSound());
 
 			break;
 		}

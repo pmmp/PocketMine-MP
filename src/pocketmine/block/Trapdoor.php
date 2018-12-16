@@ -89,7 +89,7 @@ class Trapdoor extends Transparent{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		$this->open = !$this->open;
 		$this->level->setBlock($this, $this);
-		$this->level->addSound(new DoorSound($this));
+		$this->level->addSound($this, new DoorSound());
 		return true;
 	}
 
