@@ -31,7 +31,7 @@ class Snowball extends Throwable{
 
 	protected function onHit(ProjectileHitEvent $event) : void{
 		for($i = 0; $i < 6; ++$i){
-			$this->level->addParticle(new SnowballPoofParticle($this));
+			$this->level->addParticle($this, new SnowballPoofParticle());
 		}
 	}
 }

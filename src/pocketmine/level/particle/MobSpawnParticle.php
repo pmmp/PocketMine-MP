@@ -32,16 +32,15 @@ class MobSpawnParticle extends Particle{
 	/** @var int */
 	protected $height;
 
-	public function __construct(Vector3 $pos, int $width = 0, int $height = 0){
-		parent::__construct($pos->x, $pos->y, $pos->z);
+	public function __construct(int $width = 0, int $height = 0){
 		$this->width = $width;
 		$this->height = $height;
 	}
 
-	public function encode(){
+	public function encode(Vector3 $pos){
 		$pk = new LevelEventPacket;
 		$pk->evid = LevelEventPacket::EVENT_PARTICLE_SPAWN;
-		$pk->position = $this->asVector3();
+		$pk->position = $pos;
 		$pk->data = ($this->width & 0xff) + (($this->height & 0xff) << 8);
 
 		return $pk;

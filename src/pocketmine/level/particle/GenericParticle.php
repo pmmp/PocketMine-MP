@@ -32,16 +32,15 @@ class GenericParticle extends Particle{
 	/** @var int */
 	protected $data;
 
-	public function __construct(Vector3 $pos, int $id, int $data = 0){
-		parent::__construct($pos->x, $pos->y, $pos->z);
+	public function __construct(int $id, int $data = 0){
 		$this->id = $id & 0xFFF;
 		$this->data = $data;
 	}
 
-	public function encode(){
+	public function encode(Vector3 $pos){
 		$pk = new LevelEventPacket;
 		$pk->evid = LevelEventPacket::EVENT_ADD_PARTICLE_MASK | $this->id;
-		$pk->position = $this->asVector3();
+		$pk->position = $pos;
 		$pk->data = $this->data;
 
 		return $pk;

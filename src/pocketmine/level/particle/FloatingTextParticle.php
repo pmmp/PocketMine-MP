@@ -43,12 +43,10 @@ class FloatingTextParticle extends Particle{
 	protected $invisible = false;
 
 	/**
-	 * @param Vector3 $pos
-	 * @param string  $text
-	 * @param string  $title
+	 * @param string $text
+	 * @param string $title
 	 */
-	public function __construct(Vector3 $pos, string $text, string $title = ""){
-		parent::__construct($pos->x, $pos->y, $pos->z);
+	public function __construct(string $text, string $title = ""){
 		$this->text = $text;
 		$this->title = $title;
 	}
@@ -77,7 +75,7 @@ class FloatingTextParticle extends Particle{
 		$this->invisible = $value;
 	}
 
-	public function encode(){
+	public function encode(Vector3 $pos){
 		$p = [];
 
 		if($this->entityId === null){
@@ -102,7 +100,7 @@ class FloatingTextParticle extends Particle{
 			$pk->uuid = $uuid;
 			$pk->username = $name;
 			$pk->entityRuntimeId = $this->entityId;
-			$pk->position = $this->asVector3(); //TODO: check offset
+			$pk->position = $pos; //TODO: check offset
 			$pk->item = ItemFactory::get(Item::AIR, 0, 0);
 
 			$flags = (

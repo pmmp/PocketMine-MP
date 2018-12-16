@@ -466,15 +466,15 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
-	public function addParticle(Particle $particle, array $players = null){
-		$pk = $particle->encode();
+	public function addParticle(Vector3 $pos, Particle $particle, array $players = null){
+		$pk = $particle->encode($pos);
 		if(!is_array($pk)){
 			$pk = [$pk];
 		}
 		if(!empty($pk)){
 			if($players === null){
 				foreach($pk as $e){
-					$this->broadcastPacketToViewers($particle, $e);
+					$this->broadcastPacketToViewers($pos, $e);
 				}
 			}else{
 				$this->server->broadcastPackets($players, $pk);
@@ -1761,7 +1761,7 @@ class Level implements ChunkManager, Metadatable{
 
 	private function destroyBlockInternal(Block $target, Item $item, ?Player $player = null, bool $createParticles = false) : void{
 		if($createParticles){
-			$this->addParticle(new DestroyBlockParticle($target->add(0.5, 0.5, 0.5), $target));
+			$this->addParticle($target->add(0.5, 0.5, 0.5), new DestroyBlockParticle($target));
 		}
 
 		$target->onBreak($item, $player);

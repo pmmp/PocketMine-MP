@@ -24,10 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\level\particle;
 
 use pocketmine\block\Block;
-use pocketmine\math\Vector3;
 
 class TerrainParticle extends GenericParticle{
-	public function __construct(Vector3 $pos, Block $b){
-		parent::__construct($pos, Particle::TYPE_TERRAIN, $b->getRuntimeId());
+	public function __construct(Block $b){
+		parent::__construct(Particle::TYPE_TERRAIN, $b->getRuntimeId());
 	}
 }

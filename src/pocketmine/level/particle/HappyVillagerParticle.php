@@ -23,10 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\level\particle;
 
-use pocketmine\math\Vector3;
-
 class HappyVillagerParticle extends GenericParticle{
-	public function __construct(Vector3 $pos){
-		parent::__construct($pos, Particle::TYPE_VILLAGER_HAPPY);
+	public function __construct(){
+		parent::__construct(Particle::TYPE_VILLAGER_HAPPY);
 	}
 }

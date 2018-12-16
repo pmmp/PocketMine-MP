@@ -256,7 +256,7 @@ class Explosion{
 		$pk->records = $send;
 		$this->level->broadcastPacketToViewers($source, $pk);
 
-		$this->level->addParticle(new HugeExplodeSeedParticle($source));
+		$this->level->addParticle($source, new HugeExplodeSeedParticle());
 		$this->level->broadcastLevelSoundEvent($source, LevelSoundEventPacket::SOUND_EXPLODE);
 
 		return true;

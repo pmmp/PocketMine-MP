@@ -32,15 +32,14 @@ class DestroyBlockParticle extends Particle{
 	/** @var int */
 	protected $data;
 
-	public function __construct(Vector3 $pos, Block $b){
-		parent::__construct($pos->x, $pos->y, $pos->z);
+	public function __construct(Block $b){
 		$this->data = $b->getRuntimeId();
 	}
 
-	public function encode(){
+	public function encode(Vector3 $pos){
 		$pk = new LevelEventPacket;
 		$pk->evid = LevelEventPacket::EVENT_PARTICLE_DESTROY;
-		$pk->position = $this->asVector3();
+		$pk->position = $pos;
 		$pk->data = $this->data;
 
 		return $pk;

@@ -26,7 +26,7 @@ namespace pocketmine\level\particle;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\DataPacket;
 
-abstract class Particle extends Vector3{
+abstract class Particle{
 
 	public const TYPE_BUBBLE = 1;
 	public const TYPE_CRITICAL = 2;
@@ -74,8 +74,10 @@ abstract class Particle extends Vector3{
 	public const TYPE_FOOD = 44;
 
 	/**
+	 * @param Vector3 $pos
+	 *
 	 * @return DataPacket|DataPacket[]
 	 */
-	abstract public function encode();
+	abstract public function encode(Vector3 $pos);
 
 }
