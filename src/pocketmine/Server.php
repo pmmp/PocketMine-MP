@@ -2241,7 +2241,7 @@ class Server{
 			"fullFile" => $e->getFile(),
 			"file" => $errfile,
 			"line" => $errline,
-			"trace" => Utils::printableTrace($trace)
+			"trace" => $trace
 		];
 
 		global $lastExceptionError, $lastError;
