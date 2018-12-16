@@ -29,6 +29,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\level\Level;
 use pocketmine\level\particle\AngryVillagerParticle;
 use pocketmine\level\particle\BlockForceFieldParticle;
 use pocketmine\level\particle\BubbleParticle;
@@ -84,13 +85,17 @@ class ParticleCommand extends VanillaCommand{
 
 		if($sender instanceof Player){
 			$level = $sender->getLevel();
+			$pos = new Vector3(
+				$this->getRelativeDouble($sender->getX(), $sender, $args[1]),
+				$this->getRelativeDouble($sender->getY(), $sender, $args[2], 0, Level::Y_MAX),
+				$this->getRelativeDouble($sender->getZ(), $sender, $args[3])
+			);
 		}else{
 			$level = $sender->getServer()->getDefaultLevel();
+			$pos = new Vector3((float) $args[1], (float) $args[2], (float) $args[3]);
 		}
 
 		$name = strtolower($args[0]);
-
-		$pos = new Vector3((float) $args[1], (float) $args[2], (float) $args[3]);
 
 		$xd = (float) $args[4];
 		$yd = (float) $args[5];
