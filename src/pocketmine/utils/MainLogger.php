@@ -210,7 +210,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		$errfile = Utils::cleanPath($errfile);
 
 		$message = get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
-		$stack = Utils::getTrace(0, $trace);
+		$stack = Utils::printableTrace($trace);
 
 		$this->synchronized(function() use ($type, $message, $stack) : void{
 			$this->log($type, $message);
