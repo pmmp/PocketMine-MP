@@ -242,7 +242,48 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_CONVERT_TO_DROWNED = 211;
 	public const SOUND_BUCKET_FILL_FISH = 212;
 	public const SOUND_BUCKET_EMPTY_FISH = 213;
-	public const SOUND_UNDEFINED = 214;
+	public const SOUND_BUBBLE_UP = 214;
+	public const SOUND_BUBBLE_DOWN = 215;
+	public const SOUND_BUBBLE_POP = 216;
+	public const SOUND_BUBBLE_UPINSIDE = 217;
+	public const SOUND_BUBBLE_DOWNINSIDE = 218;
+	public const SOUND_HURT_BABY = 219;
+	public const SOUND_DEATH_BABY = 220;
+	public const SOUND_STEP_BABY = 221;
+
+	public const SOUND_BORN = 223;
+	public const SOUND_BLOCK_TURTLE_EGG_BREAK = 224;
+	public const SOUND_BLOCK_TURTLE_EGG_CRACK = 225;
+	public const SOUND_BLOCK_TURTLE_EGG_HATCH = 226;
+
+	public const SOUND_BLOCK_TURTLE_EGG_ATTACK = 228;
+	public const SOUND_BEACON_ACTIVATE = 229;
+	public const SOUND_BEACON_AMBIENT = 230;
+	public const SOUND_BEACON_DEACTIVATE = 231;
+	public const SOUND_BEACON_POWER = 232;
+	public const SOUND_CONDUIT_ACTIVATE = 233;
+	public const SOUND_CONDUIT_AMBIENT = 234;
+	public const SOUND_CONDUIT_ATTACK = 235;
+	public const SOUND_CONDUIT_DEACTIVATE = 236;
+	public const SOUND_CONDUIT_SHORT = 237;
+	public const SOUND_SWOOP = 238;
+	public const SOUND_BLOCK_BAMBOO_SAPLING_PLACE = 239;
+	public const SOUND_PRESNEEZE = 240;
+	public const SOUND_SNEEZE = 241;
+	public const SOUND_AMBIENT_TAME = 242;
+	public const SOUND_SCARED = 243;
+	public const SOUND_BLOCK_SCAFFOLDING_CLIMB = 244;
+	public const SOUND_CROSSBOW_LOADING_START = 245;
+	public const SOUND_CROSSBOW_LOADING_MIDDLE = 246;
+	public const SOUND_CROSSBOW_LOADING_END = 247;
+	public const SOUND_CROSSBOW_SHOOT = 248;
+	public const SOUND_CROSSBOW_QUICK_CHARGE_START = 249;
+	public const SOUND_CROSSBOW_QUICK_CHARGE_MIDDLE = 250;
+	public const SOUND_CROSSBOW_QUICK_CHARGE_END = 251;
+	public const SOUND_AMBIENT_AGGRESSIVE = 252;
+	public const SOUND_AMBIENT_WORRIED = 253;
+	public const SOUND_CANT_BREED = 254;
+	public const SOUND_UNDEFINED = 255;
 
 	/** @var int */
 	public $sound;
