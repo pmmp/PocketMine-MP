@@ -175,6 +175,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_SCORE_TAG = 83; //string
 	public const DATA_BALLOON_ATTACHED_ENTITY = 84; //int64, entity unique ID of owner
 	public const DATA_PUFFERFISH_SIZE = 85; //byte
+	public const DATA_BOAT_BUBBLE_TIME = 86; //int (time in bubble column)
+	public const DATA_PLAYER_AGENT_EID = 87; //long
+	/* 88 (float) related to panda sitting
+	 * 89 (float) related to panda sitting
+	 * 90 (unknown) */
+	public const DATA_FLAGS2 = 91; //long (extended data flags)
+	/* 92 (float) related to panda lying down
+	 * 93 (float) related to panda lying down */
 
 
 	public const DATA_FLAG_ONFIRE = 0;
@@ -231,13 +239,23 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_FLAG_ENCHANTED = 51;
 	public const DATA_FLAG_SHOW_TRIDENT_ROPE = 52; // tridents show an animated rope when enchanted with loyalty after they are thrown and return to their owner. To be combined with DATA_OWNER_EID
 	public const DATA_FLAG_CONTAINER_PRIVATE = 53; //inventory is private, doesn't drop contents when killed if true
-	//54 TransformationComponent
+	public const DATA_FLAG_TRANSFORMING = 54;
 	public const DATA_FLAG_SPIN_ATTACK = 55;
 	public const DATA_FLAG_SWIMMING = 56;
 	public const DATA_FLAG_BRIBED = 57; //dolphins have this set when they go to find treasure for the player
 	public const DATA_FLAG_PREGNANT = 58;
 	public const DATA_FLAG_LAYING_EGG = 59;
-	//60 ??
+	public const DATA_FLAG_RIDER_CAN_PICK = 60; //???
+	public const DATA_FLAG_TRANSITION_SITTING = 61;
+	public const DATA_FLAG_EATING = 62;
+	public const DATA_FLAG_LAYING_DOWN = 63;
+	public const DATA_FLAG_SNEEZING = 64;
+	public const DATA_FLAG_TRUSTING = 65;
+	public const DATA_FLAG_ROLLING = 66;
+	public const DATA_FLAG_SCARED = 67;
+	public const DATA_FLAG_IN_SCAFFOLDING = 68;
+	public const DATA_FLAG_OVER_SCAFFOLDING = 69;
+	public const DATA_FLAG_FALL_THROUGH_SCAFFOLDING = 70;
 
 	public static $entityCount = 1;
 	/** @var Entity[] */
@@ -2081,7 +2099,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @return bool
 	 */
 	public function getGenericFlag(int $flagId) : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, $flagId);
+		return $this->getDataFlag($flagId >= 64 ? self::DATA_FLAGS2 : self::DATA_FLAGS, $flagId % 64);
 	}
 
 	/**
@@ -2091,7 +2109,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param bool $value
 	 */
 	public function setGenericFlag(int $flagId, bool $value = true) : void{
-		$this->setDataFlag(self::DATA_FLAGS, $flagId, $value, self::DATA_TYPE_LONG);
+		$this->setDataFlag($flagId >= 64 ? self::DATA_FLAGS2 : self::DATA_FLAGS, $flagId % 64, $value, self::DATA_TYPE_LONG);
 	}
 
 	/**
