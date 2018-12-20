@@ -1,0 +1,138 @@
+pocketmine:
+  description: Allows using all PocketMine commands and utilities
+  children:
+    .broadcast:
+      description: Allows the user to receive all broadcast messages
+      children:
+        .admin:
+          description: Allows the user to receive administrative broadcasts
+        .user:
+          description: Allows the user to receive user broadcasts
+          default: true
+    .spawnprotect.bypass:
+      description: Allows the user to edit blocks within the protected spawn radius
+    .command:
+      description: Allows using all PocketMine commands
+      children:
+        .whitelist:
+          description: Allows the user to modify the server whitelist
+          children:
+            .add:
+              description: Allows the user to add a player to the server whitelist
+            .remove:
+              description: Allows the user to remove a player to the server whitelist
+            .reload:
+              description: Allows the user to reload the server whitelist
+            .enable:
+              description: Allows the user to enable the server whitelist
+            .disable:
+              description: Allows the user to disable the server whitelist
+            .list:
+              description: Allows the user to list all the players on the server whitelist
+        .ban:
+          description: Allows the user to ban people
+          children:
+            .player:
+              description: Allows the user to ban players
+            .ip:
+              description: Allows the user to ban IP addresses
+        .unban:
+          description: Allows the user to unban people
+          children:
+            .player:
+              description: Allows the user to unban players
+            .ip:
+              description: Allows the user to unban IP addresses
+        .op:
+          description: Allows the user to change operators
+          children:
+            .give:
+              description: Allows the user to give a player's operator status
+            .take:
+              description: Allows the user to take a player's operator status
+        .save:
+          description: Allows the user to save the worlds
+          children:
+            .enable:
+              description: Allows the user to enable automatic saving
+            .disable:
+              description: Allows the user to disable automatic saving
+            .perform:
+              description: Allows the user to perform a manual save
+        .time:
+          description: Allows the user to alter the time
+          children:
+            .add:
+              description: Allows the user to fast-forward time
+            .set:
+              description: Allows the user to change the time
+            .start:
+              description: Allows the user to restart the time
+            .stop:
+              description: Allows the user to stop the time
+            .query:
+              description: Allows the user query the time
+        .kill:
+          description: Allows the user to kill players
+          children:
+            .self:
+              description: Allows the user to commit suicide
+              default: true
+            .other:
+              description: Allows the user to kill other players
+        .me:
+          description: Allows the user to perform a chat action
+          default: true
+        .tell:
+          description: Allows the user to privately message another player
+          default: true
+        .say:
+          description: Allows the user to talk as the console
+        .give:
+          description: Allows the user to give items to players
+        .effect:
+          description: Allows the user to give/take potion effects
+        .enchant:
+          description: Allows the user to enchant items
+        .particle:
+          description: Allows the user to create particle effects
+        .teleport:
+          description: Allows the user to teleport players
+        .kick:
+          description: Allows the user to kick players
+        .stop:
+          description: Allows the user to stop the server
+        .list:
+          description: Allows the user to list all online players
+        .help:
+          description: Allows the user to view the help menu
+          default: true
+        .plugins:
+          description: Allows the user to view the list of plugins
+        .reload:
+          description: Allows the user to reload the server settings
+        .version:
+          description: Allows the user to view the version of the server
+          default: true
+        .gamemode:
+          description: Allows the user to change the gamemode of players
+        .defaultgamemode:
+          description: Allows the user to change the default gamemode
+        .seed:
+          description: Allows the user to view the seed of the world
+        .status:
+          description: Allows the user to view the server performance
+        .gc:
+          description: Allows the user to fire garbage collection tasks
+        .dumpmemory:
+          description: Allows the user to dump memory contents
+        .timings:
+          description: Allows the user to records timings for all plugin events
+        .spawnpoint:
+          description: Allows the user to change player's spawnpoint
+        .setworldspawn:
+          description: Allows the user to change the world spawn
+        .transferserver:
+          description: Allows the user to transfer self to another server
+        .title:
+          description: Allows the user to send a title to the specified player
