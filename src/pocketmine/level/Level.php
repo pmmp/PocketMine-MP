@@ -2462,6 +2462,10 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->blockCache[$chunkHash]);
 		unset($this->chunkCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
+		if(isset($this->chunkSendTasks[$chunkHash])){ //invalidate pending caches
+			$this->chunkSendTasks[$chunkHash]->cancelRun();
+			unset($this->chunkSendTasks[$chunkHash]);
+		}
 		$chunk->setChanged();
 
 		if(!$this->isChunkInUse($chunkX, $chunkZ)){
