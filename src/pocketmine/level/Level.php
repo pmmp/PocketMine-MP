@@ -2441,7 +2441,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$chunkHash = Level::chunkHash($chunkX, $chunkZ);
 		$oldChunk = $this->getChunk($chunkX, $chunkZ, false);
-		if($oldChunk !== null){
+		if($oldChunk !== null and $oldChunk !== $chunk){
 			if($unload){
 				$this->unloadChunk($chunkX, $chunkZ, false, false);
 			}else{
