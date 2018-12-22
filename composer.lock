@@ -189,16 +189,16 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.1.1",
+            "version": "0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "54efeb978be0ff9335022729fe63c1e2077bf1be"
+                "reference": "2c1628f08a9cdeca4d3c682e13f24420944ca845"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/54efeb978be0ff9335022729fe63c1e2077bf1be",
-                "reference": "54efeb978be0ff9335022729fe63c1e2077bf1be",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/2c1628f08a9cdeca4d3c682e13f24420944ca845",
+                "reference": "2c1628f08a9cdeca4d3c682e13f24420944ca845",
                 "shasum": ""
             },
             "require": {
@@ -216,10 +216,10 @@
             ],
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
-                "source": "https://github.com/pmmp/BinaryUtils/tree/master",
+                "source": "https://github.com/pmmp/BinaryUtils/tree/0.1.2",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
-            "time": "2018-08-26T18:11:05+00:00"
+            "time": "2018-12-22T12:29:30+00:00"
         },
         {
             "name": "pocketmine/math",
