@@ -40,20 +40,14 @@ class ClosureTask extends Task{
 
 	/** @var \Closure */
 	private $closure;
-	/** @var \Closure|null */
-	private $cancel;
 
 	/**
 	 * @param \Closure $closure Must accept only ONE parameter, $currentTick
-	 * @param \Closure|null $cancel Will be called if the first argument will return false
+	 * @param bool     $cancelable
 	 */
-	public function __construct(\Closure $closure, ?\Closure $cancel = null){
-		Utils::validateCallableSignature(($nullable = $cancel === null) ? function(int $currentTick) : void{} : function(int $currentTick) : bool{ return true; }, $closure);
-		if(!$nullable){
-			Utils::validateCallableSignature(function() : void{}, $cancel);
-		}
+	public function __construct(\Closure $closure, bool $cancelable = false){
+		Utils::validateCallableSignature($cancelable ? function(int $currentTick) : bool{ return true; } : function(int $currentTick) : void{}, $closure);
 		$this->closure = $closure;
-		$this->cancel = $cancel;
 	}
 
 	public function getName() : string{
@@ -61,12 +55,8 @@ class ClosureTask extends Task{
 	}
 
 	public function onRun(int $currentTick){
-		if(($this->closure)($currentTick) === false && $this->cancel !== null){
+		if(($this->closure)($currentTick) === false){
 			$this->getHandler()->cancel();
 		}
-	}
-
-	public function onCancel(){
-		($this->cancel)();
 	}
 }
