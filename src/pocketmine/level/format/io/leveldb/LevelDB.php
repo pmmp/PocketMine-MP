@@ -283,6 +283,11 @@ class LevelDB extends BaseLevelProvider{
 		/** @var SubChunk[] $subChunks */
 		$subChunks = [];
 
+		/** @var int[] $heightMap */
+		$heightMap = [];
+		/** @var string $biomeIds */
+		$biomeIds = "";
+
 		/** @var bool $lightPopulated */
 		$lightPopulated = true;
 
@@ -325,10 +330,12 @@ class LevelDB extends BaseLevelProvider{
 					}
 				}
 
-				$binaryStream->setBuffer($this->db->get($index . self::TAG_DATA_2D), 0);
+				if(($maps2d = $this->db->get($index . self::TAG_DATA_2D)) !== false){
+					$binaryStream->setBuffer($maps2d, 0);
 
-				$heightMap = array_values(unpack("v*", $binaryStream->get(512)));
-				$biomeIds = $binaryStream->get(256);
+					$heightMap = array_values(unpack("v*", $binaryStream->get(512)));
+					$biomeIds = $binaryStream->get(256);
+				}
 				break;
 			case 2: // < MCPE 1.0
 				$binaryStream->setBuffer($this->db->get($index . self::TAG_LEGACY_TERRAIN));
