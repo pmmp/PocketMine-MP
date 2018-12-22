@@ -313,8 +313,8 @@ class Utils{
 							++$processors;
 						}
 					}
-				}else{
-					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim(@file_get_contents("/sys/devices/system/cpu/present")), $matches) > 0){
+				}elseif(is_readable("/sys/devices/system/cpu/present")){
+					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim(file_get_contents("/sys/devices/system/cpu/present")), $matches) > 0){
 						$processors = (int) ($matches[2] - $matches[1]);
 					}
 				}
