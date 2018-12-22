@@ -171,7 +171,7 @@ class Attribute{
 	}
 
 	public function resetToDefault() : void{
-		$this->setValue($this->getDefaultValue());
+		$this->setValue($this->getDefaultValue(), true);
 	}
 
 	public function getValue() : float{
