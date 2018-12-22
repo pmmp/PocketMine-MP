@@ -48,7 +48,7 @@ class ClosureTask extends Task{
 	 * @param \Closure|null $cancel Will be called if the first argument will return false
 	 */
 	public function __construct(\Closure $closure, ?\Closure $cancel = null){
-		Utils::validateCallableSignature(($nullable = is_null($cancel)) ? function(int $currentTick) : void{} : function(int $currentTick) : bool{ return true; }, $closure);
+		Utils::validateCallableSignature(($nullable = $cancel === null) ? function(int $currentTick) : void{} : function(int $currentTick) : bool{ return true; }, $closure);
 		if(!$nullable){
 			Utils::validateCallableSignature(function() : void{}, $cancel);
 		}
@@ -63,7 +63,10 @@ class ClosureTask extends Task{
 	public function onRun(int $currentTick){
 		if(($this->closure)($currentTick) === false && $this->cancel !== null){
 			$this->getHandler()->cancel();
-			($this->cancel)();
 		}
+	}
+
+	public function onCancel(){
+		($this->cancel)();
 	}
 }
