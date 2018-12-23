@@ -1732,7 +1732,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->setSkin($packet->skin);
 
 
-		$ev = new PlayerPreLoginEvent($this, "Plugin reason");
+		$ev = new PlayerPreLoginEvent($this, "Plugin reason", $this->server->requiresAuthentication());
 		$ev->call();
 		if($ev->isCancelled()){
 			$this->close("", $ev->getKickMessage());
@@ -1756,16 +1756,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if(!$packet->skipVerification){
-			$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($this, $packet, NetworkCipher::$ENABLED));
+			$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($this, $packet, $ev->isAuthRequired(), NetworkCipher::$ENABLED));
 		}else{
-			$this->setAuthenticationStatus(true, null);
+			$this->setAuthenticationStatus(false, false, null);
 			$this->networkSession->onLoginSuccess();
 		}
 
 		return true;
 	}
 
-	public function setAuthenticationStatus(bool $authenticated, ?string $error) : bool{
+	public function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error) : bool{
 		if($this->networkSession === null){
 			return false;
 		}
@@ -1783,7 +1783,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->authenticated = $authenticated;
 
 		if(!$this->authenticated){
-			if($this->server->requiresAuthentication() and $this->kick("disconnectionScreen.notAuthenticated", false)){ //use kick to allow plugins to cancel this
+			if($authRequired){
+				$this->close("", "disconnectionScreen.notAuthenticated");
 				return false;
 			}
 

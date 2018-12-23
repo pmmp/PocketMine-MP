@@ -59,6 +59,8 @@ class ProcessLoginTask extends AsyncTask{
 	 * root public key.
 	 */
 	private $authenticated = false;
+	/** @var bool */
+	private $authRequired;
 
 	/**
 	 * @var bool
@@ -74,9 +76,10 @@ class ProcessLoginTask extends AsyncTask{
 	/** @var string|null */
 	private $handshakeJwt = null;
 
-	public function __construct(Player $player, LoginPacket $packet, bool $useEncryption = true){
+	public function __construct(Player $player, LoginPacket $packet, bool $authRequired, bool $useEncryption = true){
 		$this->storeLocal($player);
 		$this->packet = $packet;
+		$this->authRequired = $authRequired;
 		$this->useEncryption = $useEncryption;
 		if($useEncryption){
 			if(self::$SERVER_PRIVATE_KEY === null){
@@ -220,7 +223,7 @@ class ProcessLoginTask extends AsyncTask{
 		$player = $this->fetchLocal();
 		if(!$player->isConnected()){
 			$this->worker->getLogger()->error("Player " . $player->getName() . " was disconnected before their login could be verified");
-		}elseif($player->setAuthenticationStatus($this->authenticated, $this->error)){
+		}elseif($player->setAuthenticationStatus($this->authenticated, $this->authRequired, $this->error)){
 			if(!$this->useEncryption){
 				$player->getNetworkSession()->onLoginSuccess();
 			}else{

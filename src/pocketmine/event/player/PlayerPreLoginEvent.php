@@ -42,14 +42,18 @@ use pocketmine\Player;
 class PlayerPreLoginEvent extends PlayerEvent implements Cancellable{
 	/** @var string */
 	protected $kickMessage;
+	/** @var bool */
+	protected $authRequired;
 
 	/**
 	 * @param Player $player
 	 * @param string $kickMessage
+	 * @param bool   $authRequired
 	 */
-	public function __construct(Player $player, string $kickMessage){
+	public function __construct(Player $player, string $kickMessage, bool $authRequired){
 		$this->player = $player;
 		$this->kickMessage = $kickMessage;
+		$this->authRequired = $authRequired;
 	}
 
 	/**
@@ -64,5 +68,19 @@ class PlayerPreLoginEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function getKickMessage() : string{
 		return $this->kickMessage;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isAuthRequired() : bool{
+		return $this->authRequired;
+	}
+
+	/**
+	 * @param bool $v
+	 */
+	public function setAuthRequired(bool $v) : void{
+		$this->authRequired = $v;
 	}
 }
