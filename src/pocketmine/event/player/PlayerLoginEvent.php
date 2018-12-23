@@ -27,7 +27,9 @@ use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 /**
- * Called when a player joins, after things have been correctly set up (you can change anything now)
+ * Called after the player has successfully authenticated, before it spawns. The player is on the loading screen when
+ * this is called.
+ * Cancelling this event will cause the player to be disconnected with the kick message set.
  */
 class PlayerLoginEvent extends PlayerEvent implements Cancellable{
 	/** @var string */
