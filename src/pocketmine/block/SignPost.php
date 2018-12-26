@@ -28,6 +28,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\tile\Sign as TileSign;
 use pocketmine\tile\Tile;
 
 class SignPost extends Transparent{
@@ -82,9 +83,7 @@ class SignPost extends Transparent{
 			}
 
 			if($ret){
-				if(($tile = Tile::createFromItem(Tile::SIGN, $this->getLevel(), $this->asVector3(), $item)) !== null){
-					$this->level->addTile($tile);
-				}
+				$this->level->addTile(Tile::createFromItem(TileSign::class, $this->getLevel(), $this->asVector3(), $item));
 				return true;
 			}
 		}

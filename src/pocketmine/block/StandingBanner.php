@@ -84,17 +84,16 @@ class StandingBanner extends Transparent{
 			}
 
 			if($ret){
-				$tile = Tile::createFromItem(Tile::BANNER, $this->getLevel(), $this->asVector3(), $item);
-				if($tile !== null){
-					if($tile instanceof TileBanner and $item instanceof ItemBanner){
-						$tile->setBaseColor($item->getBaseColor());
-						if(($patterns = $item->getPatterns()) !== null){
-							$tile->setPatterns($patterns);
-						}
+				/** @var TileBanner $tile */
+				$tile = Tile::createFromItem(TileBanner::class, $this->getLevel(), $this->asVector3(), $item);
+				if($item instanceof ItemBanner){
+					$tile->setBaseColor($item->getBaseColor());
+					if(($patterns = $item->getPatterns()) !== null){
+						$tile->setPatterns($patterns);
 					}
-
-					$this->level->addTile($tile);
 				}
+
+				$this->level->addTile($tile);
 				return true;
 			}
 		}

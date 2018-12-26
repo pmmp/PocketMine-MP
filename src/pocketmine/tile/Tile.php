@@ -44,23 +44,13 @@ abstract class Tile extends Position{
 	public const TAG_Y = "y";
 	public const TAG_Z = "z";
 
-	public const BANNER = "Banner";
-	public const BED = "Bed";
-	public const BREWING_STAND = "BrewingStand";
-	public const CHEST = "Chest";
-	public const ENCHANT_TABLE = "EnchantTable";
-	public const ENDER_CHEST = "EnderChest";
-	public const FLOWER_POT = "FlowerPot";
-	public const FURNACE = "Furnace";
-	public const ITEM_FRAME = "ItemFrame";
-	public const MOB_SPAWNER = "MobSpawner";
-	public const SIGN = "Sign";
-	public const SKULL = "Skull";
-
 	/** @var string[] classes that extend Tile */
 	private static $knownTiles = [];
 	/** @var string[][] */
 	private static $saveNames = [];
+
+	/** @var string[] base class => overridden class */
+	private static $classMapping = [];
 
 	/** @var string */
 	public $name = "";
@@ -70,16 +60,16 @@ abstract class Tile extends Position{
 	protected $timings;
 
 	public static function init(){
-		self::registerTile(Banner::class, [self::BANNER, "minecraft:banner"]);
-		self::registerTile(Bed::class, [self::BED, "minecraft:bed"]);
-		self::registerTile(Chest::class, [self::CHEST, "minecraft:chest"]);
-		self::registerTile(EnchantTable::class, [self::ENCHANT_TABLE, "minecraft:enchanting_table"]);
-		self::registerTile(EnderChest::class, [self::ENDER_CHEST, "minecraft:ender_chest"]);
-		self::registerTile(FlowerPot::class, [self::FLOWER_POT, "minecraft:flower_pot"]);
-		self::registerTile(Furnace::class, [self::FURNACE, "minecraft:furnace"]);
-		self::registerTile(ItemFrame::class, [self::ITEM_FRAME]); //this is an entity in PC
-		self::registerTile(Sign::class, [self::SIGN, "minecraft:sign"]);
-		self::registerTile(Skull::class, [self::SKULL, "minecraft:skull"]);
+		self::register(Banner::class, ["Banner", "minecraft:banner"]);
+		self::register(Bed::class, ["Bed", "minecraft:bed"]);
+		self::register(Chest::class, ["Chest", "minecraft:chest"]);
+		self::register(EnchantTable::class, ["EnchantTable", "minecraft:enchanting_table"]);
+		self::register(EnderChest::class, ["EnderChest", "minecraft:ender_chest"]);
+		self::register(FlowerPot::class, ["FlowerPot", "minecraft:flower_pot"]);
+		self::register(Furnace::class, ["Furnace", "minecraft:furnace"]);
+		self::register(ItemFrame::class, ["ItemFrame"]); //this is an entity in PC
+		self::register(Sign::class, ["Sign", "minecraft:sign"]);
+		self::register(Skull::class, ["Skull", "minecraft:skull"]);
 	}
 
 	/**
@@ -90,27 +80,32 @@ abstract class Tile extends Position{
 	 */
 	public static function createFromData(Level $level, CompoundTag $nbt) : ?Tile{
 		$type = $nbt->getString(self::TAG_ID, "", true);
-		if($type === ""){
+		if(!isset(self::$knownTiles[$type])){
 			return null;
 		}
-		$tile = self::create($type, $level, new Vector3($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z)));
-		if($tile !== null){
-			$tile->readSaveData($nbt);
-		}
+		$class = self::$knownTiles[$type];
+		assert(is_a($class, Tile::class, true));
+		/**
+		 * @var Tile $tile
+		 * @see Tile::__construct()
+		 */
+		$tile = new $class($level, new Vector3($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z)));
+		$tile->readSaveData($nbt);
 		return $tile;
 	}
 
 	/**
-	 * @param string  $type
+	 * @param string  $baseClass
 	 * @param Level   $level
 	 * @param Vector3 $pos
 	 * @param Item    $item
 	 *
-	 * @return Tile|null
+	 * @return Tile (instanceof $baseClass)
+	 * @throws \InvalidArgumentException if the base class is not a registered tile
 	 */
-	public static function createFromItem(string $type, Level $level, Vector3 $pos, Item $item) : ?Tile{
-		$tile = self::create($type, $level, $pos);
-		if($tile !== null and $item->hasCustomBlockData()){
+	public static function createFromItem(string $baseClass, Level $level, Vector3 $pos, Item $item) : Tile{
+		$tile = self::create($baseClass, $level, $pos);
+		if($item->hasCustomBlockData()){
 			$tile->readSaveData($item->getCustomBlockData());
 		}
 		if($tile instanceof Nameable and $item->hasCustomName()){ //this should take precedence over saved NBT
@@ -121,32 +116,13 @@ abstract class Tile extends Position{
 	}
 
 	/**
-	 * @param string  $type
-	 * @param Level   $level
-	 * @param Vector3 $pos
-	 *
-	 * @return Tile|null
-	 */
-	public static function create(string $type, Level $level, Vector3 $pos) : ?Tile{
-		if(isset(self::$knownTiles[$type])){
-			$class = self::$knownTiles[$type];
-			/**
-			 * @var Tile $tile
-			 * @see Tile::__construct()
-			 */
-			$tile = new $class($level, $pos);
-			return $tile;
-		}
-
-		return null;
-	}
-
-	/**
 	 * @param string   $className
 	 * @param string[] $saveNames
 	 */
-	public static function registerTile(string $className, array $saveNames = []) : void{
+	public static function register(string $className, array $saveNames = []) : void{
 		Utils::testValidInstance($className, Tile::class);
+
+		self::$classMapping[$className] = $className;
 
 		$shortName = (new \ReflectionClass($className))->getShortName();
 		if(!in_array($shortName, $saveNames, true)){
@@ -158,6 +134,44 @@ abstract class Tile extends Position{
 		}
 
 		self::$saveNames[$className] = $saveNames;
+	}
+
+	/**
+	 * @param string $baseClass Already-registered tile class to override
+	 * @param string $newClass Class which extends the base class
+	 *
+	 * @throws \InvalidArgumentException if the base class is not a registered tile
+	 */
+	public static function override(string $baseClass, string $newClass) : void{
+		if(!isset(self::$classMapping[$baseClass])){
+			throw new \InvalidArgumentException("Class $baseClass is not a registered tile");
+		}
+
+		Utils::testValidInstance($newClass, $baseClass);
+		self::$classMapping[$baseClass] = $newClass;
+	}
+
+	/**
+	 * @param string  $baseClass
+	 * @param Level   $level
+	 * @param Vector3 $pos
+	 *
+	 * @return Tile (will be an instanceof $baseClass)
+	 * @throws \InvalidArgumentException if the specified class is not a registered tile
+	 */
+	public static function create(string $baseClass, Level $level, Vector3 $pos) : Tile{
+		if(isset(self::$classMapping[$baseClass])){
+			$class = self::$classMapping[$baseClass];
+			assert(is_a($class, $baseClass, true));
+			/**
+			 * @var Tile $tile
+			 * @see Tile::__construct()
+			 */
+			$tile = new $class($level, $pos);
+			return $tile;
+		}
+
+		throw new \InvalidArgumentException("Class $baseClass is not a registered tile");
 	}
 
 	/**

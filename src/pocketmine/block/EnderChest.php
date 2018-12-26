@@ -66,9 +66,7 @@ class EnderChest extends Chest{
 		}
 
 		if(Block::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			if(($tile = Tile::createFromItem(Tile::ENDER_CHEST, $this->getLevel(), $this->asVector3(), $item)) !== null){
-				$this->level->addTile($tile);
-			}
+			$this->level->addTile(Tile::createFromItem(TileEnderChest::class, $this->getLevel(), $this->asVector3(), $item));
 			return true;
 		}
 

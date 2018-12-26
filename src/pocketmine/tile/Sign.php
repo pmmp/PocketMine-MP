@@ -125,10 +125,6 @@ class Sign extends Spawnable{
 	}
 
 	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
-		if($nbt->getString("id") !== Tile::SIGN){
-			return false;
-		}
-
 		if($nbt->hasTag(self::TAG_TEXT_BLOB, StringTag::class)){
 			$lines = array_pad(explode("\n", $nbt->getString(self::TAG_TEXT_BLOB)), 4, "");
 		}else{

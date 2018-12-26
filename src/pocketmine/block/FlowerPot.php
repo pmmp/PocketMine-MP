@@ -69,9 +69,7 @@ class FlowerPot extends Flowable{
 		}
 
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			if(($tile = Tile::createFromItem(Tile::FLOWER_POT, $this->getLevel(), $this->asVector3(), $item)) !== null){
-				$this->level->addTile($tile);
-			}
+			$this->level->addTile(Tile::createFromItem(TileFlowerPot::class, $this->getLevel(), $this->asVector3(), $item));
 			return true;
 		}
 
