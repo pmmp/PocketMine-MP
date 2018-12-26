@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\item\Banner as ItemBanner;
+use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -33,6 +35,7 @@ use pocketmine\nbt\tag\StringTag;
 class Banner extends Spawnable implements Nameable{
 	use NameableTrait {
 		addAdditionalSpawnData as addNameSpawnData;
+		copyDataFromItem as copyNameFromItem;
 	}
 
 	public const TAG_BASE = "Base";
@@ -125,6 +128,17 @@ class Banner extends Spawnable implements Nameable{
 		$nbt->setInt(self::TAG_BASE, $this->baseColor);
 		$nbt->setTag($this->patterns);
 		$this->addNameSpawnData($nbt);
+	}
+
+	protected function copyDataFromItem(Item $item) : void{
+		parent::copyDataFromItem($item);
+		$this->copyNameFromItem($item);
+		if($item instanceof ItemBanner){
+			$this->setBaseColor($item->getBaseColor());
+			if(($patterns = $item->getPatterns()) !== null){
+				$this->setPatterns($patterns);
+			}
+		}
 	}
 
 	/**

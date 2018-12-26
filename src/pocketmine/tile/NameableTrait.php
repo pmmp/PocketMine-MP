@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\item\Item;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 
@@ -78,6 +79,17 @@ trait NameableTrait{
 	protected function saveName(CompoundTag $tag) : void{
 		if($this->customName !== null){
 			$tag->setString(Nameable::TAG_CUSTOM_NAME, $this->customName);
+		}
+	}
+
+	/**
+	 * @param Item $item
+	 * @see Tile::copyDataFromItem()
+	 */
+	protected function copyDataFromItem(Item $item) : void{
+		parent::copyDataFromItem($item);
+		if($item->hasCustomName()){ //this should take precedence over saved NBT
+			$this->setName($item->getCustomName());
 		}
 	}
 }

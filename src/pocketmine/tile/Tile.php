@@ -105,12 +105,7 @@ abstract class Tile extends Position{
 	 */
 	public static function createFromItem(string $baseClass, Level $level, Vector3 $pos, Item $item) : Tile{
 		$tile = self::create($baseClass, $level, $pos);
-		if($item->hasCustomBlockData()){
-			$tile->readSaveData($item->getCustomBlockData());
-		}
-		if($tile instanceof Nameable and $item->hasCustomName()){ //this should take precedence over saved NBT
-			$tile->setName($item->getCustomName());
-		}
+		$tile->copyDataFromItem($item);
 
 		return $tile;
 	}
@@ -220,6 +215,12 @@ abstract class Tile extends Position{
 	public function getCleanedNBT() : ?CompoundTag{
 		$this->writeSaveData($tag = new CompoundTag());
 		return $tag->getCount() > 0 ? $tag : null;
+	}
+
+	protected function copyDataFromItem(Item $item) : void{
+		if($item->hasCustomBlockData()){ //TODO: check item root tag (MCPE doesn't use BlockEntityTag)
+			$this->readSaveData($item->getCustomBlockData());
+		}
 	}
 
 	/**
