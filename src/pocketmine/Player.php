@@ -1732,26 +1732,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->setSkin($packet->skin);
 
 
-		$ev = new PlayerPreLoginEvent($this, "Plugin reason", $this->server->requiresAuthentication());
+		$ev = new PlayerPreLoginEvent($this, $this->server->requiresAuthentication());
+		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers()){
+			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, "disconnectionScreen.serverFull");
+		}
+		if(!$this->server->isWhitelisted($this->username)){
+			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_WHITELISTED, "Server is whitelisted");
+		}
+		if($this->isBanned() or $this->server->getIPBans()->isBanned($this->getAddress())){
+			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_BANNED, "You are banned");
+		}
+
 		$ev->call();
-		if($ev->isCancelled()){
-			$this->close("", $ev->getKickMessage());
-
-			return true;
-		}
-
-		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
-			return true;
-		}
-
-		if(!$this->server->isWhitelisted($this->username) and $this->kick("Server is white-listed", false)){
-			return true;
-		}
-
-		if(
-			($this->isBanned() or $this->server->getIPBans()->isBanned($this->getAddress())) and
-			$this->kick("You are banned", false)
-		){
+		if(!$ev->isAllowed()){
+			$this->close("", $ev->getFinalKickMessage());
 			return true;
 		}
 

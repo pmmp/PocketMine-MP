@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 /**
@@ -39,35 +38,32 @@ use pocketmine\Player;
  * WARNING: Due to internal bad architecture, the player is not fully constructed at this stage, and errors might occur
  * when calling API methods on the player. Tread with caution.
  */
-class PlayerPreLoginEvent extends PlayerEvent implements Cancellable{
-	/** @var string */
-	protected $kickMessage;
+class PlayerPreLoginEvent extends PlayerEvent{
+	public const KICK_REASON_PLUGIN = 0;
+	public const KICK_REASON_SERVER_FULL = 1;
+	public const KICK_REASON_SERVER_WHITELISTED = 2;
+	public const KICK_REASON_BANNED = 3;
+
+	public const KICK_REASON_PRIORITY = [
+		self::KICK_REASON_PLUGIN, //Plugin reason should always take priority over anything else
+		self::KICK_REASON_SERVER_FULL,
+		self::KICK_REASON_SERVER_WHITELISTED,
+		self::KICK_REASON_BANNED
+	];
+
 	/** @var bool */
 	protected $authRequired;
 
+	/** @var string[] reason const => associated message */
+	protected $kickReasons = [];
+
 	/**
 	 * @param Player $player
-	 * @param string $kickMessage
 	 * @param bool   $authRequired
 	 */
-	public function __construct(Player $player, string $kickMessage, bool $authRequired){
+	public function __construct(Player $player, bool $authRequired){
 		$this->player = $player;
-		$this->kickMessage = $kickMessage;
 		$this->authRequired = $authRequired;
-	}
-
-	/**
-	 * @param string $kickMessage
-	 */
-	public function setKickMessage(string $kickMessage) : void{
-		$this->kickMessage = $kickMessage;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getKickMessage() : string{
-		return $this->kickMessage;
 	}
 
 	/**
@@ -82,5 +78,93 @@ class PlayerPreLoginEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function setAuthRequired(bool $v) : void{
 		$this->authRequired = $v;
+	}
+
+	/**
+	 * Returns an array of kick reasons currently assigned.
+	 *
+	 * @return int[]
+	 */
+	public function getKickReasons() : array{
+		return array_keys($this->kickReasons);
+	}
+
+	/**
+	 * Returns whether the given kick reason is set for this event.
+	 *
+	 * @param int $flag
+	 *
+	 * @return bool
+	 */
+	public function isKickReasonSet(int $flag) : bool{
+		return isset($this->kickReasons[$flag]);
+	}
+
+	/**
+	 * Sets a reason to disallow the player to continue continue authenticating, with a message.
+	 * This can also be used to change kick messages for already-set flags.
+	 *
+	 * @param int    $flag
+	 * @param string $message
+	 */
+	public function setKickReason(int $flag, string $message) : void{
+		$this->kickReasons[$flag] = $message;
+	}
+
+	/**
+	 * Clears a specific kick flag if it was set. This allows fine-tuned kick reason removal without impacting other
+	 * reasons (for example, a ban can be bypassed without accidentally allowing a player to join a full server).
+	 *
+	 * @param int $flag Specific flag to clear.
+	 */
+	public function clearKickReason(int $flag) : void{
+		unset($this->kickReasons[$flag]);
+	}
+
+	/**
+	 * Clears all pre-assigned kick reasons, allowing the player to continue logging in.
+	 */
+	public function clearAllKickReasons() : void{
+		$this->kickReasons = [];
+	}
+
+	/**
+	 * Returns whether the player is allowed to continue logging in.
+	 *
+	 * @return bool
+	 */
+	public function isAllowed() : bool{
+		return empty($this->kickReasons);
+	}
+
+	/**
+	 * Returns the kick message provided for the given kick flag, or null if not set.
+	 *
+	 * @param int $flag
+	 *
+	 * @return string|null
+	 */
+	public function getKickMessage(int $flag) : ?string{
+		return $this->kickReasons[$flag] ?? null;
+	}
+
+	/**
+	 * Returns the final kick message which will be shown on the disconnect screen.
+	 *
+	 * Note: Only one message (the highest priority one) will be shown. See priority order to decide how to set your
+	 * messages.
+	 *
+	 * @see PlayerPreLoginEvent::KICK_REASON_PRIORITY
+	 *
+	 * @return string
+	 */
+	public function getFinalKickMessage() : string{
+		foreach(self::KICK_REASON_PRIORITY as $p){
+			if(isset($this->kickReasons[$p])){
+				return $this->kickReasons[$p];
+			}
+		}
+
+		return "";
 	}
 }
