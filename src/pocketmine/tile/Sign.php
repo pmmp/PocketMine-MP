@@ -130,14 +130,9 @@ class Sign extends Spawnable{
 		}
 
 		if($nbt->hasTag(self::TAG_TEXT_BLOB, StringTag::class)){
-			$lines = array_pad(explode("\n", $nbt->getString(self::TAG_TEXT_BLOB)), 4, "");
+			$lines = array_slice(array_pad(explode("\n", $nbt->getString(self::TAG_TEXT_BLOB)), 4, ""), 0, 4);
 		}else{
-			$lines = [
-				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 1)),
-				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 2)),
-				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 3)),
-				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 4))
-			];
+			return false;
 		}
 
 		$removeFormat = $player->getRemoveFormat();
