@@ -33,6 +33,9 @@ use pocketmine\Player;
 abstract class Spawnable extends Tile{
 	/** @var string|null */
 	private $spawnCompoundCache = null;
+	/** @var bool */
+	private $dirty = true; //default dirty, until it's been spawned appropriately on the level
+
 	/** @var NetworkLittleEndianNBTStream|null */
 	private static $nbtWriter = null;
 
@@ -56,23 +59,30 @@ abstract class Spawnable extends Tile{
 		return true;
 	}
 
-	public function spawnToAll(){
-		if($this->closed){
-			return;
-		}
-
-		$this->level->broadcastPacketToViewers($this, $this->createSpawnPacket());
-	}
-
 	/**
-	 * Performs actions needed when the tile is modified, such as clearing caches and respawning the tile to players.
-	 * WARNING: This MUST be called to clear spawn-compound and chunk caches when the tile's spawn compound has changed!
+	 * Flags the tile as modified, so that updates will be broadcasted at the next available opportunity.
+	 * This MUST be called any time a change is made that players must be able to see.
 	 */
 	protected function onChanged() : void{
 		$this->spawnCompoundCache = null;
-		$this->spawnToAll();
+		$this->dirty = true;
+		$this->scheduleUpdate();
+	}
 
-		$this->level->clearChunkCache($this->getFloorX() >> 4, $this->getFloorZ() >> 4);
+	/**
+	 * Returns whether the tile needs to be respawned to viewers.
+	 *
+	 * @return bool
+	 */
+	public function isDirty() : bool{
+		return $this->dirty;
+	}
+
+	/**
+	 * @param bool $dirty
+	 */
+	public function setDirty(bool $dirty = true) : void{
+		$this->dirty = $dirty;
 	}
 
 	/**
