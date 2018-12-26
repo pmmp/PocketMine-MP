@@ -70,6 +70,15 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		$this->saveItems($nbt);
 	}
 
+	public function getCleanedNBT() : ?CompoundTag{
+		$tag = parent::getCleanedNBT();
+		if($tag !== null){
+			//TODO: replace this with a purpose flag on writeSaveData()
+			$tag->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
+		}
+		return $tag;
+	}
+
 	public function close() : void{
 		if(!$this->closed){
 			$this->inventory->removeAllViewers(true);
