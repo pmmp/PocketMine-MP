@@ -30,7 +30,8 @@
       "pocketmine/nbt": "^0.2.1",
       "pocketmine/math": "^0.2.0",
       "pocketmine/snooze": "^0.1.0",
-      "daverandom/callback-validator": "dev-master"
+      "daverandom/callback-validator": "dev-master",
+      "adhocore/json-comment": "^0.0.7"
    },
    "autoload": {
       "psr-4": {
