@@ -1052,7 +1052,7 @@ class Server{
 	 *
 	 * @return bool
 	 */
-	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = [], $backgroundGeneration = true) : bool{
+	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = [], bool $backgroundGeneration = true) : bool{
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
 			return false;
 		}
