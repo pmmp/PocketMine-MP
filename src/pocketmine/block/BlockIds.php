@@ -61,7 +61,7 @@ interface BlockIds{
 	public const PISTON = 33;
 	public const PISTONARMCOLLISION = 34, PISTON_ARM_COLLISION = 34;
 	public const WOOL = 35;
-
+	public const ELEMENT_0 = 36;
 	public const DANDELION = 37, YELLOW_FLOWER = 37;
 	public const POPPY = 38, RED_FLOWER = 38;
 	public const BROWN_MUSHROOM = 39;
@@ -191,7 +191,7 @@ interface BlockIds{
 	public const ACACIA_STAIRS = 163;
 	public const DARK_OAK_STAIRS = 164;
 	public const SLIME = 165, SLIME_BLOCK = 165;
-
+	public const GLOW_STICK = 166;
 	public const IRON_TRAPDOOR = 167;
 	public const PRISMARINE = 168;
 	public const SEALANTERN = 169, SEA_LANTERN = 169;
@@ -215,7 +215,9 @@ interface BlockIds{
 	public const ACACIA_FENCE_GATE = 187;
 	public const REPEATING_COMMAND_BLOCK = 188;
 	public const CHAIN_COMMAND_BLOCK = 189;
-
+	public const HARD_GLASS_PANE = 190;
+	public const HARD_STAINED_GLASS_PANE = 191;
+	public const CHEMICAL_HEAT = 192;
 	public const SPRUCE_DOOR_BLOCK = 193;
 	public const BIRCH_DOOR_BLOCK = 194;
 	public const JUNGLE_DOOR_BLOCK = 195;
@@ -225,9 +227,9 @@ interface BlockIds{
 	public const FRAME_BLOCK = 199, ITEM_FRAME_BLOCK = 199;
 	public const CHORUS_FLOWER = 200;
 	public const PURPUR_BLOCK = 201;
-
+	public const COLORED_TORCH_RG = 202;
 	public const PURPUR_STAIRS = 203;
-
+	public const COLORED_TORCH_BP = 204;
 	public const UNDYED_SHULKER_BOX = 205;
 	public const END_BRICKS = 206;
 	public const FROSTED_ICE = 207;
@@ -259,7 +261,8 @@ interface BlockIds{
 	public const BLACK_GLAZED_TERRACOTTA = 235;
 	public const CONCRETE = 236;
 	public const CONCRETEPOWDER = 237, CONCRETE_POWDER = 237;
-
+	public const CHEMISTRY_TABLE = 238;
+	public const UNDERWATER_TORCH = 239;
 	public const CHORUS_PLANT = 240;
 	public const STAINED_GLASS = 241;
 
@@ -273,7 +276,52 @@ interface BlockIds{
 	public const MOVINGBLOCK = 250, MOVING_BLOCK = 250;
 	public const OBSERVER = 251;
 	public const STRUCTURE_BLOCK = 252;
-
+	public const HARD_GLASS = 253;
+	public const HARD_STAINED_GLASS = 254;
 	public const RESERVED6 = 255;
+
+	public const PRISMARINE_STAIRS = 257;
+	public const DARK_PRISMARINE_STAIRS = 258;
+	public const PRISMARINE_BRICKS_STAIRS = 259;
+	public const STRIPPED_SPRUCE_LOG = 260;
+	public const STRIPPED_BIRCH_LOG = 261;
+	public const STRIPPED_JUNGLE_LOG = 262;
+	public const STRIPPED_ACACIA_LOG = 263;
+	public const STRIPPED_DARK_OAK_LOG = 264;
+	public const STRIPPED_OAK_LOG = 265;
+	public const BLUE_ICE = 266;
+
+	public const SEAGRASS = 385;
+	public const CORAL = 386;
+	public const CORAL_BLOCK = 387;
+	public const CORAL_FAN = 388;
+	public const CORAL_FAN_DEAD = 389;
+	public const CORAL_FAN_HANG = 390;
+	public const CORAL_FAN_HANG2 = 391;
+	public const CORAL_FAN_HANG3 = 392;
+	public const KELP = 393;
+	public const DRIED_KELP_BLOCK = 394;
+	public const ACACIA_BUTTON = 395;
+	public const BIRCH_BUTTON = 396;
+	public const DARK_OAK_BUTTON = 397;
+	public const JUNGLE_BUTTON = 398;
+	public const SPRUCE_BUTTON = 399;
+	public const ACACIA_TRAPDOOR = 400;
+	public const BIRCH_TRAPDOOR = 401;
+	public const DARK_OAK_TRAPDOOR = 402;
+	public const JUNGLE_TRAPDOOR = 403;
+	public const SPRUCE_TRAPDOOR = 404;
+	public const ACACIA_PRESSURE_PLATE = 405;
+	public const BIRCH_PRESSURE_PLATE = 406;
+	public const DARK_OAK_PRESSURE_PLATE = 407;
+	public const JUNGLE_PRESSURE_PLATE = 408;
+	public const SPRUCE_PRESSURE_PLATE = 409;
+	public const CARVED_PUMPKIN = 410;
+	public const SEA_PICKLE = 411;
+	public const CONDUIT = 412;
+
+	public const TURTLE_EGG = 414;
+	public const BUBBLE_COLUMN = 415;
+	public const BARRIER = 416;
 
 }
