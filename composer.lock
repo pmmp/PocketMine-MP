@@ -4,8 +4,52 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4793017ff4b236529dc5072bd06f8754",
+    "content-hash": "cdf1ae08bd2f3e13b0a766a835ed8cb8",
     "packages": [
+        {
+            "name": "adhocore/json-comment",
+            "version": "v0.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/adhocore/php-json-comment.git",
+                "reference": "135356c7e7336ef59924f1d921c770045f937a76"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/adhocore/php-json-comment/zipball/135356c7e7336ef59924f1d921c770045f937a76",
+                "reference": "135356c7e7336ef59924f1d921c770045f937a76",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ahc\\Json\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jitendra Adhikari",
+                    "email": "jiten.adhikary@gmail.com"
+                }
+            ],
+            "description": "Lightweight JSON comment stripper library for PHP",
+            "keywords": [
+                "comment",
+                "json",
+                "strip-comment"
+            ],
+            "time": "2018-08-01T12:27:26+00:00"
+        },
         {
             "name": "daverandom/callback-validator",
             "version": "dev-master",
