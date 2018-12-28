@@ -59,7 +59,7 @@ class NetworkCipher{
 		$this->encryptCipher->encryptInit($this->key, $iv);
 	}
 
-	public function decrypt($encrypted){
+	public function decrypt(string $encrypted) : string{
 		if(strlen($encrypted) < 9){
 			throw new \InvalidArgumentException("Payload is too short");
 		}
