@@ -51,6 +51,7 @@ class AsyncWorker extends Worker{
 		//set this after the autoloader is registered
 		set_error_handler([Utils::class, 'errorExceptionHandler']);
 
+		\GlobalLogger::set($this->logger);
 		if($this->logger instanceof MainLogger){
 			$this->logger->registerStatic();
 		}
