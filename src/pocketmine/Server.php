@@ -1048,10 +1048,11 @@ class Server{
 	 * @param int|null    $seed
 	 * @param string|null $generator Class name that extends pocketmine\level\generator\Generator
 	 * @param array       $options
+	 * @param bool        $backgroundGeneration
 	 *
 	 * @return bool
 	 */
-	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = []) : bool{
+	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = [], bool $backgroundGeneration = true) : bool{
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
 			return false;
 		}
@@ -1081,6 +1082,10 @@ class Server{
 		(new LevelInitEvent($level))->call();
 
 		(new LevelLoadEvent($level))->call();
+
+		if(!$backgroundGeneration){
+			return true;
+		}
 
 		$this->getLogger()->notice($this->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
 
