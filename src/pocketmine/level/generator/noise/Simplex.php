@@ -77,6 +77,11 @@ class Simplex extends Noise{
 			$this->perm[$pos] = $old;
 			$this->perm[$i + 256] = $this->perm[$i];
 		}
+
+		//this dummy call is necessary to produce the same RNG state as before latest refactors to this file
+		//previously this value would be used for offsetW
+		//TODO: this really needs to reset the RNG seed to avoid future RNG contamination
+		$random->nextSignedInt();
 	}
 
 	public function getNoise3D($x, $y, $z){
