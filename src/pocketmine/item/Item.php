@@ -93,17 +93,17 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * Tries to parse the specified string into Item ID/meta identifiers, and returns Item instances it created.
+	 * Tries to parse the specified string into Item types.
 	 *
 	 * This function redirects to {@link ItemFactory#fromString}.
 	 *
 	 * @param string $str
-	 * @param bool   $multiple
 	 *
-	 * @return Item[]|Item
+	 * @return Item
+	 * @throws \InvalidArgumentException
 	 */
-	public static function fromString(string $str, bool $multiple = false){
-		return ItemFactory::fromString($str, $multiple);
+	public static function fromString(string $str) : Item{
+		return ItemFactory::fromString($str);
 	}
 
 

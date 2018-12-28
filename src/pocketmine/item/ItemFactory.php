@@ -360,51 +360,38 @@ class ItemFactory{
 	}
 
 	/**
-	 * Tries to parse the specified string into Item ID/meta identifiers, and returns Item instances it created.
+	 * Tries to parse the specified string into Item types.
 	 *
 	 * Example accepted formats:
 	 * - `diamond_pickaxe:5`
 	 * - `minecraft:string`
 	 * - `351:4 (lapis lazuli ID:meta)`
 	 *
-	 * If multiple item instances are to be created, their identifiers must be comma-separated, for example:
-	 * `diamond_pickaxe,wooden_shovel:18,iron_ingot`
-	 *
 	 * @param string $str
-	 * @param bool   $multiple
 	 *
-	 * @return Item[]|Item
+	 * @return Item
 	 *
 	 * @throws \InvalidArgumentException if the given string cannot be parsed as an item identifier
 	 */
-	public static function fromString(string $str, bool $multiple = false){
-		if($multiple){
-			$blocks = [];
-			foreach(explode(",", $str) as $b){
-				$blocks[] = self::fromString($b, false);
-			}
-
-			return $blocks;
+	public static function fromString(string $str) : Item{
+		$b = explode(":", str_replace([" ", "minecraft:"], ["_", ""], trim($str)));
+		if(!isset($b[1])){
+			$meta = 0;
+		}elseif(is_numeric($b[1])){
+			$meta = (int) $b[1];
 		}else{
-			$b = explode(":", str_replace([" ", "minecraft:"], ["_", ""], trim($str)));
-			if(!isset($b[1])){
-				$meta = 0;
-			}elseif(is_numeric($b[1])){
-				$meta = (int) $b[1];
-			}else{
-				throw new \InvalidArgumentException("Unable to parse \"" . $b[1] . "\" from \"" . $str . "\" as a valid meta value");
-			}
-
-			if(is_numeric($b[0])){
-				$item = self::get((int) $b[0], $meta);
-			}elseif(defined(ItemIds::class . "::" . strtoupper($b[0]))){
-				$item = self::get(constant(ItemIds::class . "::" . strtoupper($b[0])), $meta);
-			}else{
-				throw new \InvalidArgumentException("Unable to resolve \"" . $str . "\" to a valid item");
-			}
-
-			return $item;
+			throw new \InvalidArgumentException("Unable to parse \"" . $b[1] . "\" from \"" . $str . "\" as a valid meta value");
 		}
+
+		if(is_numeric($b[0])){
+			$item = self::get((int) $b[0], $meta);
+		}elseif(defined(ItemIds::class . "::" . strtoupper($b[0]))){
+			$item = self::get(constant(ItemIds::class . "::" . strtoupper($b[0])), $meta);
+		}else{
+			throw new \InvalidArgumentException("Unable to resolve \"" . $str . "\" to a valid item");
+		}
+
+		return $item;
 	}
 
 	/**
