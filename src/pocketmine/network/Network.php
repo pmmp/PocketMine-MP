@@ -195,6 +195,12 @@ class Network{
 		}
 	}
 
+	public function addRawPacketFilter(string $regex) : void{
+		foreach($this->advancedInterfaces as $interface){
+			$interface->addRawPacketFilter($regex);
+		}
+	}
+
 	public function scheduleSessionTick(NetworkSession $session) : void{
 		$this->updateSessions[spl_object_hash($session)] = $session;
 	}

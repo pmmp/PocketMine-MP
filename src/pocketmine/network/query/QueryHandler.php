@@ -39,6 +39,7 @@ class QueryHandler{
 
 	public function __construct(){
 		$this->server = Server::getInstance();
+		$this->server->getNetwork()->addRawPacketFilter('/^\xfe\xfd.+$/s');
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.start"));
 		$addr = $this->server->getIp();
 		$port = $this->server->getPort();

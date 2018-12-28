@@ -169,6 +169,10 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		$this->interface->sendRaw($address, $port, $payload);
 	}
 
+	public function addRawPacketFilter(string $regex) : void{
+		$this->interface->addRawPacketFilter($regex);
+	}
+
 	public function notifyACK(string $identifier, int $identifierACK) : void{
 
 	}

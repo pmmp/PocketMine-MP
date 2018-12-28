@@ -61,4 +61,11 @@ interface AdvancedNetworkInterface extends NetworkInterface{
 	 */
 	public function sendRawPacket(string $address, int $port, string $payload) : void;
 
+	/**
+	 * Adds a regex filter for raw packets to this network interface. This filter should be used to check validity of
+	 * raw packets before relaying them to the main thread.
+	 *
+	 * @param string $regex
+	 */
+	public function addRawPacketFilter(string $regex) : void;
 }
