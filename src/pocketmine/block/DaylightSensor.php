@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -51,7 +52,7 @@ class DaylightSensor extends Transparent{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->power = $meta;
+		$this->power = BlockDataValidator::readBoundedInt("power", $meta, 0, 15);
 	}
 
 	public function getStateBitmask() : int{

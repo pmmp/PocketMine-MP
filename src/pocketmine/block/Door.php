@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
@@ -51,7 +52,7 @@ abstract class Door extends Transparent{
 			return 0x08 | ($this->hingeRight ? 0x01 : 0) | ($this->powered ? 0x02 : 0);
 		}
 
-		return Bearing::rotate(Bearing::fromFacing($this->facing), 1) | ($this->open ? 0x04 : 0);
+		return Bearing::fromFacing(Facing::rotateY($this->facing, true)) | ($this->open ? 0x04 : 0);
 	}
 
 	public function readStateFromMeta(int $meta) : void{
@@ -60,7 +61,7 @@ abstract class Door extends Transparent{
 			$this->hingeRight = ($meta & 0x01) !== 0;
 			$this->powered = ($meta & 0x02) !== 0;
 		}else{
-			$this->facing = Bearing::toFacing(Bearing::rotate($meta & 0x03, -1));
+			$this->facing = Facing::rotateY(BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03), false);
 			$this->open = ($meta & 0x04) !== 0;
 		}
 	}

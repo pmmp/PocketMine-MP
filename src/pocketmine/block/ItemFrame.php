@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -47,7 +48,7 @@ class ItemFrame extends Flowable{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->facing = 5 - $meta;
+		$this->facing = BlockDataValidator::readHorizontalFacing(5 - $meta);
 	}
 
 	public function getStateBitmask() : int{

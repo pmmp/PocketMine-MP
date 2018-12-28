@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -68,7 +69,7 @@ class Lever extends Flowable{
 			$this->facing = $rotationMeta === 7 ? Facing::SOUTH : Facing::EAST;
 		}else{
 			$this->position = self::SIDE;
-			$this->facing = 6 - $rotationMeta;
+			$this->facing = BlockDataValidator::readHorizontalFacing(6 - $rotationMeta);
 		}
 
 		$this->powered = ($meta & 0x08) !== 0;

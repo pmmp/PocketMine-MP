@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -47,7 +48,7 @@ class Sugarcane extends Flowable{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->age = $meta;
+		$this->age = BlockDataValidator::readBoundedInt("age", $meta, 0, 15);
 	}
 
 	public function getStateBitmask() : int{

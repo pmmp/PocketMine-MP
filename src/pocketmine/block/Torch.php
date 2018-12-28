@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -44,11 +45,7 @@ class Torch extends Flowable{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		if($meta === 0){
-			$this->facing = Facing::UP;
-		}else{
-			$this->facing = 6 - $meta;
-		}
+		$this->facing = $meta === 5 ? Facing::UP : BlockDataValidator::readHorizontalFacing(6 - $meta);
 	}
 
 	public function getStateBitmask() : int{

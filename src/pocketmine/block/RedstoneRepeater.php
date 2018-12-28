@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Bearing;
@@ -50,8 +51,8 @@ class RedstoneRepeater extends Flowable{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->facing = Bearing::toFacing($meta & 0x03);
-		$this->delay = ($meta >> 2) + 1;
+		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03);
+		$this->delay = BlockDataValidator::readBoundedInt("delay", ($meta >> 2) + 1, 1, 4);
 	}
 
 	public function writeStateToMeta() : int{

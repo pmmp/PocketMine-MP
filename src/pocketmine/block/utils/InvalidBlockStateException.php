@@ -21,24 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-abstract class RedstoneRail extends BaseRail{
-	protected const FLAG_POWERED = 0x08;
+class InvalidBlockStateException extends \UnexpectedValueException{
 
-	/** @var bool */
-	protected $powered = false;
-
-	protected function writeStateToMeta() : int{
-		return parent::writeStateToMeta() | ($this->powered ? self::FLAG_POWERED : 0);
-	}
-
-	public function readStateFromMeta(int $meta) : void{
-		parent::readStateFromMeta($meta);
-		$this->powered = ($meta & self::FLAG_POWERED) !== 0;
-	}
-
-	protected function getConnectionsFromMeta(int $meta) : ?array{
-		return self::CONNECTIONS[$meta & ~self::FLAG_POWERED] ?? null;
-	}
 }

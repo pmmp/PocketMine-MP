@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
@@ -44,7 +45,7 @@ class Farmland extends Transparent{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->wetness = $meta;
+		$this->wetness = BlockDataValidator::readBoundedInt("wetness", $meta, 0, 7);
 	}
 
 	public function getStateBitmask() : int{

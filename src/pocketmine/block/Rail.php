@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\math\Facing;
 
 class Rail extends BaseRail{
@@ -66,8 +67,8 @@ class Rail extends BaseRail{
 		}
 	}
 
-	protected function getConnectionsFromMeta(int $meta) : array{
-		return self::CURVE_CONNECTIONS[$meta] ?? self::CONNECTIONS[$meta] ?? [];
+	protected function getConnectionsFromMeta(int $meta) : ?array{
+		return self::CURVE_CONNECTIONS[$meta] ?? self::CONNECTIONS[$meta] ?? null;
 	}
 
 	protected function getPossibleConnectionDirectionsOneConstraint(int $constraint) : array{

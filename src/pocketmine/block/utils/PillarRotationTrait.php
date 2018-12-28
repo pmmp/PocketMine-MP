@@ -62,10 +62,13 @@ trait PillarRotationTrait{
 		static $map = [
 			0 => Facing::AXIS_Y,
 			1 => Facing::AXIS_X,
-			2 => Facing::AXIS_Z,
-			3 => Facing::AXIS_Y //TODO: how to deal with all-bark logs?
+			2 => Facing::AXIS_Z
 		];
-		$this->axis = $map[$meta >> 2];
+		$axis = $meta >> 2;
+		if(!isset($map[$axis])){
+			throw new InvalidBlockStateException("Invalid axis meta $axis");
+		}
+		$this->axis = $map[$axis];
 	}
 
 	protected function writeAxisToMeta() : int{

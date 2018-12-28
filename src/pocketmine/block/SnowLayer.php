@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
@@ -46,7 +47,7 @@ class SnowLayer extends Flowable{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->layers = $meta + 1;
+		$this->layers = BlockDataValidator::readBoundedInt("layers", $meta + 1, 1, 8);
 	}
 
 	public function getStateBitmask() : int{

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
@@ -54,7 +55,7 @@ class Trapdoor extends Transparent{
 	public function readStateFromMeta(int $meta) : void{
 		//TODO: in PC the values are reversed (facing - 2)
 
-		$this->facing = 5 - ($meta & 0x03);
+		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($meta & 0x03));
 		$this->top = ($meta & self::MASK_UPPER) !== 0;
 		$this->open = ($meta & self::MASK_OPENED) !== 0;
 	}

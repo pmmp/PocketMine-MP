@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -48,11 +49,11 @@ class EndRod extends Flowable{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		if($meta === 0 or $meta === 1){
-			$this->facing = $meta;
-		}else{
-			$this->facing = $meta ^ 1; //TODO: see above
+		if($meta !== 0 and $meta !== 1){
+			$meta ^= 1;
 		}
+
+		$this->facing = BlockDataValidator::readFacing($meta);
 	}
 
 	public function getStateBitmask() : int{

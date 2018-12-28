@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
 use pocketmine\item\FoodSource;
@@ -50,7 +51,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->bites = $meta;
+		$this->bites = BlockDataValidator::readBoundedInt("bites", $meta, 0, 6);
 	}
 
 	public function getStateBitmask() : int{

@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\block;
 
+use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
@@ -146,6 +147,10 @@ class Block extends Position implements BlockIds, Metadatable{
 		return 0;
 	}
 
+	/**
+	 * @param int $meta
+	 * @throws InvalidBlockStateException
+	 */
 	public function readStateFromMeta(int $meta) : void{
 		//NOOP
 	}

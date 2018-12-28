@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
@@ -52,7 +53,7 @@ class Skull extends Flowable{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->facing = $meta;
+		$this->facing = $meta === 1 ? Facing::UP : BlockDataValidator::readHorizontalFacing($meta);
 	}
 
 	public function getStateBitmask() : int{

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -48,7 +49,7 @@ abstract class Stair extends Transparent{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->facing = 5 - ($meta & 0x03);
+		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($meta & 0x03));
 		$this->upsideDown = ($meta & 0x04) !== 0;
 	}
 

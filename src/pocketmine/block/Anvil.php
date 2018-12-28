@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
@@ -46,7 +47,7 @@ class Anvil extends Fallable{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->facing = Bearing::toFacing($meta);
+		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($meta);
 	}
 
 	public function getStateBitmask() : int{

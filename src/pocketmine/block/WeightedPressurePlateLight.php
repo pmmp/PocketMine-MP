@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\TieredTool;
 
 class WeightedPressurePlateLight extends Transparent{
@@ -41,7 +42,7 @@ class WeightedPressurePlateLight extends Transparent{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->power = $meta;
+		$this->power = BlockDataValidator::readBoundedInt("power", $meta, 0, 15);
 	}
 
 	public function getStateBitmask() : int{

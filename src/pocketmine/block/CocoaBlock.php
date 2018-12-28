@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
@@ -49,8 +50,8 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->facing = Facing::opposite(Bearing::toFacing($meta & 0x03));
-		$this->age = $meta >> 2;
+		$this->facing = Facing::opposite(BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03));
+		$this->age = BlockDataValidator::readBoundedInt("age", $meta >> 2, 0, 2);
 	}
 
 	public function getStateBitmask() : int{

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -84,9 +85,11 @@ abstract class BaseRail extends Flowable{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		//on invalid states, this will return an empty array, allowing this rail to transform into any other state
-		//TODO: should this throw instead?
-		$this->connections = $this->getConnectionsFromMeta($meta);
+		$connections = $this->getConnectionsFromMeta($meta);
+		if($connections === null){
+			throw new InvalidBlockStateException("Invalid rail type meta $meta");
+		}
+		$this->connections = $connections;
 	}
 
 	public function getStateBitmask() : int{
@@ -138,7 +141,7 @@ abstract class BaseRail extends Flowable{
 	 *
 	 * @return int[]
 	 */
-	abstract protected function getConnectionsFromMeta(int $meta) : array;
+	abstract protected function getConnectionsFromMeta(int $meta) : ?array;
 
 	/**
 	 * Returns all the directions this rail is already connected in.

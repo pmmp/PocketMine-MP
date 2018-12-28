@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\block\utils\Color;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -65,7 +66,7 @@ class Bed extends Transparent{
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->facing = Bearing::toFacing($meta & 0x03);
+		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03);
 		$this->occupied = ($meta & self::BITFLAG_OCCUPIED) !== 0;
 		$this->head = ($meta & self::BITFLAG_HEAD) !== 0;
 	}
