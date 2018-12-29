@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io\region;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
+use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
@@ -107,12 +107,13 @@ class McRegion extends BaseLevelProvider{
 	 * @param string $data
 	 *
 	 * @return Chunk
+	 * @throws CorruptedChunkException
 	 */
 	protected function nbtDeserialize(string $data) : Chunk{
 		$nbt = new BigEndianNBTStream();
 		$chunk = $nbt->readCompressed($data);
 		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
-			throw new ChunkException("Invalid NBT format");
+			throw new CorruptedChunkException("'Level' key is missing from chunk NBT");
 		}
 
 		$chunk = $chunk->getCompoundTag("Level");
@@ -348,6 +349,14 @@ class McRegion extends BaseLevelProvider{
 		}
 	}
 
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return Chunk|null
+	 *
+	 * @throws CorruptedChunkException
+	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);

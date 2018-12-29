@@ -49,6 +49,8 @@ use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\EmptySubChunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkRequestTask;
+use pocketmine\level\format\io\exception\CorruptedChunkException;
+use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
@@ -2750,10 +2752,9 @@ class Level implements ChunkManager, Metadatable{
 
 		try{
 			$chunk = $this->provider->loadChunk($x, $z);
-		}catch(\Exception $e){
+		}catch(CorruptedChunkException | UnsupportedChunkFormatException $e){
 			$logger = $this->server->getLogger();
-			$logger->critical("An error occurred while loading chunk x=$x z=$z: " . $e->getMessage());
-			$logger->logException($e);
+			$logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
 		}
 
 		if($chunk === null and $create){

@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
+use pocketmine\level\format\io\exception\CorruptedChunkException;
+use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\math\Vector3;
 
 interface LevelProvider{
@@ -100,8 +102,8 @@ interface LevelProvider{
 	 *
 	 * @return null|Chunk
 	 *
-	 * @throws \Exception any of a range of exceptions that could be thrown while reading chunks. See individual
-	 * implementations for details.
+	 * @throws CorruptedChunkException
+	 * @throws UnsupportedChunkFormatException
 	 */
 	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk;
 
