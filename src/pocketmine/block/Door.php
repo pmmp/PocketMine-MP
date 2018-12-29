@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
+use pocketmine\level\BlockWriteBatch;
 use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Bearing;
@@ -124,9 +125,10 @@ abstract class Door extends Transparent{
 			$topHalf = clone $this;
 			$topHalf->top = true;
 
-			parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-			$this->level->setBlock($blockUp, $topHalf); //Top
-			return true;
+			$write = new BlockWriteBatch();
+			$write->addBlock($blockReplace, $this)->addBlock($blockUp, $topHalf);
+
+			return $write->apply($this->level);
 		}
 
 		return false;
