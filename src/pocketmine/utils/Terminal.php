@@ -280,6 +280,6 @@ abstract class Terminal{
 	 * @param string $line
 	 */
 	public static function writeLine(string $line) : void{
-		echo self::toANSI($line) . PHP_EOL;
+		echo self::toANSI($line) . self::$FORMAT_RESET . PHP_EOL;
 	}
 }
