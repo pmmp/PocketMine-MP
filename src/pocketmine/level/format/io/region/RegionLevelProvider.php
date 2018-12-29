@@ -26,6 +26,7 @@ namespace pocketmine\level\format\io\region;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\data\JavaLevelData;
+use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\LevelData;
 use pocketmine\level\Level;
 
@@ -156,6 +157,12 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 
 	abstract protected function serializeChunk(Chunk $chunk) : string;
 
+	/**
+	 * @param string $data
+	 *
+	 * @return Chunk
+	 * @throws CorruptedChunkException
+	 */
 	abstract protected function deserializeChunk(string $data) : Chunk;
 
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{

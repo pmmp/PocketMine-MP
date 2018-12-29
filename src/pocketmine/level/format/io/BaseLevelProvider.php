@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
+use pocketmine\level\format\io\exception\CorruptedChunkException;
+use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\LevelException;
 
 abstract class BaseLevelProvider implements LevelProvider{
@@ -54,6 +56,14 @@ abstract class BaseLevelProvider implements LevelProvider{
 		return $this->levelData;
 	}
 
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return Chunk|null
+	 * @throws CorruptedChunkException
+	 * @throws UnsupportedChunkFormatException
+	 */
 	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		return $this->readChunk($chunkX, $chunkZ);
 	}
@@ -65,6 +75,14 @@ abstract class BaseLevelProvider implements LevelProvider{
 		$this->writeChunk($chunk);
 	}
 
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return Chunk|null
+	 * @throws UnsupportedChunkFormatException
+	 * @throws CorruptedChunkException
+	 */
 	abstract protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk;
 
 	abstract protected function writeChunk(Chunk $chunk) : void;
