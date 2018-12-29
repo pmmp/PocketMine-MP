@@ -256,4 +256,23 @@ abstract class Terminal{
 
 		return $newString;
 	}
+
+	/**
+	 * Emits a string containing Minecraft colour codes to the console formatted with native colours.
+	 *
+	 * @param string $line
+	 */
+	public static function write(string $line) : void{
+		echo self::toANSI($line);
+	}
+
+	/**
+	 * Emits a string containing Minecraft colour codes to the console formatted with native colours, followed by a
+	 * newline character.
+	 *
+	 * @param string $line
+	 */
+	public static function writeLine(string $line) : void{
+		echo self::toANSI($line) . PHP_EOL;
+	}
 }
