@@ -9,6 +9,7 @@ about: Report a bug in PocketMine-MP (not plugins)
 THIS ISSUE TRACKER IS FOR BUG REPORTING, NOT FOR HELP & SUPPORT. If you need help, use the links below.
 - http://pmmp.readthedocs.io/en/rtfd/ - Documentation
 - https://forums.pmmp.io - PMMP Forums
+- https://discord.gg/bge7dYQ - Community Discord
 
 PLEASE DO NOT REPORT ATTACK VECTORS ON THIS ISSUE TRACKER.
 Send an email to team@pmmp.io if you have a vulnerability to report.
