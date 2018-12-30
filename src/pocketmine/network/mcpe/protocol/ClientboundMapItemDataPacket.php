@@ -114,7 +114,9 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			$this->yOffset = $this->getVarInt();
 
 			$count = $this->getUnsignedVarInt();
-			assert($count === $this->width * $this->height);
+			if($count !== $this->width * $this->height){
+				throw new \UnexpectedValueException("Expected colour count of " . ($this->height * $this->width) . " (height $this->height * width $this->width), got $count");
+			}
 
 			for($y = 0; $y < $this->height; ++$y){
 				for($x = 0; $x < $this->width; ++$x){
