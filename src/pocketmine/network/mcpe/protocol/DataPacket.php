@@ -69,7 +69,9 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	protected function decodeHeader() : void{
 		$pid = $this->getUnsignedVarInt();
-		assert($pid === static::NETWORK_ID);
+		if($pid !== static::NETWORK_ID){
+			throw new \UnexpectedValueException("Expected " . static::NETWORK_ID . " for packet ID, got $pid");
+		}
 	}
 
 	/**
