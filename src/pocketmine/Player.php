@@ -327,6 +327,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var Form[] */
 	protected $forms = [];
 
+	/** @var float */
+	protected $lastRightClickTime = 0.0;
+	/** @var Vector3|null */
+	protected $lastRightClickPos = null;
+
 	/**
 	 * @return TranslationContainer|string
 	 */
@@ -2333,6 +2338,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$type = $packet->trData->actionType;
 				switch($type){
 					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_BLOCK:
+						//TODO: start hack for client spam bug
+						$spamBug = ($this->lastRightClickPos !== null and
+							microtime(true) - $this->lastRightClickTime < 0.1 and //100ms
+							$this->lastRightClickPos->distanceSquared($packet->trData->clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
+						);
+						//get rid of continued spam if the player clicks and holds right-click
+						$this->lastRightClickPos = clone $packet->trData->clickPos;
+						$this->lastRightClickTime = microtime(true);
+						if($spamBug){
+							return true;
+						}
+						//TODO: end hack for client spam bug
+
 						$this->setUsingItem(false);
 
 						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
