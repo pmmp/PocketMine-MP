@@ -94,9 +94,7 @@ class Network{
 			$interface->process();
 		}catch(\Throwable $e){
 			$logger = $this->server->getLogger();
-			if(\pocketmine\DEBUG > 1){
-				$logger->logException($e);
-			}
+			$logger->logException($e);
 
 			(new NetworkInterfaceCrashEvent($interface, $e))->call();
 
