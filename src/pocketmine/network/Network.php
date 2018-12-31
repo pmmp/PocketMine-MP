@@ -26,7 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\network;
 
-use pocketmine\event\server\NetworkInterfaceCrashEvent;
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
 use pocketmine\network\mcpe\protocol\PacketPool;
@@ -90,18 +89,7 @@ class Network{
 	}
 
 	public function processInterface(SourceInterface $interface) : void{
-		try{
-			$interface->process();
-		}catch(\Throwable $e){
-			$logger = $this->server->getLogger();
-			$logger->logException($e);
-
-			(new NetworkInterfaceCrashEvent($interface, $e))->call();
-
-			$interface->emergencyShutdown();
-			$this->unregisterInterface($interface);
-			$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
-		}
+		$interface->process();
 	}
 
 	/**
