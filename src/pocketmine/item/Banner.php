@@ -55,7 +55,7 @@ class Banner extends Item{
 	 * @return int
 	 */
 	public function getBaseColor() : int{
-		return $this->getNamedTag()->getInt(self::TAG_BASE, 0);
+		return $this->getNamedTag()->getInt(self::TAG_BASE, $this->getDamage());
 	}
 
 	/**
