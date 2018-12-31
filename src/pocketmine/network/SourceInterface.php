@@ -71,6 +71,9 @@ interface SourceInterface{
 
 	public function shutdown();
 
+	/**
+	 * @deprecated
+	 */
 	public function emergencyShutdown();
 
 }

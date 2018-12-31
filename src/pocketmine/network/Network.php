@@ -84,10 +84,14 @@ class Network{
 
 	public function processInterfaces(){
 		foreach($this->interfaces as $interface){
-			$this->processInterface($interface);
+			$interface->process();
 		}
 	}
 
+	/**
+	 * @deprecated
+	 * @param SourceInterface $interface
+	 */
 	public function processInterface(SourceInterface $interface) : void{
 		$interface->process();
 	}

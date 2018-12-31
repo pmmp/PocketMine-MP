@@ -89,7 +89,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 
 	public function start(){
 		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-			$this->server->getNetwork()->processInterface($this);
+			$this->process();
 		});
 		$this->rakLib->start(PTHREADS_INHERIT_CONSTANTS); //HACK: MainLogger needs constants for exception logging
 	}
