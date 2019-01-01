@@ -84,7 +84,6 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 
 	public function start() : void{
 		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-			//this should not throw any exception. If it does, this should crash the server since it's a fault condition.
 			while($this->interface->handlePacket());
 		});
 		$this->rakLib->start(PTHREADS_INHERIT_CONSTANTS); //HACK: MainLogger needs constants for exception logging

@@ -2529,9 +2529,7 @@ class Server{
 				$this->logger->debug("Unhandled raw packet from $address $port: " . bin2hex($payload));
 			}
 		}catch(\Throwable $e){
-			if(\pocketmine\DEBUG > 1){
-				$this->logger->logException($e);
-			}
+			$this->logger->logException($e);
 
 			$this->getNetwork()->blockAddress($address, 600);
 		}

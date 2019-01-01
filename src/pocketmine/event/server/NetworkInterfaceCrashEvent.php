@@ -26,7 +26,8 @@ namespace pocketmine\event\server;
 use pocketmine\network\NetworkInterface;
 
 /**
- * Called when a network interface crashes, with relevant crash information.
+ * Never called. Should never have come into this world. Nothing to see here.
+ * @deprecated
  */
 class NetworkInterfaceCrashEvent extends NetworkInterfaceEvent{
 	/**

@@ -26,7 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\network;
 
-use pocketmine\event\server\NetworkInterfaceCrashEvent;
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
 use pocketmine\network\mcpe\NetworkSession;
@@ -86,20 +85,7 @@ class Network{
 
 	public function tick() : void{
 		foreach($this->interfaces as $interface){
-			try{
-				$interface->tick();
-			}catch(\Exception $e){
-				$logger = $this->server->getLogger();
-				if(\pocketmine\DEBUG > 1){
-					$logger->logException($e);
-				}
-
-				(new NetworkInterfaceCrashEvent($interface, $e))->call();
-
-				$interface->emergencyShutdown();
-				$this->unregisterInterface($interface);
-				$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
-			}
+			$interface->tick();
 		}
 
 		foreach($this->updateSessions as $k => $session){
