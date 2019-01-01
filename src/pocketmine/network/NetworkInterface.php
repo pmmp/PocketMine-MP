@@ -69,11 +69,4 @@ interface NetworkInterface{
 	 * Gracefully shuts down the network interface.
 	 */
 	public function shutdown() : void;
-
-	/**
-	 * @deprecated
-	 * Shuts down the network interface in an emergency situation, such as due to a crash.
-	 */
-	public function emergencyShutdown() : void;
-
 }
