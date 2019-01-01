@@ -31,12 +31,12 @@ class CompressBatchTask extends AsyncTask{
 	private $data;
 
 	/**
-	 * @param PacketStream         $stream
+	 * @param string               $data
 	 * @param int                  $compressionLevel
 	 * @param CompressBatchPromise $promise
 	 */
-	public function __construct(PacketStream $stream, int $compressionLevel, CompressBatchPromise $promise){
-		$this->data = $stream->buffer;
+	public function __construct(string $data, int $compressionLevel, CompressBatchPromise $promise){
+		$this->data = $data;
 		$this->level = $compressionLevel;
 		$this->storeLocal($promise);
 	}

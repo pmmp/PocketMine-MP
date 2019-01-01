@@ -62,7 +62,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 	}
 
 	public function decode() : void{
-		$this->offset = 0;
+		$this->rewind();
 		$this->decodeHeader();
 		$this->decodePayload();
 	}

@@ -198,14 +198,14 @@ class NetworkSession{
 
 		$packet->decode();
 		if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
-			$remains = substr($packet->buffer, $packet->offset);
+			$remains = substr($packet->getBuffer(), $packet->getOffset());
 			$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": 0x" . bin2hex($remains));
 		}
 
 		$ev = new DataPacketReceiveEvent($this->player, $packet);
 		$ev->call();
 		if(!$ev->isCancelled() and !$packet->handle($this->handler)){
-			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": 0x" . bin2hex($packet->buffer));
+			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": 0x" . bin2hex($packet->getBuffer()));
 		}
 
 		$timings->stopTiming();

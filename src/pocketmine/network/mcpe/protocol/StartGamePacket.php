@@ -262,7 +262,7 @@ class StartGamePacket extends DataPacket{
 				$stream->putString($v["name"]);
 				$stream->putLShort($v["data"]);
 			}
-			self::$runtimeIdTable = $stream->buffer;
+			self::$runtimeIdTable = $stream->getBuffer();
 		}
 		$this->put(self::$runtimeIdTable);
 

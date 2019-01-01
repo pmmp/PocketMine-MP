@@ -1900,7 +1900,7 @@ class Server{
 			$stream->putPacket($packet);
 		}
 
-		if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->buffer) < NetworkCompression::$THRESHOLD){
+		if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->getBuffer()) < NetworkCompression::$THRESHOLD){
 			foreach($targets as $target){
 				foreach($ev->getPackets() as $pk){
 					$target->addToSendBuffer($pk);
@@ -1929,17 +1929,18 @@ class Server{
 			Timings::$playerNetworkSendCompressTimer->startTiming();
 
 			$compressionLevel = NetworkCompression::$LEVEL;
-			if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->buffer) < NetworkCompression::$THRESHOLD){
+			$buffer = $stream->getBuffer();
+			if(NetworkCompression::$THRESHOLD < 0 or strlen($buffer) < NetworkCompression::$THRESHOLD){
 				$compressionLevel = 0; //Do not compress packets under the threshold
 				$forceSync = true;
 			}
 
 			$promise = new CompressBatchPromise();
 			if(!$forceSync and $this->networkCompressionAsync){
-				$task = new CompressBatchTask($stream, $compressionLevel, $promise);
+				$task = new CompressBatchTask($buffer, $compressionLevel, $promise);
 				$this->asyncPool->submitTask($task);
 			}else{
-				$promise->resolve(NetworkCompression::compress($stream->buffer, $compressionLevel));
+				$promise->resolve(NetworkCompression::compress($buffer, $compressionLevel));
 			}
 
 			return $promise;

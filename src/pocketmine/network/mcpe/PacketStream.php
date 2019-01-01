@@ -32,7 +32,7 @@ class PacketStream extends NetworkBinaryStream{
 		if(!$packet->isEncoded){
 			$packet->encode();
 		}
-		$this->putString($packet->buffer);
+		$this->putString($packet->getBuffer());
 	}
 
 	public function getPacket() : DataPacket{
