@@ -52,12 +52,6 @@ class CraftingDataPacket extends DataPacket{
 
 	public $decodedEntries = [];
 
-	public function clean(){
-		$this->entries = [];
-		$this->decodedEntries = [];
-		return parent::clean();
-	}
-
 	protected function decodePayload() : void{
 		$this->decodedEntries = [];
 		$recipeCount = $this->getUnsignedVarInt();

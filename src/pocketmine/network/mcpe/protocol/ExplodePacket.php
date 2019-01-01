@@ -39,11 +39,6 @@ class ExplodePacket extends DataPacket{
 	/** @var Vector3[] */
 	public $records = [];
 
-	public function clean(){
-		$this->records = [];
-		return parent::clean();
-	}
-
 	protected function decodePayload() : void{
 		$this->position = $this->getVector3();
 		$this->radius = (float) ($this->getVarInt() / 32);

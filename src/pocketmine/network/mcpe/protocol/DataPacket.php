@@ -115,13 +115,6 @@ abstract class DataPacket extends NetworkBinaryStream{
 	 */
 	abstract public function handle(SessionHandler $handler) : bool;
 
-	public function clean(){
-		$this->buffer = null;
-		$this->isEncoded = false;
-		$this->offset = 0;
-		return $this;
-	}
-
 	public function __debugInfo(){
 		$data = [];
 		foreach($this as $k => $v){

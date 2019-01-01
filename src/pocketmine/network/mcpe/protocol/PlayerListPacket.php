@@ -41,11 +41,6 @@ class PlayerListPacket extends DataPacket{
 	/** @var int */
 	public $type;
 
-	public function clean(){
-		$this->entries = [];
-		return parent::clean();
-	}
-
 	protected function decodePayload() : void{
 		$this->type = $this->getByte();
 		$count = $this->getUnsignedVarInt();

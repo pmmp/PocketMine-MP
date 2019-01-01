@@ -43,12 +43,6 @@ class CraftingEventPacket extends DataPacket{
 	/** @var Item[] */
 	public $output = [];
 
-	public function clean(){
-		$this->input = [];
-		$this->output = [];
-		return parent::clean();
-	}
-
 	protected function decodePayload() : void{
 		$this->windowId = $this->getByte();
 		$this->type = $this->getVarInt();
