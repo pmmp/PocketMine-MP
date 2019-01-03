@@ -5,8 +5,11 @@ supportLabel: "Support request"
 # Comment to post on issues marked as support requests. Add a link
 # to a support page, or set to `false` to disable
 supportComment: >
-  Thanks, but this issue tracker is intended for bugs reports only, not for support requests. Please use the [forums](https://forums.pmmp.io) for support requests.
-  Please read the guidelines on [submitting an issue](https://github.com/pmmp/PocketMine-MP/blob/master/CONTRIBUTING.md#creating-an-issue) before opening any further issues.
+  Thanks, but this issue tracker not intended for support requests.  Please read the guidelines on [submitting an issue](https://github.com/pmmp/PocketMine-MP/blob/master/CONTRIBUTING.md#creating-an-issue).
+
+
+  [Docs](https://pmmp.rtfd.io) | [Discord](https://discord.gg/bge7dYQ) | [Forums](https://forums.pmmp.io)
+
 # Whether to close issues marked as support requests
 close: true
 # Whether to lock issues marked as support requests
