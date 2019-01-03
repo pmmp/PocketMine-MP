@@ -111,7 +111,7 @@ class BatchPacket extends DataPacket{
 			$pk = PacketPool::getPacket($buf);
 
 			if(!$pk->canBeBatched()){
-				throw new \InvalidArgumentException("Received invalid " . get_class($pk) . " inside BatchPacket");
+				throw new \UnexpectedValueException("Received invalid " . get_class($pk) . " inside BatchPacket");
 			}
 
 			$session->handleDataPacket($pk);

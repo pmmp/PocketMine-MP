@@ -81,7 +81,7 @@ class SetScorePacket extends DataPacket{
 						$this->putString($entry->customName);
 						break;
 					default:
-						throw new \UnexpectedValueException("Unknown entry type $entry->type");
+						throw new \InvalidArgumentException("Unknown entry type $entry->type");
 				}
 			}
 		}

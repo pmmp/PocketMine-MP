@@ -109,7 +109,7 @@ class BookEditPacket extends DataPacket{
 				$this->putString($this->xuid);
 				break;
 			default:
-				throw new \UnexpectedValueException("Unknown book edit type $this->type!");
+				throw new \InvalidArgumentException("Unknown book edit type $this->type!");
 		}
 	}
 

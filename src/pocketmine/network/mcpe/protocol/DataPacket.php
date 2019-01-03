@@ -68,12 +68,20 @@ abstract class DataPacket extends NetworkBinaryStream{
 		return false;
 	}
 
+	/**
+	 * @throws \OutOfBoundsException
+	 * @throws \UnexpectedValueException
+	 */
 	public function decode(){
 		$this->offset = 0;
 		$this->decodeHeader();
 		$this->decodePayload();
 	}
 
+	/**
+	 * @throws \OutOfBoundsException
+	 * @throws \UnexpectedValueException
+	 */
 	protected function decodeHeader(){
 		$pid = $this->getUnsignedVarInt();
 		if($pid !== static::NETWORK_ID){
@@ -83,6 +91,9 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
+	 *
+	 * @throws \OutOfBoundsException
+	 * @throws \UnexpectedValueException
 	 */
 	protected function decodePayload(){
 
