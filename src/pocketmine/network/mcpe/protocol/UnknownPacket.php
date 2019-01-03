@@ -44,12 +44,19 @@ class UnknownPacket extends DataPacket{
 		return "unknown packet";
 	}
 
-	public function decode() : void{
+	protected function decodeHeader() : void{
+
+	}
+
+	protected function decodePayload() : void{
 		$this->payload = $this->getRemaining();
 	}
 
-	public function encode() : void{
-		//Do not reset the buffer, this class does not have a valid NETWORK_ID constant.
+	protected function encodeHeader() : void{
+
+	}
+
+	protected function encodePayload() : void{
 		$this->put($this->payload);
 	}
 

@@ -65,7 +65,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 	 * @throws \OutOfBoundsException
 	 * @throws \UnexpectedValueException
 	 */
-	public function decode() : void{
+	final public function decode() : void{
 		$this->rewind();
 		$this->decodeHeader();
 		$this->decodePayload();
@@ -83,16 +83,14 @@ abstract class DataPacket extends NetworkBinaryStream{
 	}
 
 	/**
-	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
+	 * Decodes the packet body, without the packet ID or other generic header fields.
 	 *
 	 * @throws \OutOfBoundsException
 	 * @throws \UnexpectedValueException
 	 */
-	protected function decodePayload() : void{
+	abstract protected function decodePayload() : void;
 
-	}
-
-	public function encode() : void{
+	final public function encode() : void{
 		$this->reset();
 		$this->encodeHeader();
 		$this->encodePayload();
@@ -104,11 +102,9 @@ abstract class DataPacket extends NetworkBinaryStream{
 	}
 
 	/**
-	 * Note for plugin developers: If you're adding your own packets, you should perform encoding in here.
+	 * Encodes the packet body, without the packet ID or other generic header fields.
 	 */
-	protected function encodePayload() : void{
-
-	}
+	abstract protected function encodePayload() : void;
 
 	/**
 	 * Performs handling for this packet. Usually you'll want an appropriately named method in the session handler for
