@@ -159,6 +159,7 @@ class NetworkInventoryAction{
 	 * @param Player $player
 	 *
 	 * @return InventoryAction|null
+	 *
 	 * @throws \UnexpectedValueException
 	 */
 	public function createInventoryAction(Player $player) : ?InventoryAction{

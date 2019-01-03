@@ -91,7 +91,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 				}elseif($object->type === MapTrackedObject::TYPE_ENTITY){
 					$object->entityUniqueId = $this->getEntityUniqueId();
 				}else{
-					throw new \UnexpectedValueException("Unknown map object type");
+					throw new \UnexpectedValueException("Unknown map object type $object->type");
 				}
 				$this->trackedEntities[] = $object;
 			}
@@ -163,7 +163,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 				}elseif($object->type === MapTrackedObject::TYPE_ENTITY){
 					$this->putEntityUniqueId($object->entityUniqueId);
 				}else{
-					throw new \UnexpectedValueException("Unknown map object type");
+					throw new \InvalidArgumentException("Unknown map object type $object->type");
 				}
 			}
 
