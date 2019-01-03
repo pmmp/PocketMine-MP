@@ -31,7 +31,7 @@ use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
  */
 class HandshakeSessionHandler extends SessionHandler{
 
-	/** @var string */
+	/** @var NetworkSession */
 	private $session;
 
 	public function __construct(NetworkSession $session){
