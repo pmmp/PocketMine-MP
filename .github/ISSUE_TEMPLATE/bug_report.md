@@ -1,6 +1,9 @@
 ---
 name: Bug report
 about: Report a bug in PocketMine-MP (not plugins)
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
