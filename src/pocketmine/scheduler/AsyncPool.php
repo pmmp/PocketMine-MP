@@ -46,6 +46,8 @@ class AsyncPool{
 
 	/** @var AsyncWorker[] */
 	private $workers = [];
+	/** @var int[] */
+	private $workerLastUsed = [];
 
 	/** @var \Closure[] */
 	private $workerStartHooks = [];
@@ -155,6 +157,7 @@ class AsyncPool{
 
 		$this->getWorker($worker)->stack($task);
 		$this->taskQueues[$worker]->enqueue($task);
+		$this->workerLastUsed[$worker] = time();
 	}
 
 	/**
@@ -253,10 +256,11 @@ class AsyncPool{
 
 	public function shutdownUnusedWorkers() : int{
 		$ret = 0;
+		$time = time();
 		foreach($this->taskQueues as $i => $queue){
-			if($queue->isEmpty()){
+			if((!isset($this->workerLastUsed[$i]) or $this->workerLastUsed[$i] + 300 < $time) and $queue->isEmpty()){
 				$this->workers[$i]->quit();
-				unset($this->workers[$i], $this->taskQueues[$i]);
+				unset($this->workers[$i], $this->taskQueues[$i], $this->workerLastUsed[$i]);
 				$ret++;
 			}
 		}
@@ -289,5 +293,6 @@ class AsyncPool{
 		}
 		$this->workers = [];
 		$this->taskQueues = [];
+		$this->workerLastUsed = [];
 	}
 }
