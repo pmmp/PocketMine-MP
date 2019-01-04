@@ -153,7 +153,7 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param $index
+	 * @param int $index
 	 *
 	 * @return Item|null
 	 */

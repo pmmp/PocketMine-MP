@@ -96,7 +96,7 @@ abstract class Tile extends Position{
 	 * @param string      $type
 	 * @param Level       $level
 	 * @param CompoundTag $nbt
-	 * @param             $args
+	 * @param mixed       ...$args
 	 *
 	 * @return Tile|null
 	 */

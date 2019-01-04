@@ -111,9 +111,9 @@ class Config{
 	}
 
 	/**
-	 * @param       $file
-	 * @param int   $type
-	 * @param array $default
+	 * @param string $file
+	 * @param int    $type
+	 * @param array  $default
 	 *
 	 * @return bool
 	 */
@@ -289,7 +289,7 @@ class Config{
 	}
 
 	/**
-	 * @param $k
+	 * @param string $k
 	 *
 	 * @return bool|mixed
 	 */
@@ -298,15 +298,15 @@ class Config{
 	}
 
 	/**
-	 * @param $k
-	 * @param $v
+	 * @param string $k
+	 * @param mixed  $v
 	 */
 	public function __set($k, $v){
 		$this->set($k, $v);
 	}
 
 	/**
-	 * @param $k
+	 * @param string $k
 	 *
 	 * @return bool
 	 */
@@ -315,15 +315,15 @@ class Config{
 	}
 
 	/**
-	 * @param $k
+	 * @param string $k
 	 */
 	public function __unset($k){
 		$this->remove($k);
 	}
 
 	/**
-	 * @param $key
-	 * @param $value
+	 * @param string $key
+	 * @param mixed  $value
 	 */
 	public function setNested($key, $value){
 		$vars = explode(".", $key);
@@ -349,8 +349,8 @@ class Config{
 	}
 
 	/**
-	 * @param       $key
-	 * @param mixed $default
+	 * @param string $key
+	 * @param mixed  $default
 	 *
 	 * @return mixed
 	 */
@@ -401,8 +401,8 @@ class Config{
 	}
 
 	/**
-	 * @param       $k
-	 * @param mixed $default
+	 * @param string $k
+	 * @param mixed  $default
 	 *
 	 * @return bool|mixed
 	 */
@@ -433,8 +433,8 @@ class Config{
 	}
 
 	/**
-	 * @param      $k
-	 * @param bool $lowercase If set, searches Config in single-case / lowercase.
+	 * @param string $k
+	 * @param bool   $lowercase If set, searches Config in single-case / lowercase.
 	 *
 	 * @return bool
 	 */
@@ -449,7 +449,7 @@ class Config{
 	}
 
 	/**
-	 * @param $k
+	 * @param string $k
 	 */
 	public function remove($k){
 		unset($this->config[$k]);

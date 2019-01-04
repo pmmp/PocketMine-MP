@@ -74,10 +74,10 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 
 
 	/**
-	 * @param Entity        $entity
-	 * @param int           $cause
-	 * @param float         $damage
-	 * @param float|float[] $modifiers
+	 * @param Entity  $entity
+	 * @param int     $cause
+	 * @param float   $damage
+	 * @param float[] $modifiers
 	 */
 	public function __construct(Entity $entity, int $cause, float $damage, array $modifiers = []){
 		$this->entity = $entity;

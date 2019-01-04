@@ -75,8 +75,9 @@ abstract class BiomeSelector{
 	}
 
 	/**
-	 * @param $x
-	 * @param $z
+	 * TODO: not sure on types here
+	 * @param int|float $x
+	 * @param int|float $z
 	 *
 	 * @return Biome
 	 */
