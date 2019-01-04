@@ -37,7 +37,8 @@ class TakeItemEntityPacket extends DataPacket{
 	public $eid;
 
 	protected function decodePayload(){
-
+		$this->target = $this->getEntityRuntimeId();
+		$this->eid = $this->getEntityRuntimeId();
 	}
 
 	protected function encodePayload(){
