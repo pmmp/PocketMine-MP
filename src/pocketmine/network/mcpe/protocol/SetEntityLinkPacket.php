@@ -29,7 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 
-class SetEntityLinkPacket extends DataPacket{
+class SetEntityLinkPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_ENTITY_LINK_PACKET;
 
 	/** @var EntityLink */

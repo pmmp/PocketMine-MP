@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class ContainerSetDataPacket extends DataPacket{
+class ContainerSetDataPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CONTAINER_SET_DATA_PACKET;
 
 	public const PROPERTY_FURNACE_TICK_COUNT = 0;

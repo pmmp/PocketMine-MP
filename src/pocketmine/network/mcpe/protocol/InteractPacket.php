@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class InteractPacket extends DataPacket{
+class InteractPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::INTERACT_PACKET;
 
 	public const ACTION_LEAVE_VEHICLE = 3;

@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class ItemFrameDropItemPacket extends DataPacket{
+class ItemFrameDropItemPacket extends DataPacket implements ServerboundPacket{
 
 	public const NETWORK_ID = ProtocolInfo::ITEM_FRAME_DROP_ITEM_PACKET;
 

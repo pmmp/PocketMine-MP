@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\timings;
 
 use pocketmine\entity\Entity;
-use pocketmine\network\mcpe\protocol\Packet;
+use pocketmine\network\mcpe\protocol\ClientboundPacket;
+use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\Player;
 use pocketmine\scheduler\TaskHandler;
 use pocketmine\tile\Tile;
@@ -212,11 +213,11 @@ abstract class Timings{
 	}
 
 	/**
-	 * @param Packet $pk
+	 * @param ServerboundPacket $pk
 	 *
 	 * @return TimingsHandler
 	 */
-	public static function getReceiveDataPacketTimings(Packet $pk) : TimingsHandler{
+	public static function getReceiveDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
 		$pid = $pk->pid();
 		if(!isset(self::$packetReceiveTimingMap[$pid])){
 			$pkName = (new \ReflectionClass($pk))->getShortName();
@@ -228,11 +229,11 @@ abstract class Timings{
 
 
 	/**
-	 * @param Packet $pk
+	 * @param ClientboundPacket $pk
 	 *
 	 * @return TimingsHandler
 	 */
-	public static function getSendDataPacketTimings(Packet $pk) : TimingsHandler{
+	public static function getSendDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
 		$pid = $pk->pid();
 		if(!isset(self::$packetSendTimingMap[$pid])){
 			$pkName = (new \ReflectionClass($pk))->getShortName();

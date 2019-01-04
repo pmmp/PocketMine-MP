@@ -29,7 +29,7 @@ use pocketmine\item\Item;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use function count;
 
-class InventoryContentPacket extends DataPacket{
+class InventoryContentPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::INVENTORY_CONTENT_PACKET;
 
 	/** @var int */

@@ -29,7 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 
-class SpawnParticleEffectPacket extends DataPacket{
+class SpawnParticleEffectPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SPAWN_PARTICLE_EFFECT_PACKET;
 
 	/** @var int */

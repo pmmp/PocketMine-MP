@@ -29,7 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class SetTitlePacket extends DataPacket{
+class SetTitlePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_TITLE_PACKET;
 
 	public const TYPE_CLEAR_TITLE = 0;

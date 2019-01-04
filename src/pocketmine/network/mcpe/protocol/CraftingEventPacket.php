@@ -30,7 +30,7 @@ use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\utils\UUID;
 use function count;
 
-class CraftingEventPacket extends DataPacket{
+class CraftingEventPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CRAFTING_EVENT_PACKET;
 
 	/** @var int */

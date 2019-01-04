@@ -30,7 +30,7 @@ use pocketmine\entity\Attribute;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use function array_values;
 
-class UpdateAttributesPacket extends DataPacket{
+class UpdateAttributesPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_ATTRIBUTES_PACKET;
 
 	/** @var int */

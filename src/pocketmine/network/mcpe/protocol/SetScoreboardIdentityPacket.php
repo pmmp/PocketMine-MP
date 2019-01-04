@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\ScoreboardIdentityPacketEntry;
 use function count;
 
-class SetScoreboardIdentityPacket extends DataPacket{
+class SetScoreboardIdentityPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_SCOREBOARD_IDENTITY_PACKET;
 
 	public const TYPE_REGISTER_IDENTITY = 0;

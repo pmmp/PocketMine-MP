@@ -31,7 +31,7 @@ use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use function count;
 
-class PlayerListPacket extends DataPacket{
+class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_LIST_PACKET;
 
 	public const TYPE_ADD = 0;

@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class MobEffectPacket extends DataPacket{
+class MobEffectPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOB_EFFECT_PACKET;
 
 	public const EVENT_ADD = 1;

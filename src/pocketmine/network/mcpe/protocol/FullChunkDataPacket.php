@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class FullChunkDataPacket extends DataPacket{
+class FullChunkDataPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::FULL_CHUNK_DATA_PACKET;
 
 	/** @var int */

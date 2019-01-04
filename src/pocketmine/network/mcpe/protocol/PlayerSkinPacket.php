@@ -29,7 +29,7 @@ use pocketmine\entity\Skin;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\utils\UUID;
 
-class PlayerSkinPacket extends DataPacket{
+class PlayerSkinPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_SKIN_PACKET;
 
 	/** @var UUID */

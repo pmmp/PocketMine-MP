@@ -35,7 +35,7 @@ use pocketmine\utils\Color;
 use function assert;
 use function count;
 
-class ClientboundMapItemDataPacket extends DataPacket{
+class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CLIENTBOUND_MAP_ITEM_DATA_PACKET;
 
 	public const BITFLAG_TEXTURE_UPDATE = 0x02;

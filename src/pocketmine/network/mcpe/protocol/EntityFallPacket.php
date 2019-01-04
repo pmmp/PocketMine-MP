@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class EntityFallPacket extends DataPacket{
+class EntityFallPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ENTITY_FALL_PACKET;
 
 	/** @var int */

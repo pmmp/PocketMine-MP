@@ -29,7 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class StopSoundPacket extends DataPacket{
+class StopSoundPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::STOP_SOUND_PACKET;
 
 	/** @var string */

@@ -30,7 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use function count;
 
-class ExplodePacket extends DataPacket{
+class ExplodePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::EXPLODE_PACKET;
 
 	/** @var Vector3 */

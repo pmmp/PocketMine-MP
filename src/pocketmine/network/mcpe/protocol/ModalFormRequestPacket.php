@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class ModalFormRequestPacket extends DataPacket{
+class ModalFormRequestPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MODAL_FORM_REQUEST_PACKET;
 
 	/** @var int */

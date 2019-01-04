@@ -43,7 +43,7 @@ use function is_array;
 use function json_decode;
 use function json_last_error_msg;
 
-class LoginPacket extends DataPacket{
+class LoginPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
 
 	public const EDITION_POCKET = 0;

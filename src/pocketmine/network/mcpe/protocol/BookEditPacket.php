@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class BookEditPacket extends DataPacket{
+class BookEditPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::BOOK_EDIT_PACKET;
 
 	public const TYPE_REPLACE_PAGE = 0;

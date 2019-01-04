@@ -29,7 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class BlockPickRequestPacket extends DataPacket{
+class BlockPickRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::BLOCK_PICK_REQUEST_PACKET;
 
 	/** @var int */

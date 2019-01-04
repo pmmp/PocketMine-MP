@@ -34,7 +34,7 @@ use function count;
 use function file_get_contents;
 use function json_decode;
 
-class StartGamePacket extends DataPacket{
+class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
 
 	/** @var string|null */

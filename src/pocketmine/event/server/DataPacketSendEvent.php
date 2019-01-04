@@ -25,30 +25,30 @@ namespace pocketmine\event\server;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\network\mcpe\protocol\Packet;
+use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\Player;
 
 class DataPacketSendEvent extends ServerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Packet */
+	/** @var ClientboundPacket */
 	private $packet;
 	/** @var Player */
 	private $player;
 
 	/**
-	 * @param Player $player
-	 * @param Packet $packet
+	 * @param Player            $player
+	 * @param ClientboundPacket $packet
 	 */
-	public function __construct(Player $player, Packet $packet){
+	public function __construct(Player $player, ClientboundPacket $packet){
 		$this->packet = $packet;
 		$this->player = $player;
 	}
 
 	/**
-	 * @return Packet
+	 * @return ClientboundPacket
 	 */
-	public function getPacket() : Packet{
+	public function getPacket() : ClientboundPacket{
 		return $this->packet;
 	}
 

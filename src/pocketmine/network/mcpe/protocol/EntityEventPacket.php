@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class EntityEventPacket extends DataPacket{
+class EntityEventPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ENTITY_EVENT_PACKET;
 
 	public const HURT_ANIMATION = 2;

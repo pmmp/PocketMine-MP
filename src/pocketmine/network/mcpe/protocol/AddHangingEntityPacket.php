@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class AddHangingEntityPacket extends DataPacket{
+class AddHangingEntityPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_HANGING_ENTITY_PACKET;
 
 	/** @var int|null */

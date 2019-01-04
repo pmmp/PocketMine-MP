@@ -34,10 +34,12 @@ use pocketmine\network\mcpe\handler\PreSpawnSessionHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksSessionHandler;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\handler\SimpleSessionHandler;
+use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
+use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\NetworkInterface;
 use pocketmine\Player;
@@ -214,6 +216,10 @@ class NetworkSession{
 	 * @throws BadPacketException
 	 */
 	public function handleDataPacket(Packet $packet) : void{
+		if(!($packet instanceof ServerboundPacket)){
+			throw new BadPacketException("Unexpected non-serverbound packet " . $packet->getName());
+		}
+
 		$timings = Timings::getReceiveDataPacketTimings($packet);
 		$timings->startTiming();
 
@@ -237,7 +243,7 @@ class NetworkSession{
 		$timings->stopTiming();
 	}
 
-	public function sendDataPacket(Packet $packet, bool $immediate = false) : bool{
+	public function sendDataPacket(ClientboundPacket $packet, bool $immediate = false) : bool{
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
@@ -260,9 +266,9 @@ class NetworkSession{
 
 	/**
 	 * @internal
-	 * @param Packet $packet
+	 * @param ClientboundPacket $packet
 	 */
-	public function addToSendBuffer(Packet $packet) : void{
+	public function addToSendBuffer(ClientboundPacket $packet) : void{
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 		try{

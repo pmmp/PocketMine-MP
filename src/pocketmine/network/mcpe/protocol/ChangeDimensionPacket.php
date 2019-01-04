@@ -29,7 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class ChangeDimensionPacket extends DataPacket{
+class ChangeDimensionPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CHANGE_DIMENSION_PACKET;
 
 	/** @var int */

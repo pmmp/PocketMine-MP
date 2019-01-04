@@ -36,7 +36,7 @@ use pocketmine\network\mcpe\NetworkBinaryStream;
 use function count;
 use function str_repeat;
 
-class CraftingDataPacket extends DataPacket{
+class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CRAFTING_DATA_PACKET;
 
 	public const ENTRY_SHAPELESS = 0;
