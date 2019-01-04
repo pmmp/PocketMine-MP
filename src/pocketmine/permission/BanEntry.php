@@ -23,6 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use function array_shift;
+use function explode;
+use function implode;
+use function strlen;
+use function strtolower;
+use function trim;
+
 class BanEntry{
 	/**
 	 * @var string

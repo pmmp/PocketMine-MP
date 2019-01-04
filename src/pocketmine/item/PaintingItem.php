@@ -30,6 +30,7 @@ use pocketmine\entity\object\PaintingMotive;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
+use function array_rand;
 
 class PaintingItem extends Item{
 	public function __construct(int $meta = 0){

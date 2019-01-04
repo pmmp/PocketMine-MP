@@ -23,6 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use function file;
+use function is_file;
+use function preg_match;
+use function strlen;
+use function strpos;
+use function substr;
+use function trim;
+use const FILE_IGNORE_NEW_LINES;
+use const FILE_SKIP_EMPTY_LINES;
+
 /**
  * Simple script loader, not for plugin development
  * For an example see https://gist.github.com/shoghicp/516105d470cf7d140757

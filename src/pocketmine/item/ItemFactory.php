@@ -26,6 +26,17 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\nbt\tag\CompoundTag;
+use function constant;
+use function defined;
+use function explode;
+use function get_class;
+use function gettype;
+use function is_numeric;
+use function is_object;
+use function is_string;
+use function str_replace;
+use function strtoupper;
+use function trim;
 
 /**
  * Manages Item instance creation and registration

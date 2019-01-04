@@ -26,6 +26,22 @@ namespace pocketmine\command;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\Thread;
 use pocketmine\utils\Utils;
+use function extension_loaded;
+use function fclose;
+use function fgets;
+use function fopen;
+use function fstat;
+use function getopt;
+use function is_resource;
+use function microtime;
+use function preg_replace;
+use function readline;
+use function readline_add_history;
+use function stream_isatty;
+use function stream_select;
+use function trim;
+use function usleep;
+use const STDIN;
 
 class CommandReader extends Thread{
 

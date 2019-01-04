@@ -28,6 +28,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\Wood;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
+use function abs;
 
 class SpruceTree extends Tree{
 

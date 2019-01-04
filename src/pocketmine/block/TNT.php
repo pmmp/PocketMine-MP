@@ -30,6 +30,9 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
+use function cos;
+use function sin;
+use const M_PI;
 
 class TNT extends Solid{
 

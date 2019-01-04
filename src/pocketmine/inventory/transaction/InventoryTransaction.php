@@ -29,6 +29,11 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\Player;
+use function assert;
+use function count;
+use function get_class;
+use function min;
+use function spl_object_hash;
 
 /**
  * This InventoryTransaction only allows doing Transaction between one / two inventories

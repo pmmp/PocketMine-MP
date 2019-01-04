@@ -29,6 +29,8 @@ use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
+use function assert;
+use function strlen;
 
 class ChunkRequestTask extends AsyncTask{
 

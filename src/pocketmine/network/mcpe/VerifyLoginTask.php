@@ -27,6 +27,19 @@ use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\Player;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
+use function assert;
+use function base64_decode;
+use function chr;
+use function explode;
+use function json_decode;
+use function ltrim;
+use function openssl_verify;
+use function ord;
+use function str_split;
+use function strlen;
+use function time;
+use function wordwrap;
+use const OPENSSL_ALGO_SHA384;
 
 class VerifyLoginTask extends AsyncTask{
 

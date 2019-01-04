@@ -25,6 +25,10 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
+use function count;
+use function memory_get_usage;
+use function number_format;
+use function round;
 
 class GarbageCollectorCommand extends VanillaCommand{
 

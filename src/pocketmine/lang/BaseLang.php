@@ -24,6 +24,20 @@ declare(strict_types=1);
 namespace pocketmine\lang;
 
 use pocketmine\utils\MainLogger;
+use function array_filter;
+use function array_map;
+use function file_exists;
+use function is_dir;
+use function ord;
+use function parse_ini_file;
+use function scandir;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function strtolower;
+use function substr;
+use const INI_SCANNER_RAW;
+use const SCANDIR_SORT_NONE;
 
 class BaseLang{
 
@@ -93,7 +107,7 @@ class BaseLang{
 
 	protected static function loadLang(string $path, array &$d){
 		if(file_exists($path)){
-			$d = array_map('stripcslashes', parse_ini_file($path, false, INI_SCANNER_RAW));
+			$d = array_map('\stripcslashes', parse_ini_file($path, false, INI_SCANNER_RAW));
 			return true;
 		}else{
 			return false;

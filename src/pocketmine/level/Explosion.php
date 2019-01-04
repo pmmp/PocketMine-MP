@@ -43,6 +43,9 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Container;
 use pocketmine\tile\Tile;
+use function ceil;
+use function floor;
+use function mt_rand;
 
 class Explosion{
 	/** @var int */

@@ -30,6 +30,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 use pocketmine\utils\Utils;
+use function ctype_digit;
 
 abstract class Generator{
 

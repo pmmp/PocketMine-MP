@@ -67,6 +67,15 @@ use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use function bin2hex;
+use function implode;
+use function json_decode;
+use function json_last_error_msg;
+use function preg_match;
+use function preg_split;
+use function strlen;
+use function substr;
+use function trim;
 
 class PlayerNetworkSessionAdapter extends NetworkSession{
 

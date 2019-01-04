@@ -30,6 +30,16 @@ namespace pocketmine\wizard;
 use pocketmine\lang\BaseLang;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
+use function base64_encode;
+use function fgets;
+use function gethostbyname;
+use function random_bytes;
+use function sleep;
+use function strtolower;
+use function substr;
+use function trim;
+use const PHP_EOL;
+use const STDIN;
 
 class SetupWizard{
 	public const DEFAULT_NAME = \pocketmine\NAME . " Server";

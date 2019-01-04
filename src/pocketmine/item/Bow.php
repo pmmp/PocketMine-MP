@@ -31,6 +31,8 @@ use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
+use function intdiv;
+use function min;
 
 class Bow extends Tool{
 	public function __construct(int $meta = 0){

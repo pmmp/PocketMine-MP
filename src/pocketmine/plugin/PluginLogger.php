@@ -25,6 +25,7 @@ namespace pocketmine\plugin;
 
 use LogLevel;
 use pocketmine\Server;
+use function spl_object_hash;
 
 class PluginLogger implements \AttachableLogger{
 

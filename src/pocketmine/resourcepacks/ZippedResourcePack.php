@@ -26,6 +26,16 @@ namespace pocketmine\resourcepacks;
 
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
+use function count;
+use function fclose;
+use function feof;
+use function file_exists;
+use function filesize;
+use function fopen;
+use function fread;
+use function fseek;
+use function hash_file;
+use function implode;
 
 class ZippedResourcePack implements ResourcePack{
 

@@ -31,6 +31,10 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
+use function file_exists;
+use function file_get_contents;
+use function file_put_contents;
+use function mkdir;
 
 abstract class BaseLevelProvider implements LevelProvider{
 	/** @var string */

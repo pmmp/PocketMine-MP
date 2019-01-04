@@ -31,6 +31,7 @@ use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
+use function abs;
 
 class Nether extends Generator{
 

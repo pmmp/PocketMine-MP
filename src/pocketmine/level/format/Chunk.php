@@ -35,6 +35,17 @@ use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\BinaryStream;
+use function array_fill;
+use function array_filter;
+use function array_values;
+use function assert;
+use function chr;
+use function count;
+use function ord;
+use function pack;
+use function str_repeat;
+use function strlen;
+use function unpack;
 
 class Chunk{
 

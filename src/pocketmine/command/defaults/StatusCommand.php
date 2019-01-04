@@ -26,6 +26,11 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
+use function count;
+use function floor;
+use function microtime;
+use function number_format;
+use function round;
 
 class StatusCommand extends VanillaCommand{
 

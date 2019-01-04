@@ -30,6 +30,7 @@ use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\Server;
+use function spl_object_hash;
 
 class Network{
 

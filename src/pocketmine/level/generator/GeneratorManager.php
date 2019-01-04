@@ -25,6 +25,9 @@ namespace pocketmine\level\generator;
 
 use pocketmine\level\generator\hell\Nether;
 use pocketmine\level\generator\normal\Normal;
+use function array_keys;
+use function is_subclass_of;
+use function strtolower;
 
 final class GeneratorManager{
 	/** @var string[] name => classname mapping */

@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use function file_put_contents;
+
 class FileWriteTask extends AsyncTask{
 
 	/** @var string */

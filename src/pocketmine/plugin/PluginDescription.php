@@ -24,6 +24,20 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\permission\Permission;
+use function array_map;
+use function array_values;
+use function constant;
+use function defined;
+use function extension_loaded;
+use function is_array;
+use function phpversion;
+use function preg_match;
+use function str_replace;
+use function stripos;
+use function strlen;
+use function strtoupper;
+use function substr;
+use function version_compare;
 
 class PluginDescription{
 	private $map;
@@ -81,8 +95,8 @@ class PluginDescription{
 			throw new PluginException("Invalid PluginDescription main, cannot start within the PocketMine namespace");
 		}
 
-		$this->api = array_map("strval", (array) ($plugin["api"] ?? []));
-		$this->compatibleMcpeProtocols = array_map("intval", (array) ($plugin["mcpe-protocol"] ?? []));
+		$this->api = array_map("\strval", (array) ($plugin["api"] ?? []));
+		$this->compatibleMcpeProtocols = array_map("\intval", (array) ($plugin["mcpe-protocol"] ?? []));
 
 		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
 			$this->commands = $plugin["commands"];

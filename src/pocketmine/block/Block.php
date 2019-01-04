@@ -38,6 +38,8 @@ use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
+use function array_merge;
+use const PHP_INT_MAX;
 
 class Block extends Position implements BlockIds, Metadatable{
 

@@ -23,6 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io;
 
+use function chr;
+use function extension_loaded;
+use function ord;
+use function str_repeat;
+
 if(!extension_loaded('pocketmine_chunkutils')){
 	class ChunkUtils{
 

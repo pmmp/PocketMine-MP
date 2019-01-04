@@ -28,6 +28,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\Sapling;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
+use function abs;
 
 abstract class Tree{
 	public $overridable = [

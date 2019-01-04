@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
+use function mt_rand;
 
 class RawChicken extends Food{
 	public function __construct(int $meta = 0){

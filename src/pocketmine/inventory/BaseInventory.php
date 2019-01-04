@@ -32,6 +32,11 @@ use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
+use function array_slice;
+use function count;
+use function max;
+use function min;
+use function spl_object_hash;
 
 abstract class BaseInventory implements Inventory{
 

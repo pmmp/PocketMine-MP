@@ -34,6 +34,8 @@ use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
+use function count;
+use function strlen;
 
 class NetworkBinaryStream extends BinaryStream{
 

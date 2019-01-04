@@ -29,6 +29,7 @@ use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\Player;
+use function array_merge;
 
 class ArmorInventory extends BaseInventory{
 	public const SLOT_HEAD = 0;

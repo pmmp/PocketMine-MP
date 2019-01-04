@@ -31,6 +31,9 @@ use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\TextFormat;
+use function array_slice;
+use function count;
+use function implode;
 
 class GiveCommand extends VanillaCommand{
 

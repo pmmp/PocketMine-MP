@@ -29,6 +29,9 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
+use function count;
+use function strtolower;
+use const INT32_MAX;
 
 class EffectCommand extends VanillaCommand{
 

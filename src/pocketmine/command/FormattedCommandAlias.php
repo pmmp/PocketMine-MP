@@ -25,6 +25,11 @@ namespace pocketmine\command;
 
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
+use function count;
+use function ord;
+use function strlen;
+use function strpos;
+use function substr;
 
 class FormattedCommandAlias extends Command{
 	private $formatStrings = [];

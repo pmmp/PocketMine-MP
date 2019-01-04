@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
+use function count;
 
 class TallGrass{
 

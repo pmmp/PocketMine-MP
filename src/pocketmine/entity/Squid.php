@@ -29,6 +29,10 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use function atan2;
+use function mt_rand;
+use function sqrt;
+use const M_PI;
 
 class Squid extends WaterAnimal{
 	public const NETWORK_ID = self::SQUID;

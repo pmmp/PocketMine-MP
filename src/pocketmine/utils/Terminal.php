@@ -23,6 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function fclose;
+use function fopen;
+use function function_exists;
+use function getenv;
+use function getopt;
+use function is_array;
+use function stream_isatty;
+
 abstract class Terminal{
 	public static $FORMAT_BOLD = "";
 	public static $FORMAT_OBFUSCATED = "";

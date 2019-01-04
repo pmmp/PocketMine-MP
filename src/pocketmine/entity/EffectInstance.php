@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\utils\Color;
+use function max;
+use const INT32_MAX;
 
 class EffectInstance{
 	/** @var Effect */

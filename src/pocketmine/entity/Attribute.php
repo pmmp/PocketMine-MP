@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use function max;
+use function min;
+
 class Attribute{
 
 	public const ABSORPTION = 0;

@@ -37,6 +37,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\Player;
+use function ceil;
 
 class Painting extends Entity{
 	public const NETWORK_ID = self::PAINTING;

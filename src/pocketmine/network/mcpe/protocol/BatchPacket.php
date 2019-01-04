@@ -28,6 +28,11 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
+use function assert;
+use function get_class;
+use function strlen;
+use function zlib_decode;
+use function zlib_encode;
 #ifndef COMPILE
 use pocketmine\utils\Binary;
 #endif

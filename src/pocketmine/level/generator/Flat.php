@@ -33,6 +33,10 @@ use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
+use function count;
+use function explode;
+use function preg_match_all;
+use function str_replace;
 
 class Flat extends Generator{
 	/** @var Chunk */

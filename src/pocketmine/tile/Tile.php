@@ -39,6 +39,11 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use function current;
+use function get_class;
+use function in_array;
+use function is_a;
+use function reset;
 
 abstract class Tile extends Position{
 

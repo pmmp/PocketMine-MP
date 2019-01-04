@@ -32,6 +32,24 @@ use pocketmine\event\server\RemoteServerCommandEvent;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\utils\TextFormat;
+use function max;
+use function socket_bind;
+use function socket_close;
+use function socket_create;
+use function socket_create_pair;
+use function socket_getsockname;
+use function socket_last_error;
+use function socket_listen;
+use function socket_set_block;
+use function socket_strerror;
+use function socket_write;
+use function trim;
+use const AF_INET;
+use const AF_UNIX;
+use const SOCK_STREAM;
+use const SOCKET_ENOPROTOOPT;
+use const SOCKET_EPROTONOSUPPORT;
+use const SOL_TCP;
 
 class RCON{
 	/** @var Server */

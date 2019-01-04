@@ -25,6 +25,12 @@ namespace pocketmine\timings;
 
 use pocketmine\entity\Living;
 use pocketmine\Server;
+use function count;
+use function fwrite;
+use function microtime;
+use function round;
+use function spl_object_hash;
+use const PHP_EOL;
 
 class TimingsHandler{
 

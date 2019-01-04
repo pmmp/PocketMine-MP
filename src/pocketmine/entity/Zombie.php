@@ -25,6 +25,7 @@ namespace pocketmine\entity;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use function mt_rand;
 
 class Zombie extends Monster{
 	public const NETWORK_ID = self::ZOMBIE;

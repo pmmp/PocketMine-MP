@@ -31,6 +31,9 @@ use pocketmine\level\Level;
 use pocketmine\level\sound\FizzSound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use function array_fill;
+use function lcg_value;
+use function min;
 
 abstract class Liquid extends Transparent{
 

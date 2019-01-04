@@ -25,6 +25,10 @@ namespace pocketmine\entity;
 
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use function assert;
+use function is_float;
+use function is_int;
+use function is_string;
 
 class DataPropertyManager{
 

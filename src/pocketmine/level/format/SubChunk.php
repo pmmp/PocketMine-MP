@@ -23,6 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format;
 
+use function assert;
+use function chr;
+use function define;
+use function defined;
+use function ord;
+use function str_repeat;
+use function strlen;
+use function substr;
+use function substr_count;
+
 if(!defined(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY')){
 	define(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY', str_repeat("\x00", 2048));
 }

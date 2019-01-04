@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pocketmine\MemoryManager;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * Task used to dump memory from AsyncWorkers

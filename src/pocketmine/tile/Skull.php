@@ -27,6 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
+use function floor;
 
 class Skull extends Spawnable{
 	public const TYPE_SKELETON = 0;

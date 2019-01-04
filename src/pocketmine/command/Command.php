@@ -32,6 +32,8 @@ use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\TextFormat;
+use function explode;
+use function str_replace;
 
 abstract class Command{
 

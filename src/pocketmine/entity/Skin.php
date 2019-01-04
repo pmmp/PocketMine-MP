@@ -23,6 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use function json_decode;
+use function json_encode;
+use function strlen;
+
 class Skin{
 
 	/** @var string */

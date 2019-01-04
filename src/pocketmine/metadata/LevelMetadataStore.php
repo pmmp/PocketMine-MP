@@ -25,6 +25,7 @@ namespace pocketmine\metadata;
 
 use pocketmine\level\Level;
 use pocketmine\plugin\Plugin;
+use function strtolower;
 
 class LevelMetadataStore extends MetadataStore{
 

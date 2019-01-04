@@ -23,6 +23,35 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function array_merge;
+use function curl_close;
+use function curl_error;
+use function curl_exec;
+use function curl_getinfo;
+use function curl_init;
+use function curl_setopt_array;
+use function explode;
+use function preg_match;
+use function strip_tags;
+use function strtolower;
+use function substr;
+use function trim;
+use const CURLINFO_HEADER_SIZE;
+use const CURLINFO_HTTP_CODE;
+use const CURLOPT_AUTOREFERER;
+use const CURLOPT_CONNECTTIMEOUT_MS;
+use const CURLOPT_FOLLOWLOCATION;
+use const CURLOPT_FORBID_REUSE;
+use const CURLOPT_FRESH_CONNECT;
+use const CURLOPT_HEADER;
+use const CURLOPT_HTTPHEADER;
+use const CURLOPT_POST;
+use const CURLOPT_POSTFIELDS;
+use const CURLOPT_RETURNTRANSFER;
+use const CURLOPT_SSL_VERIFYHOST;
+use const CURLOPT_SSL_VERIFYPEER;
+use const CURLOPT_TIMEOUT_MS;
+
 class Internet{
 	public static $ip = false;
 	public static $online = true;

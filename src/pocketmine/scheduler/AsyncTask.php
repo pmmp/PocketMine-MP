@@ -25,6 +25,9 @@ namespace pocketmine\scheduler;
 
 use pocketmine\Collectable;
 use pocketmine\Server;
+use function is_scalar;
+use function serialize;
+use function unserialize;
 
 /**
  * Class used to run async tasks in other threads.

@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
+use function ord;
+
 class PacketPool{
 	/** @var \SplFixedArray<DataPacket> */
 	protected static $pool = null;

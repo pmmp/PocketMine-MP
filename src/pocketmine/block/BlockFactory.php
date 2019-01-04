@@ -25,6 +25,10 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Position;
+use function file_get_contents;
+use function json_decode;
+use function max;
+use function min;
 
 /**
  * Manages block registration and instance creation

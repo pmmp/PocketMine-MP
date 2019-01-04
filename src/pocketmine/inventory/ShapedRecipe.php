@@ -25,6 +25,12 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use function array_map;
+use function array_values;
+use function count;
+use function implode;
+use function strlen;
+use function strpos;
 
 class ShapedRecipe implements CraftingRecipe{
 	/** @var string[] */
