@@ -28,6 +28,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use function mt_rand;
 
 class DeadBush extends Flowable{
 

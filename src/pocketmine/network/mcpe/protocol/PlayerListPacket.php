@@ -29,6 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\entity\Skin;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use function count;
 
 class PlayerListPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_LIST_PACKET;

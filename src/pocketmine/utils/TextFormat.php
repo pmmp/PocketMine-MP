@@ -23,6 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function is_array;
+use function json_encode;
+use function preg_quote;
+use function preg_replace;
+use function preg_split;
+use function str_repeat;
+use function str_replace;
+use const JSON_UNESCAPED_SLASHES;
+use const PREG_SPLIT_DELIM_CAPTURE;
+use const PREG_SPLIT_NO_EMPTY;
+
 /**
  * Class used to handle Minecraft chat format, and convert it to other formats like HTML
  */

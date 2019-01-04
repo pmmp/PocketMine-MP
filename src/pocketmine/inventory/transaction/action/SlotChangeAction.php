@@ -27,6 +27,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\Player;
+use function spl_object_hash;
 
 /**
  * Represents an action causing a change in an inventory slot.

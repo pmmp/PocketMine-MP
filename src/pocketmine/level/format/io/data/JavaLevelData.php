@@ -32,6 +32,10 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\StringTag;
+use function ceil;
+use function file_get_contents;
+use function file_put_contents;
+use function microtime;
 
 class JavaLevelData extends BaseNbtLevelData{
 

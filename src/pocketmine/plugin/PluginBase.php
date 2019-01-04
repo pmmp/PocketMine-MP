@@ -31,6 +31,26 @@ use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\Config;
+use function count;
+use function dirname;
+use function fclose;
+use function file_exists;
+use function fopen;
+use function gettype;
+use function is_array;
+use function is_bool;
+use function is_dir;
+use function is_string;
+use function mkdir;
+use function rtrim;
+use function str_replace;
+use function stream_copy_to_stream;
+use function strlen;
+use function strpos;
+use function strtolower;
+use function substr;
+use function trim;
+use const DIRECTORY_SEPARATOR;
 
 abstract class PluginBase implements Plugin, CommandExecutor{
 

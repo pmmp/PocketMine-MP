@@ -30,6 +30,22 @@ use pocketmine\Player;
 use pocketmine\scheduler\BulkCurlTask;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\InternetException;
+use function count;
+use function fclose;
+use function file_exists;
+use function fopen;
+use function fseek;
+use function http_build_query;
+use function is_array;
+use function json_decode;
+use function mkdir;
+use function stream_get_contents;
+use function strtolower;
+use const CURLOPT_AUTOREFERER;
+use const CURLOPT_FOLLOWLOCATION;
+use const CURLOPT_HTTPHEADER;
+use const CURLOPT_POST;
+use const CURLOPT_POSTFIELDS;
 
 class TimingsCommand extends VanillaCommand{
 

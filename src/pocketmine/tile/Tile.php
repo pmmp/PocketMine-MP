@@ -36,6 +36,12 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
+use function assert;
+use function current;
+use function get_class;
+use function in_array;
+use function is_a;
+use function reset;
 
 abstract class Tile extends Position{
 

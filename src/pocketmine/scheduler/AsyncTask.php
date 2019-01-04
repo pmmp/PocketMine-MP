@@ -23,6 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use function is_scalar;
+use function serialize;
+use function spl_object_hash;
+use function unserialize;
+
 /**
  * Class used to run async tasks in other threads.
  *

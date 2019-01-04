@@ -28,6 +28,8 @@ use pocketmine\level\biome\Biome;
 use pocketmine\level\Level;
 use pocketmine\level\SimpleChunkManager;
 use pocketmine\scheduler\AsyncTask;
+use function serialize;
+use function unserialize;
 
 class GeneratorRegisterTask extends AsyncTask{
 

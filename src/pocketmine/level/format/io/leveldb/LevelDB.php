@@ -36,6 +36,19 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
+use function array_values;
+use function chr;
+use function defined;
+use function extension_loaded;
+use function file_exists;
+use function is_dir;
+use function mkdir;
+use function ord;
+use function pack;
+use function strlen;
+use function substr;
+use function unpack;
+use const LEVELDB_ZLIB_RAW_COMPRESSION;
 
 class LevelDB extends BaseLevelProvider{
 

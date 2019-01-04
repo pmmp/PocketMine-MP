@@ -27,6 +27,8 @@ use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Facing;
+use function array_rand;
+use function mt_rand;
 
 abstract class Stem extends Crops{
 

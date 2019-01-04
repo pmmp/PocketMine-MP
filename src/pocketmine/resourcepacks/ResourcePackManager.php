@@ -25,6 +25,16 @@ declare(strict_types=1);
 namespace pocketmine\resourcepacks;
 
 use pocketmine\utils\Config;
+use function array_keys;
+use function copy;
+use function count;
+use function file_exists;
+use function gettype;
+use function is_array;
+use function is_dir;
+use function mkdir;
+use function strtolower;
+use const DIRECTORY_SEPARATOR;
 
 class ResourcePackManager{
 

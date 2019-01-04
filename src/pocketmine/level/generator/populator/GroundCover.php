@@ -29,6 +29,8 @@ use pocketmine\block\Liquid;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
+use function count;
+use function min;
 
 class GroundCover extends Populator{
 

@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use function array_filter;
+
 class AttributeMap implements \ArrayAccess{
 	/** @var Attribute[] */
 	private $attributes = [];

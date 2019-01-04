@@ -30,6 +30,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use function count;
 
 class KillCommand extends VanillaCommand{
 

@@ -27,6 +27,7 @@ use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\NetworkInterface;
 use pocketmine\Player;
+use function is_a;
 
 /**
  * Allows the creation of players overriding the base Player class

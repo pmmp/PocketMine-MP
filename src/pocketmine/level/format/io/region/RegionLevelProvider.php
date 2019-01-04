@@ -29,6 +29,17 @@ use pocketmine\level\format\io\data\JavaLevelData;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\LevelData;
 use pocketmine\level\Level;
+use function assert;
+use function file_exists;
+use function is_dir;
+use function is_int;
+use function mkdir;
+use function rename;
+use function scandir;
+use function strrpos;
+use function substr;
+use function time;
+use const SCANDIR_SORT_NONE;
 
 abstract class RegionLevelProvider extends BaseLevelProvider{
 

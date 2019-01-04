@@ -30,6 +30,7 @@ use pocketmine\lang\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
+use function count;
 
 class GamemodeCommand extends VanillaCommand{
 

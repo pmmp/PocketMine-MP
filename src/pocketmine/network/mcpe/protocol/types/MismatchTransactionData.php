@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
+use function count;
 
 class MismatchTransactionData extends TransactionData{
 

@@ -32,6 +32,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Skull as TileSkull;
 use pocketmine\tile\Tile;
+use function floor;
 
 class Skull extends Flowable{
 

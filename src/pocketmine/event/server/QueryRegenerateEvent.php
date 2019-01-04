@@ -27,6 +27,10 @@ use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
+use function chr;
+use function count;
+use function str_replace;
+use function substr;
 
 class QueryRegenerateEvent extends ServerEvent{
 	public const GAME_ID = "MINECRAFTPE";

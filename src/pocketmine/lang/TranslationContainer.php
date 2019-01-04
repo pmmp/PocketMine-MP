@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
+use function count;
+
 class TranslationContainer extends TextContainer{
 
 	/** @var string[] $params */

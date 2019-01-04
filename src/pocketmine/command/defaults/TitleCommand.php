@@ -26,6 +26,9 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use function array_slice;
+use function count;
+use function implode;
 
 class TitleCommand extends VanillaCommand{
 

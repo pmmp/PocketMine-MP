@@ -233,16 +233,16 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.1.4",
+            "version": "0.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "8c559e8c437aa56143e1a9231debf734b4de481c"
+                "reference": "03361b0d78ef2b400a99e96406aa594a5bc1c4ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/8c559e8c437aa56143e1a9231debf734b4de481c",
-                "reference": "8c559e8c437aa56143e1a9231debf734b4de481c",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/03361b0d78ef2b400a99e96406aa594a5bc1c4ed",
+                "reference": "03361b0d78ef2b400a99e96406aa594a5bc1c4ed",
                 "shasum": ""
             },
             "require": {
@@ -260,10 +260,10 @@
             ],
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
-                "source": "https://github.com/pmmp/BinaryUtils/tree/master",
+                "source": "https://github.com/pmmp/BinaryUtils/tree/0.1.5",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
-            "time": "2019-01-01T15:58:16+00:00"
+            "time": "2019-01-04T13:32:11+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -271,12 +271,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "a162c02be87fd49abd195a7330e61be9d4b8e766"
+                "reference": "1bf44397897d8e50d747e9e7a3de245c21b464c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/a162c02be87fd49abd195a7330e61be9d4b8e766",
-                "reference": "a162c02be87fd49abd195a7330e61be9d4b8e766",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/1bf44397897d8e50d747e9e7a3de245c21b464c9",
+                "reference": "1bf44397897d8e50d747e9e7a3de245c21b464c9",
                 "shasum": ""
             },
             "require": {
@@ -302,7 +302,7 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2018-12-07T10:47:16+00:00"
+            "time": "2019-01-04T15:49:39+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -310,12 +310,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "a32760c1797280574c461e6c42502221de499d01"
+                "reference": "863b2e509485baffd4897cd6fa8e98e7e7e5ae14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/a32760c1797280574c461e6c42502221de499d01",
-                "reference": "a32760c1797280574c461e6c42502221de499d01",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/863b2e509485baffd4897cd6fa8e98e7e7e5ae14",
+                "reference": "863b2e509485baffd4897cd6fa8e98e7e7e5ae14",
                 "shasum": ""
             },
             "require": {
@@ -343,7 +343,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2018-12-29T19:46:47+00:00"
+            "time": "2019-01-04T15:32:10+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -351,12 +351,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "3665288c955c0dbbb40c11ee1c7b4f7e6d5199bf"
+                "reference": "8f189b687d39489e422bb30be984a33763f29662"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/3665288c955c0dbbb40c11ee1c7b4f7e6d5199bf",
-                "reference": "3665288c955c0dbbb40c11ee1c7b4f7e6d5199bf",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/8f189b687d39489e422bb30be984a33763f29662",
+                "reference": "8f189b687d39489e422bb30be984a33763f29662",
                 "shasum": ""
             },
             "require": {
@@ -384,20 +384,20 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2018-12-28T17:22:34+00:00"
+            "time": "2019-01-04T15:05:24+00:00"
         },
         {
             "name": "pocketmine/snooze",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "3cc9d0164230889acb08e22cc126133809e9d346"
+                "reference": "b7bd231bdb75e69300cac89ccd515fc731c38c40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/3cc9d0164230889acb08e22cc126133809e9d346",
-                "reference": "3cc9d0164230889acb08e22cc126133809e9d346",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/b7bd231bdb75e69300cac89ccd515fc731c38c40",
+                "reference": "b7bd231bdb75e69300cac89ccd515fc731c38c40",
                 "shasum": ""
             },
             "require": {
@@ -415,10 +415,10 @@
             ],
             "description": "Thread notification management library for code using the pthreads extension",
             "support": {
-                "source": "https://github.com/pmmp/Snooze/tree/0.1.0",
+                "source": "https://github.com/pmmp/Snooze/tree/0.1.1",
                 "issues": "https://github.com/pmmp/Snooze/issues"
             },
-            "time": "2018-06-13T09:36:11+00:00"
+            "time": "2019-01-04T15:54:45+00:00"
         },
         {
             "name": "pocketmine/spl",

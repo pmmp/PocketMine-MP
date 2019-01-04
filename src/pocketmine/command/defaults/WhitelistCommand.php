@@ -28,6 +28,9 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
+use function count;
+use function implode;
+use function strtolower;
 
 class WhitelistCommand extends VanillaCommand{
 

@@ -69,6 +69,14 @@ use pocketmine\network\mcpe\protocol\types\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\UseItemTransactionData;
 use pocketmine\Player;
+use function implode;
+use function json_decode;
+use function json_encode;
+use function json_last_error_msg;
+use function microtime;
+use function preg_match;
+use function preg_split;
+use function trim;
 
 /**
  * Temporary session handler implementation

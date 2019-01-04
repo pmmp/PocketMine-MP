@@ -30,6 +30,8 @@ use pocketmine\entity\EntityIds;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use function array_search;
+use function count;
 
 class AddEntityPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_ENTITY_PACKET;

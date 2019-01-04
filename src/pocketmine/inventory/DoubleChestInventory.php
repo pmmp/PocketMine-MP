@@ -26,6 +26,9 @@ namespace pocketmine\inventory;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use pocketmine\tile\Chest;
+use function array_merge;
+use function array_slice;
+use function count;
 
 class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	/** @var ChestInventory */

@@ -26,6 +26,28 @@ namespace pocketmine\network\rcon;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\Thread;
 use pocketmine\utils\Binary;
+use function count;
+use function ltrim;
+use function microtime;
+use function rtrim;
+use function socket_accept;
+use function socket_close;
+use function socket_getpeername;
+use function socket_last_error;
+use function socket_read;
+use function socket_select;
+use function socket_set_block;
+use function socket_set_option;
+use function socket_shutdown;
+use function socket_write;
+use function str_replace;
+use function strlen;
+use function trim;
+use const PTHREADS_INHERIT_NONE;
+use const SO_KEEPALIVE;
+use const SO_LINGER;
+use const SOCKET_ECONNRESET;
+use const SOL_SOCKET;
 
 class RCONInstance extends Thread{
 

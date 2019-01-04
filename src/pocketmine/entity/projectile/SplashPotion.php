@@ -35,6 +35,8 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\utils\Color;
+use function round;
+use function sqrt;
 
 class SplashPotion extends Throwable{
 

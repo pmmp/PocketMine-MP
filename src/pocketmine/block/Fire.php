@@ -32,6 +32,8 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use function min;
+use function mt_rand;
 
 class Fire extends Flowable{
 

@@ -33,6 +33,11 @@ use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
+use function array_values;
+use function pack;
+use function str_repeat;
+use function substr;
+use function unpack;
 
 class McRegion extends RegionLevelProvider{
 

@@ -28,6 +28,11 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\utils\Utils;
+use function bin2hex;
+use function get_class;
+use function is_object;
+use function is_string;
+use function method_exists;
 
 abstract class DataPacket extends NetworkBinaryStream{
 

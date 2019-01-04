@@ -28,6 +28,14 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use function array_map;
+use function array_pad;
+use function array_slice;
+use function assert;
+use function count;
+use function explode;
+use function implode;
+use function sprintf;
 
 class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";

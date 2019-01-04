@@ -32,6 +32,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
+use function get_class;
 
 class ItemEntity extends Entity{
 	public const NETWORK_ID = self::ITEM;

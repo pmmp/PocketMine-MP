@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\Player;
+use function array_keys;
 
 /**
  * Called when a player connects to the server, prior to authentication taking place.

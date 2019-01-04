@@ -31,6 +31,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
+use function array_rand;
 
 class PaintingItem extends Item{
 	public function __construct(){

@@ -26,6 +26,7 @@ namespace pocketmine\permission;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
 use pocketmine\timings\Timings;
+use function spl_object_hash;
 
 class PermissibleBase implements Permissible{
 	/** @var ServerOperator */

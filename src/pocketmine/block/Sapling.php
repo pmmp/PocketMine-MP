@@ -29,6 +29,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
+use function mt_rand;
 
 class Sapling extends Flowable{
 

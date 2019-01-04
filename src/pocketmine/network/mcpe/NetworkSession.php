@@ -42,6 +42,10 @@ use pocketmine\network\NetworkInterface;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use function bin2hex;
+use function strlen;
+use function substr;
+use function time;
 
 class NetworkSession{
 	/** @var Server */

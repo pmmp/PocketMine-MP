@@ -24,6 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pocketmine\utils\Utils;
+use function array_keys;
+use function assert;
+use function count;
+use function spl_object_hash;
+use function time;
+use const PHP_INT_MAX;
+use const PTHREADS_INHERIT_CONSTANTS;
+use const PTHREADS_INHERIT_INI;
 
 /**
  * Manages general-purpose worker threads used for processing asynchronous tasks, and the tasks submitted to those

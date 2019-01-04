@@ -35,6 +35,28 @@ use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\Player;
 use pocketmine\scheduler\AsyncTask;
+use function assert;
+use function base64_decode;
+use function base64_encode;
+use function bin2hex;
+use function explode;
+use function gmp_init;
+use function gmp_strval;
+use function hex2bin;
+use function json_decode;
+use function json_encode;
+use function openssl_digest;
+use function openssl_sign;
+use function openssl_verify;
+use function random_bytes;
+use function rtrim;
+use function str_pad;
+use function str_repeat;
+use function str_split;
+use function strlen;
+use function time;
+use const OPENSSL_ALGO_SHA384;
+use const STR_PAD_LEFT;
 
 class ProcessLoginTask extends AsyncTask{
 

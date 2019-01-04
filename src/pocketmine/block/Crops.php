@@ -29,6 +29,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use function mt_rand;
 
 abstract class Crops extends Flowable{
 	/** @var int */

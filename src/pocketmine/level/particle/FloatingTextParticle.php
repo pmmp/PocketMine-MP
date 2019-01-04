@@ -33,6 +33,7 @@ use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\utils\UUID;
+use function str_repeat;
 
 class FloatingTextParticle extends Particle{
 	//TODO: HACK!

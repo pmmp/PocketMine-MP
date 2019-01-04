@@ -33,6 +33,10 @@ use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\Player;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
+use function ceil;
+use function implode;
+use function strpos;
+use function substr;
 
 /**
  * Handler used for the resource packs sequence phase of the session. This handler takes care of downloading resource

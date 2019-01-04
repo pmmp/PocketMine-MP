@@ -27,6 +27,7 @@ use pocketmine\level\format\io\LevelData;
 use pocketmine\level\LevelException;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use function file_exists;
 
 abstract class BaseNbtLevelData implements LevelData{
 

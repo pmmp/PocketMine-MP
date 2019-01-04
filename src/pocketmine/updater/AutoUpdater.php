@@ -28,6 +28,12 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\VersionString;
+use function date;
+use function sprintf;
+use function str_repeat;
+use function strlen;
+use function strtolower;
+use function ucfirst;
 
 class AutoUpdater{
 

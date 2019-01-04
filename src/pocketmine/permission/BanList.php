@@ -24,6 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\permission;
 
 use pocketmine\Server;
+use function fclose;
+use function fgets;
+use function fopen;
+use function fwrite;
+use function is_resource;
+use function strftime;
+use function strtolower;
+use function time;
 
 class BanList{
 

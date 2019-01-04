@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\noise;
 
 use pocketmine\utils\Random;
+use const M_SQRT3;
 
 /**
  * Generates simplex-based noise.

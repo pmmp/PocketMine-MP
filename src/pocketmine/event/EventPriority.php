@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\event;
 
+use function constant;
+use function defined;
+use function strtoupper;
 
 /**
  * List of event priorities

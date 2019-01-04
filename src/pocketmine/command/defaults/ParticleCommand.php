@@ -62,6 +62,13 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
+use function count;
+use function explode;
+use function max;
+use function microtime;
+use function mt_rand;
+use function strpos;
+use function strtolower;
 
 class ParticleCommand extends VanillaCommand{
 

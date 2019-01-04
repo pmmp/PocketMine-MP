@@ -27,6 +27,9 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\noise;
 
 
+use function array_fill;
+use function assert;
+
 abstract class Noise{
 
 

@@ -29,6 +29,14 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\tile\Skull;
+use function constant;
+use function defined;
+use function explode;
+use function is_a;
+use function is_numeric;
+use function str_replace;
+use function strtoupper;
+use function trim;
 
 /**
  * Manages Item instance creation and registration

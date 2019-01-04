@@ -27,6 +27,7 @@ use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Facing;
+use function mt_rand;
 
 class Mycelium extends Solid{
 

@@ -89,6 +89,30 @@ use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
 use pocketmine\utils\ReversePriorityQueue;
+use function abs;
+use function array_fill_keys;
+use function array_map;
+use function array_merge;
+use function array_sum;
+use function assert;
+use function cos;
+use function count;
+use function floor;
+use function get_class;
+use function gettype;
+use function is_a;
+use function is_array;
+use function is_object;
+use function lcg_value;
+use function max;
+use function microtime;
+use function min;
+use function mt_rand;
+use function strtolower;
+use function trim;
+use const INT32_MAX;
+use const INT32_MIN;
+use const M_PI;
 
 #include <rules/Level.h>
 

@@ -28,6 +28,8 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
+use function is_numeric;
+use function substr;
 
 abstract class VanillaCommand extends Command{
 	public const MAX_COORD = 30000000;

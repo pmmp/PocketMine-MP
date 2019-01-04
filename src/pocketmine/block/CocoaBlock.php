@@ -31,6 +31,7 @@ use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use function mt_rand;
 
 class CocoaBlock extends Transparent{
 

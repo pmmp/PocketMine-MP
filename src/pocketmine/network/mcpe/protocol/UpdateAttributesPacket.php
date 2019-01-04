@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\entity\Attribute;
 use pocketmine\network\mcpe\handler\SessionHandler;
+use function array_values;
 
 class UpdateAttributesPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_ATTRIBUTES_PACKET;

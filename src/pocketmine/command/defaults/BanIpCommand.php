@@ -28,6 +28,10 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Player;
+use function array_shift;
+use function count;
+use function implode;
+use function preg_match;
 
 class BanIpCommand extends VanillaCommand{
 

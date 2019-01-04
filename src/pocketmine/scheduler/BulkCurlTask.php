@@ -25,6 +25,8 @@ namespace pocketmine\scheduler;
 
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
+use function serialize;
+use function unserialize;
 
 /**
  * Executes a consecutive list of cURL operations.

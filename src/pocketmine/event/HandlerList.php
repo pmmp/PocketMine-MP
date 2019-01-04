@@ -26,6 +26,9 @@ namespace pocketmine\event;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\RegisteredListener;
 use pocketmine\utils\Utils;
+use function array_fill_keys;
+use function in_array;
+use function spl_object_hash;
 
 class HandlerList{
 	/**

@@ -25,6 +25,7 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
+use function array_sum;
 
 /**
  * Called when an entity takes damage.

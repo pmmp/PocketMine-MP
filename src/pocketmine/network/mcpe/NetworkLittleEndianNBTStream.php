@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\nbt\LittleEndianNBTStream;
+use function count;
+use function strlen;
 #ifndef COMPILE
 use pocketmine\utils\Binary;
 #endif

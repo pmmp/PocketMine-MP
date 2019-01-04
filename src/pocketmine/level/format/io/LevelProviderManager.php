@@ -28,6 +28,8 @@ use pocketmine\level\format\io\region\Anvil;
 use pocketmine\level\format\io\region\McRegion;
 use pocketmine\level\format\io\region\PMAnvil;
 use pocketmine\utils\Utils;
+use function strtolower;
+use function trim;
 
 abstract class LevelProviderManager{
 	protected static $providers = [];

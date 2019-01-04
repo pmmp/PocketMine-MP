@@ -27,6 +27,7 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\LevelException;
+use function file_exists;
 
 abstract class BaseLevelProvider implements LevelProvider{
 	/** @var string */

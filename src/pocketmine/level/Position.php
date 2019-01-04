@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level;
 
 use pocketmine\math\Vector3;
+use function assert;
 
 class Position extends Vector3{
 

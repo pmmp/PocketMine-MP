@@ -23,6 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
+use function array_filter;
+use function array_map;
+use function explode;
+use function file_exists;
+use function is_dir;
+use function ord;
+use function parse_ini_file;
+use function scandir;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function strtolower;
+use function substr;
+use const INI_SCANNER_RAW;
+use const SCANDIR_SORT_NONE;
+
 class Language{
 
 	public const FALLBACK_LANGUAGE = "eng";
@@ -100,7 +116,7 @@ class Language{
 	protected static function loadLang(string $path, string $languageCode) : array{
 		$file = $path . $languageCode . ".ini";
 		if(file_exists($file)){
-			return array_map('stripcslashes', parse_ini_file($file, false, INI_SCANNER_RAW));
+			return array_map('\stripcslashes', parse_ini_file($file, false, INI_SCANNER_RAW));
 		}
 
 		throw new LanguageNotFoundException("Language \"$languageCode\" not found");

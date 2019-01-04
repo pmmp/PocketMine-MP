@@ -36,6 +36,8 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
+use function ceil;
+use function max;
 
 class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	use NameableTrait {

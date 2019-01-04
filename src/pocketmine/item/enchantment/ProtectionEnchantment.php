@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\event\entity\EntityDamageEvent;
+use function array_flip;
+use function floor;
 
 class ProtectionEnchantment extends Enchantment{
 	/** @var float */

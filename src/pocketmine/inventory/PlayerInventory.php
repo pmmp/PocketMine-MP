@@ -29,6 +29,8 @@ use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
+use function in_array;
+use function is_array;
 
 class PlayerInventory extends BaseInventory{
 

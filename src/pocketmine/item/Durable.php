@@ -25,6 +25,8 @@ namespace pocketmine\item;
 
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\nbt\tag\ByteTag;
+use function lcg_value;
+use function min;
 
 abstract class Durable extends Item{
 

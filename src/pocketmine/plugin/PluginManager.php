@@ -34,6 +34,26 @@ use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
+use function array_intersect;
+use function array_map;
+use function array_pad;
+use function class_exists;
+use function count;
+use function dirname;
+use function explode;
+use function file_exists;
+use function get_class;
+use function implode;
+use function is_a;
+use function is_array;
+use function is_dir;
+use function is_subclass_of;
+use function mkdir;
+use function stripos;
+use function strpos;
+use function strtolower;
+use function strtoupper;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * Manages all the plugins
@@ -346,7 +366,7 @@ class PluginManager{
 	public function isCompatibleApi(string ...$versions) : bool{
 		$serverString = $this->server->getApiVersion();
 		$serverApi = array_pad(explode("-", $serverString), 2, "");
-		$serverNumbers = array_map("intval", explode(".", $serverApi[0]));
+		$serverNumbers = array_map("\intval", explode(".", $serverApi[0]));
 
 		foreach($versions as $version){
 			//Format: majorVersion.minorVersion.patch (3.0.0)
@@ -358,7 +378,7 @@ class PluginManager{
 					continue;
 				}
 
-				$pluginNumbers = array_map("intval", array_pad(explode(".", $pluginApi[0]), 3, "0")); //plugins might specify API like "3.0" or "3"
+				$pluginNumbers = array_map("\intval", array_pad(explode(".", $pluginApi[0]), 3, "0")); //plugins might specify API like "3.0" or "3"
 
 				if($pluginNumbers[0] !== $serverNumbers[0]){ //Completely different API version
 					continue;
