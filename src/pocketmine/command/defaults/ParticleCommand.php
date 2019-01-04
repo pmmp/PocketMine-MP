@@ -211,12 +211,12 @@ class ParticleCommand extends VanillaCommand{
 		}elseif(strpos($name, "blockcrack_") === 0){
 			$d = explode("_", $name);
 			if(count($d) === 2){
-				return new TerrainParticle(BlockFactory::get($d[1] & 0xff, $d[1] >> 12));
+				return new TerrainParticle(BlockFactory::get(((int) $d[1]) & 0xff, ((int) $d[1]) >> 12));
 			}
 		}elseif(strpos($name, "blockdust_") === 0){
 			$d = explode("_", $name);
 			if(count($d) >= 4){
-				return new DustParticle($d[1] & 0xff, $d[2] & 0xff, $d[3] & 0xff, isset($d[4]) ? $d[4] & 0xff : 255);
+				return new DustParticle(((int) $d[1]) & 0xff, ((int) $d[2]) & 0xff, ((int) $d[3]) & 0xff, isset($d[4]) ? ((int) $d[4]) & 0xff : 255);
 			}
 		}
 

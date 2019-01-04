@@ -173,16 +173,21 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	public function sendCreativeContents(){
+		//TODO: this mess shouldn't be in here
+		$holder = $this->getHolder();
+		if(!($holder instanceof Player)){
+			throw new \LogicException("Cannot send creative inventory contents to non-player inventory holder");
+		}
 		$pk = new InventoryContentPacket();
 		$pk->windowId = ContainerIds::CREATIVE;
 
-		if(!$this->getHolder()->isSpectator()){ //fill it for all gamemodes except spectator
+		if(!$holder->isSpectator()){ //fill it for all gamemodes except spectator
 			foreach(Item::getCreativeItems() as $i => $item){
 				$pk->items[$i] = clone $item;
 			}
 		}
 
-		$this->getHolder()->sendDataPacket($pk);
+		$holder->sendDataPacket($pk);
 	}
 
 	/**

@@ -678,7 +678,9 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function unregisterChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ){
-		if(isset($this->chunkLoaders[$index = Level::chunkHash($chunkX, $chunkZ)][$hash = $loader->getLoaderId()])){
+		$index = Level::chunkHash($chunkX, $chunkZ);
+		$hash = $loader->getLoaderId();
+		if(isset($this->chunkLoaders[$index][$hash])){
 			unset($this->chunkLoaders[$index][$hash]);
 			unset($this->playerLoaders[$index][$hash]);
 			if(count($this->chunkLoaders[$index]) === 0){
@@ -1306,9 +1308,9 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @param $x
-	 * @param $y
-	 * @param $z
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
 	 *
 	 * @return int bitmap, (id << 4) | data
 	 */
