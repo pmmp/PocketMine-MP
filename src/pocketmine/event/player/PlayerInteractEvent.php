@@ -54,7 +54,7 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * @param Player       $player
 	 * @param Item         $item
-	 * @param Block|null   $block
+	 * @param Block        $block
 	 * @param Vector3|null $touchVector
 	 * @param int          $face
 	 * @param int          $action
