@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\math\Facing;
 
 class Rail extends BaseRail{

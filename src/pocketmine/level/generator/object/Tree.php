@@ -28,7 +28,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\Leaves;
 use pocketmine\block\Sapling;
 use pocketmine\block\utils\WoodType;
-use pocketmine\block\Wood;
 use pocketmine\level\BlockWriteBatch;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
