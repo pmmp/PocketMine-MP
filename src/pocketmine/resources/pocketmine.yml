@@ -96,10 +96,6 @@ network:
  max-mtu-size: 1492
 
 debug:
- #To enable assertion execution, set zend.assertions in your php.ini to 1
- assertions:
-  #Warn if assertions are enabled in php.ini, due to assertions may impact on runtime performance if enabled.
-  warn-if-enabled: true
  #If > 1, it will show debug messages in the console
  level: 1
  #Enables /status, /gc

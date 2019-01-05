@@ -1551,7 +1551,7 @@ class Server{
 				return;
 			}
 
-			if(((int) ini_get('zend.assertions')) !== -1 and ((bool) $this->getProperty("debug.assertions.warn-if-enabled", true)) !== false){
+			if(((int) ini_get('zend.assertions')) !== -1){
 				$this->logger->warning("Debugging assertions are enabled, this may impact on performance. To disable them, set `zend.assertions = -1` in php.ini.");
 			}
 
