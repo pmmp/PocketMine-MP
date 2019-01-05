@@ -100,9 +100,11 @@ class SimpleCommandMap implements CommandMap{
 			new DefaultGamemodeCommand("defaultgamemode"),
 			new DeopCommand("deop"),
 			new DifficultyCommand("difficulty"),
+			new DumpMemoryCommand("dumpmemory"),
 			new EffectCommand("effect"),
 			new EnchantCommand("enchant"),
 			new GamemodeCommand("gamemode"),
+			new GarbageCollectorCommand("gc"),
 			new GiveCommand("give"),
 			new HelpCommand("help"),
 			new KickCommand("kick"),
@@ -122,6 +124,7 @@ class SimpleCommandMap implements CommandMap{
 			new SeedCommand("seed"),
 			new SetWorldSpawnCommand("setworldspawn"),
 			new SpawnpointCommand("spawnpoint"),
+			new StatusCommand("status"),
 			new StopCommand("stop"),
 			new TeleportCommand("tp"),
 			new TellCommand("tell"),
@@ -132,14 +135,6 @@ class SimpleCommandMap implements CommandMap{
 			new VersionCommand("version"),
 			new WhitelistCommand("whitelist")
 		]);
-
-		if($this->server->getProperty("debug.commands", false)){
-			$this->registerAll("pocketmine", [
-				new StatusCommand("status"),
-				new GarbageCollectorCommand("gc"),
-				new DumpMemoryCommand("dumpmemory")
-			]);
-		}
 	}
 
 
