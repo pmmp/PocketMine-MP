@@ -1076,6 +1076,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->broadcastMessage($ev->getJoinMessage());
 		}
 
+		$this->setImmobile(false);
 		$this->noDamageTicks = 60;
 
 		foreach($this->usedChunks as $index => $c){
@@ -2143,6 +2144,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->setNameTagVisible();
 		$this->setNameTagAlwaysVisible();
 		$this->setCanClimb();
+		$this->setImmobile(); //disable pre-spawn movement
 
 		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logIn", [
 			TextFormat::AQUA . $this->username . TextFormat::WHITE,
