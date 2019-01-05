@@ -670,7 +670,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	protected function endDeathAnimation() : void{
-		//TODO
+		$this->despawnFromAll();
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
