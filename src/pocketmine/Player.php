@@ -3625,10 +3625,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{
-		if(parent::onDeathUpdate($tickDiff)){
-			$this->despawnFromAll(); //non-player entities rely on close() to do this for them
-		}
-
+		parent::onDeathUpdate($tickDiff);
 		return false; //never flag players for despawn
 	}
 
