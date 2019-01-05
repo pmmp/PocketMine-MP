@@ -1517,8 +1517,6 @@ class Server{
 				"announce-player-achievements" => true,
 				"spawn-protection" => 16,
 				"max-players" => 20,
-				"spawn-animals" => true,
-				"spawn-mobs" => true,
 				"gamemode" => 0,
 				"force-gamemode" => false,
 				"hardcore" => false,
