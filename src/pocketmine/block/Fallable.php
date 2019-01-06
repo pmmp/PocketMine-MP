@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\math\Facing;
 
 abstract class Fallable extends Solid{
@@ -37,11 +38,9 @@ abstract class Fallable extends Solid{
 			$nbt->setInt("TileID", $this->getId());
 			$nbt->setByte("Data", $this->getDamage());
 
-			$fall = Entity::createEntity("FallingSand", $this->getLevel(), $nbt);
-
-			if($fall !== null){
-				$fall->spawnToAll();
-			}
+			/** @var FallingBlock $fall */
+			$fall = Entity::create(FallingBlock::class, $this->getLevel(), $nbt);
+			$fall->spawnToAll();
 		}
 	}
 

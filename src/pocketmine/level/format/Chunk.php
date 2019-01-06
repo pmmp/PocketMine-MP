@@ -600,18 +600,13 @@ class Chunk{
 				$level->timings->syncChunkLoadEntitiesTimer->startTiming();
 				foreach($this->NBTentities as $nbt){
 					if($nbt instanceof CompoundTag){
-						if(!$nbt->hasTag("id")){ //allow mixed types (because of leveldb)
-							$changed = true;
-							continue;
-						}
-
 						try{
-							$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
+							$entity = Entity::createFromData($level, $nbt);
 							if(!($entity instanceof Entity)){
 								$changed = true;
 								continue;
 							}
-						}catch(\Throwable $t){
+						}catch(\Exception $t){ //TODO: this shouldn't be here
 							$level->getServer()->getLogger()->logException($t);
 							$changed = true;
 							continue;

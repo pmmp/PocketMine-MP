@@ -1634,13 +1634,11 @@ class Level implements ChunkManager, Metadatable{
 			$nbt->setShort("Health", 5);
 			$nbt->setShort("PickupDelay", $delay);
 			$nbt->setTag($itemTag);
-			$itemEntity = Entity::createEntity("Item", $this, $nbt);
 
-			if($itemEntity instanceof ItemEntity){
-				$itemEntity->spawnToAll();
-
-				return $itemEntity;
-			}
+			/** @var ItemEntity $itemEntity */
+			$itemEntity = Entity::create(ItemEntity::class, $this, $nbt);
+			$itemEntity->spawnToAll();
+			return $itemEntity;
 		}
 		return null;
 	}
@@ -1666,15 +1664,10 @@ class Level implements ChunkManager, Metadatable{
 			);
 			$nbt->setShort(ExperienceOrb::TAG_VALUE_PC, $split);
 
-			$orb = Entity::createEntity("XPOrb", $this, $nbt);
-			if($orb === null){
-				continue;
-			}
-
+			/** @var ExperienceOrb $orb */
+			$orb = Entity::create(ExperienceOrb::class, $this, $nbt);
 			$orb->spawnToAll();
-			if($orb instanceof ExperienceOrb){
-				$orbs[] = $orb;
-			}
+			$orbs[] = $orb;
 		}
 
 		return $orbs;

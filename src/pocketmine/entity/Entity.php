@@ -61,6 +61,7 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
@@ -77,7 +78,7 @@ use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
 use function abs;
-use function array_unique;
+use function array_keys;
 use function assert;
 use function cos;
 use function count;
@@ -86,6 +87,7 @@ use function deg2rad;
 use function floor;
 use function get_class;
 use function in_array;
+use function is_a;
 use function is_array;
 use function is_infinite;
 use function is_nan;
@@ -282,6 +284,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	private static $knownEntities = [];
 	/** @var string[][] */
 	private static $saveNames = [];
+	/** @var string[] base class => currently used class for construction */
+	private static $classMapping = [];
 
 	/**
 	 * Called on server startup to register default entity types.
@@ -290,22 +294,22 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		//define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC
 		//TODO: index them by version to allow proper multi-save compatibility
 
-		Entity::registerEntity(Arrow::class, false, ['Arrow', 'minecraft:arrow']);
-		Entity::registerEntity(Egg::class, false, ['Egg', 'minecraft:egg']);
-		Entity::registerEntity(EnderPearl::class, false, ['ThrownEnderpearl', 'minecraft:ender_pearl']);
-		Entity::registerEntity(ExperienceBottle::class, false, ['ThrownExpBottle', 'minecraft:xp_bottle']);
-		Entity::registerEntity(ExperienceOrb::class, false, ['XPOrb', 'minecraft:xp_orb']);
-		Entity::registerEntity(FallingBlock::class, false, ['FallingSand', 'minecraft:falling_block']);
-		Entity::registerEntity(ItemEntity::class, false, ['Item', 'minecraft:item']);
-		Entity::registerEntity(Painting::class, false, ['Painting', 'minecraft:painting']);
-		Entity::registerEntity(PrimedTNT::class, false, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt']);
-		Entity::registerEntity(Snowball::class, false, ['Snowball', 'minecraft:snowball']);
-		Entity::registerEntity(SplashPotion::class, false, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
-		Entity::registerEntity(Squid::class, false, ['Squid', 'minecraft:squid']);
-		Entity::registerEntity(Villager::class, false, ['Villager', 'minecraft:villager']);
-		Entity::registerEntity(Zombie::class, false, ['Zombie', 'minecraft:zombie']);
+		self::register(Arrow::class, false, ['Arrow', 'minecraft:arrow']);
+		self::register(Egg::class, false, ['Egg', 'minecraft:egg']);
+		self::register(EnderPearl::class, false, ['ThrownEnderpearl', 'minecraft:ender_pearl']);
+		self::register(ExperienceBottle::class, false, ['ThrownExpBottle', 'minecraft:xp_bottle']);
+		self::register(ExperienceOrb::class, false, ['XPOrb', 'minecraft:xp_orb']);
+		self::register(FallingBlock::class, false, ['FallingSand', 'minecraft:falling_block']);
+		self::register(ItemEntity::class, false, ['Item', 'minecraft:item']);
+		self::register(Painting::class, false, ['Painting', 'minecraft:painting']);
+		self::register(PrimedTNT::class, false, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt']);
+		self::register(Snowball::class, false, ['Snowball', 'minecraft:snowball']);
+		self::register(SplashPotion::class, false, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
+		self::register(Squid::class, false, ['Squid', 'minecraft:squid']);
+		self::register(Villager::class, false, ['Villager', 'minecraft:villager']);
+		self::register(Zombie::class, false, ['Zombie', 'minecraft:zombie']);
 
-		Entity::registerEntity(Human::class, true);
+		self::register(Human::class, true);
 
 		Attribute::init();
 		Effect::init();
@@ -315,23 +319,62 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/**
 	 * Creates an entity with the specified type, level and NBT, with optional additional arguments to pass to the
-	 * entity's constructor
+	 * entity's constructor.
 	 *
-	 * @param int|string  $type
+	 * TODO: make this NBT-independent
+	 *
+	 * @param string      $baseClass
 	 * @param Level       $level
 	 * @param CompoundTag $nbt
 	 * @param mixed       ...$args
 	 *
-	 * @return Entity|null
+	 * @return Entity instanceof $baseClass
+	 * @throws \InvalidArgumentException if the class doesn't exist or is not registered
 	 */
-	public static function createEntity($type, Level $level, CompoundTag $nbt, ...$args) : ?Entity{
-		if(isset(self::$knownEntities[$type])){
-			$class = self::$knownEntities[$type];
-			/** @see Entity::__construct() */
-			return new $class($level, $nbt, ...$args);
+	public static function create(string $baseClass, Level $level, CompoundTag $nbt, ...$args) : Entity{
+		if(isset(self::$classMapping[$baseClass])){
+			$class = self::$classMapping[$baseClass];
+			assert(is_a($class, $baseClass, true));
+			/**
+			 * @var Entity $entity
+			 * @see Entity::__construct()
+			 */
+			$entity = new $class($level, $nbt, ...$args);
+			return $entity;
 		}
 
-		return null;
+		throw new \InvalidArgumentException("Class $baseClass is not a registered entity");
+	}
+
+	/**
+	 * Creates an entity from data stored on a chunk.
+	 * @internal
+	 *
+	 * @param Level       $level
+	 * @param CompoundTag $nbt
+	 *
+	 * @return Entity|null
+	 * @throws \RuntimeException
+	 */
+	public static function createFromData(Level $level, CompoundTag $nbt) : ?Entity{
+		$saveId = $nbt->getTag("id");
+		$baseClass = null;
+		if($saveId instanceof StringTag){
+			$baseClass = self::$knownEntities[$saveId->getValue()] ?? null;
+		}elseif($saveId instanceof IntTag){ //legacy MCPE format
+			$baseClass = self::$knownEntities[$saveId->getValue() & 0xff] ?? null;
+		}
+		if($baseClass === null){
+			return null;
+		}
+		$class = self::$classMapping[$baseClass];
+		assert(is_a($class, $baseClass, true));
+		/**
+		 * @var Entity $entity
+		 * @see Entity::__construct()
+		 */
+		$entity = new $class($level, $nbt);
+		return $entity;
 	}
 
 	/**
@@ -346,7 +389,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function registerEntity(string $className, bool $force = false, array $saveNames = []) : void{
+	public static function register(string $className, bool $force = false, array $saveNames = []) : void{
 		Utils::testValidInstance($className, Entity::class);
 
 		/** @var Entity $className */
@@ -355,6 +398,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}elseif(!$force){
 			throw new \InvalidArgumentException("Class $className does not declare a valid NETWORK_ID and not force-registering");
 		}
+		self::$classMapping[$className] = $className;
 
 		$shortName = (new \ReflectionClass($className))->getShortName();
 		if(!in_array($shortName, $saveNames, true)){
@@ -369,12 +413,30 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
+	 * Registers a class override for the given class. When a new entity is constructed using the factory, the new class
+	 * will be used instead of the base class.
+	 *
+	 * @param string $baseClass Already-registered entity class to override
+	 * @param string $newClass Class which extends the base class
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public static function override(string $baseClass, string $newClass) : void{
+		if(!isset(self::$classMapping[$baseClass])){
+			throw new \InvalidArgumentException("Class $baseClass is not a registered entity");
+		}
+
+		Utils::testValidInstance($newClass, $baseClass);
+		self::$classMapping[$baseClass] = $newClass;
+	}
+
+	/**
 	 * Returns an array of all registered entity classpaths.
 	 *
 	 * @return string[]
 	 */
-	public static function getKnownEntityTypes() : array{
-		return array_unique(self::$knownEntities);
+	public static function getKnownTypes() : array{
+		return array_keys(self::$classMapping);
 	}
 
 	/**

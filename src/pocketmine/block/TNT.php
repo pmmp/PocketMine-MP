@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\item\FlintSteel;
 use pocketmine\item\Item;
@@ -77,11 +78,9 @@ class TNT extends Solid{
 		$nbt = Entity::createBaseNBT($this->add(0.5, 0, 0.5), new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
 		$nbt->setShort("Fuse", $fuse);
 
-		$tnt = Entity::createEntity("PrimedTNT", $this->getLevel(), $nbt);
-
-		if($tnt !== null){
-			$tnt->spawnToAll();
-		}
+		/** @var PrimedTNT $tnt */
+		$tnt = Entity::create(PrimedTNT::class, $this->getLevel(), $nbt);
+		$tnt->spawnToAll();
 	}
 
 	public function getFlameEncouragement() : int{

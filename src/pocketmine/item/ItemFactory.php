@@ -194,10 +194,10 @@ class ItemFactory{
 		//TODO: ENDER_EYE
 		self::registerItem(new Item(Item::GLISTERING_MELON, 0, "Glistering Melon"));
 
-		foreach(Entity::getKnownEntityTypes() as $className){
-			/** @var Living $className */
+		foreach(Entity::getKnownTypes() as $className){
+			/** @var Living|string $className */
 			if(is_a($className, Living::class, true) and $className::NETWORK_ID !== -1){
-				self::registerItem(new SpawnEgg(Item::SPAWN_EGG, $className::NETWORK_ID, "Spawn Egg"));
+				self::registerItem(new SpawnEgg(Item::SPAWN_EGG, $className::NETWORK_ID, $className, "Spawn Egg"));
 			}
 		}
 

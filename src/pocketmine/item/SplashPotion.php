@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\entity\projectile\SplashPotion as SplashPotionEntity;
 use pocketmine\nbt\tag\CompoundTag;
 
 class SplashPotion extends ProjectileItem{
@@ -35,8 +36,8 @@ class SplashPotion extends ProjectileItem{
 		return 1;
 	}
 
-	public function getProjectileEntityType() : string{
-		return "ThrownPotion";
+	public function getProjectileEntityClass() : string{
+		return SplashPotionEntity::class;
 	}
 
 	public function getThrowForce() : float{
