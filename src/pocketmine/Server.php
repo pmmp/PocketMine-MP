@@ -34,6 +34,7 @@ use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Skin;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
@@ -1695,7 +1696,7 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			Entity::init();
+			EntityFactory::init();
 			Tile::init();
 			BlockFactory::init();
 			BlockFactory::registerStaticRuntimeIdMappings();

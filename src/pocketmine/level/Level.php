@@ -30,6 +30,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\UnknownBlock;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\block\BlockBreakEvent;
@@ -1630,13 +1631,13 @@ class Level implements ChunkManager, Metadatable{
 		$itemTag->setName("Item");
 
 		if(!$item->isNull()){
-			$nbt = Entity::createBaseNBT($source, $motion, lcg_value() * 360, 0);
+			$nbt = EntityFactory::createBaseNBT($source, $motion, lcg_value() * 360, 0);
 			$nbt->setShort("Health", 5);
 			$nbt->setShort("PickupDelay", $delay);
 			$nbt->setTag($itemTag);
 
 			/** @var ItemEntity $itemEntity */
-			$itemEntity = Entity::create(ItemEntity::class, $this, $nbt);
+			$itemEntity = EntityFactory::create(ItemEntity::class, $this, $nbt);
 			$itemEntity->spawnToAll();
 			return $itemEntity;
 		}
@@ -1656,7 +1657,7 @@ class Level implements ChunkManager, Metadatable{
 		$orbs = [];
 
 		foreach(ExperienceOrb::splitIntoOrbSizes($amount) as $split){
-			$nbt = Entity::createBaseNBT(
+			$nbt = EntityFactory::createBaseNBT(
 				$pos,
 				$this->temporalVector->setComponents((lcg_value() * 0.2 - 0.1) * 2, lcg_value() * 0.4, (lcg_value() * 0.2 - 0.1) * 2),
 				lcg_value() * 360,
@@ -1665,7 +1666,7 @@ class Level implements ChunkManager, Metadatable{
 			$nbt->setShort(ExperienceOrb::TAG_VALUE_PC, $split);
 
 			/** @var ExperienceOrb $orb */
-			$orb = Entity::create(ExperienceOrb::class, $this, $nbt);
+			$orb = EntityFactory::create(ExperienceOrb::class, $this, $nbt);
 			$orb->spawnToAll();
 			$orbs[] = $orb;
 		}

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\particle;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Skin;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -80,7 +81,7 @@ class FloatingTextParticle extends Particle{
 		$p = [];
 
 		if($this->entityId === null){
-			$this->entityId = Entity::$entityCount++;
+			$this->entityId = EntityFactory::nextRuntimeId();
 		}else{
 			$pk0 = new RemoveEntityPacket();
 			$pk0->entityUniqueId = $this->entityId;

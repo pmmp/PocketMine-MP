@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\item\FlintSteel;
@@ -75,11 +76,11 @@ class TNT extends Solid{
 		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR));
 
 		$mot = (new Random())->nextSignedFloat() * M_PI * 2;
-		$nbt = Entity::createBaseNBT($this->add(0.5, 0, 0.5), new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
+		$nbt = EntityFactory::createBaseNBT($this->add(0.5, 0, 0.5), new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
 		$nbt->setShort("Fuse", $fuse);
 
 		/** @var PrimedTNT $tnt */
-		$tnt = Entity::create(PrimedTNT::class, $this->getLevel(), $nbt);
+		$tnt = EntityFactory::create(PrimedTNT::class, $this->getLevel(), $nbt);
 		$tnt->spawnToAll();
 	}
 

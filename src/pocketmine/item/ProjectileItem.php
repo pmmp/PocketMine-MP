@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
 use pocketmine\entity\EntityIds;
 use pocketmine\entity\projectile\Throwable;
 use pocketmine\event\entity\ProjectileLaunchEvent;
@@ -54,14 +54,14 @@ abstract class ProjectileItem extends Item{
 	}
 
 	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
-		$nbt = Entity::createBaseNBT($player->add(0, $player->getEyeHeight(), 0), $directionVector, $player->yaw, $player->pitch);
+		$nbt = EntityFactory::createBaseNBT($player->add(0, $player->getEyeHeight(), 0), $directionVector, $player->yaw, $player->pitch);
 		$this->addExtraTags($nbt);
 
 		$class = $this->getProjectileEntityClass();
 		Utils::testValidInstance($class, Throwable::class);
 
 		/** @var Throwable $projectile */
-		$projectile = Entity::create($class, $player->getLevel(), $nbt, $player);
+		$projectile = EntityFactory::create($class, $player->getLevel(), $nbt, $player);
 		$projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
 
 		$projectileEv = new ProjectileLaunchEvent($projectile);

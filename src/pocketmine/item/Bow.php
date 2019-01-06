@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
 use pocketmine\entity\projectile\Arrow as ArrowEntity;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
@@ -53,7 +53,7 @@ class Bow extends Tool{
 			return false;
 		}
 
-		$nbt = Entity::createBaseNBT(
+		$nbt = EntityFactory::createBaseNBT(
 			$player->add(0, $player->getEyeHeight(), 0),
 			$player->getDirectionVector(),
 			($player->yaw > 180 ? 360 : 0) - $player->yaw,
@@ -66,7 +66,7 @@ class Bow extends Tool{
 		$force = min((($p ** 2) + $p * 2) / 3, 1) * 2;
 
 		/** @var ArrowEntity $entity */
-		$entity = Entity::create(ArrowEntity::class, $player->getLevel(), $nbt, $player, $force == 2);
+		$entity = EntityFactory::create(ArrowEntity::class, $player->getLevel(), $nbt, $player, $force == 2);
 
 		$infinity = $this->hasEnchantment(Enchantment::INFINITY);
 		if($infinity){

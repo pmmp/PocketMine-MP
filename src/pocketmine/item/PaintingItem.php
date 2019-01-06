@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PaintingMotive;
 use pocketmine\math\Facing;
@@ -86,7 +86,7 @@ class PaintingItem extends Item{
 			return false;
 		}
 
-		$nbt = Entity::createBaseNBT($blockReplace, null, $direction * 90, 0);
+		$nbt = EntityFactory::createBaseNBT($blockReplace, null, $direction * 90, 0);
 		$nbt->setByte("Direction", $direction);
 		$nbt->setString("Motive", $motive->getName());
 		$nbt->setInt("TileX", $blockClicked->getFloorX());
@@ -94,7 +94,7 @@ class PaintingItem extends Item{
 		$nbt->setInt("TileZ", $blockClicked->getFloorZ());
 
 		/** @var Painting $entity */
-		$entity = Entity::create(Painting::class, $blockReplace->getLevel(), $nbt);
+		$entity = EntityFactory::create(Painting::class, $blockReplace->getLevel(), $nbt);
 		$this->pop();
 		$entity->spawnToAll();
 

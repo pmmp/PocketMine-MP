@@ -28,6 +28,7 @@ namespace pocketmine\level\format;
 
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -601,7 +602,7 @@ class Chunk{
 				foreach($this->NBTentities as $nbt){
 					if($nbt instanceof CompoundTag){
 						try{
-							$entity = Entity::createFromData($level, $nbt);
+							$entity = EntityFactory::createFromData($level, $nbt);
 							if(!($entity instanceof Entity)){
 								$changed = true;
 								continue;

@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Utils;
@@ -50,13 +51,13 @@ class SpawnEgg extends Item{
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
-		$nbt = Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, lcg_value() * 360, 0);
+		$nbt = EntityFactory::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, lcg_value() * 360, 0);
 
 		if($this->hasCustomName()){
 			$nbt->setString("CustomName", $this->getCustomName());
 		}
 
-		$entity = Entity::create($this->entityClass, $player->getLevel(), $nbt);
+		$entity = EntityFactory::create($this->entityClass, $player->getLevel(), $nbt);
 		$this->pop();
 		$entity->spawnToAll();
 		return true;
