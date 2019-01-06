@@ -27,6 +27,7 @@ declare(strict_types=1);
  */
 namespace pocketmine;
 
+use LogLevel;
 use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
@@ -102,6 +103,7 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
+use pocketmine\utils\NotificationManager;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -249,6 +251,9 @@ class Server{
 
 	/** @var \AttachableThreadedLogger */
 	private $logger;
+
+	/** @var NotificationManager */
+	private $notificationManager;
 
 	/** @var MemoryManager */
 	private $memoryManager;
@@ -660,6 +665,13 @@ class Server{
 	 */
 	public function getLogger(){
 		return $this->logger;
+	}
+
+	/**
+	 * @return NotificationManager
+	 */
+	public function getNotificationManager() : NotificationManager{
+		return $this->notificationManager;
 	}
 
 	/**
@@ -1484,6 +1496,8 @@ class Server{
 		$this->logger = $logger;
 
 		try{
+			$this->notificationManager = new NotificationManager($dataPath . "read-notifications.txt");
+
 			if(!file_exists($dataPath . "worlds/")){
 				mkdir($dataPath . "worlds/", 0777);
 			}
@@ -1652,12 +1666,12 @@ class Server{
 
 			$this->onlineMode = $this->getConfigBool("xbox-auth", true);
 			if($this->onlineMode){
-				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.auth.enabled"));
-				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.authProperty.enabled"));
+				$this->notificationManager->post("pocketmine.server.auth.enabled", $this->getLanguage()->translateString("pocketmine.server.auth.enabled"));
+				$this->notificationManager->post("pocketmine.server.authProperty.enabled", $this->getLanguage()->translateString("pocketmine.server.authProperty.enabled"));
 			}else{
-				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.auth.disabled"));
-				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.authWarning"));
-				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.authProperty.disabled"));
+				$this->notificationManager->post("pocketmine.server.auth.disabled", $this->getLanguage()->translateString("pocketmine.server.auth.disabled"), LogLevel::WARNING);
+				$this->notificationManager->post("pocketmine.server.authWarning", $this->getLanguage()->translateString("pocketmine.server.authWarning"), LogLevel::WARNING);
+				$this->notificationManager->post("pocketmine.server.authProperty.disabled", $this->getLanguage()->translateString("pocketmine.server.authProperty.disabled"), LogLevel::WARNING);
 			}
 
 			if($this->getConfigBool("hardcore", false) and $this->getDifficulty() < Level::DIFFICULTY_HARD){
@@ -2199,6 +2213,8 @@ class Server{
 		}
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [self::getGamemodeString($this->getGamemode())]));
+
+		$this->notificationManager->print($this->logger);
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
 
