@@ -87,7 +87,11 @@ class CrashDump{
 	 * having their content changed, version format changing, etc.
 	 * It is not necessary to increase this when adding new fields.
 	 */
-	private const FORMAT_VERSION = 1;
+	private const FORMAT_VERSION = 2;
+
+	private const PLUGIN_INVOLVEMENT_NONE = "none";
+	private const PLUGIN_INVOLVEMENT_DIRECT = "direct";
+	private const PLUGIN_INVOLVEMENT_INDIRECT = "indirect";
 
 	/** @var Server */
 	private $server;
@@ -207,7 +211,7 @@ class CrashDump{
 			$error = $lastExceptionError;
 		}else{
 			$error = (array) error_get_last();
-			$error["trace"] = Utils::printableCurrentTrace(3); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
+			$error["trace"] = Utils::currentTrace(3); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
 			$errorConversion = [
 				E_ERROR => "E_ERROR",
 				E_WARNING => "E_WARNING",
@@ -245,24 +249,16 @@ class CrashDump{
 		$this->addLine("Line: " . $error["line"]);
 		$this->addLine("Type: " . $error["type"]);
 
-		if(strpos($error["file"], "src/pocketmine/") === false and strpos($error["file"], "vendor/pocketmine/") === false and file_exists($error["fullFile"])){
-			$this->addLine();
-			$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
-			$this->data["plugin"] = true;
-
-			$reflection = new \ReflectionClass(PluginBase::class);
-			$file = $reflection->getProperty("file");
-			$file->setAccessible(true);
-			foreach($this->server->getPluginManager()->getPlugins() as $plugin){
-				$filePath = Utils::cleanPath($file->getValue($plugin));
-				if(strpos($error["file"], $filePath) === 0){
-					$this->data["plugin"] = $plugin->getName();
-					$this->addLine("BAD PLUGIN: " . $plugin->getDescription()->getFullName());
+		$this->data["plugin_involvement"] = self::PLUGIN_INVOLVEMENT_NONE;
+		if(!$this->determinePluginFromFile($error["fullFile"], true)){ //fatal errors won't leave any stack trace
+			foreach($error["trace"] as $frame){
+				if(!isset($frame["file"])){
+					continue; //PHP core
+				}
+				if($this->determinePluginFromFile($frame["file"], false)){
 					break;
 				}
 			}
-		}else{
-			$this->data["plugin"] = false;
 		}
 
 		$this->addLine();
@@ -279,10 +275,38 @@ class CrashDump{
 
 		$this->addLine();
 		$this->addLine("Backtrace:");
-		foreach(($this->data["trace"] = $error["trace"]) as $line){
+		foreach(($this->data["trace"] = Utils::printableTrace($error["trace"])) as $line){
 			$this->addLine($line);
 		}
 		$this->addLine();
+	}
+
+	private function determinePluginFromFile(string $filePath, bool $crashFrame) : bool{
+		$frameCleanPath = Utils::cleanPath($filePath); //this will be empty in phar stub
+		if($frameCleanPath !== "" and strpos($frameCleanPath, "src/pocketmine/") === false and strpos($frameCleanPath, "vendor/pocketmine/") === false and file_exists($filePath)){
+			$this->addLine();
+			if($crashFrame){
+				$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
+				$this->data["plugin_involvement"] = self::PLUGIN_INVOLVEMENT_DIRECT;
+			}else{
+				$this->addLine("A PLUGIN WAS INVOLVED IN THIS CRASH");
+				$this->data["plugin_involvement"] = self::PLUGIN_INVOLVEMENT_INDIRECT;
+			}
+
+			$reflection = new \ReflectionClass(PluginBase::class);
+			$file = $reflection->getProperty("file");
+			$file->setAccessible(true);
+			foreach($this->server->getPluginManager()->getPlugins() as $plugin){
+				$filePath = Utils::cleanPath($file->getValue($plugin));
+				if(strpos($frameCleanPath, $filePath) === 0){
+					$this->data["plugin"] = $plugin->getName();
+					$this->addLine("BAD PLUGIN: " . $plugin->getDescription()->getFullName());
+					break;
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 
 	private function generalData(){

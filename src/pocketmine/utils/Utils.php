@@ -578,7 +578,21 @@ class Utils{
 	}
 
 	public static function cleanPath($path){
-		return str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH)], ["/", "", "", "", ""], $path);
+		$result = str_replace(["\\", ".php", "phar://"], ["/", "", ""], $path);
+
+		//remove relative paths
+		//TODO: make these paths dynamic so they can be unit-tested against
+		static $cleanPaths = [
+			\pocketmine\PLUGIN_PATH => "plugins", //this has to come BEFORE \pocketmine\PATH because it's inside that by default on src installations
+			\pocketmine\PATH => ""
+		];
+		foreach($cleanPaths as $cleanPath => $replacement){
+			$cleanPath = rtrim(str_replace(["\\", "phar://"], ["/", ""], $cleanPath), "/");
+			if(strpos($result, $cleanPath) === 0){
+				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
+			}
+		}
+		return $result;
 	}
 
 	/**
