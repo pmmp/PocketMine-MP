@@ -2280,7 +2280,7 @@ class Server{
 				if(is_string($plugin)){
 					$p = $this->pluginManager->getPlugin($plugin);
 					if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
-						$report = false;
+						$this->logger->debug("Not sending crashdump due to caused by non-phar plugin");
 					}
 				}
 
