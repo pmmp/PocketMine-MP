@@ -98,7 +98,6 @@ use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\AutoUpdater;
-use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
@@ -148,6 +147,7 @@ use function pcntl_signal;
 use function pcntl_signal_dispatch;
 use function preg_replace;
 use function random_bytes;
+use function random_int;
 use function realpath;
 use function register_shutdown_function;
 use function rename;
@@ -167,6 +167,8 @@ use function time;
 use function touch;
 use function trim;
 use const DIRECTORY_SEPARATOR;
+use const INT32_MAX;
+use const INT32_MIN;
 use const PHP_EOL;
 use const PHP_INT_MAX;
 use const PTHREADS_INHERIT_NONE;
@@ -1127,7 +1129,7 @@ class Server{
 			return false;
 		}
 
-		$seed = $seed ?? Binary::readInt(random_bytes(4));
+		$seed = $seed ?? random_int(INT32_MIN, INT32_MAX);
 
 		if(!isset($options["preset"])){
 			$options["preset"] = $this->getConfigString("generator-settings", "");
