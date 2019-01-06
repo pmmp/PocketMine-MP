@@ -2649,10 +2649,9 @@ class Server{
 
 		TimingsHandler::tick($this->currentTPS <= $this->profilingTickRate);
 
-		array_shift($this->tickAverage);
-		$this->tickAverage[] = $this->currentTPS;
-		array_shift($this->useAverage);
-		$this->useAverage[] = $this->currentUse;
+		$idx = $this->tickCounter % 20;
+		$this->tickAverage[$idx] = $this->currentTPS;
+		$this->useAverage[$idx] = $this->currentUse;
 
 		if(($this->nextTick - $tickTime) < -1){
 			$this->nextTick = $tickTime;
