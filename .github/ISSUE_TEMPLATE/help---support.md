@@ -1,6 +1,6 @@
 ---
 name: Help & support
-about: Help & support
+about: We don't accept support requests here. Try the links on the README.
 title: ''
 labels: Support request
 assignees: ''
