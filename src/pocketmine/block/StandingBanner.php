@@ -31,7 +31,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Banner as TileBanner;
-use pocketmine\tile\Tile;
+use pocketmine\tile\TileFactory;
 use function floor;
 
 class StandingBanner extends Transparent{
@@ -85,7 +85,7 @@ class StandingBanner extends Transparent{
 			}
 
 			if($ret){
-				$this->level->addTile(Tile::createFromItem(TileBanner::class, $this->getLevel(), $this->asVector3(), $item));
+				$this->level->addTile(TileFactory::createFromItem(TileBanner::class, $this->getLevel(), $this->asVector3(), $item));
 				return true;
 			}
 		}

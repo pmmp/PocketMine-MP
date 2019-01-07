@@ -34,6 +34,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
+use pocketmine\tile\TileFactory;
 use pocketmine\utils\BinaryStream;
 use function array_fill;
 use function array_filter;
@@ -619,7 +620,7 @@ class Chunk{
 				$level->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 				foreach($this->NBTtiles as $nbt){
 					if($nbt instanceof CompoundTag){
-						if(($tile = Tile::createFromData($level, $nbt)) !== null){
+						if(($tile = TileFactory::createFromData($level, $nbt)) !== null){
 							$level->addTile($tile);
 						}else{
 							$changed = true;

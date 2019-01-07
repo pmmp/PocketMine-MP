@@ -29,7 +29,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\ItemFrame as TileItemFrame;
-use pocketmine\tile\Tile;
+use pocketmine\tile\TileFactory;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
@@ -87,7 +87,7 @@ class ItemFrame extends Flowable{
 		$this->facing = $face;
 
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			$this->level->addTile(Tile::createFromItem(TileItemFrame::class, $this->getLevel(), $this->asVector3(), $item));
+			$this->level->addTile(TileFactory::createFromItem(TileItemFrame::class, $this->getLevel(), $this->asVector3(), $item));
 			return true;
 		}
 

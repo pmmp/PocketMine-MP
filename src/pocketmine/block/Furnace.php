@@ -30,7 +30,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Furnace as TileFurnace;
-use pocketmine\tile\Tile;
+use pocketmine\tile\TileFactory;
 
 class Furnace extends Solid{
 
@@ -100,7 +100,7 @@ class Furnace extends Solid{
 			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			$this->level->addTile(Tile::createFromItem(TileFurnace::class, $this->getLevel(), $this->asVector3(), $item));
+			$this->level->addTile(TileFactory::createFromItem(TileFurnace::class, $this->getLevel(), $this->asVector3(), $item));
 			return true;
 		}
 

@@ -86,7 +86,7 @@ trait NameableTrait{
 	 * @param Item $item
 	 * @see Tile::copyDataFromItem()
 	 */
-	protected function copyDataFromItem(Item $item) : void{
+	public function copyDataFromItem(Item $item) : void{
 		parent::copyDataFromItem($item);
 		if($item->hasCustomName()){ //this should take precedence over saved NBT
 			$this->setName($item->getCustomName());

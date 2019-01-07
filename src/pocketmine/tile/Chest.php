@@ -56,7 +56,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		parent::__construct($level, $pos);
 	}
 
-	protected function readSaveData(CompoundTag $nbt) : void{
+	public function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_PAIRX, IntTag::class) and $nbt->hasTag(self::TAG_PAIRZ, IntTag::class)){
 			$this->pairX = $nbt->getInt(self::TAG_PAIRX);
 			$this->pairZ = $nbt->getInt(self::TAG_PAIRZ);

@@ -43,7 +43,7 @@ class FlowerPot extends Spawnable{
 		parent::__construct($level, $pos);
 	}
 
-	protected function readSaveData(CompoundTag $nbt) : void{
+	public function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_ITEM, ShortTag::class) and $nbt->hasTag(self::TAG_ITEM_DATA, IntTag::class)){
 			$this->item = ItemFactory::get($nbt->getShort(self::TAG_ITEM, 0), $nbt->getInt(self::TAG_ITEM_DATA, 0), 1);
 		}

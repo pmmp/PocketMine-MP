@@ -30,7 +30,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Chest as TileChest;
-use pocketmine\tile\Tile;
+use pocketmine\tile\TileFactory;
 
 class Chest extends Transparent{
 
@@ -95,7 +95,7 @@ class Chest extends Transparent{
 
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
 			/** @var TileChest $tile */
-			$tile = Tile::createFromItem(TileChest::class, $this->getLevel(), $this->asVector3(), $item);
+			$tile = TileFactory::createFromItem(TileChest::class, $this->getLevel(), $this->asVector3(), $item);
 			$this->level->addTile($tile);
 
 			if($pair instanceof TileChest){

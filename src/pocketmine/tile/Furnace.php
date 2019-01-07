@@ -68,7 +68,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		parent::__construct($level, $pos);
 	}
 
-	protected function readSaveData(CompoundTag $nbt) : void{
+	public function readSaveData(CompoundTag $nbt) : void{
 		$this->burnTime = max(0, $nbt->getShort(self::TAG_BURN_TIME, $this->burnTime, true));
 
 		$this->cookTime = $nbt->getShort(self::TAG_COOK_TIME, $this->cookTime, true);

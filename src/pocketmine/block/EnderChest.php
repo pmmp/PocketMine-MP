@@ -30,7 +30,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\EnderChest as TileEnderChest;
-use pocketmine\tile\Tile;
+use pocketmine\tile\TileFactory;
 
 class EnderChest extends Chest{
 
@@ -66,7 +66,7 @@ class EnderChest extends Chest{
 		}
 
 		if(Block::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			$this->level->addTile(Tile::createFromItem(TileEnderChest::class, $this->getLevel(), $this->asVector3(), $item));
+			$this->level->addTile(TileFactory::createFromItem(TileEnderChest::class, $this->getLevel(), $this->asVector3(), $item));
 			return true;
 		}
 

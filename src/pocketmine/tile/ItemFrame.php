@@ -46,7 +46,7 @@ class ItemFrame extends Spawnable{
 		parent::__construct($level, $pos);
 	}
 
-	protected function readSaveData(CompoundTag $nbt) : void{
+	public function readSaveData(CompoundTag $nbt) : void{
 		if(($itemTag = $nbt->getCompoundTag(self::TAG_ITEM)) !== null){
 			$this->item = Item::nbtDeserialize($itemTag);
 		}

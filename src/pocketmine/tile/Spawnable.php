@@ -29,6 +29,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\NetworkLittleEndianNBTStream;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\Player;
+use function get_class;
 
 abstract class Spawnable extends Tile{
 	/** @var string|null */
@@ -108,7 +109,7 @@ abstract class Spawnable extends Tile{
 	 */
 	final public function getSpawnCompound() : CompoundTag{
 		$nbt = new CompoundTag("", [
-			new StringTag(self::TAG_ID, static::getSaveId()),
+			new StringTag(self::TAG_ID, TileFactory::getSaveId(get_class($this))), //TODO: disassociate network ID from save ID
 			new IntTag(self::TAG_X, $this->x),
 			new IntTag(self::TAG_Y, $this->y),
 			new IntTag(self::TAG_Z, $this->z)

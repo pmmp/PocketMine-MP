@@ -43,7 +43,7 @@ class Skull extends Spawnable{
 	/** @var int */
 	private $skullRotation = 0;
 
-	protected function readSaveData(CompoundTag $nbt) : void{
+	public function readSaveData(CompoundTag $nbt) : void{
 		$this->skullType = $nbt->getByte(self::TAG_SKULL_TYPE, $this->skullType, true);
 		$this->skullRotation = $nbt->getByte(self::TAG_ROT, $this->skullRotation, true);
 	}

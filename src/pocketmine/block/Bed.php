@@ -35,7 +35,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Bed as TileBed;
-use pocketmine\tile\Tile;
+use pocketmine\tile\TileFactory;
 use pocketmine\utils\TextFormat;
 
 class Bed extends Transparent{
@@ -88,7 +88,7 @@ class Bed extends Transparent{
 		parent::writeStateToWorld();
 		//extra block properties storage hack
 		/** @var TileBed $tile */
-		$tile = Tile::create(TileBed::class, $this->getLevel(), $this->asVector3());
+		$tile = TileFactory::create(TileBed::class, $this->getLevel(), $this->asVector3());
 		$tile->setColor($this->color);
 		$this->level->addTile($tile);
 	}

@@ -113,7 +113,7 @@ class Banner extends Spawnable implements Nameable{
 		parent::__construct($level, $pos);
 	}
 
-	protected function readSaveData(CompoundTag $nbt) : void{
+	public function readSaveData(CompoundTag $nbt) : void{
 		$this->baseColor = $nbt->getInt(self::TAG_BASE, $this->baseColor, true);
 		$this->patterns = $nbt->getListTag(self::TAG_PATTERNS) ?? $this->patterns;
 		$this->loadName($nbt);
@@ -131,7 +131,7 @@ class Banner extends Spawnable implements Nameable{
 		$this->addNameSpawnData($nbt);
 	}
 
-	protected function copyDataFromItem(Item $item) : void{
+	public function copyDataFromItem(Item $item) : void{
 		parent::copyDataFromItem($item);
 		$this->copyNameFromItem($item);
 		if($item instanceof ItemBanner){

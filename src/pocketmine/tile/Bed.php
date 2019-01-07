@@ -39,7 +39,7 @@ class Bed extends Spawnable{
 		$this->onChanged();
 	}
 
-	protected function readSaveData(CompoundTag $nbt) : void{
+	public function readSaveData(CompoundTag $nbt) : void{
 		$this->color = $nbt->getByte(self::TAG_COLOR, 14, true);
 	}
 

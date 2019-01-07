@@ -31,7 +31,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Skull as TileSkull;
-use pocketmine\tile\Tile;
+use pocketmine\tile\TileFactory;
 use function floor;
 
 class Skull extends Flowable{
@@ -73,7 +73,7 @@ class Skull extends Flowable{
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 		/** @var TileSkull $tile */
-		$tile = Tile::create(TileSkull::class, $this->getLevel(), $this->asVector3());
+		$tile = TileFactory::create(TileSkull::class, $this->getLevel(), $this->asVector3());
 		$tile->setRotation($this->rotation);
 		$tile->setType($this->type);
 		$this->level->addTile($tile);
