@@ -59,6 +59,7 @@ use function is_object;
 use function is_readable;
 use function is_string;
 use function json_decode;
+use function json_last_error_msg;
 use function memory_get_usage;
 use function ob_end_clean;
 use function ob_get_contents;
@@ -480,10 +481,29 @@ class Utils{
 		return proc_close($process);
 	}
 
-	public static function decodeJWT(string $token) : array{
-		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
+	/**
+	 * @param string $token
+	 *
+	 * @return array of claims
+	 *
+	 * @throws \UnexpectedValueException
+	 */
+	public static function getJwtClaims(string $token) : array{
+		$v = explode(".", $token);
+		if(count($v) !== 3){
+			throw new \UnexpectedValueException("Expected exactly 3 JWT parts, got " . count($v));
+		}
+		$payloadB64 = $v[1];
+		$payloadJSON = base64_decode(strtr($payloadB64, '-_', '+/'), true);
+		if($payloadJSON === false){
+			throw new \UnexpectedValueException("Invalid base64 JWT payload");
+		}
+		$result = json_decode($payloadJSON, true);
+		if(!is_array($result)){
+			throw new \UnexpectedValueException("Failed to decode JWT payload JSON: " . json_last_error_msg());
+		}
 
-		return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
+		return $result;
 	}
 
 	public static function kill($pid) : void{
