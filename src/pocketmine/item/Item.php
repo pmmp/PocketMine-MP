@@ -33,7 +33,7 @@ use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\LittleEndianNBTStream;
+use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -61,7 +61,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public const TAG_DISPLAY_LORE = "Lore";
 
 
-	/** @var LittleEndianNBTStream */
+	/** @var LittleEndianNbtSerializer */
 	private static $cachedParser = null;
 
 	private static function parseCompoundTag(string $tag) : CompoundTag{
@@ -70,7 +70,7 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		if(self::$cachedParser === null){
-			self::$cachedParser = new LittleEndianNBTStream();
+			self::$cachedParser = new LittleEndianNbtSerializer();
 		}
 
 		return self::$cachedParser->read($tag);
@@ -78,7 +78,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 	private static function writeCompoundTag(CompoundTag $tag) : string{
 		if(self::$cachedParser === null){
-			self::$cachedParser = new LittleEndianNBTStream();
+			self::$cachedParser = new LittleEndianNbtSerializer();
 		}
 
 		return self::$cachedParser->write($tag);

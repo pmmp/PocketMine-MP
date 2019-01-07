@@ -23,59 +23,55 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\nbt\LittleEndianNBTStream;
+use pocketmine\nbt\LittleEndianNbtSerializer;
 use function count;
 use function strlen;
-#ifndef COMPILE
-use pocketmine\utils\Binary;
-#endif
 
-#include <rules/NBT.h>
+class NetworkNbtSerializer extends LittleEndianNbtSerializer{
 
-class NetworkLittleEndianNBTStream extends LittleEndianNBTStream{
-
-	public function getInt() : int{
-		return Binary::readVarInt($this->buffer, $this->offset);
+	public function readInt() : int{
+		return $this->buffer->getVarInt();
 	}
 
-	public function putInt(int $v) : void{
-		$this->put(Binary::writeVarInt($v));
+	public function writeInt(int $v) : void{
+		$this->buffer->putVarInt($v);
 	}
 
-	public function getLong() : int{
-		return Binary::readVarLong($this->buffer, $this->offset);
+	public function readLong() : int{
+		return $this->buffer->getVarLong();
 	}
 
-	public function putLong(int $v) : void{
-		$this->put(Binary::writeVarLong($v));
+	public function writeLong(int $v) : void{
+		$this->buffer->putVarLong($v);
 	}
 
-	public function getString() : string{
-		return $this->get(Binary::readUnsignedVarInt($this->buffer, $this->offset));
+	public function readString() : string{
+		return $this->buffer->get($this->buffer->getUnsignedVarInt());
 	}
 
-	public function putString(string $v) : void{
+	public function writeString(string $v) : void{
 		$len = strlen($v);
 		if($len > 32767){
 			throw new \InvalidArgumentException("NBT strings cannot be longer than 32767 bytes, got $len bytes");
 		}
-		$this->put(Binary::writeUnsignedVarInt($len) . $v);
+		$this->buffer->putUnsignedVarInt($len);
+		$this->buffer->put($v);
 	}
 
-	public function getIntArray() : array{
-		$len = $this->getInt(); //varint
+	public function readIntArray() : array{
+		$len = $this->readInt(); //varint
 		$ret = [];
 		for($i = 0; $i < $len; ++$i){
-			$ret[] = $this->getInt(); //varint
+			$ret[] = $this->readInt(); //varint
 		}
 
 		return $ret;
 	}
 
-	public function putIntArray(array $array) : void{
-		$this->putInt(count($array)); //varint
+	public function writeIntArray(array $array) : void{
+		$this->writeInt(count($array)); //varint
 		foreach($array as $v){
-			$this->putInt($v); //varint
+			$this->writeInt($v); //varint
 		}
 	}
 }

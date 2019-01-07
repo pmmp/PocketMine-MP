@@ -31,7 +31,7 @@ use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\format\io\exception\UnsupportedLevelFormatException;
 use pocketmine\level\format\io\LevelData;
 use pocketmine\level\format\SubChunk;
-use pocketmine\nbt\LittleEndianNBTStream;
+use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
@@ -239,7 +239,7 @@ class LevelDB extends BaseLevelProvider{
 				throw new UnsupportedChunkFormatException("don't know how to decode chunk format version $chunkVersion");
 		}
 
-		$nbt = new LittleEndianNBTStream();
+		$nbt = new LittleEndianNbtSerializer();
 
 		/** @var CompoundTag[] $entities */
 		$entities = [];
@@ -332,7 +332,7 @@ class LevelDB extends BaseLevelProvider{
 	 */
 	private function writeTags(array $targets, string $index) : void{
 		if(!empty($targets)){
-			$nbt = new LittleEndianNBTStream();
+			$nbt = new LittleEndianNbtSerializer();
 			$this->db->put($index, $nbt->writeMultiple($targets));
 		}else{
 			$this->db->delete($index);

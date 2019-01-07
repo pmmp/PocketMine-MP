@@ -27,7 +27,7 @@ use pocketmine\level\format\io\exception\UnsupportedLevelFormatException;
 use pocketmine\level\generator\Flat;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
-use pocketmine\nbt\LittleEndianNBTStream;
+use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
@@ -97,13 +97,13 @@ class BedrockLevelData extends BaseNbtLevelData{
 			new StringTag("generatorOptions", $options["preset"] ?? "")
 		]);
 
-		$nbt = new LittleEndianNBTStream();
+		$nbt = new LittleEndianNbtSerializer();
 		$buffer = $nbt->write($levelData);
 		file_put_contents($path . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 	}
 
 	protected function load() : ?CompoundTag{
-		$nbt = new LittleEndianNBTStream();
+		$nbt = new LittleEndianNbtSerializer();
 		$levelData = $nbt->read(substr(file_get_contents($this->dataPath), 8));
 
 		$version = $levelData->getInt("StorageVersion", INT32_MAX, true);
@@ -148,7 +148,7 @@ class BedrockLevelData extends BaseNbtLevelData{
 		$this->compoundTag->setInt("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL);
 		$this->compoundTag->setInt("StorageVersion", self::CURRENT_STORAGE_VERSION);
 
-		$nbt = new LittleEndianNBTStream();
+		$nbt = new LittleEndianNbtSerializer();
 		$buffer = $nbt->write($this->compoundTag);
 		file_put_contents($this->dataPath, Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 	}

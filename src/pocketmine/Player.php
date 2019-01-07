@@ -94,7 +94,7 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\NetworkCipher;
-use pocketmine\network\mcpe\NetworkLittleEndianNBTStream;
+use pocketmine\network\mcpe\NetworkNbtSerializer;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\ProcessLoginTask;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
@@ -2465,7 +2465,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$t = $this->level->getTile($pos);
 		if($t instanceof Spawnable){
-			$nbt = new NetworkLittleEndianNBTStream();
+			$nbt = new NetworkNbtSerializer();
 			$compound = $nbt->read($packet->namedtag);
 			if(!$t->updateCompoundTag($compound, $this)){
 				$t->spawnTo($this);
