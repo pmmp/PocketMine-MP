@@ -147,8 +147,12 @@ class AvailableCommandsPacket extends DataPacket{
 		$retval->enumName = $this->getString();
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$index = $this->getEnumValueIndex();
+			if(!isset($this->enumValues[$index])){
+				throw new \UnexpectedValueException("Invalid enum value index $index");
+			}
 			//Get the enum value from the initial pile of mess
-			$retval->enumValues[] = $this->enumValues[$this->getEnumValueIndex()];
+			$retval->enumValues[] = $this->enumValues[$index];
 		}
 
 		return $retval;
