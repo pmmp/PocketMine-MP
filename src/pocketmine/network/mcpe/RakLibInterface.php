@@ -103,7 +103,11 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 
 	public function tick() : void{
 		if(!$this->rakLib->isRunning() and !$this->rakLib->isShutdown()){
-			throw new \Exception("RakLib Thread crashed");
+			$e = $this->rakLib->getCrashInfo();
+			if($e !== null){
+				throw $e;
+			}
+			throw new \Exception("RakLib Thread crashed without crash information");
 		}
 	}
 
