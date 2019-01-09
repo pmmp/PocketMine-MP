@@ -28,7 +28,7 @@ use function count;
 
 abstract class TransactionData{
 	/** @var NetworkInventoryAction[] */
-	protected $actions;
+	protected $actions = [];
 
 	/**
 	 * @return NetworkInventoryAction[]
