@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a011d12545207848fb8fe0fccb1cf18c",
+    "content-hash": "959fe32be1db4613fd22eb2c7c7b23c6",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -295,16 +295,16 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.1.6",
+            "version": "0.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "53cbb5a958130a6c6b5a4c511e623f4d401c1476"
+                "reference": "3403751da9d39853b43426085cd242173baadd2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/53cbb5a958130a6c6b5a4c511e623f4d401c1476",
-                "reference": "53cbb5a958130a6c6b5a4c511e623f4d401c1476",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/3403751da9d39853b43426085cd242173baadd2b",
+                "reference": "3403751da9d39853b43426085cd242173baadd2b",
                 "shasum": ""
             },
             "require": {
@@ -322,10 +322,10 @@
             ],
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
-                "source": "https://github.com/pmmp/BinaryUtils/tree/0.1.6",
+                "source": "https://github.com/pmmp/BinaryUtils/tree/0.1.7",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
-            "time": "2019-01-06T15:20:40+00:00"
+            "time": "2019-01-07T15:59:50+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -372,19 +372,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "ead8577bf3ff0eb8dd3c19c40a67a9ee6d06783a"
+                "reference": "8b211471159b4aca329c665bdbd9149046ca6550"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/ead8577bf3ff0eb8dd3c19c40a67a9ee6d06783a",
-                "reference": "ead8577bf3ff0eb8dd3c19c40a67a9ee6d06783a",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/8b211471159b4aca329c665bdbd9149046ca6550",
+                "reference": "8b211471159b4aca329c665bdbd9149046ca6550",
                 "shasum": ""
             },
             "require": {
                 "ext-zlib": "*",
                 "php": ">=7.2.0",
                 "php-64bit": "*",
-                "pocketmine/binaryutils": "^0.1.0"
+                "pocketmine/binaryutils": "^0.1.7"
             },
             "type": "library",
             "autoload": {
@@ -405,7 +405,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2019-01-07T21:01:32+00:00"
+            "time": "2019-01-09T00:12:13+00:00"
         },
         {
             "name": "pocketmine/raklib",
