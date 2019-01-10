@@ -1731,7 +1731,9 @@ class Server{
 			GeneratorManager::registerDefaultGenerators();
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
-				if(!is_array($options)){
+				if($options === null){
+					$options = [];
+				}elseif(!is_array($options)){
 					continue;
 				}
 				if(!$this->loadLevel($name)){
