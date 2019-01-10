@@ -144,7 +144,7 @@ class Config{
 	 * @throws \InvalidArgumentException if config type could not be auto-detected
 	 * @throws \InvalidStateException if config type is invalid
 	 */
-	public function load(string $file, int $type = Config::DETECT, array $default = []) : void{
+	private function load(string $file, int $type = Config::DETECT, array $default = []) : void{
 		$this->file = $file;
 
 		$this->type = $type;
