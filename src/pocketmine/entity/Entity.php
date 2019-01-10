@@ -296,7 +296,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var AxisAlignedBB */
 	public $boundingBox;
 	/** @var bool */
-	public $onGround;
+	public $onGround = false;
 
 	/** @var float */
 	public $eyeHeight = null;
@@ -345,11 +345,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public $isCollidedVertically = false;
 
 	/** @var int */
-	public $noDamageTicks;
+	public $noDamageTicks = 0;
 	/** @var bool */
 	protected $justCreated = true;
 	/** @var bool */
-	private $invulnerable;
+	private $invulnerable = false;
 
 	/** @var AttributeMap */
 	protected $attributeMap;
@@ -411,8 +411,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->resetLastMovements();
 
-		$this->fallDistance = $nbt->getFloat("FallDistance", 0.0);
-
 		$this->propertyManager = new DataPropertyManager();
 
 		$this->propertyManager->setLong(self::DATA_FLAGS, 0);
@@ -422,15 +420,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->propertyManager->setFloat(self::DATA_SCALE, 1);
 		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_WIDTH, $this->width);
 		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->height);
-
-		$this->fireTicks = $nbt->getShort("Fire", 0);
-		if($this->isOnFire()){
-			$this->setGenericFlag(self::DATA_FLAG_ONFIRE);
-		}
-
-		$this->propertyManager->setShort(self::DATA_AIR, $nbt->getShort("Air", 300));
-		$this->onGround = $nbt->getByte("OnGround", 0) !== 0;
-		$this->invulnerable = $nbt->getByte("Invulnerable", 0) !== 0;
 
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
@@ -755,6 +744,17 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{
+		$this->fireTicks = $nbt->getShort("Fire", 0);
+		if($this->isOnFire()){
+			$this->setGenericFlag(self::DATA_FLAG_ONFIRE);
+		}
+
+		$this->propertyManager->setShort(self::DATA_AIR, $nbt->getShort("Air", 300));
+		$this->onGround = $nbt->getByte("OnGround", 0) !== 0;
+		$this->invulnerable = $nbt->getByte("Invulnerable", 0) !== 0;
+
+		$this->fallDistance = $nbt->getFloat("FallDistance", 0.0);
+
 		if($nbt->hasTag("CustomName", StringTag::class)){
 			$this->setNameTag($nbt->getString("CustomName"));
 
