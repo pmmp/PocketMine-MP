@@ -133,7 +133,7 @@ class LoginPacket extends DataPacket{
 
 		$vd = new Validator();
 		$vd->required('chain')->isArray()->callback(function(array $data) : bool{
-			return count($data) === 3 and count(array_filter($data, '\is_string')) === count($data);
+			return count($data) <= 3 and count(array_filter($data, '\is_string')) === count($data);
 		});
 		self::validate($vd, "chainData", $chainData);
 
@@ -155,7 +155,7 @@ class LoginPacket extends DataPacket{
 				$extraV = new Validator();
 				$extraV->required('displayName')->string();
 				$extraV->required('identity')->uuid();
-				$extraV->required('XUID')->string()->digits();
+				$extraV->required('XUID')->string()->digits()->allowEmpty(true);
 				self::validate($extraV, "chain.$k.extraData", $claims['extraData']);
 
 				$this->username = $claims["extraData"]["displayName"];
