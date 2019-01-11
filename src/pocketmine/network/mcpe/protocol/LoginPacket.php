@@ -163,6 +163,9 @@ class LoginPacket extends DataPacket{
 				$this->xuid = $claims["extraData"]["XUID"];
 			}
 		}
+		if(!$hasExtraData){
+			throw new \UnexpectedValueException("'extraData' not found in chain data");
+		}
 
 		$this->clientDataJwt = $buffer->get($buffer->getLInt());
 		$clientData = Utils::getJwtClaims($this->clientDataJwt);
