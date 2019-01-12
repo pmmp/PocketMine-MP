@@ -23,12 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
-final class Gamemode{
+final class GameMode{
 	public const SURVIVAL = 0;
 	public const CREATIVE = 1;
 	public const ADVENTURE = 2;
 	public const SPECTATOR = 3;
-	public const VIEW = Gamemode::SPECTATOR;
+	public const VIEW = GameMode::SPECTATOR;
 
 	private function __construct(){
 		//NOOP
