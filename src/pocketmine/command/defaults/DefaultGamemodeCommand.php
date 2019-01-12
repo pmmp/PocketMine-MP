@@ -25,8 +25,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\Gamemode;
 use pocketmine\lang\TranslationContainer;
-use pocketmine\Server;
 use function count;
 
 class DefaultGamemodeCommand extends VanillaCommand{
@@ -49,11 +49,11 @@ class DefaultGamemodeCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$gameMode = Server::getGamemodeFromString($args[0]);
+		$gameMode = Gamemode::fromString($args[0]);
 
 		if($gameMode !== -1){
 			$sender->getServer()->setConfigInt("gamemode", $gameMode);
-			$sender->sendMessage(new TranslationContainer("commands.defaultgamemode.success", [Server::getGamemodeString($gameMode)]));
+			$sender->sendMessage(new TranslationContainer("commands.defaultgamemode.success", [Gamemode::toTranslation($gameMode)]));
 		}else{
 			$sender->sendMessage("Unknown game mode");
 		}

@@ -171,12 +171,6 @@ use const PHP_INT_MAX;
  */
 class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
-	public const SURVIVAL = 0;
-	public const CREATIVE = 1;
-	public const ADVENTURE = 2;
-	public const SPECTATOR = 3;
-	public const VIEW = Player::SPECTATOR;
-
 	/**
 	 * Checks a supplied username and checks it is valid.
 	 *
@@ -1308,8 +1302,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public static function getClientFriendlyGamemode(int $gamemode) : int{
 		$gamemode &= 0x03;
-		if($gamemode === Player::SPECTATOR){
-			return Player::CREATIVE;
+		if($gamemode === Gamemode::SPECTATOR){
+			return Gamemode::CREATIVE;
 		}
 
 		return $gamemode;
@@ -1357,7 +1351,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$client){ //Gamemode changed by server, do not send for client changes
 			$this->sendGamemode();
 		}else{
-			Command::broadcastCommandMessage($this, new TranslationContainer("commands.gamemode.success.self", [Server::getGamemodeString($gm)]));
+			Command::broadcastCommandMessage($this, new TranslationContainer("commands.gamemode.success.self", [Gamemode::toTranslation($gm)]));
 		}
 
 		$this->sendSettings();
@@ -1406,7 +1400,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function isSurvival(bool $literal = false) : bool{
 		if($literal){
-			return $this->gamemode === Player::SURVIVAL;
+			return $this->gamemode === Gamemode::SURVIVAL;
 		}else{
 			return ($this->gamemode & 0x01) === 0;
 		}
@@ -1422,7 +1416,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function isCreative(bool $literal = false) : bool{
 		if($literal){
-			return $this->gamemode === Player::CREATIVE;
+			return $this->gamemode === Gamemode::CREATIVE;
 		}else{
 			return ($this->gamemode & 0x01) === 1;
 		}
@@ -1438,7 +1432,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function isAdventure(bool $literal = false) : bool{
 		if($literal){
-			return $this->gamemode === Player::ADVENTURE;
+			return $this->gamemode === Gamemode::ADVENTURE;
 		}else{
 			return ($this->gamemode & 0x02) > 0;
 		}
@@ -1448,7 +1442,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool
 	 */
 	public function isSpectator() : bool{
-		return $this->gamemode === Player::SPECTATOR;
+		return $this->gamemode === Gamemode::SPECTATOR;
 	}
 
 	public function isFireProof() : bool{
@@ -1893,7 +1887,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->firstPlayed = $nbt->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
 		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
 
-		$this->gamemode = $nbt->getInt("playerGameType", self::SURVIVAL) & 0x03;
+		$this->gamemode = $nbt->getInt("playerGameType", Gamemode::SURVIVAL) & 0x03;
 		if($this->server->getForceGamemode()){
 			$this->gamemode = $this->server->getGamemode();
 		}
