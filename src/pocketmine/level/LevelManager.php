@@ -213,8 +213,6 @@ class LevelManager{
 		if($this->isLevelLoaded($name)){
 			return true;
 		}elseif(!$this->isLevelGenerated($name)){
-			$this->server->getLogger()->notice($this->server->getLanguage()->translateString("pocketmine.level.notFound", [$name]));
-
 			return false;
 		}
 
