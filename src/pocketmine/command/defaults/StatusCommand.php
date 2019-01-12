@@ -106,7 +106,7 @@ class StatusCommand extends VanillaCommand{
 			$sender->sendMessage(TextFormat::GOLD . "Maximum memory (manager): " . TextFormat::RED . number_format(round($server->getProperty("memory.global-limit"), 2), 2) . " MB.");
 		}
 
-		foreach($server->getLevels() as $level){
+		foreach($server->getLevelManager()->getLevels() as $level){
 			$levelName = $level->getFolderName() !== $level->getName() ? " (" . $level->getName() . ")" : "";
 			$timeColor = ($level->getTickRate() > 1 or $level->getTickRateTime() > 40) ? TextFormat::RED : TextFormat::YELLOW;
 			$tickRate = $level->getTickRate() > 1 ? " (tick rate " . $level->getTickRate() . ")" : "";

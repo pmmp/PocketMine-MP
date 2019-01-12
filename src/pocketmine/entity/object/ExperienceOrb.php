@@ -150,7 +150,7 @@ class ExperienceOrb extends Entity{
 			return null;
 		}
 
-		$entity = $this->server->findEntity($this->targetPlayerRuntimeId);
+		$entity = $this->server->getLevelManager()->findEntity($this->targetPlayerRuntimeId);
 		if($entity instanceof Human){
 			return $entity;
 		}

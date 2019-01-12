@@ -33,12 +33,9 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
-use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Skin;
 use pocketmine\event\HandlerList;
-use pocketmine\event\level\LevelInitEvent;
-use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketBroadcastEvent;
@@ -51,13 +48,12 @@ use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\TextContainer;
 use pocketmine\level\biome\Biome;
-use pocketmine\level\format\io\exception\UnsupportedLevelFormatException;
-use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
+use pocketmine\level\generator\normal\Normal;
 use pocketmine\level\Level;
-use pocketmine\level\LevelException;
+use pocketmine\level\LevelManager;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;
@@ -113,14 +109,10 @@ use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
 use function array_key_exists;
-use function array_keys;
 use function array_shift;
 use function array_sum;
-use function asort;
-use function assert;
 use function base64_encode;
 use function bin2hex;
-use function class_exists;
 use function count;
 use function define;
 use function explode;
@@ -129,7 +121,6 @@ use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function filemtime;
-use function floor;
 use function function_exists;
 use function gc_collect_cycles;
 use function get_class;
@@ -141,7 +132,6 @@ use function ini_set;
 use function is_array;
 use function is_bool;
 use function is_string;
-use function is_subclass_of;
 use function json_decode;
 use function max;
 use function microtime;
@@ -151,7 +141,6 @@ use function pcntl_signal;
 use function pcntl_signal_dispatch;
 use function preg_replace;
 use function random_bytes;
-use function random_int;
 use function realpath;
 use function register_shutdown_function;
 use function rename;
@@ -170,8 +159,6 @@ use function time;
 use function touch;
 use function trim;
 use const DIRECTORY_SEPARATOR;
-use const INT32_MAX;
-use const INT32_MIN;
 use const PHP_EOL;
 use const PHP_INT_MAX;
 use const PTHREADS_INHERIT_NONE;
@@ -266,14 +253,14 @@ class Server{
 	/** @var ResourcePackManager */
 	private $resourceManager;
 
+	/** @var LevelManager */
+	private $levelManager;
+
 	/** @var int */
 	private $maxPlayers;
 
 	/** @var bool */
 	private $onlineMode = true;
-
-	/** @var bool */
-	private $autoSave;
 
 	/** @var RCON */
 	private $rcon;
@@ -291,20 +278,6 @@ class Server{
 	private $network;
 	/** @var bool */
 	private $networkCompressionAsync = true;
-
-	/** @var bool */
-	private $autoTickRate = true;
-	/** @var int */
-	private $autoTickRateLimit = 20;
-	/** @var bool */
-	private $alwaysTickPlayers = false;
-	/** @var int */
-	private $baseTickRate = 1;
-
-	/** @var int */
-	private $autoSaveTicker = 0;
-	/** @var int */
-	private $autoSaveTicks = 6000;
 
 	/** @var Language */
 	private $language;
@@ -346,12 +319,6 @@ class Server{
 
 	/** @var Player[] */
 	private $playerList = [];
-
-	/** @var Level[] */
-	private $levels = [];
-
-	/** @var Level */
-	private $levelDefault = null;
 
 	/**
 	 * @return string
@@ -482,37 +449,6 @@ class Server{
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function getAutoSave() : bool{
-		return $this->autoSave;
-	}
-
-	/**
-	 * @param bool $value
-	 */
-	public function setAutoSave(bool $value){
-		$this->autoSave = $value;
-		foreach($this->getLevels() as $level){
-			$level->setAutoSave($this->autoSave);
-		}
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getLevelType() : string{
-		return $this->getConfigString("level-type", "DEFAULT");
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function getGenerateStructures() : bool{
-		return $this->getConfigBool("generate-structures", true);
-	}
-
-	/**
 	 * @return int
 	 */
 	public function getGamemode() : int{
@@ -630,6 +566,13 @@ class Server{
 	 */
 	public function getResourcePackManager() : ResourcePackManager{
 		return $this->resourceManager;
+	}
+
+	/**
+	 * @return LevelManager
+	 */
+	public function getLevelManager() : LevelManager{
+		return $this->levelManager;
 	}
 
 	public function getAsyncPool() : AsyncPool{
@@ -752,7 +695,7 @@ class Server{
 				$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerNotFound", [$name]));
 			}
 		}
-		$spawn = $this->getDefaultLevel()->getSafeSpawn();
+		$spawn = $this->levelManager->getDefaultLevel()->getSafeSpawn();
 		$currentTimeMillis = (int) (microtime(true) * 1000);
 
 		$nbt = new CompoundTag("", [
@@ -763,7 +706,7 @@ class Server{
 				new DoubleTag("", $spawn->y),
 				new DoubleTag("", $spawn->z)
 			], NBT::TAG_Double),
-			new StringTag("Level", $this->getDefaultLevel()->getFolderName()),
+			new StringTag("Level", $this->levelManager->getDefaultLevel()->getFolderName()),
 			//new StringTag("SpawnLevel", $this->getDefaultLevel()->getFolderName()),
 			//new IntTag("SpawnX", $spawn->getFloorX()),
 			//new IntTag("SpawnY", $spawn->getFloorY()),
@@ -896,255 +839,6 @@ class Server{
 	 */
 	public function getPlayerByUUID(UUID $uuid) : ?Player{
 		return $this->getPlayerByRawUUID($uuid->toBinary());
-	}
-
-	/**
-	 * @return Level[]
-	 */
-	public function getLevels() : array{
-		return $this->levels;
-	}
-
-	/**
-	 * @return Level|null
-	 */
-	public function getDefaultLevel() : ?Level{
-		return $this->levelDefault;
-	}
-
-	/**
-	 * Sets the default level to a different level
-	 * This won't change the level-name property,
-	 * it only affects the server on runtime
-	 *
-	 * @param Level|null $level
-	 */
-	public function setDefaultLevel(?Level $level) : void{
-		if($level === null or ($this->isLevelLoaded($level->getFolderName()) and $level !== $this->levelDefault)){
-			$this->levelDefault = $level;
-		}
-	}
-
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
-	public function isLevelLoaded(string $name) : bool{
-		return $this->getLevelByName($name) instanceof Level;
-	}
-
-	/**
-	 * @param int $levelId
-	 *
-	 * @return Level|null
-	 */
-	public function getLevel(int $levelId) : ?Level{
-		return $this->levels[$levelId] ?? null;
-	}
-
-	/**
-	 * NOTE: This matches levels based on the FOLDER name, NOT the display name.
-	 *
-	 * @param string $name
-	 *
-	 * @return Level|null
-	 */
-	public function getLevelByName(string $name) : ?Level{
-		foreach($this->getLevels() as $level){
-			if($level->getFolderName() === $name){
-				return $level;
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * @param Level $level
-	 * @param bool  $forceUnload
-	 *
-	 * @return bool
-	 *
-	 * @throws \InvalidStateException
-	 */
-	public function unloadLevel(Level $level, bool $forceUnload = false) : bool{
-		if($level === $this->getDefaultLevel() and !$forceUnload){
-			throw new \InvalidStateException("The default level cannot be unloaded while running, please switch levels.");
-		}
-
-		return $level->onUnload($forceUnload);
-	}
-
-	/**
-	 * @internal
-	 *
-	 * @param Level $level
-	 */
-	public function removeLevel(Level $level) : void{
-		unset($this->levels[$level->getId()]);
-	}
-
-	/**
-	 * Loads a level from the data directory
-	 *
-	 * @param string $name
-	 *
-	 * @return bool
-	 *
-	 * @throws LevelException
-	 */
-	public function loadLevel(string $name) : bool{
-		if(trim($name) === ""){
-			throw new LevelException("Invalid empty level name");
-		}
-		if($this->isLevelLoaded($name)){
-			return true;
-		}elseif(!$this->isLevelGenerated($name)){
-			$this->logger->notice($this->getLanguage()->translateString("pocketmine.level.notFound", [$name]));
-
-			return false;
-		}
-
-		$path = $this->getDataPath() . "worlds/" . $name . "/";
-
-		$providers = LevelProviderManager::getMatchingProviders($path);
-		if(count($providers) !== 1){
-			$this->logger->error($this->language->translateString("pocketmine.level.loadError", [
-				$name,
-				empty($providers) ?
-					$this->language->translateString("pocketmine.level.unknownFormat") :
-					$this->language->translateString("pocketmine.level.ambiguousFormat", [implode(", ", array_keys($providers))])
-			]));
-			return false;
-		}
-		$providerClass = array_shift($providers);
-
-		try{
-			/** @see LevelProvider::__construct() */
-			$level = new Level($this, $name, new $providerClass($path));
-		}catch(UnsupportedLevelFormatException $e){
-			$this->logger->error($this->language->translateString("pocketmine.level.loadError", [$name, $e->getMessage()]));
-			return false;
-		}
-
-		$this->levels[$level->getId()] = $level;
-
-		(new LevelLoadEvent($level))->call();
-
-		$level->setTickRate($this->baseTickRate);
-
-		return true;
-	}
-
-	/**
-	 * Generates a new level if it does not exist
-	 *
-	 * @param string      $name
-	 * @param int|null    $seed
-	 * @param string|null $generator Class name that extends pocketmine\level\generator\Generator
-	 * @param array       $options
-	 * @param bool        $backgroundGeneration
-	 *
-	 * @return bool
-	 */
-	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = [], bool $backgroundGeneration = true) : bool{
-		if(trim($name) === "" or $this->isLevelGenerated($name)){
-			return false;
-		}
-
-		$seed = $seed ?? random_int(INT32_MIN, INT32_MAX);
-
-		if(!isset($options["preset"])){
-			$options["preset"] = $this->getConfigString("generator-settings", "");
-		}
-
-		if(!($generator !== null and class_exists($generator, true) and is_subclass_of($generator, Generator::class))){
-			$generator = GeneratorManager::getGenerator($this->getLevelType());
-		}
-
-		$providerClass = LevelProviderManager::getDefault();
-
-		$path = $this->getDataPath() . "worlds/" . $name . "/";
-		/** @var LevelProvider $providerClass */
-		$providerClass::generate($path, $name, $seed, $generator, $options);
-
-		/** @see LevelProvider::__construct() */
-		$level = new Level($this, $name, new $providerClass($path));
-		$this->levels[$level->getId()] = $level;
-
-		$level->setTickRate($this->baseTickRate);
-
-		(new LevelInitEvent($level))->call();
-
-		(new LevelLoadEvent($level))->call();
-
-		if(!$backgroundGeneration){
-			return true;
-		}
-
-		$this->getLogger()->notice($this->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
-
-		$spawnLocation = $level->getSpawnLocation();
-		$centerX = $spawnLocation->getFloorX() >> 4;
-		$centerZ = $spawnLocation->getFloorZ() >> 4;
-
-		$order = [];
-
-		for($X = -3; $X <= 3; ++$X){
-			for($Z = -3; $Z <= 3; ++$Z){
-				$distance = $X ** 2 + $Z ** 2;
-				$chunkX = $X + $centerX;
-				$chunkZ = $Z + $centerZ;
-				$index = Level::chunkHash($chunkX, $chunkZ);
-				$order[$index] = $distance;
-			}
-		}
-
-		asort($order);
-
-		foreach($order as $index => $distance){
-			Level::getXZ($index, $chunkX, $chunkZ);
-			$level->populateChunk($chunkX, $chunkZ, true);
-		}
-
-		return true;
-	}
-
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
-	public function isLevelGenerated(string $name) : bool{
-		if(trim($name) === ""){
-			return false;
-		}
-		$path = $this->getDataPath() . "worlds/" . $name . "/";
-		if(!($this->getLevelByName($name) instanceof Level)){
-			return !empty(LevelProviderManager::getMatchingProviders($path));
-		}
-
-		return true;
-	}
-
-	/**
-	 * Searches all levels for the entity with the specified ID.
-	 * Useful for tracking entities across multiple worlds without needing strong references.
-	 *
-	 * @param int $entityId
-	 *
-	 * @return Entity|null
-	 */
-	public function findEntity(int $entityId){
-		foreach($this->levels as $level){
-			assert(!$level->isClosed());
-			if(($entity = $level->getEntity($entityId)) instanceof Entity){
-				return $entity;
-			}
-		}
-
-		return null;
 	}
 
 	/**
@@ -1530,11 +1224,6 @@ class Server{
 
 			NetworkCipher::$ENABLED = (bool) $this->getProperty("network.enable-encryption", true);
 
-			$this->autoTickRate = (bool) $this->getProperty("level-settings.auto-tick-rate", true);
-			$this->autoTickRateLimit = (int) $this->getProperty("level-settings.auto-tick-rate-limit", 20);
-			$this->alwaysTickPlayers = (bool) $this->getProperty("level-settings.always-tick-players", false);
-			$this->baseTickRate = (int) $this->getProperty("level-settings.base-tick-rate", 1);
-
 			$this->doTitleTick = ((bool) $this->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
 
 
@@ -1583,7 +1272,6 @@ class Server{
 			$this->banByIP->load();
 
 			$this->maxPlayers = $this->getConfigInt("max-players", 20);
-			$this->setAutoSave($this->getConfigBool("auto-save", true));
 
 			$this->onlineMode = $this->getConfigBool("xbox-auth", true);
 			if($this->onlineMode){
@@ -1644,6 +1332,20 @@ class Server{
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
+			LevelProviderManager::init();
+			if(($format = LevelProviderManager::getProviderByName($formatName = (string) $this->getProperty("level-settings.default-format"))) !== null){
+				LevelProviderManager::setDefault($format);
+			}elseif($formatName !== ""){
+				$this->logger->warning($this->language->translateString("pocketmine.level.badDefaultFormat", [$formatName]));
+			}
+			if(extension_loaded("leveldb")){
+				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
+			}
+
+			$this->levelManager = new LevelManager($this);
+
+			GeneratorManager::registerDefaultGenerators();
+
 			register_shutdown_function([$this, "crashDump"]);
 
 			$this->queryRegenerateTask = new QueryRegenerateEvent($this, 5);
@@ -1656,26 +1358,13 @@ class Server{
 
 			$this->network->registerInterface(new RakLibInterface($this));
 
-			LevelProviderManager::init();
-			if(($format = LevelProviderManager::getProviderByName($formatName = (string) $this->getProperty("level-settings.default-format"))) !== null){
-				LevelProviderManager::setDefault($format);
-			}elseif($formatName !== ""){
-				$this->logger->warning($this->language->translateString("pocketmine.level.badDefaultFormat", [$formatName]));
-			}
-
-			if(extension_loaded("leveldb")){
-				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
-			}
-
-			GeneratorManager::registerDefaultGenerators();
-
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
 				if($options === null){
 					$options = [];
 				}elseif(!is_array($options)){
 					continue;
 				}
-				if(!$this->loadLevel($name)){
+				if(!$this->levelManager->loadLevel($name)){
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
 						$generator = GeneratorManager::getGenerator(array_shift($generatorOptions));
@@ -1683,40 +1372,41 @@ class Server{
 							$options["preset"] = implode(":", $generatorOptions);
 						}
 					}else{
-						$generator = GeneratorManager::getGenerator("default");
+						$generator = Normal::class;
 					}
 
-					$this->generateLevel($name, Generator::convertSeed((string) ($options["seed"] ?? "")), $generator, $options);
+					$this->levelManager->generateLevel($name, Generator::convertSeed((string) ($options["seed"] ?? "")), $generator, $options);
 				}
 			}
 
-			if($this->getDefaultLevel() === null){
+			if($this->levelManager->getDefaultLevel() === null){
 				$default = $this->getConfigString("level-name", "world");
 				if(trim($default) == ""){
 					$this->getLogger()->warning("level-name cannot be null, using default");
 					$default = "world";
 					$this->setConfigString("level-name", "world");
 				}
-				if(!$this->loadLevel($default)){
-					$this->generateLevel($default, Generator::convertSeed($this->getConfigString("level-seed")));
+				if(!$this->levelManager->loadLevel($default)){
+					$this->levelManager->generateLevel(
+						$default,
+						Generator::convertSeed($this->getConfigString("level-seed")),
+						GeneratorManager::getGenerator($this->getConfigString("level-type")),
+						["preset" => $this->getConfigString("generator-settings")]
+					);
 				}
 
-				$this->setDefaultLevel($this->getLevelByName($default));
+				$level = $this->levelManager->getLevelByName($default);
+				if($level === null){
+					$this->getLogger()->emergency($this->getLanguage()->translateString("pocketmine.level.defaultError"));
+					$this->forceShutdown();
+
+					return;
+				}
+				$this->levelManager->setDefaultLevel($level);
 			}
 
 			if($this->properties->hasChanged()){
 				$this->properties->save();
-			}
-
-			if(!($this->getDefaultLevel() instanceof Level)){
-				$this->getLogger()->emergency($this->getLanguage()->translateString("pocketmine.level.defaultError"));
-				$this->forceShutdown();
-
-				return;
-			}
-
-			if($this->getProperty("ticks-per.autosave", 6000) > 0){
-				$this->autoSaveTicks = (int) $this->getProperty("ticks-per.autosave", 6000);
 			}
 
 			$this->enablePlugins(PluginLoadOrder::POSTWORLD);
@@ -2005,7 +1695,7 @@ class Server{
 	public function reload(){
 		$this->logger->info("Saving levels...");
 
-		foreach($this->levels as $level){
+		foreach($this->levelManager->getLevels() as $level){
 			$level->save();
 		}
 
@@ -2082,8 +1772,8 @@ class Server{
 			}
 
 			$this->getLogger()->debug("Unloading all levels");
-			foreach($this->getLevels() as $level){
-				$this->unloadLevel($level, true);
+			foreach($this->levelManager->getLevels() as $level){
+				$this->levelManager->unloadLevel($level, true);
 			}
 
 			$this->getLogger()->debug("Removing event handlers");
@@ -2393,69 +2083,6 @@ class Server{
 		$p->sendDataPacket($pk);
 	}
 
-	private function checkTickUpdates(int $currentTick) : void{
-		if($this->alwaysTickPlayers){
-			foreach($this->players as $p){
-				if($p->spawned){
-					$p->onUpdate($currentTick);
-				}
-			}
-		}
-
-		//Do level ticks
-		foreach($this->levels as $k => $level){
-			if(!isset($this->levels[$k])){
-				// Level unloaded during the tick of a level earlier in this loop, perhaps by plugin
-				continue;
-			}
-			if($level->getTickRate() > $this->baseTickRate and --$level->tickRateCounter > 0){
-				continue;
-			}
-
-			$levelTime = microtime(true);
-			$level->doTick($currentTick);
-			$tickMs = (microtime(true) - $levelTime) * 1000;
-			$level->tickRateTime = $tickMs;
-
-			if($this->autoTickRate){
-				if($tickMs < 50 and $level->getTickRate() > $this->baseTickRate){
-					$level->setTickRate($r = $level->getTickRate() - 1);
-					if($r > $this->baseTickRate){
-						$level->tickRateCounter = $level->getTickRate();
-					}
-					$this->getLogger()->debug("Raising level \"{$level->getName()}\" tick rate to {$level->getTickRate()} ticks");
-				}elseif($tickMs >= 50){
-					if($level->getTickRate() === $this->baseTickRate){
-						$level->setTickRate(max($this->baseTickRate + 1, min($this->autoTickRateLimit, (int) floor($tickMs / 50))));
-						$this->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), (int) round($tickMs, 2), $level->getTickRate()));
-					}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < $this->autoTickRateLimit){
-						$level->setTickRate($level->getTickRate() + 1);
-						$this->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), (int) round($tickMs, 2), $level->getTickRate()));
-					}
-					$level->tickRateCounter = $level->getTickRate();
-				}
-			}
-		}
-	}
-
-	public function doAutoSave(){
-		if($this->getAutoSave()){
-			Timings::$worldSaveTimer->startTiming();
-			foreach($this->players as $index => $player){
-				if($player->spawned){
-					$player->save();
-				}elseif(!$player->isConnected()){
-					$this->removePlayer($player);
-				}
-			}
-
-			foreach($this->getLevels() as $level){
-				$level->save(false);
-			}
-			Timings::$worldSaveTimer->stopTiming();
-		}
-	}
-
 	public function sendUsage($type = SendUsageTask::TYPE_STATUS){
 		if((bool) $this->getProperty("anonymous-statistics.enabled", true)){
 			$this->asyncPool->submitTask(new SendUsageTask($this, $type, $this->uniquePlayers));
@@ -2556,7 +2183,7 @@ class Server{
 		$this->asyncPool->collectTasks();
 		Timings::$schedulerAsyncTimer->stopTiming();
 
-		$this->checkTickUpdates($this->tickCounter);
+		$this->levelManager->tick($this->tickCounter);
 
 		Timings::$connectionTimer->startTiming();
 		$this->network->tick();
@@ -2580,18 +2207,13 @@ class Server{
 			}
 		}
 
-		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
-			$this->autoSaveTicker = 0;
-			$this->doAutoSave();
-		}
-
 		if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){
 			$this->sendUsageTicker = 6000;
 			$this->sendUsage(SendUsageTask::TYPE_STATUS);
 		}
 
 		if(($this->tickCounter % 100) === 0){
-			foreach($this->levels as $level){
+			foreach($this->levelManager->getLevels() as $level){
 				$level->clearCache();
 			}
 

@@ -59,7 +59,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 				return true;
 			}
 		}elseif(count($args) === 3){
-			$level = $sender->getServer()->getDefaultLevel();
+			$level = $sender->getServer()->getLevelManager()->getDefaultLevel();
 			$pos = new Vector3($this->getInteger($sender, $args[0]), $this->getInteger($sender, $args[1]), $this->getInteger($sender, $args[2]));
 		}else{
 			throw new InvalidCommandSyntaxException();

@@ -49,7 +49,7 @@ class SaveCommand extends VanillaCommand{
 			$player->save();
 		}
 
-		foreach($sender->getServer()->getLevels() as $level){
+		foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
 			$level->save(true);
 		}
 

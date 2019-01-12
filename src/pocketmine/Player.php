@@ -1137,7 +1137,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->hasValidSpawnPosition()){
 			return $this->spawnPosition;
 		}else{
-			$level = $this->server->getDefaultLevel();
+			$level = $this->server->getLevelManager()->getDefaultLevel();
 
 			return $level->getSafeSpawn();
 		}
@@ -1837,9 +1837,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function _actuallyConstruct(){
 		$namedtag = $this->server->getOfflinePlayerData($this->username); //TODO: make this async
 
-		if(($level = $this->server->getLevelByName($namedtag->getString("Level", "", true))) === null){
+		if(($level = $this->server->getLevelManager()->getLevelByName($namedtag->getString("Level", "", true))) === null){
 			/** @var Level $level */
-			$level = $this->server->getDefaultLevel(); //TODO: default level may be null
+			$level = $this->server->getLevelManager()->getDefaultLevel(); //TODO: default level may be null
 
 			$spawnLocation = $level->getSafeSpawn();
 			$namedtag->setTag(new ListTag("Pos", [
@@ -1910,7 +1910,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if(!$this->hasValidSpawnPosition()){
-			if(($level = $this->server->getLevelByName($nbt->getString("SpawnLevel", ""))) instanceof Level){
+			if(($level = $this->server->getLevelManager()->getLevelByName($nbt->getString("SpawnLevel", ""))) instanceof Level){
 				$this->spawnPosition = new Position($nbt->getInt("SpawnX"), $nbt->getInt("SpawnY"), $nbt->getInt("SpawnZ"), $level);
 			}else{
 				$this->spawnPosition = $this->level->getSafeSpawn();

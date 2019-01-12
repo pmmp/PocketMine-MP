@@ -25,8 +25,8 @@ namespace pocketmine\level\generator;
 
 use pocketmine\level\generator\hell\Nether;
 use pocketmine\level\generator\normal\Normal;
+use pocketmine\utils\Utils;
 use function array_keys;
-use function is_subclass_of;
 use function strtolower;
 
 final class GeneratorManager{
@@ -48,11 +48,11 @@ final class GeneratorManager{
 	 * @param string $class Fully qualified name of class that extends \pocketmine\level\generator\Generator
 	 * @param string $name Alias for this generator type that can be written in configs
 	 * @param bool   $overwrite Whether to force overwriting any existing registered generator with the same name
+	 *
+	 * @throws \InvalidArgumentException
 	 */
 	public static function addGenerator(string $class, string $name, bool $overwrite = false) : void{
-		if(!is_subclass_of($class, Generator::class)){
-			throw new \InvalidArgumentException("Class $class does not extend " . Generator::class);
-		}
+		Utils::testValidInstance($class, Generator::class);
 
 		if(!$overwrite and isset(self::$list[$name = strtolower($name)])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");

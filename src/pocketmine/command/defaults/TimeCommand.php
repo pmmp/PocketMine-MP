@@ -54,7 +54,7 @@ class TimeCommand extends VanillaCommand{
 
 				return true;
 			}
-			foreach($sender->getServer()->getLevels() as $level){
+			foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
 				$level->startTime();
 			}
 			Command::broadcastCommandMessage($sender, "Restarted the time");
@@ -65,7 +65,7 @@ class TimeCommand extends VanillaCommand{
 
 				return true;
 			}
-			foreach($sender->getServer()->getLevels() as $level){
+			foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
 				$level->stopTime();
 			}
 			Command::broadcastCommandMessage($sender, "Stopped the time");
@@ -79,7 +79,7 @@ class TimeCommand extends VanillaCommand{
 			if($sender instanceof Player){
 				$level = $sender->getLevel();
 			}else{
-				$level = $sender->getServer()->getDefaultLevel();
+				$level = $sender->getServer()->getLevelManager()->getDefaultLevel();
 			}
 			$sender->sendMessage(new TranslationContainer("commands.time.query", [$level->getTime()]));
 			return true;
@@ -105,7 +105,7 @@ class TimeCommand extends VanillaCommand{
 				$value = $this->getInteger($sender, $args[1], 0);
 			}
 
-			foreach($sender->getServer()->getLevels() as $level){
+			foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
 				$level->setTime($value);
 			}
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.set", [$value]));
@@ -117,7 +117,7 @@ class TimeCommand extends VanillaCommand{
 			}
 
 			$value = $this->getInteger($sender, $args[1], 0);
-			foreach($sender->getServer()->getLevels() as $level){
+			foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
 				$level->setTime($level->getTime() + $value);
 			}
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.added", [$value]));

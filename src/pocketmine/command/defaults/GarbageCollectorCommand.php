@@ -52,7 +52,7 @@ class GarbageCollectorCommand extends VanillaCommand{
 
 		$memory = memory_get_usage();
 
-		foreach($sender->getServer()->getLevels() as $level){
+		foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
 			$diff = [count($level->getChunks()), count($level->getEntities()), count($level->getTiles())];
 			$level->doChunkGarbageCollection();
 			$level->unloadChunks(true);

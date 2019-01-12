@@ -40,7 +40,6 @@ use pocketmine\event\level\ChunkLoadEvent;
 use pocketmine\event\level\ChunkPopulateEvent;
 use pocketmine\event\level\ChunkUnloadEvent;
 use pocketmine\event\level\LevelSaveEvent;
-use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\event\level\SpawnChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
@@ -359,7 +358,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->levelId = static::$levelIdCounter++;
 		$this->blockMetadata = new BlockMetadataStore($this);
 		$this->server = $server;
-		$this->autoSave = $server->getAutoSave();
 
 		$this->provider = $provider;
 
@@ -455,6 +453,9 @@ class Level implements ChunkManager, Metadatable{
 		return $this->closed;
 	}
 
+	/**
+	 * @internal
+	 */
 	public function close(){
 		if($this->closed){
 			throw new \InvalidStateException("Tried to close a level which is already closed");
@@ -556,52 +557,6 @@ class Level implements ChunkManager, Metadatable{
 
 	public function setAutoSave(bool $value){
 		$this->autoSave = $value;
-	}
-
-	/**
-	 * @internal DO NOT use this from plugins, it's for internal use only. Use Server->unloadLevel() instead.
-	 *
-	 * @param bool $force default false, force unload of default level
-	 *
-	 * @return bool
-	 * @throws \InvalidStateException if trying to unload a level during level tick
-	 */
-	public function onUnload(bool $force = false) : bool{
-		if($this->doingTick and !$force){
-			throw new \InvalidStateException("Cannot unload a level during level tick");
-		}
-
-		$ev = new LevelUnloadEvent($this);
-
-		if($this === $this->server->getDefaultLevel() and !$force){
-			$ev->setCancelled(true);
-		}
-
-		$ev->call();
-
-		if(!$force and $ev->isCancelled()){
-			return false;
-		}
-
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$this->getName()]));
-		$defaultLevel = $this->server->getDefaultLevel();
-		foreach($this->getPlayers() as $player){
-			if($this === $defaultLevel or $defaultLevel === null){
-				$player->close($player->getLeaveMessage(), "Forced default level unload");
-			}elseif($defaultLevel instanceof Level){
-				$player->teleport($this->server->getDefaultLevel()->getSafeSpawn());
-			}
-		}
-
-		if($this === $defaultLevel){
-			$this->server->setDefaultLevel(null);
-		}
-
-		$this->server->removeLevel($this);
-
-		$this->close();
-
-		return true;
 	}
 
 	/**
@@ -736,6 +691,10 @@ class Level implements ChunkManager, Metadatable{
 		}else{
 			$this->server->broadcastPacket($targets, $pk);
 		}
+	}
+
+	public function isDoingTick() : bool{
+		return $this->doingTick;
 	}
 
 	/**

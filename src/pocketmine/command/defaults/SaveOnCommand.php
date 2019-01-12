@@ -43,7 +43,7 @@ class SaveOnCommand extends VanillaCommand{
 			return true;
 		}
 
-		$sender->getServer()->setAutoSave(true);
+		$sender->getServer()->getLevelManager()->setAutoSave(true);
 
 		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.save.enabled"));
 
