@@ -60,13 +60,13 @@ class LoginSessionHandler extends SessionHandler{
 			return true;
 		}
 
-		if(!Player::isValidUserName($packet->username)){
+		if(!Player::isValidUserName($packet->playerInfo->getUsername())){
 			$this->session->disconnect("disconnectionScreen.invalidName");
 
 			return true;
 		}
 
-		if($packet->skin === null or !$packet->skin->isValid()){
+		if(!$packet->playerInfo->getSkin()->isValid()){
 			$this->session->disconnect("disconnectionScreen.invalidSkin");
 
 			return true;

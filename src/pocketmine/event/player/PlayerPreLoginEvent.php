@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\Player;
+use pocketmine\event\Event;
+use pocketmine\PlayerInfo;
 use function array_keys;
 
 /**
@@ -35,11 +36,8 @@ use function array_keys;
  *
  * WARNING: Any information about the player CANNOT be trusted at this stage, because they are not authenticated and
  * could be a hacker posing as another player.
- *
- * WARNING: Due to internal bad architecture, the player is not fully constructed at this stage, and errors might occur
- * when calling API methods on the player. Tread with caution.
  */
-class PlayerPreLoginEvent extends PlayerEvent{
+class PlayerPreLoginEvent extends Event{
 	public const KICK_REASON_PLUGIN = 0;
 	public const KICK_REASON_SERVER_FULL = 1;
 	public const KICK_REASON_SERVER_WHITELISTED = 2;
@@ -52,6 +50,12 @@ class PlayerPreLoginEvent extends PlayerEvent{
 		self::KICK_REASON_BANNED
 	];
 
+	/** @var PlayerInfo */
+	private $playerInfo;
+	/** @var string */
+	private $ip;
+	/** @var int */
+	private $port;
 	/** @var bool */
 	protected $authRequired;
 
@@ -59,12 +63,41 @@ class PlayerPreLoginEvent extends PlayerEvent{
 	protected $kickReasons = [];
 
 	/**
-	 * @param Player $player
-	 * @param bool   $authRequired
+	 * @param PlayerInfo $playerInfo
+	 * @param string     $ip
+	 * @param int        $port
+	 * @param bool       $authRequired
 	 */
-	public function __construct(Player $player, bool $authRequired){
-		$this->player = $player;
+	public function __construct(PlayerInfo $playerInfo, string $ip, int $port, bool $authRequired){
+		$this->playerInfo = $playerInfo;
+		$this->ip = $ip;
+		$this->port = $port;
 		$this->authRequired = $authRequired;
+	}
+
+	/**
+	 * Returns an object containing self-proclaimed information about the connecting player.
+	 * WARNING: THE PLAYER IS NOT VERIFIED DURING THIS EVENT. At this point, it's unknown if the player is real or a
+	 * hacker.
+	 *
+	 * @return PlayerInfo
+	 */
+	public function getPlayerInfo() : PlayerInfo{
+		return $this->playerInfo;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getIp() : string{
+		return $this->ip;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getPort() : int{
+		return $this->port;
 	}
 
 	/**

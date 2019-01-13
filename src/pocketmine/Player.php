@@ -191,11 +191,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var NetworkSession */
 	protected $networkSession;
 
-	/** @var float */
-	public $creationTime = 0;
-
 	/** @var bool */
-	public $loggedIn = false;
+	protected $loggedIn = false;
 
 	/** @var bool */
 	public $spawned = false;
@@ -212,6 +209,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $xuid = "";
 	/** @var bool */
 	protected $authenticated = false;
+	/** @var PlayerInfo|null */
+	protected $playerInfo = null;
 
 	protected $windowCnt = 2;
 	/** @var int[] */
@@ -379,9 +378,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * as SimpleAuth for authentication. This is NOT SAFE anymore as this UUID is now what was given by the client, NOT
 	 * a server-computed UUID.)
 	 *
-	 * @return UUID|null
+	 * @return UUID
 	 */
-	public function getUniqueId() : ?UUID{
+	public function getUniqueId() : UUID{
 		return parent::getUniqueId();
 	}
 
@@ -692,8 +691,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->loaderId = Level::generateChunkLoaderId($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
-
-		$this->creationTime = microtime(true);
 
 		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
 	}
@@ -1741,20 +1738,25 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-		$this->username = TextFormat::clean($packet->username);
+		$this->playerInfo = $packet->playerInfo;
+		$this->username = TextFormat::clean($this->playerInfo->getUsername());
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);
-		$this->locale = $packet->locale;
-		$this->randomClientId = $packet->clientId;
+		$this->locale = $this->playerInfo->getLocale();
+		$this->randomClientId = $this->playerInfo->getClientId();
 
-		$this->uuid = UUID::fromString($packet->clientUUID);
+		$this->uuid = $this->playerInfo->getUuid();
 		$this->rawUUID = $this->uuid->toBinary();
-		$this->xuid = $packet->xuid;
+		$this->xuid = $this->playerInfo->getXuid();
 
-		$this->setSkin($packet->skin);
+		$this->setSkin($this->playerInfo->getSkin());
 
-
-		$ev = new PlayerPreLoginEvent($this, $this->server->requiresAuthentication());
+		$ev = new PlayerPreLoginEvent(
+			$this->playerInfo,
+			$this->networkSession->getIp(),
+			$this->networkSession->getPort(),
+			$this->server->requiresAuthentication()
+		);
 		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers()){
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, "disconnectionScreen.serverFull");
 		}
