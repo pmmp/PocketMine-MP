@@ -230,6 +230,7 @@ class Explosion{
 
 				$t->close();
 			}
+			$this->level->updateAllLight($block);
 
 			$pos = new Vector3($block->x, $block->y, $block->z);
 
