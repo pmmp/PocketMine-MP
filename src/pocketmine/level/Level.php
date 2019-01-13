@@ -63,7 +63,6 @@ use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\Particle;
 use pocketmine\level\sound\Sound;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\BlockMetadataStore;
@@ -217,6 +216,8 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var \SplQueue */
 	private $neighbourBlockUpdateQueue;
+	/** @var bool[] blockhash => dummy */
+	private $neighbourBlockUpdateQueueIndex = [];
 
 	/** @var Player[][] */
 	private $chunkSendQueue = [];
@@ -759,8 +760,12 @@ class Level implements ChunkManager, Metadatable{
 			$ev = new BlockUpdateEvent($block);
 			$ev->call();
 			if(!$ev->isCancelled()){
+				foreach($this->getNearbyEntities(AxisAlignedBB::one()->offset($block->x, $block->y, $block->z)) as $entity){
+					$entity->onNearbyBlockChange();
+				}
 				$block->onNearbyBlockChange();
 			}
+			unset($this->neighbourBlockUpdateQueueIndex[$index]);
 		}
 
 		$this->timings->doTickPending->stopTiming();
@@ -1081,19 +1086,12 @@ class Level implements ChunkManager, Metadatable{
 		$this->scheduledBlockUpdateQueue->insert(new Vector3((int) $pos->x, (int) $pos->y, (int) $pos->z), $delay + $this->server->getTick());
 	}
 
-	/**
-	 * Schedules the blocks around the specified position to be updated at the end of this tick.
-	 * Blocks will be updated with the normal update type.
-	 *
-	 * @param Vector3 $pos
-	 */
-	public function scheduleNeighbourBlockUpdates(Vector3 $pos){
-		$pos = $pos->floor();
-
-		foreach(Facing::ALL as $face){
-			$side = $pos->getSide($face);
-			if($this->isInWorld($side->x, $side->y, $side->z)){
-				$this->neighbourBlockUpdateQueue->enqueue(Level::blockHash($side->x, $side->y, $side->z));
+	private function tryAddToNeighbourUpdateQueue(Vector3 $pos) : void{
+		if($this->isInWorld($pos->x, $pos->y, $pos->z)){
+			$hash = Level::blockHash($pos->x, $pos->y, $pos->z);
+			if(!isset($this->neighbourBlockUpdateQueueIndex[$hash])){
+				$this->neighbourBlockUpdateQueue->enqueue($hash);
+				$this->neighbourBlockUpdateQueueIndex[$hash] = true;
 			}
 		}
 	}
@@ -1559,15 +1557,9 @@ class Level implements ChunkManager, Metadatable{
 
 		if($update){
 			$this->updateAllLight($block);
-
-			$ev = new BlockUpdateEvent($block);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				foreach($this->getNearbyEntities(AxisAlignedBB::one()->offset($block->x, $block->y, $block->z)->expand(1, 1, 1)) as $entity){
-					$entity->onNearbyBlockChange();
-				}
-				$ev->getBlock()->onNearbyBlockChange();
-				$this->scheduleNeighbourBlockUpdates($block);
+			$this->tryAddToNeighbourUpdateQueue($block);
+			foreach($block->sides() as $side){
+				$this->tryAddToNeighbourUpdateQueue($side);
 			}
 		}
 
