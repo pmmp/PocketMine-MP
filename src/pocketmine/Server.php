@@ -1298,7 +1298,7 @@ class Server{
 			$this->getLogger()->debug("Server unique id: " . $this->getServerUniqueId());
 			$this->getLogger()->debug("Machine unique id: " . Utils::getMachineUniqueId());
 
-			$this->network = new Network($this);
+			$this->network = new Network();
 			$this->network->setName($this->getMotd());
 
 
