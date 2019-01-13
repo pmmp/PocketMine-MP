@@ -72,13 +72,13 @@ abstract class LightUpdate{
 
 				if($oldLevel !== $newLevel){
 					$this->setLight($x, $y, $z, $newLevel);
-					if($oldLevel < $newLevel){ //light increased
-						$this->spreadVisited[$blockHash] = true;
-						$this->spreadQueue->enqueue([$x, $y, $z]);
-					}else{ //light removed
-						$this->removalVisited[$blockHash] = true;
-						$this->removalQueue->enqueue([$x, $y, $z, $oldLevel]);
-					}
+				}
+				if($newLevel > $oldLevel){ //light increased
+					$this->spreadVisited[$blockHash] = true;
+					$this->spreadQueue->enqueue([$x, $y, $z]);
+				}elseif($newLevel < 15){ //light removed or stayed the same, force recheck nearby environment
+					$this->removalVisited[$blockHash] = true;
+					$this->removalQueue->enqueue([$x, $y, $z, $oldLevel]);
 				}
 			}
 		}
