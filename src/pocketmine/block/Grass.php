@@ -66,7 +66,7 @@ class Grass extends Solid{
 
 	public function onRandomTick() : void{
 		$lightAbove = $this->level->getFullLightAt($this->x, $this->y + 1, $this->z);
-		if($lightAbove < 4 and BlockFactory::$lightFilter[$this->level->getFullBlock($this->x, $this->y + 1, $this->z)] >= 3){ //2 plus 1 standard filter amount
+		if($lightAbove < 4 and $this->level->getBlockAt($this->x, $this->y + 1, $this->z)->getLightFilter() >= 2){
 			//grass dies
 			$ev = new BlockSpreadEvent($this, $this, BlockFactory::get(Block::DIRT));
 			$ev->call();
@@ -85,7 +85,7 @@ class Grass extends Solid{
 					$b->getId() !== Block::DIRT or
 					$b->getDamage() === 1 or //coarse dirt
 					$this->level->getFullLightAt($x, $y + 1, $z) < 4 or
-					BlockFactory::$lightFilter[$this->level->getFullBlock($x, $y + 1, $z)] >= 3
+					$this->level->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
 				){
 					continue;
 				}
