@@ -1345,7 +1345,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return $block->isSolid() and !$block->isTransparent() and $block->collidesWithBB($this->getBoundingBox());
 	}
 
-	public function move(float $dx, float $dy, float $dz) : void{
+	protected function move(float $dx, float $dy, float $dz) : void{
 		$this->blocksAround = null;
 
 		Timings::$entityMoveTimer->startTiming();
