@@ -2,14 +2,15 @@ language: php
 
 php:
  - 7.2
+ - 7.3
 
 before_script:
 # - pecl install channel://pecl.php.net/pthreads-3.1.6
- - echo | pecl install channel://pecl.php.net/yaml-2.0.2
+ - echo | pecl install channel://pecl.php.net/yaml-2.0.4
  - pecl install channel://pecl.php.net/crypto-0.3.1
  - git clone https://github.com/pmmp/pthreads.git
  - cd pthreads
- - git checkout c8cfacda84f21032d6014b53e72bf345ac901dac
+ - git checkout 6ca019c58b4fa09ee2ff490f2444e34bef0773d0
  - phpize
  - ./configure
  - make
