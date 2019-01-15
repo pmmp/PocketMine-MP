@@ -25,8 +25,9 @@ namespace pocketmine\level\sound;
 
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class AnvilUseSound extends GenericSound{
-	public function __construct(float $pitch = 0){
-		parent::__construct(LevelEventPacket::EVENT_SOUND_ANVIL_USE, $pitch);
+class AnvilUseSound extends LevelEventSound{
+
+	protected function getLevelEventId() : int{
+		return LevelEventPacket::EVENT_SOUND_ANVIL_USE;
 	}
 }

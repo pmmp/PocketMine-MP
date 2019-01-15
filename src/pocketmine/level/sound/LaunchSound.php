@@ -25,8 +25,9 @@ namespace pocketmine\level\sound;
 
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class LaunchSound extends GenericSound{
-	public function __construct(float $pitch = 0){
-		parent::__construct(LevelEventPacket::EVENT_SOUND_SHOOT, $pitch);
+class LaunchSound extends LevelEventSound{
+
+	protected function getLevelEventId() : int{
+		return LevelEventPacket::EVENT_SOUND_SHOOT;
 	}
 }

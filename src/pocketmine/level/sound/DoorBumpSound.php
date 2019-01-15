@@ -25,8 +25,9 @@ namespace pocketmine\level\sound;
 
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class DoorBumpSound extends GenericSound{
-	public function __construct(float $pitch = 0){
-		parent::__construct(LevelEventPacket::EVENT_SOUND_DOOR_BUMP, $pitch);
+class DoorBumpSound extends LevelEventSound{
+
+	protected function getLevelEventId() : int{
+		return LevelEventPacket::EVENT_SOUND_DOOR_BUMP;
 	}
 }

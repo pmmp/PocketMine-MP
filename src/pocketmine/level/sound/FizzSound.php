@@ -25,8 +25,9 @@ namespace pocketmine\level\sound;
 
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class FizzSound extends GenericSound{
-	public function __construct(float $pitch = 0){
-		parent::__construct(LevelEventPacket::EVENT_SOUND_FIZZ, $pitch);
+class FizzSound extends LevelEventSound{
+
+	protected function getLevelEventId() : int{
+		return LevelEventPacket::EVENT_SOUND_FIZZ;
 	}
 }
