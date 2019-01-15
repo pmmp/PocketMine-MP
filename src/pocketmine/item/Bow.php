@@ -63,10 +63,10 @@ class Bow extends Tool{
 
 		$diff = $player->getItemUseDuration();
 		$p = $diff / 20;
-		$force = min((($p ** 2) + $p * 2) / 3, 1) * 2;
+		$baseForce = min((($p ** 2) + $p * 2) / 3, 1);
 
 
-		$entity = Entity::createEntity("Arrow", $player->getLevel(), $nbt, $player, $force == 2);
+		$entity = Entity::createEntity("Arrow", $player->getLevel(), $nbt, $player, $baseForce >= 1);
 		if($entity instanceof Projectile){
 			$infinity = $this->hasEnchantment(Enchantment::INFINITY);
 			if($entity instanceof ArrowEntity){
@@ -83,9 +83,9 @@ class Bow extends Tool{
 			if($this->hasEnchantment(Enchantment::FLAME)){
 				$entity->setOnFire(intdiv($entity->getFireTicks(), 20) + 100);
 			}
-			$ev = new EntityShootBowEvent($player, $this, $entity, $force);
+			$ev = new EntityShootBowEvent($player, $this, $entity, $baseForce * 3);
 
-			if($force < 0.1 or $diff < 5){
+			if($baseForce < 0.1 or $diff < 5){
 				$ev->setCancelled();
 			}
 
