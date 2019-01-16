@@ -44,6 +44,7 @@ use function implode;
 use function is_dir;
 use function is_resource;
 use function json_encode;
+use function json_last_error_msg;
 use function max;
 use function mkdir;
 use function ob_end_clean;
@@ -146,7 +147,11 @@ class CrashDump{
 		$this->addLine("----------------------REPORT THE DATA BELOW THIS LINE-----------------------");
 		$this->addLine();
 		$this->addLine("===BEGIN CRASH DUMP===");
-		$this->encodedData = zlib_encode(json_encode($this->data, JSON_UNESCAPED_SLASHES), ZLIB_ENCODING_DEFLATE, 9);
+		$json = json_encode($this->data, JSON_UNESCAPED_SLASHES);
+		if($json === false){
+			throw new \RuntimeException("Failed to encode crashdump JSON: " . json_last_error_msg());
+		}
+		$this->encodedData = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
 		foreach(str_split(base64_encode($this->encodedData), 76) as $line){
 			$this->addLine($line);
 		}
@@ -238,6 +243,9 @@ class CrashDump{
 		}
 
 		if(isset($lastError)){
+			if(isset($lastError["trace"])){
+				$lastError["trace"] = Utils::printableTrace($lastError["trace"]);
+			}
 			$this->data["lastError"] = $lastError;
 		}
 
