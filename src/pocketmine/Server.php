@@ -121,7 +121,6 @@ use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function filemtime;
-use function function_exists;
 use function gc_collect_cycles;
 use function get_class;
 use function getmypid;
@@ -137,8 +136,6 @@ use function max;
 use function microtime;
 use function min;
 use function mkdir;
-use function pcntl_signal;
-use function pcntl_signal_dispatch;
 use function preg_replace;
 use function random_bytes;
 use function realpath;
@@ -162,9 +159,6 @@ use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
 use const PTHREADS_INHERIT_NONE;
-use const SIGHUP;
-use const SIGINT;
-use const SIGTERM;
 
 /**
  * The class that manages everything
@@ -231,9 +225,6 @@ class Server{
 
 	/** @var int */
 	private $sendUsageTicker = 0;
-
-	/** @var bool */
-	private $dispatchSignals = false;
 
 	/** @var \AttachableThreadedLogger */
 	private $logger;
@@ -1850,25 +1841,12 @@ class Server{
 
 		$this->tickCounter = 0;
 
-		if(function_exists("pcntl_signal")){
-			pcntl_signal(SIGTERM, [$this, "handleSignal"]);
-			pcntl_signal(SIGINT, [$this, "handleSignal"]);
-			pcntl_signal(SIGHUP, [$this, "handleSignal"]);
-			$this->dispatchSignals = true;
-		}
-
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [GameMode::toTranslation($this->getGamemode())]));
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
 
 		$this->tickProcessor();
 		$this->forceShutdown();
-	}
-
-	public function handleSignal($signo){
-		if($signo === SIGTERM or $signo === SIGINT or $signo === SIGHUP){
-			$this->shutdown();
-		}
 	}
 
 	/**
@@ -2220,10 +2198,6 @@ class Server{
 			if($this->getTicksPerSecondAverage() < 12){
 				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.tickOverload"));
 			}
-		}
-
-		if($this->dispatchSignals and $this->tickCounter % 5 === 0){
-			pcntl_signal_dispatch();
 		}
 
 		$this->getMemoryManager()->check();
