@@ -97,7 +97,7 @@ class NetworkInventoryAction{
 	 *
 	 * @return $this
 	 * @throws \UnexpectedValueException
-	 * @throws \OutOfBoundsException
+	 * @throws BadPacketException
 	 */
 	public function read(NetworkBinaryStream $packet) : NetworkInventoryAction{
 		$this->sourceType = $packet->getUnsignedVarInt();

@@ -102,7 +102,7 @@ class LoginPacket extends DataPacket{
 	 * @param string    $name
 	 * @param           $data
 	 *
-	 * @throws \UnexpectedValueException
+	 * @throws BadPacketException
 	 */
 	private static function validate(Validator $v, string $name, $data) : void{
 		$result = $v->validate($data);
@@ -116,7 +116,7 @@ class LoginPacket extends DataPacket{
 	}
 
 	/**
-	 * @throws \OutOfBoundsException
+	 * @throws BadPacketException
 	 * @throws \UnexpectedValueException
 	 */
 	protected function decodeConnectionRequest() : void{
