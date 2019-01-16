@@ -31,6 +31,7 @@ use pocketmine\entity\Skin;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\PlayerInfo;
+use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
@@ -117,7 +118,7 @@ class LoginPacket extends DataPacket{
 
 	/**
 	 * @throws BadPacketException
-	 * @throws \UnexpectedValueException
+	 * @throws BinaryDataException
 	 */
 	protected function decodeConnectionRequest() : void{
 		$buffer = new BinaryStream($this->getString());
@@ -136,7 +137,11 @@ class LoginPacket extends DataPacket{
 		$this->chainDataJwt = $chainData['chain'];
 		foreach($this->chainDataJwt as $k => $chain){
 			//validate every chain element
-			$claims = Utils::getJwtClaims($chain);
+			try{
+				$claims = Utils::getJwtClaims($chain);
+			}catch(\UnexpectedValueException $e){
+				throw new BadPacketException($e->getMessage(), 0, $e);
+			}
 			if(isset($claims["extraData"])){
 				if(!is_array($claims["extraData"])){
 					throw new BadPacketException("'extraData' key should be an array");
@@ -159,7 +164,11 @@ class LoginPacket extends DataPacket{
 		}
 
 		$this->clientDataJwt = $buffer->get($buffer->getLInt());
-		$clientData = Utils::getJwtClaims($this->clientDataJwt);
+		try{
+			$clientData = Utils::getJwtClaims($this->clientDataJwt);
+		}catch(\UnexpectedValueException $e){
+			throw new BadPacketException($e->getMessage(), 0, $e);
+		}
 
 		$v = new Validator();
 		$v->required(self::I_CLIENT_RANDOM_ID)->integer();
