@@ -50,7 +50,7 @@ use function time;
 class NetworkSession{
 	/** @var Server */
 	private $server;
-	/** @var Player */
+	/** @var Player|null */
 	private $player;
 	/** @var NetworkInterface */
 	private $interface;
