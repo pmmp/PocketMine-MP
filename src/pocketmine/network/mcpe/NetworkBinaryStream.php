@@ -113,7 +113,17 @@ class NetworkBinaryStream extends BinaryStream{
 		$nbt = $item->getCompoundTag();
 		$nbtLen = strlen($nbt);
 		if($nbtLen > 32767){
-			throw new \InvalidArgumentException("NBT encoded length must be < 32768, got $nbtLen bytes");
+			/*
+			 * TODO: Workaround bug in the protocol (overflow)
+			 * Encoded tags larger than 32KB overflow the length field, so we can't send these over network.
+			 * However, it's unreasonable to randomly throw this burden off onto users by crashing their servers, so the
+			 * next best solution is to just not send the NBT. This is also not an ideal solution (books and the like
+			 * with too-large tags won't work on the client side) but it's better than crashing the server or client due
+			 * to a protocol bug. Mojang have confirmed this will be resolved by a future MCPE release, so we'll just
+			 * work around this problem until then.
+			 */
+			$nbt = "";
+			$nbtLen = 0;
 		}
 
 		$this->putLShort($nbtLen);
