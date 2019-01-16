@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 
@@ -32,6 +33,7 @@ use pocketmine\network\mcpe\NetworkSession;
  * If cancelled, the newly connecting session will be disconnected; otherwise, the existing player will be disconnected.
  */
 class PlayerDuplicateLoginEvent extends Event implements Cancellable{
+	use CancellableTrait;
 
 	/** @var NetworkSession */
 	private $connectingSession;

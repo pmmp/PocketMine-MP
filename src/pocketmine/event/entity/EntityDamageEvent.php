@@ -25,12 +25,15 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use function array_sum;
 
 /**
  * Called when an entity takes damage.
  */
 class EntityDamageEvent extends EntityEvent implements Cancellable{
+	use CancellableTrait;
+
 	public const MODIFIER_ARMOR = 1;
 	public const MODIFIER_STRENGTH = 2;
 	public const MODIFIER_WEAKNESS = 3;

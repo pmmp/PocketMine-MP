@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\Player;
 
 /**
@@ -35,6 +36,8 @@ use pocketmine\Player;
  * The message contains a slash at the start
  */
 class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable{
+	use CancellableTrait;
+
 	/** @var string */
 	protected $message;
 

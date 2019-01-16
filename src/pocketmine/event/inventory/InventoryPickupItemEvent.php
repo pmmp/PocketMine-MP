@@ -25,9 +25,12 @@ namespace pocketmine\event\inventory;
 
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\inventory\Inventory;
 
 class InventoryPickupItemEvent extends InventoryEvent implements Cancellable{
+	use CancellableTrait;
+
 	/** @var ItemEntity */
 	private $item;
 

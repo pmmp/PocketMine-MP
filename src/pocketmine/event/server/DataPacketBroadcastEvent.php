@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\server;
 
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\Player;
 
@@ -31,6 +32,8 @@ use pocketmine\Player;
  * Called when a list of packets is broadcasted to 1 or more players.
  */
 class DataPacketBroadcastEvent extends ServerEvent implements Cancellable{
+	use CancellableTrait;
+
 	/** @var Player[] */
 	private $players;
 	/** @var DataPacket[] */

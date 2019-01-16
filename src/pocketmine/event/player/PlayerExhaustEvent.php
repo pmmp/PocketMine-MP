@@ -25,9 +25,12 @@ namespace pocketmine\event\player;
 
 use pocketmine\entity\Human;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\event\entity\EntityEvent;
 
 class PlayerExhaustEvent extends EntityEvent implements Cancellable{
+	use CancellableTrait;
+
 	public const CAUSE_ATTACK = 1;
 	public const CAUSE_DAMAGE = 2;
 	public const CAUSE_MINING = 3;

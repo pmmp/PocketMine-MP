@@ -21,25 +21,27 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\entity;
+namespace pocketmine\event;
 
-use pocketmine\entity\EffectInstance;
-use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
-use pocketmine\event\CancellableTrait;
+/**
+ * This trait implements Cancellable components for events.
+ * @see Cancellable
+ */
+trait CancellableTrait{
+	/** @var bool */
+	private $isCancelled = false;
 
-class EntityEffectEvent extends EntityEvent implements Cancellable{
-	use CancellableTrait;
-
-	/** @var EffectInstance */
-	private $effect;
-
-	public function __construct(Entity $entity, EffectInstance $effect){
-		$this->entity = $entity;
-		$this->effect = $effect;
+	/**
+	 * @return bool
+	 */
+	public function isCancelled() : bool{
+		return $this->isCancelled;
 	}
 
-	public function getEffect() : EffectInstance{
-		return $this->effect;
+	/**
+	 * @param bool $value
+	 */
+	public function setCancelled(bool $value = true) : void{
+		$this->isCancelled = $value;
 	}
 }

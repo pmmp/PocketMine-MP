@@ -24,12 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\Player;
 
 /**
  * Called when a player does an animation
  */
 class PlayerAnimationEvent extends PlayerEvent implements Cancellable{
+	use CancellableTrait;
+
 	/** @var int */
 	private $animationType;
 

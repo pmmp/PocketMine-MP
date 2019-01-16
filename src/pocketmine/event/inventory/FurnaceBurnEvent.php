@@ -25,10 +25,13 @@ namespace pocketmine\event\inventory;
 
 use pocketmine\event\block\BlockEvent;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\item\Item;
 use pocketmine\tile\Furnace;
 
 class FurnaceBurnEvent extends BlockEvent implements Cancellable{
+	use CancellableTrait;
+
 	/** @var Furnace */
 	private $furnace;
 	/** @var Item */

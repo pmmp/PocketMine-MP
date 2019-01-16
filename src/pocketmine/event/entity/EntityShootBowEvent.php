@@ -27,10 +27,13 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\item\Item;
 use function count;
 
 class EntityShootBowEvent extends EntityEvent implements Cancellable{
+	use CancellableTrait;
+
 	/** @var Item */
 	private $bow;
 	/** @var Projectile */

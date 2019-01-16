@@ -25,8 +25,11 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 
 class EntityRegainHealthEvent extends EntityEvent implements Cancellable{
+	use CancellableTrait;
+
 	public const CAUSE_REGEN = 0;
 	public const CAUSE_EATING = 1;
 	public const CAUSE_MAGIC = 2;

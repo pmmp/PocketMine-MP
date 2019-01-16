@@ -25,9 +25,12 @@ namespace pocketmine\event\inventory;
 
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\inventory\Inventory;
 
 class InventoryPickupArrowEvent extends InventoryEvent implements Cancellable{
+	use CancellableTrait;
+
 	/** @var Arrow */
 	private $arrow;
 

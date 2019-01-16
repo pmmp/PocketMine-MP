@@ -25,6 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -33,6 +34,8 @@ use pocketmine\Player;
  * Called when a player interacts or touches a block (including air?)
  */
 class PlayerInteractEvent extends PlayerEvent implements Cancellable{
+	use CancellableTrait;
+
 	public const LEFT_CLICK_BLOCK = 0;
 	public const RIGHT_CLICK_BLOCK = 1;
 

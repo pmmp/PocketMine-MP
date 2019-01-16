@@ -25,9 +25,12 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\level\Level;
 
 class EntityLevelChangeEvent extends EntityEvent implements Cancellable{
+	use CancellableTrait;
+
 	/** @var Level */
 	private $originLevel;
 	/** @var Level */

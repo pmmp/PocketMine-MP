@@ -36,42 +36,12 @@ abstract class Event{
 
 	/** @var string|null */
 	protected $eventName = null;
-	/** @var bool */
-	private $isCancelled = false;
 
 	/**
 	 * @return string
 	 */
 	final public function getEventName() : string{
 		return $this->eventName ?? get_class($this);
-	}
-
-	/**
-	 * @return bool
-	 *
-	 * @throws \BadMethodCallException
-	 */
-	public function isCancelled() : bool{
-		if(!($this instanceof Cancellable)){
-			throw new \BadMethodCallException(get_class($this) . " is not Cancellable");
-		}
-
-		/** @var Event $this */
-		return $this->isCancelled;
-	}
-
-	/**
-	 * @param bool $value
-	 *
-	 * @throws \BadMethodCallException
-	 */
-	public function setCancelled(bool $value = true) : void{
-		if(!($this instanceof Cancellable)){
-			throw new \BadMethodCallException(get_class($this) . " is not Cancellable");
-		}
-
-		/** @var Event $this */
-		$this->isCancelled = $value;
 	}
 
 	/**

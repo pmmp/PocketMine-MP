@@ -25,12 +25,15 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\item\Item;
 
 /**
  * Called before a slot in an entity's inventory changes.
  */
 class EntityInventoryChangeEvent extends EntityEvent implements Cancellable{
+	use CancellableTrait;
+
 	/** @var Item */
 	private $oldItem;
 	/** @var Item */

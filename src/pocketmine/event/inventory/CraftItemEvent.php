@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\inventory;
 
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;
 use pocketmine\inventory\CraftingRecipe;
 use pocketmine\inventory\transaction\CraftingTransaction;
@@ -31,6 +32,8 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 
 class CraftItemEvent extends Event implements Cancellable{
+	use CancellableTrait;
+
 	/** @var CraftingTransaction */
 	private $transaction;
 	/** @var CraftingRecipe */

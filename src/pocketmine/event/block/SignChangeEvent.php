@@ -25,6 +25,7 @@ namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\Player;
 use function count;
 
@@ -32,6 +33,8 @@ use function count;
  * Called when a sign is changed by a player.
  */
 class SignChangeEvent extends BlockEvent implements Cancellable{
+	use CancellableTrait;
+
 	/** @var Player */
 	private $player;
 	/** @var string[] */

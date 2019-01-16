@@ -24,10 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\event\server;
 
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\Player;
 
 class DataPacketSendEvent extends ServerEvent implements Cancellable{
+	use CancellableTrait;
+
 	/** @var DataPacket */
 	private $packet;
 	/** @var Player */
