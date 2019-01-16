@@ -191,9 +191,13 @@ class AddEntityPacket extends DataPacket{
 			$attr = Attribute::getAttribute($id);
 
 			if($attr !== null){
-				$attr->setMinValue($min);
-				$attr->setMaxValue($max);
-				$attr->setValue($current);
+				try{
+					$attr->setMinValue($min);
+					$attr->setMaxValue($max);
+					$attr->setValue($current);
+				}catch(\InvalidArgumentException $e){
+					throw new BadPacketException($e->getMessage(), 0, $e); //TODO: address this properly
+				}
 				$this->attributes[] = $attr;
 			}else{
 				throw new BadPacketException("Unknown attribute type \"$id\"");

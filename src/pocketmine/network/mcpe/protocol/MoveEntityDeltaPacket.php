@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\utils\BinaryDataException;
 
 class MoveEntityDeltaPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_DELTA_PACKET;
@@ -54,6 +55,12 @@ class MoveEntityDeltaPacket extends DataPacket{
 	/** @var float */
 	public $zRot = 0.0;
 
+	/**
+	 * @param int $flag
+	 *
+	 * @return int
+	 * @throws BinaryDataException
+	 */
 	private function maybeReadCoord(int $flag) : int{
 		if($this->flags & $flag){
 			return $this->getVarInt();
@@ -61,6 +68,12 @@ class MoveEntityDeltaPacket extends DataPacket{
 		return 0;
 	}
 
+	/**
+	 * @param int $flag
+	 *
+	 * @return float
+	 * @throws BinaryDataException
+	 */
 	private function maybeReadRotation(int $flag) : float{
 		if($this->flags & $flag){
 			return $this->getByteRotation();

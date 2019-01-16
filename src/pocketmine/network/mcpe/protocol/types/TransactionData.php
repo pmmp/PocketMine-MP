@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\NetworkBinaryStream;
+use pocketmine\utils\BinaryDataException;
 use function count;
 
 abstract class TransactionData{
@@ -45,8 +47,8 @@ abstract class TransactionData{
 	/**
 	 * @param NetworkBinaryStream $stream
 	 *
-	 * @throws \OutOfBoundsException
-	 * @throws \UnexpectedValueException
+	 * @throws BinaryDataException
+	 * @throws BadPacketException
 	 */
 	final public function decode(NetworkBinaryStream $stream) : void{
 		$actionCount = $stream->getUnsignedVarInt();
@@ -59,8 +61,8 @@ abstract class TransactionData{
 	/**
 	 * @param NetworkBinaryStream $stream
 	 *
-	 * @throws \OutOfBoundsException
-	 * @throws \UnexpectedValueException
+	 * @throws BinaryDataException
+	 * @throws BadPacketException
 	 */
 	abstract protected function decodeData(NetworkBinaryStream $stream) : void;
 

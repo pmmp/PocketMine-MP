@@ -31,6 +31,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\BinaryDataException;
@@ -43,6 +44,10 @@ class NetworkBinaryStream extends BinaryStream{
 	/** @var LittleEndianNbtSerializer */
 	private static $itemNbtSerializer = null;
 
+	/**
+	 * @return string
+	 * @throws BinaryDataException
+	 */
 	public function getString() : string{
 		return $this->get($this->getUnsignedVarInt());
 	}
@@ -52,6 +57,10 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->put($v);
 	}
 
+	/**
+	 * @return UUID
+	 * @throws BinaryDataException
+	 */
 	public function getUUID() : UUID{
 		//This is actually two little-endian longs: UUID Most followed by UUID Least
 		$part1 = $this->getLInt();
@@ -69,6 +78,12 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putLInt($uuid->getPart(2));
 	}
 
+	/**
+	 * @return Item
+	 *
+	 * @throws BadPacketException
+	 * @throws BinaryDataException
+	 */
 	public function getSlot() : Item{
 		$id = $this->getVarInt();
 		if($id === 0){
@@ -88,7 +103,11 @@ class NetworkBinaryStream extends BinaryStream{
 			if(self::$itemNbtSerializer === null){
 				self::$itemNbtSerializer = new LittleEndianNbtSerializer();
 			}
-			$compound = self::$itemNbtSerializer->read($this->get($nbtLen));
+			try{
+				$compound = self::$itemNbtSerializer->read($this->get($nbtLen));
+			}catch(\UnexpectedValueException $e){
+				throw new BadPacketException($e->getMessage(), 0, $e);
+			}
 		}
 
 		//TODO
@@ -104,7 +123,7 @@ class NetworkBinaryStream extends BinaryStream{
 		try{
 			return ItemFactory::get($id, $data, $cnt, $compound);
 		}catch(\InvalidArgumentException $e){
-			throw new BinaryDataException($e->getMessage(), 0, $e);
+			throw new BadPacketException($e->getMessage(), 0, $e);
 		}
 	}
 
@@ -146,6 +165,9 @@ class NetworkBinaryStream extends BinaryStream{
 	 * @param bool $types Whether to include metadata types along with values in the returned array
 	 *
 	 * @return array
+	 *
+	 * @throws BadPacketException
+	 * @throws BinaryDataException
 	 */
 	public function getEntityMetadata(bool $types = true) : array{
 		$count = $this->getUnsignedVarInt();
@@ -184,7 +206,7 @@ class NetworkBinaryStream extends BinaryStream{
 					$value = $this->getVector3();
 					break;
 				default:
-					throw new BinaryDataException("Invalid data type " . $type);
+					throw new BadPacketException("Unknown entity metadata type " . $type);
 			}
 			if($types){
 				$data[$key] = [$type, $value];
@@ -249,7 +271,8 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Reads a list of Attributes from the stream.
 	 * @return Attribute[]
 	 *
-	 * @throws BinaryDataException if reading an attribute with an unrecognized name
+	 * @throws BadPacketException if reading an attribute with an unrecognized name
+	 * @throws BinaryDataException
 	 */
 	public function getAttributeList() : array{
 		$list = [];
@@ -271,7 +294,7 @@ class NetworkBinaryStream extends BinaryStream{
 
 				$list[] = $attr;
 			}else{
-				throw new BinaryDataException("Unknown attribute type \"$id\"");
+				throw new BadPacketException("Unknown attribute type \"$id\"");
 			}
 		}
 
@@ -297,6 +320,8 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Reads and returns an EntityUniqueID
 	 * @return int
+	 *
+	 * @throws BinaryDataException
 	 */
 	public function getEntityUniqueId() : int{
 		return $this->getVarLong();
@@ -314,6 +339,8 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Reads and returns an EntityRuntimeID
 	 * @return int
+	 *
+	 * @throws BinaryDataException
 	 */
 	public function getEntityRuntimeId() : int{
 		return $this->getUnsignedVarLong();
@@ -334,6 +361,8 @@ class NetworkBinaryStream extends BinaryStream{
 	 * @param int &$x
 	 * @param int &$y
 	 * @param int &$z
+	 *
+	 * @throws BinaryDataException
 	 */
 	public function getBlockPosition(&$x, &$y, &$z) : void{
 		$x = $this->getVarInt();
@@ -360,6 +389,8 @@ class NetworkBinaryStream extends BinaryStream{
 	 * @param int &$x
 	 * @param int &$y
 	 * @param int &$z
+	 *
+	 * @throws BinaryDataException
 	 */
 	public function getSignedBlockPosition(&$x, &$y, &$z) : void{
 		$x = $this->getVarInt();
@@ -384,6 +415,8 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Reads a floating-point Vector3 object with coordinates rounded to 4 decimal places.
 	 *
 	 * @return Vector3
+	 *
+	 * @throws BinaryDataException
 	 */
 	public function getVector3() : Vector3{
 		return new Vector3(
@@ -424,6 +457,10 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putLFloat($vector->z);
 	}
 
+	/**
+	 * @return float
+	 * @throws BinaryDataException
+	 */
 	public function getByteRotation() : float{
 		return (float) ($this->getByte() * (360 / 256));
 	}
@@ -437,6 +474,9 @@ class NetworkBinaryStream extends BinaryStream{
 	 * TODO: implement this properly
 	 *
 	 * @return array, members are in the structure [name => [type, value]]
+	 *
+	 * @throws BadPacketException
+	 * @throws BinaryDataException
 	 */
 	public function getGameRules() : array{
 		$count = $this->getUnsignedVarInt();
@@ -456,7 +496,7 @@ class NetworkBinaryStream extends BinaryStream{
 					$value = $this->getLFloat();
 					break;
 				default:
-					throw new BinaryDataException("Unknown gamerule type $type");
+					throw new BadPacketException("Unknown gamerule type $type");
 			}
 
 			$rules[$name] = [$type, $value];
@@ -494,6 +534,8 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * @return EntityLink
+	 *
+	 * @throws BinaryDataException
 	 */
 	protected function getEntityLink() : EntityLink{
 		$link = new EntityLink();
@@ -516,6 +558,10 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putBool($link->immediate);
 	}
 
+	/**
+	 * @return CommandOriginData
+	 * @throws BinaryDataException
+	 */
 	protected function getCommandOriginData() : CommandOriginData{
 		$result = new CommandOriginData();
 

@@ -31,6 +31,7 @@ use pocketmine\item\Item;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\Player;
+use pocketmine\utils\BinaryDataException;
 
 class NetworkInventoryAction{
 	public const SOURCE_CONTAINER = 0;
@@ -96,7 +97,8 @@ class NetworkInventoryAction{
 	 * @param NetworkBinaryStream $packet
 	 *
 	 * @return $this
-	 * @throws \UnexpectedValueException
+	 *
+	 * @throws BinaryDataException
 	 * @throws BadPacketException
 	 */
 	public function read(NetworkBinaryStream $packet) : NetworkInventoryAction{

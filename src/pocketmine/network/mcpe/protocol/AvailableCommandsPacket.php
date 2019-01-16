@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\CommandData;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
+use pocketmine\utils\BinaryDataException;
 use function array_flip;
 use function array_keys;
 use function array_map;
@@ -140,6 +141,11 @@ class AvailableCommandsPacket extends DataPacket{
 		}
 	}
 
+	/**
+	 * @return CommandEnum
+	 * @throws BadPacketException
+	 * @throws BinaryDataException
+	 */
 	protected function getEnum() : CommandEnum{
 		$retval = new CommandEnum();
 		$retval->enumName = $this->getString();
@@ -156,6 +162,10 @@ class AvailableCommandsPacket extends DataPacket{
 		return $retval;
 	}
 
+	/**
+	 * @return CommandEnum
+	 * @throws BinaryDataException
+	 */
 	protected function getSoftEnum() : CommandEnum{
 		$retval = new CommandEnum();
 		$retval->enumName = $this->getString();
@@ -191,6 +201,10 @@ class AvailableCommandsPacket extends DataPacket{
 		}
 	}
 
+	/**
+	 * @return int
+	 * @throws BinaryDataException
+	 */
 	protected function getEnumValueIndex() : int{
 		if($this->enumValuesCount < 256){
 			return $this->getByte();
@@ -211,6 +225,11 @@ class AvailableCommandsPacket extends DataPacket{
 		}
 	}
 
+	/**
+	 * @return CommandData
+	 * @throws BadPacketException
+	 * @throws BinaryDataException
+	 */
 	protected function getCommandData() : CommandData{
 		$retval = new CommandData();
 		$retval->commandName = $this->getString();
