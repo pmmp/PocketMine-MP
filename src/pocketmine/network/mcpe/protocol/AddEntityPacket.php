@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\EntityIds;
 use pocketmine\math\Vector3;
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use function array_search;
@@ -173,7 +174,7 @@ class AddEntityPacket extends DataPacket{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->type = array_search($t = $this->getString(), self::LEGACY_ID_MAP_BC, true);
 		if($this->type === false){
-			throw new \UnexpectedValueException("Can't map ID $t to legacy ID");
+			throw new BadPacketException("Can't map ID $t to legacy ID");
 		}
 		$this->position = $this->getVector3();
 		$this->motion = $this->getVector3();
@@ -195,7 +196,7 @@ class AddEntityPacket extends DataPacket{
 				$attr->setValue($current);
 				$this->attributes[] = $attr;
 			}else{
-				throw new \UnexpectedValueException("Unknown attribute type \"$id\"");
+				throw new BadPacketException("Unknown attribute type \"$id\"");
 			}
 		}
 

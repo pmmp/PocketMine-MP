@@ -30,6 +30,7 @@ use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\item\Item;
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use function count;
@@ -107,7 +108,7 @@ class CraftingDataPacket extends DataPacket{
 					$entry["uuid"] = $this->getUUID()->toString();
 					break;
 				default:
-					throw new \UnexpectedValueException("Unhandled recipe type $recipeType!"); //do not continue attempting to decode
+					throw new BadPacketException("Unhandled recipe type $recipeType!"); //do not continue attempting to decode
 			}
 			$this->decodedEntries[] = $entry;
 		}

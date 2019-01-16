@@ -25,8 +25,10 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\NetworkBinaryStream;
+use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\Utils;
 use function bin2hex;
 use function get_class;
@@ -67,22 +69,26 @@ abstract class DataPacket extends NetworkBinaryStream{
 	}
 
 	/**
-	 * @throws \OutOfBoundsException
-	 * @throws \UnexpectedValueException
+	 * @throws BadPacketException
 	 */
 	final public function decode() : void{
 		$this->rewind();
-		$this->decodeHeader();
-		$this->decodePayload();
+		try{
+			$this->decodeHeader();
+			$this->decodePayload();
+		}catch(BinaryDataException | BadPacketException $e){
+			throw new BadPacketException($this->getName() . ": " . $e->getMessage(), 0, $e);
+		}
 	}
 
 	/**
-	 * @throws \OutOfBoundsException
+	 * @throws BinaryDataException
 	 * @throws \UnexpectedValueException
 	 */
 	protected function decodeHeader() : void{
 		$pid = $this->getUnsignedVarInt();
 		if($pid !== static::NETWORK_ID){
+			//TODO: this means a logical error in the code, but how to prevent it from happening?
 			throw new \UnexpectedValueException("Expected " . static::NETWORK_ID . " for packet ID, got $pid");
 		}
 	}
@@ -90,8 +96,8 @@ abstract class DataPacket extends NetworkBinaryStream{
 	/**
 	 * Decodes the packet body, without the packet ID or other generic header fields.
 	 *
-	 * @throws \OutOfBoundsException
-	 * @throws \UnexpectedValueException
+	 * @throws BadPacketException
+	 * @throws BinaryDataException
 	 */
 	abstract protected function decodePayload() : void;
 
@@ -124,6 +130,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 	 * @param SessionHandler $handler
 	 *
 	 * @return bool true if the packet was handled successfully, false if not.
+	 * @throws BadPacketException if broken data was found in the packet
 	 */
 	abstract public function handle(SessionHandler $handler) : bool;
 

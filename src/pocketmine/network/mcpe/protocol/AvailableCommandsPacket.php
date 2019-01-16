@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\CommandData;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
@@ -146,7 +147,7 @@ class AvailableCommandsPacket extends DataPacket{
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			$index = $this->getEnumValueIndex();
 			if(!isset($this->enumValues[$index])){
-				throw new \UnexpectedValueException("Invalid enum value index $index");
+				throw new BadPacketException("Invalid enum value index $index");
 			}
 			//Get the enum value from the initial pile of mess
 			$retval->enumValues[] = $this->enumValues[$index];
@@ -229,16 +230,16 @@ class AvailableCommandsPacket extends DataPacket{
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->enum = $this->enums[$index] ?? null;
 					if($parameter->enum === null){
-						throw new \UnexpectedValueException("expected enum at $index, but got none");
+						throw new BadPacketException("expected enum at $index, but got none");
 					}
 				}elseif($parameter->paramType & self::ARG_FLAG_POSTFIX){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->postfix = $this->postfixes[$index] ?? null;
 					if($parameter->postfix === null){
-						throw new \UnexpectedValueException("expected postfix at $index, but got none");
+						throw new BadPacketException("expected postfix at $index, but got none");
 					}
 				}elseif(($parameter->paramType & self::ARG_FLAG_VALID) === 0){
-					throw new \UnexpectedValueException("Invalid parameter type 0x" . dechex($parameter->paramType));
+					throw new BadPacketException("Invalid parameter type 0x" . dechex($parameter->paramType));
 				}
 
 				$retval->overloads[$overloadIndex][$paramIndex] = $parameter;

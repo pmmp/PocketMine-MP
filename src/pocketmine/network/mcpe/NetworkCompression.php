@@ -35,6 +35,12 @@ final class NetworkCompression{
 
 	}
 
+	/**
+	 * @param string $payload
+	 *
+	 * @return string
+	 * @throws \ErrorException
+	 */
 	public static function decompress(string $payload) : string{
 		return zlib_decode($payload, 1024 * 1024 * 64); //Max 64MB
 	}

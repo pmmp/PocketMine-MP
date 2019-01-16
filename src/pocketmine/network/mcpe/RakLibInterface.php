@@ -25,10 +25,12 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\GameMode;
 use pocketmine\network\AdvancedNetworkInterface;
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
+use pocketmine\utils\Utils;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\RakLib;
@@ -37,7 +39,6 @@ use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
 use raklib\utils\InternetAddress;
 use function addcslashes;
-use function bin2hex;
 use function implode;
 use function rtrim;
 use function spl_object_hash;
@@ -142,19 +143,26 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 
 	public function handleEncapsulated(string $identifier, EncapsulatedPacket $packet, int $flags) : void{
 		if(isset($this->sessions[$identifier])){
+			if($packet->buffer === "" or $packet->buffer{0} !== self::MCPE_RAKNET_PACKET_ID){
+				return;
+			}
 			//get this now for blocking in case the player was closed before the exception was raised
 			$session = $this->sessions[$identifier];
 			$address = $session->getIp();
+			$port = $session->getPort();
+			$buf = substr($packet->buffer, 1);
 			try{
-				if($packet->buffer !== "" and $packet->buffer{0} === self::MCPE_RAKNET_PACKET_ID){ //Batch
-					$session->handleEncoded(substr($packet->buffer, 1));
-				}
-			}catch(\Throwable $e){
+				$session->handleEncoded($buf);
+			}catch(BadPacketException $e){
 				$logger = $this->server->getLogger();
-				$logger->debug("EncapsulatedPacket 0x" . bin2hex($packet->buffer));
-				$logger->logException($e);
+				$logger->error("Bad packet from $address $port: " . $e->getMessage());
 
-				$session->disconnect("Internal server error");
+				//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
+				$logger->debug("Origin: " . Utils::cleanPath($e->getFile()) . "(" . $e->getLine() . ")");
+				foreach(Utils::printableTrace($e->getTrace()) as $frame){
+					$logger->debug($frame);
+				}
+				$session->disconnect("Packet processing error");
 				$this->interface->blockAddress($address, 5);
 			}
 		}

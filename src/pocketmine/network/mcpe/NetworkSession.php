@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\DeathSessionHandler;
 use pocketmine\network\mcpe\handler\HandshakeSessionHandler;
 use pocketmine\network\mcpe\handler\LoginSessionHandler;
@@ -42,6 +43,7 @@ use pocketmine\network\NetworkInterface;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\BinaryDataException;
 use function bin2hex;
 use function strlen;
 use function substr;
@@ -162,6 +164,11 @@ class NetworkSession{
 		$this->handler->setUp();
 	}
 
+	/**
+	 * @param string $payload
+	 *
+	 * @throws BadPacketException
+	 */
 	public function handleEncoded(string $payload) : void{
 		if(!$this->connected){
 			return;
@@ -171,10 +178,9 @@ class NetworkSession{
 			Timings::$playerNetworkReceiveDecryptTimer->startTiming();
 			try{
 				$payload = $this->cipher->decrypt($payload);
-			}catch(\InvalidArgumentException $e){
+			}catch(\UnexpectedValueException $e){
 				$this->server->getLogger()->debug("Encrypted packet from " . $this->ip . " " . $this->port . ": " . bin2hex($payload));
-				$this->disconnect("Packet decryption error: " . $e->getMessage());
-				return;
+				throw new BadPacketException("Packet decryption error: " . $e->getMessage(), 0, $e);
 			}finally{
 				Timings::$playerNetworkReceiveDecryptTimer->stopTiming();
 			}
@@ -185,22 +191,38 @@ class NetworkSession{
 			$stream = new PacketStream(NetworkCompression::decompress($payload));
 		}catch(\ErrorException $e){
 			$this->server->getLogger()->debug("Failed to decompress packet from " . $this->ip . " " . $this->port . ": " . bin2hex($payload));
-			$this->disconnect("Compressed packet batch decode error (incompatible game version?)", false);
-			return;
+			//TODO: this isn't incompatible game version if we already established protocol version
+			throw new BadPacketException("Compressed packet batch decode error (incompatible game version?)", 0, $e);
 		}finally{
 			Timings::$playerNetworkReceiveDecompressTimer->stopTiming();
 		}
 
 		while(!$stream->feof() and $this->connected){
-			$this->handleDataPacket(PacketPool::getPacket($stream->getString()));
+			try{
+				$buf = $stream->getString();
+			}catch(BinaryDataException $e){
+				$this->server->getLogger()->debug("Packet batch from " . $this->ip . " " . $this->port . ": " . bin2hex($stream->getBuffer()));
+				throw new BadPacketException("Packet batch decode error: " . $e->getMessage(), 0, $e);
+			}
+			$this->handleDataPacket(PacketPool::getPacket($buf));
 		}
 	}
 
+	/**
+	 * @param DataPacket $packet
+	 *
+	 * @throws BadPacketException
+	 */
 	public function handleDataPacket(DataPacket $packet) : void{
 		$timings = Timings::getReceiveDataPacketTimings($packet);
 		$timings->startTiming();
 
-		$packet->decode();
+		try{
+			$packet->decode();
+		}catch(BadPacketException $e){
+			$this->server->getLogger()->debug($packet->getName() . " from " . $this->ip . " " . $this->port . ": " . bin2hex($packet->getBuffer()));
+			throw $e;
+		}
 		if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
 			$remains = substr($packet->getBuffer(), $packet->getOffset());
 			$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": 0x" . bin2hex($remains));

@@ -33,6 +33,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
 use function count;
@@ -100,7 +101,11 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->getString();
 		}
 
-		return ItemFactory::get($id, $data, $cnt, $compound);
+		try{
+			return ItemFactory::get($id, $data, $cnt, $compound);
+		}catch(\InvalidArgumentException $e){
+			throw new BinaryDataException($e->getMessage(), 0, $e);
+		}
 	}
 
 
@@ -179,7 +184,7 @@ class NetworkBinaryStream extends BinaryStream{
 					$value = $this->getVector3();
 					break;
 				default:
-					throw new \UnexpectedValueException("Invalid data type " . $type);
+					throw new BinaryDataException("Invalid data type " . $type);
 			}
 			if($types){
 				$data[$key] = [$type, $value];
@@ -235,7 +240,7 @@ class NetworkBinaryStream extends BinaryStream{
 					$this->putVector3Nullable($d[1]);
 					break;
 				default:
-					throw new \UnexpectedValueException("Invalid data type " . $d[0]);
+					throw new \InvalidArgumentException("Invalid data type " . $d[0]);
 			}
 		}
 	}
@@ -266,7 +271,7 @@ class NetworkBinaryStream extends BinaryStream{
 
 				$list[] = $attr;
 			}else{
-				throw new \UnexpectedValueException("Unknown attribute type \"$id\"");
+				throw new BinaryDataException("Unknown attribute type \"$id\"");
 			}
 		}
 
@@ -450,6 +455,8 @@ class NetworkBinaryStream extends BinaryStream{
 				case 3:
 					$value = $this->getLFloat();
 					break;
+				default:
+					throw new BinaryDataException("Unknown gamerule type $type");
 			}
 
 			$rules[$name] = [$type, $value];
@@ -479,6 +486,8 @@ class NetworkBinaryStream extends BinaryStream{
 				case 3:
 					$this->putLFloat($rule[1]);
 					break;
+				default:
+					throw new \InvalidArgumentException("Invalid gamerule type " . $rule[0]);
 			}
 		}
 	}

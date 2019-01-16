@@ -28,6 +28,7 @@ use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\Player;
 
@@ -115,7 +116,7 @@ class NetworkInventoryAction{
 				$this->windowId = $packet->getVarInt();
 				break;
 			default:
-				throw new \UnexpectedValueException("Unknown inventory action source type $this->sourceType");
+				throw new BadPacketException("Unknown inventory action source type $this->sourceType");
 		}
 
 		$this->inventorySlot = $packet->getUnsignedVarInt();

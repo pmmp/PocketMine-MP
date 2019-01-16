@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use Particle\Validator\Validator;
 use pocketmine\entity\Skin;
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\PlayerInfo;
 use pocketmine\utils\BinaryStream;
@@ -110,7 +111,7 @@ class LoginPacket extends DataPacket{
 			foreach($result->getFailures() as $f){
 				$messages[] = $f->format();
 			}
-			throw new \UnexpectedValueException("Failed to validate '$name': " . implode(", ", $messages));
+			throw new BadPacketException("Failed to validate '$name': " . implode(", ", $messages));
 		}
 	}
 
@@ -123,7 +124,7 @@ class LoginPacket extends DataPacket{
 
 		$chainData = json_decode($buffer->get($buffer->getLInt()), true);
 		if(!is_array($chainData)){
-			throw new \UnexpectedValueException("Failed to decode chainData JSON: " . json_last_error_msg());
+			throw new BadPacketException("Failed to decode chainData JSON: " . json_last_error_msg());
 		}
 
 		$vd = new Validator();
@@ -138,10 +139,10 @@ class LoginPacket extends DataPacket{
 			$claims = Utils::getJwtClaims($chain);
 			if(isset($claims["extraData"])){
 				if(!is_array($claims["extraData"])){
-					throw new \UnexpectedValueException("'extraData' key should be an array");
+					throw new BadPacketException("'extraData' key should be an array");
 				}
 				if($this->extraData !== null){
-					throw new \UnexpectedValueException("Found 'extraData' more than once in chainData");
+					throw new BadPacketException("Found 'extraData' more than once in chainData");
 				}
 
 				$extraV = new Validator();
@@ -154,7 +155,7 @@ class LoginPacket extends DataPacket{
 			}
 		}
 		if($this->extraData === null){
-			throw new \UnexpectedValueException("'extraData' not found in chain data");
+			throw new BadPacketException("'extraData' not found in chain data");
 		}
 
 		$this->clientDataJwt = $buffer->get($buffer->getLInt());
