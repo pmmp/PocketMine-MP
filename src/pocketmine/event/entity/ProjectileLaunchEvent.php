@@ -35,7 +35,6 @@ class ProjectileLaunchEvent extends EntityEvent implements Cancellable{
 	 */
 	public function __construct(Projectile $entity){
 		$this->entity = $entity;
-
 	}
 
 	/**

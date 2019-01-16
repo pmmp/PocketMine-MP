@@ -35,7 +35,6 @@ class ItemDespawnEvent extends EntityEvent implements Cancellable{
 	 */
 	public function __construct(ItemEntity $item){
 		$this->entity = $item;
-
 	}
 
 	/**
