@@ -49,6 +49,7 @@ class BanEntry{
 
 	public function __construct(string $name){
 		$this->name = strtolower($name);
+		/** @noinspection PhpUnhandledExceptionInspection */
 		$this->creationDate = new \DateTime();
 	}
 
@@ -60,6 +61,11 @@ class BanEntry{
 		return $this->creationDate;
 	}
 
+	/**
+	 * @param \DateTime $date
+	 *
+	 * @throws \InvalidArgumentException
+	 */
 	public function setCreated(\DateTime $date){
 		self::validateDate($date);
 		$this->creationDate = $date;
@@ -82,6 +88,7 @@ class BanEntry{
 
 	/**
 	 * @param \DateTime|null $date
+	 * @throws \InvalidArgumentException
 	 */
 	public function setExpires(\DateTime $date = null){
 		if($date !== null){
@@ -91,6 +98,7 @@ class BanEntry{
 	}
 
 	public function hasExpired() : bool{
+		/** @noinspection PhpUnhandledExceptionInspection */
 		$now = new \DateTime();
 
 		return $this->expirationDate === null ? false : $this->expirationDate < $now;
@@ -127,10 +135,14 @@ class BanEntry{
 	 *
 	 * @param \DateTime $dateTime
 	 *
-	 * @throws \RuntimeException if the argument can't be parsed from a formatted date string
+	 * @throws \InvalidArgumentException if the argument can't be parsed from a formatted date string
 	 */
 	private static function validateDate(\DateTime $dateTime) : void{
-		self::parseDate($dateTime->format(self::$format));
+		try{
+			self::parseDate($dateTime->format(self::$format));
+		}catch(\RuntimeException $e){
+			throw new \InvalidArgumentException($e->getMessage(), 0, $e);
+		}
 	}
 
 	/**
@@ -142,7 +154,7 @@ class BanEntry{
 	private static function parseDate(string $date) : ?\DateTime{
 		$datetime = \DateTime::createFromFormat(self::$format, $date);
 		if(!($datetime instanceof \DateTime)){
-			throw new \RuntimeException("Error parsing date for BanEntry: " . implode(", ", \DateTime::getLastErrors()["errors"]));
+			throw new \RuntimeException("Corrupted date/time: " . implode(", ", \DateTime::getLastErrors()["errors"]));
 		}
 
 		return $datetime;
@@ -157,36 +169,26 @@ class BanEntry{
 	public static function fromString(string $str) : ?BanEntry{
 		if(strlen($str) < 2){
 			return null;
-		}else{
-			$str = explode("|", trim($str));
-			$entry = new BanEntry(trim(array_shift($str)));
-			do{
-				if(empty($str)){
-					break;
-				}
-
-				$entry->setCreated(self::parseDate(array_shift($str)));
-				if(empty($str)){
-					break;
-				}
-
-				$entry->setSource(trim(array_shift($str)));
-				if(empty($str)){
-					break;
-				}
-
-				$expire = trim(array_shift($str));
-				if($expire !== "" and strtolower($expire) !== "forever"){
-					$entry->setExpires(self::parseDate($expire));
-				}
-				if(empty($str)){
-					break;
-				}
-
-				$entry->setReason(trim(array_shift($str)));
-			}while(false);
-
-			return $entry;
 		}
+
+		$parts = explode("|", trim($str));
+		$entry = new BanEntry(trim(array_shift($parts)));
+		if(!empty($parts)){
+			$entry->setCreated(self::parseDate(array_shift($parts)));
+		}
+		if(!empty($parts)){
+			$entry->setSource(trim(array_shift($parts)));
+		}
+		if(!empty($parts)){
+			$expire = trim(array_shift($parts));
+			if($expire !== "" and strtolower($expire) !== "forever"){
+				$entry->setExpires(self::parseDate($expire));
+			}
+		}
+		if(!empty($parts)){
+			$entry->setReason(trim(array_shift($parts)));
+		}
+
+		return $entry;
 	}
 }
