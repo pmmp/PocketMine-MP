@@ -103,7 +103,6 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
-use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -113,6 +112,7 @@ use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
+use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
@@ -2546,12 +2546,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * @param DataPacket $packet
-	 * @param bool       $immediate
+	 * @param Packet $packet
+	 * @param bool   $immediate
 	 *
 	 * @return bool
 	 */
-	public function sendDataPacket(DataPacket $packet, bool $immediate = false) : bool{
+	public function sendDataPacket(Packet $packet, bool $immediate = false) : bool{
 		if(!$this->isConnected()){
 			return false;
 		}
@@ -2568,11 +2568,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @deprecated This is a proxy for sendDataPacket() and will be removed in the next major release.
 	 * @see Player::sendDataPacket()
 	 *
-	 * @param DataPacket $packet
+	 * @param Packet $packet
 	 *
 	 * @return bool
 	 */
-	public function dataPacket(DataPacket $packet) : bool{
+	public function dataPacket(Packet $packet) : bool{
 		return $this->sendDataPacket($packet, false);
 	}
 

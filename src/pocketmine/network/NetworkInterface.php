@@ -39,7 +39,7 @@ interface NetworkInterface{
 	public function start() : void;
 
 	/**
-	 * Sends a DataPacket to the interface, returns an unique identifier for the packet if $needACK is true
+	 * Sends a packet to the interface, returns an unique identifier for the packet if $needACK is true
 	 *
 	 * @param NetworkSession $session
 	 * @param string         $payload

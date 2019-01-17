@@ -34,8 +34,8 @@ use pocketmine\network\mcpe\handler\PreSpawnSessionHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksSessionHandler;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\handler\SimpleSessionHandler;
-use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
+use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
@@ -209,11 +209,11 @@ class NetworkSession{
 	}
 
 	/**
-	 * @param DataPacket $packet
+	 * @param Packet $packet
 	 *
 	 * @throws BadPacketException
 	 */
-	public function handleDataPacket(DataPacket $packet) : void{
+	public function handleDataPacket(Packet $packet) : void{
 		$timings = Timings::getReceiveDataPacketTimings($packet);
 		$timings->startTiming();
 
@@ -237,7 +237,7 @@ class NetworkSession{
 		$timings->stopTiming();
 	}
 
-	public function sendDataPacket(DataPacket $packet, bool $immediate = false) : bool{
+	public function sendDataPacket(Packet $packet, bool $immediate = false) : bool{
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
@@ -260,9 +260,9 @@ class NetworkSession{
 
 	/**
 	 * @internal
-	 * @param DataPacket $packet
+	 * @param Packet $packet
 	 */
-	public function addToSendBuffer(DataPacket $packet) : void{
+	public function addToSendBuffer(Packet $packet) : void{
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 		try{

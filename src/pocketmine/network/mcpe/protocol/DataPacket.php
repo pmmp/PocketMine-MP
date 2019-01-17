@@ -36,12 +36,12 @@ use function is_object;
 use function is_string;
 use function method_exists;
 
-abstract class DataPacket extends NetworkBinaryStream{
+abstract class DataPacket extends NetworkBinaryStream implements Packet{
 
 	public const NETWORK_ID = 0;
 
 	/** @var bool */
-	public $isEncoded = false;
+	private $isEncoded = false;
 
 	/** @var int */
 	public $senderSubId = 0;
@@ -106,6 +106,10 @@ abstract class DataPacket extends NetworkBinaryStream{
 		$this->encodeHeader();
 		$this->encodePayload();
 		$this->isEncoded = true;
+	}
+
+	final public function isEncoded() : bool{
+		return $this->isEncoded;
 	}
 
 	protected function encodeHeader() : void{

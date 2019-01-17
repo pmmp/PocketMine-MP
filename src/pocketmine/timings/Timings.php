@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\timings;
 
 use pocketmine\entity\Entity;
-use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\Player;
 use pocketmine\scheduler\TaskHandler;
 use pocketmine\tile\Tile;
@@ -212,31 +212,33 @@ abstract class Timings{
 	}
 
 	/**
-	 * @param DataPacket $pk
+	 * @param Packet $pk
 	 *
 	 * @return TimingsHandler
 	 */
-	public static function getReceiveDataPacketTimings(DataPacket $pk) : TimingsHandler{
-		if(!isset(self::$packetReceiveTimingMap[$pk::NETWORK_ID])){
+	public static function getReceiveDataPacketTimings(Packet $pk) : TimingsHandler{
+		$pid = $pk->pid();
+		if(!isset(self::$packetReceiveTimingMap[$pid])){
 			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetReceiveTimingMap[$pk::NETWORK_ID] = new TimingsHandler("** receivePacket - " . $pkName . " [0x" . dechex($pk::NETWORK_ID) . "]", self::$playerNetworkReceiveTimer);
+			self::$packetReceiveTimingMap[$pid] = new TimingsHandler("** receivePacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkReceiveTimer);
 		}
 
-		return self::$packetReceiveTimingMap[$pk::NETWORK_ID];
+		return self::$packetReceiveTimingMap[$pid];
 	}
 
 
 	/**
-	 * @param DataPacket $pk
+	 * @param Packet $pk
 	 *
 	 * @return TimingsHandler
 	 */
-	public static function getSendDataPacketTimings(DataPacket $pk) : TimingsHandler{
-		if(!isset(self::$packetSendTimingMap[$pk::NETWORK_ID])){
+	public static function getSendDataPacketTimings(Packet $pk) : TimingsHandler{
+		$pid = $pk->pid();
+		if(!isset(self::$packetSendTimingMap[$pid])){
 			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetSendTimingMap[$pk::NETWORK_ID] = new TimingsHandler("** sendPacket - " . $pkName . " [0x" . dechex($pk::NETWORK_ID) . "]", self::$playerNetworkSendTimer);
+			self::$packetSendTimingMap[$pid] = new TimingsHandler("** sendPacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkSendTimer);
 		}
 
-		return self::$packetSendTimingMap[$pk::NETWORK_ID];
+		return self::$packetSendTimingMap[$pid];
 	}
 }

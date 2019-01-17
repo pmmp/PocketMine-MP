@@ -23,19 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketPool;
 
 class PacketStream extends NetworkBinaryStream{
 
-	public function putPacket(DataPacket $packet) : void{
-		if(!$packet->isEncoded){
+	public function putPacket(Packet $packet) : void{
+		if(!$packet->isEncoded()){
 			$packet->encode();
 		}
 		$this->putString($packet->getBuffer());
 	}
 
-	public function getPacket() : DataPacket{
+	public function getPacket() : Packet{
 		return PacketPool::getPacket($this->getString());
 	}
 }

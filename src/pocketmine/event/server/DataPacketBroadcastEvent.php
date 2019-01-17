@@ -25,7 +25,7 @@ namespace pocketmine\event\server;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\Player;
 
 /**
@@ -36,12 +36,12 @@ class DataPacketBroadcastEvent extends ServerEvent implements Cancellable{
 
 	/** @var Player[] */
 	private $players;
-	/** @var DataPacket[] */
+	/** @var Packet[] */
 	private $packets;
 
 	/**
-	 * @param Player[]     $players
-	 * @param DataPacket[] $packets
+	 * @param Player[] $players
+	 * @param Packet[] $packets
 	 */
 	public function __construct(array $players, array $packets){
 		$this->players = $players;
@@ -63,14 +63,14 @@ class DataPacketBroadcastEvent extends ServerEvent implements Cancellable{
 	}
 
 	/**
-	 * @return DataPacket[]
+	 * @return Packet[]
 	 */
 	public function getPackets() : array{
 		return $this->packets;
 	}
 
 	/**
-	 * @param DataPacket[] $packets
+	 * @param Packet[] $packets
 	 */
 	public function setPackets(array $packets) : void{
 		$this->packets = $packets;
