@@ -1632,7 +1632,7 @@ class Server{
 	public function enablePlugins(int $type){
 		foreach($this->pluginManager->getPlugins() as $plugin){
 			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder() === $type){
-				$this->enablePlugin($plugin);
+				$this->pluginManager->enablePlugin($plugin);
 			}
 		}
 
@@ -1640,17 +1640,6 @@ class Server{
 			$this->commandMap->registerServerAliases();
 			DefaultPermissions::registerCorePermissions();
 		}
-	}
-
-	/**
-	 * @param Plugin $plugin
-	 */
-	public function enablePlugin(Plugin $plugin){
-		$this->pluginManager->enablePlugin($plugin);
-	}
-
-	public function disablePlugins(){
-		$this->pluginManager->disablePlugins();
 	}
 
 	/**
