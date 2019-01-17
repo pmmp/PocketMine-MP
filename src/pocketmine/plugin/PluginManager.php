@@ -172,19 +172,14 @@ class PluginManager{
 						return null;
 					}
 
-					try{
-						/**
-						 * @var Plugin $plugin
-						 * @see Plugin::__construct()
-						 */
-						$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed);
-						$this->plugins[$plugin->getDescription()->getName()] = $plugin;
+					/**
+					 * @var Plugin $plugin
+					 * @see Plugin::__construct()
+					 */
+					$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed);
+					$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 
-						return $plugin;
-					}catch(\Throwable $e){
-						$this->server->getLogger()->logException($e);
-						return null;
-					}
+					return $plugin;
 				}
 			}
 		}
@@ -228,57 +223,59 @@ class PluginManager{
 				}
 				try{
 					$description = $loader->getPluginDescription($file);
-					if($description === null){
-						continue;
-					}
+				}catch(\RuntimeException $e){ //TODO: more specific exception handling
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [$file, $directory, $e->getMessage()]));
+					$this->server->getLogger()->logException($e);
+					continue;
+				}
+				if($description === null){
+					continue;
+				}
 
-					$name = $description->getName();
-					if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.restrictedName"]));
-						continue;
-					}elseif(strpos($name, " ") !== false){
-						$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.spacesDiscouraged", [$name]));
-					}
+				$name = $description->getName();
+				if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.restrictedName"]));
+					continue;
+				}
+				if(strpos($name, " ") !== false){
+					$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.spacesDiscouraged", [$name]));
+				}
 
-					if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
-						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.duplicateError", [$name]));
-						continue;
-					}
+				if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.duplicateError", [$name]));
+					continue;
+				}
 
-					if(!$this->isCompatibleApi(...$description->getCompatibleApis())){
+				if(!$this->isCompatibleApi(...$description->getCompatibleApis())){
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+						$name,
+						$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleAPI", [implode(", ", $description->getCompatibleApis())])
+					]));
+					continue;
+				}
+
+				if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
+					$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
+					if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
 						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 							$name,
-							$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleAPI", [implode(", ", $description->getCompatibleApis())])
+							$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleProtocol", [implode(", ", $pluginMcpeProtocols)])
 						]));
 						continue;
 					}
+				}
 
-					if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
-						$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
-						if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
-							$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
-								$name,
-								$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleProtocol", [implode(", ", $pluginMcpeProtocols)])
-							]));
-							continue;
-						}
+				$plugins[$name] = $file;
+
+				$softDependencies[$name] = $description->getSoftDepend();
+				$dependencies[$name] = $description->getDepend();
+
+				foreach($description->getLoadBefore() as $before){
+					if(isset($softDependencies[$before])){
+						$softDependencies[$before][] = $name;
+					}else{
+						$softDependencies[$before] = [$name];
 					}
-
-					$plugins[$name] = $file;
-
-					$softDependencies[$name] = $description->getSoftDepend();
-					$dependencies[$name] = $description->getDepend();
-
-					foreach($description->getLoadBefore() as $before){
-						if(isset($softDependencies[$before])){
-							$softDependencies[$before][] = $name;
-						}else{
-							$softDependencies[$before] = [$name];
-						}
-					}
-				}catch(\Throwable $e){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [$file, $directory, $e->getMessage()]));
-					$this->server->getLogger()->logException($e);
 				}
 			}
 		}
@@ -413,23 +410,18 @@ class PluginManager{
 	 */
 	public function enablePlugin(Plugin $plugin){
 		if(!$plugin->isEnabled()){
-			try{
-				$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
+			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
 
-				$permManager = PermissionManager::getInstance();
-				foreach($plugin->getDescription()->getPermissions() as $perm){
-					$permManager->addPermission($perm);
-				}
-				$plugin->getScheduler()->setEnabled(true);
-				$plugin->onEnableStateChange(true);
-
-				$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
-
-				(new PluginEnableEvent($plugin))->call();
-			}catch(\Throwable $e){
-				$this->server->getLogger()->logException($e);
-				$this->disablePlugin($plugin);
+			$permManager = PermissionManager::getInstance();
+			foreach($plugin->getDescription()->getPermissions() as $perm){
+				$permManager->addPermission($perm);
 			}
+			$plugin->getScheduler()->setEnabled(true);
+			$plugin->onEnableStateChange(true);
+
+			$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
+
+			(new PluginEnableEvent($plugin))->call();
 		}
 	}
 
@@ -449,11 +441,7 @@ class PluginManager{
 
 			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);
 
-			try{
-				$plugin->onEnableStateChange(false);
-			}catch(\Throwable $e){
-				$this->server->getLogger()->logException($e);
-			}
+			$plugin->onEnableStateChange(false);
 			$plugin->getScheduler()->shutdown();
 			HandlerList::unregisterAll($plugin);
 			$permManager = PermissionManager::getInstance();
