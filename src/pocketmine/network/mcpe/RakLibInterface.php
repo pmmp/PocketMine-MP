@@ -39,6 +39,7 @@ use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
 use raklib\utils\InternetAddress;
 use function addcslashes;
+use function count;
 use function implode;
 use function rtrim;
 use function spl_object_hash;
@@ -97,6 +98,10 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 			while($this->interface->handlePacket());
 		});
 		$this->rakLib->start(PTHREADS_INHERIT_CONSTANTS); //HACK: MainLogger needs constants for exception logging
+	}
+
+	public function getConnectionCount() : int{
+		return count($this->sessions);
 	}
 
 	public function setNetwork(Network $network) : void{

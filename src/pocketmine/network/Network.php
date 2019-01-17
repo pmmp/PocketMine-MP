@@ -77,6 +77,14 @@ class Network{
 		return $this->interfaces;
 	}
 
+	public function getConnectionCount() : int{
+		$count = 0;
+		foreach($this->interfaces as $interface){
+			$count += $interface->getConnectionCount();
+		}
+		return $count;
+	}
+
 	public function tick() : void{
 		foreach($this->interfaces as $interface){
 			$interface->tick();

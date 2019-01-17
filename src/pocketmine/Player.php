@@ -1757,7 +1757,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->networkSession->getPort(),
 			$this->server->requiresAuthentication()
 		);
-		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers()){
+		if($this->server->getNetwork()->getConnectionCount() > $this->server->getMaxPlayers()){
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, "disconnectionScreen.serverFull");
 		}
 		if(!$this->server->isWhitelisted($this->username)){
