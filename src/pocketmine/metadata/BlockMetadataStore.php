@@ -37,7 +37,7 @@ class BlockMetadataStore extends MetadataStore{
 
 	private function disambiguate(Block $block, string $metadataKey) : string{
 		if($block->getLevel() !== $this->owningLevel){
-			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getName());
+			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getDisplayName());
 		}
 		return $block->x . ":" . $block->y . ":" . $block->z . ":" . $metadataKey;
 	}

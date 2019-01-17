@@ -107,7 +107,7 @@ class StatusCommand extends VanillaCommand{
 		}
 
 		foreach($server->getLevelManager()->getLevels() as $level){
-			$levelName = $level->getFolderName() !== $level->getName() ? " (" . $level->getName() . ")" : "";
+			$levelName = $level->getFolderName() !== $level->getDisplayName() ? " (" . $level->getDisplayName() . ")" : "";
 			$timeColor = ($level->getTickRate() > 1 or $level->getTickRateTime() > 40) ? TextFormat::RED : TextFormat::YELLOW;
 			$tickRate = $level->getTickRate() > 1 ? " (tick rate " . $level->getTickRate() . ")" : "";
 			$sender->sendMessage(TextFormat::GOLD . "World \"{$level->getFolderName()}\"$levelName: " .

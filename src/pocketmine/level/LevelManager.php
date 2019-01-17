@@ -179,7 +179,7 @@ class LevelManager{
 			return false;
 		}
 
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$level->getName()]));
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$level->getDisplayName()]));
 		foreach($level->getPlayers() as $player){
 			if($level === $this->levelDefault or $this->levelDefault === null){
 				$player->close($player->getLeaveMessage(), "Forced default level unload");
@@ -382,14 +382,14 @@ class LevelManager{
 					if($r > $this->baseTickRate){
 						$level->tickRateCounter = $level->getTickRate();
 					}
-					$this->server->getLogger()->debug("Raising level \"{$level->getName()}\" tick rate to {$level->getTickRate()} ticks");
+					$this->server->getLogger()->debug("Raising level \"{$level->getDisplayName()}\" tick rate to {$level->getTickRate()} ticks");
 				}elseif($tickMs >= 50){
 					if($level->getTickRate() === $this->baseTickRate){
 						$level->setTickRate(max($this->baseTickRate + 1, min($this->autoTickRateLimit, (int) floor($tickMs / 50))));
-						$this->server->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), (int) round($tickMs, 2), $level->getTickRate()));
+						$this->server->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getDisplayName(), (int) round($tickMs, 2), $level->getTickRate()));
 					}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < $this->autoTickRateLimit){
 						$level->setTickRate($level->getTickRate() + 1);
-						$this->server->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), (int) round($tickMs, 2), $level->getTickRate()));
+						$this->server->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getDisplayName(), (int) round($tickMs, 2), $level->getTickRate()));
 					}
 					$level->tickRateCounter = $level->getTickRate();
 				}

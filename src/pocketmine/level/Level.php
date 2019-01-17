@@ -2803,16 +2803,17 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Returns the Level name
+	 * Returns the Level display name.
+	 * WARNING: This is NOT guaranteed to be unique. Multiple levels at runtime may share the same display name.
 	 *
 	 * @return string
 	 */
-	public function getName() : string{
+	public function getDisplayName() : string{
 		return $this->displayName;
 	}
 
 	/**
-	 * Returns the Level folder name
+	 * Returns the Level folder name. This will not change at runtime and will be unique to a level per runtime.
 	 *
 	 * @return string
 	 */

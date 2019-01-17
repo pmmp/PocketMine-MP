@@ -89,7 +89,7 @@ class QueryRegenerateEvent extends ServerEvent{
 		$this->version = $server->getVersion();
 		$this->server_engine = $server->getName() . " " . $server->getPocketMineVersion();
 		$level = $server->getLevelManager()->getDefaultLevel();
-		$this->map = $level === null ? "unknown" : $level->getName();
+		$this->map = $level === null ? "unknown" : $level->getDisplayName();
 		$this->numPlayers = count($this->players);
 		$this->maxPlayers = $server->getMaxPlayers();
 		$this->whitelist = $server->hasWhitelist() ? "on" : "off";
