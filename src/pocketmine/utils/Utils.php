@@ -39,7 +39,6 @@ use function chunk_split;
 use function count;
 use function debug_zval_dump;
 use function dechex;
-use function error_reporting;
 use function exec;
 use function explode;
 use function fclose;
@@ -626,23 +625,6 @@ class Utils{
 		preg_match_all('/(*ANYCRLF)^[\t ]*\* @([a-zA-Z]+)(?:[\t ]+(.+))?[\t ]*$/m', $docComment, $matches);
 
 		return array_combine($matches[1], $matches[2]);
-	}
-
-	/**
-	 * @param int    $severity
-	 * @param string $message
-	 * @param string $file
-	 * @param int    $line
-	 *
-	 * @return bool
-	 * @throws \ErrorException
-	 */
-	public static function errorExceptionHandler(int $severity, string $message, string $file, int $line) : bool{
-		if(error_reporting() & $severity){
-			throw new \ErrorException($message, 0, $severity, $file, $line);
-		}
-
-		return true; //stfu operator
 	}
 
 	public static function testValidInstance(string $className, string $baseName) : void{

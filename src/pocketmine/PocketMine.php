@@ -163,7 +163,7 @@ namespace pocketmine {
 		exit(1);
 	}
 
-	set_error_handler([Utils::class, 'errorExceptionHandler']);
+	\ErrorUtils::setErrorExceptionHandler();
 
 	/*
 	 * We now use the Composer autoloader, but this autoloader is still for loading plugins.

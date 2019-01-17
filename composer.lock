@@ -413,12 +413,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "2f5dfdaa28ff69d72cd1682faa521e18b17a15ef"
+                "reference": "caffc9bcce765c78d4464b4f6852e3981b81b752"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/2f5dfdaa28ff69d72cd1682faa521e18b17a15ef",
-                "reference": "2f5dfdaa28ff69d72cd1682faa521e18b17a15ef",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/caffc9bcce765c78d4464b4f6852e3981b81b752",
+                "reference": "caffc9bcce765c78d4464b4f6852e3981b81b752",
                 "shasum": ""
             },
             "require": {
@@ -446,7 +446,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-01-09T18:42:21+00:00"
+            "time": "2019-01-17T19:13:53+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -488,12 +488,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "985e212ac528412ec00ddd3b88c5fc11549a2fe0"
+                "reference": "d7bd7b8cb10c264ca6e6b5c3ef9b52e48a6f29d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/985e212ac528412ec00ddd3b88c5fc11549a2fe0",
-                "reference": "985e212ac528412ec00ddd3b88c5fc11549a2fe0",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/d7bd7b8cb10c264ca6e6b5c3ef9b52e48a6f29d8",
+                "reference": "d7bd7b8cb10c264ca6e6b5c3ef9b52e48a6f29d8",
                 "shasum": ""
             },
             "type": "library",
@@ -512,7 +512,7 @@
             "support": {
                 "source": "https://github.com/pmmp/SPL/tree/master"
             },
-            "time": "2018-10-21T17:32:00+00:00"
+            "time": "2019-01-17T18:54:01+00:00"
         }
     ],
     "packages-dev": [],
