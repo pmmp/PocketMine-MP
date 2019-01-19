@@ -31,8 +31,6 @@ use pocketmine\utils\TextFormat;
 use function array_map;
 use function array_pad;
 use function array_slice;
-use function assert;
-use function count;
 use function explode;
 use function implode;
 use function sprintf;
@@ -41,13 +39,16 @@ class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";
 	public const TAG_TEXT_LINE = "Text%d"; //sprintf()able
 
+	private static function fixTextBlob(string $blob) : array{
+		return array_slice(array_pad(explode("\n", $blob), 4, ""), 0, 4);
+	}
+
 	/** @var string[] */
 	protected $text = ["", "", "", ""];
 
 	protected function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_TEXT_BLOB, StringTag::class)){ //MCPE 1.2 save format
-			$this->text = array_pad(explode("\n", $nbt->getString(self::TAG_TEXT_BLOB)), 4, "");
-			assert(count($this->text) === 4, "Too many lines!");
+			$this->text = self::fixTextBlob($nbt->getString(self::TAG_TEXT_BLOB));
 		}else{
 			for($i = 1; $i <= 4; ++$i){
 				$textKey = sprintf(self::TAG_TEXT_LINE, $i);
@@ -138,7 +139,7 @@ class Sign extends Spawnable{
 		}
 
 		if($nbt->hasTag(self::TAG_TEXT_BLOB, StringTag::class)){
-			$lines = array_slice(array_pad(explode("\n", $nbt->getString(self::TAG_TEXT_BLOB)), 4, ""), 0, 4);
+			$lines = self::fixTextBlob($nbt->getString(self::TAG_TEXT_BLOB));
 		}else{
 			return false;
 		}
