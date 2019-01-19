@@ -2503,14 +2503,14 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param Entity $entity
 	 *
-	 * @throws LevelException
+	 * @throws \InvalidArgumentException
 	 */
 	public function addEntity(Entity $entity){
 		if($entity->isClosed()){
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to Level");
 		}
 		if($entity->getLevel() !== $this){
-			throw new LevelException("Invalid Entity level");
+			throw new \InvalidArgumentException("Invalid Entity level");
 		}
 
 		if($entity instanceof Player){
@@ -2524,11 +2524,11 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @param Entity $entity
 	 *
-	 * @throws LevelException
+	 * @throws \InvalidArgumentException
 	 */
 	public function removeEntity(Entity $entity){
 		if($entity->getLevel() !== $this){
-			throw new LevelException("Invalid Entity level");
+			throw new \InvalidArgumentException("Invalid Entity level");
 		}
 
 		if($entity instanceof Player){
@@ -2543,14 +2543,14 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param Tile $tile
 	 *
-	 * @throws LevelException
+	 * @throws \InvalidArgumentException
 	 */
 	public function addTile(Tile $tile){
 		if($tile->isClosed()){
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to Level");
 		}
 		if($tile->getLevel() !== $this){
-			throw new LevelException("Invalid Tile level");
+			throw new \InvalidArgumentException("Invalid Tile level");
 		}
 
 		$chunkX = $tile->getFloorX() >> 4;
@@ -2569,11 +2569,11 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param Tile $tile
 	 *
-	 * @throws LevelException
+	 * @throws \InvalidArgumentException
 	 */
 	public function removeTile(Tile $tile){
 		if($tile->getLevel() !== $this){
-			throw new LevelException("Invalid Tile level");
+			throw new \InvalidArgumentException("Invalid Tile level");
 		}
 
 		unset($this->tiles[$blockHash = Level::blockHash($tile->x, $tile->y, $tile->z)], $this->updateTiles[$blockHash]);
