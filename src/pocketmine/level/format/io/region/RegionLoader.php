@@ -46,6 +46,7 @@ use function str_pad;
 use function stream_set_read_buffer;
 use function stream_set_write_buffer;
 use function strlen;
+use function substr;
 use function time;
 use function touch;
 use function unpack;
@@ -134,8 +135,11 @@ class RegionLoader{
 		}
 
 		fseek($this->filePointer, $this->locationTable[$index][0] << 12);
-		$length = Binary::readInt(fread($this->filePointer, 4));
-		$compression = ord(fgetc($this->filePointer));
+		$prefix = fread($this->filePointer, 4);
+		if($prefix === false or strlen($prefix) !== 4){
+			throw new CorruptedChunkException("Corrupted chunk header detected (unexpected end of file reading length prefix)");
+		}
+		$length = Binary::readInt($prefix);
 
 		if($length <= 0 or $length > self::MAX_SECTOR_LENGTH){ //Not yet generated / corrupted
 			if($length >= self::MAX_SECTOR_LENGTH){
@@ -150,17 +154,19 @@ class RegionLoader{
 			MainLogger::getLogger()->error("Corrupted bigger chunk detected (bigger than number of sectors given in header)");
 			$this->locationTable[$index][1] = $length >> 12;
 			$this->writeLocationIndex($index);
-		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
+		}
+
+		$chunkData = fread($this->filePointer, $length);
+		if($chunkData === false or strlen($chunkData) !== $length){
+			throw new CorruptedChunkException("Corrupted chunk detected (unexpected end of file reading chunk data)");
+		}
+
+		$compression = ord($chunkData[0]);
+		if($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
 			throw new CorruptedChunkException("Invalid compression type (got $compression, expected " . self::COMPRESSION_ZLIB . " or " . self::COMPRESSION_GZIP . ")");
 		}
 
-		$chunkData = fread($this->filePointer, $length - 1);
-		if($chunkData === false){
-			throw new CorruptedChunkException("Corrupted chunk detected (failed to read chunk data from disk)");
-
-		}
-
-		return $chunkData;
+		return substr($chunkData, 1);
 	}
 
 	public function chunkExists(int $x, int $z) : bool{
