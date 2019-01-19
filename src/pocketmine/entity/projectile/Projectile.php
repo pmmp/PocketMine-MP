@@ -319,7 +319,7 @@ abstract class Projectile extends Entity{
 
 			$entityHit->attack($ev);
 
-			if($this->fireTicks > 0){
+			if($this->isOnFire()){
 				$ev = new EntityCombustByEntityEvent($this, $entityHit, 5);
 				$ev->call();
 				if(!$ev->isCancelled()){
