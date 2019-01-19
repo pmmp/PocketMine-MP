@@ -31,6 +31,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
@@ -105,7 +106,7 @@ class NetworkBinaryStream extends BinaryStream{
 			}
 			try{
 				$compound = self::$itemNbtSerializer->read($this->get($nbtLen));
-			}catch(\UnexpectedValueException $e){
+			}catch(NbtDataException $e){
 				throw new BadPacketException($e->getMessage(), 0, $e);
 			}
 		}

@@ -29,7 +29,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\JsonNbtParser;
-use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\utils\TextFormat;
 use function array_slice;
 use function count;
@@ -75,16 +75,11 @@ class GiveCommand extends VanillaCommand{
 		}
 
 		if(isset($args[3])){
-			$tags = $exception = null;
 			$data = implode(" ", array_slice($args, 3));
 			try{
 				$tags = JsonNbtParser::parseJson($data);
-			}catch(\Exception $ex){
-				$exception = $ex;
-			}
-
-			if(!($tags instanceof CompoundTag) or $exception !== null){
-				$sender->sendMessage(new TranslationContainer("commands.give.tagError", [$exception !== null ? $exception->getMessage() : "Invalid tag conversion"]));
+			}catch(NbtDataException $e){
+				$sender->sendMessage(new TranslationContainer("commands.give.tagError", [$e->getMessage()]));
 				return true;
 			}
 

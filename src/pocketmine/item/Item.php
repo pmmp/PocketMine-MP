@@ -35,6 +35,7 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -64,11 +65,13 @@ class Item implements ItemIds, \JsonSerializable{
 	/** @var LittleEndianNbtSerializer */
 	private static $cachedParser = null;
 
+	/**
+	 * @param string $tag
+	 *
+	 * @return CompoundTag
+	 * @throws NbtDataException
+	 */
 	private static function parseCompoundTag(string $tag) : CompoundTag{
-		if($tag === ""){
-			throw new \InvalidArgumentException("No NBT data found in supplied string");
-		}
-
 		if(self::$cachedParser === null){
 			self::$cachedParser = new LittleEndianNbtSerializer();
 		}

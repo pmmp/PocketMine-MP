@@ -88,10 +88,12 @@ use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkNbtSerializer;
@@ -2451,6 +2453,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $handled;
 	}
 
+	/**
+	 * @param BlockEntityDataPacket $packet
+	 *
+	 * @return bool
+	 * @throws BadPacketException
+	 */
 	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
 		$this->doCloseInventory();
 
@@ -2462,7 +2470,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$t = $this->level->getTile($pos);
 		if($t instanceof Spawnable){
 			$nbt = new NetworkNbtSerializer();
-			$compound = $nbt->read($packet->namedtag);
+			try{
+				$compound = $nbt->read($packet->namedtag);
+			}catch(NbtDataException $e){
+				throw new BadPacketException($e->getMessage(), 0, $e);
+			}
 			if(!$t->updateCompoundTag($compound, $this)){
 				$t->spawnTo($this);
 			}

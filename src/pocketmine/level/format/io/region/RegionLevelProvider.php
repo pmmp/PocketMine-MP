@@ -176,6 +176,13 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 	 */
 	abstract protected function deserializeChunk(string $data) : Chunk;
 
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return Chunk|null
+	 * @throws CorruptedChunkException
+	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);

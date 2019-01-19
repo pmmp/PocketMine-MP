@@ -59,6 +59,7 @@ use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -676,15 +677,13 @@ class Server{
 		if($this->shouldSavePlayerData()){
 			if(file_exists($path . "$name.dat")){
 				try{
-					$nbt = new BigEndianNbtSerializer();
-					return $nbt->readCompressed(file_get_contents($path . "$name.dat"));
-				}catch(\Throwable $e){ //zlib decode error / corrupt data
+					return (new BigEndianNbtSerializer())->readCompressed(file_get_contents($path . "$name.dat"));
+				}catch(NbtDataException $e){ //zlib decode error / corrupt data
 					rename($path . "$name.dat", $path . "$name.dat.bak");
-					$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
+					$this->logger->error($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
 				}
-			}else{
-				$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerNotFound", [$name]));
 			}
+			$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerNotFound", [$name]));
 		}
 		$spawn = $this->levelManager->getDefaultLevel()->getSafeSpawn();
 		$currentTimeMillis = (int) (microtime(true) * 1000);

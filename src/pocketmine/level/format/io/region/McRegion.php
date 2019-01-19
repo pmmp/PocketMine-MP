@@ -29,6 +29,7 @@ use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
@@ -107,7 +108,11 @@ class McRegion extends RegionLevelProvider{
 	 */
 	protected function deserializeChunk(string $data) : Chunk{
 		$nbt = new BigEndianNbtSerializer();
-		$chunk = $nbt->readCompressed($data);
+		try{
+			$chunk = $nbt->readCompressed($data);
+		}catch(NbtDataException $e){
+			throw new CorruptedChunkException($e->getMessage(), 0, $e);
+		}
 		if(!$chunk->hasTag("Level")){
 			throw new CorruptedChunkException("'Level' key is missing from chunk NBT");
 		}
