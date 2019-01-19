@@ -117,7 +117,7 @@ abstract class Tree{
 		$write->addBlockAt($x, $y - 1, $z, BlockFactory::get(Block::DIRT));
 
 		for($yy = 0; $yy < $trunkHeight; ++$yy){
-			if($this->canOverride($level->getBlockAt($x, $y + $yy, $z))){
+			if($this->canOverride($write->fetchBlockAt($level, $x, $y + $yy, $z))){
 				$write->addBlockAt($x, $y + $yy, $z, $this->trunkBlock);
 			}
 		}
@@ -134,7 +134,7 @@ abstract class Tree{
 					if($xOff === $mid and $zOff === $mid and ($yOff === 0 or $random->nextBoundedInt(2) === 0)){
 						continue;
 					}
-					if(!$level->getBlockAt($xx, $yy, $zz)->isSolid()){
+					if(!$write->fetchBlockAt($level, $xx, $yy, $zz)->isSolid()){
 						$write->addBlockAt($xx, $yy, $zz, $this->leafBlock);
 					}
 				}

@@ -68,6 +68,33 @@ class BlockWriteBatch{
 	}
 
 	/**
+	 * Reads a block from the given world, masked by the blocks in this writebatch. This can be useful if you want to
+	 * add blocks to the batch that depend on previous blocks should they exist.
+	 *
+	 * @param ChunkManager $world
+	 * @param Vector3      $pos
+	 *
+	 * @return Block
+	 */
+	public function fetchBlock(ChunkManager $world, Vector3 $pos) : Block{
+		return $this->fetchBlockAt($world, $pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
+	}
+
+	/**
+	 * @see BlockWriteBatch::fetchBlock()
+	 *
+	 * @param ChunkManager $world
+	 * @param int          $x
+	 * @param int          $y
+	 * @param int          $z
+	 *
+	 * @return Block
+	 */
+	public function fetchBlockAt(ChunkManager $world, int $x, int $y, int $z) : Block{
+		return $this->blocks[$x][$y][$z] ?? $world->getBlockAt($x, $y, $z);
+	}
+
+	/**
 	 * Validates and attempts to apply the batch to the given world. If any part of the batch fails to validate, no
 	 * changes will be made to the world.
 	 *
