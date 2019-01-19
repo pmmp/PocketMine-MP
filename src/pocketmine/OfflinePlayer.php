@@ -26,6 +26,7 @@ namespace pocketmine;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\LongTag;
 use pocketmine\plugin\Plugin;
 
 class OfflinePlayer implements IPlayer, Metadatable{
@@ -106,15 +107,15 @@ class OfflinePlayer implements IPlayer, Metadatable{
 	}
 
 	public function getFirstPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("firstPlayed", 0, true) : null;
+		return ($this->namedtag !== null and $this->namedtag->hasTag("firstPlayed", LongTag::class)) ? $this->namedtag->getInt("firstPlayed") : null;
 	}
 
 	public function getLastPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("lastPlayed", 0, true) : null;
+		return ($this->namedtag !== null and $this->namedtag->hasTag("lastPlayed", LongTag::class)) ? $this->namedtag->getLong("lastPlayed") : null;
 	}
 
 	public function hasPlayedBefore() : bool{
-		return $this->namedtag instanceof CompoundTag;
+		return $this->namedtag !== null;
 	}
 
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){
