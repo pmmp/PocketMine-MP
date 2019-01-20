@@ -235,13 +235,13 @@ class NetworkSession{
 		}
 		if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
 			$remains = substr($packet->getBuffer(), $packet->getOffset());
-			$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": 0x" . bin2hex($remains));
+			$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
 		}
 
 		$ev = new DataPacketReceiveEvent($this->player, $packet);
 		$ev->call();
 		if(!$ev->isCancelled() and !$packet->handle($this->handler)){
-			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->getDisplayName() . ": 0x" . bin2hex($packet->getBuffer()));
+			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->getDisplayName() . ": " . bin2hex($packet->getBuffer()));
 		}
 
 		$timings->stopTiming();
