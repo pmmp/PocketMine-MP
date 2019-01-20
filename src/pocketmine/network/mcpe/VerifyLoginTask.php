@@ -45,6 +45,8 @@ class VerifyLoginTask extends AsyncTask{
 
 	public const MOJANG_ROOT_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V";
 
+	private const CLOCK_DRIFT_MAX = 60;
+
 	/** @var LoginPacket */
 	private $packet;
 
@@ -144,11 +146,11 @@ class VerifyLoginTask extends AsyncTask{
 		$claims = json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
 
 		$time = time();
-		if(isset($claims["nbf"]) and $claims["nbf"] > $time){
+		if(isset($claims["nbf"]) and $claims["nbf"] > $time + self::CLOCK_DRIFT_MAX){
 			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.tooEarly");
 		}
 
-		if(isset($claims["exp"]) and $claims["exp"] < $time){
+		if(isset($claims["exp"]) and $claims["exp"] < $time - self::CLOCK_DRIFT_MAX){
 			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.tooLate");
 		}
 
