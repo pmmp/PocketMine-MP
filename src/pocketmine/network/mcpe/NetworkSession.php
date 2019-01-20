@@ -139,6 +139,10 @@ class NetworkSession{
 		return $this->port;
 	}
 
+	public function getDisplayName() : string{
+		return ($this->player !== null and $this->player->getName() !== "") ? $this->player->getName() : $this->ip . " " . $this->port;
+	}
+
 	/**
 	 * Returns the last recorded ping measurement for this session, in milliseconds.
 	 *
@@ -181,7 +185,7 @@ class NetworkSession{
 			try{
 				$payload = $this->cipher->decrypt($payload);
 			}catch(\UnexpectedValueException $e){
-				$this->server->getLogger()->debug("Encrypted packet from " . $this->ip . " " . $this->port . ": " . bin2hex($payload));
+				$this->server->getLogger()->debug("Encrypted packet from " . $this->getDisplayName() . ": " . bin2hex($payload));
 				throw new BadPacketException("Packet decryption error: " . $e->getMessage(), 0, $e);
 			}finally{
 				Timings::$playerNetworkReceiveDecryptTimer->stopTiming();
@@ -192,7 +196,7 @@ class NetworkSession{
 		try{
 			$stream = new PacketStream(NetworkCompression::decompress($payload));
 		}catch(\ErrorException $e){
-			$this->server->getLogger()->debug("Failed to decompress packet from " . $this->ip . " " . $this->port . ": " . bin2hex($payload));
+			$this->server->getLogger()->debug("Failed to decompress packet from " . $this->getDisplayName() . ": " . bin2hex($payload));
 			//TODO: this isn't incompatible game version if we already established protocol version
 			throw new BadPacketException("Compressed packet batch decode error (incompatible game version?)", 0, $e);
 		}finally{
@@ -203,7 +207,7 @@ class NetworkSession{
 			try{
 				$buf = $stream->getString();
 			}catch(BinaryDataException $e){
-				$this->server->getLogger()->debug("Packet batch from " . $this->ip . " " . $this->port . ": " . bin2hex($stream->getBuffer()));
+				$this->server->getLogger()->debug("Packet batch from " . $this->getDisplayName() . ": " . bin2hex($stream->getBuffer()));
 				throw new BadPacketException("Packet batch decode error: " . $e->getMessage(), 0, $e);
 			}
 			$this->handleDataPacket(PacketPool::getPacket($buf));
@@ -226,7 +230,7 @@ class NetworkSession{
 		try{
 			$packet->decode();
 		}catch(BadPacketException $e){
-			$this->server->getLogger()->debug($packet->getName() . " from " . $this->ip . " " . $this->port . ": " . bin2hex($packet->getBuffer()));
+			$this->server->getLogger()->debug($packet->getName() . " from " . $this->getDisplayName() . ": " . bin2hex($packet->getBuffer()));
 			throw $e;
 		}
 		if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
@@ -237,7 +241,7 @@ class NetworkSession{
 		$ev = new DataPacketReceiveEvent($this->player, $packet);
 		$ev->call();
 		if(!$ev->isCancelled() and !$packet->handle($this->handler)){
-			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": 0x" . bin2hex($packet->getBuffer()));
+			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->getDisplayName() . ": 0x" . bin2hex($packet->getBuffer()));
 		}
 
 		$timings->stopTiming();
@@ -393,7 +397,7 @@ class NetworkSession{
 		$this->cipher = new NetworkCipher($encryptionKey);
 
 		$this->setHandler(new HandshakeSessionHandler($this));
-		$this->server->getLogger()->debug("Enabled encryption for $this->ip $this->port");
+		$this->server->getLogger()->debug("Enabled encryption for " . $this->getDisplayName());
 	}
 
 	public function onLoginSuccess() : void{
