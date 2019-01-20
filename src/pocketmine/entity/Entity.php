@@ -1548,7 +1548,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$vector = $this->temporalVector->setComponents(0, 0, 0);
 
 		foreach($this->getBlocksAround() as $block){
-			$block->onEntityCollide($this);
+			$block->onEntityInside($this);
 			$block->addVelocityToEntity($this, $vector);
 		}
 

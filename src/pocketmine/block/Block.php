@@ -705,9 +705,12 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Called when an entity's bounding box clips inside this block's cell. Note that the entity may not be intersecting
+	 * with the collision box or bounding box.
+	 *
 	 * @param Entity $entity
 	 */
-	public function onEntityCollide(Entity $entity) : void{
+	public function onEntityInside(Entity $entity) : void{
 
 	}
 

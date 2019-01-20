@@ -93,7 +93,7 @@ class Vine extends Flowable{
 		return true;
 	}
 
-	public function onEntityCollide(Entity $entity) : void{
+	public function onEntityInside(Entity $entity) : void{
 		$entity->resetFallDistance();
 	}
 

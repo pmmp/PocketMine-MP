@@ -74,7 +74,7 @@ class Ladder extends Transparent{
 		return true;
 	}
 
-	public function onEntityCollide(Entity $entity) : void{
+	public function onEntityInside(Entity $entity) : void{
 		$entity->resetFallDistance();
 		$entity->onGround = true;
 	}
