@@ -1165,7 +1165,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return AxisAlignedBB[]
 	 */
-	public function getCollisionCubes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
+	public function getCollisionBoxes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
 		$minX = (int) floor($bb->minX - 1);
 		$minY = (int) floor($bb->minY - 1);
 		$minZ = (int) floor($bb->minZ - 1);

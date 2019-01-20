@@ -1075,7 +1075,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function checkObstruction(float $x, float $y, float $z) : bool{
-		if(count($this->level->getCollisionCubes($this, $this->getBoundingBox(), false)) === 0){
+		if(count($this->level->getCollisionBoxes($this, $this->getBoundingBox(), false)) === 0){
 			return false;
 		}
 
@@ -1405,7 +1405,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 			assert(abs($dx) <= 20 and abs($dy) <= 20 and abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
 
-			$list = $this->level->getCollisionCubes($this, $this->level->getTickRate() > 1 ? $this->boundingBox->offsetCopy($dx, $dy, $dz) : $this->boundingBox->addCoord($dx, $dy, $dz), false);
+			$list = $this->level->getCollisionBoxes($this, $this->level->getTickRate() > 1 ? $this->boundingBox->offsetCopy($dx, $dy, $dz) : $this->boundingBox->addCoord($dx, $dy, $dz), false);
 
 			foreach($list as $bb){
 				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
@@ -1440,7 +1440,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 				$this->boundingBox->setBB($axisalignedbb);
 
-				$list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
+				$list = $this->level->getCollisionBoxes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
 
 				foreach($list as $bb){
 					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
