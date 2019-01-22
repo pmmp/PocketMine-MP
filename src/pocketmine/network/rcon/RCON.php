@@ -100,7 +100,13 @@ class RCON{
 
 		$notifier = new SleeperNotifier();
 		$this->server->getTickSleeper()->addNotifier($notifier, function() : void{
-			$this->check();
+			$response = new RemoteConsoleCommandSender();
+			$this->server->dispatchCommand($response, $this->instance->cmd);
+
+			$this->instance->response = TextFormat::clean($response->getMessage());
+			$this->instance->synchronized(function(RCONInstance $thread){
+				$thread->notify();
+			}, $this->instance);
 		});
 		$this->instance = new RCONInstance($this->socket, $password, (int) max(1, $maxClients), $this->server->getLogger(), $this->ipcThreadSocket, $notifier);
 
@@ -116,15 +122,5 @@ class RCON{
 		@socket_close($this->socket);
 		@socket_close($this->ipcMainSocket);
 		@socket_close($this->ipcThreadSocket);
-	}
-
-	public function check() : void{
-		$response = new RemoteConsoleCommandSender();
-		$this->server->dispatchCommand($response, $this->instance->cmd);
-
-		$this->instance->response = TextFormat::clean($response->getMessage());
-		$this->instance->synchronized(function(RCONInstance $thread){
-			$thread->notify();
-		}, $this->instance);
 	}
 }
