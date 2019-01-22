@@ -74,7 +74,7 @@ class RCON{
 
 		$this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 
-		if($this->socket === false or !@socket_bind($this->socket, $interface, $port) or !@socket_listen($this->socket)){
+		if($this->socket === false or !@socket_bind($this->socket, $interface, $port) or !@socket_listen($this->socket, 5)){
 			throw new \RuntimeException(trim(socket_strerror(socket_last_error())));
 		}
 
