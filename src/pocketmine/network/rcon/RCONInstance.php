@@ -29,7 +29,6 @@ use pocketmine\utils\Binary;
 use function count;
 use function ltrim;
 use function microtime;
-use function rtrim;
 use function socket_accept;
 use function socket_close;
 use function socket_getpeername;
@@ -37,11 +36,14 @@ use function socket_last_error;
 use function socket_read;
 use function socket_select;
 use function socket_set_block;
+use function socket_set_nonblock;
 use function socket_set_option;
 use function socket_shutdown;
+use function socket_strerror;
 use function socket_write;
 use function str_replace;
 use function strlen;
+use function substr;
 use function trim;
 use const PTHREADS_INHERIT_NONE;
 use const SO_KEEPALIVE;
@@ -103,24 +105,41 @@ class RCONInstance extends Thread{
 
 	private function readPacket($client, ?int &$requestID, ?int &$packetType, ?string &$payload){
 		$d = @socket_read($client, 4);
-		if($this->stop){
-			return false;
-		}elseif($d === false){
-			if(socket_last_error($client) === SOCKET_ECONNRESET){ //client crashed, terminate connection
-				return false;
+
+		socket_getpeername($client, $ip, $port);
+		if($d === false){
+			$err = socket_last_error($client);
+			if($err !== SOCKET_ECONNRESET){
+				$this->logger->debug("Connection error with $ip $port: " . trim(socket_strerror($err)));
 			}
-			return null;
-		}elseif($d === "" or strlen($d) < 4){
 			return false;
 		}
-
+		if(strlen($d) !== 4){
+			if($d !== ""){ //empty data is returned on disconnection
+				$this->logger->debug("Truncated packet from $ip $port (want 4 bytes, have " . strlen($d) . "), disconnecting");
+			}
+			return false;
+		}
 		$size = Binary::readLInt($d);
 		if($size < 0 or $size > 65535){
+			$this->logger->debug("Packet with too-large length header $size from $ip $port, disconnecting");
 			return false;
 		}
-		$requestID = Binary::readLInt(socket_read($client, 4));
-		$packetType = Binary::readLInt(socket_read($client, 4));
-		$payload = rtrim(socket_read($client, $size + 2)); //Strip two null bytes
+		$buf = @socket_read($client, $size);
+		if($buf === false){
+			$err = socket_last_error($client);
+			if($err !== SOCKET_ECONNRESET){
+				$this->logger->debug("Connection error with $ip $port: " . trim(socket_strerror($err)));
+			}
+			return false;
+		}
+		if(strlen($buf) !== $size){
+			$this->logger->debug("Truncated packet from $ip $port (want $size bytes, have " . strlen($buf) . "), disconnecting");
+			return false;
+		}
+		$requestID = Binary::readLInt(substr($buf, 0, 4));
+		$packetType = Binary::readLInt(substr($buf, 4, 4));
+		$payload = substr($buf, 8, -2); //Strip two null bytes
 		return true;
 	}
 
@@ -157,7 +176,7 @@ class RCONInstance extends Thread{
 							if(count($clients) >= $this->maxClients){
 								@socket_close($client);
 							}else{
-								socket_set_block($client);
+								socket_set_nonblock($client);
 								socket_set_option($client, SOL_SOCKET, SO_KEEPALIVE, 1);
 
 								$id = $nextClientId++;
@@ -233,11 +252,13 @@ class RCONInstance extends Thread{
 	}
 
 	private function disconnectClient($client) : void{
+		socket_getpeername($client, $ip, $port);
 		@socket_set_option($client, SOL_SOCKET, SO_LINGER, ["l_onoff" => 1, "l_linger" => 1]);
 		@socket_shutdown($client, 2);
 		@socket_set_block($client);
 		@socket_read($client, 1);
 		@socket_close($client);
+		$this->logger->info("Disconnected client: /$ip:$port");
 	}
 
 	public function getThreadName() : string{
