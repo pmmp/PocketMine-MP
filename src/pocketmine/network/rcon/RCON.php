@@ -64,11 +64,20 @@ class RCON{
 	/** @var resource */
 	private $ipcThreadSocket;
 
+	/**
+	 * @param Server $server
+	 * @param string $password
+	 * @param int    $port
+	 * @param string $interface
+	 * @param int    $maxClients
+	 *
+	 * @throws \RuntimeException
+	 */
 	public function __construct(Server $server, string $password, int $port = 19132, string $interface = "0.0.0.0", int $maxClients = 50){
 		$this->server = $server;
 		$this->server->getLogger()->info("Starting remote control listener");
 		if($password === ""){
-			throw new \InvalidArgumentException("Empty password");
+			throw new \RuntimeException("Empty password");
 		}
 
 		$this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);

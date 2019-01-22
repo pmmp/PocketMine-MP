@@ -701,7 +701,7 @@ class Server{
 			$nbt = new BigEndianNbtSerializer();
 			try{
 				file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed($ev->getSaveData()));
-			}catch(\Throwable $e){
+			}catch(\ErrorException $e){
 				$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
 				$this->logger->logException($e);
 			}
@@ -1200,7 +1200,7 @@ class Server{
 						$this->getIp(),
 						$this->getConfigInt("rcon.max-clients", 50)
 					);
-				}catch(\Exception $e){
+				}catch(\RuntimeException $e){
 					$this->getLogger()->critical("RCON can't be started: " . $e->getMessage());
 				}
 			}
@@ -1782,7 +1782,7 @@ class Server{
 			$this->logger->info("[UPnP] Trying to port forward...");
 			try{
 				UPnP::PortForward($this->getPort());
-			}catch(\Exception $e){
+			}catch(\RuntimeException $e){
 				$this->logger->alert("UPnP portforward failed: " . $e->getMessage());
 			}
 		}
