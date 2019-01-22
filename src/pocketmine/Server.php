@@ -1710,9 +1710,11 @@ class Server{
 				$player->close($player->getLeaveMessage(), $this->getProperty("settings.shutdown-message", "Server closed"));
 			}
 
-			$this->getLogger()->debug("Unloading all levels");
-			foreach($this->levelManager->getLevels() as $level){
-				$this->levelManager->unloadLevel($level, true);
+			if($this->levelManager instanceof LevelManager){
+				$this->getLogger()->debug("Unloading all levels");
+				foreach($this->levelManager->getLevels() as $level){
+					$this->levelManager->unloadLevel($level, true);
+				}
 			}
 
 			$this->getLogger()->debug("Removing event handlers");
