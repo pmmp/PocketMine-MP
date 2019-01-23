@@ -26,13 +26,12 @@ namespace pocketmine\level\sound;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 
-abstract class Sound{
+interface Sound{
 
 	/**
 	 * @param Vector3 $pos
 	 *
 	 * @return ClientboundPacket|ClientboundPacket[]
 	 */
-	abstract public function encode(Vector3 $pos);
-
+	public function encode(Vector3 $pos);
 }

@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 /**
  * @internal
  */
-abstract class LevelEventSound extends Sound{
+abstract class LevelEventSound implements Sound{
 
 	/** @var float */
 	protected $pitch = 0;
