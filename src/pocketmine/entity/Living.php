@@ -644,6 +644,10 @@ abstract class Living extends Entity implements Damageable{
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);
 		}
+
+		//TODO: check death conditions (must have been damaged by player < 5 seconds from death)
+		//TODO: allow this number to be manipulated during EntityDeathEvent
+		$this->level->dropExperience($this, $this->getXpDropAmount());
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{
@@ -651,9 +655,6 @@ abstract class Living extends Entity implements Damageable{
 			$this->deadTicks += $tickDiff;
 			if($this->deadTicks >= $this->maxDeadTicks){
 				$this->endDeathAnimation();
-
-				//TODO: check death conditions (must have been damaged by player < 5 seconds from death)
-				$this->level->dropExperience($this, $this->getXpDropAmount());
 			}
 		}
 
