@@ -27,7 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class DestroyBlockParticle extends Particle{
+class DestroyBlockParticle implements Particle{
 
 	/** @var int */
 	protected $data;

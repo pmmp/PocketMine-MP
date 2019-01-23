@@ -36,7 +36,7 @@ use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\utils\UUID;
 use function str_repeat;
 
-class FloatingTextParticle extends Particle{
+class FloatingTextParticle implements Particle{
 	//TODO: HACK!
 
 	protected $text;

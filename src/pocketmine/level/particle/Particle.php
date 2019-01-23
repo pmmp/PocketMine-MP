@@ -26,13 +26,13 @@ namespace pocketmine\level\particle;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 
-abstract class Particle{
+interface Particle{
 
 	/**
 	 * @param Vector3 $pos
 	 *
 	 * @return ClientboundPacket|ClientboundPacket[]
 	 */
-	abstract public function encode(Vector3 $pos);
+	public function encode(Vector3 $pos);
 
 }

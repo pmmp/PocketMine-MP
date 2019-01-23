@@ -26,7 +26,7 @@ namespace pocketmine\level\particle;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class MobSpawnParticle extends Particle{
+class MobSpawnParticle implements Particle{
 	/** @var int */
 	protected $width;
 	/** @var int */

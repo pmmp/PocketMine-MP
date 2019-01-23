@@ -26,7 +26,7 @@ namespace pocketmine\level\particle;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class GenericParticle extends Particle{
+class GenericParticle implements Particle{
 	/** @var int */
 	protected $id;
 	/** @var int */
