@@ -31,13 +31,10 @@ use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
-use function base64_encode;
 use function fgets;
 use function gethostbyname;
-use function random_bytes;
 use function sleep;
 use function strtolower;
-use function substr;
 use function trim;
 use const PHP_EOL;
 use const STDIN;
@@ -204,16 +201,6 @@ LICENSE;
 			$config->set("enable-query", false);
 		}else{
 			$config->set("enable-query", true);
-		}
-
-		$this->message($this->lang->get("rcon_info"));
-		if(strtolower($this->getInput($this->lang->get("rcon_enable"), "n", "y/N")) === "y"){
-			$config->set("enable-rcon", true);
-			$password = substr(base64_encode(random_bytes(20)), 3, 10);
-			$config->set("rcon.password", $password);
-			$this->message($this->lang->get("rcon_password") . ": " . $password);
-		}else{
-			$config->set("enable-rcon", false);
 		}
 
 		$config->save();

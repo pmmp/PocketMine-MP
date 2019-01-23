@@ -53,7 +53,6 @@ use function ob_start;
 use function php_uname;
 use function phpinfo;
 use function phpversion;
-use function preg_replace;
 use function str_split;
 use function strpos;
 use function substr;
@@ -173,7 +172,6 @@ class CrashDump{
 		if($this->server->getProperty("auto-report.send-settings", true) !== false){
 			$this->data["parameters"] = (array) $argv;
 			$this->data["server.properties"] = @file_get_contents($this->server->getDataPath() . "server.properties");
-			$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
 			$this->data["pocketmine.yml"] = @file_get_contents($this->server->getDataPath() . "pocketmine.yml");
 		}else{
 			$this->data["pocketmine.yml"] = "";

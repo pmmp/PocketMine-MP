@@ -74,7 +74,6 @@ use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\RakLibInterface;
 use pocketmine\network\Network;
 use pocketmine\network\query\QueryHandler;
-use pocketmine\network\rcon\RCON;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
@@ -143,7 +142,6 @@ use function stripos;
 use function strlen;
 use function strrpos;
 use function strtolower;
-use function substr;
 use function time;
 use function touch;
 use function trim;
@@ -244,9 +242,6 @@ class Server{
 
 	/** @var bool */
 	private $onlineMode = true;
-
-	/** @var RCON */
-	private $rcon;
 
 	/** @var EntityMetadataStore */
 	private $entityMetadata;
@@ -1087,8 +1082,6 @@ class Server{
 				"level-seed" => "",
 				"level-type" => "DEFAULT",
 				"enable-query" => true,
-				"enable-rcon" => false,
-				"rcon.password" => substr(base64_encode(random_bytes(20)), 3, 10),
 				"auto-save" => true,
 				"view-distance" => 8,
 				"xbox-auth" => true,
@@ -1190,20 +1183,6 @@ class Server{
 				Timings::$serverCommandTimer->stopTiming();
 			});
 			$this->console->start(PTHREADS_INHERIT_NONE);
-
-			if($this->getConfigBool("enable-rcon", false)){
-				try{
-					$this->rcon = new RCON(
-						$this,
-						$this->getConfigString("rcon.password", ""),
-						$this->getConfigInt("rcon.port", $this->getPort()),
-						$this->getIp(),
-						$this->getConfigInt("rcon.max-clients", 50)
-					);
-				}catch(\RuntimeException $e){
-					$this->getLogger()->critical("RCON can't be started: " . $e->getMessage());
-				}
-			}
 
 			$this->entityMetadata = new EntityMetadataStore();
 			$this->playerMetadata = new PlayerMetadataStore();
@@ -1692,9 +1671,6 @@ class Server{
 			$this->hasStopped = true;
 
 			$this->shutdown();
-			if($this->rcon instanceof RCON){
-				$this->rcon->stop();
-			}
 
 			if($this->getProperty("network.upnp-forwarding", false)){
 				$this->logger->info("[UPnP] Removing port forward...");
