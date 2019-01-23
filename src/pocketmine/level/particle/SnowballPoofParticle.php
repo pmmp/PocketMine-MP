@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\level\particle;
 
+use pocketmine\network\mcpe\protocol\types\ParticleIds;
+
 class SnowballPoofParticle extends GenericParticle{
 	public function __construct(){
-		parent::__construct(self::TYPE_SNOWBALL_POOF, 0);
+		parent::__construct(ParticleIds::SNOWBALL_POOF, 0);
 	}
 }

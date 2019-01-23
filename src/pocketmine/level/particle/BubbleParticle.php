@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\level\particle;
 
+use pocketmine\network\mcpe\protocol\types\ParticleIds;
+
 class BubbleParticle extends GenericParticle{
 	public function __construct(){
-		parent::__construct(Particle::TYPE_BUBBLE);
+		parent::__construct(ParticleIds::BUBBLE);
 	}
 }

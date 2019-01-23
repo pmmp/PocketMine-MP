@@ -24,9 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\level\particle;
 
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 class ItemBreakParticle extends GenericParticle{
 	public function __construct(Item $item){
-		parent::__construct(Particle::TYPE_ITEM_BREAK, ($item->getId() << 16) | $item->getDamage());
+		parent::__construct(ParticleIds::ITEM_BREAK, ($item->getId() << 16) | $item->getDamage());
 	}
 }

@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\level\particle;
 
+use pocketmine\network\mcpe\protocol\types\ParticleIds;
+
 class EntityFlameParticle extends GenericParticle{
 	public function __construct(){
-		parent::__construct(Particle::TYPE_MOB_FLAME);
+		parent::__construct(ParticleIds::MOB_FLAME);
 	}
 }

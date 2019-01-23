@@ -24,9 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\level\particle;
 
 use pocketmine\block\Block;
+use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 class TerrainParticle extends GenericParticle{
 	public function __construct(Block $b){
-		parent::__construct(Particle::TYPE_TERRAIN, $b->getRuntimeId());
+		parent::__construct(ParticleIds::TERRAIN, $b->getRuntimeId());
 	}
 }

@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\level\particle;
 
+use pocketmine\network\mcpe\protocol\types\ParticleIds;
+
 class InkParticle extends GenericParticle{
 	public function __construct(int $scale = 0){
-		parent::__construct(Particle::TYPE_INK, $scale);
+		parent::__construct(ParticleIds::INK, $scale);
 	}
 }

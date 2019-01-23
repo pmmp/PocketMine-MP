@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\level\particle;
 
+use pocketmine\network\mcpe\protocol\types\ParticleIds;
+
 class RedstoneParticle extends GenericParticle{
 	public function __construct(int $lifetime = 1){
-		parent::__construct(Particle::TYPE_REDSTONE, $lifetime);
+		parent::__construct(ParticleIds::REDSTONE, $lifetime);
 	}
 }

@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\level\particle;
 
+use pocketmine\network\mcpe\protocol\types\ParticleIds;
+
 class HugeExplodeParticle extends GenericParticle{
 	public function __construct(){
-		parent::__construct(Particle::TYPE_HUGE_EXPLODE);
+		parent::__construct(ParticleIds::HUGE_EXPLODE);
 	}
 }
