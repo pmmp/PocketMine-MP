@@ -578,7 +578,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function getXpDropAmount() : int{
-		return (int) min(100, $this->getCurrentTotalXp());
+		//this causes some XP to be lost on death when above level 1 (by design), dropping at most enough points for
+		//about 7.5 levels of XP.
+		return (int) min(100, 7 * $this->getXpLevel());
 	}
 
 	public function getInventory(){
