@@ -2164,10 +2164,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$target = $this->level->getBlock($pos);
 
 		$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, null, $face, PlayerInteractEvent::LEFT_CLICK_BLOCK);
-		if($this->level->checkSpawnProtection($this, $target)){
-			$ev->setCancelled();
-		}
-
 		$ev->call();
 		if($ev->isCancelled()){
 			$this->inventory->sendHeldItem($this);
@@ -2462,7 +2458,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->doCloseInventory();
 
 		$pos = new Vector3($packet->x, $packet->y, $packet->z);
-		if($pos->distanceSquared($this) > 10000 or $this->level->checkSpawnProtection($this, $pos)){
+		if($pos->distanceSquared($this) > 10000){
 			return true;
 		}
 
@@ -2487,7 +2483,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($tile instanceof ItemFrame){
 			//TODO: use facing blockstate property instead of damage value
 			$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $tile->getBlock(), null, 5 - $tile->getBlock()->getDamage(), PlayerInteractEvent::LEFT_CLICK_BLOCK);
-			if($this->isSpectator() or $this->level->checkSpawnProtection($this, $tile)){
+			if($this->isSpectator()){
 				$ev->setCancelled();
 			}
 

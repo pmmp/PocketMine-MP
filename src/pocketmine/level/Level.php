@@ -63,7 +63,6 @@ use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\Particle;
 use pocketmine\level\sound\Sound;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\BlockMetadataStore;
 use pocketmine\metadata\Metadatable;
@@ -1624,29 +1623,6 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Checks if the level spawn protection radius will prevent the player from using items or building at the specified
-	 * Vector3 position.
-	 *
-	 * @param Player  $player
-	 * @param Vector3 $vector
-	 *
-	 * @return bool true if spawn protection cancelled the action, false if not.
-	 */
-	public function checkSpawnProtection(Player $player, Vector3 $vector) : bool{
-		if(!$player->hasPermission("pocketmine.spawnprotect.bypass") and ($distance = $this->server->getSpawnRadius()) > -1){
-			$t = new Vector2($vector->x, $vector->z);
-
-			$spawnLocation = $this->getSpawnLocation();
-			$s = new Vector2($spawnLocation->x, $spawnLocation->z);
-			if($t->distance($s) <= $distance){
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
 	 * Tries to break a block using a item, including Player time checks if available
 	 * It'll try to lower the durability if Item is a tool, and set it to Air if broken.
 	 *
@@ -1680,8 +1656,6 @@ class Level implements ChunkManager, Metadatable{
 
 			if(($player->isSurvival() and !$target->isBreakable($item)) or $player->isSpectator()){
 				$ev->setCancelled();
-			}elseif($this->checkSpawnProtection($player, $target)){
-				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
 			}
 
 			if($player->isAdventure(true) and !$ev->isCancelled()){
@@ -1788,10 +1762,6 @@ class Level implements ChunkManager, Metadatable{
 
 		if($player !== null){
 			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, PlayerInteractEvent::RIGHT_CLICK_BLOCK);
-			if($this->checkSpawnProtection($player, $blockClicked)){
-				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
-			}
-
 			$ev->call();
 			if(!$ev->isCancelled()){
 				if(!$player->isSneaking() and $blockClicked->onActivate($item, $player)){
@@ -1842,10 +1812,6 @@ class Level implements ChunkManager, Metadatable{
 
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
-			if($this->checkSpawnProtection($player, $blockClicked)){
-				$ev->setCancelled();
-			}
-
 			if($player->isAdventure(true) and !$ev->isCancelled()){
 				$canPlace = false;
 				$tag = $item->getNamedTagEntry("CanPlaceOn");

@@ -456,13 +456,6 @@ class Server{
 	}
 
 	/**
-	 * @return int
-	 */
-	public function getSpawnRadius() : int{
-		return $this->getConfigInt("spawn-protection", 16);
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function isHardcore() : bool{
@@ -1070,7 +1063,6 @@ class Server{
 				"server-port" => 19132,
 				"white-list" => false,
 				"announce-player-achievements" => true,
-				"spawn-protection" => 16,
 				"max-players" => 20,
 				"gamemode" => 0,
 				"force-gamemode" => false,
