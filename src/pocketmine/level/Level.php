@@ -1089,11 +1089,12 @@ class Level implements ChunkManager, Metadatable{
 
 			foreach($chunk->getSubChunks() as $Y => $subChunk){
 				if(!($subChunk instanceof EmptySubChunk)){
+					$k = mt_rand(0, 0xfffffffff); //36 bits
 					for($i = 0; $i < 3; ++$i){
-						$k = mt_rand(0, 0xfff);
 						$x = $k & 0x0f;
 						$y = ($k >> 4) & 0x0f;
 						$z = ($k >> 8) & 0x0f;
+						$k >>= 12;
 
 						$blockId = $subChunk->getBlockId($x, $y, $z);
 						if($this->randomTickBlocks[$blockId] !== null){
