@@ -694,25 +694,25 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true){
-		$hash = $loader->getLoaderId();
+		$loaderId = $loader->getLoaderId();
 
-		if(!isset($this->chunkLoaders[$index = Level::chunkHash($chunkX, $chunkZ)])){
-			$this->chunkLoaders[$index] = [];
-			$this->playerLoaders[$index] = [];
-		}elseif(isset($this->chunkLoaders[$index][$hash])){
+		if(!isset($this->chunkLoaders[$chunkHash = Level::chunkHash($chunkX, $chunkZ)])){
+			$this->chunkLoaders[$chunkHash] = [];
+			$this->playerLoaders[$chunkHash] = [];
+		}elseif(isset($this->chunkLoaders[$chunkHash][$loaderId])){
 			return;
 		}
 
-		$this->chunkLoaders[$index][$hash] = $loader;
+		$this->chunkLoaders[$chunkHash][$loaderId] = $loader;
 		if($loader instanceof Player){
-			$this->playerLoaders[$index][$hash] = $loader;
+			$this->playerLoaders[$chunkHash][$loaderId] = $loader;
 		}
 
-		if(!isset($this->loaders[$hash])){
-			$this->loaderCounter[$hash] = 1;
-			$this->loaders[$hash] = $loader;
+		if(!isset($this->loaders[$loaderId])){
+			$this->loaderCounter[$loaderId] = 1;
+			$this->loaders[$loaderId] = $loader;
 		}else{
-			++$this->loaderCounter[$hash];
+			++$this->loaderCounter[$loaderId];
 		}
 
 		$this->cancelUnloadChunkRequest($chunkX, $chunkZ);
@@ -723,20 +723,20 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function unregisterChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ){
-		$index = Level::chunkHash($chunkX, $chunkZ);
-		$hash = $loader->getLoaderId();
-		if(isset($this->chunkLoaders[$index][$hash])){
-			unset($this->chunkLoaders[$index][$hash]);
-			unset($this->playerLoaders[$index][$hash]);
-			if(count($this->chunkLoaders[$index]) === 0){
-				unset($this->chunkLoaders[$index]);
-				unset($this->playerLoaders[$index]);
+		$chunkHash = Level::chunkHash($chunkX, $chunkZ);
+		$loaderId = $loader->getLoaderId();
+		if(isset($this->chunkLoaders[$chunkHash][$loaderId])){
+			unset($this->chunkLoaders[$chunkHash][$loaderId]);
+			unset($this->playerLoaders[$chunkHash][$loaderId]);
+			if(count($this->chunkLoaders[$chunkHash]) === 0){
+				unset($this->chunkLoaders[$chunkHash]);
+				unset($this->playerLoaders[$chunkHash]);
 				$this->unloadChunkRequest($chunkX, $chunkZ, true);
 			}
 
-			if(--$this->loaderCounter[$hash] === 0){
-				unset($this->loaderCounter[$hash]);
-				unset($this->loaders[$hash]);
+			if(--$this->loaderCounter[$loaderId] === 0){
+				unset($this->loaderCounter[$loaderId]);
+				unset($this->loaders[$loaderId]);
 			}
 		}
 	}
