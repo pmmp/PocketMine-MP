@@ -75,6 +75,7 @@ use function is_infinite;
 use function is_nan;
 use function lcg_value;
 use function sin;
+use function spl_object_id;
 use const M_PI_2;
 
 abstract class Entity extends Location implements Metadatable, EntityIds{
@@ -1621,10 +1622,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if(!$this->justCreated){
 				$newChunk = $this->level->getViewersForPosition($this);
 				foreach($this->hasSpawned as $player){
-					if(!isset($newChunk[$player->getLoaderId()])){
+					if(!isset($newChunk[spl_object_id($player)])){
 						$this->despawnFrom($player);
 					}else{
-						unset($newChunk[$player->getLoaderId()]);
+						unset($newChunk[spl_object_id($player)]);
 					}
 				}
 				foreach($newChunk as $player){
@@ -1767,8 +1768,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player) : void{
-		if(!isset($this->hasSpawned[$player->getLoaderId()])){
-			$this->hasSpawned[$player->getLoaderId()] = $player;
+		$id = spl_object_id($player);
+		if(!isset($this->hasSpawned[$id])){
+			$this->hasSpawned[$id] = $player;
 
 			$this->sendSpawnPacket($player);
 		}
@@ -1797,13 +1799,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param bool   $send
 	 */
 	public function despawnFrom(Player $player, bool $send = true) : void{
-		if(isset($this->hasSpawned[$player->getLoaderId()])){
+		$id = spl_object_id($player);
+		if(isset($this->hasSpawned[$id])){
 			if($send){
 				$pk = new RemoveEntityPacket();
 				$pk->entityUniqueId = $this->id;
 				$player->sendDataPacket($pk);
 			}
-			unset($this->hasSpawned[$player->getLoaderId()]);
+			unset($this->hasSpawned[$id]);
 		}
 	}
 
