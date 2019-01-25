@@ -293,6 +293,19 @@ class Level implements ChunkManager, Metadatable{
 		return (($x & 0xFFFFFFF) << 36) | (($y & Level::Y_MASK) << 28) | ($z & 0xFFFFFFF);
 	}
 
+	/**
+	 * Computes a small index relative to chunk base from the given coordinates.
+	 *
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @return int
+	 */
+	public static function chunkBlockHash(int $x, int $y, int $z) : int{
+		return ($y << 8) | (($z & 0xf) << 4) | ($x & 0xf);
+	}
+
 	public static function getBlockXYZ(int $hash, ?int &$x, ?int &$y, ?int &$z) : void{
 		$x = $hash >> 36;
 		$y = ($hash >> 28) & Level::Y_MASK; //it's always positive
@@ -1423,14 +1436,14 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function getBlockAt(int $x, int $y, int $z, bool $cached = true, bool $addToCache = true) : Block{
 		$fullState = 0;
-		$blockHash = null;
+		$relativeBlockHash = null;
 		$chunkHash = Level::chunkHash($x >> 4, $z >> 4);
 
 		if($this->isInWorld($x, $y, $z)){
-			$blockHash = Level::blockHash($x, $y, $z);
+			$relativeBlockHash = Level::chunkBlockHash($x, $y, $z);
 
-			if($cached and isset($this->blockCache[$chunkHash][$blockHash])){
-				return $this->blockCache[$chunkHash][$blockHash];
+			if($cached and isset($this->blockCache[$chunkHash][$relativeBlockHash])){
+				return $this->blockCache[$chunkHash][$relativeBlockHash];
 			}
 
 			$chunk = $this->chunks[$chunkHash] ?? null;
@@ -1448,8 +1461,8 @@ class Level implements ChunkManager, Metadatable{
 		$block->z = $z;
 		$block->level = $this;
 
-		if($addToCache and $blockHash !== null){
-			$this->blockCache[$chunkHash][$blockHash] = $block;
+		if($addToCache and $relativeBlockHash !== null){
+			$this->blockCache[$chunkHash][$relativeBlockHash] = $block;
 		}
 
 		return $block;
@@ -1607,19 +1620,19 @@ class Level implements ChunkManager, Metadatable{
 			$block->clearCaches();
 
 			$chunkHash = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
-			$blockHash = Level::blockHash($pos->x, $pos->y, $pos->z);
+			$relativeBlockHash = Level::chunkBlockHash($pos->x, $pos->y, $pos->z);
 
-			unset($this->blockCache[$chunkHash][$blockHash]);
+			unset($this->blockCache[$chunkHash][$relativeBlockHash]);
 
 			if($direct){
 				$this->sendBlocks($this->getChunkPlayers($pos->x >> 4, $pos->z >> 4), [$block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
-				unset($this->chunkCache[$chunkHash], $this->changedBlocks[$chunkHash][$blockHash]);
+				unset($this->chunkCache[$chunkHash], $this->changedBlocks[$chunkHash][$relativeBlockHash]);
 			}else{
 				if(!isset($this->changedBlocks[$chunkHash])){
 					$this->changedBlocks[$chunkHash] = [];
 				}
 
-				$this->changedBlocks[$chunkHash][$blockHash] = $block;
+				$this->changedBlocks[$chunkHash][$relativeBlockHash] = $block;
 			}
 
 			foreach($this->getChunkLoaders($pos->x >> 4, $pos->z >> 4) as $loader){
@@ -2212,14 +2225,14 @@ class Level implements ChunkManager, Metadatable{
 			return;
 		}
 		$chunkHash = Level::chunkHash($x >> 4, $z >> 4);
-		$blockHash = Level::blockHash($x, $y, $z);
-		unset($this->blockCache[$chunkHash][$blockHash]);
+		$relativeBlockHash = Level::chunkBlockHash($x, $y, $z);
+		unset($this->blockCache[$chunkHash][$relativeBlockHash]);
 		$this->getChunk($x >> 4, $z >> 4, true)->setBlockId($x & 0x0f, $y, $z & 0x0f, $id & 0xff);
 
 		if(!isset($this->changedBlocks[$chunkHash])){
 			$this->changedBlocks[$chunkHash] = [];
 		}
-		$this->changedBlocks[$chunkHash][$blockHash] = $v = new Vector3($x, $y, $z);
+		$this->changedBlocks[$chunkHash][$relativeBlockHash] = $v = new Vector3($x, $y, $z);
 		foreach($this->getChunkLoaders($x >> 4, $z >> 4) as $loader){
 			$loader->onBlockChanged($v);
 		}
@@ -2251,15 +2264,15 @@ class Level implements ChunkManager, Metadatable{
 			return;
 		}
 		$chunkHash = Level::chunkHash($x >> 4, $z >> 4);
-		$blockHash = Level::blockHash($x, $y, $z);
-		unset($this->blockCache[$chunkHash][$blockHash]);
+		$relativeBlockHash = Level::chunkBlockHash($x, $y, $z);
+		unset($this->blockCache[$chunkHash][$relativeBlockHash]);
 
 		$this->getChunk($x >> 4, $z >> 4, true)->setBlockData($x & 0x0f, $y, $z & 0x0f, $data & 0x0f);
 
 		if(!isset($this->changedBlocks[$chunkHash])){
 			$this->changedBlocks[$chunkHash] = [];
 		}
-		$this->changedBlocks[$chunkHash][$blockHash] = $v = new Vector3($x, $y, $z);
+		$this->changedBlocks[$chunkHash][$relativeBlockHash] = $v = new Vector3($x, $y, $z);
 		foreach($this->getChunkLoaders($x >> 4, $z >> 4) as $loader){
 			$loader->onBlockChanged($v);
 		}
