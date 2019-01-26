@@ -40,6 +40,8 @@ final class GameMode{
 	 * @param string $str
 	 *
 	 * @return int
+	 *
+	 * @throws \InvalidArgumentException
 	 */
 	public static function fromString(string $str) : int{
 		switch(strtolower(trim($str))){
@@ -65,7 +67,7 @@ final class GameMode{
 				return self::SPECTATOR;
 		}
 
-		return -1;
+		throw new \InvalidArgumentException("Unknown gamemode string \"$str\"");
 	}
 
 	/**
