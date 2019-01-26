@@ -372,12 +372,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "6736e85ec7600309d7ef1dc5b965ff7e4b1c5357"
+                "reference": "6f00e4f6c31d69bb9b7c19467dd70462616a45a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/6736e85ec7600309d7ef1dc5b965ff7e4b1c5357",
-                "reference": "6736e85ec7600309d7ef1dc5b965ff7e4b1c5357",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/6f00e4f6c31d69bb9b7c19467dd70462616a45a2",
+                "reference": "6f00e4f6c31d69bb9b7c19467dd70462616a45a2",
                 "shasum": ""
             },
             "require": {
@@ -405,7 +405,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2019-01-18T15:28:20+00:00"
+            "time": "2019-01-21T20:39:55+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -413,12 +413,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "ceee20a6755e33132621fba4e5f21fccb317f73e"
+                "reference": "7fd825ad208b0d7d622c55583cae9a8e21eaa3eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/ceee20a6755e33132621fba4e5f21fccb317f73e",
-                "reference": "ceee20a6755e33132621fba4e5f21fccb317f73e",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/7fd825ad208b0d7d622c55583cae9a8e21eaa3eb",
+                "reference": "7fd825ad208b0d7d622c55583cae9a8e21eaa3eb",
                 "shasum": ""
             },
             "require": {
@@ -446,7 +446,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-01-21T14:17:51+00:00"
+            "time": "2019-01-21T19:44:18+00:00"
         },
         {
             "name": "pocketmine/snooze",
