@@ -248,12 +248,8 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var int */
 	private $chunkTickRadius;
-	/** @var int[] */
-	private $chunkTickList = [];
 	/** @var int */
 	private $chunksPerTick;
-	/** @var bool */
-	private $clearChunksOnTick;
 	/** @var \SplFixedArray<bool> */
 	private $randomTickBlocks = null;
 
@@ -384,7 +380,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 4)));
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 40);
 		$this->chunkPopulationQueueSize = (int) $this->server->getProperty("chunk-generation.population-queue-size", 2);
-		$this->clearChunksOnTick = (bool) $this->server->getProperty("chunk-ticking.clear-tick-list", true);
 
 		$dontTickBlocks = array_fill_keys($this->server->getProperty("chunk-ticking.disable-block-ticking", []), true);
 
@@ -961,9 +956,11 @@ class Level implements ChunkManager, Metadatable{
 
 	private function tickChunks(){
 		if($this->chunksPerTick <= 0 or count($this->loaders) === 0){
-			$this->chunkTickList = [];
 			return;
 		}
+
+		/** @var bool[] $chunkTickList chunkhash => dummy */
+		$chunkTickList = [];
 
 		$chunksPerLoader = min(200, max(1, (int) ((($this->chunksPerTick - count($this->loaders)) / count($this->loaders)) + 0.5)));
 		$randRange = 3 + $chunksPerLoader / 30;
@@ -974,33 +971,27 @@ class Level implements ChunkManager, Metadatable{
 			$chunkZ = (int) floor($loader->getZ()) >> 4;
 
 			$index = Level::chunkHash($chunkX, $chunkZ);
-			$existingLoaders = max(0, $this->chunkTickList[$index] ?? 0);
-			$this->chunkTickList[$index] = $existingLoaders + 1;
+			$chunkTickList[$index] = true;
 			for($chunk = 0; $chunk < $chunksPerLoader; ++$chunk){
 				$dx = mt_rand(-$randRange, $randRange);
 				$dz = mt_rand(-$randRange, $randRange);
 				$hash = Level::chunkHash($dx + $chunkX, $dz + $chunkZ);
-				if(!isset($this->chunkTickList[$hash]) and isset($this->chunks[$hash])){
-					$this->chunkTickList[$hash] = -1;
+				if(!isset($chunkTickList[$hash]) and isset($this->chunks[$hash])){
+					//check adjacent chunks are loaded
+					for($cx = -1; $cx <= 1; ++$cx){
+						for($cz = -1; $cz <= 1; ++$cz){
+							if(!isset($this->chunks[Level::chunkHash($chunkX + $cx, $chunkZ + $cz)])){
+								continue 3;
+							}
+						}
+					}
+					$chunkTickList[$hash] = true;
 				}
 			}
 		}
 
-		foreach($this->chunkTickList as $index => $loaders){
+		foreach($chunkTickList as $index => $_){
 			Level::getXZ($index, $chunkX, $chunkZ);
-
-			for($cx = -1; $cx <= 1; ++$cx){
-				for($cz = -1; $cz <= 1; ++$cz){
-					if(!isset($this->chunks[Level::chunkHash($chunkX + $cx, $chunkZ + $cz)])){
-						unset($this->chunkTickList[$index]);
-						goto skip_to_next; //no "continue 3" thanks!
-					}
-				}
-			}
-
-			if($loaders <= 0){
-				unset($this->chunkTickList[$index]);
-			}
 
 			$chunk = $this->chunks[$index];
 			foreach($chunk->getEntities() as $entity){
@@ -1031,12 +1022,6 @@ class Level implements ChunkManager, Metadatable{
 					}
 				}
 			}
-
-			skip_to_next: //dummy label to break out of nested loops
-		}
-
-		if($this->clearChunksOnTick){
-			$this->chunkTickList = [];
 		}
 	}
 
@@ -2637,7 +2622,6 @@ class Level implements ChunkManager, Metadatable{
 
 	private function queueUnloadChunk(int $x, int $z){
 		$this->unloadQueue[$index = Level::chunkHash($x, $z)] = microtime(true);
-		unset($this->chunkTickList[$index]);
 	}
 
 	public function unloadChunkRequest(int $x, int $z, bool $safe = true){
@@ -2692,7 +2676,6 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		unset($this->chunks[$chunkHash]);
-		unset($this->chunkTickList[$chunkHash]);
 		unset($this->chunkCache[$chunkHash]);
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);

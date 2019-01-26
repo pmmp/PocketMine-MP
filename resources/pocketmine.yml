@@ -133,7 +133,6 @@ chunk-ticking:
   #Radius of chunks around a player to tick
   tick-radius: 3
   light-updates: false
-  clear-tick-list: true
   #IDs of blocks not to perform random ticking on.
   disable-block-ticking:
     #- 2 # grass
