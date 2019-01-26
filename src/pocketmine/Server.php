@@ -135,6 +135,7 @@ use function rename;
 use function round;
 use function sleep;
 use function spl_object_hash;
+use function spl_object_id;
 use function sprintf;
 use function str_repeat;
 use function str_replace;
@@ -1357,6 +1358,17 @@ class Server{
 		return count($recipients);
 	}
 
+	private function selectPermittedPlayers(string $permission) : array{
+		/** @var Player[] $players */
+		$players = [];
+		foreach(PermissionManager::getInstance()->getPermissionSubscriptions($permission) as $permissible){
+			if($permissible instanceof Player and $permissible->hasPermission($permission)){
+				$players[spl_object_id($permissible)] = $permissible; //prevent duplication
+			}
+		}
+		return $players;
+	}
+
 	/**
 	 * @param string   $tip
 	 * @param Player[] $recipients
@@ -1364,15 +1376,7 @@ class Server{
 	 * @return int
 	 */
 	public function broadcastTip(string $tip, array $recipients = null) : int{
-		if(!is_array($recipients)){
-			/** @var Player[] $recipients */
-			$recipients = [];
-			foreach(PermissionManager::getInstance()->getPermissionSubscriptions(self::BROADCAST_CHANNEL_USERS) as $permissible){
-				if($permissible instanceof Player and $permissible->hasPermission(self::BROADCAST_CHANNEL_USERS)){
-					$recipients[spl_object_hash($permissible)] = $permissible; // do not send messages directly, or some might be repeated
-				}
-			}
-		}
+		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
 
 		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
@@ -1389,16 +1393,7 @@ class Server{
 	 * @return int
 	 */
 	public function broadcastPopup(string $popup, array $recipients = null) : int{
-		if(!is_array($recipients)){
-			/** @var Player[] $recipients */
-			$recipients = [];
-
-			foreach(PermissionManager::getInstance()->getPermissionSubscriptions(self::BROADCAST_CHANNEL_USERS) as $permissible){
-				if($permissible instanceof Player and $permissible->hasPermission(self::BROADCAST_CHANNEL_USERS)){
-					$recipients[spl_object_hash($permissible)] = $permissible; // do not send messages directly, or some might be repeated
-				}
-			}
-		}
+		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
 
 		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
@@ -1419,16 +1414,7 @@ class Server{
 	 * @return int
 	 */
 	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, array $recipients = null) : int{
-		if(!is_array($recipients)){
-			/** @var Player[] $recipients */
-			$recipients = [];
-
-			foreach(PermissionManager::getInstance()->getPermissionSubscriptions(self::BROADCAST_CHANNEL_USERS) as $permissible){
-				if($permissible instanceof Player and $permissible->hasPermission(self::BROADCAST_CHANNEL_USERS)){
-					$recipients[spl_object_hash($permissible)] = $permissible; // do not send messages directly, or some might be repeated
-				}
-			}
-		}
+		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
 
 		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
