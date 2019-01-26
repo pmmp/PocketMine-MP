@@ -25,7 +25,7 @@ namespace pocketmine\scheduler;
 
 use function is_scalar;
 use function serialize;
-use function spl_object_hash;
+use function spl_object_id;
 use function unserialize;
 
 /**
@@ -256,7 +256,7 @@ abstract class AsyncTask extends \Threaded{
 			 */
 			self::$threadLocalStorage = new \ArrayObject();
 		}
-		self::$threadLocalStorage[spl_object_hash($this)] = $complexData;
+		self::$threadLocalStorage[spl_object_id($this)] = $complexData;
 	}
 
 	/**
@@ -270,16 +270,16 @@ abstract class AsyncTask extends \Threaded{
 	 * @throws \InvalidArgumentException if no data were stored by this AsyncTask instance.
 	 */
 	protected function fetchLocal(){
-		if(self::$threadLocalStorage === null or !isset(self::$threadLocalStorage[spl_object_hash($this)])){
+		if(self::$threadLocalStorage === null or !isset(self::$threadLocalStorage[spl_object_id($this)])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 
-		return self::$threadLocalStorage[spl_object_hash($this)];
+		return self::$threadLocalStorage[spl_object_id($this)];
 	}
 
 	final public function __destruct(){
 		$this->reallyDestruct();
-		if(self::$threadLocalStorage !== null and isset(self::$threadLocalStorage[$h = spl_object_hash($this)])){
+		if(self::$threadLocalStorage !== null and isset(self::$threadLocalStorage[$h = spl_object_id($this)])){
 			unset(self::$threadLocalStorage[$h]);
 			if(self::$threadLocalStorage->count() === 0){
 				self::$threadLocalStorage = null;

@@ -42,7 +42,7 @@ use function addcslashes;
 use function count;
 use function implode;
 use function rtrim;
-use function spl_object_hash;
+use function spl_object_id;
 use function substr;
 use function unserialize;
 use const PTHREADS_INHERIT_CONSTANTS;
@@ -121,14 +121,14 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	public function closeSession(string $identifier, string $reason) : void{
 		if(isset($this->sessions[$identifier])){
 			$session = $this->sessions[$identifier];
-			unset($this->identifiers[spl_object_hash($session)]);
+			unset($this->identifiers[spl_object_id($session)]);
 			unset($this->sessions[$identifier]);
 			$session->onClientDisconnect($reason);
 		}
 	}
 
 	public function close(NetworkSession $session, string $reason = "unknown reason") : void{
-		if(isset($this->identifiers[$h = spl_object_hash($session)])){
+		if(isset($this->identifiers[$h = spl_object_id($session)])){
 			unset($this->sessions[$this->identifiers[$h]]);
 			$this->interface->closeSession($this->identifiers[$h], $reason);
 			unset($this->identifiers[$h]);
@@ -143,7 +143,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	public function openSession(string $identifier, string $address, int $port, int $clientID) : void{
 		$session = new NetworkSession($this->server, $this, $address, $port);
 		$this->sessions[$identifier] = $session;
-		$this->identifiers[spl_object_hash($session)] = $identifier;
+		$this->identifiers[spl_object_id($session)] = $identifier;
 	}
 
 	public function handleEncapsulated(string $identifier, EncapsulatedPacket $packet, int $flags) : void{
@@ -227,7 +227,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	}
 
 	public function putPacket(NetworkSession $session, string $payload, bool $immediate = true) : void{
-		if(isset($this->identifiers[$h = spl_object_hash($session)])){
+		if(isset($this->identifiers[$h = spl_object_id($session)])){
 			$identifier = $this->identifiers[$h];
 
 			$pk = new EncapsulatedPacket();

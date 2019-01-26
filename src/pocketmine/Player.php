@@ -156,7 +156,7 @@ use function microtime;
 use function min;
 use function preg_match;
 use function round;
-use function spl_object_hash;
+use function spl_object_id;
 use function strlen;
 use function strpos;
 use function strtolower;
@@ -3247,7 +3247,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return int
 	 */
 	public function getWindowId(Inventory $inventory) : int{
-		return $this->windows[spl_object_hash($inventory)] ?? ContainerIds::NONE;
+		return $this->windows[spl_object_id($inventory)] ?? ContainerIds::NONE;
 	}
 
 	/**
@@ -3297,7 +3297,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->windowIndex[$cnt] = $inventory;
-		$this->windows[spl_object_hash($inventory)] = $cnt;
+		$this->windows[spl_object_id($inventory)] = $cnt;
 		if($inventory->open($this)){
 			if($isPermanent){
 				$this->permanentWindows[$cnt] = true;
@@ -3319,7 +3319,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @throws \InvalidArgumentException if trying to remove a fixed inventory window without the `force` parameter as true
 	 */
 	public function removeWindow(Inventory $inventory, bool $force = false){
-		$id = $this->windows[$hash = spl_object_hash($inventory)] ?? null;
+		$id = $this->windows[$hash = spl_object_id($inventory)] ?? null;
 
 		if($id !== null and !$force and isset($this->permanentWindows[$id])){
 			throw new \InvalidArgumentException("Cannot remove fixed window $id (" . get_class($inventory) . ") from " . $this->getName());

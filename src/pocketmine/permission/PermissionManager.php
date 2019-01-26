@@ -25,7 +25,7 @@ namespace pocketmine\permission;
 
 use pocketmine\timings\Timings;
 use function count;
-use function spl_object_hash;
+use function spl_object_id;
 
 class PermissionManager{
 	/** @var PermissionManager|null */
@@ -146,7 +146,7 @@ class PermissionManager{
 		if(!isset($this->permSubs[$permission])){
 			$this->permSubs[$permission] = [];
 		}
-		$this->permSubs[$permission][spl_object_hash($permissible)] = $permissible;
+		$this->permSubs[$permission][spl_object_id($permissible)] = $permissible;
 	}
 
 	/**
@@ -155,7 +155,7 @@ class PermissionManager{
 	 */
 	public function unsubscribeFromPermission(string $permission, Permissible $permissible){
 		if(isset($this->permSubs[$permission])){
-			unset($this->permSubs[$permission][spl_object_hash($permissible)]);
+			unset($this->permSubs[$permission][spl_object_id($permissible)]);
 			if(count($this->permSubs[$permission]) === 0){
 				unset($this->permSubs[$permission]);
 			}
@@ -167,7 +167,7 @@ class PermissionManager{
 	 */
 	public function unsubscribeFromAllPermissions(Permissible $permissible) : void{
 		foreach($this->permSubs as $permission => &$subs){
-			unset($subs[spl_object_hash($permissible)]);
+			unset($subs[spl_object_id($permissible)]);
 			if(empty($subs)){
 				unset($this->permSubs[$permission]);
 			}
@@ -189,9 +189,9 @@ class PermissionManager{
 	 */
 	public function subscribeToDefaultPerms(bool $op, Permissible $permissible){
 		if($op){
-			$this->defSubsOp[spl_object_hash($permissible)] = $permissible;
+			$this->defSubsOp[spl_object_id($permissible)] = $permissible;
 		}else{
-			$this->defSubs[spl_object_hash($permissible)] = $permissible;
+			$this->defSubs[spl_object_id($permissible)] = $permissible;
 		}
 	}
 
@@ -201,9 +201,9 @@ class PermissionManager{
 	 */
 	public function unsubscribeFromDefaultPerms(bool $op, Permissible $permissible){
 		if($op){
-			unset($this->defSubsOp[spl_object_hash($permissible)]);
+			unset($this->defSubsOp[spl_object_id($permissible)]);
 		}else{
-			unset($this->defSubs[spl_object_hash($permissible)]);
+			unset($this->defSubs[spl_object_id($permissible)]);
 		}
 	}
 

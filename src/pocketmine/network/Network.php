@@ -30,7 +30,7 @@ use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\PacketPool;
-use function spl_object_hash;
+use function spl_object_id;
 
 class Network{
 	/** @var NetworkInterface[] */
@@ -105,7 +105,7 @@ class Network{
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$interface->start();
-			$this->interfaces[$hash = spl_object_hash($interface)] = $interface;
+			$this->interfaces[$hash = spl_object_id($interface)] = $interface;
 			if($interface instanceof AdvancedNetworkInterface){
 				$this->advancedInterfaces[$hash] = $interface;
 				$interface->setNetwork($this);
@@ -119,7 +119,7 @@ class Network{
 	 */
 	public function unregisterInterface(NetworkInterface $interface) : void{
 		(new NetworkInterfaceUnregisterEvent($interface))->call();
-		unset($this->interfaces[$hash = spl_object_hash($interface)], $this->advancedInterfaces[$hash]);
+		unset($this->interfaces[$hash = spl_object_id($interface)], $this->advancedInterfaces[$hash]);
 	}
 
 	/**
@@ -183,6 +183,6 @@ class Network{
 	}
 
 	public function scheduleSessionTick(NetworkSession $session) : void{
-		$this->updateSessions[spl_object_hash($session)] = $session;
+		$this->updateSessions[spl_object_id($session)] = $session;
 	}
 }

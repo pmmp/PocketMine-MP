@@ -134,7 +134,6 @@ use function register_shutdown_function;
 use function rename;
 use function round;
 use function sleep;
-use function spl_object_hash;
 use function spl_object_id;
 use function sprintf;
 use function str_repeat;
@@ -1436,7 +1435,7 @@ class Server{
 		foreach(explode(";", $permissions) as $permission){
 			foreach(PermissionManager::getInstance()->getPermissionSubscriptions($permission) as $permissible){
 				if($permissible instanceof CommandSender and $permissible->hasPermission($permission)){
-					$recipients[spl_object_hash($permissible)] = $permissible; // do not send messages directly, or some might be repeated
+					$recipients[spl_object_id($permissible)] = $permissible; // do not send messages directly, or some might be repeated
 				}
 			}
 		}
@@ -1900,14 +1899,14 @@ class Server{
 	}
 
 	public function addPlayer(Player $player){
-		$this->players[spl_object_hash($player)] = $player;
+		$this->players[spl_object_id($player)] = $player;
 	}
 
 	/**
 	 * @param Player $player
 	 */
 	public function removePlayer(Player $player){
-		unset($this->players[spl_object_hash($player)]);
+		unset($this->players[spl_object_id($player)]);
 	}
 
 	public function addOnlinePlayer(Player $player){

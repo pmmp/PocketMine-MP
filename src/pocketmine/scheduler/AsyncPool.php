@@ -27,7 +27,7 @@ use pocketmine\utils\Utils;
 use function array_keys;
 use function assert;
 use function count;
-use function spl_object_hash;
+use function spl_object_id;
 use function time;
 use const PHP_INT_MAX;
 use const PTHREADS_INHERIT_CONSTANTS;
@@ -97,7 +97,7 @@ class AsyncPool{
 	 */
 	public function addWorkerStartHook(\Closure $hook) : void{
 		Utils::validateCallableSignature(function(int $worker) : void{}, $hook);
-		$this->workerStartHooks[spl_object_hash($hook)] = $hook;
+		$this->workerStartHooks[spl_object_id($hook)] = $hook;
 		foreach($this->workers as $i => $worker){
 			$hook($i);
 		}
@@ -109,7 +109,7 @@ class AsyncPool{
 	 * @param \Closure $hook
 	 */
 	public function removeWorkerStartHook(\Closure $hook) : void{
-		unset($this->workerStartHooks[spl_object_hash($hook)]);
+		unset($this->workerStartHooks[spl_object_id($hook)]);
 	}
 
 	/**

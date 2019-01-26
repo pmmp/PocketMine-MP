@@ -26,7 +26,7 @@ namespace pocketmine\permission;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
 use pocketmine\timings\Timings;
-use function spl_object_hash;
+use function spl_object_id;
 
 class PermissibleBase implements Permissible{
 	/** @var ServerOperator */
@@ -117,7 +117,7 @@ class PermissibleBase implements Permissible{
 		}
 
 		$result = new PermissionAttachment($plugin, $this->parent ?? $this);
-		$this->attachments[spl_object_hash($result)] = $result;
+		$this->attachments[spl_object_id($result)] = $result;
 		if($name !== null and $value !== null){
 			$result->setPermission($name, $value);
 		}
@@ -131,8 +131,8 @@ class PermissibleBase implements Permissible{
 	 * @param PermissionAttachment $attachment
 	 */
 	public function removeAttachment(PermissionAttachment $attachment){
-		if(isset($this->attachments[spl_object_hash($attachment)])){
-			unset($this->attachments[spl_object_hash($attachment)]);
+		if(isset($this->attachments[spl_object_id($attachment)])){
+			unset($this->attachments[spl_object_id($attachment)]);
 			if(($ex = $attachment->getRemovalCallback()) !== null){
 				$ex->attachmentRemoved($attachment);
 			}
