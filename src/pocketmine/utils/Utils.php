@@ -84,6 +84,7 @@ use function strlen;
 use function strpos;
 use function strtolower;
 use function strval;
+use function substr;
 use function sys_get_temp_dir;
 use function trim;
 use function xdebug_get_function_stack;
@@ -127,7 +128,7 @@ class Utils{
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
 		$func = new \ReflectionFunction($closure);
-		if($func->getName() !== "{closure}"){
+		if(substr($func->getName(), -strlen('{closure}')) !== '{closure}'){
 			//closure wraps a named function, can be done with reflection or fromCallable()
 			//isClosure() is useless here because it just tells us if $func is reflecting a Closure object
 

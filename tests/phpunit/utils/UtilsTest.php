@@ -24,8 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use PHPUnit\Framework\TestCase;
+use function define;
+use function defined;
 
 class UtilsTest extends TestCase{
+
+	public function setUp(){
+		if(!defined('pocketmine\PATH')){
+			define('pocketmine\PATH', 'dummy');
+		}
+		if(!defined('pocketmine\PLUGIN_PATH')){
+			define('pocketmine\PLUGIN_PATH', 'dummy');
+		}
+	}
 
 	public function parseDocCommentNewlineProvider() : array{
 		return [
@@ -46,5 +57,10 @@ class UtilsTest extends TestCase{
 		self::assertEquals("", $tags["notHandler"]);
 		self::assertArrayHasKey("priority", $tags);
 		self::assertEquals("HIGHEST", $tags["priority"]);
+	}
+
+	public function testNamespacedNiceClosureName() : void{
+		//be careful with this test. The closure has to be declared on the same line as the assertion.
+		self::assertSame('closure@' . Utils::cleanPath(__FILE__) . '#L' . __LINE__, Utils::getNiceClosureName(function(){}));
 	}
 }
