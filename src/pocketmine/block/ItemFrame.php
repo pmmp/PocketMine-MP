@@ -65,7 +65,7 @@ class ItemFrame extends Flowable{
 			2 => Vector3::SIDE_NORTH,
 			3 => Vector3::SIDE_SOUTH
 		];
-		if(!$this->getSide($sides[$this->meta])->isSolid()){
+		if(isset($sides[$this->meta]) and !$this->getSide($sides[$this->meta])->isSolid()){
 			$this->level->useBreakOn($this);
 		}
 	}
