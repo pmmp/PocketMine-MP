@@ -1680,6 +1680,19 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return true;
 	}
 
+	/**
+	 * Adds the given values to the entity's motion vector.
+	 *
+	 * @param float $x
+	 * @param float $y
+	 * @param float $z
+	 */
+	public function addMotion(float $x, float $y, float $z) : void{
+		$this->motion->x += $x;
+		$this->motion->y += $y;
+		$this->motion->z += $z;
+	}
+
 	public function isOnGround() : bool{
 		return $this->onGround;
 	}
