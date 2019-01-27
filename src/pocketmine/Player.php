@@ -623,14 +623,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->perm->recalculatePermissions();
 
-		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
-			$permManager->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
-		}
-		if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
-			$permManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
-		}
-
 		if($this->spawned){
+			if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
+				$permManager->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+			}
+			if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
+				$permManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+			}
+
 			$this->sendCommandData();
 		}
 	}
