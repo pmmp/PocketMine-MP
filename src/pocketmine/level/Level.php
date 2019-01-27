@@ -980,7 +980,7 @@ class Level implements ChunkManager, Metadatable{
 					//check adjacent chunks are loaded
 					for($cx = -1; $cx <= 1; ++$cx){
 						for($cz = -1; $cz <= 1; ++$cz){
-							if(!isset($this->chunks[Level::chunkHash($chunkX + $cx, $chunkZ + $cz)])){
+							if(!isset($this->chunks[Level::chunkHash($chunkX + $dx + $cx, $chunkZ + $dz + $cz)])){
 								continue 3;
 							}
 						}
