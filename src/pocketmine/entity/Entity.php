@@ -359,6 +359,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $gravity;
 	/** @var float */
 	protected $drag;
+	/** @var bool */
+	protected $gravityEnabled = true;
 
 	/** @var Server */
 	protected $server;
@@ -1046,6 +1048,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->level->broadcastPacketToViewers($this, $pk);
 	}
 
+	public function hasGravity() : bool{
+		return $this->gravityEnabled;
+	}
+
+	public function setHasGravity(bool $v = true) : void{
+		$this->gravityEnabled = $v;
+	}
+
 	protected function applyDragBeforeGravity() : bool{
 		return false;
 	}
@@ -1061,7 +1071,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->motion->y *= $friction;
 		}
 
-		$this->applyGravity();
+		if($this->gravityEnabled){
+			$this->applyGravity();
+		}
 
 		if(!$this->applyDragBeforeGravity()){
 			$this->motion->y *= $friction;

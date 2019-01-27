@@ -99,6 +99,7 @@ class Squid extends WaterAnimal{
 			}
 
 			$inWater = $this->isUnderwater();
+			$this->setHasGravity(!$inWater);
 			if(!$inWater){
 				$this->swimDirection = null;
 			}elseif($this->swimDirection !== null){
@@ -116,12 +117,6 @@ class Squid extends WaterAnimal{
 		}
 
 		return $hasUpdate;
-	}
-
-	protected function applyGravity() : void{
-		if(!$this->isUnderwater()){
-			parent::applyGravity();
-		}
 	}
 
 	public function getDrops() : array{
