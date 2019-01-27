@@ -1687,7 +1687,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param float $y
 	 * @param float $z
 	 */
-	public function addMotion(float $x, float $y, float $z) : void{
+	public function addMotion(float $x, float $y = 0, float $z = 0) : void{
 		$this->motion->x += $x;
 		$this->motion->y += $y;
 		$this->motion->z += $z;
