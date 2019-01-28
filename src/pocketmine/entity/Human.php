@@ -196,18 +196,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$old = $attr->getValue();
 		$attr->setValue($new);
 
-		$reset = false;
 		// ranges: 18-20 (regen), 7-17 (none), 1-6 (no sprint), 0 (health depletion)
 		foreach([17, 6, 0] as $bound){
 			if(($old > $bound) !== ($new > $bound)){
-				$reset = true;
+				$this->foodTickTimer = 0;
 				break;
 			}
 		}
-		if($reset){
-			$this->foodTickTimer = 0;
-		}
-
 	}
 
 	public function getMaxFood() : float{
