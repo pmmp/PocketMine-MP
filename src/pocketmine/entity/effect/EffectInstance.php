@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\effect;
 
 use pocketmine\utils\Color;
 use function max;

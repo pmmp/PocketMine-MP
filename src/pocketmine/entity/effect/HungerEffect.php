@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
-use pocketmine\entity\Effect;
-use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;

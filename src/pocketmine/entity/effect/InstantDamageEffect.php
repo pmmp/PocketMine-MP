@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
-use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;

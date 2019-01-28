@@ -25,8 +25,8 @@ namespace pocketmine\entity\projectile;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\InstantEffect;
-use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEntityEvent;

@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\entity\effect;
 
 use pocketmine\entity\Attribute;
-use pocketmine\entity\Effect;
-use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
 
 class SlownessEffect extends Effect{

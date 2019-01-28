@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\entity\EffectInstance;
+use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Living;
 
 /**

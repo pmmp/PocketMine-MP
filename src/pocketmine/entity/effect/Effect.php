@@ -21,21 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\effect;
 
-use pocketmine\entity\effect\AbsorptionEffect;
-use pocketmine\entity\effect\HealthBoostEffect;
-use pocketmine\entity\effect\HungerEffect;
-use pocketmine\entity\effect\InstantDamageEffect;
-use pocketmine\entity\effect\InstantHealthEffect;
-use pocketmine\entity\effect\InvisibilityEffect;
-use pocketmine\entity\effect\LevitationEffect;
-use pocketmine\entity\effect\PoisonEffect;
-use pocketmine\entity\effect\RegenerationEffect;
-use pocketmine\entity\effect\SaturationEffect;
-use pocketmine\entity\effect\SlownessEffect;
-use pocketmine\entity\effect\SpeedEffect;
-use pocketmine\entity\effect\WitherEffect;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\utils\Color;
 use function constant;
 use function defined;

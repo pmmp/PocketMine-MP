@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
-use pocketmine\entity\Effect;
-use pocketmine\entity\EffectInstance;
-
 abstract class InstantEffect extends Effect{
 
 	public function getDefaultDuration() : int{
