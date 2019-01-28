@@ -26,6 +26,7 @@ namespace pocketmine;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\UnknownBlock;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\effect\Effect;
@@ -2126,6 +2127,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function pickBlock(Vector3 $pos, bool $addTileNBT) : bool{
 		$block = $this->level->getBlock($pos);
+		if($block instanceof UnknownBlock){
+			return true;
+		}
 
 		$item = $block->getPickedItem();
 		if($addTileNBT){
