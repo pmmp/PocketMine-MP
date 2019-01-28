@@ -26,6 +26,7 @@ namespace pocketmine;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\UnknownBlock;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Effect;
@@ -2714,6 +2715,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
 		$block = $this->level->getBlockAt($packet->blockX, $packet->blockY, $packet->blockZ);
+		if($block instanceof UnknownBlock){
+			return true;
+		}
 
 		$item = $block->getPickedItem();
 		if($packet->addUserData){
