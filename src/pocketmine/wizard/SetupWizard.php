@@ -31,8 +31,8 @@ use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
+use pocketmine\utils\InternetException;
 use function fgets;
-use function gethostbyname;
 use function sleep;
 use function strtolower;
 use function trim;
@@ -204,7 +204,11 @@ LICENSE;
 		if($externalIP === false){
 			$externalIP = "unknown (server offline)";
 		}
-		$internalIP = gethostbyname(trim(`hostname`));
+		try{
+			$internalIP = Internet::getInternalIP();
+		}catch(InternetException $e){
+			$internalIP = "unknown (" . $e->getMessage() . ")";
+		}
 
 		$this->error($this->lang->translateString("ip_warning", ["EXTERNAL_IP" => $externalIP, "INTERNAL_IP" => $internalIP]));
 		$this->error($this->lang->get("ip_confirm"));
