@@ -158,6 +158,7 @@ use function min;
 use function preg_match;
 use function round;
 use function spl_object_id;
+use function sqrt;
 use function strlen;
 use function strpos;
 use function strtolower;
@@ -411,8 +412,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function setFlying(bool $value){
-		$this->flying = $value;
-		$this->sendSettings();
+		if($this->flying !== $value){
+			$this->flying = $value;
+			$this->resetFallDistance();
+			$this->sendSettings();
+		}
 	}
 
 	public function isFlying() : bool{
@@ -1332,20 +1336,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->allowFlight = $this->isCreative();
 		if($this->isSpectator()){
-			$this->flying = true;
+			$this->setFlying(true);
 			$this->keepMovement = true;
 			$this->despawnFromAll();
 		}else{
 			$this->keepMovement = $this->allowMovementCheats;
 			if($this->isSurvival()){
-				$this->flying = false;
+				$this->setFlying(false);
 			}
 			$this->spawnToAll();
 		}
 
-		$this->resetFallDistance();
-
-		if(!$client){ //GameMode changed by server, do not send for client changes
+		if(!$client){ //Gamemode changed by server, do not send for client changes
 			$this->sendGamemode();
 		}else{
 			Command::broadcastCommandMessage($this, new TranslationContainer("commands.gamemode.success.self", [GameMode::toTranslation($gm)]));
@@ -1564,7 +1566,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}else{
 					$this->broadcastMovement();
 
-					$distance = $from->distance($to);
+					$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
 					//TODO: check swimming (adds 0.015 exhaustion in MCPE)
 					if($this->isSprinting()){
 						$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
@@ -1587,6 +1589,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->newPosition = null;
+	}
+
+	public function fall(float $fallDistance) : void{
+		if(!$this->flying){
+			parent::fall($fallDistance);
+		}
 	}
 
 	public function jump() : void{
@@ -2398,8 +2406,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$ev->call();
 		if($ev->isCancelled()){
 			$this->sendSettings();
-		}else{
-			$this->setFlying($fly);
+		}else{ //don't use setFlying() here, to avoid feedback loops
+			$this->flying = $fly;
+			$this->resetFallDistance();
 		}
 	}
 

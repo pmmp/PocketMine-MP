@@ -61,7 +61,7 @@ abstract class Crops extends Flowable{
 
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
+		if($this->age < 7 and $item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
 			$block = clone $this;
 			$block->age += mt_rand(2, 5);
 			if($block->age > 7){

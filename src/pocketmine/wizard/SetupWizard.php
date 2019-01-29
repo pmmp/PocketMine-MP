@@ -75,10 +75,6 @@ class SetupWizard{
 			}
 		}while($lang === null);
 
-		$config = new Config(\pocketmine\DATA . "server.properties", Config::PROPERTIES);
-		$config->set("language", $lang);
-		$config->save();
-
 		$this->lang = new Language($lang);
 
 		$this->message($this->lang->get("language_has_been_selected"));
@@ -86,6 +82,11 @@ class SetupWizard{
 		if(!$this->showLicense()){
 			return false;
 		}
+
+		//this has to happen here to prevent user avoiding agreeing to license
+		$config = new Config(\pocketmine\DATA . "server.properties", Config::PROPERTIES);
+		$config->set("language", $lang);
+		$config->save();
 
 		if(strtolower($this->getInput($this->lang->get("skip_installer"), "n", "y/N")) === "y"){
 			return true;
