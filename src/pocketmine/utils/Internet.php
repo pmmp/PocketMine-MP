@@ -98,6 +98,14 @@ class Internet{
 		return false;
 	}
 
+	public static function getInternalIP() : string{
+		$sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+		socket_connect($sock, "8.8.8.8", 65534);
+		socket_getsockname($sock, $name); // $name passed by reference
+		socket_close($sock);
+		return $name;
+	}
+
 	/**
 	 * GETs an URL using cURL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.

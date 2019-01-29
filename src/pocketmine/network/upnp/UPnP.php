@@ -46,7 +46,7 @@ abstract class UPnP{
 			throw new \RuntimeException("UPnP requires the com_dotnet extension");
 		}
 
-		$myLocalIP = gethostbyname(trim(`hostname`));
+		$myLocalIP = Internet::getInternalIP();
 
 		/** @noinspection PhpUndefinedClassInspection */
 		$com = new \COM("HNetCfg.NATUPnP");
