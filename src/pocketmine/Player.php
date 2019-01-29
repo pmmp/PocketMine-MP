@@ -186,6 +186,7 @@ use function min;
 use function preg_match;
 use function round;
 use function spl_object_hash;
+use function sqrt;
 use function strlen;
 use function strpos;
 use function strtolower;
@@ -1649,7 +1650,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}else{
 					$this->broadcastMovement();
 
-					$distance = $from->distance($to);
+					$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
 					//TODO: check swimming (adds 0.015 exhaustion in MCPE)
 					if($this->isSprinting()){
 						$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
