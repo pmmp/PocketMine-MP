@@ -32,10 +32,17 @@ use function curl_init;
 use function curl_setopt_array;
 use function explode;
 use function preg_match;
+use function socket_close;
+use function socket_connect;
+use function socket_create;
+use function socket_getsockname;
+use function socket_last_error;
+use function socket_strerror;
 use function strip_tags;
 use function strtolower;
 use function substr;
 use function trim;
+use const AF_INET;
 use const CURLINFO_HEADER_SIZE;
 use const CURLINFO_HTTP_CODE;
 use const CURLOPT_AUTOREFERER;
@@ -51,6 +58,8 @@ use const CURLOPT_RETURNTRANSFER;
 use const CURLOPT_SSL_VERIFYHOST;
 use const CURLOPT_SSL_VERIFYPEER;
 use const CURLOPT_TIMEOUT_MS;
+use const SOCK_DGRAM;
+use const SOL_UDP;
 
 class Internet{
 	public static $ip = false;
@@ -98,12 +107,26 @@ class Internet{
 		return false;
 	}
 
+	/**
+	 * Returns the machine's internal network IP address. If the machine is not behind a router, this may be the same
+	 * as the external IP.
+	 *
+	 * @return string
+	 * @throws InternetException
+	 */
 	public static function getInternalIP() : string{
 		$sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-		socket_connect($sock, "8.8.8.8", 65534);
-		socket_getsockname($sock, $name); // $name passed by reference
-		socket_close($sock);
-		return $name;
+		try{
+			if(!@socket_connect($sock, "8.8.8.8", 65534)){
+				throw new InternetException("Failed to get internal IP: " . trim(socket_strerror(socket_last_error($sock))));
+			}
+			if(!@socket_getsockname($sock, $name)){
+				throw new InternetException("Failed to get internal IP: " . trim(socket_strerror(socket_last_error($sock))));
+			}
+			return $name;
+		}finally{
+			socket_close($sock);
+		}
 	}
 
 	/**

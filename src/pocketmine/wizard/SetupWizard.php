@@ -30,9 +30,9 @@ namespace pocketmine\wizard;
 use pocketmine\lang\BaseLang;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
+use pocketmine\utils\InternetException;
 use function base64_encode;
 use function fgets;
-use function gethostbyname;
 use function random_bytes;
 use function sleep;
 use function strtolower;
@@ -223,7 +223,11 @@ LICENSE;
 		if($externalIP === false){
 			$externalIP = "unknown (server offline)";
 		}
-		$internalIP = Internet::getInternalIP();
+		try{
+			$internalIP = Internet::getInternalIP();
+		}catch(InternetException $e){
+			$internalIP = "unknown (" . $e->getMessage() . ")";
+		}
 
 		$this->error($this->lang->translateString("ip_warning", ["EXTERNAL_IP" => $externalIP, "INTERNAL_IP" => $internalIP]));
 		$this->error($this->lang->get("ip_confirm"));
