@@ -219,11 +219,10 @@ class Explosion{
 
 			$t = $this->level->getTileAt($block->x, $block->y, $block->z);
 			if($t instanceof Tile){
+				if($t instanceof Chest){
+					$t->unpair();
+				}
 				if($yieldDrops and $t instanceof Container){
-					if($t instanceof Chest){
-						$t->unpair();
-					}
-
 					$t->getInventory()->dropContents($this->level, $t->add(0.5, 0.5, 0.5));
 				}
 
