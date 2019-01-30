@@ -2489,6 +2489,13 @@ class Level implements ChunkManager, Metadatable{
 		$oldChunk = $this->getChunk($chunkX, $chunkZ, false);
 		if($oldChunk !== null and $oldChunk !== $chunk){
 			if($deleteEntitiesAndTiles){
+				$players = $this->getChunkPlayers($chunkX, $chunkZ);
+				foreach($players as $player){
+					$chunk->addEntity($player);
+					$oldChunk->removeEntity($player);
+					$player->chunk = $chunk;
+				}
+				//TODO: this causes chunkloaders to receive false "unloaded" notifications
 				$this->unloadChunk($chunkX, $chunkZ, false, false);
 			}else{
 				foreach($oldChunk->getEntities() as $entity){
