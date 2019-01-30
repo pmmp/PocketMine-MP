@@ -63,6 +63,12 @@ class NetworkCipher{
 		$this->encryptCipher->encryptInit($this->key, $iv);
 	}
 
+	/**
+	 * @param string $encrypted
+	 *
+	 * @return string
+	 * @throws \UnexpectedValueException
+	 */
 	public function decrypt(string $encrypted) : string{
 		if(strlen($encrypted) < 9){
 			throw new \UnexpectedValueException("Payload is too short");
