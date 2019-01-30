@@ -75,6 +75,7 @@ class BlockWriteBatch{
 	 * @param Vector3      $pos
 	 *
 	 * @return Block
+	 * @throws TerrainNotLoadedException
 	 */
 	public function fetchBlock(ChunkManager $world, Vector3 $pos) : Block{
 		return $this->fetchBlockAt($world, $pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
@@ -89,6 +90,7 @@ class BlockWriteBatch{
 	 * @param int          $z
 	 *
 	 * @return Block
+	 * @throws TerrainNotLoadedException
 	 */
 	public function fetchBlockAt(ChunkManager $world, int $x, int $y, int $z) : Block{
 		return $this->blocks[$x][$y][$z] ?? $world->getBlockAt($x, $y, $z);
