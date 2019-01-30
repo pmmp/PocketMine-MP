@@ -27,6 +27,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\EmptySubChunk;
 use pocketmine\level\format\SubChunkInterface;
+use pocketmine\level\TerrainNotLoadedException;
 
 class SubChunkIteratorManager{
 	/** @var ChunkManager */
@@ -57,8 +58,10 @@ class SubChunkIteratorManager{
 			$this->currentZ = $z >> 4;
 			$this->currentSubChunk = null;
 
-			$this->currentChunk = $this->level->getChunk($this->currentX, $this->currentZ);
-			if($this->currentChunk === null){
+			try{
+				$this->currentChunk = $this->level->getChunk($this->currentX, $this->currentZ);
+			}catch(TerrainNotLoadedException $e){
+				$this->currentChunk = null;
 				return false;
 			}
 		}

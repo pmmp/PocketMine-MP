@@ -401,10 +401,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->recalculateBoundingBox();
 
-		$this->chunk = $this->level->getChunkAtPosition($this, false);
-		if($this->chunk === null){
-			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
-		}
+		$this->chunk = $this->level->getChunkAtPosition($this);
 
 		if($nbt->hasTag("Motion", ListTag::class)){
 			/** @var float[] $motion */
@@ -1629,7 +1626,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->chunk = $this->level->getChunk($chunkX, $chunkZ, true);
+			//TODO: this shouldn't be loading chunks, but currently we don't know what to do if they try to move into an
+			//unloaded chunk
+			$this->chunk = $this->level->getOrLoadChunk($chunkX, $chunkZ, true);
 
 			if(!$this->justCreated){
 				$newChunk = $this->level->getViewersForPosition($this);
