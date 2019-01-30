@@ -1497,7 +1497,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
 			$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
 			$revert = true;
-		}elseif(!$this->level->isInLoadedTerrain($newPos) or !$this->level->isChunkGenerated($newPos->getFloorX() >> 4, $newPos->getFloorZ() >> 4)){
+		}elseif(!$this->level->isInLoadedTerrain($newPos) or !$this->level->getChunk($newPos->getFloorX() >> 4, $newPos->getFloorZ() >> 4)->isGenerated()){
 			$revert = true;
 			$this->nextChunkOrderRun = 0;
 		}

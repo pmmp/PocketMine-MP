@@ -36,6 +36,7 @@ interface ChunkManager{
 	 * @param int $z
 	 *
 	 * @return Block
+	 * @throws TerrainNotLoadedException
 	 */
 	public function getBlockAt(int $x, int $y, int $z) : Block;
 
@@ -48,6 +49,7 @@ interface ChunkManager{
 	 * @param Block $block
 	 *
 	 * @return bool TODO: remove
+	 * @throws TerrainNotLoadedException
 	 */
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : bool;
 
@@ -59,6 +61,7 @@ interface ChunkManager{
 	 * @param int $z
 	 *
 	 * @return int
+	 * @throws TerrainNotLoadedException
 	 */
 	public function getBlockLightAt(int $x, int $y, int $z) : int;
 
@@ -69,6 +72,8 @@ interface ChunkManager{
 	 * @param int $y
 	 * @param int $z
 	 * @param int $level
+	 *
+	 * @throws TerrainNotLoadedException
 	 */
 	public function setBlockLightAt(int $x, int $y, int $z, int $level);
 
@@ -80,6 +85,7 @@ interface ChunkManager{
 	 * @param int $z
 	 *
 	 * @return int
+	 * @throws TerrainNotLoadedException
 	 */
 	public function getBlockSkyLightAt(int $x, int $y, int $z) : int;
 
@@ -90,16 +96,21 @@ interface ChunkManager{
 	 * @param int $y
 	 * @param int $z
 	 * @param int $level
+	 *
+	 * @throws TerrainNotLoadedException
 	 */
 	public function setBlockSkyLightAt(int $x, int $y, int $z, int $level);
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
+	 * Returns the chunk at the given coordinates, or throws an exception if it is not loaded.
 	 *
-	 * @return Chunk|null
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return Chunk
+	 * @throws TerrainNotLoadedException
 	 */
-	public function getChunk(int $chunkX, int $chunkZ);
+	public function getChunk(int $x, int $z) : Chunk;
 
 	/**
 	 * @param int        $chunkX
