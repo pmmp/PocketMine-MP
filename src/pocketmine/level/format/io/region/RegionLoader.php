@@ -83,6 +83,9 @@ class RegionLoader{
 		$this->filePath = $filePath;
 	}
 
+	/**
+	 * @throws CorruptedRegionException
+	 */
 	public function open(){
 		$exists = file_exists($this->filePath);
 		if(!$exists){
@@ -263,6 +266,9 @@ class RegionLoader{
 		}
 	}
 
+	/**
+	 * @throws CorruptedRegionException
+	 */
 	protected function loadLocationTable(){
 		fseek($this->filePointer, 0);
 		$this->lastSector = 1;
