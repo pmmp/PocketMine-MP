@@ -2475,9 +2475,9 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int        $chunkX
 	 * @param int        $chunkZ
 	 * @param Chunk|null $chunk
-	 * @param bool       $unload
+	 * @param bool       $deleteEntitiesAndTiles Whether to delete entities and tiles on the old chunk, or transfer them to the new one
 	 */
-	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk = null, bool $unload = true){
+	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk = null, bool $deleteEntitiesAndTiles = true){
 		if($chunk === null){
 			return;
 		}
@@ -2488,7 +2488,7 @@ class Level implements ChunkManager, Metadatable{
 		$chunkHash = Level::chunkHash($chunkX, $chunkZ);
 		$oldChunk = $this->getChunk($chunkX, $chunkZ, false);
 		if($oldChunk !== null and $oldChunk !== $chunk){
-			if($unload){
+			if($deleteEntitiesAndTiles){
 				$this->unloadChunk($chunkX, $chunkZ, false, false);
 			}else{
 				foreach($oldChunk->getEntities() as $entity){
