@@ -33,10 +33,11 @@ use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
+use function array_map;
 use function count;
 use function explode;
+use function preg_match;
 use function preg_match_all;
-use function str_replace;
 
 class Flat extends Generator{
 	/** @var Chunk */
@@ -62,6 +63,11 @@ class Flat extends Generator{
 		return "flat";
 	}
 
+	/**
+	 * @param array $options
+	 *
+	 * @throws InvalidGeneratorOptionsException
+	 */
 	public function __construct(array $options = []){
 		$this->options = $options;
 		if(isset($this->options["preset"]) and $this->options["preset"] != ""){
@@ -89,13 +95,28 @@ class Flat extends Generator{
 		}
 	}
 
+	/**
+	 * @param string $layers
+	 *
+	 * @return int[][]
+	 * @throws InvalidGeneratorOptionsException
+	 */
 	public static function parseLayers(string $layers) : array{
 		$result = [];
-		preg_match_all('#^(([0-9]*x|)([0-9]{1,3})(|:[0-9]{0,2}))$#m', str_replace(",", "\n", $layers), $matches);
+		$split = array_map('\trim', explode(',', $layers));
 		$y = 0;
-		foreach($matches[3] as $i => $b){
-			$b = ItemFactory::fromString($b . $matches[4][$i]);
-			$cnt = $matches[2][$i] === "" ? 1 : (int) $matches[2][$i];
+		foreach($split as $line){
+			preg_match('#^(?:(\d+)x)?(.+)$#', $line, $matches);
+			if(count($matches) !== 3){
+				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\"");
+			}
+
+			$cnt = $matches[1] !== "" ? (int) $matches[1] : 1;
+			try{
+				$b = ItemFactory::fromString($matches[2])->getBlock();
+			}catch(\InvalidArgumentException $e){
+				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\": " . $e->getMessage(), 0, $e);
+			}
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
 				$result[$cY] = [$b->getId(), $b->getDamage()];
 			}
@@ -113,6 +134,7 @@ class Flat extends Generator{
 
 		$this->floorLevel = count($this->structure);
 
+		//TODO: more error checking
 		preg_match_all('#(([0-9a-z_]{1,})\(?([0-9a-z_ =:]{0,})\)?),?#', $options, $matches);
 		foreach($matches[2] as $i => $option){
 			$params = true;

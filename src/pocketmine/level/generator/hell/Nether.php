@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\InvalidGeneratorOptionsException;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3;
@@ -51,6 +52,11 @@ class Nether extends Generator{
 	/** @var Simplex */
 	private $noiseBase;
 
+	/**
+	 * @param array $options
+	 *
+	 * @throws InvalidGeneratorOptionsException
+	 */
 	public function __construct(array $options = []){
 
 	}

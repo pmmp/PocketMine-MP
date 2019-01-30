@@ -58,6 +58,11 @@ abstract class Generator{
 	/** @var Random */
 	protected $random;
 
+	/**
+	 * @param array $settings
+	 *
+	 * @throws InvalidGeneratorOptionsException
+	 */
 	abstract public function __construct(array $settings = []);
 
 

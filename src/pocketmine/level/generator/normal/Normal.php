@@ -29,6 +29,7 @@ use pocketmine\level\biome\Biome;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\biome\BiomeSelector;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\InvalidGeneratorOptionsException;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\object\OreType;
 use pocketmine\level\generator\populator\GroundCover;
@@ -57,6 +58,11 @@ class Normal extends Generator{
 	private static $GAUSSIAN_KERNEL = null;
 	private static $SMOOTH_SIZE = 2;
 
+	/**
+	 * @param array $options
+	 *
+	 * @throws InvalidGeneratorOptionsException
+	 */
 	public function __construct(array $options = []){
 		if(self::$GAUSSIAN_KERNEL === null){
 			self::generateKernel();
