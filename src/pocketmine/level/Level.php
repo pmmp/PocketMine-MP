@@ -367,6 +367,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->displayName]));
 		$this->generator = GeneratorManager::getGenerator($this->provider->getLevelData()->getGenerator());
+		//TODO: validate generator options
 
 		$this->folderName = $name;
 

@@ -63,6 +63,13 @@ abstract class Generator{
 	/** @var Random */
 	protected $random;
 
+	/**
+	 * @param ChunkManager $level
+	 * @param int          $seed
+	 * @param array        $options
+	 *
+	 * @throws InvalidGeneratorOptionsException
+	 */
 	public function __construct(ChunkManager $level, int $seed, array $options = []){
 		$this->level = $level;
 		$this->seed = $seed;
