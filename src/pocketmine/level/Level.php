@@ -793,8 +793,13 @@ class Level implements ChunkManager, Metadatable{
 
 		//Delayed updates
 		while($this->scheduledBlockUpdateQueue->count() > 0 and $this->scheduledBlockUpdateQueue->current()["priority"] <= $currentTick){
-			$block = $this->getBlock($this->scheduledBlockUpdateQueue->extract()["data"]);
-			unset($this->scheduledBlockUpdateQueueIndex[Level::blockHash($block->x, $block->y, $block->z)]);
+			$vec = $this->scheduledBlockUpdateQueue->extract()["data"];
+			unset($this->scheduledBlockUpdateQueueIndex[Level::blockHash($vec->x, $vec->y, $vec->z)]);
+			try{
+				$block = $this->getBlock($vec);
+			}catch(TerrainNotLoadedException $e){ //chunk unloaded before update took place
+				continue;
+			}
 			$block->onScheduledUpdate();
 		}
 
@@ -1182,6 +1187,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Vector3 $pos
 	 *
 	 * @return bool
+	 * @throws TerrainNotLoadedException
 	 */
 	public function isFullBlock(Vector3 $pos) : bool{
 		if($pos instanceof Block){
@@ -1359,6 +1365,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param bool    $addToCache Whether to cache the block object created by this method call.
 	 *
 	 * @return Block
+	 * @throws TerrainNotLoadedException
 	 */
 	public function getBlock(Vector3 $pos, bool $cached = true, bool $addToCache = true) : Block{
 		return $this->getBlockAt((int) floor($pos->x), (int) floor($pos->y), (int) floor($pos->z), $cached, $addToCache);
@@ -1422,6 +1429,11 @@ class Level implements ChunkManager, Metadatable{
 		return $block;
 	}
 
+	/**
+	 * @param Vector3 $pos
+	 *
+	 * @throws TerrainNotLoadedException
+	 */
 	public function updateAllLight(Vector3 $pos){
 		$this->updateBlockSkyLight($pos->x, $pos->y, $pos->z);
 		$this->updateBlockLight($pos->x, $pos->y, $pos->z);
@@ -1435,6 +1447,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int $z
 	 *
 	 * @return int
+	 * @throws TerrainNotLoadedException
 	 */
 	public function getHighestAdjacentBlockSkyLight(int $x, int $y, int $z) : int{
 		return max([
@@ -1447,6 +1460,13 @@ class Level implements ChunkManager, Metadatable{
 		]);
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @throws TerrainNotLoadedException
+	 */
 	public function updateBlockSkyLight(int $x, int $y, int $z){
 		$this->timings->doBlockSkyLightUpdates->startTiming();
 
@@ -1495,6 +1515,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int $z
 	 *
 	 * @return int
+	 * @throws TerrainNotLoadedException
 	 */
 	public function getHighestAdjacentBlockLight(int $x, int $y, int $z) : int{
 		return max([
@@ -1507,6 +1528,13 @@ class Level implements ChunkManager, Metadatable{
 		]);
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 *
+	 * @throws TerrainNotLoadedException
+	 */
 	public function updateBlockLight(int $x, int $y, int $z){
 		$this->timings->doBlockLightUpdates->startTiming();
 
@@ -1566,6 +1594,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool Whether the block has been updated or not
 	 *
 	 * @throws \InvalidArgumentException if the position is out of the world bounds
+	 * @throws TerrainNotLoadedException
 	 */
 	public function setBlockAt(int $x, int $y, int $z, Block $block, bool $update = true) : bool{
 		if(!$this->isInWorld($x, $y, $z)){
@@ -1673,6 +1702,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param bool    $createParticles
 	 *
 	 * @return bool
+	 * @throws TerrainNotLoadedException
 	 */
 	public function useBreakOn(Vector3 $vector, Item &$item = null, Player $player = null, bool $createParticles = false) : bool{
 		$target = $this->getBlock($vector);
@@ -1751,6 +1781,14 @@ class Level implements ChunkManager, Metadatable{
 		return true;
 	}
 
+	/**
+	 * @param Block       $target
+	 * @param Item        $item
+	 * @param Player|null $player
+	 * @param bool        $createParticles
+	 *
+	 * @throws TerrainNotLoadedException
+	 */
 	private function destroyBlockInternal(Block $target, Item $item, ?Player $player = null, bool $createParticles = false) : void{
 		if($createParticles){
 			$this->addParticle($target->add(0.5, 0.5, 0.5), new DestroyBlockParticle($target));
@@ -1783,6 +1821,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param bool         $playSound Whether to play a block-place sound if the block was placed successfully.
 	 *
 	 * @return bool
+	 * @throws TerrainNotLoadedException
 	 */
 	public function useItemOn(Vector3 $vector, Item &$item, int $face, Vector3 $clickVector = null, Player $player = null, bool $playSound = false) : bool{
 		$blockClicked = $this->getBlock($vector);

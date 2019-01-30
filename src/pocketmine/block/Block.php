@@ -33,6 +33,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
+use pocketmine\level\TerrainNotLoadedException;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
@@ -172,6 +173,9 @@ class Block extends Position implements BlockIds, Metadatable{
 		$this->collisionBoxes = null;
 	}
 
+	/**
+	 * @throws TerrainNotLoadedException
+	 */
 	public function writeStateToWorld() : void{
 		$this->level->getChunkAtPosition($this)->setBlock($this->x & 0xf, $this->y, $this->z & 0xf, $this->getId(), $this->getDamage());
 	}
