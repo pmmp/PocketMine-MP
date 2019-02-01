@@ -568,7 +568,8 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @internal DO NOT use this from plugins, it's for internal use only. Use Server->unloadLevel() instead.
+	 * @internal
+	 * @see Server::unloadLevel()
 	 *
 	 * Unloads the current level from memory safely
 	 *
@@ -746,8 +747,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
+	 * @internal
 	 */
 	public function checkTime(){
 		if($this->stopTime){
@@ -758,8 +758,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
+	 * @internal
 	 *
 	 * @param Player ...$targets If empty, will send to all players in the level.
 	 */
@@ -771,8 +770,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
+	 * @internal
 	 *
 	 * @param int $currentTick
 	 *
