@@ -680,8 +680,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
+	 * @internal
 	 *
 	 * @param Player ...$targets If empty, will send to all players in the level.
 	 */
@@ -701,8 +700,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
+	 * @internal
 	 *
 	 * @param int $currentTick
 	 *
