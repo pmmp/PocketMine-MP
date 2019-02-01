@@ -299,11 +299,12 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleInteract(InteractPacket $packet) : bool{
-		if($packet->action === InteractPacket::ACTION_MOUSEOVER and $packet->target === 0){
+		if($packet->action === InteractPacket::ACTION_MOUSEOVER){
 			//TODO HACK: silence useless spam (MCPE 1.8)
-			//this packet is EXPECTED to only be sent when interacting with an entity, but due to some messy Mojang
-			//hacks, it also sends it when changing the held item now, which causes us to think the inventory was closed
-			//when it wasn't.
+			//due to some messy Mojang hacks, it sends this when changing the held item now, which causes us to think
+			//the inventory was closed when it wasn't.
+			//this is also sent whenever entity metadata updates, which can get really spammy.
+			//TODO: implement handling for this where it matters
 			return true;
 		}
 		return false; //TODO
