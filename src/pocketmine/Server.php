@@ -648,31 +648,21 @@ class Server{
 	/**
 	 * @param string $name
 	 *
-	 * @return CompoundTag
+	 * @return CompoundTag|null
 	 */
-	public function getOfflinePlayerData(string $name) : CompoundTag{
+	public function getOfflinePlayerData(string $name) : ?CompoundTag{
 		$name = strtolower($name);
 		$path = $this->getDataPath() . "players/";
-		if($this->shouldSavePlayerData()){
-			if(file_exists($path . "$name.dat")){
-				try{
-					return (new BigEndianNbtSerializer())->readCompressed(file_get_contents($path . "$name.dat"));
-				}catch(NbtDataException $e){ //zlib decode error / corrupt data
-					rename($path . "$name.dat", $path . "$name.dat.bak");
-					$this->logger->error($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
-				}
+
+		if(file_exists($path . "$name.dat")){
+			try{
+				return (new BigEndianNbtSerializer())->readCompressed(file_get_contents($path . "$name.dat"));
+			}catch(NbtDataException $e){ //zlib decode error / corrupt data
+				rename($path . "$name.dat", $path . "$name.dat.bak");
+				$this->logger->error($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
 			}
-			$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerNotFound", [$name]));
 		}
-		$spawn = $this->levelManager->getDefaultLevel()->getSafeSpawn();
-
-		$nbt = EntityFactory::createBaseNBT($spawn);
-
-		$nbt->setString("Level", $this->levelManager->getDefaultLevel()->getFolderName());
-		$nbt->setByte("OnGround", 1); //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
-		//TODO: old code had a TODO for SpawnForced
-
-		return $nbt;
+		return null;
 	}
 
 	/**
