@@ -36,7 +36,7 @@ namespace pocketmine {
 	use pocketmine\utils\VersionString;
 	use pocketmine\wizard\SetupWizard;
 
-	const NAME = "PocketMine-MP";
+	const NAME = "Altay";
 	const BASE_VERSION = "3.5.10";
 	const IS_DEVELOPMENT_BUILD = true;
 	const BUILD_NUMBER = 0;

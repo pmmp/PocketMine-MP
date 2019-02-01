@@ -22,24 +22,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\level\biome;
 
-class MapTrackedObject{
+class EndBiome extends Biome{
 
-	public const TYPE_PLAYER = 0;
-	public const TYPE_BLOCK = 1;
-
-	/** @var int */
-	public $type;
-
-	/** @var int Only set if is TYPE_PLAYER */
-	public $entityUniqueId;
-
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-
+	public function getName() : string{
+		return "End";
+	}
 }

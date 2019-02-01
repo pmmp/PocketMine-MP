@@ -22,24 +22,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\level\biome;
 
-class MapTrackedObject{
+use pocketmine\entity\Entity;
+use pocketmine\utils\WeightedRandomItem;
 
-	public const TYPE_PLAYER = 0;
-	public const TYPE_BLOCK = 1;
+class SpawnListEntry extends WeightedRandomItem{
+	/** @var Entity */
+	public $entityClass;
+	public $minGroupCount = 0;
+	public $maxGroupCount = 0;
 
-	/** @var int */
-	public $type;
+	public function __construct(string $entityClass, int $itemWeight, int $minGroupCount, int $maxGroupCount){
+		parent::__construct($itemWeight);
 
-	/** @var int Only set if is TYPE_PLAYER */
-	public $entityUniqueId;
-
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-
+		$this->entityClass = $entityClass;
+		$this->minGroupCount = $minGroupCount;
+		$this->maxGroupCount = $maxGroupCount;
+	}
 }

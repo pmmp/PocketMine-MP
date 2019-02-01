@@ -70,7 +70,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	private $syncFlush = false;
 
 	/** @var string */
-	private $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
+	private $format = TextFormat::AQUA . "%s " . TextFormat::RESET . "%s<%s/%s> %s" . TextFormat::RESET;
 
 	/** @var bool */
 	private $mainThreadHasFormattingCodes = false;
@@ -155,38 +155,38 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	public function emergency($message){
-		$this->send($message, \LogLevel::EMERGENCY, "EMERGENCY", TextFormat::RED);
+		$this->send($message, \LogLevel::EMERGENCY, "Emergency", TextFormat::DARK_PURPLE);
 	}
 
 	public function alert($message){
-		$this->send($message, \LogLevel::ALERT, "ALERT", TextFormat::RED);
+		$this->send($message, \LogLevel::ALERT, "Alert", TextFormat::DARK_AQUA);
 	}
 
 	public function critical($message){
-		$this->send($message, \LogLevel::CRITICAL, "CRITICAL", TextFormat::RED);
+		$this->send($message, \LogLevel::CRITICAL, "Critical", TextFormat::DARK_RED);
 	}
 
 	public function error($message){
-		$this->send($message, \LogLevel::ERROR, "ERROR", TextFormat::DARK_RED);
+		$this->send($message, \LogLevel::ERROR, "Error", TextFormat::RED);
 	}
 
 	public function warning($message){
-		$this->send($message, \LogLevel::WARNING, "WARNING", TextFormat::YELLOW);
+		$this->send($message, \LogLevel::WARNING, "Warning", TextFormat::YELLOW);
 	}
 
 	public function notice($message){
-		$this->send($message, \LogLevel::NOTICE, "NOTICE", TextFormat::AQUA);
+		$this->send($message, \LogLevel::NOTICE, "Notice", TextFormat::GOLD);
 	}
 
 	public function info($message){
-		$this->send($message, \LogLevel::INFO, "INFO", TextFormat::WHITE);
+		$this->send($message, \LogLevel::INFO, "Info", TextFormat::WHITE);
 	}
 
 	public function debug($message, bool $force = false){
 		if(!$this->logDebug and !$force){
 			return;
 		}
-		$this->send($message, \LogLevel::DEBUG, "DEBUG", TextFormat::GRAY);
+		$this->send($message, \LogLevel::DEBUG, "Debug", TextFormat::DARK_PURPLE);
 	}
 
 	/**

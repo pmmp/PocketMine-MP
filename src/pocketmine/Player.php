@@ -283,6 +283,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $permanentWindows = [];
 	/** @var PlayerCursorInventory */
 	protected $cursorInventory;
+	/** @var PlayerOffHandInventory */
+	protected $offHandInventory;
 	/** @var CraftingGrid */
 	protected $craftingGrid = null;
 	/** @var CraftingTransaction|null */
@@ -488,6 +490,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->flying;
 	}
 
+	public function setMuted(bool $value){
+		$this->muted = $value;
+		$this->sendSettings();
+	}
+
+	public function isMuted() : bool{
+		return $this->muted;
+	}
+
 	public function setAutoJump(bool $value){
 		$this->autoJump = $value;
 		$this->sendSettings();
@@ -495,6 +506,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function hasAutoJump() : bool{
 		return $this->autoJump;
+	}
+
+	/**
+	 * @return null|FishingHook
+	 */
+	public function getFishingHook() : ?FishingHook{
+		return $this->fishingHook;
+	}
+
+	/**
+	 * @param null|FishingHook $fishingHook
+	 */
+	public function setFishingHook(?FishingHook $fishingHook) : void{
+		$this->fishingHook = $fishingHook;
 	}
 
 	public function allowMovementCheats() : bool{
@@ -714,35 +739,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function sendCommandData(){
 		$pk = new AvailableCommandsPacket();
-		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
-			if(isset($pk->commandData[$command->getName()]) or $command->getName() === "help" or !$command->testPermissionSilent($this)){
+		foreach($this->server->getCommandMap()->getCommands() as $command){
+			if(!$command->testPermissionSilent($this) or isset($pk->commandData[$command->getName()]) or $command->getName() === "help" or !$command->testPermissionSilent($this)){
 				continue;
 			}
 
-			$data = new CommandData();
-			$data->commandName = $command->getName();
-			$data->commandDescription = $this->server->getLanguage()->translateString($command->getDescription());
-			$data->flags = 0;
-			$data->permission = 0;
-
-			$parameter = new CommandParameter();
-			$parameter->paramName = "args";
-			$parameter->paramType = AvailableCommandsPacket::ARG_FLAG_VALID | AvailableCommandsPacket::ARG_TYPE_RAWTEXT;
-			$parameter->isOptional = true;
-			$data->overloads[0][0] = $parameter;
-
-			$aliases = $command->getAliases();
-			if(!empty($aliases)){
-				if(!in_array($data->commandName, $aliases, true)){
-					//work around a client bug which makes the original name not show when aliases are used
-					$aliases[] = $data->commandName;
-				}
-				$data->aliases = new CommandEnum();
-				$data->aliases->enumName = ucfirst($command->getName()) . "Aliases";
-				$data->aliases->enumValues = $aliases;
+			$data = $command->getData();
+			if($data->aliases instanceof CommandEnum){
+				//work around a client bug which makes the original name not show when aliases are used
+				$data->aliases->enumValues[] = $data->commandName;
 			}
 
-			$pk->commandData[$command->getName()] = $data;
+			$pk->commandData[$data->commandName] = $data;
 		}
 
 		$this->dataPacket($pk);
@@ -822,6 +830,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function getLocale() : string{
 		return $this->locale;
+	}
+
+	/**
+	 * Sets player locale, e.g. en_US
+	 *
+	 * @param string $locale
+	 */
+	public function setLocale(string $locale) : void{
+		$this->locale = $locale;
 	}
 
 	/**
@@ -965,6 +982,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
+	public function getCommandPermission() : int{
+		return $this->commandPermission;
+	}
+
+	public function setCommandPermission(int $commandPermission) : void{
+		$this->commandPermission = $commandPermission;
+	}
+
+	public function changeDimension(int $dimension, Vector3 $position = null, bool $respawn = false){
+		$pk = new ChangeDimensionPacket();
+		$pk->dimension = $dimension;
+		$pk->position = $position ?? $this;
+		$pk->respawn = $respawn;
+		$this->sendDataPacket($pk);
+	}
+
 	protected function switchLevel(Level $targetLevel) : bool{
 		$oldLevel = $this->level;
 		if(parent::switchLevel($targetLevel)){
@@ -978,7 +1011,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->usedChunks = [];
 			$this->loadQueue = [];
 			$this->level->sendTime($this);
+			$this->level->sendGameRules([$this]);
 			$this->level->sendDifficulty($this);
+
+			if($oldLevel->getDimension() !== $targetLevel->getDimension()){
+				$this->changeDimension($targetLevel->getDimension(), $this, !$this->isAlive());
+			}
 
 			return true;
 		}
@@ -1286,6 +1324,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->setSpawn($pos);
 
 		$this->level->setSleepTicks(60);
+		$this->updateBoundingBox(0.2, 0.2);
 
 		return true;
 	}
@@ -1299,6 +1338,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			(new PlayerBedLeaveEvent($this, $b))->call();
 
 			$this->sleeping = null;
+			$this->updateBoundingBox(1.8, 0.6);
 			$this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
 			$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
 
@@ -1309,6 +1349,50 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$pk->action = AnimatePacket::ACTION_STOP_SLEEP;
 			$this->dataPacket($pk);
 		}
+	}
+
+	public function setSneaking(bool $value = true) : void{
+		parent::setSneaking($value);
+
+		if($value){
+			$this->updateBoundingBox(1.65, 0.6);
+		}else{
+			$this->updateBoundingBox(1.8, 0.6);
+		}
+	}
+
+	public function setGliding(bool $value = true) : void{
+		parent::setGliding($value);
+
+		if($value){
+			$this->updateBoundingBox(0.6, 0.6);
+		}else{
+			$this->updateBoundingBox(1.8, 0.6);
+		}
+	}
+
+	public function setSwimming(bool $value = true) : void{
+		parent::setSwimming($value);
+
+		if($value){
+			$this->updateBoundingBox(0.6, 0.6);
+		}else{
+			$this->updateBoundingBox(1.8, 0.6);
+		}
+	}
+
+	/**
+	 * Update player's height and width
+	 *
+	 * @param float $height
+	 * @param float $width
+	 */
+	public function updateBoundingBox(float $height, float $width) : void{
+		$this->height = $height;
+		$this->width = $width;
+		$this->recalculateBoundingBox();
+		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_WIDTH, $width);
+		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $height);
 	}
 
 	/**
@@ -1460,8 +1544,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $this->allowFlight);
 		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, $this->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::FLYING, $this->flying);
+		$pk->setFlag(AdventureSettingsPacket::MUTED, $this->muted);
 
 		$pk->commandPermission = ($this->isOp() ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL);
+		$this->commandPermission = $pk->commandPermission;
 		$pk->playerPermission = ($this->isOp() ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER);
 		$pk->entityUniqueId = $this->getId();
 
@@ -1536,7 +1622,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function getXpDropAmount() : int{
-		if(!$this->isCreative()){
+		if(!$this->server->keepExperience and !$this->isCreative() and !$this->keepExperience){
 			return parent::getXpDropAmount();
 		}
 
@@ -1653,9 +1739,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
 					//TODO: check swimming (adds 0.015 exhaustion in MCPE)
 					if($this->isSprinting()){
-						$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
+						$this->exhaust(0.025 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
+					}elseif($this->isSwimming()){
+						$this->exhaust(0.015 * $distance, PlayerExhaustEvent::CAUSE_SWIMMING);
 					}else{
-						$this->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
+						$this->exhaust(0.0025 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
 					}
 				}
 			}
@@ -1747,6 +1835,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->timings->startTiming();
 
 		if($this->spawned){
+			if($this->getInventory() !== null){
+				$this->inventory->getItemInHand()->onUpdate($this); // update map items
+			}
+			if($this->getOffHandInventory() !== null){
+				$this->offHandInventory->getItem(0)->onUpdate($this);
+			}
 			$this->processMovement($tickDiff);
 			$this->motion->x = $this->motion->y = $this->motion->z = 0; //TODO: HACK! (Fixes player knockback being messed up)
 			if($this->onGround){
@@ -3775,6 +3869,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->addWindow($this->getArmorInventory(), ContainerIds::ARMOR, true);
 
 		$this->cursorInventory = new PlayerCursorInventory($this);
+		$this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
+		$this->offHandInventory = new ($this);
 		$this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
 
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
