@@ -84,6 +84,7 @@ use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
 use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\level\ChunkListener;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
@@ -175,7 +176,7 @@ use const PHP_INT_MAX;
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  */
-class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
+class Player extends Human implements CommandSender, ChunkLoader, ChunkListener, IPlayer{
 
 	/**
 	 * Checks a supplied username and checks it is valid.
@@ -921,6 +922,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			unset($this->usedChunks[$index]);
 		}
 		$level->unregisterChunkLoader($this, $x, $z);
+		$level->unregisterChunkListener($this, $x, $z);
 		unset($this->loadQueue[$index]);
 	}
 
@@ -978,6 +980,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->usedChunks[$index] = false;
 			$this->level->registerChunkLoader($this, $X, $Z, true);
+			$this->level->registerChunkListener($this, $X, $Z);
 
 			if(!$this->level->populateChunk($X, $Z)){
 				continue;
@@ -1841,6 +1844,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		//load the spawn chunk so we can see the terrain
 		$level->registerChunkLoader($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);
+		$level->registerChunkListener($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4);
 		if($spawnReset){
 			$spawn = $level->getSafeSpawn($spawn);
 		}
@@ -2911,6 +2915,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				foreach($this->usedChunks as $index => $d){
 					Level::getXZ($index, $chunkX, $chunkZ);
 					$this->level->unregisterChunkLoader($this, $chunkX, $chunkZ);
+					$this->level->unregisterChunkListener($this, $chunkX, $chunkZ);
 					foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
 						$entity->despawnFrom($this);
 					}
