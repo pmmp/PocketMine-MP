@@ -179,6 +179,9 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Player[][] */
 	private $playerLoaders = [];
 
+	/** @var ChunkListener[][] */
+	private $chunkListeners = [];
+
 	/** @var ClientboundPacket[][] */
 	private $chunkPackets = [];
 	/** @var ClientboundPacket[] */
@@ -678,6 +681,52 @@ class Level implements ChunkManager, Metadatable{
 				unset($this->loaders[$loaderId]);
 			}
 		}
+	}
+
+	/**
+	 * Registers a listener to receive events on a chunk.
+	 *
+	 * @param ChunkListener $listener
+	 * @param int           $chunkX
+	 * @param int           $chunkZ
+	 */
+	public function registerChunkListener(ChunkListener $listener, int $chunkX, int $chunkZ) : void{
+		$hash = Level::chunkHash($chunkX, $chunkZ);
+		if(isset($this->chunkListeners[$hash])){
+			$this->chunkListeners[$hash][spl_object_id($listener)] = $listener;
+		}else{
+			$this->chunkListeners[$hash] = [spl_object_id($listener) => $listener];
+		}
+	}
+
+	/**
+	 * Unregisters a chunk listener previously registered.
+	 * @see Level::registerChunkListener()
+	 *
+	 * @param ChunkListener $listener
+	 * @param int           $chunkX
+	 * @param int           $chunkZ
+	 */
+	public function unregisterChunkListener(ChunkListener $listener, int $chunkX, int $chunkZ) : void{
+		$hash = Level::chunkHash($chunkX, $chunkZ);
+		if(isset($this->chunkListeners[$hash])){
+			unset($this->chunkListeners[$hash][spl_object_id($listener)]);
+			if(empty($this->chunkListeners[$hash])){
+				unset($this->chunkListeners[$hash]);
+			}
+		}
+	}
+
+	/**
+	 * Returns all the listeners attached to this chunk.
+	 *
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return ChunkListener[]
+	 */
+	public function getChunkListeners(int $chunkX, int $chunkZ) : array{
+		return $this->chunkListeners[Level::chunkHash($chunkX, $chunkZ)] ?? [];
 	}
 
 	/**
@@ -1539,8 +1588,8 @@ class Level implements ChunkManager, Metadatable{
 		}
 		$this->changedBlocks[$chunkHash][$relativeBlockHash] = $block;
 
-		foreach($this->getChunkLoaders($x >> 4, $z >> 4) as $loader){
-			$loader->onBlockChanged($block);
+		foreach($this->getChunkListeners($x >> 4, $z >> 4) as $listener){
+			$listener->onBlockChanged($block);
 		}
 
 		if($update){
@@ -2229,8 +2278,8 @@ class Level implements ChunkManager, Metadatable{
 				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
 					(new ChunkPopulateEvent($this, $chunk))->call();
 
-					foreach($this->getChunkLoaders($x, $z) as $loader){
-						$loader->onChunkPopulated($chunk);
+					foreach($this->getChunkListeners($x, $z) as $listener){
+						$listener->onChunkPopulated($chunk);
 					}
 				}
 			}
@@ -2301,8 +2350,8 @@ class Level implements ChunkManager, Metadatable{
 		if(!$this->isChunkInUse($chunkX, $chunkZ)){
 			$this->unloadChunkRequest($chunkX, $chunkZ);
 		}else{
-			foreach($this->getChunkLoaders($chunkX, $chunkZ) as $loader){
-				$loader->onChunkChanged($chunk);
+			foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
+				$listener->onChunkChanged($chunk);
 			}
 		}
 	}
@@ -2617,8 +2666,8 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($this->isChunkInUse($x, $z)){
-			foreach($this->getChunkLoaders($x, $z) as $loader){
-				$loader->onChunkLoaded($chunk);
+			foreach($this->getChunkListeners($x, $z) as $listener){
+				$listener->onChunkLoaded($chunk);
 			}
 		}else{
 			$this->server->getLogger()->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
@@ -2678,8 +2727,8 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 
-			foreach($this->getChunkLoaders($x, $z) as $loader){
-				$loader->onChunkUnloaded($chunk);
+			foreach($this->getChunkListeners($x, $z) as $listener){
+				$listener->onChunkUnloaded($chunk);
 			}
 
 			$chunk->onUnload();
