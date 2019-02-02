@@ -38,16 +38,7 @@ class EnderPearl extends Throwable{
 	protected function calculateInterceptWithBlock(Block $block, Vector3 $start, Vector3 $end) : ?RayTraceResult{
 		if($block->getId() !== Block::AIR and empty($block->getCollisionBoxes())){
 			//TODO: remove this once block collision boxes are fixed properly
-			$bb = new AxisAlignedBB(
-				$block->x,
-				$block->y,
-				$block->z,
-				$block->x + 1,
-				$block->y + 1,
-				$block->z + 1
-			);
-
-			return $bb->calculateIntercept($start, $end);
+			return AxisAlignedBB::one()->offset($block->x, $block->y, $block->z)->calculateIntercept($start, $end);
 		}
 
 		return parent::calculateInterceptWithBlock($block, $start, $end);
