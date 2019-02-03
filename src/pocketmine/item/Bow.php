@@ -96,24 +96,26 @@ class Bow extends Tool{
 			$player->getInventory()->sendContents($player);
 		}else{
 			$entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
-			if($player->isSurvival()){
-				if(!$infinity){ //TODO: tipped arrows are still consumed when Infinity is applied
-					$player->getInventory()->removeItem(ItemFactory::get(Item::ARROW, 0, 1));
-				}
-				$this->applyDamage(1);
-			}
 
 			if($entity instanceof Projectile){
 				$projectileEv = new ProjectileLaunchEvent($entity);
 				$projectileEv->call();
 				if($projectileEv->isCancelled()){
 					$ev->getProjectile()->flagForDespawn();
+					$player->getInventory()->sendContents($player);
+					return true;
 				}else{
 					$ev->getProjectile()->spawnToAll();
 					$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_BOW);
 				}
 			}else{
 				$entity->spawnToAll();
+			}
+			if($player->isSurvival()){
+				if(!$infinity){ //TODO: tipped arrows are still consumed when Infinity is applied
+					$player->getInventory()->removeItem(ItemFactory::get(Item::ARROW, 0, 1));
+				}
+				$this->applyDamage(1);
 			}
 		}
 
