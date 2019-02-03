@@ -25,6 +25,7 @@ namespace pocketmine\entity\object;
 
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
+use pocketmine\level\TerrainNotLoadedException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
@@ -216,7 +217,11 @@ class ExperienceOrb extends Entity{
 	}
 
 	protected function tryChangeMovement() : void{
-		$this->checkObstruction($this->x, $this->y, $this->z);
+		try{
+			$this->checkObstruction($this->x, $this->y, $this->z);
+		}catch(TerrainNotLoadedException $_){
+
+		}
 		parent::tryChangeMovement();
 	}
 
