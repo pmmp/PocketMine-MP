@@ -69,12 +69,12 @@ abstract class ProjectileItem extends Item{
 		if($projectileEv->isCancelled()){
 			$projectile->flagForDespawn();
 		}else{
+			$this->pop();
 			$projectile->spawnToAll();
 
 			$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_THROW, 0, EntityIds::PLAYER);
 		}
 
-		$this->pop();
 
 		return true;
 	}
