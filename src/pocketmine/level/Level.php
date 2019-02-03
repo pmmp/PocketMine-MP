@@ -946,6 +946,8 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @param Player[]  $target
 	 * @param Vector3[] $blocks
+	 *
+	 * @throws TerrainNotLoadedException
 	 */
 	public function sendBlocks(array $target, array $blocks){
 		$packets = [];
