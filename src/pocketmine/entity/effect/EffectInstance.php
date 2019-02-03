@@ -57,7 +57,7 @@ class EffectInstance{
 	public function __construct(Effect $effectType, ?int $duration = null, int $amplifier = 0, bool $visible = true, bool $ambient = false, ?Color $overrideColor = null){
 		$this->effectType = $effectType;
 		$this->setDuration($duration ?? $effectType->getDefaultDuration());
-		$this->amplifier = $amplifier;
+		$this->setAmplifier($amplifier);
 		$this->visible = $visible;
 		$this->ambient = $ambient;
 		$this->color = $overrideColor ?? $effectType->getColor();
@@ -141,6 +141,9 @@ class EffectInstance{
 	 * @return $this
 	 */
 	public function setAmplifier(int $amplifier) : EffectInstance{
+		if($amplifier < 0 or $amplifier > 255){
+			throw new \InvalidArgumentException("Amplifier must be in range 0 - 255, got $amplifier");
+		}
 		$this->amplifier = $amplifier;
 
 		return $this;
