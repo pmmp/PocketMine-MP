@@ -1078,13 +1078,25 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 
 		if($this->onGround){
-			$friction *= $this->level->getBlockAt((int) floor($this->x), (int) floor($this->y - 1), (int) floor($this->z))->getFrictionFactor();
+			try{
+				$friction *= $this->level->getBlockAt((int) floor($this->x), (int) floor($this->y - 1), (int) floor($this->z))->getFrictionFactor();
+			}catch(TerrainNotLoadedException $_){
+
+			}
 		}
 
 		$this->motion->x *= $friction;
 		$this->motion->z *= $friction;
 	}
 
+	/**
+	 * @param float $x
+	 * @param float $y
+	 * @param float $z
+	 *
+	 * @return bool
+	 * @throws TerrainNotLoadedException
+	 */
 	protected function checkObstruction(float $x, float $y, float $z) : bool{
 		if(count($this->level->getCollisionBoxes($this, $this->getBoundingBox(), false)) === 0){
 			return false;

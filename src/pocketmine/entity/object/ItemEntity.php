@@ -28,6 +28,7 @@ use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
+use pocketmine\level\TerrainNotLoadedException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
@@ -113,7 +114,11 @@ class ItemEntity extends Entity{
 	}
 
 	protected function tryChangeMovement() : void{
-		$this->checkObstruction($this->x, $this->y, $this->z);
+		try{
+			$this->checkObstruction($this->x, $this->y, $this->z);
+		}catch(TerrainNotLoadedException $_){
+
+		}
 		parent::tryChangeMovement();
 	}
 
