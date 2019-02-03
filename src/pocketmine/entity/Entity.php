@@ -39,6 +39,7 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
+use pocketmine\level\TerrainNotLoadedException;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
@@ -1515,6 +1516,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 */
 	public function getBlocksAround() : array{
 		if($this->blocksAround === null){
+			$cache = true;
+			$result = [];
 			$inset = 0.001; //Offset against floating-point errors
 
 			$minX = (int) floor($this->boundingBox->minX + $inset);
@@ -1524,18 +1527,25 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$maxY = (int) floor($this->boundingBox->maxY - $inset);
 			$maxZ = (int) floor($this->boundingBox->maxZ - $inset);
 
-			$this->blocksAround = [];
-
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
-						$block = $this->level->getBlockAt($x, $y, $z);
+						try{
+							$block = $this->level->getBlockAt($x, $y, $z);
+						}catch(TerrainNotLoadedException $e){
+							$cache = false;
+							continue;
+						}
 						if($block->hasEntityCollision()){
-							$this->blocksAround[] = $block;
+							$result[] = $block;
 						}
 					}
 				}
 			}
+			if($cache){
+				$this->blocksAround = $result;
+			}
+			return $result;
 		}
 
 		return $this->blocksAround;
