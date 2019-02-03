@@ -638,6 +638,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param int $step
 	 *
 	 * @return Block
+	 * @throws TerrainNotLoadedException
 	 */
 	public function getSide(int $side, int $step = 1){
 		if($this->isValid()){

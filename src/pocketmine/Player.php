@@ -1167,6 +1167,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param Vector3 $pos
 	 *
 	 * @return bool
+	 * @throws TerrainNotLoadedException
 	 */
 	public function sleepOn(Vector3 $pos) : bool{
 		if(!$this->isOnline()){
@@ -1200,6 +1201,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	public function stopSleep(){
 		if($this->sleeping instanceof Vector3){
+			//TODO: is it possible for this to be in unloaded terrain?
 			$b = $this->level->getBlock($this->sleeping);
 			if($b instanceof Bed){
 				$b->setOccupied(false);
