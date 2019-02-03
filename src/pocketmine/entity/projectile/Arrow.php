@@ -116,7 +116,7 @@ class Arrow extends Projectile{
 		$this->punchKnockback = $punchKnockback;
 	}
 
-	public function entityBaseTick(int $tickDiff = 1) : bool{
+	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->closed){
 			return false;
 		}
