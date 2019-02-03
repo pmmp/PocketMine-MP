@@ -165,7 +165,7 @@ abstract class Projectile extends Entity{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->blockHit !== null and !$this->blockHit->isSameState($this->level->getBlock($this->blockHit))){
+		if($this->blockHit !== null and $this->level->isInLoadedTerrain($this->blockHit) and !$this->blockHit->isSameState($this->level->getBlock($this->blockHit))){
 			$this->blockHit = null;
 		}
 
