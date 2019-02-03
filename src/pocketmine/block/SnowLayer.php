@@ -27,9 +27,12 @@ use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use function floor;
+use function max;
 
 class SnowLayer extends Flowable{
 
@@ -74,7 +77,18 @@ class SnowLayer extends Flowable{
 		return TieredTool::TIER_WOODEN;
 	}
 
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+		//TODO: this zero-height BB is intended to stay in lockstep with a MCPE bug
+		return AxisAlignedBB::one()->trim(Facing::UP, $this->layers >= 4 ? 0.5 : 1);
+	}
+
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		if($blockReplace instanceof SnowLayer){
+			if($blockReplace->layers >= 8){
+				return false;
+			}
+			$this->layers = $blockReplace->layers + 1;
+		}
 		if($blockReplace->getSide(Facing::DOWN)->isSolid()){
 			//TODO: fix placement
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
@@ -101,7 +115,7 @@ class SnowLayer extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::SNOWBALL) //TODO: check layer count
+			ItemFactory::get(Item::SNOWBALL, 0, max(1, (int) floor($this->layers / 2)))
 		];
 	}
 
