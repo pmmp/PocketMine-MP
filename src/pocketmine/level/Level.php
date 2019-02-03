@@ -2727,6 +2727,7 @@ class Level implements ChunkManager, Metadatable{
 				$listener->onChunkLoaded($chunk);
 			}
 		}else{
+			$this->server->getLogger()->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
 			$this->unloadChunkRequest($x, $z);
 		}
 
