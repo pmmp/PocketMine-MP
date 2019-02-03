@@ -1305,10 +1305,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		);
 	}
 
-	public function canTriggerWalking() : bool{
-		return true;
-	}
-
 	public function resetFallDistance() : void{
 		$this->fallDistance = 0.0;
 	}
