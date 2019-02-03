@@ -1997,6 +1997,9 @@ class Level implements ChunkManager, Metadatable{
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
+				if(!$this->isChunkLoaded($x, $z)){
+					continue;
+				}
 				foreach($this->getChunkEntities($x, $z) as $ent){
 					if($ent !== $entity and $ent->boundingBox->intersectsWith($bb)){
 						$nearby[] = $ent;
@@ -2033,6 +2036,9 @@ class Level implements ChunkManager, Metadatable{
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
+				if(!$this->isChunkLoaded($x, $z)){
+					continue;
+				}
 				foreach($this->getChunkEntities($x, $z) as $entity){
 					if(!($entity instanceof $entityType) or $entity->isClosed() or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
 						continue;
