@@ -812,7 +812,6 @@ class Level implements ChunkManager, Metadatable{
 			try{
 				$block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
 			}catch(TerrainNotLoadedException $e){
-				unset($this->neighbourBlockUpdateQueueIndex[$index]);
 				continue;
 			}
 
