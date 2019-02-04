@@ -809,7 +809,12 @@ class Level implements ChunkManager, Metadatable{
 			Level::getBlockXYZ($index, $x, $y, $z);
 
 			$block = $this->getBlockAt($x, $y, $z);
-			$block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
+			try{
+				$block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
+			}catch(TerrainNotLoadedException $e){
+				unset($this->neighbourBlockUpdateQueueIndex[$index]);
+				continue;
+			}
 
 			$ev = new BlockUpdateEvent($block);
 			$ev->call();
