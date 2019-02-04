@@ -44,6 +44,7 @@ use pocketmine\plugin\Plugin;
 use function array_merge;
 use function assert;
 use function dechex;
+use function get_class;
 use const PHP_INT_MAX;
 
 class Block extends Position implements BlockIds, Metadatable{
@@ -324,6 +325,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param Item $item
 	 *
 	 * @return float
+	 * @throws \InvalidArgumentException if the item efficiency is not a positive number
 	 */
 	public function getBreakTime(Item $item) : float{
 		$base = $this->getHardness();
@@ -335,7 +337,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 		$efficiency = $item->getMiningEfficiency($this);
 		if($efficiency <= 0){
-			throw new \RuntimeException("Item efficiency is invalid");
+			throw new \InvalidArgumentException(get_class($item) . " has invalid mining efficiency: expected >= 0, got $efficiency");
 		}
 
 		$base /= $efficiency;
