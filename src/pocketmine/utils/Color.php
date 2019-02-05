@@ -163,11 +163,14 @@ class Color{
 	}
 
 	/**
-	 * Returns a little-endian ARGB 32-bit colour value.
-	 * @return int
+	 * Returns a Color from the supplied RGBA colour code (32-bit)
+	 *
+	 * @param int $c
+	 *
+	 * @return Color
 	 */
-	public function toBGRA() : int{
-		return ($this->b << 24) | ($this->g << 16) | ($this->r << 8) | $this->a;
+	public static function fromRGBA(int $c) : Color{
+		return new Color(($c >> 24) & 0xff, ($c >> 16) & 0xff, ($c >> 8) & 0xff, $c & 0xff);
 	}
 
 	/**
@@ -176,17 +179,5 @@ class Color{
 	 */
 	public function toRGBA() : int{
 		return ($this->r << 24) | ($this->g << 16) | ($this->b << 8) | $this->a;
-	}
-
-	/**
-	 * Returns a little-endian RGBA colour value.
-	 * @return int
-	 */
-	public function toABGR() : int{
-		return ($this->a << 24) | ($this->b << 16) | ($this->g << 8) | $this->r;
-	}
-
-	public static function fromABGR(int $code){
-		return new Color($code & 0xff, ($code >> 8) & 0xff, ($code >> 16) & 0xff, ($code >> 24) & 0xff);
 	}
 }
