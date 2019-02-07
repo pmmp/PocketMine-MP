@@ -430,8 +430,13 @@ class BlockFactory{
 	public static function registerStaticRuntimeIdMappings() : void{
 		/** @var mixed[] $runtimeIdMap */
 		$runtimeIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
+		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "legacy_id_map.json"), true);
 		foreach($runtimeIdMap as $k => $obj){
-			self::registerMapping($k, $obj["id"], $obj["data"]);
+			//this has to use the json offset to make sure the mapping is consistent with what we send over network, even though we aren't using all the entries
+			if(!isset($legacyIdMap[$obj["name"]])){
+				continue;
+			}
+			self::registerMapping($k, $legacyIdMap[$obj["name"]], $obj["data"]);
 		}
 	}
 

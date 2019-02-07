@@ -39,15 +39,15 @@ interface ProtocolInfo{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	public const CURRENT_PROTOCOL = 313;
+	public const CURRENT_PROTOCOL = 332;
 	/**
 	 * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
 	 */
-	public const MINECRAFT_VERSION = 'v1.8.0';
+	public const MINECRAFT_VERSION = 'v1.9.0';
 	/**
 	 * Version number sent to clients in ping responses.
 	 */
-	public const MINECRAFT_VERSION_NETWORK = '1.8.0';
+	public const MINECRAFT_VERSION_NETWORK = '1.9.0';
 
 	public const LOGIN_PACKET = 0x01;
 	public const PLAY_STATUS_PACKET = 0x02;
@@ -64,7 +64,7 @@ interface ProtocolInfo{
 	public const ADD_ENTITY_PACKET = 0x0d;
 	public const REMOVE_ENTITY_PACKET = 0x0e;
 	public const ADD_ITEM_ENTITY_PACKET = 0x0f;
-	public const ADD_HANGING_ENTITY_PACKET = 0x10;
+
 	public const TAKE_ITEM_ENTITY_PACKET = 0x11;
 	public const MOVE_ENTITY_ABSOLUTE_PACKET = 0x12;
 	public const MOVE_PLAYER_PACKET = 0x13;
@@ -168,8 +168,9 @@ interface ProtocolInfo{
 	public const SCRIPT_CUSTOM_EVENT_PACKET = 0x75;
 	public const SPAWN_PARTICLE_EFFECT_PACKET = 0x76;
 	public const AVAILABLE_ENTITY_IDENTIFIERS_PACKET = 0x77;
-	public const LEVEL_SOUND_EVENT_PACKET = 0x78;
+	public const LEVEL_SOUND_EVENT_PACKET_V2 = 0x78;
 	public const NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET = 0x79;
 	public const BIOME_DEFINITION_LIST_PACKET = 0x7a;
+	public const LEVEL_SOUND_EVENT_PACKET = 0x7b;
 
 }

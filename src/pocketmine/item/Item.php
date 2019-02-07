@@ -216,7 +216,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * Sets the Item's NBT
 	 *
-	 * @param CompoundTag|string $tags
+	 * @param CompoundTag|string|null $tags
 	 *
 	 * @return Item
 	 */
@@ -224,7 +224,7 @@ class Item implements ItemIds, \JsonSerializable{
 		if($tags instanceof CompoundTag){
 			$this->setNamedTag($tags);
 		}else{
-			$this->tags = (string) $tags;
+			$this->tags = $tags === null ? "" : (string) $tags;
 			$this->cachedNBT = null;
 		}
 
@@ -232,6 +232,9 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * @deprecated This method returns NBT serialized in a network-dependent format. Prefer use of getNamedTag() instead.
+	 * @see Item::getNamedTag()
+	 *
 	 * Returns the serialized NBT of the Item
 	 * @return string
 	 */

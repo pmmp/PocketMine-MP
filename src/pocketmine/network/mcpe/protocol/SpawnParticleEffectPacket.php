@@ -34,6 +34,8 @@ class SpawnParticleEffectPacket extends DataPacket{
 
 	/** @var int */
 	public $dimensionId = DimensionIds::OVERWORLD; //wtf mojang
+	/** @var int */
+	public $entityUniqueId = -1; //default none
 	/** @var Vector3 */
 	public $position;
 	/** @var string */
@@ -41,12 +43,14 @@ class SpawnParticleEffectPacket extends DataPacket{
 
 	protected function decodePayload(){
 		$this->dimensionId = $this->getByte();
+		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->position = $this->getVector3();
 		$this->particleName = $this->getString();
 	}
 
 	protected function encodePayload(){
 		$this->putByte($this->dimensionId);
+		$this->putEntityUniqueId($this->entityUniqueId);
 		$this->putVector3($this->position);
 		$this->putString($this->particleName);
 	}

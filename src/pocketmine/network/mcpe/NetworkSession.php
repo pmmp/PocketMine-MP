@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\protocol\AddBehaviorTreePacket;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\network\mcpe\protocol\AddHangingEntityPacket;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
@@ -72,6 +71,7 @@ use pocketmine\network\mcpe\protocol\LabTablePacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV2;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
@@ -207,10 +207,6 @@ abstract class NetworkSession{
 	}
 
 	public function handleAddItemEntity(AddItemEntityPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleAddHangingEntity(AddHangingEntityPacket $packet) : bool{
 		return false;
 	}
 
@@ -622,7 +618,7 @@ abstract class NetworkSession{
 		return false;
 	}
 
-	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
+	public function handleLevelSoundEventPacketV2(LevelSoundEventPacketV2 $packet) : bool{
 		return false;
 	}
 
@@ -631,6 +627,10 @@ abstract class NetworkSession{
 	}
 
 	public function handleBiomeDefinitionList(BiomeDefinitionListPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
 		return false;
 	}
 

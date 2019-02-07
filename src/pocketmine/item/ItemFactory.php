@@ -300,16 +300,16 @@ class ItemFactory{
 	/**
 	 * Returns an instance of the Item with the specified id, meta, count and NBT.
 	 *
-	 * @param int                $id
-	 * @param int                $meta
-	 * @param int                $count
-	 * @param CompoundTag|string $tags
+	 * @param int                     $id
+	 * @param int                     $meta
+	 * @param int                     $count
+	 * @param CompoundTag|string|null $tags
 	 *
 	 * @return Item
 	 * @throws \TypeError
 	 */
-	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
-		if(!is_string($tags) and !($tags instanceof CompoundTag)){
+	public static function get(int $id, int $meta = 0, int $count = 1, $tags = null) : Item{
+		if(!is_string($tags) and !($tags instanceof CompoundTag) and $tags !== null){
 			throw new \TypeError("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
 		}
 

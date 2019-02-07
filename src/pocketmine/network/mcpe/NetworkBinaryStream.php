@@ -30,6 +30,8 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NetworkLittleEndianNBTStream;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\BinaryStream;
@@ -38,6 +40,8 @@ use function count;
 use function strlen;
 
 class NetworkBinaryStream extends BinaryStream{
+	/** @var NetworkLittleEndianNBTStream */
+	private static $nbtSerializer = null;
 
 	public function getString() : string{
 		return $this->get($this->getUnsignedVarInt());
@@ -79,10 +83,17 @@ class NetworkBinaryStream extends BinaryStream{
 		$cnt = $auxValue & 0xff;
 
 		$nbtLen = $this->getLShort();
-		$nbt = "";
 
-		if($nbtLen > 0){
-			$nbt = $this->get($nbtLen);
+		/** @var CompoundTag|string $nbt */
+		$nbt = "";
+		if($nbtLen === 0xffff){
+			$c = $this->getByte();
+			if($c !== 1){
+				throw new \UnexpectedValueException("Unexpected NBT count $c");
+			}
+			$nbt = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset);
+		}elseif($nbtLen !== 0){
+			throw new \UnexpectedValueException("Unexpected fake NBT length $nbtLen");
 		}
 
 		//TODO
@@ -110,24 +121,13 @@ class NetworkBinaryStream extends BinaryStream{
 		$auxValue = (($item->getDamage() & 0x7fff) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 
-		$nbt = $item->getCompoundTag();
-		$nbtLen = strlen($nbt);
-		if($nbtLen > 32767){
-			/*
-			 * TODO: Workaround bug in the protocol (overflow)
-			 * Encoded tags larger than 32KB overflow the length field, so we can't send these over network.
-			 * However, it's unreasonable to randomly throw this burden off onto users by crashing their servers, so the
-			 * next best solution is to just not send the NBT. This is also not an ideal solution (books and the like
-			 * with too-large tags won't work on the client side) but it's better than crashing the server or client due
-			 * to a protocol bug. Mojang have confirmed this will be resolved by a future MCPE release, so we'll just
-			 * work around this problem until then.
-			 */
-			$nbt = "";
-			$nbtLen = 0;
+		if($item->hasCompoundTag()){
+			$this->putLShort(0xffff);
+			$this->putByte(1); //TODO: some kind of count field? always 1 as of 1.9.0
+			$this->put((new NetworkLittleEndianNBTStream())->write($item->getNamedTag()));
+		}else{
+			$this->putLShort(0);
 		}
-
-		$this->putLShort($nbtLen);
-		$this->put($nbt);
 
 		$this->putVarInt(0); //CanPlaceOn entry count (TODO)
 		$this->putVarInt(0); //CanDestroy entry count (TODO)
