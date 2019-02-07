@@ -277,7 +277,7 @@
                 {
                     "name": "Berry Langerak",
                     "email": "berry@berryllium.nl",
-                    "role": "developer"
+                    "role": "Developer"
                 },
                 {
                     "name": "Rick van der Staaij",
@@ -372,12 +372,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "6f00e4f6c31d69bb9b7c19467dd70462616a45a2"
+                "reference": "87a0312552d679365c6e3304637cd0e3963175da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/6f00e4f6c31d69bb9b7c19467dd70462616a45a2",
-                "reference": "6f00e4f6c31d69bb9b7c19467dd70462616a45a2",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/87a0312552d679365c6e3304637cd0e3963175da",
+                "reference": "87a0312552d679365c6e3304637cd0e3963175da",
                 "shasum": ""
             },
             "require": {
@@ -405,7 +405,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2019-01-21T20:39:55+00:00"
+            "time": "2019-02-07T17:04:08+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -413,12 +413,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "7fd825ad208b0d7d622c55583cae9a8e21eaa3eb"
+                "reference": "44ebbd68eeb25c07f1d4c1d1af1f7abd5904b76c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/7fd825ad208b0d7d622c55583cae9a8e21eaa3eb",
-                "reference": "7fd825ad208b0d7d622c55583cae9a8e21eaa3eb",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/44ebbd68eeb25c07f1d4c1d1af1f7abd5904b76c",
+                "reference": "44ebbd68eeb25c07f1d4c1d1af1f7abd5904b76c",
                 "shasum": ""
             },
             "require": {
@@ -446,7 +446,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-01-21T19:44:18+00:00"
+            "time": "2019-01-26T16:51:18+00:00"
         },
         {
             "name": "pocketmine/snooze",
