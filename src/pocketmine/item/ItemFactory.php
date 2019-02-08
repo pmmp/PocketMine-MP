@@ -318,7 +318,7 @@ class ItemFactory{
 			$listed = self::$list[self::getListOffset($id)];
 			if($listed !== null){
 				$item = clone $listed;
-			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
+			}elseif($id >= 0 and $id < 256){ //intentionally excludes negatives because extended blocks aren't supported yet
 				/* Blocks must have a damage value 0-15, but items can have damage value -1 to indicate that they are
 				 * crafting ingredients with any-damage. */
 				$item = new ItemBlock($id, $meta);
