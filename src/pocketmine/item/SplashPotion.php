@@ -41,7 +41,7 @@ class SplashPotion extends ProjectileItem{
 	}
 
 	public function getThrowForce() : float{
-		return 0.5;
+		return 0.47;
 	}
 
 	protected function addExtraTags(CompoundTag $tag) : void{
