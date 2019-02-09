@@ -30,8 +30,6 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\LittleEndianNbtSerializer;
-use pocketmine\nbt\NbtDataException;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
@@ -42,8 +40,6 @@ use function count;
 use function strlen;
 
 class NetworkBinaryStream extends BinaryStream{
-	/** @var LittleEndianNbtSerializer */
-	private static $itemNbtSerializer = null;
 
 	/**
 	 * @return string
@@ -100,15 +96,14 @@ class NetworkBinaryStream extends BinaryStream{
 
 		$nbtLen = $this->getLShort();
 		$compound = null;
-		if($nbtLen > 0){
-			if(self::$itemNbtSerializer === null){
-				self::$itemNbtSerializer = new LittleEndianNbtSerializer();
+		if($nbtLen === 0xffff){
+			$c = $this->getByte();
+			if($c !== 1){
+				throw new BadPacketException("Unexpected NBT count $c");
 			}
-			try{
-				$compound = self::$itemNbtSerializer->read($this->get($nbtLen));
-			}catch(NbtDataException $e){
-				throw new BadPacketException($e->getMessage(), 0, $e);
-			}
+			$compound = (new NetworkNbtSerializer())->read($this->buffer, $this->offset);
+		}elseif($nbtLen !== 0){
+			throw new BadPacketException("Unexpected fake NBT length $nbtLen");
 		}
 
 		//TODO
@@ -140,31 +135,13 @@ class NetworkBinaryStream extends BinaryStream{
 		$auxValue = (($item->getDamage() & 0x7fff) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 
-		$nbt = "";
-		$nbtLen = 0;
 		if($item->hasNamedTag()){
-			if(self::$itemNbtSerializer === null){
-				self::$itemNbtSerializer = new LittleEndianNbtSerializer();
-			}
-			$nbt = self::$itemNbtSerializer->write($item->getNamedTag());
-			$nbtLen = strlen($nbt);
-			if($nbtLen > 32767){
-				/*
-				 * TODO: Workaround bug in the protocol (overflow)
-				 * Encoded tags larger than 32KB overflow the length field, so we can't send these over network.
-				 * However, it's unreasonable to randomly throw this burden off onto users by crashing their servers, so the
-				 * next best solution is to just not send the NBT. This is also not an ideal solution (books and the like
-				 * with too-large tags won't work on the client side) but it's better than crashing the server or client due
-				 * to a protocol bug. Mojang have confirmed this will be resolved by a future MCPE release, so we'll just
-				 * work around this problem until then.
-				 */
-				$nbt = "";
-				$nbtLen = 0;
-			}
+			$this->putLShort(0xffff);
+			$this->putByte(1); //TODO: some kind of count field? always 1 as of 1.9.0
+			$this->put((new NetworkNbtSerializer())->write($item->getNamedTag()));
+		}else{
+			$this->putLShort(0);
 		}
-
-		$this->putLShort($nbtLen);
-		$this->put($nbt);
 
 		$this->putVarInt(0); //CanPlaceOn entry count (TODO)
 		$this->putVarInt(0); //CanDestroy entry count (TODO)

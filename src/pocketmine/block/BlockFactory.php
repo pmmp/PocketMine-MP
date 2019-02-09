@@ -189,7 +189,13 @@ class BlockFactory{
 			new StoneSlab(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 6, "Quartz"),
 			new StoneSlab(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 7, "Nether Brick"),
 			new StoneSlab(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 0, "Red Sandstone"),
-			new StoneSlab(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 1, "Purpur")
+			new StoneSlab(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 1, "Purpur"),
+			new StoneSlab(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 2, "Prismarine"),
+			new StoneSlab(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 3, "Dark Prismarine"),
+			new StoneSlab(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 4, "Prismarine Bricks"),
+			new StoneSlab(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 5, "Mossy Cobblestone"),
+			new StoneSlab(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 6, "Smooth Sandstone"),
+			new StoneSlab(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 7, "Red Nether Brick")
 		];
 		foreach(WoodType::ALL as $woodType){
 			$slabTypes[] = new WoodenSlab($woodType);
@@ -301,8 +307,25 @@ class BlockFactory{
 		//TODO: COMMAND_BLOCK
 		//TODO: BEACON
 
-		self::registerBlock(new CobblestoneWall(Block::COBBLESTONE_WALL, CobblestoneWall::NONE_MOSSY_WALL, "Cobblestone Wall"));
-		self::registerBlock(new CobblestoneWall(Block::COBBLESTONE_WALL, CobblestoneWall::MOSSY_WALL, "Mossy Cobblestone Wall"));
+		static $wallTypes = [
+			CobblestoneWall::NONE_MOSSY_WALL => "Cobblestone",
+			CobblestoneWall::MOSSY_WALL => "Mossy Cobblestone",
+			CobblestoneWall::GRANITE_WALL => "Granite",
+			CobblestoneWall::DIORITE_WALL => "Diorite",
+			CobblestoneWall::ANDESITE_WALL => "Andesite",
+			CobblestoneWall::SANDSTONE_WALL => "Sandstone",
+			CobblestoneWall::BRICK_WALL => "Brick",
+			CobblestoneWall::STONE_BRICK_WALL => "Stone Brick",
+			CobblestoneWall::MOSSY_STONE_BRICK_WALL => "Mossy Stone Brick",
+			CobblestoneWall::NETHER_BRICK_WALL => "Nether Brick",
+			CobblestoneWall::END_STONE_BRICK_WALL => "End Stone Brick",
+			CobblestoneWall::PRISMARINE_WALL => "Prismarine",
+			CobblestoneWall::RED_SANDSTONE_WALL => "Red Sandstone",
+			CobblestoneWall::RED_NETHER_BRICK_WALL => "Red Nether Brick"
+		];
+		foreach($wallTypes as $magicNumber => $prefix){
+			self::registerBlock(new CobblestoneWall(Block::COBBLESTONE_WALL, $magicNumber, $prefix . " Wall"));
+		}
 
 		self::registerBlock(new FlowerPot());
 		self::registerBlock(new Carrot());
@@ -562,8 +585,13 @@ class BlockFactory{
 	public static function registerStaticRuntimeIdMappings() : void{
 		/** @var mixed[] $runtimeIdMap */
 		$runtimeIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
+		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "legacy_id_map.json"), true);
 		foreach($runtimeIdMap as $k => $obj){
-			self::registerMapping($k, $obj["id"], $obj["data"]);
+			//this has to use the json offset to make sure the mapping is consistent with what we send over network, even though we aren't using all the entries
+			if(!isset($legacyIdMap[$obj["name"]])){
+				continue;
+			}
+			self::registerMapping($k, $legacyIdMap[$obj["name"]], $obj["data"]);
 		}
 	}
 

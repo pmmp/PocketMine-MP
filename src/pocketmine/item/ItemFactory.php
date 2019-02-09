@@ -332,10 +332,10 @@ class ItemFactory{
 	/**
 	 * Returns an instance of the Item with the specified id, meta, count and NBT.
 	 *
-	 * @param int         $id
-	 * @param int         $meta
-	 * @param int         $count
-	 * @param CompoundTag $tags
+	 * @param int              $id
+	 * @param int              $meta
+	 * @param int              $count
+	 * @param CompoundTag|null $tags
 	 *
 	 * @return Item
 	 * @throws \InvalidArgumentException
