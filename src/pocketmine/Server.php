@@ -348,6 +348,20 @@ class Server{
 	}
 
 	/**
+	 * @return int
+	 */
+	public function getStartTime() : int{
+		return (int)\pocketmine\START_TIME;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getUptime() : int{
+		return (int)(microtime(true) - (\pocketmine\START_TIME - \pocketmine\SETUP_DURATION));
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getDataPath() : string{
@@ -1736,7 +1750,7 @@ class Server{
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [GameMode::toTranslation($this->getGamemode())]));
 
-		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
+		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round($this->getUptime(), 3)]));
 
 		$this->tickProcessor();
 		$this->forceShutdown();

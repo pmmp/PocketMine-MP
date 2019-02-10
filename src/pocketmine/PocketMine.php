@@ -244,11 +244,15 @@ namespace pocketmine {
 	$exitCode = 0;
 	do{
 		if(!file_exists(\pocketmine\DATA . "server.properties") and !isset($opts["no-wizard"])){
+			$start = microtime(true);
 			$installer = new SetupWizard();
 			if(!$installer->run()){
 				$exitCode = -1;
 				break;
 			}
+			define('pocketmine\SETUP_DURATION', microtime(true) - $start);
+		}else{
+			define('pocketmine\SETUP_DURATION', 0);
 		}
 
 		ThreadManager::init();
