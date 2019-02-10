@@ -1683,7 +1683,6 @@ class Server{
 				$this->getLogger()->debug("Stopping network interfaces");
 				foreach($this->network->getInterfaces() as $interface){
 					$this->getLogger()->debug("Stopping network interface " . get_class($interface));
-					$interface->shutdown();
 					$this->network->unregisterInterface($interface);
 				}
 			}

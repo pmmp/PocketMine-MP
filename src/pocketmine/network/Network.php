@@ -30,6 +30,7 @@ use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\PacketPool;
+use function get_class;
 use function spl_object_id;
 
 class Network{
@@ -116,10 +117,15 @@ class Network{
 
 	/**
 	 * @param NetworkInterface $interface
+	 * @throws \InvalidArgumentException
 	 */
 	public function unregisterInterface(NetworkInterface $interface) : void{
+		if(!isset($this->interfaces[$hash = spl_object_id($interface)])){
+			throw new \InvalidArgumentException("Interface " . get_class($interface) . " is not registered on this network");
+		}
 		(new NetworkInterfaceUnregisterEvent($interface))->call();
-		unset($this->interfaces[$hash = spl_object_id($interface)], $this->advancedInterfaces[$hash]);
+		unset($this->interfaces[$hash], $this->advancedInterfaces[$hash]);
+		$interface->shutdown();
 	}
 
 	/**
