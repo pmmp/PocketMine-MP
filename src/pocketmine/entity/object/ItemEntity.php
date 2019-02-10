@@ -58,6 +58,9 @@ class ItemEntity extends Entity{
 	/** @var int */
 	protected $age = 0;
 
+	public const MAX_AGE = 6000;
+	public const MIN_AGE = 0;
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
@@ -97,11 +100,11 @@ class ItemEntity extends Entity{
 			}
 
 			$this->age += $tickDiff;
-			if($this->age > 6000){
+			if($this->age > self::MAX_AGE){
 				$ev = new ItemDespawnEvent($this);
 				$ev->call();
 				if($ev->isCancelled()){
-					$this->age = 0;
+					$this->age = self::MIN_AGE;
 				}else{
 					$this->flagForDespawn();
 					$hasUpdate = true;
@@ -192,6 +195,23 @@ class ItemEntity extends Entity{
 	 */
 	public function setThrower(string $thrower) : void{
 		$this->thrower = $thrower;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getAge() : int{
+		return $this->age;
+	}
+
+	/**
+	 * @param int $age
+	 */
+	public function setAge(int $age) : void{
+		if($age < self::MIN_AGE or $age > self::MAX_AGE){
+			throw new \InvalidArgumentException("Age must be in range " . self::MIN_AGE . " - " . self::MAX_AGE . ", got $age");
+		}
+		$this->age = $age;
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
