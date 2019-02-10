@@ -33,6 +33,9 @@ use function is_object;
 
 abstract class UPnP{
 
+	/** @var bool */
+	protected static $forwarded = false;
+
 	/**
 	 * @param int $port
 	 *
@@ -62,13 +65,14 @@ abstract class UPnP{
 		try{
 			/** @noinspection PhpUndefinedFieldInspection */
 			$com->StaticPortMappingCollection->Add($port, "UDP", $port, $myLocalIP, true, "PocketMine-MP");
+			self::$forwarded = true;
 		}catch(\com_exception $e){
 			throw new \RuntimeException($e->getMessage(), 0, $e);
 		}
 	}
 
 	public static function RemovePortForward(int $port) : bool{
-		if(!Internet::$online){
+		if(!self::$forwarded or !Internet::$online){
 			return false;
 		}
 		if(Utils::getOS() != "win" or !class_exists("COM")){
@@ -85,6 +89,7 @@ abstract class UPnP{
 		try{
 			/** @noinspection PhpUndefinedFieldInspection */
 			$com->StaticPortMappingCollection->Remove($port, "UDP");
+			self::$forwarded = false;
 		}catch(\com_exception $e){
 			//TODO: should this really be silenced?
 			return false;
