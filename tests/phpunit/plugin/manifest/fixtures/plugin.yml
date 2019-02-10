@@ -1,0 +1,4 @@
+name: yaml_manifest
+version: 0.0.1
+main: yaml\manifest
+api: 4.0.0
