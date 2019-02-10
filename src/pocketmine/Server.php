@@ -348,17 +348,17 @@ class Server{
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
-	public function getStartTime() : int{
-		return (int)\pocketmine\START_TIME;
+	public function getStartTime() : float{
+		return \pocketmine\START_TIME;
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
-	public function getUptime() : int{
-		return (int)(microtime(true) - (\pocketmine\START_TIME - \pocketmine\SETUP_DURATION));
+	public function getUptime() : float{
+		return microtime(true) - (\pocketmine\START_TIME - \pocketmine\SETUP_DURATION);
 	}
 
 	/**
