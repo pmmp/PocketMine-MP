@@ -23,24 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin\loader;
 
-use pocketmine\plugin\manifest\PhpDocPluginManifest;
-
-/**
- * Simple script loader, not for plugin development
- * For an example see https://gist.github.com/shoghicp/516105d470cf7d140757
- */
-class ScriptPluginLoader extends AbstractPluginLoader implements FilePluginLoader{
-	use FilePluginLoaderTrait;
-
-	public function __construct(){
-		$this->registerManifest(PhpDocPluginManifest::class);
-	}
+interface FilePluginLoader {
 
 	/**
-	 * @inheritdoc
+	 * Returns the file extension used by this loader format.
+	 *
+	 * @return string
 	 */
-	public function getFileExtension() : string{
-		return ".php";
-	}
+	public function getFileExtension() : string;
+
+	/**
+	 * Returns whether the specified file path has a matching file extension.
+	 *
+	 * @param string $path
+	 *
+	 * @return bool
+	 */
+	public function checkExtension(string $path) : bool;
 
 }

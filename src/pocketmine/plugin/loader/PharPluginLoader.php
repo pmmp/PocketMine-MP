@@ -24,16 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\plugin\loader;
 
 use pocketmine\plugin\manifest\YamlPluginManifest;
-use function is_file;
-use function strlen;
-use function substr;
 
 /**
  * Handles loading plugins distributed as phar archives.
  */
-class PharPluginLoader extends AbstractPluginLoader{
-
-	protected const FILE_EXTENSION = ".phar";
+class PharPluginLoader extends AbstractPluginLoader implements FilePluginLoader{
+	use FilePluginLoaderTrait;
 
 	public function __construct(){
 		$this->registerManifest(YamlPluginManifest::class);
@@ -49,8 +45,8 @@ class PharPluginLoader extends AbstractPluginLoader{
 	/**
 	 * @inheritdoc
 	 */
-	public function canLoadPlugin(string $path) : bool{
-		return is_file($path) and substr($path, -strlen(self::FILE_EXTENSION)) === self::FILE_EXTENSION;
+	public function getFileExtension(): string{
+		return ".phar";
 	}
 
 }

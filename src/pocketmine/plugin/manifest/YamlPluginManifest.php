@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\plugin\manifest;
 
 use pocketmine\plugin\PluginDescription;
-use const DIRECTORY_SEPARATOR;
 use function file_exists;
 use function file_get_contents;
+use const DIRECTORY_SEPARATOR;
 
 class YamlPluginManifest extends AbstractPluginManifest{
 

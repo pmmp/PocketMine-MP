@@ -42,7 +42,7 @@ abstract class AbstractPluginLoader implements PluginLoader{
 	 */
 	public function getPluginManifest(string $path) : ?PluginManifest{
 		foreach($this->supportedManifests as $manifestFormat) {
-			if($manifestFormat::canReadPlugin($this->getAccessProtocol() . $path)) {
+			if($manifestFormat::canReadPlugin($this->getAccessProtocol() . $path)){
 				return new $manifestFormat($this, $this->getAccessProtocol() . $path);
 			}
 		}
