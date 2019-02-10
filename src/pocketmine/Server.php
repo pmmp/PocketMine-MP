@@ -430,7 +430,7 @@ class Server{
 	 * @return int
 	 */
 	public function getGamemode() : int{
-		return $this->getConfigInt("gamemode", 0) & 0b11;
+		return GameMode::fromString($this->getConfigString("gamemode", "s"));
 	}
 
 	/**
@@ -466,7 +466,7 @@ class Server{
 	 * @return int
 	 */
 	public function getDefaultGamemode() : int{
-		return $this->getConfigInt("gamemode", 0) & 0b11;
+		return GameMode::fromString($this->getConfigString("gamemode", "s"));
 	}
 
 	/**
