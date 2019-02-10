@@ -250,10 +250,8 @@ namespace pocketmine {
 				$exitCode = -1;
 				break;
 			}
-			define('pocketmine\SETUP_DURATION', microtime(true) - $start);
-		}else{
-			define('pocketmine\SETUP_DURATION', 0);
 		}
+		define('pocketmine\SETUP_DURATION', isset($start) ? microtime(true) - $start : 0);
 
 		ThreadManager::init();
 		new Server($autoloader, $logger, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
