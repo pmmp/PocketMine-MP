@@ -200,6 +200,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_FLAGS2 = 91; //long (extended data flags)
 	/* 92 (float) related to panda lying down
 	 * 93 (float) related to panda lying down */
+	public const DATA_AREA_EFFECT_CLOUD_DURATION = 94; //int
+	public const DATA_AREA_EFFECT_CLOUD_SPAWN_TIME = 95; //int
+	public const DATA_AREA_EFFECT_CLOUD_RADIUS_PER_TICK = 96; //float, usually negative
+	public const DATA_AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP = 97; //float
+	public const DATA_AREA_EFFECT_CLOUD_PICKUP_COUNT = 98; //int
 
 
 	public const DATA_FLAG_ONFIRE = 0;
