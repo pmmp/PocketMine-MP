@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "959fe32be1db4613fd22eb2c7c7b23c6",
+    "content-hash": "a51250ce87b095da41fbe411776081b3",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -160,6 +160,46 @@
             "time": "2018-12-02T01:34:34+00:00"
         },
         {
+            "name": "jacknoordhuis/threaded-class-loader",
+            "version": "0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/JackNoordhuis/threaded-class-loader.git",
+                "reference": "ae4272719c2f940feda1179b7758273cfc51a7ea"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/JackNoordhuis/threaded-class-loader/zipball/ae4272719c2f940feda1179b7758273cfc51a7ea",
+                "reference": "ae4272719c2f940feda1179b7758273cfc51a7ea",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": "*",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "jacknoordhuis\\Autoload\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jack Noordhuis",
+                    "email": "me@jacknoordhuis.net"
+                }
+            ],
+            "description": "A thread safe implementation of a PSR-0, PSR-4 and classmap class loader for use with the pthreads extension.",
+            "time": "2019-02-10T08:45:59+00:00"
+        },
+        {
             "name": "mdanter/ecc",
             "version": "v0.5.2",
             "source": {
@@ -277,7 +317,7 @@
                 {
                     "name": "Berry Langerak",
                     "email": "berry@berryllium.nl",
-                    "role": "developer"
+                    "role": "Developer"
                 },
                 {
                     "name": "Rick van der Staaij",

@@ -30,8 +30,6 @@ abstract class Thread extends \Thread{
 
 	/** @var \ClassLoader|null */
 	protected $classLoader;
-	/** @var string|null */
-	protected $composerAutoloaderPath;
 
 	protected $isKilled = false;
 
@@ -40,8 +38,6 @@ abstract class Thread extends \Thread{
 	}
 
 	public function setClassLoader(\ClassLoader $loader = null){
-		$this->composerAutoloaderPath = \pocketmine\COMPOSER_AUTOLOADER_PATH;
-
 		if($loader === null){
 			$loader = Server::getInstance()->getLoader();
 		}
@@ -56,9 +52,6 @@ abstract class Thread extends \Thread{
 	 * (unless you are using a custom autoloader).
 	 */
 	public function registerClassLoader(){
-		if($this->composerAutoloaderPath !== null){
-			require $this->composerAutoloaderPath;
-		}
 		if($this->classLoader !== null){
 			$this->classLoader->register(false);
 		}

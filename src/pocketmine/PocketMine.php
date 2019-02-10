@@ -29,6 +29,7 @@ namespace {
 namespace pocketmine {
 
 	use pocketmine\utils\MainLogger;
+	use pocketmine\utils\ServerClassLoader;
 	use pocketmine\utils\ServerKiller;
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Timezone;
@@ -156,7 +157,7 @@ namespace pocketmine {
 	define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
 
 	if(\pocketmine\COMPOSER_AUTOLOADER_PATH !== false and is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
-		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+		$autoloader = require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
 	}else{
 		critical_error("Composer autoloader not found at " . $bootstrap);
 		critical_error("Please install/update Composer dependencies or use provided builds.");
@@ -168,8 +169,7 @@ namespace pocketmine {
 	/*
 	 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
 	 */
-	$autoloader = new \BaseClassLoader();
-	$autoloader->register(false);
+	$autoloader = ServerClassLoader::fromComposerLoader($autoloader);
 
 	set_time_limit(0); //Who set it to 30 seconds?!?!
 
