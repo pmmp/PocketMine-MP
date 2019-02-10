@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\plugin;
 
+use pocketmine\plugin\loader\PluginLoader;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 

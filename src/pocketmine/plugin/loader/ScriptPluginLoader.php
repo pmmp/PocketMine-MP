@@ -21,58 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\plugin;
+namespace pocketmine\plugin\loader;
 
+use pocketmine\plugin\manifest\PhpDocPluginManifest;
 use function is_file;
 use function strlen;
 use function substr;
 
 /**
- * Handles different types of plugins
+ * Simple script loader, not for plugin development
+ * For an example see https://gist.github.com/shoghicp/516105d470cf7d140757
  */
-class PharPluginLoader implements PluginLoader{
+class ScriptPluginLoader extends AbstractPluginLoader{
 
-	/** @var \ClassLoader */
-	private $loader;
-
-	public function __construct(\ClassLoader $loader){
-		$this->loader = $loader;
+	public function __construct() {
+		$this->registerManifest(PhpDocPluginManifest::class);
 	}
 
 	public function canLoadPlugin(string $path) : bool{
-		$ext = ".phar";
+		$ext = ".php";
 		return is_file($path) and substr($path, -strlen($ext)) === $ext;
 	}
 
-	/**
-	 * Loads the plugin contained in $file
-	 *
-	 * @param string $file
-	 */
-	public function loadPlugin(string $file) : void{
-		$this->loader->addPath("$file/src");
-	}
-
-	/**
-	 * Gets the PluginDescription from the file
-	 *
-	 * @param string $file
-	 *
-	 * @return null|PluginDescription
-	 */
-	public function getPluginDescription(string $file) : ?PluginDescription{
-		$phar = new \Phar($file);
-		if(isset($phar["plugin.yml"])){
-			$pluginYml = $phar["plugin.yml"];
-			if($pluginYml instanceof \PharFileInfo){
-				return new PluginDescription($pluginYml->getContent());
-			}
-		}
-
-		return null;
-	}
-
-	public function getAccessProtocol() : string{
-		return "phar://";
-	}
 }

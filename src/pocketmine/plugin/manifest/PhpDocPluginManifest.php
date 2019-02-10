@@ -21,47 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\plugin;
+namespace pocketmine\plugin\manifest;
 
+use pocketmine\plugin\PluginDescription;
 use function file;
-use function is_file;
+use function file_exists;
 use function preg_match;
-use function strlen;
 use function strpos;
-use function substr;
 use function trim;
 use const FILE_IGNORE_NEW_LINES;
 use const FILE_SKIP_EMPTY_LINES;
 
-/**
- * Simple script loader, not for plugin development
- * For an example see https://gist.github.com/shoghicp/516105d470cf7d140757
- */
-class ScriptPluginLoader implements PluginLoader{
+class PhpDocPluginManifest extends AbstractPluginManifest{
 
-	public function canLoadPlugin(string $path) : bool{
-		$ext = ".php";
-		return is_file($path) and substr($path, -strlen($ext)) === $ext;
+	/**
+	 * @inheritdoc
+	 */
+	public static function canReadPlugin(string $path) : bool{
+		return file_exists($path);
 	}
 
 	/**
-	 * Loads the plugin contained in $file
-	 *
-	 * @param string $file
+	 * @inheritdoc
 	 */
-	public function loadPlugin(string $file) : void{
-		include_once $file;
-	}
-
-	/**
-	 * Gets the PluginDescription from the file
-	 *
-	 * @param string $file
-	 *
-	 * @return null|PluginDescription
-	 */
-	public function getPluginDescription(string $file) : ?PluginDescription{
-		$content = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	public function getPluginDescription() : ?PluginDescription{
+		$content = file($this->path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
 		$data = [];
 
@@ -93,7 +77,11 @@ class ScriptPluginLoader implements PluginLoader{
 		return null;
 	}
 
-	public function getAccessProtocol() : string{
-		return "";
+	/**
+	 * @inheritdoc
+	 */
+	public function registerPlugin(\ClassLoader $loader) : void{
+		include_once $this->path;
 	}
+
 }

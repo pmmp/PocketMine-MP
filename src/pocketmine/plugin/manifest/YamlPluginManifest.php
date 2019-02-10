@@ -21,42 +21,34 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\plugin;
+namespace pocketmine\plugin\manifest;
 
-/**
- * Handles different types of plugins
- */
-interface PluginLoader{
+use pocketmine\plugin\PluginDescription;
+use const DIRECTORY_SEPARATOR;
+use function file_exists;
+use function file_get_contents;
 
-	/**
-	 * Returns whether this PluginLoader can load the plugin in the given path.
-	 *
-	 * @param string $path
-	 *
-	 * @return bool
-	 */
-	public function canLoadPlugin(string $path) : bool;
+class YamlPluginManifest extends AbstractPluginManifest{
 
 	/**
-	 * Loads the plugin contained in $file
-	 *
-	 * @param string $file
+	 * @inheritdoc
 	 */
-	public function loadPlugin(string $file) : void;
+	public static function canReadPlugin(string $path) : bool{
+		return file_exists($path . DIRECTORY_SEPARATOR . "plugin.yml");
+	}
 
 	/**
-	 * Gets the PluginDescription from the file
-	 *
-	 * @param string $file
-	 *
-	 * @return null|PluginDescription
+	 * @inheritdoc
 	 */
-	public function getPluginDescription(string $file) : ?PluginDescription;
+	public function getPluginDescription() : PluginDescription{
+		return new PluginDescription(file_get_contents($this->path . DIRECTORY_SEPARATOR . "plugin.yml"));
+	}
 
 	/**
-	 * Returns the protocol prefix used to access files in this plugin, e.g. file://, phar://
-	 *
-	 * @return string
+	 * @inheritdoc
 	 */
-	public function getAccessProtocol() : string;
+	public function registerPlugin(\ClassLoader $loader) : void{
+		$loader->addPath($this->path . DIRECTORY_SEPARATOR . "src");
+	}
+
 }

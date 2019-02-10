@@ -31,6 +31,7 @@ use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\PermissionManager;
+use pocketmine\plugin\loader\PluginLoader;
 use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
@@ -76,7 +77,7 @@ class PluginManager{
 	/**
 	 * @var PluginLoader[]
 	 */
-	protected $fileAssociations = [];
+	protected $pluginLoaders = [];
 
 	/** @var string|null */
 	private $pluginDataDirectory;
@@ -113,8 +114,8 @@ class PluginManager{
 	/**
 	 * @param PluginLoader $loader
 	 */
-	public function registerInterface(PluginLoader $loader) : void{
-		$this->fileAssociations[get_class($loader)] = $loader;
+	public function registerLoader(PluginLoader $loader) : void{
+		$this->pluginLoaders[get_class($loader)] = $loader;
 	}
 
 	/**
@@ -138,48 +139,50 @@ class PluginManager{
 	 * @return Plugin|null
 	 */
 	public function loadPlugin(string $path, array $loaders = null) : ?Plugin{
-		foreach($loaders ?? $this->fileAssociations as $loader){
+		foreach($loaders ?? $this->pluginLoaders as $loader){
 			if($loader->canLoadPlugin($path)){
-				$description = $loader->getPluginDescription($path);
-				if($description instanceof PluginDescription){
-					$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.load", [$description->getFullName()]));
-					try{
-						$description->checkRequiredExtensions();
-					}catch(PluginException $ex){
-						$this->server->getLogger()->error($ex->getMessage());
-						return null;
-					}
+				$manifest = $loader->getPluginManifest($path);
+				if($manifest !== null) {
+					$description = $manifest->getPluginDescription();
+					if($description instanceof PluginDescription) {
+						$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.load", [$description->getFullName()]));
+						try {
+							$description->checkRequiredExtensions();
+						} catch(PluginException $ex) {
+							$this->server->getLogger()->error($ex->getMessage());
+							return null;
+						}
 
-					$dataFolder = $this->getDataDirectory($path, $description->getName());
-					if(file_exists($dataFolder) and !is_dir($dataFolder)){
-						$this->server->getLogger()->error("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
-						return null;
-					}
-					if(!file_exists($dataFolder)){
-						mkdir($dataFolder, 0777, true);
-					}
+						$dataFolder = $this->getDataDirectory($path, $description->getName());
+						if(file_exists($dataFolder) and !is_dir($dataFolder)) {
+							$this->server->getLogger()->error("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
+							return null;
+						}
+						if(!file_exists($dataFolder)) {
+							mkdir($dataFolder, 0777, true);
+						}
 
-					$prefixed = $loader->getAccessProtocol() . $path;
-					$loader->loadPlugin($prefixed);
+						$manifest->registerPlugin($this->server->getLoader());
 
-					$mainClass = $description->getMain();
-					if(!class_exists($mainClass, true)){
-						$this->server->getLogger()->error("Main class for plugin " . $description->getName() . " not found");
-						return null;
+						$mainClass = $description->getMain();
+						if(!class_exists($mainClass, true)) {
+							$this->server->getLogger()->error("Main class for plugin " . $description->getName() . " not found");
+							return null;
+						}
+						if(!is_a($mainClass, Plugin::class, true)) {
+							$this->server->getLogger()->error("Main class for plugin " . $description->getName() . " is not an instance of " . Plugin::class);
+							return null;
+						}
+
+						/**
+						 * @var Plugin $plugin
+						 * @see Plugin::__construct()
+						 */
+						$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $manifest->getPath());
+						$this->plugins[$plugin->getDescription()->getName()] = $plugin;
+
+						return $plugin;
 					}
-					if(!is_a($mainClass, Plugin::class, true)){
-						$this->server->getLogger()->error("Main class for plugin " . $description->getName() . " is not an instance of " . Plugin::class);
-						return null;
-					}
-
-					/**
-					 * @var Plugin $plugin
-					 * @see Plugin::__construct()
-					 */
-					$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed);
-					$this->plugins[$plugin->getDescription()->getName()] = $plugin;
-
-					return $plugin;
 				}
 			}
 		}
@@ -205,12 +208,12 @@ class PluginManager{
 		if(is_array($newLoaders)){
 			$loaders = [];
 			foreach($newLoaders as $key){
-				if(isset($this->fileAssociations[$key])){
-					$loaders[$key] = $this->fileAssociations[$key];
+				if(isset($this->pluginLoaders[$key])){
+					$loaders[$key] = $this->pluginLoaders[$key];
 				}
 			}
 		}else{
-			$loaders = $this->fileAssociations;
+			$loaders = $this->pluginLoaders;
 		}
 		foreach($loaders as $loader){
 			foreach(new \DirectoryIterator($directory) as $file){
@@ -221,8 +224,12 @@ class PluginManager{
 				if(!$loader->canLoadPlugin($file)){
 					continue;
 				}
+				$manifest = $loader->getPluginManifest($file);
+				if($manifest === null) {
+					continue;
+				}
 				try{
-					$description = $loader->getPluginDescription($file);
+					$description = $manifest->getPluginDescription();
 				}catch(\RuntimeException $e){ //TODO: more specific exception handling
 					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [$file, $directory, $e->getMessage()]));
 					$this->server->getLogger()->logException($e);
@@ -461,7 +468,7 @@ class PluginManager{
 		$this->disablePlugins();
 		$this->plugins = [];
 		$this->enabledPlugins = [];
-		$this->fileAssociations = [];
+		$this->pluginLoaders = [];
 	}
 
 	/**

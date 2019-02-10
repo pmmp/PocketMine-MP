@@ -78,11 +78,11 @@ use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
-use pocketmine\plugin\PharPluginLoader;
+use pocketmine\plugin\loader\PharPluginLoader;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
-use pocketmine\plugin\ScriptPluginLoader;
+use pocketmine\plugin\loader\ScriptPluginLoader;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\scheduler\SendUsageTask;
@@ -1240,8 +1240,8 @@ class Server{
 
 			$this->pluginManager = new PluginManager($this, ((bool) $this->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR);
 			$this->profilingTickRate = (float) $this->getProperty("settings.profile-report-trigger", 20);
-			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
-			$this->pluginManager->registerInterface(new ScriptPluginLoader());
+			$this->pluginManager->registerLoader(new PharPluginLoader());
+			$this->pluginManager->registerLoader(new ScriptPluginLoader());
 
 			LevelProviderManager::init();
 			if(($format = LevelProviderManager::getProviderByName($formatName = (string) $this->getProperty("level-settings.default-format"))) !== null){
@@ -1606,8 +1606,8 @@ class Server{
 			$this->getNetwork()->blockAddress($entry->getName(), -1);
 		}
 
-		$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
-		$this->pluginManager->registerInterface(new ScriptPluginLoader());
+		$this->pluginManager->registerLoader(new PharPluginLoader());
+		$this->pluginManager->registerLoader(new ScriptPluginLoader());
 		$this->pluginManager->loadPlugins($this->pluginPath);
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
