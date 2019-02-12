@@ -532,7 +532,7 @@ interface ItemIds{
 	public const RABBIT_HIDE = 415;
 	public const HORSEARMORLEATHER = 416, HORSE_ARMOR_LEATHER = 416, LEATHER_HORSE_ARMOR = 416;
 	public const HORSEARMORIRON = 417, HORSE_ARMOR_IRON = 417, IRON_HORSE_ARMOR = 417;
-	public const GOLD_HORSE_ARMOR = 418, GOLDEN_HORSE_ARMOR = 418, HORSEARMORGOLD = 418, HORSE_ARMOR_GOLD = 418;
+	public const GOLDEN_HORSE_ARMOR = 418, GOLD_HORSE_ARMOR = 418, HORSEARMORGOLD = 418, HORSE_ARMOR_GOLD = 418;
 	public const DIAMOND_HORSE_ARMOR = 419, HORSEARMORDIAMOND = 419, HORSE_ARMOR_DIAMOND = 419;
 	public const LEAD = 420;
 	public const NAMETAG = 421, NAME_TAG = 421;
@@ -583,6 +583,11 @@ interface ItemIds{
 	public const TURTLE_HELMET = 469;
 	public const PHANTOM_MEMBRANE = 470;
 	public const CROSSBOW = 471;
+	public const SPRUCE_SIGN = 472;
+	public const BIRCH_SIGN = 473;
+	public const JUNGLE_SIGN = 474;
+	public const ACACIA_SIGN = 475;
+	public const DARKOAK_SIGN = 476;
 
 	public const COMPOUND = 499;
 	public const RECORD_13 = 500;
