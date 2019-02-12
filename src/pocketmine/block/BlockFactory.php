@@ -171,7 +171,7 @@ class BlockFactory{
 		self::registerBlock(new Cake());
 		//TODO: REPEATER_BLOCK
 		//TODO: POWERED_REPEATER
-		//TODO: INVISIBLEBEDROCK
+		self::registerBlock(new InvisibleBedrock());
 		self::registerBlock(new Trapdoor());
 		//TODO: MONSTER_EGG
 		self::registerBlock(new StoneBricks());
