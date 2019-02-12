@@ -171,7 +171,7 @@ class BlockFactory{
 		self::registerBlock(new Cake());
 		//TODO: REPEATER_BLOCK
 		//TODO: POWERED_REPEATER
-		//TODO: INVISIBLEBEDROCK
+		self::registerBlock(new InvisibleBedrock());
 		self::registerBlock(new Trapdoor());
 		//TODO: MONSTER_EGG
 		self::registerBlock(new StoneBricks());
@@ -319,13 +319,13 @@ class BlockFactory{
 		self::registerBlock(new Stonecutter());
 		self::registerBlock(new GlowingObsidian());
 		self::registerBlock(new NetherReactor());
-		//TODO: INFO_UPDATE
-		//TODO: INFO_UPDATE2
+		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE, 0, "update!"));
+		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE2, 0, "ate!upd"));
 		//TODO: MOVINGBLOCK
 		//TODO: OBSERVER
 		//TODO: STRUCTURE_BLOCK
 
-		//TODO: RESERVED6
+		self::registerBlock(new Reserved6(Block::RESERVED6, 0, "reserved6"));
 
 		for($id = 0, $size = self::$fullList->getSize() >> 4; $id < $size; ++$id){
 			if(self::$fullList[$id << 4] === null){
