@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\Color;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PillarRotationTrait;
-use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\TreeType;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
 use function array_fill;
@@ -93,17 +93,17 @@ class BlockFactory{
 
 		self::registerBlock(new Cobblestone());
 
-		foreach(WoodType::ALL as $type){
-			self::registerBlock(new Planks(Block::PLANKS, $type, WoodType::NAMES[$type] . " Planks"));
-			self::registerBlock(new Sapling(Block::SAPLING, $type, WoodType::NAMES[$type] . " Sapling"));
-			self::registerBlock(new WoodenFence(Block::FENCE, $type, WoodType::NAMES[$type] . " Fence"));
-		}
+		foreach(TreeType::getAll() as $treeType){
+			$magicNumber = $treeType->getMagicNumber();
+			$name = $treeType->getDisplayName();
+			self::registerBlock(new Planks(Block::PLANKS, $magicNumber, $name . " Planks"));
+			self::registerBlock(new Sapling(Block::SAPLING, $magicNumber, $treeType, $name . " Sapling"));
+			self::registerBlock(new WoodenFence(Block::FENCE, $magicNumber, $name . " Fence"));
 
-		foreach(WoodType::ALL as $type){
 			//TODO: find a better way to deal with this split
-			self::registerBlock(new Log($type >= 4 ? Block::WOOD2 : Block::WOOD, $type & 0x03, WoodType::NAMES[$type] . " Log"));
-			self::registerBlock(new Wood($type >= 4 ? Block::WOOD2 : Block::WOOD, ($type & 0x03) | 0b1100, WoodType::NAMES[$type] . " Wood"));
-			self::registerBlock(new Leaves($type >= 4 ? Block::LEAVES2 : Block::LEAVES, $type & 0x03, $type, WoodType::NAMES[$type] . " Leaves"));
+			self::registerBlock(new Log($magicNumber >= 4 ? Block::WOOD2 : Block::WOOD, $magicNumber & 0x03, $treeType, $name . " Log"));
+			self::registerBlock(new Wood($magicNumber >= 4 ? Block::WOOD2 : Block::WOOD, ($magicNumber & 0x03) | 0b1100, $treeType, $name . " Wood"));
+			self::registerBlock(new Leaves($magicNumber >= 4 ? Block::LEAVES2 : Block::LEAVES, $magicNumber & 0x03, $treeType, $name . " Leaves"));
 		}
 
 		self::registerBlock(new Bedrock());
@@ -151,14 +151,14 @@ class BlockFactory{
 		//TODO: PISTON
 		//TODO: PISTONARMCOLLISION
 
-		foreach(Color::ALL as $color){
-			self::registerBlock(new Wool(Block::WOOL, $color, Color::NAMES[$color] . " Wool"));
-			self::registerBlock(new HardenedClay(Block::STAINED_CLAY, $color, Color::NAMES[$color] . " Stained Clay"));
-			self::registerBlock(new Glass(Block::STAINED_GLASS, $color, Color::NAMES[$color] . " Stained Glass"));
-			self::registerBlock(new GlassPane(Block::STAINED_GLASS_PANE, $color, Color::NAMES[$color] . " Stained Glass Pane"));
-			self::registerBlock(new Carpet(Block::CARPET, $color, Color::NAMES[$color] . " Carpet"));
-			self::registerBlock(new Concrete(Block::CONCRETE, $color, Color::NAMES[$color] . " Concrete"));
-			self::registerBlock(new ConcretePowder(Block::CONCRETE_POWDER, $color, Color::NAMES[$color] . " Concrete Powder"));
+		foreach(DyeColor::getAll() as $color){
+			self::registerBlock(new Wool(Block::WOOL, $color->getMagicNumber(), $color->getDisplayName() . " Wool"));
+			self::registerBlock(new HardenedClay(Block::STAINED_CLAY, $color->getMagicNumber(), $color->getDisplayName() . " Stained Clay"));
+			self::registerBlock(new Glass(Block::STAINED_GLASS, $color->getMagicNumber(), $color->getDisplayName() . " Stained Glass"));
+			self::registerBlock(new GlassPane(Block::STAINED_GLASS_PANE, $color->getMagicNumber(), $color->getDisplayName() . " Stained Glass Pane"));
+			self::registerBlock(new Carpet(Block::CARPET, $color->getMagicNumber(), $color->getDisplayName() . " Carpet"));
+			self::registerBlock(new Concrete(Block::CONCRETE, $color->getMagicNumber(), $color->getDisplayName() . " Concrete"));
+			self::registerBlock(new ConcretePowder(Block::CONCRETE_POWDER, $color->getMagicNumber(), $color->getDisplayName() . " Concrete Powder"));
 		}
 
 		self::registerBlock(new Dandelion());
@@ -197,8 +197,8 @@ class BlockFactory{
 			new StoneSlab(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 6, "Smooth Sandstone"),
 			new StoneSlab(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 7, "Red Nether Brick")
 		];
-		foreach(WoodType::ALL as $woodType){
-			$slabTypes[] = new WoodenSlab($woodType);
+		foreach(TreeType::getAll() as $woodType){
+			$slabTypes[] = new WoodenSlab(Block::WOODEN_SLAB, Block::DOUBLE_WOODEN_SLAB, $woodType->getMagicNumber(), $woodType->getDisplayName());
 		}
 		foreach($slabTypes as $type){
 			self::registerBlock($type);

@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\populator;
 
 use pocketmine\block\Block;
-use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\TreeType;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\object\Tree as ObjectTree;
 use pocketmine\utils\Random;
@@ -35,10 +35,14 @@ class Tree extends Populator{
 	private $randomAmount;
 	private $baseAmount;
 
+	/** @var TreeType */
 	private $type;
 
-	public function __construct(int $type = WoodType::OAK){
-		$this->type = $type;
+	/**
+	 * @param TreeType|null $type default oak
+	 */
+	public function __construct(?TreeType $type = null){
+		$this->type = $type ?? TreeType::$OAK;
 	}
 
 	public function setRandomAmount(int $amount) : void{

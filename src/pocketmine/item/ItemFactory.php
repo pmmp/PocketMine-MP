@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Living;
 use pocketmine\nbt\tag\CompoundTag;
@@ -151,11 +152,13 @@ class ItemFactory{
 		self::registerItem(new Item(Item::GLOWSTONE_DUST, 0, "Glowstone Dust"));
 		self::registerItem(new RawFish());
 		self::registerItem(new CookedFish());
-		for($i = 0; $i < 16; ++$i){
-			//TODO: add colour constants (this is messy)
-			self::registerItem(new Dye($i));
-			self::registerItem(new Bed($i));
-			self::registerItem(new Banner($i));
+		foreach(DyeColor::getAll() as $color){
+			//TODO: use colour object directly
+			//TODO: add interface to dye-colour objects
+			//TODO: new dedicated dyes
+			self::registerItem(new Dye($color->getInvertedMagicNumber(), $color->getDisplayName() . " Dye"));
+			self::registerItem(new Bed($color->getMagicNumber(), $color->getDisplayName() . " Bed"));
+			self::registerItem(new Banner($color->getInvertedMagicNumber(), $color->getDisplayName() . " Banner"));
 		}
 		self::registerItem(new Item(Item::BONE, 0, "Bone"));
 		self::registerItem(new Item(Item::SUGAR, 0, "Sugar"));

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -34,17 +34,17 @@ use pocketmine\Player;
 use function mt_rand;
 
 class Leaves extends Transparent{
-	/** @var int */
-	protected $woodType;
+	/** @var TreeType */
+	protected $treeType;
 
 	/** @var bool */
 	protected $noDecay = false;
 	/** @var bool */
 	protected $checkDecay = false;
 
-	public function __construct(int $id, int $variant, int $woodType, ?string $name = null){
+	public function __construct(int $id, int $variant, TreeType $treeType, ?string $name = null){
 		parent::__construct($id, $variant, $name);
-		$this->woodType = $woodType;
+		$this->treeType = $treeType;
 	}
 
 	protected function writeStateToMeta() : int{
@@ -132,9 +132,9 @@ class Leaves extends Transparent{
 
 		$drops = [];
 		if(mt_rand(1, 20) === 1){ //Saplings
-			$drops[] = ItemFactory::get(Item::SAPLING, $this->woodType);
+			$drops[] = ItemFactory::get(Item::SAPLING, $this->treeType->getMagicNumber());
 		}
-		if(($this->woodType === WoodType::OAK or $this->woodType === WoodType::DARK_OAK) and mt_rand(1, 200) === 1){ //Apples
+		if(($this->treeType === TreeType::$OAK or $this->treeType === TreeType::$DARK_OAK) and mt_rand(1, 200) === 1){ //Apples
 			$drops[] = ItemFactory::get(Item::APPLE);
 		}
 

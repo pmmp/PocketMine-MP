@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\TreeType;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
@@ -85,7 +86,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if(Facing::axis($face) !== Facing::AXIS_Y and $blockClicked->getId() === Block::LOG and $blockClicked->getVariant() === Wood::JUNGLE){
+		if(Facing::axis($face) !== Facing::AXIS_Y and $blockClicked instanceof Wood and $blockClicked->getTreeType() === TreeType::$JUNGLE){
 			$this->facing = $face;
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
@@ -103,7 +104,7 @@ class CocoaBlock extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		$side = $this->getSide(Facing::opposite($this->facing));
-		if($side->getId() !== Block::LOG or $side->getVariant() !== Wood::JUNGLE){
+		if(!($side instanceof Wood) or $side->getTreeType() !== TreeType::$JUNGLE){
 			$this->level->useBreakOn($this);
 		}
 	}

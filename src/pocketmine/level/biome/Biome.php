@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\biome;
 
 use pocketmine\block\Block;
+use pocketmine\block\utils\TreeType;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\utils\Random;
@@ -98,7 +99,7 @@ abstract class Biome{
 
 		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
 
-		self::register(self::BIRCH_FOREST, new ForestBiome(ForestBiome::TYPE_BIRCH));
+		self::register(self::BIRCH_FOREST, new ForestBiome(TreeType::$BIRCH));
 	}
 
 	/**

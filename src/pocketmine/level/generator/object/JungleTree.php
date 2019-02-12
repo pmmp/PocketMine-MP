@@ -25,11 +25,11 @@ namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\Wood;
+use pocketmine\block\utils\TreeType;
 
 class JungleTree extends Tree{
 
 	public function __construct(){
-		parent::__construct(BlockFactory::get(Block::LOG, Wood::JUNGLE), BlockFactory::get(Block::LEAVES, Wood::JUNGLE), 8);
+		parent::__construct(BlockFactory::get(Block::LOG, TreeType::$JUNGLE->getMagicNumber()), BlockFactory::get(Block::LEAVES, TreeType::$JUNGLE->getMagicNumber()), 8);
 	}
 }

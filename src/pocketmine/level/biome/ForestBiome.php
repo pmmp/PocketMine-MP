@@ -23,23 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\level\biome;
 
-use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\TreeType;
 use pocketmine\level\generator\populator\TallGrass;
 use pocketmine\level\generator\populator\Tree;
 
 class ForestBiome extends GrassyBiome{
 
-	public const TYPE_NORMAL = 0;
-	public const TYPE_BIRCH = 1;
+	/** @var TreeType */
+	private $type;
 
-	public $type;
-
-	public function __construct(int $type = self::TYPE_NORMAL){
+	public function __construct(?TreeType $type = null){
 		parent::__construct();
 
-		$this->type = $type;
+		$this->type = $type ?? TreeType::$OAK;
 
-		$trees = new Tree($type === self::TYPE_BIRCH ? WoodType::BIRCH : WoodType::OAK);
+		$trees = new Tree($type);
 		$trees->setBaseAmount(5);
 		$this->addPopulator($trees);
 
@@ -50,7 +48,7 @@ class ForestBiome extends GrassyBiome{
 
 		$this->setElevation(63, 81);
 
-		if($type === self::TYPE_BIRCH){
+		if($type === TreeType::$BIRCH){
 			$this->temperature = 0.6;
 			$this->rainfall = 0.5;
 		}else{
@@ -60,6 +58,6 @@ class ForestBiome extends GrassyBiome{
 	}
 
 	public function getName() : string{
-		return $this->type === self::TYPE_BIRCH ? "Birch Forest" : "Forest";
+		return $this->type->getDisplayName() . " Forest";
 	}
 }

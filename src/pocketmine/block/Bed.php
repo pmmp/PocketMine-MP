@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
-use pocketmine\block\utils\Color;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
@@ -52,11 +52,11 @@ class Bed extends Transparent{
 	protected $occupied = false;
 	/** @var bool */
 	protected $head = false;
-	/** @var int */
-	protected $color = Color::RED;
+	/** @var DyeColor */
+	protected $color;
 
 	public function __construct(){
-
+		$this->color = DyeColor::$RED;
 	}
 
 	protected function writeStateToMeta() : int{
@@ -183,7 +183,7 @@ class Bed extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$this->color = $item->getDamage(); //TODO: replace this with a proper colour getter
+		$this->color = DyeColor::fromMagicNumber($item->getDamage()); //TODO: replace this with a proper colour getter
 		$down = $this->getSide(Facing::DOWN);
 		if(!$down->isTransparent()){
 			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;
@@ -211,7 +211,7 @@ class Bed extends Transparent{
 	}
 
 	public function getItem() : Item{
-		return ItemFactory::get($this->getItemId(), $this->color);
+		return ItemFactory::get($this->getItemId(), $this->color->getMagicNumber());
 	}
 
 	public function isAffectedBySilkTouch() : bool{

@@ -23,15 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\WoodType;
-
 class WoodenSlab extends Slab{
 
 	protected $id = self::WOODEN_SLAB;
-
-	public function __construct(int $variant = 0){
-		parent::__construct(self::WOODEN_SLAB, self::DOUBLE_WOODEN_SLAB, $variant, WoodType::NAMES[$variant]);
-	}
 
 	public function getHardness() : float{
 		return 2;

@@ -23,31 +23,42 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\block\utils\DyeColor;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 
 class Bed extends Spawnable{
 	public const TAG_COLOR = "color";
-	/** @var int */
-	private $color = 14; //default to old red
+	/** @var DyeColor */
+	private $color;
 
-	public function getColor() : int{
+	public function __construct(Level $level, Vector3 $pos){
+		$this->color = DyeColor::$RED;
+		parent::__construct($level, $pos);
+	}
+
+	public function getColor() : DyeColor{
 		return $this->color;
 	}
 
-	public function setColor(int $color){
-		$this->color = $color & 0xf;
+	public function setColor(DyeColor $color){
+		$this->color = $color;
 		$this->onChanged();
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		$this->color = $nbt->getByte(self::TAG_COLOR, 14, true);
+		if($nbt->hasTag(self::TAG_COLOR, ByteTag::class)){
+			$this->color = DyeColor::fromMagicNumber($nbt->getByte(self::TAG_COLOR));
+		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_COLOR, $this->color);
+		$nbt->setByte(self::TAG_COLOR, $this->color->getMagicNumber());
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_COLOR, $this->color);
+		$nbt->setByte(self::TAG_COLOR, $this->color->getMagicNumber());
 	}
 }

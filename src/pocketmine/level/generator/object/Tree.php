@@ -27,7 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\Leaves;
 use pocketmine\block\Sapling;
-use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\TreeType;
 use pocketmine\level\BlockWriteBatch;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
@@ -49,34 +49,40 @@ abstract class Tree{
 		$this->treeHeight = $treeHeight;
 	}
 
-	public static function growTree(ChunkManager $level, int $x, int $y, int $z, Random $random, int $type = WoodType::OAK) : void{
-		switch($type){
-			case WoodType::SPRUCE:
-				$tree = new SpruceTree();
-				break;
-			case WoodType::BIRCH:
-				if($random->nextBoundedInt(39) === 0){
-					$tree = new BirchTree(true);
-				}else{
-					$tree = new BirchTree();
-				}
-				break;
-			case WoodType::JUNGLE:
-				$tree = new JungleTree();
-				break;
-			case WoodType::ACACIA:
-			case WoodType::DARK_OAK:
-				return; //TODO
-			default:
-				$tree = new OakTree();
-				/*if($random->nextRange(0, 9) === 0){
-					$tree = new BigTree();
-				}else{*/
+	/**
+	 * @param ChunkManager  $level
+	 * @param int           $x
+	 * @param int           $y
+	 * @param int           $z
+	 * @param Random        $random
+	 * @param TreeType|null $type default oak
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public static function growTree(ChunkManager $level, int $x, int $y, int $z, Random $random, ?TreeType $type = null) : void{
+		/** @var null|Tree $tree */
+		$tree = null;
+		$type = $type ?? TreeType::$OAK;
+		if($type === TreeType::$SPRUCE){
+			$tree = new SpruceTree();
+		}elseif($type === TreeType::$BIRCH){
+			if($random->nextBoundedInt(39) === 0){
+				$tree = new BirchTree(true);
+			}else{
+				$tree = new BirchTree();
+			}
+		}elseif($type === TreeType::$JUNGLE){
+			$tree = new JungleTree();
+		}elseif($type === TreeType::$OAK){ //default
+			$tree = new OakTree();
+			/*if($random->nextRange(0, 9) === 0){
+				$tree = new BigTree();
+			}else{*/
 
-				//}
-				break;
+			//}
 		}
-		if($tree->canPlaceObject($level, $x, $y, $z, $random)){
+
+		if($tree !== null and $tree->canPlaceObject($level, $x, $y, $z, $random)){
 			$tree->placeObject($level, $x, $y, $z, $random);
 		}
 	}

@@ -23,11 +23,25 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\TreeType;
+
 class Wood extends Solid{
-	public const OAK = 0;
-	public const SPRUCE = 1;
-	public const BIRCH = 2;
-	public const JUNGLE = 3;
+
+	/** @var TreeType */
+	private $treeType;
+
+	public function __construct(int $id, int $variant, TreeType $treeType, ?string $name = null, int $itemId = null){
+		parent::__construct($id, $variant, $name, $itemId);
+		$this->treeType = $treeType;
+	}
+
+	/**
+	 * TODO: this is ad hoc, but add an interface for this to all tree-related blocks
+	 * @return TreeType
+	 */
+	public function getTreeType() : TreeType{
+		return $this->treeType;
+	}
 
 	public function getHardness() : float{
 		return 2;
