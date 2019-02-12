@@ -36,31 +36,17 @@ class ServerClassLoader extends ThreadedClassLoader implements ClassLoader{
 	/**
 	 * Creates a new threaded class loader from a default composer class loader.
 	 *
+	 * Note: This override is here for documentation and code completion purposes only.
+	 *
 	 * @param \Composer\Autoload\ClassLoader $loader The composer class loader.
 	 * @param array $includeFiles Array of files to be included by the loader.
 	 * @param bool $register      If the new autoloader should be registered.
 	 * @param bool $unregister    If the composer autoloader should be unregistered.
 	 *
-	 * @return \pocketmine\utils\ServerClassLoader
+	 * @return ServerClassLoader|ThreadedClassLoader
 	 */
 	public static function fromComposerLoader(ComposerClassLoader $loader, array $includeFiles = [], bool $register = true, bool $unregister = true){
-		$threadedLoader = new self();
-
-		$threadedLoader->mergeComposerLoader($loader);
-
-		foreach($includeFiles as $identifier => $file){
-			$threadedLoader->addFile($identifier, $file, !$register);
-		}
-
-		if($register){
-			$threadedLoader->register();
-		}
-
-		if($unregister){
-			$loader->unregister();
-		}
-
-		return $threadedLoader;
+		return parent::fromComposerLoader($loader, $includeFiles, $register, $unregister);
 	}
 
 }

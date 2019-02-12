@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a51250ce87b095da41fbe411776081b3",
+    "content-hash": "6d359911064538d8e03a98e18a8aec5b",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -161,16 +161,16 @@
         },
         {
             "name": "jacknoordhuis/threaded-class-loader",
-            "version": "0.0.1",
+            "version": "0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JackNoordhuis/threaded-class-loader.git",
-                "reference": "ae4272719c2f940feda1179b7758273cfc51a7ea"
+                "reference": "5703b940aae5cbe9563e910123d971fb59d1b6c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JackNoordhuis/threaded-class-loader/zipball/ae4272719c2f940feda1179b7758273cfc51a7ea",
-                "reference": "ae4272719c2f940feda1179b7758273cfc51a7ea",
+                "url": "https://api.github.com/repos/JackNoordhuis/threaded-class-loader/zipball/5703b940aae5cbe9563e910123d971fb59d1b6c1",
+                "reference": "5703b940aae5cbe9563e910123d971fb59d1b6c1",
                 "shasum": ""
             },
             "require": {
@@ -197,7 +197,7 @@
                 }
             ],
             "description": "A thread safe implementation of a PSR-0, PSR-4 and classmap class loader for use with the pthreads extension.",
-            "time": "2019-02-10T08:45:59+00:00"
+            "time": "2019-02-12T04:32:14+00:00"
         },
         {
             "name": "mdanter/ecc",

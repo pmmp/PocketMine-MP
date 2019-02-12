@@ -36,7 +36,7 @@
       "daverandom/callback-validator": "dev-master",
       "adhocore/json-comment": "^0.0.7",
       "particle/validator": "^2.3",
-      "jacknoordhuis/threaded-class-loader": "^0.0.1"
+      "jacknoordhuis/threaded-class-loader": "^0.0.2"
    },
    "autoload": {
       "psr-4": {
