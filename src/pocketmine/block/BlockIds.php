@@ -323,5 +323,53 @@ interface BlockIds{
 	public const TURTLE_EGG = 414;
 	public const BUBBLE_COLUMN = 415;
 	public const BARRIER = 416;
+	public const STONE_SLAB3 = 417;
+	public const BAMBOO = 418;
+	public const BAMBOO_SAPLING = 419;
+	public const SCAFFOLDING = 420;
+	public const STONE_SLAB4 = 421;
+	public const DOUBLE_STONE_SLAB3 = 422;
+	public const DOUBLE_STONE_SLAB4 = 423;
+	public const GRANITE_STAIRS = 424;
+	public const DIORITE_STAIRS = 425;
+	public const ANDESITE_STAIRS = 426;
+	public const POLISHED_GRANITE_STAIRS = 427;
+	public const POLISHED_DIORITE_STAIRS = 428;
+	public const POLISHED_ANDESITE_STAIRS = 429;
+	public const MOSSY_STONE_BRICK_STAIRS = 430;
+	public const SMOOTH_RED_SANDSTONE_STAIRS = 431;
+	public const SMOOTH_SANDSTONE_STAIRS = 432;
+	public const END_BRICK_STAIRS = 433;
+	public const MOSSY_COBBLESTONE_STAIRS = 434;
+	public const NORMAL_STONE_STAIRS = 435;
+	public const SPRUCE_STANDING_SIGN = 436;
+	public const SPRUCE_WALL_SIGN = 437;
+	public const SMOOTH_STONE = 438;
+	public const RED_NETHER_BRICK_STAIRS = 439;
+	public const SMOOTH_QUARTZ_STAIRS = 440;
+	public const BIRCH_STANDING_SIGN = 441;
+	public const BIRCH_WALL_SIGN = 442;
+	public const JUNGLE_STANDING_SIGN = 443;
+	public const JUNGLE_WALL_SIGN = 444;
+	public const ACACIA_STANDING_SIGN = 445;
+	public const ACACIA_WALL_SIGN = 446;
+	public const DARKOAK_STANDING_SIGN = 447;
+	public const DARKOAK_WALL_SIGN = 448;
+
+	public const GRINDSTONE = 450;
+	public const BLAST_FURNACE = 451;
+
+	public const SMOKER = 453;
+
+	public const CARTOGRAPHY_TABLE = 455;
+	public const FLETCHING_TABLE = 456;
+	public const SMITHING_TABLE = 457;
+	public const BARREL = 458;
+
+	public const BELL = 461;
+
+	public const LANTERN = 463;
+
+	public const LAVA_CAULDRON = 465;
 
 }
