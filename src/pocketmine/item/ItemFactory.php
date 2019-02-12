@@ -129,21 +129,20 @@ class ItemFactory{
 		self::registerItem(new LiquidBucket(Item::BUCKET, 10, "Lava Bucket", Block::FLOWING_LAVA));
 
 		self::registerItem(new Minecart());
-		//TODO: SADDLE
+
 		self::registerItem(new ItemBlock(Block::IRON_DOOR_BLOCK, 0, Item::IRON_DOOR));
 		self::registerItem(new Redstone());
 		self::registerItem(new Snowball());
 
 		self::registerItem(new Boat());
 		self::registerItem(new Item(Item::LEATHER, 0, "Leather"));
-		//TODO: KELP
+
 		self::registerItem(new Item(Item::BRICK, 0, "Brick"));
 		self::registerItem(new Item(Item::CLAY_BALL, 0, "Clay"));
 		self::registerItem(new ItemBlock(Block::SUGARCANE_BLOCK, 0, Item::SUGARCANE));
 		self::registerItem(new Item(Item::PAPER, 0, "Paper"));
 		self::registerItem(new Book());
 		self::registerItem(new Item(Item::SLIME_BALL, 0, "Slimeball"));
-		//TODO: CHEST_MINECART
 
 		self::registerItem(new Egg());
 		self::registerItem(new Compass());
@@ -166,7 +165,7 @@ class ItemFactory{
 
 		self::registerItem(new ItemBlock(Block::REPEATER_BLOCK, 0, Item::REPEATER));
 		self::registerItem(new Cookie());
-		//TODO: FILLED_MAP
+
 		self::registerItem(new Shears());
 		self::registerItem(new Melon());
 		self::registerItem(new PumpkinSeeds());
@@ -185,7 +184,6 @@ class ItemFactory{
 		foreach(Potion::ALL as $type){
 			self::registerItem(new Potion($type));
 			self::registerItem(new SplashPotion($type));
-			//TODO: LINGERING_POTION
 		}
 		self::registerItem(new GlassBottle());
 		self::registerItem(new SpiderEye());
@@ -194,7 +192,7 @@ class ItemFactory{
 		self::registerItem(new Item(Item::MAGMA_CREAM, 0, "Magma Cream"));
 		self::registerItem(new ItemBlock(Block::BREWING_STAND_BLOCK, 0, Item::BREWING_STAND));
 		self::registerItem(new ItemBlock(Block::CAULDRON_BLOCK, 0, Item::CAULDRON));
-		//TODO: ENDER_EYE
+
 		self::registerItem(new Item(Item::GLISTERING_MELON, 0, "Glistering Melon"));
 
 		foreach(EntityFactory::getKnownTypes() as $className){
@@ -205,7 +203,7 @@ class ItemFactory{
 		}
 
 		self::registerItem(new ExperienceBottle());
-		//TODO: FIREBALL
+
 		self::registerItem(new WritableBook());
 		self::registerItem(new WrittenBook());
 		self::registerItem(new Item(Item::EMERALD, 0, "Emerald"));
@@ -215,7 +213,7 @@ class ItemFactory{
 		self::registerItem(new Potato());
 		self::registerItem(new BakedPotato());
 		self::registerItem(new PoisonousPotato());
-		//TODO: EMPTYMAP
+
 		self::registerItem(new GoldenCarrot());
 
 		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_SKELETON, Item::SKULL));
@@ -225,17 +223,13 @@ class ItemFactory{
 		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_CREEPER, Item::SKULL));
 		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_DRAGON, Item::SKULL));
 
-		//TODO: CARROTONASTICK
 		self::registerItem(new Item(Item::NETHER_STAR, 0, "Nether Star"));
 		self::registerItem(new PumpkinPie());
-		//TODO: FIREWORKS
-		//TODO: FIREWORKSCHARGE
-		//TODO: ENCHANTED_BOOK
+
 		self::registerItem(new ItemBlock(Block::COMPARATOR_BLOCK, 0, Item::COMPARATOR));
 		self::registerItem(new Item(Item::NETHER_BRICK, 0, "Nether Brick"));
 		self::registerItem(new Item(Item::NETHER_QUARTZ, 0, "Nether Quartz"));
-		//TODO: MINECART_WITH_TNT
-		//TODO: HOPPER_MINECART
+
 		self::registerItem(new Item(Item::PRISMARINE_SHARD, 0, "Prismarine Shard"));
 		self::registerItem(new ItemBlock(Block::HOPPER_BLOCK, 0, Item::HOPPER));
 		self::registerItem(new RawRabbit());
@@ -243,17 +237,11 @@ class ItemFactory{
 		self::registerItem(new RabbitStew());
 		self::registerItem(new Item(Item::RABBIT_FOOT, 0, "Rabbit's Foot"));
 		self::registerItem(new Item(Item::RABBIT_HIDE, 0, "Rabbit Hide"));
-		//TODO: HORSEARMORLEATHER
-		//TODO: HORSEARMORIRON
-		//TODO: GOLD_HORSE_ARMOR
-		//TODO: DIAMOND_HORSE_ARMOR
-		//TODO: LEAD
-		//TODO: NAMETAG
+
 		self::registerItem(new Item(Item::PRISMARINE_CRYSTALS, 0, "Prismarine Crystals"));
 		self::registerItem(new RawMutton());
 		self::registerItem(new CookedMutton());
-		//TODO: ARMOR_STAND
-		//TODO: END_CRYSTAL
+
 		self::registerItem(new ItemBlock(Block::SPRUCE_DOOR_BLOCK, 0, Item::SPRUCE_DOOR));
 		self::registerItem(new ItemBlock(Block::BIRCH_DOOR_BLOCK, 0, Item::BIRCH_DOOR));
 		self::registerItem(new ItemBlock(Block::JUNGLE_DOOR_BLOCK, 0, Item::JUNGLE_DOOR));
@@ -264,20 +252,11 @@ class ItemFactory{
 
 		self::registerItem(new Item(Item::DRAGON_BREATH, 0, "Dragon's Breath"));
 
-		//TODO: SPARKLER
-		//TODO: COMMAND_BLOCK_MINECART
-		//TODO: ELYTRA
 		self::registerItem(new Item(Item::SHULKER_SHELL, 0, "Shulker Shell"));
 
-		//TODO: MEDICINE
-		//TODO: BALLOON
-		//TODO: RAPID_FERTILIZER
 		self::registerItem(new Totem());
 		self::registerItem(new Item(Item::BLEACH, 0, "Bleach")); //EDU
 		self::registerItem(new Item(Item::IRON_NUGGET, 0, "Iron Nugget"));
-		//TODO: ICE_BOMB
-
-		//TODO: TRIDENT
 
 		self::registerItem(new Beetroot());
 		self::registerItem(new BeetrootSeeds());
@@ -291,21 +270,60 @@ class ItemFactory{
 		self::registerItem(new GoldenAppleEnchanted());
 		self::registerItem(new Item(Item::HEART_OF_THE_SEA, 0, "Heart of the Sea"));
 		self::registerItem(new Item(Item::TURTLE_SHELL_PIECE, 0, "Scute"));
-		//TODO: TURTLE_HELMET
 
-		//TODO: COMPOUND
-		//TODO: RECORD_13
-		//TODO: RECORD_CAT
-		//TODO: RECORD_BLOCKS
-		//TODO: RECORD_CHIRP
-		//TODO: RECORD_FAR
-		//TODO: RECORD_MALL
-		//TODO: RECORD_MELLOHI
-		//TODO: RECORD_STAL
-		//TODO: RECORD_STRAD
-		//TODO: RECORD_WARD
-		//TODO: RECORD_11
-		//TODO: RECORD_WAIT
+		//TODO: minecraft:acacia_sign
+		//TODO: minecraft:armor_stand
+		//TODO: minecraft:balloon
+		//TODO: minecraft:birch_sign
+		//TODO: minecraft:carrotOnAStick
+		//TODO: minecraft:chest_minecart
+		//TODO: minecraft:command_block_minecart
+		//TODO: minecraft:compound
+		//TODO: minecraft:crossbow
+		//TODO: minecraft:darkoak_sign
+		//TODO: minecraft:elytra
+		//TODO: minecraft:emptyMap
+		//TODO: minecraft:enchanted_book
+		//TODO: minecraft:end_crystal
+		//TODO: minecraft:ender_eye
+		//TODO: minecraft:fireball
+		//TODO: minecraft:fireworks
+		//TODO: minecraft:fireworksCharge
+		//TODO: minecraft:glow_stick
+		//TODO: minecraft:hopper_minecart
+		//TODO: minecraft:horsearmordiamond
+		//TODO: minecraft:horsearmorgold
+		//TODO: minecraft:horsearmoriron
+		//TODO: minecraft:horsearmorleather
+		//TODO: minecraft:ice_bomb
+		//TODO: minecraft:jungle_sign
+		//TODO: minecraft:kelp
+		//TODO: minecraft:lead
+		//TODO: minecraft:lingering_potion
+		//TODO: minecraft:map
+		//TODO: minecraft:medicine
+		//TODO: minecraft:name_tag
+		//TODO: minecraft:phantom_membrane
+		//TODO: minecraft:rapid_fertilizer
+		//TODO: minecraft:record_11
+		//TODO: minecraft:record_13
+		//TODO: minecraft:record_blocks
+		//TODO: minecraft:record_cat
+		//TODO: minecraft:record_chirp
+		//TODO: minecraft:record_far
+		//TODO: minecraft:record_mall
+		//TODO: minecraft:record_mellohi
+		//TODO: minecraft:record_stal
+		//TODO: minecraft:record_strad
+		//TODO: minecraft:record_wait
+		//TODO: minecraft:record_ward
+		//TODO: minecraft:saddle
+		//TODO: minecraft:sparkler
+		//TODO: minecraft:spawn_egg
+		//TODO: minecraft:spruce_sign
+		//TODO: minecraft:tnt_minecart
+		//TODO: minecraft:trident
+		//TODO: minecraft:turtle_helmet
 	}
 
 	/**

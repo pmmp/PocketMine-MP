@@ -123,7 +123,6 @@ class BlockFactory{
 		self::registerBlock(new Glass(Block::GLASS, 0, "Glass"));
 		self::registerBlock(new LapisOre());
 		self::registerBlock(new Lapis());
-		//TODO: DISPENSER
 
 		static $sandstoneTypes = [
 			Sandstone::NORMAL => "",
@@ -139,7 +138,7 @@ class BlockFactory{
 		self::registerBlock(new Bed());
 		self::registerBlock(new PoweredRail());
 		self::registerBlock(new DetectorRail());
-		//TODO: STICKY_PISTON
+
 		self::registerBlock(new Cobweb());
 
 		self::registerBlock(new TallGrass(Block::TALL_GRASS, 0, "Fern"));
@@ -148,8 +147,6 @@ class BlockFactory{
 		self::registerBlock(new TallGrass(Block::TALL_GRASS, 3, "Fern"));
 
 		self::registerBlock(new DeadBush());
-		//TODO: PISTON
-		//TODO: PISTONARMCOLLISION
 
 		foreach(DyeColor::getAll() as $color){
 			self::registerBlock(new Wool(Block::WOOL, $color->getMagicNumber(), $color->getDisplayName() . " Wool"));
@@ -246,20 +243,18 @@ class BlockFactory{
 		self::registerBlock(new Cactus());
 		self::registerBlock(new Clay());
 		self::registerBlock(new Sugarcane());
-		//TODO: JUKEBOX
 
 		self::registerBlock(new Pumpkin());
 		self::registerBlock(new Netherrack());
 		self::registerBlock(new SoulSand());
 		self::registerBlock(new Glowstone());
-		//TODO: PORTAL
+
 		self::registerBlock(new LitPumpkin());
 		self::registerBlock(new Cake());
 		self::registerBlock(new RedstoneRepeater());
 		self::registerBlock((new RedstoneRepeater())->setPowered());
 		self::registerBlock(new InvisibleBedrock());
 		self::registerBlock(new Trapdoor());
-		//TODO: MONSTER_EGG
 
 		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::NORMAL, "Stone Bricks"));
 		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::MOSSY, "Mossy Stone Bricks"));
@@ -285,14 +280,13 @@ class BlockFactory{
 		self::registerBlock(new NetherWartPlant());
 		self::registerBlock(new EnchantingTable());
 		self::registerBlock(new BrewingStand());
-		//TODO: CAULDRON_BLOCK
-		//TODO: END_PORTAL
+
 		self::registerBlock(new EndPortalFrame());
 		self::registerBlock(new EndStone());
-		//TODO: DRAGON_EGG
+
 		self::registerBlock(new RedstoneLamp());
 		self::registerBlock((new RedstoneLamp())->setLit()); //flattening hack
-		//TODO: DROPPER
+
 		self::registerBlock(new ActivatorRail());
 		self::registerBlock(new CocoaBlock());
 		self::registerBlock(new SandstoneStairs());
@@ -304,8 +298,6 @@ class BlockFactory{
 		self::registerBlock(new WoodenStairs(Block::SPRUCE_STAIRS, 0, "Spruce Stairs"));
 		self::registerBlock(new WoodenStairs(Block::BIRCH_STAIRS, 0, "Birch Stairs"));
 		self::registerBlock(new WoodenStairs(Block::JUNGLE_STAIRS, 0, "Jungle Stairs"));
-		//TODO: COMMAND_BLOCK
-		//TODO: BEACON
 
 		static $wallTypes = [
 			CobblestoneWall::NONE_MOSSY_WALL => "Cobblestone",
@@ -340,14 +332,12 @@ class BlockFactory{
 		self::registerBlock(new TrappedChest());
 		self::registerBlock(new WeightedPressurePlateLight());
 		self::registerBlock(new WeightedPressurePlateHeavy());
-		//TODO: COMPARATOR_BLOCK
-		//TODO: POWERED_COMPARATOR
+
 		self::registerBlock(new DaylightSensor());
 		self::registerBlock((new DaylightSensor())->setInverted()); //flattening hack
 
 		self::registerBlock(new Redstone());
 		self::registerBlock(new NetherQuartzOre());
-		//TODO: HOPPER_BLOCK
 
 		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::NORMAL, "Quartz Block"));
 		self::registerBlock(new class(Block::QUARTZ_BLOCK, Quartz::CHISELED, "Chiseled Quartz Block") extends Quartz{
@@ -366,7 +356,6 @@ class BlockFactory{
 
 		self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
 		self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
-		//TODO: SLIME
 
 		self::registerBlock(new IronTrapdoor());
 
@@ -397,8 +386,6 @@ class BlockFactory{
 		self::registerBlock(new FenceGate(Block::JUNGLE_FENCE_GATE, 0, "Jungle Fence Gate"));
 		self::registerBlock(new FenceGate(Block::DARK_OAK_FENCE_GATE, 0, "Dark Oak Fence Gate"));
 		self::registerBlock(new FenceGate(Block::ACACIA_FENCE_GATE, 0, "Acacia Fence Gate"));
-		//TODO: REPEATING_COMMAND_BLOCK
-		//TODO: CHAIN_COMMAND_BLOCK
 
 		self::registerBlock(new WoodenDoor(Block::SPRUCE_DOOR_BLOCK, 0, "Spruce Door", Item::SPRUCE_DOOR));
 		self::registerBlock(new WoodenDoor(Block::BIRCH_DOOR_BLOCK, 0, "Birch Door", Item::BIRCH_DOOR));
@@ -407,22 +394,17 @@ class BlockFactory{
 		self::registerBlock(new WoodenDoor(Block::DARK_OAK_DOOR_BLOCK, 0, "Dark Oak Door", Item::DARK_OAK_DOOR));
 		self::registerBlock(new GrassPath());
 		self::registerBlock(new ItemFrame());
-		//TODO: CHORUS_FLOWER
 
 		self::registerBlock(new PurpurStairs());
 
-		//TODO: UNDYED_SHULKER_BOX
 		self::registerBlock(new EndStoneBricks());
-		//TODO: FROSTED_ICE
 		self::registerBlock(new EndRod());
-		//TODO: END_GATEWAY
 
 		self::registerBlock(new Magma());
 		self::registerBlock(new NetherWartBlock());
 		self::registerBlock(new NetherBrick(Block::RED_NETHER_BRICK, 0, "Red Nether Bricks"));
 		self::registerBlock(new BoneBlock());
 
-		//TODO: SHULKER_BOX
 		self::registerBlock(new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA, 0, "Purple Glazed Terracotta"));
 		self::registerBlock(new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA, 0, "White Glazed Terracotta"));
 		self::registerBlock(new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA, 0, "Orange Glazed Terracotta"));
@@ -441,8 +423,6 @@ class BlockFactory{
 		self::registerBlock(new GlazedTerracotta(Block::RED_GLAZED_TERRACOTTA, 0, "Red Glazed Terracotta"));
 		self::registerBlock(new GlazedTerracotta(Block::BLACK_GLAZED_TERRACOTTA, 0, "Black Glazed Terracotta"));
 
-		//TODO: CHORUS_PLANT
-
 		self::registerBlock(new Podzol());
 		self::registerBlock(new Beetroot());
 		self::registerBlock(new Stonecutter());
@@ -450,11 +430,130 @@ class BlockFactory{
 		self::registerBlock(new NetherReactor());
 		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE, 0, "update!"));
 		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE2, 0, "ate!upd"));
-		//TODO: MOVINGBLOCK
-		//TODO: OBSERVER
-		//TODO: STRUCTURE_BLOCK
 
 		self::registerBlock(new Reserved6(Block::RESERVED6, 0, "reserved6"));
+
+		//TODO: minecraft:acacia_button
+		//TODO: minecraft:acacia_pressure_plate
+		//TODO: minecraft:acacia_standing_sign
+		//TODO: minecraft:acacia_trapdoor
+		//TODO: minecraft:acacia_wall_sign
+		//TODO: minecraft:andesite_stairs
+		//TODO: minecraft:bamboo
+		//TODO: minecraft:bamboo_sapling
+		//TODO: minecraft:barrel
+		//TODO: minecraft:barrier
+		//TODO: minecraft:beacon
+		//TODO: minecraft:bell
+		//TODO: minecraft:birch_button
+		//TODO: minecraft:birch_pressure_plate
+		//TODO: minecraft:birch_standing_sign
+		//TODO: minecraft:birch_trapdoor
+		//TODO: minecraft:birch_wall_sign
+		//TODO: minecraft:blast_furnace
+		//TODO: minecraft:blue_ice
+		//TODO: minecraft:bubble_column
+		//TODO: minecraft:cartography_table
+		//TODO: minecraft:carved_pumpkin
+		//TODO: minecraft:cauldron
+		//TODO: minecraft:chain_command_block
+		//TODO: minecraft:chemical_heat
+		//TODO: minecraft:chemistry_table
+		//TODO: minecraft:chorus_flower
+		//TODO: minecraft:chorus_plant
+		//TODO: minecraft:colored_torch_bp
+		//TODO: minecraft:colored_torch_rg
+		//TODO: minecraft:command_block
+		//TODO: minecraft:conduit
+		//TODO: minecraft:coral
+		//TODO: minecraft:coral_block
+		//TODO: minecraft:coral_fan
+		//TODO: minecraft:coral_fan_dead
+		//TODO: minecraft:coral_fan_hang
+		//TODO: minecraft:coral_fan_hang2
+		//TODO: minecraft:coral_fan_hang3
+		//TODO: minecraft:dark_oak_button
+		//TODO: minecraft:dark_oak_pressure_plate
+		//TODO: minecraft:dark_oak_trapdoor
+		//TODO: minecraft:dark_prismarine_stairs
+		//TODO: minecraft:darkoak_standing_sign
+		//TODO: minecraft:darkoak_wall_sign
+		//TODO: minecraft:diorite_stairs
+		//TODO: minecraft:dispenser
+		//TODO: minecraft:double_stone_slab3
+		//TODO: minecraft:double_stone_slab4
+		//TODO: minecraft:dragon_egg
+		//TODO: minecraft:dried_kelp_block
+		//TODO: minecraft:dropper
+		//TODO: minecraft:element_0
+		//TODO: minecraft:end_brick_stairs
+		//TODO: minecraft:end_gateway
+		//TODO: minecraft:end_portal
+		//TODO: minecraft:fletching_table
+		//TODO: minecraft:frosted_ice
+		//TODO: minecraft:granite_stairs
+		//TODO: minecraft:grindstone
+		//TODO: minecraft:hard_glass
+		//TODO: minecraft:hard_glass_pane
+		//TODO: minecraft:hard_stained_glass
+		//TODO: minecraft:hard_stained_glass_pane
+		//TODO: minecraft:hopper
+		//TODO: minecraft:jukebox
+		//TODO: minecraft:jungle_button
+		//TODO: minecraft:jungle_pressure_plate
+		//TODO: minecraft:jungle_standing_sign
+		//TODO: minecraft:jungle_trapdoor
+		//TODO: minecraft:jungle_wall_sign
+		//TODO: minecraft:kelp
+		//TODO: minecraft:lantern
+		//TODO: minecraft:lava_cauldron
+		//TODO: minecraft:monster_egg
+		//TODO: minecraft:mossy_cobblestone_stairs
+		//TODO: minecraft:mossy_stone_brick_stairs
+		//TODO: minecraft:movingBlock
+		//TODO: minecraft:normal_stone_stairs
+		//TODO: minecraft:observer
+		//TODO: minecraft:piston
+		//TODO: minecraft:pistonArmCollision
+		//TODO: minecraft:polished_andesite_stairs
+		//TODO: minecraft:polished_diorite_stairs
+		//TODO: minecraft:polished_granite_stairs
+		//TODO: minecraft:portal
+		//TODO: minecraft:powered_comparator
+		//TODO: minecraft:prismarine_bricks_stairs
+		//TODO: minecraft:prismarine_stairs
+		//TODO: minecraft:red_nether_brick_stairs
+		//TODO: minecraft:repeating_command_block
+		//TODO: minecraft:scaffolding
+		//TODO: minecraft:sea_pickle
+		//TODO: minecraft:seagrass
+		//TODO: minecraft:shulker_box
+		//TODO: minecraft:slime
+		//TODO: minecraft:smithing_table
+		//TODO: minecraft:smoker
+		//TODO: minecraft:smooth_quartz_stairs
+		//TODO: minecraft:smooth_red_sandstone_stairs
+		//TODO: minecraft:smooth_sandstone_stairs
+		//TODO: minecraft:smooth_stone
+		//TODO: minecraft:spruce_button
+		//TODO: minecraft:spruce_pressure_plate
+		//TODO: minecraft:spruce_standing_sign
+		//TODO: minecraft:spruce_trapdoor
+		//TODO: minecraft:spruce_wall_sign
+		//TODO: minecraft:sticky_piston
+		//TODO: minecraft:stone_slab3
+		//TODO: minecraft:stone_slab4
+		//TODO: minecraft:stripped_acacia_log
+		//TODO: minecraft:stripped_birch_log
+		//TODO: minecraft:stripped_dark_oak_log
+		//TODO: minecraft:stripped_jungle_log
+		//TODO: minecraft:stripped_oak_log
+		//TODO: minecraft:stripped_spruce_log
+		//TODO: minecraft:structure_block
+		//TODO: minecraft:turtle_egg
+		//TODO: minecraft:underwater_torch
+		//TODO: minecraft:undyed_shulker_box
+		//TODO: minecraft:unpowered_comparator
 	}
 
 	public static function isInit() : bool{
