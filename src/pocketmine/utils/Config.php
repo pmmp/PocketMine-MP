@@ -193,6 +193,15 @@ class Config{
 	}
 
 	/**
+	 * Returns the path of the config.
+	 *
+	 * @return string
+	 */
+	public function getPath() : string{
+		return $this->file;
+	}
+
+	/**
 	 * Flushes the config to disk in the appropriate format.
 	 *
 	 * @throws \InvalidStateException if config type is not valid
