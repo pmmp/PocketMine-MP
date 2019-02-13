@@ -53,6 +53,9 @@ class OpCommand extends VanillaCommand{
 		}
 
 		$name = array_shift($args);
+		if(!Player::isValidUserName($name)){
+			throw new InvalidCommandSyntaxException();
+		}
 
 		$player = $sender->getServer()->getOfflinePlayer($name);
 		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.op.success", [$player->getName()]));
