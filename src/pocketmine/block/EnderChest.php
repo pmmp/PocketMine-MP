@@ -27,14 +27,16 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\EnderChest as TileEnderChest;
-use pocketmine\tile\TileFactory;
 
 class EnderChest extends Chest{
 
 	protected $id = self::ENDER_CHEST;
+
+	protected function getTileClass() : ?string{
+		return TileEnderChest::class;
+	}
 
 	public function getHardness() : float{
 		return 22.5;
@@ -58,19 +60,6 @@ class EnderChest extends Chest{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
-	}
-
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($player !== null){ //same as normal chest - TODO: clean up inheritance here
-			$this->facing = Facing::opposite($player->getHorizontalFacing());
-		}
-
-		if(Block::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			$this->level->addTile(TileFactory::createFromItem(TileEnderChest::class, $this->getLevel(), $this->asVector3(), $item));
-			return true;
-		}
-
-		return false;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{

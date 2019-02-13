@@ -36,7 +36,7 @@ use function assert;
 class Banner extends Spawnable implements Nameable{
 	use NameableTrait {
 		addAdditionalSpawnData as addNameSpawnData;
-		copyDataFromItem as copyNameFromItem;
+		copyDataFromItem as protected copyNameFromItem;
 	}
 
 	public const TAG_BASE = "Base";

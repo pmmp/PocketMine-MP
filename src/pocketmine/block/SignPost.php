@@ -29,7 +29,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Sign as TileSign;
-use pocketmine\tile\TileFactory;
 use function floor;
 
 class SignPost extends Transparent{
@@ -57,6 +56,10 @@ class SignPost extends Transparent{
 		return 0b1111;
 	}
 
+	protected function getTileClass() : ?string{
+		return TileSign::class;
+	}
+
 	public function getHardness() : float{
 		return 1;
 	}
@@ -78,15 +81,10 @@ class SignPost extends Transparent{
 
 			if($face === Facing::UP){
 				$this->rotation = $player !== null ? ((int) floor((($player->yaw + 180) * 16 / 360) + 0.5)) & 0x0f : 0;
-				$ret = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-			}else{
-				$ret = $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_SIGN, $face));
+				return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}
 
-			if($ret){
-				$this->level->addTile(TileFactory::createFromItem(TileSign::class, $this->getLevel(), $this->asVector3(), $item));
-				return true;
-			}
+			return $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_SIGN, $face));
 		}
 
 		return false;

@@ -29,7 +29,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\ItemFrame as TileItemFrame;
-use pocketmine\tile\TileFactory;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
@@ -54,6 +53,10 @@ class ItemFrame extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b11;
+	}
+
+	protected function getTileClass() : ?string{
+		return TileItemFrame::class;
 	}
 
 	public function getName() : string{
@@ -86,13 +89,7 @@ class ItemFrame extends Flowable{
 
 		$this->facing = $face;
 
-		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			$this->level->addTile(TileFactory::createFromItem(TileItemFrame::class, $this->getLevel(), $this->asVector3(), $item));
-			return true;
-		}
-
-		return false;
-
+		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

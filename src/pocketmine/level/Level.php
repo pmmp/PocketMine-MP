@@ -1869,6 +1869,11 @@ class Level implements ChunkManager, Metadatable{
 		if(!$hand->place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
 			return false;
 		}
+		$tile = $this->getTile($hand);
+		if($tile !== null){
+			//TODO: seal this up inside block placement
+			$tile->copyDataFromItem($item);
+		}
 
 		if($playSound){
 			$this->broadcastLevelSoundEvent($hand, LevelSoundEventPacket::SOUND_PLACE, $hand->getRuntimeId());

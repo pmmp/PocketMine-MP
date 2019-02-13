@@ -31,7 +31,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Banner as TileBanner;
-use pocketmine\tile\TileFactory;
 use function floor;
 
 class StandingBanner extends Transparent{
@@ -59,6 +58,10 @@ class StandingBanner extends Transparent{
 		return 0b1111;
 	}
 
+	protected function getTileClass() : ?string{
+		return TileBanner::class;
+	}
+
 	public function getHardness() : float{
 		return 1;
 	}
@@ -79,15 +82,10 @@ class StandingBanner extends Transparent{
 		if($face !== Facing::DOWN){
 			if($face === Facing::UP and $player !== null){
 				$this->rotation = ((int) floor((($player->yaw + 180) * 16 / 360) + 0.5)) & 0x0f;
-				$ret = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-			}else{
-				$ret = $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_BANNER, $face));
+				return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}
 
-			if($ret){
-				$this->level->addTile(TileFactory::createFromItem(TileBanner::class, $this->getLevel(), $this->asVector3(), $item));
-				return true;
-			}
+			return $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_BANNER, $face));
 		}
 
 		return false;

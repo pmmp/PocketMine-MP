@@ -30,7 +30,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Chest as TileChest;
-use pocketmine\tile\TileFactory;
 
 class Chest extends Transparent{
 
@@ -55,6 +54,10 @@ class Chest extends Transparent{
 		return 0b111;
 	}
 
+	protected function getTileClass() : ?string{
+		return TileChest::class;
+	}
+
 	public function getHardness() : float{
 		return 2.5;
 	}
@@ -73,34 +76,28 @@ class Chest extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		/** @var TileChest|null $pair */
-		$pair = null;
 		if($player !== null){
 			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
 
-		foreach([
-			Facing::rotateY($player->getHorizontalFacing(), false),
-			Facing::rotateY($player->getHorizontalFacing(), true)
-		] as $side){
-			$c = $this->getSide($side);
-			if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
-				$tile = $this->getLevel()->getTile($c);
-				if($tile instanceof TileChest and !$tile->isPaired()){
-					$pair = $tile;
-					break;
-				}
-			}
-		}
-
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			/** @var TileChest $tile */
-			$tile = TileFactory::createFromItem(TileChest::class, $this->getLevel(), $this->asVector3(), $item);
-			$this->level->addTile($tile);
-
-			if($pair instanceof TileChest){
-				$pair->pairWith($tile);
-				$tile->pairWith($pair);
+			//TODO: this is fragile and might have unintended side effects on ender chests if modified carelessly
+			$tile = $this->level->getTile($this);
+			if($tile instanceof TileChest){
+				foreach([
+					Facing::rotateY($this->facing, true),
+					Facing::rotateY($this->facing, false)
+				] as $side){
+					$c = $this->getSide($side);
+					if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
+						$pair = $this->level->getTile($c);
+						if($pair instanceof TileChest and !$pair->isPaired()){
+							$pair->pairWith($tile);
+							$tile->pairWith($pair);
+							break;
+						}
+					}
+				}
 			}
 
 			return true;
