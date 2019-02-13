@@ -52,7 +52,7 @@ class TNT extends Solid{
 		return 0;
 	}
 
-	public function onActivate(Item $item, Player $player = null) : bool{
+	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof FlintSteel){
 			$item->applyDamage(1);
 			$this->ignite();

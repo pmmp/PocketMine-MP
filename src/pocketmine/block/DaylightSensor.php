@@ -27,6 +27,7 @@ use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class DaylightSensor extends Transparent{
@@ -93,7 +94,7 @@ class DaylightSensor extends Transparent{
 		return AxisAlignedBB::one()->trim(Facing::UP, 0.5);
 	}
 
-	public function onActivate(Item $item, Player $player = null) : bool{
+	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->inverted = !$this->inverted;
 		$this->level->setBlock($this, $this);
 		return true;

@@ -106,7 +106,7 @@ class Furnace extends Solid{
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onActivate(Item $item, Player $player = null) : bool{
+	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 			$furnace = $this->getLevel()->getTile($this);
 			if($furnace instanceof TileFurnace and $furnace->canOpenWith($item->getCustomName())){

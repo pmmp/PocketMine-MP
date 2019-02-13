@@ -28,6 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\EnchantTable as TileEnchantingTable;
 
@@ -67,7 +68,7 @@ class EnchantingTable extends Transparent{
 		return AxisAlignedBB::one()->trim(Facing::UP, 0.25);
 	}
 
-	public function onActivate(Item $item, Player $player = null) : bool{
+	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 			//TODO lock
 

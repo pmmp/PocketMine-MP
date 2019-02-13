@@ -60,7 +60,7 @@ abstract class Crops extends Flowable{
 	}
 
 
-	public function onActivate(Item $item, Player $player = null) : bool{
+	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->age < 7 and $item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
 			$block = clone $this;
 			$block->age += mt_rand(2, 5);

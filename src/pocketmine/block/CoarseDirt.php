@@ -25,12 +25,14 @@ namespace pocketmine\block;
 
 use pocketmine\item\Hoe;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class CoarseDirt extends Dirt{
 
-	public function onActivate(Item $item, Player $player = null) : bool{
-		if($item instanceof Hoe){
+	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($face === Facing::UP and $item instanceof Hoe){
 			$item->applyDamage(1);
 			$this->getLevel()->setBlock($this, BlockFactory::get(Block::DIRT));
 			return true;

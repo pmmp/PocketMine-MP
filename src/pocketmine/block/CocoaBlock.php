@@ -94,7 +94,7 @@ class CocoaBlock extends Transparent{
 		return false;
 	}
 
-	public function onActivate(Item $item, Player $player = null) : bool{
+	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->age < 2 and $item->getId() === Item::DYE and $item->getDamage() === 15){ //bone meal
 			$this->age++;
 			$this->level->setBlock($this, $this);

@@ -30,6 +30,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\Shovel;
 use pocketmine\level\generator\object\TallGrass as TallGrassObject;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 use function mt_rand;
@@ -99,7 +100,10 @@ class Grass extends Solid{
 		}
 	}
 
-	public function onActivate(Item $item, Player $player = null) : bool{
+	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($face !== Facing::UP){
+			return false;
+		}
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){
 			$item->pop();
 			TallGrassObject::growGrass($this->getLevel(), $this, new Random(mt_rand()), 8, 2);
