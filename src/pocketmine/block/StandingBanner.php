@@ -104,7 +104,7 @@ class StandingBanner extends Transparent{
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$tile = $this->level->getTile($this);
 
-		$drop = ItemFactory::get(Item::BANNER, ($tile instanceof TileBanner ? $tile->getBaseColor() : 0));
+		$drop = ItemFactory::get(Item::BANNER, ($tile instanceof TileBanner ? $tile->getBaseColor()->getInvertedMagicNumber() : 0));
 		if($tile instanceof TileBanner and $drop instanceof ItemBanner and !($patterns = $tile->getPatterns())->empty()){
 			$drop->setPatterns($patterns);
 		}

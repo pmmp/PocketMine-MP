@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
@@ -53,21 +54,21 @@ class Banner extends Item{
 	/**
 	 * Returns the color of the banner base.
 	 *
-	 * @return int
+	 * @return DyeColor
 	 */
-	public function getBaseColor() : int{
-		return $this->getNamedTag()->getInt(self::TAG_BASE, $this->getDamage());
+	public function getBaseColor() : DyeColor{
+		return DyeColor::fromMagicNumber($this->getNamedTag()->getInt(self::TAG_BASE, $this->getDamage()), true);
 	}
 
 	/**
 	 * Sets the color of the banner base.
 	 * Banner items have to be resent to see the changes in the inventory.
 	 *
-	 * @param int $color
+	 * @param DyeColor $color
 	 */
-	public function setBaseColor(int $color) : void{
+	public function setBaseColor(DyeColor $color) : void{
 		$namedTag = $this->getNamedTag();
-		$namedTag->setInt(self::TAG_BASE, $color & 0x0f);
+		$namedTag->setInt(self::TAG_BASE, $color->getInvertedMagicNumber());
 		$this->setNamedTag($namedTag);
 	}
 
@@ -75,17 +76,17 @@ class Banner extends Item{
 	 * Applies a new pattern on the banner with the given color.
 	 * Banner items have to be resent to see the changes in the inventory.
 	 *
-	 * @param string $pattern
-	 * @param int    $color
+	 * @param string   $pattern
+	 * @param DyeColor $color
 	 *
 	 * @return int ID of pattern.
 	 */
-	public function addPattern(string $pattern, int $color) : int{
+	public function addPattern(string $pattern, DyeColor $color) : int{
 		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
 		assert($patternsTag !== null);
 
 		$patternsTag->push(new CompoundTag("", [
-			new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
+			new IntTag(self::TAG_PATTERN_COLOR, $color->getInvertedMagicNumber()),
 			new StringTag(self::TAG_PATTERN_NAME, $pattern)
 		]));
 
@@ -124,7 +125,7 @@ class Banner extends Item{
 		assert($pattern instanceof CompoundTag);
 
 		return [
-			self::TAG_PATTERN_COLOR => $pattern->getInt(self::TAG_PATTERN_COLOR),
+			self::TAG_PATTERN_COLOR => DyeColor::fromMagicNumber($pattern->getInt(self::TAG_PATTERN_COLOR), true),
 			self::TAG_PATTERN_NAME => $pattern->getString(self::TAG_PATTERN_NAME)
 		];
 	}
@@ -133,13 +134,13 @@ class Banner extends Item{
 	 * Changes the pattern of a previously existing pattern.
 	 * Banner items have to be resent to see the changes in the inventory.
 	 *
-	 * @param int    $patternId
-	 * @param string $pattern
-	 * @param int    $color
+	 * @param int      $patternId
+	 * @param string   $pattern
+	 * @param DyeColor $color
 	 *
 	 * @return bool indicating success.
 	 */
-	public function changePattern(int $patternId, string $pattern, int $color) : bool{
+	public function changePattern(int $patternId, string $pattern, DyeColor $color) : bool{
 		if(!$this->patternExists($patternId)){
 			return false;
 		}
@@ -148,7 +149,7 @@ class Banner extends Item{
 		assert($patternsTag !== null);
 
 		$patternsTag->set($patternId, new CompoundTag("", [
-			new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
+			new IntTag(self::TAG_PATTERN_COLOR, $color->getInvertedMagicNumber()),
 			new StringTag(self::TAG_PATTERN_NAME, $pattern)
 		]));
 
@@ -224,7 +225,7 @@ class Banner extends Item{
 	public function correctNBT() : void{
 		$tag = $this->getNamedTag();
 		if(!$tag->hasTag(self::TAG_BASE, IntTag::class)){
-			$tag->setInt(self::TAG_BASE, 0);
+			$tag->setInt(self::TAG_BASE, DyeColor::$BLACK->getInvertedMagicNumber());
 		}
 
 		if(!$tag->hasTag(self::TAG_PATTERNS, ListTag::class)){
