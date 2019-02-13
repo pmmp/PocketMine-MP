@@ -174,7 +174,7 @@ class AddEntityPacket extends DataPacket implements ClientboundPacket{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->type = array_search($t = $this->getString(), self::LEGACY_ID_MAP_BC, true);
 		if($this->type === false){
-			throw new BadPacketException("Can't map ID $t to legacy ID");
+			$this->type = -1;
 		}
 		$this->position = $this->getVector3();
 		$this->motion = $this->getVector3();
@@ -215,9 +215,10 @@ class AddEntityPacket extends DataPacket implements ClientboundPacket{
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		if(!isset(self::LEGACY_ID_MAP_BC[$this->type])){
-			throw new \InvalidArgumentException("Unknown entity numeric ID $this->type");
+			$this->putString(strval($this->type));
+		}else{
+			$this->putString(self::LEGACY_ID_MAP_BC[$this->type]);
 		}
-		$this->putString(self::LEGACY_ID_MAP_BC[$this->type]);
 		$this->putVector3($this->position);
 		$this->putVector3Nullable($this->motion);
 		$this->putLFloat($this->pitch);
