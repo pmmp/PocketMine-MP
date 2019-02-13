@@ -35,7 +35,9 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	use NameableTrait {
 		addAdditionalSpawnData as addNameSpawnData;
 	}
-	use ContainerTrait;
+	use ContainerTrait {
+		onBlockDestroyedHook as containerTraitBlockDestroyedHook;
+	}
 
 	public const TAG_PAIRX = "pairx";
 	public const TAG_PAIRZ = "pairz";
@@ -102,6 +104,11 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 
 			parent::close();
 		}
+	}
+
+	protected function onBlockDestroyedHook() : void{
+		$this->unpair();
+		$this->containerTraitBlockDestroyedHook();
 	}
 
 	/**

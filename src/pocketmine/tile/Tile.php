@@ -129,6 +129,21 @@ abstract class Tile extends Position{
 		$this->close();
 	}
 
+	/**
+	 * Called when the tile's block is destroyed.
+	 */
+	final public function onBlockDestroyed() : void{
+		$this->onBlockDestroyedHook();
+		$this->close();
+	}
+
+	/**
+	 * Override this method to do actions you need to do when this tile is destroyed due to block being broken.
+	 */
+	protected function onBlockDestroyedHook() : void{
+
+	}
+
 	public function close() : void{
 		if(!$this->closed){
 			$this->closed = true;

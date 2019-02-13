@@ -41,9 +41,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\tile\Chest;
-use pocketmine\tile\Container;
-use pocketmine\tile\Tile;
 use function ceil;
 use function floor;
 use function mt_rand;
@@ -206,30 +203,20 @@ class Explosion{
 		$airBlock = BlockFactory::get(Block::AIR);
 
 		foreach($this->affectedBlocks as $block){
-			$yieldDrops = false;
-
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
-			}elseif($yieldDrops = (mt_rand(0, 100) < $yield)){
-				foreach($block->getDrops($air) as $drop){
-					$this->level->dropItem($block->add(0.5, 0.5, 0.5), $drop);
+			}else{
+				if(mt_rand(0, 100) < $yield){
+					foreach($block->getDrops($air) as $drop){
+						$this->level->dropItem($block->add(0.5, 0.5, 0.5), $drop);
+					}
 				}
+				if(($t = $this->level->getTileAt($block->x, $block->y, $block->z)) !== null){
+					$t->onBlockDestroyed(); //needed to create drops for inventories
+				}
+				$this->level->setBlockAt($block->x, $block->y, $block->z, $airBlock, false); //TODO: should updating really be disabled here?
+				$this->level->updateAllLight($block);
 			}
-
-			$this->level->setBlockAt($block->x, $block->y, $block->z, $airBlock, false); //TODO: should updating really be disabled here?
-
-			$t = $this->level->getTileAt($block->x, $block->y, $block->z);
-			if($t instanceof Tile){
-				if($t instanceof Chest){
-					$t->unpair();
-				}
-				if($yieldDrops and $t instanceof Container){
-					$t->getInventory()->dropContents($this->level, $t->add(0.5, 0.5, 0.5));
-				}
-
-				$t->close();
-			}
-			$this->level->updateAllLight($block);
 
 			$pos = new Vector3($block->x, $block->y, $block->z);
 

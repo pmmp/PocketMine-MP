@@ -25,6 +25,7 @@ namespace pocketmine\tile;
 
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
+use pocketmine\level\Position;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -84,5 +85,24 @@ trait ContainerTrait{
 	 */
 	public function canOpenWith(string $key) : bool{
 		return $this->lock === null or $this->lock === $key;
+	}
+
+	/**
+	 * @see Position::asPosition()
+	 * @return Position
+	 */
+	abstract protected function asPosition() : Position;
+
+	/**
+	 * @see Tile::onBlockDestroyedHook()
+	 */
+	protected function onBlockDestroyedHook() : void{
+		$inv = $this->getRealInventory();
+		$pos = $this->asPosition();
+
+		foreach($inv->getContents() as $k => $item){
+			$pos->level->dropItem($pos->add(0.5, 0.5, 0.5), $item);
+		}
+		$inv->clearAll(false);
 	}
 }

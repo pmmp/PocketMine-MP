@@ -81,8 +81,6 @@ use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
-use pocketmine\tile\Chest;
-use pocketmine\tile\Container;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
@@ -1759,15 +1757,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$tile = $this->getTile($target);
 		if($tile !== null){
-			if($tile instanceof Container){
-				if($tile instanceof Chest){
-					$tile->unpair();
-				}
-
-				$tile->getInventory()->dropContents($this, $target);
-			}
-
-			$tile->close();
+			$tile->onBlockDestroyed();
 		}
 	}
 
