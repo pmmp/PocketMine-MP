@@ -33,6 +33,8 @@ use function array_pad;
 use function array_slice;
 use function explode;
 use function implode;
+use function mb_check_encoding;
+use function mb_scrub;
 use function sprintf;
 
 class Sign extends Spawnable{
@@ -57,6 +59,9 @@ class Sign extends Spawnable{
 				}
 			}
 		}
+		$this->text = array_map(function(string $line) : string{
+			return mb_scrub($line, 'UTF-8');
+		}, $this->text);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
@@ -79,16 +84,16 @@ class Sign extends Spawnable{
 	 */
 	public function setText(?string $line1 = "", ?string $line2 = "", ?string $line3 = "", ?string $line4 = "") : void{
 		if($line1 !== null){
-			$this->text[0] = $line1;
+			$this->setLine(0, $line1, false);
 		}
 		if($line2 !== null){
-			$this->text[1] = $line2;
+			$this->setLine(1, $line2, false);
 		}
 		if($line3 !== null){
-			$this->text[2] = $line3;
+			$this->setLine(2, $line3, false);
 		}
 		if($line4 !== null){
-			$this->text[3] = $line4;
+			$this->setLine(3, $line4, false);
 		}
 
 		$this->onChanged();
@@ -102,6 +107,9 @@ class Sign extends Spawnable{
 	public function setLine(int $index, string $line, bool $update = true) : void{
 		if($index < 0 or $index > 3){
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
+		}
+		if(!mb_check_encoding($line, 'UTF-8')){
+			throw new \InvalidArgumentException("Text must be valid UTF-8");
 		}
 
 		$this->text[$index] = $line;
