@@ -88,7 +88,7 @@ abstract class TextFormat{
 	public static function clean(string $string, bool $removeFormat = true) : string{
 		$string = mb_scrub($string, 'UTF-8');
 		if($removeFormat){
-			return str_replace(TextFormat::ESCAPE, "", preg_replace(["/" . TextFormat::ESCAPE . "[0-9a-fk-or]/u", "/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/"], "", $string));
+			return str_replace(TextFormat::ESCAPE, "", preg_replace(["/" . TextFormat::ESCAPE . "[0-9a-fk-or]/u", "/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/u"], "", $string));
 		}
 		return str_replace("\x1b", "", preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/u", "", $string));
 	}
