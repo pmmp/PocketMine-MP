@@ -53,7 +53,7 @@ abstract class ProjectileItem extends Item{
 
 	}
 
-	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
+	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
 		$nbt = EntityFactory::createBaseNBT($player->add(0, $player->getEyeHeight(), 0), $directionVector, $player->yaw, $player->pitch);
 		$this->addExtraTags($nbt);
 
@@ -68,14 +68,15 @@ abstract class ProjectileItem extends Item{
 		$projectileEv->call();
 		if($projectileEv->isCancelled()){
 			$projectile->flagForDespawn();
-		}else{
-			$projectile->spawnToAll();
-
-			$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_THROW, 0, EntityIds::PLAYER);
+			return ItemUseResult::fail();
 		}
+
+		$projectile->spawnToAll();
+
+		$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_THROW, 0, EntityIds::PLAYER);
 
 		$this->pop();
 
-		return true;
+		return ItemUseResult::success();
 	}
 }

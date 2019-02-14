@@ -52,14 +52,14 @@ class LiquidBucket extends Item{
 		return 0;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		if(!$blockReplace->canBeReplaced()){
-			return false;
+			return ItemUseResult::none();
 		}
 
 		//TODO: move this to generic placement logic
 		$resultBlock = BlockFactory::get($this->liquidId);
-		if($resultBlock instanceof Liquid){
+		if($resultBlock instanceof Liquid){ //TODO: this should never be false
 			$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, ItemFactory::get(Item::BUCKET));
 			$ev->call();
 			if(!$ev->isCancelled()){
@@ -69,13 +69,12 @@ class LiquidBucket extends Item{
 				if($player->isSurvival()){
 					$player->getInventory()->setItemInHand($ev->getItem());
 				}
-			}else{
-				$player->getInventory()->sendContents($player);
+				return ItemUseResult::success();
 			}
 
-			return true;
+			return ItemUseResult::fail();
 		}
 
-		return false;
+		return ItemUseResult::none();
 	}
 }

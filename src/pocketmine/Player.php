@@ -80,6 +80,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
+use pocketmine\item\ItemUseResult;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
 use pocketmine\lang\TextContainer;
@@ -2061,11 +2062,14 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			return false;
 		}
 
-		if($item->onClickAir($this, $directionVector)){
+		$result = $item->onClickAir($this, $directionVector);
+		if($result === ItemUseResult::success()){
 			$this->resetItemCooldown($item);
 			if($this->isSurvival()){
 				$this->inventory->setItemInHand($item);
 			}
+		}elseif($result === ItemUseResult::fail()){
+			$this->inventory->sendHeldItem($this);
 		}
 
 		//TODO: check if item has a release action - if it doesn't, this shouldn't be set
@@ -2120,9 +2124,14 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 					$this->inventory->sendContents($this);
 					return false;
 				}
-				if($item->onReleaseUsing($this)){
+				$result = $item->onReleaseUsing($this);
+				if($result === ItemUseResult::success()){
 					$this->resetItemCooldown($item);
 					$this->inventory->setItemInHand($item);
+					return true;
+				}
+				if($result === ItemUseResult::fail()){
+					$this->inventory->sendContents($this);
 					return true;
 				}
 			}

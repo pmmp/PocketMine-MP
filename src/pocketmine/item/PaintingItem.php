@@ -38,9 +38,9 @@ class PaintingItem extends Item{
 		parent::__construct(self::PAINTING, 0, "Painting");
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		if(Facing::axis($face) === Facing::AXIS_Y){
-			return false;
+			return ItemUseResult::none();
 		}
 
 		$motives = [];

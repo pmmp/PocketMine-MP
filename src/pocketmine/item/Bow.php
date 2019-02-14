@@ -47,10 +47,9 @@ class Bow extends Tool{
 		return 385;
 	}
 
-	public function onReleaseUsing(Player $player) : bool{
+	public function onReleaseUsing(Player $player) : ItemUseResult{
 		if($player->isSurvival() and !$player->getInventory()->contains(ItemFactory::get(Item::ARROW, 0, 1))){
-			$player->getInventory()->sendContents($player);
-			return false;
+			return ItemUseResult::fail();
 		}
 
 		$nbt = EntityFactory::createBaseNBT(
@@ -93,30 +92,32 @@ class Bow extends Tool{
 
 		if($ev->isCancelled()){
 			$entity->flagForDespawn();
-			$player->getInventory()->sendContents($player);
-		}else{
-			$entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
-			if($player->isSurvival()){
-				if(!$infinity){ //TODO: tipped arrows are still consumed when Infinity is applied
-					$player->getInventory()->removeItem(ItemFactory::get(Item::ARROW, 0, 1));
-				}
-				$this->applyDamage(1);
-			}
-
-			if($entity instanceof Projectile){
-				$projectileEv = new ProjectileLaunchEvent($entity);
-				$projectileEv->call();
-				if($projectileEv->isCancelled()){
-					$ev->getProjectile()->flagForDespawn();
-				}else{
-					$ev->getProjectile()->spawnToAll();
-					$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_BOW);
-				}
-			}else{
-				$entity->spawnToAll();
-			}
+			return ItemUseResult::fail();
 		}
 
-		return true;
+		$entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
+
+		if($entity instanceof Projectile){
+			$projectileEv = new ProjectileLaunchEvent($entity);
+			$projectileEv->call();
+			if($projectileEv->isCancelled()){
+				$ev->getProjectile()->flagForDespawn();
+				return ItemUseResult::fail();
+			}
+
+			$ev->getProjectile()->spawnToAll();
+			$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_BOW);
+		}else{
+			$entity->spawnToAll();
+		}
+
+		if($player->isSurvival()){
+			if(!$infinity){ //TODO: tipped arrows are still consumed when Infinity is applied
+				$player->getInventory()->removeItem(ItemFactory::get(Item::ARROW, 0, 1));
+			}
+			$this->applyDamage(1);
+		}
+
+		return ItemUseResult::success();
 	}
 }

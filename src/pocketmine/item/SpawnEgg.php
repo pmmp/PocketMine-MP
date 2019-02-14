@@ -50,7 +50,7 @@ class SpawnEgg extends Item{
 		$this->entityClass = $entityClass;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		$nbt = EntityFactory::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, lcg_value() * 360, 0);
 
 		if($this->hasCustomName()){
@@ -60,6 +60,7 @@ class SpawnEgg extends Item{
 		$entity = EntityFactory::create($this->entityClass, $player->getLevel(), $nbt);
 		$this->pop();
 		$entity->spawnToAll();
-		return true;
+		//TODO: what if the entity was marked for deletion?
+		return ItemUseResult::success();
 	}
 }

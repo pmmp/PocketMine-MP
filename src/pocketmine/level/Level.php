@@ -44,6 +44,7 @@ use pocketmine\event\level\SpawnChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemUseResult;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkException;
@@ -1798,8 +1799,11 @@ class Level implements ChunkManager, Metadatable{
 					return true;
 				}
 
-				if(!$player->isSneaking() and $item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector)){
-					return true;
+				if(!$player->isSneaking()){
+					$result = $item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector);
+					if($result !== ItemUseResult::none()){
+						return $result === ItemUseResult::success();
+					}
 				}
 			}else{
 				return false;

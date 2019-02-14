@@ -36,7 +36,7 @@ class Bucket extends Item{
 		return 16;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		//TODO: move this to generic placement logic
 		if($blockClicked instanceof Liquid and $blockClicked->isSource()){
 			$stack = clone $this;
@@ -58,13 +58,12 @@ class Bucket extends Item{
 				}else{
 					$player->getInventory()->addItem($ev->getItem());
 				}
-			}else{
-				$player->getInventory()->sendContents($player);
+				return ItemUseResult::success();
 			}
 
-			return true;
+			return ItemUseResult::fail();
 		}
 
-		return false;
+		return ItemUseResult::none();
 	}
 }
