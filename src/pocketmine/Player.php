@@ -720,7 +720,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 
 			$data = new CommandData();
-			$data->commandName = $command->getName();
+			//TODO: commands containing uppercase letters in the name crash 1.9.0 client
+			$data->commandName = strtolower($command->getName());
 			$data->commandDescription = $this->server->getLanguage()->translateString($command->getDescription());
 			$data->flags = 0;
 			$data->permission = 0;
