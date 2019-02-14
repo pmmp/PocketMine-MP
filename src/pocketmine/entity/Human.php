@@ -301,7 +301,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				$food = $this->getFood();
 				if($food > 0){
 					$food--;
-					$this->setFood($food);
+					$this->setFood(max($food, 0));
 				}
 			}
 		}
