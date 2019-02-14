@@ -249,6 +249,15 @@ class Config{
 	}
 
 	/**
+	 * Returns the path of the config.
+	 *
+	 * @return string
+	 */
+	public function getPath() : string{
+		return $this->file;
+	}
+
+	/**
 	 * Sets the options for the JSON encoding when saving
 	 *
 	 * @param int $options
