@@ -166,8 +166,10 @@ class NetworkSession{
 	}
 
 	public function setHandler(SessionHandler $handler) : void{
-		$this->handler = $handler;
-		$this->handler->setUp();
+		if($this->connected){ //TODO: this is fine since we can't handle anything from a disconnected session, but it might produce surprises in some cases
+			$this->handler = $handler;
+			$this->handler->setUp();
+		}
 	}
 
 	/**
