@@ -189,8 +189,9 @@ class Block extends Position implements BlockIds, Metadatable{
 		$oldTile = $this->level->getTile($this);
 		if($oldTile !== null and ($tileType === null or !($oldTile instanceof $tileType))){
 			$oldTile->close();
+			$oldTile = null;
 		}
-		if($tileType !== null){
+		if($oldTile === null and $tileType !== null){
 			$this->level->addTile(TileFactory::create($tileType, $this->level, $this->asVector3()));
 		}
 	}
