@@ -68,7 +68,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	/** @var NetworkSession[] */
 	private $sessions = [];
 
-	/** @var string[] */
+	/** @var int[] */
 	private $identifiers = [];
 
 	/** @var ServerHandler */
@@ -118,11 +118,11 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		}
 	}
 
-	public function closeSession(string $identifier, string $reason) : void{
-		if(isset($this->sessions[$identifier])){
-			$session = $this->sessions[$identifier];
+	public function closeSession(int $sessionId, string $reason) : void{
+		if(isset($this->sessions[$sessionId])){
+			$session = $this->sessions[$sessionId];
 			unset($this->identifiers[spl_object_id($session)]);
-			unset($this->sessions[$identifier]);
+			unset($this->sessions[$sessionId]);
 			$session->onClientDisconnect($reason);
 		}
 	}
@@ -140,19 +140,19 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		$this->interface->shutdown();
 	}
 
-	public function openSession(string $identifier, string $address, int $port, int $clientID) : void{
+	public function openSession(int $sessionId, string $address, int $port, int $clientID) : void{
 		$session = new NetworkSession($this->server, $this, $address, $port);
-		$this->sessions[$identifier] = $session;
-		$this->identifiers[spl_object_id($session)] = $identifier;
+		$this->sessions[$sessionId] = $session;
+		$this->identifiers[spl_object_id($session)] = $sessionId;
 	}
 
-	public function handleEncapsulated(string $identifier, EncapsulatedPacket $packet, int $flags) : void{
-		if(isset($this->sessions[$identifier])){
+	public function handleEncapsulated(int $sessionId, EncapsulatedPacket $packet, int $flags) : void{
+		if(isset($this->sessions[$sessionId])){
 			if($packet->buffer === "" or $packet->buffer{0} !== self::MCPE_RAKNET_PACKET_ID){
 				return;
 			}
 			//get this now for blocking in case the player was closed before the exception was raised
-			$session = $this->sessions[$identifier];
+			$session = $this->sessions[$sessionId];
 			$address = $session->getIp();
 			$port = $session->getPort();
 			$buf = substr($packet->buffer, 1);
@@ -193,7 +193,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		$this->interface->addRawPacketFilter($regex);
 	}
 
-	public function notifyACK(string $identifier, int $identifierACK) : void{
+	public function notifyACK(int $sessionId, int $identifierACK) : void{
 
 	}
 
@@ -239,9 +239,9 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		}
 	}
 
-	public function updatePing(string $identifier, int $pingMS) : void{
-		if(isset($this->sessions[$identifier])){
-			$this->sessions[$identifier]->updatePing($pingMS);
+	public function updatePing(int $sessionId, int $pingMS) : void{
+		if(isset($this->sessions[$sessionId])){
+			$this->sessions[$sessionId]->updatePing($pingMS);
 		}
 	}
 }
