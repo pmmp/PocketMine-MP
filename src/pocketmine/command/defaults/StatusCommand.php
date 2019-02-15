@@ -112,8 +112,7 @@ class StatusCommand extends VanillaCommand{
 			$tickRate = $level->getTickRate() > 1 ? " (tick rate " . $level->getTickRate() . ")" : "";
 			$sender->sendMessage(TextFormat::GOLD . "World \"{$level->getFolderName()}\"$levelName: " .
 				TextFormat::RED . number_format(count($level->getChunks())) . TextFormat::GREEN . " chunks, " .
-				TextFormat::RED . number_format(count($level->getEntities())) . TextFormat::GREEN . " entities, " .
-				TextFormat::RED . number_format(count($level->getTiles())) . TextFormat::GREEN . " tiles. " .
+				TextFormat::RED . number_format(count($level->getEntities())) . TextFormat::GREEN . " entities. " .
 				"Time $timeColor" . round($level->getTickRateTime(), 2) . "ms" . $tickRate
 			);
 		}

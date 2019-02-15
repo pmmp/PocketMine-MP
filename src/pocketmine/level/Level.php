@@ -133,9 +133,6 @@ class Level implements ChunkManager, Metadatable{
 	public const DIFFICULTY_NORMAL = 2;
 	public const DIFFICULTY_HARD = 3;
 
-	/** @var Tile[] */
-	private $tiles = [];
-
 	/** @var Player[] */
 	private $players = [];
 
@@ -2008,16 +2005,6 @@ class Level implements ChunkManager, Metadatable{
 		return $currentTarget;
 	}
 
-
-	/**
-	 * Returns a list of the Tile entities in this level
-	 *
-	 * @return Tile[]
-	 */
-	public function getTiles() : array{
-		return $this->tiles;
-	}
-
 	/**
 	 * Returns a list of the players in this level
 	 *
@@ -2576,7 +2563,6 @@ class Level implements ChunkManager, Metadatable{
 			throw new \InvalidStateException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
 		}
 
-		$this->tiles[Level::blockHash($tile->x, $tile->y, $tile->z)] = $tile;
 		$tile->scheduleUpdate();
 	}
 
@@ -2590,7 +2576,7 @@ class Level implements ChunkManager, Metadatable{
 			throw new \InvalidArgumentException("Invalid Tile level");
 		}
 
-		unset($this->tiles[$blockHash = Level::blockHash($tile->x, $tile->y, $tile->z)], $this->updateTiles[$blockHash]);
+		unset($this->updateTiles[Level::blockHash($tile->x, $tile->y, $tile->z)]);
 
 		$chunkX = $tile->getFloorX() >> 4;
 		$chunkZ = $tile->getFloorZ() >> 4;
