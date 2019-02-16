@@ -25,7 +25,7 @@ namespace pocketmine\plugin\loader;
 
 class DummyScriptPluginLoader extends ScriptPluginLoader {
 
-	public function checkExtension(string $path) {
+	public function checkExtension(string $path) : bool{
 		return parent::checkExtension($path);
 	}
 

@@ -25,7 +25,7 @@ namespace pocketmine\plugin\loader;
 
 class DummyPharPluginLoader extends PharPluginLoader {
 
-	public function checkExtension(string $path) {
+	public function checkExtension(string $path) : bool{
 		return parent::checkExtension($path);
 	}
 
