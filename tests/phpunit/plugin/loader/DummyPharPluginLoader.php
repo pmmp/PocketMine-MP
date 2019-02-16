@@ -23,13 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin\loader;
 
-interface FilePluginLoader{
+class DummyPharPluginLoader extends PharPluginLoader {
 
-	/**
-	 * Returns the file extension used by this loader format.
-	 *
-	 * @return string
-	 */
-	public function getFileExtension() : string;
+	public function checkExtension(string $path) {
+		return parent::checkExtension($path);
+	}
 
 }

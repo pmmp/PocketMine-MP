@@ -48,13 +48,14 @@ trait FilePluginLoaderTrait{
 	}
 
 	/**
-	 * @see FilePluginLoader::checkExtension()
+	 * Returns whether the specified file path has a matching file extension. Isolated from
+	 * @see PluginLoader::canLoadPlugin() for testing purposes.
 	 *
 	 * @param string $path
 	 *
 	 * @return bool
 	 */
-	public function checkExtension(string $path) : bool{
+	protected function checkExtension(string $path) : bool{
 		return substr($path, -strlen($this->getFileExtension())) === $this->getFileExtension();
 	}
 
