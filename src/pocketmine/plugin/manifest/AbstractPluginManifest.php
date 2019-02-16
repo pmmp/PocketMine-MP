@@ -32,11 +32,4 @@ abstract class AbstractPluginManifest implements PluginManifest{
 		$this->path = $path;
 	}
 
-	/**
-	 * @inheritdoc
-	 */
-	public function getPath() : string{
-		return $this->path;
-	}
-
 }

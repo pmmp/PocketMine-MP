@@ -37,14 +37,6 @@ interface PluginManifest{
 	 */
 	public static function canReadPlugin(string $path) : bool;
 
-
-	/**
-	 * Get the root path to the plugin (without access protocol).
-	 *
-	 * @return string
-	 */
-	public function getPath() : string;
-
 	/**
 	 * Gets the PluginDescription from the manifest file.
 	 *
