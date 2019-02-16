@@ -26,7 +26,6 @@ namespace pocketmine\level\particle;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Skin;
-use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
@@ -103,7 +102,7 @@ class FloatingTextParticle implements Particle{
 			$pk->username = $name;
 			$pk->entityRuntimeId = $this->entityId;
 			$pk->position = $pos; //TODO: check offset
-			$pk->item = ItemFactory::get(Item::AIR, 0, 0);
+			$pk->item = ItemFactory::air();
 
 			$flags = (
 				1 << Entity::DATA_FLAG_IMMOBILE

@@ -42,7 +42,7 @@ class ItemFrame extends Spawnable{
 	private $itemDropChance = 1.0;
 
 	public function __construct(Level $level, Vector3 $pos){
-		$this->item = ItemFactory::get(Item::AIR, 0, 0);
+		$this->item = ItemFactory::air();
 		parent::__construct($level, $pos);
 	}
 
@@ -72,7 +72,7 @@ class ItemFrame extends Spawnable{
 		if($item !== null and !$item->isNull()){
 			$this->item = clone $item;
 		}else{
-			$this->item = ItemFactory::get(Item::AIR, 0, 0);
+			$this->item = ItemFactory::air();
 		}
 		$this->onChanged();
 	}

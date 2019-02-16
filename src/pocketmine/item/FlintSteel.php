@@ -36,7 +36,7 @@ class FlintSteel extends Tool{
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		if($blockReplace->getId() === self::AIR){
+		if($blockReplace->getId() === Block::AIR){
 			$level = $player->getLevel();
 			assert($level !== null);
 			$level->setBlock($blockReplace, BlockFactory::get(Block::FIRE));

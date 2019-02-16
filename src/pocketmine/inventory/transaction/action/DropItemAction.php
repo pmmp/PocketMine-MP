@@ -34,7 +34,7 @@ use pocketmine\Player;
 class DropItemAction extends InventoryAction{
 
 	public function __construct(Item $targetItem){
-		parent::__construct(ItemFactory::get(Item::AIR, 0, 0), $targetItem);
+		parent::__construct(ItemFactory::air(), $targetItem);
 	}
 
 	public function isValid(Player $source) : bool{

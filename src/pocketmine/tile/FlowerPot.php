@@ -39,7 +39,7 @@ class FlowerPot extends Spawnable{
 	private $item;
 
 	public function __construct(Level $level, Vector3 $pos){
-		$this->item = ItemFactory::get(Item::AIR, 0, 0);
+		$this->item = ItemFactory::air();
 		parent::__construct($level, $pos);
 	}
 
@@ -87,7 +87,7 @@ class FlowerPot extends Spawnable{
 	}
 
 	public function removeItem(){
-		$this->setItem(ItemFactory::get(Item::AIR, 0, 0));
+		$this->setItem(ItemFactory::air());
 	}
 
 	public function isEmpty() : bool{

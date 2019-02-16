@@ -640,7 +640,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Block
 	 */
 	public function getBlock() : Block{
-		return BlockFactory::get(self::AIR);
+		return BlockFactory::get(Block::AIR);
 	}
 
 	/**
@@ -939,7 +939,7 @@ class Item implements ItemIds, \JsonSerializable{
 				$item = ItemFactory::fromString($idTag->getValue() . ":$meta");
 			}catch(\InvalidArgumentException $e){
 				//TODO: improve error handling
-				return ItemFactory::get(Item::AIR, 0, 0);
+				return ItemFactory::air();
 			}
 			$item->setCount($count);
 		}else{

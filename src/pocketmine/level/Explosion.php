@@ -32,7 +32,6 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
-use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\particle\HugeExplodeSeedParticle;
 use pocketmine\level\utils\SubChunkIteratorManager;
@@ -199,7 +198,7 @@ class Explosion{
 		}
 
 
-		$air = ItemFactory::get(Item::AIR);
+		$air = ItemFactory::air();
 		$airBlock = BlockFactory::get(Block::AIR);
 
 		foreach($this->affectedBlocks as $block){

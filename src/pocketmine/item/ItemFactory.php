@@ -47,6 +47,9 @@ class ItemFactory{
 	/** @var \SplFixedArray */
 	private static $list = [];
 
+	/** @var Item|null */
+	private static $air = null;
+
 	public static function init(){
 		self::$list = []; //in case of re-initializing
 
@@ -421,6 +424,10 @@ class ItemFactory{
 		}
 
 		return $item;
+	}
+
+	public static function air() : Item{
+		return self::$air ?? (self::$air = self::get(ItemIds::AIR, 0, 0));
 	}
 
 	/**

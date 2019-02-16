@@ -1674,7 +1674,7 @@ class Level implements ChunkManager, Metadatable{
 		$affectedBlocks = $target->getAffectedBlocks();
 
 		if($item === null){
-			$item = ItemFactory::get(Item::AIR, 0, 0);
+			$item = ItemFactory::air();
 		}
 
 		$drops = [];
