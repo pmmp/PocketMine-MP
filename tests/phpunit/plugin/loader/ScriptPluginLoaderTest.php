@@ -69,7 +69,7 @@ class ScriptPluginLoaderTest extends TestCase{
 	 *
 	 * @param $path
 	 */
-	public function testNotDetectWrongExtension($path){
+	public function testNotDetectWrongScriptPlugin($path){
 		$loader = new DummyScriptPluginLoader();
 
 		$this->assertFalse($loader->checkExtension($path), $path);

@@ -69,7 +69,7 @@ class PharPluginLoaderTest extends TestCase{
 	 *
 	 * @param $path
 	 */
-	public function testNotDetectWrongExtension($path){
+	public function testNotDetectWrongPhar($path){
 		$loader = new DummyPharPluginLoader();
 
 		$this->assertFalse($loader->checkExtension($path), $path);
