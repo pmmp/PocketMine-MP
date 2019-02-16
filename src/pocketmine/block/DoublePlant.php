@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\level\BlockWriteBatch;
+use pocketmine\level\BlockTransaction;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -53,9 +53,9 @@ class DoublePlant extends Flowable{
 			$top = clone $this;
 			$top->top = true;
 
-			$write = new BlockWriteBatch();
-			$write->addBlock($blockReplace, $this)->addBlock($blockReplace->getSide(Facing::UP), $top);
-			return $write->apply($this->level);
+			$transaction = new BlockTransaction();
+			$transaction->addBlock($blockReplace, $this)->addBlock($blockReplace->getSide(Facing::UP), $top);
+			return $transaction->apply($this->level);
 		}
 
 		return false;

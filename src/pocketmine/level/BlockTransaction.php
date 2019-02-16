@@ -27,7 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Utils;
 
-class BlockWriteBatch{
+class BlockTransaction{
 	/** @var Block[][][] */
 	private $blocks = [];
 
@@ -41,7 +41,7 @@ class BlockWriteBatch{
 	}
 
 	/**
-	 * Adds a block to the batch at the given position.
+	 * Adds a block to the transaction at the given position.
 	 *
 	 * @param Vector3 $pos
 	 * @param Block   $state
@@ -68,8 +68,8 @@ class BlockWriteBatch{
 	}
 
 	/**
-	 * Reads a block from the given world, masked by the blocks in this writebatch. This can be useful if you want to
-	 * add blocks to the batch that depend on previous blocks should they exist.
+	 * Reads a block from the given world, masked by the blocks in this transaction. This can be useful if you want to
+	 * add blocks to the transaction that depend on previous blocks should they exist.
 	 *
 	 * @param ChunkManager $world
 	 * @param Vector3      $pos
@@ -81,7 +81,7 @@ class BlockWriteBatch{
 	}
 
 	/**
-	 * @see BlockWriteBatch::fetchBlock()
+	 * @see BlockTransaction::fetchBlock()
 	 *
 	 * @param ChunkManager $world
 	 * @param int          $x
@@ -95,8 +95,8 @@ class BlockWriteBatch{
 	}
 
 	/**
-	 * Validates and attempts to apply the batch to the given world. If any part of the batch fails to validate, no
-	 * changes will be made to the world.
+	 * Validates and attempts to apply the transaction to the given world. If any part of the transaction fails to
+	 * validate, no changes will be made to the world.
 	 *
 	 * @param ChunkManager $world
 	 *
@@ -132,7 +132,7 @@ class BlockWriteBatch{
 	/**
 	 * Add a validation predicate which will be used to validate every block.
 	 * The callable signature should be the same as the below dummy function.
-	 * @see BlockWriteBatch::dummyValidator()
+	 * @see BlockTransaction::dummyValidator()
 	 *
 	 * @param callable $validator
 	 */
@@ -143,7 +143,7 @@ class BlockWriteBatch{
 
 	/**
 	 * Dummy function demonstrating the required closure signature for validators.
-	 * @see BlockWriteBatch::addValidator()
+	 * @see BlockTransaction::addValidator()
 	 *
 	 * @dummy
 	 *
