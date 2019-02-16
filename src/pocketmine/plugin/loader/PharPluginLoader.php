@@ -45,7 +45,7 @@ class PharPluginLoader extends AbstractPluginLoader implements FilePluginLoader{
 	/**
 	 * @inheritdoc
 	 */
-	public function getFileExtension(): string{
+	public function getFileExtension() : string{
 		return ".phar";
 	}
 

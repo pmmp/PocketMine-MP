@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin\loader;
 
-interface FilePluginLoader {
+interface FilePluginLoader{
 
 	/**
 	 * Returns the file extension used by this loader format.
