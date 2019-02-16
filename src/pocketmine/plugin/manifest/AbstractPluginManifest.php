@@ -23,26 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin\manifest;
 
-use pocketmine\plugin\loader\PluginLoader;
-
 abstract class AbstractPluginManifest implements PluginManifest{
-
-	/** @var PluginLoader */
-	protected $loader;
 
 	/** @var string */
 	protected $path;
 
-	public function __construct(PluginLoader $loader, string $path){
-		$this->loader = $loader;
+	public function __construct(string $path){
 		$this->path = $path;
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function getLoader() : PluginLoader{
-		return $this->loader;
 	}
 
 	/**
