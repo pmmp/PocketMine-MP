@@ -27,8 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 interface Inventory{
@@ -121,15 +119,6 @@ interface Inventory{
 	 * @param bool   $send
 	 */
 	public function setContents(array $items, bool $send = true) : void;
-
-	/**
-	 * Drops the contents of the inventory into the specified Level at the specified position and clears the inventory
-	 * contents.
-	 *
-	 * @param Level   $level
-	 * @param Vector3 $position
-	 */
-	public function dropContents(Level $level, Vector3 $position) : void;
 
 	/**
 	 * @param Player|Player[] $target
