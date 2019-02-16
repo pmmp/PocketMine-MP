@@ -46,7 +46,7 @@ class SpruceTree extends Tree{
 		parent::placeObject($level, $x, $y, $z, $random);
 	}
 
-	protected function placeCanopy(ChunkManager $level, int $x, int $y, int $z, Random $random, BlockTransaction $transaction) : void{
+	protected function placeCanopy(int $x, int $y, int $z, Random $random, BlockTransaction $transaction) : void{
 		$topSize = $this->treeHeight - (1 + $random->nextBoundedInt(2));
 		$lRadius = 2 + $random->nextBoundedInt(2);
 		$radius = $random->nextBoundedInt(2);
@@ -64,7 +64,7 @@ class SpruceTree extends Tree{
 						continue;
 					}
 
-					if(!$level->getBlockAt($xx, $yyy, $zz)->isSolid()){
+					if(!$transaction->fetchBlockAt($xx, $yyy, $zz)->isSolid()){
 						$transaction->addBlockAt($xx, $yyy, $zz, $this->leafBlock);
 					}
 				}

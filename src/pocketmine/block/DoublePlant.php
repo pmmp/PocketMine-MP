@@ -53,9 +53,9 @@ class DoublePlant extends Flowable{
 			$top = clone $this;
 			$top->top = true;
 
-			$transaction = new BlockTransaction();
+			$transaction = new BlockTransaction($this->level);
 			$transaction->addBlock($blockReplace, $this)->addBlock($blockReplace->getSide(Facing::UP), $top);
-			return $transaction->apply($this->level);
+			return $transaction->apply();
 		}
 
 		return false;

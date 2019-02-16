@@ -107,29 +107,29 @@ abstract class Tree{
 	}
 
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random) : void{
-		$transaction = new BlockTransaction();
-		$this->placeTrunk($level, $x, $y, $z, $random, $this->generateChunkHeight($random), $transaction);
-		$this->placeCanopy($level, $x, $y, $z, $random, $transaction);
+		$transaction = new BlockTransaction($level);
+		$this->placeTrunk($x, $y, $z, $random, $this->generateChunkHeight($random), $transaction);
+		$this->placeCanopy($x, $y, $z, $random, $transaction);
 
-		$transaction->apply($level); //TODO: handle return value on failure
+		$transaction->apply(); //TODO: handle return value on failure
 	}
 
 	protected function generateChunkHeight(Random $random) : int{
 		return $this->treeHeight - 1;
 	}
 
-	protected function placeTrunk(ChunkManager $level, int $x, int $y, int $z, Random $random, int $trunkHeight, BlockTransaction $transaction) : void{
+	protected function placeTrunk(int $x, int $y, int $z, Random $random, int $trunkHeight, BlockTransaction $transaction) : void{
 		// The base dirt block
 		$transaction->addBlockAt($x, $y - 1, $z, BlockFactory::get(Block::DIRT));
 
 		for($yy = 0; $yy < $trunkHeight; ++$yy){
-			if($this->canOverride($transaction->fetchBlockAt($level, $x, $y + $yy, $z))){
+			if($this->canOverride($transaction->fetchBlockAt($x, $y + $yy, $z))){
 				$transaction->addBlockAt($x, $y + $yy, $z, $this->trunkBlock);
 			}
 		}
 	}
 
-	protected function placeCanopy(ChunkManager $level, int $x, int $y, int $z, Random $random, BlockTransaction $transaction) : void{
+	protected function placeCanopy(int $x, int $y, int $z, Random $random, BlockTransaction $transaction) : void{
 		for($yy = $y - 3 + $this->treeHeight; $yy <= $y + $this->treeHeight; ++$yy){
 			$yOff = $yy - ($y + $this->treeHeight);
 			$mid = (int) (1 - $yOff / 2);
@@ -140,7 +140,7 @@ abstract class Tree{
 					if($xOff === $mid and $zOff === $mid and ($yOff === 0 or $random->nextBoundedInt(2) === 0)){
 						continue;
 					}
-					if(!$transaction->fetchBlockAt($level, $xx, $yy, $zz)->isSolid()){
+					if(!$transaction->fetchBlockAt($xx, $yy, $zz)->isSolid()){
 						$transaction->addBlockAt($xx, $yy, $zz, $this->leafBlock);
 					}
 				}

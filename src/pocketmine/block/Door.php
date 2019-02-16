@@ -125,10 +125,10 @@ abstract class Door extends Transparent{
 			$topHalf = clone $this;
 			$topHalf->top = true;
 
-			$transaction = new BlockTransaction();
+			$transaction = new BlockTransaction($this->level);
 			$transaction->addBlock($blockReplace, $this)->addBlock($blockUp, $topHalf);
 
-			return $transaction->apply($this->level);
+			return $transaction->apply();
 		}
 
 		return false;
