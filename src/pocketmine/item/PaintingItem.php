@@ -68,7 +68,7 @@ class PaintingItem extends Item{
 		}
 
 		if(empty($motives)){ //No space available
-			return false;
+			return ItemUseResult::none();
 		}
 
 		/** @var PaintingMotive $motive */
@@ -83,7 +83,7 @@ class PaintingItem extends Item{
 
 		$direction = $directions[$face] ?? -1;
 		if($direction === -1){
-			return false;
+			return ItemUseResult::none();
 		}
 
 		$nbt = EntityFactory::createBaseNBT($blockReplace, null, $direction * 90, 0);
@@ -99,6 +99,6 @@ class PaintingItem extends Item{
 		$entity->spawnToAll();
 
 		$player->getLevel()->broadcastLevelEvent($blockReplace->add(0.5, 0.5, 0.5), LevelEventPacket::EVENT_SOUND_ITEMFRAME_PLACE); //item frame and painting have the same sound
-		return true;
+		return ItemUseResult::success();
 	}
 }
