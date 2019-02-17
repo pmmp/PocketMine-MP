@@ -112,4 +112,8 @@ class ItemFrame extends Flowable{
 	public function isAffectedBySilkTouch() : bool{
 		return false;
 	}
+
+	public function getHardness() : float{
+		return 0.25;
+	}
 }
