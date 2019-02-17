@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\plugin\loader;
 
 use pocketmine\plugin\manifest\PluginManifestLoader;
+use function get_class;
+use function is_a;
 
 abstract class AbstractPluginLoader implements PluginLoader{
 
@@ -54,6 +56,10 @@ abstract class AbstractPluginLoader implements PluginLoader{
 	 * @inheritdoc
 	 */
 	public function addManifestLoader(string $class) : void{
+		if(!is_a($class, PluginManifestLoader::class, true)) {
+			throw new \InvalidArgumentException("Manifest loaders must an instance of " . PluginManifestLoader::class . ", " . get_class($class) . " given");
+		}
+
 		$this->manifestLoaders[] = new $class();
 	}
 
