@@ -28,7 +28,7 @@ use pocketmine\plugin\manifest\PluginManifestLoader;
 abstract class AbstractPluginLoader implements PluginLoader{
 
 	/** @var PluginManifestLoader[] */
-	private $manifestsLoaders = [];
+	private $manifestLoaders = [];
 
 	/**
 	 * @inheritdoc
@@ -41,7 +41,7 @@ abstract class AbstractPluginLoader implements PluginLoader{
 	 * @inheritdoc
 	 */
 	public function getManifestLoader(string $path) : ?PluginManifestLoader{
-		foreach($this->manifestsLoaders as $manifestFormat){
+		foreach($this->manifestLoaders as $manifestFormat){
 			if($manifestFormat::canReadPlugin($this->getAccessProtocol() . $path)){
 				return new $manifestFormat($this->getAccessProtocol() . $path);
 			}
@@ -54,7 +54,7 @@ abstract class AbstractPluginLoader implements PluginLoader{
 	 * @inheritdoc
 	 */
 	public function addManifestLoader(string $class) : void{
-		$this->manifestsLoaders[] = $class;
+		$this->manifestLoaders[] = $class;
 	}
 
 }
