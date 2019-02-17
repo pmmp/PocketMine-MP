@@ -71,7 +71,7 @@ class ItemEntity extends Entity{
 
 		$age = $nbt->getShort("Age", 0);
 		if($age === -32768){
-			$this->despawnDelay = -1;
+			$this->despawnDelay = self::NEVER_DESPAWN;
 		}else{
 			$this->despawnDelay = max(0, self::DEFAULT_DESPAWN_DELAY - $age);
 		}
