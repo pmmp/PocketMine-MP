@@ -24,31 +24,31 @@ declare(strict_types=1);
 namespace pocketmine\plugin\manifest;
 
 use pocketmine\plugin\PluginDescription;
-use pocketmine\plugin\loader\PluginLoader;
+use function file_exists;
+use function file_get_contents;
+use const DIRECTORY_SEPARATOR;
 
-interface PluginManifest{
-
-	/**
-	 * Returns whether this manifest implementation can find a readable manifest file.
-	 *
-	 * @param string $path Root path to a plugin archive or folder (with access protocol).
-	 *
-	 * @return bool
-	 */
-	public static function canReadPlugin(string $path) : bool;
+class YamlManifestLoader extends AbstractManifestLoader{
 
 	/**
-	 * Gets the PluginDescription from the manifest file.
-	 *
-	 * @return PluginDescription|null
+	 * @inheritdoc
 	 */
-	public function getPluginDescription() : ?PluginDescription;
+	public static function canReadPlugin(string $path) : bool{
+		return file_exists($path . DIRECTORY_SEPARATOR . "plugin.yml");
+	}
 
 	/**
-	 * Register the plugin into the runtime.
-	 *
-	 * @param \ClassLoader $loader
+	 * @inheritdoc
 	 */
-	public function registerPlugin(\ClassLoader $loader) : void;
+	public function getPluginDescription() : PluginDescription{
+		return new PluginDescription(file_get_contents($this->path . DIRECTORY_SEPARATOR . "plugin.yml"));
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function registerPlugin(\ClassLoader $loader) : void{
+		$loader->addPath($this->path . DIRECTORY_SEPARATOR . "src");
+	}
 
 }

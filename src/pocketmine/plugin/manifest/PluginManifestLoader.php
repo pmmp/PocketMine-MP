@@ -23,13 +23,32 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin\manifest;
 
-abstract class AbstractPluginManifest implements PluginManifest{
+use pocketmine\plugin\PluginDescription;
+use pocketmine\plugin\loader\PluginLoader;
 
-	/** @var string */
-	protected $path;
+interface PluginManifestLoader{
 
-	public function __construct(string $path){
-		$this->path = $path;
-	}
+	/**
+	 * Returns whether this manifest implementation can find a readable manifest file.
+	 *
+	 * @param string $path Root path to a plugin archive or folder (with access protocol).
+	 *
+	 * @return bool
+	 */
+	public static function canReadPlugin(string $path) : bool;
+
+	/**
+	 * Gets the PluginDescription from the manifest file.
+	 *
+	 * @return PluginDescription|null
+	 */
+	public function getPluginDescription() : ?PluginDescription;
+
+	/**
+	 * Register the plugin into the runtime.
+	 *
+	 * @param \ClassLoader $loader
+	 */
+	public function registerPlugin(\ClassLoader $loader) : void;
 
 }

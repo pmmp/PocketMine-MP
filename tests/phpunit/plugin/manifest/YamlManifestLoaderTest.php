@@ -25,20 +25,20 @@ namespace pocketmine\plugin\manifest;
 
 use PHPUnit\Framework\TestCase;
 
-class YamlPluginManifestTest extends TestCase{
+class YamlManifestLoaderTest extends TestCase{
 
 	public function testDetectsManifest(){
 		$loader = new DummyPluginLoader();
-		$loader->registerManifest(YamlPluginManifest::class);
+		$loader->addManifestLoader(YamlManifestLoader::class);
 
-		$this->assertNotNull($loader->getPluginManifest(__DIR__ . "/fixtures"));
+		$this->assertNotNull($loader->getManifestLoader(__DIR__ . "/fixtures"));
 	}
 
 	public function testCreatesDescription(){
 		$loader = new DummyPluginLoader();
-		$loader->registerManifest(YamlPluginManifest::class);
+		$loader->addManifestLoader(YamlManifestLoader::class);
 
-		$this->assertNotNull($loader->getPluginManifest(__DIR__ . "/fixtures")->getPluginDescription());
+		$this->assertNotNull($loader->getManifestLoader(__DIR__ . "/fixtures")->getPluginDescription());
 	}
 
 }

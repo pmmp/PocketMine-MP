@@ -23,22 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin\manifest;
 
-use PHPUnit\Framework\TestCase;
+abstract class AbstractManifestLoader implements PluginManifestLoader{
 
-class PhpDocPluginManifestTest extends TestCase{
+	/** @var string */
+	protected $path;
 
-	public function testDetectsManifest(){
-		$loader = new DummyPluginLoader();
-		$loader->registerManifest(PhpDocPluginManifest::class);
-
-		$this->assertNotNull($loader->getPluginManifest(__DIR__ . "/fixtures/phpdoc_manifest.php"));
-	}
-
-	public function testCreatesDescription(){
-		$loader = new DummyPluginLoader();
-		$loader->registerManifest(PhpDocPluginManifest::class);
-
-		$this->assertNotNull($loader->getPluginManifest(__DIR__ . "/fixtures/phpdoc_manifest.php")->getPluginDescription());
+	public function __construct(string $path){
+		$this->path = $path;
 	}
 
 }

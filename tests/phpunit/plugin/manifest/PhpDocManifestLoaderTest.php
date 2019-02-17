@@ -23,32 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin\manifest;
 
-use pocketmine\plugin\PluginDescription;
-use function file_exists;
-use function file_get_contents;
-use const DIRECTORY_SEPARATOR;
+use PHPUnit\Framework\TestCase;
 
-class YamlPluginManifest extends AbstractPluginManifest{
+class PhpDocManifestLoaderTest extends TestCase{
 
-	/**
-	 * @inheritdoc
-	 */
-	public static function canReadPlugin(string $path) : bool{
-		return file_exists($path . DIRECTORY_SEPARATOR . "plugin.yml");
+	public function testDetectsManifest(){
+		$loader = new DummyPluginLoader();
+		$loader->addManifestLoader(PhpDocManifestLoader::class);
+
+		$this->assertNotNull($loader->getManifestLoader(__DIR__ . "/fixtures/phpdoc_manifest.php"));
 	}
 
-	/**
-	 * @inheritdoc
-	 */
-	public function getPluginDescription() : PluginDescription{
-		return new PluginDescription(file_get_contents($this->path . DIRECTORY_SEPARATOR . "plugin.yml"));
-	}
+	public function testCreatesDescription(){
+		$loader = new DummyPluginLoader();
+		$loader->addManifestLoader(PhpDocManifestLoader::class);
 
-	/**
-	 * @inheritdoc
-	 */
-	public function registerPlugin(\ClassLoader $loader) : void{
-		$loader->addPath($this->path . DIRECTORY_SEPARATOR . "src");
+		$this->assertNotNull($loader->getManifestLoader(__DIR__ . "/fixtures/phpdoc_manifest.php")->getPluginDescription());
 	}
 
 }

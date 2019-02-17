@@ -32,7 +32,7 @@ use function trim;
 use const FILE_IGNORE_NEW_LINES;
 use const FILE_SKIP_EMPTY_LINES;
 
-class PhpDocPluginManifest extends AbstractPluginManifest{
+class PhpDocManifestLoader extends AbstractManifestLoader{
 
 	/**
 	 * @inheritdoc

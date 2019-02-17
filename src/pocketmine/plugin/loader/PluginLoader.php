@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin\loader;
 
-use pocketmine\plugin\manifest\PluginManifest;
+use pocketmine\plugin\manifest\PluginManifestLoader;
 
 /**
  * Handles different types of plugins
@@ -44,9 +44,9 @@ interface PluginLoader{
 	 *
 	 * @param string $path
 	 *
-	 * @return PluginManifest|null
+	 * @return PluginManifestLoader|null
 	 */
-	public function getPluginManifest(string $path) : ?PluginManifest;
+	public function getManifestLoader(string $path) : ?PluginManifestLoader;
 
 	/**
 	 * Returns the protocol prefix used to access files in this plugin format, e.g. file://, phar://

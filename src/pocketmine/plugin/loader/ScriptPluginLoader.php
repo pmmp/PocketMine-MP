@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin\loader;
 
-use pocketmine\plugin\manifest\PhpDocPluginManifest;
+use pocketmine\plugin\manifest\PhpDocManifestLoader;
 
 /**
  * Simple script loader, not for plugin development
@@ -33,7 +33,7 @@ class ScriptPluginLoader extends AbstractPluginLoader implements FilePluginLoade
 	use FilePluginLoaderTrait;
 
 	public function __construct(){
-		$this->registerManifest(PhpDocPluginManifest::class);
+		$this->addManifestLoader(PhpDocManifestLoader::class);
 	}
 
 	/**

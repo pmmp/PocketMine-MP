@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin\loader;
 
-use pocketmine\plugin\manifest\YamlPluginManifest;
+use pocketmine\plugin\manifest\YamlManifestLoader;
 
 /**
  * Handles loading plugins distributed as phar archives.
@@ -32,7 +32,7 @@ class PharPluginLoader extends AbstractPluginLoader implements FilePluginLoader{
 	use FilePluginLoaderTrait;
 
 	public function __construct(){
-		$this->registerManifest(YamlPluginManifest::class);
+		$this->addManifestLoader(YamlManifestLoader::class);
 	}
 
 	/**
