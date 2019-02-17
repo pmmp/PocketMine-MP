@@ -26,6 +26,9 @@ namespace pocketmine\plugin\manifest;
 use pocketmine\plugin\PluginDescription;
 use pocketmine\plugin\loader\PluginLoader;
 
+/**
+ * Loads a plugins manifest and registers the plugins classes to the class loader.
+ */
 interface PluginManifestLoader{
 
 	/**
