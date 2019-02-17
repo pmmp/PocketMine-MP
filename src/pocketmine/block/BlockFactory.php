@@ -75,23 +75,234 @@ class BlockFactory{
 
 		self::$stateMasks = new \SplFixedArray(8192);
 
+		self::registerBlock(new ActivatorRail());
 		self::registerBlock(new Air());
-
-		self::registerBlock(new SmoothStone(Block::STONE, Stone::NORMAL, "Stone"));
-
-		self::registerBlock(new Stone(Block::STONE, Stone::GRANITE, "Granite"));
-		self::registerBlock(new Stone(Block::STONE, Stone::POLISHED_GRANITE, "Polished Granite"));
-		self::registerBlock(new Stone(Block::STONE, Stone::DIORITE, "Diorite"));
-		self::registerBlock(new Stone(Block::STONE, Stone::POLISHED_DIORITE, "Polished Diorite"));
-		self::registerBlock(new Stone(Block::STONE, Stone::ANDESITE, "Andesite"));
-		self::registerBlock(new Stone(Block::STONE, Stone::POLISHED_ANDESITE, "Polished Andesite"));
-
-		self::registerBlock(new Grass());
-
-		self::registerBlock(new Dirt(Block::DIRT, Dirt::NORMAL, "Dirt"));
+		self::registerBlock(new Anvil(Block::ANVIL, Anvil::TYPE_NORMAL, "Anvil"));
+		self::registerBlock(new Anvil(Block::ANVIL, Anvil::TYPE_SLIGHTLY_DAMAGED, "Slightly Damaged Anvil"));
+		self::registerBlock(new Anvil(Block::ANVIL, Anvil::TYPE_VERY_DAMAGED, "Very Damaged Anvil"));
+		self::registerBlock(new Bed());
+		self::registerBlock(new Bedrock());
+		self::registerBlock(new Beetroot());
+		self::registerBlock(new BoneBlock());
+		self::registerBlock(new Bookshelf());
+		self::registerBlock(new BrewingStand());
+		self::registerBlock(new BrickStairs());
+		self::registerBlock(new Bricks());
+		self::registerBlock(new BrownMushroom());
+		self::registerBlock(new BrownMushroomBlock());
+		self::registerBlock(new Cactus());
+		self::registerBlock(new Cake());
+		self::registerBlock(new Carrot());
+		self::registerBlock(new Chest());
+		self::registerBlock(new Clay());
+		self::registerBlock(new Coal());
+		self::registerBlock(new CoalOre());
 		self::registerBlock(new CoarseDirt(Block::DIRT, Dirt::COARSE, "Coarse Dirt"));
-
 		self::registerBlock(new Cobblestone());
+		self::registerBlock(new CobblestoneStairs());
+		self::registerBlock(new Cobweb());
+		self::registerBlock(new CocoaBlock());
+		self::registerBlock(new CraftingTable());
+		self::registerBlock(new Dandelion());
+		self::registerBlock(new DaylightSensor());
+		self::registerBlock((new DaylightSensor())->setInverted()); //flattening hack
+		self::registerBlock(new DeadBush());
+		self::registerBlock(new DetectorRail());
+		self::registerBlock(new Diamond());
+		self::registerBlock(new DiamondOre());
+		self::registerBlock(new Dirt(Block::DIRT, Dirt::NORMAL, "Dirt"));
+		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 0, "Sunflower"));
+		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 1, "Lilac"));
+		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 4, "Rose Bush"));
+		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 5, "Peony"));
+		self::registerBlock(new DoubleTallGrass(Block::DOUBLE_PLANT, 2, "Double Tallgrass"));
+		self::registerBlock(new DoubleTallGrass(Block::DOUBLE_PLANT, 3, "Large Fern"));
+		self::registerBlock(new Emerald());
+		self::registerBlock(new EmeraldOre());
+		self::registerBlock(new EnchantingTable());
+		self::registerBlock(new EndPortalFrame());
+		self::registerBlock(new EndRod());
+		self::registerBlock(new EndStone());
+		self::registerBlock(new EndStoneBricks());
+		self::registerBlock(new EnderChest());
+		self::registerBlock(new Farmland());
+		self::registerBlock(new FenceGate(Block::ACACIA_FENCE_GATE, 0, "Acacia Fence Gate"));
+		self::registerBlock(new FenceGate(Block::BIRCH_FENCE_GATE, 0, "Birch Fence Gate"));
+		self::registerBlock(new FenceGate(Block::DARK_OAK_FENCE_GATE, 0, "Dark Oak Fence Gate"));
+		self::registerBlock(new FenceGate(Block::JUNGLE_FENCE_GATE, 0, "Jungle Fence Gate"));
+		self::registerBlock(new FenceGate(Block::OAK_FENCE_GATE, 0, "Oak Fence Gate"));
+		self::registerBlock(new FenceGate(Block::SPRUCE_FENCE_GATE, 0, "Spruce Fence Gate"));
+		self::registerBlock(new Fire());
+		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_ALLIUM, "Allium"));
+		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_AZURE_BLUET, "Azure Bluet"));
+		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_BLUE_ORCHID, "Blue Orchid"));
+		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_ORANGE_TULIP, "Orange Tulip"));
+		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_OXEYE_DAISY, "Oxeye Daisy"));
+		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_PINK_TULIP, "Pink Tulip"));
+		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_POPPY, "Poppy"));
+		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_RED_TULIP, "Red Tulip"));
+		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_WHITE_TULIP, "White Tulip"));
+		self::registerBlock(new FlowerPot());
+		self::registerBlock(new Furnace());
+		self::registerBlock((new Furnace())->setLit()); //flattening hack
+		self::registerBlock(new Glass(Block::GLASS, 0, "Glass"));
+		self::registerBlock(new GlassPane(Block::GLASS_PANE, 0, "Glass Pane"));
+		self::registerBlock(new GlazedTerracotta(Block::BLACK_GLAZED_TERRACOTTA, 0, "Black Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::BLUE_GLAZED_TERRACOTTA, 0, "Blue Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::BROWN_GLAZED_TERRACOTTA, 0, "Brown Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::CYAN_GLAZED_TERRACOTTA, 0, "Cyan Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::GRAY_GLAZED_TERRACOTTA, 0, "Grey Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::GREEN_GLAZED_TERRACOTTA, 0, "Green Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::LIGHT_BLUE_GLAZED_TERRACOTTA, 0, "Light Blue Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::LIME_GLAZED_TERRACOTTA, 0, "Lime Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::MAGENTA_GLAZED_TERRACOTTA, 0, "Magenta Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA, 0, "Orange Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::PINK_GLAZED_TERRACOTTA, 0, "Pink Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA, 0, "Purple Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::RED_GLAZED_TERRACOTTA, 0, "Red Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::SILVER_GLAZED_TERRACOTTA, 0, "Light Grey Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA, 0, "White Glazed Terracotta"));
+		self::registerBlock(new GlazedTerracotta(Block::YELLOW_GLAZED_TERRACOTTA, 0, "Yellow Glazed Terracotta"));
+		self::registerBlock(new GlowingObsidian());
+		self::registerBlock(new Glowstone());
+		self::registerBlock(new Gold());
+		self::registerBlock(new GoldOre());
+		self::registerBlock(new Grass());
+		self::registerBlock(new GrassPath());
+		self::registerBlock(new Gravel());
+		self::registerBlock(new HardenedClay(Block::HARDENED_CLAY, 0, "Hardened Clay"));
+		self::registerBlock(new HayBale());
+		self::registerBlock(new Ice());
+		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE, 0, "update!"));
+		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE2, 0, "ate!upd"));
+		self::registerBlock(new InvisibleBedrock());
+		self::registerBlock(new Iron());
+		self::registerBlock(new IronBars());
+		self::registerBlock(new IronDoor());
+		self::registerBlock(new IronOre());
+		self::registerBlock(new IronTrapdoor());
+		self::registerBlock(new ItemFrame());
+		self::registerBlock(new Ladder());
+		self::registerBlock(new Lapis());
+		self::registerBlock(new LapisOre());
+		self::registerBlock(new Lava());
+		self::registerBlock((new Lava())->setStill()); //flattening hack
+		self::registerBlock(new Lever());
+		self::registerBlock(new LitPumpkin());
+		self::registerBlock(new Magma());
+		self::registerBlock(new Melon());
+		self::registerBlock(new MelonStem());
+		self::registerBlock(new MonsterSpawner());
+		self::registerBlock(new MossyCobblestone());
+		self::registerBlock(new Mycelium());
+		self::registerBlock(new NetherBrick(Block::NETHER_BRICK_BLOCK, 0, "Nether Bricks"));
+		self::registerBlock(new NetherBrick(Block::RED_NETHER_BRICK, 0, "Red Nether Bricks"));
+		self::registerBlock(new NetherBrickFence());
+		self::registerBlock(new NetherBrickStairs());
+		self::registerBlock(new NetherQuartzOre());
+		self::registerBlock(new NetherReactor());
+		self::registerBlock(new NetherWartBlock());
+		self::registerBlock(new NetherWartPlant());
+		self::registerBlock(new Netherrack());
+		self::registerBlock(new NoteBlock());
+		self::registerBlock(new Obsidian());
+		self::registerBlock(new PackedIce());
+		self::registerBlock(new Podzol());
+		self::registerBlock(new Potato());
+		self::registerBlock(new PoweredRail());
+		self::registerBlock(new Prismarine(Block::PRISMARINE, Prismarine::BRICKS, "Prismarine Bricks"));
+		self::registerBlock(new Prismarine(Block::PRISMARINE, Prismarine::DARK, "Dark Prismarine"));
+		self::registerBlock(new Prismarine(Block::PRISMARINE, Prismarine::NORMAL, "Prismarine"));
+		self::registerBlock(new Pumpkin());
+		self::registerBlock(new PumpkinStem());
+		self::registerBlock(new Purpur(Block::PURPUR_BLOCK, 0, "Purpur Block"));
+		self::registerBlock(new class(Block::PURPUR_BLOCK, 2, "Purpur Pillar") extends Purpur{
+			use PillarRotationTrait;
+		});
+		self::registerBlock(new PurpurStairs());
+		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::NORMAL, "Quartz Block"));
+		self::registerBlock(new class(Block::QUARTZ_BLOCK, Quartz::CHISELED, "Chiseled Quartz Block") extends Quartz{
+			use PillarRotationTrait;
+		});
+		self::registerBlock(new class(Block::QUARTZ_BLOCK, Quartz::PILLAR, "Quartz Pillar") extends Quartz{
+			use PillarRotationTrait;
+		});
+		self::registerBlock(new QuartzStairs());
+		self::registerBlock(new Rail());
+		self::registerBlock(new RedMushroom());
+		self::registerBlock(new RedMushroomBlock());
+		self::registerBlock(new RedSandstoneStairs());
+		self::registerBlock(new Redstone());
+		self::registerBlock(new RedstoneLamp());
+		self::registerBlock((new RedstoneLamp())->setLit()); //flattening hack
+		self::registerBlock(new RedstoneOre());
+		self::registerBlock((new RedstoneOre())->setLit()); //flattening hack
+		self::registerBlock(new RedstoneRepeater());
+		self::registerBlock((new RedstoneRepeater())->setPowered());
+		self::registerBlock(new RedstoneTorch());
+		self::registerBlock((new RedstoneTorch())->setLit(false)); //flattening hack
+		self::registerBlock(new RedstoneWire());
+		self::registerBlock(new Reserved6(Block::RESERVED6, 0, "reserved6"));
+		self::registerBlock(new Sand(Block::SAND, 0, "Sand"));
+		self::registerBlock(new Sand(Block::SAND, 1, "Red Sand"));
+		self::registerBlock(new SandstoneStairs());
+		self::registerBlock(new SeaLantern());
+		self::registerBlock(new SignPost());
+		self::registerBlock(new Skull());
+		self::registerBlock(new SmoothStone(Block::STONE, Stone::NORMAL, "Stone"));
+		self::registerBlock(new Snow());
+		self::registerBlock(new SnowLayer());
+		self::registerBlock(new SoulSand());
+		self::registerBlock(new Sponge());
+		self::registerBlock(new StandingBanner());
+		self::registerBlock(new Stone(Block::STONE, Stone::ANDESITE, "Andesite"));
+		self::registerBlock(new Stone(Block::STONE, Stone::DIORITE, "Diorite"));
+		self::registerBlock(new Stone(Block::STONE, Stone::GRANITE, "Granite"));
+		self::registerBlock(new Stone(Block::STONE, Stone::POLISHED_ANDESITE, "Polished Andesite"));
+		self::registerBlock(new Stone(Block::STONE, Stone::POLISHED_DIORITE, "Polished Diorite"));
+		self::registerBlock(new Stone(Block::STONE, Stone::POLISHED_GRANITE, "Polished Granite"));
+		self::registerBlock(new StoneBrickStairs());
+		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::CHISELED, "Chiseled Stone Bricks"));
+		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::CRACKED, "Cracked Stone Bricks"));
+		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::MOSSY, "Mossy Stone Bricks"));
+		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::NORMAL, "Stone Bricks"));
+		self::registerBlock(new StoneButton());
+		self::registerBlock(new StonePressurePlate());
+		self::registerBlock(new Stonecutter());
+		self::registerBlock(new Sugarcane());
+		self::registerBlock(new TNT());
+		self::registerBlock(new TallGrass(Block::TALL_GRASS, 0, "Fern"));
+		self::registerBlock(new TallGrass(Block::TALL_GRASS, 1, "Tall Grass"));
+		self::registerBlock(new TallGrass(Block::TALL_GRASS, 2, "Fern"));
+		self::registerBlock(new TallGrass(Block::TALL_GRASS, 3, "Fern"));
+		self::registerBlock(new Torch());
+		self::registerBlock(new Trapdoor());
+		self::registerBlock(new TrappedChest());
+		self::registerBlock(new Tripwire());
+		self::registerBlock(new TripwireHook());
+		self::registerBlock(new Vine());
+		self::registerBlock(new WallBanner());
+		self::registerBlock(new WallSign());
+		self::registerBlock(new Water());
+		self::registerBlock((new Water())->setStill()); //flattening hack
+		self::registerBlock(new WaterLily());
+		self::registerBlock(new WeightedPressurePlateHeavy());
+		self::registerBlock(new WeightedPressurePlateLight());
+		self::registerBlock(new Wheat());
+		self::registerBlock(new WoodenButton());
+		self::registerBlock(new WoodenDoor(Block::ACACIA_DOOR_BLOCK, 0, "Acacia Door", Item::ACACIA_DOOR));
+		self::registerBlock(new WoodenDoor(Block::BIRCH_DOOR_BLOCK, 0, "Birch Door", Item::BIRCH_DOOR));
+		self::registerBlock(new WoodenDoor(Block::DARK_OAK_DOOR_BLOCK, 0, "Dark Oak Door", Item::DARK_OAK_DOOR));
+		self::registerBlock(new WoodenDoor(Block::JUNGLE_DOOR_BLOCK, 0, "Jungle Door", Item::JUNGLE_DOOR));
+		self::registerBlock(new WoodenDoor(Block::OAK_DOOR_BLOCK, 0, "Oak Door", Item::OAK_DOOR));
+		self::registerBlock(new WoodenDoor(Block::SPRUCE_DOOR_BLOCK, 0, "Spruce Door", Item::SPRUCE_DOOR));
+		self::registerBlock(new WoodenPressurePlate());
+		self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
+		self::registerBlock(new WoodenStairs(Block::BIRCH_STAIRS, 0, "Birch Stairs"));
+		self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
+		self::registerBlock(new WoodenStairs(Block::JUNGLE_STAIRS, 0, "Jungle Stairs"));
+		self::registerBlock(new WoodenStairs(Block::OAK_STAIRS, 0, "Oak Stairs"));
+		self::registerBlock(new WoodenStairs(Block::SPRUCE_STAIRS, 0, "Spruce Stairs"));
 
 		foreach(TreeType::getAll() as $treeType){
 			$magicNumber = $treeType->getMagicNumber();
@@ -101,28 +312,10 @@ class BlockFactory{
 			self::registerBlock(new WoodenFence(Block::FENCE, $magicNumber, $name . " Fence"));
 
 			//TODO: find a better way to deal with this split
+			self::registerBlock(new Leaves($magicNumber >= 4 ? Block::LEAVES2 : Block::LEAVES, $magicNumber & 0x03, $treeType, $name . " Leaves"));
 			self::registerBlock(new Log($magicNumber >= 4 ? Block::WOOD2 : Block::WOOD, $magicNumber & 0x03, $treeType, $name . " Log"));
 			self::registerBlock(new Wood($magicNumber >= 4 ? Block::WOOD2 : Block::WOOD, ($magicNumber & 0x03) | 0b1100, $treeType, $name . " Wood"));
-			self::registerBlock(new Leaves($magicNumber >= 4 ? Block::LEAVES2 : Block::LEAVES, $magicNumber & 0x03, $treeType, $name . " Leaves"));
 		}
-
-		self::registerBlock(new Bedrock());
-		self::registerBlock(new Water());
-		self::registerBlock((new Water())->setStill()); //flattening hack
-		self::registerBlock(new Lava());
-		self::registerBlock((new Lava())->setStill()); //flattening hack
-
-		self::registerBlock(new Sand(Block::SAND, 0, "Sand"));
-		self::registerBlock(new Sand(Block::SAND, 1, "Red Sand"));
-
-		self::registerBlock(new Gravel());
-		self::registerBlock(new GoldOre());
-		self::registerBlock(new IronOre());
-		self::registerBlock(new CoalOre());
-		self::registerBlock(new Sponge());
-		self::registerBlock(new Glass(Block::GLASS, 0, "Glass"));
-		self::registerBlock(new LapisOre());
-		self::registerBlock(new Lapis());
 
 		static $sandstoneTypes = [
 			Sandstone::NORMAL => "",
@@ -134,46 +327,15 @@ class BlockFactory{
 			self::registerBlock(new Sandstone(Block::RED_SANDSTONE, $variant, $prefix . "Red Sandstone"));
 		}
 
-		self::registerBlock(new NoteBlock());
-		self::registerBlock(new Bed());
-		self::registerBlock(new PoweredRail());
-		self::registerBlock(new DetectorRail());
-
-		self::registerBlock(new Cobweb());
-
-		self::registerBlock(new TallGrass(Block::TALL_GRASS, 0, "Fern"));
-		self::registerBlock(new TallGrass(Block::TALL_GRASS, 1, "Tall Grass"));
-		self::registerBlock(new TallGrass(Block::TALL_GRASS, 2, "Fern"));
-		self::registerBlock(new TallGrass(Block::TALL_GRASS, 3, "Fern"));
-
-		self::registerBlock(new DeadBush());
-
 		foreach(DyeColor::getAll() as $color){
-			self::registerBlock(new Wool(Block::WOOL, $color->getMagicNumber(), $color->getDisplayName() . " Wool"));
-			self::registerBlock(new HardenedClay(Block::STAINED_CLAY, $color->getMagicNumber(), $color->getDisplayName() . " Stained Clay"));
-			self::registerBlock(new Glass(Block::STAINED_GLASS, $color->getMagicNumber(), $color->getDisplayName() . " Stained Glass"));
-			self::registerBlock(new GlassPane(Block::STAINED_GLASS_PANE, $color->getMagicNumber(), $color->getDisplayName() . " Stained Glass Pane"));
 			self::registerBlock(new Carpet(Block::CARPET, $color->getMagicNumber(), $color->getDisplayName() . " Carpet"));
 			self::registerBlock(new Concrete(Block::CONCRETE, $color->getMagicNumber(), $color->getDisplayName() . " Concrete"));
 			self::registerBlock(new ConcretePowder(Block::CONCRETE_POWDER, $color->getMagicNumber(), $color->getDisplayName() . " Concrete Powder"));
+			self::registerBlock(new Glass(Block::STAINED_GLASS, $color->getMagicNumber(), $color->getDisplayName() . " Stained Glass"));
+			self::registerBlock(new GlassPane(Block::STAINED_GLASS_PANE, $color->getMagicNumber(), $color->getDisplayName() . " Stained Glass Pane"));
+			self::registerBlock(new HardenedClay(Block::STAINED_CLAY, $color->getMagicNumber(), $color->getDisplayName() . " Stained Clay"));
+			self::registerBlock(new Wool(Block::WOOL, $color->getMagicNumber(), $color->getDisplayName() . " Wool"));
 		}
-
-		self::registerBlock(new Dandelion());
-
-		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_POPPY, "Poppy"));
-		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_BLUE_ORCHID, "Blue Orchid"));
-		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_ALLIUM, "Allium"));
-		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_AZURE_BLUET, "Azure Bluet"));
-		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_RED_TULIP, "Red Tulip"));
-		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_ORANGE_TULIP, "Orange Tulip"));
-		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_WHITE_TULIP, "White Tulip"));
-		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_PINK_TULIP, "Pink Tulip"));
-		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_OXEYE_DAISY, "Oxeye Daisy"));
-
-		self::registerBlock(new BrownMushroom());
-		self::registerBlock(new RedMushroom());
-		self::registerBlock(new Gold());
-		self::registerBlock(new Iron());
 
 		/** @var Slab[] $slabTypes */
 		$slabTypes = [
@@ -202,236 +364,25 @@ class BlockFactory{
 			self::registerBlock(new DoubleSlab($type->getDoubleSlabId(), $type->getId(), $type->getVariant()));
 		}
 
-		self::registerBlock(new Bricks());
-		self::registerBlock(new TNT());
-		self::registerBlock(new Bookshelf());
-		self::registerBlock(new MossyCobblestone());
-		self::registerBlock(new Obsidian());
-		self::registerBlock(new Torch());
-		self::registerBlock(new Fire());
-		self::registerBlock(new MonsterSpawner());
-		self::registerBlock(new WoodenStairs(Block::OAK_STAIRS, 0, "Oak Stairs"));
-		self::registerBlock(new Chest());
-		self::registerBlock(new RedstoneWire());
-		self::registerBlock(new DiamondOre());
-		self::registerBlock(new Diamond());
-		self::registerBlock(new CraftingTable());
-		self::registerBlock(new Wheat());
-		self::registerBlock(new Farmland());
-
-		self::registerBlock(new Furnace());
-		self::registerBlock((new Furnace())->setLit()); //flattening hack
-
-		self::registerBlock(new SignPost());
-		self::registerBlock(new WoodenDoor(Block::OAK_DOOR_BLOCK, 0, "Oak Door", Item::OAK_DOOR));
-		self::registerBlock(new Ladder());
-		self::registerBlock(new Rail());
-		self::registerBlock(new CobblestoneStairs());
-		self::registerBlock(new WallSign());
-		self::registerBlock(new Lever());
-		self::registerBlock(new StonePressurePlate());
-		self::registerBlock(new IronDoor());
-		self::registerBlock(new WoodenPressurePlate());
-		self::registerBlock(new RedstoneOre());
-		self::registerBlock((new RedstoneOre())->setLit()); //flattening hack
-		self::registerBlock(new RedstoneTorch());
-		self::registerBlock((new RedstoneTorch())->setLit(false)); //flattening hack
-		self::registerBlock(new StoneButton());
-		self::registerBlock(new SnowLayer());
-		self::registerBlock(new Ice());
-		self::registerBlock(new Snow());
-		self::registerBlock(new Cactus());
-		self::registerBlock(new Clay());
-		self::registerBlock(new Sugarcane());
-
-		self::registerBlock(new Pumpkin());
-		self::registerBlock(new Netherrack());
-		self::registerBlock(new SoulSand());
-		self::registerBlock(new Glowstone());
-
-		self::registerBlock(new LitPumpkin());
-		self::registerBlock(new Cake());
-		self::registerBlock(new RedstoneRepeater());
-		self::registerBlock((new RedstoneRepeater())->setPowered());
-		self::registerBlock(new InvisibleBedrock());
-		self::registerBlock(new Trapdoor());
-
-		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::NORMAL, "Stone Bricks"));
-		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::MOSSY, "Mossy Stone Bricks"));
-		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::CRACKED, "Cracked Stone Bricks"));
-		self::registerBlock(new StoneBricks(Block::STONE_BRICKS, StoneBricks::CHISELED, "Chiseled Stone Bricks"));
-
-		self::registerBlock(new BrownMushroomBlock());
-		self::registerBlock(new RedMushroomBlock());
-		self::registerBlock(new IronBars());
-		self::registerBlock(new GlassPane(Block::GLASS_PANE, 0, "Glass Pane"));
-		self::registerBlock(new Melon());
-		self::registerBlock(new PumpkinStem());
-		self::registerBlock(new MelonStem());
-		self::registerBlock(new Vine());
-		self::registerBlock(new FenceGate(Block::OAK_FENCE_GATE, 0, "Oak Fence Gate"));
-		self::registerBlock(new BrickStairs());
-		self::registerBlock(new StoneBrickStairs());
-		self::registerBlock(new Mycelium());
-		self::registerBlock(new WaterLily());
-		self::registerBlock(new NetherBrick(Block::NETHER_BRICK_BLOCK, 0, "Nether Bricks"));
-		self::registerBlock(new NetherBrickFence());
-		self::registerBlock(new NetherBrickStairs());
-		self::registerBlock(new NetherWartPlant());
-		self::registerBlock(new EnchantingTable());
-		self::registerBlock(new BrewingStand());
-
-		self::registerBlock(new EndPortalFrame());
-		self::registerBlock(new EndStone());
-
-		self::registerBlock(new RedstoneLamp());
-		self::registerBlock((new RedstoneLamp())->setLit()); //flattening hack
-
-		self::registerBlock(new ActivatorRail());
-		self::registerBlock(new CocoaBlock());
-		self::registerBlock(new SandstoneStairs());
-		self::registerBlock(new EmeraldOre());
-		self::registerBlock(new EnderChest());
-		self::registerBlock(new TripwireHook());
-		self::registerBlock(new Tripwire());
-		self::registerBlock(new Emerald());
-		self::registerBlock(new WoodenStairs(Block::SPRUCE_STAIRS, 0, "Spruce Stairs"));
-		self::registerBlock(new WoodenStairs(Block::BIRCH_STAIRS, 0, "Birch Stairs"));
-		self::registerBlock(new WoodenStairs(Block::JUNGLE_STAIRS, 0, "Jungle Stairs"));
-
 		static $wallTypes = [
-			CobblestoneWall::NONE_MOSSY_WALL => "Cobblestone",
-			CobblestoneWall::MOSSY_WALL => "Mossy Cobblestone",
-			CobblestoneWall::GRANITE_WALL => "Granite",
-			CobblestoneWall::DIORITE_WALL => "Diorite",
 			CobblestoneWall::ANDESITE_WALL => "Andesite",
-			CobblestoneWall::SANDSTONE_WALL => "Sandstone",
 			CobblestoneWall::BRICK_WALL => "Brick",
-			CobblestoneWall::STONE_BRICK_WALL => "Stone Brick",
-			CobblestoneWall::MOSSY_STONE_BRICK_WALL => "Mossy Stone Brick",
-			CobblestoneWall::NETHER_BRICK_WALL => "Nether Brick",
+			CobblestoneWall::DIORITE_WALL => "Diorite",
 			CobblestoneWall::END_STONE_BRICK_WALL => "End Stone Brick",
+			CobblestoneWall::GRANITE_WALL => "Granite",
+			CobblestoneWall::MOSSY_STONE_BRICK_WALL => "Mossy Stone Brick",
+			CobblestoneWall::MOSSY_WALL => "Mossy Cobblestone",
+			CobblestoneWall::NETHER_BRICK_WALL => "Nether Brick",
+			CobblestoneWall::NONE_MOSSY_WALL => "Cobblestone",
 			CobblestoneWall::PRISMARINE_WALL => "Prismarine",
+			CobblestoneWall::RED_NETHER_BRICK_WALL => "Red Nether Brick",
 			CobblestoneWall::RED_SANDSTONE_WALL => "Red Sandstone",
-			CobblestoneWall::RED_NETHER_BRICK_WALL => "Red Nether Brick"
+			CobblestoneWall::SANDSTONE_WALL => "Sandstone",
+			CobblestoneWall::STONE_BRICK_WALL => "Stone Brick"
 		];
 		foreach($wallTypes as $magicNumber => $prefix){
 			self::registerBlock(new CobblestoneWall(Block::COBBLESTONE_WALL, $magicNumber, $prefix . " Wall"));
 		}
-
-		self::registerBlock(new FlowerPot());
-		self::registerBlock(new Carrot());
-		self::registerBlock(new Potato());
-		self::registerBlock(new WoodenButton());
-		self::registerBlock(new Skull());
-
-		self::registerBlock(new Anvil(Block::ANVIL, Anvil::TYPE_NORMAL, "Anvil"));
-		self::registerBlock(new Anvil(Block::ANVIL, Anvil::TYPE_SLIGHTLY_DAMAGED, "Slightly Damaged Anvil"));
-		self::registerBlock(new Anvil(Block::ANVIL, Anvil::TYPE_VERY_DAMAGED, "Very Damaged Anvil"));
-
-		self::registerBlock(new TrappedChest());
-		self::registerBlock(new WeightedPressurePlateLight());
-		self::registerBlock(new WeightedPressurePlateHeavy());
-
-		self::registerBlock(new DaylightSensor());
-		self::registerBlock((new DaylightSensor())->setInverted()); //flattening hack
-
-		self::registerBlock(new Redstone());
-		self::registerBlock(new NetherQuartzOre());
-
-		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::NORMAL, "Quartz Block"));
-		self::registerBlock(new class(Block::QUARTZ_BLOCK, Quartz::CHISELED, "Chiseled Quartz Block") extends Quartz{
-			use PillarRotationTrait;
-		});
-		self::registerBlock(new class(Block::QUARTZ_BLOCK, Quartz::PILLAR, "Quartz Pillar") extends Quartz{
-			use PillarRotationTrait;
-		});
-
-		self::registerBlock(new Purpur(Block::PURPUR_BLOCK, 0, "Purpur Block"));
-		self::registerBlock(new class(Block::PURPUR_BLOCK, 2, "Purpur Pillar") extends Purpur{
-			use PillarRotationTrait;
-		});
-
-		self::registerBlock(new QuartzStairs());
-
-		self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
-		self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
-
-		self::registerBlock(new IronTrapdoor());
-
-		self::registerBlock(new Prismarine(Block::PRISMARINE, Prismarine::NORMAL, "Prismarine"));
-		self::registerBlock(new Prismarine(Block::PRISMARINE, Prismarine::DARK, "Dark Prismarine"));
-		self::registerBlock(new Prismarine(Block::PRISMARINE, Prismarine::BRICKS, "Prismarine Bricks"));
-
-		self::registerBlock(new SeaLantern());
-		self::registerBlock(new HayBale());
-
-		self::registerBlock(new HardenedClay(Block::HARDENED_CLAY, 0, "Hardened Clay"));
-		self::registerBlock(new Coal());
-		self::registerBlock(new PackedIce());
-
-		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 0, "Sunflower"));
-		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 1, "Lilac"));
-		self::registerBlock(new DoubleTallGrass(Block::DOUBLE_PLANT, 2, "Double Tallgrass"));
-		self::registerBlock(new DoubleTallGrass(Block::DOUBLE_PLANT, 3, "Large Fern"));
-		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 4, "Rose Bush"));
-		self::registerBlock(new DoublePlant(Block::DOUBLE_PLANT, 5, "Peony"));
-
-		self::registerBlock(new StandingBanner());
-		self::registerBlock(new WallBanner());
-
-		self::registerBlock(new RedSandstoneStairs());
-		self::registerBlock(new FenceGate(Block::SPRUCE_FENCE_GATE, 0, "Spruce Fence Gate"));
-		self::registerBlock(new FenceGate(Block::BIRCH_FENCE_GATE, 0, "Birch Fence Gate"));
-		self::registerBlock(new FenceGate(Block::JUNGLE_FENCE_GATE, 0, "Jungle Fence Gate"));
-		self::registerBlock(new FenceGate(Block::DARK_OAK_FENCE_GATE, 0, "Dark Oak Fence Gate"));
-		self::registerBlock(new FenceGate(Block::ACACIA_FENCE_GATE, 0, "Acacia Fence Gate"));
-
-		self::registerBlock(new WoodenDoor(Block::SPRUCE_DOOR_BLOCK, 0, "Spruce Door", Item::SPRUCE_DOOR));
-		self::registerBlock(new WoodenDoor(Block::BIRCH_DOOR_BLOCK, 0, "Birch Door", Item::BIRCH_DOOR));
-		self::registerBlock(new WoodenDoor(Block::JUNGLE_DOOR_BLOCK, 0, "Jungle Door", Item::JUNGLE_DOOR));
-		self::registerBlock(new WoodenDoor(Block::ACACIA_DOOR_BLOCK, 0, "Acacia Door", Item::ACACIA_DOOR));
-		self::registerBlock(new WoodenDoor(Block::DARK_OAK_DOOR_BLOCK, 0, "Dark Oak Door", Item::DARK_OAK_DOOR));
-		self::registerBlock(new GrassPath());
-		self::registerBlock(new ItemFrame());
-
-		self::registerBlock(new PurpurStairs());
-
-		self::registerBlock(new EndStoneBricks());
-		self::registerBlock(new EndRod());
-
-		self::registerBlock(new Magma());
-		self::registerBlock(new NetherWartBlock());
-		self::registerBlock(new NetherBrick(Block::RED_NETHER_BRICK, 0, "Red Nether Bricks"));
-		self::registerBlock(new BoneBlock());
-
-		self::registerBlock(new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA, 0, "Purple Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA, 0, "White Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA, 0, "Orange Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::MAGENTA_GLAZED_TERRACOTTA, 0, "Magenta Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::LIGHT_BLUE_GLAZED_TERRACOTTA, 0, "Light Blue Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::YELLOW_GLAZED_TERRACOTTA, 0, "Yellow Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::LIME_GLAZED_TERRACOTTA, 0, "Lime Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::PINK_GLAZED_TERRACOTTA, 0, "Pink Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::GRAY_GLAZED_TERRACOTTA, 0, "Grey Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::SILVER_GLAZED_TERRACOTTA, 0, "Light Grey Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::CYAN_GLAZED_TERRACOTTA, 0, "Cyan Glazed Terracotta"));
-
-		self::registerBlock(new GlazedTerracotta(Block::BLUE_GLAZED_TERRACOTTA, 0, "Blue Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::BROWN_GLAZED_TERRACOTTA, 0, "Brown Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::GREEN_GLAZED_TERRACOTTA, 0, "Green Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::RED_GLAZED_TERRACOTTA, 0, "Red Glazed Terracotta"));
-		self::registerBlock(new GlazedTerracotta(Block::BLACK_GLAZED_TERRACOTTA, 0, "Black Glazed Terracotta"));
-
-		self::registerBlock(new Podzol());
-		self::registerBlock(new Beetroot());
-		self::registerBlock(new Stonecutter());
-		self::registerBlock(new GlowingObsidian());
-		self::registerBlock(new NetherReactor());
-		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE, 0, "update!"));
-		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE2, 0, "ate!upd"));
-
-		self::registerBlock(new Reserved6(Block::RESERVED6, 0, "reserved6"));
 
 		//TODO: minecraft:acacia_button
 		//TODO: minecraft:acacia_pressure_plate
