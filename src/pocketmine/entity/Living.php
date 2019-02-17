@@ -152,7 +152,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function setMaxHealth(int $amount) : void{
-		$this->attributeMap->getAttribute(Attribute::HEALTH)->setMaxValue($amount);
+		$this->attributeMap->getAttribute(Attribute::HEALTH)->setMaxValue($amount)->setDefaultValue($amount);
 	}
 
 	public function getAbsorption() : float{
