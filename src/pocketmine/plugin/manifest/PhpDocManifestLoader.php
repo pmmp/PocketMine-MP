@@ -32,20 +32,20 @@ use function trim;
 use const FILE_IGNORE_NEW_LINES;
 use const FILE_SKIP_EMPTY_LINES;
 
-class PhpDocManifestLoader extends AbstractManifestLoader{
+class PhpDocManifestLoader implements PluginManifestLoader{
 
 	/**
 	 * @inheritdoc
 	 */
-	public static function canReadPlugin(string $path) : bool{
+	public function canReadPlugin(string $path) : bool{
 		return file_exists($path);
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function getPluginDescription() : ?PluginDescription{
-		$content = file($this->path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	public function getPluginDescription(string $path) : ?PluginDescription{
+		$content = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
 		$data = [];
 
@@ -80,8 +80,8 @@ class PhpDocManifestLoader extends AbstractManifestLoader{
 	/**
 	 * @inheritdoc
 	 */
-	public function registerPlugin(\ClassLoader $loader) : void{
-		include_once $this->path;
+	public function registerPlugin(string $path, \ClassLoader $loader) : void{
+		include_once $path;
 	}
 
 }

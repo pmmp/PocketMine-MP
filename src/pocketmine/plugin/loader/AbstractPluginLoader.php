@@ -42,7 +42,7 @@ abstract class AbstractPluginLoader implements PluginLoader{
 	 */
 	public function getManifestLoader(string $path) : ?PluginManifestLoader{
 		foreach($this->manifestLoaders as $manifestFormat){
-			if($manifestFormat::canReadPlugin($this->getAccessProtocol() . $path)){
+			if($manifestFormat->canReadPlugin($this->getAccessProtocol() . $path)){
 				return new $manifestFormat($this->getAccessProtocol() . $path);
 			}
 		}
@@ -54,7 +54,7 @@ abstract class AbstractPluginLoader implements PluginLoader{
 	 * @inheritdoc
 	 */
 	public function addManifestLoader(string $class) : void{
-		$this->manifestLoaders[] = $class;
+		$this->manifestLoaders[] = new $class();
 	}
 
 }

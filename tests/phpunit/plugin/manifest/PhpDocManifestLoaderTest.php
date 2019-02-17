@@ -35,10 +35,9 @@ class PhpDocManifestLoaderTest extends TestCase{
 	}
 
 	public function testCreatesDescription(){
-		$loader = new DummyPluginLoader();
-		$loader->addManifestLoader(PhpDocManifestLoader::class);
+		$manifestLoader = new PhpDocManifestLoader();
 
-		$this->assertNotNull($loader->getManifestLoader(__DIR__ . "/fixtures/phpdoc_manifest.php")->getPluginDescription());
+		$this->assertNotNull($manifestLoader->getPluginDescription(__DIR__ . "/fixtures/phpdoc_manifest.php"));
 	}
 
 }

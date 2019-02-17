@@ -28,27 +28,27 @@ use function file_exists;
 use function file_get_contents;
 use const DIRECTORY_SEPARATOR;
 
-class YamlManifestLoader extends AbstractManifestLoader{
+class YamlManifestLoader implements PluginManifestLoader{
 
 	/**
 	 * @inheritdoc
 	 */
-	public static function canReadPlugin(string $path) : bool{
+	public function canReadPlugin(string $path) : bool{
 		return file_exists($path . DIRECTORY_SEPARATOR . "plugin.yml");
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function getPluginDescription() : PluginDescription{
-		return new PluginDescription(file_get_contents($this->path . DIRECTORY_SEPARATOR . "plugin.yml"));
+	public function getPluginDescription(string $path) : PluginDescription{
+		return new PluginDescription(file_get_contents($path . DIRECTORY_SEPARATOR . "plugin.yml"));
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function registerPlugin(\ClassLoader $loader) : void{
-		$loader->addPath($this->path . DIRECTORY_SEPARATOR . "src");
+	public function registerPlugin(string $path, \ClassLoader $loader) : void{
+		$loader->addPath($path . DIRECTORY_SEPARATOR . "src");
 	}
 
 }

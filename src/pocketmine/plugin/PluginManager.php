@@ -143,7 +143,8 @@ class PluginManager{
 			if($loader->canLoadPlugin($path)){
 				$manifestLoader = $loader->getManifestLoader($path);
 				if($manifestLoader !== null){
-					$description = $manifestLoader->getPluginDescription();
+					$prefixed = $loader->getAccessProtocol() . $path;
+					$description = $manifestLoader->getPluginDescription($prefixed);
 					if($description instanceof PluginDescription){
 						$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.load", [$description->getFullName()]));
 						try{
@@ -162,7 +163,7 @@ class PluginManager{
 							mkdir($dataFolder, 0777, true);
 						}
 
-						$manifestLoader->registerPlugin($this->server->getLoader());
+						$manifestLoader->registerPlugin($prefixed, $this->server->getLoader());
 
 						$mainClass = $description->getMain();
 						if(!class_exists($mainClass, true)){
@@ -178,7 +179,7 @@ class PluginManager{
 						 * @var Plugin $plugin
 						 * @see Plugin::__construct()
 						 */
-						$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $loader->getAccessProtocol() . $path);
+						$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed);
 						$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 
 						return $plugin;
@@ -229,7 +230,7 @@ class PluginManager{
 					continue;
 				}
 				try{
-					$description = $manifestLoader->getPluginDescription();
+					$description = $manifestLoader->getPluginDescription($loader->getAccessProtocol() . $file);
 				}catch(\RuntimeException $e){ //TODO: more specific exception handling
 					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [$file, $directory, $e->getMessage()]));
 					$this->server->getLogger()->logException($e);

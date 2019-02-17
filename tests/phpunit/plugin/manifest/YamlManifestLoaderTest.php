@@ -35,10 +35,9 @@ class YamlManifestLoaderTest extends TestCase{
 	}
 
 	public function testCreatesDescription(){
-		$loader = new DummyPluginLoader();
-		$loader->addManifestLoader(YamlManifestLoader::class);
+		$manifestLoader = new YamlManifestLoader();
 
-		$this->assertNotNull($loader->getManifestLoader(__DIR__ . "/fixtures")->getPluginDescription());
+		$this->assertNotNull($manifestLoader->getPluginDescription(__DIR__ . "/fixtures"));
 	}
 
 }

@@ -38,20 +38,23 @@ interface PluginManifestLoader{
 	 *
 	 * @return bool
 	 */
-	public static function canReadPlugin(string $path) : bool;
+	public function canReadPlugin(string $path) : bool;
 
 	/**
 	 * Gets the PluginDescription from the manifest file.
 	 *
+	 * @param string $path
+	 *
 	 * @return PluginDescription|null
 	 */
-	public function getPluginDescription() : ?PluginDescription;
+	public function getPluginDescription(string $path) : ?PluginDescription;
 
 	/**
 	 * Register the plugin into the runtime.
 	 *
+	 * @param string $path
 	 * @param \ClassLoader $loader
 	 */
-	public function registerPlugin(\ClassLoader $loader) : void;
+	public function registerPlugin(string $path, \ClassLoader $loader) : void;
 
 }
