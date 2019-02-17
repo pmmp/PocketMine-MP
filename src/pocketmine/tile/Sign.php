@@ -84,16 +84,16 @@ class Sign extends Spawnable{
 	 */
 	public function setText(?string $line1 = "", ?string $line2 = "", ?string $line3 = "", ?string $line4 = "") : void{
 		if($line1 !== null){
-			$this->setLine(0, $line1, false);
+			$this->setLine(0, $line1);
 		}
 		if($line2 !== null){
-			$this->setLine(1, $line2, false);
+			$this->setLine(1, $line2);
 		}
 		if($line3 !== null){
-			$this->setLine(2, $line3, false);
+			$this->setLine(2, $line3);
 		}
 		if($line4 !== null){
-			$this->setLine(3, $line4, false);
+			$this->setLine(3, $line4);
 		}
 
 		$this->onChanged();
