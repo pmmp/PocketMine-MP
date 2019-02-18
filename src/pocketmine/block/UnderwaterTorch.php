@@ -23,40 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class RedstoneTorch extends Torch{
+class UnderwaterTorch extends Torch{
 
-	protected $itemId = self::REDSTONE_TORCH;
-
-	/** @var bool */
-	protected $lit = true;
-
-	public function __construct(){
-		parent::__construct(self::REDSTONE_TORCH, 0, "Redstone Torch", self::REDSTONE_TORCH);
-	}
-
-	public function getId() : int{
-		return $this->lit ? self::REDSTONE_TORCH : self::UNLIT_REDSTONE_TORCH;
-	}
-
-	public function getName() : string{
-		return "Redstone Torch";
-	}
-
-	public function isLit() : bool{
-		return $this->lit;
-	}
-
-	/**
-	 * @param bool $lit
-	 *
-	 * @return $this
-	 */
-	public function setLit(bool $lit = true) : self{
-		$this->lit = $lit;
-		return $this;
-	}
-
-	public function getLightLevel() : int{
-		return $this->lit ? 7 : 0;
+	public function canBeFlowedInto() : bool{
+		return false;
 	}
 }

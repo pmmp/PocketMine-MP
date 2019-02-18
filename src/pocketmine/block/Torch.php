@@ -31,14 +31,8 @@ use pocketmine\Player;
 
 class Torch extends Flowable{
 
-	protected $id = self::TORCH;
-
 	/** @var int */
 	protected $facing = Facing::UP;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return 6 - $this->facing;
@@ -54,10 +48,6 @@ class Torch extends Flowable{
 
 	public function getLightLevel() : int{
 		return 14;
-	}
-
-	public function getName() : string{
-		return "Torch";
 	}
 
 	public function onNearbyBlockChange() : void{

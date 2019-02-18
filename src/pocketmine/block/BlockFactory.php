@@ -277,11 +277,16 @@ class BlockFactory{
 		self::registerBlock(new TallGrass(Block::TALL_GRASS, 1, "Tall Grass"));
 		self::registerBlock(new TallGrass(Block::TALL_GRASS, 2, "Fern"));
 		self::registerBlock(new TallGrass(Block::TALL_GRASS, 3, "Fern"));
-		self::registerBlock(new Torch());
+		self::registerBlock(new Torch(Block::COLORED_TORCH_BP, 0, "Blue Torch"));
+		self::registerBlock(new Torch(Block::COLORED_TORCH_BP, 8, "Purple Torch"));
+		self::registerBlock(new Torch(Block::COLORED_TORCH_RG, 0, "Red Torch"));
+		self::registerBlock(new Torch(Block::COLORED_TORCH_RG, 8, "Green Torch"));
+		self::registerBlock(new Torch(Block::TORCH, 0, "Torch"));
 		self::registerBlock(new Trapdoor());
 		self::registerBlock(new TrappedChest());
 		self::registerBlock(new Tripwire());
 		self::registerBlock(new TripwireHook());
+		self::registerBlock(new UnderwaterTorch(Block::UNDERWATER_TORCH, 0, "Underwater Torch"));
 		self::registerBlock(new Vine());
 		self::registerBlock(new WallBanner());
 		self::registerBlock(new WallSign());
@@ -416,8 +421,6 @@ class BlockFactory{
 		//TODO: minecraft:chemistry_table
 		//TODO: minecraft:chorus_flower
 		//TODO: minecraft:chorus_plant
-		//TODO: minecraft:colored_torch_bp
-		//TODO: minecraft:colored_torch_rg
 		//TODO: minecraft:command_block
 		//TODO: minecraft:conduit
 		//TODO: minecraft:coral
@@ -502,7 +505,6 @@ class BlockFactory{
 		//TODO: minecraft:stripped_spruce_log
 		//TODO: minecraft:structure_block
 		//TODO: minecraft:turtle_egg
-		//TODO: minecraft:underwater_torch
 		//TODO: minecraft:undyed_shulker_box
 		//TODO: minecraft:unpowered_comparator
 	}
