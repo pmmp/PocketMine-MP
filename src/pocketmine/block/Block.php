@@ -450,7 +450,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int 0-15
 	 */
 	public function getLightFilter() : int{
-		return 15;
+		return $this->isTransparent() ? 0 : 15;
 	}
 
 	/**
