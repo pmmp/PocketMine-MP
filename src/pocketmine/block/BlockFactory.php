@@ -171,6 +171,8 @@ class BlockFactory{
 		self::registerBlock(new GrassPath());
 		self::registerBlock(new Gravel());
 		self::registerBlock(new HardenedClay(Block::HARDENED_CLAY, 0, "Hardened Clay"));
+		self::registerBlock(new HardenedGlass(Block::HARD_GLASS, 0, "Hardened Glass"));
+		self::registerBlock(new HardenedGlassPane(Block::HARD_GLASS_PANE, 0, "Hardened Glass Pane"));
 		self::registerBlock(new HayBale());
 		self::registerBlock(new Ice());
 		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE, 0, "update!"));
@@ -334,6 +336,8 @@ class BlockFactory{
 			self::registerBlock(new Glass(Block::STAINED_GLASS, $color->getMagicNumber(), $color->getDisplayName() . " Stained Glass"));
 			self::registerBlock(new GlassPane(Block::STAINED_GLASS_PANE, $color->getMagicNumber(), $color->getDisplayName() . " Stained Glass Pane"));
 			self::registerBlock(new HardenedClay(Block::STAINED_CLAY, $color->getMagicNumber(), $color->getDisplayName() . " Stained Clay"));
+			self::registerBlock(new HardenedGlass(Block::HARD_STAINED_GLASS, $color->getMagicNumber(), "Hardened " . $color->getDisplayName() . " Stained Glass"));
+			self::registerBlock(new HardenedGlassPane(Block::HARD_STAINED_GLASS_PANE, $color->getMagicNumber(), "Hardened " . $color->getDisplayName() . " Stained Glass Pane"));
 			self::registerBlock(new Wool(Block::WOOL, $color->getMagicNumber(), $color->getDisplayName() . " Wool"));
 		}
 
@@ -444,10 +448,6 @@ class BlockFactory{
 		//TODO: minecraft:frosted_ice
 		//TODO: minecraft:granite_stairs
 		//TODO: minecraft:grindstone
-		//TODO: minecraft:hard_glass
-		//TODO: minecraft:hard_glass_pane
-		//TODO: minecraft:hard_stained_glass
-		//TODO: minecraft:hard_stained_glass_pane
 		//TODO: minecraft:hopper
 		//TODO: minecraft:jukebox
 		//TODO: minecraft:jungle_button
