@@ -98,7 +98,12 @@ class CocoaBlock extends Transparent{
 		if($this->age < 2 and $item->getId() === Item::DYE and $item->getDamage() === 15){ //bone meal
 			$this->age++;
 			$this->level->setBlock($this, $this);
+
+			$item->pop();
+
+			return true;
 		}
+
 		return false;
 	}
 
