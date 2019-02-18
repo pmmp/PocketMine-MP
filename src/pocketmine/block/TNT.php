@@ -25,6 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Arrow;
+use pocketmine\item\Durable;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FlintSteel;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -51,8 +53,10 @@ class TNT extends Solid{
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		if($item instanceof FlintSteel){
-			$item->applyDamage(1);
+		if($item instanceof FlintSteel or $item->hasEnchantment(Enchantment::FIRE_ASPECT)){
+			if($item instanceof Durable){
+				$item->applyDamage(1);
+			}
 			$this->ignite();
 			return true;
 		}
