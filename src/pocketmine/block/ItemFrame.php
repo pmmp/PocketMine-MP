@@ -38,21 +38,24 @@ class ItemFrame extends Flowable{
 
 	/** @var int */
 	protected $facing = Facing::NORTH;
+	/** @var bool */
+	protected $hasMap = false; //makes frame appear large if set
 
 	public function __construct(){
 
 	}
 
 	protected function writeStateToMeta() : int{
-		return 5 - $this->facing;
+		return (5 - $this->facing) | ($this->hasMap ? 0x04 : 0);
 	}
 
 	public function readStateFromMeta(int $meta) : void{
-		$this->facing = BlockDataValidator::readHorizontalFacing(5 - $meta);
+		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($meta & 0x03));
+		$this->hasMap = ($meta & 0x04) !== 0;
 	}
 
 	public function getStateBitmask() : int{
-		return 0b11;
+		return 0b111;
 	}
 
 	protected function getTileClass() : ?string{
