@@ -29,7 +29,8 @@ class Sandstone extends Solid{
 
 	public const NORMAL = 0;
 	public const CHISELED = 1;
-	public const SMOOTH = 2;
+	public const CUT = 2;
+	public const SMOOTH = 3;
 
 	public function getHardness() : float{
 		return 0.8;

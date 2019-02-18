@@ -38,6 +38,8 @@ class Flower extends Flowable{
 	public const TYPE_WHITE_TULIP = 6;
 	public const TYPE_PINK_TULIP = 7;
 	public const TYPE_OXEYE_DAISY = 8;
+	public const TYPE_CORNFLOWER = 9;
+	public const TYPE_LILY_OF_THE_VALLEY = 10;
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);

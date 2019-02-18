@@ -142,6 +142,8 @@ class BlockFactory{
 		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_POPPY, "Poppy"));
 		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_RED_TULIP, "Red Tulip"));
 		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_WHITE_TULIP, "White Tulip"));
+		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_CORNFLOWER, "Cornflower"));
+		self::registerBlock(new Flower(Block::RED_FLOWER, Flower::TYPE_LILY_OF_THE_VALLEY, "Lily of the Valley"));
 		self::registerBlock(new FlowerPot());
 		self::registerBlock(new Furnace());
 		self::registerBlock((new Furnace())->setLit()); //flattening hack
@@ -229,6 +231,7 @@ class BlockFactory{
 		self::registerBlock(new class(Block::QUARTZ_BLOCK, Quartz::PILLAR, "Quartz Pillar") extends Quartz{
 			use PillarRotationTrait;
 		});
+		self::registerBlock(new Quartz(Block::QUARTZ_BLOCK, Quartz::SMOOTH, "Smooth Quartz Block")); //TODO: this has axis rotation in 1.9, unsure if a bug (https://bugs.mojang.com/browse/MCPE-39074)
 		self::registerBlock(new QuartzStairs());
 		self::registerBlock(new Rail());
 		self::registerBlock(new RedMushroom());
@@ -327,6 +330,7 @@ class BlockFactory{
 		static $sandstoneTypes = [
 			Sandstone::NORMAL => "",
 			Sandstone::CHISELED => "Chiseled ",
+			Sandstone::CUT => "Cut ",
 			Sandstone::SMOOTH => "Smooth "
 		];
 		foreach($sandstoneTypes as $variant => $prefix){
