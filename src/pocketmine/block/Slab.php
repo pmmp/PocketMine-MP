@@ -88,8 +88,8 @@ abstract class Slab extends Transparent{
 		}
 
 		if($blockReplace instanceof Slab and $blockReplace->isSameType($this) and (
-			($blockReplace->top and $clickVector->y <= 0.5) or
-			(!$blockReplace->top and $clickVector->y >= 0.5)
+			($blockReplace->top and ($clickVector->y <= 0.5 or $face === Facing::UP)) or
+			(!$blockReplace->top and ($clickVector->y >= 0.5 or $face === Facing::DOWN))
 		)){
 			//Clicked in empty half of existing slab
 			return $this->level->setBlock($blockReplace, $this->getDouble());
