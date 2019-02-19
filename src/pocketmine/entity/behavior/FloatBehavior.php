@@ -22,15 +22,35 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\behavior;
 
-use pocketmine\item\Item;
+use pocketmine\entity\Mob;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
 
-abstract class Vehicle extends Entity implements Rideable{
+class FloatBehavior extends Behavior{
 
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
+	public function __construct(Mob $mob){
+		parent::__construct($mob);
+		$this->mutexBits = 4;
+	}
+
+	public function canStart() : bool{
+		return $this->mob->isUnderWater();
+	}
+
+	public function onStart() : void{
+		$this->mob->setSwimmer(true);
+	}
+
+	public function onEnd() : void{
+		$this->mob->setSwimmer(false);
+	}
+
+	public function onTick() : void{
+		if($this->mob->isUnderWater()){
+			if($this->random->nextFloat() < 0.8){
+				$this->mob->setMotion(new Vector3(0, 0.39, 0));
+			}
+		}
 	}
 }

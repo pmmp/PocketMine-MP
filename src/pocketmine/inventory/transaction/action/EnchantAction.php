@@ -22,15 +22,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\inventory\transaction\action;
 
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-abstract class Vehicle extends Entity implements Rideable{
+class EnchantAction extends SlotChangeAction{
 
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
+	public function isValid(Player $source) : bool{
+		return true; // client-side enchant so we need this
 	}
 }

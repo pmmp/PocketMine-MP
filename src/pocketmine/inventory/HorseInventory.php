@@ -20,17 +20,31 @@
  *
  */
 
-declare(strict_types=1);
+namespace pocketmine\inventory;
 
-namespace pocketmine\entity;
+use pocketmine\entity\passive\AbstractHorse;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+class HorseInventory extends ContainerInventory{
+	/** @var AbstractHorse */
+	protected $holder;
 
-abstract class Vehicle extends Entity implements Rideable{
+	public function getName() : string{
+		return "Horse";
+	}
 
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
+	public function getDefaultSize() : int{
+		return 1;
+	}
+
+	public function getNetworkType() : int{
+		return WindowTypes::HORSE;
+	}
+
+	/**
+	 * @return AbstractHorse
+	 */
+	public function getHolder(){
+		return $this->holder;
 	}
 }

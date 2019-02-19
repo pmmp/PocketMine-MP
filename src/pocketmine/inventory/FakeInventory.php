@@ -22,15 +22,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\inventory;
 
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+interface FakeInventory{
 
-abstract class Vehicle extends Entity implements Rideable{
-
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
-	}
 }

@@ -24,13 +24,9 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+interface SpawnPlacementTypes{
 
-abstract class Vehicle extends Entity implements Rideable{
-
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
-	}
+	public const PLACEMENT_TYPE_ON_GROUND = 0;
+	public const PLACEMENT_TYPE_IN_AIR = 1;
+	public const PLACEMENT_TYPE_IN_WATER = 2;
 }

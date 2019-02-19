@@ -22,15 +22,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\pathfinder;
 
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\math\Vector2;
 
-abstract class Vehicle extends Entity implements Rideable{
+class PathPoint extends Vector2{
 
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
+	/** @var int */
+	public $fScore = 0, $gScore = 0, $height = 0;
+
+	public function getHashCode() : int{
+		return ($this->x * 397) ^ $this->y;
+	}
+
+	public function equals(Vector2 $v) : bool{
+		return $this->x == $v->x and $this->y == $v->y;
 	}
 }

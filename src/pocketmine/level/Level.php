@@ -28,6 +28,7 @@ namespace pocketmine\level;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\entity\CreatureType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
@@ -44,6 +45,7 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\biome\Biome;
+use pocketmine\level\biome\SpawnListEntry;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\EmptySubChunk;
@@ -74,10 +76,12 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
@@ -86,7 +90,9 @@ use pocketmine\tile\Chest;
 use pocketmine\tile\Container;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
+use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
+use pocketmine\utils\WeightedRandomItem;
 use function abs;
 use function array_fill_keys;
 use function array_map;
@@ -274,6 +280,9 @@ class Level implements ChunkManager, Metadatable{
 	/** @var string|Generator */
 	private $generator;
 
+	/** @var int */
+	protected $dimension = DimensionIds::OVERWORLD;
+
 	/** @var bool */
 	private $closed = false;
 
@@ -281,6 +290,17 @@ class Level implements ChunkManager, Metadatable{
 	private $blockLightUpdate = null;
 	/** @var SkyLightUpdate|null */
 	private $skyLightUpdate = null;
+
+	/** @var Random */
+	public $random;
+
+	/** @var AnimalSpawner */
+	private $mobSpawner;
+	/** @var GameRules */
+	private $gameRules;
+
+	private $spawnPeacefulMobs = true;
+	private $spawnHostileMobs = true;
 
 	public static function chunkHash(int $x, int $z) : int{
 		return (($x & 0xFFFFFFFF) << 32) | ($z & 0xFFFFFFFF);
@@ -361,6 +381,19 @@ class Level implements ChunkManager, Metadatable{
 		return -1;
 	}
 
+	public static function getDimensionFromString(string $str) : int{
+		switch(strtolower(trim($str))){
+			case "nether":
+			case "hell":
+				return DimensionIds::NETHER;
+			case "end":
+			case "ender":
+				return DimensionIds::THE_END;
+			default:
+				return DimensionIds::OVERWORLD;
+		}
+	}
+
 	/**
 	 * Init the default level data
 	 *
@@ -382,7 +415,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->displayName]));
 		$this->generator = GeneratorManager::getGenerator($this->provider->getGenerator());
-		//TODO: validate generator options
+		$this->dimension = self::getDimensionFromString($this->provider->getGenerator());
 
 		$this->folderName = $name;
 
@@ -409,6 +442,9 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->timings = new LevelTimings($this);
+		$this->random = new Random();
+		$this->mobSpawner = new AnimalSpawner();
+		$this->gameRules = $this->provider->getGameRules();
 		$this->temporalPosition = new Position(0, 0, 0, $this);
 		$this->temporalVector = new Vector3(0, 0, 0);
 		$this->tickRate = 1;
@@ -750,7 +786,7 @@ class Level implements ChunkManager, Metadatable{
 	 * Changes to this function won't be recorded on the version.
 	 */
 	public function checkTime(){
-		if($this->stopTime){
+		if($this->stopTime or !$this->gameRules->getBool(GameRules::RULE_DO_DAYLIGHT_CYCLE, true)){
 			return;
 		}else{
 			++$this->time;
@@ -766,6 +802,17 @@ class Level implements ChunkManager, Metadatable{
 	public function sendTime(Player ...$targets){
 		$pk = new SetTimePacket();
 		$pk->time = $this->time;
+
+		$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+	}
+
+	/**
+	 * @param Player[]   $target
+	 * @param array|null $rules
+	 */
+	public function sendGameRules(array $target = [], ?array $rules = null) : void{
+		$pk = new GameRulesChangedPacket();
+		$pk->gameRules = $rules ?? $this->gameRules->getRules();
 
 		$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 	}
@@ -798,9 +845,14 @@ class Level implements ChunkManager, Metadatable{
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
 		$this->skyLightReduction = $this->computeSkyLightReduction(); //Sky light reduction depends on the sun angle
 
-		if(++$this->sendTimeTicker === 200){
+		if($this->gameRules->getBool(GameRules::RULE_DO_DAYLIGHT_CYCLE, true) and ++$this->sendTimeTicker === 200){
 			$this->sendTime();
 			$this->sendTimeTicker = 0;
+		}
+
+		if(!empty($dirty = $this->gameRules->getDirtyRules())){
+			$this->sendGameRules([], $dirty);
+			$this->gameRules->clearDirtyRules();
 		}
 
 		$this->unloadChunks();
@@ -864,6 +916,29 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->doTickTiles->startTiming();
 		$this->tickChunks();
 		$this->timings->doTickTiles->stopTiming();
+
+		if($this->server->getAltayProperty("level.generic-auto-mob-spawning", false) and $this->gameRules->getBool(GameRules::RULE_DO_MOB_SPAWNING) and $currentTick % 400 === 0){
+			$eligibleChunks = [];
+			foreach($this->players as $player){
+				if($player->chunk !== null){
+					$cX = $player->chunk->getX();
+					$cZ = $player->chunk->getZ();
+					foreach($player->usedChunks as $chunkHash => $v){
+						Level::getXZ($chunkHash, $x, $z);
+
+						if(abs($cX - $x) <= 8 and abs($cZ - $z) <= 8 and $x !== $cX and $z !== $cZ){
+							if(!isset($eligibleChunks[$chunkHash])){
+								$eligibleChunks[$chunkHash] = $chunkHash;
+							}
+						}
+					}
+				}
+			}
+
+			$this->mobSpawner->findChunksForSpawning($this, $this->spawnHostileMobs, $this->spawnPeacefulMobs, $eligibleChunks);
+		}
+
+		$this->mobSpawner->despawnMobs($this, $currentTick);
 
 		$this->executeQueuedLightUpdates();
 
@@ -2071,17 +2146,18 @@ class Level implements ChunkManager, Metadatable{
 		return $nearby;
 	}
 
-	/**
-	 * Returns the closest Entity to the specified position, within the given radius.
-	 *
-	 * @param Vector3 $pos
-	 * @param float   $maxDistance
-	 * @param string  $entityType Class of entity to use for instanceof
-	 * @param bool    $includeDead Whether to include entitites which are dead
-	 *
-	 * @return Entity|null an entity of type $entityType, or null if not found
-	 */
-	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false) : ?Entity{
+    /**
+     * Returns the closest Entity to the specified position, within the given radius.
+     *
+     * @param Vector3 $pos
+     * @param float $maxDistance
+     * @param string $entityType Class of entity to use for instanceof
+     * @param bool $includeDead Whether to include entitites which are dead
+     *
+     * @param callable|null $filter
+     * @return Entity|null an entity of type $entityType, or null if not found
+     */
+	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false, callable $filter = null) : ?Entity{
 		assert(is_a($entityType, Entity::class, true));
 
 		$minX = ((int) floor($pos->x - $maxDistance)) >> 4;
@@ -2089,16 +2165,20 @@ class Level implements ChunkManager, Metadatable{
 		$minZ = ((int) floor($pos->z - $maxDistance)) >> 4;
 		$maxZ = ((int) floor($pos->z + $maxDistance)) >> 4;
 
-		$currentTargetDistSq = $maxDistance ** 2;
-
 		/** @var Entity|null $currentTarget */
 		$currentTarget = null;
+		$currentTargetDistSq = $maxDistance ** 2;
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				foreach($this->getChunkEntities($x, $z) as $entity){
 					if(!($entity instanceof $entityType) or $entity->isClosed() or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
 						continue;
+					}
+					if($filter !== null){
+						if(!$filter($entity)){
+							continue;
+						}
 					}
 					$distSq = $entity->distanceSquared($pos);
 					if($distSq < $currentTargetDistSq){
@@ -2382,6 +2462,28 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Return dimension of Level
+	 *
+	 * @return int
+	 */
+	public function getDimension() : int{
+		return $this->dimension;
+	}
+
+	/**
+	 * Sets dimension of Level
+	 *
+	 * @param int $dimension
+	 */
+	public function setDimension(int $dimension) : void{
+		if($dimension > 2 or $dimension < 0){
+			throw new \ArrayOutOfBoundsException("Dimension must be 0-2");
+		}
+
+		$this->dimension = $dimension;
+	}
+
+	/**
 	 * @return Chunk[]
 	 */
 	public function getChunks() : array{
@@ -2456,6 +2558,11 @@ class Level implements ChunkManager, Metadatable{
 			if($chunk !== null){
 				$oldChunk = $this->getChunk($x, $z, false);
 				$this->setChunk($x, $z, $chunk, false);
+
+				if($this->gameRules->getBool(GameRules::RULE_DO_MOB_SPAWNING, false)){
+					AnimalSpawner::performChunkGeneratorSpawning($this, $this->getBiome($x, $z), ($x * 16) + 8, ($z * 16) + 8, 16, 16, $this->random);
+				}
+
 				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
 					(new ChunkPopulateEvent($this, $chunk))->call();
 
@@ -3169,6 +3276,56 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
+	/**
+	 * @param Vector3 $pos
+	 *
+	 * @return bool
+	 */
+	public function canSeeSky(Vector3 $pos) : bool{
+		return $pos->y >= $this->getHighestBlockAt((int) floor($pos->x), (int) floor($pos->z));
+	}
+
+	/**
+	 * @param CreatureType $creatureType
+	 * @param Vector3      $pos
+	 *
+	 * @return null|SpawnListEntry
+	 */
+	public function getSpawnListEntryForTypeAt(CreatureType $creatureType, Vector3 $pos) : ?SpawnListEntry{
+		// TODO: get level provider's possible creatures
+		$possibleCreatures = $this->getBiome($pos->x, $pos->z)->getSpawnableList($creatureType);
+
+		if(empty($possibleCreatures)){
+			return null;
+		}
+
+		/** @var SpawnListEntry|null $possible */
+		$possible = WeightedRandomItem::getRandomItem($this->random, $possibleCreatures, WeightedRandomItem::getTotalWeight($possibleCreatures));
+
+		return $possible;
+	}
+
+	/**
+	 * @param CreatureType   $creatureType
+	 * @param SpawnListEntry $entry
+	 * @param Vector3        $pos
+	 *
+	 * @return bool
+	 */
+	public function canCreatureTypeSpawnHere(CreatureType $creatureType, SpawnListEntry $entry, Vector3 $pos) : bool{
+		// TODO: get level provider's possible creatures
+		$possibleCreatures = $this->getBiome($pos->x, $pos->z)->getSpawnableList($creatureType);
+
+		return empty($possibleCreatures) ? false : in_array($entry, $possibleCreatures);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isDayTime() : bool{
+		return $this->getSunAngleDegrees() < 90 or $this->getSunAngleDegrees() > 270;
+	}
+
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){
 		$this->server->getLevelMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
 	}
@@ -3183,5 +3340,40 @@ class Level implements ChunkManager, Metadatable{
 
 	public function removeMetadata(string $metadataKey, Plugin $owningPlugin){
 		$this->server->getLevelMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
+	}
+
+	/**
+	 * @return GameRules
+	 */
+	public function getGameRules() : GameRules{
+		return $this->gameRules;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getSpawnPeacefulMobs() : bool{
+		return $this->spawnPeacefulMobs;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getSpawnHostileMobs() : bool{
+		return $this->spawnHostileMobs;
+	}
+
+	/**
+	 * @param bool $spawnPeacefulMobs
+	 */
+	public function setSpawnPeacefulMobs(bool $spawnPeacefulMobs) : void{
+		$this->spawnPeacefulMobs = $spawnPeacefulMobs;
+	}
+
+	/**
+	 * @param bool $spawnHostileMobs
+	 */
+	public function setSpawnHostileMobs(bool $spawnHostileMobs) : void{
+		$this->spawnHostileMobs = $spawnHostileMobs;
 	}
 }

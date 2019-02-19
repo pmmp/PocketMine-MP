@@ -22,15 +22,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\inventory\utils;
 
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+class EquipmentSlot{
 
-abstract class Vehicle extends Entity implements Rideable{
+	/* For MobEquipmentPacket */
+	public const MAINHAND = 0;
+	public const OFFHAND = 1;
 
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
-	}
+	/** For MobArmorEquipmentPacket */
+	public const HEAD = 0;
+	public const CHEST = 1;
+	public const LEGS = 2;
+	public const FEET = 3;
 }

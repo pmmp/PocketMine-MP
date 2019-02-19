@@ -24,13 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+interface RangedAttackerMob{
 
-abstract class Vehicle extends Entity implements Rideable{
-
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
-	}
+	public function onRangedAttackToTarget(Entity $target, float $power) : void;
 }

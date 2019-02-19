@@ -22,15 +22,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\behavior;
 
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+class RestrictSunBehavior extends Behavior{
 
-abstract class Vehicle extends Entity implements Rideable{
+	public function canStart() : bool{
+		return $this->mob->level->isDayTime();
+	}
 
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
+	public function onStart() : void{
+		$this->mob->getNavigator()->setAvoidsSun(true);
+	}
+
+	public function onEnd() : void{
+		$this->mob->getNavigator()->setAvoidsSun(false);
 	}
 }

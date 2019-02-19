@@ -20,17 +20,26 @@
  *
  */
 
-declare(strict_types=1);
+namespace pocketmine\inventory;
 
-namespace pocketmine\entity;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
+use pocketmine\tile\Beacon;
 
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+class BeaconInventory extends ContainerInventory implements FakeInventory{
 
-abstract class Vehicle extends Entity implements Rideable{
+	public function __construct(Beacon $tile){
+		parent::__construct($tile);
+	}
 
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
+	public function getName() : string{
+		return "Beacon";
+	}
+
+	public function getDefaultSize() : int{
+		return 1;
+	}
+
+	public function getNetworkType() : int{
+		return WindowTypes::BEACON;
 	}
 }

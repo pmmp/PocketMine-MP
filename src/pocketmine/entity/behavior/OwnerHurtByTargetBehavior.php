@@ -22,15 +22,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\behavior;
 
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\entity\Living;
+use pocketmine\entity\Mob;
 
-abstract class Vehicle extends Entity implements Rideable{
+class OwnerHurtByTargetBehavior extends Behavior{
 
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
+	protected $mutexBits = 1;
+
+	public function canStart() : bool{
+		$owner = $this->mob->getOwningEntity();
+
+		/** @var Living $owner */
+		if($owner !== null){
+			$attacker = $owner->getLastAttacker();
+			if($attacker instanceof Mob){
+				$this->mob->setTargetEntity($attacker);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function canContinue() : bool{
+		return false;
 	}
 }
