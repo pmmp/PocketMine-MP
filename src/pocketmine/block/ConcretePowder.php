@@ -23,9 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Fallable;
+use pocketmine\block\utils\FallableTrait;
 use pocketmine\math\Facing;
 
-class ConcretePowder extends Fallable{
+class ConcretePowder extends Solid implements Fallable{
+	use FallableTrait {
+		onNearbyBlockChange as protected startFalling;
+	}
 
 	public function getHardness() : float{
 		return 0.5;
@@ -39,7 +44,7 @@ class ConcretePowder extends Fallable{
 		if(($block = $this->checkAdjacentWater()) !== null){
 			$this->level->setBlock($this, $block);
 		}else{
-			parent::onNearbyBlockChange();
+			$this->startFalling();
 		}
 	}
 

@@ -21,23 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\Fallable;
-use pocketmine\block\utils\FallableTrait;
+use pocketmine\block\Block;
 
-class Sand extends Solid implements Fallable{
-	use FallableTrait;
+interface Fallable{
 
-	public function getHardness() : float{
-		return 0.5;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_SHOVEL;
-	}
-
-	public function tickFalling() : ?Block{
-		return null;
-	}
+	/**
+	 * Called every tick by FallingBlock to update the falling state of this block. Used by concrete to check when it
+	 * hits water.
+	 * Return null if you don't want to change the usual behaviour.
+	 *
+	 * @return Block|null
+	 */
+	public function tickFalling() : ?Block;
 }

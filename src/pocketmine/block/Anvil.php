@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\Fallable;
+use pocketmine\block\utils\FallableTrait;
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
@@ -33,7 +35,8 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class Anvil extends Fallable{
+class Anvil extends Transparent implements Fallable{
+	use FallableTrait;
 
 	public const TYPE_NORMAL = 0;
 	public const TYPE_SLIGHTLY_DAMAGED = 4;
@@ -52,10 +55,6 @@ class Anvil extends Fallable{
 
 	public function getStateBitmask() : int{
 		return 0b11;
-	}
-
-	public function isTransparent() : bool{
-		return true;
 	}
 
 	public function getHardness() : float{
@@ -91,5 +90,9 @@ class Anvil extends Fallable{
 			$this->facing = Facing::rotateY($player->getHorizontalFacing(), true);
 		}
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
+	public function tickFalling() : ?Block{
+		return null;
 	}
 }
