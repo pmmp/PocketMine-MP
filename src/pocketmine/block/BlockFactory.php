@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PillarRotationTrait;
+use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
@@ -374,7 +375,7 @@ class BlockFactory{
 		}
 		foreach($slabTypes as $type){
 			self::registerBlock($type);
-			self::registerBlock(new DoubleSlab($type->getDoubleSlabId(), $type->getId(), $type->getVariant()));
+			self::registerBlock((clone $type)->setSlabType(SlabType::double())); //flattening hack
 		}
 
 		static $wallTypes = [
