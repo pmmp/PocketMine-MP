@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\Fallable;
+use pocketmine\block\utils\FallableTrait;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
@@ -34,7 +36,8 @@ use pocketmine\Player;
 use function floor;
 use function max;
 
-class SnowLayer extends Flowable{
+class SnowLayer extends Flowable implements Fallable{
+	use FallableTrait;
 
 	protected $id = self::SNOW_LAYER;
 
@@ -97,12 +100,6 @@ class SnowLayer extends Flowable{
 		return false;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::DOWN)->isSolid()){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false);
-		}
-	}
-
 	public function ticksRandomly() : bool{
 		return true;
 	}
@@ -111,6 +108,10 @@ class SnowLayer extends Flowable{
 		if($this->level->getBlockLightAt($this->x, $this->y, $this->z) >= 12){
 			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false);
 		}
+	}
+
+	public function tickFalling() : ?Block{
+		return null;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
