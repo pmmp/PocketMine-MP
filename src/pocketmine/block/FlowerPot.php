@@ -32,15 +32,8 @@ use pocketmine\tile\FlowerPot as TileFlowerPot;
 
 class FlowerPot extends Flowable{
 
-	protected $id = self::FLOWER_POT_BLOCK;
-	protected $itemId = Item::FLOWER_POT;
-
 	/** @var bool */
 	protected $occupied = false;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->occupied ? 1 : 0;
@@ -52,14 +45,6 @@ class FlowerPot extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b1111; //vanilla uses various values, we only care about 1 and 0 for PE
-	}
-
-	protected function getTileClass() : ?string{
-		return TileFlowerPot::class;
-	}
-
-	public function getName() : string{
-		return "Flower Pot";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

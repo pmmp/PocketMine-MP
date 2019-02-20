@@ -33,12 +33,6 @@ use pocketmine\tile\EnderChest as TileEnderChest;
 
 class EnderChest extends Chest{
 
-	protected $id = self::ENDER_CHEST;
-
-	protected function getTileClass() : ?string{
-		return TileEnderChest::class;
-	}
-
 	public function getHardness() : float{
 		return 22.5;
 	}
@@ -49,10 +43,6 @@ class EnderChest extends Chest{
 
 	public function getLightLevel() : int{
 		return 7;
-	}
-
-	public function getName() : string{
-		return "Ender Chest";
 	}
 
 	public function getToolType() : int{

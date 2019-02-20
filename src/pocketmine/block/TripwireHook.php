@@ -32,18 +32,12 @@ use pocketmine\Player;
 
 class TripwireHook extends Flowable{
 
-	protected $id = self::TRIPWIRE_HOOK;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $connected = false;
 	/** @var bool */
 	protected $powered = false;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing($this->facing) | ($this->connected ? 0x04 : 0) | ($this->powered ? 0x08 : 0);
@@ -57,10 +51,6 @@ class TripwireHook extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getName() : string{
-		return "Tripwire Hook";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

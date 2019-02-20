@@ -30,16 +30,6 @@ use pocketmine\item\TieredTool;
 
 class Magma extends Solid{
 
-	protected $id = Block::MAGMA;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Magma Block";
-	}
-
 	public function getHardness() : float{
 		return 0.5;
 	}

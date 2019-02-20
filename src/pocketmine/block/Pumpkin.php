@@ -32,14 +32,8 @@ use pocketmine\Player;
 
 class Pumpkin extends Solid{
 
-	protected $id = self::PUMPKIN;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
-
-	public function __construct(){
-
-	}
 
 	public function readStateFromMeta(int $meta) : void{
 		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03);
@@ -59,10 +53,6 @@ class Pumpkin extends Solid{
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_AXE;
-	}
-
-	public function getName() : string{
-		return "Pumpkin";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

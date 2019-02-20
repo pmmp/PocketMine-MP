@@ -29,16 +29,6 @@ use pocketmine\item\TieredTool;
 class BoneBlock extends Solid{
 	use PillarRotationTrait;
 
-	protected $id = Block::BONE_BLOCK;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Bone Block";
-	}
-
 	public function getHardness() : float{
 		return 2;
 	}

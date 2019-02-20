@@ -37,10 +37,6 @@ abstract class Button extends Flowable{
 	/** @var bool */
 	protected $powered = false;
 
-	public function __construct(){
-
-	}
-
 	protected function writeStateToMeta() : int{
 		return $this->facing | ($this->powered ? 0x08 : 0);
 	}

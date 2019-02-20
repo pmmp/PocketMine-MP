@@ -31,16 +31,6 @@ use pocketmine\Player;
 
 class WaterLily extends Flowable{
 
-	protected $id = self::WATER_LILY;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Lily Pad";
-	}
-
 	public function getHardness() : float{
 		return 0.6;
 	}

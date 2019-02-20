@@ -29,18 +29,8 @@ use pocketmine\item\ItemFactory;
 
 class Cobweb extends Flowable{
 
-	protected $id = self::COBWEB;
-
-	public function __construct(){
-
-	}
-
 	public function hasEntityCollision() : bool{
 		return true;
-	}
-
-	public function getName() : string{
-		return "Cobweb";
 	}
 
 	public function getHardness() : float{

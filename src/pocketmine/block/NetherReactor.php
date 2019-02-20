@@ -33,14 +33,8 @@ class NetherReactor extends Solid{
 	protected const STATE_ACTIVE = 1;
 	protected const STATE_USED = 2;
 
-	protected $id = Block::NETHER_REACTOR;
-
 	/** @var int */
 	protected $state = self::STATE_INACTIVE;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->state;
@@ -52,10 +46,6 @@ class NetherReactor extends Solid{
 
 	public function getStateBitmask() : int{
 		return 0b11;
-	}
-
-	public function getName() : string{
-		return "Nether Reactor Core";
 	}
 
 	public function getToolType() : int{

@@ -28,16 +28,6 @@ use pocketmine\block\utils\PillarRotationTrait;
 class HayBale extends Solid{
 	use PillarRotationTrait;
 
-	protected $id = self::HAY_BALE;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Hay Bale";
-	}
-
 	public function getHardness() : float{
 		return 0.5;
 	}

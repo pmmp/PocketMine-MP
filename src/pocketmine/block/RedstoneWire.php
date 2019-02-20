@@ -24,20 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
-use pocketmine\item\Item;
 
 class RedstoneWire extends Flowable{
-	/** @var int */
-	protected $id = Block::REDSTONE_WIRE;
-	/** @var int */
-	protected $itemId = Item::REDSTONE;
 
 	/** @var int */
 	protected $power = 0;
-
-	public function __construct(){
-
-	}
 
 	public function readStateFromMeta(int $meta) : void{
 		$this->power = BlockDataValidator::readBoundedInt("power", $meta, 0, 15);
@@ -49,10 +40,6 @@ class RedstoneWire extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getName() : string{
-		return "Redstone";
 	}
 
 	public function readStateFromWorld() : void{

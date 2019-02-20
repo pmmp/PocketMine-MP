@@ -27,12 +27,6 @@ use pocketmine\item\TieredTool;
 
 class IronTrapdoor extends Trapdoor{
 
-	protected $id = self::IRON_TRAPDOOR;
-
-	public function getName() : string{
-		return "Iron Trapdoor";
-	}
-
 	public function getHardness() : float{
 		return 5;
 	}

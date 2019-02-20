@@ -29,12 +29,6 @@ use function mt_rand;
 
 class Wheat extends Crops{
 
-	protected $id = self::WHEAT_BLOCK;
-
-	public function getName() : string{
-		return "Wheat Block";
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->age >= 7){
 			return [

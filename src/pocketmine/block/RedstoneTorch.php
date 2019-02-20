@@ -25,21 +25,18 @@ namespace pocketmine\block;
 
 class RedstoneTorch extends Torch{
 
-	protected $itemId = self::REDSTONE_TORCH;
+	/** @var BlockIdentifierFlattened */
+	protected $idInfo;
 
 	/** @var bool */
 	protected $lit = true;
 
-	public function __construct(){
-		parent::__construct(self::REDSTONE_TORCH, 0, "Redstone Torch", self::REDSTONE_TORCH);
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
+		parent::__construct($idInfo, $name);
 	}
 
 	public function getId() : int{
-		return $this->lit ? self::REDSTONE_TORCH : self::UNLIT_REDSTONE_TORCH;
-	}
-
-	public function getName() : string{
-		return "Redstone Torch";
+		return $this->lit ? parent::getId() : $this->idInfo->getSecondId();
 	}
 
 	public function isLit() : bool{

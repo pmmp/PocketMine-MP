@@ -32,18 +32,11 @@ use pocketmine\tile\ItemFrame as TileItemFrame;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
-	protected $id = Block::ITEM_FRAME_BLOCK;
-
-	protected $itemId = Item::ITEM_FRAME;
 
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $hasMap = false; //makes frame appear large if set
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return (5 - $this->facing) | ($this->hasMap ? 0x04 : 0);
@@ -56,14 +49,6 @@ class ItemFrame extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	protected function getTileClass() : ?string{
-		return TileItemFrame::class;
-	}
-
-	public function getName() : string{
-		return "Item Frame";
 	}
 
 	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

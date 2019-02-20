@@ -28,8 +28,6 @@ use pocketmine\math\Facing;
 
 class WallBanner extends StandingBanner{
 
-	protected $id = self::WALL_BANNER;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
@@ -43,10 +41,6 @@ class WallBanner extends StandingBanner{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getName() : string{
-		return "Wall Banner";
 	}
 
 	public function onNearbyBlockChange() : void{

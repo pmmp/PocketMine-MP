@@ -35,18 +35,12 @@ use function floor;
 
 class Skull extends Flowable{
 
-	protected $id = self::SKULL_BLOCK;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
 	protected $type = TileSkull::TYPE_SKELETON;
 	/** @var int */
 	protected $rotation = 0; //TODO: split this into floor skull and wall skull handling
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->facing;
@@ -69,10 +63,6 @@ class Skull extends Flowable{
 		}
 	}
 
-	protected function getTileClass() : ?string{
-		return TileSkull::class;
-	}
-
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 		//extra block properties storage hack
@@ -85,10 +75,6 @@ class Skull extends Flowable{
 
 	public function getHardness() : float{
 		return 1;
-	}
-
-	public function getName() : string{
-		return "Mob Head";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

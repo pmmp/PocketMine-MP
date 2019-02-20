@@ -32,16 +32,6 @@ use function mt_rand;
 class Gravel extends Solid implements Fallable{
 	use FallableTrait;
 
-	protected $id = self::GRAVEL;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Gravel";
-	}
-
 	public function getHardness() : float{
 		return 0.6;
 	}

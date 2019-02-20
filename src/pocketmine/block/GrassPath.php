@@ -30,16 +30,6 @@ use pocketmine\math\Facing;
 
 class GrassPath extends Transparent{
 
-	protected $id = self::GRASS_PATH;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Grass Path";
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_SHOVEL;
 	}

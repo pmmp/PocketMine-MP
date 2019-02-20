@@ -32,10 +32,6 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class Lava extends Liquid{
 
-	public function __construct(){
-		parent::__construct(self::FLOWING_LAVA, self::STILL_LAVA, "Lava");
-	}
-
 	public function getLightLevel() : int{
 		return 15;
 	}

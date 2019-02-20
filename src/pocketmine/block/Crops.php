@@ -35,10 +35,6 @@ abstract class Crops extends Flowable{
 	/** @var int */
 	protected $age = 0;
 
-	public function __construct(){
-
-	}
-
 	protected function writeStateToMeta() : int{
 		return $this->age;
 	}

@@ -27,16 +27,6 @@ use pocketmine\item\TieredTool;
 
 class Stonecutter extends Solid{
 
-	protected $id = self::STONECUTTER;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Stonecutter";
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}

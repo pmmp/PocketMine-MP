@@ -28,21 +28,12 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\tile\Sign as TileSign;
 use function floor;
 
 class SignPost extends Transparent{
 
-	protected $id = self::SIGN_POST;
-
-	protected $itemId = Item::SIGN;
-
 	/** @var int */
 	protected $rotation = 0;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->rotation;
@@ -56,20 +47,12 @@ class SignPost extends Transparent{
 		return 0b1111;
 	}
 
-	protected function getTileClass() : ?string{
-		return TileSign::class;
-	}
-
 	public function getHardness() : float{
 		return 1;
 	}
 
 	public function isSolid() : bool{
 		return false;
-	}
-
-	public function getName() : string{
-		return "Sign Post";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

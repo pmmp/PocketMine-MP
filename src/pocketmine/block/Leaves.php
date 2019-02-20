@@ -42,8 +42,8 @@ class Leaves extends Transparent{
 	/** @var bool */
 	protected $checkDecay = false;
 
-	public function __construct(int $id, int $variant, TreeType $treeType, ?string $name = null){
-		parent::__construct($id, $variant, $name);
+	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType){
+		parent::__construct($idInfo, $name);
 		$this->treeType = $treeType;
 	}
 

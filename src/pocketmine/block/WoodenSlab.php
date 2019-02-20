@@ -25,8 +25,6 @@ namespace pocketmine\block;
 
 class WoodenSlab extends Slab{
 
-	protected $id = self::WOODEN_SLAB;
-
 	public function getHardness() : float{
 		return 2;
 	}

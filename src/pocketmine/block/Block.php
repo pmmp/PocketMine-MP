@@ -65,71 +65,50 @@ class Block extends Position implements BlockIds, Metadatable{
 		return BlockFactory::get($id, $meta, $pos);
 	}
 
-	/** @var int */
-	protected $id;
-	/** @var int */
-	protected $variant = 0;
+	/** @var BlockIdentifier */
+	protected $idInfo;
+
 	/** @var string|null */
 	protected $fallbackName;
-	/** @var int|null */
-	protected $itemId;
+
 
 	/** @var AxisAlignedBB */
 	protected $boundingBox = null;
-
-
 	/** @var AxisAlignedBB[]|null */
 	protected $collisionBoxes = null;
 
 	/**
-	 * @param int         $id      The block type's ID, 0-255
-	 * @param int         $variant Meta value of the block type
-	 * @param string|null $name    English name of the block type (TODO: implement translations)
-	 * @param int         $itemId  The item ID of the block type, used for block picking and dropping items.
+	 * @param BlockIdentifier $idInfo
+	 * @param string|null     $name English name of the block type (TODO: implement translations)
 	 */
-	public function __construct(int $id, int $variant = 0, string $name = null, int $itemId = null){
-		$this->id = $id;
-
-		if(($variant & $this->getStateBitmask()) !== 0){
-			throw new \InvalidArgumentException("Variant 0x" . dechex($variant) . " collides with state bitmask 0x" . dechex($this->getStateBitmask()));
+	public function __construct(BlockIdentifier $idInfo, string $name){
+		if(($idInfo->getVariant() & $this->getStateBitmask()) !== 0){
+			throw new \InvalidArgumentException("Variant 0x" . dechex($idInfo->getVariant()) . " collides with state bitmask 0x" . dechex($this->getStateBitmask()));
 		}
-		$this->variant = $variant;
+		$this->idInfo = $idInfo;
 		$this->fallbackName = $name;
-		$this->itemId = $itemId;
+	}
+
+	public function getIdInfo() : BlockIdentifier{
+		return $this->idInfo;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getName() : string{
-		return $this->fallbackName ?? "Unknown";
+		return $this->fallbackName;
 	}
 
 	/**
 	 * @return int
 	 */
 	public function getId() : int{
-		return $this->id;
-	}
-
-	/**
-	 * Returns the ID of the item form of the block.
-	 * Used for drops for blocks (some blocks such as doors have a different item ID).
-	 *
-	 * @return int
-	 */
-	public function getItemId() : int{
-		if($this->itemId !== null){
-			return $this->itemId;
-		}
-		if($this->id > 255){
-			return 255 - $this->id;
-		}
-		return $this->id;
+		return $this->idInfo->getBlockId();
 	}
 
 	public function getItem() : Item{
-		return ItemFactory::get($this->getItemId(), $this->getVariant());
+		return ItemFactory::get($this->idInfo->getItemId(), $this->idInfo->getVariant());
 	}
 
 	/**
@@ -146,7 +125,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function getDamage() : int{
 		$stateMeta = $this->writeStateToMeta();
 		assert(($stateMeta & ~$this->getStateBitmask()) === 0);
-		return $this->variant | $stateMeta;
+		return $this->idInfo->getVariant() | $stateMeta;
 	}
 
 	protected function writeStateToMeta() : int{
@@ -173,19 +152,10 @@ class Block extends Position implements BlockIds, Metadatable{
 		$this->collisionBoxes = null;
 	}
 
-	/**
-	 * Returns the class of Tile associated with this block.
-	 *
-	 * @return string|null class extending Tile, or null
-	 */
-	protected function getTileClass() : ?string{
-		return null;
-	}
-
 	public function writeStateToWorld() : void{
 		$this->level->getChunkAtPosition($this)->setBlock($this->x & 0xf, $this->y, $this->z & 0xf, $this->getId(), $this->getDamage());
 
-		$tileType = $this->getTileClass();
+		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $this->level->getTile($this);
 		if($oldTile !== null and ($tileType === null or !($oldTile instanceof $tileType))){
 			$oldTile->close();
@@ -206,14 +176,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Returns the block meta, stripped of non-variant flags.
-	 * @return int
-	 */
-	public function getVariant() : int{
-		return $this->variant;
-	}
-
-	/**
 	 * Returns whether the given block has an equivalent type to this one.
 	 *
 	 * @param Block $other
@@ -221,7 +183,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return bool
 	 */
 	public function isSameType(Block $other) : bool{
-		return $this->getId() === $other->getId() and $this->getVariant() === $other->getVariant();
+		return $this->idInfo->getBlockId() === $other->idInfo->getBlockId() and $this->idInfo->getVariant() === $other->idInfo->getVariant();
 	}
 
 	/**

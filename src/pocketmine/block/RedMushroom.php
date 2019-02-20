@@ -30,16 +30,6 @@ use pocketmine\Player;
 
 class RedMushroom extends Flowable{
 
-	protected $id = self::RED_MUSHROOM;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Red Mushroom";
-	}
-
 	public function ticksRandomly() : bool{
 		return true;
 	}

@@ -40,16 +40,6 @@ use const M_PI;
 
 class TNT extends Solid{
 
-	protected $id = self::TNT;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "TNT";
-	}
-
 	public function getHardness() : float{
 		return 0;
 	}

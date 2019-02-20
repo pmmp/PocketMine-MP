@@ -33,14 +33,8 @@ use pocketmine\Player;
 
 class Ladder extends Transparent{
 
-	protected $id = self::LADDER;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->facing;
@@ -52,10 +46,6 @@ class Ladder extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getName() : string{
-		return "Ladder";
 	}
 
 	public function hasEntityCollision() : bool{

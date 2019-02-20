@@ -35,16 +35,8 @@ use function floor;
 
 class StandingBanner extends Transparent{
 
-	protected $id = self::STANDING_BANNER;
-
-	protected $itemId = Item::BANNER;
-
 	/** @var int */
 	protected $rotation = 0;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->rotation;
@@ -58,20 +50,12 @@ class StandingBanner extends Transparent{
 		return 0b1111;
 	}
 
-	protected function getTileClass() : ?string{
-		return TileBanner::class;
-	}
-
 	public function getHardness() : float{
 		return 1;
 	}
 
 	public function isSolid() : bool{
 		return false;
-	}
-
-	public function getName() : string{
-		return "Standing Banner";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

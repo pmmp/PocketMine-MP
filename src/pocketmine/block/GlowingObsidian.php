@@ -28,16 +28,6 @@ use pocketmine\item\TieredTool;
 
 class GlowingObsidian extends Solid{
 
-	protected $id = self::GLOWING_OBSIDIAN;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Glowing Obsidian";
-	}
-
 	public function getLightLevel() : int{
 		return 12;
 	}

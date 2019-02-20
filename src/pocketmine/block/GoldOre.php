@@ -27,16 +27,6 @@ use pocketmine\item\TieredTool;
 
 class GoldOre extends Solid{
 
-	protected $id = self::GOLD_ORE;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Gold Ore";
-	}
-
 	public function getHardness() : float{
 		return 3;
 	}

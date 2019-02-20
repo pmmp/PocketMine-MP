@@ -27,16 +27,6 @@ use pocketmine\item\Item;
 
 class Bedrock extends Solid{
 
-	protected $id = self::BEDROCK;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Bedrock";
-	}
-
 	public function getHardness() : float{
 		return -1;
 	}

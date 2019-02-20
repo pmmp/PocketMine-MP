@@ -31,20 +31,19 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 abstract class Slab extends Transparent{
-	/** @var int */
-	protected $doubleId;
+	/** @var BlockIdentifierFlattened */
+	protected $idInfo;
 
 	/** @var SlabType */
 	protected $slabType;
 
-	public function __construct(int $id, int $doubleId, int $variant = 0, ?string $name = null){
-		parent::__construct($id, $variant, $name . " Slab", $id);
-		$this->doubleId = $doubleId;
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
+		parent::__construct($idInfo, $name . " Slab");
 		$this->slabType = SlabType::BOTTOM();
 	}
 
 	public function getId() : int{
-		return $this->slabType === SlabType::DOUBLE() ? $this->doubleId : parent::getId();
+		return $this->slabType === SlabType::DOUBLE() ? $this->idInfo->getSecondId() : parent::getId();
 	}
 
 	protected function writeStateToMeta() : int{

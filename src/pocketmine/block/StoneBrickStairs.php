@@ -27,12 +27,6 @@ use pocketmine\item\TieredTool;
 
 class StoneBrickStairs extends Stair{
 
-	protected $id = self::STONE_BRICK_STAIRS;
-
-	public function __construct(){
-
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}
@@ -43,9 +37,5 @@ class StoneBrickStairs extends Stair{
 
 	public function getHardness() : float{
 		return 1.5;
-	}
-
-	public function getName() : string{
-		return "Stone Brick Stairs";
 	}
 }

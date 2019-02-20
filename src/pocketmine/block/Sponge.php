@@ -26,14 +26,8 @@ namespace pocketmine\block;
 
 class Sponge extends Solid{
 
-	protected $id = self::SPONGE;
-
 	/** @var bool */
 	protected $wet = false;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->wet ? 1 : 0;
@@ -49,9 +43,5 @@ class Sponge extends Solid{
 
 	public function getHardness() : float{
 		return 0.6;
-	}
-
-	public function getName() : string{
-		return "Sponge";
 	}
 }

@@ -25,18 +25,8 @@ namespace pocketmine\block;
 
 class Podzol extends Solid{
 
-	protected $id = self::PODZOL;
-
-	public function __construct(){
-
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_SHOVEL;
-	}
-
-	public function getName() : string{
-		return "Podzol";
 	}
 
 	public function getHardness() : float{

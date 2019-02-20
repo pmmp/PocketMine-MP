@@ -37,16 +37,6 @@ use function mt_rand;
 
 class Grass extends Solid{
 
-	protected $id = self::GRASS;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Grass";
-	}
-
 	public function getHardness() : float{
 		return 0.6;
 	}

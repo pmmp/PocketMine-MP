@@ -28,16 +28,6 @@ use pocketmine\item\ItemFactory;
 
 class Bookshelf extends Solid{
 
-	protected $id = self::BOOKSHELF;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Bookshelf";
-	}
-
 	public function getHardness() : float{
 		return 1.5;
 	}

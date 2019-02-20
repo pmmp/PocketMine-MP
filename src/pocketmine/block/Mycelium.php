@@ -31,16 +31,6 @@ use function mt_rand;
 
 class Mycelium extends Solid{
 
-	protected $id = self::MYCELIUM;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Mycelium";
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_SHOVEL;
 	}

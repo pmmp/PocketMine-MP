@@ -37,8 +37,8 @@ use function lcg_value;
 use function min;
 
 abstract class Liquid extends Transparent{
-	/** @var int */
-	private $stillId;
+	/** @var BlockIdentifierFlattened */
+	protected $idInfo;
 
 	public $adjacentSources = 0;
 
@@ -59,13 +59,12 @@ abstract class Liquid extends Transparent{
 	/** @var bool */
 	protected $still = false;
 
-	public function __construct(int $id, int $stillId, string $name){
-		parent::__construct($id, 0, $name);
-		$this->stillId = $stillId;
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
+		parent::__construct($idInfo, $name);
 	}
 
 	public function getId() : int{
-		return $this->still ? $this->stillId : parent::getId();
+		return $this->still ? $this->idInfo->getSecondId() : parent::getId();
 	}
 
 	protected function writeStateToMeta() : int{

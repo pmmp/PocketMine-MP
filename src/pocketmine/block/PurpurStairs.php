@@ -27,16 +27,6 @@ use pocketmine\item\TieredTool;
 
 class PurpurStairs extends Stair{
 
-	protected $id = self::PURPUR_STAIRS;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Purpur Stairs";
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}

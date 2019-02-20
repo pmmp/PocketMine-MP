@@ -35,18 +35,12 @@ class Lever extends Flowable{
 	protected const SIDE = 1;
 	protected const TOP = 2;
 
-	protected $id = self::LEVER;
-
 	/** @var int */
 	protected $position = self::BOTTOM;
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $powered = false;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		if($this->position === self::BOTTOM){
@@ -77,10 +71,6 @@ class Lever extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getName() : string{
-		return "Lever";
 	}
 
 	public function getHardness() : float{

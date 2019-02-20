@@ -35,18 +35,12 @@ class Trapdoor extends Transparent{
 	private const MASK_UPPER = 0x04;
 	private const MASK_OPENED = 0x08;
 
-	protected $id = self::TRAPDOOR;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $open = false;
 	/** @var bool */
 	protected $top = false;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return (5 - $this->facing) | ($this->top ? self::MASK_UPPER : 0) | ($this->open ? self::MASK_OPENED : 0);
@@ -62,10 +56,6 @@ class Trapdoor extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getName() : string{
-		return "Wooden Trapdoor";
 	}
 
 	public function getHardness() : float{

@@ -80,10 +80,6 @@ abstract class BaseRail extends Flowable{
 	/** @var int[] */
 	protected $connections = [];
 
-	public function __construct(){
-
-	}
-
 	protected function writeStateToMeta() : int{
 		if(empty($this->connections)){
 			return self::STRAIGHT_NORTH_SOUTH;

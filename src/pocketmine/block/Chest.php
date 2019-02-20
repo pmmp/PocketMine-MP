@@ -33,14 +33,8 @@ use pocketmine\tile\Chest as TileChest;
 
 class Chest extends Transparent{
 
-	protected $id = self::CHEST;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->facing;
@@ -54,16 +48,8 @@ class Chest extends Transparent{
 		return 0b111;
 	}
 
-	protected function getTileClass() : ?string{
-		return TileChest::class;
-	}
-
 	public function getHardness() : float{
 		return 2.5;
-	}
-
-	public function getName() : string{
-		return "Chest";
 	}
 
 	public function getToolType() : int{

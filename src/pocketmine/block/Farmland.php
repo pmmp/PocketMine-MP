@@ -31,14 +31,8 @@ use pocketmine\math\Facing;
 
 class Farmland extends Transparent{
 
-	protected $id = self::FARMLAND;
-
 	/** @var int */
 	protected $wetness = 0; //"moisture" blockstate property in PC
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->wetness;
@@ -50,10 +44,6 @@ class Farmland extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getName() : string{
-		return "Farmland";
 	}
 
 	public function getHardness() : float{

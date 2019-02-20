@@ -31,22 +31,18 @@ use pocketmine\Player;
 use function mt_rand;
 
 class RedstoneOre extends Solid{
-
-	protected $itemId = self::REDSTONE_ORE;
+	/** @var BlockIdentifierFlattened */
+	protected $idInfo;
 
 	/** @var bool */
 	protected $lit = false;
 
-	public function __construct(){
-
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
+		parent::__construct($idInfo, $name);
 	}
 
 	public function getId() : int{
-		return $this->lit ? self::GLOWING_REDSTONE_ORE : self::REDSTONE_ORE;
-	}
-
-	public function getName() : string{
-		return "Redstone Ore";
+		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
 	}
 
 	public function getHardness() : float{

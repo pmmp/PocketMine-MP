@@ -29,16 +29,6 @@ use pocketmine\Player;
 
 class Ice extends Transparent{
 
-	protected $id = self::ICE;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Ice";
-	}
-
 	public function getHardness() : float{
 		return 0.5;
 	}

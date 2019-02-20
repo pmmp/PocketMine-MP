@@ -29,12 +29,6 @@ use function mt_rand;
 
 class Carrot extends Crops{
 
-	protected $id = self::CARROT_BLOCK;
-
-	public function getName() : string{
-		return "Carrot Block";
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			ItemFactory::get(Item::CARROT, 0, $this->age >= 7 ? mt_rand(1, 4) : 1)

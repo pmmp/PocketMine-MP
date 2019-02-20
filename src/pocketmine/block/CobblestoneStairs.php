@@ -27,12 +27,6 @@ use pocketmine\item\TieredTool;
 
 class CobblestoneStairs extends Stair{
 
-	protected $id = self::COBBLESTONE_STAIRS;
-
-	public function __construct(){
-
-	}
-
 	public function getHardness() : float{
 		return 2;
 	}
@@ -43,9 +37,5 @@ class CobblestoneStairs extends Stair{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
-	}
-
-	public function getName() : string{
-		return "Cobblestone Stairs";
 	}
 }

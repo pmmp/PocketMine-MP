@@ -32,14 +32,8 @@ use pocketmine\Player;
 
 class EndRod extends Flowable{
 
-	protected $id = Block::END_ROD;
-
 	/** @var int */
 	protected $facing = Facing::DOWN;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		if(Facing::axis($this->facing) === Facing::AXIS_Y){
@@ -58,10 +52,6 @@ class EndRod extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getName() : string{
-		return "End Rod";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

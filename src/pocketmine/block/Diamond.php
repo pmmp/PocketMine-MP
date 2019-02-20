@@ -27,18 +27,8 @@ use pocketmine\item\TieredTool;
 
 class Diamond extends Solid{
 
-	protected $id = self::DIAMOND_BLOCK;
-
-	public function __construct(){
-
-	}
-
 	public function getHardness() : float{
 		return 5;
-	}
-
-	public function getName() : string{
-		return "Diamond Block";
 	}
 
 	public function getToolType() : int{

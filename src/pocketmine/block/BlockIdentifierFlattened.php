@@ -23,11 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class RedSandstoneStairs extends SandstoneStairs{
+class BlockIdentifierFlattened extends BlockIdentifier{
 
-	protected $id = self::RED_SANDSTONE_STAIRS;
+	/** @var int */
+	private $secondId;
 
-	public function getName() : string{
-		return "Red " . parent::getName();
+	public function __construct(int $blockId, int $secondId, int $variant = 0, ?int $itemId = null, ?string $tileClass = null){
+		parent::__construct($blockId, $variant, $itemId, $tileClass);
+		$this->secondId = $secondId;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getSecondId() : int{
+		return $this->secondId;
 	}
 }

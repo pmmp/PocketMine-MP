@@ -28,18 +28,12 @@ use pocketmine\item\ItemFactory;
 
 class Tripwire extends Flowable{
 
-	protected $id = self::TRIPWIRE;
-
 	/** @var bool */
 	protected $triggered = false;
 	/** @var bool */
 	protected $connected = false;
 	/** @var bool */
 	protected $disarmed = false;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return ($this->triggered ? 0x01 : 0) | ($this->connected ? 0x04 : 0) | ($this->disarmed ? 0x08 : 0);
@@ -53,10 +47,6 @@ class Tripwire extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getName() : string{
-		return "Tripwire";
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

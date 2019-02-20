@@ -27,16 +27,6 @@ use pocketmine\item\TieredTool;
 
 class NetherBrickStairs extends Stair{
 
-	protected $id = self::NETHER_BRICK_STAIRS;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Nether Brick Stairs";
-	}
-
 	public function getHardness() : float{
 		return 2;
 	}

@@ -32,8 +32,8 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class RedstoneRepeater extends Flowable{
-	/** @var int */
-	protected $itemId = Item::REPEATER;
+	/** @var BlockIdentifierFlattened */
+	protected $idInfo;
 
 	/** @var bool */
 	protected $powered = false;
@@ -42,12 +42,12 @@ class RedstoneRepeater extends Flowable{
 	/** @var int */
 	protected $delay = 1;
 
-	public function __construct(){
-
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
+		parent::__construct($idInfo, $name);
 	}
 
 	public function getId() : int{
-		return $this->powered ? Block::POWERED_REPEATER : Block::UNPOWERED_REPEATER;
+		return $this->powered ? $this->idInfo->getSecondId() : parent::getId();
 	}
 
 	public function readStateFromMeta(int $meta) : void{
@@ -61,10 +61,6 @@ class RedstoneRepeater extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getName() : string{
-		return "Redstone Repeater";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

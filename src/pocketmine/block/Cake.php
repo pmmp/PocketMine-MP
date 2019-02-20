@@ -35,16 +35,8 @@ use pocketmine\Player;
 
 class Cake extends Transparent implements FoodSource{
 
-	protected $id = self::CAKE_BLOCK;
-
-	protected $itemId = Item::CAKE;
-
 	/** @var int */
 	protected $bites = 0;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->bites;
@@ -60,10 +52,6 @@ class Cake extends Transparent implements FoodSource{
 
 	public function getHardness() : float{
 		return 0.5;
-	}
-
-	public function getName() : string{
-		return "Cake";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

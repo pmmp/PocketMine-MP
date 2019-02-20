@@ -33,16 +33,10 @@ use pocketmine\Player;
 
 class EndPortalFrame extends Solid{
 
-	protected $id = self::END_PORTAL_FRAME;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $eye = false;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing($this->facing) | ($this->eye ? 0x04 : 0);
@@ -59,10 +53,6 @@ class EndPortalFrame extends Solid{
 
 	public function getLightLevel() : int{
 		return 1;
-	}
-
-	public function getName() : string{
-		return "End Portal Frame";
 	}
 
 	public function getHardness() : float{

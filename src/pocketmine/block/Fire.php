@@ -37,14 +37,8 @@ use function mt_rand;
 
 class Fire extends Flowable{
 
-	protected $id = self::FIRE;
-
 	/** @var int */
 	protected $age = 0;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->age;
@@ -60,10 +54,6 @@ class Fire extends Flowable{
 
 	public function hasEntityCollision() : bool{
 		return true;
-	}
-
-	public function getName() : string{
-		return "Fire Block";
 	}
 
 	public function getLightLevel() : int{

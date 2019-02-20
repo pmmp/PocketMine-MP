@@ -27,16 +27,6 @@ use pocketmine\item\TieredTool;
 
 class Netherrack extends Solid{
 
-	protected $id = self::NETHERRACK;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Netherrack";
-	}
-
 	public function getHardness() : float{
 		return 0.4;
 	}

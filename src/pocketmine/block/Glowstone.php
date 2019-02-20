@@ -29,16 +29,6 @@ use function mt_rand;
 
 class Glowstone extends Transparent{
 
-	protected $id = self::GLOWSTONE;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Glowstone";
-	}
-
 	public function getHardness() : float{
 		return 0.3;
 	}

@@ -27,16 +27,6 @@ use pocketmine\item\TieredTool;
 
 class Iron extends Solid{
 
-	protected $id = self::IRON_BLOCK;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Iron Block";
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}

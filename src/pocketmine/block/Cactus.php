@@ -36,14 +36,8 @@ use pocketmine\Player;
 
 class Cactus extends Transparent{
 
-	protected $id = self::CACTUS;
-
 	/** @var int */
 	protected $age = 0;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->age;
@@ -63,10 +57,6 @@ class Cactus extends Transparent{
 
 	public function hasEntityCollision() : bool{
 		return true;
-	}
-
-	public function getName() : string{
-		return "Cactus";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

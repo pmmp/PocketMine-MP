@@ -39,14 +39,8 @@ class Vine extends Flowable{
 	private const FLAG_NORTH = 0x04;
 	private const FLAG_EAST = 0x08;
 
-	protected $id = self::VINE;
-
 	/** @var bool[] */
 	protected $faces = [];
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return
@@ -71,10 +65,6 @@ class Vine extends Flowable{
 		if(($meta & $flag) !== 0){
 			$this->faces[$face] = true;
 		}
-	}
-
-	public function getName() : string{
-		return "Vines";
 	}
 
 	public function getHardness() : float{

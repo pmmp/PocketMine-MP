@@ -27,12 +27,6 @@ use pocketmine\item\TieredTool;
 
 class Bricks extends Solid{
 
-	protected $id = self::BRICK_BLOCK;
-
-	public function __construct(){
-
-	}
-
 	public function getHardness() : float{
 		return 2;
 	}
@@ -47,9 +41,5 @@ class Bricks extends Solid{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
-	}
-
-	public function getName() : string{
-		return "Bricks";
 	}
 }

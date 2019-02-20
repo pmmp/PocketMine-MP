@@ -25,16 +25,6 @@ namespace pocketmine\block;
 
 class NoteBlock extends Solid{
 
-	protected $id = self::NOTE_BLOCK;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Note Block";
-	}
-
 	public function getFuelTime() : int{
 		return 300;
 	}

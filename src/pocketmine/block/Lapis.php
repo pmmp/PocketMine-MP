@@ -27,16 +27,6 @@ use pocketmine\item\TieredTool;
 
 class Lapis extends Solid{
 
-	protected $id = self::LAPIS_BLOCK;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Lapis Lazuli Block";
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}

@@ -28,16 +28,6 @@ use pocketmine\math\Facing;
 
 class SoulSand extends Solid{
 
-	protected $id = self::SOUL_SAND;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Soul Sand";
-	}
-
 	public function getHardness() : float{
 		return 0.5;
 	}

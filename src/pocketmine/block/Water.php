@@ -28,10 +28,6 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class Water extends Liquid{
 
-	public function __construct(){
-		parent::__construct(self::FLOWING_WATER, self::STILL_WATER, "Water");
-	}
-
 	public function getLightFilter() : int{
 		return 2;
 	}

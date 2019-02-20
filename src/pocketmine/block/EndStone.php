@@ -27,16 +27,6 @@ use pocketmine\item\TieredTool;
 
 class EndStone extends Solid{
 
-	protected $id = self::END_STONE;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "End Stone";
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}

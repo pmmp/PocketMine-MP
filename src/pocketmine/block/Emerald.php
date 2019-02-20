@@ -27,12 +27,6 @@ use pocketmine\item\TieredTool;
 
 class Emerald extends Solid{
 
-	protected $id = self::EMERALD_BLOCK;
-
-	public function __construct(){
-
-	}
-
 	public function getHardness() : float{
 		return 5;
 	}
@@ -43,9 +37,5 @@ class Emerald extends Solid{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_IRON;
-	}
-
-	public function getName() : string{
-		return "Emerald Block";
 	}
 }

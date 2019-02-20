@@ -27,12 +27,6 @@ use pocketmine\item\TieredTool;
 
 class NetherBrickFence extends Fence{
 
-	protected $id = self::NETHER_BRICK_FENCE;
-
-	public function __construct(){
-
-	}
-
 	public function getHardness() : float{
 		return 2;
 	}
@@ -43,9 +37,5 @@ class NetherBrickFence extends Fence{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
-	}
-
-	public function getName() : string{
-		return "Nether Brick Fence";
 	}
 }

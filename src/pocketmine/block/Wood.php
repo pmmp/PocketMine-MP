@@ -30,8 +30,8 @@ class Wood extends Solid{
 	/** @var TreeType */
 	private $treeType;
 
-	public function __construct(int $id, int $variant, TreeType $treeType, ?string $name = null, int $itemId = null){
-		parent::__construct($id, $variant, $name, $itemId);
+	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType){
+		parent::__construct($idInfo, $name);
 		$this->treeType = $treeType;
 	}
 

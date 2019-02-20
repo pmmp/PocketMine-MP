@@ -28,14 +28,8 @@ use pocketmine\item\TieredTool;
 
 class WeightedPressurePlateLight extends Transparent{
 
-	protected $id = self::LIGHT_WEIGHTED_PRESSURE_PLATE;
-
 	/** @var int */
 	protected $power = 0;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->power;
@@ -47,10 +41,6 @@ class WeightedPressurePlateLight extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getName() : string{
-		return "Weighted Pressure Plate Light";
 	}
 
 	public function isSolid() : bool{

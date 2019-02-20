@@ -29,12 +29,6 @@ use function mt_rand;
 
 class Beetroot extends Crops{
 
-	protected $id = self::BEETROOT_BLOCK;
-
-	public function getName() : string{
-		return "Beetroot Block";
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->age >= 7){
 			return [

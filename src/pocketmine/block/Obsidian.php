@@ -27,16 +27,6 @@ use pocketmine\item\TieredTool;
 
 class Obsidian extends Solid{
 
-	protected $id = self::OBSIDIAN;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Obsidian";
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}

@@ -27,22 +27,12 @@ use pocketmine\item\TieredTool;
 
 class Cobblestone extends Solid{
 
-	protected $id = self::COBBLESTONE;
-
-	public function __construct(){
-
-	}
-
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
-	}
-
-	public function getName() : string{
-		return "Cobblestone";
 	}
 
 	public function getHardness() : float{

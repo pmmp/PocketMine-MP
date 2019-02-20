@@ -31,8 +31,8 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class DaylightSensor extends Transparent{
-
-	protected $itemId = self::DAYLIGHT_SENSOR;
+	/** @var BlockIdentifierFlattened */
+	protected $idInfo;
 
 	/** @var int */
 	protected $power = 0;
@@ -40,12 +40,12 @@ class DaylightSensor extends Transparent{
 	/** @var bool */
 	protected $inverted = false;
 
-	public function __construct(){
-
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
+		parent::__construct($idInfo, $name);
 	}
 
 	public function getId() : int{
-		return $this->inverted ? self::DAYLIGHT_SENSOR_INVERTED : self::DAYLIGHT_SENSOR;
+		return $this->inverted ? $this->idInfo->getSecondId() : parent::getId();
 	}
 
 	protected function writeStateToMeta() : int{
@@ -72,10 +72,6 @@ class DaylightSensor extends Transparent{
 	public function setInverted(bool $inverted = true) : self{
 		$this->inverted = $inverted;
 		return $this;
-	}
-
-	public function getName() : string{
-		return "Daylight Sensor";
 	}
 
 	public function getHardness() : float{

@@ -23,17 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-
 class MelonStem extends Stem{
-
-	protected $id = self::MELON_STEM;
-
-	protected $itemId = Item::MELON_SEEDS;
-
-	public function getName() : string{
-		return "Melon Stem";
-	}
 
 	protected function getPlant() : Block{
 		return BlockFactory::get(Block::MELON_BLOCK);

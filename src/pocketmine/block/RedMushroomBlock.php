@@ -28,8 +28,6 @@ use function mt_rand;
 
 class RedMushroomBlock extends Solid{
 
-	protected $id = Block::RED_MUSHROOM_BLOCK;
-
 	/**
 	 * @var int
 	 * In PC they have blockstate properties for each of the sides (pores/not pores). Unfortunately, we can't support
@@ -38,10 +36,6 @@ class RedMushroomBlock extends Solid{
 	 * TODO: change this once proper blockstates are implemented
 	 */
 	protected $rotationData = 0;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->rotationData;
@@ -53,10 +47,6 @@ class RedMushroomBlock extends Solid{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getName() : string{
-		return "Red Mushroom Block";
 	}
 
 	public function getHardness() : float{

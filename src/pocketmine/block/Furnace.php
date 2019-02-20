@@ -32,20 +32,16 @@ use pocketmine\Player;
 use pocketmine\tile\Furnace as TileFurnace;
 
 class Furnace extends Solid{
-
-	protected $itemId = self::FURNACE;
+	/** @var BlockIdentifierFlattened */
+	protected $idInfo;
 
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $lit = false; //this is set based on the blockID
 
-	public function __construct(){
-
-	}
-
 	public function getId() : int{
-		return $this->lit ? Block::BURNING_FURNACE : Block::FURNACE;
+		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
 	}
 
 	protected function writeStateToMeta() : int{
@@ -58,14 +54,6 @@ class Furnace extends Solid{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	protected function getTileClass() : ?string{
-		return TileFurnace::class;
-	}
-
-	public function getName() : string{
-		return "Furnace";
 	}
 
 	public function getHardness() : float{

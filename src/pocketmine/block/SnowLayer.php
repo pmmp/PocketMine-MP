@@ -39,14 +39,8 @@ use function max;
 class SnowLayer extends Flowable implements Fallable{
 	use FallableTrait;
 
-	protected $id = self::SNOW_LAYER;
-
 	/** @var int */
 	protected $layers = 1;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->layers - 1;
@@ -58,10 +52,6 @@ class SnowLayer extends Flowable implements Fallable{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getName() : string{
-		return "Snow Layer";
 	}
 
 	public function canBeReplaced() : bool{

@@ -28,8 +28,6 @@ use pocketmine\math\Facing;
 
 class WallSign extends SignPost{
 
-	protected $id = self::WALL_SIGN;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
@@ -43,10 +41,6 @@ class WallSign extends SignPost{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getName() : string{
-		return "Wall Sign";
 	}
 
 	public function onNearbyBlockChange() : void{

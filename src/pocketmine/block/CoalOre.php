@@ -30,12 +30,6 @@ use function mt_rand;
 
 class CoalOre extends Solid{
 
-	protected $id = self::COAL_ORE;
-
-	public function __construct(){
-
-	}
-
 	public function getHardness() : float{
 		return 3;
 	}
@@ -46,10 +40,6 @@ class CoalOre extends Solid{
 
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
-	}
-
-	public function getName() : string{
-		return "Coal Ore";
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

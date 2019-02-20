@@ -41,10 +41,6 @@ class Bed extends Transparent{
 	private const BITFLAG_OCCUPIED = 0x04;
 	private const BITFLAG_HEAD = 0x08;
 
-	protected $id = self::BED_BLOCK;
-
-	protected $itemId = Item::BED;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var bool */
@@ -54,7 +50,8 @@ class Bed extends Transparent{
 	/** @var DyeColor */
 	protected $color;
 
-	public function __construct(){
+	public function __construct(BlockIdentifier $idInfo, string $name){
+		parent::__construct($idInfo, $name);
 		$this->color = DyeColor::RED();
 	}
 
@@ -83,10 +80,6 @@ class Bed extends Transparent{
 		}
 	}
 
-	protected function getTileClass() : ?string{
-		return TileBed::class;
-	}
-
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 		//extra block properties storage hack
@@ -98,10 +91,6 @@ class Bed extends Transparent{
 
 	public function getHardness() : float{
 		return 0.2;
-	}
-
-	public function getName() : string{
-		return "Bed Block";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
@@ -214,7 +203,7 @@ class Bed extends Transparent{
 	}
 
 	public function getItem() : Item{
-		return ItemFactory::get($this->getItemId(), $this->color->getMagicNumber());
+		return ItemFactory::get($this->idInfo->getItemId(), $this->color->getMagicNumber());
 	}
 
 	public function isAffectedBySilkTouch() : bool{

@@ -30,19 +30,8 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\tile\EnchantTable as TileEnchantingTable;
 
 class EnchantingTable extends Transparent{
-
-	protected $id = self::ENCHANTING_TABLE;
-
-	public function __construct(){
-
-	}
-
-	protected function getTileClass() : ?string{
-		return TileEnchantingTable::class;
-	}
 
 	public function getHardness() : float{
 		return 5;
@@ -50,10 +39,6 @@ class EnchantingTable extends Transparent{
 
 	public function getBlastResistance() : float{
 		return 6000;
-	}
-
-	public function getName() : string{
-		return "Enchanting Table";
 	}
 
 	public function getToolType() : int{

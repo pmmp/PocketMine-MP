@@ -52,12 +52,6 @@ class Rail extends BaseRail{
 		]
 	];
 
-	protected $id = self::RAIL;
-
-	public function getName() : string{
-		return "Rail";
-	}
-
 	protected function getMetaForState(array $connections) : int{
 		try{
 			return self::searchState($connections, self::CURVE_CONNECTIONS);

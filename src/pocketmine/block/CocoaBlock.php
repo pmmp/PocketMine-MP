@@ -36,16 +36,10 @@ use function mt_rand;
 
 class CocoaBlock extends Transparent{
 
-	protected $id = self::COCOA_BLOCK;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var int */
 	protected $age = 0;
-
-	public function __construct(){
-
-	}
 
 	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing(Facing::opposite($this->facing)) | ($this->age << 2);
@@ -58,10 +52,6 @@ class CocoaBlock extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getName() : string{
-		return "Cocoa Block";
 	}
 
 	public function getHardness() : float{

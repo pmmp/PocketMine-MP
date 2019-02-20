@@ -32,16 +32,6 @@ use pocketmine\math\AxisAlignedBB;
  */
 class Air extends Transparent{
 
-	protected $id = self::AIR;
-
-	public function __construct(){
-
-	}
-
-	public function getName() : string{
-		return "Air";
-	}
-
 	public function isBreakable(Item $item) : bool{
 		return false;
 	}
