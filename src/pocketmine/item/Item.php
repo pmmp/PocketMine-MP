@@ -249,16 +249,17 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param int $id
-	 * @param int $level
+	 * @param Enchantment $enchantment
+	 * @param int         $level
 	 *
 	 * @return bool
 	 */
-	public function hasEnchantment(int $id, int $level = -1) : bool{
+	public function hasEnchantment(Enchantment $enchantment, int $level = -1) : bool{
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
 			return false;
 		}
+		$id = $enchantment->getId();
 
 		/** @var CompoundTag $entry */
 		foreach($ench as $entry){
@@ -271,16 +272,17 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param int $id
+	 * @param Enchantment $enchantment
 	 *
 	 * @return EnchantmentInstance|null
 	 */
-	public function getEnchantment(int $id) : ?EnchantmentInstance{
+	public function getEnchantment(Enchantment $enchantment) : ?EnchantmentInstance{
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
 			return null;
 		}
 
+		$id = $enchantment->getId();
 		/** @var CompoundTag $entry */
 		foreach($ench as $entry){
 			if($entry->getShort("id") === $id){
@@ -295,17 +297,18 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param int $id
-	 * @param int $level
+	 * @param Enchantment $enchantment
+	 * @param int         $level
 	 *
 	 * @return Item
 	 */
-	public function removeEnchantment(int $id, int $level = -1) : Item{
+	public function removeEnchantment(Enchantment $enchantment, int $level = -1) : Item{
 		$ench = $this->getNamedTagEntry(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
 			return $this;
 		}
 
+		$id = $enchantment->getId();
 		/** @var CompoundTag $entry */
 		foreach($ench as $k => $entry){
 			if($entry->getShort("id") === $id and ($level === -1 or $entry->getShort("lvl") === $level)){
@@ -390,14 +393,15 @@ class Item implements ItemIds, \JsonSerializable{
 	 * Returns the level of the enchantment on this item with the specified ID, or 0 if the item does not have the
 	 * enchantment.
 	 *
-	 * @param int $enchantmentId
+	 * @param Enchantment $enchantment
 	 *
 	 * @return int
 	 */
-	public function getEnchantmentLevel(int $enchantmentId) : int{
+	public function getEnchantmentLevel(Enchantment $enchantment) : int{
 		$ench = $this->getNamedTag()->getListTag(self::TAG_ENCH);
 		if($ench !== null){
 			/** @var CompoundTag $entry */
+			$enchantmentId = $enchantment->getId();
 			foreach($ench as $entry){
 				if($entry->getShort("id") === $enchantmentId){
 					return $entry->getShort("lvl");

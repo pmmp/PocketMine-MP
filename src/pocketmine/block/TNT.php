@@ -55,7 +55,7 @@ class TNT extends Solid{
 	}
 
 	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof FlintSteel or $item->hasEnchantment(Enchantment::FIRE_ASPECT)){
+		if($item instanceof FlintSteel or $item->hasEnchantment(Enchantment::FIRE_ASPECT())){
 			if($item instanceof Durable){
 				$item->applyDamage(1);
 			}

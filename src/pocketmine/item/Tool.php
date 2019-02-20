@@ -36,7 +36,7 @@ abstract class Tool extends Durable{
 		$efficiency = 1;
 		if(($block->getToolType() & $this->getBlockToolType()) !== 0){
 			$efficiency = $this->getBaseMiningEfficiency();
-			if(($enchantmentLevel = $this->getEnchantmentLevel(Enchantment::EFFICIENCY)) > 0){
+			if(($enchantmentLevel = $this->getEnchantmentLevel(Enchantment::EFFICIENCY())) > 0){
 				$efficiency += ($enchantmentLevel ** 2 + 1);
 			}
 		}

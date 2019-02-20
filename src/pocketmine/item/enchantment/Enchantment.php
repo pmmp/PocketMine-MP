@@ -140,6 +140,82 @@ class Enchantment{
 		self::registerEnchantment(new Enchantment(self::VANISHING, "%enchantment.curse.vanishing", self::RARITY_MYTHIC, self::SLOT_NONE, self::SLOT_ALL, 1));
 	}
 
+	public static function BLAST_PROTECTION() : Enchantment{
+		return self::getEnchantment(self::BLAST_PROTECTION);
+	}
+
+	public static function EFFICIENCY() : Enchantment{
+		return self::getEnchantment(self::EFFICIENCY);
+	}
+
+	public static function FEATHER_FALLING() : Enchantment{
+		return self::getEnchantment(self::FEATHER_FALLING);
+	}
+
+	public static function FIRE_ASPECT() : Enchantment{
+		return self::getEnchantment(self::FIRE_ASPECT);
+	}
+
+	public static function FIRE_PROTECTION() : Enchantment{
+		return self::getEnchantment(self::FIRE_PROTECTION);
+	}
+
+	public static function FLAME() : Enchantment{
+		return self::getEnchantment(self::FLAME);
+	}
+
+	public static function INFINITY() : Enchantment{
+		return self::getEnchantment(self::INFINITY);
+	}
+
+	public static function KNOCKBACK() : Enchantment{
+		return self::getEnchantment(self::KNOCKBACK);
+	}
+
+	public static function MENDING() : Enchantment{
+		return self::getEnchantment(self::MENDING);
+	}
+
+	public static function POWER() : Enchantment{
+		return self::getEnchantment(self::POWER);
+	}
+
+	public static function PROJECTILE_PROTECTION() : Enchantment{
+		return self::getEnchantment(self::PROJECTILE_PROTECTION);
+	}
+
+	public static function PROTECTION() : Enchantment{
+		return self::getEnchantment(self::PROTECTION);
+	}
+
+	public static function PUNCH() : Enchantment{
+		return self::getEnchantment(self::PUNCH);
+	}
+
+	public static function RESPIRATION() : Enchantment{
+		return self::getEnchantment(self::RESPIRATION);
+	}
+
+	public static function SHARPNESS() : Enchantment{
+		return self::getEnchantment(self::SHARPNESS);
+	}
+
+	public static function SILK_TOUCH() : Enchantment{
+		return self::getEnchantment(self::SILK_TOUCH);
+	}
+
+	public static function THORNS() : Enchantment{
+		return self::getEnchantment(self::THORNS);
+	}
+
+	public static function UNBREAKING() : Enchantment{
+		return self::getEnchantment(self::UNBREAKING);
+	}
+
+	public static function VANISHING() : Enchantment{
+		return self::getEnchantment(self::VANISHING);
+	}
+
 	/**
 	 * Registers an enchantment type.
 	 *

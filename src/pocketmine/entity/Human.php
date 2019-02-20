@@ -537,12 +537,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		/** @var Durable[] $equipment */
 		$equipment = [];
 
-		if(($item = $this->inventory->getItemInHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
+		if(($item = $this->inventory->getItemInHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING())){
 			$equipment[$mainHandIndex] = $item;
 		}
 		//TODO: check offhand
 		foreach($this->armorInventory->getContents() as $k => $item){
-			if($item instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
+			if($item instanceof Durable and $item->hasEnchantment(Enchantment::MENDING())){
 				$equipment[$k] = $item;
 			}
 		}
@@ -784,7 +784,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return array_filter(array_merge(
 			$this->inventory !== null ? array_values($this->inventory->getContents()) : [],
 			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : []
-		), function(Item $item) : bool{ return !$item->hasEnchantment(Enchantment::VANISHING); });
+		), function(Item $item) : bool{ return !$item->hasEnchantment(Enchantment::VANISHING()); });
 	}
 
 	public function saveNBT() : CompoundTag{
