@@ -1577,7 +1577,7 @@ class Server{
 	}
 
 	public function reload(){
-		$this->logger->info("Saving levels...");
+		$this->logger->info("Saving worlds...");
 
 		foreach($this->levelManager->getLevels() as $level){
 			$level->save();
@@ -1653,7 +1653,7 @@ class Server{
 			}
 
 			if($this->levelManager instanceof LevelManager){
-				$this->getLogger()->debug("Unloading all levels");
+				$this->getLogger()->debug("Unloading all worlds");
 				foreach($this->levelManager->getLevels() as $level){
 					$this->levelManager->unloadLevel($level, true);
 				}

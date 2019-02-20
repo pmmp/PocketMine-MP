@@ -458,7 +458,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function close(){
 		if($this->closed){
-			throw new \InvalidStateException("Tried to close a level which is already closed");
+			throw new \InvalidStateException("Tried to close a world which is already closed");
 		}
 
 		foreach($this->chunks as $chunk){
@@ -753,7 +753,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function doTick(int $currentTick){
 		if($this->closed){
-			throw new \InvalidStateException("Attempted to tick a Level which has been closed");
+			throw new \InvalidStateException("Attempted to tick a world which has been closed");
 		}
 
 		$this->timings->doTick->startTiming();
@@ -2488,7 +2488,7 @@ class Level implements ChunkManager, Metadatable{
 
 						$this->timings->syncChunkSendTimer->stopTiming();
 					}else{
-						$this->server->getLogger()->debug("Dropped prepared chunk $x $z due to level not loaded");
+						$this->server->getLogger()->debug("Dropped prepared chunk $x $z due to world not loaded");
 					}
 				});
 				$this->server->getAsyncPool()->submitTask($task = new ChunkRequestTask($x, $z, $chunk, $promise));
@@ -2508,10 +2508,10 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function addEntity(Entity $entity){
 		if($entity->isClosed()){
-			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to Level");
+			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to world");
 		}
 		if($entity->getLevel() !== $this){
-			throw new \InvalidArgumentException("Invalid Entity level");
+			throw new \InvalidArgumentException("Invalid Entity world");
 		}
 
 		if($entity instanceof Player){
@@ -2529,7 +2529,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function removeEntity(Entity $entity){
 		if($entity->getLevel() !== $this){
-			throw new \InvalidArgumentException("Invalid Entity level");
+			throw new \InvalidArgumentException("Invalid Entity world");
 		}
 
 		if($entity instanceof Player){
@@ -2548,10 +2548,10 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function addTile(Tile $tile){
 		if($tile->isClosed()){
-			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to Level");
+			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to world");
 		}
 		if($tile->getLevel() !== $this){
-			throw new \InvalidArgumentException("Invalid Tile level");
+			throw new \InvalidArgumentException("Invalid Tile world");
 		}
 
 		$chunkX = $tile->getFloorX() >> 4;
@@ -2573,7 +2573,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function removeTile(Tile $tile){
 		if($tile->getLevel() !== $this){
-			throw new \InvalidArgumentException("Invalid Tile level");
+			throw new \InvalidArgumentException("Invalid Tile world");
 		}
 
 		unset($this->updateTiles[Level::blockHash($tile->x, $tile->y, $tile->z)]);

@@ -37,7 +37,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	public function __construct(string $path){
 		if(!file_exists($path)){
-			throw new LevelException("Level does not exist");
+			throw new LevelException("World does not exist");
 		}
 
 		$this->path = $path;

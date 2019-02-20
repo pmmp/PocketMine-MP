@@ -130,7 +130,7 @@ class BedrockLevelData extends BaseNbtLevelData{
 					case self::GENERATOR_LIMITED:
 						throw new UnsupportedLevelFormatException("Limited worlds are not currently supported");
 					default:
-						throw new UnsupportedLevelFormatException("Unknown LevelDB world format type, this level cannot be loaded");
+						throw new UnsupportedLevelFormatException("Unknown LevelDB world format type, this world cannot be loaded");
 				}
 			}else{
 				$this->compoundTag->setString("generatorName", "default");

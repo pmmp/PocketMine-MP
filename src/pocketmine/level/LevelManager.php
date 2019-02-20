@@ -162,10 +162,10 @@ class LevelManager{
 	 */
 	public function unloadLevel(Level $level, bool $forceUnload = false) : bool{
 		if($level === $this->getDefaultLevel() and !$forceUnload){
-			throw new \InvalidArgumentException("The default level cannot be unloaded while running, please switch levels.");
+			throw new \InvalidArgumentException("The default world cannot be unloaded while running, please switch worlds.");
 		}
 		if($level->isDoingTick()){
-			throw new \InvalidArgumentException("Cannot unload a level during level tick");
+			throw new \InvalidArgumentException("Cannot unload a world during world tick");
 		}
 
 		$ev = new LevelUnloadEvent($level);
@@ -182,7 +182,7 @@ class LevelManager{
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$level->getDisplayName()]));
 		foreach($level->getPlayers() as $player){
 			if($level === $this->levelDefault or $this->levelDefault === null){
-				$player->close($player->getLeaveMessage(), "Forced default level unload");
+				$player->close($player->getLeaveMessage(), "Forced default world unload");
 			}elseif($this->levelDefault instanceof Level){
 				$player->teleport($this->levelDefault->getSafeSpawn());
 			}
@@ -208,7 +208,7 @@ class LevelManager{
 	 */
 	public function loadLevel(string $name) : bool{
 		if(trim($name) === ""){
-			throw new LevelException("Invalid empty level name");
+			throw new LevelException("Invalid empty world name");
 		}
 		if($this->isLevelLoaded($name)){
 			return true;
@@ -382,14 +382,14 @@ class LevelManager{
 					if($r > $this->baseTickRate){
 						$level->tickRateCounter = $level->getTickRate();
 					}
-					$this->server->getLogger()->debug("Raising level \"{$level->getDisplayName()}\" tick rate to {$level->getTickRate()} ticks");
+					$this->server->getLogger()->debug("Raising world \"{$level->getDisplayName()}\" tick rate to {$level->getTickRate()} ticks");
 				}elseif($tickMs >= 50){
 					if($level->getTickRate() === $this->baseTickRate){
 						$level->setTickRate(max($this->baseTickRate + 1, min($this->autoTickRateLimit, (int) floor($tickMs / 50))));
-						$this->server->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getDisplayName(), (int) round($tickMs, 2), $level->getTickRate()));
+						$this->server->getLogger()->debug(sprintf("World \"%s\" took %gms, setting tick rate to %d ticks", $level->getDisplayName(), (int) round($tickMs, 2), $level->getTickRate()));
 					}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < $this->autoTickRateLimit){
 						$level->setTickRate($level->getTickRate() + 1);
-						$this->server->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getDisplayName(), (int) round($tickMs, 2), $level->getTickRate()));
+						$this->server->getLogger()->debug(sprintf("World \"%s\" took %gms, setting tick rate to %d ticks", $level->getDisplayName(), (int) round($tickMs, 2), $level->getTickRate()));
 					}
 					$level->tickRateCounter = $level->getTickRate();
 				}
