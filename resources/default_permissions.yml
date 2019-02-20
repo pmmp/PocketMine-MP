@@ -1,0 +1,192 @@
+---
+pocketmine:
+  description: Allows using all PocketMine commands and utilities
+  default: op
+  children:
+    pocketmine.broadcast:
+      description: Allows the user to receive all broadcast messages
+      default: op
+      children:
+        pocketmine.broadcast.admin:
+          description: Allows the user to receive administrative broadcasts
+          default: op
+        pocketmine.broadcast.user:
+          description: Allows the user to receive user broadcasts
+          default: "true"
+    pocketmine.command:
+      description: Allows using all PocketMine commands
+      default: op
+      children:
+        pocketmine.command.ban:
+          description: Allows the user to ban people
+          default: op
+          children:
+            pocketmine.command.ban.ip:
+              description: Allows the user to ban IP addresses
+              default: op
+            pocketmine.command.ban.player:
+              description: Allows the user to ban players
+              default: op
+        pocketmine.command.defaultgamemode:
+          description: Allows the user to change the default gamemode
+          default: op
+        pocketmine.command.dumpmemory:
+          description: Allows the user to dump memory contents
+          default: "false"
+        pocketmine.command.effect:
+          description: Allows the user to give/take potion effects
+          default: op
+        pocketmine.command.enchant:
+          description: Allows the user to enchant items
+          default: op
+        pocketmine.command.gamemode:
+          description: Allows the user to change the gamemode of players
+          default: op
+        pocketmine.command.gc:
+          description: Allows the user to fire garbage collection tasks
+          default: op
+        pocketmine.command.give:
+          description: Allows the user to give items to players
+          default: op
+        pocketmine.command.help:
+          description: Allows the user to view the help menu
+          default: "true"
+        pocketmine.command.kick:
+          description: Allows the user to kick players
+          default: op
+        pocketmine.command.kill:
+          description: Allows the user to kill players
+          default: op
+          children:
+            pocketmine.command.kill.other:
+              description: Allows the user to kill other players
+              default: op
+            pocketmine.command.kill.self:
+              description: Allows the user to commit suicide
+              default: "true"
+        pocketmine.command.list:
+          description: Allows the user to list all online players
+          default: op
+        pocketmine.command.me:
+          description: Allows the user to perform a chat action
+          default: "true"
+        pocketmine.command.op:
+          description: Allows the user to change operators
+          default: op
+          children:
+            pocketmine.command.op.give:
+              description: Allows the user to give a player operator status
+              default: op
+            pocketmine.command.op.take:
+              description: Allows the user to take a player's operator status
+              default: op
+        pocketmine.command.particle:
+          description: Allows the user to create particle effects
+          default: op
+        pocketmine.command.plugins:
+          description: Allows the user to view the list of plugins
+          default: op
+        pocketmine.command.reload:
+          description: Allows the user to reload the server settings
+          default: op
+        pocketmine.command.save:
+          description: Allows the user to save the worlds
+          default: op
+          children:
+            pocketmine.command.save.disable:
+              description: Allows the user to disable automatic saving
+              default: op
+            pocketmine.command.save.enable:
+              description: Allows the user to enable automatic saving
+              default: op
+            pocketmine.command.save.perform:
+              description: Allows the user to perform a manual save
+              default: op
+        pocketmine.command.say:
+          description: Allows the user to talk as the console
+          default: op
+        pocketmine.command.seed:
+          description: Allows the user to view the seed of the world
+          default: op
+        pocketmine.command.setworldspawn:
+          description: Allows the user to change the world spawn
+          default: op
+        pocketmine.command.spawnpoint:
+          description: Allows the user to change player's spawnpoint
+          default: op
+        pocketmine.command.status:
+          description: Allows the user to view the server performance
+          default: op
+        pocketmine.command.stop:
+          description: Allows the user to stop the server
+          default: op
+        pocketmine.command.teleport:
+          description: Allows the user to teleport players
+          default: op
+        pocketmine.command.tell:
+          description: Allows the user to privately message another player
+          default: "true"
+        pocketmine.command.time:
+          description: Allows the user to alter the time
+          default: op
+          children:
+            pocketmine.command.time.add:
+              description: Allows the user to fast-forward time
+              default: op
+            pocketmine.command.time.query:
+              description: Allows the user query the time
+              default: op
+            pocketmine.command.time.set:
+              description: Allows the user to change the time
+              default: op
+            pocketmine.command.time.start:
+              description: Allows the user to restart the time
+              default: op
+            pocketmine.command.time.stop:
+              description: Allows the user to stop the time
+              default: op
+        pocketmine.command.timings:
+          description: Allows the user to records timings for all plugin events
+          default: op
+        pocketmine.command.title:
+          description: Allows the user to send a title to the specified player
+          default: op
+        pocketmine.command.transferserver:
+          description: Allows the user to transfer self to another server
+          default: op
+        pocketmine.command.unban:
+          description: Allows the user to unban people
+          default: op
+          children:
+            pocketmine.command.unban.ip:
+              description: Allows the user to unban IP addresses
+              default: op
+            pocketmine.command.unban.player:
+              description: Allows the user to unban players
+              default: op
+        pocketmine.command.version:
+          description: Allows the user to view the version of the server
+          default: "true"
+        pocketmine.command.whitelist:
+          description: Allows the user to modify the server whitelist
+          default: op
+          children:
+            pocketmine.command.whitelist.add:
+              description: Allows the user to add a player to the server whitelist
+              default: op
+            pocketmine.command.whitelist.disable:
+              description: Allows the user to disable the server whitelist
+              default: op
+            pocketmine.command.whitelist.enable:
+              description: Allows the user to enable the server whitelist
+              default: op
+            pocketmine.command.whitelist.list:
+              description: Allows the user to list all the players on the server whitelist
+              default: op
+            pocketmine.command.whitelist.reload:
+              description: Allows the user to reload the server whitelist
+              default: op
+            pocketmine.command.whitelist.remove:
+              description: Allows the user to remove a player to the server whitelist
+              default: op
+...
