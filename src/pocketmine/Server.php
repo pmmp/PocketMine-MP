@@ -1046,7 +1046,7 @@ class Server{
 	 */
 	public function unloadLevel(Level $level, bool $forceUnload = false) : bool{
 		if($level === $this->getDefaultLevel() and !$forceUnload){
-			throw new \InvalidStateException("The default level cannot be unloaded while running, please switch levels.");
+			throw new \InvalidStateException("The default world cannot be unloaded while running, please switch worlds.");
 		}
 
 		return $level->unload($forceUnload);
@@ -1072,7 +1072,7 @@ class Server{
 	 */
 	public function loadLevel(string $name) : bool{
 		if(trim($name) === ""){
-			throw new LevelException("Invalid empty level name");
+			throw new LevelException("Invalid empty world name");
 		}
 		if($this->isLevelLoaded($name)){
 			return true;
@@ -1130,7 +1130,7 @@ class Server{
 		if(($providerClass = LevelProviderManager::getProviderByName($this->getProperty("level-settings.default-format", "pmanvil"))) === null){
 			$providerClass = LevelProviderManager::getProviderByName("pmanvil");
 			if($providerClass === null){
-				throw new \InvalidStateException("Default level provider has not been registered");
+				throw new \InvalidStateException("Default world provider has not been registered");
 			}
 		}
 
@@ -2019,7 +2019,7 @@ class Server{
 	}
 
 	public function reload(){
-		$this->logger->info("Saving levels...");
+		$this->logger->info("Saving worlds...");
 
 		foreach($this->levels as $level){
 			$level->save();
@@ -2097,7 +2097,7 @@ class Server{
 				$player->close($player->getLeaveMessage(), $this->getProperty("settings.shutdown-message", "Server closed"));
 			}
 
-			$this->getLogger()->debug("Unloading all levels");
+			$this->getLogger()->debug("Unloading all worlds");
 			foreach($this->getLevels() as $level){
 				$this->unloadLevel($level, true);
 			}

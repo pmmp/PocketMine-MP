@@ -74,10 +74,10 @@ class ChunkRequestTask extends AsyncTask{
 				$batch->isEncoded = true;
 				$level->chunkRequestCallback($this->chunkX, $this->chunkZ, $batch);
 			}else{
-				$server->getLogger()->error("Chunk request for level #" . $this->levelId . ", x=" . $this->chunkX . ", z=" . $this->chunkZ . " doesn't have any result data");
+				$server->getLogger()->error("Chunk request for world #" . $this->levelId . ", x=" . $this->chunkX . ", z=" . $this->chunkZ . " doesn't have any result data");
 			}
 		}else{
-			$server->getLogger()->debug("Dropped chunk task due to level not loaded");
+			$server->getLogger()->debug("Dropped chunk task due to world not loaded");
 		}
 	}
 }
