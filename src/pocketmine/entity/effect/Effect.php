@@ -31,6 +31,8 @@ use function defined;
 use function strtoupper;
 
 class Effect{
+
+	//TODO: remove our dependence on these magic numbers
 	public const SPEED = 1;
 	public const SLOWNESS = 2;
 	public const HASTE = 3;
@@ -88,6 +90,112 @@ class Effect{
 		self::registerEffect(new LevitationEffect(Effect::LEVITATION, "%potion.levitation", new Color(0xce, 0xff, 0xff)));
 		self::registerEffect(new PoisonEffect(Effect::FATAL_POISON, "%potion.poison", new Color(0x4e, 0x93, 0x31), true, true, true));
 		self::registerEffect(new Effect(Effect::CONDUIT_POWER, "%potion.conduitPower", new Color(0x1d, 0xc2, 0xd1)));
+	}
+
+	/* auto-generated code */
+
+	public static function ABSORPTION() : Effect{
+		return self::getEffect(Effect::ABSORPTION);
+	}
+
+	public static function BLINDNESS() : Effect{
+		return self::getEffect(Effect::BLINDNESS);
+	}
+
+	public static function CONDUIT_POWER() : Effect{
+		return self::getEffect(Effect::CONDUIT_POWER);
+	}
+
+	public static function FATAL_POISON() : Effect{
+		return self::getEffect(Effect::FATAL_POISON);
+	}
+
+	public static function FIRE_RESISTANCE() : Effect{
+		return self::getEffect(Effect::FIRE_RESISTANCE);
+	}
+
+	public static function HASTE() : Effect{
+		return self::getEffect(Effect::HASTE);
+	}
+
+	public static function HEALTH_BOOST() : Effect{
+		return self::getEffect(Effect::HEALTH_BOOST);
+	}
+
+	public static function HUNGER() : Effect{
+		return self::getEffect(Effect::HUNGER);
+	}
+
+	public static function INSTANT_DAMAGE() : Effect{
+		return self::getEffect(Effect::INSTANT_DAMAGE);
+	}
+
+	public static function INSTANT_HEALTH() : Effect{
+		return self::getEffect(Effect::INSTANT_HEALTH);
+	}
+
+	public static function INVISIBILITY() : Effect{
+		return self::getEffect(Effect::INVISIBILITY);
+	}
+
+	public static function JUMP_BOOST() : Effect{
+		return self::getEffect(Effect::JUMP_BOOST);
+	}
+
+	public static function LEVITATION() : Effect{
+		return self::getEffect(Effect::LEVITATION);
+	}
+
+	public static function MINING_FATIGUE() : Effect{
+		return self::getEffect(Effect::MINING_FATIGUE);
+	}
+
+	public static function NAUSEA() : Effect{
+		return self::getEffect(Effect::NAUSEA);
+	}
+
+	public static function NIGHT_VISION() : Effect{
+		return self::getEffect(Effect::NIGHT_VISION);
+	}
+
+	public static function POISON() : Effect{
+		return self::getEffect(Effect::POISON);
+	}
+
+	public static function REGENERATION() : Effect{
+		return self::getEffect(Effect::REGENERATION);
+	}
+
+	public static function RESISTANCE() : Effect{
+		return self::getEffect(Effect::RESISTANCE);
+	}
+
+	public static function SATURATION() : Effect{
+		return self::getEffect(Effect::SATURATION);
+	}
+
+	public static function SLOWNESS() : Effect{
+		return self::getEffect(Effect::SLOWNESS);
+	}
+
+	public static function SPEED() : Effect{
+		return self::getEffect(Effect::SPEED);
+	}
+
+	public static function STRENGTH() : Effect{
+		return self::getEffect(Effect::STRENGTH);
+	}
+
+	public static function WATER_BREATHING() : Effect{
+		return self::getEffect(Effect::WATER_BREATHING);
+	}
+
+	public static function WEAKNESS() : Effect{
+		return self::getEffect(Effect::WEAKNESS);
+	}
+
+	public static function WITHER() : Effect{
+		return self::getEffect(Effect::WITHER);
 	}
 
 	/**

@@ -41,6 +41,6 @@ class RawChicken extends Food{
 	}
 
 	public function getAdditionalEffects() : array{
-		return mt_rand(0, 9) < 3 ? [new EffectInstance(Effect::getEffect(Effect::HUNGER), 600)] : [];
+		return mt_rand(0, 9) < 3 ? [new EffectInstance(Effect::HUNGER(), 600)] : [];
 	}
 }

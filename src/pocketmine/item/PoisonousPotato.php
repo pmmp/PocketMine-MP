@@ -43,7 +43,7 @@ class PoisonousPotato extends Food{
 	public function getAdditionalEffects() : array{
 		if(mt_rand(0, 100) > 40){
 			return [
-				new EffectInstance(Effect::getEffect(Effect::POISON), 100)
+				new EffectInstance(Effect::POISON(), 100)
 			];
 		}
 		return [];

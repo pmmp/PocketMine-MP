@@ -65,6 +65,7 @@ use function max;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
+use function spl_object_id;
 use function sqrt;
 use const M_PI;
 
@@ -212,18 +213,19 @@ abstract class Living extends Entity implements Damageable{
 	 */
 	public function removeAllEffects() : void{
 		foreach($this->effects as $effect){
-			$this->removeEffect($effect->getId());
+			$this->removeEffect($effect->getType());
 		}
 	}
 
 	/**
 	 * Removes the effect with the specified ID from the mob.
 	 *
-	 * @param int $effectId
+	 * @param Effect $effectType
 	 */
-	public function removeEffect(int $effectId) : void{
-		if(isset($this->effects[$effectId])){
-			$effect = $this->effects[$effectId];
+	public function removeEffect(Effect $effectType) : void{
+		$index = spl_object_id($effectType);
+		if(isset($this->effects[$index])){
+			$effect = $this->effects[$index];
 			$hasExpired = $effect->hasExpired();
 			$ev = new EntityEffectRemoveEvent($this, $effect);
 			$ev->call();
@@ -234,7 +236,7 @@ abstract class Living extends Entity implements Damageable{
 				return;
 			}
 
-			unset($this->effects[$effectId]);
+			unset($this->effects[$index]);
 			$effect->getType()->remove($this, $effect);
 			$this->sendEffectRemove($effect);
 
@@ -246,23 +248,23 @@ abstract class Living extends Entity implements Damageable{
 	 * Returns the effect instance active on this entity with the specified ID, or null if the mob does not have the
 	 * effect.
 	 *
-	 * @param int $effectId
+	 * @param Effect $effect
 	 *
 	 * @return EffectInstance|null
 	 */
-	public function getEffect(int $effectId) : ?EffectInstance{
-		return $this->effects[$effectId] ?? null;
+	public function getEffect(Effect $effect) : ?EffectInstance{
+		return $this->effects[spl_object_id($effect)] ?? null;
 	}
 
 	/**
 	 * Returns whether the specified effect is active on the mob.
 	 *
-	 * @param int $effectId
+	 * @param Effect $effect
 	 *
 	 * @return bool
 	 */
-	public function hasEffect(int $effectId) : bool{
-		return isset($this->effects[$effectId]);
+	public function hasEffect(Effect $effect) : bool{
+		return isset($this->effects[spl_object_id($effect)]);
 	}
 
 	/**
@@ -286,8 +288,10 @@ abstract class Living extends Entity implements Damageable{
 		$oldEffect = null;
 		$cancelled = false;
 
-		if(isset($this->effects[$effect->getId()])){
-			$oldEffect = $this->effects[$effect->getId()];
+		$type = $effect->getType();
+		$index = spl_object_id($type);
+		if(isset($this->effects[$index])){
+			$oldEffect = $this->effects[$index];
 			if(
 				abs($effect->getAmplifier()) < $oldEffect->getAmplifier()
 				or (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) and $effect->getDuration() < $oldEffect->getDuration())
@@ -311,7 +315,7 @@ abstract class Living extends Entity implements Damageable{
 		$effect->getType()->add($this, $effect);
 		$this->sendEffectAdd($effect, $oldEffect !== null);
 
-		$this->effects[$effect->getId()] = $effect;
+		$this->effects[$index] = $effect;
 
 		$this->recalculateEffectColor();
 
@@ -398,7 +402,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return float
 	 */
 	public function getJumpVelocity() : float{
-		return $this->jumpVelocity + ($this->hasEffect(Effect::JUMP) ? ($this->getEffect(Effect::JUMP)->getEffectLevel() / 10) : 0);
+		return $this->jumpVelocity + ($this->hasEffect(Effect::JUMP_BOOST()) ? ($this->getEffect(Effect::JUMP_BOOST())->getEffectLevel() / 10) : 0);
 	}
 
 	/**
@@ -411,7 +415,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function fall(float $fallDistance) : void{
-		$damage = ceil($fallDistance - 3 - ($this->hasEffect(Effect::JUMP) ? $this->getEffect(Effect::JUMP)->getEffectLevel() : 0));
+		$damage = ceil($fallDistance - 3 - ($this->hasEffect(Effect::JUMP_BOOST()) ? $this->getEffect(Effect::JUMP_BOOST())->getEffectLevel() : 0));
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
@@ -474,8 +478,8 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$cause = $source->getCause();
-		if($this->hasEffect(Effect::DAMAGE_RESISTANCE) and $cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
-			$source->setModifier(-$source->getFinalDamage() * min(1, 0.2 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
+		if($this->hasEffect(Effect::RESISTANCE()) and $cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
+			$source->setModifier(-$source->getFinalDamage() * min(1, 0.2 * $this->getEffect(Effect::RESISTANCE())->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
 		}
 
 		$totalEpf = 0;
@@ -555,7 +559,7 @@ abstract class Living extends Entity implements Damageable{
 			}
 		}
 
-		if($this->hasEffect(Effect::FIRE_RESISTANCE) and (
+		if($this->hasEffect(Effect::FIRE_RESISTANCE()) and (
 				$source->getCause() === EntityDamageEvent::CAUSE_FIRE
 				or $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK
 				or $source->getCause() === EntityDamageEvent::CAUSE_LAVA
@@ -714,7 +718,7 @@ abstract class Living extends Entity implements Damageable{
 			}
 			$instance->decreaseDuration($tickDiff);
 			if($instance->hasExpired()){
-				$this->removeEffect($instance->getId());
+				$this->removeEffect($instance->getType());
 			}
 		}
 
@@ -765,7 +769,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return bool
 	 */
 	public function canBreathe() : bool{
-		return $this->hasEffect(Effect::WATER_BREATHING) or $this->hasEffect(Effect::CONDUIT_POWER) or !$this->isUnderwater();
+		return $this->hasEffect(Effect::WATER_BREATHING()) or $this->hasEffect(Effect::CONDUIT_POWER()) or !$this->isUnderwater();
 	}
 
 	/**

@@ -62,7 +62,7 @@ class EffectCommand extends VanillaCommand{
 
 		if(strtolower($args[1]) === "clear"){
 			foreach($player->getEffects() as $effect){
-				$player->removeEffect($effect->getId());
+				$player->removeEffect($effect->getType());
 			}
 
 			$sender->sendMessage(new TranslationContainer("commands.effect.success.removed.all", [$player->getDisplayName()]));
@@ -107,7 +107,7 @@ class EffectCommand extends VanillaCommand{
 		}
 
 		if($duration === 0){
-			if(!$player->hasEffect($effect->getId())){
+			if(!$player->hasEffect($effect)){
 				if(count($player->getEffects()) === 0){
 					$sender->sendMessage(new TranslationContainer("commands.effect.failure.notActive.all", [$player->getDisplayName()]));
 				}else{
@@ -116,7 +116,7 @@ class EffectCommand extends VanillaCommand{
 				return true;
 			}
 
-			$player->removeEffect($effect->getId());
+			$player->removeEffect($effect);
 			$sender->sendMessage(new TranslationContainer("commands.effect.success.removed", [$effect->getName(), $player->getDisplayName()]));
 		}else{
 			$instance = new EffectInstance($effect, $duration, $amplification, $visible);

@@ -765,9 +765,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($totemModifier < 0){ //Totem prevented death
 			$this->removeAllEffects();
 
-			$this->addEffect(new EffectInstance(Effect::getEffect(Effect::REGENERATION), 40 * 20, 1));
-			$this->addEffect(new EffectInstance(Effect::getEffect(Effect::FIRE_RESISTANCE), 40 * 20, 1));
-			$this->addEffect(new EffectInstance(Effect::getEffect(Effect::ABSORPTION), 5 * 20, 1));
+			$this->addEffect(new EffectInstance(Effect::REGENERATION(), 40 * 20, 1));
+			$this->addEffect(new EffectInstance(Effect::FIRE_RESISTANCE(), 40 * 20, 1));
+			$this->addEffect(new EffectInstance(Effect::ABSORPTION(), 5 * 20, 1));
 
 			$this->broadcastEntityEvent(EntityEventPacket::CONSUME_TOTEM);
 			$this->level->broadcastLevelEvent($this->add(0, $this->eyeHeight, 0), LevelEventPacket::EVENT_SOUND_TOTEM);
