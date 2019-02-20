@@ -37,7 +37,7 @@ class BlockTest extends TestCase{
 	public function testAccidentalOverrideBlock() : void{
 		$block = new MyCustomBlock();
 		$this->expectException(\InvalidArgumentException::class);
-		BlockFactory::registerBlock($block);
+		BlockFactory::register($block);
 	}
 
 	/**
@@ -45,7 +45,7 @@ class BlockTest extends TestCase{
 	 */
 	public function testDeliberateOverrideBlock() : void{
 		$block = new MyCustomBlock();
-		BlockFactory::registerBlock($block, true);
+		BlockFactory::register($block, true);
 		self::assertInstanceOf(MyCustomBlock::class, BlockFactory::get($block->getId()));
 	}
 
@@ -56,7 +56,7 @@ class BlockTest extends TestCase{
 		for($i = 0; $i < 256; ++$i){
 			if(!BlockFactory::isRegistered($i)){
 				$b = new StrangeNewBlock($i);
-				BlockFactory::registerBlock($b);
+				BlockFactory::register($b);
 				self::assertInstanceOf(StrangeNewBlock::class, BlockFactory::get($b->getId()));
 				return;
 			}
@@ -70,7 +70,7 @@ class BlockTest extends TestCase{
 	 */
 	public function testRegisterIdTooLarge() : void{
 		self::expectException(\RuntimeException::class);
-		BlockFactory::registerBlock(new OutOfBoundsBlock(25555));
+		BlockFactory::register(new OutOfBoundsBlock(25555));
 	}
 
 	/**
@@ -78,7 +78,7 @@ class BlockTest extends TestCase{
 	 */
 	public function testRegisterIdTooSmall() : void{
 		self::expectException(\RuntimeException::class);
-		BlockFactory::registerBlock(new OutOfBoundsBlock(-1));
+		BlockFactory::register(new OutOfBoundsBlock(-1));
 	}
 
 	/**
