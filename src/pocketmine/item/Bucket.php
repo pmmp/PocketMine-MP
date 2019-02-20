@@ -58,12 +58,12 @@ class Bucket extends Item{
 				}else{
 					$player->getInventory()->addItem($ev->getItem());
 				}
-				return ItemUseResult::success();
+				return ItemUseResult::SUCCESS();
 			}
 
-			return ItemUseResult::fail();
+			return ItemUseResult::FAIL();
 		}
 
-		return ItemUseResult::none();
+		return ItemUseResult::NONE();
 	}
 }

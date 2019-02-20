@@ -1798,8 +1798,8 @@ class Level implements ChunkManager, Metadatable{
 
 				if(!$player->isSneaking()){
 					$result = $item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector);
-					if($result !== ItemUseResult::none()){
-						return $result === ItemUseResult::success();
+					if($result !== ItemUseResult::NONE()){
+						return $result === ItemUseResult::SUCCESS();
 					}
 				}
 			}else{

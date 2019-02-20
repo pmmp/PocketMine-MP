@@ -54,7 +54,7 @@ class LiquidBucket extends Item{
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		if(!$blockReplace->canBeReplaced()){
-			return ItemUseResult::none();
+			return ItemUseResult::NONE();
 		}
 
 		//TODO: move this to generic placement logic
@@ -69,12 +69,12 @@ class LiquidBucket extends Item{
 				if($player->isSurvival()){
 					$player->getInventory()->setItemInHand($ev->getItem());
 				}
-				return ItemUseResult::success();
+				return ItemUseResult::SUCCESS();
 			}
 
-			return ItemUseResult::fail();
+			return ItemUseResult::FAIL();
 		}
 
-		return ItemUseResult::none();
+		return ItemUseResult::NONE();
 	}
 }

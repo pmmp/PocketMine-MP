@@ -49,7 +49,7 @@ class Bow extends Tool{
 
 	public function onReleaseUsing(Player $player) : ItemUseResult{
 		if($player->isSurvival() and !$player->getInventory()->contains(ItemFactory::get(Item::ARROW, 0, 1))){
-			return ItemUseResult::fail();
+			return ItemUseResult::FAIL();
 		}
 
 		$nbt = EntityFactory::createBaseNBT(
@@ -92,7 +92,7 @@ class Bow extends Tool{
 
 		if($ev->isCancelled()){
 			$entity->flagForDespawn();
-			return ItemUseResult::fail();
+			return ItemUseResult::FAIL();
 		}
 
 		$entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
@@ -102,7 +102,7 @@ class Bow extends Tool{
 			$projectileEv->call();
 			if($projectileEv->isCancelled()){
 				$ev->getProjectile()->flagForDespawn();
-				return ItemUseResult::fail();
+				return ItemUseResult::FAIL();
 			}
 
 			$ev->getProjectile()->spawnToAll();
@@ -118,6 +118,6 @@ class Bow extends Tool{
 			$this->applyDamage(1);
 		}
 
-		return ItemUseResult::success();
+		return ItemUseResult::SUCCESS();
 	}
 }

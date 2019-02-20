@@ -30,19 +30,19 @@ final class SlabType{
 	 */
 	private $name;
 
-	public static function bottom() : self{
+	public static function BOTTOM() : self{
 		/** @var SlabType $ret */
 		static $ret = null;
 		return $ret ?? ($ret = new self("bottom"));
 	}
 
-	public static function top() : self{
+	public static function TOP() : self{
 		/** @var SlabType $ret */
 		static $ret = null;
 		return $ret ?? ($ret = new self("top"));
 	}
 
-	public static function double() : self{
+	public static function DOUBLE() : self{
 		/** @var SlabType $ret */
 		static $ret = null;
 		return $ret ?? ($ret = new self("double"));

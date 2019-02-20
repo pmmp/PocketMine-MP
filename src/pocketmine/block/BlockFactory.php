@@ -375,7 +375,7 @@ class BlockFactory{
 		}
 		foreach($slabTypes as $type){
 			self::register($type);
-			self::register((clone $type)->setSlabType(SlabType::double())); //flattening hack
+			self::register((clone $type)->setSlabType(SlabType::DOUBLE())); //flattening hack
 		}
 
 		static $wallTypes = [

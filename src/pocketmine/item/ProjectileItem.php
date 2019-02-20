@@ -68,7 +68,7 @@ abstract class ProjectileItem extends Item{
 		$projectileEv->call();
 		if($projectileEv->isCancelled()){
 			$projectile->flagForDespawn();
-			return ItemUseResult::fail();
+			return ItemUseResult::FAIL();
 		}
 
 		$projectile->spawnToAll();
@@ -77,6 +77,6 @@ abstract class ProjectileItem extends Item{
 
 		$this->pop();
 
-		return ItemUseResult::success();
+		return ItemUseResult::SUCCESS();
 	}
 }

@@ -61,6 +61,6 @@ class SpawnEgg extends Item{
 		$this->pop();
 		$entity->spawnToAll();
 		//TODO: what if the entity was marked for deletion?
-		return ItemUseResult::success();
+		return ItemUseResult::SUCCESS();
 	}
 }

@@ -44,10 +44,10 @@ class FlintSteel extends Tool{
 
 			$this->applyDamage(1);
 
-			return ItemUseResult::success();
+			return ItemUseResult::SUCCESS();
 		}
 
-		return ItemUseResult::none();
+		return ItemUseResult::NONE();
 	}
 
 	public function getMaxDurability() : int{

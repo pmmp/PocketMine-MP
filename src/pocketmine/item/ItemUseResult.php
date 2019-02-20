@@ -36,7 +36,7 @@ final class ItemUseResult{
 	 *
 	 * @return ItemUseResult
 	 */
-	public static function none() : ItemUseResult{
+	public static function NONE() : ItemUseResult{
 		return self::$NONE ?? (self::$NONE = new self());
 	}
 
@@ -46,7 +46,7 @@ final class ItemUseResult{
 	 *
 	 * @return ItemUseResult
 	 */
-	public static function fail() : ItemUseResult{
+	public static function FAIL() : ItemUseResult{
 		return self::$FAILED ?? (self::$FAILED = new self());
 	}
 
@@ -55,7 +55,7 @@ final class ItemUseResult{
 	 *
 	 * @return ItemUseResult
 	 */
-	public static function success() : ItemUseResult{
+	public static function SUCCESS() : ItemUseResult{
 		return self::$SUCCEEDED ?? (self::$SUCCEEDED = new self());
 	}
 

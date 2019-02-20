@@ -2063,12 +2063,12 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		$result = $item->onClickAir($this, $directionVector);
-		if($result === ItemUseResult::success()){
+		if($result === ItemUseResult::SUCCESS()){
 			$this->resetItemCooldown($item);
 			if($this->isSurvival()){
 				$this->inventory->setItemInHand($item);
 			}
-		}elseif($result === ItemUseResult::fail()){
+		}elseif($result === ItemUseResult::FAIL()){
 			$this->inventory->sendHeldItem($this);
 		}
 
@@ -2125,12 +2125,12 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 					return false;
 				}
 				$result = $item->onReleaseUsing($this);
-				if($result === ItemUseResult::success()){
+				if($result === ItemUseResult::SUCCESS()){
 					$this->resetItemCooldown($item);
 					$this->inventory->setItemInHand($item);
 					return true;
 				}
-				if($result === ItemUseResult::fail()){
+				if($result === ItemUseResult::FAIL()){
 					$this->inventory->sendContents($this);
 					return true;
 				}

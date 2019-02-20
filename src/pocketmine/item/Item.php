@@ -738,7 +738,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return ItemUseResult
 	 */
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		return ItemUseResult::none();
+		return ItemUseResult::NONE();
 	}
 
 	/**
@@ -751,7 +751,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return ItemUseResult
 	 */
 	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
-		return ItemUseResult::none();
+		return ItemUseResult::NONE();
 	}
 
 	/**
@@ -763,7 +763,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return ItemUseResult
 	 */
 	public function onReleaseUsing(Player $player) : ItemUseResult{
-		return ItemUseResult::none();
+		return ItemUseResult::NONE();
 	}
 
 	/**

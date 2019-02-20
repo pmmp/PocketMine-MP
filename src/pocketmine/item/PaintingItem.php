@@ -40,7 +40,7 @@ class PaintingItem extends Item{
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		if(Facing::axis($face) === Facing::AXIS_Y){
-			return ItemUseResult::none();
+			return ItemUseResult::NONE();
 		}
 
 		$motives = [];
@@ -68,7 +68,7 @@ class PaintingItem extends Item{
 		}
 
 		if(empty($motives)){ //No space available
-			return ItemUseResult::none();
+			return ItemUseResult::NONE();
 		}
 
 		/** @var PaintingMotive $motive */
@@ -83,7 +83,7 @@ class PaintingItem extends Item{
 
 		$direction = $directions[$face] ?? -1;
 		if($direction === -1){
-			return ItemUseResult::none();
+			return ItemUseResult::NONE();
 		}
 
 		$nbt = EntityFactory::createBaseNBT($blockReplace, null, $direction * 90, 0);
@@ -99,6 +99,6 @@ class PaintingItem extends Item{
 		$entity->spawnToAll();
 
 		$player->getLevel()->broadcastLevelEvent($blockReplace->add(0.5, 0.5, 0.5), LevelEventPacket::EVENT_SOUND_ITEMFRAME_PLACE); //item frame and painting have the same sound
-		return ItemUseResult::success();
+		return ItemUseResult::SUCCESS();
 	}
 }
