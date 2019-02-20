@@ -26,37 +26,103 @@ namespace pocketmine\block\utils;
 final class DyeColor{
 
 	/** @var DyeColor */
-	public static $WHITE;
+	private static $WHITE;
 	/** @var DyeColor */
-	public static $ORANGE;
+	private static $ORANGE;
 	/** @var DyeColor */
-	public static $MAGENTA;
+	private static $MAGENTA;
 	/** @var DyeColor */
-	public static $LIGHT_BLUE;
+	private static $LIGHT_BLUE;
 	/** @var DyeColor */
-	public static $YELLOW;
+	private static $YELLOW;
 	/** @var DyeColor */
-	public static $LIME;
+	private static $LIME;
 	/** @var DyeColor */
-	public static $PINK;
+	private static $PINK;
 	/** @var DyeColor */
-	public static $GRAY;
+	private static $GRAY;
 	/** @var DyeColor */
-	public static $LIGHT_GRAY;
+	private static $LIGHT_GRAY;
 	/** @var DyeColor */
-	public static $CYAN;
+	private static $CYAN;
 	/** @var DyeColor */
-	public static $PURPLE;
+	private static $PURPLE;
 	/** @var DyeColor */
-	public static $BLUE;
+	private static $BLUE;
 	/** @var DyeColor */
-	public static $BROWN;
+	private static $BROWN;
 	/** @var DyeColor */
-	public static $GREEN;
+	private static $GREEN;
 	/** @var DyeColor */
-	public static $RED;
+	private static $RED;
 	/** @var DyeColor */
-	public static $BLACK;
+	private static $BLACK;
+
+	/* auto-generated code */
+
+	public static function WHITE() : DyeColor{
+		return self::$WHITE;
+	}
+
+	public static function ORANGE() : DyeColor{
+		return self::$ORANGE;
+	}
+
+	public static function MAGENTA() : DyeColor{
+		return self::$MAGENTA;
+	}
+
+	public static function LIGHT_BLUE() : DyeColor{
+		return self::$LIGHT_BLUE;
+	}
+
+	public static function YELLOW() : DyeColor{
+		return self::$YELLOW;
+	}
+
+	public static function LIME() : DyeColor{
+		return self::$LIME;
+	}
+
+	public static function PINK() : DyeColor{
+		return self::$PINK;
+	}
+
+	public static function GRAY() : DyeColor{
+		return self::$GRAY;
+	}
+
+	public static function LIGHT_GRAY() : DyeColor{
+		return self::$LIGHT_GRAY;
+	}
+
+	public static function CYAN() : DyeColor{
+		return self::$CYAN;
+	}
+
+	public static function PURPLE() : DyeColor{
+		return self::$PURPLE;
+	}
+
+	public static function BLUE() : DyeColor{
+		return self::$BLUE;
+	}
+
+	public static function BROWN() : DyeColor{
+		return self::$BROWN;
+	}
+
+	public static function GREEN() : DyeColor{
+		return self::$GREEN;
+	}
+
+	public static function RED() : DyeColor{
+		return self::$RED;
+	}
+
+	public static function BLACK() : DyeColor{
+		return self::$BLACK;
+	}
 
 	/** @var DyeColor[] */
 	private static $numericIdMap = [];

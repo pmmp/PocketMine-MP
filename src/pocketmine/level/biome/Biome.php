@@ -99,7 +99,7 @@ abstract class Biome{
 
 		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
 
-		self::register(self::BIRCH_FOREST, new ForestBiome(TreeType::$BIRCH));
+		self::register(self::BIRCH_FOREST, new ForestBiome(TreeType::BIRCH()));
 	}
 
 	/**

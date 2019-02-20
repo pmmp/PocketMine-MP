@@ -34,7 +34,7 @@ use function abs;
 class SpruceTree extends Tree{
 
 	public function __construct(){
-		parent::__construct(BlockFactory::get(Block::LOG, TreeType::$SPRUCE->getMagicNumber()), BlockFactory::get(Block::LEAVES, TreeType::$SPRUCE->getMagicNumber()), 10);
+		parent::__construct(BlockFactory::get(Block::LOG, TreeType::SPRUCE()->getMagicNumber()), BlockFactory::get(Block::LEAVES, TreeType::SPRUCE()->getMagicNumber()), 10);
 	}
 
 	protected function generateChunkHeight(Random $random) : int{

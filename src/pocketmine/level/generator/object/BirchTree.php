@@ -34,7 +34,7 @@ class BirchTree extends Tree{
 	protected $superBirch = false;
 
 	public function __construct(bool $superBirch = false){
-		parent::__construct(BlockFactory::get(Block::LOG, TreeType::$BIRCH->getMagicNumber()), BlockFactory::get(Block::LEAVES, TreeType::$BIRCH->getMagicNumber()));
+		parent::__construct(BlockFactory::get(Block::LOG, TreeType::BIRCH()->getMagicNumber()), BlockFactory::get(Block::LEAVES, TreeType::BIRCH()->getMagicNumber()));
 		$this->superBirch = $superBirch;
 	}
 

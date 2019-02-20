@@ -26,17 +26,43 @@ namespace pocketmine\block\utils;
 final class TreeType{
 
 	/** @var TreeType */
-	public static $OAK;
+	private static $OAK;
 	/** @var TreeType */
-	public static $SPRUCE;
+	private static $SPRUCE;
 	/** @var TreeType */
-	public static $BIRCH;
+	private static $BIRCH;
 	/** @var TreeType */
-	public static $JUNGLE;
+	private static $JUNGLE;
 	/** @var TreeType */
-	public static $ACACIA;
+	private static $ACACIA;
 	/** @var TreeType */
-	public static $DARK_OAK;
+	private static $DARK_OAK;
+
+	/* auto-generated code */
+
+	public static function OAK() : TreeType{
+		return self::$OAK;
+	}
+
+	public static function SPRUCE() : TreeType{
+		return self::$SPRUCE;
+	}
+
+	public static function BIRCH() : TreeType{
+		return self::$BIRCH;
+	}
+
+	public static function JUNGLE() : TreeType{
+		return self::$JUNGLE;
+	}
+
+	public static function ACACIA() : TreeType{
+		return self::$ACACIA;
+	}
+
+	public static function DARK_OAK() : TreeType{
+		return self::$DARK_OAK;
+	}
 
 	/** @var TreeType[] */
 	private static $numericIdMap = [];

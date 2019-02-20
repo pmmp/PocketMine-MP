@@ -225,7 +225,7 @@ class Banner extends Item{
 	public function correctNBT() : void{
 		$tag = $this->getNamedTag();
 		if(!$tag->hasTag(self::TAG_BASE, IntTag::class)){
-			$tag->setInt(self::TAG_BASE, DyeColor::$BLACK->getInvertedMagicNumber());
+			$tag->setInt(self::TAG_BASE, DyeColor::BLACK()->getInvertedMagicNumber());
 		}
 
 		if(!$tag->hasTag(self::TAG_PATTERNS, ListTag::class)){

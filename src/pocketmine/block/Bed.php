@@ -55,7 +55,7 @@ class Bed extends Transparent{
 	protected $color;
 
 	public function __construct(){
-		$this->color = DyeColor::$RED;
+		$this->color = DyeColor::RED();
 	}
 
 	protected function writeStateToMeta() : int{

@@ -134,7 +134,7 @@ class Leaves extends Transparent{
 		if(mt_rand(1, 20) === 1){ //Saplings
 			$drops[] = ItemFactory::get(Item::SAPLING, $this->treeType->getMagicNumber());
 		}
-		if(($this->treeType === TreeType::$OAK or $this->treeType === TreeType::$DARK_OAK) and mt_rand(1, 200) === 1){ //Apples
+		if(($this->treeType === TreeType::OAK() or $this->treeType === TreeType::DARK_OAK()) and mt_rand(1, 200) === 1){ //Apples
 			$drops[] = ItemFactory::get(Item::APPLE);
 		}
 

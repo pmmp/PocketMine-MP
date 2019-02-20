@@ -35,7 +35,7 @@ class Bed extends Spawnable{
 	private $color;
 
 	public function __construct(Level $level, Vector3 $pos){
-		$this->color = DyeColor::$RED;
+		$this->color = DyeColor::RED();
 		parent::__construct($level, $pos);
 	}
 

@@ -62,18 +62,18 @@ abstract class Tree{
 	public static function growTree(ChunkManager $level, int $x, int $y, int $z, Random $random, ?TreeType $type = null) : void{
 		/** @var null|Tree $tree */
 		$tree = null;
-		$type = $type ?? TreeType::$OAK;
-		if($type === TreeType::$SPRUCE){
+		$type = $type ?? TreeType::OAK();
+		if($type === TreeType::SPRUCE()){
 			$tree = new SpruceTree();
-		}elseif($type === TreeType::$BIRCH){
+		}elseif($type === TreeType::BIRCH()){
 			if($random->nextBoundedInt(39) === 0){
 				$tree = new BirchTree(true);
 			}else{
 				$tree = new BirchTree();
 			}
-		}elseif($type === TreeType::$JUNGLE){
+		}elseif($type === TreeType::JUNGLE()){
 			$tree = new JungleTree();
-		}elseif($type === TreeType::$OAK){ //default
+		}elseif($type === TreeType::OAK()){ //default
 			$tree = new OakTree();
 			/*if($random->nextRange(0, 9) === 0){
 				$tree = new BigTree();

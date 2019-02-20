@@ -93,7 +93,7 @@ class Banner extends Spawnable implements Nameable{
 	private $patterns;
 
 	public function __construct(Level $level, Vector3 $pos){
-		$this->baseColor = DyeColor::$BLACK;
+		$this->baseColor = DyeColor::BLACK();
 		$this->patterns = new ListTag(self::TAG_PATTERNS);
 		parent::__construct($level, $pos);
 	}
