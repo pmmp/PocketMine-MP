@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use function file_get_contents;
 use function yaml_parse_file;
 
 abstract class DefaultPermissions{
@@ -47,7 +48,7 @@ abstract class DefaultPermissions{
 
 	public static function registerCorePermissions(){
 		$manager = PermissionManager::getInstance();
-		foreach(PermissionParser::loadPermissions(yaml_parse_file(\pocketmine\RESOURCE_PATH . 'default_permissions.yml')) as $permission){
+		foreach(PermissionParser::loadPermissions(yaml_parse(file_get_contents(\pocketmine\RESOURCE_PATH . 'default_permissions.yml'))) as $permission){
 			$manager->addPermission($permission);
 		}
 	}
