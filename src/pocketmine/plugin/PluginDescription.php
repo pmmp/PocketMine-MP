@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\permission\Permission;
+use pocketmine\permission\PermissionParser;
 use function array_map;
 use function array_values;
 use function constant;
@@ -146,7 +147,7 @@ class PluginDescription{
 		}
 
 		if(isset($plugin["permissions"])){
-			$this->permissions = Permission::loadPermissions($plugin["permissions"]);
+			$this->permissions = PermissionParser::loadPermissions($plugin["permissions"]);
 		}
 	}
 

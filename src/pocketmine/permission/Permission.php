@@ -27,10 +27,6 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use function is_array;
-use function is_bool;
-use function strtolower;
-
 /**
  * Represents a permission
  */
@@ -41,106 +37,6 @@ class Permission{
 	public const DEFAULT_FALSE = "false";
 
 	public static $DEFAULT_PERMISSION = self::DEFAULT_OP;
-
-	/**
-	 * @param bool|string $value
-	 *
-	 * @return string
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public static function getByName($value) : string{
-		if(is_bool($value)){
-			if($value){
-				return "true";
-			}else{
-				return "false";
-			}
-		}
-		switch(strtolower($value)){
-			case "op":
-			case "isop":
-			case "operator":
-			case "isoperator":
-			case "admin":
-			case "isadmin":
-				return self::DEFAULT_OP;
-
-			case "!op":
-			case "notop":
-			case "!operator":
-			case "notoperator":
-			case "!admin":
-			case "notadmin":
-				return self::DEFAULT_NOT_OP;
-
-			case "true":
-				return self::DEFAULT_TRUE;
-			case "false":
-				return self::DEFAULT_FALSE;
-		}
-
-		throw new \InvalidArgumentException("Unknown permission default name \"$value\"");
-	}
-
-	/**
-	 * @param array  $data
-	 * @param string $default
-	 *
-	 * @return Permission[]
-	 */
-	public static function loadPermissions(array $data, string $default = self::DEFAULT_OP) : array{
-		$result = [];
-		foreach($data as $key => $entry){
-			$result[] = self::loadPermission($key, $entry, $default, $result);
-		}
-
-		return $result;
-	}
-
-	/**
-	 * @param string $name
-	 * @param array  $data
-	 * @param string $default
-	 * @param array  $output
-	 *
-	 * @return Permission
-	 *
-	 * @throws \Exception
-	 */
-	public static function loadPermission(string $name, array $data, string $default = self::DEFAULT_OP, array &$output = []) : Permission{
-		$desc = null;
-		$children = [];
-		if(isset($data["default"])){
-			$value = Permission::getByName($data["default"]);
-			if($value !== null){
-				$default = $value;
-			}else{
-				throw new \InvalidStateException("'default' key contained unknown value");
-			}
-		}
-
-		if(isset($data["children"])){
-			if(is_array($data["children"])){
-				foreach($data["children"] as $k => $v){
-					if(is_array($v)){
-						if(($perm = self::loadPermission($k, $v, $default, $output)) !== null){
-							$output[] = $perm;
-						}
-					}
-					$children[$k] = true;
-				}
-			}else{
-				throw new \InvalidStateException("'children' key is of wrong type");
-			}
-		}
-
-		if(isset($data["description"])){
-			$desc = $data["description"];
-		}
-
-		return new Permission($name, $desc, $default, $children);
-	}
 
 	/** @var string */
 	private $name;
