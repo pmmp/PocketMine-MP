@@ -25,12 +25,22 @@ namespace pocketmine\item;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\BlockFactory;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\EnchantmentInstance;
 
 class ItemTest extends TestCase{
 
-	public function setUp() : void{
+	public static function setUpBeforeClass() : void{
 		BlockFactory::init();
 		ItemFactory::init();
+		Enchantment::init();
+	}
+
+	/** @var Item */
+	private $item;
+
+	public function setUp() : void{
+		$this->item = ItemFactory::get(Item::DIAMOND_SWORD);
 	}
 
 	/**
@@ -52,45 +62,70 @@ class ItemTest extends TestCase{
 		self::assertTrue($item1->equals($item2));
 	}
 
-	/**
-	 * Tests that blocks are considered to be valid registered items
-	 */
-	public function testItemBlockRegistered() : void{
-		for($id = 0; $id < 256; ++$id){
-			self::assertEquals(BlockFactory::isRegistered($id), ItemFactory::isRegistered($id));
-		}
+	public function testHasEnchantment() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::EFFICIENCY(), 5));
+		self::assertTrue($this->item->hasEnchantment(Enchantment::EFFICIENCY()));
+		self::assertTrue($this->item->hasEnchantment(Enchantment::EFFICIENCY(), 5));
 	}
 
-	public function itemFromStringProvider() : array{
-		return [
-			["dye:4", ItemIds::DYE, 4],
-			["351", ItemIds::DYE, 0],
-			["351:4", ItemIds::DYE, 4],
-			["stone:3", ItemIds::STONE, 3],
-			["minecraft:string", ItemIds::STRING, 0],
-			["diamond_pickaxe", ItemIds::DIAMOND_PICKAXE, 0],
-			["diamond_pickaxe:5", ItemIds::DIAMOND_PICKAXE, 5]
+	public function testHasEnchantments() : void{
+		self::assertFalse($this->item->hasEnchantments());
+		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::FIRE_ASPECT()));
+		self::assertTrue($this->item->hasEnchantments());
+	}
+
+	public function testGetEnchantmentLevel() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::EFFICIENCY(), 5));
+		self::assertSame(5, $this->item->getEnchantmentLevel(Enchantment::EFFICIENCY()));
+	}
+
+	public function testGetEnchantments() : void{
+		/** @var EnchantmentInstance[] $enchantments */
+		$enchantments = [
+			new EnchantmentInstance(Enchantment::EFFICIENCY(), 5),
+			new EnchantmentInstance(Enchantment::SHARPNESS(), 1)
 		];
+		foreach($enchantments as $enchantment){
+			$this->item->addEnchantment($enchantment);
+		}
+		foreach($this->item->getEnchantments() as $enchantment){
+			foreach($enchantments as $k => $applied){
+				if($enchantment->getType() === $applied->getType() and $enchantment->getLevel() === $applied->getLevel()){
+					unset($enchantments[$k]);
+					continue 2;
+				}
+			}
+			self::assertTrue(false, "Unknown extra enchantment found: " . $enchantment->getType()->getName() . " x" . $enchantment->getLevel());
+		}
+		self::assertEmpty($enchantments, "Expected all enchantments to be present");
 	}
 
-	/**
-	 * @dataProvider itemFromStringProvider
-	 * @param string $string
-	 * @param int    $id
-	 * @param int    $meta
-	 */
-	public function testFromStringSingle(string $string, int $id, int $meta) : void{
-		$item = ItemFactory::fromString($string);
-
-		self::assertEquals($id, $item->getId());
-		self::assertEquals($meta, $item->getDamage());
+	public function testOverwriteEnchantment() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::SHARPNESS()));
+		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::SHARPNESS(), 5));
+		self::assertSame(5, $this->item->getEnchantmentLevel(Enchantment::SHARPNESS()));
 	}
 
-	/**
-	 * Test that durable items are correctly created by the item factory
-	 */
-	public function testGetDurableItem() : void{
-		self::assertInstanceOf(Sword::class, ItemFactory::get(Item::WOODEN_SWORD));
-		self::assertInstanceOf(Sword::class, ItemFactory::get(Item::WOODEN_SWORD, 1));
+	public function testRemoveAllEnchantments() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::FIRE_ASPECT()));
+		self::assertCount(1, $this->item->getEnchantments());
+		$this->item->removeEnchantments();
+		self::assertEmpty($this->item->getEnchantments());
+	}
+
+	public function testRemoveEnchantment() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::KNOCKBACK()));
+		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::SHARPNESS()));
+		self::assertCount(2, $this->item->getEnchantments());
+		$this->item->removeEnchantment(Enchantment::SHARPNESS());
+		self::assertFalse($this->item->hasEnchantment(Enchantment::SHARPNESS()));
+	}
+
+	public function testRemoveEnchantmentLevel() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::FIRE_ASPECT(), 2));
+		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::UNBREAKING()));
+		self::assertCount(2, $this->item->getEnchantments());
+		$this->item->removeEnchantment(Enchantment::FIRE_ASPECT(), 2);
+		self::assertFalse($this->item->hasEnchantment(Enchantment::FIRE_ASPECT()));
 	}
 }
