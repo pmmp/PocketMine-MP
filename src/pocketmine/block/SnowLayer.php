@@ -65,7 +65,7 @@ class SnowLayer extends Flowable implements Fallable{
 	}
 
 	public function canBeReplaced() : bool{
-		return true;
+		return $this->layers < 8;
 	}
 
 	public function getHardness() : float{
