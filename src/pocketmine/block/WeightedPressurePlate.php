@@ -23,19 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\TieredTool;
+use pocketmine\block\utils\BlockDataValidator;
 
-class StonePressurePlate extends SimplePressurePlate{
+abstract class WeightedPressurePlate extends PressurePlate{
 
-	public function getHardness() : float{
-		return 0.5;
+	/** @var int */
+	protected $power = 0;
+
+	protected function writeStateToMeta() : int{
+		return $this->power;
 	}
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->power = BlockDataValidator::readBoundedInt("power", $stateMeta, 0, 15);
 	}
 
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 }

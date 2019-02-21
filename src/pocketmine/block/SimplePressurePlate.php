@@ -23,19 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\TieredTool;
+abstract class SimplePressurePlate extends PressurePlate{
 
-class StonePressurePlate extends SimplePressurePlate{
+	/** @var bool */
+	protected $powered = false;
 
-	public function getHardness() : float{
-		return 0.5;
+	protected function writeStateToMeta() : int{
+		return $this->powered ? 1 : 0;
 	}
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->powered = $stateMeta !== 0;
 	}
 
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
+	public function getStateBitmask() : int{
+		return 0b1;
 	}
 }

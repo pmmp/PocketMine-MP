@@ -23,19 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\TieredTool;
+abstract class PressurePlate extends Transparent{
 
-class StonePressurePlate extends SimplePressurePlate{
-
-	public function getHardness() : float{
-		return 0.5;
+	public function isSolid() : bool{
+		return false;
 	}
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
-	}
+	//TODO
 }

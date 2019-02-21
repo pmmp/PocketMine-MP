@@ -23,17 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class WoodenPressurePlate extends StonePressurePlate{
+class WoodenPressurePlate extends SimplePressurePlate{
 
 	public function getFuelTime() : int{
 		return 300;
 	}
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
+	public function getHardness() : float{
+		return 0.5;
 	}
 
-	public function getToolHarvestLevel() : int{
-		return 0; //TODO: fix hierarchy problem
+	public function getToolType() : int{
+		return BlockToolType::TYPE_AXE;
 	}
 }
