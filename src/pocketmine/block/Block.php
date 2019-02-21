@@ -68,7 +68,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/** @var BlockIdentifier */
 	protected $idInfo;
 
-	/** @var string|null */
+	/** @var string */
 	protected $fallbackName;
 
 
@@ -79,7 +79,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 	/**
 	 * @param BlockIdentifier $idInfo
-	 * @param string|null     $name English name of the block type (TODO: implement translations)
+	 * @param string          $name English name of the block type (TODO: implement translations)
 	 */
 	public function __construct(BlockIdentifier $idInfo, string $name){
 		if(($idInfo->getVariant() & $this->getStateBitmask()) !== 0){
