@@ -714,6 +714,23 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+	 * Unregisters a chunk listener from all chunks it is listening on in this Level.
+	 *
+	 * @param ChunkListener $listener
+	 */
+	public function unregisterChunkListenerFromAll(ChunkListener $listener) : void{
+		$id = spl_object_id($listener);
+		foreach($this->chunkListeners as $hash => $listeners){
+			if(isset($listeners[$id])){
+				unset($this->chunkListeners[$hash][$id]);
+				if(empty($this->chunkListeners[$hash])){
+					unset($this->chunkListeners[$hash]);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Returns all the listeners attached to this chunk.
 	 *
 	 * @param int $chunkX
