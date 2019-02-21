@@ -27,7 +27,6 @@ use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PillarRotationTrait;
-use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\item\ItemIds;
 use pocketmine\level\Position;
@@ -107,8 +106,7 @@ class BlockFactory{
 		self::register(new CocoaBlock(new BID(Block::COCOA), "Cocoa Block"));
 		self::register(new CraftingTable(new BID(Block::CRAFTING_TABLE), "Crafting Table"));
 		self::register(new Dandelion(new BID(Block::DANDELION), "Dandelion"));
-		self::register($daylightSensor = new DaylightSensor(new BlockIdentifierFlattened(Block::DAYLIGHT_DETECTOR, Block::DAYLIGHT_DETECTOR_INVERTED), "Daylight Sensor"));
-		self::register((clone $daylightSensor)->setInverted()); //flattening hack
+		self::register(new DaylightSensor(new BlockIdentifierFlattened(Block::DAYLIGHT_DETECTOR, Block::DAYLIGHT_DETECTOR_INVERTED), "Daylight Sensor"));
 		self::register(new DeadBush(new BID(Block::DEADBUSH), "Dead Bush"));
 		self::register(new DetectorRail(new BID(Block::DETECTOR_RAIL), "Detector Rail"));
 		self::register(new Diamond(new BID(Block::DIAMOND_BLOCK), "Diamond Block"));
@@ -148,8 +146,7 @@ class BlockFactory{
 		self::register(new Flower(new BID(Block::RED_FLOWER, Flower::TYPE_RED_TULIP), "Red Tulip"));
 		self::register(new Flower(new BID(Block::RED_FLOWER, Flower::TYPE_WHITE_TULIP), "White Tulip"));
 		self::register(new FlowerPot(new BID(Block::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, \pocketmine\tile\FlowerPot::class), "Flower Pot"));
-		self::register($furnace = new Furnace(new BlockIdentifierFlattened(Block::FURNACE, Block::LIT_FURNACE, 0, null, \pocketmine\tile\Furnace::class), "Furnace"));
-		self::register((clone $furnace)->setLit()); //flattening hack
+		self::register(new Furnace(new BlockIdentifierFlattened(Block::FURNACE, Block::LIT_FURNACE, 0, null, \pocketmine\tile\Furnace::class), "Furnace"));
 		self::register(new Glass(new BID(Block::GLASS), "Glass"));
 		self::register(new GlassPane(new BID(Block::GLASS_PANE), "Glass Pane"));
 		self::register(new GlazedTerracotta(new BID(Block::BLACK_GLAZED_TERRACOTTA), "Black Glazed Terracotta"));
@@ -192,8 +189,7 @@ class BlockFactory{
 		self::register(new Ladder(new BID(Block::LADDER), "Ladder"));
 		self::register(new Lapis(new BID(Block::LAPIS_BLOCK), "Lapis Lazuli Block"));
 		self::register(new LapisOre(new BID(Block::LAPIS_ORE), "Lapis Lazuli Ore"));
-		self::register($lava = new Lava(new BlockIdentifierFlattened(Block::FLOWING_LAVA, Block::STILL_LAVA), "Lava"));
-		self::register((clone $lava)->setStill()); //flattening hack
+		self::register(new Lava(new BlockIdentifierFlattened(Block::FLOWING_LAVA, Block::STILL_LAVA), "Lava"));
 		self::register(new Lever(new BID(Block::LEVER), "Lever"));
 		self::register(new LitPumpkin(new BID(Block::JACK_O_LANTERN), "Jack o'Lantern"));
 		self::register(new Magma(new BID(Block::MAGMA), "Magma Block"));
@@ -239,14 +235,10 @@ class BlockFactory{
 		self::register(new RedMushroom(new BID(Block::RED_MUSHROOM), "Red Mushroom"));
 		self::register(new RedMushroomBlock(new BID(Block::RED_MUSHROOM_BLOCK), "Red Mushroom Block"));
 		self::register(new Redstone(new BID(Block::REDSTONE_BLOCK), "Redstone Block"));
-		self::register($redstoneLamp = new RedstoneLamp(new BlockIdentifierFlattened(Block::REDSTONE_LAMP, Block::LIT_REDSTONE_LAMP), "Redstone Lamp"));
-		self::register((clone $redstoneLamp)->setLit()); //flattening hack
-		self::register($redstoneOre = new RedstoneOre(new BlockIdentifierFlattened(Block::REDSTONE_ORE, Block::LIT_REDSTONE_ORE), "Redstone Ore"));
-		self::register((clone $redstoneOre)->setLit()); //flattening hack
-		self::register($repeater = new RedstoneRepeater(new BlockIdentifierFlattened(Block::UNPOWERED_REPEATER, Block::POWERED_REPEATER, 0, ItemIds::REPEATER), "Redstne Repeater"));
-		self::register((clone $repeater)->setPowered());
-		self::register($redstoneTorch = new RedstoneTorch(new BlockIdentifierFlattened(Block::REDSTONE_TORCH, Block::UNLIT_REDSTONE_TORCH), "Redstone Torch"));
-		self::register((clone $redstoneTorch)->setLit(false)); //flattening hack
+		self::register(new RedstoneLamp(new BlockIdentifierFlattened(Block::REDSTONE_LAMP, Block::LIT_REDSTONE_LAMP), "Redstone Lamp"));
+		self::register(new RedstoneOre(new BlockIdentifierFlattened(Block::REDSTONE_ORE, Block::LIT_REDSTONE_ORE), "Redstone Ore"));
+		self::register(new RedstoneRepeater(new BlockIdentifierFlattened(Block::UNPOWERED_REPEATER, Block::POWERED_REPEATER, 0, ItemIds::REPEATER), "Redstne Repeater"));
+		self::register(new RedstoneTorch(new BlockIdentifierFlattened(Block::REDSTONE_TORCH, Block::UNLIT_REDSTONE_TORCH), "Redstone Torch"));
 		self::register(new RedstoneWire(new BID(Block::REDSTONE_WIRE, 0, ItemIds::REDSTONE), "Redstone"));
 		self::register(new Reserved6(new BID(Block::RESERVED6), "reserved6"));
 		self::register(new Sand(new BID(Block::SAND), "Sand"));
@@ -275,6 +267,22 @@ class BlockFactory{
 		self::register(new StoneBricks(new BID(Block::STONEBRICK, StoneBricks::NORMAL), "Stone Bricks"));
 		self::register(new StoneButton(new BID(Block::STONE_BUTTON), "Stone Button"));
 		self::register(new StonePressurePlate(new BID(Block::STONE_PRESSURE_PLATE), "Stone Pressure Plate"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 0), "Stone"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 1), "Sandstone"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 2), "Fake Wooden"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 3), "Cobblestone"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 4), "Brick"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 5), "Stone Brick"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 6), "Quartz"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 7), "Nether Brick"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 0), "Red Sandstone"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 1), "Purpur"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 2), "Prismarine"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 3), "Dark Prismarine"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 4), "Prismarine Bricks"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 5), "Mossy Cobblestone"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 6), "Smooth Sandstone"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 7), "Red Nether Brick"));
 		self::register(new Stonecutter(new BID(Block::STONECUTTER), "Stonecutter"));
 		self::register(new Sugarcane(new BID(Block::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane"));
 		self::register(new TNT(new BID(Block::TNT), "TNT"));
@@ -295,8 +303,7 @@ class BlockFactory{
 		self::register(new Vine(new BID(Block::VINE), "Vines"));
 		self::register(new WallBanner(new BID(Block::WALL_BANNER, 0, ItemIds::BANNER, \pocketmine\tile\Banner::class), "Wall Banner"));
 		self::register(new WallSign(new BID(Block::WALL_SIGN, 0, ItemIds::SIGN, \pocketmine\tile\Sign::class), "Wall Sign"));
-		self::register($water = new Water(new BlockIdentifierFlattened(Block::FLOWING_WATER, Block::STILL_WATER), "Water"));
-		self::register((clone $water)->setStill()); //flattening hack
+		self::register(new Water(new BlockIdentifierFlattened(Block::FLOWING_WATER, Block::STILL_WATER), "Water"));
 		self::register(new WaterLily(new BID(Block::LILY_PAD), "Lily Pad"));
 		self::register(new WeightedPressurePlateHeavy(new BID(Block::HEAVY_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Heavy"));
 		self::register(new WeightedPressurePlateLight(new BID(Block::LIGHT_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Light"));
@@ -322,6 +329,7 @@ class BlockFactory{
 			self::register(new Planks(new BID(Block::PLANKS, $magicNumber), $name . " Planks"));
 			self::register(new Sapling(new BID(Block::SAPLING, $magicNumber), $name . " Sapling", $treeType));
 			self::register(new WoodenFence(new BID(Block::FENCE, $magicNumber), $name . " Fence"));
+			self::register(new WoodenSlab(new BlockIdentifierFlattened(Block::WOODEN_SLAB, Block::DOUBLE_WOODEN_SLAB, $treeType->getMagicNumber()), $treeType->getDisplayName()));
 
 			//TODO: find a better way to deal with this split
 			self::register(new Leaves(new BID($magicNumber >= 4 ? Block::LEAVES2 : Block::LEAVES, $magicNumber & 0x03), $name . " Leaves", $treeType));
@@ -350,33 +358,6 @@ class BlockFactory{
 			self::register(new HardenedGlass(new BID(Block::HARD_STAINED_GLASS, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass"));
 			self::register(new HardenedGlassPane(new BID(Block::HARD_STAINED_GLASS_PANE, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass Pane"));
 			self::register(new Wool(new BID(Block::WOOL, $color->getMagicNumber()), $color->getDisplayName() . " Wool"));
-		}
-
-		/** @var Slab[] $slabTypes */
-		$slabTypes = [
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 0), "Stone"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 1), "Sandstone"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 2), "Fake Wooden"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 3), "Cobblestone"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 4), "Brick"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 5), "Stone Brick"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 6), "Quartz"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB, Block::DOUBLE_STONE_SLAB, 7), "Nether Brick"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 0), "Red Sandstone"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 1), "Purpur"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 2), "Prismarine"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 3), "Dark Prismarine"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 4), "Prismarine Bricks"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 5), "Mossy Cobblestone"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 6), "Smooth Sandstone"),
-			new StoneSlab(new BlockIdentifierFlattened(Block::STONE_SLAB2, Block::DOUBLE_STONE_SLAB2, 7), "Red Nether Brick")
-		];
-		foreach(TreeType::getAll() as $woodType){
-			$slabTypes[] = new WoodenSlab(new BlockIdentifierFlattened(Block::WOODEN_SLAB, Block::DOUBLE_WOODEN_SLAB, $woodType->getMagicNumber()), $woodType->getDisplayName());
-		}
-		foreach($slabTypes as $type){
-			self::register($type);
-			self::register((clone $type)->setSlabType(SlabType::DOUBLE())); //flattening hack
 		}
 
 		static $wallTypes = [
@@ -533,7 +514,6 @@ class BlockFactory{
 	 * $override parameter.
 	 */
 	public static function register(Block $block, bool $override = false) : void{
-		$id = $block->getId();
 		$variant = $block->getIdInfo()->getVariant();
 
 		$stateMask = $block->getStateBitmask();
@@ -541,36 +521,38 @@ class BlockFactory{
 			throw new \InvalidArgumentException("Block variant collides with state bitmask");
 		}
 
-		if(!$override and self::isRegistered($id, $variant)){
-			throw new \InvalidArgumentException("Block registration $id:$variant conflicts with an existing block");
-		}
-
-		for($m = $variant; $m <= ($variant | $stateMask); ++$m){
-			if(($m & ~$stateMask) !== $variant){
-				continue;
+		foreach($block->getIdInfo()->getAllBlockIds() as $id){
+			if(!$override and self::isRegistered($id, $variant)){
+				throw new \InvalidArgumentException("Block registration $id:$variant conflicts with an existing block");
 			}
 
-			if(!$override and self::isRegistered($id, $m)){
-				throw new \InvalidArgumentException("Block registration " . get_class($block) . " has states which conflict with other blocks");
-			}
-
-			$index = ($id << 4) | $m;
-
-			$v = clone $block;
-			try{
-				$v->readStateFromMeta($m & $stateMask);
-				if($v->getDamage() !== $m){
-					throw new InvalidBlockStateException("Corrupted meta"); //don't register anything that isn't the same when we read it back again
+			for($m = $variant; $m <= ($variant | $stateMask); ++$m){
+				if(($m & ~$stateMask) !== $variant){
+					continue;
 				}
-			}catch(InvalidBlockStateException $e){ //invalid property combination
-				continue;
+
+				if(!$override and self::isRegistered($id, $m)){
+					throw new \InvalidArgumentException("Block registration " . get_class($block) . " has states which conflict with other blocks");
+				}
+
+				$index = ($id << 4) | $m;
+
+				$v = clone $block;
+				try{
+					$v->readStateFromData($id, $m & $stateMask);
+					if($v->getDamage() !== $m){
+						throw new InvalidBlockStateException("Corrupted meta"); //don't register anything that isn't the same when we read it back again
+					}
+				}catch(InvalidBlockStateException $e){ //invalid property combination
+					continue;
+				}
+
+				self::fillStaticArrays($index, $v);
 			}
 
-			self::fillStaticArrays($index, $v);
-		}
-
-		if(!self::isRegistered($id, $variant)){
-			self::fillStaticArrays(($id << 4) | $variant, $block); //register default state mapped to variant, for blocks which don't use 0 as valid state
+			if(!self::isRegistered($id, $variant)){
+				self::fillStaticArrays(($id << 4) | $variant, $block); //register default state mapped to variant, for blocks which don't use 0 as valid state
+			}
 		}
 	}
 

@@ -41,10 +41,10 @@ abstract class Button extends Flowable{
 		return $this->facing | ($this->powered ? 0x08 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
+	public function readStateFromData(int $id, int $stateMeta) : void{
 		//TODO: in PC it's (6 - facing) for every meta except 0 (down)
-		$this->facing = BlockDataValidator::readFacing($meta & 0x07);
-		$this->powered = ($meta & 0x08) !== 0;
+		$this->facing = BlockDataValidator::readFacing($stateMeta & 0x07);
+		$this->powered = ($stateMeta & 0x08) !== 0;
 	}
 
 	public function getStateBitmask() : int{

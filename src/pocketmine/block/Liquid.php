@@ -71,9 +71,10 @@ abstract class Liquid extends Transparent{
 		return $this->decay | ($this->falling ? 0x08 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->decay = BlockDataValidator::readBoundedInt("decay", $meta & 0x07, 0, 7);
-		$this->falling = ($meta & 0x08) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->decay = BlockDataValidator::readBoundedInt("decay", $stateMeta & 0x07, 0, 7);
+		$this->falling = ($stateMeta & 0x08) !== 0;
+		$this->still = $id === $this->idInfo->getSecondId();
 	}
 
 	public function getStateBitmask() : int{

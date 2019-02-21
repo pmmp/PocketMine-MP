@@ -42,12 +42,12 @@ class EndRod extends Flowable{
 		return $this->facing ^ 1; //TODO: in PC this is always the same as facing, just PE is stupid
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		if($meta !== 0 and $meta !== 1){
-			$meta ^= 1;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		if($stateMeta !== 0 and $stateMeta !== 1){
+			$stateMeta ^= 1;
 		}
 
-		$this->facing = BlockDataValidator::readFacing($meta);
+		$this->facing = BlockDataValidator::readFacing($stateMeta);
 	}
 
 	public function getStateBitmask() : int{

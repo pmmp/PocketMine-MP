@@ -30,8 +30,8 @@ class RedstoneWire extends Flowable{
 	/** @var int */
 	protected $power = 0;
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->power = BlockDataValidator::readBoundedInt("power", $meta, 0, 15);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->power = BlockDataValidator::readBoundedInt("power", $stateMeta, 0, 15);
 	}
 
 	protected function writeStateToMeta() : int{

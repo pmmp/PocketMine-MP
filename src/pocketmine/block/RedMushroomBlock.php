@@ -41,8 +41,8 @@ class RedMushroomBlock extends Solid{
 		return $this->rotationData;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->rotationData = $meta;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->rotationData = $stateMeta;
 	}
 
 	public function getStateBitmask() : int{

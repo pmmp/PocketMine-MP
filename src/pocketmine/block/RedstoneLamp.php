@@ -39,6 +39,10 @@ class RedstoneLamp extends Solid{
 		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
 	}
 
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->lit = $id === $this->idInfo->getSecondId();
+	}
+
 	public function isLit() : bool{
 		return $this->lit;
 	}

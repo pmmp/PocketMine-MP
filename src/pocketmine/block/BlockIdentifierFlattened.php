@@ -39,4 +39,8 @@ class BlockIdentifierFlattened extends BlockIdentifier{
 	public function getSecondId() : int{
 		return $this->secondId;
 	}
+
+	public function getAllBlockIds() : array{
+		return [$this->getBlockId(), $this->getSecondId()];
+	}
 }

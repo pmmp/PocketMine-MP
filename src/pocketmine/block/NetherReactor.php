@@ -40,8 +40,8 @@ class NetherReactor extends Solid{
 		return $this->state;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->state = BlockDataValidator::readBoundedInt("state", $meta, 0, 2);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->state = BlockDataValidator::readBoundedInt("state", $stateMeta, 0, 2);
 	}
 
 	public function getStateBitmask() : int{

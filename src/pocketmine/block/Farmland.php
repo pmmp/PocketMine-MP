@@ -38,8 +38,8 @@ class Farmland extends Transparent{
 		return $this->wetness;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->wetness = BlockDataValidator::readBoundedInt("wetness", $meta, 0, 7);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->wetness = BlockDataValidator::readBoundedInt("wetness", $stateMeta, 0, 7);
 	}
 
 	public function getStateBitmask() : int{

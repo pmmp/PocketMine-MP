@@ -56,14 +56,14 @@ abstract class Door extends Transparent{
 		return Bearing::fromFacing(Facing::rotateY($this->facing, true)) | ($this->open ? 0x04 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->top = $meta & 0x08;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->top = $stateMeta & 0x08;
 		if($this->top){
-			$this->hingeRight = ($meta & 0x01) !== 0;
-			$this->powered = ($meta & 0x02) !== 0;
+			$this->hingeRight = ($stateMeta & 0x01) !== 0;
+			$this->powered = ($stateMeta & 0x02) !== 0;
 		}else{
-			$this->facing = Facing::rotateY(BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03), false);
-			$this->open = ($meta & 0x04) !== 0;
+			$this->facing = Facing::rotateY(BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03), false);
+			$this->open = ($stateMeta & 0x04) !== 0;
 		}
 	}
 

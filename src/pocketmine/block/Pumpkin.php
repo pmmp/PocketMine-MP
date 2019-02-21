@@ -35,8 +35,8 @@ class Pumpkin extends Solid{
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
 	}
 
 	protected function writeStateToMeta() : int{

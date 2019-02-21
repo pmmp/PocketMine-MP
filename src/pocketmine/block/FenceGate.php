@@ -44,10 +44,10 @@ class FenceGate extends Transparent{
 		return Bearing::fromFacing($this->facing) | ($this->open ? 0x04 : 0) | ($this->inWall ? 0x08 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03);
-		$this->open = ($meta & 0x04) !== 0;
-		$this->inWall = ($meta & 0x08) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->open = ($stateMeta & 0x04) !== 0;
+		$this->inWall = ($stateMeta & 0x08) !== 0;
 	}
 
 	public function getStateBitmask() : int{

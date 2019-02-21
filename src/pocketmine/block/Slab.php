@@ -53,9 +53,11 @@ abstract class Slab extends Transparent{
 		return 0;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		if($this->slabType !== SlabType::DOUBLE()){
-			$this->slabType = ($meta & 0x08) !== 0 ? SlabType::TOP() : SlabType::BOTTOM();
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		if($id === $this->idInfo->getSecondId()){
+			$this->slabType = SlabType::DOUBLE();
+		}else{
+			$this->slabType = ($stateMeta & 0x08) !== 0 ? SlabType::TOP() : SlabType::BOTTOM();
 		}
 	}
 

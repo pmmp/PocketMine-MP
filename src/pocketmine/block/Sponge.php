@@ -33,8 +33,8 @@ class Sponge extends Solid{
 		return $this->wet ? 1 : 0;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->wet = $meta !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->wet = $stateMeta !== 0;
 	}
 
 	public function getStateBitmask() : int{

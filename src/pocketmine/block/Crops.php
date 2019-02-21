@@ -39,8 +39,8 @@ abstract class Crops extends Flowable{
 		return $this->age;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->age = BlockDataValidator::readBoundedInt("age", $meta, 0, 7);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->age = BlockDataValidator::readBoundedInt("age", $stateMeta, 0, 7);
 	}
 
 	public function getStateBitmask() : int{

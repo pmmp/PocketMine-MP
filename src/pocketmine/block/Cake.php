@@ -42,8 +42,8 @@ class Cake extends Transparent implements FoodSource{
 		return $this->bites;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->bites = BlockDataValidator::readBoundedInt("bites", $meta, 0, 6);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->bites = BlockDataValidator::readBoundedInt("bites", $stateMeta, 0, 6);
 	}
 
 	public function getStateBitmask() : int{

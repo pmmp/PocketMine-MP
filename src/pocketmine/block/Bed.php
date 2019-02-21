@@ -61,10 +61,10 @@ class Bed extends Transparent{
 			($this->head ? self::BITFLAG_HEAD : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03);
-		$this->occupied = ($meta & self::BITFLAG_OCCUPIED) !== 0;
-		$this->head = ($meta & self::BITFLAG_HEAD) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->occupied = ($stateMeta & self::BITFLAG_OCCUPIED) !== 0;
+		$this->head = ($stateMeta & self::BITFLAG_HEAD) !== 0;
 	}
 
 	public function getStateBitmask() : int{

@@ -46,8 +46,8 @@ class SnowLayer extends Flowable implements Fallable{
 		return $this->layers - 1;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->layers = BlockDataValidator::readBoundedInt("layers", $meta + 1, 1, 8);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->layers = BlockDataValidator::readBoundedInt("layers", $stateMeta + 1, 1, 8);
 	}
 
 	public function getStateBitmask() : int{

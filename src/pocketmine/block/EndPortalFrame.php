@@ -42,9 +42,9 @@ class EndPortalFrame extends Solid{
 		return Bearing::fromFacing($this->facing) | ($this->eye ? 0x04 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03);
-		$this->eye = ($meta & 0x04) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->eye = ($stateMeta & 0x04) !== 0;
 	}
 
 	public function getStateBitmask() : int{

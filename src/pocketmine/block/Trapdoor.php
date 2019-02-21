@@ -46,12 +46,12 @@ class Trapdoor extends Transparent{
 		return (5 - $this->facing) | ($this->top ? self::MASK_UPPER : 0) | ($this->open ? self::MASK_OPENED : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
+	public function readStateFromData(int $id, int $stateMeta) : void{
 		//TODO: in PC the values are reversed (facing - 2)
 
-		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($meta & 0x03));
-		$this->top = ($meta & self::MASK_UPPER) !== 0;
-		$this->open = ($meta & self::MASK_OPENED) !== 0;
+		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($stateMeta & 0x03));
+		$this->top = ($stateMeta & self::MASK_UPPER) !== 0;
+		$this->open = ($stateMeta & self::MASK_OPENED) !== 0;
 	}
 
 	public function getStateBitmask() : int{

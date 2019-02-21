@@ -48,8 +48,8 @@ class Sapling extends Flowable{
 		return ($this->ready ? 0x08 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->ready = ($meta & 0x08) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->ready = ($stateMeta & 0x08) !== 0;
 	}
 
 	public function getStateBitmask() : int{

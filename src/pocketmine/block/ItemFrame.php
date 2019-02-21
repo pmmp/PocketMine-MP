@@ -42,9 +42,9 @@ class ItemFrame extends Flowable{
 		return (5 - $this->facing) | ($this->hasMap ? 0x04 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($meta & 0x03));
-		$this->hasMap = ($meta & 0x04) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($stateMeta & 0x03));
+		$this->hasMap = ($stateMeta & 0x04) !== 0;
 	}
 
 	public function getStateBitmask() : int{

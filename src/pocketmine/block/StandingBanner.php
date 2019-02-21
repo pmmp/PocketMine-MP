@@ -42,8 +42,8 @@ class StandingBanner extends Transparent{
 		return $this->rotation;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->rotation = $meta;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->rotation = $stateMeta;
 	}
 
 	public function getStateBitmask() : int{

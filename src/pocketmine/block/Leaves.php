@@ -51,9 +51,9 @@ class Leaves extends Transparent{
 		return ($this->noDecay ? 0x04 : 0) | ($this->checkDecay ? 0x08 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->noDecay = ($meta & 0x04) !== 0;
-		$this->checkDecay = ($meta & 0x08) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->noDecay = ($stateMeta & 0x04) !== 0;
+		$this->checkDecay = ($stateMeta & 0x08) !== 0;
 	}
 
 	public function getStateBitmask() : int{

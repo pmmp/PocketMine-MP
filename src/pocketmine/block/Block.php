@@ -133,10 +133,12 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @param int $meta
+	 * @param int $id
+	 * @param int $stateMeta
+	 *
 	 * @throws InvalidBlockStateException
 	 */
-	public function readStateFromMeta(int $meta) : void{
+	public function readStateFromData(int $id, int $stateMeta) : void{
 		//NOOP
 	}
 
@@ -176,7 +178,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Returns whether the given block has an equivalent type to this one.
+	 * Returns whether the given block has an equivalent type to this one. This compares base legacy ID and variant.
+	 *
+	 * Note: This ignores additional IDs used to represent additional states. This means that, for example, a lit
+	 * furnace and unlit furnace are considered the same type.
 	 *
 	 * @param Block $other
 	 *

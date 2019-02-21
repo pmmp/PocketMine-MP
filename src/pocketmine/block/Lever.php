@@ -53,8 +53,8 @@ class Lever extends Flowable{
 		return $rotationMeta | ($this->powered ? 0x08 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$rotationMeta = $meta & 0x07;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$rotationMeta = $stateMeta & 0x07;
 		if($rotationMeta === 5 or $rotationMeta === 6){
 			$this->position = self::TOP;
 			$this->facing = $rotationMeta === 5 ? Facing::SOUTH : Facing::EAST;
@@ -66,7 +66,7 @@ class Lever extends Flowable{
 			$this->facing = BlockDataValidator::readHorizontalFacing(6 - $rotationMeta);
 		}
 
-		$this->powered = ($meta & 0x08) !== 0;
+		$this->powered = ($stateMeta & 0x08) !== 0;
 	}
 
 	public function getStateBitmask() : int{

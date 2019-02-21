@@ -43,11 +43,13 @@ trait PillarRotationTrait{
 	}
 
 	/**
-	 * @see Block::readStateFromMeta()
-	 * @param int $meta
+	 * @see Block::readStateFromData()
+	 *
+	 * @param int $id
+	 * @param int $stateMeta
 	 */
-	public function readStateFromMeta(int $meta) : void{
-		$this->readAxisFromMeta($meta);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->readAxisFromMeta($stateMeta);
 	}
 
 	/**

@@ -39,10 +39,10 @@ class Tripwire extends Flowable{
 		return ($this->triggered ? 0x01 : 0) | ($this->connected ? 0x04 : 0) | ($this->disarmed ? 0x08 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->triggered = ($meta & 0x01) !== 0;
-		$this->connected = ($meta & 0x04) !== 0;
-		$this->disarmed = ($meta & 0x08) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->triggered = ($stateMeta & 0x01) !== 0;
+		$this->connected = ($stateMeta & 0x04) !== 0;
+		$this->disarmed = ($stateMeta & 0x08) !== 0;
 	}
 
 	public function getStateBitmask() : int{

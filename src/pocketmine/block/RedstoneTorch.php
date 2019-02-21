@@ -39,6 +39,11 @@ class RedstoneTorch extends Torch{
 		return $this->lit ? parent::getId() : $this->idInfo->getSecondId();
 	}
 
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		parent::readStateFromData($id, $stateMeta);
+		$this->lit = $id !== $this->idInfo->getSecondId();
+	}
+
 	public function isLit() : bool{
 		return $this->lit;
 	}

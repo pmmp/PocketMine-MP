@@ -35,8 +35,8 @@ class WallSign extends SignPost{
 		return $this->facing;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->facing = BlockDataValidator::readHorizontalFacing($meta);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = BlockDataValidator::readHorizontalFacing($stateMeta);
 	}
 
 	public function getStateBitmask() : int{

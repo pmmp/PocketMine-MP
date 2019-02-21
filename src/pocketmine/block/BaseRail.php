@@ -87,10 +87,10 @@ abstract class BaseRail extends Flowable{
 		return $this->getMetaForState($this->connections);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$connections = $this->getConnectionsFromMeta($meta);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$connections = $this->getConnectionsFromMeta($stateMeta);
 		if($connections === null){
-			throw new InvalidBlockStateException("Invalid rail type meta $meta");
+			throw new InvalidBlockStateException("Invalid rail type meta $stateMeta");
 		}
 		$this->connections = $connections;
 	}

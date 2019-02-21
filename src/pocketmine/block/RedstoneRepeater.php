@@ -50,9 +50,10 @@ class RedstoneRepeater extends Flowable{
 		return $this->powered ? $this->idInfo->getSecondId() : parent::getId();
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03);
-		$this->delay = BlockDataValidator::readBoundedInt("delay", ($meta >> 2) + 1, 1, 4);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->delay = BlockDataValidator::readBoundedInt("delay", ($stateMeta >> 2) + 1, 1, 4);
+		$this->powered = $id === $this->idInfo->getSecondId();
 	}
 
 	public function writeStateToMeta() : int{

@@ -34,8 +34,8 @@ class StonePressurePlate extends Transparent{
 		return $this->powered ? 1 : 0;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->powered = $meta !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->powered = $stateMeta !== 0;
 	}
 
 	public function getStateBitmask() : int{

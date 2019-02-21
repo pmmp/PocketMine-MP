@@ -38,10 +38,10 @@ class BrewingStand extends Transparent{
 		return ($this->eastSlot ? 0x01 : 0) | ($this->southwestSlot ? 0x02 : 0) | ($this->northwestSlot ? 0x04 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->eastSlot = ($meta & 0x01) !== 0;
-		$this->southwestSlot = ($meta & 0x02) !== 0;
-		$this->northwestSlot = ($meta & 0x04) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->eastSlot = ($stateMeta & 0x01) !== 0;
+		$this->southwestSlot = ($stateMeta & 0x02) !== 0;
+		$this->northwestSlot = ($stateMeta & 0x04) !== 0;
 	}
 
 	public function getStateBitmask() : int{

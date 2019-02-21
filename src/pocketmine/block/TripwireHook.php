@@ -43,10 +43,10 @@ class TripwireHook extends Flowable{
 		return Bearing::fromFacing($this->facing) | ($this->connected ? 0x04 : 0) | ($this->powered ? 0x08 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03);
-		$this->connected = ($meta & 0x04) !== 0;
-		$this->powered = ($meta & 0x08) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->connected = ($stateMeta & 0x04) !== 0;
+		$this->powered = ($stateMeta & 0x08) !== 0;
 	}
 
 	public function getStateBitmask() : int{

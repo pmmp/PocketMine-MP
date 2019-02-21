@@ -49,6 +49,13 @@ class BlockIdentifier{
 	}
 
 	/**
+	 * @return int[]
+	 */
+	public function getAllBlockIds() : array{
+		return [$this->blockId];
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getVariant() : int{

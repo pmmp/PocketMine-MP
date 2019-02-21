@@ -52,8 +52,9 @@ class DaylightSensor extends Transparent{
 		return $this->power;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->power = BlockDataValidator::readBoundedInt("power", $meta, 0, 15);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->power = BlockDataValidator::readBoundedInt("power", $stateMeta, 0, 15);
+		$this->inverted = $id === $this->idInfo->getSecondId();
 	}
 
 	public function getStateBitmask() : int{

@@ -39,8 +39,8 @@ class DoublePlant extends Flowable{
 		return ($this->top ? self::BITFLAG_TOP : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->top = ($meta & self::BITFLAG_TOP) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->top = ($stateMeta & self::BITFLAG_TOP) !== 0;
 	}
 
 	public function getStateBitmask() : int{

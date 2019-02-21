@@ -46,8 +46,8 @@ class Skull extends Flowable{
 		return $this->facing;
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->facing = $meta === 1 ? Facing::UP : BlockDataValidator::readHorizontalFacing($meta);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = $stateMeta === 1 ? Facing::UP : BlockDataValidator::readHorizontalFacing($stateMeta);
 	}
 
 	public function getStateBitmask() : int{

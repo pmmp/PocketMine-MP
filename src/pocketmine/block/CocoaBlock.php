@@ -45,9 +45,9 @@ class CocoaBlock extends Transparent{
 		return Bearing::fromFacing(Facing::opposite($this->facing)) | ($this->age << 2);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->facing = Facing::opposite(BlockDataValidator::readLegacyHorizontalFacing($meta & 0x03));
-		$this->age = BlockDataValidator::readBoundedInt("age", $meta >> 2, 0, 2);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = Facing::opposite(BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03));
+		$this->age = BlockDataValidator::readBoundedInt("age", $stateMeta >> 2, 0, 2);
 	}
 
 	public function getStateBitmask() : int{

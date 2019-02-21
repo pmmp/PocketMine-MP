@@ -48,9 +48,9 @@ abstract class Stair extends Transparent{
 		return (5 - $this->facing) | ($this->upsideDown ? 0x04 : 0);
 	}
 
-	public function readStateFromMeta(int $meta) : void{
-		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($meta & 0x03));
-		$this->upsideDown = ($meta & 0x04) !== 0;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($stateMeta & 0x03));
+		$this->upsideDown = ($stateMeta & 0x04) !== 0;
 	}
 
 	public function getStateBitmask() : int{
