@@ -3,6 +3,7 @@ worlds/*
 plugin_data/*
 plugins/*
 bin*/*
+maps/*
 timings/*
 crashdumps/*
 *.log
@@ -10,6 +11,7 @@ crashdumps/*
 *.phar
 server.properties
 /pocketmine.yml
+/altay.yml
 memory_dumps/*
 resource_packs/
 
