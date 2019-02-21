@@ -215,7 +215,7 @@ class BlockFactory{
 		self::register(new Redstone(new BID(Block::REDSTONE_BLOCK), "Redstone Block"));
 		self::register(new RedstoneLamp(new BlockIdentifierFlattened(Block::REDSTONE_LAMP, Block::LIT_REDSTONE_LAMP), "Redstone Lamp"));
 		self::register(new RedstoneOre(new BlockIdentifierFlattened(Block::REDSTONE_ORE, Block::LIT_REDSTONE_ORE), "Redstone Ore"));
-		self::register(new RedstoneRepeater(new BlockIdentifierFlattened(Block::UNPOWERED_REPEATER, Block::POWERED_REPEATER, 0, ItemIds::REPEATER), "Redstne Repeater"));
+		self::register(new RedstoneRepeater(new BlockIdentifierFlattened(Block::UNPOWERED_REPEATER, Block::POWERED_REPEATER, 0, ItemIds::REPEATER), "Redstone Repeater"));
 		self::register(new RedstoneTorch(new BlockIdentifierFlattened(Block::REDSTONE_TORCH, Block::UNLIT_REDSTONE_TORCH), "Redstone Torch"));
 		self::register(new RedstoneWire(new BID(Block::REDSTONE_WIRE, 0, ItemIds::REDSTONE), "Redstone"));
 		self::register(new Reserved6(new BID(Block::RESERVED6), "reserved6"));
