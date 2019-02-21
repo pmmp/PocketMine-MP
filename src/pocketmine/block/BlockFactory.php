@@ -127,12 +127,6 @@ class BlockFactory{
 		self::register(new EndStoneBricks(new BID(Block::END_BRICKS), "End Stone Bricks"));
 		self::register(new EnderChest(new BID(Block::ENDER_CHEST, 0, null, \pocketmine\tile\EnderChest::class), "Ender Chest"));
 		self::register(new Farmland(new BID(Block::FARMLAND), "Farmland"));
-		self::register(new FenceGate(new BID(Block::ACACIA_FENCE_GATE), "Acacia Fence Gate"));
-		self::register(new FenceGate(new BID(Block::BIRCH_FENCE_GATE), "Birch Fence Gate"));
-		self::register(new FenceGate(new BID(Block::DARK_OAK_FENCE_GATE), "Dark Oak Fence Gate"));
-		self::register(new FenceGate(new BID(Block::OAK_FENCE_GATE), "Oak Fence Gate"));
-		self::register(new FenceGate(new BID(Block::JUNGLE_FENCE_GATE), "Jungle Fence Gate"));
-		self::register(new FenceGate(new BID(Block::SPRUCE_FENCE_GATE), "Spruce Fence Gate"));
 		self::register(new Fire(new BID(Block::FIRE), "Fire Block"));
 		self::register(new Flower(new BID(Block::RED_FLOWER, Flower::TYPE_ALLIUM), "Allium"));
 		self::register(new Flower(new BID(Block::RED_FLOWER, Flower::TYPE_AZURE_BLUET), "Azure Bluet"));
@@ -149,22 +143,6 @@ class BlockFactory{
 		self::register(new Furnace(new BlockIdentifierFlattened(Block::FURNACE, Block::LIT_FURNACE, 0, null, \pocketmine\tile\Furnace::class), "Furnace"));
 		self::register(new Glass(new BID(Block::GLASS), "Glass"));
 		self::register(new GlassPane(new BID(Block::GLASS_PANE), "Glass Pane"));
-		self::register(new GlazedTerracotta(new BID(Block::BLACK_GLAZED_TERRACOTTA), "Black Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::BLUE_GLAZED_TERRACOTTA), "Blue Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::BROWN_GLAZED_TERRACOTTA), "Brown Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::CYAN_GLAZED_TERRACOTTA), "Cyan Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::GRAY_GLAZED_TERRACOTTA), "Grey Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::GREEN_GLAZED_TERRACOTTA), "Green Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::LIGHT_BLUE_GLAZED_TERRACOTTA), "Light Blue Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::LIME_GLAZED_TERRACOTTA), "Lime Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::MAGENTA_GLAZED_TERRACOTTA), "Magenta Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::ORANGE_GLAZED_TERRACOTTA), "Orange Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::PINK_GLAZED_TERRACOTTA), "Pink Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::PURPLE_GLAZED_TERRACOTTA), "Purple Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::RED_GLAZED_TERRACOTTA), "Red Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::SILVER_GLAZED_TERRACOTTA), "Light Grey Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::WHITE_GLAZED_TERRACOTTA), "White Glazed Terracotta"));
-		self::register(new GlazedTerracotta(new BID(Block::YELLOW_GLAZED_TERRACOTTA), "Yellow Glazed Terracotta"));
 		self::register(new GlowingObsidian(new BID(Block::GLOWINGOBSIDIAN), "Glowing Obsidian"));
 		self::register(new Glowstone(new BID(Block::GLOWSTONE), "Glowstone"));
 		self::register(new Gold(new BID(Block::GOLD_BLOCK), "Gold Block"));
@@ -309,19 +287,34 @@ class BlockFactory{
 		self::register(new WeightedPressurePlateLight(new BID(Block::LIGHT_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Light"));
 		self::register(new Wheat(new BID(Block::WHEAT_BLOCK), "Wheat Block"));
 		self::register(new WoodenButton(new BID(Block::WOODEN_BUTTON), "Wooden Button"));
-		self::register(new WoodenDoor(new BID(Block::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR), "Acacia Door"));
-		self::register(new WoodenDoor(new BID(Block::BIRCH_DOOR_BLOCK, 0, ItemIds::BIRCH_DOOR), "Birch Door"));
-		self::register(new WoodenDoor(new BID(Block::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR), "Dark Oak Door"));
-		self::register(new WoodenDoor(new BID(Block::JUNGLE_DOOR_BLOCK, 0, ItemIds::JUNGLE_DOOR), "Jungle Door"));
-		self::register(new WoodenDoor(new BID(Block::OAK_DOOR_BLOCK, 0, ItemIds::OAK_DOOR), "Oak Door"));
-		self::register(new WoodenDoor(new BID(Block::SPRUCE_DOOR_BLOCK, 0, ItemIds::SPRUCE_DOOR), "Spruce Door"));
 		self::register(new WoodenPressurePlate(new BID(Block::WOODEN_PRESSURE_PLATE), "Wooden Pressure Plate"));
-		self::register(new WoodenStairs(new BID(Block::ACACIA_STAIRS), "Acacia Stairs"));
-		self::register(new WoodenStairs(new BID(Block::BIRCH_STAIRS), "Birch Stairs"));
-		self::register(new WoodenStairs(new BID(Block::DARK_OAK_STAIRS), "Dark Oak Stairs"));
-		self::register(new WoodenStairs(new BID(Block::JUNGLE_STAIRS), "Jungle Stairs"));
-		self::register(new WoodenStairs(new BID(Block::OAK_STAIRS), "Oak Stairs"));
-		self::register(new WoodenStairs(new BID(Block::SPRUCE_STAIRS), "Spruce Stairs"));
+
+		/** @var int[]|\SplObjectStorage $woodenStairIds */
+		$woodenStairIds = new \SplObjectStorage();
+		$woodenStairIds[TreeType::OAK()] = Block::OAK_STAIRS;
+		$woodenStairIds[TreeType::SPRUCE()] = Block::SPRUCE_STAIRS;
+		$woodenStairIds[TreeType::BIRCH()] = Block::BIRCH_STAIRS;
+		$woodenStairIds[TreeType::JUNGLE()] = Block::JUNGLE_STAIRS;
+		$woodenStairIds[TreeType::ACACIA()] = Block::ACACIA_STAIRS;
+		$woodenStairIds[TreeType::DARK_OAK()] = Block::DARK_OAK_STAIRS;
+
+		/** @var int[]|\SplObjectStorage $fenceGateIds */
+		$fenceGateIds = new \SplObjectStorage();
+		$fenceGateIds[TreeType::OAK()] = Block::OAK_FENCE_GATE;
+		$fenceGateIds[TreeType::SPRUCE()] = Block::SPRUCE_FENCE_GATE;
+		$fenceGateIds[TreeType::BIRCH()] = Block::BIRCH_FENCE_GATE;
+		$fenceGateIds[TreeType::JUNGLE()] = Block::JUNGLE_FENCE_GATE;
+		$fenceGateIds[TreeType::ACACIA()] = Block::ACACIA_FENCE_GATE;
+		$fenceGateIds[TreeType::DARK_OAK()] = Block::DARK_OAK_FENCE_GATE;
+
+		/** @var BID[]|\SplObjectStorage $woodenDoorIds */
+		$woodenDoorIds = new \SplObjectStorage();
+		$woodenDoorIds[TreeType::OAK()] = new BID(Block::OAK_DOOR_BLOCK, 0, ItemIds::OAK_DOOR);
+		$woodenDoorIds[TreeType::SPRUCE()] = new BID(Block::SPRUCE_DOOR_BLOCK, 0, ItemIds::SPRUCE_DOOR);
+		$woodenDoorIds[TreeType::BIRCH()] = new BID(Block::BIRCH_DOOR_BLOCK, 0, ItemIds::BIRCH_DOOR);
+		$woodenDoorIds[TreeType::JUNGLE()] = new BID(Block::JUNGLE_DOOR_BLOCK, 0, ItemIds::JUNGLE_DOOR);
+		$woodenDoorIds[TreeType::ACACIA()] = new BID(Block::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR);
+		$woodenDoorIds[TreeType::DARK_OAK()] = new BID(Block::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR);
 
 		foreach(TreeType::getAll() as $treeType){
 			$magicNumber = $treeType->getMagicNumber();
@@ -335,6 +328,10 @@ class BlockFactory{
 			self::register(new Leaves(new BID($magicNumber >= 4 ? Block::LEAVES2 : Block::LEAVES, $magicNumber & 0x03), $name . " Leaves", $treeType));
 			self::register(new Log(new BID($magicNumber >= 4 ? Block::WOOD2 : Block::WOOD, $magicNumber & 0x03), $name . " Log", $treeType));
 			self::register(new Wood(new BID($magicNumber >= 4 ? Block::WOOD2 : Block::WOOD, ($magicNumber & 0x03) | 0b1100), $name . " Wood", $treeType));
+
+			self::register(new FenceGate(new BID($fenceGateIds[$treeType]), $treeType->getDisplayName() . " Fence Gate"));
+			self::register(new WoodenStairs(new BID($woodenStairIds[$treeType]), $treeType->getDisplayName() . " Stairs"));
+			self::register(new WoodenDoor($woodenDoorIds[$treeType], $treeType->getDisplayName() . " Door"));
 		}
 
 		static $sandstoneTypes = [
@@ -348,12 +345,32 @@ class BlockFactory{
 			self::register(new Sandstone(new BID(Block::RED_SANDSTONE, $variant), $prefix . "Red Sandstone"));
 		}
 
+		/** @var int[]|\SplObjectStorage $glazedTerracottaIds */
+		$glazedTerracottaIds = new \SplObjectStorage();
+		$glazedTerracottaIds[DyeColor::WHITE()] = Block::WHITE_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::ORANGE()] = Block::ORANGE_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::MAGENTA()] = Block::MAGENTA_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::LIGHT_BLUE()] = Block::LIGHT_BLUE_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::YELLOW()] = Block::YELLOW_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::LIME()] = Block::LIME_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::PINK()] = Block::PINK_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::GRAY()] = Block::GRAY_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::LIGHT_GRAY()] = Block::SILVER_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::CYAN()] = Block::CYAN_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::PURPLE()] = Block::PURPLE_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::BLUE()] = Block::BLUE_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::BROWN()] = Block::BROWN_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::GREEN()] = Block::GREEN_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::RED()] = Block::RED_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::BLACK()] = Block::BLACK_GLAZED_TERRACOTTA;
+
 		foreach(DyeColor::getAll() as $color){
 			self::register(new Carpet(new BID(Block::CARPET, $color->getMagicNumber()), $color->getDisplayName() . " Carpet"));
 			self::register(new Concrete(new BID(Block::CONCRETE, $color->getMagicNumber()), $color->getDisplayName() . " Concrete"));
 			self::register(new ConcretePowder(new BID(Block::CONCRETE_POWDER, $color->getMagicNumber()), $color->getDisplayName() . " Concrete Powder"));
 			self::register(new Glass(new BID(Block::STAINED_GLASS, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass"));
 			self::register(new GlassPane(new BID(Block::STAINED_GLASS_PANE, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass Pane"));
+			self::register(new GlazedTerracotta(new BID($glazedTerracottaIds[$color]), $color->getDisplayName() . " Glazed Terracotta"));
 			self::register(new HardenedClay(new BID(Block::STAINED_CLAY, $color->getMagicNumber()), $color->getDisplayName() . " Stained Clay"));
 			self::register(new HardenedGlass(new BID(Block::HARD_STAINED_GLASS, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass"));
 			self::register(new HardenedGlassPane(new BID(Block::HARD_STAINED_GLASS_PANE, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass Pane"));
