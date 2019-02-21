@@ -25,7 +25,4 @@ namespace pocketmine\block;
 
 class MyCustomBlock extends Cobblestone{
 
-	public function getName() : string{
-		return "MyCobblestone";
-	}
 }
