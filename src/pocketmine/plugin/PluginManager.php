@@ -80,12 +80,15 @@ class PluginManager{
 
 	/** @var string|null */
 	private $pluginDataDirectory;
+	/** @var PluginGraylist|null */
+	private $graylist;
 
 	/**
-	 * @param Server      $server
-	 * @param null|string $pluginDataDirectory
+	 * @param Server              $server
+	 * @param null|string         $pluginDataDirectory
+	 * @param PluginGraylist|null $graylist
 	 */
-	public function __construct(Server $server, ?string $pluginDataDirectory){
+	public function __construct(Server $server, ?string $pluginDataDirectory, ?PluginGraylist $graylist = null){
 		$this->server = $server;
 		$this->pluginDataDirectory = $pluginDataDirectory;
 		if($this->pluginDataDirectory !== null){
@@ -95,6 +98,8 @@ class PluginManager{
 				throw new \RuntimeException("Plugin data path $this->pluginDataDirectory exists and is not a directory");
 			}
 		}
+
+		$this->graylist = $graylist;
 	}
 
 	/**
@@ -265,6 +270,13 @@ class PluginManager{
 					}
 				}
 
+				if($this->graylist !== null and !$this->graylist->isAllowed($name)){
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+						$name,
+						$this->server->getLanguage()->translateString("Disallowed by graylist")
+					]));
+					continue;
+				}
 				$plugins[$name] = $file;
 
 				$softDependencies[$name] = $description->getSoftDepend();
