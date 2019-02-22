@@ -259,7 +259,7 @@ class LevelManager{
 	 * @return bool
 	 * @throws \InvalidArgumentException
 	 */
-	public function generateLevel(string $name, int $seed = null, string $generator = Normal::class, array $options = [], bool $backgroundGeneration = true) : bool{
+	public function generateLevel(string $name, ?int $seed = null, string $generator = Normal::class, array $options = [], bool $backgroundGeneration = true) : bool{
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
 			return false;
 		}

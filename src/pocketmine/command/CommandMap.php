@@ -39,7 +39,7 @@ interface CommandMap{
 	 *
 	 * @return bool
 	 */
-	public function register(string $fallbackPrefix, Command $command, string $label = null) : bool;
+	public function register(string $fallbackPrefix, Command $command, ?string $label = null) : bool;
 
 	/**
 	 * @param CommandSender $sender

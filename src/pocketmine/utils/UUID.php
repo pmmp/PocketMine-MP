@@ -41,7 +41,7 @@ class UUID{
 	private $parts = [0, 0, 0, 0];
 	private $version = null;
 
-	public function __construct(int $part1 = 0, int $part2 = 0, int $part3 = 0, int $part4 = 0, int $version = null){
+	public function __construct(int $part1 = 0, int $part2 = 0, int $part3 = 0, int $part4 = 0, ?int $version = null){
 		$this->parts = [$part1, $part2, $part3, $part4];
 
 		$this->version = $version ?? ($this->parts[1] & 0xf000) >> 12;
@@ -63,7 +63,7 @@ class UUID{
 	 *
 	 * @return UUID
 	 */
-	public static function fromString(string $uuid, int $version = null) : UUID{
+	public static function fromString(string $uuid, ?int $version = null) : UUID{
 		return self::fromBinary(hex2bin(str_replace("-", "", trim($uuid))), $version);
 	}
 
@@ -77,7 +77,7 @@ class UUID{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function fromBinary(string $uuid, int $version = null) : UUID{
+	public static function fromBinary(string $uuid, ?int $version = null) : UUID{
 		if(strlen($uuid) !== 16){
 			throw new \InvalidArgumentException("Must have exactly 16 bytes");
 		}

@@ -141,7 +141,7 @@ class ParticleCommand extends VanillaCommand{
 	 *
 	 * @return Particle|null
 	 */
-	private function getParticle(string $name, int $data = null){
+	private function getParticle(string $name, ?int $data = null){
 		switch($name){
 			case "explode":
 				return new ExplodeParticle();

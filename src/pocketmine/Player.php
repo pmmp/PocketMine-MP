@@ -609,7 +609,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 *
 	 * @return PermissionAttachment
 	 */
-	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
+	public function addAttachment(Plugin $plugin, ?string $name = null, ?bool $value = null) : PermissionAttachment{
 		return $this->perm->addAttachment($plugin, $name, $value);
 	}
 
@@ -910,7 +910,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return false;
 	}
 
-	protected function unloadChunk(int $x, int $z, Level $level = null){
+	protected function unloadChunk(int $x, int $z, ?Level $level = null){
 		$level = $level ?? $this->level;
 		$index = Level::chunkHash($x, $z);
 		if(isset($this->usedChunks[$index])){
@@ -3132,7 +3132,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $result;
 	}
 
-	public function sendPosition(Vector3 $pos, float $yaw = null, float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL, array $targets = null){
+	public function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL, ?array $targets = null){
 		$yaw = $yaw ?? $this->yaw;
 		$pitch = $pitch ?? $this->pitch;
 
@@ -3156,7 +3156,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * {@inheritdoc}
 	 */
-	public function teleport(Vector3 $pos, float $yaw = null, float $pitch = null) : bool{
+	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
 		if(parent::teleport($pos, $yaw, $pitch)){
 
 			$this->removeAllWindows();
@@ -3298,7 +3298,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @throws \InvalidArgumentException if a forceID which is already in use is specified
 	 * @throws \InvalidStateException if trying to add a window without forceID when no slots are free
 	 */
-	public function addWindow(Inventory $inventory, int $forceId = null, bool $isPermanent = false) : int{
+	public function addWindow(Inventory $inventory, ?int $forceId = null, bool $isPermanent = false) : int{
 		if(($id = $this->getWindowId($inventory)) !== ContainerIds::NONE){
 			return $id;
 		}

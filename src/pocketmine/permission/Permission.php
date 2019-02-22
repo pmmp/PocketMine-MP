@@ -60,7 +60,7 @@ class Permission{
 	 * @param string $defaultValue
 	 * @param bool[] $children
 	 */
-	public function __construct(string $name, string $description = null, string $defaultValue = null, array $children = []){
+	public function __construct(string $name, ?string $description = null, ?string $defaultValue = null, array $children = []){
 		$this->name = $name;
 		$this->description = $description ?? "";
 		$this->defaultValue = $defaultValue ?? self::$DEFAULT_PERMISSION;

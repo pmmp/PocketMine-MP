@@ -478,7 +478,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->closed = true;
 	}
 
-	public function addSound(Vector3 $pos, Sound $sound, array $players = null){
+	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null){
 		$pk = $sound->encode($pos);
 		if(!is_array($pk)){
 			$pk = [$pk];
@@ -494,7 +494,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
-	public function addParticle(Vector3 $pos, Particle $particle, array $players = null){
+	public function addParticle(Vector3 $pos, Particle $particle, ?array $players = null){
 		$pk = $particle->encode($pos);
 		if(!is_array($pk)){
 			$pk = [$pk];
@@ -1626,7 +1626,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return ItemEntity|null
 	 */
-	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null, int $delay = 10){
+	public function dropItem(Vector3 $source, Item $item, ?Vector3 $motion = null, int $delay = 10){
 		$motion = $motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1);
 		$itemTag = $item->nbtSerialize();
 		$itemTag->setName("Item");
@@ -1686,7 +1686,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function useBreakOn(Vector3 $vector, Item &$item = null, Player $player = null, bool $createParticles = false) : bool{
+	public function useBreakOn(Vector3 $vector, Item &$item = null, ?Player $player = null, bool $createParticles = false) : bool{
 		$target = $this->getBlock($vector);
 		$affectedBlocks = $target->getAffectedBlocks();
 
@@ -1788,7 +1788,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, Vector3 $clickVector = null, Player $player = null, bool $playSound = false) : bool{
+	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false) : bool{
 		$blockClicked = $this->getBlock($vector);
 		$blockReplace = $blockClicked->getSide($face);
 
@@ -1928,7 +1928,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return Entity[]
 	 */
-	public function getCollidingEntities(AxisAlignedBB $bb, Entity $entity = null) : array{
+	public function getCollidingEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
 		$nearby = [];
 
 		if($entity === null or $entity->canCollide){
@@ -1960,7 +1960,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return Entity[]
 	 */
-	public function getNearbyEntities(AxisAlignedBB $bb, Entity $entity = null) : array{
+	public function getNearbyEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
 		$nearby = [];
 
 		$minX = ((int) floor($bb->minX - 2)) >> 4;

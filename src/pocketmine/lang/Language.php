@@ -94,7 +94,7 @@ class Language{
 	 *
 	 * @throws LanguageNotFoundException
 	 */
-	public function __construct(string $lang, string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
+	public function __construct(string $lang, ?string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
 		$this->langName = strtolower($lang);
 
 		if($path === null){
@@ -129,7 +129,7 @@ class Language{
 	 *
 	 * @return string
 	 */
-	public function translateString(string $str, array $params = [], string $onlyPrefix = null) : string{
+	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
 		$baseText = $this->get($str);
 		$baseText = $this->parseTranslation(($baseText !== null and ($onlyPrefix === null or strpos($str, $onlyPrefix) === 0)) ? $baseText : $str, $onlyPrefix);
 
@@ -179,7 +179,7 @@ class Language{
 	 *
 	 * @return string
 	 */
-	protected function parseTranslation(string $text, string $onlyPrefix = null) : string{
+	protected function parseTranslation(string $text, ?string $onlyPrefix = null) : string{
 		$newString = "";
 
 		$replaceString = null;

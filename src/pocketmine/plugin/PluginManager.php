@@ -137,7 +137,7 @@ class PluginManager{
 	 *
 	 * @return Plugin|null
 	 */
-	public function loadPlugin(string $path, array $loaders = null) : ?Plugin{
+	public function loadPlugin(string $path, ?array $loaders = null) : ?Plugin{
 		foreach($loaders ?? $this->fileAssociations as $loader){
 			if($loader->canLoadPlugin($path)){
 				$description = $loader->getPluginDescription($path);
@@ -193,7 +193,7 @@ class PluginManager{
 	 *
 	 * @return Plugin[]
 	 */
-	public function loadPlugins(string $directory, array $newLoaders = null){
+	public function loadPlugins(string $directory, ?array $newLoaders = null){
 		if(!is_dir($directory)){
 			return [];
 		}

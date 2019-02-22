@@ -38,7 +38,7 @@ class ItemBlock extends Item{
 	 * @param int      $meta usually 0-15 (placed blocks may only have meta values 0-15)
 	 * @param int|null $itemId
 	 */
-	public function __construct(int $blockId, int $meta = 0, int $itemId = null){
+	public function __construct(int $blockId, int $meta = 0, ?int $itemId = null){
 		if($blockId < 0){ //extended blocks
 			if($itemId === null){
 				$itemId = $blockId;

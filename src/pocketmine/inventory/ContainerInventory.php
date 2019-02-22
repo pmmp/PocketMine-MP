@@ -33,7 +33,7 @@ abstract class ContainerInventory extends BaseInventory{
 	/** @var Vector3 */
 	protected $holder;
 
-	public function __construct(Vector3 $holder, array $items = [], int $size = null, string $title = null){
+	public function __construct(Vector3 $holder, array $items = [], ?int $size = null, ?string $title = null){
 		$this->holder = $holder;
 		parent::__construct($items, $size, $title);
 	}

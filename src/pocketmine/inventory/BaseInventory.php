@@ -57,7 +57,7 @@ abstract class BaseInventory implements Inventory{
 	 * @param int    $size
 	 * @param string $title
 	 */
-	public function __construct(array $items = [], int $size = null, string $title = null){
+	public function __construct(array $items = [], ?int $size = null, ?string $title = null){
 		$this->slots = new \SplFixedArray($size ?? $this->getDefaultSize());
 		$this->title = $title ?? $this->getName();
 

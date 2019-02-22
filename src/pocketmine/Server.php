@@ -1333,7 +1333,7 @@ class Server{
 	 *
 	 * @return int
 	 */
-	public function broadcastMessage($message, array $recipients = null) : int{
+	public function broadcastMessage($message, ?array $recipients = null) : int{
 		if(!is_array($recipients)){
 			return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
 		}
@@ -1363,7 +1363,7 @@ class Server{
 	 *
 	 * @return int
 	 */
-	public function broadcastTip(string $tip, array $recipients = null) : int{
+	public function broadcastTip(string $tip, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
 
 		/** @var Player[] $recipients */
@@ -1380,7 +1380,7 @@ class Server{
 	 *
 	 * @return int
 	 */
-	public function broadcastPopup(string $popup, array $recipients = null) : int{
+	public function broadcastPopup(string $popup, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
 
 		/** @var Player[] $recipients */
@@ -1401,7 +1401,7 @@ class Server{
 	 *
 	 * @return int
 	 */
-	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, array $recipients = null) : int{
+	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
 
 		/** @var Player[] $recipients */
@@ -1916,7 +1916,7 @@ class Server{
 	 * @param string        $xboxUserId
 	 * @param Player[]|null $players
 	 */
-	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, string $xboxUserId = "", array $players = null){
+	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, string $xboxUserId = "", ?array $players = null){
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 
@@ -1929,7 +1929,7 @@ class Server{
 	 * @param UUID          $uuid
 	 * @param Player[]|null $players
 	 */
-	public function removePlayerListData(UUID $uuid, array $players = null){
+	public function removePlayerListData(UUID $uuid, ?array $players = null){
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_REMOVE;
 		$pk->entries[] = PlayerListEntry::createRemovalEntry($uuid);
