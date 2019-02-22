@@ -63,7 +63,7 @@ class TaskScheduler{
 	/**
 	 * @param Task $task
 	 *
-	 * @return null|TaskHandler
+	 * @return TaskHandler
 	 */
 	public function scheduleTask(Task $task){
 		return $this->addTask($task, -1, -1);
@@ -73,7 +73,7 @@ class TaskScheduler{
 	 * @param Task $task
 	 * @param int  $delay
 	 *
-	 * @return null|TaskHandler
+	 * @return TaskHandler
 	 */
 	public function scheduleDelayedTask(Task $task, int $delay){
 		return $this->addTask($task, $delay, -1);
@@ -83,7 +83,7 @@ class TaskScheduler{
 	 * @param Task $task
 	 * @param int  $period
 	 *
-	 * @return null|TaskHandler
+	 * @return TaskHandler
 	 */
 	public function scheduleRepeatingTask(Task $task, int $period){
 		return $this->addTask($task, -1, $period);
@@ -94,7 +94,7 @@ class TaskScheduler{
 	 * @param int  $delay
 	 * @param int  $period
 	 *
-	 * @return null|TaskHandler
+	 * @return TaskHandler
 	 */
 	public function scheduleDelayedRepeatingTask(Task $task, int $delay, int $period){
 		return $this->addTask($task, $delay, $period);
@@ -138,7 +138,7 @@ class TaskScheduler{
 	 * @param int  $delay
 	 * @param int  $period
 	 *
-	 * @return null|TaskHandler
+	 * @return TaskHandler
 	 *
 	 * @throws \InvalidStateException
 	 */
