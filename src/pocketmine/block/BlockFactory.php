@@ -590,7 +590,7 @@ class BlockFactory{
 	 *
 	 * @return Block
 	 */
-	public static function get(int $id, int $meta = 0, Position $pos = null) : Block{
+	public static function get(int $id, int $meta = 0, ?Position $pos = null) : Block{
 		if($meta < 0 or $meta > 0xf){
 			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
 		}

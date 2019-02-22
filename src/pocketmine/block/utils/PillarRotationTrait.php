@@ -94,7 +94,7 @@ trait PillarRotationTrait{
 	 *
 	 * @return bool
 	 */
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->axis = Facing::axis($face);
 		/** @see Block::place() */
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);

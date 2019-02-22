@@ -143,7 +143,7 @@ class Vine extends Flowable{
 		return [];
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$blockClicked->isSolid() or Facing::axis($face) === Facing::AXIS_Y){
 			return false;
 		}

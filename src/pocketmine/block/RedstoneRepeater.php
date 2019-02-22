@@ -82,7 +82,7 @@ class RedstoneRepeater extends Flowable{
 		return $this;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$blockReplace->getSide(Facing::DOWN)->isTransparent()){
 			if($player !== null){
 				$this->facing = Facing::opposite($player->getHorizontalFacing());

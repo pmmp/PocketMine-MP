@@ -43,7 +43,7 @@ class Carpet extends Flowable{
 		return AxisAlignedBB::one()->trim(Facing::UP, 15 / 16);
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() !== self::AIR){
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);

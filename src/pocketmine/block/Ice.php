@@ -45,7 +45,7 @@ class Ice extends Transparent{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function onBreak(Item $item, Player $player = null) : bool{
+	public function onBreak(Item $item, ?Player $player = null) : bool{
 		if(($player === null or $player->isSurvival()) and !$item->hasEnchantment(Enchantment::SILK_TOUCH())){
 			return $this->getLevel()->setBlock($this, BlockFactory::get(Block::WATER));
 		}

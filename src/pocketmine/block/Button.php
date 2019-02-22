@@ -51,7 +51,7 @@ abstract class Button extends Flowable{
 		return 0b1111;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		//TODO: check valid target block
 		$this->facing = $face;
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);

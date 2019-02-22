@@ -48,7 +48,7 @@ abstract class Crops extends Flowable{
 		return 0b111;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockReplace->getSide(Facing::DOWN)->getId() === Block::FARMLAND){
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}

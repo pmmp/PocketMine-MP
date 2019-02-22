@@ -104,7 +104,7 @@ abstract class Slab extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		/* note these conditions can't be merged, since one targets clicked and the other replace */
 
 		if($blockClicked instanceof Slab and $blockClicked->slabType !== SlabType::DOUBLE() and $blockClicked->isSameType($this) and (

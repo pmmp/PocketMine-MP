@@ -36,7 +36,7 @@ class TallGrass extends Flowable{
 		return true;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN)->getId();
 		if($down === self::GRASS or $down === self::DIRT){
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
