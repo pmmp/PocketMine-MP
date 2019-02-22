@@ -23,8 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-class Dye extends Item{
-	public function __construct(int $variant, string $name){
-		parent::__construct(self::DYE, $variant, $name);
+use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
+
+class CocoaBeans extends Item{
+
+	public function getBlock() : Block{
+		return BlockFactory::get(Block::COCOA);
 	}
 }

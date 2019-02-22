@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\TreeType;
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\level\generator\object\Tree;
 use pocketmine\math\Facing;
@@ -66,7 +67,7 @@ class Sapling extends Flowable{
 	}
 
 	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
+		if($item instanceof Fertilizer){
 			Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->treeType);
 
 			$item->pop();

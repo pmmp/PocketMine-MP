@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\block\utils\TreeType;
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
@@ -85,7 +86,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->age < 2 and $item->getId() === Item::DYE and $item->getDamage() === 15){ //bone meal
+		if($this->age < 2 and $item instanceof Fertilizer){
 			$this->age++;
 			$this->level->setBlock($this, $this);
 

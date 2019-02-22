@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\event\block\BlockGrowEvent;
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -57,7 +58,7 @@ abstract class Crops extends Flowable{
 
 
 	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->age < 7 and $item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
+		if($this->age < 7 and $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age += mt_rand(2, 5);
 			if($block->age > 7){

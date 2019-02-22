@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\event\block\BlockSpreadEvent;
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Hoe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -94,7 +95,7 @@ class Grass extends Solid{
 		if($face !== Facing::UP){
 			return false;
 		}
-		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){
+		if($item instanceof Fertilizer){
 			$item->pop();
 			TallGrassObject::growGrass($this->getLevel(), $this, new Random(mt_rand()), 8, 2);
 

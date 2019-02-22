@@ -154,11 +154,22 @@ class ItemFactory{
 		self::register(new Item(Item::GLOWSTONE_DUST, 0, "Glowstone Dust"));
 		self::register(new RawFish());
 		self::register(new CookedFish());
+
+		self::register(new Item(Item::DYE, 0, "Ink Sac"));
+		self::register(new CocoaBeans(Item::DYE, 3, "Cocoa Beans"));
+		self::register(new Item(Item::DYE, 4, "Lapis Lazuli"));
+		self::register(new Fertilizer(Item::DYE, 15, "Bone Meal"));
+
+		/** @var int[]|\SplObjectStorage $dyeMap */
+		$dyeMap = new \SplObjectStorage();
+		$dyeMap[DyeColor::BLACK()] = 16;
+		$dyeMap[DyeColor::BROWN()] = 17;
+		$dyeMap[DyeColor::BLUE()] = 18;
+		$dyeMap[DyeColor::WHITE()] = 19;
 		foreach(DyeColor::getAll() as $color){
 			//TODO: use colour object directly
 			//TODO: add interface to dye-colour objects
-			//TODO: new dedicated dyes
-			self::register(new Dye($color->getInvertedMagicNumber(), $color->getDisplayName() . " Dye"));
+			self::register(new Dye($dyeMap[$color] ?? $color->getInvertedMagicNumber(), $color->getDisplayName() . " Dye"));
 			self::register(new Bed($color->getMagicNumber(), $color->getDisplayName() . " Bed"));
 			self::register(new Banner($color->getInvertedMagicNumber(), $color->getDisplayName() . " Banner"));
 		}

@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\event\block\BlockGrowEvent;
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -48,7 +49,7 @@ class Sugarcane extends Flowable{
 	}
 
 	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
+		if($item instanceof Fertilizer){
 			if($this->getSide(Facing::DOWN)->getId() !== self::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);

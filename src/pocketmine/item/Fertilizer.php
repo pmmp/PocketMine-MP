@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-class Dye extends Item{
-	public function __construct(int $variant, string $name){
-		parent::__construct(self::DYE, $variant, $name);
-	}
+class Fertilizer extends Item{
+
 }
