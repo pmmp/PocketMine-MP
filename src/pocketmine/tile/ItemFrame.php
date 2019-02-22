@@ -68,7 +68,7 @@ class ItemFrame extends Spawnable{
 		return clone $this->item;
 	}
 
-	public function setItem(Item $item = null){
+	public function setItem(?Item $item){
 		if($item !== null and !$item->isNull()){
 			$this->item = clone $item;
 		}else{

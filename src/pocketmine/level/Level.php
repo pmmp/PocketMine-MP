@@ -2303,7 +2303,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Chunk|null $chunk
 	 * @param bool       $deleteEntitiesAndTiles Whether to delete entities and tiles on the old chunk, or transfer them to the new one
 	 */
-	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk = null, bool $deleteEntitiesAndTiles = true){
+	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk, bool $deleteEntitiesAndTiles = true){
 		if($chunk === null){
 			return;
 		}

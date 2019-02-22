@@ -57,5 +57,5 @@ interface CommandSender extends Permissible{
 	 *
 	 * @param int|null $height
 	 */
-	public function setScreenLineHeight(int $height = null);
+	public function setScreenLineHeight(?int $height);
 }

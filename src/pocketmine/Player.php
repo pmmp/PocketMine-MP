@@ -477,7 +477,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->lineHeight ?? 7;
 	}
 
-	public function setScreenLineHeight(int $height = null){
+	public function setScreenLineHeight(?int $height){
 		if($height !== null and $height < 1){
 			throw new \InvalidArgumentException("Line height must be at least 1");
 		}

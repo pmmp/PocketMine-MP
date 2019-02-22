@@ -90,7 +90,7 @@ class BanEntry{
 	 * @param \DateTime|null $date
 	 * @throws \InvalidArgumentException
 	 */
-	public function setExpires(\DateTime $date = null){
+	public function setExpires(?\DateTime $date){
 		if($date !== null){
 			self::validateDate($date);
 		}

@@ -79,7 +79,7 @@ class Position extends Vector3{
 	 *
 	 * @throws \InvalidArgumentException if the specified Level has been closed
 	 */
-	public function setLevel(Level $level = null){
+	public function setLevel(?Level $level){
 		if($level !== null and $level->isClosed()){
 			throw new \InvalidArgumentException("Specified world has been unloaded and cannot be used");
 		}

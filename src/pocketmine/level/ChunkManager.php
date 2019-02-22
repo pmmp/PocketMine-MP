@@ -106,7 +106,7 @@ interface ChunkManager{
 	 * @param int        $chunkZ
 	 * @param Chunk|null $chunk
 	 */
-	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk = null);
+	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk);
 
 	/**
 	 * Returns the height of the world

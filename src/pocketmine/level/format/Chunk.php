@@ -696,7 +696,7 @@ class Chunk{
 	 *
 	 * @return bool
 	 */
-	public function setSubChunk(int $y, SubChunkInterface $subChunk = null, bool $allowEmpty = false) : bool{
+	public function setSubChunk(int $y, ?SubChunkInterface $subChunk, bool $allowEmpty = false) : bool{
 		if($y < 0 or $y >= $this->height){
 			return false;
 		}

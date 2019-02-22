@@ -142,7 +142,7 @@ class ConsoleCommandSender implements CommandSender{
 		return $this->lineHeight ?? PHP_INT_MAX;
 	}
 
-	public function setScreenLineHeight(int $height = null){
+	public function setScreenLineHeight(?int $height){
 		if($height !== null and $height < 1){
 			throw new \InvalidArgumentException("Line height must be at least 1");
 		}

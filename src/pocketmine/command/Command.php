@@ -115,7 +115,7 @@ abstract class Command{
 	/**
 	 * @param string|null $permission
 	 */
-	public function setPermission(string $permission = null){
+	public function setPermission(?string $permission){
 		$this->permission = $permission;
 	}
 
