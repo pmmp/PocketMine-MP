@@ -123,7 +123,7 @@ class BlockTest extends TestCase{
 	public function testBlockIds() : void{
 		for($i = 0; $i < 256; ++$i){
 			$b = BlockFactory::get($i);
-			self::assertEquals($i, $b->getId());
+			self::assertContains($i, $b->getIdInfo()->getAllBlockIds());
 		}
 	}
 
