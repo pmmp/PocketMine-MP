@@ -128,16 +128,6 @@ class BlockTest extends TestCase{
 	}
 
 	/**
-	 * Test that all blocks have correctly set names
-	 */
-	public function testBlockNames() : void{
-		for($id = 0; $id < 256; ++$id){
-			$b = BlockFactory::get($id);
-			self::assertTrue($b instanceof UnknownBlock or $b->getName() !== "Unknown", "Block with ID $id does not have a valid name");
-		}
-	}
-
-	/**
 	 * Test that light filters in the static arrays have valid values. Wrong values can cause lots of unpleasant bugs
 	 * (like freezes) when doing light population.
 	 */
