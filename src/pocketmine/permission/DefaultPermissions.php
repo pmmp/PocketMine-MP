@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\permission;
 
 use function file_get_contents;
-use function yaml_parse_file;
 
 abstract class DefaultPermissions{
 	public const ROOT = "pocketmine";
