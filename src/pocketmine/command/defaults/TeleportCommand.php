@@ -1,23 +1,24 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,6 +29,9 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 use function array_filter;
@@ -38,13 +42,40 @@ use function round;
 class TeleportCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.tp.description",
-			"%commands.tp.usage",
-			["teleport"]
-		);
+		parent::__construct($name, "%pocketmine.command.tp.description", "%commands.tp.usage", ["teleport"]);
 		$this->setPermission("pocketmine.command.teleport");
+
+		$destination = new CommandParameter("destination", AvailableCommandsPacket::ARG_TYPE_POSITION, false);
+		$targetDestination = new CommandParameter("destination", AvailableCommandsPacket::ARG_TYPE_TARGET, false);
+		$victim = new CommandParameter("victim", AvailableCommandsPacket::ARG_TYPE_TARGET, false);
+		$yRot = new CommandParameter("yRot", AvailableCommandsPacket::ARG_TYPE_VALUE);
+		$xRot = new CommandParameter("xRot", AvailableCommandsPacket::ARG_TYPE_VALUE);
+		$facing = new CommandParameter("facing", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("facing", ["facing"]));
+		$lookAtPosition = new CommandParameter("lookAtPosition", AvailableCommandsPacket::ARG_TYPE_POSITION, false);
+		$lookAtEntity = new CommandParameter("lookAtEntity", AvailableCommandsPacket::ARG_TYPE_TARGET, false);
+
+		$this->setParameters([
+			$destination, $yRot, $xRot
+		], 0);
+		$this->setParameters([
+			$destination, $facing, $lookAtPosition
+		], 1);
+		$this->setParameters([
+			$destination, $facing, $lookAtEntity
+		], 2);
+		$this->setParameters([
+			$victim, $destination, $yRot, $xRot
+		], 3);
+		$this->setParameters([
+			$victim, $destination, $facing, $lookAtPosition
+		], 4);
+		$this->setParameters([
+			$victim, $destination, $facing, $lookAtEntity
+		], 5);
+		$this->setParameters([$targetDestination], 6);
+		$this->setParameters([
+			$victim, $targetDestination
+		], 7);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

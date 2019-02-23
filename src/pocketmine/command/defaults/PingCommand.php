@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
-use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
@@ -32,18 +31,16 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
-use function array_shift;
-use function count;
 
-class DeopCommand extends VanillaCommand{
+class PingCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct($name, "%pocketmine.command.deop.description", "%commands.deop.usage", [], [
-			[
-				new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET, false)
-			]
-		]);
-		$this->setPermission("pocketmine.command.op.take");
+		parent::__construct($name, "%pocketmine.command.ping.description", "%commands.ping.usage", [], [
+				[
+					new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET)
+				]
+			]);
+		$this->setPermission("altay.command.ping");
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -51,18 +48,30 @@ class DeopCommand extends VanillaCommand{
 			return true;
 		}
 
-		if(count($args) === 0){
+		if(count($args) >= 2){
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$name = array_shift($args);
+		$target = null;
 
-		$player = $sender->getServer()->getOfflinePlayer($name);
-		$player->setOp(false);
-		if($player instanceof Player){
-			$player->sendMessage(TextFormat::GRAY . "You are no longer op!");
+		if(count($args) === 1){
+			$target = $sender->getServer()->getPlayer($args[0]);
+		}else{
+			if($sender instanceof Player){
+				$target = $sender;
+			}else{
+				throw new InvalidCommandSyntaxException();
+			}
 		}
-		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.deop.success", [$player->getName()]));
+
+		if($target === null){
+			$sender->sendMessage(new TranslationContainer("command.generic.player.notFound"));
+			return true;
+		}
+
+		$ping = $target->getPing();
+		$color = ($ping < 150 ? TextFormat::GREEN : ($ping < 250 ? TextFormat::GOLD : TextFormat::RED));
+		$sender->sendMessage($target->getName() . "'s Ping: " . $color . $ping . "ms");
 
 		return true;
 	}

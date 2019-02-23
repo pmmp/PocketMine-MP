@@ -27,17 +27,20 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\Player;
 use function count;
 
 class TransferServerCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.transferserver.description",
-			"%pocketmine.command.transferserver.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.transferserver.description", "%pocketmine.command.transferserver.usage", [], [
+			[
+				new CommandParameter("ip", AvailableCommandsPacket::ARG_TYPE_VALUE, false),
+				new CommandParameter("port", AvailableCommandsPacket::ARG_TYPE_INT)
+			]
+		]);
 		$this->setPermission("pocketmine.command.transferserver");
 	}
 

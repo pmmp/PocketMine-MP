@@ -26,18 +26,20 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\event\server\UnbanEvent;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use function count;
 
 class PardonCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.unban.player.description",
-			"%commands.unban.usage",
-			["unban"]
-		);
+		parent::__construct($name, "%pocketmine.command.unban.player.description", "%commands.unban.usage", ["unban"], [
+			[
+				new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET, false)
+			]
+		]);
 		$this->setPermission("pocketmine.command.unban.player");
 	}
 

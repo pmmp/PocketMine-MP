@@ -25,7 +25,9 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -36,12 +38,13 @@ use function strtolower;
 class VersionCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.version.description",
-			"%pocketmine.command.version.usage",
-			["ver", "about"]
-		);
+		parent::__construct($name, "%pocketmine.command.version.description", "%pocketmine.command.version.usage", [
+			"ver", "about"
+		], [
+			[
+				new CommandParameter("plugin", AvailableCommandsPacket::ARG_TYPE_STRING)
+			]
+		]);
 		$this->setPermission("pocketmine.command.version");
 	}
 

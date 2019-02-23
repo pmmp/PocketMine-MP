@@ -29,6 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\mcpe\protocol\types\MapDecoration;
 use pocketmine\network\mcpe\protocol\types\MapTrackedObject;
 use pocketmine\utils\Color;
 use function assert;
@@ -54,7 +55,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 
 	/** @var MapTrackedObject[] */
 	public $trackedEntities = [];
-	/** @var array */
+	/** @var MapDecoration[] */
 	public $decorations = [];
 
 	/** @var int */
@@ -88,9 +89,9 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 				$object = new MapTrackedObject();
 				$object->type = $this->getLInt();
-				if($object->type === MapTrackedObject::TYPE_BLOCK){
+				if($object->type > MapTrackedObject::TYPE_PLAYER){
 					$this->getBlockPosition($object->x, $object->y, $object->z);
-				}elseif($object->type === MapTrackedObject::TYPE_ENTITY){
+				}elseif($object->type === MapTrackedObject::TYPE_PLAYER){
 					$object->entityUniqueId = $this->getEntityUniqueId();
 				}else{
 					throw new \UnexpectedValueException("Unknown map object type $object->type");
@@ -99,13 +100,16 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			}
 
 			for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-				$this->decorations[$i]["img"] = $this->getByte();
-				$this->decorations[$i]["rot"] = $this->getByte();
-				$this->decorations[$i]["xOffset"] = $this->getByte();
-				$this->decorations[$i]["yOffset"] = $this->getByte();
-				$this->decorations[$i]["label"] = $this->getString();
+				$decoration = new MapDecoration();
+				$decoration->icon = $this->getByte();
+				$decoration->rot = $this->getByte();
+				$decoration->xOffset = $this->getByte();
+				$decoration->yOffset = $this->getByte();
+				$decoration->label = $this->getString();
 
-				$this->decorations[$i]["color"] = Color::fromABGR($this->getUnsignedVarInt());
+				$decoration->color = Color::fromABGR($this->getUnsignedVarInt());
+
+				$this->decorations[$i] = $decoration;
 			}
 		}
 
@@ -160,9 +164,9 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			$this->putUnsignedVarInt(count($this->trackedEntities));
 			foreach($this->trackedEntities as $object){
 				$this->putLInt($object->type);
-				if($object->type === MapTrackedObject::TYPE_BLOCK){
+				if($object->type > MapTrackedObject::TYPE_PLAYER){
 					$this->putBlockPosition($object->x, $object->y, $object->z);
-				}elseif($object->type === MapTrackedObject::TYPE_ENTITY){
+				}elseif($object->type === MapTrackedObject::TYPE_PLAYER){
 					$this->putEntityUniqueId($object->entityUniqueId);
 				}else{
 					throw new \InvalidArgumentException("Unknown map object type $object->type");
@@ -171,14 +175,14 @@ class ClientboundMapItemDataPacket extends DataPacket{
 
 			$this->putUnsignedVarInt($decorationCount);
 			foreach($this->decorations as $decoration){
-				$this->putByte($decoration["img"]);
-				$this->putByte($decoration["rot"]);
-				$this->putByte($decoration["xOffset"]);
-				$this->putByte($decoration["yOffset"]);
-				$this->putString($decoration["label"]);
+				$this->putByte($decoration->icon);
+				$this->putByte($decoration->rot);
+				$this->putByte($decoration->xOffset);
+				$this->putByte($decoration->yOffset);
+				$this->putString($decoration->label);
 
-				assert($decoration["color"] instanceof Color);
-				$this->putUnsignedVarInt($decoration["color"]->toABGR());
+				assert($decoration->color instanceof Color);
+				$this->putUnsignedVarInt($decoration->color->toABGR());
 			}
 		}
 
@@ -192,6 +196,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 
 			for($y = 0; $y < $this->height; ++$y){
 				for($x = 0; $x < $this->width; ++$x){
+					//if mojang had any sense this would just be a regular LE int
 					$this->putUnsignedVarInt($this->colors[$y][$x]->toABGR());
 				}
 			}

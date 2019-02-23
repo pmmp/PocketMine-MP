@@ -1,23 +1,24 @@
 <?php
 
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,6 +29,9 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\utils\TextFormat;
 use function count;
 use function strtolower;
@@ -36,11 +40,22 @@ use const INT32_MAX;
 class EffectCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.effect.description",
-			"%commands.effect.usage"
-		);
+		$class = new \ReflectionClass(Effect::class);
+		$effectNames = array_keys($class->getConstants());
+		parent::__construct($name, "%pocketmine.command.effect.description", "%commands.effect.usage", [], [
+			[
+				new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET, false),
+				new CommandParameter("clear", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("clear", ["clear"]))
+			], [
+				new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET, false),
+				new CommandParameter("effect", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("effectNames", $effectNames)),
+				new CommandParameter("seconds", AvailableCommandsPacket::ARG_TYPE_INT),
+				new CommandParameter("amplifier", AvailableCommandsPacket::ARG_TYPE_INT),
+				new CommandParameter("bool", AvailableCommandsPacket::ARG_TYPE_VALUE, false, new CommandEnum("effectBool", [
+					"true", "false"
+				]))
+			]
+		]);
 		$this->setPermission("pocketmine.command.effect");
 	}
 

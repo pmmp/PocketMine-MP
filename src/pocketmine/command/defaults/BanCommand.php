@@ -35,11 +35,7 @@ use function implode;
 class BanCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.ban.player.description",
-			"%commands.ban.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.ban.player.description", "%commands.ban.usage");
 		$this->setPermission("pocketmine.command.ban.player");
 	}
 

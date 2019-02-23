@@ -28,6 +28,10 @@ namespace pocketmine\command;
 
 use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\CommandData;
+use pocketmine\network\mcpe\protocol\types\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
@@ -37,8 +41,8 @@ use function str_replace;
 
 abstract class Command{
 
-	/** @var string */
-	private $name;
+	/** @var CommandData */
+	private $commandData;
 
 	/** @var string */
 	private $nextLabel;
@@ -78,12 +82,15 @@ abstract class Command{
 	 * @param string   $usageMessage
 	 * @param string[] $aliases
 	 */
-	public function __construct(string $name, string $description = "", string $usageMessage = null, array $aliases = []){
-		$this->name = $name;
+	public function __construct(string $name, string $description = "", string $usageMessage = null, array $aliases = [], array $overloads = null){
+		if(strlen($description) > 0 and $description{0} == '%'){
+			$description = Server::getInstance()->getLanguage()->translateString($description);
+		}
+
+		$this->commandData = new CommandData($name, $description, 0, 0, null, $overloads ?? [[new CommandParameter("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT)]]);
 		$this->setLabel($name);
-		$this->setDescription($description);
-		$this->usageMessage = $usageMessage ?? ("/" . $name);
 		$this->setAliases($aliases);
+		$this->usageMessage = $usageMessage ?? ("/" . $name);
 	}
 
 	/**
@@ -96,10 +103,22 @@ abstract class Command{
 	abstract public function execute(CommandSender $sender, string $commandLabel, array $args);
 
 	/**
+	 * @return CommandData
+	 */
+	public function getData() : CommandData{
+		$data = clone $this->commandData;
+		if(!empty($this->activeAliases)){
+			$data->aliases = new CommandEnum(ucfirst($this->getName()) . "Aliases", array_values($this->activeAliases));
+		}
+
+		return $data;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getName() : string{
-		return $this->name;
+		return $this->commandData->commandName;
 	}
 
 	/**
@@ -108,7 +127,6 @@ abstract class Command{
 	public function getPermission(){
 		return $this->permission;
 	}
-
 
 	/**
 	 * @param string|null $permission
@@ -202,7 +220,7 @@ abstract class Command{
 	public function unregister(CommandMap $commandMap) : bool{
 		if($this->allowChangesFrom($commandMap)){
 			$this->commandMap = null;
-			$this->activeAliases = $this->aliases;
+			$this->setAliases($this->aliases);
 			$this->label = $this->nextLabel;
 
 			return true;
@@ -231,28 +249,7 @@ abstract class Command{
 	 * @return string[]
 	 */
 	public function getAliases() : array{
-		return $this->activeAliases;
-	}
-
-	/**
-	 * @return string|null
-	 */
-	public function getPermissionMessage() : ?string{
-		return $this->permissionMessage;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getDescription() : string{
-		return $this->description;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getUsage() : string{
-		return $this->usageMessage;
+		return $this->aliases;
 	}
 
 	/**
@@ -266,10 +263,10 @@ abstract class Command{
 	}
 
 	/**
-	 * @param string $description
+	 * @return string|null
 	 */
-	public function setDescription(string $description){
-		$this->description = $description;
+	public function getPermissionMessage() : ?string{
+		return $this->permissionMessage;
 	}
 
 	/**
@@ -277,6 +274,31 @@ abstract class Command{
 	 */
 	public function setPermissionMessage(string $permissionMessage){
 		$this->permissionMessage = $permissionMessage;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDescription() : string{
+		return $this->commandData->commandDescription;
+	}
+
+	/**
+	 * @param string $description
+	 */
+	public function setDescription(string $description){
+		if(strlen($description) > 0 and $description{0} == '%'){
+			$description = Server::getInstance()->getLanguage()->translateString($description);
+		}
+
+		$this->commandData->commandDescription = $description;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getUsage() : string{
+		return $this->usageMessage;
 	}
 
 	/**
@@ -325,9 +347,86 @@ abstract class Command{
 	}
 
 	/**
+	 * Adds parameter to overload
+	 *
+	 * @param CommandParameter $parameter
+	 * @param int              $overloadIndex
+	 */
+	public function addParameter(CommandParameter $parameter, int $overloadIndex = 0) : void{
+		$this->commandData->overloads[$overloadIndex][] = $parameter;
+	}
+
+	/**
+	 * Sets parameter to overload
+	 *
+	 * @param CommandParameter $parameter
+	 * @param int              $parameterIndex
+	 * @param int              $overloadIndex
+	 */
+	public function setParameter(CommandParameter $parameter, int $parameterIndex, int $overloadIndex = 0) : void{
+		$this->commandData->overloads[$overloadIndex][$parameterIndex] = $parameter;
+	}
+
+	/**
+	 * Sets parameters to overload
+	 *
+	 * @param CommandParameter[] $parameters
+	 * @param int                $overloadIndex
+	 */
+	public function setParameters(array $parameters, int $overloadIndex = 0) : void{
+		$this->commandData->overloads[$overloadIndex] = array_values($parameters);
+	}
+
+	/**
+	 * Removes parameter from overload
+	 *
+	 * @param int $parameterIndex
+	 * @param int $overloadIndex
+	 */
+	public function removeParameter(int $parameterIndex, int $overloadIndex = 0) : void{
+		unset($this->commandData->overloads[$overloadIndex][$parameterIndex]);
+	}
+
+	/**
+	 * Remove all overloads
+	 */
+	public function removeAllParameters() : void{
+		$this->commandData->overloads = [];
+	}
+
+	/**
+	 * Removes overload and includes.
+	 *
+	 * @param int $overloadIndex
+	 */
+	public function removeOverload(int $overloadIndex) : void{
+		unset($this->commandData->overloads[$overloadIndex]);
+	}
+
+	/**
+	 * Returns overload
+	 *
+	 * @param int $index
+	 *
+	 * @return CommandParameter[]|null
+	 */
+	public function getOverload(int $index) : ?array{
+		return $this->commandData->overloads[$index] ?? null;
+	}
+
+	/**
+	 * Returns all overloads
+	 *
+	 * @return CommandParameter[][]
+	 */
+	public function getOverloads() : array{
+		return $this->commandData->overloads;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function __toString() : string{
-		return $this->name;
+		return $this->commandData->commandName;
 	}
 }

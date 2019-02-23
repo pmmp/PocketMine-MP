@@ -135,6 +135,13 @@ class SimpleCommandMap implements CommandMap{
 			new VersionCommand("version"),
 			new WhitelistCommand("whitelist")
 		]);
+
+		if($this->server->getAltayProperty("developer.commands", true)){
+			$this->registerAll("altay", [
+				new ExtractPluginCommand("extractplugin"), new MakePluginCommand("makeplugin"),
+				new MakeServerCommand("makeserver")
+			]);
+		}
 	}
 
 

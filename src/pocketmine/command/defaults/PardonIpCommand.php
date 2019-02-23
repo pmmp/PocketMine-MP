@@ -27,18 +27,19 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use function count;
 use function preg_match;
 
 class PardonIpCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.unban.ip.description",
-			"%commands.unbanip.usage",
-			["unban-ip"]
-		);
+		parent::__construct($name, "%pocketmine.command.unban.ip.description", "%commands.unbanip.usage", ["unban-ip"], [
+			[
+				new CommandParameter("ip", AvailableCommandsPacket::ARG_TYPE_VALUE, false)
+			]
+		]);
 		$this->setPermission("pocketmine.command.unban.ip");
 	}
 
