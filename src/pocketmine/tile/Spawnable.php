@@ -27,7 +27,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\NetworkNbtSerializer;
-use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\Player;
 use function get_class;
 
@@ -39,16 +38,6 @@ abstract class Spawnable extends Tile{
 
 	/** @var NetworkNbtSerializer|null */
 	private static $nbtWriter = null;
-
-	public function createSpawnPacket() : BlockEntityDataPacket{
-		$pk = new BlockEntityDataPacket();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->namedtag = $this->getSerializedSpawnCompound();
-
-		return $pk;
-	}
 
 	/**
 	 * Flags the tile as modified, so that updates will be broadcasted at the next available opportunity.

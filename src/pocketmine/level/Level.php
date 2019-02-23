@@ -73,6 +73,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\ChunkRequestTask;
 use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -982,7 +983,12 @@ class Level implements ChunkManager, Metadatable{
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){
-				$packets[] = $tile->createSpawnPacket();
+				$tilepk = new BlockEntityDataPacket();
+				$tilepk->x = $tile->x;
+				$tilepk->y = $tile->y;
+				$tilepk->z = $tile->z;
+				$tilepk->namedtag = $tile->getSerializedSpawnCompound();
+				$packets[] = $tilepk;
 			}
 		}
 
