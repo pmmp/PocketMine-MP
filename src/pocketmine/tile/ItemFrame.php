@@ -29,6 +29,10 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 
+/**
+ * @deprecated
+ * @see \pocketmine\block\ItemFrame
+ */
 class ItemFrame extends Spawnable{
 	public const TAG_ITEM_ROTATION = "ItemRotation";
 	public const TAG_ITEM_DROP_CHANCE = "ItemDropChance";

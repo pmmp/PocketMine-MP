@@ -37,6 +37,12 @@ class ItemFrame extends Flowable{
 	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $hasMap = false; //makes frame appear large if set
+	/** @var Item|null */
+	protected $framedItem = null;
+	/** @var int */
+	protected $itemRotation = 0;
+	/** @var float */
+	protected $itemDropChance = 1.0;
 
 	protected function writeStateToMeta() : int{
 		return (5 - $this->facing) | ($this->hasMap ? 0x04 : 0);
@@ -47,19 +53,105 @@ class ItemFrame extends Flowable{
 		$this->hasMap = ($stateMeta & 0x04) !== 0;
 	}
 
+	public function readStateFromWorld() : void{
+		parent::readStateFromWorld();
+		$tile = $this->level->getTile($this);
+		if($tile instanceof TileItemFrame){
+			$this->framedItem = $tile->getItem();
+			if($this->framedItem->isNull()){
+				$this->framedItem = null;
+			}
+			$this->itemRotation = $tile->getItemRotation() % 8;
+			$this->itemDropChance = $tile->getItemDropChance();
+		}
+	}
+
+	public function writeStateToWorld() : void{
+		parent::writeStateToWorld();
+		$tile = $this->level->getTile($this);
+		if($tile instanceof TileItemFrame){
+			$tile->setItem($this->framedItem);
+			$tile->setItemRotation($this->itemRotation);
+			$tile->setItemDropChance($this->itemDropChance);
+		}
+	}
+
 	public function getStateBitmask() : int{
 		return 0b111;
 	}
 
-	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$tile = $this->level->getTile($this);
-		if($tile instanceof TileItemFrame){
-			if($tile->hasItem()){
-				$tile->setItemRotation(($tile->getItemRotation() + 1) % 8);
-			}elseif(!$item->isNull()){
-				$tile->setItem($item->pop());
-			}
+	/**
+	 * @return int
+	 */
+	public function getFacing() : int{
+		return $this->facing;
+	}
+
+	/**
+	 * @param int $facing
+	 */
+	public function setFacing(int $facing) : void{
+		$this->facing = $facing;
+	}
+
+	/**
+	 * @return Item|null
+	 */
+	public function getFramedItem() : ?Item{
+		return clone $this->framedItem;
+	}
+
+	/**
+	 * @param Item|null $item
+	 */
+	public function setFramedItem(?Item $item) : void{
+		if($item === null or $item->isNull()){
+			$this->framedItem = null;
+			$this->itemRotation = 0;
+		}else{
+			$this->framedItem = clone $item;
 		}
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getItemRotation() : int{
+		return $this->itemRotation;
+	}
+
+	/**
+	 * @param int $itemRotation
+	 */
+	public function setItemRotation(int $itemRotation) : void{
+		$this->itemRotation = $itemRotation;
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getItemDropChance() : float{
+		return $this->itemDropChance;
+	}
+
+	/**
+	 * @param float $itemDropChance
+	 */
+	public function setItemDropChance(float $itemDropChance) : void{
+		$this->itemDropChance = $itemDropChance;
+	}
+
+	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($this->framedItem !== null){
+			$this->itemRotation = ($this->itemRotation + 1) % 8;
+			$this->itemRotation %= 8;
+		}elseif(!$item->isNull()){
+			$this->framedItem = $item->pop();
+		}else{
+			return true;
+		}
+
+		$this->level->setBlock($this, $this);
 
 		return true;
 	}
@@ -82,13 +174,8 @@ class ItemFrame extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$drops = parent::getDropsForCompatibleTool($item);
-
-		$tile = $this->level->getTile($this);
-		if($tile instanceof TileItemFrame){
-			$tileItem = $tile->getItem();
-			if(lcg_value() <= $tile->getItemDropChance() and !$tileItem->isNull()){
-				$drops[] = $tileItem;
-			}
+		if($this->framedItem !== null and lcg_value() <= $this->itemDropChance){
+			$drops[] = clone $this->framedItem;
 		}
 
 		return $drops;

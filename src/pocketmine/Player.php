@@ -26,6 +26,7 @@ namespace pocketmine;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\ItemFrame;
 use pocketmine\block\UnknownBlock;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -135,7 +136,6 @@ use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
 use pocketmine\permission\PermissionManager;
 use pocketmine\plugin\Plugin;
-use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
@@ -2491,25 +2491,24 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
-		$tile = $this->level->getTileAt($packet->x, $packet->y, $packet->z);
-		if($tile instanceof ItemFrame){
-			//TODO: use facing blockstate property instead of damage value
-			$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $tile->getBlock(), null, 5 - $tile->getBlock()->getDamage(), PlayerInteractEvent::LEFT_CLICK_BLOCK);
+		$block = $this->level->getBlockAt($packet->x, $packet->y, $packet->z);
+		if($block instanceof ItemFrame){
+			$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $block, null, $block->getFacing(), PlayerInteractEvent::LEFT_CLICK_BLOCK);
 			if($this->isSpectator()){
 				$ev->setCancelled();
 			}
 
 			$ev->call();
 			if($ev->isCancelled()){
-				$this->level->sendBlocks([$this], [$tile]);
+				$this->level->sendBlocks([$this], [$block]);
 				return true;
 			}
 
-			if(lcg_value() <= $tile->getItemDropChance()){
-				$this->level->dropItem($tile->getBlock(), $tile->getItem());
+			if(lcg_value() <= $block->getItemDropChance()){
+				$this->level->dropItem($block->add(0.5, 0.5, 0.5), $block->getFramedItem());
 			}
-			$tile->setItem(null);
-			$tile->setItemRotation(0);
+			$block->setFramedItem(null);
+			$this->level->setBlock($block, $block);
 		}
 
 		return true;
