@@ -24,11 +24,10 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\hostile;
 
-use pocketmine\entity\effect\Effect;
-use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
-use pocketmine\nbt\tag\CompoundTag;
 
 class CaveSpider extends Spider{
 
@@ -37,8 +36,8 @@ class CaveSpider extends Spider{
 	public $width = 0.7;
 	public $height = 0.5;
 
-	protected function initEntity(CompoundTag $nbt) : void{
-		parent::initEntity($nbt);
+	protected function initEntity() : void{
+		parent::initEntity();
 
 		$this->setMaxHealth(12);
 		$this->setHealth(12);

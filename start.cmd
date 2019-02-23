@@ -1,5 +1,5 @@
 @echo off
-TITLE PocketMine-MP server software for Minecraft: Pocket Edition
+TITLE Altay server software for Minecraft: Bedrock Edition
 cd /d %~dp0
 
 if exist bin\php\php.exe (
@@ -9,13 +9,17 @@ if exist bin\php\php.exe (
 	set PHP_BINARY=php
 )
 
-if exist PocketMine-MP.phar (
-	set POCKETMINE_FILE=PocketMine-MP.phar
+if exist Altay.phar (
+	set POCKETMINE_FILE=Altay.phar
 ) else (
-	echo PocketMine-MP.phar not found
-	echo Downloads can be found at https://github.com/pmmp/PocketMine-MP/releases
-	pause
-	exit 1
+	if exist src\pocketmine\PocketMine.php (
+		set POCKETMINE_FILE=src\pocketmine\PocketMine.php
+	) else (
+		echo Altay.phar not found
+		echo Downloads can be found at https://github.com/TuranicTeam/Altay/releases
+		pause
+		exit 1
+	)
 )
 
 if exist bin\mintty.exe (

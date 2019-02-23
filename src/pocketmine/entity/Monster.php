@@ -39,7 +39,7 @@ abstract class Monster extends Mob{
 		return false;
 	}
 
-	protected function entityBaseTick(int $diff = 1) : bool{
+	public function entityBaseTick(int $diff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($diff);
 
 		if($this->isAlive()){

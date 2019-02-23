@@ -240,8 +240,8 @@ abstract class Mob extends Living{
 			$block = $this->level->getBlock($this);
 		}
 
-		$blockUp = $block->getSide(Facing::UP);
-		$blockUpUp = $block->getSide(Facing::UP, 2);
+		$blockUp = $block->getSide(Vector3::SIDE_UP);
+		$blockUpUp = $block->getSide(Vector3::SIDE_UP, 2);
 
 		$bb = $block->getBoundingBox();
 
