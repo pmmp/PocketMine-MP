@@ -27,6 +27,7 @@ declare(strict_types=1);
  */
 namespace pocketmine;
 
+use FolderPluginLoader\FolderPluginLoader;
 use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
@@ -55,6 +56,7 @@ use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
+use pocketmine\maps\MapManager;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
 use pocketmine\metadata\PlayerMetadataStore;
@@ -338,8 +340,14 @@ class Server{
 	/** @var mixed[] */
 	private $propertyCache = [];
 
+	/** @var mixed[] */
+	private $altayPropertyCache = [];
+
 	/** @var Config */
 	private $config;
+
+	/** @var Config */
+	private $altayConfig;
 
 	/** @var Player[] */
 	private $players = [];
@@ -355,6 +363,29 @@ class Server{
 
 	/** @var Level */
 	private $levelDefault = null;
+	/** @var Level */
+	private $levelNether = null;
+	/** @var Level */
+	private $levelTheEnd = null;
+
+	/** @var bool */
+	public $loadIncompatibleApi = true;
+	/** @var bool */
+	public $keepInventory = false;
+	/** @var bool */
+	public $keepExperience = false;
+	/** @var bool */
+	public $folderPluginLoader = true;
+	/** @var bool */
+	public $mobAiEnabled = true;
+
+	public function loadAltayConfig(){
+		$this->loadIncompatibleApi = $this->getAltayProperty("developer.load-incompatible-api", true);
+		$this->keepInventory = $this->getAltayProperty("player.keep-inventory", false);
+		$this->keepExperience = $this->getAltayProperty("player.keep-experience", false);
+		$this->folderPluginLoader = $this->getAltayProperty("developer.folder-plugin-loader", true);
+		$this->mobAiEnabled = $this->getAltayProperty("level.enable-mob-ai", false);
+	}
 
 	/**
 	 * @return string
@@ -1012,6 +1043,46 @@ class Server{
 	}
 
 	/**
+	 * @return Level|null
+	 */
+	public function getNetherLevel() : ?Level{
+		return $this->levelNether;
+	}
+
+	/**
+	 * Sets the nether level to a different level
+	 * This won't change the level-name property,
+	 * it only affects the server on runtime
+	 *
+	 * @param Level|null $level
+	 */
+	public function setNetherLevel(?Level $level) : void{
+		if($level === null or ($this->isLevelLoaded($level->getFolderName()) and $level !== $this->levelNether)){
+			$this->levelNether = $level;
+		}
+	}
+
+	/**
+	 * @return Level|null
+	 */
+	public function getTheEndLevel() : ?Level{
+		return $this->levelTheEnd;
+	}
+
+	/**
+	 * Sets the the end level to a different level
+	 * This won't change the level-name property,
+	 * it only affects the server on runtime
+	 *
+	 * @param Level|null $level
+	 */
+	public function setTheEndLevel(?Level $level) : void{
+		if($level === null or ($this->isLevelLoaded($level->getFolderName()) and $level !== $this->levelTheEnd)){
+			$this->levelTheEnd = $level;
+		}
+	}
+
+	/**
 	 * @param string $name
 	 *
 	 * @return bool
@@ -1244,6 +1315,14 @@ class Server{
 		}
 
 		return $this->propertyCache[$variable] ?? $defaultValue;
+	}
+
+	public function getAltayProperty(string $variable, $defaultValue = null){
+		if(!array_key_exists($variable, $this->altayPropertyCache)){
+			$this->altayPropertyCache[$variable] = $this->altayConfig->getNested($variable);
+		}
+
+		return $this->altayPropertyCache[$variable] ?? $defaultValue;
 	}
 
 	/**
@@ -1498,6 +1577,10 @@ class Server{
 				mkdir($pluginPath, 0777);
 			}
 
+			if(!file_exists($pluginPath . "Altay/")){
+				mkdir($pluginPath . "Altay/", 0777);
+			}
+
 			$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 			$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
@@ -1510,6 +1593,14 @@ class Server{
 				@file_put_contents($this->dataPath . "pocketmine.yml", $content);
 			}
 			$this->config = new Config($this->dataPath . "pocketmine.yml", Config::YAML, []);
+
+			$this->logger->info("Loading altay.yml...");
+			if(!file_exists($this->dataPath . "altay.yml")){
+				$content = file_get_contents(\pocketmine\RESOURCE_PATH . "altay.yml");
+				@file_put_contents($this->dataPath . "altay.yml", $content);
+			}
+			$this->altayConfig = new Config($this->dataPath . "altay.yml", Config::YAML, []);
+			$this->loadAltayConfig();
 
 			$this->logger->info("Loading server properties...");
 			$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
@@ -1701,6 +1792,9 @@ class Server{
 			ItemFactory::init();
 			Item::initCreativeItems();
 			Biome::init();
+			MapManager::initMaps();
+
+			$this->commandMap = new SimpleCommandMap($this);
 
 			$this->craftingManager = new CraftingManager();
 
@@ -1708,6 +1802,7 @@ class Server{
 
 			$this->pluginManager = new PluginManager($this, $this->commandMap, ((bool) $this->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR);
 			$this->profilingTickRate = (float) $this->getProperty("settings.profile-report-trigger", 20);
+			$this->pluginManager->registerInterface(new FolderPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
@@ -1765,6 +1860,32 @@ class Server{
 				$this->setDefaultLevel($this->getLevelByName($default));
 			}
 
+			if($this->isAllowNether() and $this->getNetherLevel() === null){
+				/** @var string $netherLevelName */
+				$netherLevelName = $this->getAltayProperty("dimensions.nether.level-name", "nether");
+				if(trim($netherLevelName) == ""){
+					$netherLevelName = "nether";
+				}
+				if(!$this->loadLevel($netherLevelName)){
+					$this->generateLevel($netherLevelName, time(), GeneratorManager::getGenerator("hell"));
+				}
+
+				$this->setNetherLevel($this->levelManager->getLevelByName($netherLevelName));
+			}
+
+			if($this->isAllowTheEnd() and $this->getTheEndLevel() === null){
+				/** @var string $endLevelName */
+				$endLevelName = $this->getAltayProperty("dimensions.the-end.level-name", "end");
+				if(trim($endLevelName) == ""){
+					$endLevelName = "end";
+				}
+				if(!$this->loadLevel($endLevelName)){
+					$this->generateLevel($endLevelName, time(), GeneratorManager::getGenerator("end"));
+				}
+
+				$this->setTheEndLevel($this->levelManager->getLevelByName($endLevelName));
+			}
+
 			if($this->properties->hasChanged()){
 				$this->properties->save();
 			}
@@ -1786,6 +1907,14 @@ class Server{
 		}catch(\Throwable $e){
 			$this->exceptionHandler($e);
 		}
+	}
+
+	public function isAllowNether() : bool{
+		return (bool) $this->getAltayProperty("dimensions.nether.active", true);
+	}
+
+	public function isAllowTheEnd() : bool{
+		return (bool) $this->getAltayProperty("dimensions.the-end.active", true);
 	}
 
 	/**
@@ -2120,6 +2249,9 @@ class Server{
 			foreach($this->getLevels() as $level){
 				$this->unloadLevel($level, true);
 			}
+
+			$this->getLogger()->debug("Saving all maps");
+			MapManager::saveMaps();
 
 			$this->getLogger()->debug("Removing event handlers");
 			HandlerList::unregisterAll();
