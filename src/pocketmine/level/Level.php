@@ -975,8 +975,12 @@ class Level implements ChunkManager, Metadatable{
 				$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
 				$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf);
 			}
-
 			$packets[] = $pk;
+
+			$tile = $this->getTileAt($b->x, $b->y, $b->z);
+			if($tile instanceof Spawnable){
+				$packets[] = $tile->createSpawnPacket();
+			}
 		}
 
 		$this->server->broadcastPackets($target, $packets);

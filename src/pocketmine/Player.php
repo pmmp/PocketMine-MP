@@ -2254,13 +2254,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->level->sendBlocks([$this], $blocks);
 
-		foreach($blocks as $b){
-			$tile = $this->level->getTile($b);
-			if($tile instanceof Spawnable){
-				$tile->spawnTo($this);
-			}
-		}
-
 		return false;
 	}
 
@@ -2490,7 +2483,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 				throw new BadPacketException($e->getMessage(), 0, $e);
 			}
 			if(!$t->updateCompoundTag($compound, $this)){
-				$t->spawnTo($this);
+				$this->level->sendBlocks([$this], [$pos]);
 			}
 		}
 
@@ -2508,7 +2501,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 			$ev->call();
 			if($ev->isCancelled()){
-				$tile->spawnTo($this);
+				$this->level->sendBlocks([$this], [$tile]);
 				return true;
 			}
 

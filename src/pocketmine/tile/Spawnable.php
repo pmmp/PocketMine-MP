@@ -50,16 +50,6 @@ abstract class Spawnable extends Tile{
 		return $pk;
 	}
 
-	public function spawnTo(Player $player) : bool{
-		if($this->closed){
-			return false;
-		}
-
-		$player->sendDataPacket($this->createSpawnPacket());
-
-		return true;
-	}
-
 	/**
 	 * Flags the tile as modified, so that updates will be broadcasted at the next available opportunity.
 	 * This MUST be called any time a change is made that players must be able to see.
