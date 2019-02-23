@@ -271,9 +271,9 @@ class PluginManager{
 				}
 
 				if($this->graylist !== null and !$this->graylist->isAllowed($name)){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+					$this->server->getLogger()->notice($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 						$name,
-						$this->server->getLanguage()->translateString("Disallowed by graylist")
+						"Disallowed by graylist"
 					]));
 					continue;
 				}
