@@ -855,9 +855,12 @@ class Level implements ChunkManager, Metadatable{
 				unset($this->updateTiles[$blockHash]);
 			}
 			if(!$tile->isClosed() and $tile instanceof Spawnable and $tile->isDirty()){
-				$this->clearChunkCache($tile->getFloorX() >> 4, $tile->getFloorZ() >> 4);
-				//TODO: merge this with block-updating (it'll send useless data if a full-chunk resend happens)
-				$this->broadcastPacketToViewers($tile, $tile->createSpawnPacket());
+				$chunkHash = Level::chunkHash($tile->getFloorX() >> 4, $tile->getFloorZ() >> 4);
+				if(!isset($this->changedBlocks[$chunkHash])){
+					$this->changedBlocks[$chunkHash] = [$blockHash => $tile];
+				}else{
+					$this->changedBlocks[$chunkHash][$blockHash] = $tile;
+				}
 				$tile->setDirty(false);
 			}
 		}
