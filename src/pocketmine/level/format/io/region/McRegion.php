@@ -65,10 +65,10 @@ class McRegion extends RegionLevelProvider{
 			for($z = 0; $z < 16; ++$z){
 				for($y = 0; $y < 8; ++$y){
 					$subChunk = $subChunks[$y];
-					$ids .= $subChunk->getBlockIdColumn($x, $z);
-					$data .= $subChunk->getBlockDataColumn($x, $z);
-					$skyLight .= $subChunk->getBlockSkyLightColumn($x, $z);
-					$blockLight .= $subChunk->getBlockLightColumn($x, $z);
+					$ids .= substr($subChunk->getBlockIdArray(), ($x << 8) | ($z << 4), 16);
+					$data .= substr($subChunk->getBlockDataArray(), ($x << 7) | ($z << 3), 8);
+					$skyLight .= substr($subChunk->getBlockSkyLightArray(), ($x << 7) | ($z << 3), 8);
+					$blockLight .= substr($subChunk->getBlockLightArray(), ($x << 7) | ($z << 3), 8);
 				}
 			}
 		}

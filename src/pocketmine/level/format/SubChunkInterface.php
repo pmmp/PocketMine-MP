@@ -117,38 +117,6 @@ interface SubChunkInterface{
 	public function getHighestBlockAt(int $x, int $z) : int;
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return string
-	 */
-	public function getBlockIdColumn(int $x, int $z) : string;
-
-	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return string
-	 */
-	public function getBlockDataColumn(int $x, int $z) : string;
-
-	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return string
-	 */
-	public function getBlockLightColumn(int $x, int $z) : string;
-
-	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return string
-	 */
-	public function getBlockSkyLightColumn(int $x, int $z) : string;
-
-	/**
 	 * @return string
 	 */
 	public function getBlockIdArray() : string;

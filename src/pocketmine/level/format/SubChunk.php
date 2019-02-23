@@ -30,7 +30,6 @@ use function defined;
 use function ord;
 use function str_repeat;
 use function strlen;
-use function substr;
 use function substr_count;
 
 if(!defined(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY')){
@@ -143,22 +142,6 @@ class SubChunk implements SubChunkInterface{
 		}
 
 		return -1; //highest block not in this subchunk
-	}
-
-	public function getBlockIdColumn(int $x, int $z) : string{
-		return substr($this->ids, ($x << 8) | ($z << 4), 16);
-	}
-
-	public function getBlockDataColumn(int $x, int $z) : string{
-		return substr($this->data, ($x << 7) | ($z << 3), 8);
-	}
-
-	public function getBlockLightColumn(int $x, int $z) : string{
-		return substr($this->blockLight, ($x << 7) | ($z << 3), 8);
-	}
-
-	public function getBlockSkyLightColumn(int $x, int $z) : string{
-		return substr($this->skyLight, ($x << 7) | ($z << 3), 8);
 	}
 
 	public function getBlockIdArray() : string{
