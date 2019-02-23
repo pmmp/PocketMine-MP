@@ -1782,8 +1782,6 @@ class Server{
 			Timings::init();
 			TimingsHandler::setEnabled((bool) $this->getProperty("settings.enable-profiling", false));
 
-			$this->commandMap = new SimpleCommandMap($this);
-
 			Entity::init();
 			Tile::init();
 			BlockFactory::init();
