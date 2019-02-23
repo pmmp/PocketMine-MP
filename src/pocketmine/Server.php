@@ -105,6 +105,7 @@ use function array_shift;
 use function array_sum;
 use function base64_encode;
 use function bin2hex;
+use function copy;
 use function count;
 use function define;
 use function explode;
@@ -1241,14 +1242,15 @@ class Server{
 
 			$pluginGraylist = null;
 			$graylistFile = $this->dataPath . "plugin_list.yml";
-			if(file_exists($graylistFile)){
-				try{
-					$pluginGraylist = PluginGraylist::fromArray(yaml_parse(file_get_contents($this->dataPath . "plugin_list.yml")));
-				}catch(\InvalidArgumentException $e){
-					$this->logger->emergency("Failed to load $graylistFile: " . $e->getMessage());
-					$this->forceShutdown();
-					return;
-				}
+			if(!file_exists($graylistFile)){
+				copy(\pocketmine\RESOURCE_PATH . 'plugin_list.yml', $graylistFile);
+			}
+			try{
+				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(file_get_contents($graylistFile)));
+			}catch(\InvalidArgumentException $e){
+				$this->logger->emergency("Failed to load $graylistFile: " . $e->getMessage());
+				$this->forceShutdown();
+				return;
 			}
 			$this->pluginManager = new PluginManager($this, ((bool) $this->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR, $pluginGraylist);
 			$this->profilingTickRate = (float) $this->getProperty("settings.profile-report-trigger", 20);

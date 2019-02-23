@@ -36,9 +36,9 @@ class PluginGraylist{
 	/** @var bool */
 	private $isWhitelist = false;
 
-	public function __construct(array $plugins = [], bool $isWhitelist = false){
+	public function __construct(array $plugins = [], bool $whitelist = false){
 		$this->plugins = array_flip($plugins);
-		$this->isWhitelist = $isWhitelist;
+		$this->isWhitelist = $whitelist;
 	}
 
 	/**
@@ -68,8 +68,8 @@ class PluginGraylist{
 
 	public static function fromArray(array $array) : PluginGraylist{
 		$v = new Validator();
-		$v->optional("whitelist")->bool();
-		$v->required("plugins")->isArray()->callback(function(array $elements) : bool{ return count(array_filter($elements, '\is_string')) === count($elements); });
+		$v->required("mode")->inArray(['whitelist', 'blacklist'], true);
+		$v->required("plugins")->isArray()->allowEmpty(true)->callback(function(array $elements) : bool{ return count(array_filter($elements, '\is_string')) === count($elements); });
 
 		$result = $v->validate($array);
 		if($result->isNotValid()){
@@ -79,12 +79,12 @@ class PluginGraylist{
 			}
 			throw new \InvalidArgumentException("Invalid data: " . implode(", ", $messages));
 		}
-		return new PluginGraylist($array["plugins"], $array["whitelist"]);
+		return new PluginGraylist($array["plugins"], $array["mode"] === 'whitelist');
 	}
 
 	public function toArray() : array{
 		return [
-			"whitelist" => $this->isWhitelist,
+			"mode" => $this->isWhitelist ? 'whitelist' : 'blacklist',
 			"plugins" => $this->plugins
 		];
 	}
