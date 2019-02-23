@@ -32,6 +32,7 @@ use pocketmine\tile\ItemFrame as TileItemFrame;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
+	public const ROTATIONS = 8;
 
 	/** @var int */
 	protected $facing = Facing::NORTH;
@@ -61,7 +62,7 @@ class ItemFrame extends Flowable{
 			if($this->framedItem->isNull()){
 				$this->framedItem = null;
 			}
-			$this->itemRotation = $tile->getItemRotation() % 8;
+			$this->itemRotation = $tile->getItemRotation() % self::ROTATIONS;
 			$this->itemDropChance = $tile->getItemDropChance();
 		}
 	}
@@ -143,8 +144,7 @@ class ItemFrame extends Flowable{
 
 	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->framedItem !== null){
-			$this->itemRotation = ($this->itemRotation + 1) % 8;
-			$this->itemRotation %= 8;
+			$this->itemRotation = ($this->itemRotation + 1) % self::ROTATIONS;
 		}elseif(!$item->isNull()){
 			$this->framedItem = $item->pop();
 		}else{
