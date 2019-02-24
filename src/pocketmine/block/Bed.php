@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\item\Bed as ItemBed;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
@@ -175,7 +176,9 @@ class Bed extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$this->color = DyeColor::fromMagicNumber($item->getDamage()); //TODO: replace this with a proper colour getter
+		if($item instanceof ItemBed){ //TODO: the item should do this
+			$this->color = $item->getColor();
+		}
 		$down = $this->getSide(Facing::DOWN);
 		if(!$down->isTransparent()){
 			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;

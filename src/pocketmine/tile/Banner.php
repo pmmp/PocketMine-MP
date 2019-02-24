@@ -123,7 +123,7 @@ class Banner extends Spawnable implements Nameable{
 		parent::copyDataFromItem($item);
 		$this->copyNameFromItem($item);
 		if($item instanceof ItemBanner){
-			$this->setBaseColor($item->getBaseColor());
+			$this->setBaseColor($item->getColor());
 			if(($patterns = $item->getPatterns()) !== null){
 				$this->setPatterns($patterns);
 			}

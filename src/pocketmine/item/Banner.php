@@ -34,13 +34,23 @@ use pocketmine\tile\Banner as TileBanner;
 use function assert;
 
 class Banner extends Item{
-	public const TAG_BASE = TileBanner::TAG_BASE;
 	public const TAG_PATTERNS = TileBanner::TAG_PATTERNS;
 	public const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
 	public const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
-	public function __construct(int $variant, string $name){
+	/** @var DyeColor */
+	private $color;
+
+	public function __construct(int $variant, string $name, DyeColor $color){
 		parent::__construct(self::BANNER, $variant, $name);
+		$this->color = $color;
+	}
+
+	/**
+	 * @return DyeColor
+	 */
+	public function getColor() : DyeColor{
+		return $this->color;
 	}
 
 	public function getBlock() : Block{
@@ -49,27 +59,6 @@ class Banner extends Item{
 
 	public function getMaxStackSize() : int{
 		return 16;
-	}
-
-	/**
-	 * Returns the color of the banner base.
-	 *
-	 * @return DyeColor
-	 */
-	public function getBaseColor() : DyeColor{
-		return DyeColor::fromMagicNumber($this->getNamedTag()->getInt(self::TAG_BASE, $this->getDamage()), true);
-	}
-
-	/**
-	 * Sets the color of the banner base.
-	 * Banner items have to be resent to see the changes in the inventory.
-	 *
-	 * @param DyeColor $color
-	 */
-	public function setBaseColor(DyeColor $color) : void{
-		$namedTag = $this->getNamedTag();
-		$namedTag->setInt(self::TAG_BASE, $color->getInvertedMagicNumber());
-		$this->setNamedTag($namedTag);
 	}
 
 	/**
@@ -224,9 +213,6 @@ class Banner extends Item{
 
 	public function correctNBT() : void{
 		$tag = $this->getNamedTag();
-		if(!$tag->hasTag(self::TAG_BASE, IntTag::class)){
-			$tag->setInt(self::TAG_BASE, DyeColor::BLACK()->getInvertedMagicNumber());
-		}
 
 		if(!$tag->hasTag(self::TAG_PATTERNS, ListTag::class)){
 			$tag->setTag(new ListTag(self::TAG_PATTERNS));

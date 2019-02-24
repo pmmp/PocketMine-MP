@@ -25,11 +25,23 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\utils\DyeColor;
 
 class Bed extends Item{
 
-	public function __construct(int $variant, string $name){
+	/** @var DyeColor */
+	private $color;
+
+	public function __construct(int $variant, string $name, DyeColor $color){
 		parent::__construct(self::BED, $variant, $name);
+		$this->color = $color;
+	}
+
+	/**
+	 * @return DyeColor
+	 */
+	public function getColor() : DyeColor{
+		return $this->color;
 	}
 
 	public function getBlock() : Block{

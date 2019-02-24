@@ -245,9 +245,9 @@ class ItemFactory{
 		foreach(DyeColor::getAll() as $color){
 			//TODO: use colour object directly
 			//TODO: add interface to dye-colour objects
-			self::register(new Dye($dyeMap[$color] ?? $color->getInvertedMagicNumber(), $color->getDisplayName() . " Dye"));
-			self::register(new Bed($color->getMagicNumber(), $color->getDisplayName() . " Bed"));
-			self::register(new Banner($color->getInvertedMagicNumber(), $color->getDisplayName() . " Banner"));
+			self::register(new Dye($dyeMap[$color] ?? $color->getInvertedMagicNumber(), $color->getDisplayName() . " Dye", $color));
+			self::register(new Bed($color->getMagicNumber(), $color->getDisplayName() . " Bed", $color));
+			self::register(new Banner($color->getInvertedMagicNumber(), $color->getDisplayName() . " Banner", $color));
 		}
 
 		foreach(Potion::ALL as $type){
