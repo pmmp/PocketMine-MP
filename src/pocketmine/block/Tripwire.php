@@ -35,7 +35,7 @@ class Tripwire extends Flowable{
 	protected $disarmed = false;
 
 	protected function writeStateToMeta() : int{
-		return ($this->triggered ? 0x01 : 0) | ($this->suspended ? 0x02: 0) | ($this->connected ? 0x04 : 0) | ($this->disarmed ? 0x08 : 0);
+		return ($this->triggered ? 0x01 : 0) | ($this->suspended ? 0x02 : 0) | ($this->connected ? 0x04 : 0) | ($this->disarmed ? 0x08 : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
