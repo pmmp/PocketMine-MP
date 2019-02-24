@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use PHPUnit\Framework\TestCase;
+use function file_get_contents;
+use function json_decode;
 
 class BlockTest extends TestCase{
 
@@ -136,6 +138,17 @@ class BlockTest extends TestCase{
 			self::assertNotNull($value, "Light filter value missing for $id");
 			self::assertLessThanOrEqual(15, $value, "Light filter value for $id is larger than the expected 15");
 			self::assertGreaterThan(0, $value, "Light filter value for $id must be larger than 0");
+		}
+	}
+
+	public function testConsistency() : void{
+		$list = json_decode(file_get_contents(__DIR__ . '/block_factory_consistency_check.json'), true);
+		$states = BlockFactory::getAllKnownStates();
+		foreach($states as $k => $state){
+			self::assertArrayHasKey($k, $list, "New block state $k (" . $state->getName() . ") - consistency check may need regenerating");
+		}
+		foreach($list as $k => $name){
+			self::assertArrayHasKey($k, $states, "Missing previously-known block state $k ($name)");
 		}
 	}
 }
