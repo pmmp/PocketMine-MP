@@ -66,7 +66,7 @@ abstract class Stem extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			$this->getItem()->setCount(mt_rand(0, 2))
+			$this->asItem()->setCount(mt_rand(0, 2))
 		];
 	}
 }

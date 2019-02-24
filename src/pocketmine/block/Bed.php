@@ -202,7 +202,7 @@ class Bed extends Transparent{
 		return [];
 	}
 
-	public function getItem() : Item{
+	public function asItem() : Item{
 		return ItemFactory::get($this->idInfo->getItemId(), $this->color->getMagicNumber());
 	}
 

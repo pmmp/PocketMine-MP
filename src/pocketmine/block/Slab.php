@@ -136,6 +136,6 @@ abstract class Slab extends Transparent{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [$this->getItem()->setCount($this->slabType === SlabType::DOUBLE() ? 2 : 1)];
+		return [$this->asItem()->setCount($this->slabType === SlabType::DOUBLE() ? 2 : 1)];
 	}
 }

@@ -95,7 +95,7 @@ class Skull extends Flowable{
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function getItem() : Item{
+	public function asItem() : Item{
 		return ItemFactory::get(Item::SKULL, $this->type);
 	}
 
