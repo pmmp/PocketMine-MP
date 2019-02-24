@@ -3340,8 +3340,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			throw new \InvalidArgumentException("Cannot remove fixed window $id (" . get_class($inventory) . ") from " . $this->getName());
 		}
 
-		$inventory->close($this);
 		if($id !== null){
+			$inventory->close($this);
 			unset($this->windows[$hash], $this->windowIndex[$id], $this->permanentWindows[$id]);
 		}
 	}
