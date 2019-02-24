@@ -31,6 +31,7 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\item\ItemIds;
 use pocketmine\level\Position;
 use function array_fill;
+use function array_filter;
 use function file_get_contents;
 use function get_class;
 use function json_decode;
@@ -674,5 +675,12 @@ class BlockFactory{
 		self::$staticRuntimeIdMap[($legacyId << 4) | $legacyMeta] = $staticRuntimeId;
 		self::$legacyIdMap[$staticRuntimeId] = ($legacyId << 4) | $legacyMeta;
 		self::$lastRuntimeId = max(self::$lastRuntimeId, $staticRuntimeId);
+	}
+
+	/**
+	 * @return Block[]
+	 */
+	public static function getAllKnownStates() : array{
+		return array_filter(self::$fullList->toArray(), function(?Block $v) : bool{ return $v !== null; });
 	}
 }
