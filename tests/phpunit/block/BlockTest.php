@@ -146,9 +146,11 @@ class BlockTest extends TestCase{
 		$states = BlockFactory::getAllKnownStates();
 		foreach($states as $k => $state){
 			self::assertArrayHasKey($k, $list, "New block state $k (" . $state->getName() . ") - consistency check may need regenerating");
+			self::assertSame($list[$k], $state->getName());
 		}
 		foreach($list as $k => $name){
 			self::assertArrayHasKey($k, $states, "Missing previously-known block state $k ($name)");
+			self::assertSame($name, $states[$k]->getName());
 		}
 	}
 }
