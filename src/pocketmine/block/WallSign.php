@@ -39,10 +39,6 @@ class WallSign extends SignPost{
 		$this->facing = BlockDataValidator::readHorizontalFacing($stateMeta);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b111;
-	}
-
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::opposite($this->facing))->getId() === self::AIR){
 			$this->getLevel()->useBreakOn($this);

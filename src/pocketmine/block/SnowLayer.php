@@ -50,10 +50,6 @@ class SnowLayer extends Flowable implements Fallable{
 		$this->layers = BlockDataValidator::readBoundedInt("layers", $stateMeta + 1, 1, 8);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b111;
-	}
-
 	public function canBeReplaced() : bool{
 		return $this->layers < 8;
 	}

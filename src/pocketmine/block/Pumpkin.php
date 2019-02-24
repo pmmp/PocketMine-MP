@@ -43,10 +43,6 @@ class Pumpkin extends Solid{
 		return Bearing::fromFacing($this->facing);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b11;
-	}
-
 	public function getHardness() : float{
 		return 1;
 	}

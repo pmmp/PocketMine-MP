@@ -77,10 +77,6 @@ abstract class Liquid extends Transparent{
 		$this->still = $id === $this->idInfo->getSecondId();
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
 	public function hasEntityCollision() : bool{
 		return true;
 	}

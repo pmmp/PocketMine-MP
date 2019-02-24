@@ -54,10 +54,6 @@ class Trapdoor extends Transparent{
 		$this->open = ($stateMeta & self::MASK_OPENED) !== 0;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
 	public function getHardness() : float{
 		return 3;
 	}

@@ -43,10 +43,6 @@ class FlowerPot extends Flowable{
 		$this->occupied = $stateMeta !== 0;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111; //vanilla uses various values, we only care about 1 and 0 for PE
-	}
-
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return AxisAlignedBB::one()->contract(3 / 16, 0, 3 / 16)->trim(Facing::UP, 5 / 8);
 	}

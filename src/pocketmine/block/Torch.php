@@ -39,11 +39,8 @@ class Torch extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
+		$stateMeta &= 0x07;
 		$this->facing = $stateMeta === 5 ? Facing::UP : BlockDataValidator::readHorizontalFacing(6 - $stateMeta);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
 	}
 
 	public function getLightLevel() : int{

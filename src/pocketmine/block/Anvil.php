@@ -50,11 +50,7 @@ class Anvil extends Transparent implements Fallable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b11;
+		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
 	}
 
 	public function getHardness() : float{

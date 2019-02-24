@@ -43,8 +43,6 @@ use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\tile\TileFactory;
 use function array_merge;
-use function assert;
-use function dechex;
 use function get_class;
 use const PHP_INT_MAX;
 
@@ -82,9 +80,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param string          $name English name of the block type (TODO: implement translations)
 	 */
 	public function __construct(BlockIdentifier $idInfo, string $name){
-		if(($idInfo->getVariant() & $this->getStateBitmask()) !== 0){
-			throw new \InvalidArgumentException("Variant 0x" . dechex($idInfo->getVariant()) . " collides with state bitmask 0x" . dechex($this->getStateBitmask()));
-		}
 		$this->idInfo = $idInfo;
 		$this->fallbackName = $name;
 	}
@@ -123,9 +118,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int
 	 */
 	public function getDamage() : int{
-		$stateMeta = $this->writeStateToMeta();
-		assert(($stateMeta & ~$this->getStateBitmask()) === 0);
-		return $this->idInfo->getVariant() | $stateMeta;
+		return $this->idInfo->getVariant() | $this->writeStateToMeta();
 	}
 
 	protected function writeStateToMeta() : int{
@@ -166,15 +159,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		if($oldTile === null and $tileType !== null){
 			$this->level->addTile(TileFactory::create($tileType, $this->level, $this->asVector3()));
 		}
-	}
-
-	/**
-	 * Returns a bitmask used to extract state bits from block metadata.
-	 *
-	 * @return int
-	 */
-	public function getStateBitmask() : int{
-		return 0;
 	}
 
 	/**

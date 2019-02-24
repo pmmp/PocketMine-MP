@@ -53,10 +53,6 @@ class Sapling extends Flowable{
 		$this->ready = ($stateMeta & 0x08) !== 0;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1000;
-	}
-
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::FARMLAND){

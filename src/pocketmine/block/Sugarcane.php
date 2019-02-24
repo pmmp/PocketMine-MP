@@ -44,10 +44,6 @@ class Sugarcane extends Flowable{
 		$this->age = BlockDataValidator::readBoundedInt("age", $stateMeta, 0, 15);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
 	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
 			if($this->getSide(Facing::DOWN)->getId() !== self::SUGARCANE_BLOCK){

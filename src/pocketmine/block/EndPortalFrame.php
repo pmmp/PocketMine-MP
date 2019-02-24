@@ -47,10 +47,6 @@ class EndPortalFrame extends Solid{
 		$this->eye = ($stateMeta & 0x04) !== 0;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b111;
-	}
-
 	public function getLightLevel() : int{
 		return 1;
 	}

@@ -61,10 +61,6 @@ abstract class Slab extends Transparent{
 		}
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1000;
-	}
-
 	public function isTransparent() : bool{
 		return $this->slabType !== SlabType::DOUBLE();
 	}

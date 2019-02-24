@@ -46,10 +46,6 @@ class StandingBanner extends Transparent{
 		$this->rotation = $stateMeta;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
 	public function getHardness() : float{
 		return 1;
 	}

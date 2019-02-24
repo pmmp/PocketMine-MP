@@ -37,8 +37,4 @@ abstract class WeightedPressurePlate extends PressurePlate{
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->power = BlockDataValidator::readBoundedInt("power", $stateMeta, 0, 15);
 	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
 }

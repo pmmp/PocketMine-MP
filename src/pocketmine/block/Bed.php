@@ -68,10 +68,6 @@ class Bed extends Transparent{
 		$this->head = ($stateMeta & self::BITFLAG_HEAD) !== 0;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		//read extra state information from the tile - this is an ugly hack

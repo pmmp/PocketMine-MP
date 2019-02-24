@@ -45,10 +45,6 @@ class Tripwire extends Flowable{
 		$this->disarmed = ($stateMeta & 0x08) !== 0;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
 	public function isAffectedBySilkTouch() : bool{
 		return false;
 	}

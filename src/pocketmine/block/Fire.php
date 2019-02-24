@@ -48,10 +48,6 @@ class Fire extends Flowable{
 		$this->age = BlockDataValidator::readBoundedInt("age", $stateMeta, 0, 15);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
 	public function hasEntityCollision() : bool{
 		return true;
 	}

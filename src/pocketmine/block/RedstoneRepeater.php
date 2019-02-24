@@ -60,10 +60,6 @@ class RedstoneRepeater extends Flowable{
 		return Bearing::fromFacing($this->facing) | (($this->delay - 1) << 2);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return AxisAlignedBB::one()->trim(Facing::UP, 7 / 8);
 	}
