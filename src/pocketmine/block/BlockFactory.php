@@ -275,7 +275,7 @@ class BlockFactory{
 		self::register(new Torch(new BID(Block::TORCH), "Torch"));
 		self::register(new Trapdoor(new BID(Block::TRAPDOOR), "Wooden Trapdoor"));
 		self::register(new TrappedChest(new BID(Block::TRAPPED_CHEST, 0, null, \pocketmine\tile\Chest::class), "Trapped Chest"));
-		self::register(new Tripwire(new BID(Block::TRIPWIRE), "Tripwire"));
+		self::register(new Tripwire(new BID(Block::TRIPWIRE, 0, ItemIds::STRING), "Tripwire"));
 		self::register(new TripwireHook(new BID(Block::TRIPWIRE_HOOK), "Tripwire Hook"));
 		self::register(new UnderwaterTorch(new BID(Block::UNDERWATER_TORCH), "Underwater Torch"));
 		self::register(new Vine(new BID(Block::VINE), "Vines"));
