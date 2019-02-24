@@ -42,6 +42,10 @@ class Farmland extends Transparent{
 		$this->wetness = BlockDataValidator::readBoundedInt("wetness", $stateMeta, 0, 7);
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function getHardness() : float{
 		return 0.6;
 	}

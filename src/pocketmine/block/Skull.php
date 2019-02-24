@@ -50,6 +50,10 @@ class Skull extends Flowable{
 		$this->facing = $stateMeta === 1 ? Facing::UP : BlockDataValidator::readHorizontalFacing($stateMeta);
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		$tile = $this->level->getTile($this);

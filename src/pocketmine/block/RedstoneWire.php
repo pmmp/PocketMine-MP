@@ -38,6 +38,10 @@ class RedstoneWire extends Flowable{
 		return $this->power;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		//TODO: check connections to nearby redstone components

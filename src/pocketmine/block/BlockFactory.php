@@ -527,17 +527,20 @@ class BlockFactory{
 	 * $override parameter.
 	 */
 	public static function register(Block $block, bool $override = false) : void{
-		foreach($block->getIdInfo()->getAllBlockIds() as $id){
-			for($m = 0; $m < 16; ++$m){
-				$index = ($id << 4) | $m;
+		$variant = $block->getIdInfo()->getVariant();
 
-				$v = clone $block;
-				try{
-					$v->readStateFromData($id, $m);
-					if($v->getDamage() !== $m){
-						throw new InvalidBlockStateException("Corrupted meta"); //don't register anything that isn't the same when we read it back again
-					}
-				}catch(InvalidBlockStateException $e){ //invalid property combination
+		$stateMask = $block->getStateBitmask();
+		if(($variant & $stateMask) !== 0){
+			throw new \InvalidArgumentException("Block variant collides with state bitmask");
+		}
+
+		foreach($block->getIdInfo()->getAllBlockIds() as $id){
+			if(!$override and self::isRegistered($id, $variant)){
+				throw new \InvalidArgumentException("Block registration $id:$variant conflicts with an existing block");
+			}
+
+			for($m = $variant; $m <= ($variant | $stateMask); ++$m){
+				if(($m & ~$stateMask) !== $variant){
 					continue;
 				}
 
@@ -545,10 +548,21 @@ class BlockFactory{
 					throw new \InvalidArgumentException("Block registration " . get_class($block) . " has states which conflict with other blocks");
 				}
 
+				$index = ($id << 4) | $m;
+
+				$v = clone $block;
+				try{
+					$v->readStateFromData($id, $m & $stateMask);
+					if($v->getDamage() !== $m){
+						throw new InvalidBlockStateException("Corrupted meta"); //don't register anything that isn't the same when we read it back again
+					}
+				}catch(InvalidBlockStateException $e){ //invalid property combination
+					continue;
+				}
+
 				self::fillStaticArrays($index, $v);
 			}
 
-			$variant = $block->getIdInfo()->getVariant();
 			if(!self::isRegistered($id, $variant)){
 				self::fillStaticArrays(($id << 4) | $variant, $block); //register default state mapped to variant, for blocks which don't use 0 as valid state
 			}

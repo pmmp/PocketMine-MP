@@ -51,6 +51,10 @@ class CocoaBlock extends Transparent{
 		$this->age = BlockDataValidator::readBoundedInt("age", $stateMeta >> 2, 0, 2);
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function getHardness() : float{
 		return 0.2;
 	}

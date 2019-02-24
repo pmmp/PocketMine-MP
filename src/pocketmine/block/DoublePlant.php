@@ -43,6 +43,10 @@ class DoublePlant extends Flowable{
 		$this->top = ($stateMeta & self::BITFLAG_TOP) !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1000;
+	}
+
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$id = $blockReplace->getSide(Facing::DOWN)->getId();
 		if(($id === Block::GRASS or $id === Block::DIRT) and $blockReplace->getSide(Facing::UP)->canBeReplaced()){

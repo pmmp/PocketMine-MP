@@ -53,6 +53,10 @@ abstract class Stair extends Transparent{
 		$this->upsideDown = ($stateMeta & 0x04) !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 

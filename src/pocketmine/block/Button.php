@@ -47,6 +47,10 @@ abstract class Button extends Flowable{
 		$this->powered = ($stateMeta & 0x08) !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		//TODO: check valid target block
 		$this->facing = $face;

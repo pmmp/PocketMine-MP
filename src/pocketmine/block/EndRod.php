@@ -50,6 +50,10 @@ class EndRod extends Flowable{
 		$this->facing = BlockDataValidator::readFacing($stateMeta);
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->facing = $face;
 		if($blockClicked instanceof EndRod and $blockClicked->facing === $this->facing){

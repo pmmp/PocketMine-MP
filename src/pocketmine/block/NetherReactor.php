@@ -44,6 +44,10 @@ class NetherReactor extends Solid{
 		$this->state = BlockDataValidator::readBoundedInt("state", $stateMeta, 0, 2);
 	}
 
+	public function getStateBitmask() : int{
+		return 0b11;
+	}
+
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}

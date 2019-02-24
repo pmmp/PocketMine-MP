@@ -77,6 +77,10 @@ class ItemFrame extends Flowable{
 		}
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	/**
 	 * @return int
 	 */

@@ -50,6 +50,10 @@ class FenceGate extends Transparent{
 		$this->inWall = ($stateMeta & 0x08) !== 0;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function getHardness() : float{
 		return 2;
 	}

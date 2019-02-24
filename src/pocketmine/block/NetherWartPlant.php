@@ -45,6 +45,10 @@ class NetherWartPlant extends Flowable{
 		$this->age = BlockDataValidator::readBoundedInt("age", $stateMeta, 0, 3);
 	}
 
+	public function getStateBitmask() : int{
+		return 0b11;
+	}
+
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() === Block::SOUL_SAND){

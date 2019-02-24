@@ -57,6 +57,10 @@ class DaylightSensor extends Transparent{
 		$this->inverted = $id === $this->idInfo->getSecondId();
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function isInverted() : bool{
 		return $this->inverted;
 	}

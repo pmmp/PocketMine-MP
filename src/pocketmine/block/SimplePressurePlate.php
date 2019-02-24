@@ -35,4 +35,8 @@ abstract class SimplePressurePlate extends PressurePlate{
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->powered = $stateMeta !== 0;
 	}
+
+	public function getStateBitmask() : int{
+		return 0b1;
+	}
 }

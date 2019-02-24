@@ -45,6 +45,10 @@ class RedMushroomBlock extends Solid{
 		$this->rotationData = $stateMeta;
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function getHardness() : float{
 		return 0.2;
 	}

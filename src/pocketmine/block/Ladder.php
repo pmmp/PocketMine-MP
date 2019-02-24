@@ -44,6 +44,10 @@ class Ladder extends Transparent{
 		$this->facing = BlockDataValidator::readHorizontalFacing($stateMeta);
 	}
 
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
 	public function hasEntityCollision() : bool{
 		return true;
 	}

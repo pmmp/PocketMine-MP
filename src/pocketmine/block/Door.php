@@ -67,6 +67,10 @@ abstract class Door extends Transparent{
 		}
 	}
 
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 
