@@ -1085,7 +1085,7 @@ class Level implements ChunkManager, Metadatable{
 
 						$state = $subChunk->getFullBlock($x, $y, $z);
 
-						if($this->randomTickBlocks[$state & ~BlockFactory::getStateMask($state >> 4)]){
+						if($this->randomTickBlocks[$state]){
 							/** @var Block $block */
 							$block = BlockFactory::fromFullBlock($state, $this->temporalPosition->setComponents(
 								$chunkX * 16 + $x,

@@ -51,9 +51,6 @@ class BlockFactory{
 	/** @var \SplFixedArray<float> */
 	public static $blastResistance = null;
 
-	/** @var \SplFixedArray|int[] */
-	private static $stateMasks = null;
-
 	/** @var int[] */
 	public static $staticRuntimeIdMap = [];
 
@@ -73,8 +70,6 @@ class BlockFactory{
 		self::$lightFilter = \SplFixedArray::fromArray(array_fill(0, 8192, 1));
 		self::$diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 8192, false));
 		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 8192, 0));
-
-		self::$stateMasks = new \SplFixedArray(8192);
 
 		self::register(new ActivatorRail(new BID(Block::ACTIVATOR_RAIL, BaseRail::STRAIGHT_NORTH_SOUTH), "Activator Rail"));
 		self::register(new Air(new BID(Block::AIR), "Air"));
@@ -575,7 +570,6 @@ class BlockFactory{
 
 	private static function fillStaticArrays(int $index, Block $block) : void{
 		self::$fullList[$index] = $block;
-		self::$stateMasks[$index] = $block->getStateBitmask();
 		self::$lightFilter[$index] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
 		self::$diffusesSkyLight[$index] = $block->diffusesSkyLight();
 		self::$blastResistance[$index] = $block->getBlastResistance();
@@ -619,10 +613,6 @@ class BlockFactory{
 
 	public static function fromFullBlock(int $fullState, ?Position $pos = null) : Block{
 		return self::get($fullState >> 4, $fullState & 0xf, $pos);
-	}
-
-	public static function getStateMask(int $id) : int{
-		return self::$stateMasks[$id] ?? 0;
 	}
 
 	/**
