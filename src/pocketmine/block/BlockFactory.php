@@ -42,14 +42,14 @@ use function min;
  * Manages block registration and instance creation
  */
 class BlockFactory{
-	/** @var \SplFixedArray<Block> */
+	/** @var \SplFixedArray|Block[] */
 	private static $fullList = null;
 
-	/** @var \SplFixedArray<int> */
+	/** @var \SplFixedArray|int[] */
 	public static $lightFilter = null;
-	/** @var \SplFixedArray<bool> */
+	/** @var \SplFixedArray|bool[] */
 	public static $diffusesSkyLight = null;
-	/** @var \SplFixedArray<float> */
+	/** @var \SplFixedArray|float[] */
 	public static $blastResistance = null;
 
 	/** @var int[] */
