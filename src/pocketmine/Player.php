@@ -26,7 +26,6 @@ namespace pocketmine;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\ItemFrame;
 use pocketmine\block\UnknownBlock;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -112,7 +111,6 @@ use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
@@ -154,7 +152,6 @@ use function in_array;
 use function is_int;
 use function json_encode;
 use function json_last_error_msg;
-use function lcg_value;
 use function max;
 use function microtime;
 use function min;
@@ -2174,7 +2171,15 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return true;
 	}
 
-	public function startBreakBlock(Vector3 $pos, int $face) : bool{
+	/**
+	 * Performs a left-click (attack) action on the block.
+	 *
+	 * @param Vector3 $pos
+	 * @param int     $face
+	 *
+	 * @return bool
+	 */
+	public function attackBlock(Vector3 $pos, int $face) : bool{
 		if($pos->distanceSquared($this) > 10000){
 			return false; //TODO: maybe this should throw an exception instead?
 		}
@@ -2184,7 +2189,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, null, $face, PlayerInteractEvent::LEFT_CLICK_BLOCK);
 		$ev->call();
 		if($ev->isCancelled()){
+			$this->level->sendBlocks([$this], [$target]);
 			$this->inventory->sendHeldItem($this);
+			return true;
+		}
+		if($target->onAttack($this->inventory->getItemInHand(), $face, $this)){
 			return true;
 		}
 
@@ -2485,30 +2494,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			if(!$t->updateCompoundTag($compound, $this)){
 				$this->level->sendBlocks([$this], [$pos]);
 			}
-		}
-
-		return true;
-	}
-
-	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
-		$block = $this->level->getBlockAt($packet->x, $packet->y, $packet->z);
-		if($block instanceof ItemFrame){
-			$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $block, null, $block->getFacing(), PlayerInteractEvent::LEFT_CLICK_BLOCK);
-			if($this->isSpectator()){
-				$ev->setCancelled();
-			}
-
-			$ev->call();
-			if($ev->isCancelled()){
-				$this->level->sendBlocks([$this], [$block]);
-				return true;
-			}
-
-			if(lcg_value() <= $block->getItemDropChance()){
-				$this->level->dropItem($block->add(0.5, 0.5, 0.5), $block->getFramedItem());
-			}
-			$block->setFramedItem(null);
-			$this->level->setBlock($block, $block);
 		}
 
 		return true;

@@ -381,6 +381,20 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Called when this block is attacked (left-clicked). This is called when a player left-clicks the block to try and
+	 * start to break it in survival mode.
+	 *
+	 * @param Item        $item
+	 * @param int         $face
+	 * @param Player|null $player
+	 *
+	 * @return bool if an action took place, prevents starting to break the block if true.
+	 */
+	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
+		return false;
+	}
+
+	/**
 	 * Returns a base value used to compute block break times.
 	 * @return float
 	 */

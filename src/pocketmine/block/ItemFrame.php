@@ -156,6 +156,18 @@ class ItemFrame extends Flowable{
 		return true;
 	}
 
+	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
+		if($this->framedItem === null){
+			return false;
+		}
+		if(lcg_value() <= $this->itemDropChance){
+			$this->level->dropItem($this->add(0.5, 0.5, 0.5), $this->getFramedItem());
+		}
+		$this->setFramedItem(null);
+		$this->level->setBlock($this, $this);
+		return true;
+	}
+
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){
 			$this->level->useBreakOn($this);

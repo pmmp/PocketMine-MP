@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\block\ItemFrame;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -309,7 +310,7 @@ class SimpleSessionHandler extends SessionHandler{
 
 		switch($packet->action){
 			case PlayerActionPacket::ACTION_START_BREAK:
-				$this->player->startBreakBlock($pos, $packet->face);
+				$this->player->attackBlock($pos, $packet->face);
 
 				break;
 
@@ -415,7 +416,11 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
-		return $this->player->handleItemFrameDropItem($packet);
+		$block = $this->player->getLevel()->getBlockAt($packet->x, $packet->y, $packet->z);
+		if($block instanceof ItemFrame and $block->getFramedItem() !== null){
+			return $this->player->attackBlock(new Vector3($packet->x, $packet->y, $packet->z), $block->getFacing());
+		}
+		return false;
 	}
 
 	public function handleBossEvent(BossEventPacket $packet) : bool{
