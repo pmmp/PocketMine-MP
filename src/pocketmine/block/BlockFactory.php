@@ -213,6 +213,7 @@ class BlockFactory{
 		self::register(new NetherBrick(new BID(Block::RED_NETHER_BRICK), "Red Nether Bricks"));
 		self::register(new NetherBrickFence(new BID(Block::NETHER_BRICK_FENCE), "Nether Brick Fence"));
 		self::register(new NetherBrickStairs(new BID(Block::NETHER_BRICK_STAIRS), "Nether Brick Stairs"));
+		self::register(new NetherPortal(new BID(Block::PORTAL), "Nether Portal"));
 		self::register(new NetherQuartzOre(new BID(Block::NETHER_QUARTZ_ORE), "Nether Quartz Ore"));
 		self::register(new NetherReactor(new BID(Block::NETHERREACTOR), "Nether Reactor Core"));
 		self::register(new NetherWartBlock(new BID(Block::NETHER_WART_BLOCK), "Nether Wart Block"));
