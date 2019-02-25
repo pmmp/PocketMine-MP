@@ -114,6 +114,7 @@ class BlockFactory{
 		self::register(new DoublePlant(new BID(Block::DOUBLE_PLANT, 5), "Peony"));
 		self::register(new DoubleTallGrass(new BID(Block::DOUBLE_PLANT, 2), "Double Tallgrass"));
 		self::register(new DoubleTallGrass(new BID(Block::DOUBLE_PLANT, 3), "Large Fern"));
+		self::register(new DragonEgg(new BID(Block::DRAGON_EGG), "Dragon Egg"));
 		self::register(new Emerald(new BID(Block::EMERALD_BLOCK), "Emerald Block"));
 		self::register(new EmeraldOre(new BID(Block::EMERALD_ORE), "Emerald Ore"));
 		self::register(new EnchantingTable(new BID(Block::ENCHANTING_TABLE, 0, null, \pocketmine\tile\EnchantTable::class), "Enchanting Table"));
