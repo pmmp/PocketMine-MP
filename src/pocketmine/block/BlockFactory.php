@@ -28,6 +28,8 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\TreeType;
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\level\Position;
 use pocketmine\tile\Comparator;
@@ -157,6 +159,36 @@ class BlockFactory{
 		self::register(new HardenedGlassPane(new BID(Block::HARD_GLASS_PANE), "Hardened Glass Pane"));
 		self::register(new HayBale(new BID(Block::HAY_BALE), "Hay Bale"));
 		self::register(new Ice(new BID(Block::ICE), "Ice"));
+		self::register(new class(new BID(Block::MONSTER_EGG), "Infested Stone") extends InfestedStone{
+			public function getSilkTouchDrops(Item $item) : array{
+				return [ItemFactory::get(ItemIds::STONE)];
+			}
+		});
+		self::register(new class(new BID(Block::MONSTER_EGG, 1), "Infested Cobblestone") extends InfestedStone{
+			public function getSilkTouchDrops(Item $item) : array{
+				return [ItemFactory::get(ItemIds::COBBLESTONE)];
+			}
+		});
+		self::register(new class(new BID(Block::MONSTER_EGG, 2), "Infested Stone Brick") extends InfestedStone{
+			public function getSilkTouchDrops(Item $item) : array{
+				return [ItemFactory::get(ItemIds::STONE_BRICK)];
+			}
+		});
+		self::register(new class(new BID(Block::MONSTER_EGG, 3), "Infested Mossy Stone Brick") extends InfestedStone{
+			public function getSilkTouchDrops(Item $item) : array{
+				return [ItemFactory::get(ItemIds::STONE_BRICK, StoneBricks::MOSSY)];
+			}
+		});
+		self::register(new class(new BID(Block::MONSTER_EGG, 4), "Infested Cracked Stone Brick") extends InfestedStone{
+			public function getSilkTouchDrops(Item $item) : array{
+				return [ItemFactory::get(ItemIds::STONE_BRICK, StoneBricks::CRACKED)];
+			}
+		});
+		self::register(new class(new BID(Block::MONSTER_EGG, 5), "Infested Chiseled Stone Brick") extends InfestedStone{
+			public function getSilkTouchDrops(Item $item) : array{
+				return [ItemFactory::get(ItemIds::STONE_BRICK, StoneBricks::CHISELED)];
+			}
+		});
 		self::register(new InfoUpdate(new BID(Block::INFO_UPDATE), "update!"));
 		self::register(new InfoUpdate(new BID(Block::INFO_UPDATE2), "ate!upd"));
 		self::register(new InvisibleBedrock(new BID(Block::INVISIBLEBEDROCK), "Invisible Bedrock"));
