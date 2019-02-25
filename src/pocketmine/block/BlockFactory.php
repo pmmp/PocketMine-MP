@@ -136,6 +136,7 @@ class BlockFactory{
 		self::register(new Flower(new BID(Block::RED_FLOWER, Flower::TYPE_RED_TULIP), "Red Tulip"));
 		self::register(new Flower(new BID(Block::RED_FLOWER, Flower::TYPE_WHITE_TULIP), "White Tulip"));
 		self::register(new FlowerPot(new BID(Block::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, \pocketmine\tile\FlowerPot::class), "Flower Pot"));
+		self::register(new FrostedIce(new BID(Block::FROSTED_ICE), "Frosted Ice"));
 		self::register(new Furnace(new BlockIdentifierFlattened(Block::FURNACE, Block::LIT_FURNACE, 0, null, \pocketmine\tile\Furnace::class), "Furnace"));
 		self::register(new Glass(new BID(Block::GLASS), "Glass"));
 		self::register(new GlassPane(new BID(Block::GLASS_PANE), "Glass Pane"));
