@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\utils\Color;
+
 final class DyeColor{
 
 	/** @var DyeColor */
@@ -133,22 +135,22 @@ final class DyeColor{
 	 * @internal
 	 */
 	public static function _init() : void{
-		self::register(self::$WHITE = new DyeColor("White", 0));
-		self::register(self::$ORANGE = new DyeColor("Orange", 1));
-		self::register(self::$MAGENTA = new DyeColor("Magenta", 2));
-		self::register(self::$LIGHT_BLUE = new DyeColor("Light Blue", 3));
-		self::register(self::$YELLOW = new DyeColor("Yellow", 4));
-		self::register(self::$LIME = new DyeColor("Lime", 5));
-		self::register(self::$PINK = new DyeColor("Pink", 6));
-		self::register(self::$GRAY = new DyeColor("Gray", 7));
-		self::register(self::$LIGHT_GRAY = new DyeColor("Light Gray", 8));
-		self::register(self::$CYAN = new DyeColor("Cyan", 9));
-		self::register(self::$PURPLE = new DyeColor("Purple", 10));
-		self::register(self::$BLUE = new DyeColor("Blue", 11));
-		self::register(self::$BROWN = new DyeColor("Brown", 12));
-		self::register(self::$GREEN = new DyeColor("Green", 13));
-		self::register(self::$RED = new DyeColor("Red", 14));
-		self::register(self::$BLACK = new DyeColor("Black", 15));
+		self::register(self::$WHITE = new DyeColor("White", 0, new Color(0xf0, 0xf0, 0xf0)));
+		self::register(self::$ORANGE = new DyeColor("Orange", 1, new Color(0xf9, 0x80, 0x1d)));
+		self::register(self::$MAGENTA = new DyeColor("Magenta", 2, new Color(0xc7, 0x4e, 0xbd)));
+		self::register(self::$LIGHT_BLUE = new DyeColor("Light Blue", 3, new Color(0x3a, 0xb3, 0xda)));
+		self::register(self::$YELLOW = new DyeColor("Yellow", 4, new Color(0xfe, 0xd8, 0x3d)));
+		self::register(self::$LIME = new DyeColor("Lime", 5, new Color(0x80, 0xc7, 0x1f)));
+		self::register(self::$PINK = new DyeColor("Pink", 6, new Color(0xf3, 0x8b, 0xaa)));
+		self::register(self::$GRAY = new DyeColor("Gray", 7, new Color(0x47, 0x4f, 0x52)));
+		self::register(self::$LIGHT_GRAY = new DyeColor("Light Gray", 8, new Color(0x9d, 0x9d, 0x97)));
+		self::register(self::$CYAN = new DyeColor("Cyan", 9, new Color(0x16, 0x9c, 0x9c)));
+		self::register(self::$PURPLE = new DyeColor("Purple", 10, new Color(0x89, 0x32, 0xb8)));
+		self::register(self::$BLUE = new DyeColor("Blue", 11, new Color(0x3c, 0x44, 0xaa)));
+		self::register(self::$BROWN = new DyeColor("Brown", 12, new Color(0x83, 0x54, 0x32)));
+		self::register(self::$GREEN = new DyeColor("Green", 13, new Color(0x5e, 0x7c, 0x16)));
+		self::register(self::$RED = new DyeColor("Red", 14, new Color(0xb0, 0x2e, 0x26)));
+		self::register(self::$BLACK = new DyeColor("Black", 15, new Color(0x1d, 0x1d, 0x21)));
 	}
 
 	private static function register(DyeColor $color) : void{
@@ -187,10 +189,13 @@ final class DyeColor{
 	private $displayName;
 	/** @var int */
 	private $magicNumber;
+	/** @var Color */
+	private $rgbValue;
 
-	private function __construct(string $displayName, int $magicNumber){
+	private function __construct(string $displayName, int $magicNumber, Color $rgbValue){
 		$this->displayName = $displayName;
 		$this->magicNumber = $magicNumber;
+		$this->rgbValue = $rgbValue;
 	}
 
 	/**
@@ -198,6 +203,13 @@ final class DyeColor{
 	 */
 	public function getDisplayName() : string{
 		return $this->displayName;
+	}
+
+	/**
+	 * @return Color
+	 */
+	public function getRgbValue() : Color{
+		return $this->rgbValue;
 	}
 
 	/**
