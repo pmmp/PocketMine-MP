@@ -29,11 +29,18 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\FlowerPot as TileFlowerPot;
+use function assert;
 
 class FlowerPot extends Flowable{
 
-	/** @var bool */
+	/**
+	 * TODO: get rid of this hack (it's currently needed to deal with blockfactory state handling)
+	 * @var bool
+	 */
 	protected $occupied = false;
+
+	/** @var Block|null */
+	protected $plant = null;
 
 	protected function writeStateToMeta() : int{
 		return $this->occupied ? 1 : 0;
@@ -45,6 +52,59 @@ class FlowerPot extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b1111; //vanilla uses various values, we only care about 1 and 0 for PE
+	}
+
+	public function readStateFromWorld() : void{
+		parent::readStateFromWorld();
+		$tile = $this->level->getTile($this);
+		if($tile instanceof TileFlowerPot){
+			$this->setPlant($tile->getPlant());
+		}else{
+			$this->occupied = false;
+		}
+	}
+
+	public function writeStateToWorld() : void{
+		parent::writeStateToWorld();
+
+		$tile = $this->level->getTile($this);
+		assert($tile instanceof TileFlowerPot);
+		$tile->setPlant($this->plant);
+	}
+
+	/**
+	 * @return Block|null
+	 */
+	public function getPlant() : ?Block{
+		return $this->plant;
+	}
+
+	/**
+	 * @param Block|null $plant
+	 */
+	public function setPlant(?Block $plant) : void{
+		if($plant === null or $plant instanceof Air){
+			$this->plant = null;
+		}else{
+			$this->plant = clone $plant;
+		}
+		$this->occupied = $this->plant !== null;
+	}
+
+	public function canAddPlant(Block $block) : bool{
+		if($this->plant !== null){
+			return false;
+		}
+
+		return
+			$block instanceof Cactus or
+			$block instanceof Dandelion or
+			$block instanceof DeadBush or
+			$block instanceof Flower or
+			$block instanceof RedMushroom or
+			$block instanceof Sapling or
+			($block instanceof TallGrass and $block->getIdInfo()->getVariant() === 2); //fern - TODO: clean up
+		//TODO: bamboo
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
@@ -66,30 +126,22 @@ class FlowerPot extends Flowable{
 	}
 
 	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$pot = $this->getLevel()->getTile($this);
-		if(!($pot instanceof TileFlowerPot)){
+		$plant = $item->getBlock();
+		if(!$this->canAddPlant($plant)){
 			return false;
 		}
-		if(!$pot->canAddItem($item)){
-			return true;
-		}
 
-		$this->occupied = true;
-		$this->getLevel()->setBlock($this, $this, false);
-		$pot->setItem($item->pop());
+		$this->setPlant($plant);
+		$item->pop();
+		$this->level->setBlock($this, $this);
 
 		return true;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$items = parent::getDropsForCompatibleTool($item);
-
-		$tile = $this->getLevel()->getTile($this);
-		if($tile instanceof TileFlowerPot){
-			$item = $tile->getItem();
-			if($item->getId() !== Item::AIR){
-				$items[] = $item;
-			}
+		if($this->plant !== null){
+			$items[] = $this->plant->asItem();
 		}
 
 		return $items;

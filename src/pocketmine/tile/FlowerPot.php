@@ -23,79 +23,59 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
-use pocketmine\math\Vector3;
+use pocketmine\block\Air;
+use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
 
+/**
+ * @deprecated
+ * @see \pocketmine\block\FlowerPot
+ */
 class FlowerPot extends Spawnable{
-	public const TAG_ITEM = "item";
-	public const TAG_ITEM_DATA = "mData";
+	private const TAG_ITEM = "item";
+	private const TAG_ITEM_DATA = "mData";
 
-	/** @var Item */
-	private $item;
-
-	public function __construct(Level $level, Vector3 $pos){
-		$this->item = ItemFactory::air();
-		parent::__construct($level, $pos);
-	}
+	/** @var Block|null */
+	private $plant = null;
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_ITEM, ShortTag::class) and $nbt->hasTag(self::TAG_ITEM_DATA, IntTag::class)){
-			$this->item = ItemFactory::get($nbt->getShort(self::TAG_ITEM, 0), $nbt->getInt(self::TAG_ITEM_DATA, 0), 1);
+			//prevent stupidity with wrong items
+			if(($id = $nbt->getShort(self::TAG_ITEM)) >= 0 and $id <= 255 and ($data = $nbt->getInt(self::TAG_ITEM_DATA)) >= 0 and $data <= 15){
+				$this->setPlant(BlockFactory::get($id, $data));
+			}
+		}else{
+			//TODO: new PlantBlock tag
 		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setShort(self::TAG_ITEM, $this->item->getId());
-		$nbt->setInt(self::TAG_ITEM_DATA, $this->item->getDamage());
-	}
-
-	public function canAddItem(Item $item) : bool{
-		if(!$this->isEmpty()){
-			return false;
-		}
-		switch($item->getId()){
-			/** @noinspection PhpMissingBreakStatementInspection */
-			case Item::TALL_GRASS:
-				if($item->getDamage() === 1){
-					return false;
-				}
-			case Item::SAPLING:
-			case Item::DEAD_BUSH:
-			case Item::DANDELION:
-			case Item::RED_FLOWER:
-			case Item::BROWN_MUSHROOM:
-			case Item::RED_MUSHROOM:
-			case Item::CACTUS:
-				return true;
-			default:
-				return false;
+		if($this->plant !== null){
+			$nbt->setShort(self::TAG_ITEM, $this->plant->getId());
+			$nbt->setInt(self::TAG_ITEM_DATA, $this->plant->getDamage());
 		}
 	}
 
-	public function getItem() : Item{
-		return clone $this->item;
+	public function getPlant() : ?Block{
+		return $this->plant !== null ? clone $this->plant : null;
 	}
 
-	public function setItem(Item $item){
-		$this->item = clone $item;
+	public function setPlant(?Block $plant){
+		if($plant === null or $plant instanceof Air){
+			$this->plant = null;
+		}else{
+			$this->plant = clone $plant;
+		}
 		$this->onChanged();
 	}
 
-	public function removeItem(){
-		$this->setItem(ItemFactory::air());
-	}
-
-	public function isEmpty() : bool{
-		return $this->getItem()->isNull();
-	}
-
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setShort(self::TAG_ITEM, $this->item->getId());
-		$nbt->setInt(self::TAG_ITEM_DATA, $this->item->getDamage());
+		if($this->plant !== null){
+			$nbt->setShort(self::TAG_ITEM, $this->plant->getId());
+			$nbt->setInt(self::TAG_ITEM_DATA, $this->plant->getDamage());
+		}
 	}
 }
