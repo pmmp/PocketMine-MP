@@ -26,10 +26,10 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\SkullType;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Living;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\tile\Skull;
 use function constant;
 use function defined;
 use function explode;
@@ -172,12 +172,6 @@ class ItemFactory{
 		self::register(new ItemBlock(Block::NETHER_WART_PLANT, 0, Item::NETHER_WART));
 		self::register(new ItemBlock(Block::OAK_DOOR_BLOCK, 0, Item::OAK_DOOR));
 		self::register(new ItemBlock(Block::REPEATER_BLOCK, 0, Item::REPEATER));
-		self::register(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_CREEPER, Item::SKULL));
-		self::register(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_DRAGON, Item::SKULL));
-		self::register(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_HUMAN, Item::SKULL));
-		self::register(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_SKELETON, Item::SKULL));
-		self::register(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_WITHER, Item::SKULL));
-		self::register(new ItemBlock(Block::SKULL_BLOCK, Skull::TYPE_ZOMBIE, Item::SKULL));
 		self::register(new ItemBlock(Block::SPRUCE_DOOR_BLOCK, 0, Item::SPRUCE_DOOR));
 		self::register(new ItemBlock(Block::SUGARCANE_BLOCK, 0, Item::SUGARCANE));
 		self::register(new LeatherBoots());
@@ -235,6 +229,10 @@ class ItemFactory{
 		self::register(new WheatSeeds());
 		self::register(new WritableBook());
 		self::register(new WrittenBook());
+
+		foreach(SkullType::getAll() as $skullType){
+			self::register(new Skull(Item::SKULL, $skullType->getMagicNumber(), $skullType->getDisplayName(), $skullType));
+		}
 
 		/** @var int[]|\SplObjectStorage $dyeMap */
 		$dyeMap = new \SplObjectStorage();

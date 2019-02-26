@@ -24,23 +24,32 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\SkullType;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\Skull as ItemSkull;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Skull as TileSkull;
+use function assert;
 use function floor;
 
 class Skull extends Flowable{
+	/** @var SkullType */
+	protected $skullType;
 
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
-	protected $type = TileSkull::TYPE_SKELETON;
 	/** @var int */
 	protected $rotation = 0; //TODO: split this into floor skull and wall skull handling
+
+	public function __construct(BlockIdentifier $idInfo, string $name){
+		$this->skullType = SkullType::SKELETON(); //TODO: this should be a parameter
+		parent::__construct($idInfo, $name);
+	}
 
 	protected function writeStateToMeta() : int{
 		return $this->facing;
@@ -58,7 +67,7 @@ class Skull extends Flowable{
 		parent::readStateFromWorld();
 		$tile = $this->level->getTile($this);
 		if($tile instanceof TileSkull){
-			$this->type = $tile->getType();
+			$this->skullType = $tile->getSkullType();
 			$this->rotation = $tile->getRotation();
 		}
 	}
@@ -67,14 +76,20 @@ class Skull extends Flowable{
 		parent::writeStateToWorld();
 		//extra block properties storage hack
 		$tile = $this->level->getTile($this);
-		if($tile instanceof TileSkull){
-			$tile->setRotation($this->rotation);
-			$tile->setType($this->type);
-		}
+		assert($tile instanceof TileSkull);
+		$tile->setRotation($this->rotation);
+		$tile->setSkullType($this->skullType);
 	}
 
 	public function getHardness() : float{
 		return 1;
+	}
+
+	/**
+	 * @return SkullType
+	 */
+	public function getSkullType() : SkullType{
+		return $this->skullType;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
@@ -88,7 +103,9 @@ class Skull extends Flowable{
 		}
 
 		$this->facing = $face;
-		$this->type = $item->getDamage(); //TODO: replace this with a proper variant getter
+		if($item instanceof ItemSkull){
+			$this->skullType = $item->getSkullType(); //TODO: the item should handle this, but this hack is currently needed because of tile mess
+		}
 		if($player !== null and $face === Facing::UP){
 			$this->rotation = ((int) floor(($player->yaw * 16 / 360) + 0.5)) & 0xf;
 		}
@@ -96,7 +113,7 @@ class Skull extends Flowable{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::get(Item::SKULL, $this->type);
+		return ItemFactory::get(Item::SKULL, $this->skullType->getMagicNumber());
 	}
 
 	public function isAffectedBySilkTouch() : bool{

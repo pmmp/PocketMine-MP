@@ -23,42 +23,58 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\block\utils\SkullType;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 
+/**
+ * @deprecated
+ * @see \pocketmine\block\Skull
+ */
 class Skull extends Spawnable{
-	public const TYPE_SKELETON = 0;
-	public const TYPE_WITHER = 1;
-	public const TYPE_ZOMBIE = 2;
-	public const TYPE_HUMAN = 3;
-	public const TYPE_CREEPER = 4;
-	public const TYPE_DRAGON = 5;
 
-	public const TAG_SKULL_TYPE = "SkullType"; //TAG_Byte
-	public const TAG_ROT = "Rot"; //TAG_Byte
-	public const TAG_MOUTH_MOVING = "MouthMoving"; //TAG_Byte
-	public const TAG_MOUTH_TICK_COUNT = "MouthTickCount"; //TAG_Int
+	private const TAG_SKULL_TYPE = "SkullType"; //TAG_Byte
+	private const TAG_ROT = "Rot"; //TAG_Byte
+	private const TAG_MOUTH_MOVING = "MouthMoving"; //TAG_Byte
+	private const TAG_MOUTH_TICK_COUNT = "MouthTickCount"; //TAG_Int
 
-	/** @var int */
-	private $skullType = self::TYPE_SKELETON;
+	/** @var SkullType */
+	private $skullType;
 	/** @var int */
 	private $skullRotation = 0;
 
+	public function __construct(Level $level, Vector3 $pos){
+		$this->skullType = SkullType::SKELETON();
+		parent::__construct($level, $pos);
+	}
+
 	public function readSaveData(CompoundTag $nbt) : void{
-		$this->skullType = $nbt->getByte(self::TAG_SKULL_TYPE, $this->skullType, true);
-		$this->skullRotation = $nbt->getByte(self::TAG_ROT, $this->skullRotation, true);
+		if($nbt->hasTag(self::TAG_SKULL_TYPE, ByteTag::class)){
+			try{
+				$this->skullType = SkullType::fromMagicNumber($nbt->getByte(self::TAG_SKULL_TYPE));
+			}catch(\InvalidArgumentException $e){
+				//bad data, drop it
+			}
+		}
+		$rotation = $nbt->getByte(self::TAG_ROT, 0, true);
+		if($rotation >= 0 and $rotation <= 15){
+			$this->skullRotation = $rotation;
+		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_SKULL_TYPE, $this->skullType);
+		$nbt->setByte(self::TAG_SKULL_TYPE, $this->skullType->getMagicNumber());
 		$nbt->setByte(self::TAG_ROT, $this->skullRotation);
 	}
 
-	public function setType(int $type){
+	public function setSkullType(SkullType $type){
 		$this->skullType = $type;
 		$this->onChanged();
 	}
 
-	public function getType() : int{
+	public function getSkullType() : SkullType{
 		return $this->skullType;
 	}
 
@@ -72,7 +88,7 @@ class Skull extends Spawnable{
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_SKULL_TYPE, $this->skullType);
+		$nbt->setByte(self::TAG_SKULL_TYPE, $this->skullType->getMagicNumber());
 		$nbt->setByte(self::TAG_ROT, $this->skullRotation);
 	}
 }
