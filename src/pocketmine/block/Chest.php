@@ -67,7 +67,6 @@ class Chest extends Transparent{
 		}
 
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			//TODO: this is fragile and might have unintended side effects on ender chests if modified carelessly
 			$tile = $this->level->getTile($this);
 			if($tile instanceof TileChest){
 				foreach([
