@@ -43,7 +43,7 @@ trait FallableTrait{
 
 	abstract protected function getId() : int;
 
-	abstract protected function getDamage() : int;
+	abstract protected function getMeta() : int;
 
 	public function onNearbyBlockChange() : void{
 		$pos = $this->asPosition();
@@ -53,7 +53,7 @@ trait FallableTrait{
 
 			$nbt = EntityFactory::createBaseNBT($pos->add(0.5, 0, 0.5));
 			$nbt->setInt("TileID", $this->getId());
-			$nbt->setByte("Data", $this->getDamage());
+			$nbt->setByte("Data", $this->getMeta());
 
 			/** @var FallingBlock $fall */
 			$fall = EntityFactory::create(FallingBlock::class, $pos->getLevel(), $nbt);
