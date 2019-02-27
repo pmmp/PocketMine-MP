@@ -132,7 +132,7 @@ class FallingBlock extends Entity{
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 		$nbt->setInt("TileID", $this->block->getId());
-		$nbt->setByte("Data", $this->block->getDamage());
+		$nbt->setByte("Data", $this->block->getMeta());
 
 		return $nbt;
 	}

@@ -555,7 +555,7 @@ class BlockFactory{
 				$v = clone $block;
 				try{
 					$v->readStateFromData($id, $m & $stateMask);
-					if($v->getDamage() !== $m){
+					if($v->getMeta() !== $m){
 						throw new InvalidBlockStateException("Corrupted meta"); //don't register anything that isn't the same when we read it back again
 					}
 				}catch(InvalidBlockStateException $e){ //invalid property combination

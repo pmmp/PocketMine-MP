@@ -64,7 +64,7 @@ class ItemFactoryTest extends TestCase{
 		$item = ItemFactory::fromString($string);
 
 		self::assertEquals($id, $item->getId());
-		self::assertEquals($meta, $item->getDamage());
+		self::assertEquals($meta, $item->getMeta());
 	}
 
 	/**

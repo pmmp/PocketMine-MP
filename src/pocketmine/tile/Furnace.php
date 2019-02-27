@@ -177,7 +177,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 				++$this->cookTime;
 
 				if($this->cookTime >= 200){ //10 seconds
-					$product = ItemFactory::get($smelt->getResult()->getId(), $smelt->getResult()->getDamage(), $product->getCount() + 1);
+					$product = ItemFactory::get($smelt->getResult()->getId(), $smelt->getResult()->getMeta(), $product->getCount() + 1);
 
 					$ev = new FurnaceSmeltEvent($this, $raw, $product);
 					$ev->call();

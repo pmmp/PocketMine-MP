@@ -33,6 +33,10 @@ abstract class Durable extends Item{
 	/** @var int */
 	protected $damage = 0;
 
+	public function getMeta() : int{
+		return $this->damage;
+	}
+
 	/**
 	 * Returns whether this item will take damage when used.
 	 * @return bool

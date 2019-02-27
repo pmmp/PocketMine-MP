@@ -657,7 +657,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @return int
 	 */
-	public function getDamage() : int{
+	public function getMeta() : int{
 		return $this->meta;
 	}
 
@@ -811,7 +811,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		if($this->id === $item->getId() and (!$checkDamage or $this->getDamage() === $item->getDamage())){
+		if($this->id === $item->getId() and (!$checkDamage or $this->getMeta() === $item->getMeta())){
 			if($checkCompound){
 				if($this->hasNamedTag() and $item->hasNamedTag()){ //both items have NBT
 					return $this->getNamedTag()->equals($item->getNamedTag());
@@ -841,7 +841,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getDamage()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . self::writeCompoundTag($this->nbt) : "");
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . self::writeCompoundTag($this->nbt) : "");
 	}
 
 	/**
@@ -854,8 +854,8 @@ class Item implements ItemIds, \JsonSerializable{
 			"id" => $this->getId()
 		];
 
-		if($this->getDamage() !== 0){
-			$data["damage"] = $this->getDamage();
+		if($this->getMeta() !== 0){
+			$data["damage"] = $this->getMeta();
 		}
 
 		if($this->getCount() !== 1){
@@ -904,7 +904,7 @@ class Item implements ItemIds, \JsonSerializable{
 		$result = new CompoundTag($tagName, [
 			new ShortTag("id", $this->id),
 			new ByteTag("Count", Binary::signByte($this->count)),
-			new ShortTag("Damage", $this->getDamage())
+			new ShortTag("Damage", $this->getMeta())
 		]);
 
 		if($this->hasNamedTag()){

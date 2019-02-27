@@ -55,7 +55,7 @@ class FlowerPot extends Spawnable{
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		if($this->plant !== null){
 			$nbt->setShort(self::TAG_ITEM, $this->plant->getId());
-			$nbt->setInt(self::TAG_ITEM_DATA, $this->plant->getDamage());
+			$nbt->setInt(self::TAG_ITEM_DATA, $this->plant->getMeta());
 		}
 	}
 
@@ -75,7 +75,7 @@ class FlowerPot extends Spawnable{
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		if($this->plant !== null){
 			$nbt->setShort(self::TAG_ITEM, $this->plant->getId());
-			$nbt->setInt(self::TAG_ITEM_DATA, $this->plant->getDamage());
+			$nbt->setInt(self::TAG_ITEM_DATA, $this->plant->getMeta());
 		}
 	}
 }

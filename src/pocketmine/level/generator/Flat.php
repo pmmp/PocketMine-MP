@@ -116,7 +116,7 @@ class Flat extends Generator{
 				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\": " . $e->getMessage(), 0, $e);
 			}
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
-				$result[$cY] = [$b->getId(), $b->getDamage()];
+				$result[$cY] = [$b->getId(), $b->getMeta()];
 			}
 		}
 

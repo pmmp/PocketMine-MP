@@ -90,7 +90,7 @@ class GiveCommand extends VanillaCommand{
 		$player->getInventory()->addItem(clone $item);
 
 		Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.give.success", [
-			$item->getName() . " (" . $item->getId() . ":" . $item->getDamage() . ")",
+			$item->getName() . " (" . $item->getId() . ":" . $item->getMeta() . ")",
 			(string) $item->getCount(),
 			$player->getName()
 		]));

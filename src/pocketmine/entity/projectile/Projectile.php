@@ -154,7 +154,7 @@ abstract class Projectile extends Entity{
 
 			//we intentionally use different ones to PC because we don't have stringy IDs
 			$nbt->setInt("blockId", $this->blockHit->getId());
-			$nbt->setByte("blockData", $this->blockHit->getDamage());
+			$nbt->setByte("blockData", $this->blockHit->getMeta());
 		}
 
 		return $nbt;

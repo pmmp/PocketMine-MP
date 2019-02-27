@@ -330,7 +330,7 @@ class ItemFactory{
 	 */
 	public static function register(Item $item, bool $override = false){
 		$id = $item->getId();
-		$variant = $item->getDamage();
+		$variant = $item->getMeta();
 
 		if(!$override and self::isRegistered($id, $variant)){
 			throw new \RuntimeException("Trying to overwrite an already registered item");

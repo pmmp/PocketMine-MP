@@ -169,7 +169,7 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 	private static function writeFurnaceRecipe(FurnaceRecipe $recipe, NetworkBinaryStream $stream) : int{
 		if(!$recipe->getInput()->hasAnyDamageValue()){ //Data recipe
 			$stream->putVarInt($recipe->getInput()->getId());
-			$stream->putVarInt($recipe->getInput()->getDamage());
+			$stream->putVarInt($recipe->getInput()->getMeta());
 			$stream->putSlot($recipe->getResult());
 
 			return CraftingDataPacket::ENTRY_FURNACE_DATA;

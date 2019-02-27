@@ -132,7 +132,7 @@ class NetworkBinaryStream extends BinaryStream{
 		}
 
 		$this->putVarInt($item->getId());
-		$auxValue = (($item->getDamage() & 0x7fff) << 8) | $item->getCount();
+		$auxValue = (($item->getMeta() & 0x7fff) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 
 		if($item->hasNamedTag()){

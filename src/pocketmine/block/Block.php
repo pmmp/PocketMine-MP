@@ -116,13 +116,13 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return int
 	 */
 	public function getRuntimeId() : int{
-		return BlockFactory::toStaticRuntimeId($this->getId(), $this->getDamage());
+		return BlockFactory::toStaticRuntimeId($this->getId(), $this->getMeta());
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getDamage() : int{
+	public function getMeta() : int{
 		$stateMeta = $this->writeStateToMeta();
 		assert(($stateMeta & ~$this->getStateBitmask()) === 0);
 		return $this->idInfo->getVariant() | $stateMeta;
@@ -155,7 +155,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->level->getChunkAtPosition($this)->setBlock($this->x & 0xf, $this->y, $this->z & 0xf, $this->getId(), $this->getDamage());
+		$this->level->getChunkAtPosition($this)->setBlock($this->x & 0xf, $this->y, $this->z & 0xf, $this->getId(), $this->getMeta());
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $this->level->getTile($this);
@@ -692,7 +692,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return string
 	 */
 	public function __toString(){
-		return "Block[" . $this->getName() . "] (" . $this->getId() . ":" . $this->getDamage() . ")";
+		return "Block[" . $this->getName() . "] (" . $this->getId() . ":" . $this->getMeta() . ")";
 	}
 
 	/**

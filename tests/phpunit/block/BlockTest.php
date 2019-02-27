@@ -119,7 +119,7 @@ class BlockTest extends TestCase{
 		$block = BlockFactory::get($id, $meta);
 
 		self::assertEquals($id, $block->getId());
-		self::assertEquals($meta, $block->getDamage());
+		self::assertEquals($meta, $block->getMeta());
 	}
 
 	public function testBlockIds() : void{
