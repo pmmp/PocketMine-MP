@@ -1379,11 +1379,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isSurvival(bool $literal = false) : bool{
-		if($literal){
-			return $this->gamemode === GameMode::SURVIVAL;
-		}else{
-			return ($this->gamemode & 0x01) === 0;
-		}
+		return $this->gamemode === GameMode::SURVIVAL or (!$literal and $this->gamemode === GameMode::ADVENTURE);
 	}
 
 	/**
@@ -1395,11 +1391,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isCreative(bool $literal = false) : bool{
-		if($literal){
-			return $this->gamemode === GameMode::CREATIVE;
-		}else{
-			return ($this->gamemode & 0x01) === 1;
-		}
+		return $this->gamemode === GameMode::CREATIVE or (!$literal and $this->gamemode === GameMode::SPECTATOR);
 	}
 
 	/**
@@ -1411,11 +1403,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isAdventure(bool $literal = false) : bool{
-		if($literal){
-			return $this->gamemode === GameMode::ADVENTURE;
-		}else{
-			return ($this->gamemode & 0x02) > 0;
-		}
+		return $this->gamemode === GameMode::ADVENTURE or (!$literal and $this->gamemode === GameMode::SPECTATOR);
 	}
 
 	/**
