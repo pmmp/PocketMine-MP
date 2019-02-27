@@ -3007,13 +3007,17 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			}
 
 			if($this->inventory !== null){
-				$this->inventory->setHeldItemIndex(0, false); //This is already handled when sending contents, don't send it twice
+				$this->inventory->setHeldItemIndex(0);
 				$this->inventory->clearAll();
 			}
 			if($this->armorInventory !== null){
 				$this->armorInventory->clearAll();
 			}
 		}
+
+		//TODO: allow this number to be manipulated during PlayerDeathEvent
+		$this->level->dropExperience($this, $this->getXpDropAmount());
+		$this->setXpAndProgress(0, 0);
 
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcastMessage($ev->getDeathMessage());
