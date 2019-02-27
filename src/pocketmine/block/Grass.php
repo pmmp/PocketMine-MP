@@ -74,8 +74,8 @@ class Grass extends Solid{
 
 				$b = $this->level->getBlockAt($x, $y, $z);
 				if(
-					$b->getId() !== Block::DIRT or
-					$b->getMeta() === 1 or //coarse dirt
+					!($b instanceof Dirt) or
+					$b instanceof CoarseDirt or
 					$this->level->getFullLightAt($x, $y + 1, $z) < 4 or
 					$this->level->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
 				){
