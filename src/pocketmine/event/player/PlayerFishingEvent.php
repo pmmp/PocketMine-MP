@@ -26,12 +26,10 @@ namespace pocketmine\event\player;
 
 use pocketmine\entity\projectile\FishingHook;
 use pocketmine\event\Cancellable;
-use pocketmine\event\CancellableTrait;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
 class PlayerFishingEvent extends PlayerEvent implements Cancellable{
-	use CancellableTrait;
 
 	/** @var Item */
 	protected $resultItem;

@@ -26,31 +26,35 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\EntityFactory;
-use pocketmine\entity\vehicle\Boat as EntityBoat;
+use pocketmine\entity\object\ArmorStand as EntityArmorStand;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
 
-class Boat extends Item{
-	public function __construct(){
-		parent::__construct(self::BOAT, 0, "Boat");
-	}
+class ArmorStand extends Item{
 
-	public function getFuelTime() : int{
-		return 1200; //400 in PC
-	}
-
-	public function getMaxStackSize() : int{
-		return 1;
+	public function __construct(int $meta = 0){
+		parent::__construct(self::ARMOR_STAND, $meta, "Armor Stand");
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		$nbt = EntityFactory::createBaseNBT($blockReplace->add(0.5, 0, 0.5));
-		$nbt->setInt("Variant", $this->getDamage());
-		$entity = EntityFactory::create(EntityBoat::class, $player->level, $nbt);
-		$entity->spawnToAll();
+		$entity = EntityFactory::create(EntityArmorStand::class, $player->level, EntityFactory::createBaseNBT($blockReplace->asVector3()->add(0.5, 0, 0.5), null, $this->getDirection($player->getYaw())));
 
-		$this->pop();
+		if($entity instanceof EntityArmorStand){
+			if($player->isSurvival()){
+				$this->pop();
+			}
 
-		return ItemUseResult::success();
+			$entity->spawnToAll();
+			$player->getLevel()->broadcastLevelEvent($player, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_PLACE);
+			return ItemUseResult::success();
+		}
+
+		return ItemUseResult::fail();
 	}
+
+	public function getDirection(float $yaw){
+		return (round($yaw / 22.5 / 2) * 45) - 180;
+	}
+
 }

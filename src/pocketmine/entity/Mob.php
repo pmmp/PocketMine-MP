@@ -27,7 +27,6 @@ namespace pocketmine\entity;
 use pocketmine\entity\behavior\BehaviorPool;
 use pocketmine\entity\pathfinder\EntityNavigator;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;

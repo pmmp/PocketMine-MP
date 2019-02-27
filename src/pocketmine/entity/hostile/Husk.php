@@ -25,8 +25,8 @@ declare(strict_types=1);
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Ageable;
-use pocketmine\entity\effect\Effect;
-use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\Effect;
+use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\Monster;
@@ -39,7 +39,7 @@ class Husk extends Zombie implements Ageable{
 		return "Husk";
 	}
 
-	protected function entityBaseTick(int $diff = 1) : bool{
+	public function entityBaseTick(int $diff = 1) : bool{
 		return Monster::entityBaseTick($diff);
 	}
 

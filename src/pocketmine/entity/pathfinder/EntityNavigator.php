@@ -183,7 +183,7 @@ class EntityNavigator{
 				if($this->mob->isSwimmer()){
 					$currentBlock = $this->mob->level->getBlock($this->mob);
 					while($currentBlock instanceof Water){
-						$currentBlock = $currentBlock->getSide(Facing::UP);
+						$currentBlock = $currentBlock->getSide(Vector3::SIDE_UP);
 						$y++;
 					}
 				}
@@ -285,11 +285,11 @@ class EntityNavigator{
 				}
 
 				if($this->mob->canClimb() or $this->mob->isSwimmer() or $this->mob->canFly()){
-					$blockUp = $this->mob->level->getBlock($coord->getSide(Facing::UP));
+					$blockUp = $this->mob->level->getBlock($coord->getSide(Vector3::SIDE_UP));
 					$canMove = false;
 					for($i = 0; $i < 10; $i++){
 						if($this->isBlocked($blockUp->asVector3())){
-							$blockUp = $this->mob->level->getBlock($blockUp->getSide(Facing::UP));
+							$blockUp = $this->mob->level->getBlock($blockUp->getSide(Vector3::SIDE_UP));
 							continue;
 						}
 
@@ -301,7 +301,7 @@ class EntityNavigator{
 
 					$cache[$item->getHashCode()] = $blockUp;
 				}elseif($tb->isPassable($this->mob)){
-					$blockUp = $this->mob->level->getBlock($coord->getSide(Facing::UP));
+					$blockUp = $this->mob->level->getBlock($coord->getSide(Vector3::SIDE_UP));
 					if($blockUp->isSolid()){
 						// Can't jump
 						continue;
@@ -318,7 +318,7 @@ class EntityNavigator{
 				if(!$blockDown->isSolid() and !$this->mob->isSwimmer() and !($blockDown instanceof Liquid) and !$this->mob->canFly()){ // TODO: bug?
 					if($this->mob->canClimb()){
 						$canClimb = false;
-						$blockDown = $this->mob->level->getBlock($blockDown->getSide(Facing::DOWN));
+						$blockDown = $this->mob->level->getBlock($blockDown->getSide(Vector3::SIDE_DOWN));
 						for($i = 0; $i < 10; $i++){
 							if(!$blockDown->isSolid()){
 								$blockDown = $this->mob->level->getBlock($blockDown->add(0, -1, 0));
@@ -331,13 +331,13 @@ class EntityNavigator{
 
 						if(!$canClimb) continue;
 
-						$blockDown = $this->mob->level->getBlock($blockDown->getSide(Facing::UP));
+						$blockDown = $this->mob->level->getBlock($blockDown->getSide(Vector3::SIDE_UP));
 
 						if($this->isObstructed($blockDown)) continue;
 
 						$cache[$item->getHashCode()] = $blockDown;
 					}else{
-						if(!$this->mob->level->getBlock($coord->getSide(Facing::DOWN, 2))->isSolid()){
+						if(!$this->mob->level->getBlock($coord->getSide(Vector3::SIDE_DOWN, 2))->isSolid()){
 							// Will fall
 							continue;
 						}
@@ -347,7 +347,7 @@ class EntityNavigator{
 						$cache[$item->getHashCode()] = $blockDown;
 					}
 				}else{
-					if($this->isObstructed($coord) or (!$this->mob->isSwimmer() and $this->avoidsWater and $this->mob->level->getBlock($coord->getSide(Facing::DOWN)) instanceof Liquid)) continue;
+					if($this->isObstructed($coord) or (!$this->mob->isSwimmer() and $this->avoidsWater and $this->mob->level->getBlock($coord->getSide(Vector3::SIDE_DOWN)) instanceof Liquid)) continue;
 
 					$cache[$item->getHashCode()] = $this->mob->level->getBlock($coord);
 				}

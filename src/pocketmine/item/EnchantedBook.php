@@ -22,30 +22,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\player;
+namespace pocketmine\item;
 
-use pocketmine\event\Cancellable;
-use pocketmine\Player;
+class EnchantedBook extends Item{
 
-class PlayerToggleSwimEvent extends PlayerEvent implements Cancellable{
-
-	/** @var bool */
-	protected $isSwimming;
-
-	/**
-	 * @param Player $player
-	 * @param bool   $isSwimming
-	 */
-	public function __construct(Player $player, bool $isSwimming){
-		$this->player = $player;
-		$this->isSwimming = $isSwimming;
+	public function __construct(int $meta = 0){
+		parent::__construct(self::ENCHANTED_BOOK, $meta, "Enchanted Book");
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSwimming() : bool{
-		return $this->isSwimming;
+	public function getMaxStackSize() : int{
+		return 1;
 	}
-
 }

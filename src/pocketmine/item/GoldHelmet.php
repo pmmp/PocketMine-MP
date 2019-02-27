@@ -36,4 +36,8 @@ class GoldHelmet extends Armor{
 	public function getMaxDurability() : int{
 		return 78;
 	}
+
+	public function getArmorSlot() : int{
+		return 0;
+	}
 }

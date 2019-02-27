@@ -26,8 +26,8 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\passive\Villager;
 use pocketmine\item\Item;
+use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\Player;
@@ -78,7 +78,7 @@ class TradeInventory extends ContainerInventory implements FakeInventory{
 			$pk->traderEid = $this->holder->getId();
 			$pk->playerEid = $who->getId();
 			$pk->displayName = $this->holder->getDisplayName();
-			$pk->offers = (new NetworkNbtSerializer())->write(clone $this->holder->getOffers());
+			$pk->offers = (new NetworkLittleEndianNBTStream())->write(clone $this->holder->getOffers());
 
 			$who->sendDataPacket($pk);
 		}else{

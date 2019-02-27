@@ -29,7 +29,6 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Server;
 
 class Boat extends Vehicle{
@@ -43,14 +42,14 @@ class Boat extends Vehicle{
 	protected $gravity = 0.09;
 	protected $drag = 0.01;
 
-	protected function initEntity(CompoundTag $nbt) : void{
+	protected function initEntity() : void{
 		$this->setHealth(4);
 		$this->setGenericFlag(self::DATA_FLAG_STACKABLE);
 		$this->setImmobile(false);
 
-		$this->setBoatType($nbt->getInt(self::TAG_VARIANT, 0));
+		$this->setBoatType($this->namedtag->getInt(self::TAG_VARIANT, 0));
 
-		parent::initEntity($nbt);
+		parent::initEntity();
 	}
 
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
@@ -69,12 +68,10 @@ class Boat extends Vehicle{
 		$this->propertyManager->setInt(self::DATA_VARIANT, $boatType);
 	}
 
-	public function saveNBT() : CompoundTag{
-		$nbt = parent::saveNBT();
+	public function saveNBT() : void {
+		parent::saveNBT();
 
-		$nbt->setInt(self::TAG_VARIANT, $this->getBoatType());
-
-		return $nbt;
+		$this->namedtag->setInt(self::TAG_VARIANT, $this->getBoatType());
 	}
 
 	public function getDrops() : array{
@@ -83,7 +80,7 @@ class Boat extends Vehicle{
 		];
 	}
 
-	protected function entityBaseTick(int $diff = 1) : bool{
+	public function entityBaseTick(int $diff = 1) : bool{
 		if($this->getHealth() < $this->getMaxHealth() and Server::getInstance()->getTick() % 10 === 0){
 			$this->heal(new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_REGEN));
 		}

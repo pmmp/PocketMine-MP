@@ -25,7 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\passive;
 
 use pocketmine\block\Block;
-use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Entity;
 use pocketmine\item\Bowl;
 use pocketmine\item\Shears;
 use pocketmine\item\Item;
@@ -59,7 +59,7 @@ class Mooshroom extends Cow{
 
 				return true;
 			}elseif($item instanceof Shears and !$this->isBaby()){
-				$cow = new Cow($this->level, EntityFactory::createBaseNBT($this));
+				$cow = new Cow($this->level, Entity::createBaseNBT($this));
 				$cow->setRotation($this->yaw, $this->pitch);
 				$cow->setHealth($this->getHealth());
 				$cow->setNameTag($this->getNameTag());

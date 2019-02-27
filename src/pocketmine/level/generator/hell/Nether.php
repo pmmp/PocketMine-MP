@@ -36,6 +36,7 @@ use pocketmine\level\generator\object\OreType;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3;
+use pocketmine\utils\Random;
 use function abs;
 
 class Nether extends Generator{
@@ -56,11 +57,15 @@ class Nether extends Generator{
 	/** @var Simplex */
 	private $noiseBase;
 
-	public function __construct(ChunkManager $level, int $seed, array $options = []){
-		parent::__construct($level, $seed, $options);
+	public function __construct(array $settings = []){
+		parent::__construct($settings);
+	}
+
+	public function init(ChunkManager $level, Random $random) : void{
+		parent::init($level, $random);
 
 		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 64);
-		$this->random->setSeed($this->seed);
+		$this->random->setSeed($this->level->getSeed());
 
 		$ores = new Ore();
 		$ores->setOreTypes([
@@ -74,8 +79,12 @@ class Nether extends Generator{
 		return "nether";
 	}
 
+	public function getSettings() : array{
+		return [];
+	}
+
 	public function generateChunk(int $chunkX, int $chunkZ) : void{
-		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
+		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 
 		$noise = $this->noiseBase->getFastNoise3D(16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
 
@@ -110,7 +119,7 @@ class Nether extends Generator{
 	}
 
 	public function populateChunk(int $chunkX, int $chunkZ) : void{
-		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
+		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		foreach($this->populators as $populator){
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}

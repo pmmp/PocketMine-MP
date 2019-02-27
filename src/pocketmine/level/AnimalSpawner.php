@@ -32,7 +32,6 @@ use pocketmine\entity\Animal;
 use pocketmine\entity\Creature;
 use pocketmine\entity\CreatureType;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Living;
 use pocketmine\entity\Mob;
 use pocketmine\entity\Monster;
@@ -133,7 +132,7 @@ class AnimalSpawner{
 													try{
 														$class = $entry->entityClass;
 														/** @var Living $entity */
-														$entity = new $class($level, EntityFactory::createBaseNBT($pos1->add(0.5, 0, 0.5)));
+														$entity = new $class($level, Entity::createBaseNBT($pos1->add(0.5, 0, 0.5)));
 													}catch(\Exception $e){
 														return;
 													}
@@ -202,7 +201,7 @@ class AnimalSpawner{
 			if(!$block1->isSolid()){
 				return false;
 			}else{
-				$flag = $block1->getId() !== Block::BEDROCK and $block1->getId() !== Block::BARRIER;
+				$flag = $block1->getId() !== Block::BEDROCK;
 				return $flag and !$block->isSolid() and !($block instanceof Liquid) and !$level->getBlock($pos->up())->isSolid();
 			}
 		}
@@ -254,7 +253,7 @@ class AnimalSpawner{
 							try{
 								$class = $entry->entityClass;
 								/** @var Entity $entity */
-								$entity = new $class($level, EntityFactory::createBaseNBT($pos->add(0.5, 0, 0.5)));
+								$entity = new $class($level, Entity::createBaseNBT($pos->add(0.5, 0, 0.5)));
 							}catch(\Exception $e){
 								continue;
 							}

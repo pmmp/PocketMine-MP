@@ -44,7 +44,7 @@ class SetBlockCommand extends VanillaCommand{
 		foreach((new \ReflectionClass(BlockIds::class))->getConstants() as $n => $id){
 			if(BlockFactory::isRegistered($id)){
 				for($i = 0; $i < 15; $i++){
-					if(BlockFactory::isRegistered($id, $i)){
+					if(BlockFactory::isRegistered($id)){
 						$blockName = strtolower(str_replace(" ", "_", (BlockFactory::get($id, $i))->getName()));
 						$blockNames[$blockName] = $blockName;
 					}else{

@@ -36,4 +36,8 @@ class ChainLeggings extends Armor{
 	public function getMaxDurability() : int{
 		return 226;
 	}
+
+	public function getArmorSlot() : int{
+		return 2;
+	}
 }

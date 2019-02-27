@@ -45,7 +45,7 @@ class ClearCommand extends VanillaCommand{
 		foreach((new \ReflectionClass(ItemIds::class))->getConstants() as $n => $id){
 			if(ItemFactory::isRegistered($id)){
 				for($i = 0; $i < 15; $i++){
-					if(ItemFactory::isRegistered($id, $i)){
+					if(ItemFactory::isRegistered($id)){
 						$itemName = (ItemFactory::get($id, $i))->getName();
 						$itemNames[$itemName] = $itemName;
 					}else{
@@ -156,7 +156,7 @@ class ClearCommand extends VanillaCommand{
 	public function getItemCount(Item $item, Inventory $inventory) : int{
 		$count = 0;
 		$checkDamage = !$item->hasAnyDamageValue();
-		$checkTags = $item->hasNamedTag();
+		$checkTags = $item->hasCompoundTag();
 		foreach($inventory->getContents(false) as $index => $i){
 			if($item->equals($i, $checkDamage, $checkTags)){
 				$count += $i->getCount();

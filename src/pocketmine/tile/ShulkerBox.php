@@ -29,10 +29,10 @@ use pocketmine\inventory\ShulkerBoxInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
-use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\Player;
 
 class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameable{
 	use NameableTrait {
@@ -44,15 +44,15 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
 	public const TAG_UNDYED = "isUndyed";
 
 	/** @var int */
-	protected $facing = Facing::UP;
+	protected $facing = Vector3::SIDE_UP;
 	/** @var bool */
 	protected $isUndyed = true;
 
 	/** @var ShulkerBoxInventory */
 	protected $inventory;
 
-	public function __construct(Level $level, Vector3 $pos){
-		parent::__construct($level, $pos);
+	public function __construct(Level $level, CompoundTag $nbt){
+		parent::__construct($level, $nbt);
 
 		$this->inventory = new ShulkerBoxInventory($this);
 	}
@@ -105,7 +105,7 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		$this->facing = $nbt->getByte(self::TAG_FACING, Facing::UP);
+		$this->facing = $nbt->getByte(self::TAG_FACING, Vector3::SIDE_DOWN);
 		$this->isUndyed = $nbt->getByte(self::TAG_UNDYED, 1) == 1;
 
 		$this->loadName($nbt);
@@ -127,8 +127,10 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
 		$this->addNameSpawnData($nbt);
 	}
 
-	protected static function createAdditionalNBT(CompoundTag $nbt, ?Item $item = null) : void{
-		$nbt->setByte(self::TAG_FACING, $face ?? Facing::UP);
+	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
+		parent::createAdditionalNBT($nbt, $pos, $face, $item, $player);
+
+		$nbt->setByte(self::TAG_FACING, $face ?? Vector3::SIDE_DOWN);
 		if($item !== null){
 			$nbt->setByte(self::TAG_UNDYED, $item->getId() == Block::UNDYED_SHULKER_BOX ? 1 : 0);
 		}

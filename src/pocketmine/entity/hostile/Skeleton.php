@@ -32,14 +32,12 @@ use pocketmine\entity\behavior\RangedAttackBehavior;
 use pocketmine\entity\behavior\RestrictSunBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Monster;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\RangedAttackerMob;
 use pocketmine\inventory\AltayEntityEquipment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use function rand;
@@ -54,12 +52,12 @@ class Skeleton extends Monster implements RangedAttackerMob{
 	/** @var AltayEntityEquipment */
 	protected $equipment;
 
-	protected function initEntity(CompoundTag $nbt) : void{
+	protected function initEntity() : void{
 		$this->setMovementSpeed(0.25);
 		$this->setFollowRange(35);
 		$this->setAttackDamage(2);
 
-		parent::initEntity($nbt);
+		parent::initEntity();
 
 		$this->equipment = new AltayEntityEquipment($this);
 		$loot = $this->level->random->nextBoundedInt(100);
@@ -102,7 +100,7 @@ class Skeleton extends Monster implements RangedAttackerMob{
 	public function onRangedAttackToTarget(Entity $target, float $power) : void{
 		$dir = $this->getDirectionVector();
 		/** @var Arrow $arrow */
-		$arrow = EntityFactory::create(Arrow::class, $this->level, EntityFactory::createBaseNBT($this->add($dir->add(0, $this->getEyeHeight(), 0))));
+		$arrow = Entity::createEntity("Arrow", $this->level, Entity::createBaseNBT($this->add($dir->add(0, $this->getEyeHeight(), 0))));
 		// TODO: Enchants
 		$arrow->setMotion($dir->multiply($power * 2.5)->add($this->level->random->nextFloat() * 0.02, $this->level->random->nextFloat() * 0.01, $this->level->random->nextFloat() * 0.02));
 		$arrow->setPickupMode(Arrow::PICKUP_NONE);
@@ -112,7 +110,7 @@ class Skeleton extends Monster implements RangedAttackerMob{
 		$arrow->spawnToAll();
 	}
 
-	protected function entityBaseTick(int $diff = 1) : bool{
+	public function entityBaseTick(int $diff = 1) : bool{
 		if(!$this->isOnFire() and $this->level->isDayTime() and !$this->isImmobile()){
 			if(!$this->isUnderwater() and $this->level->canSeeSky($this)){
 				$this->setOnFire(5);

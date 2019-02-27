@@ -29,19 +29,41 @@ namespace pocketmine\entity;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\Water;
+use pocketmine\entity\hostile\Blaze;
+use pocketmine\entity\hostile\CaveSpider;
+use pocketmine\entity\hostile\Creeper;
+use pocketmine\entity\hostile\Husk;
+use pocketmine\entity\hostile\Skeleton;
+use pocketmine\entity\hostile\Spider;
+use pocketmine\entity\hostile\Stray;
 use pocketmine\entity\hostile\Zombie;
+use pocketmine\entity\object\ArmorStand;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
-use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\object\FireworksRocket;
+use pocketmine\entity\object\LeashKnot;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PaintingMotive;
 use pocketmine\entity\object\PrimedTNT;
+use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\passive\Chicken;
+use pocketmine\entity\passive\Cow;
+use pocketmine\entity\passive\Horse;
+use pocketmine\entity\passive\Mooshroom;
+use pocketmine\entity\passive\Pig;
+use pocketmine\entity\passive\Sheep;
+use pocketmine\entity\passive\Squid;
+use pocketmine\entity\passive\Villager;
+use pocketmine\entity\passive\Wolf;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\Egg;
 use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\projectile\ExperienceBottle;
+use pocketmine\entity\projectile\FishingHook;
+use pocketmine\entity\projectile\SmallFireball;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
+use pocketmine\entity\vehicle\Boat;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
@@ -78,6 +100,8 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Random;
+use pocketmine\utils\UUID;
 use function abs;
 use function assert;
 use function cos;
@@ -92,8 +116,6 @@ use function is_array;
 use function is_infinite;
 use function is_nan;
 use function lcg_value;
-use pocketmine\utils\Random;
-use pocketmine\utils\UUID;
 use function reset;
 use function sin;
 use const M_PI_2;
@@ -309,7 +331,27 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(SplashPotion::class, false, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
 		Entity::registerEntity(Squid::class, false, ['Squid', 'minecraft:squid']);
 		Entity::registerEntity(Villager::class, false, ['Villager', 'minecraft:villager']);
+		Entity::registerEntity(Wolf::class, false, ['Wolf', 'minecraft:wolf']);
 		Entity::registerEntity(Zombie::class, false, ['Zombie', 'minecraft:zombie']);
+		Entity::registerEntity(Cow::class, false, ['Cow', 'minecraft:cow']);
+		Entity::registerEntity(Sheep::class, false, ['Sheep', 'minecraft:sheep']);
+		Entity::registerEntity(Mooshroom::class, false, ['Mooshroom', 'minecraft:mooshroom']);
+		Entity::registerEntity(Pig::class, false, ['Pig', 'minecraft:pig']);
+		Entity::registerEntity(Skeleton::class, false, ['Skeleton', 'minecraft:skeleton']);
+		Entity::registerEntity(Stray::class, false, ['Stray', 'minecraft:stray']);
+		Entity::registerEntity(Husk::class, false, ['Husk', 'minecraft:husk']);
+		Entity::registerEntity(Chicken::class, false, ['Chicken', 'minecraft:chicken']);
+		Entity::registerEntity(Spider::class, false, ['Spider', 'minecraft:spider']);
+		Entity::registerEntity(CaveSpider::class, false, ['CaveSpider', 'minecraft:cave_spider']);
+		Entity::registerEntity(Creeper::class, false, ['Creeper', 'minecraft:creeper']);
+		Entity::registerEntity(FishingHook::class, false, ['FishingHook', 'minecraft:fishing_hook']);
+		Entity::registerEntity(LeashKnot::class, false, ['LeashKnot', 'minecraft:leash_knot']);
+		Entity::registerEntity(Horse::class, false, ['Horse', 'minecraft:horse']);
+		Entity::registerEntity(Blaze::class, false, ['Blaze', 'minecraft:blaze']);
+		Entity::registerEntity(SmallFireball::class, false, ['SmallFireball', 'minecraft:small_fireball']);
+		Entity::registerEntity(ArmorStand::class, false, ['armor_stand", "minecraft:armor_stand']);
+		Entity::registerEntity(Boat::class, false, ['Boat', 'minecraft:boat']);
+		Entity::registerEntity(FireworksRocket::class, false, ['FireworksRocket', 'minecraft:fireworks_rocket']);
 
 		Entity::registerEntity(Human::class, true);
 
@@ -1847,9 +1889,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			if(!($this instanceof Player)){
 				$this->getRidingEntity()->updateRiderPosition();
 			}
-			$this->entityRiderYawDelta += $this->yaw - $this->lastLocation->yaw;
+			$this->entityRiderYawDelta += $this->yaw - $this->lastYaw;
 
-			for($this->entityRiderPitchDelta += $this->pitch - $this->lastLocation->pitch; $this->entityRiderYawDelta >= 180; $this->entityRiderYawDelta -= 360){
+			for($this->entityRiderPitchDelta += $this->pitch - $this->lastPitch; $this->entityRiderYawDelta >= 180; $this->entityRiderYawDelta -= 360){
 				//empty
 			}
 

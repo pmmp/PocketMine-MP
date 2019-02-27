@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\UUID;
 use function boolval;
@@ -32,28 +31,26 @@ use function intval;
 
 abstract class Tamable extends Animal{
 
-	public function saveNBT() : CompoundTag{
-		$nbt = parent::saveNBT();
+	public function saveNBT() : void {
+		parent::saveNBT();
 
-		$nbt->setByte("Tamed", intval($this->isTamed()));
-		$nbt->setByte("Sitting", intval($this->isSitting()));
+		$this->namedtag->setByte("Tamed", intval($this->isTamed()));
+		$this->namedtag->setByte("Sitting", intval($this->isSitting()));
 
 		if($this->getOwningEntity() !== null){
 			$uuid = $this->getOwningEntity()->getUniqueId();
 
-			$nbt->setString("OwnerUUID", $uuid->toString());
+			$this->namedtag->setString("OwnerUUID", $uuid->toString());
 		}
-
-		return $nbt;
 	}
 
-	protected function initEntity(CompoundTag $nbt) : void{
-		parent::initEntity($nbt);
+	protected function initEntity() : void{
+		parent::initEntity();
 
-		$this->setTamed(boolval($nbt->getByte("Tamed", 0)));
-		$this->setSitting(boolval($nbt->getByte("Sitting", 0)));
-		if($nbt->hasTag("OwnerUUID", StringTag::class)){
-			$owner = $this->server->getPlayerByUUID(UUID::fromString($nbt->getString("OwnerUUID"))); // why only player?
+		$this->setTamed(boolval($this->namedtag->getByte("Tamed", 0)));
+		$this->setSitting(boolval($this->namedtag->getByte("Sitting", 0)));
+		if($this->namedtag->hasTag("OwnerUUID", StringTag::class)){
+			$owner = $this->server->getPlayerByUUID(UUID::fromString($this->namedtag->getString("OwnerUUID"))); // why only player?
 
 			if($owner !== null){
 				$this->setOwningEntity($owner);

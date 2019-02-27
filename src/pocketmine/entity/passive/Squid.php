@@ -29,7 +29,6 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use function atan2;
 use function mt_rand;
@@ -48,9 +47,9 @@ class Squid extends WaterAnimal{
 
 	private $switchDirectionTicker = 0;
 
-	public function initEntity(CompoundTag $nbt) : void{
+	public function initEntity() : void{
 		$this->setMaxHealth(10);
-		parent::initEntity($nbt);
+		parent::initEntity();
 	}
 
 	public function getName() : string{
@@ -79,7 +78,7 @@ class Squid extends WaterAnimal{
 	}
 
 
-	protected function entityBaseTick(int $tickDiff = 1) : bool{
+	public function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->closed){
 			return false;
 		}
@@ -100,7 +99,6 @@ class Squid extends WaterAnimal{
 			}
 
 			$inWater = $this->isUnderwater();
-			$this->setHasGravity(!$inWater);
 			if(!$inWater){
 				$this->swimDirection = null;
 			}elseif($this->swimDirection !== null){
@@ -124,5 +122,11 @@ class Squid extends WaterAnimal{
 		return [
 			ItemFactory::get(Item::DYE, 0, mt_rand(1, 3))
 		];
+	}
+
+	protected function applyGravity() : void{
+		if(!$this->isUnderwater()){
+			parent::applyGravity();
+		}
 	}
 }

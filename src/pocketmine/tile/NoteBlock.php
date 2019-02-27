@@ -26,7 +26,7 @@ namespace pocketmine\tile;
 
 use pocketmine\block\Block;
 use pocketmine\level\sound\NoteBlockSound;
-use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 
 class NoteBlock extends Spawnable{
@@ -59,7 +59,7 @@ class NoteBlock extends Spawnable{
 	public function triggerNote() : bool{
 		$up = $this->level->getBlock($this->getSide(Facing::UP));
 		if($up->getId() === Block::AIR){
-			$below = $this->level->getBlock($this->getSide(Facing::DOWN));
+			$below = $this->level->getBlock($this->getSide(Vector3::SIDE_DOWN));
 			$instrument = NoteBlockSound::INSTRUMENT_PIANO;
 
 			switch($below->getId()){ // TODO: implement block materials
@@ -142,7 +142,7 @@ class NoteBlock extends Spawnable{
 					break;
 			}
 
-			$this->level->addSound($this, new NoteBlockSound($instrument, $this->note));
+			$this->level->addSound(new NoteBlockSound($this, $instrument, $this->note));
 
 			return true;
 		}

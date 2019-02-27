@@ -41,8 +41,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\Explosion;
 use pocketmine\level\GameRules;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
@@ -63,30 +61,28 @@ class Creeper extends Monster implements Ageable{
 	protected $fuseTime = 30;
 	protected $explosionRadius = 3;
 
-	protected function initEntity(CompoundTag $nbt) : void{
+	protected function initEntity() : void{
 		$this->setMaxHealth(20);
 		$this->setMovementSpeed(0.25);
 		$this->setFollowRange(35);
 		$this->setAttackDamage(1.0);
 
-		$this->setIgnited(boolval($nbt->getByte("ignited", 0)));
-		$this->setPowered(boolval($nbt->getByte("powered", 0)));
+		$this->setIgnited(boolval($this->namedtag->getByte("ignited", 0)));
+		$this->setPowered(boolval($this->namedtag->getByte("powered", 0)));
 
-		$this->explosionRadius = $nbt->getByte("ExplosionRadius", $this->explosionRadius);
-		$this->fuseTime = $nbt->getShort("Fuse", $this->fuseTime);
+		$this->explosionRadius = $this->namedtag->getByte("ExplosionRadius", $this->explosionRadius);
+		$this->fuseTime = $this->namedtag->getShort("Fuse", $this->fuseTime);
 
-		parent::initEntity($nbt);
+		parent::initEntity();
 	}
 
-	public function saveNBT() : CompoundTag{
-		$nbt = parent::saveNBT();
+	public function saveNBT() : void{
+		parent::saveNBT();
 
-		$nbt->setByte("ignited", intval($this->isIgnited()));
-		$nbt->setByte("powered", intval($this->isPowered()));
-		$nbt->setShort("Fuse", $this->fuseTime);
-		$nbt->setByte("ExplosionRadius", $this->explosionRadius);
-
-		return $nbt;
+		$this->namedtag->setByte("ignited", intval($this->isIgnited()));
+		$this->namedtag->setByte("powered", intval($this->isPowered()));
+		$this->namedtag->setShort("Fuse", $this->fuseTime);
+		$this->namedtag->setByte("ExplosionRadius", $this->explosionRadius);
 	}
 
 	public function getName() : string{
@@ -147,14 +143,15 @@ class Creeper extends Monster implements Ageable{
 			$this->flagForDespawn();
 
 			if($this->level->getGameRules()->getBool(GameRules::RULE_MOB_GRIEFING, true)){
-				$exp->explode();
+				$exp->explodeA();
+				$exp->explodeB();
 			}else{
 				$exp->explodeB();
 			}
 		}
 	}
 
-	protected function entityBaseTick(int $diff = 1) : bool{
+	public function entityBaseTick(int $diff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($diff);
 
 		$this->lastActiveTime = $this->timeSinceIgnited;
@@ -192,7 +189,6 @@ class Creeper extends Monster implements Ageable{
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
 		if($item instanceof FlintSteel){
 			$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_IGNITE);
-			$player->animate(AnimatePacket::ACTION_SWING_ARM);
 
 			if($this->isValid()){
 				$this->setIgnited(true);

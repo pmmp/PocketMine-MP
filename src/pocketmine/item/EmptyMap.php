@@ -24,33 +24,41 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
-use pocketmine\entity\EntityFactory;
-use pocketmine\entity\vehicle\Boat as EntityBoat;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class Boat extends Item{
-	public function __construct(){
-		parent::__construct(self::BOAT, 0, "Boat");
+class EmptyMap extends Item{
+
+	public function __construct(int $meta = 0){
+		parent::__construct(self::EMPTY_MAP, $meta, "Empty Map");
 	}
 
-	public function getFuelTime() : int{
-		return 1200; //400 in PC
-	}
+	/**
+	 * @param Player  $player
+	 * @param Vector3 $directionVector
+	 *
+	 * @return bool
+	 */
+	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
+		$map = new FilledMap();
+		// TODO: Create world map
+		$map->onCreateMap($player->level, 0);
 
-	public function getMaxStackSize() : int{
-		return 1;
-	}
-
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		$nbt = EntityFactory::createBaseNBT($blockReplace->add(0.5, 0, 0.5));
-		$nbt->setInt("Variant", $this->getDamage());
-		$entity = EntityFactory::create(EntityBoat::class, $player->level, $nbt);
-		$entity->spawnToAll();
+		if($player->getInventory()->canAddItem($map)){
+			$player->getInventory()->addItem($map);
+		}else{
+			$player->dropItem($map);
+		}
 
 		$this->pop();
 
 		return ItemUseResult::success();
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getMaxStackSize() : int{
+		return 1;
 	}
 }

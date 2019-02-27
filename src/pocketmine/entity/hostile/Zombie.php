@@ -35,7 +35,6 @@ use pocketmine\entity\Monster;
 use pocketmine\entity\passive\Villager;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use function mt_rand;
 
@@ -45,12 +44,12 @@ class Zombie extends Monster implements Ageable{
 	public $width = 0.6;
 	public $height = 1.95;
 
-	protected function initEntity(CompoundTag $nbt) : void{
+	protected function initEntity() : void{
 		$this->setMovementSpeed($this->isBaby() ? 0.345 : 0.23);
 		$this->setFollowRange(35);
 		$this->setAttackDamage(3);
 
-		parent::initEntity($nbt);
+		parent::initEntity();
 	}
 
 	public function getName() : string{
@@ -95,7 +94,7 @@ class Zombie extends Monster implements Ageable{
 		$this->targetBehaviorPool->setBehavior(2, new FindAttackableTargetBehavior($this, Villager::class));
 	}
 
-	protected function entityBaseTick(int $diff = 1) : bool{
+	public function entityBaseTick(int $diff = 1) : bool{
 		if(!$this->isOnFire() and $this->level->isDayTime() and !$this->isImmobile()){
 			if(!$this->isUnderwater() and $this->level->canSeeSky($this)){
 				$this->setOnFire(5);

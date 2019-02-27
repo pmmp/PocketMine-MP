@@ -30,7 +30,6 @@ use pocketmine\item\Saddle;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\Player;
 use function boolval;
@@ -64,11 +63,11 @@ abstract class AbstractHorse extends Tamable{
 		}
 	}
 
-	protected function initEntity(CompoundTag $nbt) : void{
-		$this->setSaddled(boolval($nbt->getByte("Saddle", 0)));
-		$this->setChested(boolval($nbt->getByte("Chested", 0)));
+	protected function initEntity() : void{
+		$this->setSaddled(boolval($this->namedtag->getByte("Saddle", 0)));
+		$this->setChested(boolval($this->namedtag->getByte("Chested", 0)));
 
-		parent::initEntity($nbt);
+		parent::initEntity();
 	}
 
 	/**
@@ -155,17 +154,15 @@ abstract class AbstractHorse extends Tamable{
 		$this->setGenericFlag(self::DATA_FLAG_CHESTED, $value);
 	}
 
-	public function saveNBT() : CompoundTag{
-		$nbt = parent::saveNBT();
+	public function saveNBT() : void{
+		parent::saveNBT();
 
-		$nbt->setByte("Saddled", intval($this->isSaddled()));
-		$nbt->setByte("Chested", intval($this->isChested()));
+		$this->namedtag->setByte("Saddled", intval($this->isSaddled()));
+		$this->namedtag->setByte("Chested", intval($this->isChested()));
 
 		// in bedrock edition, this values saved like this
-		$nbt->setInt("Variant", $this->getVariant());
-		$nbt->setInt("MarkVariant", $this->getMarkVariant());
-
-		return $nbt;
+		$this->namedtag->setInt("Variant", $this->getVariant());
+		$this->namedtag->setInt("MarkVariant", $this->getMarkVariant());
 	}
 
 	public function isRearing() : bool{

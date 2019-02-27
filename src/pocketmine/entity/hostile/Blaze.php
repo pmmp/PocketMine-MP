@@ -31,14 +31,12 @@ use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\RangedAttackBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Monster;
 use pocketmine\entity\projectile\SmallFireball;
 use pocketmine\entity\RangedAttackerMob;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use function rand;
 
@@ -49,12 +47,12 @@ class Blaze extends Monster implements RangedAttackerMob{
 	public $height = 1.8;
 	public $width = 0.6;
 
-	public function initEntity(CompoundTag $nbt) : void{
+	public function initEntity() : void{
 		$this->setMaxHealth(20);
 		$this->setMovementSpeed(0.23000000417232513);
 		$this->setFollowRange(35);
 
-		parent::initEntity($nbt);
+		parent::initEntity();
 	}
 
 	public function getName() : string{
@@ -96,7 +94,7 @@ class Blaze extends Monster implements RangedAttackerMob{
 
 	public function onRangedAttackToTarget(Entity $target, float $power) : void{
 		$dv = $target->subtract($this)->normalize();
-		$fireball = new SmallFireball($this->level, EntityFactory::createBaseNBT($this->add($this->random->nextFloat() * $power, $this->getEyeHeight(), $this->random->nextFloat() * $power), $dv), $this);
+		$fireball = new SmallFireball($this->level, Entity::createBaseNBT($this->add($this->random->nextFloat() * $power, $this->getEyeHeight(), $this->random->nextFloat() * $power), $dv), $this);
 		$fireball->setMotion($dv->multiply($power));
 		$fireball->spawnToAll();
 	}

@@ -36,17 +36,18 @@ class PlaySound extends Sound{
 	/** @var float */
 	protected $pitch = 1;
 
-	public function __construct(string $soundName, float $volume = 100, float $pitch = 1){
+	public function __construct(Vector3 $pos, string $soundName, float $volume = 100, float $pitch = 1){
+		parent::__construct($pos->x, $pos->y, $pos->z);
 		$this->soundName = $soundName;
 		$this->volume = $volume;
 		$this->pitch = $pitch;
 	}
 
-	public function encode(Vector3 $pos){
+	public function encode(){
 		$pk = new PlaySoundPacket();
-		$pk->x = $pos->x;
-		$pk->y = $pos->y;
-		$pk->z = $pos->z;
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
 		$pk->soundName = $this->soundName;
 		$pk->volume = $this->volume;
 		$pk->pitch = $this->pitch;

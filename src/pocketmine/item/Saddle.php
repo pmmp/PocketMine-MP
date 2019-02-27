@@ -24,33 +24,31 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
-use pocketmine\entity\EntityFactory;
-use pocketmine\entity\vehicle\Boat as EntityBoat;
-use pocketmine\math\Vector3;
+use pocketmine\entity\Entity;
+use pocketmine\entity\passive\Pig;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
-class Boat extends Item{
-	public function __construct(){
-		parent::__construct(self::BOAT, 0, "Boat");
-	}
-
-	public function getFuelTime() : int{
-		return 1200; //400 in PC
+class Saddle extends Item{
+	public function __construct(int $meta = 0){
+		parent::__construct(self::SADDLE, $meta, "Saddle");
 	}
 
 	public function getMaxStackSize() : int{
 		return 1;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		$nbt = EntityFactory::createBaseNBT($blockReplace->add(0.5, 0, 0.5));
-		$nbt->setInt("Variant", $this->getDamage());
-		$entity = EntityFactory::create(EntityBoat::class, $player->level, $nbt);
-		$entity->spawnToAll();
+	public function onInteractWithEntity(Player $player, Entity $entity) : bool{
+		if($entity instanceof Pig){
+			if(!$entity->isSaddled() and !$entity->isBaby()){
+				$entity->setSaddled(true);
+				$entity->level->broadcastLevelSoundEvent($entity, LevelSoundEventPacket::SOUND_ARMOR_EQUIP_LEATHER);
+				$this->pop();
+			}
 
-		$this->pop();
-
-		return ItemUseResult::success();
+			return true;
+		}
+		return false;
 	}
 }
+

@@ -114,9 +114,9 @@ use function min;
 use function mt_rand;
 use function strtolower;
 use function trim;
+use const M_PI;
 use const INT32_MAX;
 use const INT32_MIN;
-use const M_PI;
 
 #include <rules/Level.h>
 
@@ -814,7 +814,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk = new GameRulesChangedPacket();
 		$pk->gameRules = $rules ?? $this->gameRules->getRules();
 
-		$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+		$this->server->broadcastPacket(count($target) > 0 ? $target : $this->players, $pk);
 	}
 
 	/**

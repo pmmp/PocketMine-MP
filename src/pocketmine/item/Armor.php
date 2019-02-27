@@ -41,6 +41,8 @@ abstract class Armor extends Durable{
 		return 1;
 	}
 
+	abstract public function getArmorSlot() : int;
+
 	/**
 	 * Returns the dyed colour of this armour piece. This generally only applies to leather armour.
 	 * @return Color|null

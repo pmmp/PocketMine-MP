@@ -36,8 +36,8 @@ use pocketmine\command\SimpleCommandMap;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Skin;
 use pocketmine\event\HandlerList;
-use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
+use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
@@ -65,11 +65,11 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\AdvancedSourceInterface;
 use pocketmine\network\CompressBatchedTask;
 use pocketmine\network\mcpe\protocol\BatchPacket;
@@ -101,12 +101,12 @@ use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Config;
-use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
+use pocketmine\utils\Internet;
 use function array_filter;
 use function array_key_exists;
 use function array_shift;
@@ -169,15 +169,15 @@ use function time;
 use function touch;
 use function trim;
 use const DIRECTORY_SEPARATOR;
-use const INT32_MAX;
-use const INT32_MIN;
 use const PHP_EOL;
 use const PHP_INT_MAX;
 use const PTHREADS_INHERIT_NONE;
 use const SCANDIR_SORT_NONE;
 use const SIGHUP;
-use const SIGINT;
 use const SIGTERM;
+use const SIGINT;
+use const INT32_MAX;
+use const INT32_MIN;
 
 /**
  * The class that manages everything
@@ -1870,7 +1870,7 @@ class Server{
 					$this->generateLevel($netherLevelName, time(), GeneratorManager::getGenerator("hell"));
 				}
 
-				$this->setNetherLevel($this->levelManager->getLevelByName($netherLevelName));
+				$this->setNetherLevel($this->getLevelByName($netherLevelName));
 			}
 
 			if($this->isAllowTheEnd() and $this->getTheEndLevel() === null){
@@ -1883,7 +1883,7 @@ class Server{
 					$this->generateLevel($endLevelName, time(), GeneratorManager::getGenerator("end"));
 				}
 
-				$this->setTheEndLevel($this->levelManager->getLevelByName($endLevelName));
+				$this->setTheEndLevel($this->getLevelByName($endLevelName));
 			}
 
 			if($this->properties->hasChanged()){

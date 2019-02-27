@@ -22,30 +22,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\player;
+namespace pocketmine\item;
 
-use pocketmine\event\Cancellable;
-use pocketmine\Player;
-
-class PlayerToggleSwimEvent extends PlayerEvent implements Cancellable{
-
-	/** @var bool */
-	protected $isSwimming;
-
-	/**
-	 * @param Player $player
-	 * @param bool   $isSwimming
-	 */
-	public function __construct(Player $player, bool $isSwimming){
-		$this->player = $player;
-		$this->isSwimming = $isSwimming;
+class Elytra extends Item{
+	public function __construct(int $meta = 0){
+		parent::__construct(Item::ELYTRA, $meta, "Elytra Wings");
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSwimming() : bool{
-		return $this->isSwimming;
+	public function getArmorSlot() : int{
+		return Armor::SLOT_CHESTPLATE;
 	}
 
+	public function getMaxStackSize() : int{
+		return 1;
+	}
 }

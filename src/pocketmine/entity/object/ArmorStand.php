@@ -65,16 +65,16 @@ class ArmorStand extends Living{
 
 	protected $vibrateTimer = 0;
 
-	protected function initEntity(CompoundTag $nbt) : void{
+	protected function initEntity() : void{
 		$this->setMaxHealth(6);
 		$this->setImmobile(true);
 
-		parent::initEntity($nbt);
+		parent::initEntity();
 
 		$this->equipment = new AltayEntityEquipment($this);
 
-		if($nbt->hasTag(self::TAG_ARMOR, ListTag::class)){
-			$armors = $nbt->getListTag(self::TAG_ARMOR);
+		if($this->namedtag->hasTag(self::TAG_ARMOR, ListTag::class)){
+			$armors = $this->namedtag->getListTag(self::TAG_ARMOR);
 
 			/** @var CompoundTag $armor */
 			foreach($armors as $armor){
@@ -84,14 +84,14 @@ class ArmorStand extends Living{
 			}
 		}
 
-		if($nbt->hasTag(self::TAG_MAINHAND, CompoundTag::class)){
-			$this->equipment->setItemInHand(Item::nbtDeserialize($nbt->getCompoundTag(self::TAG_MAINHAND)));
+		if($this->namedtag->hasTag(self::TAG_MAINHAND, CompoundTag::class)){
+			$this->equipment->setItemInHand(Item::nbtDeserialize($this->namedtag->getCompoundTag(self::TAG_MAINHAND)));
 		}
-		if($nbt->hasTag(self::TAG_OFFHAND, CompoundTag::class)){
-			$this->equipment->setItemInHand(Item::nbtDeserialize($nbt->getCompoundTag(self::TAG_OFFHAND)));
+		if($this->namedtag->hasTag(self::TAG_OFFHAND, CompoundTag::class)){
+			$this->equipment->setItemInHand(Item::nbtDeserialize($this->namedtag->getCompoundTag(self::TAG_OFFHAND)));
 		}
 
-		$this->setPose(min($nbt->getInt(self::TAG_POSE_INDEX, 0), 12));
+		$this->setPose(min($this->namedtag->getInt(self::TAG_POSE_INDEX, 0), 12));
 		$this->propertyManager->setString(self::DATA_INTERACTIVE_TAG, "armorstand.change.pose");
 	}
 
@@ -199,12 +199,12 @@ class ArmorStand extends Living{
 		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_FALL, $this->getId());
 	}
 
-	public function saveNBT() : CompoundTag{
-		$nbt = parent::saveNBT();
+	public function saveNBT() : void{
+		parent::saveNBT();
 
 		if($this->equipment instanceof AltayEntityEquipment){
-			$nbt->setTag($this->equipment->getItemInHand()->nbtSerialize(-1, self::TAG_MAINHAND), true);
-			$nbt->setTag($this->equipment->getOffhandItem()->nbtSerialize(-1, self::TAG_OFFHAND), true);
+			$this->namedtag->setTag($this->equipment->getItemInHand()->nbtSerialize(-1, self::TAG_MAINHAND), true);
+			$this->namedtag->setTag($this->equipment->getOffhandItem()->nbtSerialize(-1, self::TAG_OFFHAND), true);
 		}
 
 		if($this->armorInventory !== null){
@@ -214,12 +214,10 @@ class ArmorStand extends Living{
 				$armorTag->push($this->armorInventory->getItem($i)->nbtSerialize($i));
 			}
 
-			$nbt->setTag($armorTag, true);
+			$this->namedtag->setTag($armorTag, true);
 		}
 
-		$nbt->setInt(self::TAG_POSE_INDEX, $this->getPose(), true);
-
-		return $nbt;
+		$this->namedtag->setInt(self::TAG_POSE_INDEX, $this->getPose(), true);
 	}
 
 	public function getDrops() : array{
@@ -248,7 +246,7 @@ class ArmorStand extends Living{
 	}
 
 	public function startDeathAnimation() : void{
-		$this->level->addParticle($this, new DestroyBlockParticle(BlockFactory::get(Block::WOODEN_PLANKS)));
+		$this->level->addParticle(new DestroyBlockParticle($this, BlockFactory::get(Block::WOODEN_PLANKS)));
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{
@@ -269,7 +267,7 @@ class ArmorStand extends Living{
 		return false;
 	}
 
-	protected function entityBaseTick(int $tickDiff = 1) : bool{
+	public function entityBaseTick(int $tickDiff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->getGenericFlag(self::DATA_FLAG_VIBRATING) and $this->vibrateTimer-- <= 0){

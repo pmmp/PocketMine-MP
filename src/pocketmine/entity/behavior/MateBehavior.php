@@ -25,7 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Animal;
-use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Entity;
 use pocketmine\entity\Mob;
 
 class MateBehavior extends Behavior{
@@ -95,7 +95,7 @@ class MateBehavior extends Behavior{
 
 	private function spawnBaby() : void{
 		/** @var Mob $baby */
-		$baby = EntityFactory::create(EntityFactory::getEntityClassName($this->mob::NETWORK_ID), $this->mob->level, EntityFactory::createBaseNBT($this->mob));
+		$baby = Entity::createEntity($this->mob::NETWORK_ID, $this->mob->level, Entity::createBaseNBT($this->mob));
 		$baby->setBaby(true);
 		$baby->setImmobile(false);
 		$baby->spawnToAll();

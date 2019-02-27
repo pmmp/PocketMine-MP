@@ -68,9 +68,9 @@ class LeashKnot extends Entity{
 	/**
 	 * @param CompoundTag $nbt
 	 */
-	public function initEntity(CompoundTag $nbt) : void{
+	public function initEntity() : void{
 		$this->setMaxHealth(1);
-		parent::initEntity($nbt);
+		parent::initEntity();
 	}
 
 	/**
@@ -106,7 +106,7 @@ class LeashKnot extends Entity{
 	 *
 	 * @return bool
 	 */
-	protected function entityBaseTick(int $tickDiff = 1) : bool{
+	public function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->dropCounter++ >= 100 and $this->isValid()){
 			$this->dropCounter = 0;
 			if(!$this->isSurfaceValid() and !$this->isFlaggedForDespawn()){
@@ -169,8 +169,8 @@ class LeashKnot extends Entity{
 		}
 	}
 
-	public function onDeath() : void{
-		parent::onDeath();
+	public function kill() : void{
+		parent::kill();
 
 		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEASHKNOT_BREAK);
 	}

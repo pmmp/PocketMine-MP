@@ -32,10 +32,10 @@ use pocketmine\item\ItemIds;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\TextFormat;
 use function array_slice;
 use function count;
@@ -50,7 +50,7 @@ class GiveCommand extends VanillaCommand{
 		foreach((new \ReflectionClass(ItemIds::class))->getConstants() as $n => $id){
 			if(ItemFactory::isRegistered($id)){
 				for($i = 0; $i < 15; $i++){
-					if(ItemFactory::isRegistered($id, $i)){
+					if(ItemFactory::isRegistered($id)){
 						$itemName = strtolower(str_replace(" ", "_", (ItemFactory::get($id, $i))->getName()));
 						$itemNames[$itemName] = $itemName;
 					}else{

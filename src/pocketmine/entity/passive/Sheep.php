@@ -40,8 +40,8 @@ use pocketmine\item\Shears;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
+use pocketmine\utils\Color;
 use pocketmine\utils\Random;
 use function boolval;
 use function intval;
@@ -66,14 +66,14 @@ class Sheep extends Animal{
 		$this->behaviorPool->setBehavior(8, new RandomLookAroundBehavior($this));
 	}
 
-	protected function initEntity(CompoundTag $nbt) : void{
+	protected function initEntity() : void{
 		$this->setMaxHealth(8);
 		$this->setMovementSpeed(0.23000000417232513);
 		$this->setFollowRange(10);
-		$this->propertyManager->setByte(self::DATA_COLOR, $nbt->getByte("Color", $this->getRandomColor($this->level->random)));
-		$this->setSheared(boolval($nbt->getByte("Sheared", 0)));
+		$this->propertyManager->setByte(self::DATA_COLOR, $this->namedtag->getByte("Color", $this->getRandomColor($this->level->random)));
+		$this->setSheared(boolval($this->namedtag->getByte("Sheared", 0)));
 
-		parent::initEntity($nbt);
+		parent::initEntity();
 	}
 
 	public function getName() : string{
@@ -129,13 +129,11 @@ class Sheep extends Animal{
 		$this->setGenericFlag(self::DATA_FLAG_SHEARED, $value);
 	}
 
-	public function saveNBT() : CompoundTag{
-		$nbt = parent::saveNBT();
+	public function saveNBT() : void{
+		parent::saveNBT();
 
-		$nbt->setByte("Sheared", intval($this->isSheared()));
-		$nbt->setByte("Color", intval($this->propertyManager->getByte(self::DATA_COLOR)));
-
-		return $nbt;
+		$this->namedtag->setByte("Sheared", intval($this->isSheared()));
+		$this->namedtag->setByte("Color", intval($this->propertyManager->getByte(self::DATA_COLOR)));
 	}
 
 	/**
@@ -147,17 +145,17 @@ class Sheep extends Animal{
 		$i = $random->nextBoundedInt(100);
 
 		if($i < 5){
-			return DyeColor::$BLACK->getMagicNumber();
+			return Color::COLOR_DYE_BLACK;
 		}elseif($i < 10){
-			return DyeColor::$GRAY->getMagicNumber();
+			return Color::COLOR_DYE_GRAY;
 		}elseif($i < 15){
-			return DyeColor::$LIGHT_GRAY->getMagicNumber();
+			return Color::COLOR_DYE_LIGHT_GRAY;
 		}elseif($i < 18){
-			return DyeColor::$BROWN->getMagicNumber();
+			return Color::COLOR_DYE_BROWN;
 		}elseif($random->nextBoundedInt(500) === 0){
-			return DyeColor::$PINK->getMagicNumber();
+			return Color::COLOR_DYE_PINK;
 		}else{
-			return DyeColor::$WHITE->getMagicNumber();
+			return Color::COLOR_DYE_WHITE;
 		}
 	}
 
