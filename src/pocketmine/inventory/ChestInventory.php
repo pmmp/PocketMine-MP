@@ -46,10 +46,6 @@ class ChestInventory extends ContainerInventory{
 		return WindowTypes::CONTAINER;
 	}
 
-	public function getName() : string{
-		return "Chest";
-	}
-
 	public function getDefaultSize() : int{
 		return 27;
 	}
@@ -70,7 +66,7 @@ class ChestInventory extends ContainerInventory{
 		return LevelSoundEventPacket::SOUND_CHEST_CLOSED;
 	}
 
-	public function onOpen(Player $who) : void{
+	protected function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
@@ -80,7 +76,7 @@ class ChestInventory extends ContainerInventory{
 		}
 	}
 
-	public function onClose(Player $who) : void{
+	protected function onClose(Player $who) : void{
 		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
 			//TODO: this crap really shouldn't be managed by the inventory
 			$this->broadcastBlockEventPacket(false);

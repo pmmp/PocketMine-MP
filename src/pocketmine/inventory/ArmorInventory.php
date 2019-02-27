@@ -50,10 +50,6 @@ class ArmorInventory extends BaseInventory{
 		return $this->holder;
 	}
 
-	public function getName() : string{
-		return "Armor";
-	}
-
 	public function getDefaultSize() : int{
 		return 4;
 	}

@@ -65,10 +65,6 @@ class CraftingGrid extends BaseInventory{
 		throw new \BadMethodCallException("Cannot change the size of a crafting grid");
 	}
 
-	public function getName() : string{
-		return "Crafting";
-	}
-
 	public function setItem(int $index, Item $item, bool $send = true) : bool{
 		if(parent::setItem($index, $item, $send)){
 			$this->seekRecipeBounds();

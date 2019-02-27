@@ -43,10 +43,6 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		BaseInventory::__construct($items);
 	}
 
-	public function getName() : string{
-		return "Double Chest";
-	}
-
 	public function getDefaultSize() : int{
 		return $this->left->getDefaultSize() + $this->right->getDefaultSize();
 	}
@@ -113,7 +109,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		}
 	}
 
-	public function onOpen(Player $who) : void{
+	protected function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1 and $this->right->getHolder()->isValid()){
@@ -121,7 +117,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		}
 	}
 
-	public function onClose(Player $who) : void{
+	protected function onClose(Player $who) : void{
 		if(count($this->getViewers()) === 1 and $this->right->getHolder()->isValid()){
 			$this->right->broadcastBlockEventPacket(false);
 		}

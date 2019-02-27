@@ -40,10 +40,6 @@ class EnchantInventory extends ContainerInventory{
 		return WindowTypes::ENCHANTMENT;
 	}
 
-	public function getName() : string{
-		return "Enchantment Table";
-	}
-
 	public function getDefaultSize() : int{
 		return 2; //1 input, 1 lapis
 	}
@@ -56,7 +52,7 @@ class EnchantInventory extends ContainerInventory{
 		return $this->holder;
 	}
 
-	public function onClose(Player $who) : void{
+	protected function onClose(Player $who) : void{
 		parent::onClose($who);
 
 		foreach($this->getContents() as $item){

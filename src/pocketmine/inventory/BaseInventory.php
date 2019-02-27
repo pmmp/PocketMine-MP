@@ -41,10 +41,6 @@ abstract class BaseInventory implements Inventory{
 
 	/** @var int */
 	protected $maxStackSize = Inventory::MAX_STACK;
-	/** @var string */
-	protected $name;
-	/** @var string */
-	protected $title;
 	/** @var \SplFixedArray|Item[] */
 	protected $slots = [];
 	/** @var Player[] */
@@ -55,19 +51,11 @@ abstract class BaseInventory implements Inventory{
 	/**
 	 * @param Item[] $items
 	 * @param int    $size
-	 * @param string $title
 	 */
-	public function __construct(array $items = [], ?int $size = null, ?string $title = null){
+	public function __construct(array $items = [], ?int $size = null){
 		$this->slots = new \SplFixedArray($size ?? $this->getDefaultSize());
-		$this->title = $title ?? $this->getName();
 
 		$this->setContents($items, false);
-	}
-
-	abstract public function getName() : string;
-
-	public function getTitle() : string{
-		return $this->title;
 	}
 
 	/**
@@ -401,20 +389,19 @@ abstract class BaseInventory implements Inventory{
 		$this->onClose($who);
 	}
 
-	public function onOpen(Player $who) : void{
+	protected function onOpen(Player $who) : void{
 		$this->viewers[spl_object_id($who)] = $who;
 	}
 
-	public function onClose(Player $who) : void{
+	protected function onClose(Player $who) : void{
 		unset($this->viewers[spl_object_id($who)]);
 	}
 
-	public function onSlotChange(int $index, Item $before, bool $send) : void{
+	protected function onSlotChange(int $index, Item $before, bool $send) : void{
 		if($send){
 			$this->sendSlot($index, $this->getViewers());
 		}
 	}
-
 
 	/**
 	 * @param Player|Player[] $target

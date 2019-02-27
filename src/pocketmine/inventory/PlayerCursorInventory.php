@@ -34,10 +34,6 @@ class PlayerCursorInventory extends BaseInventory{
 		parent::__construct();
 	}
 
-	public function getName() : string{
-		return "Cursor";
-	}
-
 	public function getDefaultSize() : int{
 		return 1;
 	}

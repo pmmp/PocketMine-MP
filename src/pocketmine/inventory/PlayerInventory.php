@@ -48,10 +48,6 @@ class PlayerInventory extends BaseInventory{
 		parent::__construct();
 	}
 
-	public function getName() : string{
-		return "Player";
-	}
-
 	public function getDefaultSize() : int{
 		return 36;
 	}

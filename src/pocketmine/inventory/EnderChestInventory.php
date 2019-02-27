@@ -41,10 +41,6 @@ class EnderChestInventory extends ChestInventory{
 		return WindowTypes::CONTAINER;
 	}
 
-	public function getName() : string{
-		return "EnderChest";
-	}
-
 	public function getDefaultSize() : int{
 		return 27;
 	}

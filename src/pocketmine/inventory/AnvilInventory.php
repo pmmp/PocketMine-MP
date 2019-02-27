@@ -40,10 +40,6 @@ class AnvilInventory extends ContainerInventory{
 		return WindowTypes::ANVIL;
 	}
 
-	public function getName() : string{
-		return "Anvil";
-	}
-
 	public function getDefaultSize() : int{
 		return 2; //1 input, 1 material
 	}
@@ -56,7 +52,7 @@ class AnvilInventory extends ContainerInventory{
 		return $this->holder;
 	}
 
-	public function onClose(Player $who) : void{
+	protected function onClose(Player $who) : void{
 		parent::onClose($who);
 
 		foreach($this->getContents() as $item){

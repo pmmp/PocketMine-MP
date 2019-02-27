@@ -39,10 +39,6 @@ class FurnaceInventory extends ContainerInventory{
 		return WindowTypes::FURNACE;
 	}
 
-	public function getName() : string{
-		return "Furnace";
-	}
-
 	public function getDefaultSize() : int{
 		return 3; //1 input, 1 fuel, 1 output
 	}
