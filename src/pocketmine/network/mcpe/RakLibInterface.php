@@ -39,8 +39,10 @@ use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
 use raklib\utils\InternetAddress;
 use function addcslashes;
+use function bin2hex;
 use function count;
 use function implode;
+use function random_bytes;
 use function rtrim;
 use function spl_object_id;
 use function substr;
@@ -159,15 +161,16 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 			try{
 				$session->handleEncoded($buf);
 			}catch(BadPacketException $e){
+				$errorId = bin2hex(random_bytes(6));
 				$logger = $this->server->getLogger();
-				$logger->error("Bad packet from $address $port: " . $e->getMessage());
+				$logger->error("Bad packet from $address $port (error ID $errorId): " . $e->getMessage());
 
 				//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
 				$logger->debug("Origin: " . Utils::cleanPath($e->getFile()) . "(" . $e->getLine() . ")");
 				foreach(Utils::printableTrace($e->getTrace()) as $frame){
 					$logger->debug($frame);
 				}
-				$session->disconnect("Packet processing error");
+				$session->disconnect("Packet processing error (Error ID: $errorId)");
 				$this->interface->blockAddress($address, 5);
 			}
 		}
