@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\Utils;
@@ -120,23 +119,6 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	 * Encodes the packet body, without the packet ID or other generic header fields.
 	 */
 	abstract protected function encodePayload() : void;
-
-	/**
-	 * Performs handling for this packet. Usually you'll want an appropriately named method in the session handler for
-	 * this.
-	 *
-	 * This method returns a bool to indicate whether the packet was handled or not. If the packet was unhandled, a
-	 * debug message will be logged with a hexdump of the packet.
-	 *
-	 * Typically this method returns the return value of the handler in the supplied SessionHandler. See other packets
-	 * for examples how to implement this.
-	 *
-	 * @param SessionHandler $handler
-	 *
-	 * @return bool true if the packet was handled successfully, false if not.
-	 * @throws BadPacketException if broken data was found in the packet
-	 */
-	abstract public function handle(SessionHandler $handler) : bool;
 
 	public function __debugInfo(){
 		$data = [];
