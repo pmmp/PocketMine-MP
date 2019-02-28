@@ -30,6 +30,7 @@ use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\TreeType;
 use pocketmine\item\ItemIds;
 use pocketmine\level\Position;
+use pocketmine\tile\Comparator;
 use function array_fill;
 use function array_filter;
 use function file_get_contents;
@@ -211,6 +212,7 @@ class BlockFactory{
 		self::register(new RedMushroom(new BID(Block::RED_MUSHROOM), "Red Mushroom"));
 		self::register(new RedMushroomBlock(new BID(Block::RED_MUSHROOM_BLOCK), "Red Mushroom Block"));
 		self::register(new Redstone(new BID(Block::REDSTONE_BLOCK), "Redstone Block"));
+		self::register(new RedstoneComparator(new BlockIdentifierFlattened(Block::UNPOWERED_COMPARATOR, Block::POWERED_COMPARATOR, 0, ItemIds::COMPARATOR, Comparator::class), "Redstone Comparator"));
 		self::register(new RedstoneLamp(new BlockIdentifierFlattened(Block::REDSTONE_LAMP, Block::LIT_REDSTONE_LAMP), "Redstone Lamp"));
 		self::register(new RedstoneOre(new BlockIdentifierFlattened(Block::REDSTONE_ORE, Block::LIT_REDSTONE_ORE), "Redstone Ore"));
 		self::register(new RedstoneRepeater(new BlockIdentifierFlattened(Block::UNPOWERED_REPEATER, Block::POWERED_REPEATER, 0, ItemIds::REPEATER), "Redstone Repeater"));
