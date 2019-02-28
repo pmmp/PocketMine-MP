@@ -46,4 +46,6 @@ class NoteBlock extends Solid{
 	public function getToolType() : int{
 		return BlockToolType::TYPE_AXE;
 	}
+
+	//TODO
 }
