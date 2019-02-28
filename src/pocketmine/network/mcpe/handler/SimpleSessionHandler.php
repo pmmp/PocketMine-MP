@@ -24,12 +24,17 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\ItemFrame;
+use pocketmine\block\SignPost;
+use pocketmine\block\utils\SignText;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\BadPacketException;
+use pocketmine\network\mcpe\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
@@ -72,6 +77,7 @@ use pocketmine\network\mcpe\protocol\types\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\UseItemTransactionData;
 use pocketmine\Player;
+use function base64_encode;
 use function implode;
 use function json_decode;
 use function json_encode;
@@ -385,7 +391,37 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
-		return $this->player->handleBlockEntityData($packet);
+		$pos = new Vector3($packet->x, $packet->y, $packet->z);
+		if($pos->distanceSquared($this->player) > 10000){
+			return false;
+		}
+
+		$block = $this->player->getLevel()->getBlock($pos);
+		try{
+			$nbt = (new NetworkNbtSerializer())->read($packet->namedtag);
+		}catch(NbtDataException $e){
+			throw new BadPacketException($e->getMessage(), 0, $e);
+		}
+
+		if($block instanceof SignPost){
+			if($nbt->hasTag("Text", StringTag::class)){
+				try{
+					$text = SignText::fromBlob($nbt->getString("Text"));
+				}catch(\InvalidArgumentException $e){
+					throw new BadPacketException("Invalid sign text update: " . $e->getMessage(), 0, $e);
+				}
+
+				if(!$block->updateText($this->player, $text)){
+					$this->player->getLevel()->sendBlocks([$this->player], [$block]);
+				}
+
+				return true;
+			}
+
+			$this->player->getServer()->getLogger()->debug("Invalid sign update data from " . $this->player->getName() . ": " . base64_encode($packet->namedtag));
+		}
+
+		return false;
 	}
 
 	public function handlePlayerInput(PlayerInputPacket $packet) : bool{

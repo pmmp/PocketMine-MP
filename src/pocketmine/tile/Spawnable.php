@@ -27,7 +27,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\NetworkNbtSerializer;
-use pocketmine\Player;
 use function get_class;
 
 abstract class Spawnable extends Tile{
@@ -104,17 +103,4 @@ abstract class Spawnable extends Tile{
 	 * @param CompoundTag $nbt
 	 */
 	abstract protected function addAdditionalSpawnData(CompoundTag $nbt) : void;
-
-	/**
-	 * Called when a player updates a block entity's NBT data
-	 * for example when writing on a sign.
-	 *
-	 * @param CompoundTag $nbt
-	 * @param Player      $player
-	 *
-	 * @return bool indication of success, will respawn the tile to the player if false.
-	 */
-	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
-		return false;
-	}
 }

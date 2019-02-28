@@ -92,21 +92,17 @@ use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
-use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\NetworkCipher;
-use pocketmine\network\mcpe\NetworkNbtSerializer;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\ProcessLoginTask;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
-use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
@@ -134,7 +130,6 @@ use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
 use pocketmine\permission\PermissionManager;
 use pocketmine\plugin\Plugin;
-use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
@@ -2455,36 +2450,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		//TODO: check other changes
 
 		return $handled;
-	}
-
-	/**
-	 * @param BlockEntityDataPacket $packet
-	 *
-	 * @return bool
-	 * @throws BadPacketException
-	 */
-	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
-		$this->doCloseInventory();
-
-		$pos = new Vector3($packet->x, $packet->y, $packet->z);
-		if($pos->distanceSquared($this) > 10000){
-			return true;
-		}
-
-		$t = $this->level->getTile($pos);
-		if($t instanceof Spawnable){
-			$nbt = new NetworkNbtSerializer();
-			try{
-				$compound = $nbt->read($packet->namedtag);
-			}catch(NbtDataException $e){
-				throw new BadPacketException($e->getMessage(), 0, $e);
-			}
-			if(!$t->updateCompoundTag($compound, $this)){
-				$this->level->sendBlocks([$this], [$pos]);
-			}
-		}
-
-		return true;
 	}
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{

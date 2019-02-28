@@ -23,32 +23,44 @@ declare(strict_types=1);
 
 namespace pocketmine\event\block;
 
-use pocketmine\block\Block;
+use pocketmine\block\SignPost;
+use pocketmine\block\utils\SignText;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\Player;
-use function count;
 
 /**
- * Called when a sign is changed by a player.
+ * Called when a sign's text is changed by a player.
  */
 class SignChangeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
+	/** @var SignPost */
+	private $sign;
+
 	/** @var Player */
 	private $player;
-	/** @var string[] */
-	private $lines = [];
+
+	/** @var SignText */
+	private $text;
 
 	/**
-	 * @param Block    $theBlock
-	 * @param Player   $thePlayer
-	 * @param string[] $theLines
+	 * @param SignPost $sign
+	 * @param Player   $player
+	 * @param SignText $text
 	 */
-	public function __construct(Block $theBlock, Player $thePlayer, array $theLines){
-		parent::__construct($theBlock);
-		$this->player = $thePlayer;
-		$this->setLines($theLines);
+	public function __construct(SignPost $sign, Player $player, SignText $text){
+		parent::__construct($sign);
+		$this->sign = $sign;
+		$this->player = $player;
+		$this->text = $text;
+	}
+
+	/**
+	 * @return SignPost
+	 */
+	public function getSign() : SignPost{
+		return $this->sign;
 	}
 
 	/**
@@ -59,49 +71,29 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * @return string[]
+	 * Returns the text currently on the sign.
+	 *
+	 * @return SignText
 	 */
-	public function getLines() : array{
-		return $this->lines;
+	public function getOldText() : SignText{
+		return $this->sign->getText();
 	}
 
 	/**
-	 * @param int $index 0-3
+	 * Returns the text which will be on the sign after the event.
 	 *
-	 * @return string
-	 *
-	 * @throws \InvalidArgumentException if the index is out of bounds
+	 * @return SignText
 	 */
-	public function getLine(int $index) : string{
-		if($index < 0 or $index > 3){
-			throw new \InvalidArgumentException("Index must be in the range 0-3!");
-		}
-
-		return $this->lines[$index];
+	public function getNewText() : SignText{
+		return $this->text;
 	}
 
 	/**
-	 * @param string[] $lines
+	 * Sets the text to be written on the sign after the event.
 	 *
-	 * @throws \InvalidArgumentException if there are more or less than 4 lines in the passed array
+	 * @param SignText $text
 	 */
-	public function setLines(array $lines) : void{
-		if(count($lines) !== 4){
-			throw new \InvalidArgumentException("Array size must be 4!");
-		}
-		$this->lines = $lines;
-	}
-
-	/**
-	 * @param int    $index 0-3
-	 * @param string $line
-	 *
-	 * @throws \InvalidArgumentException if the index is out of bounds
-	 */
-	public function setLine(int $index, string $line) : void{
-		if($index < 0 or $index > 3){
-			throw new \InvalidArgumentException("Index must be in the range 0-3!");
-		}
-		$this->lines[$index] = $line;
+	public function setNewText(SignText $text) : void{
+		$this->text = $text;
 	}
 }

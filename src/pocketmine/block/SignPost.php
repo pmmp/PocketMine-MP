@@ -23,11 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SignText;
+use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\tile\Sign as TileSign;
+use pocketmine\utils\TextFormat;
+use function array_map;
+use function assert;
 use function floor;
 
 class SignPost extends Transparent{
@@ -35,12 +41,35 @@ class SignPost extends Transparent{
 	/** @var int */
 	protected $rotation = 0;
 
+	/** @var SignText */
+	protected $text;
+
+	public function __construct(BlockIdentifier $idInfo, string $name){
+		parent::__construct($idInfo, $name);
+		$this->text = new SignText();
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->rotation;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->rotation = $stateMeta;
+	}
+
+	public function readStateFromWorld() : void{
+		parent::readStateFromWorld();
+		$tile = $this->level->getTile($this);
+		if($tile instanceof TileSign){
+			$this->text = $tile->getText();
+		}
+	}
+
+	public function writeStateToWorld() : void{
+		parent::writeStateToWorld();
+		$tile = $this->level->getTile($this);
+		assert($tile instanceof TileSign);
+		$tile->setText($this->text);
 	}
 
 	public function getStateBitmask() : int{
@@ -81,5 +110,37 @@ class SignPost extends Transparent{
 
 	public function getToolType() : int{
 		return BlockToolType::TYPE_AXE;
+	}
+
+	/**
+	 * Returns an object containing information about the sign text.
+	 *
+	 * @return SignText
+	 */
+	public function getText() : SignText{
+		return $this->text;
+	}
+
+	/**
+	 * Called by the player controller (network session) to update the sign text, firing events as appropriate.
+	 *
+	 * @param Player   $author
+	 * @param SignText $text
+	 *
+	 * @return bool if the sign update was successful.
+	 */
+	public function updateText(Player $author, SignText $text) : bool{
+		$removeFormat = $author->getRemoveFormat();
+		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) use ($removeFormat){
+			return TextFormat::clean($line, $removeFormat);
+		}, $text->getLines())));
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$this->text = clone $ev->getNewText();
+			$this->level->setBlock($this, $this);
+			return true;
+		}
+
+		return false;
 	}
 }
