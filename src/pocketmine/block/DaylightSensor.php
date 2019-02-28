@@ -91,7 +91,7 @@ class DaylightSensor extends Transparent{
 		return AxisAlignedBB::one()->trim(Facing::UP, 0.5);
 	}
 
-	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->inverted = !$this->inverted;
 		$this->level->setBlock($this, $this);
 		return true;

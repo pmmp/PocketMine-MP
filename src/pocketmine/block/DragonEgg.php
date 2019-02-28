@@ -58,7 +58,7 @@ class DragonEgg extends Transparent implements Fallable{
 		return null;
 	}
 
-	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->teleport();
 		return true;
 	}

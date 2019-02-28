@@ -125,7 +125,7 @@ class FlowerPot extends Flowable{
 		}
 	}
 
-	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$plant = $item->getBlock();
 		if(!$this->canAddPlant($plant)){
 			return false;

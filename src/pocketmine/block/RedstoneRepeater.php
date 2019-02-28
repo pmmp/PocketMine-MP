@@ -94,7 +94,7 @@ class RedstoneRepeater extends Flowable{
 		return false;
 	}
 
-	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(++$this->delay > 4){
 			$this->delay = 1;
 		}

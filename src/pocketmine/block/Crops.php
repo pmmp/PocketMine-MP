@@ -57,7 +57,7 @@ abstract class Crops extends Flowable{
 	}
 
 
-	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->age < 7 and $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age += mt_rand(2, 5);

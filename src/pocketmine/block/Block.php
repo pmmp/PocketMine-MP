@@ -367,7 +367,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * Do actions when activated by Item. Returns if it has done anything
+	 * Do actions when interacted by Item. Returns if it has done anything
 	 *
 	 * @param Item        $item
 	 * @param int         $face
@@ -376,7 +376,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		return false;
 	}
 

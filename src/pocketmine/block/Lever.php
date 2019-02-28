@@ -109,7 +109,7 @@ class Lever extends Flowable{
 		}
 	}
 
-	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->powered = !$this->powered;
 		$this->level->setBlock($this, $this);
 		$this->level->broadcastLevelSoundEvent(

@@ -1822,7 +1822,7 @@ class Level implements ChunkManager, Metadatable{
 			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, PlayerInteractEvent::RIGHT_CLICK_BLOCK);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if(!$player->isSneaking() and $blockClicked->onActivate($item, $face, $clickVector, $player)){
+				if(!$player->isSneaking() and $blockClicked->onInteract($item, $face, $clickVector, $player)){
 					return true;
 				}
 
@@ -1835,7 +1835,7 @@ class Level implements ChunkManager, Metadatable{
 			}else{
 				return false;
 			}
-		}elseif($blockClicked->onActivate($item, $face, $clickVector, $player)){
+		}elseif($blockClicked->onInteract($item, $face, $clickVector, $player)){
 			return true;
 		}
 

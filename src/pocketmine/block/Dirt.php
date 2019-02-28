@@ -41,7 +41,7 @@ class Dirt extends Solid{
 		return BlockToolType::TYPE_SHOVEL;
 	}
 
-	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP and $item instanceof Hoe){
 			$item->applyDamage(1);
 			$this->getLevel()->setBlock($this, BlockFactory::get(Block::FARMLAND));

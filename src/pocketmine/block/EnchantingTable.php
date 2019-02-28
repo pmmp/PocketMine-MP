@@ -53,7 +53,7 @@ class EnchantingTable extends Transparent{
 		return AxisAlignedBB::one()->trim(Facing::UP, 0.25);
 	}
 
-	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 			//TODO lock
 

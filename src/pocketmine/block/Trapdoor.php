@@ -77,7 +77,7 @@ class Trapdoor extends Transparent{
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onActivate(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->open = !$this->open;
 		$this->level->setBlock($this, $this);
 		$this->level->addSound($this, new DoorSound());
