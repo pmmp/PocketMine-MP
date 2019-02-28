@@ -207,12 +207,18 @@ class NetworkSession{
 
 		while(!$stream->feof() and $this->connected){
 			try{
-				$buf = $stream->getString();
+				$pk = PacketPool::getPacket($stream->getString());
 			}catch(BinaryDataException $e){
 				$this->server->getLogger()->debug("Packet batch from " . $this->getDisplayName() . ": " . bin2hex($stream->getBuffer()));
 				throw new BadPacketException("Packet batch decode error: " . $e->getMessage(), 0, $e);
 			}
-			$this->handleDataPacket(PacketPool::getPacket($buf));
+
+			try{
+				$this->handleDataPacket($pk);
+			}catch(BadPacketException $e){
+				$this->server->getLogger()->debug($pk->getName() . " from " . $this->getDisplayName() . ": " . bin2hex($pk->getBuffer()));
+				throw new BadPacketException("Error processing " . $pk->getName() . ": " . $e->getMessage(), 0, $e);
+			}
 		}
 	}
 
@@ -223,7 +229,7 @@ class NetworkSession{
 	 */
 	public function handleDataPacket(Packet $packet) : void{
 		if(!($packet instanceof ServerboundPacket)){
-			throw new BadPacketException("Unexpected non-serverbound packet " . $packet->getName());
+			throw new BadPacketException("Unexpected non-serverbound packet");
 		}
 
 		$timings = Timings::getReceiveDataPacketTimings($packet);
@@ -231,22 +237,19 @@ class NetworkSession{
 
 		try{
 			$packet->decode();
-		}catch(BadPacketException $e){
-			$this->server->getLogger()->debug($packet->getName() . " from " . $this->getDisplayName() . ": " . bin2hex($packet->getBuffer()));
-			throw $e;
-		}
-		if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
-			$remains = substr($packet->getBuffer(), $packet->getOffset());
-			$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
-		}
+			if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
+				$remains = substr($packet->getBuffer(), $packet->getOffset());
+				$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
+			}
 
-		$ev = new DataPacketReceiveEvent($this->player, $packet);
-		$ev->call();
-		if(!$ev->isCancelled() and !$packet->handle($this->handler)){
-			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->getDisplayName() . ": " . bin2hex($packet->getBuffer()));
+			$ev = new DataPacketReceiveEvent($this->player, $packet);
+			$ev->call();
+			if(!$ev->isCancelled() and !$packet->handle($this->handler)){
+				$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->getDisplayName() . ": " . bin2hex($packet->getBuffer()));
+			}
+		}finally{
+			$timings->stopTiming();
 		}
-
-		$timings->stopTiming();
 	}
 
 	public function sendDataPacket(ClientboundPacket $packet, bool $immediate = false) : bool{
