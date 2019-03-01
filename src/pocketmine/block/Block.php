@@ -325,7 +325,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			$base *= 5;
 		}
 
-		$efficiency = $item->getMiningEfficiency($this);
+		$efficiency = $item->getMiningEfficiency(($this->getToolType() & $item->getBlockToolType()) !== 0);
 		if($efficiency <= 0){
 			throw new \InvalidArgumentException(get_class($item) . " has invalid mining efficiency: expected >= 0, got $efficiency");
 		}

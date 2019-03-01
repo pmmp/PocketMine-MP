@@ -726,7 +726,7 @@ class Item implements ItemIds, \JsonSerializable{
 		return 0;
 	}
 
-	public function getMiningEfficiency(Block $block) : float{
+	public function getMiningEfficiency(bool $isCorrectTool) : float{
 		return 1;
 	}
 
