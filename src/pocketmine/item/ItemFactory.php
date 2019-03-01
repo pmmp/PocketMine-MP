@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use function constant;
 use function defined;
 use function explode;
@@ -121,7 +122,7 @@ class ItemFactory{
 		self::registerItem(new Bucket());
 
 		self::registerItem(new Minecart());
-		//TODO: SADDLE
+		self::registerItem(new Saddle());
 		self::registerItem(new ItemBlock(Block::IRON_DOOR_BLOCK, 0, Item::IRON_DOOR));
 		self::registerItem(new Redstone());
 		self::registerItem(new Snowball());
@@ -150,7 +151,7 @@ class ItemFactory{
 		self::registerItem(new Bed());
 		self::registerItem(new ItemBlock(Block::REPEATER_BLOCK, 0, Item::REPEATER));
 		self::registerItem(new Cookie());
-		//TODO: FILLED_MAP
+		self::registerItem(new FilledMap());
 		self::registerItem(new Shears());
 		self::registerItem(new Melon());
 		self::registerItem(new PumpkinSeeds());
@@ -187,15 +188,15 @@ class ItemFactory{
 		self::registerItem(new Potato());
 		self::registerItem(new BakedPotato());
 		self::registerItem(new PoisonousPotato());
-		//TODO: EMPTYMAP
+		self::registerItem(new EmptyMap());
 		self::registerItem(new GoldenCarrot());
 		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, 0, Item::SKULL));
 		//TODO: CARROTONASTICK
 		self::registerItem(new Item(Item::NETHER_STAR, 0, "Nether Star"));
 		self::registerItem(new PumpkinPie());
-		//TODO: FIREWORKS
+		self::registerItem(new Fireworks());
 		//TODO: FIREWORKSCHARGE
-		//TODO: ENCHANTED_BOOK
+		self::registerItem(new EnchantedBook());
 		self::registerItem(new ItemBlock(Block::COMPARATOR_BLOCK, 0, Item::COMPARATOR));
 		self::registerItem(new Item(Item::NETHER_BRICK, 0, "Nether Brick"));
 		self::registerItem(new Item(Item::NETHER_QUARTZ, 0, "Nether Quartz"));
@@ -212,12 +213,12 @@ class ItemFactory{
 		//TODO: HORSEARMORIRON
 		//TODO: GOLD_HORSE_ARMOR
 		//TODO: DIAMOND_HORSE_ARMOR
-		//TODO: LEAD
+		self::registerItem(new Item(Item::LEAD, 0, "Lead"));
 		//TODO: NAMETAG
 		self::registerItem(new Item(Item::PRISMARINE_CRYSTALS, 0, "Prismarine Crystals"));
 		self::registerItem(new RawMutton());
 		self::registerItem(new CookedMutton());
-		//TODO: ARMOR_STAND
+		self::registerItem(new ArmorStand());
 		//TODO: END_CRYSTAL
 		self::registerItem(new ItemBlock(Block::SPRUCE_DOOR_BLOCK, 0, Item::SPRUCE_DOOR));
 		self::registerItem(new ItemBlock(Block::BIRCH_DOOR_BLOCK, 0, Item::BIRCH_DOOR));
@@ -233,7 +234,7 @@ class ItemFactory{
 		//TODO: LINGERING_POTION
 		//TODO: SPARKLER
 		//TODO: COMMAND_BLOCK_MINECART
-		//TODO: ELYTRA
+		self::registerItem(new Elytra());
 		self::registerItem(new Item(Item::SHULKER_SHELL, 0, "Shulker Shell"));
 		self::registerItem(new Banner());
 		//TODO: MEDICINE
@@ -260,19 +261,18 @@ class ItemFactory{
 		self::registerItem(new Item(Item::TURTLE_SHELL_PIECE, 0, "Scute"));
 		//TODO: TURTLE_HELMET
 
-		//TODO: COMPOUND
-		//TODO: RECORD_13
-		//TODO: RECORD_CAT
-		//TODO: RECORD_BLOCKS
-		//TODO: RECORD_CHIRP
-		//TODO: RECORD_FAR
-		//TODO: RECORD_MALL
-		//TODO: RECORD_MELLOHI
-		//TODO: RECORD_STAL
-		//TODO: RECORD_STRAD
-		//TODO: RECORD_WARD
-		//TODO: RECORD_11
-		//TODO: RECORD_WAIT
+		self::registerItem(new Record(Item::RECORD_13, LevelSoundEventPacket::SOUND_RECORD_13));
+		self::registerItem(new Record(Item::RECORD_CAT, LevelSoundEventPacket::SOUND_RECORD_CAT));
+		self::registerItem(new Record(Item::RECORD_BLOCKS, LevelSoundEventPacket::SOUND_RECORD_BLOCKS));
+		self::registerItem(new Record(Item::RECORD_CHIRP, LevelSoundEventPacket::SOUND_RECORD_CHIRP));
+		self::registerItem(new Record(Item::RECORD_FAR, LevelSoundEventPacket::SOUND_RECORD_FAR));
+		self::registerItem(new Record(Item::RECORD_MALL, LevelSoundEventPacket::SOUND_RECORD_MALL));
+		self::registerItem(new Record(Item::RECORD_MELLOHI, LevelSoundEventPacket::SOUND_RECORD_MELLOHI));
+		self::registerItem(new Record(Item::RECORD_STAL, LevelSoundEventPacket::SOUND_RECORD_STAL));
+		self::registerItem(new Record(Item::RECORD_STRAD, LevelSoundEventPacket::SOUND_RECORD_STRAD));
+		self::registerItem(new Record(Item::RECORD_WARD, LevelSoundEventPacket::SOUND_RECORD_WARD));
+		self::registerItem(new Record(Item::RECORD_11, LevelSoundEventPacket::SOUND_RECORD_11));
+		self::registerItem(new Record(Item::RECORD_WAIT, LevelSoundEventPacket::SOUND_RECORD_WAIT));
 	}
 
 	/**

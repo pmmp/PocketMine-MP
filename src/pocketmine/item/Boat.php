@@ -25,8 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\entity\EntityFactory;
-use pocketmine\entity\vehicle\Boat as EntityBoat;
+use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -43,14 +42,14 @@ class Boat extends Item{
 		return 1;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		$nbt = EntityFactory::createBaseNBT($blockReplace->add(0.5, 0, 0.5));
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+		$nbt = Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5));
 		$nbt->setInt("Variant", $this->getDamage());
-		$entity = EntityFactory::create(EntityBoat::class, $player->level, $nbt);
+		$entity = Entity::createEntity("Boat", $player->level, $nbt);
 		$entity->spawnToAll();
 
 		$this->pop();
 
-		return ItemUseResult::success();
+		return true;
 	}
 }

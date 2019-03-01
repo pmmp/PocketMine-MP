@@ -66,7 +66,7 @@ class EatBlockBehavior extends Behavior{
 
 			if($this->mob->level->getBlock($pos) instanceof Grass){
 				if($this->mob->level->getGameRules()->getBool(GameRules::RULE_MOB_GRIEFING)){
-					$this->mob->level->addParticle($this->mob->floor(), new DestroyBlockParticle(Block::get(Block::GRASS)));
+					$this->mob->level->addParticle(new DestroyBlockParticle($this->mob->floor(), Block::get(Block::GRASS)));
 					$this->mob->level->setBlock($pos, Block::get(Block::DIRT));
 				}
 

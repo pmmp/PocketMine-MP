@@ -26,7 +26,6 @@ namespace pocketmine\entity\utils;
 
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
 use pocketmine\entity\EntityIds;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\{AddEntityPacket,
@@ -61,7 +60,7 @@ class Bossbar extends Vector3{
 			Entity::DATA_NAMETAG => [Entity::DATA_TYPE_STRING, $title]
 		];
 
-		$this->entityId = EntityFactory::nextRuntimeId();
+		$this->entityId = Entity::$entityCount++;
 
 		$this->setHealthPercent($hp, $maxHp);
 	}

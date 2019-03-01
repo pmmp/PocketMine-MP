@@ -56,7 +56,6 @@ class End extends Generator{
 	private static $SMOOTH_SIZE = 2;
 
 	public function __construct(array $options = []){
-		parent::__construct($options);
 		if(self::$GAUSSIAN_KERNEL === null){
 			self::generateKernel();
 		}

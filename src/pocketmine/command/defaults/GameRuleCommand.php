@@ -57,7 +57,7 @@ class GameRuleCommand extends VanillaCommand{
 		if($sender instanceof Player){
 			$level = $sender->getLevel();
 		}else{
-			$level = $sender->getServer()->getLevelManager()->getDefaultLevel();
+			$level = $sender->getServer()->getDefaultLevel();
 		}
 
 		$rule = $this->matchRuleName($level->getGameRules()->getRules(), $args[0]);

@@ -44,9 +44,9 @@ use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
@@ -54,6 +54,7 @@ use pocketmine\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Color;
+use pocketmine\utils\UUID;
 use function abs;
 use function array_shift;
 use function atan2;
@@ -65,7 +66,6 @@ use function max;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
-use pocketmine\utils\UUID;
 use function sqrt;
 use const M_PI;
 
@@ -100,6 +100,8 @@ abstract class Living extends Entity implements Damageable{
 
 	/** @var Entity|null */
 	protected $leashedToEntity;
+
+	public $headYaw = 0;
 
 	abstract public function getName() : string;
 

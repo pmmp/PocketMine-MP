@@ -26,8 +26,6 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
-use pocketmine\entity\object\FireworksRocket;
 use pocketmine\level\sound\BlazeShootSound;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -98,37 +96,35 @@ class Fireworks extends Item{
 		$this->setNamedTagEntry($tag);
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		$nbt = EntityFactory::createBaseNBT($blockReplace->add(0.5, 0, 0.5), new Vector3(0.001, 0.05, 0.001), lcg_value() * 360, 90);
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+		$nbt = Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), new Vector3(0.001, 0.05, 0.001), lcg_value() * 360, 90);
 
-		$entity = EntityFactory::create(FireworksRocket::class, $player->getLevel(), $nbt, $this);
+		$entity = Entity::createEntity("FireworksRocket", $player->getLevel(), $nbt, $this);
 
 		if($entity instanceof Entity){
 			$this->pop();
 			$entity->spawnToAll();
-			return ItemUseResult::success();
+			return true;
 		}
 
-		return ItemUseResult::fail();
+		return false;
 	}
 
-	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
 		if($player->isGliding()){
 			$motion = new Vector3((-sin($player->yaw / 180 * M_PI) * cos($player->pitch / 180 * M_PI) * self::BOOST_POWER), (-sin($player->pitch / 180 * M_PI) * self::BOOST_POWER), (cos($player->yaw / 180 * M_PI) * cos($player->pitch / 180 * M_PI) * self::BOOST_POWER));
 
-			$nbt = EntityFactory::createBaseNBT($player, $motion->subtract(0, 0.1, 0), lcg_value() * 360, 90);
-			$entity = EntityFactory::create(FireworksRocket::class, $player->getLevel(), $nbt, $this);
+			$nbt = Entity::createBaseNBT($player, $motion->subtract(0, 0.1, 0), lcg_value() * 360, 90);
+			$entity = Entity::createEntity("FireworksRocket", $player->getLevel(), $nbt, $this);
 
 			if($entity instanceof Entity){
 				$this->pop();
 				$entity->spawnToAll();
 				$player->setMotion($motion);
-				$player->getLevel()->addSound($player, new BlazeShootSound());
+				$player->getLevel()->addSound(new BlazeShootSound($player));
 			}
-
-			return ItemUseResult::success();
 		}
 
-		return ItemUseResult::none();
+		return true;
 	}
 }

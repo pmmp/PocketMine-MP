@@ -105,7 +105,6 @@ class GameRules{
 	/**
 	 * @param string $name
 	 * @param        $value
-	 * @param bool   $force
 	 *
 	 * @return bool
 	 */

@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\passive;
 
-use pocketmine\block\utils\DyeColor;
 use pocketmine\entity\Animal;
 use pocketmine\entity\behavior\EatBlockBehavior;
 use pocketmine\entity\behavior\FloatBehavior;

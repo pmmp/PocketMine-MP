@@ -39,7 +39,6 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Tamable;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
 use function mt_rand;
@@ -65,7 +64,7 @@ class Wolf extends Tamable{
 		$this->targetBehaviorPool->setBehavior(2, new OwnerHurtTargetBehavior($this));
 	}
 
-	protected function initEntity(CompoundTag $nbt) : void{
+	protected function initEntity() : void{
 		$this->setMaxHealth(8);
 		$this->setMovementSpeed(0.3);
 		$this->setAttackDamage(3);
@@ -73,7 +72,7 @@ class Wolf extends Tamable{
 
 		$this->propertyManager->setInt(self::DATA_COLOR, 14); // collar color
 
-		parent::initEntity($nbt);
+		parent::initEntity();
 	}
 
 	public function getName() : string{

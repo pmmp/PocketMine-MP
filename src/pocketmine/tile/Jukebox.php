@@ -93,7 +93,7 @@ class Jukebox extends Spawnable{
 		return "Jukebox";
 	}
 
-	public function readSaveData(CompoundTag $nbt) : void{
+	protected function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_RECORD_ITEM)){
 			$this->recordItem = Item::nbtDeserialize($nbt->getCompoundTag(self::TAG_RECORD_ITEM));
 		}
@@ -112,7 +112,7 @@ class Jukebox extends Spawnable{
 	public function onUpdate() : bool{
 		if($this->hasRecordItem()){
 			if(Server::getInstance()->getTick() % 30 === 0){
-				$this->level->addParticle($this->add(0.5, 1.5, 0.5), new GenericParticle(Particle::TYPE_NOTE, mt_rand(0, 4) | mt_rand(0, 24)));
+				$this->level->addParticle(new GenericParticle($this->add(0.5, 1.5, 0.5), Particle::TYPE_NOTE, mt_rand(0, 4) | mt_rand(0, 24)));
 			}
 			return true;
 		}

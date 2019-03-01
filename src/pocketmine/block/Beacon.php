@@ -27,51 +27,54 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\tile\NoteBlock as TileNoteBlock;
+use pocketmine\tile\Beacon as TileBeacon;
 use pocketmine\tile\Tile;
 
-class Noteblock extends Solid{
+class Beacon extends Transparent{
 
-	// TODO: Redstone power
-
-	protected $id = self::NOTE_BLOCK;
+	protected $id = self::BEACON;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness() : float{
-		return 0.8;
+	public function getName() : string{
+		return "Beacon";
 	}
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
+	public function getLightLevel() : int{
+		return 15;
+	}
+
+	public function getHardness() : float{
+		return 3;
+	}
+
+	public function getBreakTime(Item $item) : float{
+		return 4.5;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
-		Tile::createTile(Tile::NOTE_BLOCK, $this->getLevel(), TileNoteBlock::createNBT($this, $face, $item, $player));
+		Tile::createTile(Tile::BEACON, $this->getLevel(), TileBeacon::createNBT($this, $face, $item, $player));
 
 		return true;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		$tile = $this->level->getTile($this);
-		if($tile instanceof TileNoteBlock){
-			$tile->changePitch();
+		if($player instanceof Player){
+			$tile = $this->level->getTile($this);
+			if($tile instanceof TileBeacon){
+				$top = $this->getSide(Vector3::SIDE_UP);
+				if($top->isTransparent() !== true){
+					return true;
+				}
 
-			return $tile->triggerNote();
+				$player->addWindow($tile->getInventory());
+			}
 		}
 
-		return false;
-	}
-
-	public function getName() : string{
-		return "Noteblock";
-	}
-
-	public function getFuelTime() : int{
-		return 300;
+		return true;
 	}
 }

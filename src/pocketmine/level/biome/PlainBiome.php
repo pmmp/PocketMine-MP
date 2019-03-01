@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\biome;
 
+use pocketmine\entity\passive\Horse;
 use pocketmine\level\generator\populator\TallGrass;
 
 class PlainBiome extends GrassyBiome{
@@ -39,6 +40,8 @@ class PlainBiome extends GrassyBiome{
 
 		$this->temperature = 0.8;
 		$this->rainfall = 0.4;
+
+		$this->spawnableCreatureList[] = new SpawnListEntry(Horse::class, 5, 2, 6);
 	}
 
 	public function getName() : string{

@@ -22,18 +22,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-class Elytra extends Item{
-	public function __construct(int $meta = 0){
-		parent::__construct(Item::ELYTRA, $meta, "Elytra Wings");
-	}
+class UndyedShulkerBox extends ShulkerBox{
 
-	public function getArmorSlot() : int{
-		return 1;
-	}
+	protected $id = self::UNDYED_SHULKER_BOX;
 
-	public function getMaxStackSize() : int{
-		return 1;
+	public function getName() : string{
+		return "Undyed Shulker Box";
 	}
 }

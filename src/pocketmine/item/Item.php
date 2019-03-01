@@ -759,6 +759,10 @@ class Item implements ItemIds, \JsonSerializable{
 		return 1;
 	}
 
+	public function onUpdate(Player $player) : void{
+
+	}
+
 	/**
 	 * Called when a player uses this item on a block.
 	 *

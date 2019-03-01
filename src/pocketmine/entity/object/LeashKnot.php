@@ -65,9 +65,6 @@ class LeashKnot extends Entity{
 		$this->boundingBox = new AxisAlignedBB($this->x - 0.1875, $this->y - 0.25 + 0.125, $this->z - 0.1875, $this->x + 0.1875, $this->y + 0.25 + 0.125, $this->z + 0.1875);
 	}
 
-	/**
-	 * @param CompoundTag $nbt
-	 */
 	public function initEntity() : void{
 		$this->setMaxHealth(1);
 		parent::initEntity();

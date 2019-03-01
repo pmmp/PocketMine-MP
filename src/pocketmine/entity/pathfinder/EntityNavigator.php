@@ -30,7 +30,6 @@ use pocketmine\block\Liquid;
 use pocketmine\block\Water;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Mob;
-use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\timings\Timings;

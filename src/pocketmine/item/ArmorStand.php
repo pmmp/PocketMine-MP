@@ -25,7 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Entity;
 use pocketmine\entity\object\ArmorStand as EntityArmorStand;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -37,8 +37,8 @@ class ArmorStand extends Item{
 		parent::__construct(self::ARMOR_STAND, $meta, "Armor Stand");
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		$entity = EntityFactory::create(EntityArmorStand::class, $player->level, EntityFactory::createBaseNBT($blockReplace->asVector3()->add(0.5, 0, 0.5), null, $this->getDirection($player->getYaw())));
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
+		$entity = Entity::createEntity("ArmorStand", $player->level, Entity::createBaseNBT($blockReplace->asVector3()->add(0.5, 0, 0.5), null, $this->getDirection($player->getYaw())));
 
 		if($entity instanceof EntityArmorStand){
 			if($player->isSurvival()){
@@ -47,10 +47,10 @@ class ArmorStand extends Item{
 
 			$entity->spawnToAll();
 			$player->getLevel()->broadcastLevelEvent($player, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_PLACE);
-			return ItemUseResult::success();
+			return true;
 		}
 
-		return ItemUseResult::fail();
+		return false;
 	}
 
 	public function getDirection(float $yaw){

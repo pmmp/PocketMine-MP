@@ -58,7 +58,7 @@ class Nether extends Generator{
 	private $noiseBase;
 
 	public function __construct(array $settings = []){
-		parent::__construct($settings);
+
 	}
 
 	public function init(ChunkManager $level, Random $random) : void{

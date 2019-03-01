@@ -373,7 +373,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var FishingHook|null */
 	protected $fishingHook = null;
 	/** @var int */
-	protected $commandPermission = 0;
+	protected $commandPermission = AdventureSettingsPacket::PERMISSION_NORMAL;
+	/** @var bool */
+	protected $keepExperience = false;
 
 	/**
 	 * @return TranslationContainer|string
@@ -3717,7 +3719,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->doCloseInventory();
 
 		$ev = new PlayerDeathEvent($this, $this->getDrops());
+		$ev->setKeepInventory($this->server->keepInventory);
+		$ev->setKeepExperience($this->server->keepExperience);
 		$ev->call();
+
+		$this->keepExperience = $ev->getKeepExperience();
 
 		if(!$ev->getKeepInventory()){
 			foreach($ev->getDrops() as $item){
@@ -3766,8 +3772,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->removeAllEffects();
 		$this->setHealth($this->getMaxHealth());
 
+		$xp = $this->getCurrentTotalXp();
+
 		foreach($this->attributeMap->getAll() as $attr){
 			$attr->resetToDefault();
+		}
+
+		if($this->keepExperience){
+			$this->setCurrentTotalXp($xp);
+			$this->keepExperience = false;
 		}
 
 		$this->sendData($this);
@@ -3875,8 +3888,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->cursorInventory = new PlayerCursorInventory($this);
 		$this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
-		$this->offHandInventory = new ($this);
-		$this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
+		$this->offHandInventory = new PlayerOffHandInventory($this);
+		$this->addWindow($this->offHandInventory, ContainerIds::OFFHAND, true);
 
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
 
@@ -3884,6 +3897,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function getCursorInventory() : PlayerCursorInventory{
+		return $this->cursorInventory;
+	}
+
+	public function getOffHandInventory() : PlayerCursorInventory{
 		return $this->cursorInventory;
 	}
 

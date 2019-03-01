@@ -33,8 +33,8 @@ use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -64,6 +64,11 @@ abstract class Tile extends Position{
 	public const MOB_SPAWNER = "MobSpawner";
 	public const SIGN = "Sign";
 	public const SKULL = "Skull";
+	public const BEACON = "Beacon";
+	public const HOPPER = "Hopper";
+	public const NOTE_BLOCK = "NoteBlock";
+	public const JUKEBOX = "Jukebox";
+	public const SHULKER_BOX = "ShulkerBox";
 
 	/** @var int */
 	public static $tileCount = 1;
@@ -95,6 +100,11 @@ abstract class Tile extends Position{
 		self::registerTile(ItemFrame::class, [self::ITEM_FRAME]); //this is an entity in PC
 		self::registerTile(Sign::class, [self::SIGN, "minecraft:sign"]);
 		self::registerTile(Skull::class, [self::SKULL, "minecraft:skull"]);
+		self::registerTile(NoteBlock::class, [self::NOTE_BLOCK, "minecraft:noteblock"]);
+		self::registerTile(Jukebox::class, [self::JUKEBOX, "minecraft:jukebox"]);
+		self::registerTile(MobSpawner::class, [self::MOB_SPAWNER, "minecraft:mob_spawner"]);
+		self::registerTile(ShulkerBox::class, [self::SHULKER_BOX, "minecraft:shulker_box"]);
+		self::registerTile(Hopper::class, [self::HOPPER, "minecraft:hopper"]);
 	}
 
 	/**

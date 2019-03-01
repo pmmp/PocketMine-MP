@@ -26,6 +26,7 @@ namespace pocketmine\level\format\io;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
+use pocketmine\level\GameRules;
 use pocketmine\level\LevelException;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\BigEndianNBTStream;
@@ -137,6 +138,18 @@ abstract class BaseLevelProvider implements LevelProvider{
 		$this->levelData->setInt("SpawnX", $pos->getFloorX());
 		$this->levelData->setInt("SpawnY", $pos->getFloorY());
 		$this->levelData->setInt("SpawnZ", $pos->getFloorZ());
+	}
+
+	public function getGameRules() : GameRules{
+		$rules = new GameRules();
+		if($this->levelData->hasTag("GameRules", CompoundTag::class)){
+			$rules->readSaveData($this->levelData->getCompoundTag("GameRules"));
+		}
+		return $rules;
+	}
+
+	public function setGameRules(GameRules $rules) : void{
+		$this->levelData->setTag($rules->writeSaveData());
 	}
 
 	public function doGarbageCollection(){

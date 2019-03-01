@@ -55,7 +55,8 @@ class AutoUpdater{
 		$this->endpoint = "http://$endpoint/api/";
 
 		if($server->getProperty("auto-updater.enabled", true)){
-			$this->doCheck();
+			// this is not available for altay
+			//$this->doCheck();
 		}
 	}
 

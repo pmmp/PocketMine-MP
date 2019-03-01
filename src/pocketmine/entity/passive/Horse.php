@@ -36,7 +36,6 @@ use pocketmine\entity\behavior\TemptedBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 
@@ -77,21 +76,21 @@ class Horse extends AbstractHorse{
 		$this->behaviorPool->setBehavior(8, new RandomLookAroundBehavior($this));
 	}
 
-	protected function initEntity(CompoundTag $nbt) : void{
+	protected function initEntity() : void{
 		$this->setMaxHealth($this->getModifiedMaxHealth());
 		$this->setMovementSpeed($this->getModifiedMovementSpeed());
 		$this->setJumpStrength($this->getModifiedJumpStrength());
 		$this->setFollowRange(35);
 
-		if($nbt->hasTag("Variant", IntTag::class) and $nbt->hasTag("MarkVariant", IntTag::class)){
-			$this->setVariant($nbt->getInt("Variant"));
-			$this->setMarkVariant($nbt->getInt("MarkVariant"));
+		if($this->namedtag->hasTag("Variant", IntTag::class) and $this->namedtag->hasTag("MarkVariant", IntTag::class)){
+			$this->setVariant($this->namedtag->getInt("Variant"));
+			$this->setMarkVariant($this->namedtag->getInt("MarkVariant"));
 		}else{
 			$this->setVariant($this->random->nextBoundedInt(7));
 			$this->setMarkVariant($this->random->nextBoundedInt(5));
 		}
 
-		parent::initEntity($nbt);
+		parent::initEntity();
 	}
 
 	public function addAttributes() : void{

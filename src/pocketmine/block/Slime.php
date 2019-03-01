@@ -22,18 +22,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-class Elytra extends Item{
-	public function __construct(int $meta = 0){
-		parent::__construct(Item::ELYTRA, $meta, "Elytra Wings");
+use pocketmine\entity\Entity;
+
+class Slime extends Solid{
+
+	protected $id = self::SLIME_BLOCK;
+
+	public function __construct(){
+
 	}
 
-	public function getArmorSlot() : int{
-		return 1;
+	public function hasEntityCollision() : bool{
+		return true;
 	}
 
-	public function getMaxStackSize() : int{
-		return 1;
+	public function getHardness() : float{
+		return 0;
+	}
+
+	public function getName() : string{
+		return "Slime Block";
+	}
+
+	public function onEntityCollideUpon(Entity $entity) : void{
+		$entity->resetFallDistance();
 	}
 }

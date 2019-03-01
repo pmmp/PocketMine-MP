@@ -26,6 +26,7 @@ namespace pocketmine\level\format\io;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
+use pocketmine\level\GameRules;
 use pocketmine\math\Vector3;
 
 interface LevelProvider{
@@ -154,6 +155,10 @@ interface LevelProvider{
 	 * @param int $difficulty
 	 */
 	public function setDifficulty(int $difficulty);
+
+	public function getGameRules() : GameRules;
+
+	public function setGameRules(GameRules $rules) : void;
 
 	/**
 	 * Performs garbage collection in the level provider, such as cleaning up regions in Region-based worlds.

@@ -39,7 +39,7 @@ class NoteBlock extends Spawnable{
 	/** @var bool */
 	protected $powered = false;
 
-	public function readSaveData(CompoundTag $nbt) : void{
+	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->note = max(0, min(24, $nbt->getByte(self::TAG_NOTE, 0, true)));
 		$this->powered = boolval($nbt->getByte(self::TAG_POWERED, 0));
 	}
@@ -57,7 +57,7 @@ class NoteBlock extends Spawnable{
 	}
 
 	public function triggerNote() : bool{
-		$up = $this->level->getBlock($this->getSide(Facing::UP));
+		$up = $this->level->getBlock($this->getSide(Vector3::SIDE_UP));
 		if($up->getId() === Block::AIR){
 			$below = $this->level->getBlock($this->getSide(Vector3::SIDE_DOWN));
 			$instrument = NoteBlockSound::INSTRUMENT_PIANO;

@@ -27,10 +27,11 @@ namespace pocketmine\tile;
 use pocketmine\block\Block;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
+use pocketmine\entity\Entity;
 use pocketmine\inventory\BeaconInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
@@ -51,13 +52,17 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 	protected $currentTick = 0;
 	/** @var array */
 	protected $minerals = [Block::IRON_BLOCK, Block::GOLD_BLOCK, Block::EMERALD_BLOCK, Block::DIAMOND_BLOCK];
+	/** @var AxisAlignedBB */
+	protected $rangeBox;
 
-	public function __construct(Level $level, Vector3 $pos){
-		parent::__construct($level, $pos);
+	public function __construct(Level $level, CompoundTag $nbt){
+		parent::__construct($level, $nbt);
+
 		$this->inventory = new BeaconInventory($this);
+		$this->rangeBox = new AxisAlignedBB($this->x, $this->y, $this->z, $this->x, $this->y, $this->z);
 	}
 
-	public function readSaveData(CompoundTag $nbt) : void{
+	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->primary = $nbt->getInt(self::TAG_PRIMARY, 0);
 		$this->secondary = $nbt->getInt(self::TAG_SECONDARY, 0);
 
@@ -102,7 +107,7 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 	}
 
 	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
-		if($nbt->getString("id") !== "Beacon"){
+		if($nbt->getString("id") !== Tile::BEACON){
 			return false;
 		}
 
@@ -119,15 +124,15 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 		$pyramidLevels = $this->getPyramidLevels();
 
 		$duration = 180 + $pyramidLevels * 40;
-		$range = 10 + $pyramidLevels * 10;
+		$range = (10 + $pyramidLevels * 10) * (10 + $pyramidLevels * 10);
 
 		$effectPrim = Effect::getEffect($this->primary);
 
 		if($effectPrim != null && $pyramidLevels > 0){
 			$effectPrim = new EffectInstance($effectPrim, $duration, $pyramidLevels == 4 && $this->primary == $this->secondary ? 1 : 0);
 
-			$players = array_filter($this->level->getPlayers(), function(Player $player) use ($range) : bool{
-				return $player->spawned and $player->distance($this) <= $range;
+			$players = array_filter($this->level->getCollidingEntities($this->rangeBox->expandedCopy($range, $range, $range)), function(Entity $player) : bool{
+				return $player instanceof Player and $player->spawned;
 			});
 			/** @var Player $player */
 			foreach($players as $player){

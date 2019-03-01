@@ -104,7 +104,7 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
 		return $this->inventory;
 	}
 
-	public function readSaveData(CompoundTag $nbt) : void{
+	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->facing = $nbt->getByte(self::TAG_FACING, Vector3::SIDE_DOWN);
 		$this->isUndyed = $nbt->getByte(self::TAG_UNDYED, 1) == 1;
 
@@ -112,10 +112,15 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
 		$this->loadItems($nbt);
 	}
 
-	public function writeSaveData(CompoundTag $nbt) : void{
+	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setTag(new ByteTag(self::TAG_FACING, $this->facing));
 		$nbt->setTag(new ByteTag(self::TAG_UNDYED, $this->isUndyed ? 1 : 0));
 
+		$this->saveName($nbt);
+		$this->saveItems($nbt);
+	}
+
+	public function writeBlockData(CompoundTag $nbt){
 		$this->saveName($nbt);
 		$this->saveItems($nbt);
 	}

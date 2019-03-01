@@ -196,7 +196,7 @@ class MobSpawner extends Spawnable{
 		$this->onChanged();
 	}
 
-	public function readSaveData(CompoundTag $nbt) : void{
+	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->delay = $nbt->getShort(self::TAG_DELAY, 0, true);
 		$this->maxNearbyEntities = $nbt->getShort(self::TAG_MAX_NEARBY_ENTITIES, 6, true);
 		$this->maxSpawnDelay = $nbt->getShort(self::TAG_MAX_SPAWN_DELAY, 800, true);

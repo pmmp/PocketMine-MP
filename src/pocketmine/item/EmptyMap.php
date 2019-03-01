@@ -39,7 +39,7 @@ class EmptyMap extends Item{
 	 *
 	 * @return bool
 	 */
-	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
 		$map = new FilledMap();
 		// TODO: Create world map
 		$map->onCreateMap($player->level, 0);
@@ -52,7 +52,7 @@ class EmptyMap extends Item{
 
 		$this->pop();
 
-		return ItemUseResult::success();
+		return true;
 	}
 
 	/**
