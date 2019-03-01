@@ -149,16 +149,12 @@ abstract class Door extends Transparent{
 		return true;
 	}
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		if(!$this->top){ //bottom half only
-			return parent::getDropsForCompatibleTool($item);
+	public function getDrops(Item $item) : array{
+		if(!$this->top){
+			return parent::getDrops($item);
 		}
 
 		return [];
-	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return false;
 	}
 
 	public function getAffectedBlocks() : array{

@@ -197,9 +197,9 @@ class Bed extends Transparent{
 		return false;
 	}
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		if($this->isHeadPart()){
-			return parent::getDropsForCompatibleTool($item);
+	public function getDrops(Item $item) : array{
+		if($this->head){
+			return parent::getDrops($item);
 		}
 
 		return [];
@@ -207,10 +207,6 @@ class Bed extends Transparent{
 
 	public function asItem() : Item{
 		return ItemFactory::get($this->idInfo->getItemId(), $this->color->getMagicNumber());
-	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return false;
 	}
 
 	public function getAffectedBlocks() : array{

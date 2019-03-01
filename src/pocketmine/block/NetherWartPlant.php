@@ -85,8 +85,4 @@ class NetherWartPlant extends Flowable{
 			$this->asItem()->setCount($this->age === 3 ? mt_rand(2, 4) : 1)
 		];
 	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return false;
-	}
 }

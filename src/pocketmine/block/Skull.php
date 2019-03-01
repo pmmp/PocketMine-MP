@@ -115,8 +115,4 @@ class Skull extends Flowable{
 	public function asItem() : Item{
 		return ItemFactory::get(Item::SKULL, $this->skullType->getMagicNumber());
 	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return false;
-	}
 }
