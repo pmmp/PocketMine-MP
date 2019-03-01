@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "959fe32be1db4613fd22eb2c7c7b23c6",
+    "content-hash": "d865f72c482e34c96a7e46bc535d0c15",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -413,12 +413,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "2d19bbaa4fb92d9eabe8c027ea0af9dbd6a90100"
+                "reference": "d9f15311ef328bddd5891fb7e92d2b3a7e48f501"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/2d19bbaa4fb92d9eabe8c027ea0af9dbd6a90100",
-                "reference": "2d19bbaa4fb92d9eabe8c027ea0af9dbd6a90100",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/d9f15311ef328bddd5891fb7e92d2b3a7e48f501",
+                "reference": "d9f15311ef328bddd5891fb7e92d2b3a7e48f501",
                 "shasum": ""
             },
             "require": {
@@ -446,7 +446,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-02-15T12:21:28+00:00"
+            "time": "2019-02-21T14:39:41+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -488,12 +488,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "d7bd7b8cb10c264ca6e6b5c3ef9b52e48a6f29d8"
+                "reference": "35110fcc742701d5f2b8093d63365c42900236c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/d7bd7b8cb10c264ca6e6b5c3ef9b52e48a6f29d8",
-                "reference": "d7bd7b8cb10c264ca6e6b5c3ef9b52e48a6f29d8",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/35110fcc742701d5f2b8093d63365c42900236c1",
+                "reference": "35110fcc742701d5f2b8093d63365c42900236c1",
                 "shasum": ""
             },
             "type": "library",
@@ -512,7 +512,7 @@
             "support": {
                 "source": "https://github.com/pmmp/SPL/tree/master"
             },
-            "time": "2019-01-17T18:54:01+00:00"
+            "time": "2019-02-23T12:20:29+00:00"
         }
     ],
     "packages-dev": [],
@@ -536,6 +536,7 @@
         "ext-crypto": "^0.3.1",
         "ext-ctype": "*",
         "ext-date": "*",
+        "ext-ds": "^1.2.7",
         "ext-gmp": "*",
         "ext-hash": "*",
         "ext-json": "*",
