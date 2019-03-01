@@ -23,15 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use Ds\Deque;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\tile\Banner as TileBanner;
-use function assert;
 
 class Banner extends Item{
 	public const TAG_PATTERNS = TileBanner::TAG_PATTERNS;
@@ -62,162 +63,33 @@ class Banner extends Item{
 	}
 
 	/**
-	 * Applies a new pattern on the banner with the given color.
-	 * Banner items have to be resent to see the changes in the inventory.
-	 *
-	 * @param string   $pattern
-	 * @param DyeColor $color
-	 *
-	 * @return int ID of pattern.
+	 * @return Deque|BannerPattern[]
 	 */
-	public function addPattern(string $pattern, DyeColor $color) : int{
-		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
-		assert($patternsTag !== null);
-
-		$patternsTag->push(new CompoundTag("", [
-			new IntTag(self::TAG_PATTERN_COLOR, $color->getInvertedMagicNumber()),
-			new StringTag(self::TAG_PATTERN_NAME, $pattern)
-		]));
-
-		$this->setNamedTagEntry($patternsTag);
-
-		return $patternsTag->count() - 1;
-	}
-
-	/**
-	 * Returns whether a pattern with the given ID exists on the banner or not.
-	 *
-	 * @param int $patternId
-	 *
-	 * @return bool
-	 */
-	public function patternExists(int $patternId) : bool{
-		$this->correctNBT();
-		return $this->getNamedTag()->getListTag(self::TAG_PATTERNS)->isset($patternId);
-	}
-
-	/**
-	 * Returns the data of a pattern with the given ID.
-	 *
-	 * @param int $patternId
-	 *
-	 * @return array
-	 */
-	public function getPatternData(int $patternId) : array{
-		if(!$this->patternExists($patternId)){
-			return [];
+	public function getPatterns() : Deque{
+		$result = new Deque();
+		$tag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
+		if($tag !== null){
+			/** @var CompoundTag $t */
+			foreach($tag as $t){
+				$result->push(new BannerPattern($t->getString(self::TAG_PATTERN_NAME), DyeColor::fromMagicNumber($t->getInt(self::TAG_PATTERN_COLOR), true)));
+			}
 		}
-
-		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
-		assert($patternsTag !== null);
-		$pattern = $patternsTag->get($patternId);
-		assert($pattern instanceof CompoundTag);
-
-		return [
-			self::TAG_PATTERN_COLOR => DyeColor::fromMagicNumber($pattern->getInt(self::TAG_PATTERN_COLOR), true),
-			self::TAG_PATTERN_NAME => $pattern->getString(self::TAG_PATTERN_NAME)
-		];
+		return $result;
 	}
 
 	/**
-	 * Changes the pattern of a previously existing pattern.
-	 * Banner items have to be resent to see the changes in the inventory.
-	 *
-	 * @param int      $patternId
-	 * @param string   $pattern
-	 * @param DyeColor $color
-	 *
-	 * @return bool indicating success.
+	 * @param Deque|BannerPattern[] $patterns
 	 */
-	public function changePattern(int $patternId, string $pattern, DyeColor $color) : bool{
-		if(!$this->patternExists($patternId)){
-			return false;
+	public function setPatterns(Deque $patterns) : void{
+		$tag = new ListTag(self::TAG_PATTERNS);
+		/** @var BannerPattern $pattern */
+		foreach($patterns as $pattern){
+			$tag->push(new CompoundTag("", [
+				new StringTag(self::TAG_PATTERN_NAME, $pattern->getId()),
+				new IntTag(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
+			]));
 		}
-
-		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
-		assert($patternsTag !== null);
-
-		$patternsTag->set($patternId, new CompoundTag("", [
-			new IntTag(self::TAG_PATTERN_COLOR, $color->getInvertedMagicNumber()),
-			new StringTag(self::TAG_PATTERN_NAME, $pattern)
-		]));
-
-		$this->setNamedTagEntry($patternsTag);
-		return true;
-	}
-
-	/**
-	 * Deletes a pattern from the banner with the given ID.
-	 * Banner items have to be resent to see the changes in the inventory.
-	 *
-	 * @param int $patternId
-	 *
-	 * @return bool indicating whether the pattern existed or not.
-	 */
-	public function deletePattern(int $patternId) : bool{
-		if(!$this->patternExists($patternId)){
-			return false;
-		}
-
-		$patternsTag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
-		if($patternsTag instanceof ListTag){
-			$patternsTag->remove($patternId);
-			$this->setNamedTagEntry($patternsTag);
-		}
-
-		return true;
-	}
-
-	/**
-	 * Deletes the top most pattern of the banner.
-	 * Banner items have to be resent to see the changes in the inventory.
-	 *
-	 * @return bool indicating whether the banner was empty or not.
-	 */
-	public function deleteTopPattern() : bool{
-		return $this->deletePattern($this->getPatternCount() - 1);
-	}
-
-	/**
-	 * Deletes the bottom pattern of the banner.
-	 * Banner items have to be resent to see the changes in the inventory.
-	 *
-	 * @return bool indicating whether the banner was empty or not.
-	 */
-	public function deleteBottomPattern() : bool{
-		return $this->deletePattern(0);
-	}
-
-	/**
-	 * Returns the total count of patterns on this banner.
-	 *
-	 * @return int
-	 */
-	public function getPatternCount() : int{
-		return $this->getNamedTag()->getListTag(self::TAG_PATTERNS)->count();
-	}
-
-	/**
-	 * @return ListTag|null
-	 */
-	public function getPatterns() : ?ListTag{
-		return $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
-	}
-
-	/**
-	 * @param ListTag $patterns
-	 */
-	public function setPatterns(ListTag $patterns) : void{
-		$this->setNamedTagEntry(clone $patterns);
-	}
-
-	public function correctNBT() : void{
-		$tag = $this->getNamedTag();
-
-		if(!$tag->hasTag(self::TAG_PATTERNS, ListTag::class)){
-			$tag->setTag(new ListTag(self::TAG_PATTERNS));
-		}
-		$this->setNamedTag($tag);
+		$this->setNamedTagEntry($tag);
 	}
 
 	public function getFuelTime() : int{
