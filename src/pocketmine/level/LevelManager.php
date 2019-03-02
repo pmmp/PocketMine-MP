@@ -398,7 +398,10 @@ class LevelManager{
 
 		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
 			$this->autoSaveTicker = 0;
+			$this->server->getLogger()->debug("[Auto Save] Saving worlds...");
+			$start = microtime(true);
 			$this->doAutoSave();
+			$this->server->getLogger()->debug("[Auto Save] Save completed in " . round(microtime(true) - $start, 3) . "s");
 		}
 	}
 
