@@ -41,11 +41,11 @@ class LevelMetadataStore extends MetadataStore{
 		return $this->hasMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
 
-	public function removeMetadata(Level $subject, string $metadataKey, Plugin $owningPlugin){
+	public function removeMetadata(Level $subject, string $metadataKey, Plugin $owningPlugin) : void{
 		$this->removeMetadataInternal($this->disambiguate($subject, $metadataKey), $owningPlugin);
 	}
 
-	public function setMetadata(Level $subject, string $metadataKey, MetadataValue $newMetadataValue){
+	public function setMetadata(Level $subject, string $metadataKey, MetadataValue $newMetadataValue) : void{
 		$this->setMetadataInternal($this->disambiguate($subject, $metadataKey), $newMetadataValue);
 	}
 }

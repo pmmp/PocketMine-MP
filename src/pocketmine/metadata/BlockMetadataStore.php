@@ -50,11 +50,11 @@ class BlockMetadataStore extends MetadataStore{
 		return $this->hasMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
 
-	public function removeMetadata(Block $subject, string $metadataKey, Plugin $owningPlugin){
+	public function removeMetadata(Block $subject, string $metadataKey, Plugin $owningPlugin) : void{
 		$this->removeMetadataInternal($this->disambiguate($subject, $metadataKey), $owningPlugin);
 	}
 
-	public function setMetadata(Block $subject, string $metadataKey, MetadataValue $newMetadataValue){
+	public function setMetadata(Block $subject, string $metadataKey, MetadataValue $newMetadataValue) : void{
 		$this->setMetadataInternal($this->disambiguate($subject, $metadataKey), $newMetadataValue);
 	}
 }

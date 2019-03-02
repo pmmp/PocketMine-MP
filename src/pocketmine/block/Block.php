@@ -800,7 +800,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $currentHit;
 	}
 
-	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){
+	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue) : void{
 		if($this->isValid()){
 			$this->level->getBlockMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
 		}
@@ -822,7 +822,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	public function removeMetadata(string $metadataKey, Plugin $owningPlugin){
+	public function removeMetadata(string $metadataKey, Plugin $owningPlugin) : void{
 		if($this->isValid()){
 			$this->level->getBlockMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
 		}

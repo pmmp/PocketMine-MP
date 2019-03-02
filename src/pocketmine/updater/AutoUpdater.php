@@ -68,7 +68,7 @@ class AutoUpdater{
 	 *
 	 * @param array $updateInfo
 	 */
-	public function checkUpdateCallback(array $updateInfo){
+	public function checkUpdateCallback(array $updateInfo) : void{
 		$this->updateInfo = $updateInfo;
 		$this->checkUpdate();
 		if($this->hasUpdate()){
@@ -97,7 +97,7 @@ class AutoUpdater{
 	/**
 	 * Posts a warning to the console to tell the user there is an update available
 	 */
-	public function showConsoleUpdate(){
+	public function showConsoleUpdate() : void{
 		$messages = [
 			"Your version of " . $this->server->getName() . " is out of date. Version " . $this->newVersion->getFullVersion(true) . " was released on " . date("D M j h:i:s Y", $this->updateInfo["date"])
 		];
@@ -114,26 +114,26 @@ class AutoUpdater{
 	 *
 	 * @param Player $player
 	 */
-	public function showPlayerUpdate(Player $player){
+	public function showPlayerUpdate(Player $player) : void{
 		$player->sendMessage(TextFormat::DARK_PURPLE . "The version of " . $this->server->getName() . " that this server is running is out of date. Please consider updating to the latest version.");
 		$player->sendMessage(TextFormat::DARK_PURPLE . "Check the console for more details.");
 	}
 
-	protected function showChannelSuggestionStable(){
+	protected function showChannelSuggestionStable() : void{
 		$this->printConsoleMessage([
 			"It appears you're running a Stable build, when you've specified that you prefer to run " . ucfirst($this->getChannel()) . " builds.",
 			"If you would like to be kept informed about new Stable builds only, it is recommended that you change 'preferred-channel' in your pocketmine.yml to 'stable'."
 		]);
 	}
 
-	protected function showChannelSuggestionBeta(){
+	protected function showChannelSuggestionBeta() : void{
 		$this->printConsoleMessage([
 			"It appears you're running a Beta build, when you've specified that you prefer to run Stable builds.",
 			"If you would like to be kept informed about new Beta or Development builds, it is recommended that you change 'preferred-channel' in your pocketmine.yml to 'beta' or 'development'."
 		]);
 	}
 
-	protected function printConsoleMessage(array $lines, string $logLevel = \LogLevel::INFO){
+	protected function printConsoleMessage(array $lines, string $logLevel = \LogLevel::INFO) : void{
 		$logger = $this->server->getLogger();
 
 		$title = $this->server->getName() . ' Auto Updater';
@@ -149,21 +149,21 @@ class AutoUpdater{
 	 *
 	 * @return array|null
 	 */
-	public function getUpdateInfo(){
+	public function getUpdateInfo() : ?array{
 		return $this->updateInfo;
 	}
 
 	/**
 	 * Schedules an AsyncTask to check for an update.
 	 */
-	public function doCheck(){
+	public function doCheck() : void{
 		$this->server->getAsyncPool()->submitTask(new UpdateCheckTask($this, $this->endpoint, $this->getChannel()));
 	}
 
 	/**
 	 * Checks the update information against the current server version to decide if there's an update
 	 */
-	protected function checkUpdate(){
+	protected function checkUpdate() : void{
 		if($this->updateInfo === null){
 			return;
 		}

@@ -45,7 +45,7 @@ abstract class DefaultPermissions{
 		return PermissionManager::getInstance()->getPermission($perm->getName());
 	}
 
-	public static function registerCorePermissions(){
+	public static function registerCorePermissions() : void{
 		$manager = PermissionManager::getInstance();
 		foreach(PermissionParser::loadPermissions(yaml_parse(file_get_contents(\pocketmine\RESOURCE_PATH . 'default_permissions.yml'))) as $permission){
 			$manager->addPermission($permission);

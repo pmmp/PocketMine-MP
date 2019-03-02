@@ -93,7 +93,7 @@ class Permission{
 	/**
 	 * @param string $value
 	 */
-	public function setDefault(string $value){
+	public function setDefault(string $value) : void{
 		if($value !== $this->defaultValue){
 			$this->defaultValue = $value;
 			$this->recalculatePermissibles();
@@ -110,7 +110,7 @@ class Permission{
 	/**
 	 * @param string $value
 	 */
-	public function setDescription(string $value){
+	public function setDescription(string $value) : void{
 		$this->description = $value;
 	}
 
@@ -121,7 +121,7 @@ class Permission{
 		return PermissionManager::getInstance()->getPermissionSubscriptions($this->name);
 	}
 
-	public function recalculatePermissibles(){
+	public function recalculatePermissibles() : void{
 		$perms = $this->getPermissibles();
 
 		PermissionManager::getInstance()->recalculatePermissionDefaults($this);
@@ -138,7 +138,7 @@ class Permission{
 	 *
 	 * @return Permission|null Permission if $name is a string, null if it's a Permission
 	 */
-	public function addParent($name, bool $value){
+	public function addParent($name, bool $value) : ?Permission{
 		if($name instanceof Permission){
 			$name->getChildren()[$this->getName()] = $value;
 			$name->recalculatePermissibles();

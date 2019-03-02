@@ -109,7 +109,7 @@ abstract class LevelProviderManager{
 	 *
 	 * @return string|null
 	 */
-	public static function getProviderByName(string $name){
+	public static function getProviderByName(string $name) : ?string{
 		return self::$providers[trim(strtolower($name))] ?? null;
 	}
 }

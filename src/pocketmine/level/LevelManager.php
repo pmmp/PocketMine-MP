@@ -342,7 +342,7 @@ class LevelManager{
 	 *
 	 * @return Entity|null
 	 */
-	public function findEntity(int $entityId){
+	public function findEntity(int $entityId) : ?Entity{
 		foreach($this->levels as $level){
 			assert(!$level->isClosed());
 			if(($entity = $level->getEntity($entityId)) instanceof Entity){
@@ -413,7 +413,7 @@ class LevelManager{
 	/**
 	 * @param bool $value
 	 */
-	public function setAutoSave(bool $value){
+	public function setAutoSave(bool $value) : void{
 		$this->autoSave = $value;
 		foreach($this->levels as $level){
 			$level->setAutoSave($this->autoSave);

@@ -41,7 +41,7 @@ abstract class Food extends Item implements FoodSource{
 		return [];
 	}
 
-	public function onConsume(Living $consumer){
+	public function onConsume(Living $consumer) : void{
 
 	}
 }

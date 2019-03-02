@@ -33,7 +33,7 @@ interface Metadatable{
 	 * @param string        $metadataKey
 	 * @param MetadataValue $newMetadataValue
 	 */
-	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue);
+	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue) : void;
 
 	/**
 	 * Returns a list of previously set metadata values from the implementing
@@ -62,6 +62,6 @@ interface Metadatable{
 	 * @param string $metadataKey
 	 * @param Plugin $owningPlugin
 	 */
-	public function removeMetadata(string $metadataKey, Plugin $owningPlugin);
+	public function removeMetadata(string $metadataKey, Plugin $owningPlugin) : void;
 
 }

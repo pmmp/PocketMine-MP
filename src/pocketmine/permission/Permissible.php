@@ -59,13 +59,13 @@ interface Permissible extends ServerOperator{
 	 *
 	 * @return void
 	 */
-	public function removeAttachment(PermissionAttachment $attachment);
+	public function removeAttachment(PermissionAttachment $attachment) : void;
 
 
 	/**
 	 * @return void
 	 */
-	public function recalculatePermissions();
+	public function recalculatePermissions() : void;
 
 	/**
 	 * @return PermissionAttachmentInfo[]

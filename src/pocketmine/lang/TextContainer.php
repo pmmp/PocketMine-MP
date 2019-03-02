@@ -38,7 +38,7 @@ class TextContainer{
 	/**
 	 * @param string $text
 	 */
-	public function setText(string $text){
+	public function setText(string $text) : void{
 		$this->text = $text;
 	}
 

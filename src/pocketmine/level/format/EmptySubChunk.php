@@ -89,7 +89,7 @@ class EmptySubChunk implements SubChunkInterface{
 		return str_repeat("\x00", 2048);
 	}
 
-	public function setBlockLightArray(string $data){
+	public function setBlockLightArray(string $data) : void{
 
 	}
 
@@ -97,7 +97,7 @@ class EmptySubChunk implements SubChunkInterface{
 		return str_repeat("\xff", 2048);
 	}
 
-	public function setBlockSkyLightArray(string $data){
+	public function setBlockSkyLightArray(string $data) : void{
 
 	}
 

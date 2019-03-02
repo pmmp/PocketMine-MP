@@ -109,7 +109,7 @@ class Bed extends Transparent{
 		return $this->occupied;
 	}
 
-	public function setOccupied(bool $occupied = true){
+	public function setOccupied(bool $occupied = true) : void{
 		$this->occupied = $occupied;
 		$this->level->setBlock($this, $this, false);
 

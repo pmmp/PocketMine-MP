@@ -53,7 +53,7 @@ class ClosureTask extends Task{
 		return Utils::getNiceClosureName($this->closure);
 	}
 
-	public function onRun(int $currentTick){
+	public function onRun(int $currentTick) : void{
 		($this->closure)($currentTick);
 	}
 }

@@ -193,7 +193,7 @@ class Internet{
 	 *
 	 * @throws InternetException if a cURL error occurs
 	 */
-	public static function simpleCurl(string $page, $timeout = 10, array $extraHeaders = [], array $extraOpts = [], ?callable $onSuccess = null){
+	public static function simpleCurl(string $page, $timeout = 10, array $extraHeaders = [], array $extraOpts = [], ?callable $onSuccess = null) : array{
 		if(!self::$online){
 			throw new InternetException("Cannot execute web request while offline");
 		}

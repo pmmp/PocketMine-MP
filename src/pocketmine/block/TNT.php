@@ -66,7 +66,7 @@ class TNT extends Solid{
 		}
 	}
 
-	public function ignite(int $fuse = 80){
+	public function ignite(int $fuse = 80) : void{
 		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR));
 
 		$mot = (new Random())->nextSignedFloat() * M_PI * 2;

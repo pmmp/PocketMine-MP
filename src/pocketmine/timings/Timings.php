@@ -112,7 +112,7 @@ abstract class Timings{
 	/** @var TimingsHandler[] */
 	public static $pluginTaskTimingMap = [];
 
-	public static function init(){
+	public static function init() : void{
 		if(self::$serverTickTimer instanceof TimingsHandler){
 			return;
 		}

@@ -49,7 +49,7 @@ class ChorusFruit extends Food{
 		return false;
 	}
 
-	public function onConsume(Living $consumer){
+	public function onConsume(Living $consumer) : void{
 		$level = $consumer->getLevel();
 		assert($level !== null);
 

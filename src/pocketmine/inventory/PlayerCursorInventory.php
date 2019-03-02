@@ -38,7 +38,7 @@ class PlayerCursorInventory extends BaseInventory{
 		return 1;
 	}
 
-	public function setSize(int $size){
+	public function setSize(int $size) : void{
 		throw new \BadMethodCallException("Cursor can only carry one item at a time");
 	}
 

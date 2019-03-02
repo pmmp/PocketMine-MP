@@ -42,7 +42,7 @@ class SubChunk implements SubChunkInterface{
 	protected $blockLight;
 	protected $skyLight;
 
-	private static function assignData(&$target, string $data, int $length, string $value = "\x00"){
+	private static function assignData(&$target, string $data, int $length, string $value = "\x00") : void{
 		if(strlen($data) !== $length){
 			assert($data === "", "Invalid non-zero length given, expected $length, got " . strlen($data));
 			$target = str_repeat($value, $length);
@@ -159,7 +159,7 @@ class SubChunk implements SubChunkInterface{
 		return $this->skyLight;
 	}
 
-	public function setBlockSkyLightArray(string $data){
+	public function setBlockSkyLightArray(string $data) : void{
 		assert(strlen($data) === 2048, "Wrong length of skylight array, expecting 2048 bytes, got " . strlen($data));
 		$this->skyLight = $data;
 	}
@@ -169,7 +169,7 @@ class SubChunk implements SubChunkInterface{
 		return $this->blockLight;
 	}
 
-	public function setBlockLightArray(string $data){
+	public function setBlockLightArray(string $data) : void{
 		assert(strlen($data) === 2048, "Wrong length of light array, expecting 2048 bytes, got " . strlen($data));
 		$this->blockLight = $data;
 	}

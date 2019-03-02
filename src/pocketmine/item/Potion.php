@@ -263,7 +263,7 @@ class Potion extends Item implements Consumable{
 		return 1;
 	}
 
-	public function onConsume(Living $consumer){
+	public function onConsume(Living $consumer) : void{
 
 	}
 

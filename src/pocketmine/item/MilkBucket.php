@@ -39,7 +39,7 @@ class MilkBucket extends Item implements Consumable{
 		return [];
 	}
 
-	public function onConsume(Living $consumer){
+	public function onConsume(Living $consumer) : void{
 		$consumer->removeAllEffects();
 	}
 }

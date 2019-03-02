@@ -1639,7 +1639,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return ItemEntity|null
 	 */
-	public function dropItem(Vector3 $source, Item $item, ?Vector3 $motion = null, int $delay = 10){
+	public function dropItem(Vector3 $source, Item $item, ?Vector3 $motion = null, int $delay = 10) : ?ItemEntity{
 		$motion = $motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1);
 		$itemTag = $item->nbtSerialize();
 		$itemTag->setName("Item");
@@ -1920,7 +1920,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return Entity|null
 	 */
-	public function getEntity(int $entityId){
+	public function getEntity(int $entityId) : ?Entity{
 		return $this->entities[$entityId] ?? null;
 	}
 
@@ -2123,7 +2123,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int $z
 	 * @param int $level 0-15
 	 */
-	public function setBlockSkyLightAt(int $x, int $y, int $z, int $level){
+	public function setBlockSkyLightAt(int $x, int $y, int $z, int $level) : void{
 		$this->getChunk($x >> 4, $z >> 4, true)->setBlockSkyLight($x & 0x0f, $y, $z & 0x0f, $level & 0x0f);
 	}
 
@@ -2148,7 +2148,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int $z
 	 * @param int $level 0-15
 	 */
-	public function setBlockLightAt(int $x, int $y, int $z, int $level){
+	public function setBlockLightAt(int $x, int $y, int $z, int $level) : void{
 		$this->getChunk($x >> 4, $z >> 4, true)->setBlockLight($x & 0x0f, $y, $z & 0x0f, $level & 0x0f);
 	}
 
@@ -2211,16 +2211,16 @@ class Level implements ChunkManager, Metadatable{
 	 * Returns the chunk at the specified X/Z coordinates. If the chunk is not loaded, attempts to (synchronously!!!)
 	 * load it.
 	 *
-	 * @param int  $x
-	 * @param int  $z
+	 * @param int  $chunkX
+	 * @param int  $chunkZ
 	 * @param bool $create Whether to create an empty chunk as a placeholder if the chunk does not exist
 	 *
 	 * @return Chunk|null
 	 */
-	public function getChunk(int $x, int $z, bool $create = false){
-		if(isset($this->chunks[$index = Level::chunkHash($x, $z)])){
+	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
+		if(isset($this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)])){
 			return $this->chunks[$index];
-		}elseif($this->loadChunk($x, $z, $create)){
+		}elseif($this->loadChunk($chunkX, $chunkZ, $create)){
 			return $this->chunks[$index];
 		}
 
@@ -2316,7 +2316,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Chunk|null $chunk
 	 * @param bool       $deleteEntitiesAndTiles Whether to delete entities and tiles on the old chunk, or transfer them to the new one
 	 */
-	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk, bool $deleteEntitiesAndTiles = true){
+	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk, bool $deleteEntitiesAndTiles = true) : void{
 		if($chunk === null){
 			return;
 		}
@@ -3000,7 +3000,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
-	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){
+	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue) : void{
 		$this->server->getLevelMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
 	}
 
@@ -3012,7 +3012,7 @@ class Level implements ChunkManager, Metadatable{
 		return $this->server->getLevelMetadata()->hasMetadata($this, $metadataKey);
 	}
 
-	public function removeMetadata(string $metadataKey, Plugin $owningPlugin){
+	public function removeMetadata(string $metadataKey, Plugin $owningPlugin) : void{
 		$this->server->getLevelMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
 	}
 }

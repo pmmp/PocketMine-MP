@@ -160,7 +160,7 @@ class Language{
 	 *
 	 * @return string|null
 	 */
-	protected function internalGet(string $id){
+	protected function internalGet(string $id) : ?string{
 		return $this->lang[$id] ?? $this->fallbackLang[$id] ?? null;
 	}
 

@@ -81,7 +81,7 @@ class RegisteredListener{
 	/**
 	 * @param Event $event
 	 */
-	public function callEvent(Event $event){
+	public function callEvent(Event $event) : void{
 		if($event instanceof Cancellable and $event->isCancelled() and $this->isIgnoringCancelled()){
 			return;
 		}

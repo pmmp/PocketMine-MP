@@ -196,7 +196,7 @@ abstract class AsyncTask extends \Threaded{
 	 *
 	 * @param mixed $progress A value that can be safely serialize()'ed.
 	 */
-	public function publishProgress($progress){
+	public function publishProgress($progress) : void{
 		$this->progressUpdates[] = serialize($progress);
 	}
 

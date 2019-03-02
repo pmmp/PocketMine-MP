@@ -50,5 +50,5 @@ interface Consumable{
 	 *
 	 * @param Living $consumer
 	 */
-	public function onConsume(Living $consumer);
+	public function onConsume(Living $consumer) : void;
 }

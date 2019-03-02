@@ -102,7 +102,7 @@ class PluginManager{
 	 *
 	 * @return null|Plugin
 	 */
-	public function getPlugin(string $name){
+	public function getPlugin(string $name) : ?Plugin{
 		if(isset($this->plugins[$name])){
 			return $this->plugins[$name];
 		}
@@ -193,7 +193,7 @@ class PluginManager{
 	 *
 	 * @return Plugin[]
 	 */
-	public function loadPlugins(string $directory, ?array $newLoaders = null){
+	public function loadPlugins(string $directory, ?array $newLoaders = null) : array{
 		if(!is_dir($directory)){
 			return [];
 		}
@@ -408,7 +408,7 @@ class PluginManager{
 	/**
 	 * @param Plugin $plugin
 	 */
-	public function enablePlugin(Plugin $plugin){
+	public function enablePlugin(Plugin $plugin) : void{
 		if(!$plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
 
@@ -425,7 +425,7 @@ class PluginManager{
 		}
 	}
 
-	public function disablePlugins(){
+	public function disablePlugins() : void{
 		foreach($this->getPlugins() as $plugin){
 			$this->disablePlugin($plugin);
 		}
@@ -434,7 +434,7 @@ class PluginManager{
 	/**
 	 * @param Plugin $plugin
 	 */
-	public function disablePlugin(Plugin $plugin){
+	public function disablePlugin(Plugin $plugin) : void{
 		if($plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.disable", [$plugin->getDescription()->getFullName()]));
 			(new PluginDisableEvent($plugin))->call();
@@ -457,7 +457,7 @@ class PluginManager{
 		}
 	}
 
-	public function clearPlugins(){
+	public function clearPlugins() : void{
 		$this->disablePlugins();
 		$this->plugins = [];
 		$this->enabledPlugins = [];

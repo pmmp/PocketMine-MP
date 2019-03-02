@@ -58,7 +58,7 @@ class Color{
 	 *
 	 * @param int $a
 	 */
-	public function setA(int $a){
+	public function setA(int $a) : void{
 		$this->a = $a & 0xff;
 	}
 
@@ -75,7 +75,7 @@ class Color{
 	 *
 	 * @param int $r
 	 */
-	public function setR(int $r){
+	public function setR(int $r) : void{
 		$this->r = $r & 0xff;
 	}
 
@@ -92,7 +92,7 @@ class Color{
 	 *
 	 * @param int $g
 	 */
-	public function setG(int $g){
+	public function setG(int $g) : void{
 		$this->g = $g & 0xff;
 	}
 
@@ -109,7 +109,7 @@ class Color{
 	 *
 	 * @param int $b
 	 */
-	public function setB(int $b){
+	public function setB(int $b) : void{
 		$this->b = $b & 0xff;
 	}
 
@@ -145,7 +145,7 @@ class Color{
 	 *
 	 * @return Color
 	 */
-	public static function fromRGB(int $code){
+	public static function fromRGB(int $code) : Color{
 		return new Color(($code >> 16) & 0xff, ($code >> 8) & 0xff, $code & 0xff);
 	}
 
@@ -156,7 +156,7 @@ class Color{
 	 *
 	 * @return Color
 	 */
-	public static function fromARGB(int $code){
+	public static function fromARGB(int $code) : Color{
 		return new Color(($code >> 16) & 0xff, ($code >> 8) & 0xff, $code & 0xff, ($code >> 24) & 0xff);
 	}
 

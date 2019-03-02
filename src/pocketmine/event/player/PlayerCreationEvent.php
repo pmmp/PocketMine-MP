@@ -88,7 +88,7 @@ class PlayerCreationEvent extends Event{
 	/**
 	 * @param Player::class $class
 	 */
-	public function setBaseClass($class){
+	public function setBaseClass($class) : void{
 		if(!is_a($class, $this->baseClass, true)){
 			throw new \RuntimeException("Base class $class must extend " . $this->baseClass);
 		}
@@ -106,7 +106,7 @@ class PlayerCreationEvent extends Event{
 	/**
 	 * @param Player::class $class
 	 */
-	public function setPlayerClass($class){
+	public function setPlayerClass($class) : void{
 		if(!is_a($class, $this->baseClass, true)){
 			throw new \RuntimeException("Class $class must extend " . $this->baseClass);
 		}

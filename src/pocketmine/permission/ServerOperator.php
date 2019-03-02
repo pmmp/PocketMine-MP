@@ -37,5 +37,5 @@ interface ServerOperator{
 	 *
 	 * @param bool $value
 	 */
-	public function setOp(bool $value);
+	public function setOp(bool $value) : void;
 }

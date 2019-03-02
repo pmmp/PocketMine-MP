@@ -63,7 +63,7 @@ class FlowerPot extends Spawnable{
 		return $this->plant !== null ? clone $this->plant : null;
 	}
 
-	public function setPlant(?Block $plant){
+	public function setPlant(?Block $plant) : void{
 		if($plant === null or $plant instanceof Air){
 			$this->plant = null;
 		}else{

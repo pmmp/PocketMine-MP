@@ -64,7 +64,7 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		return $this->server->isOp($this->name);
 	}
 
-	public function setOp(bool $value){
+	public function setOp(bool $value) : void{
 		if($value === $this->isOp()){
 			return;
 		}
@@ -80,8 +80,8 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		return $this->server->getNameBans()->isBanned($this->name);
 	}
 
-	public function setBanned(bool $value){
-		if($value){
+	public function setBanned(bool $banned) : void{
+		if($banned){
 			$this->server->getNameBans()->addBan($this->name, null, null, null);
 		}else{
 			$this->server->getNameBans()->remove($this->name);
@@ -92,7 +92,7 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		return $this->server->isWhitelisted($this->name);
 	}
 
-	public function setWhitelisted(bool $value){
+	public function setWhitelisted(bool $value) : void{
 		if($value){
 			$this->server->addWhitelist($this->name);
 		}else{
@@ -100,15 +100,15 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		}
 	}
 
-	public function getPlayer(){
+	public function getPlayer() : ?Player{
 		return $this->server->getPlayerExact($this->name);
 	}
 
-	public function getFirstPlayed(){
+	public function getFirstPlayed() : ?int{
 		return ($this->namedtag !== null and $this->namedtag->hasTag("firstPlayed", LongTag::class)) ? $this->namedtag->getInt("firstPlayed") : null;
 	}
 
-	public function getLastPlayed(){
+	public function getLastPlayed() : ?int{
 		return ($this->namedtag !== null and $this->namedtag->hasTag("lastPlayed", LongTag::class)) ? $this->namedtag->getLong("lastPlayed") : null;
 	}
 
@@ -116,7 +116,7 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		return $this->namedtag !== null;
 	}
 
-	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){
+	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue) : void{
 		$this->server->getPlayerMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
 	}
 
@@ -128,7 +128,7 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		return $this->server->getPlayerMetadata()->hasMetadata($this, $metadataKey);
 	}
 
-	public function removeMetadata(string $metadataKey, Plugin $owningPlugin){
+	public function removeMetadata(string $metadataKey, Plugin $owningPlugin) : void{
 		$this->server->getPlayerMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
 	}
 }

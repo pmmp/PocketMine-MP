@@ -50,7 +50,7 @@ abstract class Durable extends Item{
 	 *
 	 * @param bool $value
 	 */
-	public function setUnbreakable(bool $value = true){
+	public function setUnbreakable(bool $value = true) : void{
 		$this->setNamedTagEntry(new ByteTag("Unbreakable", $value ? 1 : 0));
 	}
 

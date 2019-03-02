@@ -39,7 +39,7 @@ interface Nameable{
 	/**
 	 * @param string $str
 	 */
-	public function setName(string $str);
+	public function setName(string $str) : void;
 
 	/**
 	 * @return bool

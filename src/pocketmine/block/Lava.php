@@ -52,7 +52,7 @@ class Lava extends Liquid{
 		return 2; //TODO: this is 1 in the nether
 	}
 
-	protected function checkForHarden(){
+	protected function checkForHarden() : void{
 		$colliding = null;
 		foreach(Facing::ALL as $side){
 			if($side === Facing::DOWN){

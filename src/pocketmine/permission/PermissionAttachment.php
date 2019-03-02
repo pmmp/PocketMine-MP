@@ -66,14 +66,14 @@ class PermissionAttachment{
 	/**
 	 * @param PermissionRemovedExecutor $ex
 	 */
-	public function setRemovalCallback(PermissionRemovedExecutor $ex){
+	public function setRemovalCallback(PermissionRemovedExecutor $ex) : void{
 		$this->removed = $ex;
 	}
 
 	/**
 	 * @return PermissionRemovedExecutor|null
 	 */
-	public function getRemovalCallback(){
+	public function getRemovalCallback() : ?PermissionRemovedExecutor{
 		return $this->removed;
 	}
 
@@ -91,7 +91,7 @@ class PermissionAttachment{
 		return $this->permissions;
 	}
 
-	public function clearPermissions(){
+	public function clearPermissions() : void{
 		$this->permissions = [];
 		$this->permissible->recalculatePermissions();
 	}
@@ -99,7 +99,7 @@ class PermissionAttachment{
 	/**
 	 * @param bool[] $permissions
 	 */
-	public function setPermissions(array $permissions){
+	public function setPermissions(array $permissions) : void{
 		foreach($permissions as $key => $value){
 			$this->permissions[$key] = (bool) $value;
 		}
@@ -109,7 +109,7 @@ class PermissionAttachment{
 	/**
 	 * @param string[] $permissions
 	 */
-	public function unsetPermissions(array $permissions){
+	public function unsetPermissions(array $permissions) : void{
 		foreach($permissions as $node){
 			unset($this->permissions[$node]);
 		}
@@ -120,7 +120,7 @@ class PermissionAttachment{
 	 * @param string|Permission $name
 	 * @param bool              $value
 	 */
-	public function setPermission($name, bool $value){
+	public function setPermission($name, bool $value) : void{
 		$name = $name instanceof Permission ? $name->getName() : $name;
 		if(isset($this->permissions[$name])){
 			if($this->permissions[$name] === $value){
@@ -135,7 +135,7 @@ class PermissionAttachment{
 	/**
 	 * @param string|Permission $name
 	 */
-	public function unsetPermission($name){
+	public function unsetPermission($name) : void{
 		$name = $name instanceof Permission ? $name->getName() : $name;
 		if(isset($this->permissions[$name])){
 			unset($this->permissions[$name]);
@@ -146,7 +146,7 @@ class PermissionAttachment{
 	/**
 	 * @return void
 	 */
-	public function remove(){
+	public function remove() : void{
 		$this->permissible->removeAttachment($this);
 	}
 }

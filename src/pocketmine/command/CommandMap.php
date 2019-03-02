@@ -30,7 +30,7 @@ interface CommandMap{
 	 * @param string    $fallbackPrefix
 	 * @param Command[] $commands
 	 */
-	public function registerAll(string $fallbackPrefix, array $commands);
+	public function registerAll(string $fallbackPrefix, array $commands) : void;
 
 	/**
 	 * @param string      $fallbackPrefix
@@ -52,14 +52,14 @@ interface CommandMap{
 	/**
 	 * @return void
 	 */
-	public function clearCommands();
+	public function clearCommands() : void;
 
 	/**
 	 * @param string $name
 	 *
 	 * @return Command|null
 	 */
-	public function getCommand(string $name);
+	public function getCommand(string $name) : ?Command;
 
 
 }

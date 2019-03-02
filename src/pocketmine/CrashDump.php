@@ -118,7 +118,7 @@ class CrashDump{
 		return $this->path;
 	}
 
-	public function getEncodedData(){
+	public function getEncodedData() : string{
 		return $this->encodedData;
 	}
 
@@ -126,7 +126,7 @@ class CrashDump{
 		return $this->data;
 	}
 
-	private function encodeData(){
+	private function encodeData() : void{
 		$this->addLine();
 		$this->addLine("----------------------REPORT THE DATA BELOW THIS LINE-----------------------");
 		$this->addLine();
@@ -142,7 +142,7 @@ class CrashDump{
 		$this->addLine("===END CRASH DUMP===");
 	}
 
-	private function pluginsData(){
+	private function pluginsData() : void{
 		if($this->server->getPluginManager() instanceof PluginManager){
 			$this->addLine();
 			$this->addLine("Loaded plugins:");
@@ -166,7 +166,7 @@ class CrashDump{
 		}
 	}
 
-	private function extraData(){
+	private function extraData() : void{
 		global $argv;
 
 		if($this->server->getProperty("auto-report.send-settings", true) !== false){
@@ -192,7 +192,7 @@ class CrashDump{
 		}
 	}
 
-	private function baseCrash(){
+	private function baseCrash() : void{
 		global $lastExceptionError, $lastError;
 
 		if(isset($lastExceptionError)){
@@ -287,7 +287,7 @@ class CrashDump{
 		return false;
 	}
 
-	private function generalData(){
+	private function generalData() : void{
 		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
 		$this->data["general"] = [];
 		$this->data["general"]["name"] = $this->server->getName();
@@ -310,11 +310,11 @@ class CrashDump{
 		$this->addLine("OS : " . PHP_OS . ", " . Utils::getOS());
 	}
 
-	public function addLine($line = ""){
+	public function addLine($line = "") : void{
 		fwrite($this->fp, $line . PHP_EOL);
 	}
 
-	public function add($str){
+	public function add($str) : void{
 		fwrite($this->fp, $str);
 	}
 }

@@ -88,7 +88,7 @@ interface Plugin{
 	/**
 	 * @return PluginLoader
 	 */
-	public function getPluginLoader();
+	public function getPluginLoader() : PluginLoader;
 
 	/**
 	 * @return TaskScheduler

@@ -44,7 +44,7 @@ class TimingsHandler{
 	/**
 	 * @param resource $fp
 	 */
-	public static function printTimings($fp){
+	public static function printTimings($fp) : void{
 		fwrite($fp, "Minecraft" . PHP_EOL);
 
 		foreach(self::$HANDLERS as $timings){
@@ -93,7 +93,7 @@ class TimingsHandler{
 		return self::$timingStart;
 	}
 
-	public static function reload(){
+	public static function reload() : void{
 		if(self::$enabled){
 			foreach(self::$HANDLERS as $timings){
 				$timings->reset();
@@ -102,7 +102,7 @@ class TimingsHandler{
 		}
 	}
 
-	public static function tick(bool $measure = true){
+	public static function tick(bool $measure = true) : void{
 		if(self::$enabled){
 			if($measure){
 				foreach(self::$HANDLERS as $timings){
@@ -157,7 +157,7 @@ class TimingsHandler{
 		self::$HANDLERS[spl_object_id($this)] = $this;
 	}
 
-	public function startTiming(){
+	public function startTiming() : void{
 		if(self::$enabled and ++$this->timingDepth === 1){
 			$this->start = microtime(true);
 			if($this->parent !== null and ++$this->parent->timingDepth === 1){
@@ -166,7 +166,7 @@ class TimingsHandler{
 		}
 	}
 
-	public function stopTiming(){
+	public function stopTiming() : void{
 		if(self::$enabled){
 			if(--$this->timingDepth !== 0 or $this->start === 0){
 				return;
@@ -184,7 +184,7 @@ class TimingsHandler{
 		}
 	}
 
-	public function reset(){
+	public function reset() : void{
 		$this->count = 0;
 		$this->curCount = 0;
 		$this->violations = 0;
@@ -194,7 +194,7 @@ class TimingsHandler{
 		$this->timingDepth = 0;
 	}
 
-	public function remove(){
+	public function remove() : void{
 		unset(self::$HANDLERS[spl_object_id($this)]);
 	}
 }

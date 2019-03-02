@@ -38,7 +38,7 @@ abstract class MetadataStore{
 	 * @param string        $key
 	 * @param MetadataValue $newMetadataValue
 	 */
-	protected function setMetadataInternal(string $key, MetadataValue $newMetadataValue){
+	protected function setMetadataInternal(string $key, MetadataValue $newMetadataValue) : void{
 		$owningPlugin = $newMetadataValue->getOwningPlugin();
 
 		if(!isset($this->metadataMap[$key])){
@@ -83,7 +83,7 @@ abstract class MetadataStore{
 	 * @param string $key
 	 * @param Plugin $owningPlugin
 	 */
-	protected function removeMetadataInternal(string $key, Plugin $owningPlugin){
+	protected function removeMetadataInternal(string $key, Plugin $owningPlugin) : void{
 		if(isset($this->metadataMap[$key])){
 			unset($this->metadataMap[$key][$owningPlugin]);
 			if($this->metadataMap[$key]->count() === 0){
@@ -99,7 +99,7 @@ abstract class MetadataStore{
 	 *
 	 * @param Plugin $owningPlugin
 	 */
-	public function invalidateAll(Plugin $owningPlugin){
+	public function invalidateAll(Plugin $owningPlugin) : void{
 		/** @var MetadataValue[] $values */
 		foreach($this->metadataMap as $values){
 			if(isset($values[$owningPlugin])){

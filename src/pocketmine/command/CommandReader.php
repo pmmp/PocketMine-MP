@@ -71,11 +71,11 @@ class CommandReader extends Thread{
 		}
 	}
 
-	public function shutdown(){
+	public function shutdown() : void{
 		$this->shutdown = true;
 	}
 
-	public function quit(){
+	public function quit() : void{
 		$wait = microtime(true) + 0.5;
 		while(microtime(true) < $wait){
 			if($this->isRunning()){
@@ -94,7 +94,7 @@ class CommandReader extends Thread{
 		throw new \ThreadException($message);
 	}
 
-	private function initStdin(){
+	private function initStdin() : void{
 		if(is_resource(self::$stdin)){
 			fclose(self::$stdin);
 		}
@@ -176,7 +176,7 @@ class CommandReader extends Thread{
 	 *
 	 * @return string|null
 	 */
-	public function getLine(){
+	public function getLine() : ?string{
 		if($this->buffer->count() !== 0){
 			return (string) $this->buffer->shift();
 		}
@@ -184,7 +184,7 @@ class CommandReader extends Thread{
 		return null;
 	}
 
-	public function run(){
+	public function run() : void{
 		$this->registerClassLoader();
 
 		if($this->type !== self::TYPE_READLINE){

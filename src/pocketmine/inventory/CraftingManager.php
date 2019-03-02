@@ -137,7 +137,7 @@ class CraftingManager{
 	 *
 	 * @return int
 	 */
-	public static function sort(Item $i1, Item $i2){
+	public static function sort(Item $i1, Item $i2) : int{
 		//Use spaceship operator to compare each property, then try the next one if they are equivalent.
 		($retval = $i1->getId() <=> $i2->getId()) === 0 && ($retval = $i1->getMeta() <=> $i2->getMeta()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount());
 

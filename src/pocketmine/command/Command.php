@@ -107,7 +107,7 @@ abstract class Command{
 	/**
 	 * @return string|null
 	 */
-	public function getPermission(){
+	public function getPermission() : ?string{
 		return $this->permission;
 	}
 
@@ -115,7 +115,7 @@ abstract class Command{
 	/**
 	 * @param string|null $permission
 	 */
-	public function setPermission(?string $permission){
+	public function setPermission(?string $permission) : void{
 		$this->permission = $permission;
 	}
 
@@ -260,7 +260,7 @@ abstract class Command{
 	/**
 	 * @param string[] $aliases
 	 */
-	public function setAliases(array $aliases){
+	public function setAliases(array $aliases) : void{
 		$this->aliases = $aliases;
 		if(!$this->isRegistered()){
 			$this->activeAliases = $aliases;
@@ -270,21 +270,21 @@ abstract class Command{
 	/**
 	 * @param string $description
 	 */
-	public function setDescription(string $description){
+	public function setDescription(string $description) : void{
 		$this->description = $description;
 	}
 
 	/**
 	 * @param string $permissionMessage
 	 */
-	public function setPermissionMessage(string $permissionMessage){
+	public function setPermissionMessage(string $permissionMessage) : void{
 		$this->permissionMessage = $permissionMessage;
 	}
 
 	/**
 	 * @param string $usage
 	 */
-	public function setUsage(string $usage){
+	public function setUsage(string $usage) : void{
 		$this->usageMessage = $usage;
 	}
 
@@ -293,7 +293,7 @@ abstract class Command{
 	 * @param TextContainer|string $message
 	 * @param bool                 $sendToSource
 	 */
-	public static function broadcastCommandMessage(CommandSender $source, $message, bool $sendToSource = true){
+	public static function broadcastCommandMessage(CommandSender $source, $message, bool $sendToSource = true) : void{
 		if($message instanceof TextContainer){
 			$m = clone $message;
 			$result = "[" . $source->getName() . ": " . ($source->getServer()->getLanguage()->get($m->getText()) !== $m->getText() ? "%" : "") . $m->getText() . "]";

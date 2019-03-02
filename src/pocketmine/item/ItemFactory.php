@@ -50,7 +50,7 @@ class ItemFactory{
 	/** @var Item|null */
 	private static $air = null;
 
-	public static function init(){
+	public static function init() : void{
 		self::$list = []; //in case of re-initializing
 
 		self::register(new Apple());
@@ -328,7 +328,7 @@ class ItemFactory{
 	 * @throws \RuntimeException if something attempted to override an already-registered item without specifying the
 	 * $override parameter.
 	 */
-	public static function register(Item $item, bool $override = false){
+	public static function register(Item $item, bool $override = false) : void{
 		$id = $item->getId();
 		$variant = $item->getMeta();
 

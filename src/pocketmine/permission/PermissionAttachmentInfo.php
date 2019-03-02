@@ -69,7 +69,7 @@ class PermissionAttachmentInfo{
 	/**
 	 * @return PermissionAttachment|null
 	 */
-	public function getAttachment(){
+	public function getAttachment() : ?PermissionAttachment{
 		return $this->attachment;
 	}
 

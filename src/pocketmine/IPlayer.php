@@ -45,7 +45,7 @@ interface IPlayer extends ServerOperator{
 	/**
 	 * @param bool $banned
 	 */
-	public function setBanned(bool $banned);
+	public function setBanned(bool $banned) : void;
 
 	/**
 	 * @return bool
@@ -55,22 +55,22 @@ interface IPlayer extends ServerOperator{
 	/**
 	 * @param bool $value
 	 */
-	public function setWhitelisted(bool $value);
+	public function setWhitelisted(bool $value) : void;
 
 	/**
 	 * @return Player|null
 	 */
-	public function getPlayer();
+	public function getPlayer() : ?Player;
 
 	/**
 	 * @return int|null
 	 */
-	public function getFirstPlayed();
+	public function getFirstPlayed() : ?int;
 
 	/**
 	 * @return int|null
 	 */
-	public function getLastPlayed();
+	public function getLastPlayed() : ?int;
 
 	/**
 	 * @return bool

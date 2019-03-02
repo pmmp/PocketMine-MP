@@ -471,7 +471,7 @@ abstract class Liquid extends Transparent{
 		return ($decay >= 0 && $blockDecay >= $decay) ? $decay : $blockDecay;
 	}
 
-	protected function checkForHarden(){
+	protected function checkForHarden() : void{
 
 	}
 

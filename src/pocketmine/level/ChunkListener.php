@@ -46,14 +46,14 @@ interface ChunkListener{
 	 *
 	 * @param Chunk $chunk
 	 */
-	public function onChunkChanged(Chunk $chunk);
+	public function onChunkChanged(Chunk $chunk) : void;
 
 	/**
 	 * This method will be called when a registered chunk is loaded
 	 *
 	 * @param Chunk $chunk
 	 */
-	public function onChunkLoaded(Chunk $chunk);
+	public function onChunkLoaded(Chunk $chunk) : void;
 
 
 	/**
@@ -61,7 +61,7 @@ interface ChunkListener{
 	 *
 	 * @param Chunk $chunk
 	 */
-	public function onChunkUnloaded(Chunk $chunk);
+	public function onChunkUnloaded(Chunk $chunk) : void;
 
 	/**
 	 * This method will be called when a registered chunk is populated
@@ -69,12 +69,12 @@ interface ChunkListener{
 	 *
 	 * @param Chunk $chunk
 	 */
-	public function onChunkPopulated(Chunk $chunk);
+	public function onChunkPopulated(Chunk $chunk) : void;
 
 	/**
 	 * This method will be called when a block changes in a registered chunk
 	 *
 	 * @param Block|Vector3 $block
 	 */
-	public function onBlockChanged(Vector3 $block);
+	public function onBlockChanged(Vector3 $block) : void;
 }

@@ -76,7 +76,7 @@ class BanIpCommand extends VanillaCommand{
 		return true;
 	}
 
-	private function processIPBan(string $ip, CommandSender $sender, string $reason){
+	private function processIPBan(string $ip, CommandSender $sender, string $reason) : void{
 		$sender->getServer()->getIPBans()->addBan($ip, $reason, null, $sender->getName());
 
 		foreach($sender->getServer()->getOnlinePlayers() as $player){

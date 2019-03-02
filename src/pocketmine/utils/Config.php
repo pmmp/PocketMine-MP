@@ -113,7 +113,7 @@ class Config{
 	/**
 	 * Removes all the changes in memory and loads the file again
 	 */
-	public function reload(){
+	public function reload() : void{
 		$this->config = [];
 		$this->nestedCache = [];
 		$this->load($this->file, $this->type);
@@ -341,7 +341,7 @@ class Config{
 	 * @param string $key
 	 * @param mixed  $value
 	 */
-	public function setNested($key, $value){
+	public function setNested($key, $value) : void{
 		$vars = explode(".", $key);
 		$base = array_shift($vars);
 
@@ -430,7 +430,7 @@ class Config{
 	 * @param string $k key to be set
 	 * @param mixed  $v value to set key
 	 */
-	public function set($k, $v = true){
+	public function set($k, $v = true) : void{
 		$this->config[$k] = $v;
 		$this->changed = true;
 		foreach($this->nestedCache as $nestedKey => $nvalue){
@@ -443,7 +443,7 @@ class Config{
 	/**
 	 * @param array $v
 	 */
-	public function setAll(array $v){
+	public function setAll(array $v) : void{
 		$this->config = $v;
 		$this->changed = true;
 	}
@@ -467,7 +467,7 @@ class Config{
 	/**
 	 * @param string $k
 	 */
-	public function remove($k){
+	public function remove($k) : void{
 		unset($this->config[$k]);
 		$this->changed = true;
 	}
@@ -484,7 +484,7 @@ class Config{
 	/**
 	 * @param array $defaults
 	 */
-	public function setDefaults(array $defaults){
+	public function setDefaults(array $defaults) : void{
 		$this->fillDefaults($defaults, $this->config);
 	}
 
@@ -518,7 +518,7 @@ class Config{
 	/**
 	 * @param string $content
 	 */
-	private function parseList(string $content){
+	private function parseList(string $content) : void{
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
 			if($v == ""){
@@ -548,7 +548,7 @@ class Config{
 	/**
 	 * @param string $content
 	 */
-	private function parseProperties(string $content){
+	private function parseProperties(string $content) : void{
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);

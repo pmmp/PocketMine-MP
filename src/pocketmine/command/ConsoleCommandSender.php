@@ -80,11 +80,11 @@ class ConsoleCommandSender implements CommandSender{
 	 *
 	 * @return void
 	 */
-	public function removeAttachment(PermissionAttachment $attachment){
+	public function removeAttachment(PermissionAttachment $attachment) : void{
 		$this->perm->removeAttachment($attachment);
 	}
 
-	public function recalculatePermissions(){
+	public function recalculatePermissions() : void{
 		$this->perm->recalculatePermissions();
 	}
 
@@ -98,14 +98,14 @@ class ConsoleCommandSender implements CommandSender{
 	/**
 	 * @return Server
 	 */
-	public function getServer(){
+	public function getServer() : Server{
 		return Server::getInstance();
 	}
 
 	/**
 	 * @param TextContainer|string $message
 	 */
-	public function sendMessage($message){
+	public function sendMessage($message) : void{
 		if($message instanceof TextContainer){
 			$message = $this->getServer()->getLanguage()->translate($message);
 		}else{
@@ -134,7 +134,7 @@ class ConsoleCommandSender implements CommandSender{
 	/**
 	 * @param bool $value
 	 */
-	public function setOp(bool $value){
+	public function setOp(bool $value) : void{
 
 	}
 
@@ -142,7 +142,7 @@ class ConsoleCommandSender implements CommandSender{
 		return $this->lineHeight ?? PHP_INT_MAX;
 	}
 
-	public function setScreenLineHeight(?int $height){
+	public function setScreenLineHeight(?int $height) : void{
 		if($height !== null and $height < 1){
 			throw new \InvalidArgumentException("Line height must be at least 1");
 		}

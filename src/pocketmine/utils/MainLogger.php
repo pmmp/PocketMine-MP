@@ -111,7 +111,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	 * WARNING: Because static properties are thread-local, this MUST be called from the body of every Thread if you
 	 * want the logger to be accessible via {@link MainLogger#getLogger}.
 	 */
-	public function registerStatic(){
+	public function registerStatic() : void{
 		if(static::$logger === null){
 			static::$logger = $this;
 		}
@@ -181,7 +181,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	/**
 	 * @param bool $logDebug
 	 */
-	public function setLogDebug(bool $logDebug){
+	public function setLogDebug(bool $logDebug) : void{
 		$this->logDebug = $logDebug;
 	}
 
@@ -253,12 +253,12 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 	}
 
-	public function shutdown(){
+	public function shutdown() : void{
 		$this->shutdown = true;
 		$this->notify();
 	}
 
-	protected function send($message, $level, $prefix, $color){
+	protected function send($message, $level, $prefix, $color) : void{
 		/** @var \DateTime|null $time */
 		static $time = null;
 		if($time === null){ //thread-local
@@ -292,7 +292,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		});
 	}
 
-	public function syncFlushBuffer(){
+	public function syncFlushBuffer() : void{
 		$this->syncFlush = true;
 		$this->synchronized(function(){
 			$this->notify(); //write immediately
@@ -306,7 +306,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	/**
 	 * @param resource $logResource
 	 */
-	private function writeLogStream($logResource){
+	private function writeLogStream($logResource) : void{
 		while($this->logStream->count() > 0){
 			$chunk = $this->logStream->shift();
 			fwrite($logResource, $chunk);
@@ -318,7 +318,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 	}
 
-	public function run(){
+	public function run() : void{
 		$this->shutdown = false;
 		$logResource = fopen($this->logFile, "ab");
 		if(!is_resource($logResource)){

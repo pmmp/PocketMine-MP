@@ -668,7 +668,7 @@ class Server{
 	 * @param string      $name
 	 * @param CompoundTag $nbtTag
 	 */
-	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag){
+	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag) : void{
 		$ev = new PlayerDataSaveEvent($nbtTag, $name);
 		$ev->setCancelled(!$this->shouldSavePlayerData());
 
@@ -690,7 +690,7 @@ class Server{
 	 *
 	 * @return Player|null
 	 */
-	public function getPlayer(string $name){
+	public function getPlayer(string $name) : ?Player{
 		$found = null;
 		$name = strtolower($name);
 		$delta = PHP_INT_MAX;
@@ -715,7 +715,7 @@ class Server{
 	 *
 	 * @return Player|null
 	 */
-	public function getPlayerExact(string $name){
+	public function getPlayerExact(string $name) : ?Player{
 		$name = strtolower($name);
 		foreach($this->getOnlinePlayers() as $player){
 			if($player->getLowerCaseName() === $name){
@@ -806,7 +806,7 @@ class Server{
 	 * @param string $variable
 	 * @param string $value
 	 */
-	public function setConfigString(string $variable, string $value){
+	public function setConfigString(string $variable, string $value) : void{
 		$this->properties->set($variable, $value);
 	}
 
@@ -829,7 +829,7 @@ class Server{
 	 * @param string $variable
 	 * @param int    $value
 	 */
-	public function setConfigInt(string $variable, int $value){
+	public function setConfigInt(string $variable, int $value) : void{
 		$this->properties->set($variable, $value);
 	}
 
@@ -865,7 +865,7 @@ class Server{
 	 * @param string $variable
 	 * @param bool   $value
 	 */
-	public function setConfigBool(string $variable, bool $value){
+	public function setConfigBool(string $variable, bool $value) : void{
 		$this->properties->set($variable, $value ? "1" : "0");
 	}
 
@@ -899,7 +899,7 @@ class Server{
 	/**
 	 * @param string $name
 	 */
-	public function addOp(string $name){
+	public function addOp(string $name) : void{
 		$this->operators->set(strtolower($name), true);
 
 		if(($player = $this->getPlayerExact($name)) !== null){
@@ -911,7 +911,7 @@ class Server{
 	/**
 	 * @param string $name
 	 */
-	public function removeOp(string $name){
+	public function removeOp(string $name) : void{
 		$this->operators->remove(strtolower($name));
 
 		if(($player = $this->getPlayerExact($name)) !== null){
@@ -923,7 +923,7 @@ class Server{
 	/**
 	 * @param string $name
 	 */
-	public function addWhitelist(string $name){
+	public function addWhitelist(string $name) : void{
 		$this->whitelist->set(strtolower($name), true);
 		$this->whitelist->save();
 	}
@@ -931,7 +931,7 @@ class Server{
 	/**
 	 * @param string $name
 	 */
-	public function removeWhitelist(string $name){
+	public function removeWhitelist(string $name) : void{
 		$this->whitelist->remove(strtolower($name));
 		$this->whitelist->save();
 	}
@@ -968,7 +968,7 @@ class Server{
 		return $this->operators;
 	}
 
-	public function reloadWhitelist(){
+	public function reloadWhitelist() : void{
 		$this->whitelist->reload();
 	}
 
@@ -1533,7 +1533,7 @@ class Server{
 	/**
 	 * @param int $type
 	 */
-	public function enablePlugins(int $type){
+	public function enablePlugins(int $type) : void{
 		foreach($this->pluginManager->getPlugins() as $plugin){
 			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder() === $type){
 				$this->pluginManager->enablePlugin($plugin);
@@ -1576,7 +1576,7 @@ class Server{
 		return false;
 	}
 
-	public function reload(){
+	public function reload() : void{
 		$this->logger->info("Saving worlds...");
 
 		foreach($this->levelManager->getLevels() as $level){
@@ -1616,11 +1616,11 @@ class Server{
 	/**
 	 * Shuts the server down correctly
 	 */
-	public function shutdown(){
+	public function shutdown() : void{
 		$this->isRunning = false;
 	}
 
-	public function forceShutdown(){
+	public function forceShutdown() : void{
 		if($this->hasStopped){
 			return;
 		}
@@ -1703,7 +1703,7 @@ class Server{
 	/**
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
-	private function start(){
+	private function start() : void{
 		if($this->getConfigBool("enable-query", true)){
 			$this->queryHandler = new QueryHandler();
 		}
@@ -1741,7 +1741,7 @@ class Server{
 	 * @param \Throwable $e
 	 * @param array|null $trace
 	 */
-	public function exceptionHandler(\Throwable $e, $trace = null){
+	public function exceptionHandler(\Throwable $e, $trace = null) : void{
 		global $lastError;
 
 		if($trace === null){
@@ -1772,7 +1772,7 @@ class Server{
 		$this->crashDump();
 	}
 
-	public function crashDump(){
+	public function crashDump() : void{
 		if(!$this->isRunning){
 			return;
 		}
@@ -1860,7 +1860,7 @@ class Server{
 		return $this->tickSleeper;
 	}
 
-	private function tickProcessor(){
+	private function tickProcessor() : void{
 		$this->nextTick = microtime(true);
 
 		while($this->isRunning){
@@ -1871,7 +1871,7 @@ class Server{
 		}
 	}
 
-	public function onPlayerLogin(Player $player){
+	public function onPlayerLogin(Player $player) : void{
 		if($this->sendUsageTicker > 0){
 			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
 		}
@@ -1879,28 +1879,28 @@ class Server{
 		$this->loggedInPlayers[$player->getRawUniqueId()] = $player;
 	}
 
-	public function onPlayerLogout(Player $player){
+	public function onPlayerLogout(Player $player) : void{
 		unset($this->loggedInPlayers[$player->getRawUniqueId()]);
 	}
 
-	public function addPlayer(Player $player){
+	public function addPlayer(Player $player) : void{
 		$this->players[spl_object_id($player)] = $player;
 	}
 
 	/**
 	 * @param Player $player
 	 */
-	public function removePlayer(Player $player){
+	public function removePlayer(Player $player) : void{
 		unset($this->players[spl_object_id($player)]);
 	}
 
-	public function addOnlinePlayer(Player $player){
+	public function addOnlinePlayer(Player $player) : void{
 		$this->updatePlayerListData($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXuid());
 
 		$this->playerList[$player->getRawUniqueId()] = $player;
 	}
 
-	public function removeOnlinePlayer(Player $player){
+	public function removeOnlinePlayer(Player $player) : void{
 		if(isset($this->playerList[$player->getRawUniqueId()])){
 			unset($this->playerList[$player->getRawUniqueId()]);
 
@@ -1916,7 +1916,7 @@ class Server{
 	 * @param string        $xboxUserId
 	 * @param Player[]|null $players
 	 */
-	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, string $xboxUserId = "", ?array $players = null){
+	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, string $xboxUserId = "", ?array $players = null) : void{
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 
@@ -1929,7 +1929,7 @@ class Server{
 	 * @param UUID          $uuid
 	 * @param Player[]|null $players
 	 */
-	public function removePlayerListData(UUID $uuid, ?array $players = null){
+	public function removePlayerListData(UUID $uuid, ?array $players = null) : void{
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_REMOVE;
 		$pk->entries[] = PlayerListEntry::createRemovalEntry($uuid);
@@ -1939,7 +1939,7 @@ class Server{
 	/**
 	 * @param Player $p
 	 */
-	public function sendFullPlayerListData(Player $p){
+	public function sendFullPlayerListData(Player $p) : void{
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 		foreach($this->playerList as $player){
@@ -1949,7 +1949,7 @@ class Server{
 		$p->sendDataPacket($pk);
 	}
 
-	public function sendUsage($type = SendUsageTask::TYPE_STATUS){
+	public function sendUsage(int $type = SendUsageTask::TYPE_STATUS) : void{
 		if((bool) $this->getProperty("anonymous-statistics.enabled", true)){
 			$this->asyncPool->submitTask(new SendUsageTask($this, $type, $this->uniquePlayers));
 		}
@@ -1985,7 +1985,7 @@ class Server{
 		return $this->memoryManager;
 	}
 
-	private function titleTick(){
+	private function titleTick() : void{
 		Timings::$titleTickTimer->startTiming();
 		$d = Utils::getRealMemoryUsage();
 
@@ -2016,7 +2016,7 @@ class Server{
 	 *
 	 * TODO: move this to Network
 	 */
-	public function handlePacket(AdvancedNetworkInterface $interface, string $address, int $port, string $payload){
+	public function handlePacket(AdvancedNetworkInterface $interface, string $address, int $port, string $payload) : void{
 		if($this->queryHandler === null or !$this->queryHandler->handle($interface, $address, $port, $payload)){
 			$this->logger->debug("Unhandled raw packet from $address $port: " . bin2hex($payload));
 		}

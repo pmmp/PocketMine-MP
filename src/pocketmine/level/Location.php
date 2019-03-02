@@ -40,7 +40,7 @@ class Location extends Position{
 	 * @param float $pitch
 	 * @param Level $level
 	 */
-	public function __construct($x = 0, $y = 0, $z = 0, $yaw = 0.0, $pitch = 0.0, ?Level $level = null){
+	public function __construct($x = 0, $y = 0, $z = 0, float $yaw = 0.0, float $pitch = 0.0, ?Level $level = null){
 		$this->yaw = $yaw;
 		$this->pitch = $pitch;
 		parent::__construct($x, $y, $z, $level);
@@ -49,12 +49,12 @@ class Location extends Position{
 	/**
 	 * @param Vector3    $pos
 	 * @param Level|null $level default null
-	 * @param float      $yaw   default 0.0
+	 * @param float      $yaw default 0.0
 	 * @param float      $pitch default 0.0
 	 *
 	 * @return Location
 	 */
-	public static function fromObject(Vector3 $pos, ?Level $level = null, $yaw = 0.0, $pitch = 0.0) : Location{
+	public static function fromObject(Vector3 $pos, ?Level $level = null, float $yaw = 0.0, float $pitch = 0.0){
 		return new Location($pos->x, $pos->y, $pos->z, $yaw, $pitch, $level ?? (($pos instanceof Position) ? $pos->level : null));
 	}
 
@@ -67,11 +67,11 @@ class Location extends Position{
 		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->level);
 	}
 
-	public function getYaw(){
+	public function getYaw() : float{
 		return $this->yaw;
 	}
 
-	public function getPitch(){
+	public function getPitch() : float{
 		return $this->pitch;
 	}
 

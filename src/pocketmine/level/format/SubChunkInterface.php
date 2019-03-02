@@ -134,7 +134,7 @@ interface SubChunkInterface{
 	/**
 	 * @param string $data
 	 */
-	public function setBlockSkyLightArray(string $data);
+	public function setBlockSkyLightArray(string $data) : void;
 
 	/**
 	 * @return string
@@ -144,7 +144,7 @@ interface SubChunkInterface{
 	/**
 	 * @param string $data
 	 */
-	public function setBlockLightArray(string $data);
+	public function setBlockLightArray(string $data) : void;
 
 	/**
 	 * @return string

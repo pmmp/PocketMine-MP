@@ -45,7 +45,7 @@ final class TileFactory{
 		//NOOP
 	}
 
-	public static function init(){
+	public static function init() : void{
 		self::register(Banner::class, ["Banner", "minecraft:banner"]);
 		self::register(Bed::class, ["Bed", "minecraft:bed"]);
 		self::register(Chest::class, ["Chest", "minecraft:chest"]);

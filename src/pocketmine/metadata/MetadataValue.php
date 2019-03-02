@@ -36,7 +36,7 @@ abstract class MetadataValue{
 	/**
 	 * @return Plugin
 	 */
-	public function getOwningPlugin(){
+	public function getOwningPlugin() : Plugin{
 		return $this->owningPlugin;
 	}
 
@@ -51,5 +51,5 @@ abstract class MetadataValue{
 	 * Invalidates this metadata item, forcing it to recompute when next
 	 * accessed.
 	 */
-	abstract public function invalidate();
+	abstract public function invalidate() : void;
 }

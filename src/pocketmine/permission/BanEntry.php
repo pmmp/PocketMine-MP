@@ -66,7 +66,7 @@ class BanEntry{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function setCreated(\DateTime $date){
+	public function setCreated(\DateTime $date) : void{
 		self::validateDate($date);
 		$this->creationDate = $date;
 	}
@@ -75,14 +75,14 @@ class BanEntry{
 		return $this->source;
 	}
 
-	public function setSource(string $source){
+	public function setSource(string $source) : void{
 		$this->source = $source;
 	}
 
 	/**
 	 * @return \DateTime|null
 	 */
-	public function getExpires(){
+	public function getExpires() : ?\DateTime{
 		return $this->expirationDate;
 	}
 
@@ -90,7 +90,7 @@ class BanEntry{
 	 * @param \DateTime|null $date
 	 * @throws \InvalidArgumentException
 	 */
-	public function setExpires(?\DateTime $date){
+	public function setExpires(?\DateTime $date) : void{
 		if($date !== null){
 			self::validateDate($date);
 		}
@@ -108,7 +108,7 @@ class BanEntry{
 		return $this->reason;
 	}
 
-	public function setReason(string $reason){
+	public function setReason(string $reason) : void{
 		$this->reason = $reason;
 	}
 
