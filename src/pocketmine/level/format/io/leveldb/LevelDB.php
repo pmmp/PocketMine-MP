@@ -46,7 +46,7 @@ use function file_exists;
 use function is_dir;
 use function mkdir;
 use function ord;
-use function pack;
+use function str_repeat;
 use function strlen;
 use function substr;
 use function unpack;
@@ -146,13 +146,8 @@ class LevelDB extends BaseLevelProvider{
 		/** @var SubChunk[] $subChunks */
 		$subChunks = [];
 
-		/** @var int[] $heightMap */
-		$heightMap = [];
 		/** @var string $biomeIds */
 		$biomeIds = "";
-
-		/** @var bool $lightPopulated */
-		$lightPopulated = true;
 
 		$chunkVersion = ord($this->db->get($index . self::TAG_VERSION));
 
@@ -179,20 +174,15 @@ class LevelDB extends BaseLevelProvider{
 							try{
 								$blocks = $binaryStream->get(4096);
 								$blockData = $binaryStream->get(2048);
+
 								if($chunkVersion < 4){
-									$blockSkyLight = $binaryStream->get(2048);
-									$blockLight = $binaryStream->get(2048);
-								}else{
-									//Mojang didn't bother changing the subchunk version when they stopped saving sky light -_-
-									$blockSkyLight = "";
-									$blockLight = "";
-									$lightPopulated = false;
+									$binaryStream->get(4096); //legacy light info, discard it
 								}
 							}catch(BinaryDataException $e){
 								throw new CorruptedChunkException($e->getMessage(), 0, $e);
 							}
 
-							$subChunks[$y] = new SubChunk($blocks, $blockData, $blockSkyLight, $blockLight);
+							$subChunks[$y] = new SubChunk($blocks, $blockData);
 							break;
 						default:
 							//TODO: set chunks read-only so the version on disk doesn't get overwritten
@@ -204,7 +194,7 @@ class LevelDB extends BaseLevelProvider{
 					$binaryStream->setBuffer($maps2d);
 
 					try{
-						$heightMap = array_values(unpack("v*", $binaryStream->get(512)));
+						$binaryStream->get(512); //heightmap, discard it
 						$biomeIds = $binaryStream->get(256);
 					}catch(BinaryDataException $e){
 						throw new CorruptedChunkException($e->getMessage(), 0, $e);
@@ -220,8 +210,7 @@ class LevelDB extends BaseLevelProvider{
 				try{
 					$fullIds = $binaryStream->get(32768);
 					$fullData = $binaryStream->get(16384);
-					$fullSkyLight = $binaryStream->get(16384);
-					$fullBlockLight = $binaryStream->get(16384);
+					$binaryStream->get(32768); //legacy light info, discard it
 				}catch(BinaryDataException $e){
 					throw new CorruptedChunkException($e->getMessage(), 0, $e);
 				}
@@ -239,23 +228,12 @@ class LevelDB extends BaseLevelProvider{
 						$data .= substr($fullData, $subOffset, 8);
 						$subOffset += 64;
 					}
-					$skyLight = "";
-					$subOffset = ($yy << 3);
-					for($i = 0; $i < 256; ++$i){
-						$skyLight .= substr($fullSkyLight, $subOffset, 8);
-						$subOffset += 64;
-					}
-					$blockLight = "";
-					$subOffset = ($yy << 3);
-					for($i = 0; $i < 256; ++$i){
-						$blockLight .= substr($fullBlockLight, $subOffset, 8);
-						$subOffset += 64;
-					}
-					$subChunks[$yy] = new SubChunk($ids, $data, $skyLight, $blockLight);
+
+					$subChunks[$yy] = new SubChunk($ids, $data);
 				}
 
 				try{
-					$heightMap = array_values(unpack("C*", $binaryStream->get(256)));
+					$binaryStream->get(256); //heightmap, discard it
 					$biomeIds = ChunkUtils::convertBiomeColors(array_values(unpack("N*", $binaryStream->get(1024))));
 				}catch(BinaryDataException $e){
 					throw new CorruptedChunkException($e->getMessage(), 0, $e);
@@ -307,15 +285,13 @@ class LevelDB extends BaseLevelProvider{
 			$subChunks,
 			$entities,
 			$tiles,
-			$biomeIds,
-			$heightMap
+			$biomeIds
 		);
 
 		//TODO: tile ticks, biome states (?)
 
-		$chunk->setGenerated(true);
-		$chunk->setPopulated(true);
-		$chunk->setLightPopulated($lightPopulated);
+		$chunk->setGenerated();
+		$chunk->setPopulated();
 
 		return $chunk;
 	}
@@ -338,7 +314,7 @@ class LevelDB extends BaseLevelProvider{
 			}
 		}
 
-		$this->db->put($index . self::TAG_DATA_2D, pack("v*", ...$chunk->getHeightMapArray()) . $chunk->getBiomeIdArray());
+		$this->db->put($index . self::TAG_DATA_2D, str_repeat("\x00", 512) . $chunk->getBiomeIdArray());
 
 		//TODO: use this properly
 		$this->db->put($index . self::TAG_STATE_FINALISATION, chr(self::FINALISATION_DONE));

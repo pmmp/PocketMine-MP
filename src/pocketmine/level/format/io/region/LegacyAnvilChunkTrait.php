@@ -33,6 +33,7 @@ use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
+use function array_fill;
 
 /**
  * Trait containing I/O methods for handling legacy Anvil-style chunks.
@@ -56,7 +57,7 @@ trait LegacyAnvilChunkTrait{
 		$nbt->setLong("LastUpdate", 0); //TODO
 		$nbt->setLong("InhabitedTime", 0); //TODO
 		$nbt->setByte("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
-		$nbt->setByte("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
+		$nbt->setByte("LightPopulated", 0);
 
 		$subChunks = [];
 		foreach($chunk->getSubChunks() as $y => $subChunk){
@@ -71,7 +72,7 @@ trait LegacyAnvilChunkTrait{
 		$nbt->setTag(new ListTag("Sections", $subChunks, NBT::TAG_Compound));
 
 		$nbt->setByteArray("Biomes", $chunk->getBiomeIdArray());
-		$nbt->setIntArray("HeightMap", $chunk->getHeightMapArray());
+		$nbt->setIntArray("HeightMap", array_fill(0, 256, 0));
 
 		$nbt->setTag(new ListTag("Entities", $chunk->getNBTentities(), NBT::TAG_Compound));
 		$nbt->setTag(new ListTag("TileEntities", $chunk->getNBTtiles(), NBT::TAG_Compound));
@@ -123,10 +124,8 @@ trait LegacyAnvilChunkTrait{
 			$subChunks,
 			$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
 			$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
-			$biomeIds,
-			$chunk->getIntArray("HeightMap", [])
+			$biomeIds
 		);
-		$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
 		$result->setGenerated();
 		return $result;

@@ -34,11 +34,8 @@ use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
-use function array_values;
-use function pack;
 use function str_repeat;
 use function substr;
-use function unpack;
 
 class McRegion extends RegionLevelProvider{
 
@@ -54,12 +51,10 @@ class McRegion extends RegionLevelProvider{
 
 		$nbt->setLong("LastUpdate", 0); //TODO
 		$nbt->setByte("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
-		$nbt->setByte("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
+		$nbt->setByte("LightPopulated", 0);
 
 		$ids = "";
 		$data = "";
-		$skyLight = "";
-		$blockLight = "";
 		$subChunks = $chunk->getSubChunks();
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
@@ -67,19 +62,17 @@ class McRegion extends RegionLevelProvider{
 					$subChunk = $subChunks[$y];
 					$ids .= substr($subChunk->getBlockIdArray(), ($x << 8) | ($z << 4), 16);
 					$data .= substr($subChunk->getBlockDataArray(), ($x << 7) | ($z << 3), 8);
-					$skyLight .= substr($subChunk->getBlockSkyLightArray(), ($x << 7) | ($z << 3), 8);
-					$blockLight .= substr($subChunk->getBlockLightArray(), ($x << 7) | ($z << 3), 8);
 				}
 			}
 		}
 
 		$nbt->setByteArray("Blocks", $ids);
 		$nbt->setByteArray("Data", $data);
-		$nbt->setByteArray("SkyLight", $skyLight);
-		$nbt->setByteArray("BlockLight", $blockLight);
+		$nbt->setByteArray("SkyLight", str_repeat("\x00", 16384));
+		$nbt->setByteArray("BlockLight", str_repeat("\x00", 16384));
 
 		$nbt->setByteArray("Biomes", $chunk->getBiomeIdArray()); //doesn't exist in regular McRegion, this is here for PocketMine-MP only
-		$nbt->setByteArray("HeightMap", pack("C*", ...$chunk->getHeightMapArray())); //this is ByteArray in McRegion, but IntArray in Anvil (due to raised build height)
+		$nbt->setByteArray("HeightMap", str_repeat("\x00", 256)); //this is ByteArray in McRegion, but IntArray in Anvil (due to raised build height)
 
 		$nbt->setTag(new ListTag("Entities", $chunk->getNBTentities(), NBT::TAG_Compound));
 		$nbt->setTag(new ListTag("TileEntities", $chunk->getNBTtiles(), NBT::TAG_Compound));
@@ -110,8 +103,6 @@ class McRegion extends RegionLevelProvider{
 		$subChunks = [];
 		$fullIds = $chunk->hasTag("Blocks", ByteArrayTag::class) ? $chunk->getByteArray("Blocks") : str_repeat("\x00", 32768);
 		$fullData = $chunk->hasTag("Data", ByteArrayTag::class) ? $chunk->getByteArray("Data") : str_repeat("\x00", 16384);
-		$fullSkyLight = $chunk->hasTag("SkyLight", ByteArrayTag::class) ? $chunk->getByteArray("SkyLight") : str_repeat("\xff", 16384);
-		$fullBlockLight = $chunk->hasTag("BlockLight", ByteArrayTag::class) ? $chunk->getByteArray("BlockLight") : str_repeat("\x00", 16384);
 
 		for($y = 0; $y < 8; ++$y){
 			$offset = ($y << 4);
@@ -126,19 +117,7 @@ class McRegion extends RegionLevelProvider{
 				$data .= substr($fullData, $offset, 8);
 				$offset += 64;
 			}
-			$skyLight = "";
-			$offset = ($y << 3);
-			for($i = 0; $i < 256; ++$i){
-				$skyLight .= substr($fullSkyLight, $offset, 8);
-				$offset += 64;
-			}
-			$blockLight = "";
-			$offset = ($y << 3);
-			for($i = 0; $i < 256; ++$i){
-				$blockLight .= substr($fullBlockLight, $offset, 8);
-				$offset += 64;
-			}
-			$subChunks[$y] = new SubChunk($ids, $data, $skyLight, $blockLight);
+			$subChunks[$y] = new SubChunk($ids, $data);
 		}
 
 		if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
@@ -149,23 +128,14 @@ class McRegion extends RegionLevelProvider{
 			$biomeIds = "";
 		}
 
-		$heightMap = [];
-		if($chunk->hasTag("HeightMap", ByteArrayTag::class)){
-			$heightMap = array_values(unpack("C*", $chunk->getByteArray("HeightMap")));
-		}elseif($chunk->hasTag("HeightMap", IntArrayTag::class)){
-			$heightMap = $chunk->getIntArray("HeightMap"); #blameshoghicp
-		}
-
 		$result = new Chunk(
 			$chunk->getInt("xPos"),
 			$chunk->getInt("zPos"),
 			$subChunks,
 			$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
 			$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
-			$biomeIds,
-			$heightMap
+			$biomeIds
 		);
-		$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
 		$result->setGenerated(true);
 		return $result;

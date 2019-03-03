@@ -27,6 +27,7 @@ use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
+use function str_repeat;
 
 class Anvil extends RegionLevelProvider{
 	use LegacyAnvilChunkTrait;
@@ -35,17 +36,16 @@ class Anvil extends RegionLevelProvider{
 		return new CompoundTag("", [
 			new ByteArrayTag("Blocks", ChunkUtils::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currently always XZY
 			new ByteArrayTag("Data", ChunkUtils::reorderNibbleArray($subChunk->getBlockDataArray())),
-			new ByteArrayTag("SkyLight", ChunkUtils::reorderNibbleArray($subChunk->getBlockSkyLightArray(), "\xff")),
-			new ByteArrayTag("BlockLight", ChunkUtils::reorderNibbleArray($subChunk->getBlockLightArray()))
+			new ByteArrayTag("SkyLight", str_repeat("\x00", 2048)),
+			new ByteArrayTag("BlockLight", str_repeat("\x00", 2048))
 		]);
 	}
 
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
 		return new SubChunk(
 			ChunkUtils::reorderByteArray($subChunk->getByteArray("Blocks")),
-			ChunkUtils::reorderNibbleArray($subChunk->getByteArray("Data")),
-			ChunkUtils::reorderNibbleArray($subChunk->getByteArray("SkyLight"), "\xff"),
-			ChunkUtils::reorderNibbleArray($subChunk->getByteArray("BlockLight"))
+			ChunkUtils::reorderNibbleArray($subChunk->getByteArray("Data"))
+			//ignore legacy light information
 		);
 	}
 

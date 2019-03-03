@@ -26,6 +26,7 @@ namespace pocketmine\level\format\io\region;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
+use function str_repeat;
 
 /**
  * This format is exactly the same as the PC Anvil format, with the only difference being that the stored data order
@@ -38,17 +39,15 @@ class PMAnvil extends RegionLevelProvider{
 		return new CompoundTag("", [
 			new ByteArrayTag("Blocks",     $subChunk->getBlockIdArray()),
 			new ByteArrayTag("Data",       $subChunk->getBlockDataArray()),
-			new ByteArrayTag("SkyLight",   $subChunk->getBlockSkyLightArray()),
-			new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray())
+			new ByteArrayTag("SkyLight",   str_repeat("\x00", 2048)),
+			new ByteArrayTag("BlockLight", str_repeat("\x00", 2048))
 		]);
 	}
 
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
 		return new SubChunk(
 			$subChunk->getByteArray("Blocks"),
-			$subChunk->getByteArray("Data"),
-			$subChunk->getByteArray("SkyLight"),
-			$subChunk->getByteArray("BlockLight")
+			$subChunk->getByteArray("Data")
 		);
 	}
 
