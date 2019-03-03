@@ -346,6 +346,9 @@ class LevelManager{
 			$level->doTick($currentTick);
 			$tickMs = (microtime(true) - $levelTime) * 1000;
 			$level->tickRateTime = $tickMs;
+			if($tickMs >= 50){
+				$this->server->getLogger()->debug(sprintf("World \"%s\" took too long to tick: %gms (%g ticks)", $level->getDisplayName(), $tickMs, round($tickMs / 50, 2)));
+			}
 		}
 
 		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
