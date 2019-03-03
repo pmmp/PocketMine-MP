@@ -99,7 +99,7 @@ class ItemFrame extends Flowable{
 	 * @return Item|null
 	 */
 	public function getFramedItem() : ?Item{
-		return clone $this->framedItem;
+		return $this->framedItem !== null ? clone $this->framedItem : null;
 	}
 
 	/**
