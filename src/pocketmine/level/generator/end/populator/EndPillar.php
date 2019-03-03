@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\end\populator;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\utils\Random;
@@ -57,13 +56,14 @@ class EndPillar extends Populator{
 				$x = $random->nextRange($chunkX * 16, $chunkX * 16 + 15);
 				$z = $random->nextRange($chunkZ * 16, $chunkZ * 16 + 15);
 				$y = $this->getHighestWorkableBlock($x, $z);
-				if($this->level->getBlockAt($x, $y, $z)->getId() == Block::END_STONE){
+				if($this->level->getBlockIdAt($x, $y, $z) == Block::END_STONE){
 					$height = mt_rand(28, 50);
 					for($ny = $y; $ny < $y + $height; $ny++){
 						for($r = 0.5; $r < 5; $r += 0.5){
 							$nd = 360 / (2 * pi() * $r);
 							for($d = 0; $d < 360; $d += $nd){
-								$level->setBlockAt(intval($x + (cos(deg2rad($d)) * $r)), $ny, intval($z + (sin(deg2rad($d)) * $r)), BlockFactory::get(Block::OBSIDIAN));
+								$level->setBlockIdAt(intval($x + (cos(deg2rad($d)) * $r)), $ny, intval($z + (sin(deg2rad($d)) * $r)), Block::OBSIDIAN);
+								$level->setBlockDataAt(intval($x + (cos(deg2rad($d)) * $r)), $ny, intval($z + (sin(deg2rad($d)) * $r)), 0);
 							}
 						}
 					}
@@ -75,7 +75,7 @@ class EndPillar extends Populator{
 
 	private function getHighestWorkableBlock($x, $z){
 		for($y = 127; $y >= 0; --$y){
-			$b = $this->level->getBlockAt($x, $y, $z)->getId();
+			$b = $this->level->getBlockIdAt($x, $y, $z);
 			if($b == Block::END_STONE){
 				break;
 			}

@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction;
 
 use pocketmine\event\inventory\InventoryTransactionEvent;
-use pocketmine\inventory\Inventory;
-use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
+use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use function assert;

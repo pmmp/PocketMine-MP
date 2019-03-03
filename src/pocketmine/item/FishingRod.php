@@ -61,9 +61,8 @@ class FishingRod extends Tool{
 			$hook = $player->getFishingHook();
 			$hook->handleHookRetraction();
 			$this->applyDamage(1);
-
-			return true;
 		}
-		return false;
+
+		return true;
 	}
 }

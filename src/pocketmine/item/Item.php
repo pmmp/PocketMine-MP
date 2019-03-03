@@ -826,6 +826,18 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Called when player interacted with an entity and entity didnt make anything
+	 *
+	 * @param Player $player
+	 * @param Entity $entity
+	 *
+	 * @return bool
+	 */
+	public function onInteractWithEntity(Player $player, Entity $entity) : bool{
+		return false;
+	}
+
+	/**
 	 * Returns the number of ticks a player must wait before activating this item again.
 	 *
 	 * @return int

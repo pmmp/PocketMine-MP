@@ -25,9 +25,9 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
-use pocketmine\IPlayer;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Server;
+use pocketmine\IPlayer;
 
 /**
  * Called when a player's data is about to be saved to disk.

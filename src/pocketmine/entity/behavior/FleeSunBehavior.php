@@ -26,7 +26,6 @@ namespace pocketmine\entity\behavior;
 
 use pocketmine\block\Block;
 use pocketmine\block\Water;
-use pocketmine\entity\Entity;
 use pocketmine\entity\Mob;
 use pocketmine\math\Vector3;
 
@@ -46,7 +45,7 @@ class FleeSunBehavior extends Behavior{
 
 	public function canStart() : bool{
 		if($this->mob->isOnFire() and $this->mob->level->isDayTime() and $this->mob->level->canSeeSky($this->mob->floor())){
-			$this->shelter = $this->findPossibleShelter($this->mob);
+			$this->shelter = $this->findPossibleShelter();
 
 			return $this->shelter !== null;
 		}
@@ -67,7 +66,7 @@ class FleeSunBehavior extends Behavior{
 		$this->mob->getNavigator()->clearPath();
 	}
 
-	public function findPossibleShelter(Entity $entity) : ?Block{
+	public function findPossibleShelter() : ?Block{
 		for($i = 0; $i < 10; $i++){
 			$block = $this->mob->level->getBlock($this->mob->add($this->random->nextBoundedInt(20) - 10, $this->random->nextBoundedInt(6) - 3, $this->random->nextBoundedInt(20) - 10));
 			$canSeeSky = $this->mob->level->canSeeSky($block);

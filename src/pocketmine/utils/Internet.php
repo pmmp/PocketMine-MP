@@ -43,8 +43,6 @@ use function strtolower;
 use function substr;
 use function trim;
 use const AF_INET;
-use const CURLINFO_HEADER_SIZE;
-use const CURLINFO_HTTP_CODE;
 use const CURLOPT_AUTOREFERER;
 use const CURLOPT_CONNECTTIMEOUT_MS;
 use const CURLOPT_FOLLOWLOCATION;
@@ -58,6 +56,8 @@ use const CURLOPT_RETURNTRANSFER;
 use const CURLOPT_SSL_VERIFYHOST;
 use const CURLOPT_SSL_VERIFYPEER;
 use const CURLOPT_TIMEOUT_MS;
+use const CURLINFO_HEADER_SIZE;
+use const CURLINFO_HTTP_CODE;
 use const SOCK_DGRAM;
 use const SOL_UDP;
 

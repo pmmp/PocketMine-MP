@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\form;
 
-use pocketmine\form\FormValidationException;
 use pocketmine\Player;
 use pocketmine\utils\Utils;
 

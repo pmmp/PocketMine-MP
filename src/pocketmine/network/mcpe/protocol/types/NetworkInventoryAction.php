@@ -23,10 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\inventory\AnvilInventory;
+use pocketmine\inventory\BeaconInventory;
+use pocketmine\inventory\EnchantInventory;
+use pocketmine\inventory\FakeInventory;
+use pocketmine\inventory\TradeInventory;
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
-use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\inventory\transaction\action\EnchantAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
+use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\Player;
@@ -197,7 +203,8 @@ class NetworkInventoryAction{
 				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
 			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
-				//These types need special handling.
+				$window = $player->findWindow(FakeInventory::class);
+
 				switch($this->windowId){
 					case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
 					case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
@@ -206,6 +213,80 @@ class NetworkInventoryAction{
 					case self::SOURCE_TYPE_CRAFTING_RESULT:
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						return null;
+					case self::SOURCE_TYPE_ENCHANT_INPUT:
+						if($window instanceof EnchantInventory){
+							return new EnchantAction($window, 0, $this->oldItem, $this->newItem);
+						}else{
+							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+						}
+					case self::SOURCE_TYPE_ENCHANT_MATERIAL:
+						if($window instanceof EnchantInventory){
+							return new EnchantAction($window, 1, $this->oldItem, $this->newItem);
+						}else{
+							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+						}
+					case self::SOURCE_TYPE_ENCHANT_OUTPUT:
+						if($window instanceof EnchantInventory){
+							return new EnchantAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+						}else{
+							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+						}
+					case self::SOURCE_TYPE_ANVIL_INPUT:
+						if($window instanceof AnvilInventory){
+							if($window->isResultOutput()){
+								return null;
+							}
+							return new SlotChangeAction($window, 0, $this->oldItem, $this->newItem);
+						}else{
+							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+						}
+					case self::SOURCE_TYPE_ANVIL_MATERIAL:
+						if($window instanceof AnvilInventory){
+							if($window->isResultOutput()){
+								return null;
+							}
+							return new SlotChangeAction($window, 1, $this->oldItem, $this->newItem);
+						}else{
+							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+						}
+					case self::SOURCE_TYPE_ANVIL_RESULT:
+						if($window instanceof AnvilInventory){
+							if($window->onResult($this->oldItem)){
+								$window->setItem(2, $this->oldItem, false);
+								return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
+							}else{
+								return null;
+							}
+						}else{
+							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+						}
+					case self::SOURCE_TYPE_TRADING_INPUT_1:
+					case self::SOURCE_TYPE_TRADING_INPUT_2:
+						if($window instanceof TradeInventory){
+							return new SlotChangeAction($window, $this->windowId === self::SOURCE_TYPE_TRADING_INPUT_1 ? 0 : 1, $this->oldItem, $this->newItem);
+						}else{
+							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+						}
+					case self::SOURCE_TYPE_TRADING_USE_INPUTS:
+						return new SlotChangeAction($window, $window->first($this->newItem, true), $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_TRADING_OUTPUT:
+						if($window instanceof TradeInventory){
+							if($window->onResult($this->oldItem)){
+								$window->setItem(2, $this->oldItem, true);
+
+								return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
+							}else{
+								return null;
+							}
+						}else{
+							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+						}
+					case self::SOURCE_TYPE_BEACON:
+						if($window instanceof BeaconInventory){
+							return new SlotChangeAction($window, 0, $this->oldItem, $this->newItem);
+						}else{
+							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+						}
 				}
 
 				//TODO: more stuff

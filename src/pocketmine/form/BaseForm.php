@@ -26,8 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\form;
 
-use pocketmine\form\Form;
-
 /**
  * Base class for a custom form. Forms are serialized to JSON data to be sent to clients.
  */

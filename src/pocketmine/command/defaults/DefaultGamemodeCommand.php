@@ -29,8 +29,8 @@ use pocketmine\lang\TranslationContainer;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
-use function count;
 use pocketmine\Server;
+use function count;
 
 class DefaultGamemodeCommand extends VanillaCommand{
 

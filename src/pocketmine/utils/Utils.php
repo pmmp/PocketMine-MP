@@ -89,9 +89,9 @@ use function sys_get_temp_dir;
 use function trim;
 use function xdebug_get_function_stack;
 use const PHP_EOL;
+use const PHP_MAXPATHLEN;
 use const PHP_INT_MAX;
 use const PHP_INT_SIZE;
-use const PHP_MAXPATHLEN;
 use const STR_PAD_LEFT;
 use const STR_PAD_RIGHT;
 

@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\metadata;
 
-use pocketmine\IPlayer;
 use pocketmine\plugin\Plugin;
+use pocketmine\IPlayer;
 use function strtolower;
 
 class PlayerMetadataStore extends MetadataStore{

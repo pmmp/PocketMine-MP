@@ -36,8 +36,8 @@ use function strlen;
 use function strpos;
 use function strtolower;
 use function substr;
-use const INI_SCANNER_RAW;
 use const SCANDIR_SORT_NONE;
+use const INI_SCANNER_RAW;
 
 class BaseLang{
 

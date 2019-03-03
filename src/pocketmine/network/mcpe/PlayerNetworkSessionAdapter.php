@@ -24,7 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 
+use pocketmine\entity\passive\AbstractHorse;
 use pocketmine\event\server\DataPacketReceiveEvent;
+use pocketmine\maps\MapData;
+use pocketmine\maps\MapManager;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
@@ -40,9 +43,6 @@ use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
-use pocketmine\network\mcpe\protocol\InteractPacket;
-use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\LoginPacket;
@@ -53,17 +53,22 @@ use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
-use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
+use pocketmine\network\mcpe\protocol\RiderJumpPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
+use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\InteractPacket;
+use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
+use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -201,7 +206,25 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handlePlayerInput(PlayerInputPacket $packet) : bool{
-		return false; //TODO
+		if($this->player->isRiding()){
+			$entity = $this->player->getRidingEntity();
+			if($entity !== null and $entity->isAlive()){
+				// TODO: Remove this, this is not right
+				$entity->onRidingUpdate($this->player, $packet->motionX, $packet->motionY, $packet->jumping, $packet->sneaking);
+			}
+		}
+		return true;
+	}
+
+	public function handleRiderJump(RiderJumpPacket $packet) : bool{
+		if($this->player->isRiding()){
+			$horse = $this->player->getRidingEntity();
+			if($horse instanceof AbstractHorse){
+				// This is useless for now, only may usable for plugins
+				$horse->setJumpPower($packet->jumpStrength);
+			}
+		}
+		return false;
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
@@ -213,7 +236,12 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
-		return false; //TODO
+		$data = MapManager::getMapDataById($packet->mapId);
+		if($data instanceof MapData){
+			$this->player->sendDataPacket($data->getDataPacket());
+			return true;
+		}
+		return false;
 	}
 
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
@@ -235,7 +263,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
-		return $this->player->chat($packet->command);
+		return $this->player->handleCommandRequest($packet);
 	}
 
 	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
@@ -299,5 +327,19 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
 		return $this->player->handleLevelSoundEvent($packet);
+	}
+
+	public function handleSetEntityMotion(SetEntityMotionPacket $packet) : bool{
+		// TODO: remove this
+		$target = $this->player->getServer()->findEntity($packet->entityRuntimeId);
+		if($target !== null){
+			if($this->player->isRiding() and $this->player->getRidingEntity() !== null and $this->player->getRidingEntity()->getId() === $target->getId()){
+				$target->setMotion($packet->motion);
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
