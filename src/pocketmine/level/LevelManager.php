@@ -401,7 +401,8 @@ class LevelManager{
 			$this->server->getLogger()->debug("[Auto Save] Saving worlds...");
 			$start = microtime(true);
 			$this->doAutoSave();
-			$this->server->getLogger()->debug("[Auto Save] Save completed in " . round(microtime(true) - $start, 3) . "s");
+			$time = microtime(true) - $start;
+			$this->server->getLogger()->debug("[Auto Save] Save completed in " . ($time >= 1 ? round($time, 3) . "s" : round($time * 1000) . "ms"));
 		}
 	}
 
