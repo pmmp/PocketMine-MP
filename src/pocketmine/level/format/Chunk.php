@@ -107,7 +107,7 @@ class Chunk{
 	 * @param string              $biomeIds
 	 * @param int[]               $heightMap
 	 */
-	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = []){
+	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], ?array $entities = null, ?array $tiles = null, string $biomeIds = "", array $heightMap = []){
 		$this->x = $chunkX;
 		$this->z = $chunkZ;
 
@@ -875,7 +875,7 @@ class Chunk{
 			}
 		}
 
-		$chunk = new Chunk($x, $z, $subChunks, [], [], $biomeIds, $heightMap);
+		$chunk = new Chunk($x, $z, $subChunks, null, null, $biomeIds, $heightMap);
 		$chunk->setGenerated($terrainGenerated);
 		$chunk->setPopulated($terrainPopulated);
 		$chunk->setLightPopulated($lightPopulated);
