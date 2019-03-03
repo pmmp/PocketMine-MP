@@ -30,7 +30,6 @@ use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Mob;
 use pocketmine\entity\NPC;
 use pocketmine\inventory\TradeInventory;
-use pocketmine\inventory\TradeItems;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -109,7 +108,7 @@ class Villager extends Mob implements NPC, Ageable{
 
 	public function updateTradeItems() : void{
 		$this->offers = new CompoundTag("Offers", [
-			new ListTag("Recipes", TradeItems::getItemsForVillager($this))
+			new ListTag("Recipes", []) // TODO
 		]);
 	}
 
@@ -123,7 +122,7 @@ class Villager extends Mob implements NPC, Ageable{
 	}
 
 	public function setTradeTier(int $tradeTier) : void{
-		$items = TradeItems::getItems()[$this->getProfession()][$this->getCareer()] ?? [];
+		$items = []; // TODO
 		if(count($items) < ($tradeTier + 1)){
 			throw new \InvalidArgumentException("Trade tier $tradeTier is not available");
 		}
