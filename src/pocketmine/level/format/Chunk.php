@@ -620,6 +620,7 @@ class Chunk{
 						try{
 							$entity = EntityFactory::createFromData($level, $nbt);
 							if(!($entity instanceof Entity)){
+								$level->getServer()->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type " . $nbt->getString("id", "<unknown>", true));
 								$changed = true;
 								continue;
 							}
@@ -638,6 +639,7 @@ class Chunk{
 						if(($tile = TileFactory::createFromData($level, $nbt)) !== null){
 							$level->addTile($tile);
 						}else{
+							$level->getServer()->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>", true));
 							$changed = true;
 							continue;
 						}
