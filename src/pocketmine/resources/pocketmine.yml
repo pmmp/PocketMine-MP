@@ -109,13 +109,6 @@ player:
 level-settings:
   #The default format that levels will use when created
   default-format: pmanvil
-  #Automatically change levels tick rate to maintain 20 ticks per second
-  auto-tick-rate: true
-  auto-tick-rate-limit: 20
-  #Sets the base tick rate (1 = 20 ticks per second, 2 = 10 ticks per second, etc.)
-  base-tick-rate: 1
-  #Tick all players each tick even when other settings disallow this.
-  always-tick-players: false
 
 chunk-sending:
   #To change server normal render distance, change view-distance in server.properties.
