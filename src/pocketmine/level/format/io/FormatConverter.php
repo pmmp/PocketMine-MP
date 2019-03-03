@@ -132,7 +132,7 @@ class FormatConverter{
 		$start = microtime(true);
 		$thisRound = $start;
 		static $reportInterval = 256;
-		foreach($this->oldProvider->getAllChunks(true) as $chunk){
+		foreach($this->oldProvider->getAllChunks(true, $this->logger) as $chunk){
 			$new->saveChunk($chunk);
 			$counter++;
 			if(($counter % $reportInterval) === 0){
