@@ -1,5 +1,6 @@
 players/*
 worlds/*
+world_conversion_backups/*
 plugin_data/*
 plugins/*
 bin*/*

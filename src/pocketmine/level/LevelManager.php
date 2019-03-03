@@ -28,8 +28,10 @@ use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
 use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\level\format\io\exception\UnsupportedLevelFormatException;
+use pocketmine\level\format\io\FormatConverter;
 use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\format\io\LevelProviderManager;
+use pocketmine\level\format\io\WritableLevelProvider;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\normal\Normal;
 use pocketmine\Server;
@@ -184,12 +186,13 @@ class LevelManager{
 	 * Loads a level from the data directory
 	 *
 	 * @param string $name
+	 * @param bool   $autoUpgrade Converts worlds to the default format if the world's format is not writable / deprecated
 	 *
 	 * @return bool
 	 *
 	 * @throws LevelException
 	 */
-	public function loadLevel(string $name) : bool{
+	public function loadLevel(string $name, bool $autoUpgrade = false) : bool{
 		if(trim($name) === ""){
 			throw new LevelException("Invalid empty world name");
 		}
@@ -213,9 +216,25 @@ class LevelManager{
 		}
 		$providerClass = array_shift($providers);
 
+		/**
+		 * @var LevelProvider
+		 * @see LevelProvider::__construct()
+		 */
+		$provider = new $providerClass($path);
+		if(!($provider instanceof WritableLevelProvider)){
+			if(!$autoUpgrade){
+				throw new LevelException("World \"$name\" is in an unsupported format and needs to be upgraded");
+			}
+			$this->server->getLogger()->notice("Upgrading world \"$name\" to new format. This may take a while.");
+
+			$converter = new FormatConverter($provider, LevelProviderManager::getDefault(), $this->server->getDataPath() . "world_conversion_backups", $this->server->getLogger());
+			$provider = $converter->execute();
+
+			$this->server->getLogger()->notice("Upgraded world \"$name\" to new format successfully. Backed up pre-conversion world at " . $converter->getBackupPath());
+		}
+
 		try{
-			/** @see LevelProvider::__construct() */
-			$level = new Level($this->server, $name, new $providerClass($path));
+			$level = new Level($this->server, $name, $provider);
 		}catch(UnsupportedLevelFormatException $e){
 			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, $e->getMessage()]));
 			return false;
@@ -253,10 +272,10 @@ class LevelManager{
 		$providerClass = LevelProviderManager::getDefault();
 
 		$path = $this->server->getDataPath() . "worlds/" . $name . "/";
-		/** @var LevelProvider $providerClass */
+		/** @var WritableLevelProvider $providerClass */
 		$providerClass::generate($path, $name, $seed, $generator, $options);
 
-		/** @see LevelProvider::__construct() */
+		/** @see WritableLevelProvider::__construct() */
 		$level = new Level($this->server, $name, new $providerClass($path));
 		$this->levels[$level->getId()] = $level;
 

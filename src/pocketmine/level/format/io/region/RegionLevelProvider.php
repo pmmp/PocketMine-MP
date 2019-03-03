@@ -222,7 +222,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 		);
 	}
 
-	public function getAllChunks() : \Generator{
+	public function getAllChunks(bool $skipCorrupted = false, ?\Logger $logger = null) : \Generator{
 		$iterator = $this->createRegionIterator();
 
 		foreach($iterator as $region){
@@ -231,9 +231,18 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 
 			for($chunkX = $rX; $chunkX < $rX + 32; ++$chunkX){
 				for($chunkZ = $rZ; $chunkZ < $rZ + 32; ++$chunkZ){
-					$chunk = $this->loadChunk($chunkX, $chunkZ);
-					if($chunk !== null){
-						yield $chunk;
+					try{
+						$chunk = $this->loadChunk($chunkX, $chunkZ);
+						if($chunk !== null){
+							yield $chunk;
+						}
+					}catch(CorruptedChunkException $e){
+						if(!$skipCorrupted){
+							throw $e;
+						}
+						if($logger !== null){
+							$logger->error("Skipped corrupted chunk $chunkX $chunkZ (" . $e->getMessage() . ")");
+						}
 					}
 				}
 			}

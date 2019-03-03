@@ -24,12 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io\region;
 
 use pocketmine\level\format\io\ChunkUtils;
+use pocketmine\level\format\io\WritableLevelProvider;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use function str_repeat;
 
-class Anvil extends RegionLevelProvider{
+class Anvil extends RegionLevelProvider implements WritableLevelProvider{
 	use LegacyAnvilChunkTrait;
 
 	protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag{

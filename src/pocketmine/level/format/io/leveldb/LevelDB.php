@@ -31,6 +31,7 @@ use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\format\io\exception\UnsupportedLevelFormatException;
 use pocketmine\level\format\io\LevelData;
+use pocketmine\level\format\io\WritableLevelProvider;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\Generator;
 use pocketmine\nbt\LittleEndianNbtSerializer;
@@ -54,7 +55,7 @@ use function substr;
 use function unpack;
 use const LEVELDB_ZLIB_RAW_COMPRESSION;
 
-class LevelDB extends BaseLevelProvider{
+class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 
 	//According to Tomasso, these aren't supposed to be readable anymore. Thankfully he didn't change the readable ones...
 	protected const TAG_DATA_2D = "\x2d";
@@ -371,13 +372,22 @@ class LevelDB extends BaseLevelProvider{
 		$this->db->close();
 	}
 
-	public function getAllChunks() : \Generator{
+	public function getAllChunks(bool $skipCorrupted = false, ?\Logger $logger = null) : \Generator{
 		foreach($this->db->getIterator() as $key => $_){
 			if(strlen($key) === 9 and substr($key, -1) === self::TAG_VERSION){
 				$chunkX = Binary::readLInt(substr($key, 0, 4));
 				$chunkZ = Binary::readLInt(substr($key, 4, 4));
-				if(($chunk = $this->loadChunk($chunkX, $chunkZ)) !== null){
-					yield $chunk;
+				try{
+					if(($chunk = $this->loadChunk($chunkX, $chunkZ)) !== null){
+						yield $chunk;
+					}
+				}catch(CorruptedChunkException $e){
+					if(!$skipCorrupted){
+						throw $e;
+					}
+					if($logger !== null){
+						$logger->error("Skipped corrupted chunk $chunkX $chunkZ (" . $e->getMessage() . ")");
+					}
 				}
 			}
 		}

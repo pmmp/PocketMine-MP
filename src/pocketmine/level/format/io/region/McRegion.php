@@ -26,6 +26,7 @@ namespace pocketmine\level\format\io\region;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
+use pocketmine\level\format\io\WritableLevelProvider;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NBT;
@@ -37,7 +38,7 @@ use pocketmine\nbt\tag\ListTag;
 use function str_repeat;
 use function substr;
 
-class McRegion extends RegionLevelProvider{
+class McRegion extends RegionLevelProvider implements WritableLevelProvider{
 
 	/**
 	 * @param Chunk $chunk

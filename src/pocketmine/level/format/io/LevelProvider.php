@@ -57,24 +57,6 @@ interface LevelProvider{
 	public static function isValid(string $path) : bool;
 
 	/**
-	 * Generate the needed files in the path given
-	 *
-	 * @param string  $path
-	 * @param string  $name
-	 * @param int     $seed
-	 * @param string  $generator
-	 * @param array[] $options
-	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void;
-
-	/**
-	 * Saves a chunk (usually to disk).
-	 *
-	 * @param Chunk $chunk
-	 */
-	public function saveChunk(Chunk $chunk) : void;
-
-	/**
 	 * Loads a chunk (usually from disk storage) and returns it. If the chunk does not exist, null is returned.
 	 *
 	 * @param int $chunkX
@@ -107,9 +89,14 @@ interface LevelProvider{
 	/**
 	 * Returns a generator which yields all the chunks in this level.
 	 *
+	 * @param bool         $skipCorrupted
+	 *
+	 * @param \Logger|null $logger
+	 *
 	 * @return \Generator|Chunk[]
+	 * @throws CorruptedChunkException
 	 */
-	public function getAllChunks() : \Generator;
+	public function getAllChunks(bool $skipCorrupted = false, ?\Logger $logger = null) : \Generator;
 
 	/**
 	 * Returns the number of chunks in the provider. Used for world conversion time estimations.

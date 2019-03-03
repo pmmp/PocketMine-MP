@@ -51,7 +51,7 @@ use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\EmptySubChunk;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
-use pocketmine\level\format\io\LevelProvider;
+use pocketmine\level\format\io\WritableLevelProvider;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\generator\GeneratorRegisterTask;
@@ -159,7 +159,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var int */
 	private $levelId;
 
-	/** @var LevelProvider */
+	/** @var WritableLevelProvider */
 	private $provider;
 	/** @var int */
 	private $providerGarbageCollectionTicker = 0;
@@ -347,11 +347,11 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * Init the default level data
 	 *
-	 * @param Server        $server
-	 * @param string        $name
-	 * @param LevelProvider $provider
+	 * @param Server                $server
+	 * @param string                $name
+	 * @param WritableLevelProvider $provider
 	 */
-	public function __construct(Server $server, string $name, LevelProvider $provider){
+	public function __construct(Server $server, string $name, WritableLevelProvider $provider){
 		$this->levelId = static::$levelIdCounter++;
 		$this->blockMetadata = new BlockMetadataStore($this);
 		$this->server = $server;
@@ -426,7 +426,7 @@ class Level implements ChunkManager, Metadatable{
 		return $this->server;
 	}
 
-	final public function getProvider() : LevelProvider{
+	final public function getProvider() : WritableLevelProvider{
 		return $this->provider;
 	}
 

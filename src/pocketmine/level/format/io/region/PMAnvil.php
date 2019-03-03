@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\region;
 
+use pocketmine\level\format\io\WritableLevelProvider;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -32,7 +33,7 @@ use function str_repeat;
  * This format is exactly the same as the PC Anvil format, with the only difference being that the stored data order
  * is XZY instead of YZX for more performance loading and saving worlds.
  */
-class PMAnvil extends RegionLevelProvider{
+class PMAnvil extends RegionLevelProvider implements WritableLevelProvider{
 	use LegacyAnvilChunkTrait;
 
 	protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag{

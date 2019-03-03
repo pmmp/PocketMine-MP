@@ -49,6 +49,7 @@ use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\TextContainer;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\format\io\LevelProviderManager;
+use pocketmine\level\format\io\WritableLevelProvider;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\generator\normal\Normal;
@@ -118,6 +119,7 @@ use function getopt;
 use function implode;
 use function ini_get;
 use function ini_set;
+use function is_a;
 use function is_array;
 use function is_bool;
 use function is_string;
@@ -1244,7 +1246,10 @@ class Server{
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
 			LevelProviderManager::init();
-			if(($format = LevelProviderManager::getProviderByName($formatName = (string) $this->getProperty("level-settings.default-format"))) !== null){
+			if(
+				($format = LevelProviderManager::getProviderByName($formatName = (string) $this->getProperty("level-settings.default-format"))) !== null and
+				is_a($format, WritableLevelProvider::class, true)
+			){
 				LevelProviderManager::setDefault($format);
 			}elseif($formatName !== ""){
 				$this->logger->warning($this->language->translateString("pocketmine.level.badDefaultFormat", [$formatName]));
@@ -1275,7 +1280,7 @@ class Server{
 				}elseif(!is_array($options)){
 					continue;
 				}
-				if(!$this->levelManager->loadLevel($name)){
+				if(!$this->levelManager->loadLevel($name, true)){
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
 						$generator = GeneratorManager::getGenerator(array_shift($generatorOptions));
@@ -1297,7 +1302,7 @@ class Server{
 					$default = "world";
 					$this->setConfigString("level-name", "world");
 				}
-				if(!$this->levelManager->loadLevel($default)){
+				if(!$this->levelManager->loadLevel($default, true)){
 					$this->levelManager->generateLevel(
 						$default,
 						Generator::convertSeed($this->getConfigString("level-seed")),
