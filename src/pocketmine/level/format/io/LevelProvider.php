@@ -111,4 +111,10 @@ interface LevelProvider{
 	 */
 	public function getAllChunks() : \Generator;
 
+	/**
+	 * Returns the number of chunks in the provider. Used for world conversion time estimations.
+	 *
+	 * @return int
+	 */
+	public function calculateChunkCount() : int;
 }

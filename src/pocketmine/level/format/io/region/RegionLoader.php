@@ -289,4 +289,14 @@ class RegionLoader{
 	public function getFilePath() : string{
 		return $this->filePath;
 	}
+
+	public function calculateChunkCount() : int{
+		$count = 0;
+		for($i = 0; $i < 1024; ++$i){
+			if($this->isChunkGenerated($i)){
+				$count++;
+			}
+		}
+		return $count;
+	}
 }

@@ -373,4 +373,14 @@ class LevelDB extends BaseLevelProvider{
 			}
 		}
 	}
+
+	public function calculateChunkCount() : int{
+		$count = 0;
+		foreach($this->db->getIterator() as $key => $_){
+			if(strlen($key) === 9 and substr($key, -1) === self::TAG_VERSION){
+				$count++;
+			}
+		}
+		return $count;
+	}
 }
