@@ -40,8 +40,6 @@ use function count;
 use function strlen;
 
 class NetworkBinaryStream extends BinaryStream{
-	/** @var NetworkLittleEndianNBTStream */
-	private static $nbtSerializer = null;
 
 	public function getString() : string{
 		return $this->get($this->getUnsignedVarInt());
