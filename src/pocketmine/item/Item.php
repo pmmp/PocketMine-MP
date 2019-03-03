@@ -61,32 +61,6 @@ class Item implements ItemIds, \JsonSerializable{
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
 
-
-	/** @var LittleEndianNbtSerializer */
-	private static $cachedParser = null;
-
-	/**
-	 * @param string $tag
-	 *
-	 * @return CompoundTag
-	 * @throws NbtDataException
-	 */
-	private static function parseCompoundTag(string $tag) : CompoundTag{
-		if(self::$cachedParser === null){
-			self::$cachedParser = new LittleEndianNbtSerializer();
-		}
-
-		return self::$cachedParser->read($tag);
-	}
-
-	private static function writeCompoundTag(CompoundTag $tag) : string{
-		if(self::$cachedParser === null){
-			self::$cachedParser = new LittleEndianNbtSerializer();
-		}
-
-		return self::$cachedParser->write($tag);
-	}
-
 	/**
 	 * Returns a new Item instance with the specified ID, damage, count and NBT.
 	 *
@@ -841,7 +815,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:" . base64_encode(self::writeCompoundTag($this->nbt)) : "");
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:" . base64_encode((new LittleEndianNbtSerializer())->write($this->nbt)) : "");
 	}
 
 	/**
@@ -863,7 +837,7 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		if($this->hasNamedTag()){
-			$data["nbt_b64"] = base64_encode(self::writeCompoundTag($this->getNamedTag()));
+			$data["nbt_b64"] = base64_encode((new LittleEndianNbtSerializer())->write($this->getNamedTag()));
 		}
 
 		return $data;
@@ -875,6 +849,8 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @param array $data
 	 *
 	 * @return Item
+	 * @throws NbtDataException
+	 * @throws \InvalidArgumentException
 	 */
 	final public static function jsonDeserialize(array $data) : Item{
 		$nbt = "";
@@ -888,7 +864,7 @@ class Item implements ItemIds, \JsonSerializable{
 			$nbt = base64_decode($data["nbt_b64"], true);
 		}
 		return ItemFactory::get(
-			(int) $data["id"], (int) ($data["damage"] ?? 0), (int) ($data["count"] ?? 1), $nbt !== "" ? self::parseCompoundTag($nbt) : null
+			(int) $data["id"], (int) ($data["damage"] ?? 0), (int) ($data["count"] ?? 1), $nbt !== "" ? (new LittleEndianNbtSerializer())->read($nbt) : null
 		);
 	}
 
