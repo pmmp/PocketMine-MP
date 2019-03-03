@@ -73,20 +73,8 @@ trait LegacyAnvilChunkTrait{
 		$nbt->setByteArray("Biomes", $chunk->getBiomeIdArray());
 		$nbt->setIntArray("HeightMap", $chunk->getHeightMapArray());
 
-		$entities = [];
-
-		foreach($chunk->getSavableEntities() as $entity){
-			$entities[] = $entity->saveNBT();
-		}
-
-		$nbt->setTag(new ListTag("Entities", $entities, NBT::TAG_Compound));
-
-		$tiles = [];
-		foreach($chunk->getTiles() as $tile){
-			$tiles[] = $tile->saveNBT();
-		}
-
-		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
+		$nbt->setTag(new ListTag("Entities", $chunk->getNBTentities(), NBT::TAG_Compound));
+		$nbt->setTag(new ListTag("TileEntities", $chunk->getNBTtiles(), NBT::TAG_Compound));
 
 		//TODO: TileTicks
 

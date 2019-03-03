@@ -38,6 +38,7 @@ use pocketmine\tile\TileFactory;
 use pocketmine\utils\BinaryStream;
 use function array_fill;
 use function array_filter;
+use function array_map;
 use function array_values;
 use function assert;
 use function chr;
@@ -588,6 +589,20 @@ class Chunk{
 		foreach($this->getTiles() as $tile){
 			$tile->close();
 		}
+	}
+
+	/**
+	 * @return CompoundTag[]
+	 */
+	public function getNBTtiles() : array{
+		return $this->NBTtiles ?? array_map(function(Tile $tile) : CompoundTag{ return $tile->saveNBT(); }, $this->tiles);
+	}
+
+	/**
+	 * @return CompoundTag[]
+	 */
+	public function getNBTentities() : array{
+		return $this->NBTentities ?? array_map(function(Entity $entity) : CompoundTag{ return $entity->saveNBT(); }, $this->getSavableEntities());
 	}
 
 	/**

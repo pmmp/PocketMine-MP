@@ -343,19 +343,8 @@ class LevelDB extends BaseLevelProvider{
 		//TODO: use this properly
 		$this->db->put($index . self::TAG_STATE_FINALISATION, chr(self::FINALISATION_DONE));
 
-		/** @var CompoundTag[] $tiles */
-		$tiles = [];
-		foreach($chunk->getTiles() as $tile){
-			$tiles[] = $tile->saveNBT();
-		}
-		$this->writeTags($tiles, $index . self::TAG_BLOCK_ENTITY);
-
-		/** @var CompoundTag[] $entities */
-		$entities = [];
-		foreach($chunk->getSavableEntities() as $entity){
-			$entities[] = $entity->saveNBT();
-		}
-		$this->writeTags($entities, $index . self::TAG_ENTITY);
+		$this->writeTags($chunk->getNBTtiles(), $index . self::TAG_BLOCK_ENTITY);
+		$this->writeTags($chunk->getNBTentities(), $index . self::TAG_ENTITY);
 
 		$this->db->delete($index . self::TAG_DATA_2D_LEGACY);
 		$this->db->delete($index . self::TAG_LEGACY_TERRAIN);
