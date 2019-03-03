@@ -841,7 +841,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . self::writeCompoundTag($this->nbt) : "");
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:" . base64_encode(self::writeCompoundTag($this->nbt)) : "");
 	}
 
 	/**
