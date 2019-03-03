@@ -25,11 +25,12 @@ namespace pocketmine\level\format\io;
 
 use pocketmine\utils\Utils;
 use function basename;
+use function crc32;
 use function file_exists;
 use function floor;
-use function is_dir;
 use function microtime;
 use function mkdir;
+use function random_bytes;
 use function rename;
 use function round;
 use function rtrim;
@@ -52,15 +53,16 @@ class FormatConverter{
 		$this->oldProvider = $oldProvider;
 		Utils::testValidInstance($newProvider, WritableLevelProvider::class);
 		$this->newProvider = $newProvider;
-
-		$this->backupPath = $backupPath . DIRECTORY_SEPARATOR . basename($this->oldProvider->getPath());
-		if(!file_exists($backupPath)){
-			@mkdir($backupPath);
-		}elseif(!is_dir($backupPath)){
-			throw new \RuntimeException("Backup path $backupPath exists and is not a directory");
-		}
-
 		$this->logger = new \PrefixedLogger($logger, "World Converter - " . $this->oldProvider->getLevelData()->getName());
+
+		if(!file_exists($backupPath)){
+			@mkdir($backupPath, 0777, true);
+		}
+		$nextSuffix = "";
+		do{
+			$this->backupPath = $backupPath . DIRECTORY_SEPARATOR . basename($this->oldProvider->getPath()) . $nextSuffix;
+			$nextSuffix = "_" . crc32(random_bytes(4));
+		}while(file_exists($this->backupPath));
 	}
 
 	public function getBackupPath() : string{
