@@ -257,11 +257,7 @@ class Level implements ChunkManager, Metadatable{
 	public $timings;
 
 	/** @var int */
-	private $tickRate;
-	/** @var int */
 	public $tickRateTime = 0;
-	/** @var int */
-	public $tickRateCounter = 0;
 
 	/** @var bool */
 	private $doingTick = false;
@@ -401,19 +397,10 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings = new LevelTimings($this);
 		$this->temporalPosition = new Position(0, 0, 0, $this);
 		$this->temporalVector = new Vector3(0, 0, 0);
-		$this->tickRate = 1;
-	}
-
-	public function getTickRate() : int{
-		return $this->tickRate;
 	}
 
 	public function getTickRateTime() : float{
 		return $this->tickRateTime;
-	}
-
-	public function setTickRate(int $tickRate){
-		$this->tickRate = $tickRate;
 	}
 
 	public function registerGeneratorToWorker(int $worker) : void{

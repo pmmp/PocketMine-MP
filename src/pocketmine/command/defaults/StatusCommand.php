@@ -108,12 +108,11 @@ class StatusCommand extends VanillaCommand{
 
 		foreach($server->getLevelManager()->getLevels() as $level){
 			$levelName = $level->getFolderName() !== $level->getDisplayName() ? " (" . $level->getDisplayName() . ")" : "";
-			$timeColor = ($level->getTickRate() > 1 or $level->getTickRateTime() > 40) ? TextFormat::RED : TextFormat::YELLOW;
-			$tickRate = $level->getTickRate() > 1 ? " (tick rate " . $level->getTickRate() . ")" : "";
+			$timeColor = $level->getTickRateTime() > 40 ? TextFormat::RED : TextFormat::YELLOW;
 			$sender->sendMessage(TextFormat::GOLD . "World \"{$level->getFolderName()}\"$levelName: " .
 				TextFormat::RED . number_format(count($level->getChunks())) . TextFormat::GREEN . " chunks, " .
 				TextFormat::RED . number_format(count($level->getEntities())) . TextFormat::GREEN . " entities. " .
-				"Time $timeColor" . round($level->getTickRateTime(), 2) . "ms" . $tickRate
+				"Time $timeColor" . round($level->getTickRateTime(), 2) . "ms"
 			);
 		}
 
