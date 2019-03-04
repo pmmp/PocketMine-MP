@@ -3877,8 +3877,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		//TODO: allow this number to be manipulated during PlayerDeathEvent
-		$this->level->dropExperience($this, $this->getXpDropAmount());
-		$this->setXpAndProgress(0, 0);
+		if(!$this->keepExperience){
+			$this->level->dropExperience($this, $this->getXpDropAmount());
+			$this->setXpAndProgress(0, 0.0);
+		}
 
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
@@ -3913,15 +3915,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->removeAllEffects();
 		$this->setHealth($this->getMaxHealth());
 
-		$xp = $this->getCurrentTotalXp();
-
 		foreach($this->attributeMap->getAll() as $attr){
+			if($this->keepExperience and ($attr->getId() === Attribute::EXPERIENCE or $attr->getId() === Attribute::EXPERIENCE_LEVEL)){
+				continue;
+			}
 			$attr->resetToDefault();
-		}
-
-		if($this->keepExperience){
-			$this->setCurrentTotalXp($xp);
-			$this->keepExperience = false;
 		}
 
 		$this->sendData($this);
