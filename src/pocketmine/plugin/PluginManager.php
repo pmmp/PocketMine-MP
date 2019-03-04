@@ -384,14 +384,14 @@ class PluginManager{
 	 */
 	public function isCompatibleApi(string ...$versions) : bool{
 		$serverString = $this->server->getApiVersion();
-		$serverApi = array_pad(explode("-", $serverString), 2, "");
+		$serverApi = array_pad(explode("-", $serverString, 2), 2, "");
 		$serverNumbers = array_map("\intval", explode(".", $serverApi[0]));
 
 		foreach($versions as $version){
 			//Format: majorVersion.minorVersion.patch (3.0.0)
 			//    or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
 			if($version !== $serverString){
-				$pluginApi = array_pad(explode("-", $version), 2, ""); //0 = version, 1 = suffix (optional)
+				$pluginApi = array_pad(explode("-", $version, 2), 2, ""); //0 = version, 1 = suffix (optional)
 
 				if(strtoupper($pluginApi[1]) !== strtoupper($serverApi[1])){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
 					continue;

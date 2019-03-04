@@ -35,6 +35,8 @@ class ResourcePacksInfoPacket extends DataPacket{
 
 	/** @var bool */
 	public $mustAccept = false; //if true, forces client to use selected resource packs
+	/** @var bool */
+	public $hasScripts = false; //if true, causes disconnect for any platform that doesn't support scripts yet
 	/** @var ResourcePack[] */
 	public $behaviorPackEntries = [];
 	/** @var ResourcePack[] */
@@ -42,6 +44,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 
 	protected function decodePayload(){
 		$this->mustAccept = $this->getBool();
+		$this->hasScripts = $this->getBool();
 		$behaviorPackCount = $this->getLShort();
 		while($behaviorPackCount-- > 0){
 			$this->getString();
@@ -50,6 +53,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$this->getString();
 			$this->getString();
 			$this->getString();
+			$this->getBool();
 		}
 
 		$resourcePackCount = $this->getLShort();
@@ -60,12 +64,13 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$this->getString();
 			$this->getString();
 			$this->getString();
+			$this->getBool();
 		}
 	}
 
 	protected function encodePayload(){
-
 		$this->putBool($this->mustAccept);
+		$this->putBool($this->hasScripts);
 		$this->putLShort(count($this->behaviorPackEntries));
 		foreach($this->behaviorPackEntries as $entry){
 			$this->putString($entry->getPackId());
@@ -74,6 +79,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$this->putString(""); //TODO: encryption key
 			$this->putString(""); //TODO: subpack name
 			$this->putString(""); //TODO: content identity
+			$this->putBool(false); //TODO: has scripts (?)
 		}
 		$this->putLShort(count($this->resourcePackEntries));
 		foreach($this->resourcePackEntries as $entry){
@@ -83,6 +89,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$this->putString(""); //TODO: encryption key
 			$this->putString(""); //TODO: subpack name
 			$this->putString(""); //TODO: content identity
+			$this->putBool(false); //TODO: seems useless for resource packs
 		}
 	}
 

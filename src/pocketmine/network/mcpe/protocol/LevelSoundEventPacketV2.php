@@ -25,39 +25,47 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
-class AddHangingEntityPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::ADD_HANGING_ENTITY_PACKET;
+/**
+ * Useless leftover from a 1.9 refactor, does nothing
+ */
+class LevelSoundEventPacketV2 extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::LEVEL_SOUND_EVENT_PACKET_V2;
 
-	/** @var int|null */
-	public $entityUniqueId = null;
 	/** @var int */
-	public $entityRuntimeId;
+	public $sound;
+	/** @var Vector3 */
+	public $position;
 	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-	/** @var int */
-	public $direction;
+	public $extraData = -1;
+	/** @var string */
+	public $entityType = ":"; //???
+	/** @var bool */
+	public $isBabyMob = false; //...
+	/** @var bool */
+	public $disableRelativeVolume = false;
 
 	protected function decodePayload(){
-		$this->entityUniqueId = $this->getEntityUniqueId();
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->direction = $this->getVarInt();
+		$this->sound = $this->getByte();
+		$this->position = $this->getVector3();
+		$this->extraData = $this->getVarInt();
+		$this->entityType = $this->getString();
+		$this->isBabyMob = $this->getBool();
+		$this->disableRelativeVolume = $this->getBool();
 	}
 
 	protected function encodePayload(){
-		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putVarInt($this->direction);
+		$this->putByte($this->sound);
+		$this->putVector3($this->position);
+		$this->putVarInt($this->extraData);
+		$this->putString($this->entityType);
+		$this->putBool($this->isBabyMob);
+		$this->putBool($this->disableRelativeVolume);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleAddHangingEntity($this);
+		return $session->handleLevelSoundEventPacketV2($this);
 	}
 }

@@ -319,13 +319,13 @@ class BlockFactory{
 		self::registerBlock(new Stonecutter());
 		self::registerBlock(new GlowingObsidian());
 		self::registerBlock(new NetherReactor());
-		//TODO: INFO_UPDATE
-		//TODO: INFO_UPDATE2
+		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE, 0, "update!"));
+		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE2, 0, "ate!upd"));
 		//TODO: MOVINGBLOCK
 		//TODO: OBSERVER
 		//TODO: STRUCTURE_BLOCK
 
-		//TODO: RESERVED6
+		self::registerBlock(new Reserved6(Block::RESERVED6, 0, "reserved6"));
 
 		for($id = 0, $size = self::$fullList->getSize() >> 4; $id < $size; ++$id){
 			if(self::$fullList[$id << 4] === null){
@@ -430,8 +430,13 @@ class BlockFactory{
 	public static function registerStaticRuntimeIdMappings() : void{
 		/** @var mixed[] $runtimeIdMap */
 		$runtimeIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
+		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "legacy_id_map.json"), true);
 		foreach($runtimeIdMap as $k => $obj){
-			self::registerMapping($k, $obj["id"], $obj["data"]);
+			//this has to use the json offset to make sure the mapping is consistent with what we send over network, even though we aren't using all the entries
+			if(!isset($legacyIdMap[$obj["name"]])){
+				continue;
+			}
+			self::registerMapping($k, $legacyIdMap[$obj["name"]], $obj["data"]);
 		}
 	}
 

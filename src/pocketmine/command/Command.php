@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\command;
 
+use pocketmine\command\utils\CommandException;
 use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
@@ -100,6 +101,7 @@ abstract class Command{
 	 * @param string[]      $args
 	 *
 	 * @return mixed
+	 * @throws CommandException
 	 */
 	abstract public function execute(CommandSender $sender, string $commandLabel, array $args);
 

@@ -126,7 +126,6 @@ use function file_put_contents;
 use function filemtime;
 use function floor;
 use function function_exists;
-use function gc_collect_cycles;
 use function get_class;
 use function getmypid;
 use function getopt;
@@ -145,6 +144,7 @@ use function max;
 use function microtime;
 use function min;
 use function mkdir;
+use function ob_end_flush;
 use function pcntl_signal;
 use function pcntl_signal_dispatch;
 use function preg_replace;
@@ -2280,9 +2280,6 @@ class Server{
 					$this->network->unregisterInterface($interface);
 				}
 			}
-
-			$this->getLogger()->debug("Collecting cycles");
-			gc_collect_cycles();
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			$this->logger->emergency("Crashed while crashing, killing process");
@@ -2353,6 +2350,7 @@ class Server{
 	 * @param array|null $trace
 	 */
 	public function exceptionHandler(\Throwable $e, $trace = null){
+		while(@ob_end_flush()){}
 		global $lastError;
 
 		if($trace === null){
@@ -2384,6 +2382,7 @@ class Server{
 	}
 
 	public function crashDump(){
+		while(@ob_end_flush()){}
 		if(!$this->isRunning){
 			return;
 		}

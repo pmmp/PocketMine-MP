@@ -28,7 +28,7 @@ namespace pocketmine;
  */
 abstract class Thread extends \Thread{
 
-	/** @var \ClassLoader */
+	/** @var \ClassLoader|null */
 	protected $classLoader;
 	/** @var string|null */
 	protected $composerAutoloaderPath;

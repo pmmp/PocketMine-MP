@@ -300,16 +300,16 @@ class ItemFactory{
 	/**
 	 * Returns an instance of the Item with the specified id, meta, count and NBT.
 	 *
-	 * @param int                $id
-	 * @param int                $meta
-	 * @param int                $count
-	 * @param CompoundTag|string $tags
+	 * @param int                     $id
+	 * @param int                     $meta
+	 * @param int                     $count
+	 * @param CompoundTag|string|null $tags
 	 *
 	 * @return Item
 	 * @throws \TypeError
 	 */
-	public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
-		if(!is_string($tags) and !($tags instanceof CompoundTag)){
+	public static function get(int $id, int $meta = 0, int $count = 1, $tags = null) : Item{
+		if(!is_string($tags) and !($tags instanceof CompoundTag) and $tags !== null){
 			throw new \TypeError("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
 		}
 
@@ -318,7 +318,7 @@ class ItemFactory{
 			$listed = self::$list[self::getListOffset($id)];
 			if($listed !== null){
 				$item = clone $listed;
-			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
+			}elseif($id >= 0 and $id < 256){ //intentionally excludes negatives because extended blocks aren't supported yet
 				/* Blocks must have a damage value 0-15, but items can have damage value -1 to indicate that they are
 				 * crafting ingredients with any-damage. */
 				$item = new ItemBlock($id, $meta);

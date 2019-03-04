@@ -3865,7 +3865,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 
 			if($this->inventory !== null){
-				$this->inventory->setHeldItemIndex(0, false); //This is already handled when sending contents, don't send it twice
+				$this->inventory->setHeldItemIndex(0);
 				$this->inventory->clearAll();
 			}
 			if($this->armorInventory !== null){
@@ -3875,6 +3875,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->cursorInventory->clearAll();
 			}
 		}
+
+		//TODO: allow this number to be manipulated during PlayerDeathEvent
+		$this->level->dropExperience($this, $this->getXpDropAmount());
+		$this->setXpAndProgress(0, 0);
 
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
@@ -4173,8 +4177,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			throw new \InvalidArgumentException("Cannot remove fixed window $id (" . get_class($inventory) . ") from " . $this->getName());
 		}
 
-		$inventory->close($this);
 		if($id !== null){
+			$inventory->close($this);
 			unset($this->windows[$hash], $this->windowIndex[$id], $this->permanentWindows[$id]);
 		}
 	}

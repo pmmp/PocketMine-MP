@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d3fb809caf4d5a5c99054f47f28ff271",
+    "content-hash": "2f5313e4ebd7b62c785cf683b27464b4",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -160,16 +160,16 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.2.5",
+            "version": "0.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "0b290fa0f5b44835ebeea8146c9ac960cac833f5"
+                "reference": "92eaf84dd61f700d3ec02ebd01b606cb5b1590d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/0b290fa0f5b44835ebeea8146c9ac960cac833f5",
-                "reference": "0b290fa0f5b44835ebeea8146c9ac960cac833f5",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/92eaf84dd61f700d3ec02ebd01b606cb5b1590d4",
+                "reference": "92eaf84dd61f700d3ec02ebd01b606cb5b1590d4",
                 "shasum": ""
             },
             "require": {
@@ -194,23 +194,23 @@
             ],
             "description": "PHP library for working with Named Binary Tags",
             "support": {
-                "source": "https://github.com/pmmp/NBT/tree/0.2.5",
+                "source": "https://github.com/pmmp/NBT/tree/0.2.6",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2019-01-07T17:28:16+00:00"
+            "time": "2019-02-07T16:28:11+00:00"
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.12.1",
+            "version": "0.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "334b469f2d0f070f17902d7ac584bea7c6149dc6"
+                "reference": "54a36d55eeba0a182e00439920ee2fcfa8c72bf3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/334b469f2d0f070f17902d7ac584bea7c6149dc6",
-                "reference": "334b469f2d0f070f17902d7ac584bea7c6149dc6",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/54a36d55eeba0a182e00439920ee2fcfa8c72bf3",
+                "reference": "54a36d55eeba0a182e00439920ee2fcfa8c72bf3",
                 "shasum": ""
             },
             "require": {
@@ -235,10 +235,10 @@
             ],
             "description": "A RakNet server implementation written in PHP",
             "support": {
-                "source": "https://github.com/pmmp/RakLib/tree/0.12.1",
+                "source": "https://github.com/pmmp/RakLib/tree/0.12",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-01-04T14:23:37+00:00"
+            "time": "2019-01-21T14:17:30+00:00"
         },
         {
             "name": "pocketmine/snooze",

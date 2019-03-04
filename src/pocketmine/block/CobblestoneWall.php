@@ -30,6 +30,18 @@ use pocketmine\math\Vector3;
 class CobblestoneWall extends Transparent{
 	public const NONE_MOSSY_WALL = 0;
 	public const MOSSY_WALL = 1;
+	public const GRANITE_WALL = 2;
+	public const DIORITE_WALL = 3;
+	public const ANDESITE_WALL = 4;
+	public const SANDSTONE_WALL = 5;
+	public const BRICK_WALL = 6;
+	public const STONE_BRICK_WALL = 7;
+	public const MOSSY_STONE_BRICK_WALL = 8;
+	public const NETHER_BRICK_WALL = 9;
+	public const END_STONE_BRICK_WALL = 10;
+	public const PRISMARINE_WALL = 11;
+	public const RED_SANDSTONE_WALL = 12;
+	public const RED_NETHER_BRICK_WALL = 13;
 
 	protected $id = self::COBBLESTONE_WALL;
 
@@ -50,11 +62,23 @@ class CobblestoneWall extends Transparent{
 	}
 
 	public function getName() : string{
-		if($this->meta === 0x01){
-			return "Mossy Cobblestone Wall";
-		}
-
-		return "Cobblestone Wall";
+		static $names = [
+			self::NONE_MOSSY_WALL => "Cobblestone",
+			self::MOSSY_WALL => "Mossy Cobblestone",
+			self::GRANITE_WALL => "Granite",
+			self::DIORITE_WALL => "Diorite",
+			self::ANDESITE_WALL => "Andesite",
+			self::SANDSTONE_WALL => "Sandstone",
+			self::BRICK_WALL => "Brick",
+			self::STONE_BRICK_WALL => "Stone Brick",
+			self::MOSSY_STONE_BRICK_WALL => "Mossy Stone Brick",
+			self::NETHER_BRICK_WALL => "Nether Brick",
+			self::END_STONE_BRICK_WALL => "End Stone Brick",
+			self::PRISMARINE_WALL => "Prismarine",
+			self::RED_SANDSTONE_WALL => "Red Sandstone",
+			self::RED_NETHER_BRICK_WALL => "Red Nether Brick"
+		];
+		return ($names[$this->getVariant()] ?? "Unknown") . " Wall";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

@@ -56,6 +56,9 @@ class DeopCommand extends VanillaCommand{
 		}
 
 		$name = array_shift($args);
+		if(!Player::isValidUserName($name)){
+			throw new InvalidCommandSyntaxException();
+		}
 
 		$player = $sender->getServer()->getOfflinePlayer($name);
 		$player->setOp(false);

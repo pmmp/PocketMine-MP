@@ -47,7 +47,13 @@ class Color{
 	public const COLOR_DYE_WHITE = 15;
 
 	/** @var int */
-	protected $a, $r, $g, $b;
+	protected $a;
+	/** @var int */
+	protected $r;
+	/** @var int */
+	protected $g;
+	/** @var int */
+	protected $b;
 
 	public function __construct(int $r, int $g, int $b, int $a = 0xff){
 		$this->r = $r & 0xff;

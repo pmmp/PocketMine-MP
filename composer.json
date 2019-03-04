@@ -27,7 +27,7 @@
       "pocketmine/raklib": "^0.12.0",
       "pocketmine/spl": "^0.3.0",
       "pocketmine/binaryutils": "^0.1.0",
-      "pocketmine/nbt": "^0.2.1",
+      "pocketmine/nbt": "^0.2.6",
       "pocketmine/math": "^0.2.0",
       "pocketmine/snooze": "^0.1.0",
       "daverandom/callback-validator": "dev-master",
