@@ -142,6 +142,7 @@ use function max;
 use function microtime;
 use function min;
 use function mkdir;
+use function ob_end_flush;
 use function pcntl_signal;
 use function pcntl_signal_dispatch;
 use function preg_replace;
@@ -2217,6 +2218,7 @@ class Server{
 	 * @param array|null $trace
 	 */
 	public function exceptionHandler(\Throwable $e, $trace = null){
+		while(@ob_end_flush()){}
 		global $lastError;
 
 		if($trace === null){
@@ -2248,6 +2250,7 @@ class Server{
 	}
 
 	public function crashDump(){
+		while(@ob_end_flush()){}
 		if(!$this->isRunning){
 			return;
 		}
