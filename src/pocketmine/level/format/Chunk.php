@@ -200,7 +200,7 @@ class Chunk{
 	 * @return bool
 	 */
 	public function setBlock(int $x, int $y, int $z, int $blockId, int $meta) : bool{
-		if($this->getSubChunk($y >> 4, true)->setBlock($x, $y & 0x0f, $z, $blockId & 0xff, $meta & 0x0f)){
+		if($this->getSubChunk($y >> 4, true)->setBlock($x, $y & 0x0f, $z, $blockId, $meta & 0x0f)){
 			$this->hasChanged = true;
 			return true;
 		}
