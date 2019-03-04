@@ -126,6 +126,7 @@ use function max;
 use function microtime;
 use function min;
 use function mkdir;
+use function ob_end_flush;
 use function preg_replace;
 use function random_bytes;
 use function realpath;
@@ -1742,6 +1743,7 @@ class Server{
 	 * @param array|null $trace
 	 */
 	public function exceptionHandler(\Throwable $e, $trace = null) : void{
+		while(@ob_end_flush()){}
 		global $lastError;
 
 		if($trace === null){
@@ -1773,6 +1775,7 @@ class Server{
 	}
 
 	public function crashDump() : void{
+		while(@ob_end_flush()){}
 		if(!$this->isRunning){
 			return;
 		}
