@@ -46,7 +46,7 @@ use function time;
 
 class BedrockLevelData extends BaseNbtLevelData{
 
-	public const CURRENT_STORAGE_VERSION = 6;
+	public const CURRENT_STORAGE_VERSION = 8;
 
 	public const GENERATOR_LIMITED = 0;
 	public const GENERATOR_INFINITE = 1;

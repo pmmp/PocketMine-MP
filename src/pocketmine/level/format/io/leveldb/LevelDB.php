@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\leveldb;
 
+use pocketmine\block\BlockIds;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
@@ -31,22 +32,31 @@ use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\format\io\exception\UnsupportedLevelFormatException;
 use pocketmine\level\format\io\LevelData;
+use pocketmine\level\format\io\SubChunkConverter;
 use pocketmine\level\format\io\WritableLevelProvider;
+use pocketmine\level\format\PalettedBlockArray;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\Generator;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ShortTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
+use function array_flip;
 use function array_values;
 use function chr;
+use function count;
 use function defined;
 use function extension_loaded;
 use function file_exists;
+use function file_get_contents;
 use function is_dir;
+use function json_decode;
 use function mkdir;
 use function ord;
 use function str_repeat;
@@ -81,7 +91,7 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 	protected const ENTRY_FLAT_WORLD_LAYERS = "game_flatworldlayers";
 
 	protected const CURRENT_LEVEL_CHUNK_VERSION = 7;
-	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = 0;
+	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = 8;
 
 	/** @var \LevelDB */
 	protected $db;
@@ -132,6 +142,35 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 		BedrockLevelData::generate($path, $name, $seed, $generator, $options);
 	}
 
+	protected function deserializePaletted(BinaryStream $stream) : PalettedBlockArray{
+		static $stringToLegacyId = null;
+		if($stringToLegacyId === null){
+			$stringToLegacyId = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . '/legacy_id_map.json'), true);
+		}
+
+		$bitsPerBlock = $stream->getByte() >> 1;
+
+		try{
+			$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
+		}catch(\InvalidArgumentException $e){
+			throw new CorruptedChunkException("Failed to deserialize paletted storage: " . $e->getMessage(), 0, $e);
+		}
+		$nbt = new LittleEndianNbtSerializer();
+		$palette = [];
+		for($i = 0, $paletteSize = $stream->getLInt(); $i < $paletteSize; ++$i){
+			$offset = $stream->getOffset();
+			$tag = $nbt->read($stream->getBuffer(), $offset);
+			$stream->setOffset($offset);
+
+			$id = $stringToLegacyId[$tag->getString("name")] ?? BlockIds::INFO_UPDATE;
+			$data = $tag->getShort("val");
+			$palette[] = ($id << 4) | $data;
+		}
+
+		//TODO: exceptions
+		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
+	}
+
 	/**
 	 * @param int $chunkX
 	 * @param int $chunkZ
@@ -159,6 +198,8 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 		$binaryStream = new BinaryStream();
 
 		switch($chunkVersion){
+			case 10: //MCPE 1.9 (???)
+			case 9: //MCPE 1.8 (???)
 			case 7: //MCPE 1.2 (???)
 			case 4: //MCPE 1.1
 				//TODO: check beds
@@ -179,6 +220,12 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 
 					switch($subChunkVersion){
 						case 0:
+						case 2: //these are all identical to version 0, but vanilla respects these so we should also
+						case 3:
+						case 4:
+						case 5:
+						case 6:
+						case 7:
 							try{
 								$blocks = $binaryStream->get(4096);
 								$blockData = $binaryStream->get(2048);
@@ -191,7 +238,17 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 								throw new CorruptedChunkException($e->getMessage(), 0, $e);
 							}
 
-							$subChunks[$y] = new SubChunk($blocks, $blockData);
+							$subChunks[$y] = new SubChunk([SubChunkConverter::convertSubChunkXZY($blocks, $blockData)]);
+							break;
+						case 1: //paletted v1, has a single blockstorage
+							$subChunks[$y] = new SubChunk([$this->deserializePaletted($binaryStream)]);
+							break;
+						case 8:
+							$storages = [];
+							for($k = 0, $storageCount = $binaryStream->getByte(); $k < $storageCount; ++$k){
+								$storages[] = $this->deserializePaletted($binaryStream);
+							}
+							$subChunks[$y] = new SubChunk($storages);
 							break;
 						default:
 							//TODO: set chunks read-only so the version on disk doesn't get overwritten
@@ -225,20 +282,7 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 				}
 
 				for($yy = 0; $yy < 8; ++$yy){
-					$subOffset = ($yy << 4);
-					$ids = "";
-					for($i = 0; $i < 256; ++$i){
-						$ids .= substr($fullIds, $subOffset, 16);
-						$subOffset += 128;
-					}
-					$data = "";
-					$subOffset = ($yy << 3);
-					for($i = 0; $i < 256; ++$i){
-						$data .= substr($fullData, $subOffset, 8);
-						$subOffset += 64;
-					}
-
-					$subChunks[$yy] = new SubChunk($ids, $data);
+					$subChunks[$yy] = new SubChunk([SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $yy)]);
 				}
 
 				try{
@@ -307,6 +351,10 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 	}
 
 	protected function writeChunk(Chunk $chunk) : void{
+		static $idMap = null;
+		if($idMap === null){
+			$idMap = array_flip(json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . '/legacy_id_map.json'), true));
+		}
 		$index = LevelDB::chunkIndex($chunk->getX(), $chunk->getZ());
 		$this->db->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
@@ -316,11 +364,30 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 			if($subChunk->isEmpty(false)){ //MCPE doesn't save light anymore as of 1.1
 				$this->db->delete($key);
 			}else{
-				$this->db->put($key,
-					chr(self::CURRENT_LEVEL_SUBCHUNK_VERSION) .
-					$subChunk->getBlockIdArray() .
-					$subChunk->getBlockDataArray()
-				);
+				$subStream = new BinaryStream();
+				$subStream->putByte(self::CURRENT_LEVEL_SUBCHUNK_VERSION);
+
+				$layers = $subChunk->getBlockLayers();
+				$subStream->putByte(count($layers));
+				foreach($layers as $blocks){
+					$subStream->putByte($blocks->getBitsPerBlock() << 1);
+					$subStream->put($blocks->getWordArray());
+
+					$palette = $blocks->getPalette();
+					$subStream->putLInt(count($palette));
+					$tags = [];
+					foreach($palette as $p){
+						$tags[] = new CompoundTag("", [
+							new StringTag("name", $idMap[$p >> 4] ?? "minecraft:info_update"),
+							new IntTag("oldid", $p >> 4), //PM only (debugging), vanilla doesn't have this
+							new ShortTag("val", $p & 0xf)
+						]);
+					}
+
+					$subStream->put((new LittleEndianNbtSerializer())->writeMultiple($tags));
+				}
+
+				$this->db->put($key, $subStream->getBuffer());
 			}
 		}
 

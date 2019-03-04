@@ -23,31 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\region;
 
-use pocketmine\level\format\io\ChunkUtils;
-use pocketmine\level\format\io\WritableLevelProvider;
+use pocketmine\level\format\io\SubChunkConverter;
 use pocketmine\level\format\SubChunk;
-use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
-use function str_repeat;
 
-class Anvil extends RegionLevelProvider implements WritableLevelProvider{
+class Anvil extends RegionLevelProvider{
 	use LegacyAnvilChunkTrait;
 
 	protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag{
-		return new CompoundTag("", [
-			new ByteArrayTag("Blocks", ChunkUtils::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currently always XZY
-			new ByteArrayTag("Data", ChunkUtils::reorderNibbleArray($subChunk->getBlockDataArray())),
-			new ByteArrayTag("SkyLight", str_repeat("\x00", 2048)),
-			new ByteArrayTag("BlockLight", str_repeat("\x00", 2048))
-		]);
+		throw new \RuntimeException("Unsupported");
 	}
 
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
-		return new SubChunk(
-			ChunkUtils::reorderByteArray($subChunk->getByteArray("Blocks")),
-			ChunkUtils::reorderNibbleArray($subChunk->getByteArray("Data"))
-			//ignore legacy light information
-		);
+		return new SubChunk([SubChunkConverter::convertSubChunkYZX($subChunk->getByteArray("Blocks"), $subChunk->getByteArray("Data"))]);
+		//ignore legacy light information
 	}
 
 	protected static function getRegionFileExtension() : string{

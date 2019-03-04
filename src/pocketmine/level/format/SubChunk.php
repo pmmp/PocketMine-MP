@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format;
 
+use pocketmine\block\BlockIds;
+use function array_values;
 use function assert;
 use function chr;
 use function define;
@@ -37,9 +39,12 @@ if(!defined(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY')){
 }
 
 class SubChunk implements SubChunkInterface{
-	protected $ids;
-	protected $data;
+	/** @var PalettedBlockArray[] */
+	private $blockLayers;
+
+	/** @var string */
 	protected $blockLight;
+	/** @var string */
 	protected $skyLight;
 
 	private static function assignData(&$target, string $data, int $length, string $value = "\x00") : void{
@@ -51,57 +56,57 @@ class SubChunk implements SubChunkInterface{
 		}
 	}
 
-	public function __construct(string $ids = "", string $data = "", string $skyLight = "", string $blockLight = ""){
-		self::assignData($this->ids, $ids, 4096);
-		self::assignData($this->data, $data, 2048);
+	/**
+	 * SubChunk constructor.
+	 *
+	 * @param PalettedBlockArray[] $blocks
+	 * @param string               $skyLight
+	 * @param string               $blockLight
+	 */
+	public function __construct(array $blocks, string $skyLight = "", string $blockLight = ""){
+		$this->blockLayers = $blocks;
+
 		self::assignData($this->skyLight, $skyLight, 2048, "\xff");
 		self::assignData($this->blockLight, $blockLight, 2048);
-		$this->collectGarbage();
 	}
 
 	public function isEmpty(bool $checkLight = true) : bool{
-		return (
-			substr_count($this->ids, "\x00") === 4096 and
+		foreach($this->blockLayers as $layer){
+			$palette = $layer->getPalette();
+			foreach($palette as $p){
+				if(($p >> 4) !== BlockIds::AIR){
+					return false;
+				}
+			}
+		}
+		return
 			(!$checkLight or (
 				substr_count($this->skyLight, "\xff") === 2048 and
 				$this->blockLight === ZERO_NIBBLE_ARRAY
-			))
+			)
 		);
 	}
 
-	public function getBlockId(int $x, int $y, int $z) : int{
-		return ord($this->ids{($x << 8) | ($z << 4) | $y});
-	}
-
-	public function getBlockData(int $x, int $y, int $z) : int{
-		return (ord($this->data{($x << 7) | ($z << 3) | ($y >> 1)}) >> (($y & 1) << 2)) & 0xf;
-	}
-
 	public function getFullBlock(int $x, int $y, int $z) : int{
-		$i = ($x << 8) | ($z << 4) | $y;
-		return (ord($this->ids{$i}) << 4) | ((ord($this->data{$i >> 1}) >> (($y & 1) << 2)) & 0xf);
+		if(empty($this->blockLayers)){
+			return BlockIds::AIR << 4;
+		}
+		return $this->blockLayers[0]->get($x, $y, $z);
 	}
 
 	public function setBlock(int $x, int $y, int $z, int $id, int $data) : bool{
-		$i = ($x << 8) | ($z << 4) | $y;
-		$changed = false;
-
-		$block = chr($id);
-		if($this->ids{$i} !== $block){
-			$this->ids{$i} = $block;
-			$changed = true;
+		if(empty($this->blockLayers)){
+			$this->blockLayers[] = new PalettedBlockArray(BlockIds::AIR << 4);
 		}
+		$this->blockLayers[0]->set($x, $y, $z, ($id << 4) | $data);
+		return true;
+	}
 
-		$i >>= 1;
-		$shift = ($y & 1) << 2;
-		$oldPair = ord($this->data{$i});
-		$newPair = ($oldPair & ~(0xf << $shift)) | (($data & 0xf) << $shift);
-		if($newPair !== $oldPair){
-			$this->data{$i} = chr($newPair);
-			$changed = true;
-		}
-
-		return $changed;
+	/**
+	 * @return PalettedBlockArray[]
+	 */
+	public function getBlockLayers() : array{
+		return $this->blockLayers;
 	}
 
 	public function getBlockLight(int $x, int $y, int $z) : int{
@@ -136,22 +141,12 @@ class SubChunk implements SubChunkInterface{
 		$low = ($x << 8) | ($z << 4);
 		$i = $low | 0x0f;
 		for(; $i >= $low; --$i){
-			if($this->ids{$i} !== "\x00"){
+			if(($this->blockLayers[0]->get($x, $i, $z) >> 4) !== BlockIds::AIR){
 				return $i & 0x0f;
 			}
 		}
 
 		return -1; //highest block not in this subchunk
-	}
-
-	public function getBlockIdArray() : string{
-		assert(strlen($this->ids) === 4096, "Wrong length of ID array, expecting 4096 bytes, got " . strlen($this->ids));
-		return $this->ids;
-	}
-
-	public function getBlockDataArray() : string{
-		assert(strlen($this->data) === 2048, "Wrong length of data array, expecting 2048 bytes, got " . strlen($this->data));
-		return $this->data;
 	}
 
 	public function getBlockSkyLightArray() : string{
@@ -174,23 +169,28 @@ class SubChunk implements SubChunkInterface{
 		$this->blockLight = $data;
 	}
 
-	public function networkSerialize() : string{
-		return "\x00" . $this->ids . $this->data;
-	}
-
 	public function __debugInfo(){
 		return [];
 	}
 
 	public function collectGarbage() : void{
+		foreach($this->blockLayers as $k => $layer){
+			$layer->collectGarbage();
+
+			foreach($layer->getPalette() as $p){
+				if(($p >> 4) !== BlockIds::AIR){
+					continue 2;
+				}
+			}
+			unset($this->blockLayers[$k]);
+		}
+		$this->blockLayers = array_values($this->blockLayers);
+
 		/*
 		 * This strange looking code is designed to exploit PHP's copy-on-write behaviour. Assigning will copy a
 		 * reference to the const instead of duplicating the whole string. The string will only be duplicated when
 		 * modified, which is perfect for this purpose.
 		 */
-		if($this->data === ZERO_NIBBLE_ARRAY){
-			$this->data = ZERO_NIBBLE_ARRAY;
-		}
 		if($this->skyLight === ZERO_NIBBLE_ARRAY){
 			$this->skyLight = ZERO_NIBBLE_ARRAY;
 		}

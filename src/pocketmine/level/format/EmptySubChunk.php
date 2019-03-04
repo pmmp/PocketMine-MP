@@ -41,20 +41,16 @@ class EmptySubChunk implements SubChunkInterface{
 		return true;
 	}
 
-	public function getBlockId(int $x, int $y, int $z) : int{
-		return 0;
-	}
-
-	public function getBlockData(int $x, int $y, int $z) : int{
-		return 0;
-	}
-
 	public function getFullBlock(int $x, int $y, int $z) : int{
 		return 0;
 	}
 
 	public function setBlock(int $x, int $y, int $z, int $id, int $data) : bool{
 		return false;
+	}
+
+	public function getBlockLayers() : array{
+		return [];
 	}
 
 	public function getBlockLight(int $x, int $y, int $z) : int{
@@ -77,14 +73,6 @@ class EmptySubChunk implements SubChunkInterface{
 		return -1;
 	}
 
-	public function getBlockIdArray() : string{
-		return str_repeat("\x00", 4096);
-	}
-
-	public function getBlockDataArray() : string{
-		return str_repeat("\x00", 2048);
-	}
-
 	public function getBlockLightArray() : string{
 		return str_repeat("\x00", 2048);
 	}
@@ -99,9 +87,5 @@ class EmptySubChunk implements SubChunkInterface{
 
 	public function setBlockSkyLightArray(string $data) : void{
 
-	}
-
-	public function networkSerialize() : string{
-		return "\x00" . str_repeat("\x00", 6144);
 	}
 }

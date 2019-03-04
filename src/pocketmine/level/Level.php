@@ -28,6 +28,7 @@ namespace pocketmine\level;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockIds;
 use pocketmine\block\UnknownBlock;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
@@ -380,7 +381,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$dontTickBlocks = array_fill_keys($this->server->getProperty("chunk-ticking.disable-block-ticking", []), true);
 
-		$this->randomTickBlocks = new \SplFixedArray(4096);
+		$this->randomTickBlocks = new \SplFixedArray(16384);
 		foreach($this->randomTickBlocks as $i => $null){
 			$id = $i >> 4;
 			$meta = $i & 0xf;
@@ -2783,7 +2784,7 @@ class Level implements ChunkManager, Metadatable{
 		$z = (int) $v->z;
 		if($chunk !== null and $chunk->isGenerated()){
 			$y = (int) min($max - 2, $v->y);
-			$wasAir = ($chunk->getBlockId($x & 0x0f, $y - 1, $z & 0x0f) === 0);
+			$wasAir = $this->getBlockAt($x, $y - 1, $z)->getId() === BlockIds::AIR; //TODO: bad hack, clean up
 			for(; $y > 0; --$y){
 				if($this->isFullBlock($this->getBlockAt($x, $y, $z))){
 					if($wasAir){

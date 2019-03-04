@@ -28,12 +28,10 @@ use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\BigEndianNbtSerializer;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
-use function array_fill;
 
 /**
  * Trait containing I/O methods for handling legacy Anvil-style chunks.
@@ -49,41 +47,8 @@ use function array_fill;
 trait LegacyAnvilChunkTrait{
 
 	protected function serializeChunk(Chunk $chunk) : string{
-		$nbt = new CompoundTag("Level", []);
-		$nbt->setInt("xPos", $chunk->getX());
-		$nbt->setInt("zPos", $chunk->getZ());
-
-		$nbt->setByte("V", 1);
-		$nbt->setLong("LastUpdate", 0); //TODO
-		$nbt->setLong("InhabitedTime", 0); //TODO
-		$nbt->setByte("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
-		$nbt->setByte("LightPopulated", 0);
-
-		$subChunks = [];
-		foreach($chunk->getSubChunks() as $y => $subChunk){
-			if($subChunk->isEmpty()){
-				continue;
-			}
-
-			$tag = $this->serializeSubChunk($subChunk);
-			$tag->setByte("Y", $y);
-			$subChunks[] = $tag;
-		}
-		$nbt->setTag(new ListTag("Sections", $subChunks, NBT::TAG_Compound));
-
-		$nbt->setByteArray("Biomes", $chunk->getBiomeIdArray());
-		$nbt->setIntArray("HeightMap", array_fill(0, 256, 0));
-
-		$nbt->setTag(new ListTag("Entities", $chunk->getNBTentities(), NBT::TAG_Compound));
-		$nbt->setTag(new ListTag("TileEntities", $chunk->getNBTtiles(), NBT::TAG_Compound));
-
-		//TODO: TileTicks
-
-		$writer = new BigEndianNbtSerializer();
-		return $writer->writeCompressed(new CompoundTag("", [$nbt]), ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
+		throw new \RuntimeException("Unsupported");
 	}
-
-	abstract protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag;
 
 	/**
 	 * @param string $data

@@ -35,7 +35,7 @@ abstract class LevelProviderManager{
 	protected static $providers = [];
 
 	/** @var string|LevelProvider */
-	private static $default = PMAnvil::class;
+	private static $default = LevelDB::class;
 
 	public static function init() : void{
 		self::addProvider(Anvil::class, "anvil");

@@ -26,6 +26,7 @@ namespace pocketmine\level\format\io\region;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
+use pocketmine\level\format\io\SubChunkConverter;
 use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
@@ -33,7 +34,6 @@ use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
 use function str_repeat;
-use function substr;
 
 class McRegion extends RegionLevelProvider{
 
@@ -71,19 +71,7 @@ class McRegion extends RegionLevelProvider{
 		$fullData = $chunk->hasTag("Data", ByteArrayTag::class) ? $chunk->getByteArray("Data") : str_repeat("\x00", 16384);
 
 		for($y = 0; $y < 8; ++$y){
-			$offset = ($y << 4);
-			$ids = "";
-			for($i = 0; $i < 256; ++$i){
-				$ids .= substr($fullIds, $offset, 16);
-				$offset += 128;
-			}
-			$data = "";
-			$offset = ($y << 3);
-			for($i = 0; $i < 256; ++$i){
-				$data .= substr($fullData, $offset, 8);
-				$offset += 64;
-			}
-			$subChunks[$y] = new SubChunk($ids, $data);
+			$subChunks[$y] = new SubChunk([SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $y)]);
 		}
 
 		if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
