@@ -79,6 +79,7 @@ class BlockFactory{
 		self::register(new Anvil(new BID(Block::ANVIL, Anvil::TYPE_SLIGHTLY_DAMAGED), "Slightly Damaged Anvil"));
 		self::register(new Anvil(new BID(Block::ANVIL, Anvil::TYPE_VERY_DAMAGED), "Very Damaged Anvil"));
 		self::register(new Banner(new BlockIdentifierFlattened(Block::STANDING_BANNER, Block::WALL_BANNER, 0, ItemIds::BANNER, \pocketmine\tile\Banner::class), "Banner"));
+		self::register(new Barrier(new BID(Block::BARRIER), "Barrier"));
 		self::register(new Bed(new BID(Block::BED_BLOCK, 0, ItemIds::BED, \pocketmine\tile\Bed::class), "Bed Block"));
 		self::register(new Bedrock(new BID(Block::BEDROCK), "Bedrock"));
 		self::register(new Beetroot(new BID(Block::BEETROOT_BLOCK), "Beetroot Block"));
