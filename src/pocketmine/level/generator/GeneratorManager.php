@@ -91,6 +91,7 @@ final class GeneratorManager{
 	 * @param string $class Fully qualified name of class that extends \pocketmine\level\generator\Generator
 	 *
 	 * @return string
+	 * @throws \InvalidArgumentException if the class type cannot be matched to a known alias
 	 */
 	public static function getGeneratorName(string $class) : string{
 		foreach(self::$list as $name => $c){
@@ -99,7 +100,7 @@ final class GeneratorManager{
 			}
 		}
 
-		return "unknown";
+		throw new \InvalidArgumentException("Generator class $class is not registered");
 	}
 
 	private function __construct(){
