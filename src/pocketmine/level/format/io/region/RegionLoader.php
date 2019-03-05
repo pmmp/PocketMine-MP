@@ -140,8 +140,6 @@ class RegionLoader{
 
 		if($length <= 0 or $length > self::MAX_SECTOR_LENGTH){ //Not yet generated / corrupted
 			if($length >= self::MAX_SECTOR_LENGTH){
-				$this->locationTable[$index][0] = ++$this->lastSector;
-				$this->locationTable[$index][1] = 1;
 				throw new CorruptedChunkException("Corrupted chunk header detected (sector count $length larger than max " . self::MAX_SECTOR_LENGTH . ")");
 			}
 			return null;
