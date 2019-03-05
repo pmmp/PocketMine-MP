@@ -124,9 +124,6 @@ class RegionLoader{
 	 */
 	public function readChunk(int $x, int $z) : ?string{
 		$index = self::getChunkOffset($x, $z);
-		if($index < 0 or $index >= 4096){
-			throw new \InvalidArgumentException("Invalid chunk position in region, expected x/z in range 0-31, got x=$x, z=$z");
-		}
 
 		$this->lastUsed = time();
 
@@ -169,10 +166,25 @@ class RegionLoader{
 		return substr($chunkData, 1);
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return bool
+	 * @throws \InvalidArgumentException
+	 */
 	public function chunkExists(int $x, int $z) : bool{
 		return $this->isChunkGenerated(self::getChunkOffset($x, $z));
 	}
 
+	/**
+	 * @param int    $x
+	 * @param int    $z
+	 * @param string $chunkData
+	 *
+	 * @throws ChunkException
+	 * @throws \InvalidArgumentException
+	 */
 	public function writeChunk(int $x, int $z, string $chunkData){
 		$this->lastUsed = time();
 
@@ -202,14 +214,30 @@ class RegionLoader{
 		}
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @throws \InvalidArgumentException
+	 */
 	public function removeChunk(int $x, int $z){
 		$index = self::getChunkOffset($x, $z);
 		$this->locationTable[$index][0] = 0;
 		$this->locationTable[$index][1] = 0;
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return int
+	 * @throws \InvalidArgumentException
+	 */
 	protected static function getChunkOffset(int $x, int $z) : int{
-		return $x + ($z << 5);
+		if($x < 0 or $x > 31 or $z < 0 or $z > 31){
+			throw new \InvalidArgumentException("Invalid chunk position in region, expected x/z in range 0-31, got x=$x, z=$z");
+		}
+		return $x | ($z << 5);
 	}
 
 	/**

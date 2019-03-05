@@ -68,4 +68,51 @@ class RegionLoaderTest extends TestCase{
 		$r->open();
 		self::assertSame($data, $r->readChunk(0, 0));
 	}
+
+	public function outOfBoundsCoordsProvider() : \Generator{
+		yield [-1, -1];
+		yield [32, 32];
+		yield [-1, 32];
+		yield [32, -1];
+	}
+
+	/**
+	 * @dataProvider outOfBoundsCoordsProvider
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @throws ChunkException
+	 * @throws \InvalidArgumentException
+	 */
+	public function testWriteChunkOutOfBounds(int $x, int $z) : void{
+		$this->expectException(\InvalidArgumentException::class);
+		$this->region->writeChunk($x, $z, str_repeat("\x00", 1000));
+	}
+
+	public function testReadWriteChunkInBounds() : void{
+		$dat = random_bytes(1000);
+		for($x = 0; $x < 32; ++$x){
+			for($z = 0; $z < 32; ++$z){
+				$this->region->writeChunk($x, $z, $dat);
+			}
+		}
+		for($x = 0; $x < 32; ++$x){
+			for($z = 0; $z < 32; ++$z){
+				self::assertSame($dat, $this->region->readChunk($x, $z));
+			}
+		}
+	}
+
+	/**
+	 * @dataProvider outOfBoundsCoordsProvider
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @throws \InvalidArgumentException
+	 * @throws \pocketmine\level\format\io\exception\CorruptedChunkException
+	 */
+	public function testReadChunkOutOfBounds(int $x, int $z) : void{
+		$this->expectException(\InvalidArgumentException::class);
+		$this->region->readChunk($x, $z);
+	}
 }
