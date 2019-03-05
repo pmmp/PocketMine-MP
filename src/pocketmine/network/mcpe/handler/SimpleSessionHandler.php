@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\ItemFrame;
-use pocketmine\block\SignPost;
+use pocketmine\block\Sign;
 use pocketmine\block\utils\SignText;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
@@ -403,7 +403,7 @@ class SimpleSessionHandler extends SessionHandler{
 			throw new BadPacketException($e->getMessage(), 0, $e);
 		}
 
-		if($block instanceof SignPost){
+		if($block instanceof Sign){
 			if($nbt->hasTag("Text", StringTag::class)){
 				try{
 					$text = SignText::fromBlob($nbt->getString("Text"));

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\block\utils\SignText;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Item;
@@ -36,15 +37,22 @@ use function array_map;
 use function assert;
 use function floor;
 
-class SignPost extends Transparent{
+class Sign extends Transparent{
+	/** @var BlockIdentifierFlattened */
+	protected $idInfo;
+
+	//TODO: conditionally useless properties, find a way to fix
 
 	/** @var int */
 	protected $rotation = 0;
 
+	/** @var int */
+	protected $facing = Facing::UP;
+
 	/** @var SignText */
 	protected $text;
 
-	public function __construct(BlockIdentifier $idInfo, string $name){
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
 		parent::__construct($idInfo, $name);
 		$this->text = new SignText();
 	}
@@ -53,12 +61,24 @@ class SignPost extends Transparent{
 		$this->text = clone $this->text;
 	}
 
+	public function getId() : int{
+		return $this->facing === Facing::UP ? parent::getId() : $this->idInfo->getSecondId();
+	}
+
 	protected function writeStateToMeta() : int{
-		return $this->rotation;
+		if($this->facing === Facing::UP){
+			return $this->rotation;
+		}
+		return $this->facing;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->rotation = $stateMeta;
+		if($id === $this->idInfo->getSecondId()){
+			$this->facing = BlockDataValidator::readHorizontalFacing($stateMeta);
+		}else{
+			$this->facing = Facing::UP;
+			$this->rotation = $stateMeta;
+		}
 	}
 
 	public function readStateFromWorld() : void{
@@ -94,20 +114,19 @@ class SignPost extends Transparent{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face !== Facing::DOWN){
-
+			$this->facing = $face;
 			if($face === Facing::UP){
 				$this->rotation = $player !== null ? ((int) floor((($player->yaw + 180) * 16 / 360) + 0.5)) & 0x0f : 0;
-				return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}
 
-			return $this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_SIGN, $face));
+			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() === self::AIR){
+		if($this->getSide(Facing::opposite($this->facing))->getId() === self::AIR){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}
