@@ -25,27 +25,46 @@ namespace pocketmine\level\format\io\region;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\level\format\ChunkException;
+use function file_exists;
+use function random_bytes;
+use function str_repeat;
+use function sys_get_temp_dir;
+use function unlink;
 
 class RegionLoaderTest extends TestCase{
 
-	public function testChunkTooBig() : void{
-		$r = new RegionLoader(sys_get_temp_dir() . '/chunk_too_big.testregion_' . bin2hex(random_bytes(4)), 0, 0);
-		$r->open();
+	/** @var string */
+	private $regionPath;
+	/** @var RegionLoader */
+	private $region;
 
+	public function setUp(){
+		$this->regionPath = sys_get_temp_dir() . '/test.testregion';
+		if(file_exists($this->regionPath)){
+			unlink($this->regionPath);
+		}
+		$this->region = new RegionLoader($this->regionPath, 0, 0);
+		$this->region->open();
+	}
+
+	public function tearDown(){
+		$this->region->close();
+		if(file_exists($this->regionPath)){
+			unlink($this->regionPath);
+		}
+	}
+
+	public function testChunkTooBig() : void{
 		$this->expectException(ChunkException::class);
-		$r->writeChunk(0, 0, str_repeat("a", 1044476));
+		$this->region->writeChunk(0, 0, str_repeat("a", 1044476));
 	}
 
 	public function testChunkMaxSize() : void{
 		$data = str_repeat("a", 1044475);
-		$path = sys_get_temp_dir() . '/chunk_just_fits.testregion_' . bin2hex(random_bytes(4));
-		$r = new RegionLoader($path, 0, 0);
-		$r->open();
+		$this->region->writeChunk(0, 0, $data);
+		$this->region->close();
 
-		$r->writeChunk(0, 0, $data);
-		$r->close();
-
-		$r = new RegionLoader($path, 0, 0);
+		$r = new RegionLoader($this->regionPath, 0, 0);
 		$r->open();
 		self::assertSame($data, $r->readChunk(0, 0));
 	}
