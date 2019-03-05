@@ -138,6 +138,9 @@ class SubChunk implements SubChunkInterface{
 	}
 
 	public function getHighestBlockAt(int $x, int $z) : int{
+		if(empty($this->blockLayers)){
+			return -1;
+		}
 		for($y = 15; $y >= 0; --$y){
 			if(($this->blockLayers[0]->get($x, $y, $z) >> 4) !== BlockIds::AIR){
 				return $y;
