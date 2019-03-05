@@ -60,6 +60,8 @@ class RegionLoader{
 	public const MAX_SECTOR_LENGTH = 255 << 12; //255 sectors (~0.996 MiB)
 	public const REGION_HEADER_LENGTH = 8192; //4096 location table + 4096 timestamps
 
+	private const FIRST_SECTOR = 2; //location table occupies 0 and 1
+
 	public static $COMPRESSION_LEVEL = 7;
 
 	/** @var int */
@@ -71,7 +73,7 @@ class RegionLoader{
 	/** @var resource */
 	protected $filePointer;
 	/** @var int */
-	protected $lastSector;
+	protected $nextSector = self::FIRST_SECTOR;
 	/** @var RegionLocationTableEntry[] */
 	protected $locationTable = [];
 	/** @var int */
@@ -201,11 +203,11 @@ class RegionLoader{
 		$offset = $this->locationTable[$index]->getFirstSector();
 
 		if($this->locationTable[$index]->getSectorCount() < $newSize){
-			$offset = $this->lastSector + 1;
+			$offset = $this->nextSector;
 		}
 
 		$this->locationTable[$index] = new RegionLocationTableEntry($offset, $newSize, time());
-		$this->lastSector = max($this->lastSector, $this->locationTable[$index]->getLastSector());
+		$this->bumpNextFreeSector($this->locationTable[$index]);
 
 		fseek($this->filePointer, $offset << 12);
 		fwrite($this->filePointer, str_pad(Binary::writeInt($length) . chr(self::COMPRESSION_ZLIB) . $chunkData, $newSize << 12, "\x00", STR_PAD_RIGHT));
@@ -268,7 +270,6 @@ class RegionLoader{
 	 */
 	protected function loadLocationTable(){
 		fseek($this->filePointer, 0);
-		$this->lastSector = 1;
 
 		$headerRaw = fread($this->filePointer, self::REGION_HEADER_LENGTH);
 		if(($len = strlen($headerRaw)) !== self::REGION_HEADER_LENGTH){
@@ -298,7 +299,7 @@ class RegionLoader{
 			}
 
 			$this->locationTable[$i] = new RegionLocationTableEntry($offset, $index & 0xff, $timestamp);
-			$this->lastSector = max($this->lastSector, $this->locationTable[$i]->getLastSector());
+			$this->bumpNextFreeSector($this->locationTable[$i]);
 		}
 
 		fseek($this->filePointer, 0);
@@ -327,10 +328,13 @@ class RegionLoader{
 	protected function createBlank(){
 		fseek($this->filePointer, 0);
 		ftruncate($this->filePointer, 8192); // this fills the file with the null byte
-		$this->lastSector = 1;
 		for($i = 0; $i < 1024; ++$i){
 			$this->locationTable[$i] = new RegionLocationTableEntry(0, 0, 0);
 		}
+	}
+
+	private function bumpNextFreeSector(RegionLocationTableEntry $entry) : void{
+		$this->nextSector = max($this->nextSector, $entry->getLastSector()) + 1;
 	}
 
 	public function getX() : int{
