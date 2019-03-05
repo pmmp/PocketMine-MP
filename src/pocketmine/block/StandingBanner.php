@@ -54,6 +54,10 @@ class StandingBanner extends Transparent{
 		$this->patterns = new Deque();
 	}
 
+	public function __clone(){
+		$this->patterns = $this->patterns->map(function(BannerPattern $pattern) : BannerPattern{ return clone $pattern; });
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->rotation;
 	}

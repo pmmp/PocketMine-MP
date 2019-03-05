@@ -49,6 +49,10 @@ class SignPost extends Transparent{
 		$this->text = new SignText();
 	}
 
+	public function __clone(){
+		$this->text = clone $this->text;
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->rotation;
 	}
