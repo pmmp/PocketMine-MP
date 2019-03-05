@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io;
 
+use pocketmine\level\generator\GeneratorManager;
 use pocketmine\utils\Utils;
 use function basename;
 use function crc32;
@@ -99,7 +100,7 @@ class FormatConverter{
 			$this->logger->info("Found previous conversion attempt, deleting...");
 			Utils::recursiveUnlink($convertedOutput);
 		}
-		$this->newProvider::generate($convertedOutput, $data->getName(), $data->getSeed(), $data->getGenerator(), $data->getGeneratorOptions());
+		$this->newProvider::generate($convertedOutput, $data->getName(), $data->getSeed(), GeneratorManager::getGenerator($data->getGenerator()), $data->getGeneratorOptions());
 
 		/**
 		 * @see WritableLevelProvider::__construct()
