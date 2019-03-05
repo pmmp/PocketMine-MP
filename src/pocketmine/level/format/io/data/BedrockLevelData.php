@@ -25,6 +25,7 @@ namespace pocketmine\level\format\io\data;
 
 use pocketmine\level\format\io\exception\UnsupportedLevelFormatException;
 use pocketmine\level\generator\Flat;
+use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\nbt\LittleEndianNbtSerializer;
@@ -36,6 +37,7 @@ use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Utils;
 use function file_get_contents;
 use function file_put_contents;
 use function strlen;
@@ -51,6 +53,7 @@ class BedrockLevelData extends BaseNbtLevelData{
 	public const GENERATOR_FLAT = 2;
 
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
+		Utils::testValidInstance($generator, Generator::class);
 		switch($generator){
 			case Flat::class:
 				$generatorType = self::GENERATOR_FLAT;

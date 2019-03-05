@@ -94,6 +94,7 @@ final class GeneratorManager{
 	 * @throws \InvalidArgumentException if the class type cannot be matched to a known alias
 	 */
 	public static function getGeneratorName(string $class) : string{
+		Utils::testValidInstance($class, Generator::class);
 		foreach(self::$list as $name => $c){
 			if($c === $class){
 				return $name;

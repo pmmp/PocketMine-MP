@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\data;
 
+use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\nbt\BigEndianNbtSerializer;
@@ -32,6 +33,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\utils\Utils;
 use function ceil;
 use function file_get_contents;
 use function file_put_contents;
@@ -40,6 +42,7 @@ use function microtime;
 class JavaLevelData extends BaseNbtLevelData{
 
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = [], int $version = 19133) : void{
+		Utils::testValidInstance($generator, Generator::class);
 		//TODO, add extra details
 		$levelData = new CompoundTag("Data", [
 			new ByteTag("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0),

@@ -28,7 +28,9 @@ use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\data\JavaLevelData;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\LevelData;
+use pocketmine\level\generator\Generator;
 use pocketmine\level\Level;
+use pocketmine\utils\Utils;
 use function assert;
 use function file_exists;
 use function is_dir;
@@ -69,6 +71,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 	}
 
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
+		Utils::testValidInstance($generator, Generator::class);
 		if(!file_exists($path)){
 			mkdir($path, 0777, true);
 		}

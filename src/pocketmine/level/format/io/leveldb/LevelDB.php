@@ -32,12 +32,14 @@ use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\format\io\exception\UnsupportedLevelFormatException;
 use pocketmine\level\format\io\LevelData;
 use pocketmine\level\format\SubChunk;
+use pocketmine\level\generator\Generator;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
+use pocketmine\utils\Utils;
 use function array_values;
 use function chr;
 use function defined;
@@ -119,6 +121,7 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
+		Utils::testValidInstance($generator, Generator::class);
 		self::checkForLevelDBExtension();
 
 		if(!file_exists($path . "/db")){
