@@ -25,28 +25,94 @@ namespace pocketmine\level\format\io\region;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\level\format\ChunkException;
+use function file_exists;
+use function random_bytes;
+use function str_repeat;
+use function sys_get_temp_dir;
+use function unlink;
 
 class RegionLoaderTest extends TestCase{
 
-	public function testChunkTooBig() : void{
-		$r = new RegionLoader(sys_get_temp_dir() . '/chunk_too_big.testregion_' . bin2hex(random_bytes(4)));
-		$r->open();
+	/** @var string */
+	private $regionPath;
+	/** @var RegionLoader */
+	private $region;
 
+	public function setUp(){
+		$this->regionPath = sys_get_temp_dir() . '/test.testregion';
+		if(file_exists($this->regionPath)){
+			unlink($this->regionPath);
+		}
+		$this->region = new RegionLoader($this->regionPath);
+		$this->region->open();
+	}
+
+	public function tearDown(){
+		$this->region->close();
+		if(file_exists($this->regionPath)){
+			unlink($this->regionPath);
+		}
+	}
+
+	public function testChunkTooBig() : void{
 		$this->expectException(ChunkException::class);
-		$r->writeChunk(0, 0, str_repeat("a", 1044476));
+		$this->region->writeChunk(0, 0, str_repeat("a", 1044476));
 	}
 
 	public function testChunkMaxSize() : void{
 		$data = str_repeat("a", 1044475);
-		$path = sys_get_temp_dir() . '/chunk_just_fits.testregion_' . bin2hex(random_bytes(4));
-		$r = new RegionLoader($path);
-		$r->open();
+		$this->region->writeChunk(0, 0, $data);
+		$this->region->close();
 
-		$r->writeChunk(0, 0, $data);
-		$r->close();
-
-		$r = new RegionLoader($path);
+		$r = new RegionLoader($this->regionPath);
 		$r->open();
 		self::assertSame($data, $r->readChunk(0, 0));
+	}
+
+	public function outOfBoundsCoordsProvider() : \Generator{
+		yield [-1, -1];
+		yield [32, 32];
+		yield [-1, 32];
+		yield [32, -1];
+	}
+
+	/**
+	 * @dataProvider outOfBoundsCoordsProvider
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @throws ChunkException
+	 * @throws \InvalidArgumentException
+	 */
+	public function testWriteChunkOutOfBounds(int $x, int $z) : void{
+		$this->expectException(\InvalidArgumentException::class);
+		$this->region->writeChunk($x, $z, str_repeat("\x00", 1000));
+	}
+
+	public function testReadWriteChunkInBounds() : void{
+		$dat = random_bytes(1000);
+		for($x = 0; $x < 32; ++$x){
+			for($z = 0; $z < 32; ++$z){
+				$this->region->writeChunk($x, $z, $dat);
+			}
+		}
+		for($x = 0; $x < 32; ++$x){
+			for($z = 0; $z < 32; ++$z){
+				self::assertSame($dat, $this->region->readChunk($x, $z));
+			}
+		}
+	}
+
+	/**
+	 * @dataProvider outOfBoundsCoordsProvider
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @throws \InvalidArgumentException
+	 * @throws \pocketmine\level\format\io\exception\CorruptedChunkException
+	 */
+	public function testReadChunkOutOfBounds(int $x, int $z) : void{
+		$this->expectException(\InvalidArgumentException::class);
+		$this->region->readChunk($x, $z);
 	}
 }
