@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use Ds\Deque;
-use pocketmine\block\StandingBanner;
 use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\level\Level;
@@ -36,7 +35,7 @@ use pocketmine\nbt\tag\StringTag;
 
 /**
  * @deprecated
- * @see StandingBanner
+ * @see \pocketmine\block\Banner
  */
 class Banner extends Spawnable{
 

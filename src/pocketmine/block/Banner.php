@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use Ds\Deque;
 use pocketmine\block\utils\BannerPattern;
+use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
@@ -37,10 +38,17 @@ use pocketmine\tile\Banner as TileBanner;
 use function assert;
 use function floor;
 
-class StandingBanner extends Transparent{
+class Banner extends Transparent{
+	/** @var BlockIdentifierFlattened */
+	protected $idInfo;
+
+	//TODO: conditionally useless properties, find a way to fix
 
 	/** @var int */
 	protected $rotation = 0;
+
+	/** @var int */
+	protected $facing = Facing::UP;
 
 	/** @var DyeColor */
 	protected $baseColor;
@@ -48,7 +56,7 @@ class StandingBanner extends Transparent{
 	/** @var Deque|BannerPattern[] */
 	protected $patterns;
 
-	public function __construct(BlockIdentifier $idInfo, string $name){
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
 		parent::__construct($idInfo, $name);
 		$this->baseColor = DyeColor::BLACK();
 		$this->patterns = new Deque();
@@ -58,12 +66,24 @@ class StandingBanner extends Transparent{
 		$this->patterns = $this->patterns->map(function(BannerPattern $pattern) : BannerPattern{ return clone $pattern; });
 	}
 
+	public function getId() : int{
+		return $this->facing === Facing::UP ? parent::getId() : $this->idInfo->getSecondId();
+	}
+
 	protected function writeStateToMeta() : int{
-		return $this->rotation;
+		if($this->facing === Facing::UP){
+			return $this->rotation;
+		}
+		return $this->facing;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->rotation = $stateMeta;
+		if($id === $this->idInfo->getSecondId()){
+			$this->facing = BlockDataValidator::readHorizontalFacing($stateMeta);
+		}else{
+			$this->facing = Facing::UP;
+			$this->rotation = $stateMeta;
+		}
 	}
 
 	public function getStateBitmask() : int{
@@ -131,24 +151,19 @@ class StandingBanner extends Transparent{
 			$this->setPatterns($item->getPatterns());
 		}
 		if($face !== Facing::DOWN){
-			if($face === Facing::UP and $player !== null){
-				$this->rotation = ((int) floor((($player->yaw + 180) * 16 / 360) + 0.5)) & 0x0f;
-				return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+			$this->facing = $face;
+			if($face === Facing::UP){
+				$this->rotation = $player !== null ? ((int) floor((($player->yaw + 180) * 16 / 360) + 0.5)) & 0x0f : 0;
 			}
 
-			//TODO: awful hack :(
-			$wallBanner = BlockFactory::get(Block::WALL_BANNER, $face);
-			assert($wallBanner instanceof WallBanner);
-			$wallBanner->baseColor = $this->baseColor;
-			$wallBanner->setPatterns($this->patterns);
-			return $this->getLevel()->setBlock($blockReplace, $wallBanner);
+			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() === self::AIR){
+		if($this->getSide(Facing::opposite($this->facing))->getId() === self::AIR){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}
