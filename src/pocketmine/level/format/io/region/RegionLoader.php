@@ -277,32 +277,54 @@ class RegionLoader{
 		}
 
 		$data = unpack("N*", $headerRaw);
-		/** @var int[] $usedOffsets */
-		$usedOffsets = [];
+
 		for($i = 0; $i < 1024; ++$i){
 			$index = $data[$i + 1];
 			$offset = $index >> 8;
 			$timestamp = $data[$i + 1025];
-			if($offset !== 0){
-				self::getChunkCoords($i, $x, $z);
-				$fileOffset = $offset << 12;
 
-				fseek($this->filePointer, $fileOffset);
-				if(feof($this->filePointer)){
-					throw new CorruptedRegionException("Region file location offset x=$x,z=$z points to invalid file location $fileOffset");
-				}elseif(isset($usedOffsets[$offset])){
-					self::getChunkCoords($usedOffsets[$offset], $existingX, $existingZ);
-					throw new CorruptedRegionException("Found two chunk offsets (chunk1: x=$existingX,z=$existingZ, chunk2: x=$x,z=$z) pointing to the file location $fileOffset");
-				}else{
-					$usedOffsets[$offset] = $i;
-				}
+			if($offset === 0){
+				$this->locationTable[$i] = new RegionLocationTableEntry(0, 0, 0);
+			}else{
+				$this->locationTable[$i] = new RegionLocationTableEntry($offset, $index & 0xff, $timestamp);
+				$this->bumpNextFreeSector($this->locationTable[$i]);
 			}
-
-			$this->locationTable[$i] = new RegionLocationTableEntry($offset, $index & 0xff, $timestamp);
-			$this->bumpNextFreeSector($this->locationTable[$i]);
 		}
 
+		$this->checkLocationTableValidity();
+
 		fseek($this->filePointer, 0);
+	}
+
+	/**
+	 * @throws CorruptedRegionException
+	 */
+	private function checkLocationTableValidity() : void{
+		/** @var int[] $usedOffsets */
+		$usedOffsets = [];
+
+		for($i = 0; $i < 1024; ++$i){
+			$entry = $this->locationTable[$i];
+			if($entry->isNull()){
+				continue;
+			}
+
+			self::getChunkCoords($i, $x, $z);
+			$offset = $entry->getFirstSector();
+			$fileOffset = $offset << 12;
+
+			//TODO: more validity checks
+
+			fseek($this->filePointer, $fileOffset);
+			if(feof($this->filePointer)){
+				throw new CorruptedRegionException("Region file location offset x=$x,z=$z points to invalid file location $fileOffset");
+			}
+			if(isset($usedOffsets[$offset])){
+				self::getChunkCoords($usedOffsets[$offset], $existingX, $existingZ);
+				throw new CorruptedRegionException("Found two chunk offsets (chunk1: x=$existingX,z=$existingZ, chunk2: x=$x,z=$z) pointing to the file location $fileOffset");
+			}
+			$usedOffsets[$offset] = $i;
+		}
 	}
 
 	private function writeLocationTable(){
