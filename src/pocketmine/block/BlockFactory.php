@@ -273,7 +273,6 @@ class BlockFactory{
 		self::register(new Torch(new BID(Block::COLORED_TORCH_RG), "Red Torch"));
 		self::register(new Torch(new BID(Block::COLORED_TORCH_RG, 8), "Green Torch"));
 		self::register(new Torch(new BID(Block::TORCH), "Torch"));
-		self::register(new Trapdoor(new BID(Block::TRAPDOOR), "Wooden Trapdoor"));
 		self::register(new TrappedChest(new BID(Block::TRAPPED_CHEST, 0, null, \pocketmine\tile\Chest::class), "Trapped Chest"));
 		self::register(new Tripwire(new BID(Block::TRIPWIRE, 0, ItemIds::STRING), "Tripwire"));
 		self::register(new TripwireHook(new BID(Block::TRIPWIRE_HOOK), "Tripwire Hook"));
@@ -284,8 +283,6 @@ class BlockFactory{
 		self::register(new WeightedPressurePlateHeavy(new BID(Block::HEAVY_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Heavy"));
 		self::register(new WeightedPressurePlateLight(new BID(Block::LIGHT_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Light"));
 		self::register(new Wheat(new BID(Block::WHEAT_BLOCK), "Wheat Block"));
-		self::register(new WoodenButton(new BID(Block::WOODEN_BUTTON), "Wooden Button"));
-		self::register(new WoodenPressurePlate(new BID(Block::WOODEN_PRESSURE_PLATE), "Wooden Pressure Plate"));
 
 		/** @var int[]|\SplObjectStorage $woodenStairIds */
 		$woodenStairIds = new \SplObjectStorage();
@@ -314,6 +311,33 @@ class BlockFactory{
 		$woodenDoorIds[TreeType::ACACIA()] = new BID(Block::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR);
 		$woodenDoorIds[TreeType::DARK_OAK()] = new BID(Block::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR);
 
+		/** @var int[]|\SplObjectStorage $woodenPressurePlateIds */
+		$woodenPressurePlateIds = new \SplObjectStorage();
+		$woodenPressurePlateIds[TreeType::OAK()] = Block::WOODEN_PRESSURE_PLATE;
+		$woodenPressurePlateIds[TreeType::SPRUCE()] = Block::SPRUCE_PRESSURE_PLATE;
+		$woodenPressurePlateIds[TreeType::BIRCH()] = Block::BIRCH_PRESSURE_PLATE;
+		$woodenPressurePlateIds[TreeType::JUNGLE()] = Block::JUNGLE_PRESSURE_PLATE;
+		$woodenPressurePlateIds[TreeType::ACACIA()] = Block::ACACIA_PRESSURE_PLATE;
+		$woodenPressurePlateIds[TreeType::DARK_OAK()] = Block::DARK_OAK_PRESSURE_PLATE;
+
+		/** @var int[]|\SplObjectStorage $woodenButtonIds */
+		$woodenButtonIds = new \SplObjectStorage();
+		$woodenButtonIds[TreeType::OAK()] = Block::WOODEN_BUTTON;
+		$woodenButtonIds[TreeType::SPRUCE()] = Block::SPRUCE_BUTTON;
+		$woodenButtonIds[TreeType::BIRCH()] = Block::BIRCH_BUTTON;
+		$woodenButtonIds[TreeType::JUNGLE()] = Block::JUNGLE_BUTTON;
+		$woodenButtonIds[TreeType::ACACIA()] = Block::ACACIA_BUTTON;
+		$woodenButtonIds[TreeType::DARK_OAK()] = Block::DARK_OAK_BUTTON;
+
+		/** @var int[]|\SplObjectStorage $woodenTrapdoorIds */
+		$woodenTrapdoorIds = new \SplObjectStorage();
+		$woodenTrapdoorIds[TreeType::OAK()] = Block::WOODEN_TRAPDOOR;
+		$woodenTrapdoorIds[TreeType::SPRUCE()] = Block::SPRUCE_TRAPDOOR;
+		$woodenTrapdoorIds[TreeType::BIRCH()] = Block::BIRCH_TRAPDOOR;
+		$woodenTrapdoorIds[TreeType::JUNGLE()] = Block::JUNGLE_TRAPDOOR;
+		$woodenTrapdoorIds[TreeType::ACACIA()] = Block::ACACIA_TRAPDOOR;
+		$woodenTrapdoorIds[TreeType::DARK_OAK()] = Block::DARK_OAK_TRAPDOOR;
+
 		foreach(TreeType::getAll() as $treeType){
 			$magicNumber = $treeType->getMagicNumber();
 			$name = $treeType->getDisplayName();
@@ -330,6 +354,10 @@ class BlockFactory{
 			self::register(new FenceGate(new BID($fenceGateIds[$treeType]), $treeType->getDisplayName() . " Fence Gate"));
 			self::register(new WoodenStairs(new BID($woodenStairIds[$treeType]), $treeType->getDisplayName() . " Stairs"));
 			self::register(new WoodenDoor($woodenDoorIds[$treeType], $treeType->getDisplayName() . " Door"));
+
+			self::register(new WoodenButton(new BID($woodenButtonIds[$treeType]), $treeType->getDisplayName() . " Button"));
+			self::register(new WoodenPressurePlate(new BID($woodenPressurePlateIds[$treeType]), $treeType->getDisplayName() . " Pressure Plate"));
+			self::register(new Trapdoor(new BID($woodenTrapdoorIds[$treeType]), $treeType->getDisplayName() . " Trapdoor"));
 		}
 
 		static $sandstoneTypes = [
