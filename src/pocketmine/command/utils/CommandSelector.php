@@ -53,7 +53,7 @@ class CommandSelector{
 	 * @return Entity[]
 	 */
 	public static function findTargets(CommandSender $sender, string $selector, string $entityType = Entity::class, ?Vector3 $pos = null) : array{
-		if(!($pos instanceof Position)){
+		if(!($pos instanceof Position) and $pos !== null){
 			if($sender instanceof Position){
 				$pos = $sender->asPosition()->setComponents($pos->x, $pos->y, $pos->z);
 			}else{
