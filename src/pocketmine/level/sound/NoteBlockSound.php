@@ -28,7 +28,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
-class NoteBlockSound extends GenericSound{
+class NoteBlockSound extends Sound{
 
 	public const INSTRUMENT_PIANO = 0;
 	public const INSTRUMENT_BASS_DRUM = 1;
@@ -36,17 +36,21 @@ class NoteBlockSound extends GenericSound{
 	public const INSTRUMENT_TABOUR = 3;
 	public const INSTRUMENT_BASS = 4;
 
+	protected $instrument = self::INSTRUMENT_PIANO;
+	protected $note = 0;
+
 	/**
 	 * NoteBlockSound constructor.
 	 *
 	 * @param Vector3 $pos
-	 * @param int     $instrument
-	 * @param int     $note
+	 * @param int $instrument
+	 * @param int $note
 	 */
 	public function __construct(Vector3 $pos, int $instrument = self::INSTRUMENT_PIANO, int $note = 0){
-		parent::__construct($pos, $instrument, $note);
+		parent::__construct($pos->x, $pos->y, $pos->z);
 
-		$this->pitch = $note;
+		$this->instrument = $instrument;
+		$this->note = $note;
 	}
 
 	public function encode(){
@@ -54,13 +58,13 @@ class NoteBlockSound extends GenericSound{
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->eventType = $this->id;
-		$pk->eventData = $this->pitch;
+		$pk->eventType = $this->instrument;
+		$pk->eventData = $this->note;
 
 		$pk2 = new LevelSoundEventPacket();
 		$pk2->sound = LevelSoundEventPacket::SOUND_NOTE;
 		$pk2->position = $this;
-		$pk2->extraData = $this->id | $this->pitch;
+		$pk2->extraData = $this->instrument | $this->note;
 
 		return [$pk, $pk2];
 	}

@@ -223,6 +223,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 			if($horse instanceof AbstractHorse){
 				// This is useless for now, only may usable for plugins
 				$horse->setJumpPower($packet->jumpStrength);
+				return true;
 			}
 		}
 		return false;
@@ -340,6 +341,8 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 				return true;
 			}
 		}
+
+		return false;
 	}
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{

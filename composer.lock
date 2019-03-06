@@ -235,7 +235,7 @@
             ],
             "description": "A RakNet server implementation written in PHP",
             "support": {
-                "source": "https://github.com/pmmp/RakLib/tree/0.12",
+                "source": "https://github.com/pmmp/RakLib/tree/0.12.2",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
             "time": "2019-01-21T14:17:30+00:00"
