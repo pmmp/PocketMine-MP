@@ -153,6 +153,7 @@ class LevelDB extends BaseLevelProvider{
 		$biomeIds = "";
 
 		$chunkVersion = ord($this->db->get($index . self::TAG_VERSION));
+		$hasBeenUpgraded = $chunkVersion < self::CURRENT_LEVEL_CHUNK_VERSION;
 
 		$binaryStream = new BinaryStream();
 
@@ -171,6 +172,9 @@ class LevelDB extends BaseLevelProvider{
 						throw new CorruptedChunkException("Unexpected empty data for subchunk $y");
 					}
 					$subChunkVersion = $binaryStream->getByte();
+					if($subChunkVersion < self::CURRENT_LEVEL_SUBCHUNK_VERSION){
+						$hasBeenUpgraded = true;
+					}
 
 					switch($subChunkVersion){
 						case 0:
@@ -180,6 +184,7 @@ class LevelDB extends BaseLevelProvider{
 
 								if($chunkVersion < 4){
 									$binaryStream->get(4096); //legacy light info, discard it
+									$hasBeenUpgraded = true;
 								}
 							}catch(BinaryDataException $e){
 								throw new CorruptedChunkException($e->getMessage(), 0, $e);
@@ -295,6 +300,7 @@ class LevelDB extends BaseLevelProvider{
 
 		$chunk->setGenerated();
 		$chunk->setPopulated();
+		$chunk->setChanged($hasBeenUpgraded); //trigger rewriting chunk to disk if it was converted from an older format
 
 		return $chunk;
 	}
