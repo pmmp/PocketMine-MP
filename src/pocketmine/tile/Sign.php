@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-use pocketmine\block\SignPost;
 use pocketmine\block\utils\SignText;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -38,7 +37,7 @@ use function sprintf;
 
 /**
  * @deprecated
- * @see SignPost
+ * @see \pocketmine\block\Sign
  */
 class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";

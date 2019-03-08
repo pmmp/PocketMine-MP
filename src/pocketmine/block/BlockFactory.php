@@ -78,6 +78,7 @@ class BlockFactory{
 		self::register(new Anvil(new BID(Block::ANVIL, Anvil::TYPE_NORMAL), "Anvil"));
 		self::register(new Anvil(new BID(Block::ANVIL, Anvil::TYPE_SLIGHTLY_DAMAGED), "Slightly Damaged Anvil"));
 		self::register(new Anvil(new BID(Block::ANVIL, Anvil::TYPE_VERY_DAMAGED), "Very Damaged Anvil"));
+		self::register(new Banner(new BlockIdentifierFlattened(Block::STANDING_BANNER, Block::WALL_BANNER, 0, ItemIds::BANNER, \pocketmine\tile\Banner::class), "Banner"));
 		self::register(new Bed(new BID(Block::BED_BLOCK, 0, ItemIds::BED, \pocketmine\tile\Bed::class), "Bed Block"));
 		self::register(new Bedrock(new BID(Block::BEDROCK), "Bedrock"));
 		self::register(new Beetroot(new BID(Block::BEETROOT_BLOCK), "Beetroot Block"));
@@ -224,14 +225,13 @@ class BlockFactory{
 		self::register(new SandstoneStairs(new BID(Block::RED_SANDSTONE_STAIRS), "Red Sandstone Stairs"));
 		self::register(new SandstoneStairs(new BID(Block::SANDSTONE_STAIRS), "Sandstone Stairs"));
 		self::register(new SeaLantern(new BID(Block::SEALANTERN), "Sea Lantern"));
-		self::register(new SignPost(new BID(Block::SIGN_POST, 0, ItemIds::SIGN, \pocketmine\tile\Sign::class), "Sign Post"));
+		self::register(new Sign(new BlockIdentifierFlattened(Block::STANDING_SIGN, Block::WALL_SIGN, 0, ItemIds::SIGN, \pocketmine\tile\Sign::class), "Sign"));
 		self::register(new Skull(new BID(Block::MOB_HEAD_BLOCK, 0, null, \pocketmine\tile\Skull::class), "Mob Head"));
 		self::register(new SmoothStone(new BID(Block::STONE, Stone::NORMAL), "Stone"));
 		self::register(new Snow(new BID(Block::SNOW), "Snow Block"));
 		self::register(new SnowLayer(new BID(Block::SNOW_LAYER), "Snow Layer"));
 		self::register(new SoulSand(new BID(Block::SOUL_SAND), "Soul Sand"));
 		self::register(new Sponge(new BID(Block::SPONGE), "Sponge"));
-		self::register(new StandingBanner(new BID(Block::STANDING_BANNER, 0, ItemIds::BANNER, \pocketmine\tile\Banner::class), "Standing Banner"));
 		self::register(new Stone(new BID(Block::STONE, Stone::ANDESITE), "Andesite"));
 		self::register(new Stone(new BID(Block::STONE, Stone::DIORITE), "Diorite"));
 		self::register(new Stone(new BID(Block::STONE, Stone::GRANITE), "Granite"));
@@ -279,8 +279,6 @@ class BlockFactory{
 		self::register(new TripwireHook(new BID(Block::TRIPWIRE_HOOK), "Tripwire Hook"));
 		self::register(new UnderwaterTorch(new BID(Block::UNDERWATER_TORCH), "Underwater Torch"));
 		self::register(new Vine(new BID(Block::VINE), "Vines"));
-		self::register(new WallBanner(new BID(Block::WALL_BANNER, 0, ItemIds::BANNER, \pocketmine\tile\Banner::class), "Wall Banner"));
-		self::register(new WallSign(new BID(Block::WALL_SIGN, 0, ItemIds::SIGN, \pocketmine\tile\Sign::class), "Wall Sign"));
 		self::register(new Water(new BlockIdentifierFlattened(Block::FLOWING_WATER, Block::STILL_WATER), "Water"));
 		self::register(new WaterLily(new BID(Block::LILY_PAD), "Lily Pad"));
 		self::register(new WeightedPressurePlateHeavy(new BID(Block::HEAVY_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Heavy"));
