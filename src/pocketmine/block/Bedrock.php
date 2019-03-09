@@ -27,6 +27,21 @@ use pocketmine\item\Item;
 
 class Bedrock extends Solid{
 
+	/** @var bool */
+	private $burnsForever = false;
+
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->burnsForever = $stateMeta !== 0;
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->burnsForever ? 1 : 0;
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1;
+	}
+
 	public function getHardness() : float{
 		return -1;
 	}
@@ -37,5 +52,9 @@ class Bedrock extends Solid{
 
 	public function isBreakable(Item $item) : bool{
 		return false;
+	}
+
+	public function burnsForever() : bool{
+		return $this->burnsForever;
 	}
 }
