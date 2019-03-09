@@ -424,22 +424,15 @@ class BlockFactory{
 			self::register(new CobblestoneWall(new BID(Block::COBBLESTONE_WALL, $magicNumber), $prefix . " Wall"));
 		}
 
-		//TODO: minecraft:acacia_button
-		//TODO: minecraft:acacia_pressure_plate
 		//TODO: minecraft:acacia_standing_sign
-		//TODO: minecraft:acacia_trapdoor
 		//TODO: minecraft:acacia_wall_sign
 		//TODO: minecraft:andesite_stairs
 		//TODO: minecraft:bamboo
 		//TODO: minecraft:bamboo_sapling
 		//TODO: minecraft:barrel
-		//TODO: minecraft:barrier
 		//TODO: minecraft:beacon
 		//TODO: minecraft:bell
-		//TODO: minecraft:birch_button
-		//TODO: minecraft:birch_pressure_plate
 		//TODO: minecraft:birch_standing_sign
-		//TODO: minecraft:birch_trapdoor
 		//TODO: minecraft:birch_wall_sign
 		//TODO: minecraft:blast_furnace
 		//TODO: minecraft:blue_ice
@@ -461,9 +454,6 @@ class BlockFactory{
 		//TODO: minecraft:coral_fan_hang
 		//TODO: minecraft:coral_fan_hang2
 		//TODO: minecraft:coral_fan_hang3
-		//TODO: minecraft:dark_oak_button
-		//TODO: minecraft:dark_oak_pressure_plate
-		//TODO: minecraft:dark_oak_trapdoor
 		//TODO: minecraft:dark_prismarine_stairs
 		//TODO: minecraft:darkoak_standing_sign
 		//TODO: minecraft:darkoak_wall_sign
@@ -471,7 +461,6 @@ class BlockFactory{
 		//TODO: minecraft:dispenser
 		//TODO: minecraft:double_stone_slab3
 		//TODO: minecraft:double_stone_slab4
-		//TODO: minecraft:dragon_egg
 		//TODO: minecraft:dried_kelp_block
 		//TODO: minecraft:dropper
 		//TODO: minecraft:element_0
@@ -479,15 +468,11 @@ class BlockFactory{
 		//TODO: minecraft:end_gateway
 		//TODO: minecraft:end_portal
 		//TODO: minecraft:fletching_table
-		//TODO: minecraft:frosted_ice
 		//TODO: minecraft:granite_stairs
 		//TODO: minecraft:grindstone
 		//TODO: minecraft:hopper
 		//TODO: minecraft:jukebox
-		//TODO: minecraft:jungle_button
-		//TODO: minecraft:jungle_pressure_plate
 		//TODO: minecraft:jungle_standing_sign
-		//TODO: minecraft:jungle_trapdoor
 		//TODO: minecraft:jungle_wall_sign
 		//TODO: minecraft:kelp
 		//TODO: minecraft:lantern
@@ -504,7 +489,6 @@ class BlockFactory{
 		//TODO: minecraft:polished_diorite_stairs
 		//TODO: minecraft:polished_granite_stairs
 		//TODO: minecraft:portal
-		//TODO: minecraft:powered_comparator
 		//TODO: minecraft:prismarine_bricks_stairs
 		//TODO: minecraft:prismarine_stairs
 		//TODO: minecraft:red_nether_brick_stairs
@@ -520,10 +504,7 @@ class BlockFactory{
 		//TODO: minecraft:smooth_red_sandstone_stairs
 		//TODO: minecraft:smooth_sandstone_stairs
 		//TODO: minecraft:smooth_stone
-		//TODO: minecraft:spruce_button
-		//TODO: minecraft:spruce_pressure_plate
 		//TODO: minecraft:spruce_standing_sign
-		//TODO: minecraft:spruce_trapdoor
 		//TODO: minecraft:spruce_wall_sign
 		//TODO: minecraft:sticky_piston
 		//TODO: minecraft:stone_slab3
@@ -537,7 +518,6 @@ class BlockFactory{
 		//TODO: minecraft:structure_block
 		//TODO: minecraft:turtle_egg
 		//TODO: minecraft:undyed_shulker_box
-		//TODO: minecraft:unpowered_comparator
 	}
 
 	public static function isInit() : bool{
