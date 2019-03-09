@@ -2450,6 +2450,9 @@ class Server{
 			$level->doTick($currentTick);
 			$tickMs = (microtime(true) - $levelTime) * 1000;
 			$level->tickRateTime = $tickMs;
+			if($tickMs >= 50){
+				$this->getLogger()->debug(sprintf("World \"%s\" took too long to tick: %gms (%g ticks)", $level->getName(), $tickMs, round($tickMs / 50, 2)));
+			}
 
 			if($this->autoTickRate){
 				if($tickMs < 50 and $level->getTickRate() > $this->baseTickRate){
