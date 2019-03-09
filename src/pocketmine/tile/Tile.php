@@ -105,6 +105,7 @@ abstract class Tile extends Position{
 		self::registerTile(MobSpawner::class, [self::MOB_SPAWNER, "minecraft:mob_spawner"]);
 		self::registerTile(ShulkerBox::class, [self::SHULKER_BOX, "minecraft:shulker_box"]);
 		self::registerTile(Hopper::class, [self::HOPPER, "minecraft:hopper"]);
+		self::registerTile(Beacon::class, [self::BEACON, "minecraft:beacon"]);
 	}
 
 	/**
