@@ -42,6 +42,8 @@ foreach($old as $k => $name){
 foreach($new as $k => $name){
 	if(!isset($old[$k])){
 		echo "Added state for $name (" . ($k >> 4) . ":" . ($k & 0xf) . ")\n";
+	}elseif($old[$k] !== $name){
+		echo "Name changed (" . ($k >> 4) . ":" . ($k & 0xf) . "): " . $old[$k] . " -> " . $name . "\n";
 	}
 }
 file_put_contents(__DIR__ . '/block_factory_consistency_check.json', json_encode(
