@@ -2579,6 +2579,7 @@ class Server{
 		}
 
 		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
+			$this->autoSaveTicker = 0;
 			$this->getLogger()->debug("[Auto Save] Saving worlds...");
 			$start = microtime(true);
 			$this->doAutoSave();
