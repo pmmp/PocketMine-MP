@@ -263,6 +263,11 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var int */
 	public $tickRateTime = 0;
+	/**
+	 * @deprecated
+	 * @var int
+	 */
+	public $tickRateCounter = 0;
 
 	/** @var bool */
 	private $doingTick = false;
