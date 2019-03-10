@@ -274,7 +274,7 @@ class FishingHook extends Projectile{
 				$ev = new PlayerFishEvent($angler, $this, PlayerFishEvent::STATE_CAUGHT_ENTITY);
 				$ev->call();
 
-				if($ev->isCancelled()){
+				if(!$ev->isCancelled()){
 					$d0 = $angler->x - $this->x;
 					$d2 = $angler->y - $this->y;
 					$d4 = $angler->z - $this->z;
