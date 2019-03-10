@@ -1,45 +1,52 @@
-# [![PocketMine-MP](http://cdn.pocketmine.net/img/PocketMine-MP-h.png)](https://pmmp.io)
+<h1>Altay<img src="http://fs1.directupload.net/images/180401/urn5z9ic.png" height="64" width="64" align="left"></img></h1>
+<br />
 
-__A highly customisable, open source server software for Minecraft: Bedrock Edition written in PHP__
+A feature-rich server software for Minecraft: Bedrock/W10 Edition. Altay is a fork of [pmmp](https://github.com/pmmp/PocketMine-MP)
 
-[![Build Status](https://travis-ci.org/pmmp/PocketMine-MP.svg?branch=master)](https://travis-ci.org/pmmp/PocketMine-MP)
+##### WARNING: Altay is still in development so may be bugs sometimes 
 
-### Setup, help & support, FAQs
-Head over to the [documentation site](http://pmmp.readthedocs.org/).
-If you don't find what you're looking for there, [talk to a human](#discussion). Please do not use our issue tracker for support requests.
+------------       
 
-### Discussion
-- [Forums](https://forums.pmmp.io/)
+| Jenkins | TravisCI | Discord | Twitter |
+| :---: | :---: | :---: | :---: |
+| [![Build Status](https://altay.minehub.de/job/Altay/badge/icon)](https://altay.minehub.de/job/Altay/) | [![Travis branch](https://img.shields.io/travis/TuranicTeam/Altay/master.svg?style=flat-square)](https://travis-ci.org/TuranicTeam/Altay) | [![Discord](https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.gg/UsuhCFj) | [![Twitter Follow](https://img.shields.io/twitter/follow/TuranicTeam.svg?style=flat-square&logo=twitter&label=Follow)](https://twitter.com/TuranicTeam) |
 
-### Plugins
-There are a very wide range of already-written plugins available which you can use to customise your server. Check out [Poggit](https://poggit.pmmp.io), or just search GitHub.
+------------
 
-### For developers
- * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
- * [DevTools](https://github.com/pmmp/PocketMine-DevTools/) - A development tools plugin for creating plugins.
+## Why should I prefer Altay?
 
-### Can I contribute?
-Yes you can! Contributions are welcomed provided that they comply with our [Contributing Guidelines](CONTRIBUTING.md). Please ensure you read the relevant sections of the guidelines carefully before making a Pull Request or opening an Issue.
+Because Altay has more features and improvements than PocketMine-MP:
 
-### Where can I get the latest .phar?
-- Latest release builds can be found in our [GitHub releases](https://github.com/pmmp/PocketMine-MP/releases).
-- Latest bleeding-edge development builds (and other builds in the build job channels) can be found on our [Jenkins server](https://jenkins.pmmp.io/).
+- Working GameRules
+- Auto Mob Spawning
+- Map Items (only API for now)
+- Fishing
+- Leashing Mobs
+- Best MobAI, More mobs(Chicken, Cow, Sheep, Zombie, Husk, Creeper, Spider, CaveSpider, Stray, Blaze, Mooshroom, Wolf, Horse, Pig, Skeleton)
+- More Items, Blocks
+- More Methods
+- More Event (PlayerFishingEvent, BanEvent, UnbanEvent, AddressBanEvent)
+- Entity Riding (Example: Horses)
+- Best FormAPI
+- Best BossBarAPI
+- More Technical Fixes
+- Working fake inventories (EnchantmentTable, Beacon)
+- More Tiles (Jukebox, ShulkerBox, NoteBlock, Hopper, MobSpawner)
+- Best Command Parameter API ever
+- More Event Handling (Dimension changing, Swimming)
+- More Generators (End, Nether, Void)
+- Villager Trading
+- More Inventory (PlayerOffHandInventory)
 
-**Note: Please avoid development builds unless there is no other alternative for what you need.** Development builds are subject to changes at any time without notice, and it is likely that your server or plugins might break without warning.
+And more...
 
-## Licensing information
+### Can I test this before I download it?
 
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+Yes, you can.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+- **entengames.net:19132**
+- **play.oyungg.net:19132**
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#### Do you need help about Altay?
 
-pmmp/PocketMine are not affiliated with Mojang. All brands and trademarks belong to their respective owners. PocketMine-MP is not a Mojang-approved software, nor is it associated with Mojang.
+Join our Discord group and contact us!
