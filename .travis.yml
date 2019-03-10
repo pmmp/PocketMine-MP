@@ -1,3 +1,4 @@
+dist: xenial
 language: php
 
 php:
@@ -5,6 +6,22 @@ php:
  - 7.3
 
 before_script:
+ - LEVELDB_VERSION=f1463cb0b2486b0caf7d42ca3c7684545e875f04
+ - curl -fsSL "https://github.com/pmmp/leveldb-mcpe/archive/f1463cb0b2486b0caf7d42ca3c7684545e875f04.tar.gz" | tar -zx
+ - mv leveldb-mcpe-$LEVELDB_VERSION leveldb-mcpe
+ - cd leveldb-mcpe && make -j4 && mv out-shared/libleveldb.* . && cd ..
+ - git clone https://github.com/reeze/php-leveldb.git leveldb
+ - cd leveldb
+ - git checkout 9bcae79f71b81a5c3ea6f67e45ae9ae9fb2775a5
+ - phpize
+ - ./configure --with-leveldb=../leveldb-mcpe && make && make install
+ - cd ..
+ - git clone https://github.com/pmmp/ext-chunkutils2.git chunkutils
+ - cd chunkutils
+ - git checkout 5c96eeea7667ef15aa684b6a455a2a46699aff37
+ - phpize
+ - ./configure && make && make install
+ - cd ..
 # - pecl install channel://pecl.php.net/pthreads-3.1.6
  - echo | pecl install channel://pecl.php.net/yaml-2.0.4
  - pecl install channel://pecl.php.net/crypto-0.3.1
@@ -18,6 +35,8 @@ before_script:
  - make install
  - cd ..
  - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+ - echo "extension=chunkutils2.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+ - echo "extension=leveldb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
  - composer install
 
 script:
