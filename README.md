@@ -13,36 +13,21 @@ A feature-rich server software for Minecraft: Bedrock/W10 Edition. Altay is a fo
 
 ------------
 
-## Why should I prefer Altay?
+## Why should I choose Altay?
 
-Because Altay has more features and improvements than PocketMine-MP:
+Because Altay has more features and improvements than PocketMine-MP
+and its more near to Vanilla MC:BE
 
-- Working GameRules
-- Auto Mob Spawning
-- Map Items (only API for now)
-- Fishing
-- Leashing Mobs
-- Best MobAI, More mobs(Chicken, Cow, Sheep, Zombie, Husk, Creeper, Spider, CaveSpider, Stray, Blaze, Mooshroom, Wolf, Horse, Pig, Skeleton)
-- More Items, Blocks
-- More Methods
-- More Event (PlayerFishingEvent, BanEvent, UnbanEvent, AddressBanEvent)
-- Entity Riding (Example: Horses)
-- Best FormAPI
-- Best BossBarAPI
-- More Technical Fixes
-- Working fake inventories (EnchantmentTable, Beacon)
-- More Tiles (Jukebox, ShulkerBox, NoteBlock, Hopper, MobSpawner)
-- Best Command Parameter API ever
-- More Event Handling (Dimension changing, Swimming)
-- More Generators (End, Nether, Void)
-- Villager Trading
-- More Inventory (PlayerOffHandInventory)
+### What about plugins?
 
-And more...
+Don't worry. Altay is tracking the PocketMine-MP API so most of pmmp plugins will support Altay
+Altay hasn't very API changes compared to PocketMine-MP. Just maybe a little bit :)
 
 ### Can I test this before I download it?
 
 Yes, you can.
+
+Here. Some servers that using Altay software:
 
 - **entengames.net:19132**
 - **play.oyungg.net:19132**
