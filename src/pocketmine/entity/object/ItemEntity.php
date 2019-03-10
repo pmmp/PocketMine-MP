@@ -33,9 +33,14 @@ use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
 use function get_class;
+use function max;
 
 class ItemEntity extends Entity{
 	public const NETWORK_ID = self::ITEM;
+
+	public const DEFAULT_DESPAWN_DELAY = 6000; //5 minutes
+	public const NEVER_DESPAWN = -1;
+	public const MAX_DESPAWN_DELAY = 32767 + self::DEFAULT_DESPAWN_DELAY; //max value storable by mojang NBT :(
 
 	/** @var string */
 	protected $owner = "";
@@ -56,14 +61,20 @@ class ItemEntity extends Entity{
 	public $canCollide = false;
 
 	/** @var int */
-	protected $age = 0;
+	protected $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
 		$this->setMaxHealth(5);
 		$this->setHealth($nbt->getShort("Health", (int) $this->getHealth()));
-		$this->age = $nbt->getShort("Age", $this->age);
+
+		$age = $nbt->getShort("Age", 0);
+		if($age === -32768){
+			$this->despawnDelay = self::NEVER_DESPAWN;
+		}else{
+			$this->despawnDelay = max(0, self::DEFAULT_DESPAWN_DELAY - $age);
+		}
 		$this->pickupDelay = $nbt->getShort("PickupDelay", $this->pickupDelay);
 		$this->owner = $nbt->getString("Owner", $this->owner);
 		$this->thrower = $nbt->getString("Thrower", $this->thrower);
@@ -90,18 +101,18 @@ class ItemEntity extends Entity{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if(!$this->isFlaggedForDespawn() and $this->pickupDelay > -1 and $this->pickupDelay < 32767){ //Infinite delay
+		if(!$this->isFlaggedForDespawn() and $this->pickupDelay !== self::NEVER_DESPAWN){ //Infinite delay
 			$this->pickupDelay -= $tickDiff;
 			if($this->pickupDelay < 0){
 				$this->pickupDelay = 0;
 			}
 
-			$this->age += $tickDiff;
-			if($this->age > 6000){
+			$this->despawnDelay -= $tickDiff;
+			if($this->despawnDelay <= 0){
 				$ev = new ItemDespawnEvent($this);
 				$ev->call();
 				if($ev->isCancelled()){
-					$this->age = 0;
+					$this->despawnDelay = self::DEFAULT_DESPAWN_DELAY;
 				}else{
 					$this->flagForDespawn();
 					$hasUpdate = true;
@@ -125,7 +136,12 @@ class ItemEntity extends Entity{
 		$nbt = parent::saveNBT();
 		$nbt->setTag($this->item->nbtSerialize(-1, "Item"));
 		$nbt->setShort("Health", (int) $this->getHealth());
-		$nbt->setShort("Age", $this->age);
+		if($this->despawnDelay === self::NEVER_DESPAWN){
+			$age = -32768;
+		}else{
+			$age = self::DEFAULT_DESPAWN_DELAY - $this->despawnDelay;
+		}
+		$nbt->setShort("Age", $age);
 		$nbt->setShort("PickupDelay", $this->pickupDelay);
 		if($this->owner !== null){
 			$nbt->setString("Owner", $this->owner);
@@ -164,6 +180,27 @@ class ItemEntity extends Entity{
 	 */
 	public function setPickupDelay(int $delay) : void{
 		$this->pickupDelay = $delay;
+	}
+
+	/**
+	 * Returns the number of ticks left before this item will despawn. If -1, the item will never despawn.
+	 *
+	 * @return int
+	 */
+	public function getDespawnDelay() : int{
+		return $this->despawnDelay;
+	}
+
+	/**
+	 * @param int $despawnDelay
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function setDespawnDelay(int $despawnDelay) : void{
+		if(($despawnDelay < 0 or $despawnDelay > self::MAX_DESPAWN_DELAY) and $despawnDelay !== self::NEVER_DESPAWN){
+			throw new \InvalidArgumentException("Despawn ticker must be in range 0 ... " . self::MAX_DESPAWN_DELAY . " or " . self::NEVER_DESPAWN . ", got $despawnDelay");
+		}
+		$this->despawnDelay = $despawnDelay;
 	}
 
 	/**
