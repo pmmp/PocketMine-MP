@@ -124,7 +124,6 @@ use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function filemtime;
-use function floor;
 use function function_exists;
 use function get_class;
 use function getmypid;
@@ -296,15 +295,6 @@ class Server{
 	private $networkCompressionAsync = true;
 	/** @var int */
 	public $networkCompressionLevel = 7;
-
-	/** @var bool */
-	private $autoTickRate = true;
-	/** @var int */
-	private $autoTickRateLimit = 20;
-	/** @var bool */
-	private $alwaysTickPlayers = false;
-	/** @var int */
-	private $baseTickRate = 1;
 
 	/** @var int */
 	private $autoSaveTicker = 0;
@@ -1180,8 +1170,6 @@ class Server{
 
 		(new LevelLoadEvent($level))->call();
 
-		$level->setTickRate($this->baseTickRate);
-
 		return true;
 	}
 
@@ -1224,8 +1212,6 @@ class Server{
 		/** @see LevelProvider::__construct() */
 		$level = new Level($this, $name, new $providerClass($path));
 		$this->levels[$level->getId()] = $level;
-
-		$level->setTickRate($this->baseTickRate);
 
 		(new LevelInitEvent($level))->call();
 
@@ -1683,11 +1669,6 @@ class Server{
 				$this->networkCompressionLevel = 7;
 			}
 			$this->networkCompressionAsync = (bool) $this->getProperty("network.async-compression", true);
-
-			$this->autoTickRate = (bool) $this->getProperty("level-settings.auto-tick-rate", true);
-			$this->autoTickRateLimit = (int) $this->getProperty("level-settings.auto-tick-rate-limit", 20);
-			$this->alwaysTickPlayers = (bool) $this->getProperty("level-settings.always-tick-players", false);
-			$this->baseTickRate = (int) $this->getProperty("level-settings.base-tick-rate", 1);
 
 			$this->doTitleTick = ((bool) $this->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
 
@@ -2563,8 +2544,6 @@ class Server{
 		foreach($this->players as $p){
 			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
 				$p->close("", "Login timeout");
-			}elseif($this->alwaysTickPlayers and $p->spawned){
-				$p->onUpdate($currentTick);
 			}
 		}
 
@@ -2574,32 +2553,13 @@ class Server{
 				// Level unloaded during the tick of a level earlier in this loop, perhaps by plugin
 				continue;
 			}
-			if($level->getTickRate() > $this->baseTickRate and --$level->tickRateCounter > 0){
-				continue;
-			}
 
 			$levelTime = microtime(true);
 			$level->doTick($currentTick);
 			$tickMs = (microtime(true) - $levelTime) * 1000;
 			$level->tickRateTime = $tickMs;
-
-			if($this->autoTickRate){
-				if($tickMs < 50 and $level->getTickRate() > $this->baseTickRate){
-					$level->setTickRate($r = $level->getTickRate() - 1);
-					if($r > $this->baseTickRate){
-						$level->tickRateCounter = $level->getTickRate();
-					}
-					$this->getLogger()->debug("Raising level \"{$level->getName()}\" tick rate to {$level->getTickRate()} ticks");
-				}elseif($tickMs >= 50){
-					if($level->getTickRate() === $this->baseTickRate){
-						$level->setTickRate(max($this->baseTickRate + 1, min($this->autoTickRateLimit, (int) floor($tickMs / 50))));
-						$this->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), (int) round($tickMs, 2), $level->getTickRate()));
-					}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < $this->autoTickRateLimit){
-						$level->setTickRate($level->getTickRate() + 1);
-						$this->getLogger()->debug(sprintf("Level \"%s\" took %gms, setting tick rate to %d ticks", $level->getName(), (int) round($tickMs, 2), $level->getTickRate()));
-					}
-					$level->tickRateCounter = $level->getTickRate();
-				}
+			if($tickMs >= 50){
+				$this->getLogger()->debug(sprintf("World \"%s\" took too long to tick: %gms (%g ticks)", $level->getName(), $tickMs, round($tickMs / 50, 2)));
 			}
 		}
 	}
@@ -2752,7 +2712,10 @@ class Server{
 
 		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
 			$this->autoSaveTicker = 0;
+			$this->getLogger()->debug("[Auto Save] Saving worlds...");
+			$start = microtime(true);
 			$this->doAutoSave();
+			$this->getLogger()->debug("[Auto Save] Save completed in " . round(microtime(true) - $start, 3) . "s");
 		}
 
 		if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){

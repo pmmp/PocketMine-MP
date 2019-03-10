@@ -27,7 +27,7 @@ use pocketmine\level\Position;
 use pocketmine\Player;
 
 /**
- * Called when a player is respawned (or first time spawned)
+ * Called when a player is respawned
  */
 class PlayerRespawnEvent extends PlayerEvent{
 	/** @var Position */

@@ -311,6 +311,7 @@ class LevelDB extends BaseLevelProvider{
 		$lightPopulated = true;
 
 		$chunkVersion = ord($this->db->get($index . self::TAG_VERSION));
+		$hasBeenUpgraded = $chunkVersion < self::CURRENT_LEVEL_CHUNK_VERSION;
 
 		$binaryStream = new BinaryStream();
 
@@ -326,6 +327,9 @@ class LevelDB extends BaseLevelProvider{
 
 					$binaryStream->setBuffer($data, 0);
 					$subChunkVersion = $binaryStream->getByte();
+					if($subChunkVersion < self::CURRENT_LEVEL_SUBCHUNK_VERSION){
+						$hasBeenUpgraded = true;
+					}
 
 					switch($subChunkVersion){
 						case 0:
@@ -334,6 +338,7 @@ class LevelDB extends BaseLevelProvider{
 							if($chunkVersion < 4){
 								$blockSkyLight = $binaryStream->get(2048);
 								$blockLight = $binaryStream->get(2048);
+								$hasBeenUpgraded = true; //drop saved light
 							}else{
 								//Mojang didn't bother changing the subchunk version when they stopped saving sky light -_-
 								$blockSkyLight = "";
@@ -453,6 +458,7 @@ class LevelDB extends BaseLevelProvider{
 		$chunk->setGenerated(true);
 		$chunk->setPopulated(true);
 		$chunk->setLightPopulated($lightPopulated);
+		$chunk->setChanged($hasBeenUpgraded); //trigger rewriting chunk to disk if it was converted from an older format
 
 		return $chunk;
 	}

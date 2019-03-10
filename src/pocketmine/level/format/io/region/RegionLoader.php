@@ -124,9 +124,6 @@ class RegionLoader{
 	 */
 	public function readChunk(int $x, int $z) : ?string{
 		$index = self::getChunkOffset($x, $z);
-		if($index < 0 or $index >= 4096){
-			throw new \InvalidArgumentException("Invalid chunk position in region, expected x/z in range 0-31, got x=$x, z=$z");
-		}
 
 		$this->lastUsed = time();
 
@@ -143,15 +140,13 @@ class RegionLoader{
 
 		if($length <= 0 or $length > self::MAX_SECTOR_LENGTH){ //Not yet generated / corrupted
 			if($length >= self::MAX_SECTOR_LENGTH){
-				$this->locationTable[$index][0] = ++$this->lastSector;
-				$this->locationTable[$index][1] = 1;
-				throw new CorruptedChunkException("Corrupted chunk header detected (sector count larger than max)");
+				throw new CorruptedChunkException("Corrupted chunk header detected (sector count $length larger than max " . self::MAX_SECTOR_LENGTH . ")");
 			}
 			return null;
 		}
 
 		if($length > ($this->locationTable[$index][1] << 12)){ //Invalid chunk, bigger than defined number of sectors
-			MainLogger::getLogger()->error("Corrupted bigger chunk detected (bigger than number of sectors given in header)");
+			MainLogger::getLogger()->error("Chunk x=$x,z=$z length mismatch (expected " . ($this->locationTable[$index][1] << 12) . " sectors, got $length sectors)");
 			$this->locationTable[$index][1] = $length >> 12;
 			$this->writeLocationIndex($index);
 		}
@@ -169,10 +164,25 @@ class RegionLoader{
 		return substr($chunkData, 1);
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return bool
+	 * @throws \InvalidArgumentException
+	 */
 	public function chunkExists(int $x, int $z) : bool{
 		return $this->isChunkGenerated(self::getChunkOffset($x, $z));
 	}
 
+	/**
+	 * @param int    $x
+	 * @param int    $z
+	 * @param string $chunkData
+	 *
+	 * @throws ChunkException
+	 * @throws \InvalidArgumentException
+	 */
 	public function writeChunk(int $x, int $z, string $chunkData){
 		$this->lastUsed = time();
 
@@ -202,14 +212,40 @@ class RegionLoader{
 		}
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @throws \InvalidArgumentException
+	 */
 	public function removeChunk(int $x, int $z){
 		$index = self::getChunkOffset($x, $z);
 		$this->locationTable[$index][0] = 0;
 		$this->locationTable[$index][1] = 0;
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return int
+	 * @throws \InvalidArgumentException
+	 */
 	protected static function getChunkOffset(int $x, int $z) : int{
-		return $x + ($z << 5);
+		if($x < 0 or $x > 31 or $z < 0 or $z > 31){
+			throw new \InvalidArgumentException("Invalid chunk position in region, expected x/z in range 0-31, got x=$x, z=$z");
+		}
+		return $x | ($z << 5);
+	}
+
+	/**
+	 * @param int $offset
+	 * @param int &$x
+	 * @param int &$z
+	 */
+	protected static function getChunkCoords(int $offset, ?int &$x, ?int &$z) : void{
+		$x = $offset & 0x1f;
+		$z = ($offset >> 5) & 0x1f;
 	}
 
 	/**
@@ -237,18 +273,23 @@ class RegionLoader{
 		}
 
 		$data = unpack("N*", $headerRaw);
+		/** @var int[] $usedOffsets */
 		$usedOffsets = [];
 		for($i = 0; $i < 1024; ++$i){
 			$index = $data[$i + 1];
 			$offset = $index >> 8;
 			if($offset !== 0){
-				fseek($this->filePointer, $offset << 12);
+				self::getChunkCoords($i, $x, $z);
+				$fileOffset = $offset << 12;
+
+				fseek($this->filePointer, $fileOffset);
 				if(fgetc($this->filePointer) === false){ //Try and read from the location
-					throw new CorruptedRegionException("Region file location offset points to invalid location");
+					throw new CorruptedRegionException("Region file location offset x=$x,z=$z points to invalid file location $fileOffset");
 				}elseif(isset($usedOffsets[$offset])){
-					throw new CorruptedRegionException("Found two chunk offsets pointing to the same location");
+					self::getChunkCoords($usedOffsets[$offset], $existingX, $existingZ);
+					throw new CorruptedRegionException("Found two chunk offsets (chunk1: x=$existingX,z=$existingZ, chunk2: x=$x,z=$z) pointing to the file location $fileOffset");
 				}else{
-					$usedOffsets[$offset] = true;
+					$usedOffsets[$offset] = $i;
 				}
 			}
 
