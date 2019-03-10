@@ -40,4 +40,4 @@ By the way, you can tell us to add your server to this list from our Discord gro
 
 Join our Discord group and contact us!
 
-######However may be good if you read #rules channel when you joined first time :)
+#####However may be good if you read #rules channel when you joined first time :)
