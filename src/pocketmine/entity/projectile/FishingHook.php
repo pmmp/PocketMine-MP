@@ -29,7 +29,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\player\PlayerFishingEvent;
+use pocketmine\event\player\PlayerFishEvent;
 use pocketmine\item\FishingRod;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -85,6 +85,7 @@ class FishingHook extends Projectile{
 
 		if($owner instanceof Player){
 			$owner->setFishingHook($this);
+
 			$this->handleHookCasting($this->motion->x, $this->motion->y, $this->motion->z, 1.5, 1.0);
 		}
 	}
@@ -270,25 +271,32 @@ class FishingHook extends Projectile{
 		$angler = $this->getOwningEntity();
 		if($this->isValid() and $angler instanceof Player){
 			if($this->getRidingEntity() != null){
-				$d0 = $angler->x - $this->x;
-				$d2 = $angler->y - $this->y;
-				$d4 = $angler->z - $this->z;
-				$d6 = sqrt($d0 * $d0 + $d2 * $d2 + $d4 * $d4);
-				$d8 = 0.1;
-				$this->getRidingEntity()->setMotion(new Vector3($d0 * $d8, $d2 * $d8 + sqrt($d6) * 0.08, $d4 * $d8));
+				$ev = new PlayerFishEvent($angler, $this, PlayerFishEvent::STATE_CAUGHT_ENTITY);
+				$ev->call();
+
+				if($ev->isCancelled()){
+					$d0 = $angler->x - $this->x;
+					$d2 = $angler->y - $this->y;
+					$d4 = $angler->z - $this->z;
+					$d6 = sqrt($d0 * $d0 + $d2 * $d2 + $d4 * $d4);
+					$d8 = 0.1;
+					$this->getRidingEntity()->setMotion(new Vector3($d0 * $d8, $d2 * $d8 + sqrt($d6) * 0.08, $d4 * $d8));
+				}
 			}elseif($this->ticksCatchable > 0){
 				// TODO: Random weighted items
 				$items = [
 					Item::RAW_FISH, Item::PUFFERFISH, Item::RAW_SALMON, Item::CLOWNFISH
 				];
 				$randomFish = $items[mt_rand(0, count($items) - 1)];
+				$result = ItemFactory::get($randomFish);
 
-				$ev = new PlayerFishingEvent($angler, $this, ItemFactory::get($randomFish), $this->random->nextBoundedInt(6) + 1);
+				$ev = new PlayerFishEvent($angler, $this, PlayerFishEvent::STATE_CAUGHT_FISH, $this->random->nextBoundedInt(6) + 1);
 				$ev->call();
 
 				if(!$ev->isCancelled()){
 					$nbt = Entity::createBaseNBT($this);
-					$nbt->setTag($ev->getResultItem()->nbtSerialize(-1, "Item"));
+					$nbt->setTag($result->nbtSerialize(-1, "Item"));
+
 					$entityitem = new ItemEntity($this->level, $nbt);
 					$d0 = $angler->x - $this->x;
 					$d2 = $angler->y - $this->y;

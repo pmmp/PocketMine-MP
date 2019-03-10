@@ -24,33 +24,34 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
+use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\FishingHook;
 use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
-class PlayerFishingEvent extends PlayerEvent implements Cancellable{
+class PlayerFishEvent extends PlayerEvent implements Cancellable{
+	
+	public const STATE_FISHING = 0;
+	public const STATE_CAUGHT_FISH = 1;
+	public const STATE_CAUGHT_ENTITY = 2;
 
-	/** @var Item */
-	protected $resultItem;
 	/** @var FishingHook */
 	protected $hook;
 	/** @var int */
 	protected $xpDropAmount = 0;
+	/** @var int */
+	protected $state = 0;
 
-	/**
-	 * PlayerFishingEvent constructor.
-	 *
-	 * @param Player      $fisher
-	 * @param FishingHook $hook
-	 * @param Item        $resultItem
-	 * @param int         $xpDropAmount
-	 */
-	public function __construct(Player $fisher, FishingHook $hook, Item $resultItem, int $xpDropAmount = 0){
+	public function __construct(Player $fisher, FishingHook $hook, int $state, int $xpDropAmount = 0){
 		$this->player = $fisher;
 		$this->hook = $hook;
-		$this->resultItem = $resultItem;
+		$this->state = $state;
 		$this->xpDropAmount = $xpDropAmount;
+	}
+
+	public function getCaughtEntity() : ?Entity{
+		return $this->hook->getRidingEntity();
 	}
 
 	/**
@@ -58,20 +59,6 @@ class PlayerFishingEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function getHook() : FishingHook{
 		return $this->hook;
-	}
-
-	/**
-	 * @return Item
-	 */
-	public function getResultItem() : Item{
-		return $this->resultItem;
-	}
-
-	/**
-	 * @param Item $resultItem
-	 */
-	public function setResultItem(Item $resultItem) : void{
-		$this->resultItem = $resultItem;
 	}
 
 	/**
@@ -86,5 +73,12 @@ class PlayerFishingEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function setXpDropAmount(int $xpDropAmount) : void{
 		$this->xpDropAmount = $xpDropAmount;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getState() : int{
+		return $this->state;
 	}
 }
