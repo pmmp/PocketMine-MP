@@ -592,7 +592,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $entityRiderPitchDelta = 0;
 	/** @var float */
 	protected $entityRiderYawDelta = 0;
-	/** @var Entity[] */
+	/** @var int[] */
 	public $passengers = [];
 	/** @var Random */
 	public $random;
@@ -2678,6 +2678,22 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pk->entityRuntimeId = $this->id;
 		$pk->action = $animationId;
 		$this->server->broadcastPacket($players ?? $this->getViewers(), $pk);
+	}
+
+	/**
+	 * @return Entity[]
+	 */
+	public function getPassengers() : array{
+		$passengers = [];
+
+		foreach($this->passengers as $id){
+			$entity = $this->server->findEntity($id);
+			if($entity !== null){
+				$passengers[] = $entity;
+			}
+		}
+
+		return $passengers;
 	}
 
 	/**
