@@ -52,6 +52,12 @@ class ZippedResourcePack implements ResourcePack{
 			return false;
 		}
 
+		foreach($manifest->modules as $module){
+			if(!isset($module->type)){ // check modules
+				return false;
+			}
+		}
+
 		//Right now we don't care about anything else, only the stuff we're sending to clients.
 		return
 			isset($manifest->header->description) and
@@ -72,6 +78,8 @@ class ZippedResourcePack implements ResourcePack{
 
 	/** @var resource */
 	protected $fileResource;
+
+	protected $packType = self::PACK_TYPE_RESOURCE;
 
 	/**
 	 * @param string $zipPath Path to the resource pack zip
@@ -110,6 +118,15 @@ class ZippedResourcePack implements ResourcePack{
 		}
 
 		$this->manifest = $manifest;
+
+		$type = $manifest->modules[0]->type;
+		if($type === self::PACK_TYPE_RESOURCE){
+			$this->packType = self::PACK_TYPE_RESOURCE;
+		}elseif($type === self::PACK_TYPE_BEHAVIOR){
+			$this->packType = self::PACK_TYPE_BEHAVIOR;
+		}else{
+			throw new ResourcePackException("Pack type is unsupported in manifest.json");
+		}
 
 		$this->fileResource = fopen($zipPath, "rb");
 	}
@@ -151,5 +168,9 @@ class ZippedResourcePack implements ResourcePack{
 			throw new \RuntimeException("Requested a resource pack chunk with invalid start offset");
 		}
 		return fread($this->fileResource, $length);
+	}
+
+	public function getPackType() : string{
+		return $this->packType;
 	}
 }

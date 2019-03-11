@@ -2156,7 +2156,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$pk = new ResourcePacksInfoPacket();
 		$manager = $this->server->getResourcePackManager();
-		$pk->resourcePackEntries = $manager->getResourceStack();
+		foreach($manager->getResourceStack() as $pack){
+			if($pack->getPackType() === ResourcePack::PACK_TYPE_RESOURCE){
+				$pk->resourcePackEntries[] = $pack;
+			}else{
+				$pk->behaviorPackEntries[] = $pack;
+			}
+		}
 		$pk->mustAccept = $manager->resourcePacksRequired();
 		$this->dataPacket($pk);
 	}
@@ -2192,7 +2198,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
 				$pk = new ResourcePackStackPacket();
 				$manager = $this->server->getResourcePackManager();
-				$pk->resourcePackStack = $manager->getResourceStack();
+				foreach($manager->getResourceStack() as $pack){
+					if($pack->getPackType() === ResourcePack::PACK_TYPE_RESOURCE){
+						$pk->resourcePackStack[] = $pack;
+					}else{
+						$pk->behaviorPackStack[] = $pack;
+					}
+				}
 				$pk->mustAccept = $manager->resourcePacksRequired();
 				$this->dataPacket($pk);
 				break;
