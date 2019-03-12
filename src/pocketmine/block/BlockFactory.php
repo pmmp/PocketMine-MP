@@ -83,6 +83,7 @@ class BlockFactory{
 		self::register(new Bed(new BID(Block::BED_BLOCK, 0, ItemIds::BED, \pocketmine\tile\Bed::class), "Bed Block"));
 		self::register(new Bedrock(new BID(Block::BEDROCK), "Bedrock"));
 		self::register(new Beetroot(new BID(Block::BEETROOT_BLOCK), "Beetroot Block"));
+		self::register(new BlueIce(new BID(Block::BLUE_ICE), "Blue Ice"));
 		self::register(new BoneBlock(new BID(Block::BONE_BLOCK), "Bone Block"));
 		self::register(new Bookshelf(new BID(Block::BOOKSHELF), "Bookshelf"));
 		self::register(new BrewingStand(new BID(Block::BREWING_STAND_BLOCK, 0, ItemIds::BREWING_STAND), "Brewing Stand"));
