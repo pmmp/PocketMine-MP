@@ -23,17 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\inventory\ArmorInventory;
 
-class GoldLeggings extends Armor{
-	public function __construct(){
-		parent::__construct(self::GOLD_LEGGINGS, 0, "Gold Leggings");
-	}
+class Helmet extends Armor{
 
-	public function getDefensePoints() : int{
-		return 3;
-	}
-
-	public function getMaxDurability() : int{
-		return 106;
+	public function getArmorSlot() : int{
+		return ArmorInventory::SLOT_HEAD;
 	}
 }

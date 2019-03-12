@@ -23,17 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\inventory\ArmorInventory;
 
-class ChainChestplate extends Armor{
-	public function __construct(){
-		parent::__construct(self::CHAIN_CHESTPLATE, 0, "Chain Chestplate");
-	}
+class Leggings extends Armor{
 
-	public function getDefensePoints() : int{
-		return 5;
-	}
-
-	public function getMaxDurability() : int{
-		return 241;
+	public function getArmorSlot() : int{
+		return ArmorInventory::SLOT_LEGS;
 	}
 }

@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\ProtectionEnchantment;
 use pocketmine\nbt\tag\IntTag;
@@ -36,6 +37,28 @@ use function mt_rand;
 abstract class Armor extends Durable{
 
 	public const TAG_CUSTOM_COLOR = "customColor"; //TAG_Int
+
+	/** @var ArmorTypeInfo */
+	private $armorInfo;
+
+	public function __construct(int $id, int $variant, string $name, ArmorTypeInfo $info){
+		parent::__construct($id, $variant, $name);
+		$this->armorInfo = $info;
+	}
+
+	public function getMaxDurability() : int{
+		return $this->armorInfo->getMaxDurability();
+	}
+
+	public function getDefensePoints() : int{
+		return $this->armorInfo->getDefensePoints();
+	}
+
+	/**
+	 * @see ArmorInventory
+	 * @return int
+	 */
+	abstract public function getArmorSlot() : int;
 
 	public function getMaxStackSize() : int{
 		return 1;
