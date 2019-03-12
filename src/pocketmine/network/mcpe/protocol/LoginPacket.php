@@ -56,6 +56,9 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 	public const I_SERVER_ADDRESS = 'ServerAddress';
 	public const I_LANGUAGE_CODE = 'LanguageCode';
 
+	public const I_DEVICE_MODEL = 'DeviceModel';
+	public const I_DEVICE_OS = 'DeviceOS';
+
 	public const I_SKIN_ID = 'SkinId';
 	public const I_SKIN_DATA = 'SkinData';
 	public const I_CAPE_DATA = 'CapeData';
@@ -196,7 +199,9 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 			),
 			$this->clientData[self::I_LANGUAGE_CODE],
 			$this->extraData[self::I_XUID],
-			$this->clientData[self::I_CLIENT_RANDOM_ID]
+			$this->clientData[self::I_CLIENT_RANDOM_ID],
+			$this->clientData[self::I_DEVICE_MODEL],
+			$this->clientData[self::I_DEVICE_OS]
 		);
 	}
 
