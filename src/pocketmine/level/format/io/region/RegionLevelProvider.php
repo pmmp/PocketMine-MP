@@ -233,8 +233,10 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 		$iterator = $this->createRegionIterator();
 
 		foreach($iterator as $region){
-			$rX = ((int) $region[1]) << 5;
-			$rZ = ((int) $region[2]) << 5;
+			$regionX = ((int) $region[1]);
+			$regionZ = ((int) $region[2]);
+			$rX = $regionX << 5;
+			$rZ = $regionZ << 5;
 
 			for($chunkX = $rX; $chunkX < $rX + 32; ++$chunkX){
 				for($chunkZ = $rZ; $chunkZ < $rZ + 32; ++$chunkZ){
@@ -254,16 +256,18 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 				}
 			}
 
-			$this->unloadRegion($rX, $rZ);
+			$this->unloadRegion($regionX, $regionZ);
 		}
 	}
 
 	public function calculateChunkCount() : int{
 		$count = 0;
 		foreach($this->createRegionIterator() as $region){
-			$this->loadRegion((int) $region[1], (int) $region[2]);
-			$count += $this->getRegion((int) $region[1], (int) $region[2])->calculateChunkCount();
-			$this->unloadRegion((int) $region[1], (int) $region[2]);
+			$regionX = ((int) $region[1]);
+			$regionZ = ((int) $region[2]);
+			$this->loadRegion($regionX, $regionZ);
+			$count += $this->getRegion($regionX, $regionZ)->calculateChunkCount();
+			$this->unloadRegion($regionX, $regionZ);
 		}
 		return $count;
 	}
