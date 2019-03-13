@@ -260,7 +260,7 @@ class Item implements ItemIds, \JsonSerializable{
 		/** @var CompoundTag $entry */
 		foreach($ench as $entry){
 			if($entry->getShort("id") === $id){
-				$e = Enchantment::getEnchantment($entry->getShort("id"));
+				$e = Enchantment::get($entry->getShort("id"));
 				if($e !== null){
 					return new EnchantmentInstance($e, $entry->getShort("lvl"));
 				}
@@ -353,7 +353,7 @@ class Item implements ItemIds, \JsonSerializable{
 		if($ench instanceof ListTag){
 			/** @var CompoundTag $entry */
 			foreach($ench as $entry){
-				$e = Enchantment::getEnchantment($entry->getShort("id"));
+				$e = Enchantment::get($entry->getShort("id"));
 				if($e !== null){
 					$enchantments[] = new EnchantmentInstance($e, $entry->getShort("lvl"));
 				}

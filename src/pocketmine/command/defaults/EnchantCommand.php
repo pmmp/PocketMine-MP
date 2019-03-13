@@ -67,9 +67,9 @@ class EnchantCommand extends VanillaCommand{
 		}
 
 		if(is_numeric($args[1])){
-			$enchantment = Enchantment::getEnchantment((int) $args[1]);
+			$enchantment = Enchantment::get((int) $args[1]);
 		}else{
-			$enchantment = Enchantment::getEnchantmentByName($args[1]);
+			$enchantment = Enchantment::fromString($args[1]);
 		}
 
 		if(!($enchantment instanceof Enchantment)){

@@ -69,10 +69,10 @@ class EffectCommand extends VanillaCommand{
 			return true;
 		}
 
-		$effect = Effect::getEffectByName($args[1]);
+		$effect = Effect::fromString($args[1]);
 
 		if($effect === null){
-			$effect = Effect::getEffect((int) $args[1]);
+			$effect = Effect::get((int) $args[1]);
 		}
 
 		if($effect === null){

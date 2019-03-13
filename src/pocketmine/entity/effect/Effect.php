@@ -64,144 +64,144 @@ class Effect{
 	protected static $effects = [];
 
 	public static function init() : void{
-		self::registerEffect(new SpeedEffect(Effect::SPEED, "%potion.moveSpeed", new Color(0x7c, 0xaf, 0xc6)));
-		self::registerEffect(new SlownessEffect(Effect::SLOWNESS, "%potion.moveSlowdown", new Color(0x5a, 0x6c, 0x81), true));
-		self::registerEffect(new Effect(Effect::HASTE, "%potion.digSpeed", new Color(0xd9, 0xc0, 0x43)));
-		self::registerEffect(new Effect(Effect::MINING_FATIGUE, "%potion.digSlowDown", new Color(0x4a, 0x42, 0x17), true));
-		self::registerEffect(new Effect(Effect::STRENGTH, "%potion.damageBoost", new Color(0x93, 0x24, 0x23)));
-		self::registerEffect(new InstantHealthEffect(Effect::INSTANT_HEALTH, "%potion.heal", new Color(0xf8, 0x24, 0x23), false, false));
-		self::registerEffect(new InstantDamageEffect(Effect::INSTANT_DAMAGE, "%potion.harm", new Color(0x43, 0x0a, 0x09), true, false));
-		self::registerEffect(new Effect(Effect::JUMP_BOOST, "%potion.jump", new Color(0x22, 0xff, 0x4c)));
-		self::registerEffect(new Effect(Effect::NAUSEA, "%potion.confusion", new Color(0x55, 0x1d, 0x4a), true));
-		self::registerEffect(new RegenerationEffect(Effect::REGENERATION, "%potion.regeneration", new Color(0xcd, 0x5c, 0xab)));
-		self::registerEffect(new Effect(Effect::RESISTANCE, "%potion.resistance", new Color(0x99, 0x45, 0x3a)));
-		self::registerEffect(new Effect(Effect::FIRE_RESISTANCE, "%potion.fireResistance", new Color(0xe4, 0x9a, 0x3a)));
-		self::registerEffect(new Effect(Effect::WATER_BREATHING, "%potion.waterBreathing", new Color(0x2e, 0x52, 0x99)));
-		self::registerEffect(new InvisibilityEffect(Effect::INVISIBILITY, "%potion.invisibility", new Color(0x7f, 0x83, 0x92)));
-		self::registerEffect(new Effect(Effect::BLINDNESS, "%potion.blindness", new Color(0x1f, 0x1f, 0x23), true));
-		self::registerEffect(new Effect(Effect::NIGHT_VISION, "%potion.nightVision", new Color(0x1f, 0x1f, 0xa1)));
-		self::registerEffect(new HungerEffect(Effect::HUNGER, "%potion.hunger", new Color(0x58, 0x76, 0x53), true));
-		self::registerEffect(new Effect(Effect::WEAKNESS, "%potion.weakness", new Color(0x48, 0x4d, 0x48), true));
-		self::registerEffect(new PoisonEffect(Effect::POISON, "%potion.poison", new Color(0x4e, 0x93, 0x31), true));
-		self::registerEffect(new WitherEffect(Effect::WITHER, "%potion.wither", new Color(0x35, 0x2a, 0x27), true));
-		self::registerEffect(new HealthBoostEffect(Effect::HEALTH_BOOST, "%potion.healthBoost", new Color(0xf8, 0x7d, 0x23)));
-		self::registerEffect(new AbsorptionEffect(Effect::ABSORPTION, "%potion.absorption", new Color(0x25, 0x52, 0xa5)));
-		self::registerEffect(new SaturationEffect(Effect::SATURATION, "%potion.saturation", new Color(0xf8, 0x24, 0x23), false));
-		self::registerEffect(new LevitationEffect(Effect::LEVITATION, "%potion.levitation", new Color(0xce, 0xff, 0xff)));
-		self::registerEffect(new PoisonEffect(Effect::FATAL_POISON, "%potion.poison", new Color(0x4e, 0x93, 0x31), true, true, true));
-		self::registerEffect(new Effect(Effect::CONDUIT_POWER, "%potion.conduitPower", new Color(0x1d, 0xc2, 0xd1)));
+		self::register(new SpeedEffect(Effect::SPEED, "%potion.moveSpeed", new Color(0x7c, 0xaf, 0xc6)));
+		self::register(new SlownessEffect(Effect::SLOWNESS, "%potion.moveSlowdown", new Color(0x5a, 0x6c, 0x81), true));
+		self::register(new Effect(Effect::HASTE, "%potion.digSpeed", new Color(0xd9, 0xc0, 0x43)));
+		self::register(new Effect(Effect::MINING_FATIGUE, "%potion.digSlowDown", new Color(0x4a, 0x42, 0x17), true));
+		self::register(new Effect(Effect::STRENGTH, "%potion.damageBoost", new Color(0x93, 0x24, 0x23)));
+		self::register(new InstantHealthEffect(Effect::INSTANT_HEALTH, "%potion.heal", new Color(0xf8, 0x24, 0x23), false, false));
+		self::register(new InstantDamageEffect(Effect::INSTANT_DAMAGE, "%potion.harm", new Color(0x43, 0x0a, 0x09), true, false));
+		self::register(new Effect(Effect::JUMP_BOOST, "%potion.jump", new Color(0x22, 0xff, 0x4c)));
+		self::register(new Effect(Effect::NAUSEA, "%potion.confusion", new Color(0x55, 0x1d, 0x4a), true));
+		self::register(new RegenerationEffect(Effect::REGENERATION, "%potion.regeneration", new Color(0xcd, 0x5c, 0xab)));
+		self::register(new Effect(Effect::RESISTANCE, "%potion.resistance", new Color(0x99, 0x45, 0x3a)));
+		self::register(new Effect(Effect::FIRE_RESISTANCE, "%potion.fireResistance", new Color(0xe4, 0x9a, 0x3a)));
+		self::register(new Effect(Effect::WATER_BREATHING, "%potion.waterBreathing", new Color(0x2e, 0x52, 0x99)));
+		self::register(new InvisibilityEffect(Effect::INVISIBILITY, "%potion.invisibility", new Color(0x7f, 0x83, 0x92)));
+		self::register(new Effect(Effect::BLINDNESS, "%potion.blindness", new Color(0x1f, 0x1f, 0x23), true));
+		self::register(new Effect(Effect::NIGHT_VISION, "%potion.nightVision", new Color(0x1f, 0x1f, 0xa1)));
+		self::register(new HungerEffect(Effect::HUNGER, "%potion.hunger", new Color(0x58, 0x76, 0x53), true));
+		self::register(new Effect(Effect::WEAKNESS, "%potion.weakness", new Color(0x48, 0x4d, 0x48), true));
+		self::register(new PoisonEffect(Effect::POISON, "%potion.poison", new Color(0x4e, 0x93, 0x31), true));
+		self::register(new WitherEffect(Effect::WITHER, "%potion.wither", new Color(0x35, 0x2a, 0x27), true));
+		self::register(new HealthBoostEffect(Effect::HEALTH_BOOST, "%potion.healthBoost", new Color(0xf8, 0x7d, 0x23)));
+		self::register(new AbsorptionEffect(Effect::ABSORPTION, "%potion.absorption", new Color(0x25, 0x52, 0xa5)));
+		self::register(new SaturationEffect(Effect::SATURATION, "%potion.saturation", new Color(0xf8, 0x24, 0x23), false));
+		self::register(new LevitationEffect(Effect::LEVITATION, "%potion.levitation", new Color(0xce, 0xff, 0xff)));
+		self::register(new PoisonEffect(Effect::FATAL_POISON, "%potion.poison", new Color(0x4e, 0x93, 0x31), true, true, true));
+		self::register(new Effect(Effect::CONDUIT_POWER, "%potion.conduitPower", new Color(0x1d, 0xc2, 0xd1)));
 	}
 
 	/* auto-generated code */
 
 	public static function ABSORPTION() : Effect{
-		return self::getEffect(Effect::ABSORPTION);
+		return self::get(Effect::ABSORPTION);
 	}
 
 	public static function BLINDNESS() : Effect{
-		return self::getEffect(Effect::BLINDNESS);
+		return self::get(Effect::BLINDNESS);
 	}
 
 	public static function CONDUIT_POWER() : Effect{
-		return self::getEffect(Effect::CONDUIT_POWER);
+		return self::get(Effect::CONDUIT_POWER);
 	}
 
 	public static function FATAL_POISON() : Effect{
-		return self::getEffect(Effect::FATAL_POISON);
+		return self::get(Effect::FATAL_POISON);
 	}
 
 	public static function FIRE_RESISTANCE() : Effect{
-		return self::getEffect(Effect::FIRE_RESISTANCE);
+		return self::get(Effect::FIRE_RESISTANCE);
 	}
 
 	public static function HASTE() : Effect{
-		return self::getEffect(Effect::HASTE);
+		return self::get(Effect::HASTE);
 	}
 
 	public static function HEALTH_BOOST() : Effect{
-		return self::getEffect(Effect::HEALTH_BOOST);
+		return self::get(Effect::HEALTH_BOOST);
 	}
 
 	public static function HUNGER() : Effect{
-		return self::getEffect(Effect::HUNGER);
+		return self::get(Effect::HUNGER);
 	}
 
 	public static function INSTANT_DAMAGE() : Effect{
-		return self::getEffect(Effect::INSTANT_DAMAGE);
+		return self::get(Effect::INSTANT_DAMAGE);
 	}
 
 	public static function INSTANT_HEALTH() : Effect{
-		return self::getEffect(Effect::INSTANT_HEALTH);
+		return self::get(Effect::INSTANT_HEALTH);
 	}
 
 	public static function INVISIBILITY() : Effect{
-		return self::getEffect(Effect::INVISIBILITY);
+		return self::get(Effect::INVISIBILITY);
 	}
 
 	public static function JUMP_BOOST() : Effect{
-		return self::getEffect(Effect::JUMP_BOOST);
+		return self::get(Effect::JUMP_BOOST);
 	}
 
 	public static function LEVITATION() : Effect{
-		return self::getEffect(Effect::LEVITATION);
+		return self::get(Effect::LEVITATION);
 	}
 
 	public static function MINING_FATIGUE() : Effect{
-		return self::getEffect(Effect::MINING_FATIGUE);
+		return self::get(Effect::MINING_FATIGUE);
 	}
 
 	public static function NAUSEA() : Effect{
-		return self::getEffect(Effect::NAUSEA);
+		return self::get(Effect::NAUSEA);
 	}
 
 	public static function NIGHT_VISION() : Effect{
-		return self::getEffect(Effect::NIGHT_VISION);
+		return self::get(Effect::NIGHT_VISION);
 	}
 
 	public static function POISON() : Effect{
-		return self::getEffect(Effect::POISON);
+		return self::get(Effect::POISON);
 	}
 
 	public static function REGENERATION() : Effect{
-		return self::getEffect(Effect::REGENERATION);
+		return self::get(Effect::REGENERATION);
 	}
 
 	public static function RESISTANCE() : Effect{
-		return self::getEffect(Effect::RESISTANCE);
+		return self::get(Effect::RESISTANCE);
 	}
 
 	public static function SATURATION() : Effect{
-		return self::getEffect(Effect::SATURATION);
+		return self::get(Effect::SATURATION);
 	}
 
 	public static function SLOWNESS() : Effect{
-		return self::getEffect(Effect::SLOWNESS);
+		return self::get(Effect::SLOWNESS);
 	}
 
 	public static function SPEED() : Effect{
-		return self::getEffect(Effect::SPEED);
+		return self::get(Effect::SPEED);
 	}
 
 	public static function STRENGTH() : Effect{
-		return self::getEffect(Effect::STRENGTH);
+		return self::get(Effect::STRENGTH);
 	}
 
 	public static function WATER_BREATHING() : Effect{
-		return self::getEffect(Effect::WATER_BREATHING);
+		return self::get(Effect::WATER_BREATHING);
 	}
 
 	public static function WEAKNESS() : Effect{
-		return self::getEffect(Effect::WEAKNESS);
+		return self::get(Effect::WEAKNESS);
 	}
 
 	public static function WITHER() : Effect{
-		return self::getEffect(Effect::WITHER);
+		return self::get(Effect::WITHER);
 	}
 
 	/**
 	 * @param Effect $effect
 	 */
-	public static function registerEffect(Effect $effect) : void{
+	public static function register(Effect $effect) : void{
 		self::$effects[$effect->getId()] = $effect;
 	}
 
@@ -210,7 +210,7 @@ class Effect{
 	 *
 	 * @return Effect|null
 	 */
-	public static function getEffect(int $id) : ?Effect{
+	public static function get(int $id) : ?Effect{
 		return self::$effects[$id] ?? null;
 	}
 
@@ -219,10 +219,10 @@ class Effect{
 	 *
 	 * @return Effect|null
 	 */
-	public static function getEffectByName(string $name) : ?Effect{
+	public static function fromString(string $name) : ?Effect{
 		$const = self::class . "::" . strtoupper($name);
 		if(defined($const)){
-			return self::getEffect(constant($const));
+			return self::get(constant($const));
 		}
 		return null;
 	}

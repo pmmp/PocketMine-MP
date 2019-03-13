@@ -121,7 +121,7 @@ abstract class Living extends Entity implements Damageable{
 		$activeEffectsTag = $nbt->getListTag("ActiveEffects");
 		if($activeEffectsTag !== null){
 			foreach($activeEffectsTag as $e){
-				$effect = Effect::getEffect($e->getByte("Id"));
+				$effect = Effect::get($e->getByte("Id"));
 				if($effect === null){
 					continue;
 				}
