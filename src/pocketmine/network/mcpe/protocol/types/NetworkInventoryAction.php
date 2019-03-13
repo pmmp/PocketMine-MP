@@ -217,19 +217,31 @@ class NetworkInventoryAction{
 						if($window instanceof EnchantInventory){
 							return new EnchantAction($window, 0, $this->oldItem, $this->newItem);
 						}else{
-							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+							if($window === null){
+								throw new \InvalidStateException("Window not found");
+							}else{
+								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . EnchantInventory::class . " , given " . get_class($window));
+							}
 						}
 					case self::SOURCE_TYPE_ENCHANT_MATERIAL:
 						if($window instanceof EnchantInventory){
 							return new EnchantAction($window, 1, $this->oldItem, $this->newItem);
 						}else{
-							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+							if($window === null){
+								throw new \InvalidStateException("Window not found");
+							}else{
+								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . EnchantInventory::class . " , given " . get_class($window));
+							}
 						}
 					case self::SOURCE_TYPE_ENCHANT_OUTPUT:
 						if($window instanceof EnchantInventory){
 							return new EnchantAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 						}else{
-							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+							if($window === null){
+								throw new \InvalidStateException("Window not found");
+							}else{
+								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . EnchantInventory::class . " , given " . get_class($window));
+							}
 						}
 					case self::SOURCE_TYPE_ANVIL_INPUT:
 						if($window instanceof AnvilInventory){
@@ -238,7 +250,11 @@ class NetworkInventoryAction{
 							}
 							return new SlotChangeAction($window, 0, $this->oldItem, $this->newItem);
 						}else{
-							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+							if($window === null){
+								throw new \InvalidStateException("Window not found");
+							}else{
+								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . AnvilInventory::class . " , given " . get_class($window));
+							}
 						}
 					case self::SOURCE_TYPE_ANVIL_MATERIAL:
 						if($window instanceof AnvilInventory){
@@ -247,7 +263,11 @@ class NetworkInventoryAction{
 							}
 							return new SlotChangeAction($window, 1, $this->oldItem, $this->newItem);
 						}else{
-							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+							if($window === null){
+								throw new \InvalidStateException("Window not found");
+							}else{
+								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . AnvilInventory::class . " , given " . get_class($window));
+							}
 						}
 					case self::SOURCE_TYPE_ANVIL_RESULT:
 						if($window instanceof AnvilInventory){
@@ -258,14 +278,22 @@ class NetworkInventoryAction{
 								return null;
 							}
 						}else{
-							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+							if($window === null){
+								throw new \InvalidStateException("Window not found");
+							}else{
+								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . AnvilInventory::class . " , given " . get_class($window));
+							}
 						}
 					case self::SOURCE_TYPE_TRADING_INPUT_1:
 					case self::SOURCE_TYPE_TRADING_INPUT_2:
 						if($window instanceof TradeInventory){
 							return new SlotChangeAction($window, $this->windowId === self::SOURCE_TYPE_TRADING_INPUT_1 ? 0 : 1, $this->oldItem, $this->newItem);
 						}else{
-							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+							if($window === null){
+								throw new \InvalidStateException("Window not found");
+							}else{
+								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . TradeInventory::class . " , given " . get_class($window));
+							}
 						}
 					case self::SOURCE_TYPE_TRADING_USE_INPUTS:
 						return new SlotChangeAction($window, $window->first($this->newItem, true), $this->oldItem, $this->newItem);
@@ -279,13 +307,21 @@ class NetworkInventoryAction{
 								return null;
 							}
 						}else{
-							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+							if($window === null){
+								throw new \InvalidStateException("Window not found");
+							}else{
+								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . TradeInventory::class . " , given " . get_class($window));
+							}
 						}
 					case self::SOURCE_TYPE_BEACON:
 						if($window instanceof BeaconInventory){
 							return new SlotChangeAction($window, 0, $this->oldItem, $this->newItem);
 						}else{
-							throw new \InvalidStateException("Unexpected inventory, got " . get_class($window));
+							if($window === null){
+								throw new \InvalidStateException("Window not found");
+							}else{
+								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . BeaconInventory::class . " , given " . get_class($window));
+							}
 						}
 				}
 
