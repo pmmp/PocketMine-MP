@@ -23,36 +23,25 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\utils\EnumTrait;
+
+/**
+ * This doc-block is generated automatically, do not modify it manually.
+ * This must be regenerated whenever enum members are added, removed or changed.
+ * @see EnumTrait::_generateMethodAnnotations()
+ *
+ * @method static self BOTTOM()
+ * @method static self TOP()
+ * @method static self DOUBLE()
+ */
 final class SlabType{
+	use EnumTrait;
 
-	/**
-	 * @var string
-	 */
-	private $name;
-
-	public static function BOTTOM() : self{
-		/** @var SlabType $ret */
-		static $ret = null;
-		return $ret ?? ($ret = new self("bottom"));
-	}
-
-	public static function TOP() : self{
-		/** @var SlabType $ret */
-		static $ret = null;
-		return $ret ?? ($ret = new self("top"));
-	}
-
-	public static function DOUBLE() : self{
-		/** @var SlabType $ret */
-		static $ret = null;
-		return $ret ?? ($ret = new self("double"));
-	}
-
-	private function __construct(string $name){
-		$this->name = $name;
-	}
-
-	public function getName() : string{
-		return $this->name;
+	protected static function setup() : array{
+		return [
+			new self("bottom"),
+			new self("top"),
+			new self("double")
+		];
 	}
 }

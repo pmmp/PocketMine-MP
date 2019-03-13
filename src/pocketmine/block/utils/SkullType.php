@@ -23,71 +23,43 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\utils\EnumTrait;
+
+/**
+ * This doc-block is generated automatically, do not modify it manually.
+ * This must be regenerated whenever enum members are added, removed or changed.
+ * @see EnumTrait::_generateMethodAnnotations()
+ *
+ * @method static self SKELETON()
+ * @method static self WITHER_SKELETON()
+ * @method static self ZOMBIE()
+ * @method static self PLAYER()
+ * @method static self CREEPER()
+ * @method static self DRAGON()
+ */
 final class SkullType{
-
-	/** @var SkullType */
-	private static $SKELETON;
-	/** @var SkullType */
-	private static $WITHER_SKELETON;
-	/** @var SkullType */
-	private static $ZOMBIE;
-	/** @var SkullType */
-	private static $HUMAN;
-	/** @var SkullType */
-	private static $CREEPER;
-	/** @var SkullType */
-	private static $DRAGON;
-
-	/* auto-generated code */
-
-	public static function SKELETON() : SkullType{
-		return self::$SKELETON;
+	use EnumTrait {
+		register as Enum_register;
+		__construct as Enum___construct;
 	}
 
-	public static function WITHER_SKELETON() : SkullType{
-		return self::$WITHER_SKELETON;
-	}
-
-	public static function ZOMBIE() : SkullType{
-		return self::$ZOMBIE;
-	}
-
-	public static function HUMAN() : SkullType{
-		return self::$HUMAN;
-	}
-
-	public static function CREEPER() : SkullType{
-		return self::$CREEPER;
-	}
-
-	public static function DRAGON() : SkullType{
-		return self::$DRAGON;
-	}
-
-	/** @var SkullType[] */
-	private static $all = [];
 	/** @var SkullType[] */
 	private static $numericIdMap = [];
 
-	public static function _init() : void{
-		self::register(self::$SKELETON = new SkullType("Skeleton Skull", 0));
-		self::register(self::$WITHER_SKELETON = new SkullType("Wither Skeleton Skull", 1));
-		self::register(self::$ZOMBIE = new SkullType("Zombie Head", 2));
-		self::register(self::$HUMAN = new SkullType("Player Head", 3));
-		self::register(self::$CREEPER = new SkullType("Creeper Head", 4));
-		self::register(self::$DRAGON = new SkullType("Dragon Head", 5));
+	protected static function setup() : array{
+		return [
+			new SkullType("skeleton", "Skeleton Skull", 0),
+			new SkullType("wither_skeleton", "Wither Skeleton Skull", 1),
+			new SkullType("zombie", "Zombie Head", 2),
+			new SkullType("player", "Player Head", 3),
+			new SkullType("creeper", "Creeper Head", 4),
+			new SkullType("dragon", "Dragon Head", 5)
+		];
 	}
 
-	private static function register(SkullType $type) : void{
+	protected static function register(SkullType $type) : void{
+		self::Enum_register($type);
 		self::$numericIdMap[$type->getMagicNumber()] = $type;
-		self::$all[] = $type;
-	}
-
-	/**
-	 * @return SkullType[]
-	 */
-	public static function getAll() : array{
-		return self::$all;
 	}
 
 	/**
@@ -109,7 +81,8 @@ final class SkullType{
 	/** @var int */
 	private $magicNumber;
 
-	public function __construct(string $displayName, int $magicNumber){
+	public function __construct(string $enumName, string $displayName, int $magicNumber){
+		$this->Enum___construct($enumName);
 		$this->displayName = $displayName;
 		$this->magicNumber = $magicNumber;
 	}
@@ -128,4 +101,3 @@ final class SkullType{
 		return $this->magicNumber;
 	}
 }
-SkullType::_init();

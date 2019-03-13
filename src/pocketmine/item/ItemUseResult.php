@@ -23,43 +23,25 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\utils\EnumTrait;
+
+/**
+ * This doc-block is generated automatically, do not modify it manually.
+ * This must be regenerated whenever enum members are added, removed or changed.
+ * @see EnumTrait::_generateMethodAnnotations()
+ *
+ * @method static self NONE()
+ * @method static self FAIL()
+ * @method static self SUCCESS()
+ */
 final class ItemUseResult{
-	/** @var ItemUseResult */
-	private static $NONE;
-	/** @var ItemUseResult */
-	private static $FAILED;
-	/** @var ItemUseResult */
-	private static $SUCCEEDED;
+	use EnumTrait;
 
-	/**
-	 * No action attempted to take place. Does nothing.
-	 *
-	 * @return ItemUseResult
-	 */
-	public static function NONE() : ItemUseResult{
-		return self::$NONE ?? (self::$NONE = new self());
-	}
-
-	/**
-	 * An action attempted to take place, but failed due to cancellation. This triggers rollback behaviour for a remote
-	 * player.
-	 *
-	 * @return ItemUseResult
-	 */
-	public static function FAIL() : ItemUseResult{
-		return self::$FAILED ?? (self::$FAILED = new self());
-	}
-
-	/**
-	 * An action took place successfully. Changes inventory contents if appropriate.
-	 *
-	 * @return ItemUseResult
-	 */
-	public static function SUCCESS() : ItemUseResult{
-		return self::$SUCCEEDED ?? (self::$SUCCEEDED = new self());
-	}
-
-	private function __construct(){
-		//NOOP
+	protected static function setup() : array{
+		return [
+			new self("none"),
+			new self("fail"),
+			new self("success")
+		];
 	}
 }

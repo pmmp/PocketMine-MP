@@ -23,74 +23,43 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\utils\EnumTrait;
+
+/**
+ * This doc-block is generated automatically, do not modify it manually.
+ * This must be regenerated whenever enum members are added, removed or changed.
+ * @see EnumTrait::_generateMethodAnnotations()
+ *
+ * @method static self OAK()
+ * @method static self SPRUCE()
+ * @method static self BIRCH()
+ * @method static self JUNGLE()
+ * @method static self ACACIA()
+ * @method static self DARK_OAK()
+ */
 final class TreeType{
-
-	/** @var TreeType */
-	private static $OAK;
-	/** @var TreeType */
-	private static $SPRUCE;
-	/** @var TreeType */
-	private static $BIRCH;
-	/** @var TreeType */
-	private static $JUNGLE;
-	/** @var TreeType */
-	private static $ACACIA;
-	/** @var TreeType */
-	private static $DARK_OAK;
-
-	/* auto-generated code */
-
-	public static function OAK() : TreeType{
-		return self::$OAK;
-	}
-
-	public static function SPRUCE() : TreeType{
-		return self::$SPRUCE;
-	}
-
-	public static function BIRCH() : TreeType{
-		return self::$BIRCH;
-	}
-
-	public static function JUNGLE() : TreeType{
-		return self::$JUNGLE;
-	}
-
-	public static function ACACIA() : TreeType{
-		return self::$ACACIA;
-	}
-
-	public static function DARK_OAK() : TreeType{
-		return self::$DARK_OAK;
+	use EnumTrait {
+		register as Enum_register;
+		__construct as Enum___construct;
 	}
 
 	/** @var TreeType[] */
 	private static $numericIdMap = [];
-	/** @var TreeType[] */
-	private static $all = [];
 
-	/**
-	 * @internal
-	 */
-	public static function _init() : void{
-		self::register(self::$OAK = new TreeType("Oak", 0));
-		self::register(self::$SPRUCE = new TreeType("Spruce", 1));
-		self::register(self::$BIRCH = new TreeType("Birch", 2));
-		self::register(self::$JUNGLE = new TreeType("Jungle", 3));
-		self::register(self::$ACACIA = new TreeType("Acacia", 4));
-		self::register(self::$DARK_OAK = new TreeType("Dark Oak", 5));
+	protected static function setup() : array{
+		return [
+			new TreeType("oak", "Oak", 0),
+			new TreeType("spruce", "Spruce", 1),
+			new TreeType("birch", "Birch", 2),
+			new TreeType("jungle", "Jungle", 3),
+			new TreeType("acacia", "Acacia", 4),
+			new TreeType("dark_oak","Dark Oak", 5)
+		];
 	}
 
-	private static function register(TreeType $type) : void{
+	protected static function register(TreeType $type) : void{
+		self::Enum_register($type);
 		self::$numericIdMap[$type->getMagicNumber()] = $type;
-		self::$all[] = $type;
-	}
-
-	/**
-	 * @return TreeType[]
-	 */
-	public static function getAll() : array{
-		return self::$all;
 	}
 
 	/**
@@ -101,6 +70,7 @@ final class TreeType{
 	 * @throws \InvalidArgumentException
 	 */
 	public static function fromMagicNumber(int $magicNumber) : TreeType{
+		self::checkInit();
 		if(!isset(self::$numericIdMap[$magicNumber])){
 			throw new \InvalidArgumentException("Unknown tree type magic number $magicNumber");
 		}
@@ -113,10 +83,12 @@ final class TreeType{
 	private $magicNumber;
 
 	/**
+	 * @param string $enumName
 	 * @param string $displayName
 	 * @param int    $magicNumber
 	 */
-	private function __construct(string $displayName, int $magicNumber){
+	private function __construct(string $enumName, string $displayName, int $magicNumber){
+		$this->Enum___construct($enumName);
 		$this->displayName = $displayName;
 		$this->magicNumber = $magicNumber;
 	}
@@ -135,4 +107,3 @@ final class TreeType{
 		return $this->magicNumber;
 	}
 }
-TreeType::_init();
