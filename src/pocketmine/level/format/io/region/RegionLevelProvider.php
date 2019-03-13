@@ -162,6 +162,13 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 		}
 	}
 
+	protected function unloadRegion(int $regionX, int $regionZ) : void{
+		if(isset($this->regions[$hash = Level::chunkHash($regionX, $regionZ)])){
+			$this->regions[$hash]->close();
+			unset($this->regions[$hash]);
+		}
+	}
+
 	public function close() : void{
 		foreach($this->regions as $index => $region){
 			$region->close();
@@ -246,6 +253,8 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 					}
 				}
 			}
+
+			$this->unloadRegion($rX, $rZ);
 		}
 	}
 
@@ -254,6 +263,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 		foreach($this->createRegionIterator() as $region){
 			$this->loadRegion((int) $region[1], (int) $region[2]);
 			$count += $this->getRegion((int) $region[1], (int) $region[2])->calculateChunkCount();
+			$this->unloadRegion((int) $region[1], (int) $region[2]);
 		}
 		return $count;
 	}
