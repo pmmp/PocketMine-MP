@@ -216,6 +216,7 @@ class RegionLoader{
 	public function removeChunk(int $x, int $z) : void{
 		$index = self::getChunkOffset($x, $z);
 		$this->locationTable[$index] = new RegionLocationTableEntry(0, 0, 0);
+		$this->writeLocationIndex($index);
 	}
 
 	/**
