@@ -29,7 +29,7 @@ use pocketmine\utils\Binary;
 use function ceil;
 use function chr;
 use function fclose;
-use function fgetc;
+use function feof;
 use function file_exists;
 use function filesize;
 use function fopen;
@@ -301,7 +301,7 @@ class RegionLoader{
 			//TODO: more validity checks
 
 			fseek($this->filePointer, $fileOffset);
-			if(fgetc($this->filePointer) === false){ //Try and read from the location
+			if(feof($this->filePointer)){
 				throw new CorruptedRegionException("Region file location offset x=$x,z=$z points to invalid file location $fileOffset");
 			}
 			if(isset($usedOffsets[$offset])){
