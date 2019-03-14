@@ -229,9 +229,7 @@ class Chunk{
 	 * @param int $level 0-15
 	 */
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : void{
-		if($this->getSubChunk($y >> 4, true)->setBlockSkyLight($x, $y & 0x0f, $z, $level)){
-			$this->hasChanged = true;
-		}
+		$this->getSubChunk($y >> 4, true)->setBlockSkyLight($x, $y & 0x0f, $z, $level);
 	}
 
 	/**
@@ -267,9 +265,7 @@ class Chunk{
 	 * @param int $level 0-15
 	 */
 	public function setBlockLight(int $x, int $y, int $z, int $level) : void{
-		if($this->getSubChunk($y >> 4, true)->setBlockLight($x, $y & 0x0f, $z, $level)){
-			$this->hasChanged = true;
-		}
+		$this->getSubChunk($y >> 4, true)->setBlockLight($x, $y & 0x0f, $z, $level);
 	}
 
 	/**
