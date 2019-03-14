@@ -143,7 +143,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	}
 
 	public function openSession(int $sessionId, string $address, int $port, int $clientID) : void{
-		$session = new NetworkSession($this->server, $this, $address, $port);
+		$session = new NetworkSession($this->server, $this->network->getSessionManager(), $this, $address, $port);
 		$this->sessions[$sessionId] = $session;
 		$this->identifiers[spl_object_id($session)] = $sessionId;
 	}

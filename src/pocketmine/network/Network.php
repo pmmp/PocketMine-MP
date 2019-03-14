@@ -28,7 +28,6 @@ namespace pocketmine\network;
 
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use function get_class;
 use function spl_object_id;
@@ -46,11 +45,12 @@ class Network{
 	/** @var string */
 	private $name;
 
-	/** @var NetworkSession[] */
-	private $updateSessions = [];
+	/** @var NetworkSessionManager */
+	private $sessionManager;
 
 	public function __construct(){
 		PacketPool::init();
+		$this->sessionManager = new NetworkSessionManager();
 	}
 
 	public function addStatistics(float $upload, float $download) : void{
@@ -78,12 +78,15 @@ class Network{
 		return $this->interfaces;
 	}
 
+	/**
+	 * @return NetworkSessionManager
+	 */
+	public function getSessionManager() : NetworkSessionManager{
+		return $this->sessionManager;
+	}
+
 	public function getConnectionCount() : int{
-		$count = 0;
-		foreach($this->interfaces as $interface){
-			$count += $interface->getConnectionCount();
-		}
-		return $count;
+		return $this->sessionManager->getSessionCount();
 	}
 
 	public function tick() : void{
@@ -91,11 +94,7 @@ class Network{
 			$interface->tick();
 		}
 
-		foreach($this->updateSessions as $k => $session){
-			if(!$session->isConnected() or !$session->tick()){
-				unset($this->updateSessions[$k]);
-			}
-		}
+		$this->sessionManager->tick();
 	}
 
 	/**
@@ -186,9 +185,5 @@ class Network{
 		foreach($this->advancedInterfaces as $interface){
 			$interface->addRawPacketFilter($regex);
 		}
-	}
-
-	public function scheduleSessionTick(NetworkSession $session) : void{
-		$this->updateSessions[spl_object_id($session)] = $session;
 	}
 }

@@ -404,8 +404,6 @@ class LevelManager{
 			foreach($level->getPlayers() as $player){
 				if($player->spawned){
 					$player->save();
-				}elseif(!$player->isConnected()){ //TODO: check if this is ever possible
-					$this->server->removePlayer($player);
 				}
 			}
 			$level->save(false);

@@ -45,6 +45,8 @@ class LoginSessionHandler extends SessionHandler{
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{
+		$this->session->setPlayerInfo($packet->playerInfo);
+
 		if(!$this->isCompatibleProtocol($packet->protocol)){
 			$pk = new PlayStatusPacket();
 			$pk->status = $packet->protocol < ProtocolInfo::CURRENT_PROTOCOL ?

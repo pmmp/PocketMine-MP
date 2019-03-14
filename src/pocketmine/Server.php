@@ -292,12 +292,6 @@ class Server{
 	private $config;
 
 	/** @var Player[] */
-	private $players = [];
-
-	/** @var Player[] */
-	private $loggedInPlayers = [];
-
-	/** @var Player[] */
 	private $playerList = [];
 
 	/**
@@ -600,13 +594,6 @@ class Server{
 	 */
 	public function getCommandMap(){
 		return $this->commandMap;
-	}
-
-	/**
-	 * @return Player[]
-	 */
-	public function getLoggedInPlayers() : array{
-		return $this->loggedInPlayers;
 	}
 
 	/**
@@ -1654,8 +1641,8 @@ class Server{
 				$this->pluginManager->disablePlugins();
 			}
 
-			foreach($this->players as $player){
-				$player->close($player->getLeaveMessage(), $this->getProperty("settings.shutdown-message", "Server closed"));
+			if($this->network instanceof Network){
+				$this->network->getSessionManager()->close($this->getProperty("settings.shutdown-message", "Server closed"));
 			}
 
 			if($this->levelManager instanceof LevelManager){
@@ -1883,23 +1870,6 @@ class Server{
 		if($this->sendUsageTicker > 0){
 			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
 		}
-
-		$this->loggedInPlayers[$player->getRawUniqueId()] = $player;
-	}
-
-	public function onPlayerLogout(Player $player) : void{
-		unset($this->loggedInPlayers[$player->getRawUniqueId()]);
-	}
-
-	public function addPlayer(Player $player) : void{
-		$this->players[spl_object_id($player)] = $player;
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function removePlayer(Player $player) : void{
-		unset($this->players[spl_object_id($player)]);
 	}
 
 	public function addOnlinePlayer(Player $player) : void{
