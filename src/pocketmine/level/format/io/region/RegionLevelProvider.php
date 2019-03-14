@@ -148,7 +148,7 @@ abstract class RegionLevelProvider extends BaseLevelProvider{
 				$logger = \GlobalLogger::get();
 				$logger->error("Corrupted region file detected: " . $e->getMessage());
 
-				$region->close(false); //Do not write anything to the file
+				$region->close(); //Do not write anything to the file
 
 				$backupPath = $path . ".bak." . time();
 				rename($path, $backupPath);

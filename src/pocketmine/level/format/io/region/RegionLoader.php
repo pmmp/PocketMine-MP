@@ -40,7 +40,6 @@ use function fwrite;
 use function is_resource;
 use function max;
 use function ord;
-use function pack;
 use function str_pad;
 use function stream_set_read_buffer;
 use function stream_set_write_buffer;
@@ -102,7 +101,6 @@ class RegionLoader{
 
 	public function __destruct(){
 		if(is_resource($this->filePointer)){
-			$this->writeLocationTable();
 			fclose($this->filePointer);
 		}
 	}
@@ -244,16 +242,10 @@ class RegionLoader{
 	}
 
 	/**
-	 * Writes the region header and closes the file
-	 *
-	 * @param bool $writeHeader
+	 * Closes the file
 	 */
-	public function close(bool $writeHeader = true) : void{
+	public function close() : void{
 		if(is_resource($this->filePointer)){
-			if($writeHeader){
-				$this->writeLocationTable();
-			}
-
 			fclose($this->filePointer);
 		}
 	}
@@ -318,19 +310,6 @@ class RegionLoader{
 			}
 			$usedOffsets[$offset] = $i;
 		}
-	}
-
-	private function writeLocationTable() : void{
-		$write = [];
-
-		for($i = 0; $i < 1024; ++$i){
-			$write[] = (($this->locationTable[$i]->getFirstSector() << 8) | $this->locationTable[$i]->getSectorCount());
-		}
-		for($i = 0; $i < 1024; ++$i){
-			$write[] = $this->locationTable[$i]->getTimestamp();
-		}
-		fseek($this->filePointer, 0);
-		fwrite($this->filePointer, pack("N*", ...$write), 4096 * 2);
 	}
 
 	protected function writeLocationIndex(int $index) : void{
