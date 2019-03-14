@@ -1866,16 +1866,14 @@ class Server{
 		}
 	}
 
-	public function onPlayerLogin(Player $player) : void{
-		if($this->sendUsageTicker > 0){
-			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
-		}
-	}
-
 	public function addOnlinePlayer(Player $player) : void{
 		$this->updatePlayerListData($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXuid());
 
 		$this->playerList[$player->getRawUniqueId()] = $player;
+
+		if($this->sendUsageTicker > 0){
+			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
+		}
 	}
 
 	public function removeOnlinePlayer(Player $player) : void{

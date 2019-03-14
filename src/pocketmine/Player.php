@@ -1799,7 +1799,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	public function onLoginSuccess() : void{
 		$this->loggedIn = true;
-		$this->server->onPlayerLogin($this);
 	}
 
 	public function _actuallyConstruct(){
