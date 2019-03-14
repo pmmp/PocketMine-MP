@@ -1604,10 +1604,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	public function onUpdate(int $currentTick) : bool{
-		if(!$this->loggedIn){
-			return false;
-		}
-
 		$tickDiff = $currentTick - $this->lastUpdate;
 
 		if($tickDiff <= 0){
