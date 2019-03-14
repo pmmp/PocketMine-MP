@@ -49,6 +49,7 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\BinaryDataException;
 use function bin2hex;
+use function get_class;
 use function strlen;
 use function substr;
 use function time;
@@ -76,6 +77,8 @@ class NetworkSession{
 
 	/** @var bool */
 	private $connected = true;
+	/** @var bool */
+	private $loggedIn = false;
 	/** @var int */
 	private $connectTime;
 
@@ -276,6 +279,11 @@ class NetworkSession{
 	}
 
 	public function sendDataPacket(ClientboundPacket $packet, bool $immediate = false) : bool{
+		//Basic safety restriction. TODO: improve this
+		if(!$this->loggedIn and !$packet->canBeSentBeforeLogin()){
+			throw new \InvalidArgumentException("Attempted to send " . get_class($packet) . " to " . $this->getDisplayName() . " too early");
+		}
+
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
@@ -435,6 +443,8 @@ class NetworkSession{
 	}
 
 	public function onLoginSuccess() : void{
+		$this->loggedIn = true;
+
 		$pk = new PlayStatusPacket();
 		$pk->status = PlayStatusPacket::LOGIN_SUCCESS;
 		$this->sendDataPacket($pk);
