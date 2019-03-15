@@ -119,6 +119,7 @@ class FormatConverter{
 		$data->setSpawn($oldData->getSpawn());
 		$data->setTime($oldData->getTime());
 
+		$data->save();
 		$this->logger->info("Finished converting manifest");
 		//TODO: add more properties as-needed
 	}
