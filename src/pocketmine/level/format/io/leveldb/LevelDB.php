@@ -356,13 +356,15 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 			$idMap = array_flip(json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . '/legacy_id_map.json'), true));
 		}
 		$index = LevelDB::chunkIndex($chunk->getX(), $chunk->getZ());
-		$this->db->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
+
+		$write = new \LevelDBWriteBatch();
+		$write->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
 		$subChunks = $chunk->getSubChunks();
 		foreach($subChunks as $y => $subChunk){
 			$key = $index . self::TAG_SUBCHUNK_PREFIX . chr($y);
 			if($subChunk->isEmpty(false)){ //MCPE doesn't save light anymore as of 1.1
-				$this->db->delete($key);
+				$write->delete($key);
 			}else{
 				$subStream = new BinaryStream();
 				$subStream->putByte(self::CURRENT_LEVEL_SUBCHUNK_VERSION);
@@ -387,32 +389,35 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 					$subStream->put((new LittleEndianNbtSerializer())->writeMultiple($tags));
 				}
 
-				$this->db->put($key, $subStream->getBuffer());
+				$write->put($key, $subStream->getBuffer());
 			}
 		}
 
-		$this->db->put($index . self::TAG_DATA_2D, str_repeat("\x00", 512) . $chunk->getBiomeIdArray());
+		$write->put($index . self::TAG_DATA_2D, str_repeat("\x00", 512) . $chunk->getBiomeIdArray());
 
 		//TODO: use this properly
-		$this->db->put($index . self::TAG_STATE_FINALISATION, chr(self::FINALISATION_DONE));
+		$write->put($index . self::TAG_STATE_FINALISATION, chr(self::FINALISATION_DONE));
 
-		$this->writeTags($chunk->getNBTtiles(), $index . self::TAG_BLOCK_ENTITY);
-		$this->writeTags($chunk->getNBTentities(), $index . self::TAG_ENTITY);
+		$this->writeTags($chunk->getNBTtiles(), $index . self::TAG_BLOCK_ENTITY, $write);
+		$this->writeTags($chunk->getNBTentities(), $index . self::TAG_ENTITY, $write);
 
-		$this->db->delete($index . self::TAG_DATA_2D_LEGACY);
-		$this->db->delete($index . self::TAG_LEGACY_TERRAIN);
+		$write->delete($index . self::TAG_DATA_2D_LEGACY);
+		$write->delete($index . self::TAG_LEGACY_TERRAIN);
+
+		$this->db->write($write);
 	}
 
 	/**
-	 * @param CompoundTag[] $targets
-	 * @param string        $index
+	 * @param CompoundTag[]      $targets
+	 * @param string             $index
+	 * @param \LevelDBWriteBatch $write
 	 */
-	private function writeTags(array $targets, string $index) : void{
+	private function writeTags(array $targets, string $index, \LevelDBWriteBatch $write) : void{
 		if(!empty($targets)){
 			$nbt = new LittleEndianNbtSerializer();
-			$this->db->put($index, $nbt->writeMultiple($targets));
+			$write->put($index, $nbt->writeMultiple($targets));
 		}else{
-			$this->db->delete($index);
+			$write->delete($index);
 		}
 	}
 
