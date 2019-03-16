@@ -104,14 +104,14 @@ class PlayerInfo{
 	/**
 	 * @return string
 	 */
-	public function getDeviceModel(): string {
+	public function getDeviceModel() : string {
 		return $this->deviceModel;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getPlatformType(): int {
+	public function getPlatformType() : int {
 		return $this->platformType;
 	}
 }

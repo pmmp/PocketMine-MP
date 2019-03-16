@@ -27,10 +27,16 @@ interface PlatformTypes{
 
 	public const ANDROID = 1;
 	public const IOS = 2;
-	public const MAC = 3;
+	public const OSX = 3;
 	public const FIRE = 4;
 	public const GEARVR = 5;
 	public const HOLOLENS = 6;
-	public const WINDOWS = 7;
+	public const WIN10 = 7;
+	public const WIN32 = 8;
+	public const DEDICATED = 9;
+	public const TVOS = 10;
+	public const ORBIS = 11;
+	public const NX = 12;
+	public const UNKNOWN = -1;
 
 }
