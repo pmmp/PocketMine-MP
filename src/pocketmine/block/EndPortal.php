@@ -28,6 +28,7 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\Player;
+use pocketmine\Server;
 
 class EndPortal extends Transparent{
 
@@ -62,10 +63,12 @@ class EndPortal extends Transparent{
 	}
 
 	public function onEntityCollide(Entity $entity) : void{
-		if($entity->getLevel()->getDimension() === DimensionIds::THE_END){
-			$entity->travelToDimension(DimensionIds::OVERWORLD);
-		}else{
-			$entity->travelToDimension(DimensionIds::THE_END);
+		if(Server::getInstance()->isAllowTheEnd()){
+			if($entity->getLevel()->getDimension() === DimensionIds::THE_END){
+				$entity->travelToDimension(DimensionIds::OVERWORLD);
+			}else{
+				$entity->travelToDimension(DimensionIds::THE_END);
+			}
 		}
 	}
 
