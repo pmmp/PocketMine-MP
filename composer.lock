@@ -372,12 +372,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "87a0312552d679365c6e3304637cd0e3963175da"
+                "reference": "cb170cf827e265cfb492de2af684cba23574dfec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/87a0312552d679365c6e3304637cd0e3963175da",
-                "reference": "87a0312552d679365c6e3304637cd0e3963175da",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/cb170cf827e265cfb492de2af684cba23574dfec",
+                "reference": "cb170cf827e265cfb492de2af684cba23574dfec",
                 "shasum": ""
             },
             "require": {
@@ -405,7 +405,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2019-02-07T17:04:08+00:00"
+            "time": "2019-03-16T12:12:20+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -488,12 +488,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "35110fcc742701d5f2b8093d63365c42900236c1"
+                "reference": "02476b8990ad31c38fa999ec0392f6d01208574d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/35110fcc742701d5f2b8093d63365c42900236c1",
-                "reference": "35110fcc742701d5f2b8093d63365c42900236c1",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/02476b8990ad31c38fa999ec0392f6d01208574d",
+                "reference": "02476b8990ad31c38fa999ec0392f6d01208574d",
                 "shasum": ""
             },
             "type": "library",
@@ -512,7 +512,7 @@
             "support": {
                 "source": "https://github.com/pmmp/SPL/tree/master"
             },
-            "time": "2019-02-23T12:20:29+00:00"
+            "time": "2019-03-15T15:22:36+00:00"
         }
     ],
     "packages-dev": [],
