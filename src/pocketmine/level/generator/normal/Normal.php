@@ -178,6 +178,10 @@ class Normal extends Generator{
 
 		$biomeCache = [];
 
+		$bedrock = BlockFactory::get(Block::BEDROCK)->getFullId();
+		$stillWater = BlockFactory::get(Block::STILL_WATER)->getFullId();
+		$stone = BlockFactory::get(Block::STONE)->getFullId();
+
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				$minSum = 0;
@@ -217,15 +221,15 @@ class Normal extends Generator{
 
 				for($y = 0; $y < 128; ++$y){
 					if($y === 0){
-						$chunk->setBlock($x, $y, $z, Block::BEDROCK, 0);
+						$chunk->setFullBlock($x, $y, $z, $bedrock);
 						continue;
 					}
 					$noiseValue = $noise[$x][$z][$y] - 1 / $smoothHeight * ($y - $smoothHeight - $minSum);
 
 					if($noiseValue > 0){
-						$chunk->setBlock($x, $y, $z, Block::STONE, 0);
+						$chunk->setFullBlock($x, $y, $z, $stone);
 					}elseif($y <= $this->waterHeight){
-						$chunk->setBlock($x, $y, $z, Block::STILL_WATER, 0);
+						$chunk->setFullBlock($x, $y, $z, $stillWater);
 					}
 				}
 			}

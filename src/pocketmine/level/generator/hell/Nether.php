@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\hell;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\Generator;
@@ -89,6 +90,10 @@ class Nether extends Generator{
 
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 
+		$bedrock = BlockFactory::get(Block::BEDROCK)->getFullId();
+		$netherrack = BlockFactory::get(Block::NETHERRACK)->getFullId();
+		$stillLava = BlockFactory::get(Block::STILL_LAVA)->getFullId();
+
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 
@@ -97,16 +102,16 @@ class Nether extends Generator{
 
 				for($y = 0; $y < 128; ++$y){
 					if($y === 0 or $y === 127){
-						$chunk->setBlock($x, $y, $z, Block::BEDROCK, 0);
+						$chunk->setFullBlock($x, $y, $z, $bedrock);
 						continue;
 					}
 					$noiseValue = (abs($this->emptyHeight - $y) / $this->emptyHeight) * $this->emptyAmplitude - $noise[$x][$z][$y];
 					$noiseValue -= 1 - $this->density;
 
 					if($noiseValue > 0){
-						$chunk->setBlock($x, $y, $z, Block::NETHERRACK, 0);
+						$chunk->setFullBlock($x, $y, $z, $netherrack);
 					}elseif($y <= $this->waterHeight){
-						$chunk->setBlock($x, $y, $z, Block::STILL_LAVA, 0);
+						$chunk->setFullBlock($x, $y, $z, $stillLava);
 					}
 				}
 			}

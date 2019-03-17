@@ -45,12 +45,9 @@ interface SubChunkInterface{
 	 * @param int $x
 	 * @param int $y
 	 * @param int $z
-	 * @param int $id
-	 * @param int $data
-	 *
-	 * @return bool
+	 * @param int $block
 	 */
-	public function setBlock(int $x, int $y, int $z, int $id, int $data) : bool;
+	public function setFullBlock(int $x, int $y, int $z, int $block) : void;
 
 	/**
 	 * @return PalettedBlockArray[]

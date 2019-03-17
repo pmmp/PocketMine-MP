@@ -107,6 +107,14 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $this->idInfo->getBlockId();
 	}
 
+	/**
+	 * @internal
+	 * @return int
+	 */
+	public function getFullId() : int{
+		return ($this->getId() << 4) | $this->getMeta();
+	}
+
 	public function asItem() : Item{
 		return ItemFactory::get($this->idInfo->getItemId(), $this->idInfo->getVariant());
 	}
@@ -155,7 +163,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->level->getChunkAtPosition($this)->setBlock($this->x & 0xf, $this->y, $this->z & 0xf, $this->getId(), $this->getMeta());
+		$this->level->getChunkAtPosition($this)->setFullBlock($this->x & 0xf, $this->y, $this->z & 0xf, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $this->level->getTile($this);

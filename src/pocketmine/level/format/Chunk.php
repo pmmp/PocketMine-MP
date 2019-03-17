@@ -176,7 +176,7 @@ class Chunk{
 	}
 
 	/**
-	 * Returns a bitmap of block ID and meta at the specified chunk block coordinates
+	 * Returns the internal ID of the blockstate at the given coordinates.
 	 *
 	 * @param int $x 0-15
 	 * @param int $y
@@ -189,22 +189,16 @@ class Chunk{
 	}
 
 	/**
-	 * Sets block ID and meta in one call at the specified chunk block coordinates
+	 * Sets the blockstate at the given coordinate by internal ID.
 	 *
-	 * @param int $x 0-15
+	 * @param int $x
 	 * @param int $y
-	 * @param int $z 0-15
-	 * @param int $blockId 0-255
-	 * @param int $meta 0-15
-	 *
-	 * @return bool
+	 * @param int $z
+	 * @param int $block
 	 */
-	public function setBlock(int $x, int $y, int $z, int $blockId, int $meta) : bool{
-		if($this->getSubChunk($y >> 4, true)->setBlock($x, $y & 0x0f, $z, $blockId, $meta & 0x0f)){
-			$this->hasChanged = true;
-			return true;
-		}
-		return false;
+	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
+		$this->getSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
+		$this->hasChanged = true;
 	}
 
 	/**

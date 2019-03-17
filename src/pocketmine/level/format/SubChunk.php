@@ -94,12 +94,11 @@ class SubChunk implements SubChunkInterface{
 		return $this->blockLayers[0]->get($x, $y, $z);
 	}
 
-	public function setBlock(int $x, int $y, int $z, int $id, int $data) : bool{
+	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
 		if(empty($this->blockLayers)){
 			$this->blockLayers[] = new PalettedBlockArray(BlockIds::AIR << 4);
 		}
-		$this->blockLayers[0]->set($x, $y, $z, ($id << 4) | $data);
-		return true;
+		$this->blockLayers[0]->set($x, $y, $z, $block);
 	}
 
 	/**

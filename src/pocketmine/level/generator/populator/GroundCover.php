@@ -63,7 +63,7 @@ class GroundCover extends Populator{
 							continue;
 						}
 
-						$chunk->setBlock($x, $y, $z, $b->getId(), $b->getMeta());
+						$chunk->setFullBlock($x, $y, $z, $b->getFullId());
 					}
 				}
 			}

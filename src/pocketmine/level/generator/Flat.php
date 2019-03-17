@@ -43,7 +43,7 @@ class Flat extends Generator{
 	private $chunk;
 	/** @var Populator[] */
 	private $populators = [];
-	/** @var int[][] */
+	/** @var int[] */
 	private $structure;
 	/** @var int */
 	private $floorLevel;
@@ -96,7 +96,7 @@ class Flat extends Generator{
 	/**
 	 * @param string $layers
 	 *
-	 * @return int[][]
+	 * @return int[]
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public static function parseLayers(string $layers) : array{
@@ -116,7 +116,7 @@ class Flat extends Generator{
 				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\": " . $e->getMessage(), 0, $e);
 			}
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
-				$result[$cY] = [$b->getId(), $b->getMeta()];
+				$result[$cY] = $b->getFullId();
 			}
 		}
 
@@ -164,11 +164,11 @@ class Flat extends Generator{
 		for($sy = 0; $sy < $count; $sy += 16){
 			$subchunk = $this->chunk->getSubChunk($sy >> 4, true);
 			for($y = 0; $y < 16 and isset($this->structure[$y | $sy]); ++$y){
-				list($id, $meta) = $this->structure[$y | $sy];
+				$id = $this->structure[$y | $sy];
 
 				for($Z = 0; $Z < 16; ++$Z){
 					for($X = 0; $X < 16; ++$X){
-						$subchunk->setBlock($X, $y, $Z, $id, $meta);
+						$subchunk->setFullBlock($X, $y, $Z, $id);
 					}
 				}
 			}

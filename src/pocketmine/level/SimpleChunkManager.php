@@ -54,7 +54,8 @@ class SimpleChunkManager implements ChunkManager{
 
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : bool{
 		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
-			return $chunk->setBlock($x & 0xf, $y, $z & 0xf, $block->getId(), $block->getMeta());
+			$chunk->setFullBlock($x & 0xf, $y, $z & 0xf, $block->getFullId());
+			return true;
 		}
 		return false;
 	}
