@@ -1015,6 +1015,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sendDataPacket($pk);
 	}
 
+	public function getMaxInPortalTime() : int{
+		return $this->isCreative() ? 0 : 80;
+	}
+
+	public function getPortalCooldown() : int{
+		return 10;
+	}
+
 	protected function switchLevel(Level $targetLevel) : bool{
 		$oldLevel = $this->level;
 		if(parent::switchLevel($targetLevel)){

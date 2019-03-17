@@ -28,6 +28,7 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\Portal;
 use pocketmine\block\Water;
 use pocketmine\entity\hostile\Blaze;
 use pocketmine\entity\hostile\CaveSpider;
@@ -94,6 +95,7 @@ use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
 use pocketmine\network\mcpe\protocol\SetEntityLinkPacket;
 use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
@@ -598,6 +600,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public $random;
 	/** @var UUID|null */
 	protected $uuid;
+	/** @var bool */
+	protected $inPortal = false;
+	/** @var int */
+	protected $timeUntilPortal = 0;
+	/** @var int */
+	protected $portalCounter = 0;
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		$this->random = new Random($level->random->nextInt());
@@ -829,6 +837,20 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 */
 	public function setStatic(bool $static) : void{
 		$this->isStatic = $static;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isInPortal() : bool{
+		return $this->inPortal;
+	}
+
+	/**
+	 * @param bool $inPortal
+	 */
+	public function setInPortal(bool $inPortal) : void{
+		$this->inPortal = $inPortal;
 	}
 
 	public function getBoundingBox() : AxisAlignedBB{
@@ -1310,9 +1332,54 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($this->isGliding()) $this->resetFallDistance();
 
+		if($this->inPortal){
+			if($this->server->isAllowNether()){
+				if(!$this->isRiding() and $this->portalCounter++ > $this->getMaxInPortalTime()){
+					$this->portalCounter = $this->getMaxInPortalTime();
+					$this->timeUntilPortal = $this->getPortalCooldown();
+
+					$this->travelToDimension($this->level->getDimension() === DimensionIds::NETHER ? DimensionIds::OVERWORLD : DimensionIds::NETHER);
+
+					$this->inPortal = false;
+				}
+			}
+		}else{
+			if($this->portalCounter > 0){
+				$this->portalCounter -= 4;
+			}
+
+			if($this->portalCounter < 0){
+				$this->portalCounter = 0;
+			}
+		}
+
+		if($this->timeUntilPortal > 0){
+			$this->timeUntilPortal--;
+		}
+
 		$this->ticksLived += $tickDiff;
 
 		return $hasUpdate;
+	}
+
+	public function getMaxInPortalTime() : int{
+		return 0;
+	}
+
+	public function getPortalCooldown() : int{
+		return 300;
+	}
+
+	public function travelToDimension(int $dimensionId) : void{
+		if($dimensionId === DimensionIds::NETHER){
+			$targetLevel = $this->server->getNetherLevel();
+		}elseif($dimensionId === DimensionIds::THE_END){
+			$targetLevel = $this->server->getTheEndLevel();
+		}else{
+			$targetLevel = $this->server->getDefaultLevel();
+		}
+
+		$this->teleport($targetLevel->getSafeSpawn()); // TODO: more work for spawn points
 	}
 
 	public function isOnFire() : bool{
@@ -2486,10 +2553,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pk->attributes = $this->attributeMap->getAll();
 		$pk->metadata = $this->propertyManager->getAll();
 
-		if(!empty($this->seats)){
-			$id = $this->getId();
-			$pk->links = array_walk($this->passengers, function(Entity $entity, int $seat) use ($id){
-				return new EntityLink($id, $entity->getId(), EntityLink::TYPE_RIDER);
+		if(!empty($this->passengers)){
+			$pk->links = array_walk($this->passengers, function(int $entityId, int $seatNumber){
+				return new EntityLink($this->getId(), $entityId, EntityLink::TYPE_RIDER);
 			});
 		}
 

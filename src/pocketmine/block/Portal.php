@@ -24,12 +24,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
 class Portal extends Flowable{
-
-	// TODO: Nether teleport
 
 	protected $id = self::PORTAL;
 
@@ -55,6 +54,14 @@ class Portal extends Flowable{
 
 	public function isBreakable(Item $item) : bool{
 		return false;
+	}
+
+	public function hasEntityCollision() : bool{
+		return true;
+	}
+
+	public function onEntityCollide(Entity $entity) : void{
+		$entity->setInPortal(true);
 	}
 
 	public function onBreak(Item $item, Player $player = null) : bool{

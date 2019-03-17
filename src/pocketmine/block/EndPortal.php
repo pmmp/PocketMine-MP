@@ -24,7 +24,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\Player;
 
 class EndPortal extends Transparent{
@@ -53,6 +55,18 @@ class EndPortal extends Transparent{
 
 	public function isBreakable(Item $item) : bool{
 		return false;
+	}
+
+	public function hasEntityCollision() : bool{
+		return true;
+	}
+
+	public function onEntityCollide(Entity $entity) : void{
+		if($entity->getLevel()->getDimension() === DimensionIds::THE_END){
+			$entity->travelToDimension(DimensionIds::OVERWORLD);
+		}else{
+			$entity->travelToDimension(DimensionIds::THE_END);
+		}
 	}
 
 	public function onBreak(Item $item, Player $player = null) : bool{
