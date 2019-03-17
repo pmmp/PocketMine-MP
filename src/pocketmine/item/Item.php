@@ -518,7 +518,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return CompoundTag
 	 */
 	public function getNamedTag() : CompoundTag{
-		return $this->nbt ?? ($this->nbt = new CompoundTag());
+		return $this->nbt ?? ($this->nbt = new CompoundTag(""));
 	}
 
 	/**

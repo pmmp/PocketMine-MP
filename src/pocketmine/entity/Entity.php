@@ -715,7 +715,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function saveNBT() : CompoundTag{
-		$nbt = new CompoundTag();
+		$nbt = new CompoundTag("");
 		if(!($this instanceof Player)){
 			$nbt->setString("id", EntityFactory::getSaveId(get_class($this)));
 
