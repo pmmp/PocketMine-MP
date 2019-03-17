@@ -1715,7 +1715,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			if($player->isAdventure(true) and !$ev->isCancelled()){
-				$tag = $item->getNamedTagEntry("CanDestroy");
+				$tag = $item->getNamedTag()->getListTag("CanDestroy");
 				$canBreak = false;
 				if($tag instanceof ListTag){
 					foreach($tag as $v){
@@ -1865,7 +1865,7 @@ class Level implements ChunkManager, Metadatable{
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
 			if($player->isAdventure(true) and !$ev->isCancelled()){
 				$canPlace = false;
-				$tag = $item->getNamedTagEntry("CanPlaceOn");
+				$tag = $item->getNamedTag()->getListTag("CanPlaceOn");
 				if($tag instanceof ListTag){
 					foreach($tag as $v){
 						if($v instanceof StringTag){

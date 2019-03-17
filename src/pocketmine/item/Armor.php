@@ -85,7 +85,7 @@ abstract class Armor extends Durable{
 	 * @param Color $color
 	 */
 	public function setCustomColor(Color $color) : void{
-		$this->setNamedTagEntry(new IntTag(self::TAG_CUSTOM_COLOR, Binary::signInt($color->toARGB())));
+		$this->getNamedTag()->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($color->toARGB()));
 	}
 
 	/**

@@ -91,7 +91,7 @@ class WritableBook extends Item{
 		$page = $pagesTag->get($pageId);
 		$page->setString(self::TAG_PAGE_TEXT, $pageText);
 
-		$this->setNamedTagEntry($pagesTag);
+		$this->getNamedTag()->setTag($pagesTag);
 
 		return $created;
 	}
@@ -116,7 +116,7 @@ class WritableBook extends Item{
 			]));
 		}
 
-		$this->setNamedTagEntry($pagesTag);
+		$this->getNamedTag()->setTag($pagesTag);
 	}
 
 	/**
@@ -129,7 +129,6 @@ class WritableBook extends Item{
 	public function deletePage(int $pageId) : bool{
 		$pagesTag = $this->getPagesTag();
 		$pagesTag->remove($pageId);
-		$this->setNamedTagEntry($pagesTag);
 
 		return true;
 	}
@@ -150,7 +149,7 @@ class WritableBook extends Item{
 			new StringTag(self::TAG_PAGE_PHOTONAME, "")
 		]));
 
-		$this->setNamedTagEntry($pagesTag);
+		$this->getNamedTag()->setTag($pagesTag);
 
 		return true;
 	}

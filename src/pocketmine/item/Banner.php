@@ -89,7 +89,7 @@ class Banner extends Item{
 				new IntTag(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
 			]));
 		}
-		$this->setNamedTagEntry($tag);
+		$this->getNamedTag()->setTag($tag);
 	}
 
 	public function getFuelTime() : int{
