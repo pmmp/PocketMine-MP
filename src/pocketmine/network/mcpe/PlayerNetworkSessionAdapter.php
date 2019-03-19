@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-
-use http\Client;
 use pocketmine\entity\passive\AbstractHorse;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\maps\MapData;
