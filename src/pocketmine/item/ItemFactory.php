@@ -151,7 +151,7 @@ class ItemFactory{
 		self::registerItem(new Bed());
 		self::registerItem(new ItemBlock(Block::REPEATER_BLOCK, 0, Item::REPEATER));
 		self::registerItem(new Cookie());
-		self::registerItem(new FilledMap());
+		self::registerItem(new Map());
 		self::registerItem(new Shears());
 		self::registerItem(new Melon());
 		self::registerItem(new PumpkinSeeds());

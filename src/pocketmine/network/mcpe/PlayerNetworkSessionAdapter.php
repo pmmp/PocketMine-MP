@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 
+use http\Client;
 use pocketmine\entity\passive\AbstractHorse;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\maps\MapData;
@@ -34,6 +35,7 @@ use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
+use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
@@ -240,7 +242,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
 		$data = MapManager::getMapDataById($packet->mapId);
 		if($data instanceof MapData){
-			$this->player->sendDataPacket($data->getDataPacket());
+			$this->player->sendDataPacket($data->createDataPacket(ClientboundMapItemDataPacket::BITFLAG_TEXTURE_UPDATE | ClientboundMapItemDataPacket::BITFLAG_DECORATION_UPDATE));
 			return true;
 		}
 		return false;

@@ -1,5 +1,4 @@
 <?php
-
 /*
  *               _ _
  *         /\   | | |
@@ -19,7 +18,6 @@
  * @link https://github.com/TuranicTeam/Altay
  *
  */
-
 declare(strict_types=1);
 
 namespace pocketmine\maps;
@@ -30,14 +28,13 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Server;
 
 class MapManager{
-
 	/** @var MapData[] */
 	protected static $maps = [];
 	/** @var int */
 	protected static $mapIdCounter = 0;
 
 	public static function registerMapData(MapData $map) : void{
-		self::$maps[$map->getMapId()] = $map;
+		self::$maps[$map->getId()] = $map;
 	}
 
 	public static function getMapDataById(int $id) : ?MapData{
@@ -48,46 +45,57 @@ class MapManager{
 		return self::$mapIdCounter++;
 	}
 
-	public static function initMaps() : void{
+	public static function loadIdCounts() : void{
 		@mkdir($path = Server::getInstance()->getDataPath() . "maps/", 0777);
-
 		$stream = new LittleEndianNBTStream();
 
 		if(is_file($path . "idcounts.dat")){
 			/** @var \pocketmine\nbt\tag\CompoundTag $data */
 			$data = $stream->read(file_get_contents($path . "idcounts.dat"));
-
 			self::$mapIdCounter = $data->getInt("map", 0);
 		}
+	}
 
+	public static function loadMaps() : void{
+		@mkdir($path = Server::getInstance()->getDataPath() . "maps/", 0777);
+
+		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path)) as $file => $obj){
+			$id = intval(str_replace("map_", "", basename($file)));
+			self::loadMapData($id);
+		}
+	}
+
+	public static function loadMapData(int $id) : void{
+		@mkdir($path = Server::getInstance()->getDataPath() . "maps/");
 		$stream = new BigEndianNBTStream();
-		for($i = self::$mapIdCounter; $i >= 0; $i--){
-			$item = $path . "map_" . strval($i) . ".dat";
-			if(is_file($item)){
-				$data = $stream->readCompressed(file_get_contents($item));
-				$map = new MapData($i);
-				$map->readSaveData($data);
-				self::registerMapData($map);
-			}
+
+		if(is_file($fp = $path . "maps/map_" . strval($id))){
+			/** @var \pocketmine\nbt\tag\CompoundTag $data */
+			$data = $stream->readCompressed(file_get_contents($fp));
+			$mp = new MapData($id);
+			$mp->readSaveData($data);
+
+			self::registerMapData($mp);
 		}
 	}
 
 	public static function saveMaps() : void{
 		@mkdir($path = Server::getInstance()->getDataPath() . "maps/", 0777);
-
 		$stream = new LittleEndianNBTStream();
+
 		$idcounts = new CompoundTag();
 		$idcounts->setInt("map", self::$mapIdCounter);
 
 		file_put_contents($path . "idcounts.dat", $stream->write($idcounts));
-
 		$stream = new BigEndianNBTStream();
 
 		foreach(self::$maps as $data){
-			$tag = new CompoundTag("data");
-			$data->writeSaveData($tag);
+			if(!$data->isVirtual()){
+				$tag = new CompoundTag("data");
+				$data->writeSaveData($tag);
 
-			file_put_contents($path . "map_" . strval($data->getMapId()) . ".dat", $stream->writeCompressed($tag));
+				file_put_contents($path . "map_" . strval($data->getId()) . ".dat", $stream->writeCompressed($tag));
+			}
 		}
 	}
 

@@ -1771,7 +1771,8 @@ class Server{
 			ItemFactory::init();
 			Item::initCreativeItems();
 			Biome::init();
-			MapManager::initMaps();
+			MapManager::loadIdCounts();
+			MapManager::loadMaps();
 
 			$this->commandMap = new SimpleCommandMap($this);
 

@@ -194,13 +194,35 @@ class ClientboundMapItemDataPacket extends DataPacket{
 
 			$this->putUnsignedVarInt($this->width * $this->height); //list count, but we handle it as a 2D array... thanks for the confusion mojang
 
-			for($y = 0; $y < $this->height; ++$y){
-				for($x = 0; $x < $this->width; ++$x){
+			for($y = $this->yOffset; $y < $this->height; ++$y){
+				for($x = $this->xOffset; $x < $this->width; ++$x){
 					//if mojang had any sense this would just be a regular LE int
 					$this->putUnsignedVarInt($this->colors[$y][$x]->toABGR());
 				}
 			}
 		}
+	}
+
+	/**
+	 * Crops the texture to wanted size
+	 *
+	 * @param int $minX
+	 * @param int $minY
+	 * @param int $maxX
+	 * @param int $maxY
+	 */
+	public function cropTexture(int $minX, int $minY, int $maxX, int $maxY) : void{
+		$this->height = $maxY;
+		$this->width = $maxX;
+		$this->xOffset = $minX;
+		$this->yOffset = $minY;
+		$newColors = [];
+		for($x = 0; $x < $maxX; $x++){
+			for($y = 0; $y < $maxY; $y++){
+				$newColors[$y][$x] = $this->colors[$minX + $x][$minY + $y];
+			}
+		}
+		$this->colors = $newColors;
 	}
 
 	public function handle(NetworkSession $session) : bool{

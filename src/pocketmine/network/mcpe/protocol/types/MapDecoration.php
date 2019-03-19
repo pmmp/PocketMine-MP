@@ -19,17 +19,25 @@
  * @link https://github.com/TuranicTeam/Altay
  *
  */
-
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\utils\Color;
 
 class MapDecoration{
+
+	public const TYPE_PLAYER = 0;
+	public const TYPE_FRAME = 1;
+	public const TYPE_RED_MARKER = 2;
+	public const TYPE_BLUE_MARKER = 3;
+	public const TYPE_TARGET_X = 4;
+	public const TYPE_TARGET_POINT = 5;
+	public const TYPE_PLAYER_OFF_MAP = 6;
+	public const TYPE_PLAYER_OFF_LIMITS = 7;
+	public const TYPE_MANSION = 8;
+	public const TYPE_MONUMENT = 9;
+	// more ???
 
 	/** @var int */
 	public $icon;
@@ -43,22 +51,4 @@ class MapDecoration{
 	public $label;
 	/** @var Color */
 	public $color;
-
-	public function toNBT(string $name) : ListTag{
-		return new ListTag($name, [
-			new IntTag("icon", $this->icon), new IntTag("rot", $this->rot), new IntTag("xOffset", $this->xOffset),
-			new IntTag("yOffset", $this->yOffset), new StringTag("label", $this->label),
-			new IntTag("color", $this->color->toABGR())
-		]);
-	}
-
-	public static function fromNBT(ListTag $nbt) : MapDecoration{
-		$d = new MapDecoration();
-		foreach($nbt->getValue() as $item){
-			$d->{$item->getName()} = $item->getName() === "color" ? Color::fromABGR($item->getValue()) : $item->getValue();
-		}
-
-		return $d;
-	}
-
 }

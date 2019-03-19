@@ -1866,6 +1866,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if($this->getOffHandInventory() !== null){
 				$this->offHandInventory->getItem(0)->onUpdate($this);
 			}
+
 			$this->processMovement($tickDiff);
 			$this->motion->x = $this->motion->y = $this->motion->z = 0; //TODO: HACK! (Fixes player knockback being messed up)
 			if($this->onGround){

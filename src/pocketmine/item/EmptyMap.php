@@ -29,6 +29,8 @@ use pocketmine\Player;
 
 class EmptyMap extends Item{
 
+	public const TYPE_EXPLORER_MAP = 2;
+
 	public function __construct(int $meta = 0){
 		parent::__construct(self::EMPTY_MAP, $meta, "Empty Map");
 	}
@@ -40,9 +42,12 @@ class EmptyMap extends Item{
 	 * @return bool
 	 */
 	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
-		$map = new FilledMap();
-		// TODO: Create world map
-		$map->onCreateMap($player->level, 0);
+		$map = new Map();
+		$map->initMap($player, 0);
+
+		if($this->getDamage() === self::TYPE_EXPLORER_MAP){
+			$map->setMapDisplayPlayers(true);
+		}
 
 		if($player->getInventory()->canAddItem($map)){
 			$player->getInventory()->addItem($map);
