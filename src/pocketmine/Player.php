@@ -205,7 +205,6 @@ use const M_PI;
 use const M_SQRT3;
 use const PHP_INT_MAX;
 
-
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  */
@@ -364,6 +363,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $lineHeight = null;
 	/** @var string */
 	protected $locale = "en_US";
+	/** @var string $deviceModel */
+	protected $deviceModel;
+	/** @var int $deviceOS */
+	protected $deviceOS;
 
 	/** @var int */
 	protected $startAction = -1;
@@ -2014,6 +2017,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($packet->locale !== null){
 			$this->locale = $packet->locale;
 		}
+
+		$this->deviceModel = $packet->clientData["DeviceModel"] ?? null;
+		$this->deviceOS = $packet->clientData["DeviceOS"] ?? null;
 
 		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 			return true;
@@ -4276,4 +4282,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function canBePushed() : bool{
 		return true;
 	}
+
+	public function getDeviceOS(): ?int{
+	    return $this->getDeviceOS();
+    }
+
+    public function getDeviceModel(): ?string{
+	    return $this->getDeviceModel();
+    }
 }
