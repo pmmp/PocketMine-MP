@@ -27,6 +27,10 @@ use pocketmine\form\element\CustomFormElement;
 use pocketmine\Player;
 use pocketmine\utils\Utils;
 
+use function array_values;
+use function is_array;
+use function count;
+
 abstract class CustomForm extends BaseForm{
 
 	/** @var CustomFormElement[] */

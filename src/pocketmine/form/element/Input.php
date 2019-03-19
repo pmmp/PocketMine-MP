@@ -25,6 +25,8 @@ namespace pocketmine\form\element;
 
 use pocketmine\form\FormValidationException;
 
+use function is_string;
+
 /**
  * Element which accepts text input. The text-box can have a default value, and may also have a text hint when there is
  * no text in the box.

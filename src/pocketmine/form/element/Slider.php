@@ -25,8 +25,11 @@ namespace pocketmine\form\element;
 
 use pocketmine\form\FormValidationException;
 
-class Slider extends CustomFormElement{
+use function is_float;
+use function is_int;
+use function gettype;
 
+class Slider extends CustomFormElement{
 	/** @var float */
 	private $min;
 	/** @var float */

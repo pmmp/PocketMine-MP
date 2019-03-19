@@ -25,6 +25,9 @@ namespace pocketmine\form\element;
 
 use pocketmine\form\FormValidationException;
 
+use function array_values;
+use function is_int;
+
 abstract class BaseSelector extends CustomFormElement{
 	/** @var int */
 	protected $defaultOptionIndex;

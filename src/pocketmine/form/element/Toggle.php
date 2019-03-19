@@ -25,6 +25,8 @@ namespace pocketmine\form\element;
 
 use pocketmine\form\FormValidationException;
 
+use function is_bool;
+
 /**
  * Represents a UI on/off switch. The switch may have a default value.
  */

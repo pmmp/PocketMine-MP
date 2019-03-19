@@ -26,6 +26,8 @@ namespace pocketmine\form;
 use pocketmine\Player;
 use pocketmine\utils\Utils;
 
+use function is_bool;
+
 /**
  * This form type presents a simple "yes/no" dialog with two buttons.
  */
