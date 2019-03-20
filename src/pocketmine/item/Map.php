@@ -24,6 +24,9 @@ namespace pocketmine\item;
 
 use pocketmine\maps\MapData;
 use pocketmine\maps\MapManager;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\LongTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 
 class Map extends Item{
@@ -35,10 +38,6 @@ class Map extends Item{
 
 	public function __construct(int $meta = 0){
 		parent::__construct(self::FILLED_MAP, $meta, "Map");
-
-		if($this->isMapInit()){
-			MapManager::loadMapData($this->getMapId());
-		}
 	}
 
 	public function getMapData() : ?MapData{
@@ -46,11 +45,12 @@ class Map extends Item{
 	}
 
 	public function onUpdate(Player $player) : void{
-		if($data = $this->getMapData()){
-			$data->renderMap($player);
-			$player->sendTip("messaaage");
+		if($this->isMapInit()){
+			if($data = $this->getMapData()){
+				$data->renderMap($player);
 
-			$data->updateVisiblePlayers($player, $this);
+				$data->updateVisiblePlayers($player, $this);
+			}
 		}
 	}
 
@@ -75,7 +75,7 @@ class Map extends Item{
 	}
 
 	public function setMapId(int $mapId) : void{
-		$this->getNamedTag()->setLong(self::TAG_MAP_UUID, $mapId);
+		$this->setNamedTagEntry(new LongTag(self::TAG_MAP_UUID, $mapId));
 	}
 
 	public function getMapId() : int{
@@ -83,7 +83,7 @@ class Map extends Item{
 	}
 
 	public function setMapNameIndex(int $nameIndex) : void{
-		$this->getNamedTag()->setInt(self::TAG_MAP_NAME_INDEX, $nameIndex);
+		$this->setNamedTagEntry(new IntTag(self::TAG_MAP_NAME_INDEX, $nameIndex));
 	}
 
 	public function getMapNameIndex() : int{
@@ -91,7 +91,7 @@ class Map extends Item{
 	}
 
 	public function setMapDisplayPlayers(bool $value) : void{
-		$this->getNamedTag()->setByte(self::TAG_MAP_DISPLAY_PLAYERS, intval($value));
+		$this->setNamedTagEntry(new ByteTag(self::TAG_MAP_DISPLAY_PLAYERS, intval($value)));
 	}
 
 	public function isMapDisplayPlayers() : bool{
@@ -99,7 +99,7 @@ class Map extends Item{
 	}
 
 	public function setMapInit(bool $value) : void{
-		$this->getNamedTag()->setByte(self::TAG_MAP_IS_INIT, intval($value));
+		$this->setNamedTagEntry(new ByteTag(self::TAG_MAP_IS_INIT, intval($value)));
 	}
 
 	public function isMapInit() : bool{

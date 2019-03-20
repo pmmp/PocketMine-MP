@@ -1,28 +1,33 @@
 <?php
+
 /*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
  *
- *
-*/
+ */
+
 declare(strict_types=1);
 
 namespace pocketmine\maps;
 
 use pocketmine\item\Map;
 use pocketmine\level\Level;
+use pocketmine\maps\renderer\MapRenderer;
+use pocketmine\maps\renderer\VanillaMapRenderer;
 use pocketmine\math\Vector2;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -56,7 +61,7 @@ class MapData{
 	protected $cachedDataPacket = null;
 
 	/** @var bool */
-	protected $fullyExplored = true;
+	protected $fullyExplored = false;
 	/** @var bool */
 	protected $unlimitedTracking = true;
 	/** @var bool */
@@ -67,12 +72,29 @@ class MapData{
 	/** @var MapRenderer[] */
 	protected $renderers = [];
 
+	/**
+	 * MapData constructor.
+	 *
+	 * @param int   $mapId
+	 * @param MapRenderer[] $renderers
+	 */
 	public function __construct(int $mapId, array $renderers = []){
 		$this->id = $mapId;
 		if(empty($renderers)){
 			$renderers[] = new VanillaMapRenderer();
 		}
 		$this->renderers = $renderers;
+
+		foreach($renderers as $renderer){
+			$renderer->initialize($this);
+		}
+
+		$transColor = new Color(0, 0, 0, 0);
+		for($y = 0; $y < 128; $y++){
+			for($x = 0; $x < 128; $x++){
+				$this->setColorAt($x, $y, clone $transColor);
+			}
+		}
 	}
 
 	/**
@@ -176,8 +198,7 @@ class MapData{
 				$pk = $this->createDataPacket($flags);
 				if($info->forceUpdate and !empty($pk->colors)){
 					$info->forceUpdate = false;
-					$player->sendPopup("xxxxx");
-					$pk->cropTexture($info->minX, $info->minY, $info->maxX + 1 - $info->minX, $info->maxY + 1 - $info->minY);
+					//$pk->cropTexture($info->minX, $info->minY, $info->maxX + 1 - $info->minX, $info->maxY + 1 - $info->minY);
 				}
 				$player->sendDataPacket($pk);
 			}
@@ -283,6 +304,7 @@ class MapData{
 	public function getMapInfo(Player $player) : MapInfo{
 		if(!isset($this->playersMap[spl_object_hash($player)])){
 			$this->playersMap[spl_object_hash($player)] = new MapInfo($player);
+
 			$mo = new MapTrackedObject();
 			$mo->entityUniqueId = $player->getId();
 			$mo->type = MapTrackedObject::TYPE_PLAYER;
@@ -327,15 +349,11 @@ class MapData{
 			$this->trackedObjects[$player->getName()] = $mo;
 		}
 
-		if(!$player->getInventory()->contains($mapStack)){
-			unset($this->decorations[$player->getName()]);
-		}
-
 		if($mapStack->isMapDisplayPlayers()){
 			foreach($this->playersMap as $info){
 				$pi = $info->player;
-				if($pi->isOnline() and $pi->isAlive() and $pi->level->getDimension() === $this->dimension and $info->packetSendTimer++ % 5 === 0){
-					if(!$mapStack->isOnItemFrame() and $pi->getInventory()->contains($mapStack)){
+				if($pi->isOnline() and $pi->isAlive() and $pi->level->getDimension() === $this->dimension){
+					if(!$mapStack->isOnItemFrame() and $info->packetSendTimer++ % 5 === 0){
 						$this->updateDecorations(MapDecoration::TYPE_PLAYER, $pi->level, $pi->getName(), $pi->getFloorX(), $pi->getFloorZ(), $pi->getYaw());
 					}
 				}else{
@@ -416,7 +434,7 @@ class MapData{
 		$deco->rot = $b2;
 		$deco->xOffset = $b0;
 		$deco->yOffset = $b1;
-		$deco->color = $color ?? new Color(0, 0, 0);
+		$deco->color = $color ?? new Color(255, 255, 255);
 		$deco->label = $entityIdentifier;
 
 		$this->decorations[$entityIdentifier] = $deco;
@@ -429,6 +447,7 @@ class MapData{
 	 */
 	public function addRenderer(MapRenderer $renderer) : void{
 		$this->renderers[spl_object_id($renderer)] = $renderer;
+		$renderer->initialize($this);
 	}
 
 	/**

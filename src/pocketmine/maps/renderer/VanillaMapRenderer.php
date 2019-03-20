@@ -1,24 +1,38 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: aronf
- * Date: 20.03.2019
- * Time: 00:41
+
+/*
+ *               _ _
+ *         /\   | | |
+ *        /  \  | | |_ __ _ _   _
+ *       / /\ \ | | __/ _` | | | |
+ *      / ____ \| | || (_| | |_| |
+ *     /_/    \_|_|\__\__,_|\__, |
+ *                           __/ |
+ *                          |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Altay
+ *
  */
 
-namespace pocketmine\maps;
+namespace pocketmine\maps\renderer;
 
-use pocketmine\block\Water;
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
-use pocketmine\Player;
-use pocketmine\utils\Color;
 use pocketmine\block\Block;
 use pocketmine\block\Prismarine;
 use pocketmine\block\Stone;
 use pocketmine\block\StoneSlab;
 use pocketmine\block\Wood;
 use pocketmine\block\Wood2;
+use pocketmine\maps\MapData;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
+use pocketmine\Player;
+use pocketmine\utils\Color;
 
 class VanillaMapRenderer implements MapRenderer{
 
@@ -30,7 +44,7 @@ class VanillaMapRenderer implements MapRenderer{
 	 * Renders a map
 	 *
 	 * @param MapData $mapData
-	 * @param Player $player
+	 * @param Player  $player
 	 */
 	public function render(MapData $mapData, Player $player) : void{
 		// TODO: Update this, this may cause lag
@@ -44,68 +58,68 @@ class VanillaMapRenderer implements MapRenderer{
 			$j1 = 128 / $i;
 			$info = $mapData->getMapInfo($player);
 			$info->textureCheckCounter++;
+			$info->textureCheckCounter %= 15;
+
 			$world = $player->level;
 			$tempVector = new Vector3();
 			$changed = false;
 
-			for($k1 = max(0, $l - $j1 + 1); $k1 < min($l + $j1, 128); ++$k1){
-				if(($k1 & 15) === ($info->textureCheckCounter & 15)){
-					$d0 = 0.0;
-					for($l1 = max($i1 - $j1 - 1, 0); $l1 < min($i1 + $j1, 128); ++$l1){
-						if($k1 >= 0 and $l1 >= -1 and $k1 < 128 and $l1 < 128){
-							$i2 = $k1 - $l;
-							$j2 = $l1 - $i1;
-							$flag1 = $i2 * $i2 + $j2 * $j2 > ($j1 - 2) * ($j1 - 2);
-							$k2 = ($j / $i + $k1 - 64) * $i;
-							$l2 = ($k / $i + $l1 - 64) * $i;
-							if($world->isChunkInUse($k2 >> 4, $l2 >> 4)){
-								$k3 = 0;
-								$d1 = 0.0;
-								$chunk = $world->getChunk($k2 >> 4, $l2 >> 4);
-								$h = $chunk->getHighestBlockAt($k2 & 15, $l2 & 15);
-								if($h >= 0){
-									$block = $world->getBlock($tempVector->setComponents($k2, $h, $l2));
-									if($block instanceof Water){
-										$attempt = 0;
-										while($block->getSide(Vector3::SIDE_DOWN) instanceof Water and $h > 0 and $attempt++ < 15){
-											$block = $block->getSide(Vector3::SIDE_DOWN);
-											$h--;
-										}
+			for($k1 = max(0, $l - $j1 + 1) + $info->textureCheckCounter; $k1 < min($l + $j1, 128); $k1 += 15){
+				$d0 = 0.0;
+				for($l1 = max($i1 - $j1 - 1, 0); $l1 < min($i1 + $j1, 128); $l1++){
+					if($k1 >= 0 and $l1 >= -1 and $k1 < 128 and $l1 < 128){
+						$i2 = $k1 - $l;
+						$j2 = $l1 - $i1;
+						$flag1 = $i2 * $i2 + $j2 * $j2 > ($j1 - 2) * ($j1 - 2);
+						$k2 = ($j / $i + $k1 - 64) * $i;
+						$l2 = ($k / $i + $l1 - 64) * $i;
+						if($world->isChunkInUse($k2 >> 4, $l2 >> 4)){
+							$k3 = 0;
+							$d1 = 0.0;
+							$chunk = $world->getChunk($k2 >> 4, $l2 >> 4);
+							$h = $chunk->getHeightMap($k2 & 15, $l2 & 15) - 1;
+							if($h >= 0){
+								$block = $world->getBlock($tempVector->setComponents($k2, $h, $l2));
+								/*if($block instanceof Water){
+									$attempt = 0;
+									while($block->getSide(Vector3::SIDE_DOWN) instanceof Water and $h > 0 and $attempt++ < 15){
+										$block = $block->getSide(Vector3::SIDE_DOWN);
+										$h--;
 									}
-									$d1 += (int) $h / (int) ($i * $i);
-									$mapColor = self::getMapColorByBlock($block);
-								}else{
-									$mapColor = new Color(0 ,0, 0);
-								}
-								$k3 = $k3 / ($i * $i);
-								$d2 = ($d1 - $d0) * 4.0 / (int) ($i + 4) + ((int) ($k1 + $l1 & 1) - 0.5) * 0.4;
+								}*/
+								$d1 += (int) $h / (int) ($i * $i);
+								$mapColor = self::getMapColorByBlock($block);
+							}else{
+								$mapColor = new Color(0, 0, 0);
+							}
+							$k3 = $k3 / ($i * $i);
+							$d2 = ($d1 - $d0) * 4.0 / (int) ($i + 4) + ((int) ($k1 + $l1 & 1) - 0.5) * 0.4;
+							$i5 = 1;
+							if($d2 > 0.6){
+								$i5 = 2;
+							}
+							if($d2 < -0.6){
+								$i5 = 0;
+							}
+							if($mapColor->getR() === 64 and $mapColor->getG() === 64 and $mapColor->getB() === 255){ // water color
+								$d2 = (int) $k3 * 0.1 + (int) ($k1 + $l1 & 1) * 0.2;
 								$i5 = 1;
-								if($d2 > 0.6){
+								if($d2 < 0.5){
 									$i5 = 2;
 								}
-								if($d2 < -0.6){
+								if($d2 > 0.9){
 									$i5 = 0;
 								}
-								if($mapColor->getR() === 64 and $mapColor->getG() === 64 and $mapColor->getB() === 255){ // water color
-									$d2 = (int) $k3 * 0.1 + (int) ($k1 + $l1 & 1) * 0.2;
-									$i5 = 1;
-									if($d2 < 0.5){
-										$i5 = 2;
-									}
-									if($d2 > 0.9){
-										$i5 = 0;
-									}
-								}
-								$d0 = $d1;
-								if($l1 >= 0 and $i2 * $i2 + $j2 * $j2 < $j1 * $j1 and (!$flag1 || ($k1 + $l1 & 1) != 0)){
-									$b0 = $mapData->getColorAt($k1, $l1)->toABGR();
-									$b1 = self::colorizeMapColor($mapColor->toABGR(), $i5);
-									if($b0 !== $b1){
-										$mapData->setColorAt($k1, $l1, Color::fromABGR($b1));
+							}
+							$d0 = $d1;
+							if($l1 >= 0 and $i2 * $i2 + $j2 * $j2 < $j1 * $j1 and (!$flag1 || ($k1 + $l1 & 1) != 0)){
+								$b0 = $mapData->getColorAt($k1, $l1)->toABGR();
+								$b1 = self::colorizeMapColor($mapColor->toABGR(), $i5);
+								if($b0 !== $b1){
+									$mapData->setColorAt($k1, $l1, Color::fromABGR($b1));
 
-										$mapData->updateTextureAt($k1, $l1);
-										$changed = true;
-									}
+									$mapData->updateTextureAt($k1, $l1);
+									$changed = true;
 								}
 							}
 						}
