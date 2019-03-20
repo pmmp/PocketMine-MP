@@ -247,21 +247,22 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 				$parameter->paramName = $this->getString();
 				$parameter->paramType = $this->getLInt();
 				$parameter->isOptional = $this->getBool();
+				$parameter->byte1 = $this->getByte();
 
 				if($parameter->paramType & self::ARG_FLAG_ENUM){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->enum = $this->enums[$index] ?? null;
 					if($parameter->enum === null){
-						throw new BadPacketException("expected enum at $index, but got none");
+						throw new BadPacketException("deserializing $retval->commandName parameter $parameter->paramName: expected enum at $index, but got none");
 					}
 				}elseif($parameter->paramType & self::ARG_FLAG_POSTFIX){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->postfix = $this->postfixes[$index] ?? null;
 					if($parameter->postfix === null){
-						throw new BadPacketException("expected postfix at $index, but got none");
+						throw new BadPacketException("deserializing $retval->commandName parameter $parameter->paramName: expected postfix at $index, but got none");
 					}
 				}elseif(($parameter->paramType & self::ARG_FLAG_VALID) === 0){
-					throw new BadPacketException("Invalid parameter type 0x" . dechex($parameter->paramType));
+					throw new BadPacketException("deserializing $retval->commandName parameter $parameter->paramName: Invalid parameter type 0x" . dechex($parameter->paramType));
 				}
 
 				$retval->overloads[$overloadIndex][$paramIndex] = $parameter;
@@ -304,6 +305,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 
 				$this->putLInt($type);
 				$this->putBool($parameter->isOptional);
+				$this->putByte($parameter->byte1);
 			}
 		}
 	}

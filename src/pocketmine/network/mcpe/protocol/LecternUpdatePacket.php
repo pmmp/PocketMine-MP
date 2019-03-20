@@ -27,21 +27,33 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class WSConnectPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::W_S_CONNECT_PACKET;
+class LecternUpdatePacket extends DataPacket implements ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::LECTERN_UPDATE_PACKET;
 
-	/** @var string */
-	public $serverUri;
+	/** @var int */
+	public $page;
+	/** @var int */
+	public $x;
+	/** @var int */
+	public $y;
+	/** @var int */
+	public $z;
+	/** @var bool */
+	public $dropBook;
 
 	protected function decodePayload() : void{
-		$this->serverUri = $this->getString();
+		$this->page = $this->getByte();
+		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->dropBook = $this->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->serverUri);
+		$this->putByte($this->page);
+		$this->putBlockPosition($this->x, $this->y, $this->z);
+		$this->putBool($this->dropBook);
 	}
 
 	public function handle(SessionHandler $handler) : bool{
-		return $handler->handleWSConnect($this);
+		return $handler->handleLecternUpdate($this);
 	}
 }

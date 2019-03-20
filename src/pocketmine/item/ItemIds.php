@@ -548,6 +548,7 @@ interface ItemIds{
 	public const DARK_OAK_DOOR = 431;
 	public const CHORUS_FRUIT = 432;
 	public const CHORUS_FRUIT_POPPED = 433;
+	public const BANNER_PATTERN = 434;
 
 	public const DRAGON_BREATH = 437;
 	public const SPLASH_POTION = 438;
@@ -588,6 +589,7 @@ interface ItemIds{
 	public const JUNGLE_SIGN = 474;
 	public const ACACIA_SIGN = 475;
 	public const DARKOAK_SIGN = 476;
+	public const SWEET_BERRIES = 477;
 
 	public const COMPOUND = 499;
 	public const RECORD_13 = 500;
@@ -602,5 +604,7 @@ interface ItemIds{
 	public const RECORD_WARD = 509;
 	public const RECORD_11 = 510;
 	public const RECORD_WAIT = 511;
+
+	public const SHIELD = 513;
 
 }

@@ -47,6 +47,8 @@ class UseItemTransactionData extends TransactionData{
 	private $playerPos;
 	/** @var Vector3 */
 	private $clickPos;
+	/** @var int */
+	private $blockRuntimeId;
 
 	/**
 	 * @return int
@@ -97,6 +99,13 @@ class UseItemTransactionData extends TransactionData{
 		return $this->clickPos;
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getBlockRuntimeId() : int{
+		return $this->blockRuntimeId;
+	}
+
 	public function getTypeId() : int{
 		return InventoryTransactionPacket::TYPE_USE_ITEM;
 	}
@@ -110,6 +119,7 @@ class UseItemTransactionData extends TransactionData{
 		$this->itemInHand = $stream->getSlot();
 		$this->playerPos = $stream->getVector3();
 		$this->clickPos = $stream->getVector3();
+		$this->blockRuntimeId = $stream->getUnsignedVarInt();
 	}
 
 	protected function encodeData(NetworkBinaryStream $stream) : void{
@@ -120,9 +130,10 @@ class UseItemTransactionData extends TransactionData{
 		$stream->putSlot($this->itemInHand);
 		$stream->putVector3($this->playerPos);
 		$stream->putVector3($this->clickPos);
+		$stream->putUnsignedVarInt($this->blockRuntimeId);
 	}
 
-	public static function new(array $actions, int $actionType, Vector3 $blockPos, int $face, int $hotbarSlot, Item $itemInHand, Vector3 $playerPos, Vector3 $clickPos) : self{
+	public static function new(array $actions, int $actionType, Vector3 $blockPos, int $face, int $hotbarSlot, Item $itemInHand, Vector3 $playerPos, Vector3 $clickPos, int $blockRuntimeId) : self{
 		$result = new self;
 		$result->actions = $actions;
 		$result->actionType = $actionType;
@@ -132,6 +143,7 @@ class UseItemTransactionData extends TransactionData{
 		$result->itemInHand = $itemInHand;
 		$result->playerPos = $playerPos;
 		$result->clickPos = $clickPos;
+		$result->blockRuntimeId = $blockRuntimeId;
 		return $result;
 	}
 }

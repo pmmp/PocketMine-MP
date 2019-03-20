@@ -29,6 +29,7 @@ use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
@@ -116,6 +117,10 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->getString();
 		}
 
+		if($id === ItemIds::SHIELD){
+			$this->getVarLong(); //"blocking tick" (ffs mojang)
+		}
+
 		try{
 			return ItemFactory::get($id, $data, $cnt, $compound);
 		}catch(\InvalidArgumentException $e){
@@ -145,6 +150,10 @@ class NetworkBinaryStream extends BinaryStream{
 
 		$this->putVarInt(0); //CanPlaceOn entry count (TODO)
 		$this->putVarInt(0); //CanDestroy entry count (TODO)
+
+		if($item->getId() === ItemIds::SHIELD){
+			$this->putVarLong(0); //"blocking tick" (ffs mojang)
+		}
 	}
 
 	/**

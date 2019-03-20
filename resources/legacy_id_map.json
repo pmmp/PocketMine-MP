@@ -439,14 +439,22 @@
     "minecraft:acacia_wall_sign": 446,
     "minecraft:darkoak_standing_sign": 447,
     "minecraft:darkoak_wall_sign": 448,
+    "minecraft:lectern": 449,
     "minecraft:grindstone": 450,
     "minecraft:blast_furnace": 451,
+    "minecraft:stonecutter_block": 452,
     "minecraft:smoker": 453,
     "minecraft:cartography_table": 455,
     "minecraft:fletching_table": 456,
     "minecraft:smithing_table": 457,
     "minecraft:barrel": 458,
+    "minecraft:loom": 459,
     "minecraft:bell": 461,
+    "minecraft:sweet_berry_bush": 462,
     "minecraft:lantern": 463,
-    "minecraft:lava_cauldron": 465
+    "minecraft:campfire": 464,
+    "minecraft:lava_cauldron": 465,
+    "minecraft:jigsaw": 466,
+    "minecraft:wood": 467,
+    "minecraft:composter": 468
 }
