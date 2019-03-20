@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
+use pocketmine\network\mcpe\protocol\AutomationClientConnectPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\AvailableEntityIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
@@ -68,6 +69,7 @@ use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
+use pocketmine\network\mcpe\protocol\LecternUpdatePacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
@@ -144,7 +146,7 @@ use pocketmine\network\mcpe\protocol\UpdateBlockSyncedPacket;
 use pocketmine\network\mcpe\protocol\UpdateEquipPacket;
 use pocketmine\network\mcpe\protocol\UpdateSoftEnumPacket;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
-use pocketmine\network\mcpe\protocol\WSConnectPacket;
+use pocketmine\network\mcpe\protocol\VideoStreamConnectPacket;
 
 abstract class NetworkSession{
 
@@ -522,7 +524,7 @@ abstract class NetworkSession{
 		return false;
 	}
 
-	public function handleWSConnect(WSConnectPacket $packet) : bool{
+	public function handleAutomationClientConnect(AutomationClientConnectPacket $packet) : bool{
 		return false;
 	}
 
@@ -631,6 +633,14 @@ abstract class NetworkSession{
 	}
 
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleLecternUpdate(LecternUpdatePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleVideoStreamConnect(VideoStreamConnectPacket $packet) : bool{
 		return false;
 	}
 

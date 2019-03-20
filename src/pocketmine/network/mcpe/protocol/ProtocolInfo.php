@@ -39,15 +39,15 @@ interface ProtocolInfo{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	public const CURRENT_PROTOCOL = 332;
+	public const CURRENT_PROTOCOL = 340;
 	/**
 	 * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
 	 */
-	public const MINECRAFT_VERSION = 'v1.9.0';
+	public const MINECRAFT_VERSION = 'v1.10.0';
 	/**
 	 * Version number sent to clients in ping responses.
 	 */
-	public const MINECRAFT_VERSION_NETWORK = '1.9.0';
+	public const MINECRAFT_VERSION_NETWORK = '1.10.0';
 
 	public const LOGIN_PACKET = 0x01;
 	public const PLAY_STATUS_PACKET = 0x02;
@@ -143,7 +143,7 @@ interface ProtocolInfo{
 	public const PURCHASE_RECEIPT_PACKET = 0x5c;
 	public const PLAYER_SKIN_PACKET = 0x5d;
 	public const SUB_CLIENT_LOGIN_PACKET = 0x5e;
-	public const W_S_CONNECT_PACKET = 0x5f;
+	public const AUTOMATION_CLIENT_CONNECT_PACKET = 0x5f;
 	public const SET_LAST_HURT_BY_PACKET = 0x60;
 	public const BOOK_EDIT_PACKET = 0x61;
 	public const NPC_REQUEST_PACKET = 0x62;
@@ -172,5 +172,7 @@ interface ProtocolInfo{
 	public const NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET = 0x79;
 	public const BIOME_DEFINITION_LIST_PACKET = 0x7a;
 	public const LEVEL_SOUND_EVENT_PACKET = 0x7b;
+	public const LECTERN_UPDATE_PACKET = 0x7c;
+	public const VIDEO_STREAM_CONNECT_PACKET = 0x7d;
 
 }

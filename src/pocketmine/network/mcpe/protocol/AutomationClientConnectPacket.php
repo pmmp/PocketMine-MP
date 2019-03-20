@@ -21,19 +21,27 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol;
 
-class CommandParameter{
+#include <rules/DataPacket.h>
+
+use pocketmine\network\mcpe\NetworkSession;
+
+class AutomationClientConnectPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::AUTOMATION_CLIENT_CONNECT_PACKET;
+
 	/** @var string */
-	public $paramName;
-	/** @var int */
-	public $paramType;
-	/** @var bool */
-	public $isOptional;
-	/** @var int */
-	public $byte1 = 0; //unknown, always zero except for in /gamerule command
-	/** @var CommandEnum|null */
-	public $enum;
-	/** @var string|null */
-	public $postfix;
+	public $serverUri;
+
+	protected function decodePayload(){
+		$this->serverUri = $this->getString();
+	}
+
+	protected function encodePayload(){
+		$this->putString($this->serverUri);
+	}
+
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleAutomationClientConnect($this);
+	}
 }
