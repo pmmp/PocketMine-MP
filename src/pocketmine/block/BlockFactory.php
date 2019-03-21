@@ -436,8 +436,8 @@ class BlockFactory{
 		//TODO: minecraft:birch_standing_sign
 		//TODO: minecraft:birch_wall_sign
 		//TODO: minecraft:blast_furnace
-		//TODO: minecraft:blue_ice
 		//TODO: minecraft:bubble_column
+		//TODO: minecraft:campfire
 		//TODO: minecraft:cartography_table
 		//TODO: minecraft:carved_pumpkin
 		//TODO: minecraft:cauldron
@@ -447,6 +447,7 @@ class BlockFactory{
 		//TODO: minecraft:chorus_flower
 		//TODO: minecraft:chorus_plant
 		//TODO: minecraft:command_block
+		//TODO: minecraft:composter
 		//TODO: minecraft:conduit
 		//TODO: minecraft:coral
 		//TODO: minecraft:coral_block
@@ -464,7 +465,6 @@ class BlockFactory{
 		//TODO: minecraft:double_stone_slab4
 		//TODO: minecraft:dried_kelp_block
 		//TODO: minecraft:dropper
-		//TODO: minecraft:element_0
 		//TODO: minecraft:end_brick_stairs
 		//TODO: minecraft:end_gateway
 		//TODO: minecraft:end_portal
@@ -472,12 +472,15 @@ class BlockFactory{
 		//TODO: minecraft:granite_stairs
 		//TODO: minecraft:grindstone
 		//TODO: minecraft:hopper
+		//TODO: minecraft:jigsaw
 		//TODO: minecraft:jukebox
 		//TODO: minecraft:jungle_standing_sign
 		//TODO: minecraft:jungle_wall_sign
 		//TODO: minecraft:kelp
 		//TODO: minecraft:lantern
 		//TODO: minecraft:lava_cauldron
+		//TODO: minecraft:lectern
+		//TODO: minecraft:loom
 		//TODO: minecraft:monster_egg
 		//TODO: minecraft:mossy_cobblestone_stairs
 		//TODO: minecraft:mossy_stone_brick_stairs
@@ -510,6 +513,7 @@ class BlockFactory{
 		//TODO: minecraft:sticky_piston
 		//TODO: minecraft:stone_slab3
 		//TODO: minecraft:stone_slab4
+		//TODO: minecraft:stonecutter_block
 		//TODO: minecraft:stripped_acacia_log
 		//TODO: minecraft:stripped_birch_log
 		//TODO: minecraft:stripped_dark_oak_log
@@ -517,8 +521,10 @@ class BlockFactory{
 		//TODO: minecraft:stripped_oak_log
 		//TODO: minecraft:stripped_spruce_log
 		//TODO: minecraft:structure_block
+		//TODO: minecraft:sweet_berry_bush
 		//TODO: minecraft:turtle_egg
 		//TODO: minecraft:undyed_shulker_box
+		//TODO: minecraft:wood
 	}
 
 	public static function isInit() : bool{
