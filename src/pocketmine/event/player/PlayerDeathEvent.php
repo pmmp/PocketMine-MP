@@ -46,9 +46,10 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	 * @param Player                    $entity
 	 * @param Item[]                    $drops
 	 * @param string|TextContainer|null $deathMessage Null will cause the default vanilla message to be used
+	 * @param int                       $xp
 	 */
-	public function __construct(Player $entity, array $drops, $deathMessage = null){
-		parent::__construct($entity, $drops);
+	public function __construct(Player $entity, array $drops, $deathMessage = null, int $xp = 0){
+		parent::__construct($entity, $drops, $xp);
 		$this->deathMessage = $deathMessage ?? self::deriveMessage($entity->getDisplayName(), $entity->getLastDamageCause());
 	}
 

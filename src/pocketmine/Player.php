@@ -3665,7 +3665,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		//main inventory and drops the rest on the ground.
 		$this->doCloseInventory();
 
-		$ev = new PlayerDeathEvent($this, $this->getDrops());
+		$ev = new PlayerDeathEvent($this, $this->getDrops(), null, $this->getXpDropAmount());
 		$ev->call();
 
 		if(!$ev->getKeepInventory()){
@@ -3682,8 +3682,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 		}
 
-		//TODO: allow this number to be manipulated during PlayerDeathEvent
-		$this->level->dropExperience($this, $this->getXpDropAmount());
+		$this->level->dropExperience($this, $ev->getXpDropAmount());
 		$this->setXpAndProgress(0, 0);
 
 		if($ev->getDeathMessage() != ""){
