@@ -641,15 +641,14 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	protected function onDeath() : void{
-		$ev = new EntityDeathEvent($this, $this->getDrops());
+		$ev = new EntityDeathEvent($this, $this->getDrops(), $this->getXpDropAmount());
 		$ev->call();
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);
 		}
 
 		//TODO: check death conditions (must have been damaged by player < 5 seconds from death)
-		//TODO: allow this number to be manipulated during EntityDeathEvent
-		$this->level->dropExperience($this, $this->getXpDropAmount());
+		$this->level->dropExperience($this, $ev->getXpDropAmount());
 
 		$this->startDeathAnimation();
 	}
