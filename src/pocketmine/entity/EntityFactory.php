@@ -246,21 +246,20 @@ final class EntityFactory{
 	 * @return CompoundTag
 	 */
 	public static function createBaseNBT(Vector3 $pos, ?Vector3 $motion = null, float $yaw = 0.0, float $pitch = 0.0) : CompoundTag{
-		return new CompoundTag("", [
-			new ListTag("Pos", [
-				new DoubleTag("", $pos->x),
-				new DoubleTag("", $pos->y),
-				new DoubleTag("", $pos->z)
-			]),
-			new ListTag("Motion", [
-				new DoubleTag("", $motion ? $motion->x : 0.0),
-				new DoubleTag("", $motion ? $motion->y : 0.0),
-				new DoubleTag("", $motion ? $motion->z : 0.0)
-			]),
-			new ListTag("Rotation", [
-				new FloatTag("", $yaw),
-				new FloatTag("", $pitch)
-			])
-		]);
+		return CompoundTag::create()
+			->setTag("Pos", new ListTag([
+				new DoubleTag($pos->x),
+				new DoubleTag($pos->y),
+				new DoubleTag($pos->z)
+			]))
+			->setTag("Motion", new ListTag([
+				new DoubleTag($motion ? $motion->x : 0.0),
+				new DoubleTag($motion ? $motion->y : 0.0),
+				new DoubleTag($motion ? $motion->z : 0.0)
+			]))
+			->setTag("Rotation", new ListTag([
+				new FloatTag($yaw),
+				new FloatTag($pitch)
+			]));
 	}
 }

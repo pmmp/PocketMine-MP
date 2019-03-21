@@ -59,7 +59,7 @@ trait LegacyAnvilChunkTrait{
 	protected function deserializeChunk(string $data) : Chunk{
 		$nbt = new BigEndianNbtSerializer();
 		try{
-			$chunk = $nbt->readCompressed($data);
+			$chunk = $nbt->readCompressed($data)->getTag();
 		}catch(NbtDataException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
 		}

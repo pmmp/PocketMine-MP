@@ -134,7 +134,7 @@ class ItemEntity extends Entity{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setTag($this->item->nbtSerialize(-1, "Item"));
+		$nbt->setTag("Item", $this->item->nbtSerialize());
 		$nbt->setShort("Health", (int) $this->getHealth());
 		if($this->despawnDelay === self::NEVER_DESPAWN){
 			$age = -32768;

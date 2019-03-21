@@ -29,12 +29,10 @@ use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\nbt\LittleEndianNbtSerializer;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
@@ -63,51 +61,50 @@ class BedrockLevelData extends BaseNbtLevelData{
 			//TODO: add support for limited worlds
 		}
 
-		$levelData = new CompoundTag("", [
+		$levelData = CompoundTag::create()
 			//Vanilla fields
-			new IntTag("DayCycleStopTime", -1),
-			new IntTag("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))),
-			new ByteTag("ForceGameType", 0),
-			new IntTag("GameType", 0),
-			new IntTag("Generator", $generatorType),
-			new LongTag("LastPlayed", time()),
-			new StringTag("LevelName", $name),
-			new IntTag("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL),
-			//new IntTag("Platform", 2), //TODO: find out what the possible values are for
-			new LongTag("RandomSeed", $seed),
-			new IntTag("SpawnX", 0),
-			new IntTag("SpawnY", 32767),
-			new IntTag("SpawnZ", 0),
-			new IntTag("StorageVersion", self::CURRENT_STORAGE_VERSION),
-			new LongTag("Time", 0),
-			new ByteTag("eduLevel", 0),
-			new ByteTag("falldamage", 1),
-			new ByteTag("firedamage", 1),
-			new ByteTag("hasBeenLoadedInCreative", 1), //badly named, this actually determines whether achievements can be earned in this world...
-			new ByteTag("immutableWorld", 0),
-			new FloatTag("lightningLevel", 0.0),
-			new IntTag("lightningTime", 0),
-			new ByteTag("pvp", 1),
-			new FloatTag("rainLevel", 0.0),
-			new IntTag("rainTime", 0),
-			new ByteTag("spawnMobs", 1),
-			new ByteTag("texturePacksRequired", 0), //TODO
+			->setInt("DayCycleStopTime", -1)
+			->setInt("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal")))
+			->setByte("ForceGameType", 0)
+			->setInt("GameType", 0)
+			->setInt("Generator", $generatorType)
+			->setLong("LastPlayed", time())
+			->setString("LevelName", $name)
+			->setInt("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL)
+			//->setInt("Platform", 2) //TODO: find out what the possible values are for
+			->setLong("RandomSeed", $seed)
+			->setInt("SpawnX", 0)
+			->setInt("SpawnY", 32767)
+			->setInt("SpawnZ", 0)
+			->setInt("StorageVersion", self::CURRENT_STORAGE_VERSION)
+			->setLong("Time", 0)
+			->setByte("eduLevel", 0)
+			->setByte("falldamage", 1)
+			->setByte("firedamage", 1)
+			->setByte("hasBeenLoadedInCreative", 1) //badly named, this actually determines whether achievements can be earned in this world...
+			->setByte("immutableWorld", 0)
+			->setFloat("lightningLevel", 0.0)
+			->setInt("lightningTime", 0)
+			->setByte("pvp", 1)
+			->setFloat("rainLevel", 0.0)
+			->setInt("rainTime", 0)
+			->setByte("spawnMobs", 1)
+			->setByte("texturePacksRequired", 0) //TODO
 
 			//Additional PocketMine-MP fields
-			new CompoundTag("GameRules", []),
-			new ByteTag("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0),
-			new StringTag("generatorName", GeneratorManager::getGeneratorName($generator)),
-			new StringTag("generatorOptions", $options["preset"] ?? "")
-		]);
+			->setTag("GameRules", new CompoundTag())
+			->setByte("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0)
+			->setString("generatorName", GeneratorManager::getGeneratorName($generator))
+			->setString("generatorOptions", $options["preset"] ?? "");
 
 		$nbt = new LittleEndianNbtSerializer();
-		$buffer = $nbt->write($levelData);
+		$buffer = $nbt->write(new TreeRoot($levelData));
 		file_put_contents($path . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 	}
 
 	protected function load() : ?CompoundTag{
 		$nbt = new LittleEndianNbtSerializer();
-		$levelData = $nbt->read(substr(file_get_contents($this->dataPath), 8));
+		$levelData = $nbt->read(substr(file_get_contents($this->dataPath), 8))->getTag();
 
 		$version = $levelData->getInt("StorageVersion", INT32_MAX, true);
 		if($version > self::CURRENT_STORAGE_VERSION){
@@ -152,7 +149,7 @@ class BedrockLevelData extends BaseNbtLevelData{
 		$this->compoundTag->setInt("StorageVersion", self::CURRENT_STORAGE_VERSION);
 
 		$nbt = new LittleEndianNbtSerializer();
-		$buffer = $nbt->write($this->compoundTag);
+		$buffer = $nbt->write(new TreeRoot($this->compoundTag));
 		file_put_contents($this->dataPath, Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 	}
 

@@ -31,6 +31,8 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
@@ -96,13 +98,14 @@ class NetworkBinaryStream extends BinaryStream{
 		$cnt = $auxValue & 0xff;
 
 		$nbtLen = $this->getLShort();
+		/** @var CompoundTag|null $compound */
 		$compound = null;
 		if($nbtLen === 0xffff){
 			$c = $this->getByte();
 			if($c !== 1){
 				throw new BadPacketException("Unexpected NBT count $c");
 			}
-			$compound = (new NetworkNbtSerializer())->read($this->buffer, $this->offset);
+			$compound = (new NetworkNbtSerializer())->read($this->buffer, $this->offset)->getTag();
 		}elseif($nbtLen !== 0){
 			throw new BadPacketException("Unexpected fake NBT length $nbtLen");
 		}
@@ -143,7 +146,7 @@ class NetworkBinaryStream extends BinaryStream{
 		if($item->hasNamedTag()){
 			$this->putLShort(0xffff);
 			$this->putByte(1); //TODO: some kind of count field? always 1 as of 1.9.0
-			$this->put((new NetworkNbtSerializer())->write($item->getNamedTag()));
+			$this->put((new NetworkNbtSerializer())->write(new TreeRoot($item->getNamedTag())));
 		}else{
 			$this->putLShort(0);
 		}

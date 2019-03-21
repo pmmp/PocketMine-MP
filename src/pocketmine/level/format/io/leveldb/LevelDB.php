@@ -40,14 +40,13 @@ use pocketmine\level\generator\Generator;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ShortTag;
-use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
 use function array_flip;
+use function array_map;
 use function array_values;
 use function chr;
 use function count;
@@ -159,7 +158,7 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 		$palette = [];
 		for($i = 0, $paletteSize = $stream->getLInt(); $i < $paletteSize; ++$i){
 			$offset = $stream->getOffset();
-			$tag = $nbt->read($stream->getBuffer(), $offset);
+			$tag = $nbt->read($stream->getBuffer(), $offset)->getTag();
 			$stream->setOffset($offset);
 
 			$id = $stringToLegacyId[$tag->getString("name")] ?? BlockIds::INFO_UPDATE;
@@ -303,7 +302,7 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 		$entities = [];
 		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and $entityData !== ""){
 			try{
-				$entities = $nbt->readMultiple($entityData);
+				$entities = array_map(function(TreeRoot $root) : CompoundTag{ return $root->getTag(); }, $nbt->readMultiple($entityData));
 			}catch(NbtDataException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
@@ -313,7 +312,7 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 		$tiles = [];
 		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and $tileData !== ""){
 			try{
-				$tiles = $nbt->readMultiple($tileData);
+				$tiles = array_map(function(TreeRoot $root) : CompoundTag{ return $root->getTag(); }, $nbt->readMultiple($tileData));
 			}catch(NbtDataException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
@@ -379,11 +378,10 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 					$subStream->putLInt(count($palette));
 					$tags = [];
 					foreach($palette as $p){
-						$tags[] = new CompoundTag("", [
-							new StringTag("name", $idMap[$p >> 4] ?? "minecraft:info_update"),
-							new IntTag("oldid", $p >> 4), //PM only (debugging), vanilla doesn't have this
-							new ShortTag("val", $p & 0xf)
-						]);
+						$tags[] = new TreeRoot(CompoundTag::create()
+							->setString("name", $idMap[$p >> 4] ?? "minecraft:info_update")
+							->setInt("oldid", $p >> 4) //PM only (debugging), vanilla doesn't have this
+							->setShort("val", $p & 0xf));
 					}
 
 					$subStream->put((new LittleEndianNbtSerializer())->writeMultiple($tags));
@@ -415,7 +413,7 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 	private function writeTags(array $targets, string $index, \LevelDBWriteBatch $write) : void{
 		if(!empty($targets)){
 			$nbt = new LittleEndianNbtSerializer();
-			$write->put($index, $nbt->writeMultiple($targets));
+			$write->put($index, $nbt->writeMultiple(array_map(function(CompoundTag $tag) : TreeRoot{ return new TreeRoot($tag); }, $targets)));
 		}else{
 			$write->delete($index);
 		}

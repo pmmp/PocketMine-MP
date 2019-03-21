@@ -72,18 +72,18 @@ abstract class Tile extends Position{
 	abstract protected function writeSaveData(CompoundTag $nbt) : void;
 
 	public function saveNBT() : CompoundTag{
-		$nbt = new CompoundTag("");
-		$nbt->setString(self::TAG_ID, TileFactory::getSaveId(get_class($this)));
-		$nbt->setInt(self::TAG_X, $this->x);
-		$nbt->setInt(self::TAG_Y, $this->y);
-		$nbt->setInt(self::TAG_Z, $this->z);
+		$nbt = CompoundTag::create()
+			->setString(self::TAG_ID, TileFactory::getSaveId(get_class($this)))
+			->setInt(self::TAG_X, $this->x)
+			->setInt(self::TAG_Y, $this->y)
+			->setInt(self::TAG_Z, $this->z);
 		$this->writeSaveData($nbt);
 
 		return $nbt;
 	}
 
 	public function getCleanedNBT() : ?CompoundTag{
-		$this->writeSaveData($tag = new CompoundTag(""));
+		$this->writeSaveData($tag = new CompoundTag());
 		return $tag->getCount() > 0 ? $tag : null;
 	}
 

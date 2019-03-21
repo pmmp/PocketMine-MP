@@ -26,7 +26,6 @@ namespace pocketmine\item;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
 
 class WritableBook extends Item{
 
@@ -91,7 +90,7 @@ class WritableBook extends Item{
 		$page = $pagesTag->get($pageId);
 		$page->setString(self::TAG_PAGE_TEXT, $pageText);
 
-		$this->getNamedTag()->setTag($pagesTag);
+		$this->getNamedTag()->setTag(self::TAG_PAGES, $pagesTag);
 
 		return $created;
 	}
@@ -110,13 +109,13 @@ class WritableBook extends Item{
 		$pagesTag = $this->getPagesTag();
 
 		for($current = $pagesTag->count(); $current <= $pageId; $current++){
-			$pagesTag->push(new CompoundTag("", [
-				new StringTag(self::TAG_PAGE_TEXT, ""),
-				new StringTag(self::TAG_PAGE_PHOTONAME, "")
-			]));
+			$pagesTag->push(CompoundTag::create()
+				->setString(self::TAG_PAGE_TEXT, "")
+				->setString(self::TAG_PAGE_PHOTONAME, "")
+			);
 		}
 
-		$this->getNamedTag()->setTag($pagesTag);
+		$this->getNamedTag()->setTag(self::TAG_PAGES, $pagesTag);
 	}
 
 	/**
@@ -144,12 +143,12 @@ class WritableBook extends Item{
 	public function insertPage(int $pageId, string $pageText = "") : bool{
 		$pagesTag = $this->getPagesTag();
 
-		$pagesTag->insert($pageId, new CompoundTag("", [
-			new StringTag(self::TAG_PAGE_TEXT, $pageText),
-			new StringTag(self::TAG_PAGE_PHOTONAME, "")
-		]));
+		$pagesTag->insert($pageId, CompoundTag::create()
+			->setString(self::TAG_PAGE_TEXT, $pageText)
+			->setString(self::TAG_PAGE_PHOTONAME, "")
+		);
 
-		$this->getNamedTag()->setTag($pagesTag);
+		$this->getNamedTag()->setTag(self::TAG_PAGES, $pagesTag);
 
 		return true;
 	}
@@ -194,7 +193,7 @@ class WritableBook extends Item{
 	}
 
 	protected function getPagesTag() : ListTag{
-		return $this->getNamedTag()->getListTag(self::TAG_PAGES) ?? new ListTag(self::TAG_PAGES, [], NBT::TAG_Compound);
+		return $this->getNamedTag()->getListTag(self::TAG_PAGES) ?? new ListTag([], NBT::TAG_Compound);
 	}
 
 	/**
@@ -203,7 +202,7 @@ class WritableBook extends Item{
 	 */
 	public function setPages(array $pages) : void{
 		$nbt = $this->getNamedTag();
-		$nbt->setTag(new ListTag(self::TAG_PAGES, $pages, NBT::TAG_Compound));
+		$nbt->setTag(self::TAG_PAGES, new ListTag($pages, NBT::TAG_Compound));
 		$this->setNamedTag($nbt);
 	}
 }

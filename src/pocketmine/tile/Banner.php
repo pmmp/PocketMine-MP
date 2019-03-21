@@ -31,7 +31,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
 
 /**
  * @deprecated
@@ -72,26 +71,26 @@ class Banner extends Spawnable{
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setInt(self::TAG_BASE, $this->baseColor->getInvertedMagicNumber());
-		$patterns = new ListTag(self::TAG_PATTERNS);
+		$patterns = new ListTag();
 		foreach($this->patterns as $pattern){
-			$patterns->push(new CompoundTag("", [
-				new StringTag(self::TAG_PATTERN_NAME, $pattern->getId()),
-				new IntTag(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
-			]));
+			$patterns->push(CompoundTag::create()
+				->setString(self::TAG_PATTERN_NAME, $pattern->getId())
+				->setInt(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
+			);
 		}
-		$nbt->setTag($patterns);
+		$nbt->setTag(self::TAG_PATTERNS, $patterns);
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setInt(self::TAG_BASE, $this->baseColor->getInvertedMagicNumber());
-		$patterns = new ListTag(self::TAG_PATTERNS);
+		$patterns = new ListTag();
 		foreach($this->patterns as $pattern){
-			$patterns->push(new CompoundTag("", [
-				new StringTag(self::TAG_PATTERN_NAME, $pattern->getId()),
-				new IntTag(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
-			]));
+			$patterns->push(CompoundTag::create()
+				->setString(self::TAG_PATTERN_NAME, $pattern->getId())
+				->setInt(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
+			);
 		}
-		$nbt->setTag($patterns);
+		$nbt->setTag(self::TAG_PATTERNS, $patterns);
 	}
 
 	/**

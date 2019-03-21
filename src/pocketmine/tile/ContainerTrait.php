@@ -69,7 +69,7 @@ trait ContainerTrait{
 			$items[] = $item->nbtSerialize($slot);
 		}
 
-		$tag->setTag(new ListTag(Container::TAG_ITEMS, $items, NBT::TAG_Compound));
+		$tag->setTag(Container::TAG_ITEMS, new ListTag($items, NBT::TAG_Compound));
 
 		if($this->lock !== null){
 			$tag->setString(Container::TAG_LOCK, $this->lock);

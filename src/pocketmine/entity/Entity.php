@@ -715,7 +715,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function saveNBT() : CompoundTag{
-		$nbt = new CompoundTag("");
+		$nbt = new CompoundTag();
 		if(!($this instanceof Player)){
 			$nbt->setString("id", EntityFactory::getSaveId(get_class($this)));
 
@@ -725,21 +725,21 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			}
 		}
 
-		$nbt->setTag(new ListTag("Pos", [
-			new DoubleTag("", $this->x),
-			new DoubleTag("", $this->y),
-			new DoubleTag("", $this->z)
+		$nbt->setTag("Pos", new ListTag([
+			new DoubleTag($this->x),
+			new DoubleTag($this->y),
+			new DoubleTag($this->z)
 		]));
 
-		$nbt->setTag(new ListTag("Motion", [
-			new DoubleTag("", $this->motion->x),
-			new DoubleTag("", $this->motion->y),
-			new DoubleTag("", $this->motion->z)
+		$nbt->setTag("Motion", new ListTag([
+			new DoubleTag($this->motion->x),
+			new DoubleTag($this->motion->y),
+			new DoubleTag($this->motion->z)
 		]));
 
-		$nbt->setTag(new ListTag("Rotation", [
-			new FloatTag("", $this->yaw),
-			new FloatTag("", $this->pitch)
+		$nbt->setTag("Rotation", new ListTag([
+			new FloatTag($this->yaw),
+			new FloatTag($this->pitch)
 		]));
 
 		$nbt->setFloat("FallDistance", $this->fallDistance);

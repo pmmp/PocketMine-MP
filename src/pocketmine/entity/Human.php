@@ -800,8 +800,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$nbt->setInt("XpTotal", $this->totalXp);
 		$nbt->setInt("XpSeed", $this->xpSeed);
 
-		$inventoryTag = new ListTag("Inventory", [], NBT::TAG_Compound);
-		$nbt->setTag($inventoryTag);
+		$inventoryTag = new ListTag([], NBT::TAG_Compound);
+		$nbt->setTag("Inventory", $inventoryTag);
 		if($this->inventory !== null){
 			//Normal inventory
 			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
@@ -835,17 +835,17 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 
-			$nbt->setTag(new ListTag("EnderChestInventory", $items, NBT::TAG_Compound));
+			$nbt->setTag("EnderChestInventory", new ListTag($items, NBT::TAG_Compound));
 		}
 
 		if($this->skin !== null){
-			$nbt->setTag(new CompoundTag("Skin", [
-				new StringTag("Name", $this->skin->getSkinId()),
-				new ByteArrayTag("Data", $this->skin->getSkinData()),
-				new ByteArrayTag("CapeData", $this->skin->getCapeData()),
-				new StringTag("GeometryName", $this->skin->getGeometryName()),
-				new ByteArrayTag("GeometryData", $this->skin->getGeometryData())
-			]));
+			$nbt->setTag("Skin", CompoundTag::create()
+				->setString("Name", $this->skin->getSkinId())
+				->setByteArray("Data", $this->skin->getSkinData())
+				->setByteArray("CapeData", $this->skin->getCapeData())
+				->setString("GeometryName", $this->skin->getGeometryName())
+				->setByteArray("GeometryData", $this->skin->getGeometryData())
+			);
 		}
 
 		return $nbt;

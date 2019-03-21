@@ -27,12 +27,10 @@ use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\nbt\BigEndianNbtSerializer;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Utils;
 use function ceil;
 use function file_get_contents;
@@ -44,36 +42,34 @@ class JavaLevelData extends BaseNbtLevelData{
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = [], int $version = 19133) : void{
 		Utils::testValidInstance($generator, Generator::class);
 		//TODO, add extra details
-		$levelData = new CompoundTag("Data", [
-			new ByteTag("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0),
-			new ByteTag("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))),
-			new ByteTag("initialized", 1),
-			new IntTag("GameType", 0),
-			new IntTag("generatorVersion", 1), //2 in MCPE
-			new IntTag("SpawnX", 256),
-			new IntTag("SpawnY", 70),
-			new IntTag("SpawnZ", 256),
-			new IntTag("version", $version),
-			new IntTag("DayTime", 0),
-			new LongTag("LastPlayed", (int) (microtime(true) * 1000)),
-			new LongTag("RandomSeed", $seed),
-			new LongTag("SizeOnDisk", 0),
-			new LongTag("Time", 0),
-			new StringTag("generatorName", GeneratorManager::getGeneratorName($generator)),
-			new StringTag("generatorOptions", $options["preset"] ?? ""),
-			new StringTag("LevelName", $name),
-			new CompoundTag("GameRules", [])
-		]);
+		$levelData = CompoundTag::create()
+			->setByte("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0)
+			->setByte("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal")))
+			->setByte("initialized", 1)
+			->setInt("GameType", 0)
+			->setInt("generatorVersion", 1) //2 in MCPE
+			->setInt("SpawnX", 256)
+			->setInt("SpawnY", 70)
+			->setInt("SpawnZ", 256)
+			->setInt("version", $version)
+			->setInt("DayTime", 0)
+			->setLong("LastPlayed", (int) (microtime(true) * 1000))
+			->setLong("RandomSeed", $seed)
+			->setLong("SizeOnDisk", 0)
+			->setLong("Time", 0)
+			->setString("generatorName", GeneratorManager::getGeneratorName($generator))
+			->setString("generatorOptions", $options["preset"] ?? "")
+			->setString("LevelName", $name)
+			->setTag("GameRules", new CompoundTag());
+
 		$nbt = new BigEndianNbtSerializer();
-		$buffer = $nbt->writeCompressed(new CompoundTag("", [
-			$levelData
-		]));
+		$buffer = $nbt->writeCompressed(new TreeRoot(CompoundTag::create()->setTag("Data", $levelData)));
 		file_put_contents($path . "level.dat", $buffer);
 	}
 
 	protected function load() : ?CompoundTag{
 		$nbt = new BigEndianNbtSerializer();
-		$levelData = $nbt->readCompressed(file_get_contents($this->dataPath));
+		$levelData = $nbt->readCompressed(file_get_contents($this->dataPath))->getTag();
 		if($levelData->hasTag("Data", CompoundTag::class)){
 			return $levelData->getCompoundTag("Data");
 		}
@@ -94,10 +90,7 @@ class JavaLevelData extends BaseNbtLevelData{
 
 	public function save() : void{
 		$nbt = new BigEndianNbtSerializer();
-		$this->compoundTag->setName("Data");
-		$buffer = $nbt->writeCompressed(new CompoundTag("", [
-			$this->compoundTag
-		]));
+		$buffer = $nbt->writeCompressed(new TreeRoot(CompoundTag::create()->setTag("Data", $this->compoundTag)));
 		file_put_contents($this->dataPath, $buffer);
 	}
 

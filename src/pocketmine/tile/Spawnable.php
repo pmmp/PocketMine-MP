@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\NetworkNbtSerializer;
 use function get_class;
 
@@ -76,7 +75,7 @@ abstract class Spawnable extends Tile{
 				self::$nbtWriter = new NetworkNbtSerializer();
 			}
 
-			$this->spawnCompoundCache = self::$nbtWriter->write($this->getSpawnCompound());
+			$this->spawnCompoundCache = self::$nbtWriter->write(new TreeRoot($this->getSpawnCompound()));
 		}
 
 		return $this->spawnCompoundCache;
@@ -86,12 +85,11 @@ abstract class Spawnable extends Tile{
 	 * @return CompoundTag
 	 */
 	final public function getSpawnCompound() : CompoundTag{
-		$nbt = new CompoundTag("", [
-			new StringTag(self::TAG_ID, TileFactory::getSaveId(get_class($this))), //TODO: disassociate network ID from save ID
-			new IntTag(self::TAG_X, $this->x),
-			new IntTag(self::TAG_Y, $this->y),
-			new IntTag(self::TAG_Z, $this->z)
-		]);
+		$nbt = CompoundTag::create()
+			->setString(self::TAG_ID, TileFactory::getSaveId(get_class($this))) //TODO: disassociate network ID from save ID
+			->setInt(self::TAG_X, $this->x)
+			->setInt(self::TAG_Y, $this->y)
+			->setInt(self::TAG_Z, $this->z);
 		$this->addAdditionalSpawnData($nbt);
 		return $nbt;
 	}

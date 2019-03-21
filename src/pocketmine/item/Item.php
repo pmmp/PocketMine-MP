@@ -36,11 +36,11 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 use function array_map;
@@ -199,10 +199,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Item
 	 */
 	public function setCustomBlockData(CompoundTag $compound) : Item{
-		$tags = clone $compound;
-		$tags->setName(self::TAG_BLOCK_ENTITY_TAG);
-		$this->getNamedTag()->setTag($tags);
-
+		$this->getNamedTag()->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $compound);
 		return $this;
 	}
 
@@ -311,15 +308,15 @@ class Item implements ItemIds, \JsonSerializable{
 
 		$ench = $this->getNamedTag()->getListTag(self::TAG_ENCH);
 		if(!($ench instanceof ListTag)){
-			$ench = new ListTag(self::TAG_ENCH, [], NBT::TAG_Compound);
+			$ench = new ListTag([], NBT::TAG_Compound);
 		}else{
 			/** @var CompoundTag $entry */
 			foreach($ench as $k => $entry){
 				if($entry->getShort("id") === $enchantment->getId()){
-					$ench->set($k, new CompoundTag("", [
-						new ShortTag("id", $enchantment->getId()),
-						new ShortTag("lvl", $enchantment->getLevel())
-					]));
+					$ench->set($k, CompoundTag::create()
+						->setShort("id", $enchantment->getId())
+						->setShort("lvl", $enchantment->getLevel())
+					);
 					$found = true;
 					break;
 				}
@@ -327,13 +324,13 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		if(!$found){
-			$ench->push(new CompoundTag("", [
-				new ShortTag("id", $enchantment->getId()),
-				new ShortTag("lvl", $enchantment->getLevel())
-			]));
+			$ench->push(CompoundTag::create()
+				->setShort("id", $enchantment->getId())
+				->setShort("lvl", $enchantment->getLevel())
+			);
 		}
 
-		$this->getNamedTag()->setTag($ench);
+		$this->getNamedTag()->setTag(self::TAG_ENCH, $ench);
 
 		return $this;
 	}
@@ -418,12 +415,12 @@ class Item implements ItemIds, \JsonSerializable{
 
 		/** @var CompoundTag $display */
 		$display = $this->getNamedTag()->getCompoundTag(self::TAG_DISPLAY);
-		if(!($display instanceof CompoundTag)){
-			$display = new CompoundTag(self::TAG_DISPLAY);
+		if($display === null){
+			$display = new CompoundTag();
 		}
 
 		$display->setString(self::TAG_DISPLAY_NAME, $name);
-		$this->getNamedTag()->setTag($display);
+		$this->getNamedTag()->setTag(self::TAG_DISPLAY, $display);
 
 		return $this;
 	}
@@ -439,7 +436,7 @@ class Item implements ItemIds, \JsonSerializable{
 			if($display->getCount() === 0){
 				$this->getNamedTag()->removeTag(self::TAG_DISPLAY);
 			}else{
-				$this->getNamedTag()->setTag($display);
+				$this->getNamedTag()->setTag(self::TAG_DISPLAY, $display);
 			}
 		}
 
@@ -466,14 +463,14 @@ class Item implements ItemIds, \JsonSerializable{
 	public function setLore(array $lines) : Item{
 		$display = $this->getNamedTag()->getCompoundTag(self::TAG_DISPLAY);
 		if(!($display instanceof CompoundTag)){
-			$display = new CompoundTag(self::TAG_DISPLAY, []);
+			$display = new CompoundTag();
 		}
 
-		$display->setTag(new ListTag(self::TAG_DISPLAY_LORE, array_map(function(string $str) : StringTag{
-			return new StringTag("", $str);
+		$display->setTag(self::TAG_DISPLAY_LORE, new ListTag(array_map(function(string $str) : StringTag{
+			return new StringTag($str);
 		}, $lines), NBT::TAG_String));
 
-		$this->getNamedTag()->setTag($display);
+		$this->getNamedTag()->setTag(self::TAG_DISPLAY, $display);
 
 		return $this;
 	}
@@ -493,7 +490,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return CompoundTag
 	 */
 	public function getNamedTag() : CompoundTag{
-		return $this->nbt ?? ($this->nbt = new CompoundTag(""));
+		return $this->nbt ?? ($this->nbt = new CompoundTag());
 	}
 
 	/**
@@ -790,7 +787,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:" . base64_encode((new LittleEndianNbtSerializer())->write($this->nbt)) : "");
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->nbt))) : "");
 	}
 
 	/**
@@ -812,7 +809,7 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		if($this->hasNamedTag()){
-			$data["nbt_b64"] = base64_encode((new LittleEndianNbtSerializer())->write($this->getNamedTag()));
+			$data["nbt_b64"] = base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag())));
 		}
 
 		return $data;
@@ -839,29 +836,25 @@ class Item implements ItemIds, \JsonSerializable{
 			$nbt = base64_decode($data["nbt_b64"], true);
 		}
 		return ItemFactory::get(
-			(int) $data["id"], (int) ($data["damage"] ?? 0), (int) ($data["count"] ?? 1), $nbt !== "" ? (new LittleEndianNbtSerializer())->read($nbt) : null
+			(int) $data["id"], (int) ($data["damage"] ?? 0), (int) ($data["count"] ?? 1), $nbt !== "" ? (new LittleEndianNbtSerializer())->read($nbt)->getTag() : null
 		);
 	}
 
 	/**
 	 * Serializes the item to an NBT CompoundTag
 	 *
-	 * @param int    $slot optional, the inventory slot of the item
-	 * @param string $tagName the name to assign to the CompoundTag object
+	 * @param int $slot optional, the inventory slot of the item
 	 *
 	 * @return CompoundTag
 	 */
-	public function nbtSerialize(int $slot = -1, string $tagName = "") : CompoundTag{
-		$result = new CompoundTag($tagName, [
-			new ShortTag("id", $this->id),
-			new ByteTag("Count", Binary::signByte($this->count)),
-			new ShortTag("Damage", $this->getMeta())
-		]);
+	public function nbtSerialize(int $slot = -1) : CompoundTag{
+		$result = CompoundTag::create()
+			->setShort("id", $this->id)
+			->setByte("Count", Binary::signByte($this->count))
+			->setShort("Damage", $this->getMeta());
 
 		if($this->hasNamedTag()){
-			$itemNBT = clone $this->getNamedTag();
-			$itemNBT->setName("tag");
-			$result->setTag($itemNBT);
+			$result->setTag("tag", clone $this->getNamedTag());
 		}
 
 		if($slot !== -1){
@@ -902,11 +895,8 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 
 		$itemNBT = $tag->getCompoundTag("tag");
-		if($itemNBT instanceof CompoundTag){
-			/** @var CompoundTag $t */
-			$t = clone $itemNBT;
-			$t->setName("");
-			$item->setNamedTag($t);
+		if($itemNBT !== null){
+			$item->setNamedTag(clone $itemNBT);
 		}
 
 		return $item;

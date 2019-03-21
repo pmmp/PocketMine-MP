@@ -42,10 +42,8 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -178,16 +176,15 @@ abstract class Living extends Entity implements Damageable{
 		if(count($this->effects) > 0){
 			$effects = [];
 			foreach($this->effects as $effect){
-				$effects[] = new CompoundTag("", [
-					new ByteTag("Id", $effect->getId()),
-					new ByteTag("Amplifier", Binary::signByte($effect->getAmplifier())),
-					new IntTag("Duration", $effect->getDuration()),
-					new ByteTag("Ambient", $effect->isAmbient() ? 1 : 0),
-					new ByteTag("ShowParticles", $effect->isVisible() ? 1 : 0)
-				]);
+				$effects[] = CompoundTag::create()
+					->setByte("Id", $effect->getId())
+					->setByte("Amplifier", Binary::signByte($effect->getAmplifier()))
+					->setInt("Duration", $effect->getDuration())
+					->setByte("Ambient", $effect->isAmbient() ? 1 : 0)
+					->setByte("ShowParticles", $effect->isVisible() ? 1 : 0);
 			}
 
-			$nbt->setTag(new ListTag("ActiveEffects", $effects));
+			$nbt->setTag("ActiveEffects", new ListTag($effects));
 		}
 
 		return $nbt;

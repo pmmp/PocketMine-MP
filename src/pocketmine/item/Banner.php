@@ -29,9 +29,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\tile\Banner as TileBanner;
 
 class Banner extends Item{
@@ -81,15 +79,15 @@ class Banner extends Item{
 	 * @param Deque|BannerPattern[] $patterns
 	 */
 	public function setPatterns(Deque $patterns) : void{
-		$tag = new ListTag(self::TAG_PATTERNS);
+		$tag = new ListTag();
 		/** @var BannerPattern $pattern */
 		foreach($patterns as $pattern){
-			$tag->push(new CompoundTag("", [
-				new StringTag(self::TAG_PATTERN_NAME, $pattern->getId()),
-				new IntTag(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
-			]));
+			$tag->push(CompoundTag::create()
+				->setString(self::TAG_PATTERN_NAME, $pattern->getId())
+				->setInt(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
+			);
 		}
-		$this->getNamedTag()->setTag($tag);
+		$this->getNamedTag()->setTag(self::TAG_PATTERNS, $tag);
 	}
 
 	public function getFuelTime() : int{

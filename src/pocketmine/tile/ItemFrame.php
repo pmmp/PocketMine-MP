@@ -61,7 +61,7 @@ class ItemFrame extends Spawnable{
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
 		$nbt->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
-		$nbt->setTag($this->item->nbtSerialize(-1, self::TAG_ITEM));
+		$nbt->setTag(self::TAG_ITEM, $this->item->nbtSerialize());
 	}
 
 	public function hasItem() : bool{
@@ -102,6 +102,6 @@ class ItemFrame extends Spawnable{
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
 		$nbt->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
-		$nbt->setTag($this->item->nbtSerialize(-1, self::TAG_ITEM));
+		$nbt->setTag(self::TAG_ITEM, $this->item->nbtSerialize());
 	}
 }

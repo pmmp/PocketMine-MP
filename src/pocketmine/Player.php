@@ -1826,10 +1826,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			//TODO: old code had a TODO for SpawnForced
 
 		}elseif($spawnReset){
-			$namedtag->setTag(new ListTag("Pos", [
-				new DoubleTag("", $spawn->x),
-				new DoubleTag("", $spawn->y),
-				new DoubleTag("", $spawn->z)
+			$namedtag->setTag("Pos", new ListTag([
+				new DoubleTag($spawn->x),
+				new DoubleTag($spawn->y),
+				new DoubleTag($spawn->z)
 			]));
 		}
 
@@ -1882,9 +1882,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->achievements = [];
 		$achievements = $nbt->getCompoundTag("Achievements");
 		if($achievements !== null){
-			/** @var ByteTag $achievement */
-			foreach($achievements as $achievement){
-				$this->achievements[$achievement->getName()] = $achievement->getValue() !== 0;
+			/** @var ByteTag $tag */
+			foreach($achievements as $name => $tag){
+				$this->achievements[$name] = $tag->getValue() !== 0;
 			}
 		}
 
@@ -2897,19 +2897,19 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 			if(!$this->isAlive()){
 				//hack for respawn after quit
-				$nbt->setTag(new ListTag("Pos", [
-					new DoubleTag("", $this->spawnPosition->x),
-					new DoubleTag("", $this->spawnPosition->y),
-					new DoubleTag("", $this->spawnPosition->z)
+				$nbt->setTag("Pos", new ListTag([
+					new DoubleTag($this->spawnPosition->x),
+					new DoubleTag($this->spawnPosition->y),
+					new DoubleTag($this->spawnPosition->z)
 				]));
 			}
 		}
 
-		$achievements = new CompoundTag("Achievements");
+		$achievements = new CompoundTag();
 		foreach($this->achievements as $achievement => $status){
 			$achievements->setByte($achievement, $status ? 1 : 0);
 		}
-		$nbt->setTag($achievements);
+		$nbt->setTag("Achievements", $achievements);
 
 		$nbt->setInt("playerGameType", $this->gamemode);
 		$nbt->setLong("firstPlayed", $this->firstPlayed);

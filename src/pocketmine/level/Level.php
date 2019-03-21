@@ -1630,22 +1630,21 @@ class Level implements ChunkManager, Metadatable{
 	 * @return ItemEntity|null
 	 */
 	public function dropItem(Vector3 $source, Item $item, ?Vector3 $motion = null, int $delay = 10) : ?ItemEntity{
-		$motion = $motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1);
-		$itemTag = $item->nbtSerialize();
-		$itemTag->setName("Item");
-
-		if(!$item->isNull()){
-			$nbt = EntityFactory::createBaseNBT($source, $motion, lcg_value() * 360, 0);
-			$nbt->setShort("Health", 5);
-			$nbt->setShort("PickupDelay", $delay);
-			$nbt->setTag($itemTag);
-
-			/** @var ItemEntity $itemEntity */
-			$itemEntity = EntityFactory::create(ItemEntity::class, $this, $nbt);
-			$itemEntity->spawnToAll();
-			return $itemEntity;
+		if($item->isNull()){
+			return null;
 		}
-		return null;
+
+		$motion = $motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1);
+		$nbt = EntityFactory::createBaseNBT($source, $motion, lcg_value() * 360, 0);
+		$nbt->setShort("Health", 5);
+		$nbt->setShort("PickupDelay", $delay);
+		$nbt->setTag("Item", $item->nbtSerialize());
+
+		/** @var ItemEntity $itemEntity */
+		$itemEntity = EntityFactory::create(ItemEntity::class, $this, $nbt);
+		$itemEntity->spawnToAll();
+		return $itemEntity;
+
 	}
 
 	/**
