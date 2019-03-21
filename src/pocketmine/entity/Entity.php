@@ -806,8 +806,18 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function kill() : void{
-		$this->health = 0;
-		$this->scheduleUpdate();
+		if($this->isAlive()){
+			$this->health = 0;
+			$this->onDeath();
+			$this->scheduleUpdate();
+		}
+	}
+
+	/**
+	 * Override this to do actions on death.
+	 */
+	protected function onDeath() : void{
+
 	}
 
 	/**
@@ -844,7 +854,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		if($amount <= 0){
 			if($this->isAlive()){
-				$this->health = 0;
 				$this->kill();
 			}
 		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){

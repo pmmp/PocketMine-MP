@@ -2918,17 +2918,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->server->saveOfflinePlayerData($this->username, $nbt);
 	}
 
-	public function kill() : void{
-		if(!$this->spawned){
+	protected function onDeath() : void{
+		if(!$this->spawned){ //TODO: drop this hack
 			return;
 		}
-
-		parent::kill();
-
-		$this->networkSession->onDeath();
-	}
-
-	protected function onDeath() : void{
 		//Crafting grid must always be evacuated even if keep-inventory is true. This dumps the contents into the
 		//main inventory and drops the rest on the ground.
 		$this->doCloseInventory();
@@ -2957,6 +2950,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcastMessage($ev->getDeathMessage());
 		}
+
+		$this->startDeathAnimation();
+
+		$this->networkSession->onDeath();
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{

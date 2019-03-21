@@ -93,8 +93,8 @@ class Painting extends Entity{
 		return $nbt;
 	}
 
-	public function kill() : void{
-		parent::kill();
+	protected function onDeath() : void{
+		parent::onDeath();
 
 		$drops = true;
 
