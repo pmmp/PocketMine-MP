@@ -55,7 +55,7 @@ class AvailableCommandsPacket extends DataPacket{
 	public const ARG_TYPE_FLOAT           = 0x02;
 	public const ARG_TYPE_VALUE           = 0x03;
 	public const ARG_TYPE_WILDCARD_INT    = 0x04;
-	public const ARG_TYPE_TARGET          = 0x06;
+	public const ARG_TYPE_TARGET          = 0x05;
 	public const ARG_TYPE_WILDCARD_TARGET = 0x06;
 
 	public const ARG_TYPE_STRING   = 0x0f;
