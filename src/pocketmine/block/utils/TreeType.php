@@ -53,7 +53,7 @@ final class TreeType{
 			new TreeType("birch", "Birch", 2),
 			new TreeType("jungle", "Jungle", 3),
 			new TreeType("acacia", "Acacia", 4),
-			new TreeType("dark_oak","Dark Oak", 5)
+			new TreeType("dark_oak", "Dark Oak", 5)
 		];
 	}
 
@@ -64,6 +64,7 @@ final class TreeType{
 
 	/**
 	 * @internal
+	 *
 	 * @param int $magicNumber
 	 *
 	 * @return TreeType

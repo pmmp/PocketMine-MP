@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 class EnchantTable extends Spawnable implements Nameable{
-	use NameableTrait{
+	use NameableTrait {
 		loadName as public readSaveData;
 		saveName as writeSaveData;
 	}
