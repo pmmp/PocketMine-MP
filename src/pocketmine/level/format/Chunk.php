@@ -197,7 +197,7 @@ class Chunk{
 	 * @param int $block
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		$this->getSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
+		$this->getSubChunk($y >> 4, true)->setFullBlock($x, $y & 0xf, $z, $block);
 		$this->hasChanged = true;
 	}
 
