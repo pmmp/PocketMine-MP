@@ -74,7 +74,7 @@ class Explosion{
 	 */
 	public function __construct(Position $center, float $size, $what = null){
 		if(!$center->isValid()){
-			throw new \InvalidArgumentException("Position does not have a valid level");
+			throw new \InvalidArgumentException("Position does not have a valid world");
 		}
 		$this->source = $center;
 		$this->level = $center->getLevel();

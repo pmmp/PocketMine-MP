@@ -51,25 +51,23 @@ class AvailableCommandsPacket extends DataPacket{
 	 * Basic parameter types. These must be combined with the ARG_FLAG_VALID constant.
 	 * ARG_FLAG_VALID | (type const)
 	 */
-	public const ARG_TYPE_INT = 0x01;
-	public const ARG_TYPE_FLOAT = 0x02;
-	public const ARG_TYPE_VALUE = 0x03;
-	public const ARG_TYPE_WILDCARD_INT = 0x04;
-	public const ARG_TYPE_OPERATOR = 0x05;
-	public const ARG_TYPE_TARGET = 0x06;
-	public const ARG_TYPE_WILDCARD_TARGET = 0x07;
+	public const ARG_TYPE_INT             = 0x01;
+	public const ARG_TYPE_FLOAT           = 0x02;
+	public const ARG_TYPE_VALUE           = 0x03;
+	public const ARG_TYPE_WILDCARD_INT    = 0x04;
+	public const ARG_TYPE_TARGET          = 0x05;
+	public const ARG_TYPE_WILDCARD_TARGET = 0x06;
 
-	public const ARG_TYPE_FILE_PATH = 0x0e;
+	public const ARG_TYPE_STRING   = 0x0f;
+	public const ARG_TYPE_POSITION = 0x10;
 
-	public const ARG_TYPE_INT_RANGE = 0x12;
+	public const ARG_TYPE_MESSAGE  = 0x13;
 
-	public const ARG_TYPE_STRING = 0x1a;
-	public const ARG_TYPE_POSITION = 0x1c;
+	public const ARG_TYPE_RAWTEXT  = 0x15;
 
-	public const ARG_TYPE_MESSAGE = 0x1f;
-	public const ARG_TYPE_RAWTEXT = 0x21;
-	public const ARG_TYPE_JSON = 0x24;
-	public const ARG_TYPE_COMMAND = 0x2b;
+	public const ARG_TYPE_JSON     = 0x18;
+
+	public const ARG_TYPE_COMMAND  = 0x1f;
 
 	/**
 	 * Enums are a little different: they are composed as follows:
@@ -81,8 +79,6 @@ class AvailableCommandsPacket extends DataPacket{
 	 * This is used for /xp <level: int>L. It can only be applied to integer parameters.
 	 */
 	public const ARG_FLAG_POSTFIX = 0x1000000;
-
-	public const ARG_FLAG_SOFT_ENUM = 0x4000000;
 
 	/**
 	 * @var string[]
@@ -144,7 +140,8 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	protected function getEnum() : CommandEnum{
-		$retval = new CommandEnum($this->getString());
+		$retval = new CommandEnum();
+		$retval->enumName = $this->getString();
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			//Get the enum value from the initial pile of mess
@@ -155,7 +152,8 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	protected function getSoftEnum() : CommandEnum{
-		$retval = new CommandEnum($this->getString());
+		$retval = new CommandEnum();
+		$retval->enumName = $this->getString();
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			//Get the enum value from the initial pile of mess
@@ -209,26 +207,35 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	protected function getCommandData() : CommandData{
-		$retval = new CommandData($this->getString(), $this->getString(), $this->getByte(), $this->getByte(), $this->enums[$this->getLInt()] ?? null);
+		$retval = new CommandData();
+		$retval->commandName = $this->getString();
+		$retval->commandDescription = $this->getString();
+		$retval->flags = $this->getByte();
+		$retval->permission = $this->getByte();
+		$retval->aliases = $this->enums[$this->getLInt()] ?? null;
 
 		for($overloadIndex = 0, $overloadCount = $this->getUnsignedVarInt(); $overloadIndex < $overloadCount; ++$overloadIndex){
 			for($paramIndex = 0, $paramCount = $this->getUnsignedVarInt(); $paramIndex < $paramCount; ++$paramIndex){
-				$parameter = new CommandParameter($this->getString(), $this->getLInt(), $this->getBool());
+				$parameter = new CommandParameter();
+				$parameter->paramName = $this->getString();
+				$parameter->paramType = $this->getLInt();
+				$parameter->isOptional = $this->getBool();
+				$parameter->byte1 = $this->getByte();
 
 				if($parameter->paramType & self::ARG_FLAG_ENUM){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->enum = $this->enums[$index] ?? null;
 					if($parameter->enum === null){
-						throw new \UnexpectedValueException("expected enum at $index, but got none");
+						throw new \UnexpectedValueException("deserializing $retval->commandName parameter $parameter->paramName: expected enum at $index, but got none");
 					}
 				}elseif($parameter->paramType & self::ARG_FLAG_POSTFIX){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->postfix = $this->postfixes[$index] ?? null;
 					if($parameter->postfix === null){
-						throw new \UnexpectedValueException("expected postfix at $index, but got none");
+						throw new \UnexpectedValueException("deserializing $retval->commandName parameter $parameter->paramName: expected postfix at $index, but got none");
 					}
 				}elseif(($parameter->paramType & self::ARG_FLAG_VALID) === 0){
-					throw new \UnexpectedValueException("Invalid parameter type 0x" . dechex($parameter->paramType));
+					throw new \UnexpectedValueException("deserializing $retval->commandName parameter $parameter->paramName: Invalid parameter type 0x" . dechex($parameter->paramType));
 				}
 
 				$retval->overloads[$overloadIndex][$paramIndex] = $parameter;
@@ -266,11 +273,12 @@ class AvailableCommandsPacket extends DataPacket{
 					}
 					$type = self::ARG_FLAG_POSTFIX | $key;
 				}else{
-					$type = self::ARG_FLAG_VALID | $parameter->paramType;
+					$type = $parameter->paramType;
 				}
 
 				$this->putLInt($type);
 				$this->putBool($parameter->isOptional);
+				$this->putByte($parameter->byte1);
 			}
 		}
 	}
