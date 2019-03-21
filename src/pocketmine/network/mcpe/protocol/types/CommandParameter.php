@@ -24,6 +24,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+
 class CommandParameter{
 
 	/** @var string */
@@ -33,15 +35,14 @@ class CommandParameter{
 	/** @var bool */
 	public $isOptional;
 	/** @var int */
-	public $flag;
-	/** @var int */
 	public $byte1 = 0; //unknown, always zero except for in /gamerule command
+
 	/** @var CommandEnum|null */
 	public $enum;
 	/** @var string|null */
 	public $postfix;
 
-	public function __construct(string $name, int $type, bool $optional = true, $extraData = null){
+	public function __construct(string $name = "args", int $type = AvailableCommandsPacket::ARG_TYPE_RAWTEXT, bool $optional = true, $extraData = null){
 		$this->paramName = $name;
 		$this->paramType = $type;
 		$this->isOptional = $optional;

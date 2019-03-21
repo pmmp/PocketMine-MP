@@ -91,7 +91,15 @@ abstract class Command{
 			$description = Server::getInstance()->getLanguage()->translateString($description);
 		}
 
-		$this->commandData = new CommandData($name, $description, 0, 0, null, $overloads ?? [[new CommandParameter("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT)]]);
+		$this->commandData = new CommandData();
+
+		$this->commandData->commandName = $name;
+		$this->commandData->commandDescription = $description;
+		$this->commandData->flags = 0;
+		$this->commandData->permission = 0;
+		$this->commandData->aliases = null;
+		$this->commandData->overloads = $overloads ?? [[new CommandParameter()]];
+
 		$this->setLabel($name);
 		$this->setAliases($aliases);
 		$this->usageMessage = $usageMessage ?? ("/" . $name);

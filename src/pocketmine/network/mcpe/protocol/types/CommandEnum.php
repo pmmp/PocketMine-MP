@@ -31,20 +31,8 @@ class CommandEnum{
 	/** @var string[] */
 	public $enumValues = [];
 
-	public function __construct(string $enumName, array $enumValues = []){
+	public function __construct(string $enumName = "CommandEnum", array $enumValues = []){
 		$this->enumName = $enumName;
 		$this->enumValues = $enumValues;
-	}
-
-	public function setName(string $enumName) : CommandEnum{
-		$this->enumName = $enumName;
-
-		return $this;
-	}
-
-	public function setValues(array $enumValues) : CommandEnum{
-		$this->enumValues = $enumValues;
-
-		return $this;
 	}
 }
