@@ -1311,7 +1311,37 @@ class Server{
 
 			$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 
-			$this->start();
+			if($this->getConfigBool("enable-query", true)){
+				$this->queryHandler = new QueryHandler();
+			}
+
+			foreach($this->getIPBans()->getEntries() as $entry){
+				$this->network->blockAddress($entry->getName(), -1);
+			}
+
+			if($this->getProperty("settings.send-usage", true)){
+				$this->sendUsageTicker = 6000;
+				$this->sendUsage(SendUsageTask::TYPE_OPEN);
+			}
+
+
+			if($this->getProperty("network.upnp-forwarding", false)){
+				$this->logger->info("[UPnP] Trying to port forward...");
+				try{
+					UPnP::PortForward($this->getPort());
+				}catch(\RuntimeException $e){
+					$this->logger->alert("UPnP portforward failed: " . $e->getMessage());
+				}
+			}
+
+			$this->tickCounter = 0;
+
+			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [GameMode::toTranslation($this->getGamemode())]));
+
+			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
+
+			$this->tickProcessor();
+			$this->forceShutdown();
 		}catch(\Throwable $e){
 			$this->exceptionHandler($e);
 		}
@@ -1651,43 +1681,6 @@ class Server{
 	 */
 	public function getQueryInformation(){
 		return $this->queryRegenerateTask;
-	}
-
-	/**
-	 * Starts the PocketMine-MP server and starts processing ticks and packets
-	 */
-	private function start() : void{
-		if($this->getConfigBool("enable-query", true)){
-			$this->queryHandler = new QueryHandler();
-		}
-
-		foreach($this->getIPBans()->getEntries() as $entry){
-			$this->network->blockAddress($entry->getName(), -1);
-		}
-
-		if($this->getProperty("settings.send-usage", true)){
-			$this->sendUsageTicker = 6000;
-			$this->sendUsage(SendUsageTask::TYPE_OPEN);
-		}
-
-
-		if($this->getProperty("network.upnp-forwarding", false)){
-			$this->logger->info("[UPnP] Trying to port forward...");
-			try{
-				UPnP::PortForward($this->getPort());
-			}catch(\RuntimeException $e){
-				$this->logger->alert("UPnP portforward failed: " . $e->getMessage());
-			}
-		}
-
-		$this->tickCounter = 0;
-
-		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [GameMode::toTranslation($this->getGamemode())]));
-
-		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
-
-		$this->tickProcessor();
-		$this->forceShutdown();
 	}
 
 	/**
