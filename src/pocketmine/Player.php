@@ -2130,14 +2130,28 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		$ev = new PlayerBlockPickEvent($this, $block, $item);
-		if(!$this->isCreative(true)){
-			$this->server->getLogger()->debug("Got block-pick request from " . $this->getName() . " when not in creative mode (gamemode " . $this->getGamemode() . ")");
-			$ev->setCancelled();
-		}
-
 		$ev->call();
+
 		if(!$ev->isCancelled()){
-			$this->inventory->setItemInHand($item);
+			$existing = $this->inventory->first($item);
+			if($existing !== -1){
+				if($existing < $this->inventory->getHotbarSize()){
+					$this->inventory->setHeldItemIndex($existing);
+				}else{
+					$this->inventory->swap($this->inventory->getHeldItemIndex(), $existing);
+				}
+			}elseif($this->isCreative(true)){ //TODO: plugins won't know this isn't going to execute
+				$firstEmpty = $this->inventory->firstEmpty();
+				if($firstEmpty === -1){ //full inventory
+					$this->inventory->setItemInHand($item);
+				}elseif($firstEmpty < $this->inventory->getHotbarSize()){
+					$this->inventory->setItem($firstEmpty, $item);
+					$this->inventory->setHeldItemIndex($firstEmpty);
+				}else{
+					$this->inventory->swap($this->inventory->getHeldItemIndex(), $firstEmpty);
+					$this->inventory->setItemInHand($item);
+				}
+			}
 		}
 
 		return true;
