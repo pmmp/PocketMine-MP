@@ -58,19 +58,19 @@ class AvailableCommandsPacket extends DataPacket{
 	public const ARG_TYPE_OPERATOR        = 0x05;
 	public const ARG_TYPE_TARGET          = 0x06;
 
-	public const ARG_TYPE_FILEPATH = 0x0f;
+	public const ARG_TYPE_FILEPATH = 0x0e;
 
-	public const ARG_TYPE_STRING   = 0x1c;
+	public const ARG_TYPE_STRING   = 0x1b;
 
-	public const ARG_TYPE_POSITION = 0x1e;
+	public const ARG_TYPE_POSITION = 0x1d;
 
-	public const ARG_TYPE_MESSAGE  = 0x21;
+	public const ARG_TYPE_MESSAGE  = 0x20;
 
-	public const ARG_TYPE_RAWTEXT  = 0x23;
+	public const ARG_TYPE_RAWTEXT  = 0x22;
 
-	public const ARG_TYPE_JSON     = 0x26;
+	public const ARG_TYPE_JSON     = 0x25;
 
-	public const ARG_TYPE_COMMAND  = 0x2d;
+	public const ARG_TYPE_COMMAND  = 0x2c;
 
 	/**
 	 * Enums are a little different: they are composed as follows:
