@@ -206,10 +206,7 @@ final class EntityFactory{
 	 * @throws \RuntimeException
 	 */
 	public static function createFromData(Level $level, CompoundTag $nbt) : ?Entity{
-		$saveId = $nbt->getTag("id");
-		if($saveId === null){
-			$saveId = $nbt->getTag("identifier"); //new MCPE format
-		}
+		$saveId = $nbt->getTag("id") ?? $nbt->getTag("identifier");
 		$baseClass = null;
 		if($saveId instanceof StringTag){
 			$baseClass = self::$knownEntities[$saveId->getValue()] ?? null;
