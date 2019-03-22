@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\CommandSelector;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
@@ -35,6 +36,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
+use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 use function array_slice;
 use function count;
@@ -80,8 +82,9 @@ class GiveCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $sender->getServer()->getPlayer($args[0]);
-		if($player === null){
+		/** @var Player[] $targets */
+		$targets = CommandSelector::findTargets($sender, $args[0], Player::class);
+		if(empty($targets)){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
 			return true;
 		}
@@ -116,14 +119,16 @@ class GiveCommand extends VanillaCommand{
 			$item->setNamedTag($tags);
 		}
 
-		//TODO: overflow
-		$player->getInventory()->addItem(clone $item);
+		foreach($targets as $player){
+			//TODO: overflow
+			$player->getInventory()->addItem(clone $item);
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.give.success", [
-			$item->getName() . " (" . $item->getId() . ":" . $item->getDamage() . ")",
-			(string) $item->getCount(),
-			$player->getName()
-		]));
+			Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.give.success", [
+				$item->getName() . " (" . $item->getId() . ":" . $item->getDamage() . ")", (string) $item->getCount(),
+				$player->getName()
+			]));
+		}
+
 		return true;
 	}
 }
