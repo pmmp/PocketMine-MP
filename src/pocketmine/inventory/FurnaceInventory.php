@@ -32,15 +32,11 @@ class FurnaceInventory extends ContainerInventory{
 	protected $holder;
 
 	public function __construct(Furnace $tile){
-		parent::__construct($tile);
+		parent::__construct($tile, 3);
 	}
 
 	public function getNetworkType() : int{
 		return WindowTypes::FURNACE;
-	}
-
-	public function getDefaultSize() : int{
-		return 3; //1 input, 1 fuel, 1 output
 	}
 
 	/**

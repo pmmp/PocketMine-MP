@@ -50,15 +50,11 @@ class CraftingGrid extends BaseInventory{
 	public function __construct(Player $holder, int $gridWidth){
 		$this->holder = $holder;
 		$this->gridWidth = $gridWidth;
-		parent::__construct();
+		parent::__construct($this->getGridWidth() ** 2);
 	}
 
 	public function getGridWidth() : int{
 		return $this->gridWidth;
-	}
-
-	public function getDefaultSize() : int{
-		return $this->getGridWidth() ** 2;
 	}
 
 	public function setSize(int $size) : void{

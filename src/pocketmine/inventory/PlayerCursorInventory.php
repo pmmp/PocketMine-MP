@@ -31,11 +31,7 @@ class PlayerCursorInventory extends BaseInventory{
 
 	public function __construct(Player $holder){
 		$this->holder = $holder;
-		parent::__construct();
-	}
-
-	public function getDefaultSize() : int{
-		return 1;
+		parent::__construct(1);
 	}
 
 	public function setSize(int $size) : void{

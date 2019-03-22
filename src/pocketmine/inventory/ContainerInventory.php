@@ -33,9 +33,9 @@ abstract class ContainerInventory extends BaseInventory{
 	/** @var Vector3 */
 	protected $holder;
 
-	public function __construct(Vector3 $holder, array $items = [], ?int $size = null){
+	public function __construct(Vector3 $holder, int $size, array $items = []){
 		$this->holder = $holder;
-		parent::__construct($items, $size);
+		parent::__construct($size, $items);
 	}
 
 	protected function onOpen(Player $who) : void{

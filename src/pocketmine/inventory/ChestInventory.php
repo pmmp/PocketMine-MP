@@ -39,15 +39,11 @@ class ChestInventory extends ContainerInventory{
 	 * @param Chest $tile
 	 */
 	public function __construct(Chest $tile){
-		parent::__construct($tile);
+		parent::__construct($tile, 27);
 	}
 
 	public function getNetworkType() : int{
 		return WindowTypes::CONTAINER;
-	}
-
-	public function getDefaultSize() : int{
-		return 27;
 	}
 
 	/**

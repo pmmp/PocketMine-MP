@@ -43,15 +43,11 @@ class ArmorInventory extends BaseInventory{
 
 	public function __construct(Living $holder){
 		$this->holder = $holder;
-		parent::__construct();
+		parent::__construct(4);
 	}
 
 	public function getHolder() : Living{
 		return $this->holder;
-	}
-
-	public function getDefaultSize() : int{
-		return 4;
 	}
 
 	public function getHelmet() : Item{

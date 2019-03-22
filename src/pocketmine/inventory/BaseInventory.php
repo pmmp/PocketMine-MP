@@ -49,11 +49,11 @@ abstract class BaseInventory implements Inventory{
 	protected $slotChangeListener;
 
 	/**
-	 * @param Item[] $items
 	 * @param int    $size
+	 * @param Item[] $items
 	 */
-	public function __construct(array $items = [], ?int $size = null){
-		$this->slots = new \SplFixedArray($size ?? $this->getDefaultSize());
+	public function __construct(int $size, array $items = []){
+		$this->slots = new \SplFixedArray($size);
 
 		$this->setContents($items, false);
 	}
@@ -75,8 +75,6 @@ abstract class BaseInventory implements Inventory{
 	public function setSize(int $size) : void{
 		$this->slots->setSize($size);
 	}
-
-	abstract public function getDefaultSize() : int;
 
 	public function getMaxStackSize() : int{
 		return $this->maxStackSize;

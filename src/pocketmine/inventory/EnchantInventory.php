@@ -33,15 +33,11 @@ class EnchantInventory extends ContainerInventory{
 	protected $holder;
 
 	public function __construct(Position $pos){
-		parent::__construct($pos->asPosition());
+		parent::__construct($pos->asPosition(), 2);
 	}
 
 	public function getNetworkType() : int{
 		return WindowTypes::ENCHANTMENT;
-	}
-
-	public function getDefaultSize() : int{
-		return 2; //1 input, 1 lapis
 	}
 
 	/**

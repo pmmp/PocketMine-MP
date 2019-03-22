@@ -34,15 +34,11 @@ class EnderChestInventory extends ChestInventory{
 	protected $holder;
 
 	public function __construct(){
-		ContainerInventory::__construct(new Position());
+		ContainerInventory::__construct(new Position(), 27);
 	}
 
 	public function getNetworkType() : int{
 		return WindowTypes::CONTAINER;
-	}
-
-	public function getDefaultSize() : int{
-		return 27;
 	}
 
 	/**

@@ -45,11 +45,7 @@ class PlayerInventory extends BaseInventory{
 	 */
 	public function __construct(Human $player){
 		$this->holder = $player;
-		parent::__construct();
-	}
-
-	public function getDefaultSize() : int{
-		return 36;
+		parent::__construct(36);
 	}
 
 	public function isHotbarSlot(int $slot) : bool{

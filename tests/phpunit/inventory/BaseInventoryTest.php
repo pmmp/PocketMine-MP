@@ -34,13 +34,8 @@ class BaseInventoryTest extends TestCase{
 	}
 
 	public function testAddItemDifferentUserData() : void{
-		$inv = new class extends BaseInventory{
-			public function getDefaultSize() : int{
-				return 1;
-			}
-			public function getName() : string{
-				return "";
-			}
+		$inv = new class(1) extends BaseInventory{
+
 		};
 		$item1 = ItemFactory::get(Item::ARROW, 0, 1);
 		$item2 = ItemFactory::get(Item::ARROW, 0, 1)->setCustomName("TEST");
