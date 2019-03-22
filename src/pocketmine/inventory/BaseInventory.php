@@ -378,6 +378,13 @@ abstract class BaseInventory implements Inventory{
 		}
 	}
 
+	public function swap(int $slot1, int $slot2) : void{
+		$i1 = $this->getItem($slot1);
+		$i2 = $this->getItem($slot2);
+		$this->setItem($slot1, $i2);
+		$this->setItem($slot2, $i1);
+	}
+
 	/**
 	 * @return Player[]
 	 */
