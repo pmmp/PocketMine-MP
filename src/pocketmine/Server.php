@@ -109,7 +109,6 @@ use function bin2hex;
 use function count;
 use function define;
 use function explode;
-use function extension_loaded;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
@@ -1241,9 +1240,6 @@ class Server{
 				LevelProviderManager::setDefault($format);
 			}elseif($formatName !== ""){
 				$this->logger->warning($this->language->translateString("pocketmine.level.badDefaultFormat", [$formatName]));
-			}
-			if(extension_loaded("leveldb")){
-				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
 			}
 
 			$this->levelManager = new LevelManager($this);
