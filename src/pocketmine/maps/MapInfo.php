@@ -31,6 +31,7 @@ class MapInfo{
 	/** @var Player */
 	public $player;
 	public $textureCheckCounter = 0;
+	public $colorIndex = 0;
 	public $packetSendTimer = 0;
 	public $forceUpdate = true;
 
@@ -53,8 +54,8 @@ class MapInfo{
 		if($this->forceUpdate){
 			$this->minX = min($this->minX, $x);
 			$this->minY = min($this->minY, $y);
-			$this->maxX = min($this->maxX, $x);
-			$this->maxY = min($this->maxY, $y);
+			$this->maxX = max($this->maxX, $x);
+			$this->maxY = max($this->maxY, $y);
 		}else{
 			$this->forceUpdate = true;
 			$this->minX = $x;
@@ -62,5 +63,6 @@ class MapInfo{
 			$this->maxX = $x;
 			$this->maxY = $y;
 		}
+
 	}
 }

@@ -26,6 +26,7 @@ use pocketmine\block\Block;
 use pocketmine\block\Prismarine;
 use pocketmine\block\Stone;
 use pocketmine\block\StoneSlab;
+use pocketmine\block\Water;
 use pocketmine\block\Wood;
 use pocketmine\block\Wood2;
 use pocketmine\maps\MapData;
@@ -36,8 +37,15 @@ use pocketmine\utils\Color;
 
 class VanillaMapRenderer implements MapRenderer{
 
+	protected $indexes = [];
+
 	public function initialize(MapData $mapData) : void{
-		// NOOP (?)
+		$i = 0;
+		for($x = 0; $x < 128; $x += 16){
+			for($y = 0; $y < 128; $y += 16){
+				$this->indexes[$i++] = [$x, $y];
+			}
+		}
 	}
 
 	/**
@@ -57,16 +65,16 @@ class VanillaMapRenderer implements MapRenderer{
 			$i1 = (int) floor($player->z - $k) / $i + 64;
 			$j1 = 128 / $i;
 			$info = $mapData->getMapInfo($player);
-			$info->textureCheckCounter++;
-			$info->textureCheckCounter %= 15;
-
 			$world = $player->level;
-			$tempVector = new Vector3();
 			$changed = false;
 
-			for($k1 = max(0, $l - $j1 + 1) + $info->textureCheckCounter; $k1 < min($l + $j1, 128); $k1 += 15){
-				$d0 = 0.0;
-				for($l1 = max($i1 - $j1 - 1, 0); $l1 < min($i1 + $j1, 128); $l1++){
+			$current = $this->indexes[$info->textureCheckCounter++];
+			for($x = 0; $x < 16; $x++){
+				$d0 = 0;
+				for($y = 0; $y < 16; $y++){
+					$k1 = $current[0] + $x;
+					$l1 = $current[1] + $y;
+
 					if($k1 >= 0 and $l1 >= -1 and $k1 < 128 and $l1 < 128){
 						$i2 = $k1 - $l;
 						$j2 = $l1 - $i1;
@@ -79,14 +87,14 @@ class VanillaMapRenderer implements MapRenderer{
 							$chunk = $world->getChunk($k2 >> 4, $l2 >> 4);
 							$h = $chunk->getHeightMap($k2 & 15, $l2 & 15) - 1;
 							if($h >= 0){
-								$block = $world->getBlock($tempVector->setComponents($k2, $h, $l2));
-								/*if($block instanceof Water){
+								$block = $world->getBlockAt($k2, $h, $l2);
+								if($block instanceof Water){
 									$attempt = 0;
-									while($block->getSide(Vector3::SIDE_DOWN) instanceof Water and $h > 0 and $attempt++ < 15){
+									while($block->getSide(Vector3::SIDE_DOWN) instanceof Water and $h > 0 and $attempt++ < 3){
 										$block = $block->getSide(Vector3::SIDE_DOWN);
 										$h--;
 									}
-								}*/
+								}
 								$d1 += (int) $h / (int) ($i * $i);
 								$mapColor = self::getMapColorByBlock($block);
 							}else{
@@ -111,6 +119,7 @@ class VanillaMapRenderer implements MapRenderer{
 									$i5 = 0;
 								}
 							}
+
 							$d0 = $d1;
 							if($l1 >= 0 and $i2 * $i2 + $j2 * $j2 < $j1 * $j1 and (!$flag1 || ($k1 + $l1 & 1) != 0)){
 								$b0 = $mapData->getColorAt($k1, $l1)->toABGR();
@@ -130,6 +139,8 @@ class VanillaMapRenderer implements MapRenderer{
 			if($changed){
 				$mapData->updateMap(ClientboundMapItemDataPacket::BITFLAG_TEXTURE_UPDATE);
 			}
+
+			$info->textureCheckCounter %= 64;
 		}
 	}
 
@@ -142,7 +153,7 @@ class VanillaMapRenderer implements MapRenderer{
 	 * @return Color
 	 */
 	public static function getMapColorByBlock(Block $block) : Color{
-		$meta = $block->getDamage();
+		$meta = $block->getVariant();
 		$id = $block->getId();
 		switch($id){
 			case ($id === Block::AIR):

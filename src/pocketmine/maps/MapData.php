@@ -198,7 +198,7 @@ class MapData{
 				$pk = $this->createDataPacket($flags);
 				if($info->forceUpdate and !empty($pk->colors)){
 					$info->forceUpdate = false;
-					//$pk->cropTexture($info->minX, $info->minY, $info->maxX + 1 - $info->minX, $info->maxY + 1 - $info->minY);
+					$pk->cropTexture($info->minX, $info->minY, $info->maxX + 1 - $info->minX, $info->maxY + 1 - $info->minY);
 				}
 				$player->sendDataPacket($pk);
 			}

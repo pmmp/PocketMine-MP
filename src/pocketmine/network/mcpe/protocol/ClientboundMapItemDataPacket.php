@@ -194,8 +194,8 @@ class ClientboundMapItemDataPacket extends DataPacket{
 
 			$this->putUnsignedVarInt($this->width * $this->height); //list count, but we handle it as a 2D array... thanks for the confusion mojang
 
-			for($y = $this->yOffset; $y < $this->height; ++$y){
-				for($x = $this->xOffset; $x < $this->width; ++$x){
+			for($y = 0; $y < $this->height; ++$y){
+				for($x = 0; $x < $this->width; ++$x){
 					//if mojang had any sense this would just be a regular LE int
 					$this->putUnsignedVarInt($this->colors[$y][$x]->toABGR());
 				}
@@ -217,9 +217,9 @@ class ClientboundMapItemDataPacket extends DataPacket{
 		$this->xOffset = $minX;
 		$this->yOffset = $minY;
 		$newColors = [];
-		for($x = 0; $x < $maxX; $x++){
-			for($y = 0; $y < $maxY; $y++){
-				$newColors[$y][$x] = $this->colors[$minX + $x][$minY + $y];
+		for($y = 0; $y < $maxY; $y++){
+			for($x = 0; $x < $maxX; $x++){
+				$newColors[$y][$x] = $this->colors[$minY + $y][$minX + $x];
 			}
 		}
 		$this->colors = $newColors;
