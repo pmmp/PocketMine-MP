@@ -40,6 +40,7 @@ use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketBroadcastEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
+use pocketmine\event\server\StartupDoneEvent;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
@@ -1349,6 +1350,9 @@ class Server{
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
 
+			$this->startedTicking = true;
+			(new StartupDoneEvent())->call();
+
 			$this->tickProcessor();
 			$this->forceShutdown();
 		}catch(\Throwable $e){
@@ -1818,7 +1822,6 @@ class Server{
 	}
 
 	private function tickProcessor() : void{
-		$this->startedTicking = true;
 		$this->nextTick = microtime(true);
 
 		while($this->isRunning){
