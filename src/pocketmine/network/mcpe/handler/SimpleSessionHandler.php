@@ -135,7 +135,21 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleEntityEvent(EntityEventPacket $packet) : bool{
-		return $this->player->handleEntityEvent($packet);
+		$this->player->doCloseInventory();
+
+		switch($packet->event){
+			case EntityEventPacket::EATING_ITEM: //TODO: ignore this and handle it server-side
+				if($packet->data === 0){
+					return false;
+				}
+
+				$this->player->broadcastEntityEvent(EntityEventPacket::EATING_ITEM, $packet->data);
+				break;
+			default:
+				return false;
+		}
+
+		return true;
 	}
 
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
@@ -397,7 +411,21 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-		return $this->player->handleAdventureSettings($packet);
+		if($packet->entityUniqueId !== $this->player->getId()){
+			return false; //TODO: operators can change other people's permissions using this
+		}
+
+		$handled = false;
+
+		$isFlying = $packet->getFlag(AdventureSettingsPacket::FLYING);
+		if($isFlying !== $this->player->isFlying()){
+			$this->player->toggleFlight($isFlying);
+			$handled = true;
+		}
+
+		//TODO: check for other changes
+
+		return $handled;
 	}
 
 	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
@@ -541,7 +569,8 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
-		return $this->player->handleLevelSoundEvent($packet);
+		$this->player->getLevel()->broadcastPacketToViewers($this->player->asVector3(), $packet);
+		return true;
 	}
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{

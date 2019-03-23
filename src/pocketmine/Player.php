@@ -102,9 +102,7 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -1891,31 +1889,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return true;
 	}
 
-	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
-		//TODO: add events so plugins can change this
-		$this->getLevel()->broadcastPacketToViewers($this, $packet);
-		return true;
-	}
-
-	public function handleEntityEvent(EntityEventPacket $packet) : bool{
-		$this->doCloseInventory();
-
-		switch($packet->event){
-			case EntityEventPacket::EATING_ITEM:
-				if($packet->data === 0){
-					return false;
-				}
-
-				$this->sendDataPacket($packet);
-				$this->server->broadcastPacket($this->getViewers(), $packet);
-				break;
-			default:
-				return false;
-		}
-
-		return true;
-	}
-
 	public function equipItem(int $hotbarSlot) : bool{
 		if(!$this->inventory->isHotbarSlot($hotbarSlot)){
 			$this->inventory->sendContents($this);
@@ -2325,6 +2298,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	public function toggleFlight(bool $fly) : void{
 		$ev = new PlayerToggleFlightEvent($this, $fly);
+		if(!$this->allowFlight){
+			$ev->setCancelled();
+		}
 		$ev->call();
 		if($ev->isCancelled()){
 			$this->sendSettings();
@@ -2352,32 +2328,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function dropItem(Item $item) : void{
 		$this->level->dropItem($this->add(0, 1.3, 0), $item, $this->getDirectionVector()->multiply(0.4), 40);
-	}
-
-	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-		if($packet->entityUniqueId !== $this->getId()){
-			return false; //TODO
-		}
-
-		$handled = false;
-
-		$isFlying = $packet->getFlag(AdventureSettingsPacket::FLYING);
-		if($isFlying and !$this->allowFlight){
-			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]));
-			return true;
-		}elseif($isFlying !== $this->isFlying()){
-			$this->toggleFlight($isFlying);
-			$handled = true;
-		}
-
-		if($packet->getFlag(AdventureSettingsPacket::NO_CLIP) and !$this->allowMovementCheats and !$this->isSpectator()){
-			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.noclip"]));
-			return true;
-		}
-
-		//TODO: check other changes
-
-		return $handled;
 	}
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
