@@ -227,6 +227,7 @@ class BlockFactory{
 		self::register(new SandstoneStairs(new BID(Block::RED_SANDSTONE_STAIRS), "Red Sandstone Stairs"));
 		self::register(new SandstoneStairs(new BID(Block::SANDSTONE_STAIRS), "Sandstone Stairs"));
 		self::register(new SeaLantern(new BID(Block::SEALANTERN), "Sea Lantern"));
+		self::register(new SeaPickle(new BID(Block::SEA_PICKLE), "Sea Pickle"));
 		self::register(new Skull(new BID(Block::MOB_HEAD_BLOCK, 0, null, \pocketmine\tile\Skull::class), "Mob Head"));
 		self::register(new SmoothStone(new BID(Block::STONE, Stone::NORMAL), "Stone"));
 		self::register(new Snow(new BID(Block::SNOW), "Snow Block"));
