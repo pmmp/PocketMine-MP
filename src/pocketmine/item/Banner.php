@@ -77,8 +77,10 @@ class Banner extends Item{
 
 	/**
 	 * @param Deque|BannerPattern[] $patterns
+	 *
+	 * @return $this
 	 */
-	public function setPatterns(Deque $patterns) : void{
+	public function setPatterns(Deque $patterns) : self{
 		$tag = new ListTag();
 		/** @var BannerPattern $pattern */
 		foreach($patterns as $pattern){
@@ -88,6 +90,7 @@ class Banner extends Item{
 			);
 		}
 		$this->getNamedTag()->setTag(self::TAG_PATTERNS, $tag);
+		return $this;
 	}
 
 	public function getFuelTime() : int{

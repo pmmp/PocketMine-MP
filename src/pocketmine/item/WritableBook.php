@@ -75,13 +75,11 @@ class WritableBook extends Item{
 	 * @param int    $pageId
 	 * @param string $pageText
 	 *
-	 * @return bool indicating whether the page was created or not.
+	 * @return $this
 	 */
-	public function setPageText(int $pageId, string $pageText) : bool{
-		$created = false;
+	public function setPageText(int $pageId, string $pageText) : self{
 		if(!$this->pageExists($pageId)){
 			$this->addPage($pageId);
-			$created = true;
 		}
 
 		/** @var CompoundTag[]|ListTag $pagesTag */
@@ -92,7 +90,7 @@ class WritableBook extends Item{
 
 		$this->getNamedTag()->setTag(self::TAG_PAGES, $pagesTag);
 
-		return $created;
+		return $this;
 	}
 
 	/**
@@ -100,8 +98,10 @@ class WritableBook extends Item{
 	 * Creates a new page for every page between the given ID and existing pages that doesn't yet exist.
 	 *
 	 * @param int $pageId
+	 *
+	 * @return $this
 	 */
-	public function addPage(int $pageId) : void{
+	public function addPage(int $pageId) : self{
 		if($pageId < 0){
 			throw new \InvalidArgumentException("Page number \"$pageId\" is out of range");
 		}
@@ -116,6 +116,7 @@ class WritableBook extends Item{
 		}
 
 		$this->getNamedTag()->setTag(self::TAG_PAGES, $pagesTag);
+		return $this;
 	}
 
 	/**
@@ -123,13 +124,13 @@ class WritableBook extends Item{
 	 *
 	 * @param int $pageId
 	 *
-	 * @return bool indicating success
+	 * @return $this
 	 */
-	public function deletePage(int $pageId) : bool{
+	public function deletePage(int $pageId) : self{
 		$pagesTag = $this->getPagesTag();
 		$pagesTag->remove($pageId);
 
-		return true;
+		return $this;
 	}
 
 	/**
@@ -138,9 +139,9 @@ class WritableBook extends Item{
 	 * @param int    $pageId
 	 * @param string $pageText
 	 *
-	 * @return bool indicating success
+	 * @return $this
 	 */
-	public function insertPage(int $pageId, string $pageText = "") : bool{
+	public function insertPage(int $pageId, string $pageText = "") : self{
 		$pagesTag = $this->getPagesTag();
 
 		$pagesTag->insert($pageId, CompoundTag::create()
@@ -150,7 +151,7 @@ class WritableBook extends Item{
 
 		$this->getNamedTag()->setTag(self::TAG_PAGES, $pagesTag);
 
-		return true;
+		return $this;
 	}
 
 	/**
@@ -197,12 +198,14 @@ class WritableBook extends Item{
 	}
 
 	/**
-	 *
 	 * @param CompoundTag[] $pages
+	 *
+	 * @return $this
 	 */
-	public function setPages(array $pages) : void{
+	public function setPages(array $pages) : self{
 		$nbt = $this->getNamedTag();
 		$nbt->setTag(self::TAG_PAGES, new ListTag($pages, NBT::TAG_Compound));
 		$this->setNamedTag($nbt);
+		return $this;
 	}
 }

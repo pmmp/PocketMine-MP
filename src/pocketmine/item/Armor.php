@@ -83,9 +83,12 @@ abstract class Armor extends Durable{
 	 * Sets the dyed colour of this armour piece. This generally only applies to leather armour.
 	 *
 	 * @param Color $color
+	 *
+	 * @return $this
 	 */
-	public function setCustomColor(Color $color) : void{
+	public function setCustomColor(Color $color) : self{
 		$this->getNamedTag()->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($color->toARGB()));
+		return $this;
 	}
 
 	/**
