@@ -58,13 +58,14 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
 
-		$this->inventory = new BeaconInventory($this);
 		$this->rangeBox = new AxisAlignedBB($this->x, $this->y, $this->z, $this->x, $this->y, $this->z);
 	}
 
 	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->primary = $nbt->getInt(self::TAG_PRIMARY, 0);
 		$this->secondary = $nbt->getInt(self::TAG_SECONDARY, 0);
+
+		$this->inventory = new BeaconInventory($this);
 
 		$this->loadName($nbt);
 		$this->loadItems($nbt);

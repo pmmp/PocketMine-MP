@@ -51,12 +51,6 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
 	/** @var ShulkerBoxInventory */
 	protected $inventory;
 
-	public function __construct(Level $level, CompoundTag $nbt){
-		parent::__construct($level, $nbt);
-
-		$this->inventory = new ShulkerBoxInventory($this);
-	}
-
 	/**
 	 * @param int $facing
 	 */
@@ -107,6 +101,8 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
 	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->facing = $nbt->getByte(self::TAG_FACING, Vector3::SIDE_DOWN);
 		$this->isUndyed = $nbt->getByte(self::TAG_UNDYED, 1) == 1;
+
+		$this->inventory = new ShulkerBoxInventory($this);
 
 		$this->loadName($nbt);
 		$this->loadItems($nbt);

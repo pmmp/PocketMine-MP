@@ -49,12 +49,13 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
 
-		$this->inventory = new HopperInventory($this);
 		$this->scheduleUpdate();
 	}
 
 	protected function readSaveData(CompoundTag $nbt) : void{
 		$this->transferCooldown = $nbt->getInt(self::TAG_TRANSFER_COOLDOWN, 8);
+
+		$this->inventory = new HopperInventory($this);
 
 		$this->loadName($nbt);
 		$this->loadItems($nbt);
