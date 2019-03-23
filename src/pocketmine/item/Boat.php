@@ -23,9 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\utils\TreeType;
+
 class Boat extends Item{
-	public function __construct(){
-		parent::__construct(self::BOAT, 0, "Boat");
+	/** @var TreeType */
+	private $woodType;
+
+	public function __construct(TreeType $woodType){
+		parent::__construct(self::BOAT, $woodType->getMagicNumber(), $woodType->getDisplayName() . " Boat");
+		$this->woodType = $woodType;
+	}
+
+	/**
+	 * @return TreeType
+	 */
+	public function getWoodType() : TreeType{
+		return $this->woodType;
 	}
 
 	public function getFuelTime() : int{

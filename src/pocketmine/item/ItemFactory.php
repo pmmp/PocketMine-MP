@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
+use pocketmine\block\utils\TreeType;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Living;
 use pocketmine\nbt\tag\CompoundTag;
@@ -65,7 +66,6 @@ class ItemFactory{
 		self::register(new BeetrootSeeds());
 		self::register(new BeetrootSoup());
 		self::register(new BlazeRod());
-		self::register(new Boat());
 		self::register(new Book());
 		self::register(new Boots(Item::CHAIN_BOOTS, 0, "Chainmail Boots", new ArmorTypeInfo(1, 196)));
 		self::register(new Boots(Item::DIAMOND_BOOTS, 0, "Diamond Boots", new ArmorTypeInfo(3, 430)));
@@ -258,6 +258,10 @@ class ItemFactory{
 			if(is_a($className, Living::class, true) and $className::NETWORK_ID !== -1){
 				self::register(new SpawnEgg(Item::SPAWN_EGG, $className::NETWORK_ID, $className, "Spawn Egg"));
 			}
+		}
+
+		foreach(TreeType::getAll() as $type){
+			self::register(new Boat($type));
 		}
 
 		//TODO: minecraft:acacia_sign
