@@ -23,11 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
+use pocketmine\block\Wood;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
@@ -260,13 +262,10 @@ class ItemEntity extends Entity{
 			return;
 		}
 
-		switch($item->getId()){
-			case Item::WOOD:
-				$player->awardAchievement("mineWood");
-				break;
-			case Item::DIAMOND:
-				$player->awardAchievement("diamond");
-				break;
+		if($item->getBlock() instanceof Wood){
+			$player->awardAchievement("mineWood");
+		}elseif($item->getId() === ItemIds::DIAMOND){
+			$player->awardAchievement("diamond");
 		}
 
 		$pk = new TakeItemEntityPacket();
