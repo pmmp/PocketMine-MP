@@ -138,6 +138,10 @@ class PluginManager{
 	 * @return Plugin|null
 	 */
 	public function loadPlugin(string $path, ?array $loaders = null) : ?Plugin{
+		if($this->server->hasStartedTicking()){
+			throw new \InvalidStateException("Could not load plugins after server has started");
+		}
+
 		foreach($loaders ?? $this->fileAssociations as $loader){
 			if($loader->canLoadPlugin($path)){
 				$description = $loader->getPluginDescription($path);
@@ -194,6 +198,10 @@ class PluginManager{
 	 * @return Plugin[]
 	 */
 	public function loadPlugins(string $directory, ?array $newLoaders = null) : array{
+		if($this->server->hasStartedTicking()){
+			throw new \InvalidStateException("Could not load plugins after server has started");
+		}
+
 		if(!is_dir($directory)){
 			return [];
 		}
