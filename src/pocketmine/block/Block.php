@@ -136,6 +136,16 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $this->idInfo->getVariant() | $stateMeta;
 	}
 
+
+	/**
+	 * Returns a bitmask used to extract state bits from block metadata.
+	 *
+	 * @return int
+	 */
+	public function getStateBitmask() : int{
+		return 0;
+	}
+
 	protected function writeStateToMeta() : int{
 		return 0;
 	}
@@ -174,15 +184,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		if($oldTile === null and $tileType !== null){
 			$this->level->addTile(TileFactory::create($tileType, $this->level, $this->asVector3()));
 		}
-	}
-
-	/**
-	 * Returns a bitmask used to extract state bits from block metadata.
-	 *
-	 * @return int
-	 */
-	public function getStateBitmask() : int{
-		return 0;
 	}
 
 	/**
