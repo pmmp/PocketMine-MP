@@ -240,7 +240,18 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
 		$data = MapManager::getMapDataById($packet->mapId);
 		if($data instanceof MapData){
-			$this->player->sendDataPacket($data->createDataPacket(ClientboundMapItemDataPacket::BITFLAG_TEXTURE_UPDATE | ClientboundMapItemDataPacket::BITFLAG_DECORATION_UPDATE));
+			// this is for first appearance
+			$pk = new ClientboundMapItemDataPacket();
+			$pk->height = $pk->width = 128;
+			$pk->dimensionId = $data->getDimension();
+			$pk->scale = $data->getScale();
+			$pk->colors = $data->getColors();
+			$pk->mapId = $data->getId();
+			$pk->decorations = $data->getDecorations();
+			$pk->trackedEntities = $data->getTrackedObjects();
+
+			$this->player->sendDataPacket($pk);
+
 			return true;
 		}
 		return false;

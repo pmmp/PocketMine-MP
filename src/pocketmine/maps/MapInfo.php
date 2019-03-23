@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\maps;
 
+use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\Player;
 
 class MapInfo{
@@ -31,9 +32,9 @@ class MapInfo{
 	/** @var Player */
 	public $player;
 	public $textureCheckCounter = 0;
-	public $colorIndex = 0;
+	public $colorIndexes = [];
 	public $packetSendTimer = 0;
-	public $forceUpdate = true;
+	public $dirty = true;
 
 	public $minX = 0;
 	public $minY = 0;
@@ -42,7 +43,41 @@ class MapInfo{
 
 	public function __construct(Player $player){
 		$this->player = $player;
+
+		$this->colorIndexes = array_fill(0, 128, 0);
 	}
+
+	public function getPacket(MapData $mapData) : ?ClientboundMapItemDataPacket{
+		if($this->dirty){
+			$this->dirty = false;
+
+			$pk = new ClientboundMapItemDataPacket();
+			$pk->height = $pk->width = 128;
+			$pk->dimensionId = $mapData->getDimension();
+			$pk->scale = $mapData->getScale();
+			$pk->colors = $mapData->getColors();
+			$pk->mapId = $mapData->getId();
+			$pk->decorations = $mapData->getDecorations();
+			$pk->trackedEntities = $mapData->getTrackedObjects();
+
+			$pk->cropTexture($this->minX, $this->minY, $this->maxX + 1 - $this->minX, $this->maxY + 1 - $this->minY);
+
+			return $pk;
+		}elseif(($this->packetSendTimer++ % 5) === 0){ // update decorations
+			$pk = new ClientboundMapItemDataPacket();
+			$pk->height = $pk->width = 128;
+			$pk->dimensionId = $mapData->getDimension();
+			$pk->scale = $mapData->getScale();
+			$pk->mapId = $mapData->getId();
+			$pk->decorations = $mapData->getDecorations();
+			$pk->trackedEntities = $mapData->getTrackedObjects();
+
+			return $pk;
+		}
+
+		return null;
+	}
+
 
 	/**
 	 * Calculates map canvas
@@ -51,18 +86,17 @@ class MapInfo{
 	 * @param int $y
 	 */
 	public function updateTextureAt(int $x, int $y) : void{
-		if($this->forceUpdate){
+		if($this->dirty){
 			$this->minX = min($this->minX, $x);
 			$this->minY = min($this->minY, $y);
 			$this->maxX = max($this->maxX, $x);
 			$this->maxY = max($this->maxY, $y);
 		}else{
-			$this->forceUpdate = true;
+			$this->dirty = true;
 			$this->minX = $x;
 			$this->minY = $y;
 			$this->maxX = $x;
 			$this->maxY = $y;
 		}
-
 	}
 }

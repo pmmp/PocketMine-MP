@@ -50,6 +50,10 @@ class Map extends Item{
 				$data->renderMap($player);
 
 				$data->updateVisiblePlayers($player, $this);
+
+				if($pk = $data->getMapInfo($player)->getPacket($data)){
+					$player->sendDataPacket($pk);
+				}
 			}
 		}
 	}
@@ -63,6 +67,8 @@ class Map extends Item{
 		$data->setScale($scale);
 		$data->setDimension($player->level->getDimension());
 		$data->calculateMapCenter($player->getFloorX(), $player->getFloorZ(), $scale);
+
+		$data->onMapCrated($player);
 
 		MapManager::registerMapData($data);
 	}
