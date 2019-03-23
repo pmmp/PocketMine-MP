@@ -27,7 +27,7 @@ use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-class CobblestoneWall extends Transparent{
+class Wall extends Transparent{
 	public const NONE_MOSSY_WALL = 0;
 	public const MOSSY_WALL = 1;
 	public const GRANITE_WALL = 2;

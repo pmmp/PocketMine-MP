@@ -73,8 +73,8 @@ class FenceGate extends Transparent{
 
 	private function checkInWall() : bool{
 		return (
-			$this->getSide(Facing::rotateY($this->facing, false)) instanceof CobblestoneWall or
-			$this->getSide(Facing::rotateY($this->facing, true)) instanceof CobblestoneWall
+			$this->getSide(Facing::rotateY($this->facing, false)) instanceof Wall or
+			$this->getSide(Facing::rotateY($this->facing, true)) instanceof Wall
 		);
 	}
 

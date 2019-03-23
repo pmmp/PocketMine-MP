@@ -453,23 +453,23 @@ class BlockFactory{
 		}
 
 		static $wallTypes = [
-			CobblestoneWall::ANDESITE_WALL => "Andesite",
-			CobblestoneWall::BRICK_WALL => "Brick",
-			CobblestoneWall::DIORITE_WALL => "Diorite",
-			CobblestoneWall::END_STONE_BRICK_WALL => "End Stone Brick",
-			CobblestoneWall::GRANITE_WALL => "Granite",
-			CobblestoneWall::MOSSY_STONE_BRICK_WALL => "Mossy Stone Brick",
-			CobblestoneWall::MOSSY_WALL => "Mossy Cobblestone",
-			CobblestoneWall::NETHER_BRICK_WALL => "Nether Brick",
-			CobblestoneWall::NONE_MOSSY_WALL => "Cobblestone",
-			CobblestoneWall::PRISMARINE_WALL => "Prismarine",
-			CobblestoneWall::RED_NETHER_BRICK_WALL => "Red Nether Brick",
-			CobblestoneWall::RED_SANDSTONE_WALL => "Red Sandstone",
-			CobblestoneWall::SANDSTONE_WALL => "Sandstone",
-			CobblestoneWall::STONE_BRICK_WALL => "Stone Brick"
+			Wall::ANDESITE_WALL => "Andesite",
+			Wall::BRICK_WALL => "Brick",
+			Wall::DIORITE_WALL => "Diorite",
+			Wall::END_STONE_BRICK_WALL => "End Stone Brick",
+			Wall::GRANITE_WALL => "Granite",
+			Wall::MOSSY_STONE_BRICK_WALL => "Mossy Stone Brick",
+			Wall::MOSSY_WALL => "Mossy Cobblestone",
+			Wall::NETHER_BRICK_WALL => "Nether Brick",
+			Wall::NONE_MOSSY_WALL => "Cobblestone",
+			Wall::PRISMARINE_WALL => "Prismarine",
+			Wall::RED_NETHER_BRICK_WALL => "Red Nether Brick",
+			Wall::RED_SANDSTONE_WALL => "Red Sandstone",
+			Wall::SANDSTONE_WALL => "Sandstone",
+			Wall::STONE_BRICK_WALL => "Stone Brick"
 		];
 		foreach($wallTypes as $magicNumber => $prefix){
-			self::register(new CobblestoneWall(new BID(BlockLegacyIds::COBBLESTONE_WALL, $magicNumber), $prefix . " Wall"));
+			self::register(new Wall(new BID(BlockLegacyIds::COBBLESTONE_WALL, $magicNumber), $prefix . " Wall"));
 		}
 
 		//TODO: minecraft:andesite_stairs
