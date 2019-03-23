@@ -49,9 +49,9 @@ class VanillaMapRenderer extends MapRenderer{
 
 	public function onMapCreated(Player $player, MapData $mapData) : void{
 		// TODO: make this async
-		for($i = 0; $i < 64; $i++){
+		/*for($i = 0; $i < 64; $i++){
 			$this->render($mapData, $player);
-		}
+		}*/
 	}
 
 	/**
