@@ -368,7 +368,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $deviceModel;
 	/** @var int $deviceOS */
 	protected $deviceOS;
-
+	/** @var string $deviceId */
+	protected $deviceId;
 	/** @var int */
 	protected $startAction = -1;
 	/** @var int[] ID => ticks map */
@@ -2020,6 +2021,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->locale = $packet->locale;
 		}
 
+		$this->deviceId = $packet->clientData["DeviceId"] ?? null;
 		$this->deviceModel = $packet->clientData["DeviceModel"] ?? null;
 		$this->deviceOS = $packet->clientData["DeviceOS"] ?? null;
 
@@ -4287,10 +4289,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function getDeviceOS(): ?int{
-	    return $this->getDeviceOS();
+	    return $this->deviceOS;
     }
 
     public function getDeviceModel(): ?string{
-	    return $this->getDeviceModel();
+	    return $this->deviceModel;
+    }
+
+    public function getDeviceId(): ?string{
+	    return $this->deviceId;
     }
 }
