@@ -42,7 +42,7 @@ interface BlockIds{
 	public const GOLD_ORE = 14;
 	public const IRON_ORE = 15;
 	public const COAL_ORE = 16;
-	public const LOG = 17, WOOD = 17;
+	public const LOG = 17;
 	public const LEAVES = 18;
 	public const SPONGE = 19;
 	public const GLASS = 20;
@@ -187,7 +187,7 @@ interface BlockIds{
 	public const STAINED_CLAY = 159, STAINED_HARDENED_CLAY = 159, TERRACOTTA = 159;
 	public const STAINED_GLASS_PANE = 160;
 	public const LEAVES2 = 161;
-	public const LOG2 = 162, WOOD2 = 162;
+	public const LOG2 = 162;
 	public const ACACIA_STAIRS = 163;
 	public const DARK_OAK_STAIRS = 164;
 	public const SLIME = 165, SLIME_BLOCK = 165;
@@ -490,7 +490,7 @@ interface BlockIds{
 	public const CAMPFIRE = 464;
 	public const LAVA_CAULDRON = 465;
 	public const JIGSAW = 466;
-
+	public const WOOD = 467;
 	public const COMPOSTER = 468;
 
 }

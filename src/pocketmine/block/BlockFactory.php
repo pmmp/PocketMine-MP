@@ -392,8 +392,8 @@ class BlockFactory{
 
 			//TODO: find a better way to deal with this split
 			self::register(new Leaves(new BID($magicNumber >= 4 ? Block::LEAVES2 : Block::LEAVES, $magicNumber & 0x03), $name . " Leaves", $treeType));
-			self::register(new Log(new BID($magicNumber >= 4 ? Block::WOOD2 : Block::WOOD, $magicNumber & 0x03), $name . " Log", $treeType));
-			self::register(new Wood(new BID($magicNumber >= 4 ? Block::WOOD2 : Block::WOOD, ($magicNumber & 0x03) | 0b1100), $name . " Wood", $treeType));
+			self::register(new Log(new BID($magicNumber >= 4 ? Block::LOG2 : Block::LOG, $magicNumber & 0x03), $name . " Log", $treeType));
+			self::register(new Wood(new BID($magicNumber >= 4 ? Block::LOG2 : Block::LOG, ($magicNumber & 0x03) | 0b1100), $name . " Wood", $treeType));
 
 			self::register(new FenceGate(new BID($fenceGateIds[$treeType]), $treeType->getDisplayName() . " Fence Gate"));
 			self::register(new WoodenStairs(new BID($woodenStairIds[$treeType]), $treeType->getDisplayName() . " Stairs"));
