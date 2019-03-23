@@ -60,7 +60,7 @@ class Grass extends Solid{
 		$lightAbove = $this->level->getFullLightAt($this->x, $this->y + 1, $this->z);
 		if($lightAbove < 4 and $this->level->getBlockAt($this->x, $this->y + 1, $this->z)->getLightFilter() >= 2){
 			//grass dies
-			$ev = new BlockSpreadEvent($this, $this, BlockFactory::get(Block::DIRT));
+			$ev = new BlockSpreadEvent($this, $this, BlockFactory::get(BlockIds::DIRT));
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->level->setBlock($this, $ev->getNewState(), false);
@@ -82,7 +82,7 @@ class Grass extends Solid{
 					continue;
 				}
 
-				$ev = new BlockSpreadEvent($b, $this, BlockFactory::get(Block::GRASS));
+				$ev = new BlockSpreadEvent($b, $this, BlockFactory::get(BlockIds::GRASS));
 				$ev->call();
 				if(!$ev->isCancelled()){
 					$this->level->setBlock($b, $ev->getNewState(), false);
@@ -102,12 +102,12 @@ class Grass extends Solid{
 			return true;
 		}elseif($item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::FARMLAND));
+			$this->getLevel()->setBlock($this, BlockFactory::get(BlockIds::FARMLAND));
 
 			return true;
-		}elseif($item instanceof Shovel and $this->getSide(Facing::UP)->getId() === Block::AIR){
+		}elseif($item instanceof Shovel and $this->getSide(Facing::UP)->getId() === BlockIds::AIR){
 			$item->applyDamage(1);
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::GRASS_PATH));
+			$this->getLevel()->setBlock($this, BlockFactory::get(BlockIds::GRASS_PATH));
 
 			return true;
 		}

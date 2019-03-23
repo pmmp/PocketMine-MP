@@ -1803,7 +1803,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($blockClicked->getId() === Block::AIR){
+		if($blockClicked->getId() === BlockIds::AIR){
 			return false;
 		}
 

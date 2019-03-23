@@ -88,7 +88,7 @@ class Fire extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Facing::DOWN)->isSolid() and !$this->hasAdjacentFlammableBlocks()){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR));
+			$this->getLevel()->setBlock($this, BlockFactory::get(BlockIds::AIR));
 		}else{
 			$this->level->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
 		}
@@ -113,12 +113,12 @@ class Fire extends Flowable{
 			if($this->age === 15){
 				if(!$down->isFlammable() and mt_rand(0, 3) === 3){ //1/4 chance to extinguish
 					$canSpread = false;
-					$result = BlockFactory::get(Block::AIR);
+					$result = BlockFactory::get(BlockIds::AIR);
 				}
 			}elseif(!$this->hasAdjacentFlammableBlocks()){
 				$canSpread = false;
 				if(!$down->isSolid() or $this->age > 3){
-					$result = BlockFactory::get(Block::AIR);
+					$result = BlockFactory::get(BlockIds::AIR);
 				}
 			}
 		}
@@ -170,7 +170,7 @@ class Fire extends Flowable{
 					$fire->age = min(15, $fire->age + (mt_rand(0, 4) >> 2));
 					$this->level->setBlock($block, $fire);
 				}else{
-					$this->level->setBlock($block, BlockFactory::get(Block::AIR));
+					$this->level->setBlock($block, BlockFactory::get(BlockIds::AIR));
 				}
 			}
 		}

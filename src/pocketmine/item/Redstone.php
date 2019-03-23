@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockIds;
 
 class Redstone extends Item{
 	public function __construct(){
@@ -32,6 +33,6 @@ class Redstone extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::REDSTONE_WIRE);
+		return BlockFactory::get(BlockIds::REDSTONE_WIRE);
 	}
 }

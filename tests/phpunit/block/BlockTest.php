@@ -37,7 +37,7 @@ class BlockTest extends TestCase{
 	 * Test registering a block which would overwrite another block, without forcing it
 	 */
 	public function testAccidentalOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(Block::COBBLESTONE), "Cobblestone");
+		$block = new MyCustomBlock(new BlockIdentifier(BlockIds::COBBLESTONE), "Cobblestone");
 		$this->expectException(\InvalidArgumentException::class);
 		BlockFactory::register($block);
 	}
@@ -46,7 +46,7 @@ class BlockTest extends TestCase{
 	 * Test registering a block deliberately overwriting another block works as expected
 	 */
 	public function testDeliberateOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(Block::COBBLESTONE), "Cobblestone");
+		$block = new MyCustomBlock(new BlockIdentifier(BlockIds::COBBLESTONE), "Cobblestone");
 		BlockFactory::register($block, true);
 		self::assertInstanceOf(MyCustomBlock::class, BlockFactory::get($block->getId()));
 	}
@@ -101,12 +101,12 @@ class BlockTest extends TestCase{
 	 */
 	public function blockGetProvider() : array{
 		return [
-			[Block::STONE, 5],
-			[Block::STONE, 15],
-			[Block::GOLD_BLOCK, 0],
-			[Block::WOODEN_PLANKS, 5],
-			[Block::SAND, 0],
-			[Block::GOLD_BLOCK, 0]
+			[BlockIds::STONE, 5],
+			[BlockIds::STONE, 15],
+			[BlockIds::GOLD_BLOCK, 0],
+			[BlockIds::WOODEN_PLANKS, 5],
+			[BlockIds::SAND, 0],
+			[BlockIds::GOLD_BLOCK, 0]
 		];
 	}
 

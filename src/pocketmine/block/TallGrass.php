@@ -38,7 +38,7 @@ class TallGrass extends Flowable{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN)->getId();
-		if($down === self::GRASS or $down === self::DIRT){
+		if($down === BlockIds::GRASS or $down === BlockIds::DIRT){
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -47,7 +47,7 @@ class TallGrass extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){ //Replace with common break method
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR));
+			$this->getLevel()->setBlock($this, BlockFactory::get(BlockIds::AIR));
 		}
 	}
 

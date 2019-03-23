@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockIds;
 use pocketmine\block\utils\SkullType;
 
 class Skull extends Item{
@@ -38,7 +39,7 @@ class Skull extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::SKULL_BLOCK);
+		return BlockFactory::get(BlockIds::SKULL_BLOCK);
 	}
 
 	public function getSkullType() : SkullType{

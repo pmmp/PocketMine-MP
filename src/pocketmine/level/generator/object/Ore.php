@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\generator\object;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockIds;
 use pocketmine\level\ChunkManager;
 use pocketmine\math\VectorMath;
 use pocketmine\utils\Random;
@@ -46,7 +46,7 @@ class Ore{
 	}
 
 	public function canPlaceObject(ChunkManager $level, int $x, int $y, int $z) : bool{
-		return $level->getBlockAt($x, $y, $z)->getId() === Block::STONE;
+		return $level->getBlockAt($x, $y, $z)->getId() === BlockIds::STONE;
 	}
 
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z) : void{
@@ -86,7 +86,7 @@ class Ore{
 								$sizeZ = ($z + 0.5 - $seedZ) / $size;
 								$sizeZ *= $sizeZ;
 
-								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->getBlockAt($x, $y, $z)->getId() === Block::STONE){
+								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->getBlockAt($x, $y, $z)->getId() === BlockIds::STONE){
 									$level->setBlockAt($x, $y, $z, $this->type->material);
 								}
 							}

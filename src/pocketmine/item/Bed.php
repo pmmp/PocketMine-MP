@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockIds;
 use pocketmine\block\utils\DyeColor;
 
 class Bed extends Item{
@@ -45,7 +46,7 @@ class Bed extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::BED_BLOCK);
+		return BlockFactory::get(BlockIds::BED_BLOCK);
 	}
 
 	public function getMaxStackSize() : int{

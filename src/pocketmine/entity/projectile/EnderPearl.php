@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\projectile;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockIds;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\level\sound\EndermanTeleportSound;
@@ -36,7 +37,7 @@ class EnderPearl extends Throwable{
 	public const NETWORK_ID = self::ENDER_PEARL;
 
 	protected function calculateInterceptWithBlock(Block $block, Vector3 $start, Vector3 $end) : ?RayTraceResult{
-		if($block->getId() !== Block::AIR and empty($block->getCollisionBoxes())){
+		if($block->getId() !== BlockIds::AIR and empty($block->getCollisionBoxes())){
 			//TODO: remove this once block collision boxes are fixed properly
 			return AxisAlignedBB::one()->offset($block->x, $block->y, $block->z)->calculateIntercept($start, $end);
 		}

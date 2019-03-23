@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\level\generator;
 
-use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockIds;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\format\Chunk;
@@ -78,14 +78,14 @@ class Flat extends Generator{
 		if(isset($this->options["decoration"])){
 			$ores = new Ore();
 			$ores->setOreTypes([
-				new OreType(BlockFactory::get(Block::COAL_ORE), 20, 16, 0, 128),
-				new OreType(BlockFactory::get(Block::IRON_ORE), 20, 8, 0, 64),
-				new OreType(BlockFactory::get(Block::REDSTONE_ORE), 8, 7, 0, 16),
-				new OreType(BlockFactory::get(Block::LAPIS_ORE), 1, 6, 0, 32),
-				new OreType(BlockFactory::get(Block::GOLD_ORE), 2, 8, 0, 32),
-				new OreType(BlockFactory::get(Block::DIAMOND_ORE), 1, 7, 0, 16),
-				new OreType(BlockFactory::get(Block::DIRT), 20, 32, 0, 128),
-				new OreType(BlockFactory::get(Block::GRAVEL), 10, 16, 0, 128)
+				new OreType(BlockFactory::get(BlockIds::COAL_ORE), 20, 16, 0, 128),
+				new OreType(BlockFactory::get(BlockIds::IRON_ORE), 20, 8, 0, 64),
+				new OreType(BlockFactory::get(BlockIds::REDSTONE_ORE), 8, 7, 0, 16),
+				new OreType(BlockFactory::get(BlockIds::LAPIS_ORE), 1, 6, 0, 32),
+				new OreType(BlockFactory::get(BlockIds::GOLD_ORE), 2, 8, 0, 32),
+				new OreType(BlockFactory::get(BlockIds::DIAMOND_ORE), 1, 7, 0, 16),
+				new OreType(BlockFactory::get(BlockIds::DIRT), 20, 32, 0, 128),
+				new OreType(BlockFactory::get(BlockIds::GRAVEL), 10, 16, 0, 128)
 			]);
 			$this->populators[] = $ores;
 		}

@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\level\generator\populator;
 
-use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockIds;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
@@ -46,7 +46,7 @@ class TallGrass extends Populator{
 		$this->level = $level;
 		$amount = $random->nextRange(0, $this->randomAmount + 1) + $this->baseAmount;
 
-		$block = BlockFactory::get(Block::TALL_GRASS, 1);
+		$block = BlockFactory::get(BlockIds::TALL_GRASS, 1);
 		for($i = 0; $i < $amount; ++$i){
 			$x = $random->nextRange($chunkX * 16, $chunkX * 16 + 15);
 			$z = $random->nextRange($chunkZ * 16, $chunkZ * 16 + 15);
@@ -60,13 +60,13 @@ class TallGrass extends Populator{
 
 	private function canTallGrassStay(int $x, int $y, int $z) : bool{
 		$b = $this->level->getBlockAt($x, $y, $z)->getId();
-		return ($b === Block::AIR or $b === Block::SNOW_LAYER) and $this->level->getBlockAt($x, $y - 1, $z)->getId() === Block::GRASS;
+		return ($b === BlockIds::AIR or $b === BlockIds::SNOW_LAYER) and $this->level->getBlockAt($x, $y - 1, $z)->getId() === BlockIds::GRASS;
 	}
 
 	private function getHighestWorkableBlock(int $x, int $z) : int{
 		for($y = 127; $y >= 0; --$y){
 			$b = $this->level->getBlockAt($x, $y, $z)->getId();
-			if($b !== Block::AIR and $b !== Block::LEAVES and $b !== Block::LEAVES2 and $b !== Block::SNOW_LAYER){
+			if($b !== BlockIds::AIR and $b !== BlockIds::LEAVES and $b !== BlockIds::LEAVES2 and $b !== BlockIds::SNOW_LAYER){
 				break;
 			}
 		}

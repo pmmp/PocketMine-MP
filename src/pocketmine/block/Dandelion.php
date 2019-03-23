@@ -33,7 +33,7 @@ class Dandelion extends Flowable{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === Block::GRASS or $down->getId() === Block::DIRT or $down->getId() === Block::FARMLAND){
+		if($down->getId() === BlockIds::GRASS or $down->getId() === BlockIds::DIRT or $down->getId() === BlockIds::FARMLAND){
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 

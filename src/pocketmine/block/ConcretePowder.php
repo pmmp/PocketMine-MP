@@ -64,7 +64,7 @@ class ConcretePowder extends Solid implements Fallable{
 				continue;
 			}
 			if($this->getSide($i) instanceof Water){
-				return BlockFactory::get(Block::CONCRETE, $this->idInfo->getVariant());
+				return BlockFactory::get(BlockIds::CONCRETE, $this->idInfo->getVariant());
 			}
 		}
 

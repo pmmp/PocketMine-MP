@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockIds;
 
 class PumpkinSeeds extends Item{
 	public function __construct(){
@@ -32,6 +33,6 @@ class PumpkinSeeds extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::PUMPKIN_STEM);
+		return BlockFactory::get(BlockIds::PUMPKIN_STEM);
 	}
 }

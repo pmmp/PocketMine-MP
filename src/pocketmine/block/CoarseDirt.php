@@ -34,7 +34,7 @@ class CoarseDirt extends Dirt{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP and $item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::DIRT));
+			$this->getLevel()->setBlock($this, BlockFactory::get(BlockIds::DIRT));
 			return true;
 		}
 

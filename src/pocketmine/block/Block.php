@@ -314,7 +314,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		if(($t = $this->level->getTile($this)) !== null){
 			$t->onBlockDestroyed();
 		}
-		return $this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR));
+		return $this->getLevel()->setBlock($this, BlockFactory::get(BlockIds::AIR));
 	}
 
 
@@ -655,7 +655,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			return $this->getLevel()->getBlock(Vector3::getSide($side, $step));
 		}
 
-		return BlockFactory::get(Block::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
+		return BlockFactory::get(BlockIds::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
 	}
 
 	/**

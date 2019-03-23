@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\level\generator\populator;
 
-use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockIds;
 use pocketmine\block\Liquid;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\ChunkManager;
@@ -56,7 +56,7 @@ class GroundCover extends Populator{
 					for($y = $startY; $y > $endY and $y >= 0; --$y){
 						$b = $cover[$startY - $y];
 						$id = BlockFactory::fromFullBlock($chunk->getFullBlock($x, $y, $z));
-						if($id->getId() === Block::AIR and $b->isSolid()){
+						if($id->getId() === BlockIds::AIR and $b->isSolid()){
 							break;
 						}
 						if($b->canBeFlowedInto() and $id instanceof Liquid){

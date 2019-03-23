@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockIds;
 use pocketmine\block\Fire;
 use pocketmine\block\Liquid;
 use pocketmine\entity\EntityFactory;
@@ -48,8 +48,8 @@ trait FallableTrait{
 	public function onNearbyBlockChange() : void{
 		$pos = $this->asPosition();
 		$down = $pos->level->getBlock($pos->getSide(Facing::DOWN));
-		if($down->getId() === Block::AIR or $down instanceof Liquid or $down instanceof Fire){
-			$pos->level->setBlock($pos, BlockFactory::get(Block::AIR));
+		if($down->getId() === BlockIds::AIR or $down instanceof Liquid or $down instanceof Fire){
+			$pos->level->setBlock($pos, BlockFactory::get(BlockIds::AIR));
 
 			$nbt = EntityFactory::createBaseNBT($pos->add(0.5, 0, 0.5));
 			$nbt->setInt("TileID", $this->getId());

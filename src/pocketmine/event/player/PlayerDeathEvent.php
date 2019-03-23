@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockIds;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -170,7 +170,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 			case EntityDamageEvent::CAUSE_CONTACT:
 				if($deathCause instanceof EntityDamageByBlockEvent){
-					if($deathCause->getDamager()->getId() === Block::CACTUS){
+					if($deathCause->getDamager()->getId() === BlockIds::CACTUS){
 						$message = "death.attack.cactus";
 					}
 				}

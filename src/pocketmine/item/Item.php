@@ -28,6 +28,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockIds;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
@@ -590,7 +591,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return Block
 	 */
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::AIR);
+		return BlockFactory::get(BlockIds::AIR);
 	}
 
 	/**

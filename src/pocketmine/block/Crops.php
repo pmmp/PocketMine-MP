@@ -49,7 +49,7 @@ abstract class Crops extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockReplace->getSide(Facing::DOWN)->getId() === Block::FARMLAND){
+		if($blockReplace->getSide(Facing::DOWN)->getId() === BlockIds::FARMLAND){
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -80,7 +80,7 @@ abstract class Crops extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() !== Block::FARMLAND){
+		if($this->getSide(Facing::DOWN)->getId() !== BlockIds::FARMLAND){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}
