@@ -62,7 +62,6 @@ use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
 use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\player\PlayerMoveEvent;
-use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
@@ -96,9 +95,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\CompressBatchPromise;
-use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\ProcessLoginTask;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
@@ -108,7 +105,6 @@ use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -190,9 +186,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $networkSession;
 
 	/** @var bool */
-	protected $loggedIn = false;
-
-	/** @var bool */
 	public $spawned = false;
 
 	/** @var string */
@@ -206,9 +199,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/** @var string */
 	protected $xuid = "";
 	/** @var bool */
-	protected $authenticated = false;
-	/** @var PlayerInfo|null */
-	protected $playerInfo = null;
+	protected $authenticated;
+	/** @var PlayerInfo */
+	protected $playerInfo;
 
 	protected $windowCnt = 2;
 	/** @var int[] */
@@ -551,7 +544,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isOnline() : bool{
-		return $this->isConnected() and $this->loggedIn;
+		return $this->isConnected();
 	}
 
 	/**
@@ -685,21 +678,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->sendDataPacket($pk);
 
-	}
-
-	/**
-	 * @param Server         $server
-	 * @param NetworkSession $session
-	 */
-	public function __construct(Server $server, NetworkSession $session){
-		$this->server = $server;
-		$this->networkSession = $session;
-
-		$this->perm = new PermissibleBase($this);
-		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
-		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
-
-		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
 	}
 
 	/**
@@ -1712,8 +1690,19 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return ($targetDot - $eyeDot) >= -$maxDiff;
 	}
 
-	public function handleLogin(LoginPacket $packet) : bool{
-		$this->playerInfo = $packet->playerInfo;
+	/**
+	 * @param Server         $server
+	 * @param NetworkSession $session
+	 * @param PlayerInfo     $playerInfo
+	 * @param bool           $authenticated
+	 */
+	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated){
+		$this->server = $server;
+		$this->networkSession = $session;
+		$this->playerInfo = $playerInfo;
+		$this->authenticated = $authenticated;
+		$this->skin = $this->playerInfo->getSkin();
+
 		$this->username = TextFormat::clean($this->playerInfo->getUsername());
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);
@@ -1722,82 +1711,14 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->rawUUID = $this->uuid->toBinary();
-		$this->xuid = $this->playerInfo->getXuid();
+		$this->xuid = $authenticated ? $this->playerInfo->getXuid() : "";
 
-		$this->setSkin($this->playerInfo->getSkin());
+		$this->perm = new PermissibleBase($this);
+		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
+		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
 
-		$ev = new PlayerPreLoginEvent(
-			$this->playerInfo,
-			$this->networkSession->getIp(),
-			$this->networkSession->getPort(),
-			$this->server->requiresAuthentication()
-		);
-		if($this->server->getNetwork()->getConnectionCount() > $this->server->getMaxPlayers()){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, "disconnectionScreen.serverFull");
-		}
-		if(!$this->server->isWhitelisted($this->username)){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_WHITELISTED, "Server is whitelisted");
-		}
-		if($this->isBanned() or $this->server->getIPBans()->isBanned($this->getAddress())){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_BANNED, "You are banned");
-		}
+		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
 
-		$ev->call();
-		if(!$ev->isAllowed()){
-			$this->close("", $ev->getFinalKickMessage());
-			return true;
-		}
-
-		if(!$packet->skipVerification){
-			$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($this, $packet, $ev->isAuthRequired(), NetworkCipher::$ENABLED));
-		}else{
-			$this->setAuthenticationStatus(false, false, null);
-			$this->networkSession->onLoginSuccess();
-		}
-
-		return true;
-	}
-
-	public function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error) : bool{
-		if($this->networkSession === null){
-			return false;
-		}
-
-		if($authenticated and $this->xuid === ""){
-			$error = "Expected XUID but none found";
-		}
-
-		if($error !== null){
-			$this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.invalidSession", [$error]));
-
-			return false;
-		}
-
-		$this->authenticated = $authenticated;
-
-		if(!$this->authenticated){
-			if($authRequired){
-				$this->close("", "disconnectionScreen.notAuthenticated");
-				return false;
-			}
-
-			$this->server->getLogger()->debug($this->getName() . " is NOT logged into Xbox Live");
-			if($this->xuid !== ""){
-				$this->server->getLogger()->warning($this->getName() . " has an XUID, but their login keychain is not signed by Mojang");
-				$this->xuid = "";
-			}
-		}else{
-			$this->server->getLogger()->debug($this->getName() . " is logged into Xbox Live");
-		}
-
-		return $this->server->getNetwork()->getSessionManager()->kickDuplicates($this->networkSession);
-	}
-
-	public function onLoginSuccess() : void{
-		$this->loggedIn = true;
-	}
-
-	public function _actuallyConstruct(){
 		$namedtag = $this->server->getOfflinePlayerData($this->username); //TODO: make this async
 
 		$spawnReset = false;
@@ -1834,6 +1755,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		parent::__construct($level, $namedtag);
+
 		$ev = new PlayerLoginEvent($this, "Plugin reason");
 		$ev->call();
 		if($ev->isCancelled()){
@@ -2832,14 +2754,12 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->usedChunks = [];
 			$this->loadQueue = [];
 
-			if($this->loggedIn){
-				foreach($this->server->getOnlinePlayers() as $player){
-					if(!$player->canSee($this)){
-						$player->showPlayer($this);
-					}
+			foreach($this->server->getOnlinePlayers() as $player){
+				if(!$player->canSee($this)){
+					$player->showPlayer($this);
 				}
-				$this->hiddenPlayers = [];
 			}
+			$this->hiddenPlayers = [];
 
 			$this->removeAllWindows(true);
 			$this->windows = [];
@@ -2847,17 +2767,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->cursorInventory = null;
 			$this->craftingGrid = null;
 
-			if($this->constructed){
-				parent::close();
-			}else{
-				$this->closed = true;
-			}
+			parent::close();
+
 			$this->spawned = false;
 
-			if($this->loggedIn){
-				$this->loggedIn = false;
-				$this->server->removeOnlinePlayer($this);
-			}
+			$this->server->removeOnlinePlayer($this);
 
 			$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
 				TextFormat::AQUA . $this->getName() . TextFormat::WHITE,

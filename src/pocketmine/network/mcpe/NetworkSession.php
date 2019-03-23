@@ -58,7 +58,7 @@ class NetworkSession{
 	/** @var Server */
 	private $server;
 	/** @var Player|null */
-	private $player;
+	private $player = null;
 	/** @var NetworkSessionManager */
 	private $manager;
 	/** @var NetworkInterface */
@@ -79,6 +79,8 @@ class NetworkSession{
 	private $connected = true;
 	/** @var bool */
 	private $loggedIn = false;
+	/** @var bool */
+	private $authenticated = false;
 	/** @var int */
 	private $connectTime;
 
@@ -102,10 +104,7 @@ class NetworkSession{
 
 		$this->connectTime = time();
 
-		//TODO: this should happen later in the login sequence
-		$this->createPlayer();
-
-		$this->setHandler(new LoginSessionHandler($this->player, $this));
+		$this->setHandler(new LoginSessionHandler($this->server, $this));
 
 		$this->manager->add($this);
 	}
@@ -119,7 +118,7 @@ class NetworkSession{
 		 * @var Player $player
 		 * @see Player::__construct()
 		 */
-		$this->player = new $class($this->server, $this);
+		$this->player = new $class($this->server, $this, $this->info, $this->authenticated);
 	}
 
 	public function getPlayer() : ?Player{
@@ -166,7 +165,7 @@ class NetworkSession{
 	}
 
 	public function getDisplayName() : string{
-		return ($this->player !== null and $this->player->getName() !== "") ? $this->player->getName() : $this->ip . " " . $this->port;
+		return $this->info !== null ? $this->info->getUsername() : $this->ip . " " . $this->port;
 	}
 
 	/**
@@ -385,7 +384,9 @@ class NetworkSession{
 	 */
 	public function disconnect(string $reason, bool $notify = true) : void{
 		if($this->checkDisconnect()){
-			$this->player->close($this->player->getLeaveMessage(), $reason);
+			if($this->player !== null){
+				$this->player->close($this->player->getLeaveMessage(), $reason);
+			}
 			$this->doServerDisconnect($reason, $notify);
 		}
 	}
@@ -426,9 +427,39 @@ class NetworkSession{
 	 * @param string $reason
 	 */
 	public function onClientDisconnect(string $reason) : void{
-		if($this->checkDisconnect()){
+		if($this->checkDisconnect() and $this->player !== null){
 			$this->player->close($this->player->getLeaveMessage(), $reason);
 		}
+	}
+
+	public function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error) : bool{
+		if($authenticated and $this->info->getXuid() === ""){
+			$error = "Expected XUID but none found";
+		}
+
+		if($error !== null){
+			$this->disconnect($this->server->getLanguage()->translateString("pocketmine.disconnect.invalidSession", [$error]));
+
+			return false;
+		}
+
+		$this->authenticated = $authenticated;
+
+		if(!$this->authenticated){
+			if($authRequired){
+				$this->disconnect("disconnectionScreen.notAuthenticated");
+				return false;
+			}
+
+			$this->server->getLogger()->debug($this->getDisplayName() . " is NOT logged into Xbox Live");
+			if($this->info->getXuid() !== ""){
+				$this->server->getLogger()->warning($this->getDisplayName() . " has an XUID, but their login keychain is not signed by Mojang");
+			}
+		}else{
+			$this->server->getLogger()->debug($this->getDisplayName() . " is logged into Xbox Live");
+		}
+
+		return $this->manager->kickDuplicates($this);
 	}
 
 	public function enableEncryption(string $encryptionKey, string $handshakeJwt) : void{
@@ -449,12 +480,11 @@ class NetworkSession{
 		$pk->status = PlayStatusPacket::LOGIN_SUCCESS;
 		$this->sendDataPacket($pk);
 
-		$this->player->onLoginSuccess();
-		$this->setHandler(new ResourcePacksSessionHandler($this->player, $this, $this->server->getResourcePackManager()));
+		$this->setHandler(new ResourcePacksSessionHandler($this->server, $this, $this->server->getResourcePackManager()));
 	}
 
 	public function onResourcePacksDone() : void{
-		$this->player->_actuallyConstruct();
+		$this->createPlayer();
 
 		$this->setHandler(new PreSpawnSessionHandler($this->server, $this->player, $this));
 	}

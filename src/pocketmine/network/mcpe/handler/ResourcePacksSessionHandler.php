@@ -30,9 +30,9 @@ use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
 use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
-use pocketmine\Player;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
+use pocketmine\Server;
 use function ceil;
 use function implode;
 use function strpos;
@@ -45,8 +45,8 @@ use function substr;
 class ResourcePacksSessionHandler extends SessionHandler{
 	private const PACK_CHUNK_SIZE = 1048576; //1MB
 
-	/** @var Player */
-	private $player;
+	/** @var Server */
+	private $server;
 	/** @var NetworkSession */
 	private $session;
 	/** @var ResourcePackManager */
@@ -55,8 +55,9 @@ class ResourcePacksSessionHandler extends SessionHandler{
 	/** @var bool[][] uuid => [chunk index => hasSent] */
 	private $downloadedChunks = [];
 
-	public function __construct(Player $player, NetworkSession $session, ResourcePackManager $resourcePackManager){
-		$this->player = $player;
+
+	public function __construct(Server $server, NetworkSession $session, ResourcePackManager $resourcePackManager){
+		$this->server = $server;
 		$this->session = $session;
 		$this->resourcePackManager = $resourcePackManager;
 	}
@@ -69,7 +70,7 @@ class ResourcePacksSessionHandler extends SessionHandler{
 	}
 
 	private function disconnectWithError(string $error) : void{
-		$this->player->getServer()->getLogger()->error("Error while downloading resource packs for " . $this->player->getName() . ": " . $error);
+		$this->server->getLogger()->error("Error while downloading resource packs for " . $this->session->getDisplayName() . ": " . $error);
 		$this->session->disconnect("disconnectionScreen.resourcePack");
 	}
 

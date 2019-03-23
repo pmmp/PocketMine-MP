@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use pocketmine\entity\Skin;
+use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 
 /**
@@ -45,7 +46,7 @@ class PlayerInfo{
 	private $clientId;
 
 	public function __construct(string $username, UUID $uuid, Skin $skin, string $locale, string $xuid, int $clientId){
-		$this->username = $username;
+		$this->username = TextFormat::clean($username);
 		$this->uuid = $uuid;
 		$this->skin = $skin;
 		$this->locale = $locale;
