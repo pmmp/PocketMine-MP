@@ -126,7 +126,7 @@ class Sign extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::opposite($this->facing))->getId() === BlockIds::AIR){
+		if($this->getSide(Facing::opposite($this->facing))->getId() === BlockLegacyIds::AIR){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}

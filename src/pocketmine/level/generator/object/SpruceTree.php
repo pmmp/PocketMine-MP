@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\object;
 
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockIds;
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\utils\TreeType;
 use pocketmine\level\BlockTransaction;
 use pocketmine\level\ChunkManager;
@@ -34,7 +34,7 @@ use function abs;
 class SpruceTree extends Tree{
 
 	public function __construct(){
-		parent::__construct(BlockFactory::get(BlockIds::LOG, TreeType::SPRUCE()->getMagicNumber()), BlockFactory::get(BlockIds::LEAVES, TreeType::SPRUCE()->getMagicNumber()), 10);
+		parent::__construct(BlockFactory::get(BlockLegacyIds::LOG, TreeType::SPRUCE()->getMagicNumber()), BlockFactory::get(BlockLegacyIds::LEAVES, TreeType::SPRUCE()->getMagicNumber()), 10);
 	}
 
 	protected function generateChunkHeight(Random $random) : int{

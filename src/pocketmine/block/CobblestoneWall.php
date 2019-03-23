@@ -72,7 +72,7 @@ class CobblestoneWall extends Transparent{
 			}
 		}
 
-		$this->up = $this->getSide(Facing::UP)->getId() !== BlockIds::AIR;
+		$this->up = $this->getSide(Facing::UP)->getId() !== BlockLegacyIds::AIR;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

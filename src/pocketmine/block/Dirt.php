@@ -44,7 +44,7 @@ class Dirt extends Solid{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP and $item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->getLevel()->setBlock($this, BlockFactory::get(BlockIds::FARMLAND));
+			$this->getLevel()->setBlock($this, BlockFactory::get(BlockLegacyIds::FARMLAND));
 
 			return true;
 		}

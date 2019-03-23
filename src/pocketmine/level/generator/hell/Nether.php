@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\generator\hell;
 
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockIds;
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\Generator;
@@ -90,9 +90,9 @@ class Nether extends Generator{
 
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 
-		$bedrock = BlockFactory::get(BlockIds::BEDROCK)->getFullId();
-		$netherrack = BlockFactory::get(BlockIds::NETHERRACK)->getFullId();
-		$stillLava = BlockFactory::get(BlockIds::STILL_LAVA)->getFullId();
+		$bedrock = BlockFactory::get(BlockLegacyIds::BEDROCK)->getFullId();
+		$netherrack = BlockFactory::get(BlockLegacyIds::NETHERRACK)->getFullId();
+		$stillLava = BlockFactory::get(BlockLegacyIds::STILL_LAVA)->getFullId();
 
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){

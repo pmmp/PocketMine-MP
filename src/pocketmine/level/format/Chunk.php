@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\level\format;
 
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockIds;
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\level\Level;
@@ -664,7 +664,7 @@ class Chunk{
 		if($y < 0 or $y >= $this->height){
 			return $this->emptySubChunk;
 		}elseif($generateNew and $this->subChunks[$y] instanceof EmptySubChunk){
-			$this->subChunks[$y] = new SubChunk([new PalettedBlockArray(BlockIds::AIR << 4)]);
+			$this->subChunks[$y] = new SubChunk([new PalettedBlockArray(BlockLegacyIds::AIR << 4)]);
 		}
 
 		return $this->subChunks[$y];

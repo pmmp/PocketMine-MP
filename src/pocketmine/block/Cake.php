@@ -63,7 +63,7 @@ class Cake extends Transparent implements FoodSource{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() !== BlockIds::AIR){
+		if($down->getId() !== BlockLegacyIds::AIR){
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -71,8 +71,8 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() === BlockIds::AIR){ //Replace with common break method
-			$this->getLevel()->setBlock($this, BlockFactory::get(BlockIds::AIR));
+		if($this->getSide(Facing::DOWN)->getId() === BlockLegacyIds::AIR){ //Replace with common break method
+			$this->getLevel()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
 		}
 	}
 
@@ -112,7 +112,7 @@ class Cake extends Transparent implements FoodSource{
 		$clone = clone $this;
 		$clone->bites++;
 		if($clone->bites > 6){
-			$clone = BlockFactory::get(BlockIds::AIR);
+			$clone = BlockFactory::get(BlockLegacyIds::AIR);
 		}
 		return $clone;
 	}

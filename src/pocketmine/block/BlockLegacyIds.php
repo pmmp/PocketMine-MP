@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-interface BlockIds{
+interface BlockLegacyIds{
 
 	public const AIR = 0;
 	public const STONE = 1;

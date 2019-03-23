@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format\io\leveldb;
 
-use pocketmine\block\BlockIds;
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
@@ -161,7 +161,7 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 			$tag = $nbt->read($stream->getBuffer(), $offset)->getTag();
 			$stream->setOffset($offset);
 
-			$id = $stringToLegacyId[$tag->getString("name")] ?? BlockIds::INFO_UPDATE;
+			$id = $stringToLegacyId[$tag->getString("name")] ?? BlockLegacyIds::INFO_UPDATE;
 			$data = $tag->getShort("val");
 			$palette[] = ($id << 4) | $data;
 		}

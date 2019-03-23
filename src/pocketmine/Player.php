@@ -26,7 +26,7 @@ namespace pocketmine;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockIds;
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\UnknownBlock;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -2083,8 +2083,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		$block = $target->getSide($face);
-		if($block->getId() === BlockIds::FIRE){
-			$this->level->setBlock($block, BlockFactory::get(BlockIds::AIR));
+		if($block->getId() === BlockLegacyIds::FIRE){
+			$this->level->setBlock($block, BlockFactory::get(BlockLegacyIds::AIR));
 			return true;
 		}
 

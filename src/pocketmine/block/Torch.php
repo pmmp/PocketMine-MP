@@ -54,7 +54,7 @@ class Torch extends Flowable{
 		$below = $this->getSide(Facing::DOWN);
 		$face = Facing::opposite($this->facing);
 
-		if($this->getSide($face)->isTransparent() and !($face === Facing::DOWN and ($below->getId() === BlockIds::FENCE or $below->getId() === BlockIds::COBBLESTONE_WALL))){
+		if($this->getSide($face)->isTransparent() and !($face === Facing::DOWN and ($below->getId() === BlockLegacyIds::FENCE or $below->getId() === BlockLegacyIds::COBBLESTONE_WALL))){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}
@@ -63,7 +63,7 @@ class Torch extends Flowable{
 		if($blockClicked->canBeReplaced() and !$blockClicked->getSide(Facing::DOWN)->isTransparent()){
 			$this->facing = Facing::UP;
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($face !== Facing::DOWN and (!$blockClicked->isTransparent() or ($face === Facing::UP and ($blockClicked->getId() === BlockIds::FENCE or $blockClicked->getId() === BlockIds::COBBLESTONE_WALL)))){
+		}elseif($face !== Facing::DOWN and (!$blockClicked->isTransparent() or ($face === Facing::UP and ($blockClicked->getId() === BlockLegacyIds::FENCE or $blockClicked->getId() === BlockLegacyIds::COBBLESTONE_WALL)))){
 			$this->facing = $face;
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}else{

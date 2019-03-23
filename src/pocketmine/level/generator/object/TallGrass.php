@@ -25,7 +25,7 @@ namespace pocketmine\level\generator\object;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockIds;
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\level\ChunkManager;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
@@ -36,9 +36,9 @@ class TallGrass{
 	public static function growGrass(ChunkManager $level, Vector3 $pos, Random $random, int $count = 15, int $radius = 10) : void{
 		/** @var Block[] $arr */
 		$arr = [
-			BlockFactory::get(BlockIds::DANDELION),
-			BlockFactory::get(BlockIds::POPPY),
-			$tallGrass = BlockFactory::get(BlockIds::TALL_GRASS, 1),
+			BlockFactory::get(BlockLegacyIds::DANDELION),
+			BlockFactory::get(BlockLegacyIds::POPPY),
+			$tallGrass = BlockFactory::get(BlockLegacyIds::TALL_GRASS, 1),
 			$tallGrass,
 			$tallGrass,
 			$tallGrass
@@ -47,7 +47,7 @@ class TallGrass{
 		for($c = 0; $c < $count; ++$c){
 			$x = $random->nextRange($pos->x - $radius, $pos->x + $radius);
 			$z = $random->nextRange($pos->z - $radius, $pos->z + $radius);
-			if($level->getBlockAt($x, $pos->y + 1, $z)->getId() === BlockIds::AIR and $level->getBlockAt($x, $pos->y, $z)->getId() === BlockIds::GRASS){
+			if($level->getBlockAt($x, $pos->y + 1, $z)->getId() === BlockLegacyIds::AIR and $level->getBlockAt($x, $pos->y, $z)->getId() === BlockLegacyIds::GRASS){
 				$level->setBlockAt($x, $pos->y + 1, $z, $arr[$random->nextRange(0, $arrC)]);
 			}
 		}

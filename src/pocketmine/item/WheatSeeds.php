@@ -25,7 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockIds;
+use pocketmine\block\BlockLegacyIds;
 
 class WheatSeeds extends Item{
 	public function __construct(){
@@ -33,6 +33,6 @@ class WheatSeeds extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(BlockIds::WHEAT_BLOCK);
+		return BlockFactory::get(BlockLegacyIds::WHEAT_BLOCK);
 	}
 }

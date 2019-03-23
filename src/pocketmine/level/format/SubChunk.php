@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format;
 
-use pocketmine\block\BlockIds;
+use pocketmine\block\BlockLegacyIds;
 use function array_values;
 use function assert;
 use function chr;
@@ -74,7 +74,7 @@ class SubChunk implements SubChunkInterface{
 		foreach($this->blockLayers as $layer){
 			$palette = $layer->getPalette();
 			foreach($palette as $p){
-				if(($p >> 4) !== BlockIds::AIR){
+				if(($p >> 4) !== BlockLegacyIds::AIR){
 					return false;
 				}
 			}
@@ -89,14 +89,14 @@ class SubChunk implements SubChunkInterface{
 
 	public function getFullBlock(int $x, int $y, int $z) : int{
 		if(empty($this->blockLayers)){
-			return BlockIds::AIR << 4;
+			return BlockLegacyIds::AIR << 4;
 		}
 		return $this->blockLayers[0]->get($x, $y, $z);
 	}
 
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
 		if(empty($this->blockLayers)){
-			$this->blockLayers[] = new PalettedBlockArray(BlockIds::AIR << 4);
+			$this->blockLayers[] = new PalettedBlockArray(BlockLegacyIds::AIR << 4);
 		}
 		$this->blockLayers[0]->set($x, $y, $z, $block);
 	}
@@ -141,7 +141,7 @@ class SubChunk implements SubChunkInterface{
 			return -1;
 		}
 		for($y = 15; $y >= 0; --$y){
-			if(($this->blockLayers[0]->get($x, $y, $z) >> 4) !== BlockIds::AIR){
+			if(($this->blockLayers[0]->get($x, $y, $z) >> 4) !== BlockLegacyIds::AIR){
 				return $y;
 			}
 		}
@@ -178,7 +178,7 @@ class SubChunk implements SubChunkInterface{
 			$layer->collectGarbage();
 
 			foreach($layer->getPalette() as $p){
-				if(($p >> 4) !== BlockIds::AIR){
+				if(($p >> 4) !== BlockLegacyIds::AIR){
 					continue 2;
 				}
 			}

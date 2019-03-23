@@ -28,7 +28,7 @@ namespace pocketmine\level;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockIds;
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\UnknownBlock;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
@@ -1803,7 +1803,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($blockClicked->getId() === BlockIds::AIR){
+		if($blockClicked->getId() === BlockLegacyIds::AIR){
 			return false;
 		}
 
@@ -2783,7 +2783,7 @@ class Level implements ChunkManager, Metadatable{
 		$z = (int) $v->z;
 		if($chunk !== null and $chunk->isGenerated()){
 			$y = (int) min($max - 2, $v->y);
-			$wasAir = $this->getBlockAt($x, $y - 1, $z)->getId() === BlockIds::AIR; //TODO: bad hack, clean up
+			$wasAir = $this->getBlockAt($x, $y - 1, $z)->getId() === BlockLegacyIds::AIR; //TODO: bad hack, clean up
 			for(; $y > 0; --$y){
 				if($this->isFullBlock($this->getBlockAt($x, $y, $z))){
 					if($wasAir){

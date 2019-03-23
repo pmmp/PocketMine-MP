@@ -26,6 +26,6 @@ namespace pocketmine\block;
 class MelonStem extends Stem{
 
 	protected function getPlant() : Block{
-		return BlockFactory::get(BlockIds::MELON_BLOCK);
+		return BlockFactory::get(BlockLegacyIds::MELON_BLOCK);
 	}
 }

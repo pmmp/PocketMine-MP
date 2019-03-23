@@ -48,7 +48,7 @@ use function dechex;
 use function get_class;
 use const PHP_INT_MAX;
 
-class Block extends Position implements BlockIds, Metadatable{
+class Block extends Position implements BlockLegacyIds, Metadatable{
 
 	/**
 	 * Returns a new Block instance with the specified ID, meta and position.
@@ -314,7 +314,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		if(($t = $this->level->getTile($this)) !== null){
 			$t->onBlockDestroyed();
 		}
-		return $this->getLevel()->setBlock($this, BlockFactory::get(BlockIds::AIR));
+		return $this->getLevel()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
 	}
 
 
@@ -655,7 +655,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			return $this->getLevel()->getBlock(Vector3::getSide($side, $step));
 		}
 
-		return BlockFactory::get(BlockIds::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
+		return BlockFactory::get(BlockLegacyIds::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
 	}
 
 	/**
