@@ -268,7 +268,7 @@ class NetworkSession{
 				$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
 			}
 
-			$ev = new DataPacketReceiveEvent($this->player, $packet);
+			$ev = new DataPacketReceiveEvent($this, $packet);
 			$ev->call();
 			if(!$ev->isCancelled() and !$packet->handle($this->handler)){
 				$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->getDisplayName() . ": " . bin2hex($packet->getBuffer()));
@@ -287,7 +287,7 @@ class NetworkSession{
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
-			$ev = new DataPacketSendEvent($this->player, $packet);
+			$ev = new DataPacketSendEvent($this, $packet);
 			$ev->call();
 			if($ev->isCancelled()){
 				return false;

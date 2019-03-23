@@ -1479,22 +1479,23 @@ class Server{
 			throw new \InvalidArgumentException("Cannot broadcast empty list of packets");
 		}
 
-		$ev = new DataPacketBroadcastEvent($players, $packets);
+		/** @var NetworkSession[] $recipients */
+		$recipients = [];
+		foreach($players as $player){
+			if($player->isConnected()){
+				$recipients[] = $player->getNetworkSession();
+			}
+		}
+		if(empty($recipients)){
+			return false;
+		}
+
+		$ev = new DataPacketBroadcastEvent($recipients, $packets);
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;
 		}
-
-		/** @var NetworkSession[] $targets */
-		$targets = [];
-		foreach($ev->getPlayers() as $player){
-			if($player->isConnected()){
-				$targets[] = $player->getNetworkSession();
-			}
-		}
-		if(empty($targets)){
-			return false;
-		}
+		$recipients = $ev->getTargets();
 
 		$stream = new PacketStream();
 		foreach($ev->getPackets() as $packet){
@@ -1502,14 +1503,14 @@ class Server{
 		}
 
 		if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->getBuffer()) < NetworkCompression::$THRESHOLD){
-			foreach($targets as $target){
+			foreach($recipients as $target){
 				foreach($ev->getPackets() as $pk){
 					$target->addToSendBuffer($pk);
 				}
 			}
 		}else{
 			$promise = $this->prepareBatch($stream);
-			foreach($targets as $target){
+			foreach($recipients as $target){
 				$target->queueCompressed($promise);
 			}
 		}

@@ -25,24 +25,24 @@ namespace pocketmine\event\server;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
-use pocketmine\Player;
 
 class DataPacketReceiveEvent extends ServerEvent implements Cancellable{
 	use CancellableTrait;
 
 	/** @var ServerboundPacket */
 	private $packet;
-	/** @var Player */
-	private $player;
+	/** @var NetworkSession */
+	private $origin;
 
 	/**
-	 * @param Player            $player
+	 * @param NetworkSession    $origin
 	 * @param ServerboundPacket $packet
 	 */
-	public function __construct(Player $player, ServerboundPacket $packet){
+	public function __construct(NetworkSession $origin, ServerboundPacket $packet){
 		$this->packet = $packet;
-		$this->player = $player;
+		$this->origin = $origin;
 	}
 
 	/**
@@ -53,9 +53,9 @@ class DataPacketReceiveEvent extends ServerEvent implements Cancellable{
 	}
 
 	/**
-	 * @return Player
+	 * @return NetworkSession
 	 */
-	public function getPlayer() : Player{
-		return $this->player;
+	public function getOrigin() : NetworkSession{
+		return $this->origin;
 	}
 }

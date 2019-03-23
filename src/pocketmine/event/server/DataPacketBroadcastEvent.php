@@ -25,8 +25,8 @@ namespace pocketmine\event\server;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
-use pocketmine\Player;
 
 /**
  * Called when a list of packets is broadcasted to 1 or more players.
@@ -34,32 +34,32 @@ use pocketmine\Player;
 class DataPacketBroadcastEvent extends ServerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Player[] */
-	private $players;
+	/** @var NetworkSession[] */
+	private $targets;
 	/** @var ClientboundPacket[] */
 	private $packets;
 
 	/**
-	 * @param Player[]            $players
+	 * @param NetworkSession[]    $targets
 	 * @param ClientboundPacket[] $packets
 	 */
-	public function __construct(array $players, array $packets){
-		$this->players = $players;
+	public function __construct(array $targets, array $packets){
+		$this->targets = $targets;
 		$this->packets = $packets;
 	}
 
 	/**
-	 * @return Player[]
+	 * @return NetworkSession[]
 	 */
-	public function getPlayers() : array{
-		return $this->players;
+	public function getTargets() : array{
+		return $this->targets;
 	}
 
 	/**
-	 * @param Player[] $players
+	 * @param NetworkSession[] $targets
 	 */
-	public function setPlayers(array $players) : void{
-		$this->players = $players;
+	public function setTargets(array $targets) : void{
+		$this->targets = $targets;
 	}
 
 	/**
