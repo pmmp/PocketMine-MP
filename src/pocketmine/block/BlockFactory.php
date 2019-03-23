@@ -227,7 +227,6 @@ class BlockFactory{
 		self::register(new SandstoneStairs(new BID(Block::RED_SANDSTONE_STAIRS), "Red Sandstone Stairs"));
 		self::register(new SandstoneStairs(new BID(Block::SANDSTONE_STAIRS), "Sandstone Stairs"));
 		self::register(new SeaLantern(new BID(Block::SEALANTERN), "Sea Lantern"));
-		self::register(new Sign(new BlockIdentifierFlattened(Block::STANDING_SIGN, Block::WALL_SIGN, 0, ItemIds::SIGN, \pocketmine\tile\Sign::class), "Sign"));
 		self::register(new Skull(new BID(Block::MOB_HEAD_BLOCK, 0, null, \pocketmine\tile\Skull::class), "Mob Head"));
 		self::register(new SmoothStone(new BID(Block::STONE, Stone::NORMAL), "Stone"));
 		self::register(new Snow(new BID(Block::SNOW), "Snow Block"));
@@ -340,6 +339,15 @@ class BlockFactory{
 		$woodenTrapdoorIds[TreeType::ACACIA()] = Block::ACACIA_TRAPDOOR;
 		$woodenTrapdoorIds[TreeType::DARK_OAK()] = Block::DARK_OAK_TRAPDOOR;
 
+		/** @var BlockIdentifierFlattened[]|\SplObjectStorage $woodenSignIds */
+		$woodenSignIds = new \SplObjectStorage();
+		$woodenSignIds[TreeType::OAK()] = new BlockIdentifierFlattened(Block::SIGN_POST, Block::WALL_SIGN, 0, ItemIds::SIGN, \pocketmine\tile\Sign::class);
+		$woodenSignIds[TreeType::SPRUCE()] = new BlockIdentifierFlattened(Block::SPRUCE_STANDING_SIGN, Block::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, \pocketmine\tile\Sign::class);
+		$woodenSignIds[TreeType::BIRCH()] = new BlockIdentifierFlattened(Block::BIRCH_STANDING_SIGN, Block::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, \pocketmine\tile\Sign::class);
+		$woodenSignIds[TreeType::JUNGLE()] = new BlockIdentifierFlattened(Block::JUNGLE_STANDING_SIGN, Block::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, \pocketmine\tile\Sign::class);
+		$woodenSignIds[TreeType::ACACIA()] = new BlockIdentifierFlattened(Block::ACACIA_STANDING_SIGN, Block::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, \pocketmine\tile\Sign::class);
+		$woodenSignIds[TreeType::DARK_OAK()] = new BlockIdentifierFlattened(Block::DARKOAK_STANDING_SIGN, Block::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, \pocketmine\tile\Sign::class);
+
 		foreach(TreeType::getAll() as $treeType){
 			$magicNumber = $treeType->getMagicNumber();
 			$name = $treeType->getDisplayName();
@@ -360,6 +368,8 @@ class BlockFactory{
 			self::register(new WoodenButton(new BID($woodenButtonIds[$treeType]), $treeType->getDisplayName() . " Button"));
 			self::register(new WoodenPressurePlate(new BID($woodenPressurePlateIds[$treeType]), $treeType->getDisplayName() . " Pressure Plate"));
 			self::register(new Trapdoor(new BID($woodenTrapdoorIds[$treeType]), $treeType->getDisplayName() . " Trapdoor"));
+
+			self::register(new Sign($woodenSignIds[$treeType], $treeType->getDisplayName() . " Sign"));
 		}
 
 		static $sandstoneTypes = [

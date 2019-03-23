@@ -214,7 +214,12 @@ class ItemFactory{
 		self::register(new Shovel(Item::IRON_SHOVEL, "Iron Shovel", TieredTool::TIER_IRON));
 		self::register(new Shovel(Item::STONE_SHOVEL, "Stone Shovel", TieredTool::TIER_STONE));
 		self::register(new Shovel(Item::WOODEN_SHOVEL, "Wooden Shovel", TieredTool::TIER_WOODEN));
-		self::register(new Sign());
+		self::register(new Sign(Block::STANDING_SIGN, 0, Item::SIGN));
+		self::register(new Sign(Block::SPRUCE_STANDING_SIGN, 0, Item::SPRUCE_SIGN));
+		self::register(new Sign(Block::BIRCH_STANDING_SIGN, 0, Item::BIRCH_SIGN));
+		self::register(new Sign(Block::JUNGLE_STANDING_SIGN, 0, Item::JUNGLE_SIGN));
+		self::register(new Sign(Block::ACACIA_STANDING_SIGN, 0, Item::ACACIA_SIGN));
+		self::register(new Sign(Block::DARKOAK_STANDING_SIGN, 0, Item::DARKOAK_SIGN));
 		self::register(new Snowball());
 		self::register(new SpiderEye());
 		self::register(new Steak());

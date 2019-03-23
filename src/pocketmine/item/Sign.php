@@ -23,17 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
-
-class Sign extends Item{
-	public function __construct(){
-		parent::__construct(self::SIGN, 0, "Sign");
-	}
-
-	public function getBlock() : Block{
-		return BlockFactory::get(Block::SIGN_POST);
-	}
+class Sign extends ItemBlock{
 
 	public function getMaxStackSize() : int{
 		return 16;
