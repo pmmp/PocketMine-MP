@@ -291,6 +291,135 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $forms = [];
 
 	/**
+	 * @param Server         $server
+	 * @param NetworkSession $session
+	 * @param PlayerInfo     $playerInfo
+	 * @param bool           $authenticated
+	 */
+	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated){
+		$this->server = $server;
+		$this->networkSession = $session;
+		$this->playerInfo = $playerInfo;
+		$this->authenticated = $authenticated;
+		$this->skin = $this->playerInfo->getSkin();
+
+		$this->username = TextFormat::clean($this->playerInfo->getUsername());
+		$this->displayName = $this->username;
+		$this->iusername = strtolower($this->username);
+		$this->locale = $this->playerInfo->getLocale();
+		$this->randomClientId = $this->playerInfo->getClientId();
+
+		$this->uuid = $this->playerInfo->getUuid();
+		$this->rawUUID = $this->uuid->toBinary();
+		$this->xuid = $authenticated ? $this->playerInfo->getXuid() : "";
+
+		$this->perm = new PermissibleBase($this);
+		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
+		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
+
+		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
+
+		$namedtag = $this->server->getOfflinePlayerData($this->username); //TODO: make this async
+
+		$spawnReset = false;
+
+		if($namedtag !== null and ($level = $this->server->getLevelManager()->getLevelByName($namedtag->getString("Level", "", true))) !== null){
+			/** @var float[] $pos */
+			$pos = $namedtag->getListTag("Pos")->getAllValues();
+			$spawn = new Vector3($pos[0], $pos[1], $pos[2]);
+		}else{
+			$level = $this->server->getLevelManager()->getDefaultLevel(); //TODO: default level might be null
+			$spawn = $level->getSpawnLocation();
+			$spawnReset = true;
+		}
+
+		//load the spawn chunk so we can see the terrain
+		$level->registerChunkLoader($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);
+		$level->registerChunkListener($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4);
+		if($spawnReset){
+			$spawn = $level->getSafeSpawn($spawn);
+		}
+
+		if($namedtag === null){
+			$namedtag = EntityFactory::createBaseNBT($spawn);
+
+			$namedtag->setByte("OnGround", 1); //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
+			//TODO: old code had a TODO for SpawnForced
+
+		}elseif($spawnReset){
+			$namedtag->setTag("Pos", new ListTag([
+				new DoubleTag($spawn->x),
+				new DoubleTag($spawn->y),
+				new DoubleTag($spawn->z)
+			]));
+		}
+
+		parent::__construct($level, $namedtag);
+
+		$ev = new PlayerLoginEvent($this, "Plugin reason");
+		$ev->call();
+		if($ev->isCancelled()){
+			$this->close($this->getLeaveMessage(), $ev->getKickMessage());
+
+			return;
+		}
+
+		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logIn", [
+			TextFormat::AQUA . $this->username . TextFormat::WHITE,
+			$this->networkSession->getIp(),
+			$this->networkSession->getPort(),
+			$this->id,
+			$this->level->getDisplayName(),
+			round($this->x, 4),
+			round($this->y, 4),
+			round($this->z, 4)
+		]));
+
+		$this->server->addOnlinePlayer($this);
+	}
+
+	protected function initHumanData(CompoundTag $nbt) : void{
+		$this->setNameTag($this->username);
+	}
+
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
+		$this->addDefaultWindows();
+
+		$this->firstPlayed = $nbt->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
+		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
+
+		$this->gamemode = $this->server->getForceGamemode() ? $this->server->getGamemode() : $nbt->getInt("playerGameType", $this->server->getGamemode()) & 0x03;
+
+		$this->allowFlight = $this->isCreative();
+		$this->keepMovement = $this->isSpectator() || $this->allowMovementCheats();
+		if($this->isOp()){
+			$this->setRemoveFormat(false);
+		}
+
+		$this->setNameTagVisible();
+		$this->setNameTagAlwaysVisible();
+		$this->setCanClimb();
+
+		$this->achievements = [];
+		$achievements = $nbt->getCompoundTag("Achievements");
+		if($achievements !== null){
+			/** @var ByteTag $tag */
+			foreach($achievements as $name => $tag){
+				$this->achievements[$name] = $tag->getValue() !== 0;
+			}
+		}
+
+		if(!$this->hasValidSpawnPosition()){
+			if(($level = $this->server->getLevelManager()->getLevelByName($nbt->getString("SpawnLevel", ""))) instanceof Level){
+				$this->spawnPosition = new Position($nbt->getInt("SpawnX"), $nbt->getInt("SpawnY"), $nbt->getInt("SpawnZ"), $level);
+			}else{
+				$this->spawnPosition = $this->level->getSafeSpawn();
+			}
+		}
+	}
+
+	/**
 	 * @return TranslationContainer|string
 	 */
 	public function getLeaveMessage(){
@@ -1688,135 +1817,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$eyeDot = $dV->dot($eyePos);
 		$targetDot = $dV->dot($pos);
 		return ($targetDot - $eyeDot) >= -$maxDiff;
-	}
-
-	/**
-	 * @param Server         $server
-	 * @param NetworkSession $session
-	 * @param PlayerInfo     $playerInfo
-	 * @param bool           $authenticated
-	 */
-	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated){
-		$this->server = $server;
-		$this->networkSession = $session;
-		$this->playerInfo = $playerInfo;
-		$this->authenticated = $authenticated;
-		$this->skin = $this->playerInfo->getSkin();
-
-		$this->username = TextFormat::clean($this->playerInfo->getUsername());
-		$this->displayName = $this->username;
-		$this->iusername = strtolower($this->username);
-		$this->locale = $this->playerInfo->getLocale();
-		$this->randomClientId = $this->playerInfo->getClientId();
-
-		$this->uuid = $this->playerInfo->getUuid();
-		$this->rawUUID = $this->uuid->toBinary();
-		$this->xuid = $authenticated ? $this->playerInfo->getXuid() : "";
-
-		$this->perm = new PermissibleBase($this);
-		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
-		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
-
-		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
-
-		$namedtag = $this->server->getOfflinePlayerData($this->username); //TODO: make this async
-
-		$spawnReset = false;
-
-		if($namedtag !== null and ($level = $this->server->getLevelManager()->getLevelByName($namedtag->getString("Level", "", true))) !== null){
-			/** @var float[] $pos */
-			$pos = $namedtag->getListTag("Pos")->getAllValues();
-			$spawn = new Vector3($pos[0], $pos[1], $pos[2]);
-		}else{
-			$level = $this->server->getLevelManager()->getDefaultLevel(); //TODO: default level might be null
-			$spawn = $level->getSpawnLocation();
-			$spawnReset = true;
-		}
-
-		//load the spawn chunk so we can see the terrain
-		$level->registerChunkLoader($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);
-		$level->registerChunkListener($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4);
-		if($spawnReset){
-			$spawn = $level->getSafeSpawn($spawn);
-		}
-
-		if($namedtag === null){
-			$namedtag = EntityFactory::createBaseNBT($spawn);
-
-			$namedtag->setByte("OnGround", 1); //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
-			//TODO: old code had a TODO for SpawnForced
-
-		}elseif($spawnReset){
-			$namedtag->setTag("Pos", new ListTag([
-				new DoubleTag($spawn->x),
-				new DoubleTag($spawn->y),
-				new DoubleTag($spawn->z)
-			]));
-		}
-
-		parent::__construct($level, $namedtag);
-
-		$ev = new PlayerLoginEvent($this, "Plugin reason");
-		$ev->call();
-		if($ev->isCancelled()){
-			$this->close($this->getLeaveMessage(), $ev->getKickMessage());
-
-			return;
-		}
-
-		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logIn", [
-			TextFormat::AQUA . $this->username . TextFormat::WHITE,
-			$this->networkSession->getIp(),
-			$this->networkSession->getPort(),
-			$this->id,
-			$this->level->getDisplayName(),
-			round($this->x, 4),
-			round($this->y, 4),
-			round($this->z, 4)
-		]));
-
-		$this->server->addOnlinePlayer($this);
-	}
-
-	protected function initHumanData(CompoundTag $nbt) : void{
-		$this->setNameTag($this->username);
-	}
-
-	protected function initEntity(CompoundTag $nbt) : void{
-		parent::initEntity($nbt);
-		$this->addDefaultWindows();
-
-		$this->firstPlayed = $nbt->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
-		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
-
-		$this->gamemode = $this->server->getForceGamemode() ? $this->server->getGamemode() : $nbt->getInt("playerGameType", $this->server->getGamemode()) & 0x03;
-
-		$this->allowFlight = $this->isCreative();
-		$this->keepMovement = $this->isSpectator() || $this->allowMovementCheats();
-		if($this->isOp()){
-			$this->setRemoveFormat(false);
-		}
-
-		$this->setNameTagVisible();
-		$this->setNameTagAlwaysVisible();
-		$this->setCanClimb();
-
-		$this->achievements = [];
-		$achievements = $nbt->getCompoundTag("Achievements");
-		if($achievements !== null){
-			/** @var ByteTag $tag */
-			foreach($achievements as $name => $tag){
-				$this->achievements[$name] = $tag->getValue() !== 0;
-			}
-		}
-
-		if(!$this->hasValidSpawnPosition()){
-			if(($level = $this->server->getLevelManager()->getLevelByName($nbt->getString("SpawnLevel", ""))) instanceof Level){
-				$this->spawnPosition = new Position($nbt->getInt("SpawnX"), $nbt->getInt("SpawnY"), $nbt->getInt("SpawnZ"), $level);
-			}else{
-				$this->spawnPosition = $this->level->getSafeSpawn();
-			}
-		}
 	}
 
 	/**
