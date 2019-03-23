@@ -49,7 +49,7 @@ class WrittenBook extends WritableBook{
 	 * @return int
 	 */
 	public function getGeneration() : int{
-		return $this->getNamedTag()->getInt(self::TAG_GENERATION, -1);
+		return $this->getNamedTag()->getInt(self::TAG_GENERATION, self::GENERATION_ORIGINAL);
 	}
 
 	/**
