@@ -81,4 +81,8 @@ class SeaPickle extends Transparent{
 		//TODO: bonemeal logic (requires coral)
 		return parent::onInteract($item, $face, $clickVector, $player);
 	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [$this->asItem()->setCount($this->count)];
+	}
 }
