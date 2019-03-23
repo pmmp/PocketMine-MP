@@ -74,6 +74,7 @@ use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
 use pocketmine\command\defaults\WorldCommand;
 use pocketmine\command\defaults\XpCommand;
+use pocketmine\command\utils\NoSelectorMatchException;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\Server;
 use function array_shift;
@@ -294,6 +295,8 @@ class SimpleCommandMap implements CommandMap{
 			$target->execute($sender, $sentCommandLabel, $args);
 		}catch(InvalidCommandSyntaxException $e){
 			$sender->sendMessage($this->server->getLanguage()->translateString("commands.generic.usage", [$target->getUsage()]));
+		}catch(NoSelectorMatchException $e){
+			$sender->sendMessage($this->server->getLanguage()->translateString("commands.generic.noTargetMatch"));
 		}finally{
 			$target->timings->stopTiming();
 		}

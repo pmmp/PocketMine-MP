@@ -40,15 +40,13 @@ use const INT32_MAX;
 class EffectCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		$class = new \ReflectionClass(Effect::class);
-		$effectNames = array_keys($class->getConstants());
 		parent::__construct($name, "%pocketmine.command.effect.description", "%commands.effect.usage", [], [
 			[
 				new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET, false),
 				new CommandParameter("clear", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("clear", ["clear"]))
 			], [
 				new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET, false),
-				new CommandParameter("effect", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("effectNames", $effectNames)),
+				new CommandParameter("effect", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("Effect", [])),
 				new CommandParameter("seconds", AvailableCommandsPacket::ARG_TYPE_INT),
 				new CommandParameter("amplifier", AvailableCommandsPacket::ARG_TYPE_INT),
 				new CommandParameter("bool", AvailableCommandsPacket::ARG_TYPE_VALUE, false, new CommandEnum("effectBool", [

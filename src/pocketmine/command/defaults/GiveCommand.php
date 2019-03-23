@@ -48,11 +48,12 @@ class GiveCommand extends VanillaCommand{
 		parent::__construct($name, "%pocketmine.command.give.description", "%pocketmine.command.give.usage");
 		$this->setPermission("pocketmine.command.give");
 		$itemNames = [];
-		foreach((new \ReflectionClass(ItemIds::class))->getConstants() as $n => $id){
+
+		/*foreach((new \ReflectionClass(ItemIds::class))->getConstants() as $n => $id){
 			if(ItemFactory::isRegistered($id)){
 				for($i = 0; $i < 15; $i++){
-					if(ItemFactory::isRegistered($id)){
-						$itemName = strtolower(str_replace(" ", "_", (ItemFactory::get($id, $i))->getName()));
+					$itemName = strtolower(str_replace(" ", "_", (ItemFactory::get($id, $i))->getName()));
+					if(!isset($itemNames[$itemName])){
 						$itemNames[$itemName] = $itemName;
 					}else{
 						goto go_to_next;
@@ -62,11 +63,11 @@ class GiveCommand extends VanillaCommand{
 				$itemNames[$id] = strtolower($n);
 			}
 			go_to_next:
-		}
+		}*/
 
 		$parameters = [
 			new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET, false),
-			new CommandParameter("itemName", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("itemNames", array_values($itemNames))),
+			new CommandParameter("itemName", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("Item", [])),
 			new CommandParameter("amount", AvailableCommandsPacket::ARG_TYPE_INT),
 			new CommandParameter("components", AvailableCommandsPacket::ARG_TYPE_JSON)
 		];

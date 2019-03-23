@@ -40,26 +40,10 @@ use pocketmine\utils\TextFormat;
 class SetBlockCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		$blockNames = [];
-		foreach((new \ReflectionClass(BlockIds::class))->getConstants() as $n => $id){
-			if(BlockFactory::isRegistered($id)){
-				for($i = 0; $i < 15; $i++){
-					if(BlockFactory::isRegistered($id)){
-						$blockName = strtolower(str_replace(" ", "_", (BlockFactory::get($id, $i))->getName()));
-						$blockNames[$blockName] = $blockName;
-					}else{
-						goto go_to_next;
-					}
-				}
-			}else{
-				$blockNames[$id] = strtolower($n);
-			}
-			go_to_next:
-		}
 		parent::__construct($name, "Changes a block to another block.", "/setblock <position: x y z> <tileName: string> [tileData: int] [oldBlockHandling: string]", [], [
 			[
 				new CommandParameter("position", AvailableCommandsPacket::ARG_TYPE_POSITION, false),
-				new CommandParameter("tileName", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("blockNames", array_values($blockNames))),
+				new CommandParameter("tileName", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("Block", [])),
 				new CommandParameter("tileData", AvailableCommandsPacket::ARG_TYPE_INT),
 				new CommandParameter("mode", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("mode", [
 					"replace", "destroy", "keep"

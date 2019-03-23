@@ -39,17 +39,10 @@ use function is_numeric;
 class EnchantCommand extends VanillaCommand{
 
 	public function __construct(string $name){
-		$enchantNames = [];
-		for($i = 0; $i <= 32; $i++){
-			$enchant = Enchantment::getEnchantment($i);
-			if($enchant !== null){
-				$enchantNames[] = str_replace(["%enchantment.", "."], ["", "_"], $enchant->getName());
-			}
-		}
 		parent::__construct($name, "%pocketmine.command.enchant.description", "%commands.enchant.usage", [], [
 			[
 				new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_TARGET),
-				new CommandParameter("enchantName", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("enchantNames", $enchantNames)),
+				new CommandParameter("enchantName", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("Enchant", [])),
 				new CommandParameter("level", AvailableCommandsPacket::ARG_TYPE_INT)
 			], [
 				new CommandParameter("player", AvailableCommandsPacket::ARG_TYPE_INT, false),

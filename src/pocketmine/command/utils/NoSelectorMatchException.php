@@ -26,7 +26,4 @@ namespace pocketmine\command\utils;
 
 class NoSelectorMatchException extends CommandException{
 
-	public function __construct(){
-		parent::__construct("commands.generic.noTargetMatch", 0, null);
-	}
 }
