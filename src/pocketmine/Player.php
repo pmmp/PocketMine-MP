@@ -136,7 +136,6 @@ use function ceil;
 use function count;
 use function explode;
 use function floor;
-use function fmod;
 use function get_class;
 use function in_array;
 use function is_int;
@@ -929,17 +928,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * @return Position
-	 */
-	public function getNextPosition() : Position{
-		return $this->newPosition !== null ? Position::fromObject($this->newPosition, $this->level) : $this->getPosition();
-	}
-
-	public function getInAirTicks() : int{
-		return $this->inAirTicks;
-	}
-
-	/**
 	 * Returns whether the player is currently using an item (right-click and hold).
 	 * @return bool
 	 */
@@ -1566,6 +1554,48 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 	}
 
+	/**
+	 * Returns the location that the player wants to be in at the end of this tick. Note that this may not be their
+	 * actual result position at the end due to plugin interference or a range of other things.
+	 *
+	 * @return Vector3
+	 */
+	public function getNextPosition() : Vector3{
+		return $this->newPosition !== null ? clone $this->newPosition : $this->asVector3();
+	}
+
+	/**
+	 * Sets the coordinates the player will move to next. This is processed at the end of each tick. Unless you have
+	 * some particularly specialized logic, you probably want to use teleport() instead of this.
+	 *
+	 * This is used for processing movements sent by the player over network.
+	 *
+	 * @param Vector3 $newPos Coordinates of the player's feet, centered horizontally at the base of their bounding box.
+	 *
+	 * @return bool if the
+	 */
+	public function updateNextPosition(Vector3 $newPos) : bool{
+		$newPos = $newPos->asVector3();
+		if($this->isTeleporting and $newPos->distanceSquared($this) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
+			$this->server->getLogger()->debug("Got outdated pre-teleport movement from " . $this->getName() . ", received " . $newPos . ", expected " . $this->asVector3());
+			//Still getting movements from before teleport, ignore them
+			return false;
+		}
+
+		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
+		if($this->isTeleporting){
+			$this->isTeleporting = false;
+		}
+
+		$this->newPosition = $newPos;
+		return true;
+	}
+
+	public function getInAirTicks() : int{
+		return $this->inAirTicks;
+	}
+
 	protected function processMovement(int $tickDiff){
 		if($this->newPosition === null or $this->isSleeping()){
 			return;
@@ -1856,33 +1886,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 					}
 				}
 			}
-		}
-
-		return true;
-	}
-
-	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
-		$newPos = $packet->position->subtract(0, $this->baseOffset, 0);
-
-		if($this->isTeleporting and $newPos->distanceSquared($this) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
-			$this->server->getLogger()->debug("Got outdated pre-teleport movement from " . $this->getName() . ", received " . $newPos . ", expected " . $this->asVector3());
-			//Still getting movements from before teleport, ignore them
-		}else{
-			// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
-			if($this->isTeleporting){
-				$this->isTeleporting = false;
-			}
-
-			$packet->yaw = fmod($packet->yaw, 360);
-			$packet->pitch = fmod($packet->pitch, 360);
-
-			if($packet->yaw < 0){
-				$packet->yaw += 360;
-			}
-
-			$this->setRotation($packet->yaw, $packet->pitch);
-			$this->newPosition = $newPos;
 		}
 
 		return true;
