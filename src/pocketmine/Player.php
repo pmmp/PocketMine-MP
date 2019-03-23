@@ -189,11 +189,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public $spawned = false;
 
 	/** @var string */
-	protected $username = "";
+	protected $username;
 	/** @var string */
-	protected $iusername = "";
+	protected $iusername;
 	/** @var string */
-	protected $displayName = "";
+	protected $displayName;
 	/** @var int */
 	protected $randomClientId;
 	/** @var string */
