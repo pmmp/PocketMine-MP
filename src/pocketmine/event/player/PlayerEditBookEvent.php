@@ -25,7 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\item\WritableBook;
+use pocketmine\item\WritableBookBase;
 use pocketmine\Player;
 
 class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
@@ -37,16 +37,16 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	public const ACTION_SWAP_PAGES = 3;
 	public const ACTION_SIGN_BOOK = 4;
 
-	/** @var WritableBook */
+	/** @var WritableBookBase */
 	private $oldBook;
 	/** @var int */
 	private $action;
-	/** @var WritableBook */
+	/** @var WritableBookBase */
 	private $newBook;
 	/** @var int[] */
 	private $modifiedPages;
 
-	public function __construct(Player $player, WritableBook $oldBook, WritableBook $newBook, int $action, array $modifiedPages){
+	public function __construct(Player $player, WritableBookBase $oldBook, WritableBookBase $newBook, int $action, array $modifiedPages){
 		$this->player = $player;
 		$this->oldBook = $oldBook;
 		$this->newBook = $newBook;
@@ -66,9 +66,9 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * Returns the book before it was modified.
 	 *
-	 * @return WritableBook
+	 * @return WritableBookBase
 	 */
-	public function getOldBook() : WritableBook{
+	public function getOldBook() : WritableBookBase{
 		return $this->oldBook;
 	}
 
@@ -76,18 +76,18 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	 * Returns the book after it was modified.
 	 * The new book may be a written book, if the book was signed.
 	 *
-	 * @return WritableBook
+	 * @return WritableBookBase
 	 */
-	public function getNewBook() : WritableBook{
+	public function getNewBook() : WritableBookBase{
 		return $this->newBook;
 	}
 
 	/**
 	 * Sets the new book as the given instance.
 	 *
-	 * @param WritableBook $book
+	 * @param WritableBookBase $book
 	 */
-	public function setNewBook(WritableBook $book) : void{
+	public function setNewBook(WritableBookBase $book) : void{
 		$this->newBook = $book;
 	}
 

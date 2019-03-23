@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-class WrittenBook extends WritableBook{
+class WrittenBook extends WritableBookBase{
 
 	public const GENERATION_ORIGINAL = 0;
 	public const GENERATION_COPY = 1;
@@ -35,7 +35,7 @@ class WrittenBook extends WritableBook{
 	public const TAG_TITLE = "title"; //TAG_String
 
 	public function __construct(){
-		Item::__construct(self::WRITTEN_BOOK, 0, "Written Book");
+		parent::__construct(self::WRITTEN_BOOK, 0, "Written Book");
 	}
 
 	public function getMaxStackSize() : int{

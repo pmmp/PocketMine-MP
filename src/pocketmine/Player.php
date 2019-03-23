@@ -2333,7 +2333,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		/** @var WritableBook $oldBook */
 		$oldBook = $this->inventory->getItem($packet->inventorySlot);
-		if($oldBook->getId() !== Item::WRITABLE_BOOK){
+		if(!($oldBook instanceof WritableBook)){
 			return false;
 		}
 
