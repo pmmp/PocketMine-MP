@@ -80,8 +80,7 @@ class Leaves extends Transparent{
 		}
 		$visited[$index] = true;
 
-		$id = $pos->getId();
-		if($id === Block::WOOD or $id === Block::WOOD2){
+		if($pos instanceof Wood){ //type doesn't matter
 			return true;
 		}
 
