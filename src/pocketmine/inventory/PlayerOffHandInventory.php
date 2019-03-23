@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\entity\Human;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
@@ -31,10 +32,10 @@ use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\Player;
 
 class PlayerOffHandInventory extends BaseInventory{
-	/** @var Player */
+	/** @var Human */
 	protected $holder;
 
-	public function __construct(Player $holder){
+	public function __construct(Human $holder){
 		$this->holder = $holder;
 		parent::__construct();
 	}
@@ -47,12 +48,16 @@ class PlayerOffHandInventory extends BaseInventory{
 		return 1;
 	}
 
-	public function getHolder() : Player{
+	public function getHolder() : Human{
 		return $this->holder;
 	}
 
-	public function setOffHand(Item $item) : void{
+	public function setItemInOffHand(Item $item) : void{
 		$this->setItem(0, $item);
+	}
+
+	public function getItemInOffHand() : Item{
+		return $this->getItem(0);
 	}
 
 	public function setSize(int $size){
@@ -65,7 +70,6 @@ class PlayerOffHandInventory extends BaseInventory{
 		}
 
 		/** @var Player[] $target */
-
 		if(($k = array_search($this->holder, $target, true)) !== false){
 			$pk = new InventorySlotPacket();
 			$pk->windowId = $target[$k]->getWindowId($this);

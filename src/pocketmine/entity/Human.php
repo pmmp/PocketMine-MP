@@ -31,6 +31,7 @@ use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
 use pocketmine\inventory\EntityInventoryEventProcessor;
+use pocketmine\inventory\PlayerOffHandInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Consumable;
@@ -79,6 +80,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/** @var PlayerInventory */
 	protected $inventory;
+
+	/** @var PlayerOffHandInventory */
+	protected $offHandInventory;
 
 	/** @var EnderChestInventory */
 	protected $enderChestInventory;
@@ -386,6 +390,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	/**
+	 * @return PlayerOffHandInventory
+	 */
+	public function getOffHandInventory() : PlayerOffHandInventory{
+		return $this->offHandInventory;
+	}
+
+	/**
 	 * Sets the player's progress through the current level to a value between 0.0 and 1.0.
 	 *
 	 * @param float $progress
@@ -534,6 +545,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function onPickupXp(int $xpValue) : void{
 		static $mainHandIndex = -1;
+		static $offHandIndex = -2;
 
 		//TODO: replace this with a more generic equipment getting/setting interface
 		/** @var Durable[] $equipment */
@@ -542,7 +554,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(($item = $this->inventory->getItemInHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
 			$equipment[$mainHandIndex] = $item;
 		}
-		//TODO: check offhand
+
+		if(($item = $this->offHandInventory->getItemInOffHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
+			$equipment[$offHandIndex] = $item;
+		}
+
 		foreach($this->armorInventory->getContents() as $k => $item){
 			if($item instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
 				$equipment[$k] = $item;
@@ -620,6 +636,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
 
 		$this->inventory = new PlayerInventory($this);
+		$this->offHandInventory = new PlayerOffHandInventory($this);
 		$this->enderChestInventory = new EnderChestInventory();
 		$this->initHumanData();
 
@@ -641,6 +658,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 
 			$this->armorInventory->setEventProcessor($armorListener);
+		}
+
+		$offHand = $this->namedtag->getCompoundTag("OffHand");
+		if($offHand !== null){
+			$this->offHandInventory->setItemInOffHand(Item::nbtDeserialize($offHand));
 		}
 
 		$enderChestInventoryTag = $this->namedtag->getListTag("EnderChestInventory");
@@ -813,6 +835,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 
 			$this->namedtag->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
+		}
+
+		if($this->offHandInventory !== null){
+			$this->namedtag->setTag(($this->offHandInventory->getItemInOffHand())->nbtSerialize(-1, "OffHand"));
 		}
 
 		if($this->enderChestInventory !== null){

@@ -4053,13 +4053,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	protected function addDefaultWindows(){
 		$this->addWindow($this->getInventory(), ContainerIds::INVENTORY, true);
-
+		$this->addWindow($this->getOffHandInventory(), ContainerIds::OFFHAND, true);
 		$this->addWindow($this->getArmorInventory(), ContainerIds::ARMOR, true);
 
 		$this->cursorInventory = new PlayerCursorInventory($this);
 		$this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
-		$this->offHandInventory = new PlayerOffHandInventory($this);
-		$this->addWindow($this->offHandInventory, ContainerIds::OFFHAND, true);
 
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
 
@@ -4068,10 +4066,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function getCursorInventory() : PlayerCursorInventory{
 		return $this->cursorInventory;
-	}
-
-	public function getOffHandInventory() : PlayerOffHandInventory{
-		return $this->offHandInventory;
 	}
 
 	public function getCraftingGrid() : CraftingGrid{
