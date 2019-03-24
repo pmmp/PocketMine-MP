@@ -1719,7 +1719,7 @@ class Server{
 
 			register_shutdown_function([$this, "crashDump"]);
 
-			$this->queryRegenerateTask = new QueryRegenerateEvent($this, 5);
+			$this->queryRegenerateTask = new QueryRegenerateEvent($this);
 
 			$this->pluginManager->loadPlugins($this->pluginPath);
 
@@ -2591,10 +2591,7 @@ class Server{
 		}
 
 		if(($this->tickCounter & 0b111111111) === 0){
-			($this->queryRegenerateTask = new QueryRegenerateEvent($this, 5))->call();
-			if($this->queryHandler !== null){
-				$this->queryHandler->regenerateInfo();
-			}
+			($this->queryRegenerateTask = new QueryRegenerateEvent($this))->call();
 		}
 
 		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){

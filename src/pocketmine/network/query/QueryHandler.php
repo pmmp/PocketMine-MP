@@ -33,7 +33,6 @@ use pocketmine\utils\Binary;
 use function base64_encode;
 use function chr;
 use function hash;
-use function microtime;
 use function ord;
 use function random_bytes;
 use function strlen;
@@ -46,12 +45,6 @@ class QueryHandler{
 	private $lastToken;
 	/** @var string */
 	private $token;
-	/** @var string */
-	private $longData;
-	/** @var string */
-	private $shortData;
-	/** @var float */
-	private $timeout;
 
 	public const HANDSHAKE = 9;
 	public const STATISTICS = 0;
@@ -73,7 +66,6 @@ class QueryHandler{
 
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
-		$this->regenerateInfo();
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
 	}
 
@@ -82,11 +74,11 @@ class QueryHandler{
 		$this->server->getLogger()->debug("[Query] $message");
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function regenerateInfo(){
-		$ev = $this->server->getQueryInformation();
-		$this->longData = $ev->getLongQuery();
-		$this->shortData = $ev->getShortQuery();
-		$this->timeout = microtime(true) + $ev->getTimeout();
+
 	}
 
 	public function regenerateToken(){
@@ -122,14 +114,10 @@ class QueryHandler{
 				$reply = chr(self::STATISTICS);
 				$reply .= Binary::writeInt($sessionID);
 
-				if($this->timeout < microtime(true)){
-					$this->regenerateInfo();
-				}
-
 				if(strlen($payload) === 8){
-					$reply .= $this->longData;
+					$reply .= $this->server->getQueryInformation()->getLongQuery();
 				}else{
-					$reply .= $this->shortData;
+					$reply .= $this->server->getQueryInformation()->getShortQuery();
 				}
 				$interface->sendRawPacket($address, $port, $reply);
 				break;
