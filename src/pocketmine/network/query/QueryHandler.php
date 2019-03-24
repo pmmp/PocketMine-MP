@@ -34,7 +34,6 @@ use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use function chr;
 use function hash;
-use function microtime;
 use function random_bytes;
 use function strlen;
 use function substr;
@@ -46,12 +45,6 @@ class QueryHandler{
 	private $lastToken;
 	/** @var string */
 	private $token;
-	/** @var string */
-	private $longData;
-	/** @var string */
-	private $shortData;
-	/** @var float */
-	private $timeout;
 
 	public const HANDSHAKE = 9;
 	public const STATISTICS = 0;
@@ -74,20 +67,12 @@ class QueryHandler{
 
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
-		$this->regenerateInfo();
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
 	}
 
 	private function debug(string $message) : void{
 		//TODO: replace this with a proper prefixed logger
 		$this->server->getLogger()->debug("[Query] $message");
-	}
-
-	public function regenerateInfo() : void{
-		$ev = $this->server->getQueryInformation();
-		$this->longData = $ev->getLongQuery();
-		$this->shortData = $ev->getShortQuery();
-		$this->timeout = microtime(true) + $ev->getTimeout();
 	}
 
 	public function regenerateToken() : void{
@@ -136,15 +121,11 @@ class QueryHandler{
 					$reply = chr(self::STATISTICS);
 					$reply .= Binary::writeInt($sessionID);
 
-					if($this->timeout < microtime(true)){
-						$this->regenerateInfo();
-					}
-
 					$remaining = $stream->getRemaining();
 					if(strlen($remaining) === 4){ //TODO: check this! according to the spec, this should always be here and always be FF FF FF 01
-						$reply .= $this->longData;
+						$reply .= $this->server->getQueryInformation()->getLongQuery();
 					}else{
-						$reply .= $this->shortData;
+						$reply .= $this->server->getQueryInformation()->getShortQuery();
 					}
 					$interface->sendRawPacket($address, $port, $reply);
 
