@@ -237,9 +237,8 @@ class Network{
 		$handled = false;
 		foreach($this->rawPacketHandlers as $handler){
 			if(preg_match($handler->getPattern(), $packet) === 1){
-				$handled = true;
 				try{
-					$handler->handle($interface, $address, $port, $packet);
+					$handled = $handler->handle($interface, $address, $port, $packet);
 				}catch(BadPacketException $e){
 					$this->logger->error("Bad raw packet from /$address:$port: " . $e->getMessage());
 					$this->blockAddress($address, 600);
