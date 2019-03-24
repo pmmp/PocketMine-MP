@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\server;
 
-use pocketmine\utils\Utils;
+use pocketmine\utils\Process;
 
 
 /**
@@ -87,6 +87,6 @@ class LowMemoryEvent extends ServerEvent{
 	 * @return int
 	 */
 	public function getMemoryFreed() : int{
-		return $this->getMemory() - ($this->isGlobal() ? Utils::getMemoryUsage(true)[1] : Utils::getMemoryUsage(true)[0]);
+		return $this->getMemory() - ($this->isGlobal() ? Process::getMemoryUsage(true)[1] : Process::getMemoryUsage(true)[0]);
 	}
 }

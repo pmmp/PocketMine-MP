@@ -29,6 +29,7 @@ namespace {
 namespace pocketmine {
 
 	use pocketmine\utils\MainLogger;
+	use pocketmine\utils\Process;
 	use pocketmine\utils\ServerKiller;
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Timezone;
@@ -238,9 +239,9 @@ namespace pocketmine {
 	$gitHash = str_repeat("00", 20);
 
 	if(\Phar::running(true) === ""){
-		if(Utils::execute("git rev-parse HEAD", $out) === 0 and $out !== false and strlen($out = trim($out)) === 40){
+		if(Process::execute("git rev-parse HEAD", $out) === 0 and $out !== false and strlen($out = trim($out)) === 40){
 			$gitHash = trim($out);
-			if(Utils::execute("git diff --quiet") === 1 or Utils::execute("git diff --cached --quiet") === 1){ //Locally-modified
+			if(Process::execute("git diff --quiet") === 1 or Process::execute("git diff --cached --quiet") === 1){ //Locally-modified
 				$gitHash .= "-dirty";
 			}
 		}
@@ -283,7 +284,7 @@ namespace pocketmine {
 			if(\pocketmine\DEBUG > 1){
 				echo "Some threads could not be stopped, performing a force-kill" . PHP_EOL . PHP_EOL;
 			}
-			Utils::kill(getmypid());
+			Process::kill(getmypid());
 		}
 	}while(false);
 

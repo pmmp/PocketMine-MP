@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use DaveRandom\CallbackValidator\CallbackType;
-use pocketmine\ThreadManager;
 use function array_combine;
 use function array_map;
 use function array_reverse;
@@ -42,7 +41,6 @@ use function dechex;
 use function error_reporting;
 use function exec;
 use function explode;
-use function fclose;
 use function file;
 use function file_exists;
 use function file_get_contents;
@@ -51,7 +49,6 @@ use function get_current_user;
 use function get_loaded_extensions;
 use function getenv;
 use function gettype;
-use function hexdec;
 use function implode;
 use function is_array;
 use function is_dir;
@@ -60,20 +57,16 @@ use function is_object;
 use function is_readable;
 use function is_string;
 use function json_decode;
-use function memory_get_usage;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
 use function ord;
 use function php_uname;
 use function phpversion;
-use function posix_kill;
 use function preg_grep;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
-use function proc_close;
-use function proc_open;
 use function rmdir;
 use function scandir;
 use function sha1;
@@ -81,7 +74,6 @@ use function spl_object_hash;
 use function str_pad;
 use function str_replace;
 use function str_split;
-use function stream_get_contents;
 use function stripos;
 use function strlen;
 use function strpos;
@@ -289,74 +281,35 @@ class Utils{
 	}
 
 	/**
+	 * @deprecated
+	 * @see Process::getRealMemoryUsage()
+	 *
 	 * @return int[]
 	 */
 	public static function getRealMemoryUsage() : array{
-		$stack = 0;
-		$heap = 0;
-
-		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-			$mappings = file("/proc/self/maps");
-			foreach($mappings as $line){
-				if(preg_match("#([a-z0-9]+)\\-([a-z0-9]+) [rwxp\\-]{4} [a-z0-9]+ [^\\[]*\\[([a-zA-z0-9]+)\\]#", trim($line), $matches) > 0){
-					if(strpos($matches[3], "heap") === 0){
-						$heap += hexdec($matches[2]) - hexdec($matches[1]);
-					}elseif(strpos($matches[3], "stack") === 0){
-						$stack += hexdec($matches[2]) - hexdec($matches[1]);
-					}
-				}
-			}
-		}
-
-		return [$heap, $stack];
+		return Process::getRealMemoryUsage();
 	}
 
 	/**
+	 * @deprecated
+	 * @see Process::getMemoryUsage()
+	 *
 	 * @param bool $advanced
 	 *
 	 * @return int[]|int
 	 */
 	public static function getMemoryUsage(bool $advanced = false){
-		$reserved = memory_get_usage();
-		$VmSize = null;
-		$VmRSS = null;
-		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-			$status = file_get_contents("/proc/self/status");
-			if(preg_match("/VmRSS:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-				$VmRSS = $matches[1] * 1024;
-			}
-
-			if(preg_match("/VmSize:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-				$VmSize = $matches[1] * 1024;
-			}
-		}
-
-		//TODO: more OS
-
-		if($VmRSS === null){
-			$VmRSS = memory_get_usage();
-		}
-
-		if(!$advanced){
-			return $VmRSS;
-		}
-
-		if($VmSize === null){
-			$VmSize = memory_get_usage(true);
-		}
-
-		return [$reserved, $VmRSS, $VmSize];
+		return Process::getMemoryUsage($advanced);
 	}
 
+	/**
+	 * @deprecated
+	 * @see Process::getThreadCount()
+	 *
+	 * @return int
+	 */
 	public static function getThreadCount() : int{
-		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
-				return (int) $matches[1];
-			}
-		}
-		//TODO: more OS
-
-		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
+		return Process::getThreadCount();
 	}
 
 	/**
@@ -520,6 +473,9 @@ class Utils{
 
 
 	/**
+	 * @deprecated
+	 * @see Process::execute()
+	 *
 	 * @param string      $command Command to execute
 	 * @param string|null &$stdout Reference parameter to write stdout to
 	 * @param string|null &$stderr Reference parameter to write stderr to
@@ -527,27 +483,7 @@ class Utils{
 	 * @return int process exit code
 	 */
 	public static function execute(string $command, string &$stdout = null, string &$stderr = null) : int{
-		$process = proc_open($command, [
-			["pipe", "r"],
-			["pipe", "w"],
-			["pipe", "w"]
-		], $pipes);
-
-		if($process === false){
-			$stderr = "Failed to open process";
-			$stdout = "";
-
-			return -1;
-		}
-
-		$stdout = stream_get_contents($pipes[1]);
-		$stderr = stream_get_contents($pipes[2]);
-
-		foreach($pipes as $p){
-			fclose($p);
-		}
-
-		return proc_close($process);
+		return Process::execute($command, $stdout, $stderr);
 	}
 
 	public static function decodeJWT(string $token) : array{
@@ -556,23 +492,14 @@ class Utils{
 		return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
 	}
 
+	/**
+	 * @deprecated
+	 * @see Process::kill()
+	 *
+	 * @param int $pid
+	 */
 	public static function kill($pid) : void{
-		if(MainLogger::isRegisteredStatic()){
-			MainLogger::getLogger()->syncFlushBuffer();
-		}
-		switch(Utils::getOS()){
-			case "win":
-				exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
-				break;
-			case "mac":
-			case "linux":
-			default:
-				if(function_exists("posix_kill")){
-					posix_kill($pid, 9); //SIGKILL
-				}else{
-					exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
-				}
-		}
+		Process::kill($pid);
 	}
 
 	/**

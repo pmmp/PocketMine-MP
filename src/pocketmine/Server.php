@@ -101,6 +101,7 @@ use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
+use pocketmine\utils\Process;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -2150,7 +2151,7 @@ class Server{
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			$this->logger->emergency("Crashed while crashing, killing process");
-			@Utils::kill(getmypid());
+			@Process::kill(getmypid());
 		}
 
 	}
@@ -2326,7 +2327,7 @@ class Server{
 			echo "--- Waiting $spacing seconds to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
 			sleep($spacing);
 		}
-		@Utils::kill(getmypid());
+		@Process::kill(getmypid());
 		exit(1);
 	}
 
@@ -2507,10 +2508,10 @@ class Server{
 
 	private function titleTick(){
 		Timings::$titleTickTimer->startTiming();
-		$d = Utils::getRealMemoryUsage();
+		$d = Process::getRealMemoryUsage();
 
-		$u = Utils::getMemoryUsage(true);
-		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Utils::getThreadCount());
+		$u = Process::getMemoryUsage(true);
+		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Process::getThreadCount());
 
 		echo "\x1b]0;" . $this->getName() . " " .
 			$this->getPocketMineVersion() .
