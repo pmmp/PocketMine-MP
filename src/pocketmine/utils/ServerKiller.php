@@ -48,7 +48,7 @@ class ServerKiller extends Thread{
 		});
 		if(time() - $start >= $this->time){
 			echo "\nTook too long to stop, server was killed forcefully!\n";
-			@Utils::kill(getmypid());
+			@Process::kill(getmypid());
 		}
 	}
 
