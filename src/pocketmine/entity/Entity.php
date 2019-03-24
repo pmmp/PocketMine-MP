@@ -2557,9 +2557,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pk->metadata = $this->propertyManager->getAll();
 
 		if(!empty($this->passengers)){
-			$pk->links = array_walk($this->passengers, function(int $entityId, int $seatNumber){
+			$pk->links = array_map($this->passengers, function(int $entityId, int $seatNumber){
 				return new EntityLink($this->getId(), $entityId, EntityLink::TYPE_RIDER);
-			});
+			}, array_keys($this->passengers), $this->passengers);
 		}
 
 		$player->sendDataPacket($pk);
