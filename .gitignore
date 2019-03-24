@@ -11,6 +11,7 @@ crashdumps/*
 *.phar
 server.properties
 /pocketmine.yml
+/plugin_list.yml
 memory_dumps/*
 resource_packs/
 
