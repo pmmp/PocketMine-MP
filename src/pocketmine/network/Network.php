@@ -33,6 +33,8 @@ use function bin2hex;
 use function get_class;
 use function preg_match;
 use function spl_object_id;
+use function time;
+use const PHP_INT_MAX;
 
 class Network{
 	/** @var NetworkInterface[] */
@@ -43,6 +45,9 @@ class Network{
 
 	/** @var RawPacketHandler[] */
 	private $rawPacketHandlers = [];
+
+	/** @var int[] */
+	private $bannedIps = [];
 
 	private $upload = 0;
 	private $download = 0;
@@ -118,6 +123,9 @@ class Network{
 			if($interface instanceof AdvancedNetworkInterface){
 				$this->advancedInterfaces[$hash] = $interface;
 				$interface->setNetwork($this);
+				foreach($this->bannedIps as $ip => $until){
+					$interface->blockAddress($ip);
+				}
 			}
 			$interface->setName($this->name);
 		}
@@ -179,12 +187,14 @@ class Network{
 	 * @param int    $timeout
 	 */
 	public function blockAddress(string $address, int $timeout = 300) : void{
+		$this->bannedIps[$address] = $timeout > 0 ? time() + $timeout : PHP_INT_MAX;
 		foreach($this->advancedInterfaces as $interface){
 			$interface->blockAddress($address, $timeout);
 		}
 	}
 
 	public function unblockAddress(string $address) : void{
+		unset($this->bannedIps[$address]);
 		foreach($this->advancedInterfaces as $interface){
 			$interface->unblockAddress($address);
 		}
@@ -220,6 +230,10 @@ class Network{
 	 * @param string                   $packet
 	 */
 	public function processRawPacket(AdvancedNetworkInterface $interface, string $address, int $port, string $packet) : void{
+		if(isset($this->bannedIps[$address]) and time() < $this->bannedIps[$address]){
+			$this->logger->debug("Dropped raw packet from banned address $address $port");
+			return;
+		}
 		$handled = false;
 		foreach($this->rawPacketHandlers as $handler){
 			if(preg_match($handler->getPattern(), $packet) === 1){
