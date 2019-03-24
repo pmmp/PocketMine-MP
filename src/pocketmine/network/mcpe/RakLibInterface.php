@@ -187,7 +187,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	}
 
 	public function handleRaw(string $address, int $port, string $payload) : void{
-		$this->server->handlePacket($this, $address, $port, $payload);
+		$this->network->processRawPacket($this, $address, $port, $payload);
 	}
 
 	public function sendRawPacket(string $address, int $port, string $payload) : void{

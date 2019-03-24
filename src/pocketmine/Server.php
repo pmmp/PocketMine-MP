@@ -62,7 +62,6 @@ use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\CompressBatchTask;
 use pocketmine\network\mcpe\NetworkCipher;
@@ -106,7 +105,6 @@ use function array_key_exists;
 use function array_shift;
 use function array_sum;
 use function base64_encode;
-use function bin2hex;
 use function copy;
 use function count;
 use function define;
@@ -279,9 +277,6 @@ class Server{
 
 	/** @var string[] */
 	private $uniquePlayers = [];
-
-	/** @var QueryHandler */
-	private $queryHandler;
 
 	/** @var QueryRegenerateEvent */
 	private $queryRegenerateTask = null;
@@ -1201,7 +1196,7 @@ class Server{
 			$this->getLogger()->debug("Server unique id: " . $this->getServerUniqueId());
 			$this->getLogger()->debug("Machine unique id: " . Utils::getMachineUniqueId());
 
-			$this->network = new Network();
+			$this->network = new Network($this->logger);
 			$this->network->setName($this->getMotd());
 
 
@@ -1327,7 +1322,7 @@ class Server{
 			$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 
 			if($this->getConfigBool("enable-query", true)){
-				$this->queryHandler = new QueryHandler();
+				$this->network->registerRawPacketHandler(new QueryHandler());
 			}
 
 			foreach($this->getIPBans()->getEntries() as $entry){
@@ -1952,22 +1947,6 @@ class Server{
 
 		Timings::$titleTickTimer->stopTiming();
 	}
-
-	/**
-	 * @param AdvancedNetworkInterface $interface
-	 * @param string                   $address
-	 * @param int                      $port
-	 * @param string                   $payload
-	 *
-	 * TODO: move this to Network
-	 */
-	public function handlePacket(AdvancedNetworkInterface $interface, string $address, int $port, string $payload) : void{
-		if($this->queryHandler === null or !$this->queryHandler->handle($interface, $address, $port, $payload)){
-			$this->logger->debug("Unhandled raw packet from $address $port: " . bin2hex($payload));
-		}
-		//TODO: add raw packet events
-	}
-
 
 	/**
 	 * Tries to execute a server tick

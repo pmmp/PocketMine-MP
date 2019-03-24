@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace pocketmine\network\query;
 
 use pocketmine\network\AdvancedNetworkInterface;
+use pocketmine\network\RawPacketHandler;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
@@ -38,7 +39,7 @@ use function random_bytes;
 use function strlen;
 use function substr;
 
-class QueryHandler{
+class QueryHandler implements RawPacketHandler{
 	/** @var Server */
 	private $server;
 	/** @var string */
@@ -51,7 +52,6 @@ class QueryHandler{
 
 	public function __construct(){
 		$this->server = Server::getInstance();
-		$this->server->getNetwork()->addRawPacketFilter('/^\xfe\xfd.+$/s');
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.start"));
 		$addr = $this->server->getIp();
 		$port = $this->server->getPort();
@@ -68,6 +68,10 @@ class QueryHandler{
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
+	}
+
+	public function getPattern() : string{
+		return '/^\xfe\xfd.+$/s';
 	}
 
 	private function debug(string $message) : void{
