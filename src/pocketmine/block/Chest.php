@@ -77,15 +77,15 @@ class Chest extends Transparent{
 					$c = $this->getSide($side);
 					if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
 						$pair = $this->level->getTile($c);
-                        if($pair instanceof TileChest and !$pair->isPaired()){
-                        	$ev = new ChestPairEvent($this, $c);
+						if($pair instanceof TileChest and !$pair->isPaired()){
+							$ev = new ChestPairEvent($this, $c);
 							$ev->call();
 							if(!$ev->isCancelled()){
 								$pair->pairWith($tile);
 								$tile->pairWith($pair);
-                            }
-                            break;
-                        }
+							}
+							break;
+						}
 					}
 				}
 			}
