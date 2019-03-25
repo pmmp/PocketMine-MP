@@ -1267,8 +1267,6 @@ class Server{
 
 			$this->enablePlugins(PluginLoadOrder::STARTUP);
 
-			$this->network->registerInterface(new RakLibInterface($this));
-
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
 				if($options === null){
 					$options = [];
@@ -1321,6 +1319,8 @@ class Server{
 			}
 
 			$this->enablePlugins(PluginLoadOrder::POSTWORLD);
+
+			$this->network->registerInterface(new RakLibInterface($this));
 
 			if($this->getConfigBool("enable-query", true)){
 				$this->network->registerRawPacketHandler(new QueryHandler());
