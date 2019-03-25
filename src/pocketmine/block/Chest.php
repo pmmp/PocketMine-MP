@@ -79,7 +79,7 @@ class Chest extends Transparent{
 						$pair = $this->level->getTile($c);
 						$ev = new ChestPairEvent($this, $c);
                         $ev->call();
-						if($pair instanceof TileChest and !$ev->isCanceled() and !$pair->isPaired()){
+						if($pair instanceof TileChest and !$ev->isCancelled() and !$pair->isPaired()){
 							$pair->pairWith($tile);
 							$tile->pairWith($pair);
 							break;
