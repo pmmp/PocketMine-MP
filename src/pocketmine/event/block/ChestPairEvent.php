@@ -50,7 +50,7 @@ class ChestPairEvent extends BlockEvent implements Cancellable{
     }
     
     /**
-     * Returns the chest thats about to pair with the chest thats already placed.
+     * Returns the chest that's about to pair with the chest that's already placed.
      *
      * @return Chest
      */
@@ -59,7 +59,7 @@ class ChestPairEvent extends BlockEvent implements Cancellable{
     }
     
     /**
-     * Returns the chest thats already placed.
+     * Returns the chest that's already placed.
      *
      * @return Chest
      */
