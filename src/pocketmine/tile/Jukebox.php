@@ -96,6 +96,8 @@ class Jukebox extends Spawnable{
 	protected function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_RECORD_ITEM)){
 			$this->recordItem = Item::nbtDeserialize($nbt->getCompoundTag(self::TAG_RECORD_ITEM));
+
+			$this->scheduleUpdate();
 		}
 	}
 
