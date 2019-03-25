@@ -57,18 +57,20 @@ class AvailableCommandsPacket extends DataPacket{
 	public const ARG_TYPE_WILDCARD_INT    = 0x04;
 	public const ARG_TYPE_OPERATOR        = 0x05;
 	public const ARG_TYPE_TARGET          = 0x06;
-	public const ARG_TYPE_WILDCARD_TARGET = 0x07;
 
-	public const ARG_TYPE_STRING   = 0x0f;
-	public const ARG_TYPE_POSITION = 0x10;
+	public const ARG_TYPE_FILEPATH = 0x0e;
 
-	public const ARG_TYPE_MESSAGE  = 0x13;
+	public const ARG_TYPE_STRING   = 0x1b;
 
-	public const ARG_TYPE_RAWTEXT  = 0x15;
+	public const ARG_TYPE_POSITION = 0x1d;
 
-	public const ARG_TYPE_JSON     = 0x18;
+	public const ARG_TYPE_MESSAGE  = 0x20;
 
-	public const ARG_TYPE_COMMAND  = 0x1f;
+	public const ARG_TYPE_RAWTEXT  = 0x22;
+
+	public const ARG_TYPE_JSON     = 0x25;
+
+	public const ARG_TYPE_COMMAND  = 0x2c;
 
 	/**
 	 * Enums are a little different: they are composed as follows:
@@ -274,7 +276,7 @@ class AvailableCommandsPacket extends DataPacket{
 					}
 					$type = self::ARG_FLAG_POSTFIX | $key;
 				}else{
-					$type = self::ARG_FLAG_VALID | $parameter->paramType;
+					$type = $parameter->paramType;
 				}
 
 				$this->putLInt($type);

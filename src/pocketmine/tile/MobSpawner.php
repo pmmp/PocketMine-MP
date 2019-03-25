@@ -27,6 +27,7 @@ namespace pocketmine\tile;
 use pocketmine\block\Air;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Mob;
+use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -67,6 +68,12 @@ class MobSpawner extends Spawnable{
 	protected $spawnCount = 1;
 	/** @var bool */
 	protected $isMovable = true;
+
+	public function __construct(Level $level, CompoundTag $nbt){
+		parent::__construct($level, $nbt);
+
+		$this->scheduleUpdate();
+	}
 
 	/**
 	 * @return int

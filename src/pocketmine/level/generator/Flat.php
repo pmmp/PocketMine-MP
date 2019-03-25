@@ -106,7 +106,7 @@ class Flat extends Generator{
 		$split = array_map('\trim', explode(',', $layers));
 		$y = 0;
 		foreach($split as $line){
-			preg_match('#^(?:(\d+)x)?(.+)$#', $line, $matches);
+			preg_match('#^(?:(\d+)[x|*])?(.+)$#', $line, $matches);
 			if(count($matches) !== 3){
 				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\"");
 			}
