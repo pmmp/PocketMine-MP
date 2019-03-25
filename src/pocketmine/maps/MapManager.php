@@ -62,7 +62,7 @@ class MapManager{
 		@mkdir($path = Server::getInstance()->getDataPath() . "maps/", 0777);
 
 		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path)) as $file => $obj){
-			$id = intval(str_replace("map_", "", basename($file)));
+			$id = intval(str_replace("map_", "", basename($file, ".dat")));
 			self::loadMapData($id);
 		}
 	}

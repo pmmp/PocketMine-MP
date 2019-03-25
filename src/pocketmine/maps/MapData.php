@@ -185,6 +185,8 @@ class MapData{
 	}
 
 	public function calculateMapCenter(int $x, int $z, int $scale) : void{
+		$this->scale = $scale;
+
 		$i = 128 * (1 << $scale);
 		$j = (int) floor(($x + 64.0) / $i);
 		$k = (int) floor(($z + 64.0) / $i);

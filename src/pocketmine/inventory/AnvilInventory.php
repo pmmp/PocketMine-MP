@@ -25,8 +25,10 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\block\BlockIds;
+use pocketmine\item\Compass;
 use pocketmine\item\Durable;
 use pocketmine\item\EnchantedBook;
+use pocketmine\item\Map;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -109,6 +111,19 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 					/** @var TieredTool $resultE */
 					if($input->getDamage() < $input->getMaxDurability()){
 						$resultE->setDamage($resultE->getDamage() + 1);
+					}
+				}
+			}
+		}elseif($input instanceof Map){
+			/** @var Map $resultE */
+			if($material instanceof Compass){
+				$resultE->setMapDisplayPlayers(true);
+			}elseif($material->getId() === ItemIds::PAPER){
+				if(($mapData = $resultE->getMapData()) !== null){
+					if($mapData->getScale() < 3){
+						$mapData->setScale($mapData->getScale() + 1);
+					}else{
+						return false;
 					}
 				}
 			}
