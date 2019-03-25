@@ -2808,7 +2808,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		//main inventory and drops the rest on the ground.
 		$this->doCloseInventory();
 
-		$ev = new PlayerDeathEvent($this, $this->getDrops(), $this->getXpDropAmount());
+		$ev = new PlayerDeathEvent($this, $this->getDrops(), $this->getXpDropAmount(), null);
 		$ev->call();
 
 		if(!$ev->getKeepInventory()){
