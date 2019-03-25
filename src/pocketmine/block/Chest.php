@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\event\block\ChestPairEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -76,7 +77,9 @@ class Chest extends Transparent{
 					$c = $this->getSide($side);
 					if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
 						$pair = $this->level->getTile($c);
-						if($pair instanceof TileChest and !$pair->isPaired()){
+						$ev = new ChestPairEvent($this, $c);
+                        $ev->call();
+						if($pair instanceof TileChest and !$ev->isCanceled() and !$pair->isPaired()){
 							$pair->pairWith($tile);
 							$tile->pairWith($pair);
 							break;
