@@ -32,8 +32,8 @@ use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
+use pocketmine\level\particle\PotionSplashParticle;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\utils\Color;
 use function round;
@@ -68,9 +68,7 @@ class SplashPotion extends Throwable{
 		$hasEffects = true;
 
 		if(empty($effects)){
-			$colors = [
-				new Color(0x38, 0x5d, 0xc6) //Default colour for splash water bottle and similar with no effects.
-			];
+			$particle = new PotionSplashParticle(PotionSplashParticle::DEFAULT_COLOR());
 			$hasEffects = false;
 		}else{
 			$colors = [];
@@ -80,9 +78,10 @@ class SplashPotion extends Throwable{
 					$colors[] = $effect->getColor();
 				}
 			}
+			$particle = new PotionSplashParticle(Color::mix(...$colors));
 		}
 
-		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_PARTICLE_SPLASH, Color::mix(...$colors)->toARGB());
+		$this->level->addParticle($this, $particle);
 		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_GLASS);
 
 		if($hasEffects){

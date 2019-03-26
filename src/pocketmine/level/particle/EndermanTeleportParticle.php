@@ -21,26 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\projectile;
+namespace pocketmine\level\particle;
 
-use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\level\particle\PotionSplashParticle;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use function mt_rand;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class ExperienceBottle extends Throwable{
-	public const NETWORK_ID = self::XP_BOTTLE;
+class EndermanTeleportParticle implements Particle{
 
-	protected $gravity = 0.07;
-
-	public function getResultDamage() : int{
-		return -1;
-	}
-
-	public function onHit(ProjectileHitEvent $event) : void{
-		$this->level->addParticle($this, new PotionSplashParticle(PotionSplashParticle::DEFAULT_COLOR()));
-		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_GLASS);
-
-		$this->level->dropExperience($this, mt_rand(3, 11));
+	public function encode(Vector3 $pos){
+		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_ENDERMAN_TELEPORT, 0, $pos);
 	}
 }
