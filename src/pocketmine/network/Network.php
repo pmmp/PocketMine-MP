@@ -240,6 +240,7 @@ class Network{
 				try{
 					$handled = $handler->handle($interface, $address, $port, $packet);
 				}catch(BadPacketException $e){
+					$handled = true;
 					$this->logger->error("Bad raw packet from /$address:$port: " . $e->getMessage());
 					$this->blockAddress($address, 600);
 					break;
