@@ -285,6 +285,17 @@ class LevelSoundEventPacket extends DataPacket implements ClientboundPacket, Ser
 	public const SOUND_CANT_BREED = 254;
 	public const SOUND_UNDEFINED = 255;
 
+	public static function create(int $sound, int $extraData, ?Vector3 $pos, string $entityType = ":", bool $isBabyMob = false) : self{
+		$result = new self;
+		$result->sound = $sound;
+		$result->extraData = $extraData;
+		$result->position = $pos;
+		$result->disableRelativeVolume = $pos === null;
+		$result->entityType = $entityType;
+		$result->isBabyMob = $isBabyMob;
+		return $result;
+	}
+
 	/** @var int */
 	public $sound;
 	/** @var Vector3 */

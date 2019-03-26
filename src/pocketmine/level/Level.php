@@ -523,17 +523,20 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int     $extraData
 	 * @param int     $entityTypeId
 	 * @param bool    $isBabyMob
-	 * @param bool    $disableRelativeVolume If true, all players receiving this sound-event will hear the sound at full volume regardless of distance
 	 */
-	public function broadcastLevelSoundEvent(Vector3 $pos, int $soundId, int $extraData = -1, int $entityTypeId = -1, bool $isBabyMob = false, bool $disableRelativeVolume = false){
-		$pk = new LevelSoundEventPacket();
-		$pk->sound = $soundId;
-		$pk->extraData = $extraData;
-		$pk->entityType = AddEntityPacket::LEGACY_ID_MAP_BC[$entityTypeId] ?? ":";
-		$pk->isBabyMob = $isBabyMob;
-		$pk->disableRelativeVolume = $disableRelativeVolume;
-		$pk->position = $pos->asVector3();
-		$this->broadcastPacketToViewers($pos, $pk);
+	public function broadcastLevelSoundEvent(?Vector3 $pos, int $soundId, int $extraData = -1, int $entityTypeId = -1, bool $isBabyMob = false){
+		$pk = LevelSoundEventPacket::create(
+			$soundId,
+			$extraData,
+			$pos,
+			AddEntityPacket::LEGACY_ID_MAP_BC[$entityTypeId] ?? ":",
+			$isBabyMob
+		);
+		if($pos !== null){
+			$this->broadcastPacketToViewers($pos, $pk);
+		}else{
+			$this->broadcastGlobalPacket($pk);
+		}
 	}
 
 	public function getAutoSave() : bool{
