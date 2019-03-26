@@ -40,7 +40,6 @@ use raklib\server\ServerInstance;
 use raklib\utils\InternetAddress;
 use function addcslashes;
 use function bin2hex;
-use function count;
 use function implode;
 use function random_bytes;
 use function rtrim;
@@ -102,10 +101,6 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		$this->server->getLogger()->debug("Waiting for RakLib to start...");
 		$this->rakLib->startAndWait(PTHREADS_INHERIT_CONSTANTS); //HACK: MainLogger needs constants for exception logging
 		$this->server->getLogger()->debug("RakLib booted successfully");
-	}
-
-	public function getConnectionCount() : int{
-		return count($this->sessions);
 	}
 
 	public function setNetwork(Network $network) : void{

@@ -39,13 +39,6 @@ interface NetworkInterface{
 	public function start() : void;
 
 	/**
-	 * Returns the number of connections on this interface.
-	 *
-	 * @return int
-	 */
-	public function getConnectionCount() : int;
-
-	/**
 	 * Sends a packet to the interface, returns an unique identifier for the packet if $needACK is true
 	 *
 	 * @param NetworkSession $session
