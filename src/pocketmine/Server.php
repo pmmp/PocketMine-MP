@@ -957,10 +957,6 @@ class Server{
 		return $this->operators;
 	}
 
-	public function reloadWhitelist() : void{
-		$this->whitelist->reload();
-	}
-
 	/**
 	 * @return string[]
 	 */
