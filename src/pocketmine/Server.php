@@ -1190,7 +1190,6 @@ class Server{
 				@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 			}
 
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
 			define("BOOTUP_RANDOM", random_bytes(16));
 			$this->serverID = Utils::getMachineUniqueId($this->getIp() . $this->getPort());
 
@@ -1321,6 +1320,7 @@ class Server{
 			$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 
 			$this->network->registerInterface(new RakLibInterface($this));
+			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
 
 			if($this->getConfigBool("enable-query", true)){
 				$this->network->registerRawPacketHandler(new QueryHandler());
