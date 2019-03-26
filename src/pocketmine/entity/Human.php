@@ -43,6 +43,8 @@ use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
 use pocketmine\level\Level;
+use pocketmine\level\sound\TotemUseSound;
+use pocketmine\level\sound\XpCollectSound;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -51,7 +53,6 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
@@ -65,7 +66,6 @@ use function array_values;
 use function ceil;
 use function max;
 use function min;
-use function mt_rand;
 use function random_int;
 use function strlen;
 use const INT32_MAX;
@@ -448,7 +448,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
 					$this->playLevelUpSound($newLevel);
 				}elseif($this->getCurrentTotalXp() > $oldTotal){
-					$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ORB, mt_rand());
+					$this->level->addSound($this, new XpCollectSound());
 				}
 			}
 
@@ -770,7 +770,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$this->addEffect(new EffectInstance(Effect::ABSORPTION(), 5 * 20, 1));
 
 			$this->broadcastEntityEvent(EntityEventPacket::CONSUME_TOTEM);
-			$this->level->broadcastLevelEvent($this->add(0, $this->eyeHeight, 0), LevelEventPacket::EVENT_SOUND_TOTEM);
+			$this->level->addSound($this->add(0, $this->eyeHeight, 0), new TotemUseSound());
 
 			$hand = $this->inventory->getItemInHand();
 			if($hand instanceof Totem){
