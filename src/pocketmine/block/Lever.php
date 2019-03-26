@@ -25,9 +25,10 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
+use pocketmine\level\sound\RedstonePowerOffSound;
+use pocketmine\level\sound\RedstonePowerOnSound;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class Lever extends Flowable{
@@ -112,9 +113,9 @@ class Lever extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->powered = !$this->powered;
 		$this->level->setBlock($this, $this);
-		$this->level->broadcastLevelSoundEvent(
+		$this->level->addSound(
 			$this->add(0.5, 0.5, 0.5),
-			$this->powered ? LevelSoundEventPacket::SOUND_POWER_ON : LevelSoundEventPacket::SOUND_POWER_OFF
+			$this->powered ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
 		);
 		return true;
 	}

@@ -40,13 +40,13 @@ use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
+use pocketmine\level\sound\ItemBreakSound;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
 use pocketmine\timings\Timings;
@@ -544,7 +544,7 @@ abstract class Living extends Entity implements Damageable{
 	private function damageItem(Durable $item, int $durabilityRemoved) : void{
 		$item->applyDamage($durabilityRemoved);
 		if($item->isBroken()){
-			$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BREAK);
+			$this->level->addSound($this, new ItemBreakSound());
 		}
 	}
 

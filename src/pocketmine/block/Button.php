@@ -25,9 +25,10 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
+use pocketmine\level\sound\RedstonePowerOffSound;
+use pocketmine\level\sound\RedstonePowerOnSound;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 abstract class Button extends Flowable{
@@ -64,7 +65,7 @@ abstract class Button extends Flowable{
 			$this->powered = true;
 			$this->level->setBlock($this, $this);
 			$this->level->scheduleDelayedBlockUpdate($this, $this->getActivationTime());
-			$this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_POWER_ON);
+			$this->level->addSound($this->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
 		}
 
 		return true;
@@ -74,7 +75,7 @@ abstract class Button extends Flowable{
 		if($this->powered){
 			$this->powered = false;
 			$this->level->setBlock($this, $this);
-			$this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_POWER_OFF);
+			$this->level->addSound($this->add(0.5, 0.5, 0.5), new RedstonePowerOffSound());
 		}
 	}
 }

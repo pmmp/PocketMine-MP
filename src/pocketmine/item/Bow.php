@@ -29,7 +29,7 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\level\sound\BowShootSound;
 use pocketmine\Player;
 use function intdiv;
 use function min;
@@ -106,7 +106,7 @@ class Bow extends Tool{
 			}
 
 			$ev->getProjectile()->spawnToAll();
-			$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_BOW);
+			$player->getLevel()->addSound($player, new BowShootSound());
 		}else{
 			$entity->spawnToAll();
 		}

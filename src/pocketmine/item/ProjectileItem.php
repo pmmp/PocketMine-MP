@@ -24,12 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\EntityFactory;
-use pocketmine\entity\EntityIds;
 use pocketmine\entity\projectile\Throwable;
 use pocketmine\event\entity\ProjectileLaunchEvent;
+use pocketmine\level\sound\ThrowSound;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use pocketmine\utils\Utils;
 
@@ -73,7 +72,7 @@ abstract class ProjectileItem extends Item{
 
 		$projectile->spawnToAll();
 
-		$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_THROW, 0, EntityIds::PLAYER);
+		$player->getLevel()->addSound($player, new ThrowSound());
 
 		$this->pop();
 

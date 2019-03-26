@@ -45,6 +45,7 @@ use pocketmine\item\Totem;
 use pocketmine\level\Level;
 use pocketmine\level\sound\TotemUseSound;
 use pocketmine\level\sound\XpCollectSound;
+use pocketmine\level\sound\XpLevelUpSound;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -53,7 +54,6 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
@@ -354,7 +354,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			if($playSound){
 				$newLevel = $this->getXpLevel();
 				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
-					$this->playLevelUpSound($newLevel);
+					$this->level->addSound($this, new XpLevelUpSound($newLevel));
 				}
 			}
 
@@ -446,7 +446,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			if($playSound){
 				$newLevel = $this->getXpLevel();
 				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
-					$this->playLevelUpSound($newLevel);
+					$this->level->addSound($this, new XpLevelUpSound($newLevel));
 				}elseif($this->getCurrentTotalXp() > $oldTotal){
 					$this->level->addSound($this, new XpCollectSound());
 				}
@@ -456,11 +456,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 
 		return false;
-	}
-
-	private function playLevelUpSound(int $newLevel) : void{
-		$volume = 0x10000000 * (min(30, $newLevel) / 5); //No idea why such odd numbers, but this works...
-		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEVELUP, (int) $volume);
 	}
 
 	/**

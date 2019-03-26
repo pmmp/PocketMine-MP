@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\level\sound\BucketEmptyWaterSound;
+use pocketmine\level\sound\BucketFillWaterSound;
+use pocketmine\level\sound\Sound;
 
 class Water extends Liquid{
 
@@ -32,12 +34,12 @@ class Water extends Liquid{
 		return 2;
 	}
 
-	public function getBucketFillSound() : int{
-		return LevelSoundEventPacket::SOUND_BUCKET_FILL_WATER;
+	public function getBucketFillSound() : Sound{
+		return new BucketFillWaterSound();
 	}
 
-	public function getBucketEmptySound() : int{
-		return LevelSoundEventPacket::SOUND_BUCKET_EMPTY_WATER;
+	public function getBucketEmptySound() : Sound{
+		return new BucketEmptyWaterSound();
 	}
 
 	public function tickRate() : int{

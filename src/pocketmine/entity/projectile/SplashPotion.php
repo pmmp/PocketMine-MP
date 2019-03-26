@@ -33,8 +33,8 @@ use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
 use pocketmine\level\particle\PotionSplashParticle;
+use pocketmine\level\sound\PotionSplashSound;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\utils\Color;
 use function round;
 use function sqrt;
@@ -82,7 +82,7 @@ class SplashPotion extends Throwable{
 		}
 
 		$this->level->addParticle($this, $particle);
-		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_GLASS);
+		$this->level->addSound($this, new PotionSplashSound());
 
 		if($hasEffects){
 			if(!$this->willLinger()){

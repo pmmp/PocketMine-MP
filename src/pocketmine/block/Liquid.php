@@ -30,6 +30,7 @@ use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\sound\FizzSound;
+use pocketmine\level\sound\Sound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use function array_fill;
@@ -125,9 +126,9 @@ abstract class Liquid extends Transparent{
 		return $b;
 	}
 
-	abstract public function getBucketFillSound() : int;
+	abstract public function getBucketFillSound() : Sound;
 
-	abstract public function getBucketEmptySound() : int;
+	abstract public function getBucketEmptySound() : Sound;
 
 	public function isSource() : bool{
 		return !$this->falling and $this->decay === 0;

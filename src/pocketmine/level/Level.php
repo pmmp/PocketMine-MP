@@ -63,6 +63,7 @@ use pocketmine\level\light\LightPopulationTask;
 use pocketmine\level\light\SkyLightUpdate;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\Particle;
+use pocketmine\level\sound\BlockPlaceSound;
 use pocketmine\level\sound\Sound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -73,11 +74,9 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\ChunkRequestTask;
 use pocketmine\network\mcpe\CompressBatchPromise;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
@@ -508,30 +507,6 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function broadcastLevelEvent(?Vector3 $pos, int $evid, int $data = 0){
 		$pk = LevelEventPacket::create($evid, $data, $pos);
-		if($pos !== null){
-			$this->broadcastPacketToViewers($pos, $pk);
-		}else{
-			$this->broadcastGlobalPacket($pk);
-		}
-	}
-
-	/**
-	 * Broadcasts a LevelSoundEvent to players in the area.
-	 *
-	 * @param Vector3 $pos
-	 * @param int     $soundId
-	 * @param int     $extraData
-	 * @param int     $entityTypeId
-	 * @param bool    $isBabyMob
-	 */
-	public function broadcastLevelSoundEvent(?Vector3 $pos, int $soundId, int $extraData = -1, int $entityTypeId = -1, bool $isBabyMob = false){
-		$pk = LevelSoundEventPacket::create(
-			$soundId,
-			$extraData,
-			$pos,
-			AddEntityPacket::LEGACY_ID_MAP_BC[$entityTypeId] ?? ":",
-			$isBabyMob
-		);
 		if($pos !== null){
 			$this->broadcastPacketToViewers($pos, $pk);
 		}else{
@@ -1895,7 +1870,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($playSound){
-			$this->broadcastLevelSoundEvent($hand, LevelSoundEventPacket::SOUND_PLACE, $hand->getRuntimeId());
+			$this->addSound($hand, new BlockPlaceSound($hand));
 		}
 
 		$item->pop();

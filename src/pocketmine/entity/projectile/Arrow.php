@@ -30,10 +30,10 @@ use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
+use pocketmine\level\sound\ArrowHitSound;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
 use function mt_rand;
@@ -138,7 +138,7 @@ class Arrow extends Projectile{
 
 	protected function onHit(ProjectileHitEvent $event) : void{
 		$this->setCritical(false);
-		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BOW_HIT);
+		$this->level->addSound($this, new ArrowHitSound());
 	}
 
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{

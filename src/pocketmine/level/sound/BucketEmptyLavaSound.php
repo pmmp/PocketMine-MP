@@ -21,26 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\projectile;
+namespace pocketmine\level\sound;
 
-use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\level\particle\PotionSplashParticle;
-use pocketmine\level\sound\PotionSplashSound;
-use function mt_rand;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
-class ExperienceBottle extends Throwable{
-	public const NETWORK_ID = self::XP_BOTTLE;
+class BucketEmptyLavaSound implements Sound{
 
-	protected $gravity = 0.07;
-
-	public function getResultDamage() : int{
-		return -1;
-	}
-
-	public function onHit(ProjectileHitEvent $event) : void{
-		$this->level->addParticle($this, new PotionSplashParticle(PotionSplashParticle::DEFAULT_COLOR()));
-		$this->level->addSound($this, new PotionSplashSound());
-
-		$this->level->dropExperience($this, mt_rand(3, 11));
+	public function encode(Vector3 $pos){
+		return LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_BUCKET_EMPTY_LAVA, $pos);
 	}
 }
