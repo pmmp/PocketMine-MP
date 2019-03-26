@@ -33,16 +33,12 @@ class MobSpawnParticle implements Particle{
 	protected $height;
 
 	public function __construct(int $width = 0, int $height = 0){
+		//TODO: bounds checks
 		$this->width = $width;
 		$this->height = $height;
 	}
 
 	public function encode(Vector3 $pos){
-		$pk = new LevelEventPacket;
-		$pk->evid = LevelEventPacket::EVENT_PARTICLE_SPAWN;
-		$pk->position = $pos;
-		$pk->data = ($this->width & 0xff) + (($this->height & 0xff) << 8);
-
-		return $pk;
+		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_SPAWN, ($this->width & 0xff) | (($this->height & 0xff) << 8), $pos);
 	}
 }

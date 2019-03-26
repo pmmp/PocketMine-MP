@@ -50,17 +50,13 @@ class DragonEggTeleportParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos){
-		$pk = new LevelEventPacket();
-		$pk->evid = LevelEventPacket::EVENT_PARTICLE_DRAGON_EGG_TELEPORT;
-		$pk->position = $pos;
-		$pk->data =
-			($this->zDiff < 0 ? 1 << 26 : 0) |
+		$data = ($this->zDiff < 0 ? 1 << 26 : 0) |
 			($this->yDiff < 0 ? 1 << 25 : 0) |
 			($this->xDiff < 0 ? 1 << 24 : 0) |
 			(abs($this->xDiff) << 16) |
 			(abs($this->yDiff) << 8) |
 			abs($this->zDiff);
 
-		return $pk;
+		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DRAGON_EGG_TELEPORT, $data, $pos);
 	}
 }

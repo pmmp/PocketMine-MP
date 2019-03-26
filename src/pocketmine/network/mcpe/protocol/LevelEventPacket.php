@@ -119,6 +119,14 @@ class LevelEventPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $data;
 
+	public static function create(int $evid, int $data, ?Vector3 $pos) : self{
+		$pk = new self;
+		$pk->evid = $evid;
+		$pk->data = $data;
+		$pk->position = $pos !== null ? $pos->asVector3() : null;
+		return $pk;
+	}
+
 	protected function decodePayload() : void{
 		$this->evid = $this->getVarInt();
 		$this->position = $this->getVector3();

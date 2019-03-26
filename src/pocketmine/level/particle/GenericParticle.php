@@ -38,11 +38,6 @@ class GenericParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos){
-		$pk = new LevelEventPacket;
-		$pk->evid = LevelEventPacket::EVENT_ADD_PARTICLE_MASK | $this->id;
-		$pk->position = $pos;
-		$pk->data = $this->data;
-
-		return $pk;
+		return LevelEventPacket::create(LevelEventPacket::EVENT_ADD_PARTICLE_MASK | $this->id, $this->data, $pos);
 	}
 }

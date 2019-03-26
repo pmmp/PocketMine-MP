@@ -49,11 +49,6 @@ abstract class LevelEventSound implements Sound{
 	}
 
 	public function encode(Vector3 $pos){
-		$pk = new LevelEventPacket;
-		$pk->evid = $this->getLevelEventId();
-		$pk->position = $pos;
-		$pk->data = (int) $this->pitch;
-
-		return $pk;
+		return LevelEventPacket::create($this->getLevelEventId(), (int) $this->pitch, $pos);
 	}
 }

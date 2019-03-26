@@ -507,14 +507,10 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int          $data
 	 */
 	public function broadcastLevelEvent(?Vector3 $pos, int $evid, int $data = 0){
-		$pk = new LevelEventPacket();
-		$pk->evid = $evid;
-		$pk->data = $data;
+		$pk = LevelEventPacket::create($evid, $data, $pos);
 		if($pos !== null){
-			$pk->position = $pos->asVector3();
 			$this->broadcastPacketToViewers($pos, $pk);
 		}else{
-			$pk->position = null;
 			$this->broadcastGlobalPacket($pk);
 		}
 	}
