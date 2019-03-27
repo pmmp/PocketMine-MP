@@ -65,6 +65,13 @@ class ArmorStand extends Living{
 
 	protected $vibrateTimer = 0;
 
+	/**
+	 * @return AltayEntityEquipment
+	 */
+	public function getEquipment() : AltayEntityEquipment{
+		return $this->equipment;
+	}
+
 	protected function initEntity() : void{
 		$this->setMaxHealth(6);
 		$this->setImmobile(true);
