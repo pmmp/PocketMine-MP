@@ -1135,21 +1135,6 @@ class Server{
 
 			$this->doTitleTick = ((bool) $this->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
 
-
-			$consoleSender = new ConsoleCommandSender();
-			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
-
-			$consoleNotifier = new SleeperNotifier();
-			$this->console = new CommandReader($consoleNotifier);
-			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($consoleSender) : void{
-				Timings::$serverCommandTimer->startTiming();
-				while(($line = $this->console->getLine()) !== null){
-					$this->dispatchCommand($consoleSender, $line);
-				}
-				Timings::$serverCommandTimer->stopTiming();
-			});
-			$this->console->start(PTHREADS_INHERIT_NONE);
-
 			$this->entityMetadata = new EntityMetadataStore();
 			$this->playerMetadata = new PlayerMetadataStore();
 			$this->levelMetadata = new LevelMetadataStore();
@@ -1195,16 +1180,15 @@ class Server{
 			$this->network = new Network($this->logger);
 			$this->network->setName($this->getMotd());
 
-
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.info", [
 				$this->getName(),
 				(\pocketmine\IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET
 			]));
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.license", [$this->getName()]));
 
-
 			Timings::init();
 			TimingsHandler::setEnabled((bool) $this->getProperty("settings.enable-profiling", false));
+			$this->profilingTickRate = (float) $this->getProperty("settings.profile-report-trigger", 20);
 
 			$this->commandMap = new SimpleCommandMap($this);
 
@@ -1234,7 +1218,6 @@ class Server{
 				return;
 			}
 			$this->pluginManager = new PluginManager($this, ((bool) $this->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR, $pluginGraylist);
-			$this->profilingTickRate = (float) $this->getProperty("settings.profile-report-trigger", 20);
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
@@ -1248,18 +1231,16 @@ class Server{
 				$this->logger->warning($this->language->translateString("pocketmine.level.badDefaultFormat", [$formatName]));
 			}
 
-			$this->levelManager = new LevelManager($this);
-
 			GeneratorManager::registerDefaultGenerators();
-
-			register_shutdown_function([$this, "crashDump"]);
-
-			$this->queryRegenerateTask = new QueryRegenerateEvent($this);
-
-			$this->pluginManager->loadPlugins($this->pluginPath);
+			$this->levelManager = new LevelManager($this);
 
 			$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "update.pmmp.io"));
 
+			$this->queryRegenerateTask = new QueryRegenerateEvent($this);
+
+			register_shutdown_function([$this, "crashDump"]);
+
+			$this->pluginManager->loadPlugins($this->pluginPath);
 			$this->enablePlugins(PluginLoadOrder::STARTUP());
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
@@ -1309,10 +1290,6 @@ class Server{
 				$this->levelManager->setDefaultLevel($level);
 			}
 
-			if($this->properties->hasChanged()){
-				$this->properties->save();
-			}
-
 			$this->enablePlugins(PluginLoadOrder::POSTWORLD());
 
 			$this->network->registerInterface(new RakLibInterface($this));
@@ -1326,12 +1303,6 @@ class Server{
 				$this->network->blockAddress($entry->getName(), -1);
 			}
 
-			if($this->getProperty("settings.send-usage", true)){
-				$this->sendUsageTicker = 6000;
-				$this->sendUsage(SendUsageTask::TYPE_OPEN);
-			}
-
-
 			if($this->getProperty("network.upnp-forwarding", false)){
 				$this->logger->info("[UPnP] Trying to port forward...");
 				try{
@@ -1341,11 +1312,35 @@ class Server{
 				}
 			}
 
+			if($this->getProperty("settings.send-usage", true)){
+				$this->sendUsageTicker = 6000;
+				$this->sendUsage(SendUsageTask::TYPE_OPEN);
+			}
+
+			if($this->properties->hasChanged()){
+				$this->properties->save();
+			}
+
 			$this->tickCounter = 0;
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [GameMode::toTranslation($this->getGamemode())]));
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
+
+			//TODO: move console parts to a separate component
+			$consoleSender = new ConsoleCommandSender();
+			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
+
+			$consoleNotifier = new SleeperNotifier();
+			$this->console = new CommandReader($consoleNotifier);
+			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($consoleSender) : void{
+				Timings::$serverCommandTimer->startTiming();
+				while(($line = $this->console->getLine()) !== null){
+					$this->dispatchCommand($consoleSender, $line);
+				}
+				Timings::$serverCommandTimer->stopTiming();
+			});
+			$this->console->start(PTHREADS_INHERIT_NONE);
 
 			$this->tickProcessor();
 			$this->forceShutdown();
