@@ -178,6 +178,13 @@ class MemoryManager{
 	}
 
 	/**
+	 * @return int
+	 */
+	public function getGlobalMemoryLimit() : int{
+		return $this->globalMemoryLimit;
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function canUseChunkCache() : bool{
