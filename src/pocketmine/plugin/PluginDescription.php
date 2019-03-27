@@ -27,8 +27,6 @@ use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionParser;
 use function array_map;
 use function array_values;
-use function constant;
-use function defined;
 use function extension_loaded;
 use function is_array;
 use function phpversion;
@@ -36,7 +34,6 @@ use function preg_match;
 use function str_replace;
 use function stripos;
 use function strlen;
-use function strtoupper;
 use function substr;
 use function version_compare;
 
@@ -63,7 +60,8 @@ class PluginDescription{
 	private $website = "";
 	/** @var string */
 	private $prefix = "";
-	private $order = PluginLoadOrder::POSTWORLD;
+	/** @var PluginLoadOrder */
+	private $order;
 
 	/**
 	 * @var Permission[]
@@ -129,13 +127,15 @@ class PluginDescription{
 		$this->prefix = (string) ($plugin["prefix"] ?? $this->prefix);
 
 		if(isset($plugin["load"])){
-			$order = strtoupper($plugin["load"]);
-			if(!defined(PluginLoadOrder::class . "::" . $order)){
-				throw new PluginException("Invalid PluginDescription load");
-			}else{
-				$this->order = constant(PluginLoadOrder::class . "::" . $order);
+			try{
+				$this->order = PluginLoadOrder::fromString($plugin["load"]);
+			}catch(\Error $e){
+				throw new PluginException("Invalid PluginDescription \"load\"");
 			}
+		}else{
+			$this->order = PluginLoadOrder::POSTWORLD();
 		}
+
 		$this->authors = [];
 		if(isset($plugin["author"])){
 			$this->authors[] = $plugin["author"];
@@ -273,9 +273,9 @@ class PluginDescription{
 	}
 
 	/**
-	 * @return int
+	 * @return PluginLoadOrder
 	 */
-	public function getOrder() : int{
+	public function getOrder() : PluginLoadOrder{
 		return $this->order;
 	}
 

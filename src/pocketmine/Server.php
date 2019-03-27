@@ -1260,7 +1260,7 @@ class Server{
 
 			$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "update.pmmp.io"));
 
-			$this->enablePlugins(PluginLoadOrder::STARTUP);
+			$this->enablePlugins(PluginLoadOrder::STARTUP());
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
 				if($options === null){
@@ -1313,7 +1313,7 @@ class Server{
 				$this->properties->save();
 			}
 
-			$this->enablePlugins(PluginLoadOrder::POSTWORLD);
+			$this->enablePlugins(PluginLoadOrder::POSTWORLD());
 
 			$this->network->registerInterface(new RakLibInterface($this));
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
@@ -1559,16 +1559,16 @@ class Server{
 	}
 
 	/**
-	 * @param int $type
+	 * @param PluginLoadOrder $type
 	 */
-	public function enablePlugins(int $type) : void{
+	public function enablePlugins(PluginLoadOrder $type) : void{
 		foreach($this->pluginManager->getPlugins() as $plugin){
 			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder() === $type){
 				$this->pluginManager->enablePlugin($plugin);
 			}
 		}
 
-		if($type === PluginLoadOrder::POSTWORLD){
+		if($type === PluginLoadOrder::POSTWORLD()){
 			$this->commandMap->registerServerAliases();
 			DefaultPermissions::registerCorePermissions();
 		}

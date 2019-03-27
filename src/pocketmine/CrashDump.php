@@ -25,7 +25,6 @@ namespace pocketmine;
 
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
-use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
@@ -55,6 +54,7 @@ use function phpinfo;
 use function phpversion;
 use function str_split;
 use function strpos;
+use function strtoupper;
 use function substr;
 use function time;
 use function zend_version;
@@ -158,7 +158,7 @@ class CrashDump{
 					"depends" => $d->getDepend(),
 					"softDepends" => $d->getSoftDepend(),
 					"main" => $d->getMain(),
-					"load" => $d->getOrder() === PluginLoadOrder::POSTWORLD ? "POSTWORLD" : "STARTUP",
+					"load" => strtoupper($d->getOrder()->getEnumName()),
 					"website" => $d->getWebsite()
 				];
 				$this->addLine($d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . " for API(s) " . implode(", ", $d->getCompatibleApis()));

@@ -23,15 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\utils\EnumTrait;
 
-abstract class PluginLoadOrder{
-	/*
-	 * The plugin will be loaded at startup
-	 */
-	public const STARTUP = 0;
+/**
+ * This doc-block is generated automatically, do not modify it manually.
+ * This must be regenerated whenever enum members are added, removed or changed.
+ * @see EnumTrait::_generateMethodAnnotations()
+ *
+ * @method static self STARTUP()
+ * @method static self POSTWORLD()
+ */
+final class PluginLoadOrder{
+	use EnumTrait;
 
-	/*
-	 * The plugin will be loaded after the first world has been loaded/created.
-	 */
-	public const POSTWORLD = 1;
+	protected static function setup() : array{
+		return [
+			new self("startup"),
+			new self("postworld")
+		];
+	}
 }
