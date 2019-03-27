@@ -1330,6 +1330,7 @@ class Server{
 			//TODO: move console parts to a separate component
 			$consoleSender = new ConsoleCommandSender();
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
+			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $consoleSender);
 
 			$consoleNotifier = new SleeperNotifier();
 			$this->console = new CommandReader($consoleNotifier);
