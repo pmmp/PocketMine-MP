@@ -41,6 +41,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 use function array_map;
@@ -60,6 +61,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
+	public const TAG_REPAIR_COST = "RepairCost";
 
 
 	/** @var LittleEndianNBTStream */
@@ -1032,5 +1034,13 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function setOnItemFrame(bool $onItemFrame) : void{
 		$this->onItemFrame = $onItemFrame;
+	}
+
+	public function getRepairCost() : int{
+		return $this->getNamedTag()->getInt(self::TAG_REPAIR_COST, 0);
+	}
+
+	public function setRepairCost(int $cost) : void{
+		$this->setNamedTagEntry(new IntTag(self::TAG_REPAIR_COST, $cost));
 	}
 }

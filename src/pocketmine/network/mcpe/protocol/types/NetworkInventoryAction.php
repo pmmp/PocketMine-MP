@@ -271,7 +271,7 @@ class NetworkInventoryAction{
 						}
 					case self::SOURCE_TYPE_ANVIL_RESULT:
 						if($window instanceof AnvilInventory){
-							if($window->onResult($this->oldItem)){
+							if($window->onResult($player, $this->oldItem)){
 								$window->setItem(2, $this->oldItem, false);
 								return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
 							}else{
