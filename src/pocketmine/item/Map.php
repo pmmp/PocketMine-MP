@@ -66,11 +66,11 @@ class Map extends Item{
 		$data = new MapData($id);
 		$data->setScale($scale);
 		$data->setDimension($player->level->getDimension());
-		$data->calculateMapCenter($player->getFloorX(), $player->getFloorZ(), $scale);
+		$data->calculateMapCenter($player->getFloorX(), $player->getFloorZ());
 
 		$data->onMapCrated($player);
 
-		MapManager::registerMapData($data);
+		MapManager::setMapData($data);
 	}
 
 	/**

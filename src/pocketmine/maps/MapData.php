@@ -70,16 +70,20 @@ class MapData{
 	/** @var bool */
 	protected $dirty = false;
 
+	/** @var Color[] */
+	protected static $emptyColors = [];
+
 	/**
 	 * MapData constructor.
 	 *
 	 * @param int   $mapId
-	 * @param MapRenderer[] $renderers
+	 * @param MapRenderer[]|null $renderers
 	 */
-	public function __construct(int $mapId, array $renderers = []){
+	public function __construct(int $mapId, ?array $renderers = null){
 		$this->id = $mapId;
-		if(empty($renderers)){
-			$renderers[] = new VanillaMapRenderer();
+
+		if($renderers === null){
+			$renderers = [new VanillaMapRenderer()];
 		}
 		$this->renderers = $renderers;
 
@@ -87,12 +91,11 @@ class MapData{
 			$renderer->initialize($this);
 		}
 
-		$transColor = new Color(0, 0, 0, 0);
-		for($y = 0; $y < 128; $y++){
-			for($x = 0; $x < 128; $x++){
-				$this->setColorAt($x, $y, clone $transColor);
-			}
+		if(empty(self::$emptyColors)){
+			self::$emptyColors = array_fill(0, 128, array_fill(0, 128, new Color(0, 0, 0, 0)));
 		}
+
+		$this->colors = self::$emptyColors;
 	}
 
 	/**
@@ -164,7 +167,7 @@ class MapData{
 	 * @return Color
 	 */
 	public function getColorAt(int $x, int $y) : Color{
-		return $this->colors[$y][$x] ?? new Color(0, 0, 0);
+		return $this->colors[$y][$x] ?? new Color(0, 0, 0, 0);
 	}
 
 	/**
@@ -174,6 +177,8 @@ class MapData{
 	public function setCenter(int $x, int $z) : void{
 		$this->xCenter = $x;
 		$this->zCenter = $z;
+
+		$this->markAsDirty();
 	}
 
 	public function getCenterX() : int{
@@ -184,10 +189,8 @@ class MapData{
 		return $this->zCenter;
 	}
 
-	public function calculateMapCenter(int $x, int $z, int $scale) : void{
-		$this->scale = $scale;
-
-		$i = 128 * (1 << $scale);
+	public function calculateMapCenter(int $x, int $z) : void{
+		$i = 128 * (1 << $this->getScale());
 		$j = (int) floor(($x + 64.0) / $i);
 		$k = (int) floor(($z + 64.0) / $i);
 		$this->setCenter($j * $i + $i / 2 - 64, $k * $i + $i / 2 - 64);
@@ -204,7 +207,9 @@ class MapData{
 			$colors = $nbt->getIntArray("colors");
 			for($y = 0; $y < 128; $y++){
 				for($x = 0; $x < 128; $x++){
-					$this->colors[$y][$x] = Color::fromABGR($colors[$x + $y * 128] ?? 0);
+					if(isset($colors[$x + $y * 128])){
+						$this->colors[$y][$x] = Color::fromABGR($colors[$x + $y * 128]);
+					}
 				}
 			}
 		}
@@ -220,10 +225,12 @@ class MapData{
 			$colors = [];
 			for($y = 0; $y < 128; $y++){
 				for($x = 0; $x < 128; $x++){
-					$color = $this->colors[$y][$x] ?? new Color(0, 0, 0);
-					$colors[$x + $y * 128] = $color->toABGR();
+					if(isset($this->colors[$y]) and isset($this->colors[$y][$x])){
+						$colors[$x + $y * 128] = $this->colors[$y][$x]->toABGR();
+					}
 				}
 			}
+
 			$nbt->setIntArray("colors", $colors, true);
 		}
 	}
@@ -365,7 +372,7 @@ class MapData{
 	 * @param float      $rotation
 	 * @param Color|null $color
 	 */
-	public function updateDecorations(int $type, Level $worldIn, String $entityIdentifier, int $worldX, int $worldZ, float $rotation, ?Color $color = null){
+	public function updateDecorations(int $type, Level $worldIn, string $entityIdentifier, int $worldX, int $worldZ, float $rotation, ?Color $color = null){
 		$i = 1 << $this->scale;
 		$f = ($worldX - $this->xCenter) / $i;
 		$f1 = ($worldZ - $this->zCenter) / $i;
@@ -485,5 +492,9 @@ class MapData{
 	 */
 	public function setDirty(bool $value) : void{
 		$this->dirty = $value;
+	}
+
+	public function isEmpty() : bool{
+		return count($this->colors) === 0;
 	}
 }

@@ -30,16 +30,24 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Server;
 
 class MapManager{
+
 	/** @var MapData[] */
 	protected static $maps = [];
 	/** @var int */
 	protected static $mapIdCounter = 0;
 
-	public static function registerMapData(MapData $map) : void{
+	private function __construct(){
+		// NOOP
+	}
+
+	public static function setMapData(MapData $map) : void{
 		self::$maps[$map->getId()] = $map;
 	}
 
 	public static function getMapDataById(int $id) : ?MapData{
+		if(!isset(self::$maps[$id])){
+			self::loadMapData($id);
+		}
 		return self::$maps[$id] ?? null;
 	}
 
@@ -58,26 +66,17 @@ class MapManager{
 		}
 	}
 
-	public static function loadMaps() : void{
-		@mkdir($path = Server::getInstance()->getDataPath() . "maps/", 0777);
-
-		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path)) as $file => $obj){
-			$id = intval(str_replace("map_", "", basename($file, ".dat")));
-			self::loadMapData($id);
-		}
-	}
-
 	public static function loadMapData(int $id) : void{
 		@mkdir($path = Server::getInstance()->getDataPath() . "maps/");
 		$stream = new BigEndianNBTStream();
 
-		if(is_file($fp = $path . "maps/map_" . strval($id))){
+		if(is_file($fp = $path . "map_" . strval($id) . ".dat")){
 			/** @var \pocketmine\nbt\tag\CompoundTag $data */
 			$data = $stream->readCompressed(file_get_contents($fp));
 			$mp = new MapData($id);
 			$mp->readSaveData($data);
 
-			self::registerMapData($mp);
+			self::setMapData($mp);
 		}
 	}
 
@@ -92,7 +91,7 @@ class MapManager{
 		$stream = new BigEndianNBTStream();
 
 		foreach(self::$maps as $data){
-			if(!$data->isVirtual()){
+			if(!$data->isVirtual() and $data->isDirty()){
 				$tag = new CompoundTag("data");
 				$data->writeSaveData($tag);
 

@@ -1772,7 +1772,6 @@ class Server{
 			Item::initCreativeItems();
 			Biome::init();
 			MapManager::loadIdCounts();
-			MapManager::loadMaps();
 
 			$this->commandMap = new SimpleCommandMap($this);
 
