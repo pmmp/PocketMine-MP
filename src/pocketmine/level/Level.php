@@ -3289,7 +3289,12 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function canSeeSky(Vector3 $pos) : bool{
-		return $pos->y >= $this->getHighestBlockAt((int) floor($pos->x), (int) floor($pos->z));
+		if($this->isChunkLoaded($pos->x >> 4, $pos->z >> 4)){
+			$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4);
+			return $pos->y >= $chunk->getHeightMap($pos->x & 15, $pos->z & 15);
+		}
+
+		return false;
 	}
 
 	/**
