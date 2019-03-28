@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\event\block\BlockUpdateEvent;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 use pocketmine\level\Level;
@@ -76,8 +77,12 @@ class DragonEgg extends Transparent implements Fallable{
 				$this->z + mt_rand(-16, 16)
 			);
 			if($block instanceof Air){
+				$ev = new BlockUpdateEvent($this);
+				$ev->call();
+				if($ev->isCancelled()){
+					break;
+				}
 				$this->level->addParticle($this, new DragonEggTeleportParticle($this->x - $block->x, $this->y - $block->y, $this->z - $block->z));
-				//TODO: add events
 				$this->level->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
 				$this->level->setBlock($block, $this);
 				break;
