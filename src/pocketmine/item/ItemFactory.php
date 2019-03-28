@@ -123,6 +123,44 @@ class ItemFactory{
 		self::register(new Item(Item::BRICK, 0, "Brick"));
 		self::register(new Item(Item::CHORUS_FRUIT_POPPED, 0, "Popped Chorus Fruit"));
 		self::register(new Item(Item::CLAY_BALL, 0, "Clay"));
+		self::register(new Item(Item::COMPOUND, 0, "Salt"));
+		self::register(new Item(Item::COMPOUND, 1, "Sodium Oxide"));
+		self::register(new Item(Item::COMPOUND, 2, "Sodium Hydroxide"));
+		self::register(new Item(Item::COMPOUND, 3, "Magnesium Nitrate"));
+		self::register(new Item(Item::COMPOUND, 4, "Iron Sulphide"));
+		self::register(new Item(Item::COMPOUND, 5, "Lithium Hydride"));
+		self::register(new Item(Item::COMPOUND, 6, "Sodium Hydride"));
+		self::register(new Item(Item::COMPOUND, 7, "Calcium Bromide"));
+		self::register(new Item(Item::COMPOUND, 8, "Magnesium Oxide"));
+		self::register(new Item(Item::COMPOUND, 9, "Sodium Acetate"));
+		self::register(new Item(Item::COMPOUND, 10, "Luminol"));
+		self::register(new Item(Item::COMPOUND, 11, "Charcoal")); //??? maybe bug
+		self::register(new Item(Item::COMPOUND, 12, "Sugar")); //??? maybe bug
+		self::register(new Item(Item::COMPOUND, 13, "Aluminium Oxide"));
+		self::register(new Item(Item::COMPOUND, 14, "Boron Trioxide"));
+		self::register(new Item(Item::COMPOUND, 15, "Soap"));
+		self::register(new Item(Item::COMPOUND, 16, "Polyethylene"));
+		self::register(new Item(Item::COMPOUND, 17, "Rubbish"));
+		self::register(new Item(Item::COMPOUND, 18, "Magnesium Salts"));
+		self::register(new Item(Item::COMPOUND, 19, "Sulphate"));
+		self::register(new Item(Item::COMPOUND, 20, "Barium Sulphate"));
+		self::register(new Item(Item::COMPOUND, 21, "Potassium Chloride"));
+		self::register(new Item(Item::COMPOUND, 22, "Mercuric Chloride"));
+		self::register(new Item(Item::COMPOUND, 23, "Cerium Chloride"));
+		self::register(new Item(Item::COMPOUND, 24, "Tungsten Chloride"));
+		self::register(new Item(Item::COMPOUND, 25, "Calcium Chloride"));
+		self::register(new Item(Item::COMPOUND, 26, "Water")); //???
+		self::register(new Item(Item::COMPOUND, 27, "Glue"));
+		self::register(new Item(Item::COMPOUND, 28, "Hypochlorite"));
+		self::register(new Item(Item::COMPOUND, 29, "Crude Oil"));
+		self::register(new Item(Item::COMPOUND, 30, "Latex"));
+		self::register(new Item(Item::COMPOUND, 31, "Potassium Iodide"));
+		self::register(new Item(Item::COMPOUND, 32, "Sodium Fluoride"));
+		self::register(new Item(Item::COMPOUND, 33, "Benzene"));
+		self::register(new Item(Item::COMPOUND, 34, "Ink"));
+		self::register(new Item(Item::COMPOUND, 35, "Hydrogen Peroxide"));
+		self::register(new Item(Item::COMPOUND, 36, "Ammonia"));
+		self::register(new Item(Item::COMPOUND, 37, "Sodium Hypochlorite"));
 		self::register(new Item(Item::DIAMOND, 0, "Diamond"));
 		self::register(new Item(Item::DRAGON_BREATH, 0, "Dragon's Breath"));
 		self::register(new Item(Item::DYE, 0, "Ink Sac"));
