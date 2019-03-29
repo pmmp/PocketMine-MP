@@ -90,7 +90,7 @@ class NetworkBinaryStream extends BinaryStream{
 			if($c !== 1){
 				throw new \UnexpectedValueException("Unexpected NBT count $c");
 			}
-			$nbt = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset);
+			$nbt = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
 		}elseif($nbtLen !== 0){
 			throw new \UnexpectedValueException("Unexpected fake NBT length $nbtLen");
 		}
