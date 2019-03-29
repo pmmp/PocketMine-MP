@@ -30,9 +30,8 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use function count;
-use function file_get_contents;
-use function json_decode;
 
 class StartGamePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
@@ -251,7 +250,7 @@ class StartGamePacket extends DataPacket{
 		if(self::$runtimeIdTable === null){
 			//this is a really nasty hack, but it'll do for now
 			$stream = new NetworkBinaryStream();
-			$data = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
+			$data = RuntimeBlockMapping::getBedrockKnownStates();
 			$stream->putUnsignedVarInt(count($data));
 			foreach($data as $v){
 				$stream->putString($v["name"]);
