@@ -36,10 +36,6 @@ use function sprintf;
 use function time;
 use function touch;
 use function trim;
-use const E_ERROR;
-use const E_USER_ERROR;
-use const E_USER_WARNING;
-use const E_WARNING;
 use const PHP_EOL;
 use const PTHREADS_INHERIT_NONE;
 
@@ -198,11 +194,6 @@ class MainLogger extends \AttachableThreadedLogger{
 		$errno = $e->getCode();
 		$errline = $e->getLine();
 
-		if($errno === 0){
-			$type = LogLevel::CRITICAL;
-		}else{
-			$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? LogLevel::WARNING : LogLevel::NOTICE);
-		}
 		try{
 			$errno = \ErrorUtils::errorTypeToString($errno);
 		}catch(\InvalidArgumentException $e){
@@ -214,8 +205,8 @@ class MainLogger extends \AttachableThreadedLogger{
 		$message = get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
 		$stack = Utils::printableTrace($trace);
 
-		$this->synchronized(function() use ($type, $message, $stack) : void{
-			$this->log($type, $message);
+		$this->synchronized(function() use ($message, $stack) : void{
+			$this->log(LogLevel::CRITICAL, $message);
 			foreach($stack as $line){
 				$this->debug($line, true);
 			}
