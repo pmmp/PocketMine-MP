@@ -338,7 +338,7 @@ class MapData{
 		if($mapStack->isMapDisplayPlayers()){
 			foreach($this->playersMap as $info){
 				$pi = $info->player;
-				if($pi->isOnline() and $pi->isAlive() and $pi->level->getDimension() === $this->dimension){
+				if($pi->isOnline() and $pi->isAlive() and $pi->level->getDimension() === $this->dimension and ($pi->getInventory()->contains($mapStack) or $pi->getOffHandInventory()->contains($mapStack))){
 					if(!$mapStack->isOnItemFrame()){
 						$this->updateDecorations(MapDecoration::TYPE_PLAYER, $pi->level, $pi->getName(), $pi->getFloorX(), $pi->getFloorZ(), $pi->getYaw());
 					}
