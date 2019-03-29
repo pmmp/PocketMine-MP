@@ -33,6 +33,7 @@ use pocketmine\entity\EntityFactory;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
@@ -749,10 +750,6 @@ class Chunk{
 		$subChunkCount = $this->getSubChunkSendCount();
 		$stream->putByte($subChunkCount);
 
-		if(empty(BlockFactory::$staticRuntimeIdMap)){
-			BlockFactory::registerStaticRuntimeIdMappings();
-		}
-
 		for($y = 0; $y < $subChunkCount; ++$y){
 			$layers = $this->subChunks[$y]->getBlockLayers();
 			$stream->putByte(8); //version
@@ -765,7 +762,7 @@ class Chunk{
 				$palette = $blocks->getPalette();
 				$stream->putVarInt(count($palette)); //yes, this is intentionally zigzag
 				foreach($palette as $p){
-					$stream->putVarInt(BlockFactory::toStaticRuntimeId($p >> 4, $p & 0xf));
+					$stream->putVarInt(RuntimeBlockMapping::toStaticRuntimeId($p >> 4, $p & 0xf));
 				}
 			}
 		}

@@ -32,13 +32,11 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\level\Position;
+use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\tile\Comparator;
 use function array_fill;
 use function array_filter;
-use function file_get_contents;
 use function get_class;
-use function json_decode;
-use function max;
 use function min;
 
 /**
@@ -54,15 +52,6 @@ class BlockFactory{
 	public static $diffusesSkyLight = null;
 	/** @var \SplFixedArray|float[] */
 	public static $blastResistance = null;
-
-	/** @var int[] */
-	public static $staticRuntimeIdMap = [];
-
-	/** @var int[] */
-	public static $legacyIdMap = [];
-
-	/** @var int */
-	private static $lastRuntimeId = 0;
 
 	/**
 	 * Initializes the block factory. By default this is called only once on server start, however you may wish to use
@@ -680,21 +669,9 @@ class BlockFactory{
 		return $b !== null and !($b instanceof UnknownBlock);
 	}
 
-	public static function registerStaticRuntimeIdMappings() : void{
-		/** @var mixed[] $runtimeIdMap */
-		$runtimeIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
-		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "legacy_id_map.json"), true);
-		foreach($runtimeIdMap as $k => $obj){
-			//this has to use the json offset to make sure the mapping is consistent with what we send over network, even though we aren't using all the entries
-			if(!isset($legacyIdMap[$obj["name"]])){
-				continue;
-			}
-			self::registerMapping($k, $legacyIdMap[$obj["name"]], $obj["data"]);
-		}
-	}
-
 	/**
 	 * @internal
+	 * @deprecated
 	 *
 	 * @param int $id
 	 * @param int $meta
@@ -702,15 +679,11 @@ class BlockFactory{
 	 * @return int
 	 */
 	public static function toStaticRuntimeId(int $id, int $meta = 0) : int{
-		/*
-		 * try id+meta first
-		 * if not found, try id+0 (strip meta)
-		 * if still not found, return update! block
-		 */
-		return self::$staticRuntimeIdMap[($id << 4) | $meta] ?? self::$staticRuntimeIdMap[$id << 4] ?? self::$staticRuntimeIdMap[BlockLegacyIds::INFO_UPDATE << 4];
+		return RuntimeBlockMapping::toStaticRuntimeId($id, $meta);
 	}
 
 	/**
+	 * @deprecated
 	 * @internal
 	 *
 	 * @param int $runtimeId
@@ -718,14 +691,7 @@ class BlockFactory{
 	 * @return int[] [id, meta]
 	 */
 	public static function fromStaticRuntimeId(int $runtimeId) : array{
-		$v = self::$legacyIdMap[$runtimeId];
-		return [$v >> 4, $v & 0xf];
-	}
-
-	private static function registerMapping(int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{
-		self::$staticRuntimeIdMap[($legacyId << 4) | $legacyMeta] = $staticRuntimeId;
-		self::$legacyIdMap[$staticRuntimeId] = ($legacyId << 4) | $legacyMeta;
-		self::$lastRuntimeId = max(self::$lastRuntimeId, $staticRuntimeId);
+		return RuntimeBlockMapping::fromStaticRuntimeId($runtimeId);
 	}
 
 	/**
