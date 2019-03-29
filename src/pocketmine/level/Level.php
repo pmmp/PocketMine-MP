@@ -78,6 +78,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
+use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
@@ -982,7 +983,7 @@ class Level implements ChunkManager, Metadatable{
 					$pk->blockRuntimeId = $b->getRuntimeId();
 				}else{
 					$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-					$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf);
+					$pk->blockRuntimeId = RuntimeBlockMapping::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf);
 				}
 
 				$pk->flags = $first ? $flags : UpdateBlockPacket::FLAG_NONE;
@@ -1004,7 +1005,7 @@ class Level implements ChunkManager, Metadatable{
 					$pk->blockRuntimeId = $b->getRuntimeId();
 				}else{
 					$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-					$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf);
+					$pk->blockRuntimeId = RuntimeBlockMapping::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf);
 				}
 
 				$pk->flags = $flags;
