@@ -436,7 +436,8 @@ class SimpleSessionHandler extends SessionHandler{
 
 		$block = $this->player->getLevel()->getBlock($pos);
 		try{
-			$nbt = (new NetworkNbtSerializer())->read($packet->namedtag)->getTag();
+			$offset = 0;
+			$nbt = (new NetworkNbtSerializer())->read($packet->namedtag, $offset, 512)->getTag();
 		}catch(NbtDataException $e){
 			throw new BadPacketException($e->getMessage(), 0, $e);
 		}

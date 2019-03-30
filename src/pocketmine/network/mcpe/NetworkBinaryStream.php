@@ -105,7 +105,7 @@ class NetworkBinaryStream extends BinaryStream{
 			if($c !== 1){
 				throw new BadPacketException("Unexpected NBT count $c");
 			}
-			$compound = (new NetworkNbtSerializer())->read($this->buffer, $this->offset)->getTag();
+			$compound = (new NetworkNbtSerializer())->read($this->buffer, $this->offset, 512)->getTag();
 		}elseif($nbtLen !== 0){
 			throw new BadPacketException("Unexpected fake NBT length $nbtLen");
 		}
