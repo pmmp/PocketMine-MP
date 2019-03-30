@@ -55,6 +55,7 @@ abstract class AbstractHorse extends Tamable{
 				$jumpPowerIn = 0;
 			}else{
 				$this->setRearing(true);
+				$this->rearingCounter = 40; // HACK!
 			}
 
 			if($jumpPowerIn >= 90){
@@ -103,6 +104,15 @@ abstract class AbstractHorse extends Tamable{
 
 			if($this->rearingCounter === 0){
 				$this->setRearing(false);
+			}
+		}
+
+		$rider = $this->getRiddenByEntity();
+		if($rider !== null){
+			$rider->resetFallDistance();
+
+			if($rider->isUnderwater()){
+				$this->throwRider();
 			}
 		}
 	}

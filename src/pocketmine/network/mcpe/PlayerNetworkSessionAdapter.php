@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\entity\passive\AbstractHorse;
+use pocketmine\entity\passive\Horse;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\maps\MapData;
 use pocketmine\maps\MapManager;
@@ -222,8 +223,10 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		if($this->player->isRiding()){
 			$horse = $this->player->getRidingEntity();
 			if($horse instanceof AbstractHorse){
-				// This is useless for now, only may usable for plugins
-				$horse->setJumpPower($packet->jumpStrength);
+				if($horse->onGround){
+					// This is useless for now, only may usable for plugins
+					$horse->setJumpPower($packet->jumpStrength);
+				}
 				return true;
 			}
 		}
