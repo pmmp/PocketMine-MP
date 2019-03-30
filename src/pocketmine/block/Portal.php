@@ -56,14 +56,6 @@ class Portal extends Flowable{
 		return false;
 	}
 
-	public function hasEntityCollision() : bool{
-		return true;
-	}
-
-	public function onEntityCollide(Entity $entity) : void{
-		$entity->setInPortal(true);
-	}
-
 	public function onBreak(Item $item, Player $player = null) : bool{
 		$result = parent::onBreak($item, $player);
 

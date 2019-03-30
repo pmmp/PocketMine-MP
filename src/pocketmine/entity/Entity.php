@@ -2322,6 +2322,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$down->onEntityCollideUpon($this);
 		}
 
+		$this->setInPortal($this->level->getBlock($this) instanceof Portal);
+
 		if($vector->lengthSquared() > 0){
 			$vector = $vector->normalize();
 			$d = 0.014;
