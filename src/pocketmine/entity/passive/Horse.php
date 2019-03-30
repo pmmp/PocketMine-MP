@@ -138,8 +138,6 @@ class Horse extends AbstractHorse implements InventoryHolder{
 
 			if($player->isSneaking()){
 				if($this->isTamed()){
-					$this->setOwningEntity($player);
-
 					$player->addWindow($this->inventory);
 				}else{
 					$this->rearUp();
