@@ -126,7 +126,7 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 		$pyramidLevels = $this->getPyramidLevels();
 
 		$duration = 180 + $pyramidLevels * 40;
-		$range = (10 + $pyramidLevels * 10) * (10 + $pyramidLevels * 10);
+		$range = (10 + $pyramidLevels * 10);
 
 		$effectPrim = Effect::getEffect($this->primary);
 
