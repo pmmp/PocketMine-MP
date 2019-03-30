@@ -44,6 +44,10 @@ use pocketmine\Player;
 use pocketmine\utils\Random;
 use pocketmine\utils\WeightedRandomItem;
 
+use function array_filter;
+use function count;
+use function is_a;
+
 class AnimalSpawner{
 
 	public const MAX_MOBS = 289;
