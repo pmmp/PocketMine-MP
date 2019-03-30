@@ -116,7 +116,10 @@ abstract class Armor extends Durable{
         if(!$existing->isNull()){
             return false;
         }
-        $player->getArmorInventory()->setItem($this->getArmorSlot(), $this->pop());
+        if(!$player->isCreative(true)){
+            $player->getInventory()->setItem($player->getInventory()->getHeldItemIndex(), Item::get(Item::AIR));
+        }
+        $player->getArmorInventory()->setItem($this->getArmorSlot(), $this);
         return false;
     }
 }
