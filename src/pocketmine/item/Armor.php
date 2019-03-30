@@ -33,7 +33,6 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Color;
-
 use function lcg_value;
 use function mt_rand;
 
@@ -111,15 +110,14 @@ abstract class Armor extends Durable{
 		return 0;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector): bool{
-        $existing = $player->getArmorInventory()->getItem($this->getArmorSlot());
-        if(!$existing->isNull()){
-            return false;
-        }
-        if(!$player->isCreative(true)){
-            $player->getInventory()->setItem($player->getInventory()->getHeldItemIndex(), Item::get(Item::AIR));
-        }
-        $player->getArmorInventory()->setItem($this->getArmorSlot(), $this);
-        return false;
-    }
+	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
+		if($player->getArmorInventory()->getItem($this->getArmorSlot())->isNull()){
+			$player->getArmorInventory()->setItem($this->getArmorSlot(), $this);
+
+			$this->pop();
+
+			return true;
+		}
+		return false;
+	}
 }
