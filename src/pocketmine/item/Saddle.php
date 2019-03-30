@@ -42,7 +42,7 @@ class Saddle extends Item{
 		if($entity instanceof Pig){
 			if(!$entity->isSaddled() and !$entity->isBaby()){
 				$entity->setSaddled(true);
-				$entity->level->broadcastLevelSoundEvent($entity, LevelSoundEventPacket::SOUND_ARMOR_EQUIP_LEATHER);
+				$entity->level->broadcastLevelSoundEvent($entity, LevelSoundEventPacket::SOUND_SADDLE);
 				$this->pop();
 			}
 

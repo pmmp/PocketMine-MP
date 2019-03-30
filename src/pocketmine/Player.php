@@ -84,6 +84,7 @@ use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -2892,6 +2893,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		switch($packet->action){
+			case InteractPacket::ACTION_OPEN_INVENTORY:
+				if($target instanceof InventoryHolder){
+					$this->addWindow($target->getInventory());
+				}
+				break;
 			case InteractPacket::ACTION_LEAVE_VEHICLE:
 				if($this->ridingEid === $packet->target){
 					$this->dismountEntity();

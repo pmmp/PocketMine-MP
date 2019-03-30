@@ -34,12 +34,15 @@ use pocketmine\entity\behavior\PanicBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\TemptedBehavior;
 use pocketmine\entity\behavior\WanderBehavior;
+use pocketmine\inventory\HorseInventory;
+use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 
-class Horse extends AbstractHorse{
+class Horse extends AbstractHorse implements InventoryHolder{
 
 	public const NETWORK_ID = self::HORSE;
 
@@ -60,8 +63,18 @@ class Horse extends AbstractHorse{
 	public $width = 1.3965;
 	public $height = 1.6;
 
+	/** @var HorseInventory */
+	protected $inventory;
+
 	public function getName() : string{
 		return "Horse";
+	}
+
+	/**
+	 * @return HorseInventory
+	 */
+	public function getInventory() : HorseInventory{
+		return $this->inventory;
 	}
 
 	protected function addBehaviors() : void{
@@ -69,7 +82,7 @@ class Horse extends AbstractHorse{
 		$this->behaviorPool->setBehavior(1, new FloatBehavior($this));
 		$this->behaviorPool->setBehavior(2, new PanicBehavior($this, 1.25));
 		$this->behaviorPool->setBehavior(3, new MateBehavior($this, 1.0));
-		$this->behaviorPool->setBehavior(4, new TemptedBehavior($this, [Item::WHEAT], 1.2));
+		$this->behaviorPool->setBehavior(4, new TemptedBehavior($this, [Item::WHEAT, Item::APPLE, Item::WHEAT_BLOCK, Item::GOLDEN_APPLE, Item::ENCHANTED_GOLDEN_APPLE, Item::GOLDEN_CARROT, Item::SUGAR], 1.2));
 		$this->behaviorPool->setBehavior(5, new FollowParentBehavior($this, 1.1));
 		$this->behaviorPool->setBehavior(6, new WanderBehavior($this, 1.0));
 		$this->behaviorPool->setBehavior(7, new LookAtPlayerBehavior($this, 6.0));
@@ -90,6 +103,16 @@ class Horse extends AbstractHorse{
 			$this->setMarkVariant($this->random->nextBoundedInt(5));
 		}
 
+		$this->inventory = new HorseInventory($this);
+
+		if($this->namedtag->hasTag("ArmorItem", CompoundTag::class)){
+			$this->inventory->setArmor(Item::nbtDeserialize($this->namedtag->getCompoundTag("ArmorItem")));
+		}
+
+		if($this->namedtag->hasTag("SaddleItem", CompoundTag::class)){
+			$this->inventory->setSaddle(Item::nbtDeserialize($this->namedtag->getCompoundTag("SaddleItem")));
+		}
+
 		parent::initEntity();
 	}
 
@@ -105,13 +128,49 @@ class Horse extends AbstractHorse{
 
 	public function setSaddled(bool $value = true) : void{
 		parent::setSaddled($value);
+
 		$this->setGenericFlag(self::DATA_FLAG_CAN_POWER_JUMP, $value);
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
 		if(!$this->isImmobile()){
-			// TODO: Feeding
+			// TODO: feeding
+
+			if($player->isSneaking()){
+				if($this->isTamed()){
+					$this->setOwningEntity($player);
+
+					$player->addWindow($this->inventory);
+				}else{
+					$this->rearUp();
+				}
+
+				return true;
+			}
 		}
 		return parent::onInteract($player, $item, $clickPos);
+	}
+
+	public function sendSpawnPacket(Player $player) : void{
+		parent::sendSpawnPacket($player);
+
+		$this->inventory->sendArmor($player);
+	}
+
+	public function doHitAnimation() : void{
+		parent::doHitAnimation();
+
+		foreach($this->getViewers() as $player){ // WTF
+			$this->inventory->sendArmor($player);
+		}
+	}
+
+	public function saveNBT() : void{
+		parent::saveNBT();
+
+		if($this->inventory !== null){
+			$this->namedtag->setTag($this->inventory->getSaddle()->nbtSerialize(-1, "SaddleItem"));
+			$this->namedtag->setTag($this->inventory->getArmor()->nbtSerialize(-1, "ArmorItem"));
+		}
 	}
 }

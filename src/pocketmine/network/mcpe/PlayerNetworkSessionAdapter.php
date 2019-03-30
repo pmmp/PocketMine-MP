@@ -50,6 +50,7 @@ use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
+use pocketmine\network\mcpe\protocol\MoveEntityAbsolutePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
@@ -342,18 +343,22 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleLevelSoundEvent($packet);
 	}
 
-	public function handleSetEntityMotion(SetEntityMotionPacket $packet) : bool{
+	public function handleMoveEntityAbsolute(MoveEntityAbsolutePacket $packet) : bool{
 		// TODO: remove this
 		$target = $this->player->getServer()->findEntity($packet->entityRuntimeId);
 		if($target !== null){
 			if($this->player->isRiding() and $this->player->getRidingEntity() !== null and $this->player->getRidingEntity()->getId() === $target->getId()){
-				$target->setMotion($packet->motion);
+				$target->setPositionAndRotation($packet->position, $packet->yRot, $packet->xRot);
 
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	public function handleSetEntityMotion(SetEntityMotionPacket $packet) : bool{
+		return true; // WTF, spam??
 	}
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{

@@ -325,7 +325,6 @@ class NetworkInventoryAction{
 						}
 				}
 
-				//TODO: more stuff
 				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
 			default:
 				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
