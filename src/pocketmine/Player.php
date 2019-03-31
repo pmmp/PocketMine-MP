@@ -2622,18 +2622,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * @param string $sender
-	 * @param string $message
-	 */
-	public function sendWhisper(string $sender, string $message){
-		$pk = new TextPacket();
-		$pk->type = TextPacket::TYPE_WHISPER;
-		$pk->sourceName = $sender;
-		$pk->message = $message;
-		$this->sendDataPacket($pk);
-	}
-
-	/**
 	 * Sends a Form to the player, or queue to send it if a form is already open.
 	 *
 	 * @param Form $form
