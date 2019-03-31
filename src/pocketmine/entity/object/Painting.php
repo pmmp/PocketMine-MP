@@ -100,7 +100,7 @@ class Painting extends Entity{
 
 		if($this->lastDamageCause instanceof EntityDamageByEntityEvent){
 			$killer = $this->lastDamageCause->getDamager();
-			if($killer instanceof Player and $killer->isCreative()){
+			if($killer instanceof Player and !$killer->hasFiniteResources()){
 				$drops = false;
 			}
 		}

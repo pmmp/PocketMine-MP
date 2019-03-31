@@ -1527,7 +1527,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	public function getDrops() : array{
-		if(!$this->isCreative()){
+		if($this->hasFiniteResources()){
 			return parent::getDrops();
 		}
 
@@ -1535,7 +1535,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	public function getXpDropAmount() : int{
-		if(!$this->isCreative()){
+		if($this->hasFiniteResources()){
 			return parent::getXpDropAmount();
 		}
 
@@ -2052,7 +2052,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 				}else{
 					$this->inventory->swap($this->inventory->getHeldItemIndex(), $existing);
 				}
-			}elseif($this->isCreative(true)){ //TODO: plugins won't know this isn't going to execute
+			}elseif(!$this->hasFiniteResources()){ //TODO: plugins won't know this isn't going to execute
 				$firstEmpty = $this->inventory->firstEmpty();
 				if($firstEmpty === -1){ //full inventory
 					$this->inventory->setItemInHand($item);
