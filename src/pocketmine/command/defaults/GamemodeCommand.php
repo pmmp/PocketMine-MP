@@ -76,10 +76,10 @@ class GamemodeCommand extends VanillaCommand{
 			$sender->sendMessage("Game mode change for " . $target->getName() . " failed!");
 		}else{
 			if($target === $sender){
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.self", [GameMode::toTranslation($gameMode)]));
+				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.self", [$gameMode->getTranslationKey()]));
 			}else{
-				$target->sendMessage(new TranslationContainer("gameMode.changed", [GameMode::toTranslation($gameMode)]));
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.other", [GameMode::toTranslation($gameMode), $target->getName()]));
+				$target->sendMessage(new TranslationContainer("gameMode.changed", [$gameMode->getTranslationKey()]));
+				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.other", [$gameMode->getTranslationKey(), $target->getName()]));
 			}
 		}
 

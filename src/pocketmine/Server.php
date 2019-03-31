@@ -422,10 +422,10 @@ class Server{
 	}
 
 	/**
-	 * @return int
+	 * @return GameMode
 	 */
-	public function getGamemode() : int{
-		return $this->getConfigInt("gamemode", 0) & 0b11;
+	public function getGamemode() : GameMode{
+		return GameMode::fromMagicNumber($this->getConfigInt("gamemode", 0) & 0b11);
 	}
 
 	/**
@@ -1322,7 +1322,7 @@ class Server{
 
 			$this->tickCounter = 0;
 
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [GameMode::toTranslation($this->getGamemode())]));
+			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [$this->getGamemode()->getTranslationKey()]));
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
 

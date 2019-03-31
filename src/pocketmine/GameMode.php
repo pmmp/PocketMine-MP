@@ -23,88 +23,109 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
-final class GameMode{
-	public const SURVIVAL = 0;
-	public const CREATIVE = 1;
-	public const ADVENTURE = 2;
-	public const SPECTATOR = 3;
-	public const VIEW = GameMode::SPECTATOR;
+use pocketmine\utils\EnumTrait;
 
-	private function __construct(){
-		//NOOP
+/**
+ * This doc-block is generated automatically, do not modify it manually.
+ * This must be regenerated whenever enum members are added, removed or changed.
+ * @see EnumTrait::_generateMethodAnnotations()
+ *
+ * @method static self SURVIVAL()
+ * @method static self CREATIVE()
+ * @method static self ADVENTURE()
+ * @method static self SPECTATOR()
+ */
+final class GameMode{
+	use EnumTrait {
+		__construct as Enum___construct;
+		register as Enum_register;
+		fromString as Enum_fromString;
+	}
+
+	/** @var self[] */
+	protected static $aliasMap = [];
+	/** @var self[] */
+	protected static $magicNumberMap = [];
+
+	protected static function setup() : array{
+		return [
+			new self("survival", 0, "Survival", "gameMode.survival", ["s", "0"]),
+			new self("creative", 1, "Creative", "gameMode.creative", ["c", "1"]),
+			new self("adventure", 2, "Adventure", "gameMode.adventure", ["a", "2"]),
+			new self("spectator", 3, "Spectator", "gameMode.spectator", ["v", "view", "3"])
+		];
+	}
+
+	protected static function register(self $member) : void{
+		self::Enum_register($member);
+		self::$magicNumberMap[$member->getMagicNumber()] = $member;
+		foreach($member->getAliases() as $alias){
+			self::$aliasMap[$alias] = $member;
+		}
+	}
+
+	public static function fromString(string $str) : self{
+		self::checkInit();
+		return self::$aliasMap[$str] ?? self::Enum_fromString($str);
 	}
 
 	/**
-	 * Parses a string and returns a gamemode integer, -1 if not found
+	 * @param int $n
 	 *
-	 * @param string $str
-	 *
-	 * @return int
-	 *
+	 * @return GameMode
 	 * @throws \InvalidArgumentException
 	 */
-	public static function fromString(string $str) : int{
-		switch(strtolower(trim($str))){
-			case (string) self::SURVIVAL:
-			case "survival":
-			case "s":
-				return self::SURVIVAL;
-
-			case (string) self::CREATIVE:
-			case "creative":
-			case "c":
-				return self::CREATIVE;
-
-			case (string) self::ADVENTURE:
-			case "adventure":
-			case "a":
-				return self::ADVENTURE;
-
-			case (string) self::SPECTATOR:
-			case "spectator":
-			case "view":
-			case "v":
-				return self::SPECTATOR;
+	public static function fromMagicNumber(int $n) : self{
+		self::checkInit();
+		if(!isset(self::$magicNumberMap[$n])){
+			throw new \InvalidArgumentException("No " . self::class . " enum member matches magic number $n");
 		}
+		return self::$magicNumberMap[$n];
+	}
 
-		throw new \InvalidArgumentException("Unknown gamemode string \"$str\"");
+	/** @var int */
+	private $magicNumber;
+	/** @var string */
+	private $englishName;
+	/** @var string */
+	private $translationKey;
+	/** @var string[] */
+	private $aliases;
+
+	private function __construct(string $enumName, int $magicNumber, string $englishName, string $translationKey, array $aliases = []){
+		$this->Enum___construct($enumName);
+		$this->magicNumber = $magicNumber;
+		$this->englishName = $englishName;
+		$this->translationKey = $translationKey;
+		$this->aliases = $aliases;
 	}
 
 	/**
-	 * Returns the gamemode text name
-	 *
-	 * @param int $mode
-	 *
-	 * @return string
+	 * @return int
 	 */
-	public static function toTranslation(int $mode) : string{
-		switch($mode){
-			case self::SURVIVAL:
-				return "%gameMode.survival";
-			case self::CREATIVE:
-				return "%gameMode.creative";
-			case self::ADVENTURE:
-				return "%gameMode.adventure";
-			case self::SPECTATOR:
-				return "%gameMode.spectator";
-		}
-
-		return "UNKNOWN";
+	public function getMagicNumber() : int{
+		return $this->magicNumber;
 	}
 
-	public static function toString(int $mode) : string{
-		switch($mode){
-			case self::SURVIVAL:
-				return "Survival";
-			case self::CREATIVE:
-				return "Creative";
-			case self::ADVENTURE:
-				return "Adventure";
-			case self::SPECTATOR:
-				return "Spectator";
-			default:
-				throw new \InvalidArgumentException("Invalid gamemode $mode");
-		}
+	/**
+	 * @return string
+	 */
+	public function getEnglishName() : string{
+		return $this->englishName;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTranslationKey() : string{
+		return "%" . $this->translationKey;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getAliases() : array{
+		return $this->aliases;
 	}
 
 	//TODO: ability sets per gamemode

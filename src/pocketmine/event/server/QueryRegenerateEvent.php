@@ -86,7 +86,7 @@ class QueryRegenerateEvent extends ServerEvent{
 			}
 		}
 
-		$this->gametype = ($server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP";
+		$this->gametype = ($server->getGamemode()->getMagicNumber() & 0x01) === 0 ? "SMP" : "CMP";
 		$this->version = $server->getVersion();
 		$this->server_engine = $server->getName() . " " . $server->getPocketMineVersion();
 		$level = $server->getLevelManager()->getDefaultLevel();

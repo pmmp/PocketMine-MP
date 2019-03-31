@@ -468,7 +468,7 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
-		if($packet->gamemode !== $this->player->getGamemode()){
+		if($packet->gamemode !== $this->player->getGamemode()->getMagicNumber()){
 			//Set this back to default. TODO: handle this properly
 			$this->player->sendGamemode();
 			$this->player->sendSettings();

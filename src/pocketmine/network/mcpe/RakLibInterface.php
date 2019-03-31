@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\GameMode;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -210,7 +209,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 				$info->getMaxPlayerCount(),
 				$this->rakLib->getServerId(),
 				$this->server->getName(),
-				GameMode::toString($this->server->getGamemode())
+				$this->server->getGamemode()->getEnglishName()
 			]) . ";"
 		);
 	}

@@ -94,6 +94,7 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\NetworkSession;
@@ -224,7 +225,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $firstPlayed;
 	/** @var int */
 	protected $lastPlayed;
-	/** @var int */
+	/** @var GameMode */
 	protected $gamemode;
 
 	/** @var bool[] chunkHash => bool (true = sent, false = needs sending) */
@@ -387,7 +388,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->firstPlayed = $nbt->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
 		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
 
-		$this->gamemode = $this->server->getForceGamemode() ? $this->server->getGamemode() : $nbt->getInt("playerGameType", $this->server->getGamemode()) & 0x03;
+		if($this->server->getForceGamemode() or !$nbt->hasTag("playerGameType", IntTag::class)){
+			$this->gamemode = $this->server->getGamemode();
+		}else{
+			$this->gamemode = GameMode::fromMagicNumber($nbt->getInt("playerGameType") & 0x03); //TODO: bad hack here to avoid crashes on corrupted data
+		}
 
 		$this->allowFlight = $this->isCreative();
 		$this->keepMovement = $this->isSpectator() || $this->allowMovementCheats();
@@ -1360,9 +1365,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * @return int
+	 * @return GameMode
 	 */
-	public function getGamemode() : int{
+	public function getGamemode() : GameMode{
 		return $this->gamemode;
 	}
 
@@ -1374,29 +1379,28 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 *
 	 * TODO: remove this when Spectator Mode gets added properly to MCPE
 	 *
-	 * @param int $gamemode
+	 * @param GameMode $gamemode
 	 *
 	 * @return int
 	 */
-	public static function getClientFriendlyGamemode(int $gamemode) : int{
-		$gamemode &= 0x03;
-		if($gamemode === GameMode::SPECTATOR){
-			return GameMode::CREATIVE;
+	public static function getClientFriendlyGamemode(GameMode $gamemode) : int{
+		if($gamemode === GameMode::SPECTATOR()){
+			return GameMode::CREATIVE()->getMagicNumber();
 		}
 
-		return $gamemode;
+		return $gamemode->getMagicNumber();
 	}
 
 	/**
 	 * Sets the gamemode, and if needed, kicks the Player.
 	 *
-	 * @param int  $gm
-	 * @param bool $client if the client made this change in their GUI
+	 * @param GameMode $gm
+	 * @param bool     $client if the client made this change in their GUI
 	 *
 	 * @return bool
 	 */
-	public function setGamemode(int $gm, bool $client = false) : bool{
-		if($gm < 0 or $gm > 3 or $this->gamemode === $gm){
+	public function setGamemode(GameMode $gm, bool $client = false) : bool{
+		if($this->gamemode === $gm){
 			return false;
 		}
 
@@ -1427,7 +1431,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if(!$client){ //Gamemode changed by server, do not send for client changes
 			$this->sendGamemode();
 		}else{
-			Command::broadcastCommandMessage($this, new TranslationContainer("commands.gamemode.success.self", [GameMode::toTranslation($gm)]));
+			Command::broadcastCommandMessage($this, new TranslationContainer("commands.gamemode.success.self", [$gm->getTranslationKey()]));
 		}
 
 		$this->sendSettings();
@@ -1475,7 +1479,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isSurvival(bool $literal = false) : bool{
-		return $this->gamemode === GameMode::SURVIVAL or (!$literal and $this->gamemode === GameMode::ADVENTURE);
+		return $this->gamemode === GameMode::SURVIVAL() or (!$literal and $this->gamemode === GameMode::ADVENTURE());
 	}
 
 	/**
@@ -1487,7 +1491,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isCreative(bool $literal = false) : bool{
-		return $this->gamemode === GameMode::CREATIVE or (!$literal and $this->gamemode === GameMode::SPECTATOR);
+		return $this->gamemode === GameMode::CREATIVE() or (!$literal and $this->gamemode === GameMode::SPECTATOR());
 	}
 
 	/**
@@ -1499,14 +1503,14 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isAdventure(bool $literal = false) : bool{
-		return $this->gamemode === GameMode::ADVENTURE or (!$literal and $this->gamemode === GameMode::SPECTATOR);
+		return $this->gamemode === GameMode::ADVENTURE() or (!$literal and $this->gamemode === GameMode::SPECTATOR());
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isSpectator() : bool{
-		return $this->gamemode === GameMode::SPECTATOR;
+		return $this->gamemode === GameMode::SPECTATOR();
 	}
 
 	public function isFireProof() : bool{
@@ -2793,7 +2797,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 		$nbt->setTag("Achievements", $achievements);
 
-		$nbt->setInt("playerGameType", $this->gamemode);
+		$nbt->setInt("playerGameType", $this->gamemode->getMagicNumber());
 		$nbt->setLong("firstPlayed", $this->firstPlayed);
 		$nbt->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 
