@@ -1513,6 +1513,15 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->gamemode === GameMode::SPECTATOR();
 	}
 
+	/**
+	 * TODO: make this a dynamic ability instead of being hardcoded
+	 *
+	 * @return bool
+	 */
+	public function hasFiniteResources() : bool{
+		return $this->gamemode === GameMode::SURVIVAL() or $this->gamemode === GameMode::ADVENTURE();
+	}
+
 	public function isFireProof() : bool{
 		return $this->isCreative();
 	}
@@ -1937,7 +1946,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$result = $item->onClickAir($this, $directionVector);
 		if($result === ItemUseResult::SUCCESS()){
 			$this->resetItemCooldown($item);
-			if($this->isSurvival()){
+			if($this->hasFiniteResources()){
 				$this->inventory->setItemInHand($item);
 			}
 		}elseif($result === ItemUseResult::FAIL()){
@@ -1971,7 +1980,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 			$this->resetItemCooldown($slot);
 
-			if($this->isSurvival()){
+			if($this->hasFiniteResources()){
 				$slot->pop();
 				$this->inventory->setItemInHand($slot);
 				$this->inventory->addItem($slot->getResidue());
@@ -2132,12 +2141,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$item = $this->inventory->getItemInHand();
 			$oldItem = clone $item;
 			if($this->level->useBreakOn($pos, $item, $this, true)){
-				if($this->isSurvival()){
-					if(!$item->equalsExact($oldItem)){
-						$this->inventory->setItemInHand($item);
-					}
-					$this->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
+				if($this->hasFiniteResources() and !$item->equalsExact($oldItem)){
+					$this->inventory->setItemInHand($item);
 				}
+				$this->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
 				return true;
 			}
 		}
@@ -2171,7 +2178,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
 			if($this->level->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
-				if($this->isSurvival() and !$item->equalsExact($oldItem)){
+				if($this->hasFiniteResources() and !$item->equalsExact($oldItem)){
 					$this->inventory->setItemInHand($item);
 				}
 				return true;
@@ -2239,7 +2246,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$entity->attack($ev);
 
 		if($ev->isCancelled()){
-			if($heldItem instanceof Durable and $this->isSurvival()){
+			if($heldItem instanceof Durable and $this->hasFiniteResources()){
 				$this->inventory->sendContents($this);
 			}
 			return false;
@@ -2258,7 +2265,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($this->isAlive()){
 			//reactive damage like thorns might cause us to be killed by attacking another mob, which
 			//would mean we'd already have dropped the inventory by the time we reached here
-			if($heldItem->onAttackEntity($entity) and $this->isSurvival()){ //always fire the hook, even if we are survival
+			if($heldItem->onAttackEntity($entity) and $this->hasFiniteResources()){ //always fire the hook, even if we are survival
 				$this->inventory->setItemInHand($heldItem);
 			}
 

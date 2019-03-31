@@ -252,7 +252,7 @@ class ItemEntity extends Entity{
 		$item = $this->getItem();
 		$playerInventory = $player->getInventory();
 
-		if($player->isSurvival() and !$playerInventory->canAddItem($item)){
+		if($player->hasFiniteResources() and !$playerInventory->canAddItem($item)){
 			return;
 		}
 

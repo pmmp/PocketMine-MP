@@ -179,7 +179,7 @@ class Arrow extends Projectile{
 		$item = ItemFactory::get(Item::ARROW, 0, 1);
 
 		$playerInventory = $player->getInventory();
-		if($player->isSurvival() and !$playerInventory->canAddItem($item)){
+		if($player->hasFiniteResources() and !$playerInventory->canAddItem($item)){
 			return;
 		}
 

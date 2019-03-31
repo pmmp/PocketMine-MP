@@ -49,7 +49,7 @@ class Bucket extends Item{
 			if(!$ev->isCancelled()){
 				$player->getLevel()->setBlock($blockClicked, BlockFactory::get(BlockLegacyIds::AIR));
 				$player->getLevel()->addSound($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
-				if($player->isSurvival()){
+				if($player->hasFiniteResources()){
 					if($stack->getCount() === 0){
 						$player->getInventory()->setItemInHand($ev->getItem());
 					}else{

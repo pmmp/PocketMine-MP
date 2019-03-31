@@ -66,7 +66,7 @@ class LiquidBucket extends Item{
 				$player->getLevel()->setBlock($blockReplace, $resultBlock->getFlowingForm());
 				$player->getLevel()->addSound($blockClicked->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
 
-				if($player->isSurvival()){
+				if($player->hasFiniteResources()){
 					$player->getInventory()->setItemInHand($ev->getItem());
 				}
 				return ItemUseResult::SUCCESS();
