@@ -76,12 +76,13 @@ trait EnumTrait{
 	 * @param string $name
 	 *
 	 * @return self
+	 * @throws \InvalidArgumentException
 	 */
 	public static function fromString(string $name) : self{
 		self::checkInit();
 		$name = strtoupper($name);
 		if(!isset(self::$members[$name])){
-			throw new \Error("Undefined enum member: " . self::class . "::" . $name);
+			throw new \InvalidArgumentException("Undefined enum member: " . self::class . "::" . $name);
 		}
 		return self::$members[$name];
 	}
@@ -96,7 +97,11 @@ trait EnumTrait{
 		if(!empty($arguments)){
 			throw new \ArgumentCountError("Expected exactly 0 arguments, " . count($arguments) . " passed");
 		}
-		return self::fromString($name);
+		try{
+			return self::fromString($name);
+		}catch(\InvalidArgumentException $e){
+			throw new \Error($e->getMessage(), 0, $e);
+		}
 	}
 
 	/**
