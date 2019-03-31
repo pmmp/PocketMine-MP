@@ -129,7 +129,7 @@ class PluginDescription{
 		if(isset($plugin["load"])){
 			try{
 				$this->order = PluginLoadOrder::fromString($plugin["load"]);
-			}catch(\Error $e){
+			}catch(\InvalidArgumentException $e){
 				throw new PluginException("Invalid PluginDescription \"load\"");
 			}
 		}else{
