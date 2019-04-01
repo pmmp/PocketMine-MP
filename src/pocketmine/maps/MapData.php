@@ -243,6 +243,30 @@ class MapData{
 	}
 
 	/**
+	 * @param string $identifier
+	 *
+	 * @return MapDecoration|null
+	 */
+	public function getDecoration(string $identifier) : ?MapDecoration{
+		return $this->decorations[$identifier] ?? null;
+	}
+
+	/**
+	 * @param string        $identifier
+	 * @param MapDecoration $decoration
+	 */
+	public function setDecoration(string $identifier, MapDecoration $decoration) : void{
+		$this->decorations[$identifier] = $decoration;
+	}
+
+	/**
+	 * @param string $identifier
+	 */
+	public function removeDecoration(string $identifier) : void{
+		unset($this->decorations[$identifier]);
+	}
+
+	/**
 	 * @param MapDecoration[] $decorations
 	 */
 	public function setDecorations(array $decorations) : void{
@@ -379,10 +403,11 @@ class MapData{
 		$b0 = (int) (($f * 2.0) + 0.5);
 		$b1 = (int) (($f1 * 2.0) + 0.5);
 		$j = 63;
-		if($f >= (-$j) and $f1 >= (-$j) and $f <= $j and $f1 <= $j){
-			$rotation = $rotation + ($rotation < 0.0 ? -8.0 : 8.0);
-			$b2 = ((int) ($rotation * 16.0 / 360.0));
 
+		$rotation = $rotation + ($rotation < 0.0 ? -8.0 : 8.0);
+		$b2 = ((int) ($rotation * 16.0 / 360.0));
+
+		if($f >= (-$j) and $f1 >= (-$j) and $f <= $j and $f1 <= $j){
 			if($this->dimension > DimensionIds::OVERWORLD){
 				$k = (int) ($worldIn->getTime() / 10);
 				$b2 = (int) ($k * $k * 34187121 + $k * 121 >> 15 & 15);
@@ -397,7 +422,6 @@ class MapData{
 				$type = MapDecoration::TYPE_PLAYER_OFF_MAP;
 			}
 
-			$b2 = 0;
 			if($f <= -$j){
 				$b0 = (int) (($j * 2) + 2.5);
 			}

@@ -44,6 +44,10 @@ class MapManager{
 		self::$maps[$map->getId()] = $map;
 	}
 
+	public static function unsetMapData(int $mapId) : void{
+		unset(self::$maps[$mapId]);
+	}
+
 	public static function getMapDataById(int $id) : ?MapData{
 		if(!isset(self::$maps[$id])){
 			self::loadMapData($id);
