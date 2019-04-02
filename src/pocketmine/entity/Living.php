@@ -228,14 +228,14 @@ abstract class Living extends Entity implements Damageable{
 			$ev->call();
 			if($ev->isCancelled()){
 				if($hasExpired and !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
-					$this->sendEffectAdd($ev->getEffect(), true);
+					$this->onEffectAdded($ev->getEffect(), true);
 				}
 				return;
 			}
 
 			unset($this->effects[$index]);
 			$effect->getType()->remove($this, $effect);
-			$this->sendEffectRemove($effect);
+			$this->onEffectRemoved($effect);
 
 			$this->recalculateEffectColor();
 		}
@@ -310,7 +310,7 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$effect->getType()->add($this, $effect);
-		$this->sendEffectAdd($effect, $oldEffect !== null);
+		$this->onEffectAdded($effect, $oldEffect !== null);
 
 		$this->effects[$index] = $effect;
 
@@ -368,11 +368,11 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
-	protected function sendEffectAdd(EffectInstance $effect, bool $replacesOldEffect) : void{
+	protected function onEffectAdded(EffectInstance $effect, bool $replacesOldEffect) : void{
 
 	}
 
-	protected function sendEffectRemove(EffectInstance $effect) : void{
+	protected function onEffectRemoved(EffectInstance $effect) : void{
 
 	}
 

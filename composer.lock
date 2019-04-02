@@ -488,12 +488,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "02476b8990ad31c38fa999ec0392f6d01208574d"
+                "reference": "463152d5d2ee052a89fe44dcc27b56663f891912"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/02476b8990ad31c38fa999ec0392f6d01208574d",
-                "reference": "02476b8990ad31c38fa999ec0392f6d01208574d",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/463152d5d2ee052a89fe44dcc27b56663f891912",
+                "reference": "463152d5d2ee052a89fe44dcc27b56663f891912",
                 "shasum": ""
             },
             "type": "library",
@@ -512,7 +512,7 @@
             "support": {
                 "source": "https://github.com/pmmp/SPL/tree/master"
             },
-            "time": "2019-03-15T15:22:36+00:00"
+            "time": "2019-03-31T16:30:20+00:00"
         }
     ],
     "packages-dev": [],

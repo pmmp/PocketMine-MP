@@ -23,9 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\form\Form;
+use pocketmine\GameMode;
+use pocketmine\level\Position;
+use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\DeathSessionHandler;
 use pocketmine\network\mcpe\handler\HandshakeSessionHandler;
@@ -34,13 +40,29 @@ use pocketmine\network\mcpe\handler\PreSpawnSessionHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksSessionHandler;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\handler\SimpleSessionHandler;
+use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
+use pocketmine\network\mcpe\protocol\MobEffectPacket;
+use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
+use pocketmine\network\mcpe\protocol\MovePlayerPacket;
+use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
+use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
+use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
+use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\TransferPacket;
+use pocketmine\network\mcpe\protocol\types\CommandData;
+use pocketmine\network\mcpe\protocol\types\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\CommandParameter;
+use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\NetworkInterface;
 use pocketmine\network\NetworkSessionManager;
 use pocketmine\Player;
@@ -49,10 +71,16 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\BinaryDataException;
 use function bin2hex;
+use function count;
 use function get_class;
+use function in_array;
+use function json_encode;
+use function json_last_error_msg;
 use function strlen;
+use function strtolower;
 use function substr;
 use function time;
+use function ucfirst;
 
 class NetworkSession{
 	/** @var Server */
@@ -392,6 +420,23 @@ class NetworkSession{
 	}
 
 	/**
+	 * Instructs the remote client to connect to a different server.
+	 *
+	 * @param string $ip
+	 * @param int    $port
+	 * @param string $reason
+	 *
+	 * @throws \UnsupportedOperationException
+	 */
+	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
+		$pk = new TransferPacket();
+		$pk->address = $ip;
+		$pk->port = $port;
+		$this->sendDataPacket($pk, true);
+		$this->disconnect($reason);
+	}
+
+	/**
 	 * Called by the Player when it is closed (for example due to getting kicked).
 	 *
 	 * @param string $reason
@@ -496,7 +541,7 @@ class NetworkSession{
 	}
 
 	public function onSpawn() : void{
-		$this->setHandler(new SimpleSessionHandler($this->player));
+		$this->setHandler(new SimpleSessionHandler($this->player, $this));
 	}
 
 	public function onDeath() : void{
@@ -504,7 +549,188 @@ class NetworkSession{
 	}
 
 	public function onRespawn() : void{
-		$this->setHandler(new SimpleSessionHandler($this->player));
+		$this->setHandler(new SimpleSessionHandler($this->player, $this));
+	}
+
+	public function syncMovement(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
+		$yaw = $yaw ?? $this->player->getYaw();
+		$pitch = $pitch ?? $this->player->getPitch();
+
+		$pk = new MovePlayerPacket();
+		$pk->entityRuntimeId = $this->player->getId();
+		$pk->position = $this->player->getOffsetPosition($pos);
+		$pk->pitch = $pitch;
+		$pk->headYaw = $yaw;
+		$pk->yaw = $yaw;
+		$pk->mode = $mode;
+
+		$this->sendDataPacket($pk);
+	}
+
+	public function syncViewAreaRadius(int $distance) : void{
+		$pk = new ChunkRadiusUpdatedPacket();
+		$pk->radius = $distance;
+		$this->sendDataPacket($pk);
+	}
+
+	public function syncViewAreaCenterPoint(Vector3 $newPos, int $viewDistance) : void{
+		$pk = new NetworkChunkPublisherUpdatePacket();
+		$pk->x = $newPos->getFloorX();
+		$pk->y = $newPos->getFloorY();
+		$pk->z = $newPos->getFloorZ();
+		$pk->radius = $viewDistance * 16; //blocks, not chunks >.>
+		$this->sendDataPacket($pk);
+	}
+
+	public function syncPlayerSpawnPoint(Position $newSpawn) : void{
+		$pk = new SetSpawnPositionPacket();
+		$pk->x = $newSpawn->getFloorX();
+		$pk->y = $newSpawn->getFloorY();
+		$pk->z = $newSpawn->getFloorZ();
+		$pk->spawnType = SetSpawnPositionPacket::TYPE_PLAYER_SPAWN;
+		$pk->spawnForced = false;
+		$this->sendDataPacket($pk);
+	}
+
+	public function syncGameMode(GameMode $mode) : void{
+		$pk = new SetPlayerGameTypePacket();
+		$pk->gamemode = self::getClientFriendlyGamemode($mode);
+		$this->sendDataPacket($pk);
+	}
+
+	/**
+	 * TODO: make this less specialized
+	 *
+	 * @param Player $for
+	 */
+	public function syncAdventureSettings(Player $for) : void{
+		$pk = new AdventureSettingsPacket();
+
+		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isSpectator());
+		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
+		$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $for->hasAutoJump());
+		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $for->getAllowFlight());
+		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, $for->isSpectator());
+		$pk->setFlag(AdventureSettingsPacket::FLYING, $for->isFlying());
+
+		//TODO: permission flags
+
+		$pk->commandPermission = ($for->isOp() ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL);
+		$pk->playerPermission = ($for->isOp() ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER);
+		$pk->entityUniqueId = $for->getId();
+
+		$this->sendDataPacket($pk);
+	}
+
+	public function syncAttributes(Living $entity, bool $sendAll = false){
+		$entries = $sendAll ? $entity->getAttributeMap()->getAll() : $entity->getAttributeMap()->needSend();
+		if(count($entries) > 0){
+			$pk = new UpdateAttributesPacket();
+			$pk->entityRuntimeId = $entity->getId();
+			$pk->entries = $entries;
+			$this->sendDataPacket($pk);
+			foreach($entries as $entry){
+				$entry->markSynchronized();
+			}
+		}
+	}
+
+	public function onEntityEffectAdded(Living $entity, EffectInstance $effect, bool $replacesOldEffect) : void{
+		$pk = new MobEffectPacket();
+		$pk->entityRuntimeId = $entity->getId();
+		$pk->eventId = $replacesOldEffect ? MobEffectPacket::EVENT_MODIFY : MobEffectPacket::EVENT_ADD;
+		$pk->effectId = $effect->getId();
+		$pk->amplifier = $effect->getAmplifier();
+		$pk->particles = $effect->isVisible();
+		$pk->duration = $effect->getDuration();
+
+		$this->sendDataPacket($pk);
+	}
+
+	public function onEntityEffectRemoved(Living $entity, EffectInstance $effect) : void{
+		$pk = new MobEffectPacket();
+		$pk->entityRuntimeId = $entity->getId();
+		$pk->eventId = MobEffectPacket::EVENT_REMOVE;
+		$pk->effectId = $effect->getId();
+
+		$this->sendDataPacket($pk);
+	}
+
+	public function syncAvailableCommands() : void{
+		$pk = new AvailableCommandsPacket();
+		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
+			if(isset($pk->commandData[$command->getName()]) or $command->getName() === "help" or !$command->testPermissionSilent($this->player)){
+				continue;
+			}
+
+			$data = new CommandData();
+			//TODO: commands containing uppercase letters in the name crash 1.9.0 client
+			$data->commandName = strtolower($command->getName());
+			$data->commandDescription = $this->server->getLanguage()->translateString($command->getDescription());
+			$data->flags = 0;
+			$data->permission = 0;
+
+			$parameter = new CommandParameter();
+			$parameter->paramName = "args";
+			$parameter->paramType = AvailableCommandsPacket::ARG_FLAG_VALID | AvailableCommandsPacket::ARG_TYPE_RAWTEXT;
+			$parameter->isOptional = true;
+			$data->overloads[0][0] = $parameter;
+
+			$aliases = $command->getAliases();
+			if(!empty($aliases)){
+				if(!in_array($data->commandName, $aliases, true)){
+					//work around a client bug which makes the original name not show when aliases are used
+					$aliases[] = $data->commandName;
+				}
+				$data->aliases = new CommandEnum();
+				$data->aliases->enumName = ucfirst($command->getName()) . "Aliases";
+				$data->aliases->enumValues = $aliases;
+			}
+
+			$pk->commandData[$command->getName()] = $data;
+		}
+
+		$this->sendDataPacket($pk);
+	}
+
+	public function onRawChatMessage(string $message) : void{
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_RAW;
+		$pk->message = $message;
+		$this->sendDataPacket($pk);
+	}
+
+	public function onTranslatedChatMessage(string $key, array $parameters) : void{
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_TRANSLATION;
+		$pk->needsTranslation = true;
+		$pk->message = $key;
+		$pk->parameters = $parameters;
+		$this->sendDataPacket($pk);
+	}
+
+	public function onPopup(string $message) : void{
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_POPUP;
+		$pk->message = $message;
+		$this->sendDataPacket($pk);
+	}
+
+	public function onTip(string $message) : void{
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_TIP;
+		$pk->message = $message;
+		$this->sendDataPacket($pk);
+	}
+
+	public function onFormSent(int $id, Form $form) : bool{
+		$pk = new ModalFormRequestPacket();
+		$pk->formId = $id;
+		$pk->formData = json_encode($form);
+		if($pk->formData === false){
+			throw new \InvalidArgumentException("Failed to encode form JSON: " . json_last_error_msg());
+		}
+		return $this->sendDataPacket($pk);
 	}
 
 	public function tick() : bool{
@@ -522,5 +748,22 @@ class NetworkSession{
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns a client-friendly gamemode of the specified real gamemode
+	 * This function takes care of handling gamemodes known to MCPE (as of 1.1.0.3, that includes Survival, Creative and Adventure)
+	 *
+	 * @internal
+	 * @param GameMode $gamemode
+	 *
+	 * @return int
+	 */
+	public static function getClientFriendlyGamemode(GameMode $gamemode) : int{
+		if($gamemode === GameMode::SPECTATOR()){
+			return GameMode::CREATIVE()->getMagicNumber();
+		}
+
+		return $gamemode->getMagicNumber();
 	}
 }

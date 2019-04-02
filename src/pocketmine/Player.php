@@ -98,28 +98,13 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
-use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
-use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\network\mcpe\protocol\MobEffectPacket;
-use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
-use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
-use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
-use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
-use pocketmine\network\mcpe\protocol\TextPacket;
-use pocketmine\network\mcpe\protocol\TransferPacket;
-use pocketmine\network\mcpe\protocol\types\CommandData;
-use pocketmine\network\mcpe\protocol\types\CommandEnum;
-use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
-use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
-use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
@@ -137,10 +122,7 @@ use function count;
 use function explode;
 use function floor;
 use function get_class;
-use function in_array;
 use function is_int;
-use function json_encode;
-use function json_last_error_msg;
 use function max;
 use function microtime;
 use function min;
@@ -153,7 +135,6 @@ use function strpos;
 use function strtolower;
 use function substr;
 use function trim;
-use function ucfirst;
 use const M_PI;
 use const M_SQRT3;
 use const PHP_INT_MAX;
@@ -531,7 +512,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	public function setAllowFlight(bool $value){
 		$this->allowFlight = $value;
-		$this->sendSettings();
+		$this->networkSession->syncAdventureSettings($this);
 	}
 
 	public function getAllowFlight() : bool{
@@ -542,7 +523,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($this->flying !== $value){
 			$this->flying = $value;
 			$this->resetFallDistance();
-			$this->sendSettings();
+			$this->networkSession->syncAdventureSettings($this);
 		}
 	}
 
@@ -552,7 +533,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	public function setAutoJump(bool $value){
 		$this->autoJump = $value;
-		$this->sendSettings();
+		$this->networkSession->syncAdventureSettings($this);
 	}
 
 	public function hasAutoJump() : bool{
@@ -665,9 +646,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->nextChunkOrderRun = 0;
 
-		$pk = new ChunkRadiusUpdatedPacket();
-		$pk->radius = $this->viewDistance;
-		$this->sendDataPacket($pk);
+		$this->networkSession->syncViewAreaRadius($this->viewDistance);
 
 		$this->server->getLogger()->debug("Setting view distance for " . $this->getName() . " to " . $this->viewDistance . " (requested " . $distance . ")");
 	}
@@ -700,7 +679,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->server->removeOp($this->getName());
 		}
 
-		$this->sendSettings();
+		$this->networkSession->syncAdventureSettings($this);
 	}
 
 	/**
@@ -763,7 +742,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 				$permManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 			}
 
-			$this->sendCommandData();
+			$this->networkSession->syncAvailableCommands();
 		}
 	}
 
@@ -772,44 +751,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function getEffectivePermissions() : array{
 		return $this->perm->getEffectivePermissions();
-	}
-
-	public function sendCommandData(){
-		$pk = new AvailableCommandsPacket();
-		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
-			if(isset($pk->commandData[$command->getName()]) or $command->getName() === "help" or !$command->testPermissionSilent($this)){
-				continue;
-			}
-
-			$data = new CommandData();
-			//TODO: commands containing uppercase letters in the name crash 1.9.0 client
-			$data->commandName = strtolower($command->getName());
-			$data->commandDescription = $this->server->getLanguage()->translateString($command->getDescription());
-			$data->flags = 0;
-			$data->permission = 0;
-
-			$parameter = new CommandParameter();
-			$parameter->paramName = "args";
-			$parameter->paramType = AvailableCommandsPacket::ARG_FLAG_VALID | AvailableCommandsPacket::ARG_TYPE_RAWTEXT;
-			$parameter->isOptional = true;
-			$data->overloads[0][0] = $parameter;
-
-			$aliases = $command->getAliases();
-			if(!empty($aliases)){
-				if(!in_array($data->commandName, $aliases, true)){
-					//work around a client bug which makes the original name not show when aliases are used
-					$aliases[] = $data->commandName;
-				}
-				$data->aliases = new CommandEnum();
-				$data->aliases->enumName = ucfirst($command->getName()) . "Aliases";
-				$data->aliases->enumValues = $aliases;
-			}
-
-			$pk->commandData[$command->getName()] = $data;
-		}
-
-		$this->sendDataPacket($pk);
-
 	}
 
 	/**
@@ -1187,12 +1128,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->loadQueue = $newOrder;
 		if(!empty($this->loadQueue) or !empty($unloadChunks)){
-			$pk = new NetworkChunkPublisherUpdatePacket();
-			$pk->x = $this->getFloorX();
-			$pk->y = $this->getFloorY();
-			$pk->z = $this->getFloorZ();
-			$pk->radius = $this->viewDistance * 16; //blocks, not chunks >.>
-			$this->sendDataPacket($pk);
+			$this->networkSession->syncViewAreaCenterPoint($this, $this->viewDistance);
 		}
 
 		Timings::$playerChunkOrderTimer->stopTiming();
@@ -1246,13 +1182,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$level = $pos->getLevel();
 		}
 		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $level);
-		$pk = new SetSpawnPositionPacket();
-		$pk->x = $this->spawnPosition->getFloorX();
-		$pk->y = $this->spawnPosition->getFloorY();
-		$pk->z = $this->spawnPosition->getFloorZ();
-		$pk->spawnType = SetSpawnPositionPacket::TYPE_PLAYER_SPAWN;
-		$pk->spawnForced = false;
-		$this->sendDataPacket($pk);
+		$this->networkSession->syncPlayerSpawnPoint($this->spawnPosition);
 	}
 
 	/**
@@ -1372,26 +1302,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * @internal
-	 *
-	 * Returns a client-friendly gamemode of the specified real gamemode
-	 * This function takes care of handling gamemodes known to MCPE (as of 1.1.0.3, that includes Survival, Creative and Adventure)
-	 *
-	 * TODO: remove this when Spectator Mode gets added properly to MCPE
-	 *
-	 * @param GameMode $gamemode
-	 *
-	 * @return int
-	 */
-	public static function getClientFriendlyGamemode(GameMode $gamemode) : int{
-		if($gamemode === GameMode::SPECTATOR()){
-			return GameMode::CREATIVE()->getMagicNumber();
-		}
-
-		return $gamemode->getMagicNumber();
-	}
-
-	/**
 	 * Sets the gamemode, and if needed, kicks the Player.
 	 *
 	 * @param GameMode $gm
@@ -1408,7 +1318,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$ev->call();
 		if($ev->isCancelled()){
 			if($client){ //gamemode change by client in the GUI
-				$this->sendGamemode();
+				$this->networkSession->syncGameMode($this->gamemode);
 			}
 			return false;
 		}
@@ -1429,45 +1339,15 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		if(!$client){ //Gamemode changed by server, do not send for client changes
-			$this->sendGamemode();
+			$this->networkSession->syncGameMode($this->gamemode);
 		}else{
 			Command::broadcastCommandMessage($this, new TranslationContainer("commands.gamemode.success.self", [$gm->getTranslationKey()]));
 		}
 
-		$this->sendSettings();
+		$this->networkSession->syncAdventureSettings($this);
 		$this->inventory->sendCreativeContents();
 
 		return true;
-	}
-
-	/**
-	 * @internal
-	 * Sends the player's gamemode to the client.
-	 */
-	public function sendGamemode(){
-		$pk = new SetPlayerGameTypePacket();
-		$pk->gamemode = Player::getClientFriendlyGamemode($this->gamemode);
-		$this->sendDataPacket($pk);
-	}
-
-	/**
-	 * Sends all the option flags
-	 */
-	public function sendSettings(){
-		$pk = new AdventureSettingsPacket();
-
-		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $this->isSpectator());
-		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $this->isSpectator());
-		$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $this->autoJump);
-		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $this->allowFlight);
-		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, $this->isSpectator());
-		$pk->setFlag(AdventureSettingsPacket::FLYING, $this->flying);
-
-		$pk->commandPermission = ($this->isOp() ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL);
-		$pk->playerPermission = ($this->isOp() ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER);
-		$pk->entityUniqueId = $this->getId();
-
-		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -1587,6 +1467,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool if the
 	 */
 	public function updateNextPosition(Vector3 $newPos) : bool{
+		//TODO: teleport acks are a network specific thing and shouldn't be here
+
 		$newPos = $newPos->asVector3();
 		if($this->isTeleporting and $newPos->distanceSquared($this) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
 			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
@@ -1739,19 +1621,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	}
 
-	public function sendAttributes(bool $sendAll = false){
-		$entries = $sendAll ? $this->attributeMap->getAll() : $this->attributeMap->needSend();
-		if(count($entries) > 0){
-			$pk = new UpdateAttributesPacket();
-			$pk->entityRuntimeId = $this->id;
-			$pk->entries = $entries;
-			$this->sendDataPacket($pk);
-			foreach($entries as $entry){
-				$entry->markSynchronized();
-			}
-		}
-	}
-
 	public function onUpdate(int $currentTick) : bool{
 		$tickDiff = $currentTick - $this->lastUpdate;
 
@@ -1763,7 +1632,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->lastUpdate = $currentTick;
 
-		$this->sendAttributes();
+		//TODO: move this to network session ticking (this is specifically related to net sync)
+		$this->networkSession->syncAttributes($this);
 
 		if(!$this->isAlive() and $this->spawned){
 			$this->onDeathUpdate($tickDiff);
@@ -1819,25 +1689,12 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->isCreative() or parent::canBreathe();
 	}
 
-	protected function sendEffectAdd(EffectInstance $effect, bool $replacesOldEffect) : void{
-		$pk = new MobEffectPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->eventId = $replacesOldEffect ? MobEffectPacket::EVENT_MODIFY : MobEffectPacket::EVENT_ADD;
-		$pk->effectId = $effect->getId();
-		$pk->amplifier = $effect->getAmplifier();
-		$pk->particles = $effect->isVisible();
-		$pk->duration = $effect->getDuration();
-
-		$this->sendDataPacket($pk);
+	protected function onEffectAdded(EffectInstance $effect, bool $replacesOldEffect) : void{
+	    $this->networkSession->onEntityEffectAdded($this, $effect, $replacesOldEffect);
 	}
 
-	protected function sendEffectRemove(EffectInstance $effect) : void{
-		$pk = new MobEffectPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->eventId = MobEffectPacket::EVENT_REMOVE;
-		$pk->effectId = $effect->getId();
-
-		$this->sendDataPacket($pk);
+	protected function onEffectRemoved(EffectInstance $effect) : void{
+	    $this->networkSession->onEntityEffectRemoved($this, $effect);
 	}
 
 	/**
@@ -2315,7 +2172,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 		$ev->call();
 		if($ev->isCancelled()){
-			$this->sendSettings();
+			$this->networkSession->syncAdventureSettings($this);
 		}else{ //don't use setFlying() here, to avoid feedback loops
 			$this->flying = $fly;
 			$this->resetFallDistance();
@@ -2430,12 +2287,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$ev = new PlayerTransferEvent($this, $address, $port, $message);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$pk = new TransferPacket();
-			$pk->address = $ev->getAddress();
-			$pk->port = $ev->getPort();
-			$this->sendDataPacket($pk, true);
-			$this->close("", $ev->getMessage(), false);
-
+			$this->networkSession->transfer($ev->getAddress(), $ev->getPort(), $ev->getMessage());
 			return true;
 		}
 
@@ -2572,10 +2424,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$message = $message->getText();
 		}
 
-		$pk = new TextPacket();
-		$pk->type = TextPacket::TYPE_RAW;
-		$pk->message = $this->server->getLanguage()->translateString($message);
-		$this->sendDataPacket($pk);
+		$this->networkSession->onRawChatMessage($this->server->getLanguage()->translateString($message));
 	}
 
 	/**
@@ -2583,20 +2432,14 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param string[] $parameters
 	 */
 	public function sendTranslation(string $message, array $parameters = []){
-		$pk = new TextPacket();
 		if(!$this->server->isLanguageForced()){
-			$pk->type = TextPacket::TYPE_TRANSLATION;
-			$pk->needsTranslation = true;
-			$pk->message = $this->server->getLanguage()->translateString($message, $parameters, "pocketmine.");
 			foreach($parameters as $i => $p){
 				$parameters[$i] = $this->server->getLanguage()->translateString($p, $parameters, "pocketmine.");
 			}
-			$pk->parameters = $parameters;
+			$this->networkSession->onTranslatedChatMessage($this->server->getLanguage()->translateString($message, $parameters, "pocketmine."), $parameters);
 		}else{
-			$pk->type = TextPacket::TYPE_RAW;
-			$pk->message = $this->server->getLanguage()->translateString($message, $parameters);
+			$this->sendMessage($this->server->getLanguage()->translateString($message, $parameters));
 		}
-		$this->sendDataPacket($pk);
 	}
 
 	/**
@@ -2608,33 +2451,23 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param string $subtitle @deprecated
 	 */
 	public function sendPopup(string $message, string $subtitle = ""){
-		$pk = new TextPacket();
-		$pk->type = TextPacket::TYPE_POPUP;
-		$pk->message = $message;
-		$this->sendDataPacket($pk);
+		$this->networkSession->onPopup($message);
 	}
 
 	public function sendTip(string $message){
-		$pk = new TextPacket();
-		$pk->type = TextPacket::TYPE_TIP;
-		$pk->message = $message;
-		$this->sendDataPacket($pk);
+		$this->networkSession->onTip($message);
 	}
 
 	/**
 	 * Sends a Form to the player, or queue to send it if a form is already open.
 	 *
 	 * @param Form $form
+	 *
+	 * @throws \InvalidArgumentException
 	 */
 	public function sendForm(Form $form) : void{
 		$id = $this->formIdCounter++;
-		$pk = new ModalFormRequestPacket();
-		$pk->formId = $id;
-		$pk->formData = json_encode($form);
-		if($pk->formData === false){
-			throw new \InvalidArgumentException("Failed to encode form JSON: " . json_last_error_msg());
-		}
-		if($this->sendDataPacket($pk)){
+		if($this->networkSession->onFormSent($id, $form)){
 			$this->forms[$id] = $form;
 		}
 	}
@@ -2871,7 +2704,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->sendData($this);
 		$this->sendData($this->getViewers());
 
-		$this->sendSettings();
+		$this->networkSession->syncAdventureSettings($this);
 		$this->sendAllInventories();
 
 		$this->spawnToAll();
@@ -2925,24 +2758,18 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $result;
 	}
 
-	public function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL, ?array $targets = null){
-		$yaw = $yaw ?? $this->yaw;
-		$pitch = $pitch ?? $this->pitch;
+	/**
+	 * TODO: remove this
+	 *
+	 * @param Vector3    $pos
+	 * @param float|null $yaw
+	 * @param float|null $pitch
+	 * @param int        $mode
+	 */
+	public function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL){
+		$this->networkSession->syncMovement($pos, $yaw, $pitch, $mode);
 
-		$pk = new MovePlayerPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->getOffsetPosition($pos);
-		$pk->pitch = $pitch;
-		$pk->headYaw = $yaw;
-		$pk->yaw = $yaw;
-		$pk->mode = $mode;
-
-		if($targets !== null){
-			$this->server->broadcastPacket($targets, $pk);
-		}else{
-			$this->sendDataPacket($pk);
-		}
-
+		//TODO: get rid of this
 		$this->newPosition = null;
 	}
 
@@ -2955,7 +2782,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->removeAllWindows();
 
 			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_TELEPORT);
-			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_TELEPORT, $this->getViewers());
+			$this->broadcastMovement(true);
 
 			$this->spawnToAll();
 

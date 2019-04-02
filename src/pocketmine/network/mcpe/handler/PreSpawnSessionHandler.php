@@ -57,13 +57,13 @@ class PreSpawnSessionHandler extends SessionHandler{
 		$pk = new StartGamePacket();
 		$pk->entityUniqueId = $this->player->getId();
 		$pk->entityRuntimeId = $this->player->getId();
-		$pk->playerGamemode = Player::getClientFriendlyGamemode($this->player->getGamemode());
+		$pk->playerGamemode = NetworkSession::getClientFriendlyGamemode($this->player->getGamemode());
 		$pk->playerPosition = $this->player->getOffsetPosition($this->player);
 		$pk->pitch = $this->player->pitch;
 		$pk->yaw = $this->player->yaw;
 		$pk->seed = -1;
 		$pk->dimension = DimensionIds::OVERWORLD; //TODO: implement this properly
-		$pk->worldGamemode = Player::getClientFriendlyGamemode($this->server->getGamemode());
+		$pk->worldGamemode = NetworkSession::getClientFriendlyGamemode($this->server->getGamemode());
 		$pk->difficulty = $this->player->getLevel()->getDifficulty();
 		$pk->spawnX = $spawnPosition->getFloorX();
 		$pk->spawnY = $spawnPosition->getFloorY();
@@ -85,9 +85,9 @@ class PreSpawnSessionHandler extends SessionHandler{
 
 		$this->player->getLevel()->sendTime($this->player);
 
-		$this->player->sendAttributes(true);
-		$this->player->sendCommandData();
-		$this->player->sendSettings();
+		$this->session->syncAttributes($this->player, true);
+		$this->session->syncAvailableCommands();
+		$this->session->syncAdventureSettings($this->player);
 		$this->player->sendPotionEffects($this->player);
 		$this->player->sendData($this->player);
 

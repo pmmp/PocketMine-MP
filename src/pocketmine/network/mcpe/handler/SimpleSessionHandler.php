@@ -35,6 +35,7 @@ use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\NetworkNbtSerializer;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
@@ -96,6 +97,8 @@ class SimpleSessionHandler extends SessionHandler{
 
 	/** @var Player */
 	private $player;
+	/** @var NetworkSession */
+	private $session;
 
 	/** @var CraftingTransaction|null */
 	protected $craftingTransaction = null;
@@ -105,8 +108,9 @@ class SimpleSessionHandler extends SessionHandler{
 	/** @var Vector3|null */
 	protected $lastRightClickPos = null;
 
-	public function __construct(Player $player){
+	public function __construct(Player $player, NetworkSession $session){
 		$this->player = $player;
+		$this->session = $session;
 	}
 
 	public function handleText(TextPacket $packet) : bool{
@@ -470,8 +474,8 @@ class SimpleSessionHandler extends SessionHandler{
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
 		if($packet->gamemode !== $this->player->getGamemode()->getMagicNumber()){
 			//Set this back to default. TODO: handle this properly
-			$this->player->sendGamemode();
-			$this->player->sendSettings();
+			$this->session->syncGameMode($this->player->getGamemode());
+			$this->session->syncAdventureSettings($this->player);
 		}
 		return true;
 	}
