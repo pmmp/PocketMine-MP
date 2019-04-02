@@ -40,8 +40,6 @@ use pocketmine\nbt\tag\ListTag;
  * of handling worlds in the PC 1.13 format. Thus, we don't want PMAnvil getting accidentally influenced by changes
  * happening to the underlying Anvil, because it only uses the legacy part.
  *
- * TODO: When the formats are deprecated, the write parts of this trait can be eliminated.
- *
  * @internal
  */
 trait LegacyAnvilChunkTrait{
