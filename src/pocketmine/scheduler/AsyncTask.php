@@ -139,45 +139,6 @@ abstract class AsyncTask extends \Threaded{
 	}
 
 	/**
-	 * @see AsyncWorker::getFromThreadStore()
-	 *
-	 * @param string $identifier
-	 *
-	 * @return mixed
-	 */
-	public function getFromThreadStore(string $identifier){
-		if($this->worker === null or $this->isFinished()){
-			throw new \BadMethodCallException("Objects stored in AsyncWorker thread-local storage can only be retrieved during task execution");
-		}
-		return $this->worker->getFromThreadStore($identifier);
-	}
-
-	/**
-	 * @see AsyncWorker::saveToThreadStore()
-	 *
-	 * @param string $identifier
-	 * @param mixed  $value
-	 */
-	public function saveToThreadStore(string $identifier, $value) : void{
-		if($this->worker === null or $this->isFinished()){
-			throw new \BadMethodCallException("Objects can only be added to AsyncWorker thread-local storage during task execution");
-		}
-		$this->worker->saveToThreadStore($identifier, $value);
-	}
-
-	/**
-	 * @see AsyncWorker::removeFromThreadStore()
-	 *
-	 * @param string $identifier
-	 */
-	public function removeFromThreadStore(string $identifier) : void{
-		if($this->worker === null or $this->isFinished()){
-			throw new \BadMethodCallException("Objects can only be removed from AsyncWorker thread-local storage during task execution");
-		}
-		$this->worker->removeFromThreadStore($identifier);
-	}
-
-	/**
 	 * Actions to execute when run
 	 */
 	abstract public function onRun() : void;
