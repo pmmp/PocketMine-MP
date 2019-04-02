@@ -2145,38 +2145,37 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return false;
 	}
 
-	public function toggleSprint(bool $sprint) : void{
+	public function toggleSprint(bool $sprint) : bool{
 		$ev = new PlayerToggleSprintEvent($this, $sprint);
 		$ev->call();
 		if($ev->isCancelled()){
-			$this->sendData($this);
-		}else{
-			$this->setSprinting($sprint);
+			return false;
 		}
+		$this->setSprinting($sprint);
+		return true;
 	}
 
-	public function toggleSneak(bool $sneak) : void{
+	public function toggleSneak(bool $sneak) : bool{
 		$ev = new PlayerToggleSneakEvent($this, $sneak);
 		$ev->call();
 		if($ev->isCancelled()){
-			$this->sendData($this);
-		}else{
-			$this->setSneaking($sneak);
+			return false;
 		}
+		$this->setSneaking($sneak);
+		return true;
 	}
 
-	public function toggleFlight(bool $fly) : void{
+	public function toggleFlight(bool $fly) : bool{
 		$ev = new PlayerToggleFlightEvent($this, $fly);
-		if(!$this->allowFlight){
-			$ev->setCancelled();
-		}
+		$ev->setCancelled(!$this->allowFlight);
 		$ev->call();
 		if($ev->isCancelled()){
-			$this->networkSession->syncAdventureSettings($this);
-		}else{ //don't use setFlying() here, to avoid feedback loops
-			$this->flying = $fly;
-			$this->resetFallDistance();
+			return false;
 		}
+		//don't use setFlying() here, to avoid feedback loops - TODO: get rid of this hack
+		$this->flying = $fly;
+		$this->resetFallDistance();
+		return true;
 	}
 
 	public function animate(int $action) : bool{

@@ -362,16 +362,24 @@ class SimpleSessionHandler extends SessionHandler{
 				$this->player->jump();
 				return true;
 			case PlayerActionPacket::ACTION_START_SPRINT:
-				$this->player->toggleSprint(true);
+				if(!$this->player->toggleSprint(true)){
+					$this->player->sendData($this->player);
+				}
 				return true;
 			case PlayerActionPacket::ACTION_STOP_SPRINT:
-				$this->player->toggleSprint(false);
+				if(!$this->player->toggleSprint(false)){
+					$this->player->sendData($this->player);
+				}
 				return true;
 			case PlayerActionPacket::ACTION_START_SNEAK:
-				$this->player->toggleSneak(true);
+				if(!$this->player->toggleSneak(true)){
+					$this->player->sendData($this->player);
+				}
 				return true;
 			case PlayerActionPacket::ACTION_STOP_SNEAK:
-				$this->player->toggleSneak(false);
+				if(!$this->player->toggleSneak(false)){
+					$this->player->sendData($this->player);
+				}
 				return true;
 			case PlayerActionPacket::ACTION_START_GLIDE:
 			case PlayerActionPacket::ACTION_STOP_GLIDE:
@@ -423,7 +431,9 @@ class SimpleSessionHandler extends SessionHandler{
 
 		$isFlying = $packet->getFlag(AdventureSettingsPacket::FLYING);
 		if($isFlying !== $this->player->isFlying()){
-			$this->player->toggleFlight($isFlying);
+			if(!$this->player->toggleFlight($isFlying)){
+				$this->session->syncAdventureSettings($this->player);
+			}
 			$handled = true;
 		}
 
