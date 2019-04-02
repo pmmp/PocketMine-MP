@@ -2274,58 +2274,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * Transfers a player to another server.
-	 *
-	 * @param string $address The IP address or hostname of the destination server
-	 * @param int    $port The destination port, defaults to 19132
-	 * @param string $message Message to show in the console when closing the player
-	 *
-	 * @return bool if transfer was successful.
-	 */
-	public function transfer(string $address, int $port = 19132, string $message = "transfer") : bool{
-		$ev = new PlayerTransferEvent($this, $address, $port, $message);
-		$ev->call();
-		if(!$ev->isCancelled()){
-			$this->networkSession->transfer($ev->getAddress(), $ev->getPort(), $ev->getMessage());
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Kicks a player from the server
-	 *
-	 * @param string               $reason
-	 * @param bool                 $isAdmin
-	 * @param TextContainer|string $quitMessage
-	 *
-	 * @return bool
-	 */
-	public function kick(string $reason = "", bool $isAdmin = true, $quitMessage = null) : bool{
-		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
-		$ev->call();
-		if(!$ev->isCancelled()){
-			$reason = $ev->getReason();
-			$message = $reason;
-			if($isAdmin){
-				if(!$this->isBanned()){
-					$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
-				}
-			}else{
-				if($reason === ""){
-					$message = "disconnectionScreen.noReason";
-				}
-			}
-			$this->close($ev->getQuitMessage(), $message);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
 	 * Adds a title text to the user's screen, with an optional subtitle.
 	 *
 	 * @param string $title
@@ -2484,6 +2432,58 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		return true;
+	}
+
+	/**
+	 * Transfers a player to another server.
+	 *
+	 * @param string $address The IP address or hostname of the destination server
+	 * @param int    $port The destination port, defaults to 19132
+	 * @param string $message Message to show in the console when closing the player
+	 *
+	 * @return bool if transfer was successful.
+	 */
+	public function transfer(string $address, int $port = 19132, string $message = "transfer") : bool{
+		$ev = new PlayerTransferEvent($this, $address, $port, $message);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$this->networkSession->transfer($ev->getAddress(), $ev->getPort(), $ev->getMessage());
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Kicks a player from the server
+	 *
+	 * @param string               $reason
+	 * @param bool                 $isAdmin
+	 * @param TextContainer|string $quitMessage
+	 *
+	 * @return bool
+	 */
+	public function kick(string $reason = "", bool $isAdmin = true, $quitMessage = null) : bool{
+		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$reason = $ev->getReason();
+			$message = $reason;
+			if($isAdmin){
+				if(!$this->isBanned()){
+					$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
+				}
+			}else{
+				if($reason === ""){
+					$message = "disconnectionScreen.noReason";
+				}
+			}
+			$this->close($ev->getQuitMessage(), $message);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
