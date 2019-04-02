@@ -32,7 +32,6 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\level\Position;
-use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\tile\Comparator;
 use function array_fill;
 use function array_filter;
@@ -667,31 +666,6 @@ class BlockFactory{
 	public static function isRegistered(int $id, int $meta = 0) : bool{
 		$b = self::$fullList[($id << 4) | $meta];
 		return $b !== null and !($b instanceof UnknownBlock);
-	}
-
-	/**
-	 * @internal
-	 * @deprecated
-	 *
-	 * @param int $id
-	 * @param int $meta
-	 *
-	 * @return int
-	 */
-	public static function toStaticRuntimeId(int $id, int $meta = 0) : int{
-		return RuntimeBlockMapping::toStaticRuntimeId($id, $meta);
-	}
-
-	/**
-	 * @deprecated
-	 * @internal
-	 *
-	 * @param int $runtimeId
-	 *
-	 * @return int[] [id, meta]
-	 */
-	public static function fromStaticRuntimeId(int $runtimeId) : array{
-		return RuntimeBlockMapping::fromStaticRuntimeId($runtimeId);
 	}
 
 	/**
