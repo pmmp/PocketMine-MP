@@ -2101,6 +2101,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		/** @var float[] $pos */
 		$pos = $this->namedtag->getListTag("Pos")->getAllValues();
 		$this->level->registerChunkLoader($this, ((int) floor($pos[0])) >> 4, ((int) floor($pos[2])) >> 4, true);
+		$this->usedChunks[Level::chunkHash(((int) floor($pos[0])) >> 4, ((int) floor($pos[2])) >> 4)] = false;
 
 		parent::__construct($this->level, $this->namedtag);
 		$ev = new PlayerLoginEvent($this, "Plugin reason");
