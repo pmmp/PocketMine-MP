@@ -316,6 +316,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		//load the spawn chunk so we can see the terrain
 		$level->registerChunkLoader($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);
 		$level->registerChunkListener($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4);
+		$this->usedChunks[Level::chunkHash($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4)] = false;
 		if($spawnReset){
 			$spawn = $level->getSafeSpawn($spawn);
 		}
