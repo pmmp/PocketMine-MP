@@ -167,7 +167,7 @@ class LevelManager{
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$level->getDisplayName()]));
 		foreach($level->getPlayers() as $player){
 			if($level === $this->levelDefault or $this->levelDefault === null){
-				$player->close($player->getLeaveMessage(), "Forced default world unload");
+				$player->disconnect("Forced default world unload");
 			}elseif($this->levelDefault instanceof Level){
 				$player->teleport($this->levelDefault->getSafeSpawn());
 			}

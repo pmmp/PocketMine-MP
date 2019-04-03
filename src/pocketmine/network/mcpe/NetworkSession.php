@@ -106,6 +106,8 @@ class NetworkSession{
 	/** @var bool */
 	private $connected = true;
 	/** @var bool */
+	private $disconnectGuard = false;
+	/** @var bool */
 	private $loggedIn = false;
 	/** @var bool */
 	private $authenticated = false;
@@ -395,13 +397,14 @@ class NetworkSession{
 		$this->interface->putPacket($this, $payload, $immediate);
 	}
 
-	private function checkDisconnect() : bool{
-		if($this->connected){
+	private function tryDisconnect(\Closure $func) : void{
+		if($this->connected and !$this->disconnectGuard){
+			$this->disconnectGuard = true;
+			$func();
+			$this->disconnectGuard = false;
 			$this->connected = false;
 			$this->manager->remove($this);
-			return true;
 		}
-		return false;
 	}
 
 	/**
@@ -411,12 +414,12 @@ class NetworkSession{
 	 * @param bool   $notify
 	 */
 	public function disconnect(string $reason, bool $notify = true) : void{
-		if($this->checkDisconnect()){
+		$this->tryDisconnect(function() use($reason, $notify){
 			if($this->player !== null){
-				$this->player->close($this->player->getLeaveMessage(), $reason);
+				$this->player->disconnect($reason, null, $notify);
 			}
 			$this->doServerDisconnect($reason, $notify);
-		}
+		});
 	}
 
 	/**
@@ -429,11 +432,17 @@ class NetworkSession{
 	 * @throws \UnsupportedOperationException
 	 */
 	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
-		$pk = new TransferPacket();
-		$pk->address = $ip;
-		$pk->port = $port;
-		$this->sendDataPacket($pk, true);
-		$this->disconnect($reason);
+		$this->tryDisconnect(function() use($ip, $port, $reason){
+			$pk = new TransferPacket();
+			$pk->address = $ip;
+			$pk->port = $port;
+			$this->sendDataPacket($pk, true);
+			$this->disconnect($reason, false);
+			if($this->player !== null){
+				$this->player->disconnect($reason, null, false);
+			}
+			$this->doServerDisconnect($reason, false);
+		});
 	}
 
 	/**
@@ -443,9 +452,9 @@ class NetworkSession{
 	 * @param bool   $notify
 	 */
 	public function onPlayerDestroyed(string $reason, bool $notify = true) : void{
-		if($this->checkDisconnect()){
+		$this->tryDisconnect(function() use($reason, $notify){
 			$this->doServerDisconnect($reason, $notify);
-		}
+		});
 	}
 
 	/**
@@ -472,9 +481,11 @@ class NetworkSession{
 	 * @param string $reason
 	 */
 	public function onClientDisconnect(string $reason) : void{
-		if($this->checkDisconnect() and $this->player !== null){
-			$this->player->close($this->player->getLeaveMessage(), $reason);
-		}
+		$this->tryDisconnect(function() use($reason){
+			if($this->player !== null){
+				$this->player->disconnect($reason, null, false);
+			}
+		});
 	}
 
 	public function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error) : bool{

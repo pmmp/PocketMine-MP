@@ -339,8 +339,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$ev = new PlayerLoginEvent($this, "Plugin reason");
 		$ev->call();
-		if($ev->isCancelled()){
-			$this->close($this->getLeaveMessage(), $ev->getKickMessage());
+		if($ev->isCancelled() or !$this->isConnected()){
+			$this->disconnect($ev->getKickMessage());
 
 			return;
 		}
@@ -758,7 +758,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isConnected() : bool{
-		return $this->networkSession !== null;
+		return $this->networkSession !== null and $this->networkSession->isConnected();
 	}
 
 	/**
@@ -2479,7 +2479,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 					$message = "disconnectionScreen.noReason";
 				}
 			}
-			$this->close($ev->getQuitMessage(), $message);
+			$this->disconnect($message, $ev->getQuitMessage());
 
 			return true;
 		}
@@ -2488,81 +2488,92 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * Note for plugin developers: use kick() with the isAdmin
-	 * flag set to kick without the "Kicked by admin" part instead of this method.
+	 * Removes the player from the server. This cannot be cancelled.
+	 * This is used for remote disconnects and for uninterruptible disconnects (for example, when the server shuts down).
 	 *
-	 * @param TextContainer|string $message Message to be broadcasted
-	 * @param string               $reason Reason showed in console
+	 * Note for plugin developers: Prefer kick() with the isAdmin flag set to kick without the "Kicked by admin" part
+	 * instead of this method. This way other plugins can have a say in whether the player is removed or not.
+	 *
+	 * @param string               $reason Shown to the player, usually this will appear on their disconnect screen.
+	 * @param TextContainer|string $quitMessage Message to broadcast to online players (null will use default)
 	 * @param bool                 $notify
 	 */
-	final public function close($message = "", string $reason = "generic reason", bool $notify = true) : void{
-		if($this->isConnected() and !$this->closed){
-			$ip = $this->networkSession->getIp();
-			$port = $this->networkSession->getPort();
-			$this->networkSession->onPlayerDestroyed($reason, $notify);
+	public function disconnect(string $reason, $quitMessage = null, bool $notify = true) : void{
+		if(!$this->isConnected()){
+			return;
+		}
+
+		$this->networkSession->onPlayerDestroyed($reason, $notify);
+
+		//prevent the player receiving their own disconnect message
+		PermissionManager::getInstance()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+		PermissionManager::getInstance()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+
+		$ev = new PlayerQuitEvent($this, $quitMessage ?? $this->getLeaveMessage(), $reason);
+		$ev->call();
+		if(!empty($ev->getQuitMessage())){
+			$this->server->broadcastMessage($ev->getQuitMessage());
+		}
+		$this->save();
+
+		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
+			TextFormat::AQUA . $this->getName() . TextFormat::WHITE,
+			$this->networkSession->getIp(),
+			$this->networkSession->getPort(),
+			$this->getServer()->getLanguage()->translateString($reason)
+		]));
+
+		$this->spawned = false;
+
+		$this->stopSleep();
+		$this->despawnFromAll();
+
+		$this->server->removeOnlinePlayer($this);
+
+		foreach($this->server->getOnlinePlayers() as $player){
+			if(!$player->canSee($this)){
+				$player->showPlayer($this);
+			}
+		}
+		$this->hiddenPlayers = [];
+
+		if($this->isValid()){
+			foreach($this->usedChunks as $index => $d){
+				Level::getXZ($index, $chunkX, $chunkZ);
+				$this->level->unregisterChunkLoader($this, $chunkX, $chunkZ);
+				$this->level->unregisterChunkListener($this, $chunkX, $chunkZ);
+				foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
+					$entity->despawnFrom($this);
+				}
+				unset($this->usedChunks[$index]);
+			}
+		}
+		$this->usedChunks = [];
+		$this->loadQueue = [];
+
+		$this->removeAllWindows(true);
+		$this->windows = [];
+		$this->windowIndex = [];
+
+		$this->perm->clearPermissions();
+
+		$this->flagForDespawn();
+	}
+
+	final public function close() : void{
+		if(!$this->closed){
+			$this->disconnect("Player destroyed");
 			$this->networkSession = null;
 
-			PermissionManager::getInstance()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
-			PermissionManager::getInstance()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
-
-			$this->stopSleep();
-
-			if($this->spawned){
-				$ev = new PlayerQuitEvent($this, $message, $reason);
-				$ev->call();
-				if($ev->getQuitMessage() != ""){
-					$this->server->broadcastMessage($ev->getQuitMessage());
-				}
-
-				$this->save();
-			}
-
-			if($this->isValid()){
-				foreach($this->usedChunks as $index => $d){
-					Level::getXZ($index, $chunkX, $chunkZ);
-					$this->level->unregisterChunkLoader($this, $chunkX, $chunkZ);
-					$this->level->unregisterChunkListener($this, $chunkX, $chunkZ);
-					foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
-						$entity->despawnFrom($this);
-					}
-					unset($this->usedChunks[$index]);
-				}
-			}
-			$this->usedChunks = [];
-			$this->loadQueue = [];
-
-			foreach($this->server->getOnlinePlayers() as $player){
-				if(!$player->canSee($this)){
-					$player->showPlayer($this);
-				}
-			}
-			$this->hiddenPlayers = [];
-
-			$this->removeAllWindows(true);
-			$this->windows = [];
-			$this->windowIndex = [];
 			$this->cursorInventory = null;
 			$this->craftingGrid = null;
 
-			parent::close();
-
 			$this->spawned = false;
 
-			$this->server->removeOnlinePlayer($this);
-
-			$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
-				TextFormat::AQUA . $this->getName() . TextFormat::WHITE,
-				$ip,
-				$port,
-				$this->getServer()->getLanguage()->translateString($reason)
-			]));
-
 			$this->spawnPosition = null;
+			$this->perm = null;
 
-			if($this->perm !== null){
-				$this->perm->clearPermissions();
-				$this->perm = null;
-			}
+			parent::close();
 		}
 	}
 
