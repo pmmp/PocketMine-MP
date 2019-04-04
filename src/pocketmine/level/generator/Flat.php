@@ -52,10 +52,6 @@ class Flat extends Generator{
 	/** @var string */
 	private $preset;
 
-	public function getName() : string{
-		return "flat";
-	}
-
 	/**
 	 * @param ChunkManager $level
 	 * @param int          $seed

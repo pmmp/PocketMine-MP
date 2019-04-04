@@ -79,10 +79,6 @@ class Nether extends Generator{
 		$this->populators[] = $ores;*/
 	}
 
-	public function getName() : string{
-		return "nether";
-	}
-
 	public function generateChunk(int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 

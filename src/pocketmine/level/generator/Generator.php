@@ -85,7 +85,5 @@ abstract class Generator{
 		return $this->options;
 	}
 
-	abstract public function getName() : string;
-
 	abstract public function getSpawn() : Vector3;
 }

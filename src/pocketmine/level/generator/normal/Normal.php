@@ -150,10 +150,6 @@ class Normal extends Generator{
 		}
 	}
 
-	public function getName() : string{
-		return "normal";
-	}
-
 	private function pickBiome(int $x, int $z) : Biome{
 		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->seed;
 		$hash *= $hash + 223;
