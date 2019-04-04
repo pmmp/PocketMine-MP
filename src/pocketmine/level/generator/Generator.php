@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\level\generator;
 
 use pocketmine\level\ChunkManager;
-use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 use pocketmine\utils\Utils;
 use function ctype_digit;
@@ -80,10 +79,4 @@ abstract class Generator{
 	abstract public function generateChunk(int $chunkX, int $chunkZ) : void;
 
 	abstract public function populateChunk(int $chunkX, int $chunkZ) : void;
-
-	public function getSettings() : array{
-		return $this->options;
-	}
-
-	abstract public function getSpawn() : Vector3;
 }

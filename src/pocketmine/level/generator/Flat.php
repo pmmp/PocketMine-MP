@@ -31,7 +31,6 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\generator\object\OreType;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
-use pocketmine\math\Vector3;
 use function array_map;
 use function count;
 use function explode;
@@ -184,9 +183,5 @@ class Flat extends Generator{
 			$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 		}
 
-	}
-
-	public function getSpawn() : Vector3{
-		return new Vector3(128, $this->floorLevel, 128);
 	}
 }

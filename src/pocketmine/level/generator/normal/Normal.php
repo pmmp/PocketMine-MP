@@ -36,7 +36,6 @@ use pocketmine\level\generator\populator\GroundCover;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use function exp;
 
 class Normal extends Generator{
@@ -245,9 +244,5 @@ class Normal extends Generator{
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 		$biome = Biome::getBiome($chunk->getBiomeId(7, 7));
 		$biome->populateChunk($this->level, $chunkX, $chunkZ, $this->random);
-	}
-
-	public function getSpawn() : Vector3{
-		return new Vector3(127.5, 128, 127.5);
 	}
 }

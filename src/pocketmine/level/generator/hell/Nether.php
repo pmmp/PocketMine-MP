@@ -31,7 +31,6 @@ use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\InvalidGeneratorOptionsException;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\populator\Populator;
-use pocketmine\math\Vector3;
 use function abs;
 
 class Nether extends Generator{
@@ -127,9 +126,5 @@ class Nether extends Generator{
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 		$biome = Biome::getBiome($chunk->getBiomeId(7, 7));
 		$biome->populateChunk($this->level, $chunkX, $chunkZ, $this->random);
-	}
-
-	public function getSpawn() : Vector3{
-		return new Vector3(127.5, 128, 127.5);
 	}
 }
