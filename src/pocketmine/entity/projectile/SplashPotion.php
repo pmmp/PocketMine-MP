@@ -93,7 +93,7 @@ class SplashPotion extends Throwable{
 							continue;
 						}
 
-						$distanceMultiplier = 1 - (sqrt($distanceSquared) / 4);
+						$distanceMultiplier = 0.662 - (sqrt($distanceSquared) / 4);
 						if($event instanceof ProjectileHitEntityEvent and $entity === $event->getEntityHit()){
 							$distanceMultiplier = 1.0;
 						}
