@@ -189,6 +189,14 @@ namespace pocketmine {
 		mkdir(\pocketmine\DATA, 0777, true);
 	}
 
+	define('pocketmine\LOCK_FILE_PATH', \pocketmine\DATA . 'server.lock');
+	define('pocketmine\LOCK_FILE', fopen(\pocketmine\LOCK_FILE_PATH, "cb"));
+	if(!flock(\pocketmine\LOCK_FILE, LOCK_EX | LOCK_NB)){
+		critical_error("Another " . \pocketmine\NAME . " instance is already using this folder (" . realpath(\pocketmine\DATA) . ").");
+		critical_error("Please stop the other server first before running a new one.");
+		exit(1);
+	}
+
 	//Logger has a dependency on timezone
 	$tzError = Timezone::init();
 
