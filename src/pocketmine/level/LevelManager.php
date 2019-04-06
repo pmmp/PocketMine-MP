@@ -33,6 +33,7 @@ use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\format\io\WritableLevelProvider;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\generator\normal\Normal;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -217,10 +218,16 @@ class LevelManager{
 		$providerClass = array_shift($providers);
 
 		/**
-		 * @var LevelProvider
+		 * @var LevelProvider $provider
 		 * @see LevelProvider::__construct()
 		 */
 		$provider = new $providerClass($path);
+		try{
+			GeneratorManager::getGenerator($provider->getLevelData()->getGenerator(), true);
+		}catch(\InvalidArgumentException $e){
+			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Unknown generator \"" . $provider->getLevelData()->getGenerator() . "\""]));
+			return false;
+		}
 		if(!($provider instanceof WritableLevelProvider)){
 			if(!$autoUpgrade){
 				throw new LevelException("World \"$name\" is in an unsupported format and needs to be upgraded");
