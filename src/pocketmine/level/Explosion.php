@@ -178,7 +178,7 @@ class Explosion{
 
 		$list = $this->level->getNearbyEntities($explosionBB, $this->what instanceof Entity ? $this->what : null);
 		foreach($list as $entity){
-			$distance = $entity->distance($this->source) / $explosionSize;
+			$distance = $entity->distance($this->source) / ($explosionSize * 2);
 
 			if($distance <= 1){
 				$motion = $entity->subtract($this->source)->normalize();
