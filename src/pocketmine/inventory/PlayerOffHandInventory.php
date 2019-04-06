@@ -69,21 +69,24 @@ class PlayerOffHandInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		/** @var Player[] $target */
-		if(($k = array_search($this->holder, $target, true)) !== false){
-			$pk = new InventorySlotPacket();
-			$pk->windowId = $target[$k]->getWindowId($this);
-			$pk->inventorySlot = $index;
-			$pk->item = $this->getItem($index);
-			$target[$k]->sendDataPacket($pk);
-			unset($target[$k]);
-		}
-		if(!empty($target)){
-			$pk = new MobEquipmentPacket();
-			$pk->entityRuntimeId = $this->getHolder()->getId();
-			$pk->item = $this->getItem($index);
-			$pk->inventorySlot = $pk->hotbarSlot = $index;
-			$this->holder->getLevel()->getServer()->broadcastPacket($target, $pk);
+		$pk = new MobEquipmentPacket();
+		$pk->entityRuntimeId = $this->getHolder()->getId();
+		$pk->item = $this->getItem(0);
+		$pk->inventorySlot = 0;
+		$pk->hotbarSlot = 1;
+		$pk->encode();
+
+		foreach($target as $player){
+			if($player === $this->getHolder()){
+				$pk2 = new InventorySlotPacket();
+				$pk2->windowId = $player->getWindowId($this);
+				$pk2->inventorySlot = 0;
+				$pk2->item = $this->getItem(0);
+
+				$player->sendDataPacket($pk2);
+			}else{
+				$player->sendDataPacket($pk);
+			}
 		}
 	}
 
@@ -92,19 +95,23 @@ class PlayerOffHandInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		if(($k = array_search($this->holder, $target, true)) !== false){
-			$pk = new InventoryContentPacket();
-			$pk->windowId = $target[$k]->getWindowId($this);
-			$pk->items = $this->getContents(true);
-			$target[$k]->sendDataPacket($pk);
-			unset($target[$k]);
-		}
-		if(!empty($target)){
-			$pk = new MobEquipmentPacket();
-			$pk->entityRuntimeId = $this->getHolder()->getId();
-			$pk->item = $this->getItem(0);
-			$pk->inventorySlot = $pk->hotbarSlot = 0;
-			$this->holder->getLevel()->getServer()->broadcastPacket($target, $pk);
+		$pk = new MobEquipmentPacket();
+		$pk->entityRuntimeId = $this->getHolder()->getId();
+		$pk->item = $this->getItem(0);
+		$pk->inventorySlot = 0;
+		$pk->hotbarSlot = 1;
+		$pk->encode();
+
+		foreach($target as $player){
+			if($player === $this->getHolder()){
+				$pk2 = new InventoryContentPacket();
+				$pk2->windowId = $player->getWindowId($this);
+				$pk2->items = $this->getContents(true);
+
+				$player->sendDataPacket($pk2);
+			}else{
+				$player->sendDataPacket($pk);
+			}
 		}
 	}
 
