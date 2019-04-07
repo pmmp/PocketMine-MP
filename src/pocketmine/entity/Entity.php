@@ -65,6 +65,7 @@ use pocketmine\entity\projectile\SmallFireball;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\entity\vehicle\Boat;
+use pocketmine\entity\vehicle\Minecart;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityLevelChangeEvent;
@@ -358,6 +359,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(SmallFireball::class, false, ['SmallFireball', 'minecraft:small_fireball']);
 		Entity::registerEntity(ArmorStand::class, false, ['armor_stand", "minecraft:armor_stand']);
 		Entity::registerEntity(Boat::class, false, ['Boat', 'minecraft:boat']);
+		Entity::registerEntity(Minecart::class, false, ['Minecart', 'minecraft:minecart']);
 		Entity::registerEntity(FireworksRocket::class, false, ['FireworksRocket', 'minecraft:fireworks_rocket']);
 
 		Entity::registerEntity(Human::class, true);
