@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\utils;
 
 use pocketmine\math\Math;
+
 use function max;
 
 abstract class ExperienceUtils{

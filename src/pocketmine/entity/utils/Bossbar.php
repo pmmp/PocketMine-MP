@@ -41,7 +41,6 @@ use pocketmine\Player;
  */
 
 class Bossbar extends Vector3{
-
 	/** @var float */
 	protected $healthPercent = 0, $maxHealthPercent = 1;
 	/** @var int */
@@ -51,7 +50,7 @@ class Bossbar extends Vector3{
 	/** @var Player[] */
 	protected $viewers = [];
 
-	public function __construct(string $title = "Altay Bossbar API", float $hp = 1, float $maxHp = 1){
+	public function __construct(string $title = "", float $hp = 1, float $maxHp = 1){
 		parent::__construct(0, 0, 0);
 
 		$flags = ((1 << Entity::DATA_FLAG_INVISIBLE) | (1 << Entity::DATA_FLAG_IMMOBILE));

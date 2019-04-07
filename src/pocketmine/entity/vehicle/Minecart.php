@@ -40,17 +40,12 @@ class Minecart extends Vehicle {
 
     protected function initEntity(): void{
         $this->setHealth(6);
-        $this->setImmobile(true);
 
         parent::initEntity();
     }
 
     public function getRiderSeatPosition(int $seatNumber = 0): Vector3{
         return new Vector3($seatNumber * 0.8, 0, 0);
-    }
-
-    public function getMountedYOffset(): float{
-        return -0.3;
     }
 
     public function getDrops(): array{

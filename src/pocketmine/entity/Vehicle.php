@@ -28,9 +28,24 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-abstract class Vehicle extends Entity implements Rideable{
+abstract class Vehicle extends Entity implements Rideable {
 
-	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		return $player->mountEntity($this);
-	}
+    public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos): bool{
+        return $player->mountEntity($this);
+    }
+
+    public function kill(): void{
+        parent::kill();
+        $this->onDeath();
+    }
+
+    protected function onDeath(): void{
+        foreach($this->getDrops() as $item){
+            $this->getLevel()->dropItem($this, $item);
+        }
+    }
+
+    public function getDrops(): array{
+        return [];
+    }
 }
