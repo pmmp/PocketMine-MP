@@ -39,6 +39,10 @@ class Minecart extends Item {
     }
 
     public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector): bool{
+        if($blockClicked->getId() !== Block::RAIL){
+            return false;
+        }
+
         $nbt = Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5));
         $entity = Entity::createEntity("Minecart", $player->level, $nbt);
         $entity->spawnToAll();
