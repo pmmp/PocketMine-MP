@@ -107,6 +107,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_TYPE_LONG = 7;
 	public const DATA_TYPE_VECTOR3F = 8;
 
+	/*
+	 * Readers beware: this isn't a nice list. Some of the properties have different types for different entities, and
+	 * are used for entirely different things.
+	 */
 	public const DATA_FLAGS = 0;
 	public const DATA_HEALTH = 1; //int (minecart/boat)
 	public const DATA_VARIANT = 2; //int
@@ -124,17 +128,21 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_PADDLE_TIME_RIGHT = 14; //float
 	public const DATA_EXPERIENCE_VALUE = 15; //int (xp orb)
 	public const DATA_MINECART_DISPLAY_BLOCK = 16; //int (id | (data << 16))
+	public const DATA_HORSE_FLAGS = 16; //int
+	/* 16 (byte) used by wither skull */
 	public const DATA_MINECART_DISPLAY_OFFSET = 17; //int
+	public const DATA_SHOOTER_ID = 17; //long (used by arrows)
 	public const DATA_MINECART_HAS_DISPLAY = 18; //byte (must be 1 for minecart to show block inside)
-
-	//TODO: add more properties
-
+	public const DATA_HORSE_TYPE = 19; //byte
+	/* 20 (unknown)
+	 * 21 (unknown) */
+	public const DATA_CHARGE_AMOUNT = 22; //int8, used for ghasts and also crossbow charging
 	public const DATA_ENDERMAN_HELD_ITEM_ID = 23; //short
 	public const DATA_ENTITY_AGE = 24; //short
-
-	/* 26 (byte) player-specific flags
-	 * 27 (int) player "index"?
-	 * 28 (block coords) bed position */
+	/* 25 (int) used by horse, (byte) used by witch */
+	public const DATA_PLAYER_FLAGS = 26; //byte
+	public const DATA_PLAYER_INDEX = 27; //int, used for marker colours and agent nametag colours
+	public const DATA_PLAYER_BED_POSITION = 28; //blockpos
 	public const DATA_FIREBALL_POWER_X = 29; //float
 	public const DATA_FIREBALL_POWER_Y = 30;
 	public const DATA_FIREBALL_POWER_Z = 31;
@@ -145,7 +153,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_POTION_AUX_VALUE = 36; //short
 	public const DATA_LEAD_HOLDER_EID = 37; //long
 	public const DATA_SCALE = 38; //float
-	public const DATA_INTERACTIVE_TAG = 39; //string (button text)
+	public const DATA_HAS_NPC_COMPONENT = 39; //byte (???)
 	public const DATA_NPC_SKIN_ID = 40; //string
 	public const DATA_URL_TAG = 41; //string
 	public const DATA_MAX_AIR = 42; //short
@@ -195,8 +203,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_BOAT_BUBBLE_TIME = 86; //int (time in bubble column)
 	public const DATA_PLAYER_AGENT_EID = 87; //long
 	/* 88 (float) related to panda sitting
-	 * 89 (float) related to panda sitting
-	 * 90 (unknown) */
+	 * 89 (float) related to panda sitting */
+	public const DATA_EAT_COUNTER = 90; //int (used by pandas)
 	public const DATA_FLAGS2 = 91; //long (extended data flags)
 	/* 92 (float) related to panda lying down
 	 * 93 (float) related to panda lying down */
@@ -205,7 +213,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_AREA_EFFECT_CLOUD_RADIUS_PER_TICK = 96; //float, usually negative
 	public const DATA_AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP = 97; //float
 	public const DATA_AREA_EFFECT_CLOUD_PICKUP_COUNT = 98; //int
-
+	public const DATA_INTERACTIVE_TAG = 99; //string (button text)
+	public const DATA_TRADE_TIER = 100; //int
+	public const DATA_MAX_TRADE_TIER = 101; //int
 
 	public const DATA_FLAG_ONFIRE = 0;
 	public const DATA_FLAG_SNEAKING = 1;
@@ -278,6 +288,18 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_FLAG_IN_SCAFFOLDING = 68;
 	public const DATA_FLAG_OVER_SCAFFOLDING = 69;
 	public const DATA_FLAG_FALL_THROUGH_SCAFFOLDING = 70;
+	public const DATA_FLAG_BLOCKING = 71; //shield
+	public const DATA_FLAG_DISABLE_BLOCKING = 72;
+	//73 is set when a player is attacked while using shield, unclear on purpose
+	public const DATA_FLAG_SLEEPING = 74;
+	//75 related to sleeping, unclear usage
+	public const DATA_FLAG_TRADE_INTEREST = 76;
+	public const DATA_FLAG_DOOR_BREAKER = 77; //...
+	public const DATA_FLAG_BREAKING_OBSTRUCTION = 78;
+	public const DATA_FLAG_DOOR_OPENER = 79; //...
+
+	public const DATA_PLAYER_FLAG_SLEEP = 1;
+	public const DATA_PLAYER_FLAG_DEAD = 2; //TODO: CHECK
 
 	public static $entityCount = 1;
 	/** @var Entity[] */

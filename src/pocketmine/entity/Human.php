@@ -70,13 +70,6 @@ use const INT32_MIN;
 
 class Human extends Creature implements ProjectileSource, InventoryHolder{
 
-	public const DATA_PLAYER_FLAG_SLEEP = 1;
-	public const DATA_PLAYER_FLAG_DEAD = 2; //TODO: CHECK
-
-	public const DATA_PLAYER_FLAGS = 26;
-
-	public const DATA_PLAYER_BED_POSITION = 28;
-
 	/** @var PlayerInventory */
 	protected $inventory;
 

@@ -50,8 +50,6 @@ use const PHP_INT_MAX;
 
 abstract class Projectile extends Entity{
 
-	public const DATA_SHOOTER_ID = 17;
-
 	/** @var float */
 	protected $damage = 0.0;
 
