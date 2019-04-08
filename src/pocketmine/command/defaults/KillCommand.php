@@ -56,7 +56,8 @@ class KillCommand extends VanillaCommand{
 
 		if(count($args) === 1){
 			if(!$sender->hasPermission("altay.command.kill.other")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+
 				return true;
 			}
 
@@ -75,7 +76,7 @@ class KillCommand extends VanillaCommand{
 
 		if($sender instanceof Player){
 			if(!$sender->hasPermission("altay.command.kill.self")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 				return true;
 			}

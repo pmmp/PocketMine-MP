@@ -78,14 +78,19 @@ final class GeneratorManager{
 	 * Returns a class name of a registered Generator matching the given name.
 	 *
 	 * @param string $name
+	 * @param bool   $throwOnMissing @deprecated this is for backwards compatibility only
 	 *
 	 * @return string|Generator Name of class that extends Generator (not an actual Generator object)
+	 * @throws \InvalidArgumentException if the generator type isn't registered
 	 */
-	public static function getGenerator(string $name){
+	public static function getGenerator(string $name, bool $throwOnMissing = false){
 		if(isset(self::$list[$name = strtolower($name)])){
 			return self::$list[$name];
 		}
 
+		if($throwOnMissing){
+			throw new \InvalidArgumentException("Alias \"$name\" does not map to any known generator");
+		}
 		return Normal::class;
 	}
 
