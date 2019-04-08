@@ -559,6 +559,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 
 		if(!empty($equipment)){
+			/** @var int $k */
 			$repairItem = $equipment[$k = array_rand($equipment)];
 			if($repairItem->getDamage() > 0){
 				$repairAmount = min($repairItem->getDamage(), $xpValue * 2);
