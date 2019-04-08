@@ -59,12 +59,39 @@ abstract class TextFormat{
 	public const YELLOW = TextFormat::ESCAPE . "e";
 	public const WHITE = TextFormat::ESCAPE . "f";
 
+	public const COLORS = [
+		self::BLACK => true,
+		self::DARK_BLUE => true,
+		self::DARK_GREEN => true,
+		self::DARK_AQUA => true,
+		self::DARK_RED => true,
+		self::DARK_PURPLE => true,
+		self::GOLD => true,
+		self::GRAY => true,
+		self::DARK_GRAY => true,
+		self::BLUE => true,
+		self::GREEN => true,
+		self::AQUA => true,
+		self::RED => true,
+		self::LIGHT_PURPLE => true,
+		self::YELLOW => true,
+		self::WHITE => true
+	];
+
 	public const OBFUSCATED = TextFormat::ESCAPE . "k";
 	public const BOLD = TextFormat::ESCAPE . "l";
 	public const STRIKETHROUGH = TextFormat::ESCAPE . "m";
 	public const UNDERLINE = TextFormat::ESCAPE . "n";
 	public const ITALIC = TextFormat::ESCAPE . "o";
 	public const RESET = TextFormat::ESCAPE . "r";
+
+	public const FORMATS = [
+		self::OBFUSCATED => true,
+		self::BOLD => true,
+		self::STRIKETHROUGH => true,
+		self::UNDERLINE => true,
+		self::ITALIC => true
+	];
 
 	/**
 	 * Splits the string by Format tokens
