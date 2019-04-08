@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function array_keys;
+use function implode;
 use function is_array;
 use function json_encode;
 use function mb_scrub;
@@ -131,6 +133,46 @@ abstract class TextFormat{
 	 */
 	public static function colorize(string $string, string $placeholder = "&") : string{
 		return preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
+	}
+
+	/**
+	 * Returns a copy of the given string with the minimum amount of formatting codes required to produce the same
+	 * resulting appearance, removing redundant formatting codes such as repeated colours with nothing between them.
+	 * This performs lossy compression without affecting text appearance.
+	 *
+	 * @param string $string
+	 *
+	 * @return string
+	 */
+	public static function compress(string $string) : string{
+		$result = "";
+
+		$currentColor = "";
+		$formatting = [];
+		$wasCode = false;
+
+		foreach(self::tokenize($string) as $part){
+			if(isset(self::COLORS[$part])){
+				$currentColor = $part;
+				$wasCode = true;
+			}elseif(isset(self::FORMATS[$part])){
+				$formatting[$part] = true;
+				$wasCode = true;
+			}elseif($part === self::RESET){
+				if($currentColor !== "" or !empty($formatting)){
+					$currentColor = "";
+					$formatting = [];
+					if(!$wasCode){
+						$result .= $part;
+					}
+				}
+				$wasCode = true;
+			}else{
+				$result .= implode("", array_keys($formatting)) . $currentColor . $part;
+				$wasCode = false;
+			}
+		}
+		return $result;
 	}
 
 	/**
