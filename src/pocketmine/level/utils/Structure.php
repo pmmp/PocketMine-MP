@@ -59,7 +59,7 @@ class Structure{
 		if(is_file($structurePath)){
 			$stream = new BigEndianNBTStream();
 
-			$data = $stream->read(file_get_contents($structurePath));
+			$data = $stream->readCompressed(file_get_contents($structurePath));
 
 			if($data instanceof CompoundTag){
 				if($this->verifyStructureNbt($data)){
@@ -150,7 +150,11 @@ class Structure{
 					if(isset($palette[$state])){
 						$type = $palette[$state];
 						if($type instanceof CompoundTag and $type->hasTag(self::TAG_BLOCK_NAME, StringTag::class)){
-							$item = ItemFactory::fromString($type->getString(self::TAG_BLOCK_NAME));
+							try{
+								$item = ItemFactory::fromString($type->getString(self::TAG_BLOCK_NAME));
+							}catch(\Exception $e){
+								continue; // unexpected block id given, continue
+							}
 
 							if($item instanceof ItemBlock){
 								$block = $item->getBlock();
@@ -160,7 +164,7 @@ class Structure{
 									// this may just when api is 4.0 because we need block state implementation to do this
 								}
 
-								$level->setBlock($baseVector->add($tempVector->setComponents(...$pos)), $block);
+								$level->setBlock($baseVector->add($tempVector->setComponents(...$pos)), $block, true, false);
 							}
 						}
 					}
