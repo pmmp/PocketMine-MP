@@ -258,6 +258,14 @@ class PluginManager{
 					]));
 					continue;
 				}
+				$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
+				if(!empty($ambiguousVersions)){
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+						$name,
+						$this->server->getLanguage()->translateString("pocketmine.plugin.ambiguousMinAPI", [implode(", ", $ambiguousVersions)])
+					]));
+					continue;
+				}
 
 				if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
 					$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];

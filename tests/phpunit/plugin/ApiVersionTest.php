@@ -52,4 +52,27 @@ class ApiVersionTest extends TestCase{
 	public function testCompatibleApi(string $myVersion, string $wantVersion, bool $expected) : void{
 		self::assertSame($expected, ApiVersion::isCompatible($myVersion, [$wantVersion]), "my version: $myVersion, their version: $wantVersion, expect " . ($expected ? "yes" : "no"));
 	}
+
+	public function ambiguousVersionsProvider() : \Generator{
+		yield [["3.0.0"], []];
+		yield [["3.0.0", "3.0.1"], ["3.0.0", "3.0.1"]];
+		yield [["3.0.0", "3.1.0", "4.0.0"], ["3.0.0", "3.1.0"]];
+		yield [["3.0.0", "4.0.0"], []];
+		yield [["3.0.0-ALPHA1", "3.0.0-ALPHA2"], []];
+	}
+
+	/**
+	 * @dataProvider ambiguousVersionsProvider
+	 *
+	 * @param string[] $input
+	 * @param string[] $expectedOutput
+	 */
+	public function testFindAmbiguousVersions(array $input, array $expectedOutput) : void{
+		$ambiguous = ApiVersion::checkAmbiguousVersions($input);
+
+		sort($expectedOutput);
+		sort($ambiguous);
+
+		self::assertSame($expectedOutput, $ambiguous);
+	}
 }
