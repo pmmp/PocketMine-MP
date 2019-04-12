@@ -50,7 +50,7 @@ class TimeCommand extends VanillaCommand{
 
 		if($args[0] === "start"){
 			if(!$sender->hasPermission("pocketmine.command.time.start")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 				return true;
 			}
@@ -61,7 +61,7 @@ class TimeCommand extends VanillaCommand{
 			return true;
 		}elseif($args[0] === "stop"){
 			if(!$sender->hasPermission("pocketmine.command.time.stop")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 				return true;
 			}
@@ -72,7 +72,7 @@ class TimeCommand extends VanillaCommand{
 			return true;
 		}elseif($args[0] === "query"){
 			if(!$sender->hasPermission("pocketmine.command.time.query")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 				return true;
 			}
@@ -92,7 +92,7 @@ class TimeCommand extends VanillaCommand{
 
 		if($args[0] === "set"){
 			if(!$sender->hasPermission("pocketmine.command.time.set")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 				return true;
 			}
@@ -111,7 +111,7 @@ class TimeCommand extends VanillaCommand{
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.set", [$value]));
 		}elseif($args[0] === "add"){
 			if(!$sender->hasPermission("pocketmine.command.time.add")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 				return true;
 			}

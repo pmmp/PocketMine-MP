@@ -74,7 +74,7 @@ abstract class TextFormat{
 	 * @return array
 	 */
 	public static function tokenize(string $string) : array{
-		return preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fk-or])/", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		return preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 	}
 
 	/**
