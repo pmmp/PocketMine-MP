@@ -251,7 +251,7 @@ class PluginManager{
 					continue;
 				}
 
-				if(!$this->isCompatibleApi(...$description->getCompatibleApis())){
+				if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){
 					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 						$name,
 						$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleAPI", [implode(", ", $description->getCompatibleApis())])
