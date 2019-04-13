@@ -458,13 +458,6 @@ class Server{
 	}
 
 	/**
-	 * @return int
-	 */
-	public function getDefaultGamemode() : int{
-		return $this->getConfigInt("gamemode", 0) & 0b11;
-	}
-
-	/**
 	 * @return string
 	 */
 	public function getMotd() : string{
