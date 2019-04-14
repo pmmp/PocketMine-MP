@@ -372,12 +372,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "d2a9d578e3d677f5a007b16881e3390f1bad8fb9"
+                "reference": "38485dbfa94a80b8c5439457307a70ee0703d579"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/d2a9d578e3d677f5a007b16881e3390f1bad8fb9",
-                "reference": "d2a9d578e3d677f5a007b16881e3390f1bad8fb9",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/38485dbfa94a80b8c5439457307a70ee0703d579",
+                "reference": "38485dbfa94a80b8c5439457307a70ee0703d579",
                 "shasum": ""
             },
             "require": {
@@ -405,7 +405,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2019-03-30T19:51:58+00:00"
+            "time": "2019-04-13T14:34:37+00:00"
         },
         {
             "name": "pocketmine/raklib",
