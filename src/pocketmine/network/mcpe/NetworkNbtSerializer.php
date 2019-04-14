@@ -46,15 +46,11 @@ class NetworkNbtSerializer extends LittleEndianNbtSerializer{
 	}
 
 	public function readString() : string{
-		return $this->buffer->get($this->buffer->getUnsignedVarInt());
+		return $this->buffer->get(self::checkReadStringLength($this->buffer->getUnsignedVarInt()));
 	}
 
 	public function writeString(string $v) : void{
-		$len = strlen($v);
-		if($len > 32767){
-			throw new \InvalidArgumentException("NBT strings cannot be longer than 32767 bytes, got $len bytes");
-		}
-		$this->buffer->putUnsignedVarInt($len);
+		$this->buffer->putUnsignedVarInt(self::checkWriteStringLength(strlen($v)));
 		$this->buffer->put($v);
 	}
 
