@@ -36,6 +36,7 @@ use pocketmine\utils\TextFormat;
 use function array_map;
 use function assert;
 use function floor;
+use function strlen;
 
 class Sign extends Transparent{
 	/** @var BlockIdentifierFlattened */
@@ -151,8 +152,16 @@ class Sign extends Transparent{
 	 * @param SignText $text
 	 *
 	 * @return bool if the sign update was successful.
+	 * @throws \UnexpectedValueException if the text payload is too large
 	 */
 	public function updateText(Player $author, SignText $text) : bool{
+		$size = 0;
+		foreach($text->getLines() as $line){
+			$size += strlen($line);
+		}
+		if($size > 1000){
+			throw new \UnexpectedValueException($author->getName() . " tried to write $size bytes of text onto a sign (bigger than max 1000)");
+		}
 		$removeFormat = $author->getRemoveFormat();
 		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) use ($removeFormat){
 			return TextFormat::clean($line, $removeFormat);

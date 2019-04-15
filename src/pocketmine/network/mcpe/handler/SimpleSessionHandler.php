@@ -464,8 +464,12 @@ class SimpleSessionHandler extends SessionHandler{
 					throw new BadPacketException("Invalid sign text update: " . $e->getMessage(), 0, $e);
 				}
 
-				if(!$block->updateText($this->player, $text)){
-					$this->player->getLevel()->sendBlocks([$this->player], [$block]);
+				try{
+					if(!$block->updateText($this->player, $text)){
+						$this->player->getLevel()->sendBlocks([$this->player], [$block]);
+					}
+				}catch(\UnexpectedValueException $e){
+					throw new BadPacketException($e->getMessage(), 0, $e);
 				}
 
 				return true;
