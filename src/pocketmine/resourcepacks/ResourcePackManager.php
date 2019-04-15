@@ -44,8 +44,14 @@ class ResourcePackManager{
 	/** @var bool */
 	private $serverForceResources = false;
 
+	/** @var bool */
+	private $serverHasClientScripts = false;
+
 	/** @var ResourcePack[] */
 	private $resourcePacks = [];
+
+	/** @var BehaviorPack[] */
+	private $behaviorPacks = [];
 
 	/** @var ResourcePack[] */
 	private $uuidList = [];
@@ -118,6 +124,57 @@ class ResourcePackManager{
 		}
 
 		$logger->debug("Successfully loaded " . count($this->resourcePacks) . " resource packs");
+
+		$logger->info("Loading behavior packs...");
+
+		$behaviorStack = $resourcePacksConfig->get("behavior_stack", []);
+		if(!is_array($behaviorStack)){
+			throw new \InvalidArgumentException("\"behavior_stack\" key should contain a list of pack names");
+		}
+
+		foreach($behaviorStack as $pos => $pack){
+			try{
+				$pack = (string) $pack;
+			}catch(\ErrorException $e){
+				$logger->critical("Found invalid entry in behavior pack list at offset $pos of type " . gettype($pack));
+				continue;
+			}
+			try{
+				/** @var string $pack */
+				$packPath = $this->path . DIRECTORY_SEPARATOR . $pack;
+				if(!file_exists($packPath)){
+					throw new ResourcePackException("File or directory not found");
+				}
+				if(is_dir($packPath)){
+					throw new ResourcePackException("Directory behavior packs are unsupported");
+				}
+
+				$newPack = null;
+				//Detect the type of resource pack.
+				$info = new \SplFileInfo($packPath);
+				switch($info->getExtension()){
+					case "zip":
+					case "mcpack":
+						$newPack = new ZippedBehaviorPack($packPath);
+						break;
+				}
+
+				if($newPack instanceof BehaviorPack){
+					$this->behaviorPacks[] = $newPack;
+					$this->uuidList[strtolower($newPack->getPackId())] = $newPack;
+
+					if($newPack->hasClientScripts()){
+						$this->serverHasClientScripts = true;
+					}
+				}else{
+					throw new ResourcePackException("Format not recognized");
+				}
+			}catch(ResourcePackException $e){
+				$logger->critical("Could not load behavior pack \"$pack\": " . $e->getMessage());
+			}
+		}
+
+		$logger->debug("Successfully loaded " . count($this->behaviorPacks) . " behavior packs");
 	}
 
 	/**
@@ -137,11 +194,27 @@ class ResourcePackManager{
 	}
 
 	/**
+	 * Returns whether there are any client-scripts.
+	 * @return bool
+	 */
+	public function hasClientScripts() : bool{
+		return $this->serverHasClientScripts;
+	}
+
+	/**
 	 * Returns an array of resource packs in use, sorted in order of priority.
 	 * @return ResourcePack[]
 	 */
 	public function getResourceStack() : array{
 		return $this->resourcePacks;
+	}
+
+	/**
+	 * Returns an array of behavior packs in use, sorted in order of priority.
+	 * @return BehaviorPack[]
+	 */
+	public function getBehaviorStack() : array{
+		return $this->behaviorPacks;
 	}
 
 	/**

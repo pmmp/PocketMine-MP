@@ -98,7 +98,8 @@ class StartGamePacket extends DataPacket{
 	public $isTexturePacksRequired = true;
 	/** @var array */
 	public $gameRules = [ //TODO: implement this
-		"naturalregeneration" => [1, false] //Hack for client side regeneration
+		"naturalregeneration" => [1, false], //Hack for client side regeneration
+		"experimentalgameplay" => [1, true] // Enables client-side scripts
 	];
 	/** @var bool */
 	public $hasBonusChestEnabled = false;

@@ -2048,7 +2048,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new ResourcePacksInfoPacket();
 		$manager = $this->server->getResourcePackManager();
 		$pk->resourcePackEntries = $manager->getResourceStack();
+		$pk->behaviorPackEntries = $manager->getBehaviorStack();
 		$pk->mustAccept = $manager->resourcePacksRequired();
+		$pk->hasScripts = $manager->hasClientScripts();
 		$this->dataPacket($pk);
 	}
 
@@ -2084,7 +2086,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$pk = new ResourcePackStackPacket();
 				$manager = $this->server->getResourcePackManager();
 				$pk->resourcePackStack = $manager->getResourceStack();
+				$pk->behaviorPackStack = $manager->getBehaviorStack();
 				$pk->mustAccept = $manager->resourcePacksRequired();
+				$pk->isExperimental = true; // TODO: Not sure if having this hard-coded is the best
 				$this->dataPacket($pk);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
