@@ -59,6 +59,7 @@ use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
+use pocketmine\network\mcpe\protocol\ScriptCustomEventPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
@@ -304,5 +305,10 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
+	}
+
+	public function handleScriptCustomEvent(ScriptCustomEventPacket $packet): bool
+	{
+		return $this->player->handleScriptCustomEvent($packet);
 	}
 }
