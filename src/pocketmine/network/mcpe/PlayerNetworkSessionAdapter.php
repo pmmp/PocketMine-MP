@@ -307,8 +307,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
 	}
 
-	public function handleScriptCustomEvent(ScriptCustomEventPacket $packet): bool
-	{
+	public function handleScriptCustomEvent(ScriptCustomEventPacket $packet) : bool{
 		return $this->player->handleScriptCustomEvent($packet);
 	}
 }

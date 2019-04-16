@@ -33,7 +33,7 @@ class PlayerScriptEvent extends PlayerEvent{
 	/** @var string */
 	protected $scriptEventName;
 
-	/** @var */
+	/** @var mixed*/
 	protected $scriptEventData;
 
 	/**
@@ -61,7 +61,7 @@ class PlayerScriptEvent extends PlayerEvent{
 	}
 
 	/**
-	 * @param $scriptEventData
+	 * @param mixed $scriptEventData
 	 */
 	public function setScriptEventData($scriptEventData) : void{
 		$this->scriptEventData = $scriptEventData;

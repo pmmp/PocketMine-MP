@@ -50,8 +50,7 @@ class ZippedBehaviorPack extends ZippedResourcePack implements BehaviorPack {
 	 * Returns whether the behavior pack contains a client-side script.
 	 * @return bool
 	 */
-	public function hasClientScripts(): bool
-	{
+	public function hasClientScripts() : bool{
 		return $this->hasClientScripts;
 	}
 }
