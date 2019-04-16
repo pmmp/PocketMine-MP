@@ -239,6 +239,7 @@ class AsyncPool{
 
 					if($task->isCrashed()){
 						$this->logger->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
+						$task->onError();
 					}elseif(!$task->hasCancelledRun()){
 						/*
 						 * It's possible for a task to submit a progress update and then finish before the progress

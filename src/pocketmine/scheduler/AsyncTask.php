@@ -184,6 +184,14 @@ abstract class AsyncTask extends \Threaded{
 	}
 
 	/**
+	 * Called from the main thread when the async task experiences an error during onRun(). Use this for things like
+	 * promise rejection.
+	 */
+	public function onError() : void{
+
+	}
+
+	/**
 	 * Saves mixed data in thread-local storage. Data stored using this storage is **only accessible from the thread it
 	 * was stored on**. Data stored using this method will **not** be serialized.
 	 * This can be used to store references to variables which you need later on on the same thread, but not others.
