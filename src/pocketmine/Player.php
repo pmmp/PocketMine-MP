@@ -96,7 +96,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\network\mcpe\CompressBatchPromise;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
@@ -954,12 +953,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$level = $level ?? $this->level;
 		$index = Level::chunkHash($x, $z);
 		if(isset($this->usedChunks[$index])){
-			foreach($level->getChunkEntities($x, $z) as $entity){
-				if($entity !== $this){
-					$entity->despawnFrom($this);
-				}
-			}
-
+			$this->networkSession->stopUsingChunk($x, $z);
 			unset($this->usedChunks[$index]);
 		}
 		$level->unregisterChunkLoader($this, $x, $z);
@@ -967,39 +961,24 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		unset($this->loadQueue[$index]);
 	}
 
-	public function sendChunk(int $x, int $z, CompressBatchPromise $promise){
+	public function onChunkReady(int $x, int $z){
 		if(!$this->isConnected()){
 			return;
 		}
 
+		assert(isset($this->usedChunks[Level::chunkHash($x, $z)]));
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
 
-		$this->networkSession->queueCompressed($promise);
+		$spawn = ++$this->spawnChunkLoadCount === $this->spawnThreshold;
+		$this->networkSession->startUsingChunk($x, $z, $spawn);
 
-		if($this->spawned){
-			foreach($this->level->getChunkEntities($x, $z) as $entity){
-				if($entity !== $this and !$entity->isClosed() and $entity->isAlive()){
-					$entity->spawnTo($this);
-				}
-			}
-		}elseif(++$this->spawnChunkLoadCount >= $this->spawnThreshold){
-			$this->spawnChunkLoadCount = -1;
+		if($spawn){
+			//TODO: not sure this should be here
 			$this->spawned = true;
-
-			foreach($this->usedChunks as $index => $c){
-				Level::getXZ($index, $chunkX, $chunkZ);
-				foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
-					if($entity !== $this and !$entity->isClosed() and $entity->isAlive() and !$entity->isFlaggedForDespawn()){
-						$entity->spawnTo($this);
-					}
-				}
-			}
-
-			$this->networkSession->onTerrainReady();
 		}
 	}
 
-	protected function sendNextChunk(){
+	protected function requestChunks(){
 		if(!$this->isConnected()){
 			return;
 		}
@@ -1146,7 +1125,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		if(count($this->loadQueue) > 0){
-			$this->sendNextChunk();
+			$this->requestChunks();
 		}
 	}
 
