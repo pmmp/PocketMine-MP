@@ -37,14 +37,14 @@ class ChunkRequestTask extends AsyncTask{
 
 	protected $compressionLevel;
 
-	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise){
+	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise, ?\Closure $onError = null){
 		$this->compressionLevel = NetworkCompression::$LEVEL;
 
 		$this->chunk = $chunk->networkSerialize();
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
 
-		$this->storeLocal($promise);
+		$this->storeLocal(["promise" => $promise, "errorHook" => $onError]);
 	}
 
 	public function onRun() : void{
@@ -59,9 +59,14 @@ class ChunkRequestTask extends AsyncTask{
 		$this->setResult(NetworkCompression::compress($stream->getBuffer(), $this->compressionLevel));
 	}
 
+	public function onError() : void{
+		$hook = $this->fetchLocal()["errorHook"];
+		$hook();
+	}
+
 	public function onCompletion() : void{
 		/** @var CompressBatchPromise $promise */
-		$promise = $this->fetchLocal();
+		$promise = $this->fetchLocal()["promise"];
 		$promise->resolve($this->getResult());
 	}
 }

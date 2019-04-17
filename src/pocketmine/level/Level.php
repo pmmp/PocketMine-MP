@@ -2440,13 +2440,8 @@ class Level implements ChunkManager, Metadatable{
 				Level::getXZ($index, $x, $z);
 
 				if(isset($this->chunkSendTasks[$index])){
-					if($this->chunkSendTasks[$index]->isCrashed()){
-						unset($this->chunkSendTasks[$index]);
-						$this->server->getLogger()->error("Failed to prepare chunk $x $z for sending, retrying");
-					}else{
-						//Not ready for sending yet
-						continue;
-					}
+					//Not ready for sending yet
+					continue;
 				}
 
 				if(isset($this->chunkCache[$index])){
@@ -2485,7 +2480,12 @@ class Level implements ChunkManager, Metadatable{
 						$this->server->getLogger()->debug("Dropped prepared chunk $x $z due to world not loaded");
 					}
 				});
-				$this->server->getAsyncPool()->submitTask($task = new ChunkRequestTask($x, $z, $chunk, $promise));
+				$this->server->getAsyncPool()->submitTask($task = new ChunkRequestTask($x, $z, $chunk, $promise, function() use($index, $x, $z){
+					if(isset($this->chunkSendTasks[$index])){
+						unset($this->chunkSendTasks[$index]);
+						$this->server->getLogger()->error("Failed to prepare chunk $x $z for sending, retrying");
+					}
+				}));
 				$this->chunkSendTasks[$index] = $task;
 
 				$this->timings->syncChunkSendPrepareTimer->stopTiming();
