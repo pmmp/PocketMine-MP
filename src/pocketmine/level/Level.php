@@ -2329,10 +2329,9 @@ class Level implements ChunkManager, Metadatable{
 
 		if(!$this->isChunkInUse($chunkX, $chunkZ)){
 			$this->unloadChunkRequest($chunkX, $chunkZ);
-		}else{
-			foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
-				$listener->onChunkChanged($chunk);
-			}
+		}
+		foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
+			$listener->onChunkChanged($chunk);
 		}
 	}
 
@@ -2644,13 +2643,12 @@ class Level implements ChunkManager, Metadatable{
 			$this->getServer()->getAsyncPool()->submitTask(new LightPopulationTask($this, $chunk));
 		}
 
-		if($this->isChunkInUse($x, $z)){
-			foreach($this->getChunkListeners($x, $z) as $listener){
-				$listener->onChunkLoaded($chunk);
-			}
-		}else{
+		if(!$this->isChunkInUse($x, $z)){
 			$this->server->getLogger()->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
 			$this->unloadChunkRequest($x, $z);
+		}
+		foreach($this->getChunkListeners($x, $z) as $listener){
+			$listener->onChunkLoaded($chunk);
 		}
 
 		$this->timings->syncChunkLoadTimer->stopTiming();
