@@ -61,7 +61,9 @@ class ChunkRequestTask extends AsyncTask{
 
 	public function onError() : void{
 		$hook = $this->fetchLocal()["errorHook"];
-		$hook();
+		if($hook !== null){
+			$hook();
+		}
 	}
 
 	public function onCompletion() : void{
