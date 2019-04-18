@@ -969,7 +969,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		assert(isset($this->usedChunks[Level::chunkHash($x, $z)]));
 		$this->usedChunks[Level::chunkHash($x, $z)] = true;
 
-		$spawn = ++$this->spawnChunkLoadCount === $this->spawnThreshold;
+		$spawn = $this->spawnChunkLoadCount++ === $this->spawnThreshold;
 		$this->networkSession->startUsingChunk($x, $z, $spawn);
 
 		if($spawn){
