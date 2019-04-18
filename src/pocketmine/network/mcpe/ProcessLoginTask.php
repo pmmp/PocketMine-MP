@@ -58,6 +58,7 @@ use const OPENSSL_ALGO_SHA384;
 use const STR_PAD_LEFT;
 
 class ProcessLoginTask extends AsyncTask{
+	private const TLS_KEY_SESSION = "session";
 
 	public const MOJANG_ROOT_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V";
 
@@ -100,7 +101,7 @@ class ProcessLoginTask extends AsyncTask{
 	private $handshakeJwt = null;
 
 	public function __construct(NetworkSession $session, LoginPacket $packet, bool $authRequired, bool $useEncryption = true){
-		$this->storeLocal($session);
+		$this->storeLocal(self::TLS_KEY_SESSION, $session);
 		$this->packet = $packet;
 		$this->authRequired = $authRequired;
 		$this->useEncryption = $useEncryption;
@@ -243,7 +244,7 @@ class ProcessLoginTask extends AsyncTask{
 
 	public function onCompletion() : void{
 		/** @var NetworkSession $session */
-		$session = $this->fetchLocal();
+		$session = $this->fetchLocal(self::TLS_KEY_SESSION);
 		if(!$session->isConnected()){
 			$this->worker->getLogger()->error("Player " . $session->getDisplayName() . " was disconnected before their login could be verified");
 		}elseif($session->setAuthenticationStatus($this->authenticated, $this->authRequired, $this->error)){

@@ -40,10 +40,12 @@ class AsyncTaskPublishProgressRaceTest extends Test{
 		//this test is racy, but it should fail often enough to be a pest if something is broken
 
 		$this->getPlugin()->getServer()->getAsyncPool()->submitTask(new class($this) extends AsyncTask{
+			private const TLS_KEY_TEST = "test";
+
 			private static $success = false;
 
 			public function __construct(AsyncTaskPublishProgressRaceTest $t){
-				$this->storeLocal($t);
+				$this->storeLocal(self::TLS_KEY_TEST, $t);
 			}
 
 			public function onRun() : void{
@@ -59,7 +61,7 @@ class AsyncTaskPublishProgressRaceTest extends Test{
 
 			public function onCompletion() : void{
 				/** @var AsyncTaskPublishProgressRaceTest $t */
-				$t = $this->fetchLocal();
+				$t = $this->fetchLocal(self::TLS_KEY_TEST);
 				$t->setResult(self::$success ? Test::RESULT_OK : Test::RESULT_FAILED);
 			}
 		});

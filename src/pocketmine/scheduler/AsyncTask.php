@@ -213,9 +213,10 @@ abstract class AsyncTask extends \Threaded{
 	 * (E.g. a {@link \pocketmine\Level} object is no longer usable because it is unloaded while the AsyncTask is
 	 * executing, or even a plugin might be unloaded).
 	 *
-	 * @param mixed $complexData the data to store
+	 * @param string $key
+	 * @param mixed  $complexData the data to store
 	 */
-	protected function storeLocal($complexData) : void{
+	protected function storeLocal(string $key, $complexData) : void{
 		if(self::$threadLocalStorage === null){
 			/*
 			 * It's necessary to use an object (not array) here because pthreads is stupid. Non-default array statics
@@ -225,7 +226,7 @@ abstract class AsyncTask extends \Threaded{
 			 */
 			self::$threadLocalStorage = new \ArrayObject();
 		}
-		self::$threadLocalStorage[spl_object_id($this)] = $complexData;
+		self::$threadLocalStorage[spl_object_id($this)][$key] = $complexData;
 	}
 
 	/**
@@ -234,16 +235,19 @@ abstract class AsyncTask extends \Threaded{
 	 * If you used storeLocal(), you can use this on the same thread to fetch data stored. This should be used during
 	 * onProgressUpdate() and onCompletion() to fetch thread-local data stored on the parent thread.
 	 *
+	 * @param string $key
+	 *
 	 * @return mixed
 	 *
 	 * @throws \InvalidArgumentException if no data were stored by this AsyncTask instance.
 	 */
-	protected function fetchLocal(){
-		if(self::$threadLocalStorage === null or !isset(self::$threadLocalStorage[spl_object_id($this)])){
+	protected function fetchLocal(string $key){
+		$id = spl_object_id($this);
+		if(self::$threadLocalStorage === null or !isset(self::$threadLocalStorage[$id][$key])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 
-		return self::$threadLocalStorage[spl_object_id($this)];
+		return self::$threadLocalStorage[$id][$key];
 	}
 
 	final public function __destruct(){

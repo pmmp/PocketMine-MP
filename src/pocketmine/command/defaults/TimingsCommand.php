@@ -122,6 +122,8 @@ class TimingsCommand extends VanillaCommand{
 				$host = $sender->getServer()->getProperty("timings.host", "timings.pmmp.io");
 
 				$sender->getServer()->getAsyncPool()->submitTask(new class($sender, $host, $agent, $data) extends BulkCurlTask{
+					private const TLS_KEY_SENDER = "sender";
+
 					/** @var string */
 					private $host;
 
@@ -139,11 +141,12 @@ class TimingsCommand extends VanillaCommand{
 							]]
 						]);
 						$this->host = $host;
-						$this->storeLocal($sender);
+						$this->storeLocal(self::TLS_KEY_SENDER, $sender);
 					}
 
 					public function onCompletion() : void{
-						$sender = $this->fetchLocal();
+						/** @var CommandSender $sender */
+						$sender = $this->fetchLocal(self::TLS_KEY_SENDER);
 						if($sender instanceof Player and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
 							return;
 						}

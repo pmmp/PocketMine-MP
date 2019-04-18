@@ -29,11 +29,12 @@ use pocketmine\level\Level;
 use pocketmine\scheduler\AsyncTask;
 
 class LightPopulationTask extends AsyncTask{
+	private const TLS_KEY_WORLD = "world";
 
 	public $chunk;
 
 	public function __construct(Level $level, Chunk $chunk){
-		$this->storeLocal($level);
+		$this->storeLocal(self::TLS_KEY_WORLD, $level);
 		$this->chunk = $chunk->fastSerialize();
 	}
 
@@ -53,7 +54,7 @@ class LightPopulationTask extends AsyncTask{
 
 	public function onCompletion() : void{
 		/** @var Level $level */
-		$level = $this->fetchLocal();
+		$level = $this->fetchLocal(self::TLS_KEY_WORLD);
 		if(!$level->isClosed()){
 			/** @var Chunk $chunk */
 			$chunk = Chunk::fastDeserialize($this->chunk);

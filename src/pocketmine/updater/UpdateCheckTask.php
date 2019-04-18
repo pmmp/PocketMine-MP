@@ -30,6 +30,7 @@ use function is_array;
 use function json_decode;
 
 class UpdateCheckTask extends AsyncTask{
+	private const TLS_KEY_UPDATER = "updater";
 
 	/** @var string */
 	private $endpoint;
@@ -39,7 +40,7 @@ class UpdateCheckTask extends AsyncTask{
 	private $error = "Unknown error";
 
 	public function __construct(AutoUpdater $updater, string $endpoint, string $channel){
-		$this->storeLocal($updater);
+		$this->storeLocal(self::TLS_KEY_UPDATER, $updater);
 		$this->endpoint = $endpoint;
 		$this->channel = $channel;
 	}
@@ -74,7 +75,7 @@ class UpdateCheckTask extends AsyncTask{
 
 	public function onCompletion() : void{
 		/** @var AutoUpdater $updater */
-		$updater = $this->fetchLocal();
+		$updater = $this->fetchLocal(self::TLS_KEY_UPDATER);
 		if($this->hasResult()){
 			$updater->checkUpdateCallback($this->getResult());
 		}else{

@@ -28,6 +28,9 @@ use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\scheduler\AsyncTask;
 
 class ChunkRequestTask extends AsyncTask{
+	private const TLS_KEY_PROMISE = "promise";
+	private const TLS_KEY_ERROR_HOOK = "errorHook";
+
 	/** @var string */
 	protected $chunk;
 	/** @var int */
@@ -44,7 +47,8 @@ class ChunkRequestTask extends AsyncTask{
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
 
-		$this->storeLocal(["promise" => $promise, "errorHook" => $onError]);
+		$this->storeLocal(self::TLS_KEY_PROMISE, $promise);
+		$this->storeLocal(self::TLS_KEY_ERROR_HOOK, $onError);
 	}
 
 	public function onRun() : void{
@@ -60,7 +64,8 @@ class ChunkRequestTask extends AsyncTask{
 	}
 
 	public function onError() : void{
-		$hook = $this->fetchLocal()["errorHook"];
+		/** @var \Closure $hook */
+		$hook = $this->fetchLocal(self::TLS_KEY_ERROR_HOOK);
 		if($hook !== null){
 			$hook();
 		}
@@ -68,7 +73,7 @@ class ChunkRequestTask extends AsyncTask{
 
 	public function onCompletion() : void{
 		/** @var CompressBatchPromise $promise */
-		$promise = $this->fetchLocal()["promise"];
+		$promise = $this->fetchLocal(self::TLS_KEY_PROMISE);
 		$promise->resolve($this->getResult());
 	}
 }

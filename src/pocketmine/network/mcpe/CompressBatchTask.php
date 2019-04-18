@@ -27,6 +27,8 @@ use pocketmine\scheduler\AsyncTask;
 
 class CompressBatchTask extends AsyncTask{
 
+	private const TLS_KEY_PROMISE = "promise";
+
 	private $level;
 	private $data;
 
@@ -38,7 +40,7 @@ class CompressBatchTask extends AsyncTask{
 	public function __construct(string $data, int $compressionLevel, CompressBatchPromise $promise){
 		$this->data = $data;
 		$this->level = $compressionLevel;
-		$this->storeLocal($promise);
+		$this->storeLocal(self::TLS_KEY_PROMISE, $promise);
 	}
 
 	public function onRun() : void{
@@ -47,7 +49,7 @@ class CompressBatchTask extends AsyncTask{
 
 	public function onCompletion() : void{
 		/** @var CompressBatchPromise $promise */
-		$promise = $this->fetchLocal();
+		$promise = $this->fetchLocal(self::TLS_KEY_PROMISE);
 		$promise->resolve($this->getResult());
 	}
 }

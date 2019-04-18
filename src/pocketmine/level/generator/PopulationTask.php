@@ -29,6 +29,7 @@ use pocketmine\level\SimpleChunkManager;
 use pocketmine\scheduler\AsyncTask;
 
 class PopulationTask extends AsyncTask{
+	private const TLS_KEY_WORLD = "world";
 
 	public $state;
 	public $levelId;
@@ -53,7 +54,7 @@ class PopulationTask extends AsyncTask{
 			$this->{"chunk$i"} = $c !== null ? $c->fastSerialize() : null;
 		}
 
-		$this->storeLocal($level);
+		$this->storeLocal(self::TLS_KEY_WORLD, $level);
 	}
 
 	public function onRun() : void{
@@ -138,7 +139,7 @@ class PopulationTask extends AsyncTask{
 
 	public function onCompletion() : void{
 		/** @var Level $level */
-		$level = $this->fetchLocal();
+		$level = $this->fetchLocal(self::TLS_KEY_WORLD);
 		if(!$level->isClosed()){
 			if(!$this->state){
 				$level->registerGeneratorToWorker($this->worker->getAsyncWorkerId());
