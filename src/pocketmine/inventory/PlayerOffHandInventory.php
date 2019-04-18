@@ -27,6 +27,7 @@ namespace pocketmine\inventory;
 use pocketmine\entity\Human;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\Player;
@@ -72,14 +73,16 @@ class PlayerOffHandInventory extends BaseInventory{
 		$pk = new MobEquipmentPacket();
 		$pk->entityRuntimeId = $this->getHolder()->getId();
 		$pk->item = $this->getItem(0);
-		$pk->inventorySlot = 0;
-		$pk->hotbarSlot = 1;
+		$pk->inventorySlot = $pk->hotbarSlot = 0;
+		$pk->windowId = ContainerIds::OFFHAND;
 		$pk->encode();
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
+				$player->sendDataPacket($pk);
+
 				$pk2 = new InventorySlotPacket();
-				$pk2->windowId = $player->getWindowId($this);
+				$pk2->windowId = ContainerIds::OFFHAND;
 				$pk2->inventorySlot = 0;
 				$pk2->item = $this->getItem(0);
 
@@ -98,12 +101,14 @@ class PlayerOffHandInventory extends BaseInventory{
 		$pk = new MobEquipmentPacket();
 		$pk->entityRuntimeId = $this->getHolder()->getId();
 		$pk->item = $this->getItem(0);
-		$pk->inventorySlot = 0;
-		$pk->hotbarSlot = 1;
+		$pk->inventorySlot = $pk->hotbarSlot = 0;
+		$pk->windowId = ContainerIds::OFFHAND;
 		$pk->encode();
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
+				$player->sendDataPacket($pk);
+
 				$pk2 = new InventoryContentPacket();
 				$pk2->windowId = $player->getWindowId($this);
 				$pk2->items = $this->getContents(true);
