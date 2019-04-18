@@ -883,18 +883,16 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 	}
 
-	public function close() : void{
-		if(!$this->closed){
-			if($this->inventory !== null){
-				$this->inventory->removeAllViewers(true);
-				$this->inventory = null;
-			}
-			if($this->enderChestInventory !== null){
-				$this->enderChestInventory->removeAllViewers(true);
-				$this->enderChestInventory = null;
-			}
-			parent::close();
-		}
+	protected function onDispose() : void{
+		$this->inventory->removeAllViewers(true);
+		$this->enderChestInventory->removeAllViewers(true);
+		parent::onDispose();
+	}
+
+	protected function destroyCycles() : void{
+		$this->inventory = null;
+		$this->enderChestInventory = null;
+		parent::destroyCycles();
 	}
 
 	/**

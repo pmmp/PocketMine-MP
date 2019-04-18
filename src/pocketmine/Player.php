@@ -2539,21 +2539,20 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->flagForDespawn();
 	}
 
-	final public function close() : void{
-		if(!$this->closed){
-			$this->disconnect("Player destroyed");
-			$this->networkSession = null;
+	protected function onDispose() : void{
+		$this->disconnect("Player destroyed");
+		$this->cursorInventory->removeAllViewers(true);
+		$this->craftingGrid->removeAllViewers(true);
+		parent::onDispose();
+	}
 
-			$this->cursorInventory = null;
-			$this->craftingGrid = null;
-
-			$this->spawned = false;
-
-			$this->spawnPosition = null;
-			$this->perm = null;
-
-			parent::close();
-		}
+	protected function destroyCycles() : void{
+		$this->networkSession = null;
+		$this->cursorInventory = null;
+		$this->craftingGrid = null;
+		$this->spawnPosition = null;
+		$this->perm = null;
+		parent::destroyCycles();
 	}
 
 	public function __debugInfo(){

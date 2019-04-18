@@ -1897,26 +1897,40 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 *
 	 * WARNING: Entities are unusable after this has been executed!
 	 */
-	public function close() : void{
+	final public function close() : void{
 		if(!$this->closed){
-			(new EntityDespawnEvent($this))->call();
 			$this->closed = true;
+			(new EntityDespawnEvent($this))->call();
 
-			$this->despawnFromAll();
-			$this->hasSpawned = [];
-
-			if($this->chunk !== null){
-				$this->chunk->removeEntity($this);
-				$this->chunk = null;
-			}
-
-			if($this->isValid()){
-				$this->level->removeEntity($this);
-				$this->setLevel(null);
-			}
-
-			$this->lastDamageCause = null;
+			$this->onDispose();
+			$this->destroyCycles();
 		}
+	}
+
+	/**
+	 * Called when the entity is disposed to clean up things like viewers. This SHOULD NOT destroy internal state,
+	 * because it may be needed by descendent classes.
+	 */
+	protected function onDispose() : void{
+		$this->despawnFromAll();
+		if($this->chunk !== null){
+			$this->chunk->removeEntity($this);
+		}
+		if($this->isValid()){
+			$this->level->removeEntity($this);
+		}
+	}
+
+	/**
+	 * Called when the entity is disposed, after all events have been fired. This should be used to perform destructive
+	 * circular object references and things which could impact memory usage.
+	 *
+	 * It is expected that the object is unusable after this is called.
+	 */
+	protected function destroyCycles() : void{
+		$this->chunk = null;
+		$this->setLevel(null);
+		$this->lastDamageCause = null;
 	}
 
 	/**
