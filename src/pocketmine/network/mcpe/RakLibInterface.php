@@ -77,11 +77,6 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	/** @var SleeperNotifier */
 	private $sleeper;
 
-	/** @var int */
-	private $sendBytes = 0;
-	/** @var int */
-	private $receiveBytes = 0;
-
 	public function __construct(Server $server){
 		$this->server = $server;
 
@@ -226,8 +221,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	public function handleOption(string $option, string $value) : void{
 		if($option === "bandwidth"){
 			$v = unserialize($value);
-			$this->sendBytes = $v["up"];
-			$this->receiveBytes = $v["down"];
+			$this->network->addStatistics($v["up"], $v["down"]);
 		}
 	}
 
@@ -248,17 +242,5 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		if(isset($this->sessions[$sessionId])){
 			$this->sessions[$sessionId]->updatePing($pingMS);
 		}
-	}
-
-	public function getBytesSent() : int{
-		return $this->sendBytes;
-	}
-
-	public function getBytesReceived() : int{
-		return $this->receiveBytes;
-	}
-
-	public function resetTrafficStats() : void{
-		$this->sendBytes = $this->receiveBytes = 0;
 	}
 }

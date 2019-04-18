@@ -49,6 +49,9 @@ class Network{
 	/** @var int[] */
 	private $bannedIps = [];
 
+	private $upload = 0;
+	private $download = 0;
+
 	/** @var string */
 	private $name;
 
@@ -64,26 +67,22 @@ class Network{
 		$this->logger = $logger;
 	}
 
+	public function addStatistics(float $upload, float $download) : void{
+		$this->upload += $upload;
+		$this->download += $download;
+	}
+
 	public function getUpload() : float{
-		$result = 0;
-		foreach($this->advancedInterfaces as $interface){
-			$result += $interface->getBytesSent();
-		}
-		return $result;
+		return $this->upload;
 	}
 
 	public function getDownload() : float{
-		$result = 0;
-		foreach($this->advancedInterfaces as $interface){
-			$result += $interface->getBytesReceived();
-		}
-		return $result;
+		return $this->download;
 	}
 
 	public function resetStatistics() : void{
-		foreach($this->advancedInterfaces as $interface){
-			$interface->resetTrafficStats();
-		}
+		$this->upload = 0;
+		$this->download = 0;
 	}
 
 	/**

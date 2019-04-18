@@ -68,23 +68,4 @@ interface AdvancedNetworkInterface extends NetworkInterface{
 	 * @param string $regex
 	 */
 	public function addRawPacketFilter(string $regex) : void;
-
-	/**
-	 * Returns the number of bytes sent on this network interface since the last statistics reset.
-	 *
-	 * @return int
-	 */
-	public function getBytesSent() : int;
-
-	/**
-	 * Returns the number of bytes received on this network interface since the last statistics reset.
-	 *
-	 * @return int
-	 */
-	public function getBytesReceived() : int;
-
-	/**
-	 * Resets the upload/download statistics to zero.
-	 */
-	public function resetTrafficStats() : void;
 }
