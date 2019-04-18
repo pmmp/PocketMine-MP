@@ -36,6 +36,7 @@ use function implode;
 use function mb_check_encoding;
 use function mb_scrub;
 use function sprintf;
+use function strlen;
 
 class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";
@@ -150,6 +151,14 @@ class Sign extends Spawnable{
 			$lines = self::fixTextBlob($nbt->getString(self::TAG_TEXT_BLOB));
 		}else{
 			return false;
+		}
+		$size = 0;
+		foreach($lines as $line){
+			$size += strlen($line);
+		}
+		if($size > 1000){
+			//trigger kick + IP ban - TODO: on 4.0 this will require a better fix
+			throw new \UnexpectedValueException($player->getName() . " tried to write $size bytes of text onto a sign (bigger than max 1000)");
 		}
 
 		$removeFormat = $player->getRemoveFormat();

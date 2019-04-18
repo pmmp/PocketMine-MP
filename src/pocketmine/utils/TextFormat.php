@@ -87,6 +87,7 @@ abstract class TextFormat{
 	 */
 	public static function clean(string $string, bool $removeFormat = true) : string{
 		$string = mb_scrub($string, 'UTF-8');
+		$string = preg_replace("/[\x{E000}-\x{F8FF}]/u", "", $string); //remove unicode private-use-area characters (they might break the console)
 		if($removeFormat){
 			$string = str_replace(TextFormat::ESCAPE, "", preg_replace("/" . TextFormat::ESCAPE . "[0-9a-fk-or]/u", "", $string));
 		}
