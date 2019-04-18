@@ -1158,11 +1158,16 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	public function saveChunks(){
-		foreach($this->chunks as $chunk){
-			if(($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0) and $chunk->isGenerated()){
-				$this->provider->saveChunk($chunk);
-				$chunk->setChanged(false);
+		$this->timings->syncChunkSaveTimer->startTiming();
+		try{
+			foreach($this->chunks as $chunk){
+				if(($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0) and $chunk->isGenerated()){
+					$this->provider->saveChunk($chunk);
+					$chunk->setChanged(false);
+				}
 			}
+		}finally{
+			$this->timings->syncChunkSaveTimer->stopTiming();
 		}
 	}
 
@@ -2902,7 +2907,12 @@ class Level implements ChunkManager, Metadatable{
 
 			if($trySave and $this->getAutoSave() and $chunk->isGenerated()){
 				if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0){
-					$this->provider->saveChunk($chunk);
+					$this->timings->syncChunkSaveTimer->startTiming();
+					try{
+						$this->provider->saveChunk($chunk);
+					}finally{
+						$this->timings->syncChunkSaveTimer->stopTiming();
+					}
 				}
 			}
 
