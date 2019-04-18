@@ -209,7 +209,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $gamemode;
 
 	/** @var bool[] chunkHash => bool (true = sent, false = needs sending) */
-	public $usedChunks = [];
+	protected $usedChunks = [];
 	/** @var bool[] chunkHash => dummy */
 	protected $loadQueue = [];
 	/** @var int */
