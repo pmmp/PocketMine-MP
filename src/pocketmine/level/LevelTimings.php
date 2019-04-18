@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level;
 
+use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 
 class LevelTimings{
@@ -62,6 +63,8 @@ class LevelTimings{
 	public $syncChunkLoadEntitiesTimer;
 	/** @var TimingsHandler */
 	public $syncChunkLoadTileEntitiesTimer;
+	/** @var TimingsHandler */
+	public $syncChunkSaveTimer;
 
 	public function __construct(Level $level){
 		$name = $level->getFolderName() . " - ";
@@ -84,6 +87,9 @@ class LevelTimings{
 		$this->syncChunkLoadDataTimer = new TimingsHandler("** " . $name . "syncChunkLoad - Data");
 		$this->syncChunkLoadEntitiesTimer = new TimingsHandler("** " . $name . "syncChunkLoad - Entities");
 		$this->syncChunkLoadTileEntitiesTimer = new TimingsHandler("** " . $name . "syncChunkLoad - TileEntities");
+
+		Timings::init(); //make sure the timer we want is available
+		$this->syncChunkSaveTimer = new TimingsHandler("** " . $name . "syncChunkSave", Timings::$worldSaveTimer);
 
 		$this->doTick = new TimingsHandler($name . "doTick");
 	}
