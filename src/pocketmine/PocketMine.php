@@ -211,6 +211,9 @@ namespace pocketmine {
 	if(extension_loaded("xdebug")){
 		$logger->warning(PHP_EOL . PHP_EOL . PHP_EOL . "\tYou are running " . \pocketmine\NAME . " with xdebug enabled. This has a major impact on performance." . PHP_EOL . PHP_EOL);
 	}
+	if(!extension_loaded("pocketmine_chunkutils")){
+		$logger->warning("ChunkUtils extension is missing. Anvil-format worlds will experience degraded performance.");
+	}
 
 	if(\Phar::running(true) === ""){
 		$logger->warning("Non-packaged " . \pocketmine\NAME . " installation detected. Consider using a phar in production for better performance.");
