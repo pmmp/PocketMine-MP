@@ -260,7 +260,11 @@ class NetworkSession{
 			Timings::$playerNetworkReceiveDecompressTimer->stopTiming();
 		}
 
+		$count = 0;
 		while(!$stream->feof() and $this->connected){
+			if($count++ >= 500){
+				throw new BadPacketException("Too many packets in a single batch");
+			}
 			try{
 				$pk = PacketPool::getPacket($stream->getString());
 			}catch(BinaryDataException $e){

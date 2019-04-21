@@ -37,12 +37,13 @@ final class NetworkCompression{
 
 	/**
 	 * @param string $payload
+	 * @param int    $maxDecodedLength default 2MB
 	 *
 	 * @return string
 	 * @throws \ErrorException
 	 */
-	public static function decompress(string $payload) : string{
-		return zlib_decode($payload, 1024 * 1024 * 64); //Max 64MB
+	public static function decompress(string $payload, int $maxDecodedLength = 1024 * 1024 * 2) : string{
+		return zlib_decode($payload, $maxDecodedLength);
 	}
 
 	/**
