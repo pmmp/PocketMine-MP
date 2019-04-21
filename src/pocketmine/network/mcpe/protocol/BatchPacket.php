@@ -61,7 +61,7 @@ class BatchPacket extends DataPacket{
 	protected function decodePayload(){
 		$data = $this->getRemaining();
 		try{
-			$this->payload = zlib_decode($data, 1024 * 1024 * 2); //Max 64MB
+			$this->payload = zlib_decode($data, 1024 * 1024 * 2); //Max 2MB
 		}catch(\ErrorException $e){ //zlib decode error
 			$this->payload = "";
 		}
