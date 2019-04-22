@@ -89,8 +89,8 @@ abstract class Living extends Entity implements Damageable{
 	/** @var ArmorInventory */
 	protected $armorInventory;
 
-	/** @var Entity|null */
-	protected $lastAttacker = null;
+	/** @var int|null */
+	protected $lastAttackerId = null;
 
 	/** @var bool */
 	protected $leashed = false;
@@ -98,8 +98,8 @@ abstract class Living extends Entity implements Damageable{
 	/** @var CompoundTag */
 	protected $leashNbt;
 
-	/** @var Entity|null */
-	protected $leashedToEntity;
+	/** @var int|null */
+	protected $leashedToEntityId = null;
 
 	public $headYaw = 0;
 
@@ -109,21 +109,33 @@ abstract class Living extends Entity implements Damageable{
 	 * @return null|Entity
 	 */
 	public function getLastAttacker() : ?Entity{
-		return $this->lastAttacker;
+		if($this->lastAttackerId !== null){
+			return $this->server->findEntity($this->lastAttackerId);
+		}
+
+		return null;
 	}
 
 	/**
 	 * @param null|Entity $lastAttacker
 	 */
 	public function setLastAttacker(?Entity $lastAttacker) : void{
-		$this->lastAttacker = $lastAttacker;
+		if($lastAttacker === null){
+			$this->lastAttackerId = null;
+		}else{
+			$this->lastAttackerId = $lastAttacker->getId();
+		}
 	}
 
 	/**
 	 * @return null|Entity
 	 */
 	public function getLeashedToEntity() : ?Entity{
-		return $this->leashedToEntity;
+		if($this->leashedToEntityId !== null){
+			return $this->server->findEntity($this->leashedToEntityId);
+		}
+
+		return null;
 	}
 
 	/**
@@ -132,7 +144,7 @@ abstract class Living extends Entity implements Damageable{
 	 */
 	public function setLeashedToEntity(Entity $leashedToEntity, bool $send = true) : void{
 		$this->leashed = true;
-		$this->leashedToEntity = $leashedToEntity;
+		$this->leashedToEntityId = $leashedToEntity->getId();
 
 		if($send){
 			$this->setGenericFlag(self::DATA_FLAG_LEASHED, true);
@@ -277,12 +289,12 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		$this->namedtag->setByte("Leashed", intval($this->leashed));
-		if($this->leashedToEntity !== null){
+		if(($leashedToEntity = $this->getLeashedToEntity())){
 			$leashNbt = new CompoundTag("Leash");
 
-			if($this->leashedToEntity instanceof Living){
-				$leashNbt->setString("UUID", $this->leashedToEntity->getUniqueId()->toString());
-			}elseif($this->leashedToEntity instanceof LeashKnot){
+			if($leashedToEntity instanceof Living){
+				$leashNbt->setString("UUID", $leashedToEntity->getUniqueId()->toString());
+			}elseif($leashedToEntity instanceof LeashKnot){
 				$pos = $this->leashedToEntity->getHangingPosition();
 				$leashNbt->setInt("X", $pos->x);
 				$leashNbt->setInt("Y", $pos->y);
@@ -798,10 +810,6 @@ abstract class Living extends Entity implements Damageable{
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		Timings::$timerLivingEntityBaseTick->startTiming();
 
-		if($this->getLastAttacker() instanceof Entity and $this->getLastAttacker()->isClosed()){
-			$this->setLastAttacker(null);
-		}
-
 		if($this->getTargetEntity() instanceof Entity and $this->getTargetEntity()->isClosed()){
 			$this->setTargetEntity(null);
 		}
@@ -1090,7 +1098,7 @@ abstract class Living extends Entity implements Damageable{
 	public function clearLeashed(bool $send, bool $dropLead) : void{
 		if($this->isLeashed()){
 			$this->leashed = false;
-			$this->leashedToEntity = null;
+			$this->leashedToEntityId = null;
 
 			if($dropLead){
 				$this->level->dropItem($this, Item::get(Item::LEAD));
@@ -1146,14 +1154,15 @@ abstract class Living extends Entity implements Damageable{
 				$this->clearLeashed(true, true);
 			}
 
-			if($this->leashedToEntity === null or $this->leashedToEntity->isClosed()){
+			$leashedToEntity = $this->getLeashedToEntity();
+			if($leashedToEntity === null){
 				$this->clearLeashed(true, true);
 			}
 		}
 	}
 
 	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
-		if($this->isLeashed() and $this->leashedToEntity === $player){
+		if($this->isLeashed() and $this->getLeashedToEntity() === $player){
 			$this->clearLeashed(true, !$player->isCreative());
 			return true;
 		}else{

@@ -1561,7 +1561,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$d1 = $entity->z - $this->z;
 				$d2 = abs(max($d0, $d1));
 
-				if($d2 >= 0.009999999776482582){
+				if($d2 >= 0.009){
 					$d2 = sqrt($d2);
 					$d0 = $d0 / $d2;
 					$d1 = $d1 / $d2;
@@ -1571,10 +1571,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 					$d0 = $d0 * $d3;
 					$d1 = $d1 * $d3;
-					$d0 = $d0 * 0.05000000074505806;
-					$d1 = $d1 * 0.05000000074505806;
-					$d0 = $d0 * (1.0 - $this->entityCollisionReduction);
-					$d1 = $d1 * (1.0 - $this->entityCollisionReduction);
+					$d0 = $d0 * 0.05;
+					$d1 = $d1 * 0.05;
+					$d0 = $d0 * (1 - $this->entityCollisionReduction);
+					$d1 = $d1 * (1 - $this->entityCollisionReduction);
 
 					$this->motion = $this->motion->subtract($d0, 0, $d1);
 					$entity->motion = $entity->motion->add($d0, 0, $d1);
@@ -2044,7 +2044,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function moveFlying(float $strafe, float $forward, float $friction) : bool{
 		$f = $strafe * $strafe + $forward * $forward;
-		if($f >= 1.0){
+		if($f >= 1){
 			$f = sqrt($f);
 
 			if($f < 1) $f = 1;
