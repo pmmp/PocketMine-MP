@@ -413,12 +413,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "34a7600d6b4124ecbbc1654cb2dab0d1342a5622"
+                "reference": "a0be471c23bf5d896c8ed394b1c7a377c86cde71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/34a7600d6b4124ecbbc1654cb2dab0d1342a5622",
-                "reference": "34a7600d6b4124ecbbc1654cb2dab0d1342a5622",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/a0be471c23bf5d896c8ed394b1c7a377c86cde71",
+                "reference": "a0be471c23bf5d896c8ed394b1c7a377c86cde71",
                 "shasum": ""
             },
             "require": {
@@ -446,7 +446,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-04-21T13:19:16+00:00"
+            "time": "2019-04-22T19:12:20+00:00"
         },
         {
             "name": "pocketmine/snooze",
