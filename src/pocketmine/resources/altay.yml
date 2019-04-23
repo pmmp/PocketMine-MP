@@ -27,8 +27,6 @@ developer:
   folder-plugin-loader: true
   # This setting allows developer commands (extractplugin, makeserver... etc)
   commands: true
-  # This setting allows the server to load plugins with Incompatible API
-  load-incompatible-api: true
 
 level:
   # If enabled, mobs can move around

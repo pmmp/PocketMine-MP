@@ -36,10 +36,8 @@ use function error_get_last;
 use function fclose;
 use function file;
 use function file_exists;
-use function file_get_contents;
 use function fopen;
 use function fwrite;
-use function get_loaded_extensions;
 use function implode;
 use function is_dir;
 use function is_resource;
@@ -47,13 +45,8 @@ use function json_encode;
 use function json_last_error_msg;
 use function max;
 use function mkdir;
-use function ob_end_clean;
-use function ob_get_contents;
-use function ob_start;
 use function php_uname;
-use function phpinfo;
 use function phpversion;
-use function preg_replace;
 use function str_split;
 use function strpos;
 use function substr;
@@ -123,8 +116,6 @@ class CrashDump{
 		$this->generalData();
 		$this->pluginsData();
 
-		$this->extraData();
-
 		$this->encodeData();
 
 		fclose($this->fp);
@@ -179,33 +170,6 @@ class CrashDump{
 				];
 				$this->addLine($d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . " for API(s) " . implode(", ", $d->getCompatibleApis()));
 			}
-		}
-	}
-
-	private function extraData(){
-		global $argv;
-
-		if($this->server->getProperty("auto-report.send-settings", true) !== false){
-			$this->data["parameters"] = (array) $argv;
-			$this->data["server.properties"] = @file_get_contents($this->server->getDataPath() . "server.properties");
-			$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
-			$this->data["pocketmine.yml"] = @file_get_contents($this->server->getDataPath() . "pocketmine.yml");
-		}else{
-			$this->data["pocketmine.yml"] = "";
-			$this->data["server.properties"] = "";
-			$this->data["parameters"] = [];
-		}
-		$extensions = [];
-		foreach(get_loaded_extensions() as $ext){
-			$extensions[$ext] = phpversion($ext);
-		}
-		$this->data["extensions"] = $extensions;
-
-		if($this->server->getProperty("auto-report.send-phpinfo", true) !== false){
-			ob_start();
-			phpinfo();
-			$this->data["phpinfo"] = ob_get_contents();
-			ob_end_clean();
 		}
 	}
 

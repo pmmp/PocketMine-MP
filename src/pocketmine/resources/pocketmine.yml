@@ -144,22 +144,6 @@ auto-report:
   use-https: true
   host: crash.pmmp.io
 
-anonymous-statistics:
-  #Sends anonymous statistics for data aggregation, plugin usage tracking
-  enabled: false #TODO: re-enable this when we have a new stats host
-  host: stats.pocketmine.net
-
-auto-updater:
-  enabled: true
-  on-update:
-    warn-console: true
-    warn-ops: true
-  #Can be development, alpha, beta or stable.
-  preferred-channel: stable
-  #If using a development version, it will suggest changing the channel
-  suggest-channels: true
-  host: update.pmmp.io
-
 timings:
   #Choose the host to use for viewing your timings results.
   host: timings.pmmp.io

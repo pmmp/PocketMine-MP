@@ -93,13 +93,11 @@ use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\ScriptPluginLoader;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
-use pocketmine\scheduler\SendUsageTask;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
-use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Config;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Terminal;
@@ -218,9 +216,6 @@ class Server{
 	/** @var float */
 	private $profilingTickRate = 20;
 
-	/** @var AutoUpdater */
-	private $updater = null;
-
 	/** @var AsyncPool */
 	private $asyncPool;
 
@@ -243,9 +238,6 @@ class Server{
 
 	/** @var bool */
 	private $doTitleTick = true;
-
-	/** @var int */
-	private $sendUsageTicker = 0;
 
 	/** @var bool */
 	private $dispatchSignals = false;
@@ -359,8 +351,6 @@ class Server{
 	private $levelTheEnd = null;
 
 	/** @var bool */
-	public $loadIncompatibleApi = true;
-	/** @var bool */
 	public $keepInventory = false;
 	/** @var bool */
 	public $keepExperience = false;
@@ -370,7 +360,6 @@ class Server{
 	public $mobAiEnabled = true;
 
 	public function loadAltayConfig(){
-		$this->loadIncompatibleApi = $this->getAltayProperty("developer.load-incompatible-api", true);
 		$this->keepInventory = $this->getAltayProperty("player.keep-inventory", false);
 		$this->keepExperience = $this->getAltayProperty("player.keep-experience", false);
 		$this->folderPluginLoader = $this->getAltayProperty("developer.folder-plugin-loader", true);
@@ -704,13 +693,6 @@ class Server{
 	 */
 	public function getLevelMetadata(){
 		return $this->levelMetadata;
-	}
-
-	/**
-	 * @return AutoUpdater
-	 */
-	public function getUpdater(){
-		return $this->updater;
 	}
 
 	/**
@@ -1802,8 +1784,6 @@ class Server{
 
 			$this->pluginManager->loadPlugins($this->pluginPath);
 
-			$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "update.pmmp.io"));
-
 			$this->enablePlugins(PluginLoadOrder::STARTUP);
 
 			$this->network->registerInterface(new RakLibInterface($this));
@@ -2210,10 +2190,6 @@ class Server{
 		}
 
 		try{
-			if(!$this->isRunning()){
-				$this->sendUsage(SendUsageTask::TYPE_CLOSE);
-			}
-
 			$this->hasStopped = true;
 
 			$this->shutdown();
@@ -2297,12 +2273,6 @@ class Server{
 			$this->network->blockAddress($entry->getName(), -1);
 		}
 
-		if($this->getProperty("settings.send-usage", true)){
-			$this->sendUsageTicker = 6000;
-			$this->sendUsage(SendUsageTask::TYPE_OPEN);
-		}
-
-
 		if($this->getProperty("network.upnp-forwarding", false)){
 			$this->logger->info("[UPnP] Trying to port forward...");
 			try{
@@ -2376,9 +2346,6 @@ class Server{
 		if(!$this->isRunning){
 			return;
 		}
-		if($this->sendUsageTicker > 0){
-			$this->sendUsage(SendUsageTask::TYPE_CLOSE);
-		}
 		$this->hasStopped = false;
 
 		ini_set("error_reporting", '0');
@@ -2388,50 +2355,6 @@ class Server{
 			$dump = new CrashDump($this);
 
 			$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.submit", [$dump->getPath()]));
-
-			if($this->getProperty("auto-report.enabled", true) !== false){
-				$report = true;
-
-				$stamp = $this->getDataPath() . "crashdumps/.last_crash";
-				$crashInterval = 120; //2 minutes
-				if(file_exists($stamp) and !($report = (filemtime($stamp) + $crashInterval < time()))){
-					$this->logger->debug("Not sending crashdump due to last crash less than $crashInterval seconds ago");
-				}
-				@touch($stamp); //update file timestamp
-
-				$plugin = $dump->getData()["plugin"];
-				if(is_string($plugin)){
-					$p = $this->pluginManager->getPlugin($plugin);
-					if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
-						$this->logger->debug("Not sending crashdump due to caused by non-phar plugin");
-					}
-				}
-
-				if($dump->getData()["error"]["type"] === \ParseError::class){
-					$report = false;
-				}
-
-				if(strrpos(\pocketmine\GIT_COMMIT, "-dirty") !== false or \pocketmine\GIT_COMMIT === str_repeat("00", 20)){
-					$this->logger->debug("Not sending crashdump due to locally modified");
-					$report = false; //Don't send crashdumps for locally modified builds
-				}
-
-				if($report){
-					$url = ($this->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
-					$reply = Internet::postURL($url, [
-						"report" => "yes",
-						"name" => $this->getName() . " " . $this->getPocketMineVersion(),
-						"email" => "crash@pocketmine.net",
-						"reportPaste" => base64_encode($dump->getEncodedData())
-					]);
-
-					if($reply !== false and ($data = json_decode($reply)) !== null and isset($data->crashId) and isset($data->crashUrl)){
-						$reportId = $data->crashId;
-						$reportUrl = $data->crashUrl;
-						$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
-					}
-				}
-			}
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			try{
@@ -2472,10 +2395,6 @@ class Server{
 	}
 
 	public function onPlayerLogin(Player $player){
-		if($this->sendUsageTicker > 0){
-			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
-		}
-
 		$this->loggedInPlayers[$player->getRawUniqueId()] = $player;
 	}
 
@@ -2590,14 +2509,6 @@ class Server{
 			Timings::$worldSaveTimer->stopTiming();
 		}
 	}
-
-	public function sendUsage($type = SendUsageTask::TYPE_STATUS){
-		if((bool) $this->getProperty("anonymous-statistics.enabled", true)){
-			$this->asyncPool->submitTask(new SendUsageTask($this, $type, $this->uniquePlayers));
-		}
-		$this->uniquePlayers = [];
-	}
-
 
 	/**
 	 * @return BaseLang
@@ -2726,11 +2637,6 @@ class Server{
 			$this->doAutoSave();
 			$time = (microtime(true) - $start);
 			$this->getLogger()->debug("[Auto Save] Save completed in " . ($time >= 1 ? round($time, 3) . "s" : round($time * 1000) . "ms"));
-		}
-
-		if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){
-			$this->sendUsageTicker = 6000;
-			$this->sendUsage(SendUsageTask::TYPE_STATUS);
 		}
 
 		if(($this->tickCounter % 100) === 0){
