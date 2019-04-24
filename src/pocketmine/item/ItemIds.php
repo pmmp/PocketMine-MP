@@ -246,6 +246,21 @@ interface ItemIds extends BlockIds{
 	public const ACACIA_SIGN = 475;
 	public const DARKOAK_SIGN = 476;
 	public const SWEET_BERRIES = 477;
+	public const KELP = 478;
+	public const SEA_PICKLE = 479;
+	public const BAMBOO = 478;
+	public const BAMBOO_SAPLING = 479;
+	public const SCAFFOLDING = 480;
+	public const TURTLE_EGG = 481;
+	public const CORAL = 482;
+	public const CORAL_FAN = 483;
+	public const CORAL_FAN_DEAD = 484;
+	public const CORAL_FAN_HANG = 485;
+	public const CORAL_FAN_HANG2 = 486;
+	public const CORAL_FAN_HANG3 = 487;
+	public const CORAL_BLOCK = 488;
+	public const SEAGRASS = 489;
+	public const CONDUIT = 490;
 
 	public const COMPOUND = 499;
 	public const RECORD_13 = 500;
