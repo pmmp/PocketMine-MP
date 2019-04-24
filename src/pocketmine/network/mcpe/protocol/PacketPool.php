@@ -156,6 +156,8 @@ class PacketPool{
 		static::registerPacket(new LevelSoundEventPacket());
 		static::registerPacket(new LecternUpdatePacket());
 		static::registerPacket(new VideoStreamConnectPacket());
+		static::registerPacket(new MapCreateLockedCopyPacket());
+		static::registerPacket(new OnScreenTextureAnimationPacket());
 
 		static::registerPacket(new BatchPacket());
 	}

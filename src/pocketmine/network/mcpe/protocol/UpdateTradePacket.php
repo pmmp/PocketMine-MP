@@ -40,45 +40,45 @@ class UpdateTradePacket extends DataPacket{
 	/** @var int */
 	public $windowType = WindowTypes::TRADING; //Mojang hardcoded this -_-
 	/** @var int */
-	public $varint1;
+	public $thisIsAlwaysZero = 0; //hardcoded to 0
 	/** @var int */
-	public $varint2;
-	/** @var int */
-	public $varint3;
-	/** @var bool */
-	public $isWilling;
+	public $tradeTier;
 	/** @var int */
 	public $traderEid;
 	/** @var int */
 	public $playerEid;
 	/** @var string */
 	public $displayName;
+	/** @var bool */
+	public $isWilling;
+	/** @var bool */
+	public $isV2Trading;
 	/** @var string */
 	public $offers;
 
 	protected function decodePayload(){
 		$this->windowId = $this->getByte();
 		$this->windowType = $this->getByte();
-		$this->varint1 = $this->getVarInt();
-		$this->varint2 = $this->getVarInt();
-		$this->varint3 = $this->getVarInt();
-		$this->isWilling = $this->getBool();
+		$this->thisIsAlwaysZero = $this->getVarInt();
+		$this->tradeTier = $this->getVarInt();
 		$this->traderEid = $this->getEntityUniqueId();
 		$this->playerEid = $this->getEntityUniqueId();
 		$this->displayName = $this->getString();
+		$this->isWilling = $this->getBool();
+		$this->isV2Trading = $this->getBool();
 		$this->offers = $this->getRemaining();
 	}
 
 	protected function encodePayload(){
 		$this->putByte($this->windowId);
 		$this->putByte($this->windowType);
-		$this->putVarInt($this->varint1);
-		$this->putVarInt($this->varint2);
-		$this->putVarInt($this->varint3);
-		$this->putBool($this->isWilling);
+		$this->putVarInt($this->thisIsAlwaysZero);
+		$this->putVarInt($this->tradeTier);
 		$this->putEntityUniqueId($this->traderEid);
 		$this->putEntityUniqueId($this->playerEid);
 		$this->putString($this->displayName);
+		$this->putBool($this->isWilling);
+		$this->putBool($this->isV2Trading);
 		$this->put($this->offers);
 	}
 

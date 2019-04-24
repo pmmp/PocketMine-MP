@@ -57,12 +57,18 @@ class CraftingManager{
 		foreach($recipes as $recipe){
 			switch($recipe["type"]){
 				case 0:
+					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
+						break;
+					}
 					$this->registerRecipe(new ShapelessRecipe(
 						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]),
 						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
 					));
 					break;
 				case 1:
+					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
+						break;
+					}
 					$this->registerRecipe(new ShapedRecipe(
 						$recipe["shape"],
 						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]),
@@ -71,6 +77,9 @@ class CraftingManager{
 					break;
 				case 2:
 				case 3:
+					if($recipe["block"] !== "furnace"){ //TODO: filter others out for now to avoid breaking economics
+						break;
+					}
 					$result = $recipe["output"];
 					$resultItem = Item::jsonDeserialize($result);
 					$this->registerRecipe(new FurnaceRecipe($resultItem, ItemFactory::get($recipe["inputId"], $recipe["inputDamage"] ?? -1, 1)));

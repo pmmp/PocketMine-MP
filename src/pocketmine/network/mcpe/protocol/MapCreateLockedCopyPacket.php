@@ -27,37 +27,25 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class LecternUpdatePacket extends DataPacket/* implements ServerboundPacket*/{
-	public const NETWORK_ID = ProtocolInfo::LECTERN_UPDATE_PACKET;
+class MapCreateLockedCopyPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::MAP_CREATE_LOCKED_COPY_PACKET;
 
 	/** @var int */
-	public $page;
+	public $originalMapId;
 	/** @var int */
-	public $totalPages;
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-	/** @var bool */
-	public $dropBook;
+	public $newMapId;
 
 	protected function decodePayload() : void{
-		$this->page = $this->getByte();
-		$this->totalPages = $this->getByte();
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->dropBook = $this->getBool();
+		$this->originalMapId = $this->getEntityUniqueId();
+		$this->newMapId = $this->getEntityUniqueId();
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->page);
-		$this->putByte($this->totalPages);
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putBool($this->dropBook);
+		$this->putEntityUniqueId($this->originalMapId);
+		$this->putEntityUniqueId($this->newMapId);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleLecternUpdate($this);
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleMapCreateLockedCopy($this);
 	}
 }
