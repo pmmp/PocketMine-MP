@@ -70,6 +70,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV2;
 use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\network\mcpe\protocol\MapCreateLockedCopyPacket;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
@@ -82,6 +83,7 @@ use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\NpcRequestPacket;
+use pocketmine\network\mcpe\protocol\OnScreenTextureAnimationPacket;
 use pocketmine\network\mcpe\protocol\PhotoTransferPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
@@ -641,6 +643,14 @@ abstract class NetworkSession{
 	}
 
 	public function handleVideoStreamConnect(VideoStreamConnectPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleMapCreateLockedCopy(MapCreateLockedCopyPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleOnScreenTextureAnimation(OnScreenTextureAnimationPacket $packet) : bool{
 		return false;
 	}
 

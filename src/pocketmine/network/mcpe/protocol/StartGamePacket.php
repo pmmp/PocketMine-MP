@@ -37,7 +37,7 @@ class StartGamePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
 
 	/** @var string|null */
-	private static $runtimeIdTable;
+	private static $runtimeIdTableCache;
 
 	/** @var int */
 	public $entityUniqueId;
@@ -138,6 +138,9 @@ class StartGamePacket extends DataPacket{
 	/** @var string */
 	public $multiplayerCorrelationId = ""; //TODO: this should be filled with a UUID of some sort
 
+	/** @var array|null each entry must have a "name" (string) and "data" (int16) element */
+	public $runtimeIdTable = null;
+
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
@@ -189,10 +192,14 @@ class StartGamePacket extends DataPacket{
 		$this->enchantmentSeed = $this->getVarInt();
 
 		$count = $this->getUnsignedVarInt();
+		$table = [];
 		for($i = 0; $i < $count; ++$i){
-			$this->getString();
-			$this->getLShort();
+			$id = $this->getString();
+			$data = $this->getLShort();
+
+			$table[$i] = ["name" => $id, "data" => $data];
 		}
+		$this->runtimeIdTable = $table;
 
 		$this->multiplayerCorrelationId = $this->getString();
 	}
@@ -247,20 +254,27 @@ class StartGamePacket extends DataPacket{
 
 		$this->putVarInt($this->enchantmentSeed);
 
-		if(self::$runtimeIdTable === null){
-			//this is a really nasty hack, but it'll do for now
-			$stream = new NetworkBinaryStream();
-			$data = RuntimeBlockMapping::getBedrockKnownStates();
-			$stream->putUnsignedVarInt(count($data));
-			foreach($data as $v){
-				$stream->putString($v["name"]);
-				$stream->putLShort($v["data"]);
+		if($this->runtimeIdTable === null){
+			if(self::$runtimeIdTableCache === null){
+				//this is a really nasty hack, but it'll do for now
+				self::$runtimeIdTableCache = self::serializeBlockTable(RuntimeBlockMapping::getBedrockKnownStates());
 			}
-			self::$runtimeIdTable = $stream->buffer;
+			$this->put(self::$runtimeIdTableCache);
+		}else{
+			$this->put(self::serializeBlockTable($this->runtimeIdTable));
 		}
-		$this->put(self::$runtimeIdTable);
 
 		$this->putString($this->multiplayerCorrelationId);
+	}
+
+	private static function serializeBlockTable(array $table) : string{
+		$stream = new NetworkBinaryStream();
+		$stream->putUnsignedVarInt(count($table));
+		foreach($table as $v){
+			$stream->putString($v["name"]);
+			$stream->putLShort($v["data"]);
+		}
+		return $stream->getBuffer();
 	}
 
 	public function handle(NetworkSession $session) : bool{

@@ -218,7 +218,7 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_ITEM_TRIDENT_THUNDER = 184;
 	public const SOUND_ITEM_TRIDENT_HIT_GROUND = 185;
 	public const SOUND_DEFAULT = 186;
-
+	public const SOUND_BLOCK_FLETCHING_TABLE_USE = 187;
 	public const SOUND_ELEMCONSTRUCT_OPEN = 188;
 	public const SOUND_ICEBOMB_HIT = 189;
 	public const SOUND_BALLOONPOP = 190;
@@ -283,7 +283,26 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_AMBIENT_AGGRESSIVE = 252;
 	public const SOUND_AMBIENT_WORRIED = 253;
 	public const SOUND_CANT_BREED = 254;
-	public const SOUND_UNDEFINED = 255;
+	public const SOUND_ITEM_SHIELD_BLOCK = 255;
+	public const SOUND_ITEM_BOOK_PUT = 256;
+	public const SOUND_BLOCK_GRINDSTONE_USE = 257;
+	public const SOUND_BLOCK_BELL_HIT = 258;
+	public const SOUND_BLOCK_CAMPFIRE_CRACKLE = 259;
+	public const SOUND_ROAR = 260;
+	public const SOUND_STUN = 261;
+	public const SOUND_BLOCK_SWEET_BERRY_BUSH_HURT = 262;
+	public const SOUND_BLOCK_SWEET_BERRY_BUSH_PICK = 263;
+	public const SOUND_UI_CARTOGRAPHY_TABLE_TAKE_RESULT = 264;
+	public const SOUND_UI_STONECUTTER_TAKE_RESULT = 265;
+	public const SOUND_BLOCK_COMPOSTER_EMPTY = 266;
+	public const SOUND_BLOCK_COMPOSTER_FILL = 267;
+	public const SOUND_BLOCK_COMPOSTER_FILL_SUCCESS = 268;
+	public const SOUND_BLOCK_COMPOSTER_READY = 269;
+	public const SOUND_BLOCK_BARREL_OPEN = 270;
+	public const SOUND_BLOCK_BARREL_CLOSE = 271;
+	public const SOUND_RAID_HORN = 272;
+	public const SOUND_BLOCK_LOOM_USE = 273;
+	public const SOUND_UNDEFINED = 274;
 
 	/** @var int */
 	public $sound;
