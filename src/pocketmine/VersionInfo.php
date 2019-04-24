@@ -21,7 +21,7 @@
 
 namespace pocketmine;
 
-const NAME = "PocketMine-MP";
-const BASE_VERSION = "3.8.1";
-const IS_DEVELOPMENT_BUILD = true;
+const NAME = "Altay";
+const BASE_VERSION = "3.8.0";
+const IS_DEVELOPMENT_BUILD = false;
 const BUILD_NUMBER = 0;

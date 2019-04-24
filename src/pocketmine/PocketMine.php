@@ -36,10 +36,6 @@ namespace pocketmine {
 	use pocketmine\utils\VersionString;
 	use pocketmine\wizard\SetupWizard;
 
-	const NAME = "Altay";
-	const BASE_VERSION = "3.7.3";
-	const IS_DEVELOPMENT_BUILD = true;
-	const BUILD_NUMBER = 0;
 	require_once __DIR__ . '/VersionInfo.php';
 
 	const MIN_PHP_VERSION = "7.2.0";
