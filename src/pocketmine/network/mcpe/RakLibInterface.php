@@ -27,7 +27,6 @@ use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\network\AdvancedSourceInterface;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
 use pocketmine\Player;
@@ -166,7 +165,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			$address = $player->getAddress();
 			try{
 				if($packet->buffer !== ""){
-					$pk = PacketPool::getPacket($packet->buffer);
+					$pk = new BatchPacket($packet->buffer);
 					$player->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
