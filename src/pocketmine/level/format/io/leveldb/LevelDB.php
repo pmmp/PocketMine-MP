@@ -144,7 +144,7 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 	protected function deserializePaletted(BinaryStream $stream) : PalettedBlockArray{
 		static $stringToLegacyId = null;
 		if($stringToLegacyId === null){
-			$stringToLegacyId = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . '/legacy_id_map.json'), true);
+			$stringToLegacyId = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . 'vanilla/block_id_map.json'), true);
 		}
 
 		$bitsPerBlock = $stream->getByte() >> 1;
@@ -352,7 +352,7 @@ class LevelDB extends BaseLevelProvider implements WritableLevelProvider{
 	protected function writeChunk(Chunk $chunk) : void{
 		static $idMap = null;
 		if($idMap === null){
-			$idMap = array_flip(json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . '/legacy_id_map.json'), true));
+			$idMap = array_flip(json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . 'vanilla/block_id_map.json'), true));
 		}
 		$index = LevelDB::chunkIndex($chunk->getX(), $chunk->getZ());
 

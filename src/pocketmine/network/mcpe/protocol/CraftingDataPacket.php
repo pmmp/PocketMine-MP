@@ -30,6 +30,7 @@ use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\NetworkBinaryStream;
@@ -101,10 +102,15 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 					break;
 				case self::ENTRY_FURNACE:
 				case self::ENTRY_FURNACE_DATA:
-					$entry["inputId"] = $this->getVarInt();
+					$inputId = $this->getVarInt();
+					$inputData = -1;
 					if($recipeType === self::ENTRY_FURNACE_DATA){
-						$entry["inputDamage"] = $this->getVarInt();
+						$inputData = $this->getVarInt();
+						if($inputData === 0x7fff){
+							$inputData = -1;
+						}
 					}
+					$entry["input"] = ItemFactory::get($inputId, $inputData);
 					$entry["output"] = $this->getSlot();
 					$entry["block"] = $this->getString();
 

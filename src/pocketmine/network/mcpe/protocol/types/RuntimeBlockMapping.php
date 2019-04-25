@@ -48,9 +48,22 @@ final class RuntimeBlockMapping{
 	}
 
 	public static function init() : void{
-		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "legacy_id_map.json"), true);
+		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/block_id_map.json"), true);
 
-		self::$bedrockKnownStates = self::randomizeTable(json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true));
+		$compressedTable = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/required_block_states.json"), true);
+		$decompressed = [];
+
+		foreach($compressedTable as $prefix => $entries){
+			foreach($entries as $shortStringId => $states){
+				foreach($states as $state){
+					$decompressed[] = [
+						"name" => "$prefix:$shortStringId",
+						"data" => $state
+					];
+				}
+			}
+		}
+		self::$bedrockKnownStates = self::randomizeTable($decompressed);
 
 		foreach(self::$bedrockKnownStates as $k => $obj){
 			//this has to use the json offset to make sure the mapping is consistent with what we send over network, even though we aren't using all the entries
