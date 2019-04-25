@@ -48,9 +48,9 @@ final class RuntimeBlockMapping{
 	}
 
 	public static function init() : void{
-		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "legacy_id_map.json"), true);
+		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/block_id_map.json"), true);
 
-		$compressedTable = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
+		$compressedTable = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/required_block_states.json"), true);
 		$decompressed = [];
 
 		foreach($compressedTable as $prefix => $entries){
