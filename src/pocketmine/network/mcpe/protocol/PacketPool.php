@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\utils\Binary;
+use pocketmine\utils\BinaryDataException;
 
 class PacketPool{
 	/** @var \SplFixedArray<DataPacket> */
@@ -179,6 +180,7 @@ class PacketPool{
 	 * @param string $buffer
 	 *
 	 * @return DataPacket
+	 * @throws BinaryDataException
 	 */
 	public static function getPacket(string $buffer) : DataPacket{
 		$offset = 0;
