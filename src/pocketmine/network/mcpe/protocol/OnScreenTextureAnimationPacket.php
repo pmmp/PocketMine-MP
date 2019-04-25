@@ -27,37 +27,21 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class LecternUpdatePacket extends DataPacket implements ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::LECTERN_UPDATE_PACKET;
+class OnScreenTextureAnimationPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::ON_SCREEN_TEXTURE_ANIMATION_PACKET;
 
 	/** @var int */
-	public $page;
-	/** @var int */
-	public $totalPages;
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-	/** @var bool */
-	public $dropBook;
+	public $effectId;
 
 	protected function decodePayload() : void{
-		$this->page = $this->getByte();
-		$this->totalPages = $this->getByte();
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->dropBook = $this->getBool();
+		$this->effectId = $this->getLInt(); //unsigned
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->page);
-		$this->putByte($this->totalPages);
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putBool($this->dropBook);
+		$this->putLInt($this->effectId);
 	}
 
 	public function handle(SessionHandler $handler) : bool{
-		return $handler->handleLecternUpdate($this);
+		return $handler->handleOnScreenTextureAnimation($this);
 	}
 }
