@@ -405,6 +405,25 @@ class LevelManager{
 		}
 	}
 
+	/**
+	 * Returns the period after which loaded worlds will be automatically saved to disk.
+	 *
+	 * @return int
+	 */
+	public function getAutoSaveTicks() : int{
+		return $this->autoSaveTicks;
+	}
+
+	/**
+	 * @param int $autoSaveTicks
+	 */
+	public function setAutoSaveTicks(int $autoSaveTicks) : void{
+		if($autoSaveTicks <= 0){
+			throw new \InvalidArgumentException("Autosave ticks must be positive");
+		}
+		$this->autoSaveTicks = $autoSaveTicks;
+	}
+
 	private function doAutoSave() : void{
 		Timings::$worldSaveTimer->startTiming();
 		foreach($this->levels as $level){
