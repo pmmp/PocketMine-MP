@@ -82,7 +82,7 @@ class TitleCommand extends VanillaCommand{
 					throw new InvalidCommandSyntaxException();
 				}
 
-				$player->sendTip(implode(" ", array_slice($args, 2)));
+				$player->addActionBarMessage(implode(" ", array_slice($args, 2)));
 				break;
 			case "times":
 				if(count($args) < 5){
