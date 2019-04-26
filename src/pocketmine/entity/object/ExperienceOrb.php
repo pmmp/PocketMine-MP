@@ -28,6 +28,7 @@ use pocketmine\entity\Human;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\Player;
 use function sqrt;
 
@@ -132,14 +133,14 @@ class ExperienceOrb extends Entity{
 	}
 
 	public function getXpValue() : int{
-		return $this->propertyManager->getInt(self::DATA_EXPERIENCE_VALUE) ?? 0;
+		return $this->propertyManager->getInt(EntityMetadataProperties::EXPERIENCE_VALUE) ?? 0;
 	}
 
 	public function setXpValue(int $amount) : void{
 		if($amount <= 0){
 			throw new \InvalidArgumentException("XP amount must be greater than 0, got $amount");
 		}
-		$this->propertyManager->setInt(self::DATA_EXPERIENCE_VALUE, $amount);
+		$this->propertyManager->setInt(EntityMetadataProperties::EXPERIENCE_VALUE, $amount);
 	}
 
 	public function hasTargetPlayer() : bool{

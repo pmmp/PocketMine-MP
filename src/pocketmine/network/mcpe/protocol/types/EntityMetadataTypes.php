@@ -21,23 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
+final class EntityMetadataTypes{
 
-abstract class WaterAnimal extends Creature implements Ageable{
-
-	public function isBaby() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::BABY);
+	private function __construct(){
+		//NOOP
 	}
 
-	public function canBreathe() : bool{
-		return $this->isUnderwater();
-	}
-
-	public function onAirExpired() : void{
-		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
-		$this->attack($ev);
-	}
+	public const BYTE = 0;
+	public const SHORT = 1;
+	public const INT = 2;
+	public const FLOAT = 3;
+	public const STRING = 4;
+	public const SLOT = 5;
+	public const POS = 6;
+	public const LONG = 7;
+	public const VECTOR3F = 8;
 }

@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\level\particle;
 
-use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Skin;
 use pocketmine\item\ItemFactory;
@@ -31,6 +30,9 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataTypes;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\utils\UUID;
 use function str_repeat;
@@ -105,11 +107,11 @@ class FloatingTextParticle implements Particle{
 			$pk->item = ItemFactory::air();
 
 			$flags = (
-				1 << Entity::DATA_FLAG_IMMOBILE
+				1 << EntityMetadataFlags::IMMOBILE
 			);
 			$pk->metadata = [
-				Entity::DATA_FLAGS => [Entity::DATA_TYPE_LONG, $flags],
-				Entity::DATA_SCALE => [Entity::DATA_TYPE_FLOAT, 0.01] //zero causes problems on debug builds
+				EntityMetadataProperties::FLAGS => [EntityMetadataTypes::LONG, $flags],
+				EntityMetadataProperties::SCALE => [EntityMetadataTypes::FLOAT, 0.01] //zero causes problems on debug builds
 			];
 
 			$p[] = $pk;

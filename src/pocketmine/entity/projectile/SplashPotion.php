@@ -35,6 +35,8 @@ use pocketmine\item\Potion;
 use pocketmine\level\particle\PotionSplashParticle;
 use pocketmine\level\sound\PotionSplashSound;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\utils\Color;
 use function round;
 use function sqrt;
@@ -136,14 +138,14 @@ class SplashPotion extends Throwable{
 	 * @return int
 	 */
 	public function getPotionId() : int{
-		return $this->propertyManager->getShort(self::DATA_POTION_AUX_VALUE) ?? 0;
+		return $this->propertyManager->getShort(EntityMetadataProperties::POTION_AUX_VALUE) ?? 0;
 	}
 
 	/**
 	 * @param int $id
 	 */
 	public function setPotionId(int $id) : void{
-		$this->propertyManager->setShort(self::DATA_POTION_AUX_VALUE, $id);
+		$this->propertyManager->setShort(EntityMetadataProperties::POTION_AUX_VALUE, $id);
 	}
 
 	/**
@@ -151,7 +153,7 @@ class SplashPotion extends Throwable{
 	 * @return bool
 	 */
 	public function willLinger() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_LINGER);
+		return $this->getDataFlag(EntityMetadataProperties::FLAGS, EntityMetadataFlags::LINGER);
 	}
 
 	/**
@@ -160,7 +162,7 @@ class SplashPotion extends Throwable{
 	 * @param bool $value
 	 */
 	public function setLinger(bool $value = true) : void{
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_LINGER, $value);
+		$this->setDataFlag(EntityMetadataProperties::FLAGS, EntityMetadataFlags::LINGER, $value);
 	}
 
 	/**

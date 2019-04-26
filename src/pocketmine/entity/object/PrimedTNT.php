@@ -31,6 +31,8 @@ use pocketmine\level\Explosion;
 use pocketmine\level\sound\IgniteSound;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ShortTag;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 
 class PrimedTNT extends Entity implements Explosive{
 	public const NETWORK_ID = self::TNT;
@@ -63,8 +65,8 @@ class PrimedTNT extends Entity implements Explosive{
 			$this->fuse = 80;
 		}
 
-		$this->setGenericFlag(self::DATA_FLAG_IGNITED, true);
-		$this->propertyManager->setInt(self::DATA_FUSE_LENGTH, $this->fuse);
+		$this->setGenericFlag(EntityMetadataFlags::IGNITED, true);
+		$this->propertyManager->setInt(EntityMetadataProperties::FUSE_LENGTH, $this->fuse);
 
 		$this->level->addSound($this, new IgniteSound());
 	}
@@ -89,7 +91,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->fuse % 5 === 0){ //don't spam it every tick, it's not necessary
-			$this->propertyManager->setInt(self::DATA_FUSE_LENGTH, $this->fuse);
+			$this->propertyManager->setInt(EntityMetadataProperties::FUSE_LENGTH, $this->fuse);
 		}
 
 		if(!$this->isFlaggedForDespawn()){

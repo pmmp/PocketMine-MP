@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 
 class Villager extends Creature implements NPC, Ageable{
 	public const PROFESSION_FARMER = 0;
@@ -67,14 +69,14 @@ class Villager extends Creature implements NPC, Ageable{
 	 * @param int $profession
 	 */
 	public function setProfession(int $profession) : void{
-		$this->propertyManager->setInt(self::DATA_VARIANT, $profession);
+		$this->propertyManager->setInt(EntityMetadataProperties::VARIANT, $profession);
 	}
 
 	public function getProfession() : int{
-		return $this->propertyManager->getInt(self::DATA_VARIANT);
+		return $this->propertyManager->getInt(EntityMetadataProperties::VARIANT);
 	}
 
 	public function isBaby() : bool{
-		return $this->getGenericFlag(self::DATA_FLAG_BABY);
+		return $this->getGenericFlag(EntityMetadataFlags::BABY);
 	}
 }

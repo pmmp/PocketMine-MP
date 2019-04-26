@@ -25,6 +25,7 @@ namespace pocketmine\entity;
 
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataTypes;
 use function assert;
 use function is_float;
 use function is_int;
@@ -46,7 +47,7 @@ class DataPropertyManager{
 	 * @return int|null
 	 */
 	public function getByte(int $key) : ?int{
-		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_BYTE);
+		$value = $this->getPropertyValue($key, EntityMetadataTypes::BYTE);
 		assert(is_int($value) or $value === null);
 		return $value;
 	}
@@ -57,7 +58,7 @@ class DataPropertyManager{
 	 * @param bool $force
 	 */
 	public function setByte(int $key, int $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_BYTE, $value, $force);
+		$this->setPropertyValue($key, EntityMetadataTypes::BYTE, $value, $force);
 	}
 
 	/**
@@ -66,7 +67,7 @@ class DataPropertyManager{
 	 * @return int|null
 	 */
 	public function getShort(int $key) : ?int{
-		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_SHORT);
+		$value = $this->getPropertyValue($key, EntityMetadataTypes::SHORT);
 		assert(is_int($value) or $value === null);
 		return $value;
 	}
@@ -77,7 +78,7 @@ class DataPropertyManager{
 	 * @param bool $force
 	 */
 	public function setShort(int $key, int $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_SHORT, $value, $force);
+		$this->setPropertyValue($key, EntityMetadataTypes::SHORT, $value, $force);
 	}
 
 	/**
@@ -86,7 +87,7 @@ class DataPropertyManager{
 	 * @return int|null
 	 */
 	public function getInt(int $key) : ?int{
-		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_INT);
+		$value = $this->getPropertyValue($key, EntityMetadataTypes::INT);
 		assert(is_int($value) or $value === null);
 		return $value;
 	}
@@ -97,7 +98,7 @@ class DataPropertyManager{
 	 * @param bool $force
 	 */
 	public function setInt(int $key, int $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_INT, $value, $force);
+		$this->setPropertyValue($key, EntityMetadataTypes::INT, $value, $force);
 	}
 
 	/**
@@ -106,7 +107,7 @@ class DataPropertyManager{
 	 * @return float|null
 	 */
 	public function getFloat(int $key) : ?float{
-		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_FLOAT);
+		$value = $this->getPropertyValue($key, EntityMetadataTypes::FLOAT);
 		assert(is_float($value) or $value === null);
 		return $value;
 	}
@@ -117,7 +118,7 @@ class DataPropertyManager{
 	 * @param bool  $force
 	 */
 	public function setFloat(int $key, float $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_FLOAT, $value, $force);
+		$this->setPropertyValue($key, EntityMetadataTypes::FLOAT, $value, $force);
 	}
 
 	/**
@@ -126,7 +127,7 @@ class DataPropertyManager{
 	 * @return null|string
 	 */
 	public function getString(int $key) : ?string{
-		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_STRING);
+		$value = $this->getPropertyValue($key, EntityMetadataTypes::STRING);
 		assert(is_string($value) or $value === null);
 		return $value;
 	}
@@ -137,7 +138,7 @@ class DataPropertyManager{
 	 * @param bool   $force
 	 */
 	public function setString(int $key, string $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_STRING, $value, $force);
+		$this->setPropertyValue($key, EntityMetadataTypes::STRING, $value, $force);
 	}
 
 	/**
@@ -146,7 +147,7 @@ class DataPropertyManager{
 	 * @return null|Item
 	 */
 	public function getItem(int $key) : ?Item{
-		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_SLOT);
+		$value = $this->getPropertyValue($key, EntityMetadataTypes::SLOT);
 		assert($value instanceof Item or $value === null);
 
 		return $value;
@@ -158,7 +159,7 @@ class DataPropertyManager{
 	 * @param bool $force
 	 */
 	public function setItem(int $key, Item $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_SLOT, $value, $force);
+		$this->setPropertyValue($key, EntityMetadataTypes::SLOT, $value, $force);
 	}
 
 	/**
@@ -167,7 +168,7 @@ class DataPropertyManager{
 	 * @return null|Vector3
 	 */
 	public function getBlockPos(int $key) : ?Vector3{
-		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_POS);
+		$value = $this->getPropertyValue($key, EntityMetadataTypes::POS);
 		assert($value instanceof Vector3 or $value === null);
 		return $value;
 	}
@@ -178,7 +179,7 @@ class DataPropertyManager{
 	 * @param bool         $force
 	 */
 	public function setBlockPos(int $key, ?Vector3 $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_POS, $value ? $value->floor() : null, $force);
+		$this->setPropertyValue($key, EntityMetadataTypes::POS, $value ? $value->floor() : null, $force);
 	}
 
 	/**
@@ -187,7 +188,7 @@ class DataPropertyManager{
 	 * @return int|null
 	 */
 	public function getLong(int $key) : ?int{
-		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_LONG);
+		$value = $this->getPropertyValue($key, EntityMetadataTypes::LONG);
 		assert(is_int($value) or $value === null);
 		return $value;
 	}
@@ -198,7 +199,7 @@ class DataPropertyManager{
 	 * @param bool $force
 	 */
 	public function setLong(int $key, int $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_LONG, $value, $force);
+		$this->setPropertyValue($key, EntityMetadataTypes::LONG, $value, $force);
 	}
 
 	/**
@@ -207,7 +208,7 @@ class DataPropertyManager{
 	 * @return null|Vector3
 	 */
 	public function getVector3(int $key) : ?Vector3{
-		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_VECTOR3F);
+		$value = $this->getPropertyValue($key, EntityMetadataTypes::VECTOR3F);
 		assert($value instanceof Vector3 or $value === null);
 		return $value;
 	}
@@ -218,7 +219,7 @@ class DataPropertyManager{
 	 * @param bool         $force
 	 */
 	public function setVector3(int $key, ?Vector3 $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_VECTOR3F, $value ? $value->asVector3() : null, $force);
+		$this->setPropertyValue($key, EntityMetadataTypes::VECTOR3F, $value ? $value->asVector3() : null, $force);
 	}
 
 	/**

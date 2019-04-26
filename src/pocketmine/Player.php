@@ -104,6 +104,9 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
+use pocketmine\network\mcpe\protocol\types\PlayerMetadataFlags;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
@@ -877,12 +880,12 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isUsingItem() : bool{
-		return $this->getGenericFlag(self::DATA_FLAG_ACTION) and $this->startAction > -1;
+		return $this->getGenericFlag(EntityMetadataFlags::ACTION) and $this->startAction > -1;
 	}
 
 	public function setUsingItem(bool $value){
 		$this->startAction = $value ? $this->server->getTick() : -1;
-		$this->setGenericFlag(self::DATA_FLAG_ACTION, $value);
+		$this->setGenericFlag(EntityMetadataFlags::ACTION, $value);
 	}
 
 	/**
@@ -1197,8 +1200,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->sleeping = clone $pos;
 
-		$this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, $pos);
-		$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, true);
+		$this->propertyManager->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $pos);
+		$this->setPlayerFlag(PlayerMetadataFlags::SLEEP, true);
 
 		$this->setSpawn($pos);
 
@@ -1216,8 +1219,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			(new PlayerBedLeaveEvent($this, $b))->call();
 
 			$this->sleeping = null;
-			$this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
-			$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
+			$this->propertyManager->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, null);
+			$this->setPlayerFlag(PlayerMetadataFlags::SLEEP, false);
 
 			$this->level->setSleepTicks(0);
 

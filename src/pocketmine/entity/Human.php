@@ -56,7 +56,10 @@ use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataTypes;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\PlayerMetadataFlags;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
 use function array_filter;
@@ -604,8 +607,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
-		$this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
+		$this->setPlayerFlag(PlayerMetadataFlags::SLEEP, false);
+		$this->propertyManager->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, null);
 
 		$this->inventory = new PlayerInventory($this);
 		$this->enderChestInventory = new EnderChestInventory();
@@ -871,7 +874,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$player->sendDataPacket($pk);
 
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
-		$this->sendData($player, [self::DATA_NAMETAG => [self::DATA_TYPE_STRING, $this->getNameTag()]]);
+		$this->sendData($player, [EntityMetadataProperties::NAMETAG => [EntityMetadataTypes::STRING, $this->getNameTag()]]);
 
 		$this->armorInventory->sendContents($player);
 
@@ -903,7 +906,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @return bool
 	 */
 	public function getPlayerFlag(int $flagId) : bool{
-		return $this->getDataFlag(self::DATA_PLAYER_FLAGS, $flagId);
+		return $this->getDataFlag(EntityMetadataProperties::PLAYER_FLAGS, $flagId);
 	}
 
 	/**
@@ -913,6 +916,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @param bool $value
 	 */
 	public function setPlayerFlag(int $flagId, bool $value = true) : void{
-		$this->setDataFlag(self::DATA_PLAYER_FLAGS, $flagId, $value, self::DATA_TYPE_BYTE);
+		$this->setDataFlag(EntityMetadataProperties::PLAYER_FLAGS, $flagId, $value, EntityMetadataTypes::BYTE);
 	}
 }

@@ -32,6 +32,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use function get_class;
 
 class FallingBlock extends Entity{
@@ -70,7 +71,7 @@ class FallingBlock extends Entity{
 
 		$this->block = BlockFactory::get($blockId, $damage);
 
-		$this->propertyManager->setInt(self::DATA_VARIANT, $this->block->getRuntimeId());
+		$this->propertyManager->setInt(EntityMetadataProperties::VARIANT, $this->block->getRuntimeId());
 	}
 
 	public function canCollideWith(Entity $entity) : bool{

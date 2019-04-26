@@ -48,6 +48,8 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
@@ -341,11 +343,11 @@ abstract class Living extends Entity implements Damageable{
 		}
 
 		if(!empty($colors)){
-			$this->propertyManager->setInt(Entity::DATA_POTION_COLOR, Color::mix(...$colors)->toARGB());
-			$this->propertyManager->setByte(Entity::DATA_POTION_AMBIENT, $ambient ? 1 : 0);
+			$this->propertyManager->setInt(EntityMetadataProperties::POTION_COLOR, Color::mix(...$colors)->toARGB());
+			$this->propertyManager->setByte(EntityMetadataProperties::POTION_AMBIENT, $ambient ? 1 : 0);
 		}else{
-			$this->propertyManager->setInt(Entity::DATA_POTION_COLOR, 0);
-			$this->propertyManager->setByte(Entity::DATA_POTION_AMBIENT, 0);
+			$this->propertyManager->setInt(EntityMetadataProperties::POTION_COLOR, 0);
+			$this->propertyManager->setByte(EntityMetadataProperties::POTION_AMBIENT, 0);
 		}
 	}
 
@@ -769,7 +771,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return bool
 	 */
 	public function isBreathing() : bool{
-		return $this->getGenericFlag(self::DATA_FLAG_BREATHING);
+		return $this->getGenericFlag(EntityMetadataFlags::BREATHING);
 	}
 
 	/**
@@ -779,7 +781,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @param bool $value
 	 */
 	public function setBreathing(bool $value = true) : void{
-		$this->setGenericFlag(self::DATA_FLAG_BREATHING, $value);
+		$this->setGenericFlag(EntityMetadataFlags::BREATHING, $value);
 	}
 
 	/**
@@ -789,7 +791,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return int
 	 */
 	public function getAirSupplyTicks() : int{
-		return $this->propertyManager->getShort(self::DATA_AIR);
+		return $this->propertyManager->getShort(EntityMetadataProperties::AIR);
 	}
 
 	/**
@@ -798,7 +800,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @param int $ticks
 	 */
 	public function setAirSupplyTicks(int $ticks) : void{
-		$this->propertyManager->setShort(self::DATA_AIR, $ticks);
+		$this->propertyManager->setShort(EntityMetadataProperties::AIR, $ticks);
 	}
 
 	/**
@@ -806,7 +808,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return int
 	 */
 	public function getMaxAirSupplyTicks() : int{
-		return $this->propertyManager->getShort(self::DATA_MAX_AIR);
+		return $this->propertyManager->getShort(EntityMetadataProperties::MAX_AIR);
 	}
 
 	/**
@@ -815,7 +817,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @param int $ticks
 	 */
 	public function setMaxAirSupplyTicks(int $ticks) : void{
-		$this->propertyManager->setShort(self::DATA_MAX_AIR, $ticks);
+		$this->propertyManager->setShort(EntityMetadataProperties::MAX_AIR, $ticks);
 	}
 
 	/**
