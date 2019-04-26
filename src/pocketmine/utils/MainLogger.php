@@ -302,20 +302,18 @@ class MainLogger extends \AttachableThreadedLogger{
 
 		$message = sprintf($this->format, $time->format("H:i:s"), $color, $threadName, $prefix, $message);
 
-		$this->synchronized(function() use ($message, $level, $time) : void{
-			$cleanMessage = TextFormat::clean($message);
+		if(!Terminal::isInit()){
+			Terminal::init($this->mainThreadHasFormattingCodes); //lazy-init colour codes because we don't know if they've been registered on this thread
+		}
 
-			if($this->mainThreadHasFormattingCodes and Terminal::hasFormattingCodes()){ //hasFormattingCodes() lazy-inits colour codes because we don't know if they've been registered on this thread
-				echo Terminal::toANSI($message) . PHP_EOL;
-			}else{
-				echo $cleanMessage . PHP_EOL;
-			}
+		$this->synchronized(function() use ($message, $level, $time) : void{
+			echo Terminal::toANSI($message) . PHP_EOL;
 
 			foreach($this->attachments as $attachment){
 				$attachment->call($level, $message);
 			}
 
-			$this->logStream[] = $time->format("Y-m-d") . " " . $cleanMessage . PHP_EOL;
+			$this->logStream[] = $time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL;
 		});
 	}
 

@@ -22,6 +22,6 @@
 namespace pocketmine;
 
 const NAME = "Altay";
-const BASE_VERSION = "3.8.0";
+const BASE_VERSION = "3.8.2";
 const IS_DEVELOPMENT_BUILD = false;
 const BUILD_NUMBER = 0;

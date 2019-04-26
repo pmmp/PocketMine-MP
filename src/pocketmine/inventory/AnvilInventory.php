@@ -171,4 +171,13 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 	public function getHolder(){
 		return $this->holder;
 	}
+
+	public function onClose(Player $who) : void{
+		parent::onClose($who);
+
+		foreach($this->getContents() as $item){
+			$who->dropItem($item);
+		}
+		$this->clearAll();
+	}
 }

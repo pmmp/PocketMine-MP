@@ -793,17 +793,6 @@ class Level implements ChunkManager, Metadatable{
 
 	/**
 	 * @internal
-	 */
-	public function checkTime(){
-		if($this->stopTime or !$this->gameRules->getBool(GameRules::RULE_DO_DAYLIGHT_CYCLE, true)){
-			return;
-		}else{
-			++$this->time;
-		}
-	}
-
-	/**
-	 * @internal
 	 *
 	 * @param Player ...$targets If empty, will send to all players in the level.
 	 */
@@ -847,7 +836,9 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	protected function actuallyDoTick(int $currentTick) : void{
-		$this->checkTime();
+		if(!$this->stopTime){
+			$this->time++;
+		}
 
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
 		$this->skyLightReduction = $this->computeSkyLightReduction(); //Sky light reduction depends on the sun angle
@@ -1973,7 +1964,7 @@ class Level implements ChunkManager, Metadatable{
 			$clickVector = new Vector3(0.0, 0.0, 0.0);
 		}
 
-		if($blockReplace->y >= $this->worldHeight or $blockReplace->y < 0){
+		if(!$this->isInWorld($blockReplace->x, $blockReplace->y, $blockReplace->z)){
 			//TODO: build height limit messages for custom world heights and mcregion cap
 			return false;
 		}
@@ -3215,35 +3206,31 @@ class Level implements ChunkManager, Metadatable{
 		if(isset($this->chunkPopulationQueue[$index = Level::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){
 			return false;
 		}
+		for($xx = -1; $xx <= 1; ++$xx){
+			for($zz = -1; $zz <= 1; ++$zz){
+				if(isset($this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)])){
+					return false;
+				}
+			}
+		}
 
 		$chunk = $this->getChunk($x, $z, true);
 		if(!$chunk->isPopulated()){
 			Timings::$populationTimer->startTiming();
-			$populate = true;
+
+			$this->chunkPopulationQueue[$index] = true;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
-					if(isset($this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)])){
-						$populate = false;
-						break;
-					}
+					$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
 				}
 			}
 
-			if($populate){
-				$this->chunkPopulationQueue[$index] = true;
-				for($xx = -1; $xx <= 1; ++$xx){
-					for($zz = -1; $zz <= 1; ++$zz){
-						$this->chunkPopulationLock[Level::chunkHash($x + $xx, $z + $zz)] = true;
-					}
-				}
-
-				$task = new PopulationTask($this, $chunk);
-				$workerId = $this->server->getAsyncPool()->selectWorker();
-				if(!isset($this->generatorRegisteredWorkers[$workerId])){
-					$this->registerGeneratorToWorker($workerId);
-				}
-				$this->server->getAsyncPool()->submitTaskToWorker($task, $workerId);
+			$task = new PopulationTask($this, $chunk);
+			$workerId = $this->server->getAsyncPool()->selectWorker();
+			if(!isset($this->generatorRegisteredWorkers[$workerId])){
+				$this->registerGeneratorToWorker($workerId);
 			}
+			$this->server->getAsyncPool()->submitTaskToWorker($task, $workerId);
 
 			Timings::$populationTimer->stopTiming();
 			return false;

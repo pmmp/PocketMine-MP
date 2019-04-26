@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\Server;
@@ -56,7 +55,7 @@ class CraftingManager{
 
 		foreach($recipes as $recipe){
 			switch($recipe["type"]){
-				case 0:
+				case "shapeless":
 					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
 						break;
 					}
@@ -65,7 +64,7 @@ class CraftingManager{
 						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
 					));
 					break;
-				case 1:
+				case "shaped":
 					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
 						break;
 					}
@@ -75,14 +74,14 @@ class CraftingManager{
 						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
 					));
 					break;
-				case 2:
-				case 3:
+				case "smelting":
 					if($recipe["block"] !== "furnace"){ //TODO: filter others out for now to avoid breaking economics
 						break;
 					}
-					$result = $recipe["output"];
-					$resultItem = Item::jsonDeserialize($result);
-					$this->registerRecipe(new FurnaceRecipe($resultItem, ItemFactory::get($recipe["inputId"], $recipe["inputDamage"] ?? -1, 1)));
+					$this->registerRecipe(new FurnaceRecipe(
+						Item::jsonDeserialize($recipe["output"]),
+						Item::jsonDeserialize($recipe["input"]))
+					);
 					break;
 				default:
 					break;
