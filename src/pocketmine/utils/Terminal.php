@@ -27,7 +27,6 @@ use function fclose;
 use function fopen;
 use function function_exists;
 use function getenv;
-use function getopt;
 use function is_array;
 use function stream_isatty;
 
