@@ -292,33 +292,31 @@ class LevelManager{
 
 		(new LevelLoadEvent($level))->call();
 
-		if(!$backgroundGeneration){
-			return true;
-		}
+		if($backgroundGeneration){
+			$this->server->getLogger()->notice($this->server->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
 
-		$this->server->getLogger()->notice($this->server->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
+			$spawnLocation = $level->getSpawnLocation();
+			$centerX = $spawnLocation->getFloorX() >> 4;
+			$centerZ = $spawnLocation->getFloorZ() >> 4;
 
-		$spawnLocation = $level->getSpawnLocation();
-		$centerX = $spawnLocation->getFloorX() >> 4;
-		$centerZ = $spawnLocation->getFloorZ() >> 4;
+			$order = [];
 
-		$order = [];
-
-		for($X = -3; $X <= 3; ++$X){
-			for($Z = -3; $Z <= 3; ++$Z){
-				$distance = $X ** 2 + $Z ** 2;
-				$chunkX = $X + $centerX;
-				$chunkZ = $Z + $centerZ;
-				$index = Level::chunkHash($chunkX, $chunkZ);
-				$order[$index] = $distance;
+			for($X = -3; $X <= 3; ++$X){
+				for($Z = -3; $Z <= 3; ++$Z){
+					$distance = $X ** 2 + $Z ** 2;
+					$chunkX = $X + $centerX;
+					$chunkZ = $Z + $centerZ;
+					$index = Level::chunkHash($chunkX, $chunkZ);
+					$order[$index] = $distance;
+				}
 			}
-		}
 
-		asort($order);
+			asort($order);
 
-		foreach($order as $index => $distance){
-			Level::getXZ($index, $chunkX, $chunkZ);
-			$level->populateChunk($chunkX, $chunkZ, true);
+			foreach($order as $index => $distance){
+				Level::getXZ($index, $chunkX, $chunkZ);
+				$level->populateChunk($chunkX, $chunkZ, true);
+			}
 		}
 
 		return true;
