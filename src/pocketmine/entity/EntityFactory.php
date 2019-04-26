@@ -51,6 +51,14 @@ use function in_array;
 use function is_a;
 use function reset;
 
+/**
+ * This class manages the creation of entities loaded from disk (and optionally entities created at runtime).
+ *
+ * You need to register your entity class into this factory if:
+ * a) you want to load/save your entity on disk (saving with chunks)
+ * b) you want to allow custom things to provide a custom class for your entity. Note that you must use
+ *    create(MyEntity::class) instead of `new MyEntity()` if you want to allow this.
+ */
 final class EntityFactory{
 
 	private static $entityCount = 1;
