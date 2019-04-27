@@ -295,7 +295,7 @@ abstract class Living extends Entity implements Damageable{
 			if($leashedToEntity instanceof Living){
 				$leashNbt->setString("UUID", $leashedToEntity->getUniqueId()->toString());
 			}elseif($leashedToEntity instanceof LeashKnot){
-				$pos = $this->leashedToEntity->getHangingPosition();
+				$pos = $leashedToEntity->getHangingPosition();
 				$leashNbt->setInt("X", $pos->x);
 				$leashNbt->setInt("Y", $pos->y);
 				$leashNbt->setInt("Z", $pos->z);
