@@ -3266,11 +3266,26 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
 	 * @param int    $stay Duration in ticks to stay on screen for
 	 * @param int    $fadeOut Duration in ticks for fade-out.
+     *
+     * @deprecated please use sendTitle
 	 */
-	public function addTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
+    public function addTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
+        $this->sendTitle($title,$subtitle,$fadeIn,$stay,$fadeOut);
+    }
+
+    /**
+     * Adds a title text to the user's screen, with an optional subtitle.
+     *
+     * @param string $title
+     * @param string $subtitle
+     * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+     * @param int    $stay Duration in ticks to stay on screen for
+     * @param int    $fadeOut Duration in ticks for fade-out.
+     */
+	public function sendTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
 		$this->setTitleDuration($fadeIn, $stay, $fadeOut);
 		if($subtitle !== ""){
-			$this->addSubTitle($subtitle);
+			$this->sendSubTitle($subtitle);
 		}
 		$this->sendTitleText($title, SetTitlePacket::TYPE_SET_TITLE);
 	}
@@ -3279,8 +3294,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Sets the subtitle message, without sending a title.
 	 *
 	 * @param string $subtitle
+     *
+     * @deprecated please use sendSubTitle
 	 */
 	public function addSubTitle(string $subtitle){
+        $this->sendSubTitle($subtitle);
+    }
+
+    /**
+     * Sets the subtitle message, without sending a title.
+     *
+     * @param string $subtitle
+     */
+    public function sendSubTitle(string $subtitle){
 		$this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
 	}
 
