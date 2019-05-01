@@ -384,9 +384,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * This might disappear in the future. Please use getUniqueId() instead.
-	 * @return int
 	 * @deprecated
 	 *
+	 * @return int
 	 */
 	public function getClientId(){
 		return $this->randomClientId;
@@ -892,10 +892,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * Updates the player's last ping measurement.
 	 *
-	 * @param int $pingMS
-	 *
 	 * @internal Plugins should not use this method.
 	 *
+	 * @param int $pingMS
 	 */
 	public function updatePing(int $pingMS){
 		$this->lastPingMeasure = $pingMS;
@@ -1371,9 +1370,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * @param int $gamemode
-	 *
-	 * @return int
 	 * @internal
 	 *
 	 * Returns a client-friendly gamemode of the specified real gamemode
@@ -1381,6 +1377,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 *
 	 * TODO: remove this when Spectator Mode gets added properly to MCPE
 	 *
+	 * @param int $gamemode
+	 *
+	 * @return int
 	 */
 	public static function getClientFriendlyGamemode(int $gamemode) : int{
 		$gamemode &= 0x03;
@@ -3260,17 +3259,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Adds a title text to the user's screen, with an optional subtitle.
+	 * @deprecated
+	 * @see Player::sendTitle()
 	 *
 	 * @param string $title
 	 * @param string $subtitle
 	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
 	 * @param int    $stay Duration in ticks to stay on screen for
 	 * @param int    $fadeOut Duration in ticks for fade-out.
-	 *
-	 * @see Player::sendTitle()
-	 *
-	 * @deprecated
 	 */
 	public function addTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
 		$this->sendTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
@@ -3294,13 +3290,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Sets the subtitle message, without sending a title.
-	 *
-	 * @param string $subtitle
-	 *
+	 * @deprecated
 	 * @see Player::sendSubTitle()
 	 *
-	 * @deprecated
+	 * @param string $subtitle
 	 */
 	public function addSubTitle(string $subtitle){
 		$this->sendSubTitle($subtitle);
@@ -3316,13 +3309,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Adds small text to the user's screen.
-	 *
-	 * @param string $message
-	 *
+	 * @deprecated
 	 * @see Player::sendActionBarMessage()
 	 *
-	 * @deprecated
+	 * @param string $message
 	 */
 	public function addActionBarMessage(string $message){
 		$this->sendActionBarMessage($message);
