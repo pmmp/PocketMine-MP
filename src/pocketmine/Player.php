@@ -384,9 +384,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * This might disappear in the future. Please use getUniqueId() instead.
+	 * @return int
 	 * @deprecated
 	 *
-	 * @return int
 	 */
 	public function getClientId(){
 		return $this->randomClientId;
@@ -892,9 +892,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * Updates the player's last ping measurement.
 	 *
+	 * @param int $pingMS
+	 *
 	 * @internal Plugins should not use this method.
 	 *
-	 * @param int $pingMS
 	 */
 	public function updatePing(int $pingMS){
 		$this->lastPingMeasure = $pingMS;
@@ -1370,6 +1371,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
+	 * @param int $gamemode
+	 *
+	 * @return int
 	 * @internal
 	 *
 	 * Returns a client-friendly gamemode of the specified real gamemode
@@ -1377,9 +1381,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 *
 	 * TODO: remove this when Spectator Mode gets added properly to MCPE
 	 *
-	 * @param int $gamemode
-	 *
-	 * @return int
 	 */
 	public static function getClientFriendlyGamemode(int $gamemode) : int{
 		$gamemode &= 0x03;
@@ -3261,28 +3262,29 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * Adds a title text to the user's screen, with an optional subtitle.
 	 *
-     * @deprecated
-     * @see Player::sendTitle()
-     *
+	 * @param string $title
+	 * @param string $subtitle
+	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int    $stay Duration in ticks to stay on screen for
+	 * @param int    $fadeOut Duration in ticks for fade-out.
+	 *
+	 * @see Player::sendTitle()
+	 *
+	 * @deprecated
+	 */
+	public function addTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
+		$this->sendTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
+	}
+
+	/**
+	 * Adds a title text to the user's screen, with an optional subtitle.
+	 *
 	 * @param string $title
 	 * @param string $subtitle
 	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
 	 * @param int    $stay Duration in ticks to stay on screen for
 	 * @param int    $fadeOut Duration in ticks for fade-out.
 	 */
-    public function addTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
-        $this->sendTitle($title,$subtitle,$fadeIn,$stay,$fadeOut);
-    }
-
-    /**
-     * Adds a title text to the user's screen, with an optional subtitle.
-     *
-     * @param string $title
-     * @param string $subtitle
-     * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-     * @param int    $stay Duration in ticks to stay on screen for
-     * @param int    $fadeOut Duration in ticks for fade-out.
-     */
 	public function sendTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1) : void{
 		$this->setTitleDuration($fadeIn, $stay, $fadeOut);
 		if($subtitle !== ""){
@@ -3294,44 +3296,46 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * Sets the subtitle message, without sending a title.
 	 *
-     * @deprecated
-     * @see Player::sendSubTitle()
-     *
 	 * @param string $subtitle
+	 *
+	 * @see Player::sendSubTitle()
+	 *
+	 * @deprecated
 	 */
 	public function addSubTitle(string $subtitle){
-        $this->sendSubTitle($subtitle);
-    }
+		$this->sendSubTitle($subtitle);
+	}
 
-    /**
-     * Sets the subtitle message, without sending a title.
-     *
-     * @param string $subtitle
-     */
-    public function sendSubTitle(string $subtitle) : void{
+	/**
+	 * Sets the subtitle message, without sending a title.
+	 *
+	 * @param string $subtitle
+	 */
+	public function sendSubTitle(string $subtitle) : void{
 		$this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
 	}
 
 	/**
 	 * Adds small text to the user's screen.
 	 *
-     * @deprecated
-     * @see Player::sendActionBarMessage()
-     *
 	 * @param string $message
+	 *
+	 * @see Player::sendActionBarMessage()
+	 *
+	 * @deprecated
 	 */
 	public function addActionBarMessage(string $message){
 		$this->sendActionBarMessage($message);
 	}
 
-    /**
-     * Adds small text to the user's screen.
-     *
-     * @param string $message
-     */
-    public function sendActionBarMessage(string $message) : void{
-        $this->sendTitleText($message, SetTitlePacket::TYPE_SET_ACTIONBAR_MESSAGE);
-    }
+	/**
+	 * Adds small text to the user's screen.
+	 *
+	 * @param string $message
+	 */
+	public function sendActionBarMessage(string $message) : void{
+		$this->sendTitleText($message, SetTitlePacket::TYPE_SET_ACTIONBAR_MESSAGE);
+	}
 
 	/**
 	 * Removes the title from the client's screen.
