@@ -2265,10 +2265,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param int    $stay Duration in ticks to stay on screen for
 	 * @param int    $fadeOut Duration in ticks for fade-out.
 	 */
-	public function addTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
+	public function sendTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
 		$this->setTitleDuration($fadeIn, $stay, $fadeOut);
 		if($subtitle !== ""){
-			$this->addSubTitle($subtitle);
+			$this->sendSubTitle($subtitle);
 		}
 		$this->sendTitleText($title, SetTitlePacket::TYPE_SET_TITLE);
 	}
@@ -2278,7 +2278,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 *
 	 * @param string $subtitle
 	 */
-	public function addSubTitle(string $subtitle){
+	public function sendSubTitle(string $subtitle){
 		$this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
 	}
 
