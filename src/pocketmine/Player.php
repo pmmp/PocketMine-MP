@@ -3261,13 +3261,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * Adds a title text to the user's screen, with an optional subtitle.
 	 *
+     * @deprecated
+     * @see Player::sendTitle()
+     *
 	 * @param string $title
 	 * @param string $subtitle
 	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
 	 * @param int    $stay Duration in ticks to stay on screen for
 	 * @param int    $fadeOut Duration in ticks for fade-out.
-     *
-     * @deprecated please use sendTitle
 	 */
     public function addTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
         $this->sendTitle($title,$subtitle,$fadeIn,$stay,$fadeOut);
@@ -3282,7 +3283,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
      * @param int    $stay Duration in ticks to stay on screen for
      * @param int    $fadeOut Duration in ticks for fade-out.
      */
-	public function sendTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
+	public function sendTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1) : void{
 		$this->setTitleDuration($fadeIn, $stay, $fadeOut);
 		if($subtitle !== ""){
 			$this->sendSubTitle($subtitle);
@@ -3293,9 +3294,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * Sets the subtitle message, without sending a title.
 	 *
-	 * @param string $subtitle
+     * @deprecated
+     * @see Player::sendSubTitle()
      *
-     * @deprecated please use sendSubTitle
+	 * @param string $subtitle
 	 */
 	public function addSubTitle(string $subtitle){
         $this->sendSubTitle($subtitle);
@@ -3306,18 +3308,30 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
      *
      * @param string $subtitle
      */
-    public function sendSubTitle(string $subtitle){
+    public function sendSubTitle(string $subtitle) : void{
 		$this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
 	}
 
 	/**
 	 * Adds small text to the user's screen.
 	 *
+     * @deprecated
+     * @see Player::sendActionBarMessage()
+     *
 	 * @param string $message
 	 */
 	public function addActionBarMessage(string $message){
-		$this->sendTitleText($message, SetTitlePacket::TYPE_SET_ACTIONBAR_MESSAGE);
+		$this->sendActionBarMessage($message);
 	}
+
+    /**
+     * Adds small text to the user's screen.
+     *
+     * @param string $message
+     */
+    public function sendActionBarMessage(string $message) : void{
+        $this->sendTitleText($message, SetTitlePacket::TYPE_SET_ACTIONBAR_MESSAGE);
+    }
 
 	/**
 	 * Removes the title from the client's screen.
