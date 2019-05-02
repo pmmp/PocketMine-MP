@@ -82,7 +82,13 @@ class ResourcePacksSessionHandler extends SessionHandler{
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
 				foreach($packet->packIds as $uuid){
-					$pack = $this->resourcePackManager->getPackById(substr($uuid, 0, strpos($uuid, "_")));
+					//dirty hack for mojang's dirty hack for versions
+					$splitPos = strpos($uuid, "_");
+					if($splitPos !== false){
+						$uuid = substr($uuid, 0, $splitPos);
+					}
+					$pack = $this->resourcePackManager->getPackById($uuid);
+
 					if(!($pack instanceof ResourcePack)){
 						//Client requested a resource pack but we don't have it available on the server
 						$this->disconnectWithError("Unknown pack $uuid requested, available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
