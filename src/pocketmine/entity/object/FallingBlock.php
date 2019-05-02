@@ -23,12 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
+use pocketmine\block\Anvil;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\Fallable;
+use pocketmine\entity\behaviour\Behaviour;
+use pocketmine\entity\behaviour\DestroyWhileFalling;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\math\Facing;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -37,6 +41,10 @@ use function get_class;
 
 class FallingBlock extends Entity{
 	public const NETWORK_ID = self::FALLING_BLOCK;
+
+	public const STATE_SOLIDIFY = 0;
+	public const STATE_DROP_ITEM = 1;
+	public const STATE_DESTROY_BLOCK = 2;
 
 	public $width = 0.98;
 	public $height = 0.98;
@@ -48,6 +56,9 @@ class FallingBlock extends Entity{
 
 	/** @var Block */
 	protected $block;
+
+	/** @var Behaviour[]|null */
+	protected $behaviours;
 
 	public $canCollide = false;
 
@@ -70,6 +81,10 @@ class FallingBlock extends Entity{
 		$damage = $nbt->getByte("Data", 0);
 
 		$this->block = BlockFactory::get($blockId, $damage);
+		if ($this->block instanceof Anvil) {
+			$this->behaviours = [new DestroyWhileFalling($this,	[Block::TORCH, Block::COLORED_TORCH_RG, Block::COLORED_TORCH_BP,
+					Block::LIT_REDSTONE_TORCH, Block::UNLIT_REDSTONE_TORCH, Block::UNDERWATER_TORCH], true)];
+		}
 
 		$this->propertyManager->setInt(EntityMetadataProperties::VARIANT, $this->block->getRuntimeId());
 	}
@@ -105,20 +120,42 @@ class FallingBlock extends Entity{
 				$blockTarget = $this->block->tickFalling();
 			}
 
-			if($this->onGround or $blockTarget !== null){
-				$this->flagForDespawn();
-
-				$block = $this->level->getBlock($pos);
-				if($block->getId() > 0 and $block->isTransparent() and !$block->canBeReplaced()){
-					//FIXME: anvils are supposed to destroy torches
-					$this->getLevel()->dropItem($this, $this->block->asItem());
-				}else{
-					$ev = new EntityBlockChangeEvent($this, $block, $blockTarget ?? $this->block);
-					$ev->call();
-					if(!$ev->isCancelled()){
-						$this->getLevel()->setBlock($pos, $ev->getTo());
-					}
+			if($this->behaviours != null) {
+				foreach($this->behaviours as $behaviour) {
+					$behaviour->update($tickDiff);
 				}
+			}
+
+
+			if($this->onGround or $blockTarget !== null){
+				// Check if the hit block (on ground) accepts the block falling ontop of it
+				$block = $this->level->getBlock($pos);
+
+				// FIXME: anvils are supposed to destroy torches
+				$blockDown = $this->level->getBlock($block->getSide(Facing::DOWN));
+				$state = $blockDown->canBlockLand($this->block);
+				switch($state) {
+					case self::STATE_SOLIDIFY:
+						$this->flagForDespawn();
+
+						$ev = new EntityBlockChangeEvent($this, $block, $blockTarget ?? $this->block);
+						$ev->call();
+						if(!$ev->isCancelled()){
+							$this->getLevel()->setBlock($pos, $ev->getTo(), true);
+						}
+						break;
+
+					case self::STATE_DROP_ITEM:
+						$this->flagForDespawn();
+						$this->getLevel()->dropItem($this, $this->block->asItem());
+						break;
+
+					case self::STATE_DESTROY_BLOCK:
+						$this->level->setBlock($blockDown, Block::get(Block::AIR));
+						$this->getLevel()->dropItem($blockDown, $blockDown->asItem());
+						break;
+				}
+
 				$hasUpdate = true;
 			}
 		}

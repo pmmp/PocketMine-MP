@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\Fallable;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -84,4 +86,13 @@ class Torch extends Flowable{
 		}
 		return false;
 	}
+
+	public function canBlockLand(Fallable $block) : int{
+		if ($block instanceof Anvil) {
+			return FallingBlock::STATE_DESTROY_BLOCK;
+		}
+
+		return parent::canBlockLand($block);
+	}
+
 }

@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\Fallable;
 use pocketmine\entity\Entity;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -127,4 +129,18 @@ class Cactus extends Transparent{
 
 		return false;
 	}
+
+	public function canBlockLand(Fallable $block) : int{
+		$parentDecision = parent::canBlockLand($block);
+		if ($parentDecision == FallingBlock::STATE_DROP_ITEM) {
+			return $parentDecision;
+		}
+
+		if ($block instanceof Sand) {
+			return FallingBlock::STATE_DROP_ITEM;
+		}
+
+		return FallingBlock::STATE_SOLIDIFY;
+	}
+
 }

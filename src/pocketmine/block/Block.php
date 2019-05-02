@@ -26,8 +26,10 @@ declare(strict_types=1);
  */
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\entity\Entity;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -837,4 +839,18 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 			$this->level->getBlockMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
 		}
 	}
+
+	/**
+	 * Check if the falling block can be made solid again when hitting this block
+	 *
+	 * @param Fallable $block which is currently falling
+	 *
+	 * @return 	int 0 when block can be solidfy, 1 when the block should drop as item, 2 when this block should
+	 * 			be destroyed and falling should continue
+	 */
+	public function canBlockLand(Fallable $block) : int{
+		return ($this->getId() > 0 and !$this->isTransparent() and !$this->canBeReplaced()) ?
+			FallingBlock::STATE_SOLIDIFY : FallingBlock::STATE_DROP_ITEM;
+	}
+
 }
