@@ -1065,6 +1065,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return; //avoid player spawning twice (this can only happen on 3.x with a custom malicious client)
 		}
 		$this->spawned = true;
+		$this->setImmobile(false);
 
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
@@ -1083,7 +1084,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->broadcastMessage($ev->getJoinMessage());
 		}
 
-		$this->setImmobile(false);
 		$this->noDamageTicks = 60;
 
 		foreach($this->usedChunks as $index => $c){
