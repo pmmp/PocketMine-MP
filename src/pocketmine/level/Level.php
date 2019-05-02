@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\level;
 
+use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
@@ -1797,7 +1798,7 @@ class Level implements ChunkManager, Metadatable{
 		if($player !== null){
 			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative(), $drops, $xpDrop);
 
-			if(($player->isSurvival() and !$target->isBreakable($item)) or $player->isSpectator()){
+			if($target instanceof Air or ($player->isSurvival() and !$target->isBreakable($item)) or $player->isSpectator()){
 				$ev->setCancelled();
 			}elseif($this->checkSpawnProtection($player, $target)){
 				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
