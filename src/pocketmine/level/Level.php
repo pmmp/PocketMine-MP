@@ -112,6 +112,8 @@ use function trim;
 use const INT32_MAX;
 use const INT32_MIN;
 use const M_PI;
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 #include <rules/Level.h>
 
@@ -762,7 +764,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function sendTime(Player ...$targets){
 		$pk = new SetTimePacket();
-		$pk->time = $this->time;
+		$pk->time = $this->time & 0xffffffff; //avoid overflowing the field, since the packet uses an int32
 
 		$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 	}
@@ -790,7 +792,12 @@ class Level implements ChunkManager, Metadatable{
 
 	protected function actuallyDoTick(int $currentTick) : void{
 		if(!$this->stopTime){
-			$this->time++;
+			//this simulates an overflow, as would happen in any language which doesn't do stupid things to var types
+			if($this->time === PHP_INT_MAX){
+				$this->time = PHP_INT_MIN;
+			}else{
+				$this->time++;
+			}
 		}
 
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
