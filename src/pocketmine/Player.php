@@ -1065,6 +1065,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return; //avoid player spawning twice (this can only happen on 3.x with a custom malicious client)
 		}
 		$this->spawned = true;
+		$this->setImmobile(false);
 
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
@@ -1083,7 +1084,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->broadcastMessage($ev->getJoinMessage());
 		}
 
-		$this->setImmobile(false);
 		$this->noDamageTicks = 60;
 
 		foreach($this->usedChunks as $index => $c){
@@ -2061,7 +2061,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
 				$manager = $this->server->getResourcePackManager();
 				foreach($packet->packIds as $uuid){
-					$pack = $manager->getPackById(substr($uuid, 0, strpos($uuid, "_"))); //dirty hack for mojang's dirty hack for versions
+					//dirty hack for mojang's dirty hack for versions
+					$splitPos = strpos($uuid, "_");
+					if($splitPos !== false){
+						$uuid = substr($uuid, 0, $splitPos);
+					}
+
+					$pack = $manager->getPackById($uuid);
 					if(!($pack instanceof ResourcePack)){
 						//Client requested a resource pack but we don't have it available on the server
 						$this->close("", "disconnectionScreen.resourcePack", true);
