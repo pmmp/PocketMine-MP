@@ -136,11 +136,7 @@ class Cactus extends Transparent{
 			return $parentDecision;
 		}
 
-		if ($block instanceof Sand) {
-			return FallingBlock::STATE_DROP_ITEM;
-		}
-
-		return FallingBlock::STATE_SOLIDIFY;
+		return FallingBlock::STATE_DROP_ITEM;
 	}
 
 }
