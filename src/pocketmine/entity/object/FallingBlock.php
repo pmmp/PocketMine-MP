@@ -82,7 +82,7 @@ class FallingBlock extends Entity{
 
 		$this->block = BlockFactory::get($blockId, $damage);
 		if ($this->block instanceof Anvil) {
-			$this->behaviours = [new DestroyWhileFalling($this,	[Block::TORCH, Block::COLORED_TORCH_RG, Block::COLORED_TORCH_BP,
+			$this->behaviours = [new DestroyWhileFalling($this, [Block::TORCH, Block::COLORED_TORCH_RG, Block::COLORED_TORCH_BP,
 					Block::LIT_REDSTONE_TORCH, Block::UNLIT_REDSTONE_TORCH, Block::UNDERWATER_TORCH], true)];
 		}
 
