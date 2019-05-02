@@ -593,6 +593,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
 
+		$this->motion = new Vector3(0, 0, 0);
 		if($this->namedtag->hasTag("Motion", ListTag::class)){
 			/** @var float[] $motion */
 			$motion = $this->namedtag->getListTag("Motion")->getAllValues();
