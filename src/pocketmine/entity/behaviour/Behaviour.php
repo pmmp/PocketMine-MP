@@ -30,7 +30,7 @@ abstract class Behaviour{
 	/** @var Entity */
 	protected $entity;
 
-	protected function __construct(Entity $entity) {
+	protected function __construct(Entity $entity){
 		$this->entity = $entity;
 	}
 
