@@ -849,8 +849,7 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	 * 			be destroyed and falling should continue
 	 */
 	public function canBlockLand(Fallable $block) : int{
-		return (!$this->isTransparent() and !$this->canBeReplaced()) ?
-			FallingBlock::STATE_SOLIDIFY : FallingBlock::STATE_DROP_ITEM;
+		return FallingBlock::STATE_SOLIDIFY;
 	}
 
 }
