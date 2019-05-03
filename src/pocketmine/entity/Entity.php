@@ -2110,7 +2110,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * WARNING: Entities are unusable after this has been executed!
 	 */
 	public function close() : void{
-		if($this->closeInFlight) {
+		if($this->closeInFlight){
 			return;
 		}
 
