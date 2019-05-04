@@ -1766,6 +1766,12 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
+			LevelProviderManager::init();
+			if(extension_loaded("leveldb")){
+				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
+			}
+			GeneratorManager::registerDefaultGenerators();
+
 			$this->craftingManager = new CraftingManager();
 
 			$this->resourceManager = new ResourcePackManager($this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR, $this->logger);
@@ -1787,13 +1793,6 @@ class Server{
 			$this->enablePlugins(PluginLoadOrder::STARTUP);
 
 			$this->network->registerInterface(new RakLibInterface($this));
-
-			LevelProviderManager::init();
-			if(extension_loaded("leveldb")){
-				$this->logger->debug($this->getLanguage()->translateString("pocketmine.debug.enable"));
-			}
-
-			GeneratorManager::registerDefaultGenerators();
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
 				if($options === null){
