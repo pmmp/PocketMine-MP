@@ -46,7 +46,7 @@ use pocketmine\plugin\PluginManager;
  * - `@softDepend [PluginName]`: Handler WILL NOT be registered if its event doesn't exist. Useful for soft-depending
  *     on plugin events. Plugin name is optional.
  *     Example: `@softDepend SimpleAuth`
- * - `@ignoreCancelled`: Cancelled events WILL NOT be passed to this handler.
+ * - `@handleCancelled`: Cancelled events will STILL invoke this handler.
  * - `@priority <PRIORITY>`: Sets the priority at which this event handler will receive events.
  *     Example: `@priority HIGHEST`
  *     @see EventPriority for a list of possible options.
