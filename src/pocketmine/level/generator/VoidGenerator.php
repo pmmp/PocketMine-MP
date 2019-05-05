@@ -25,21 +25,16 @@ declare(strict_types=1);
 namespace pocketmine\level\generator;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockIds;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\format\Chunk;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 class VoidGenerator extends Generator{
-	/** @var Chunk */
-	private $emptyChunk = null;
 
 	public function __construct(array $options = []){
-		$this->generateEmptyChunk();
-	}
-
-	public function init(ChunkManager $level, Random $random) : void{
-		parent::init($level, $random);
+		// NOOP
 	}
 
 	public function getSettings() : array{
@@ -50,38 +45,19 @@ class VoidGenerator extends Generator{
 		return "Void";
 	}
 
-	public function generateEmptyChunk() : void{
-		$chunk = new Chunk(0, 0);
-		$chunk->setGenerated();
-
-		for($Z = 0; $Z < 16; ++$Z){
-			for($X = 0; $X < 16; ++$X){
-				$chunk->setBiomeId($X, $Z, 1);
-				for($y = 0; $y < 256; ++$y){
-					$chunk->setBlock($X, $y, $Z, Block::AIR, 0);
-				}
-			}
-		}
-
-		$this->emptyChunk = $chunk;
-	}
-
 	public function generateChunk(int $chunkX, int $chunkZ) : void{
-		$chunk = clone $this->emptyChunk;
-
+		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 		$spawn = $this->getSpawn();
-		if(($spawn->x >> 4) === $chunkX and ($spawn->z >> 4) === $chunkZ){
-			//why?
+
+		if($spawn->x >> 4 === $chunkX and $spawn->z >> 4 === $chunkZ){
+			$chunk->setBlock(0, $spawn->y - 1, 0, BlockIds::GRASS, 0);
 		}
 
-		$chunk->setX($chunkX);
-		$chunk->setZ($chunkZ);
-
-		$this->level->setChunk($chunkX, $chunkZ, $chunk);
+		$chunk->setGenerated(true);
 	}
 
 	public function populateChunk(int $chunkX, int $chunkZ) : void{
-
+		// NOOP
 	}
 
 	public function getSpawn() : Vector3{

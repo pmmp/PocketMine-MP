@@ -191,7 +191,7 @@ class GameRules{
 	 */
 	public function toStringValue($value) : string{
 		if(is_bool($value)){
-			return $value === true ? "true" : "false";
+			return $value ? "true" : "false";
 		}
 		return strval($value);
 	}
