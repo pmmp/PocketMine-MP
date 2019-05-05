@@ -33,6 +33,7 @@ use pocketmine\command\defaults\DifficultyCommand;
 use pocketmine\command\defaults\DumpMemoryCommand;
 use pocketmine\command\defaults\EffectCommand;
 use pocketmine\command\defaults\EnchantCommand;
+use pocketmine\command\defaults\ExtractPluginCommand;
 use pocketmine\command\defaults\GamemodeCommand;
 use pocketmine\command\defaults\GameRuleCommand;
 use pocketmine\command\defaults\GarbageCollectorCommand;
@@ -41,6 +42,8 @@ use pocketmine\command\defaults\HelpCommand;
 use pocketmine\command\defaults\KickCommand;
 use pocketmine\command\defaults\KillCommand;
 use pocketmine\command\defaults\ListCommand;
+use pocketmine\command\defaults\MakePluginCommand;
+use pocketmine\command\defaults\MakeServerCommand;
 use pocketmine\command\defaults\MeCommand;
 use pocketmine\command\defaults\OpCommand;
 use pocketmine\command\defaults\PardonCommand;
@@ -150,6 +153,13 @@ class SimpleCommandMap implements CommandMap{
 			new StopSoundCommand("stopsound"),
 			new XpCommand("xp")
 		]);
+
+		if($this->server->getAltayProperty("developer.commands", true)){
+			$this->registerAll("altay", [
+				new ExtractPluginCommand("extractplugin"), new MakePluginCommand("makeplugin"),
+				new MakeServerCommand("makeserver")
+			]);
+		}
 	}
 
 
