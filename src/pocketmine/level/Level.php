@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\level;
 
+use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\CreatureType;
@@ -118,6 +119,8 @@ use function trim;
 use const M_PI;
 use const INT32_MAX;
 use const INT32_MIN;
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 #include <rules/Level.h>
 
@@ -798,7 +801,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function sendTime(Player ...$targets){
 		$pk = new SetTimePacket();
-		$pk->time = $this->time;
+		$pk->time = $this->time & 0xffffffff; //avoid overflowing the field, since the packet uses an int32
 
 		$this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
 	}
@@ -837,7 +840,12 @@ class Level implements ChunkManager, Metadatable{
 
 	protected function actuallyDoTick(int $currentTick) : void{
 		if(!$this->stopTime){
-			$this->time++;
+			//this simulates an overflow, as would happen in any language which doesn't do stupid things to var types
+			if($this->time === PHP_INT_MAX){
+				$this->time = PHP_INT_MIN;
+			}else{
+				$this->time++;
+			}
 		}
 
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
@@ -1865,7 +1873,7 @@ class Level implements ChunkManager, Metadatable{
 		if($player !== null){
 			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative(), $drops, $xpDrop);
 
-			if(($player->isSurvival() and !$target->isBreakable($item)) or $player->isSpectator()){
+			if($target instanceof Air or ($player->isSurvival() and !$target->isBreakable($item)) or $player->isSpectator()){
 				$ev->setCancelled();
 			}elseif($this->checkSpawnProtection($player, $target)){
 				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
