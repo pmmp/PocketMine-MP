@@ -313,8 +313,8 @@ abstract class Mob extends Living{
 	public function updateLeashedState() : void{
 		parent::updateLeashedState();
 
-		if($this->isLeashed() and $this->leashedToEntity !== null){
-			$entity = $this->leashedToEntity;
+		$entity = $this->getLeashedToEntity();
+		if($this->isLeashed() and $entity !== null){
 			$f = $this->distance($entity);
 
 			if($this instanceof Tamable and $this->isSitting()){
