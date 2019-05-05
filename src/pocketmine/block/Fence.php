@@ -136,7 +136,7 @@ abstract class Fence extends Transparent{
 				$player->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEASHKNOT_PLACE);
 			}
 
-			return true;
+			return $flag;
 		}
 		return false;
 	}
