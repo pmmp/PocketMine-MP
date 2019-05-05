@@ -532,6 +532,10 @@ class PluginManager{
 					throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid/unknown priority \"" . $tags["priority"] . "\"");
 				}
 
+				if(isset($tags["ignoreCancelled"])){
+					throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares obsolete tag @ignoreCancelled");
+				}
+
 				$handleCancelled = false;
 				if(isset($tags["handleCancelled"])){
 					switch(strtolower($tags["handleCancelled"])){
