@@ -1492,10 +1492,7 @@ class Server{
 		}
 		$recipients = $ev->getTargets();
 
-		$stream = new PacketStream();
-		foreach($ev->getPackets() as $packet){
-			$stream->putPacket($packet);
-		}
+		$stream = PacketStream::fromPackets(...$ev->getPackets());
 
 		if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->getBuffer()) < NetworkCompression::$THRESHOLD){
 			foreach($recipients as $target){

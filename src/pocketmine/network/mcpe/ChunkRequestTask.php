@@ -57,10 +57,7 @@ class ChunkRequestTask extends AsyncTask{
 		$pk->chunkZ = $this->chunkZ;
 		$pk->data = $this->chunk;
 
-		$stream = new PacketStream();
-		$stream->putPacket($pk);
-
-		$this->setResult(NetworkCompression::compress($stream->getBuffer(), $this->compressionLevel));
+		$this->setResult(NetworkCompression::compress(PacketStream::fromPackets($pk)->getBuffer(), $this->compressionLevel));
 	}
 
 	public function onError() : void{

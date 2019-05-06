@@ -115,11 +115,8 @@ class CraftingManager{
 			$pk->addFurnaceRecipe($recipe);
 		}
 
-		$batch = new PacketStream();
-		$batch->putPacket($pk);
-
 		$this->craftingDataCache = new CompressBatchPromise();
-		$this->craftingDataCache->resolve(NetworkCompression::compress($batch->getBuffer()));
+		$this->craftingDataCache->resolve(NetworkCompression::compress(PacketStream::fromPackets($pk)->getBuffer()));
 
 		Timings::$craftingDataCacheRebuildTimer->stopTiming();
 	}

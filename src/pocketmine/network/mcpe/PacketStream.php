@@ -43,4 +43,19 @@ class PacketStream extends NetworkBinaryStream{
 	public function getPacket() : Packet{
 		return PacketPool::getPacket($this->getString());
 	}
+
+	/**
+	 * Constructs a packet batch from the given list of packets.
+	 *
+	 * @param Packet ...$packets
+	 *
+	 * @return PacketStream
+	 */
+	public static function fromPackets(Packet ...$packets) : self{
+		$result = new self();
+		foreach($packets as $packet){
+			$result->putPacket($packet);
+		}
+		return $result;
+	}
 }
