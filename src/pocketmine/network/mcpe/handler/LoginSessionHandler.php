@@ -117,7 +117,7 @@ class LoginSessionHandler extends SessionHandler{
 	 */
 	protected function processLogin(LoginPacket $packet, bool $authRequired) : void{
 		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($this->session, $packet, $authRequired, NetworkCipher::$ENABLED));
-		$this->session->setHandler(new NullSessionHandler()); //drop packets received during login verification
+		$this->session->setHandler(NullSessionHandler::getInstance()); //drop packets received during login verification
 	}
 
 	protected function isCompatibleProtocol(int $protocolVersion) : bool{

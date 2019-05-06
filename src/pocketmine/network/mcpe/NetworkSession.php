@@ -420,7 +420,7 @@ class NetworkSession{
 			$this->disconnectGuard = true;
 			$func();
 			$this->disconnectGuard = false;
-			$this->setHandler(new NullSessionHandler());
+			$this->setHandler(NullSessionHandler::getInstance());
 			$this->connected = false;
 			$this->manager->remove($this);
 		}

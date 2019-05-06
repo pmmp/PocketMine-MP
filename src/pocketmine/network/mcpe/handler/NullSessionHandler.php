@@ -26,6 +26,15 @@ namespace pocketmine\network\mcpe\handler;
 /**
  * Handler which simply ignores all packets received.
  */
-class NullSessionHandler extends SessionHandler{
+final class NullSessionHandler extends SessionHandler{
+	/** @var self|null */
+	private static $instance = null;
 
+	public static function getInstance() : self{
+		return self::$instance ?? (self::$instance = new self);
+	}
+
+	private function __construct(){
+
+	}
 }
