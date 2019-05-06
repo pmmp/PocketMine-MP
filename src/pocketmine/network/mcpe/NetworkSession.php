@@ -36,6 +36,7 @@ use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\DeathSessionHandler;
 use pocketmine\network\mcpe\handler\HandshakeSessionHandler;
 use pocketmine\network\mcpe\handler\LoginSessionHandler;
+use pocketmine\network\mcpe\handler\NullSessionHandler;
 use pocketmine\network\mcpe\handler\PreSpawnSessionHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksSessionHandler;
 use pocketmine\network\mcpe\handler\SessionHandler;
@@ -419,6 +420,7 @@ class NetworkSession{
 			$this->disconnectGuard = true;
 			$func();
 			$this->disconnectGuard = false;
+			$this->setHandler(new NullSessionHandler());
 			$this->connected = false;
 			$this->manager->remove($this);
 		}
