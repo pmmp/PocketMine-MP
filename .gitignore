@@ -40,3 +40,4 @@ test_data/*
 
 # Doxygen
 Documentation/*
+src/pocketmine/lang/locale
