@@ -246,7 +246,7 @@ class ProcessLoginTask extends AsyncTask{
 		/** @var NetworkSession $session */
 		$session = $this->fetchLocal(self::TLS_KEY_SESSION);
 		if(!$session->isConnected()){
-			$this->worker->getLogger()->error("Player " . $session->getDisplayName() . " was disconnected before their login could be verified");
+			$session->getLogger()->debug("Disconnected before login could be verified");
 		}elseif($session->setAuthenticationStatus($this->authenticated, $this->authRequired, $this->error)){
 			if(!$this->useEncryption){
 				$session->onLoginSuccess();

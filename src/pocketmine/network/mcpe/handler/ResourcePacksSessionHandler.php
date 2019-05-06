@@ -32,7 +32,6 @@ use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
-use pocketmine\Server;
 use function ceil;
 use function implode;
 use function strpos;
@@ -45,8 +44,6 @@ use function substr;
 class ResourcePacksSessionHandler extends SessionHandler{
 	private const PACK_CHUNK_SIZE = 1048576; //1MB
 
-	/** @var Server */
-	private $server;
 	/** @var NetworkSession */
 	private $session;
 	/** @var ResourcePackManager */
@@ -56,8 +53,7 @@ class ResourcePacksSessionHandler extends SessionHandler{
 	private $downloadedChunks = [];
 
 
-	public function __construct(Server $server, NetworkSession $session, ResourcePackManager $resourcePackManager){
-		$this->server = $server;
+	public function __construct(NetworkSession $session, ResourcePackManager $resourcePackManager){
 		$this->session = $session;
 		$this->resourcePackManager = $resourcePackManager;
 	}
@@ -70,7 +66,7 @@ class ResourcePacksSessionHandler extends SessionHandler{
 	}
 
 	private function disconnectWithError(string $error) : void{
-		$this->server->getLogger()->error("Error while downloading resource packs for " . $this->session->getDisplayName() . ": " . $error);
+		$this->session->getLogger()->error("Error downloading resource packs: " . $error);
 		$this->session->disconnect("disconnectionScreen.resourcePack");
 	}
 

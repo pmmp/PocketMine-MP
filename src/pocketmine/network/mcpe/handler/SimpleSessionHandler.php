@@ -199,7 +199,7 @@ class SimpleSessionHandler extends SessionHandler{
 					$actions[] = $action;
 				}
 			}catch(\UnexpectedValueException $e){
-				$this->player->getServer()->getLogger()->debug("Unhandled inventory action from " . $this->player->getName() . ": " . $e->getMessage());
+				$this->session->getLogger()->debug("Unhandled inventory action: " . $e->getMessage());
 				return false;
 			}
 		}
@@ -220,7 +220,7 @@ class SimpleSessionHandler extends SessionHandler{
 				try{
 					$this->craftingTransaction->execute();
 				}catch(TransactionValidationException $e){
-					$this->player->getServer()->getLogger()->debug("Failed to execute crafting transaction for " . $this->player->getName() . ": " . $e->getMessage());
+					$this->session->getLogger()->debug("Failed to execute crafting transaction: " . $e->getMessage());
 					return false;
 				}finally{
 					$this->craftingTransaction = null;
@@ -229,7 +229,7 @@ class SimpleSessionHandler extends SessionHandler{
 		}else{
 			//normal transaction fallthru
 			if($this->craftingTransaction !== null){
-				$this->player->getServer()->getLogger()->debug("Got unexpected normal inventory action with incomplete crafting transaction from " . $this->player->getName() . ", refusing to execute crafting");
+				$this->session->getLogger()->debug("Got unexpected normal inventory action with incomplete crafting transaction, refusing to execute crafting");
 				$this->craftingTransaction = null;
 				return false;
 			}
@@ -238,8 +238,8 @@ class SimpleSessionHandler extends SessionHandler{
 			try{
 				$transaction->execute();
 			}catch(TransactionValidationException $e){
-				$logger = $this->player->getServer()->getLogger();
-				$logger->debug("Failed to execute inventory transaction from " . $this->player->getName() . ": " . $e->getMessage());
+				$logger = $this->session->getLogger();
+				$logger->debug("Failed to execute inventory transaction: " . $e->getMessage());
 				$logger->debug("Actions: " . json_encode($data->getActions()));
 
 				return false;
@@ -393,7 +393,7 @@ class SimpleSessionHandler extends SessionHandler{
 				//TODO: handle this when it doesn't spam every damn tick (yet another spam bug!!)
 				break;
 			default:
-				$this->player->getServer()->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->player->getName());
+				$this->session->getLogger()->debug("Unhandled/unknown player action type " . $packet->action);
 				return false;
 		}
 
@@ -475,7 +475,7 @@ class SimpleSessionHandler extends SessionHandler{
 				return true;
 			}
 
-			$this->player->getServer()->getLogger()->debug("Invalid sign update data from " . $this->player->getName() . ": " . base64_encode($packet->namedtag));
+			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->namedtag));
 		}
 
 		return false;
