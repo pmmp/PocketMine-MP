@@ -260,14 +260,14 @@ interface ItemIds extends BlockIds{
 	public const SHIELD = 513;
 	public const CAMPFIRE = 720;
 
-	public const GRINDSTONE = 721;
-	public const STONECUTTER = 722;
-	public const BLAST_FURNACE = 723;
-	public const CARTOGRAPHY_TABLE = 724;
-	public const SMITHING_TABLE = 725;
-	public const FLETCHING_TABLE = 726;
-	public const LOOM = 727;
-	public const BELL = 728;
+	public const ITEM_1 = 721;
+	public const ITEM_2 = 722;
+	public const ITEM_3 = 723;
+	public const ITEM_4 = 724;
+	public const ITEM_5 = 725;
+	public const ITEM_6 = 726;
+	public const ITEM_7 = 727;
+	public const ITEM_8 = 728;
 	public const ITEM_9 = 729;
 	public const ITEM_10 = 730;
 

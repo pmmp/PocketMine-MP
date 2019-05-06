@@ -22,6 +22,6 @@
 namespace pocketmine;
 
 const NAME = "Cloud-MP";
-const BASE_VERSION = "1.0.0";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 2;
+const BASE_VERSION = "3.8.0";
+const IS_DEVELOPMENT_BUILD = false;
+const BUILD_NUMBER = 3;

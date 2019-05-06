@@ -90,26 +90,15 @@ class ItemFactory{
 		self::registerItem(new DarkOakSign());
 
 		self::registerItem(new ItemBlock(477, 0, 477));
-		self::registerItem(new Item(720, 0, "Campfire"));
-		self::registerItem(new Item(385, 0, "Seagrass"));
-		self::registerItem(new Item(449, 0, "Lectern")); // Lectern
-
-		self::registerItem(new Item(721, 0, "Grind Stone")); // Grind Stone
-		self::registerItem(new Item(722, 0, "Stone Cutter")); // Stone Cutter
-
-		self::registerItem(new Item(453, 0, "Smoker")); // Smoker
-
-		self::registerItem(new Item(723, 0, "Blast Furnace")); // Blast Furnace
-		self::registerItem(new Item(724, 0, "Cartography Table")); // Cartography Table
-
-		self::registerItem(new Item(456, 0, "Fletching Table")); // Fletching Table
-
-		self::registerItem(new Item(725, 0, "Smithing Table"));	// Smithing Table
-		self::registerItem(new Item(726, 0, "Barrel")); // Barrel
-
-		self::registerItem(new Item(727, 0, "Loom")); // Loom
-
-		self::registerItem(new Item(728, 0, "Bell")); // Bell
+		self::registerItem(new ItemBlock(464, 0, 720));
+		self::registerItem(new ItemBlock(411, 0, 721));
+		self::registerItem(new ItemBlock(385, 0, 722));
+		self::registerItem(new ItemBlock(449, 0, 723));
+		self::registerItem(new ItemBlock(458, 0, 724));
+		self::registerItem(new ItemBlock(450, 0, 725));
+		self::registerItem(new ItemBlock(386, 0, 726));
+		self::registerItem(new ItemBlock(388, 0, 727));
+		self::registerItem(new ItemBlock(393, 0, 728));
 
 		//self::registerItem(new ItemBlock(385, 0, 385)); // Seagrass
 		//self::registerItem(new ItemBlock(386, 0, 386)); // Coral
