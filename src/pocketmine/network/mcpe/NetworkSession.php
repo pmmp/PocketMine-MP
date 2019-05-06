@@ -51,7 +51,6 @@ use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
 use pocketmine\network\mcpe\protocol\Packet;
-use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
@@ -280,7 +279,7 @@ class NetworkSession{
 				throw new BadPacketException("Too many packets in a single batch");
 			}
 			try{
-				$pk = PacketPool::getPacket($stream->getString());
+				$pk = $stream->getPacket();
 			}catch(BinaryDataException $e){
 				$this->logger->debug("Packet batch: " . bin2hex($stream->getBuffer()));
 				throw new BadPacketException("Packet batch decode error: " . $e->getMessage(), 0, $e);
