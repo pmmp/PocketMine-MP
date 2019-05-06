@@ -36,4 +36,8 @@ class DiamondHelmet extends Armor{
 	public function getMaxDurability() : int{
 		return 364;
 	}
+
+	public function getArmorSlot() : int{
+		return 0;
+	}
 }

@@ -1,0 +1,318 @@
+[
+    {
+        "name": "adhocore/json-comment",
+        "version": "v0.0.7",
+        "version_normalized": "0.0.7.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/adhocore/php-json-comment.git",
+            "reference": "135356c7e7336ef59924f1d921c770045f937a76"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/adhocore/php-json-comment/zipball/135356c7e7336ef59924f1d921c770045f937a76",
+            "reference": "135356c7e7336ef59924f1d921c770045f937a76",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5"
+        },
+        "time": "2018-08-01T12:27:26+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Ahc\\Json\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jitendra Adhikari",
+                "email": "jiten.adhikary@gmail.com"
+            }
+        ],
+        "description": "Lightweight JSON comment stripper library for PHP",
+        "keywords": [
+            "comment",
+            "json",
+            "strip-comment"
+        ]
+    },
+    {
+        "name": "daverandom/callback-validator",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/DaveRandom/CallbackValidator.git",
+            "reference": "d87a08cddbc6099816ed01e50ce25cdfc43b542f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/DaveRandom/CallbackValidator/zipball/d87a08cddbc6099816ed01e50ce25cdfc43b542f",
+            "reference": "d87a08cddbc6099816ed01e50ce25cdfc43b542f",
+            "shasum": ""
+        },
+        "require": {
+            "ext-reflection": "*",
+            "php": ">=7.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^6.0"
+        },
+        "time": "2017-04-03T15:22:41+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "DaveRandom\\CallbackValidator\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Chris Wright",
+                "email": "cw@daverandom.com"
+            }
+        ],
+        "description": "Tools for validating callback signatures"
+    },
+    {
+        "name": "pocketmine/binaryutils",
+        "version": "0.1.8",
+        "version_normalized": "0.1.8.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pmmp/BinaryUtils.git",
+            "reference": "33f511715d22418c03368b49b45a6c25d6b33806"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/33f511715d22418c03368b49b45a6c25d6b33806",
+            "reference": "33f511715d22418c03368b49b45a6c25d6b33806",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=7.2",
+            "php-64bit": "*"
+        },
+        "time": "2019-01-16T17:31:44+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "pocketmine\\utils\\": "src/"
+            }
+        },
+        "license": [
+            "LGPL-3.0"
+        ],
+        "description": "Classes and methods for conveniently handling binary data",
+        "support": {
+            "source": "https://github.com/pmmp/BinaryUtils/tree/0.1.8",
+            "issues": "https://github.com/pmmp/BinaryUtils/issues"
+        }
+    },
+    {
+        "name": "pocketmine/math",
+        "version": "0.2.2",
+        "version_normalized": "0.2.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pmmp/Math.git",
+            "reference": "b755d3fb7025c4ddb7d9d6df0ba7e0b65125e51c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pmmp/Math/zipball/b755d3fb7025c4ddb7d9d6df0ba7e0b65125e51c",
+            "reference": "b755d3fb7025c4ddb7d9d6df0ba7e0b65125e51c",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=7.2.0",
+            "php-64bit": "*"
+        },
+        "time": "2019-01-04T15:42:36+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "pocketmine\\math\\": "src/"
+            }
+        },
+        "license": [
+            "LGPL-3.0"
+        ],
+        "description": "PHP library containing math related code used in PocketMine-MP",
+        "support": {
+            "source": "https://github.com/pmmp/Math/tree/0.2.2",
+            "issues": "https://github.com/pmmp/Math/issues"
+        }
+    },
+    {
+        "name": "pocketmine/nbt",
+        "version": "0.2.7",
+        "version_normalized": "0.2.7.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pmmp/NBT.git",
+            "reference": "2f176c9f2fd9b31db8bc2ada2f38990157ec8f1a"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pmmp/NBT/zipball/2f176c9f2fd9b31db8bc2ada2f38990157ec8f1a",
+            "reference": "2f176c9f2fd9b31db8bc2ada2f38990157ec8f1a",
+            "shasum": ""
+        },
+        "require": {
+            "ext-zlib": "*",
+            "php": ">=7.2.0",
+            "php-64bit": "*",
+            "pocketmine/binaryutils": "^0.1.0"
+        },
+        "time": "2019-03-29T19:39:42+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "pocketmine\\nbt\\": "src/"
+            }
+        },
+        "autoload-dev": {
+            "psr-4": {
+                "pocketmine\\nbt\\": "tests/phpunit/"
+            }
+        },
+        "license": [
+            "LGPL-3.0"
+        ],
+        "description": "PHP library for working with Named Binary Tags",
+        "support": {
+            "source": "https://github.com/pmmp/NBT/tree/0.2.7",
+            "issues": "https://github.com/pmmp/NBT/issues"
+        }
+    },
+    {
+        "name": "pocketmine/raklib",
+        "version": "0.12.4",
+        "version_normalized": "0.12.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pmmp/RakLib.git",
+            "reference": "fc1ccc8e61b9033e5372436b2e28a7a95388373f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pmmp/RakLib/zipball/fc1ccc8e61b9033e5372436b2e28a7a95388373f",
+            "reference": "fc1ccc8e61b9033e5372436b2e28a7a95388373f",
+            "shasum": ""
+        },
+        "require": {
+            "ext-bcmath": "*",
+            "ext-pthreads": ">=3.1.7dev",
+            "ext-sockets": "*",
+            "php": ">=7.2.0",
+            "php-64bit": "*",
+            "php-ipv6": "*",
+            "pocketmine/binaryutils": "^0.1.0",
+            "pocketmine/snooze": "^0.1.0",
+            "pocketmine/spl": "^0.3.0"
+        },
+        "time": "2019-05-02T14:53:51+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "raklib\\": "src/"
+            }
+        },
+        "license": [
+            "GPL-3.0"
+        ],
+        "description": "A RakNet server implementation written in PHP",
+        "support": {
+            "source": "https://github.com/pmmp/RakLib/tree/0.12.4",
+            "issues": "https://github.com/pmmp/RakLib/issues"
+        }
+    },
+    {
+        "name": "pocketmine/snooze",
+        "version": "0.1.1",
+        "version_normalized": "0.1.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pmmp/Snooze.git",
+            "reference": "b7bd231bdb75e69300cac89ccd515fc731c38c40"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pmmp/Snooze/zipball/b7bd231bdb75e69300cac89ccd515fc731c38c40",
+            "reference": "b7bd231bdb75e69300cac89ccd515fc731c38c40",
+            "shasum": ""
+        },
+        "require": {
+            "ext-pthreads": ">=3.1.7dev",
+            "php-64bit": ">=7.2.0"
+        },
+        "time": "2019-01-04T15:54:45+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "pocketmine\\snooze\\": "src/"
+            }
+        },
+        "license": [
+            "LGPL-3.0"
+        ],
+        "description": "Thread notification management library for code using the pthreads extension",
+        "support": {
+            "source": "https://github.com/pmmp/Snooze/tree/0.1.1",
+            "issues": "https://github.com/pmmp/Snooze/issues"
+        }
+    },
+    {
+        "name": "pocketmine/spl",
+        "version": "0.3.2",
+        "version_normalized": "0.3.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pmmp/SPL.git",
+            "reference": "7fd53857cd000491ba69e8db865792a024dd2c49"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pmmp/SPL/zipball/7fd53857cd000491ba69e8db865792a024dd2c49",
+            "reference": "7fd53857cd000491ba69e8db865792a024dd2c49",
+            "shasum": ""
+        },
+        "time": "2018-08-12T15:17:39+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "exclude-from-classmap": [
+                "stubs"
+            ],
+            "classmap": [
+                "./"
+            ]
+        },
+        "license": [
+            "LGPL-3.0"
+        ],
+        "description": "Standard library files required by PocketMine-MP and related projects",
+        "support": {
+            "source": "https://github.com/pmmp/SPL/tree/0.3.2"
+        }
+    }
+]

@@ -25,9 +25,9 @@ namespace pocketmine\block;
 
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Hoe;
+use pocketmine\item\Shovel;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\Shovel;
 use pocketmine\level\generator\object\TallGrass as TallGrassObject;
 use pocketmine\math\Vector3;
 use pocketmine\Player;

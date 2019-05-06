@@ -36,4 +36,8 @@ class LeatherCap extends Armor{
 	public function getMaxDurability() : int{
 		return 56;
 	}
+
+	public function getArmorSlot() : int{
+		return 0;
+	}
 }

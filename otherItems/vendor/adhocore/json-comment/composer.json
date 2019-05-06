@@ -1,0 +1,31 @@
+{
+    "name": "adhocore/json-comment",
+    "description": "Lightweight JSON comment stripper library for PHP",
+    "type": "library",
+    "keywords": [
+        "json", "comment", "strip-comment"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jitendra Adhikari",
+            "email": "jiten.adhikary@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ahc\\Json\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ahc\\Json\\Test\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5"
+    }
+}

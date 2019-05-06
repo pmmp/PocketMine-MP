@@ -1,0 +1,15 @@
+{
+	"name": "pocketmine/binaryutils",
+	"description": "Classes and methods for conveniently handling binary data",
+	"type": "library",
+	"license": "LGPL-3.0",
+	"require": {
+		"php": ">=7.2",
+		"php-64bit": "*"
+	},
+	"autoload": {
+		"psr-4": {
+			"pocketmine\\utils\\": "src/"
+		}
+	}
+}

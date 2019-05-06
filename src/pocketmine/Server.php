@@ -495,7 +495,7 @@ class Server{
 	 * @return string
 	 */
 	public function getLevelType() : string{
-		return $this->getConfigString("level-type", "DEFAULT");
+		return $this->getConfigString("level-type", "FLAT");
 	}
 
 	/**
@@ -608,7 +608,7 @@ class Server{
 	 * @return int
 	 */
 	public function getSpawnRadius() : int{
-		return $this->getConfigInt("spawn-protection", 16);
+		return $this->getConfigInt("spawn-protection", 32);
 	}
 
 	/**
@@ -637,7 +637,7 @@ class Server{
 	 * @return string
 	 */
 	public function getMotd() : string{
-		return $this->getConfigString("motd", \pocketmine\NAME . " Server");
+		return $this->getConfigString("motd", "§4§lM§6i§en§ae§1c§8r§da§4f§6t");
 	}
 
 	/**
@@ -1138,7 +1138,7 @@ class Server{
 		}
 
 		if(($providerClass = LevelProviderManager::getProviderByName($this->getProperty("level-settings.default-format", "pmanvil"))) === null){
-			$providerClass = LevelProviderManager::getProviderByName("pmanvil");
+			$providerClass = LevelProviderManager::getProviderByName("McRegion");
 			if($providerClass === null){
 				throw new \InvalidStateException("Default world provider has not been registered");
 			}
@@ -1523,7 +1523,7 @@ class Server{
 				"generator-settings" => "",
 				"level-name" => "world",
 				"level-seed" => "",
-				"level-type" => "DEFAULT",
+				"level-type" => "FLAT",
 				"enable-query" => true,
 				"enable-rcon" => false,
 				"rcon.password" => substr(base64_encode(random_bytes(20)), 3, 10),
@@ -2597,7 +2597,7 @@ class Server{
 		}
 
 		if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){
-			$this->sendUsageTicker = 6000;
+			$this->sendUsageTicker = 7000;
 			$this->sendUsage(SendUsageTask::TYPE_STATUS);
 		}
 

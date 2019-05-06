@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use function constant;
 use function defined;
 use function explode;
@@ -48,6 +49,93 @@ class ItemFactory{
 
 	public static function init(){
 		self::$list = new \SplFixedArray(65536);
+
+		/*새로운 아이템 추가 작업 */
+		self::registerItem(new LingeringPotion());
+
+		self::registerItem(new MedicineBlindness()); /* 247 */
+
+		self::registerItem(new Kelp());
+
+		self::registerItem(new Item(342, 0, "Minecart with Chest"));
+
+		self::registerItem(new Item(381, 0, "Ender Eye"));
+
+		self::registerItem(new CarrotonaStick()); /* 398 */
+
+		self::registerItem(new Item(407, 0, "Minecart with TNT"));
+		self::registerItem(new Item(408, 0, "Minecart with Hopper"));
+
+		self::registerItem(new LeatherHorseArmor()); /* 416 */
+		self::registerItem(new IronHorseArmor()); /* 417 */
+		self::registerItem(new GoldHorseArmor()); /* 418 */
+		self::registerItem(new DiamondHorseArmor()); /* 419 */
+
+		self::registerItem(new Item(421, 0, "Name Tag"));
+
+		self::registerItem(new EndCrystal()); /* 426 */
+
+		self::registerItem(new BannerPattern(434, 0, "Banner Pattern"));
+
+		self::registerItem(new Trident()); /* 455 */
+
+		self::registerItem(new TurtleHelmet()); /* 469 */
+		self::registerItem(new PhantomMembrane()); /* 470 */
+		self::registerItem(new CrossBow()); /* 471 */
+
+		self::registerItem(new SpruceSign());
+		self::registerItem(new BirchSign());
+		self::registerItem(new JungleSign());
+		self::registerItem(new AcaciaSign());
+		self::registerItem(new DarkOakSign());
+
+		self::registerItem(new ItemBlock(477, 0, 477));
+		self::registerItem(new Item(720, 0, "Campfire"));
+		self::registerItem(new Item(385, 0, "Seagrass"));
+		self::registerItem(new Item(449, 0, "Lectern")); // Lectern
+
+		self::registerItem(new Item(721, 0, "Grind Stone")); // Grind Stone
+		self::registerItem(new Item(722, 0, "Stone Cutter")); // Stone Cutter
+
+		self::registerItem(new Item(453, 0, "Smoker")); // Smoker
+
+		self::registerItem(new Item(723, 0, "Blast Furnace")); // Blast Furnace
+		self::registerItem(new Item(724, 0, "Cartography Table")); // Cartography Table
+
+		self::registerItem(new Item(456, 0, "Fletching Table")); // Fletching Table
+
+		self::registerItem(new Item(725, 0, "Smithing Table"));	// Smithing Table
+		self::registerItem(new Item(726, 0, "Barrel")); // Barrel
+
+		self::registerItem(new Item(727, 0, "Loom")); // Loom
+
+		self::registerItem(new Item(728, 0, "Bell")); // Bell
+
+		//self::registerItem(new ItemBlock(385, 0, 385)); // Seagrass
+		//self::registerItem(new ItemBlock(386, 0, 386)); // Coral
+		//self::registerItem(new ItemBlock(388, 0, 388)); // Coral Fan
+
+
+		//self::registerItem(new ItemBlock(449, 0, 449)); // Lectern
+		//self::registerItem(new ItemBlock(450, 0, 450)); // Grind Stone
+		//self::registerItem(new ItemBlock(452, 0, 452)); // Stone Cutter
+		//self::registerItem(new ItemBlock(453, 0, 453)); // Smoker
+		//self::registerItem(new ItemBlock(451, 0, 451)); // Blast Furnace
+		//self::registerItem(new ItemBlock(455, 0, 455)); // Cartography Table
+		//self::registerItem(new ItemBlock(456, 0, 456)); // Fletching Table
+		//self::registerItem(new ItemBlock(457, 0, 457));	// Smithing Table
+		//self::registerItem(new ItemBlock(458, 0, 458)); // Barrel
+		//self::registerItem(new ItemBlock(459, 0, 459)); // Loom
+		//self::registerItem(new ItemBlock(461, 0, 461)); // Bell
+
+		/*self::registerItem(new ItemBlock(0, 0, "Elixer"));
+		self::registerItem(new ItemBlock(0, 0, "Ice Bomb"));
+		self::registerItem(new ItemBlock(0, 0, "Blast Furnace"));
+		self::registerItem(new ItemBlock(0, 0, "Blast Furnace"));*/
+
+		self::registerItem(new Shield()); /* 513 */
+
+		/*새로운 아이템 추가 작업 */
 
 		self::registerItem(new Shovel(Item::IRON_SHOVEL, 0, "Iron Shovel", TieredTool::TIER_IRON));
 		self::registerItem(new Pickaxe(Item::IRON_PICKAXE, 0, "Iron Pickaxe", TieredTool::TIER_IRON));
@@ -121,7 +209,7 @@ class ItemFactory{
 		self::registerItem(new Bucket());
 
 		self::registerItem(new Minecart());
-		//TODO: SADDLE
+		self::registerItem(new Saddle());
 		self::registerItem(new ItemBlock(Block::IRON_DOOR_BLOCK, 0, Item::IRON_DOOR));
 		self::registerItem(new Redstone());
 		self::registerItem(new Snowball());
@@ -150,7 +238,7 @@ class ItemFactory{
 		self::registerItem(new Bed());
 		self::registerItem(new ItemBlock(Block::REPEATER_BLOCK, 0, Item::REPEATER));
 		self::registerItem(new Cookie());
-		//TODO: FILLED_MAP
+		self::registerItem(new Map());
 		self::registerItem(new Shears());
 		self::registerItem(new Melon());
 		self::registerItem(new PumpkinSeeds());
@@ -187,15 +275,15 @@ class ItemFactory{
 		self::registerItem(new Potato());
 		self::registerItem(new BakedPotato());
 		self::registerItem(new PoisonousPotato());
-		//TODO: EMPTYMAP
+		self::registerItem(new EmptyMap());
 		self::registerItem(new GoldenCarrot());
 		self::registerItem(new ItemBlock(Block::SKULL_BLOCK, 0, Item::SKULL));
 		//TODO: CARROTONASTICK
 		self::registerItem(new Item(Item::NETHER_STAR, 0, "Nether Star"));
 		self::registerItem(new PumpkinPie());
-		//TODO: FIREWORKS
+		self::registerItem(new Fireworks());
 		//TODO: FIREWORKSCHARGE
-		//TODO: ENCHANTED_BOOK
+		self::registerItem(new EnchantedBook());
 		self::registerItem(new ItemBlock(Block::COMPARATOR_BLOCK, 0, Item::COMPARATOR));
 		self::registerItem(new Item(Item::NETHER_BRICK, 0, "Nether Brick"));
 		self::registerItem(new Item(Item::NETHER_QUARTZ, 0, "Nether Quartz"));
@@ -212,12 +300,12 @@ class ItemFactory{
 		//TODO: HORSEARMORIRON
 		//TODO: GOLD_HORSE_ARMOR
 		//TODO: DIAMOND_HORSE_ARMOR
-		//TODO: LEAD
+		self::registerItem(new Item(Item::LEAD, 0, "Lead"));
 		//TODO: NAMETAG
 		self::registerItem(new Item(Item::PRISMARINE_CRYSTALS, 0, "Prismarine Crystals"));
 		self::registerItem(new RawMutton());
 		self::registerItem(new CookedMutton());
-		//TODO: ARMOR_STAND
+		self::registerItem(new ArmorStand());
 		//TODO: END_CRYSTAL
 		self::registerItem(new ItemBlock(Block::SPRUCE_DOOR_BLOCK, 0, Item::SPRUCE_DOOR));
 		self::registerItem(new ItemBlock(Block::BIRCH_DOOR_BLOCK, 0, Item::BIRCH_DOOR));
@@ -233,7 +321,7 @@ class ItemFactory{
 		//TODO: LINGERING_POTION
 		//TODO: SPARKLER
 		//TODO: COMMAND_BLOCK_MINECART
-		//TODO: ELYTRA
+		self::registerItem(new Elytra());
 		self::registerItem(new Item(Item::SHULKER_SHELL, 0, "Shulker Shell"));
 		self::registerItem(new Banner());
 		//TODO: MEDICINE
@@ -260,19 +348,18 @@ class ItemFactory{
 		self::registerItem(new Item(Item::TURTLE_SHELL_PIECE, 0, "Scute"));
 		//TODO: TURTLE_HELMET
 
-		//TODO: COMPOUND
-		//TODO: RECORD_13
-		//TODO: RECORD_CAT
-		//TODO: RECORD_BLOCKS
-		//TODO: RECORD_CHIRP
-		//TODO: RECORD_FAR
-		//TODO: RECORD_MALL
-		//TODO: RECORD_MELLOHI
-		//TODO: RECORD_STAL
-		//TODO: RECORD_STRAD
-		//TODO: RECORD_WARD
-		//TODO: RECORD_11
-		//TODO: RECORD_WAIT
+		self::registerItem(new Record(Item::RECORD_13, LevelSoundEventPacket::SOUND_RECORD_13));
+		self::registerItem(new Record(Item::RECORD_CAT, LevelSoundEventPacket::SOUND_RECORD_CAT));
+		self::registerItem(new Record(Item::RECORD_BLOCKS, LevelSoundEventPacket::SOUND_RECORD_BLOCKS));
+		self::registerItem(new Record(Item::RECORD_CHIRP, LevelSoundEventPacket::SOUND_RECORD_CHIRP));
+		self::registerItem(new Record(Item::RECORD_FAR, LevelSoundEventPacket::SOUND_RECORD_FAR));
+		self::registerItem(new Record(Item::RECORD_MALL, LevelSoundEventPacket::SOUND_RECORD_MALL));
+		self::registerItem(new Record(Item::RECORD_MELLOHI, LevelSoundEventPacket::SOUND_RECORD_MELLOHI));
+		self::registerItem(new Record(Item::RECORD_STAL, LevelSoundEventPacket::SOUND_RECORD_STAL));
+		self::registerItem(new Record(Item::RECORD_STRAD, LevelSoundEventPacket::SOUND_RECORD_STRAD));
+		self::registerItem(new Record(Item::RECORD_WARD, LevelSoundEventPacket::SOUND_RECORD_WARD));
+		self::registerItem(new Record(Item::RECORD_11, LevelSoundEventPacket::SOUND_RECORD_11));
+		self::registerItem(new Record(Item::RECORD_WAIT, LevelSoundEventPacket::SOUND_RECORD_WAIT));
 	}
 
 	/**
@@ -291,7 +378,7 @@ class ItemFactory{
 	public static function registerItem(Item $item, bool $override = false){
 		$id = $item->getId();
 		if(!$override and self::isRegistered($id)){
-			throw new \RuntimeException("Trying to overwrite an already registered item");
+			throw new \RuntimeException("Trying to overwrite an already registered item $id");
 		}
 
 		self::$list[self::getListOffset($id)] = clone $item;

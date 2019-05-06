@@ -24,10 +24,13 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\Block;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\ProtectionEnchantment;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\Player;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Color;
 use function lcg_value;
@@ -35,11 +38,18 @@ use function mt_rand;
 
 abstract class Armor extends Durable{
 
+	public const SLOT_HELMET = 0;
+	public const SLOT_CHESTPLATE = 1;
+	public const SLOT_LEGGINGS = 2;
+	public const SLOT_BOOTS = 3;
+
 	public const TAG_CUSTOM_COLOR = "customColor"; //TAG_Int
 
 	public function getMaxStackSize() : int{
 		return 1;
 	}
+
+	abstract public function getArmorSlot() : int;
 
 	/**
 	 * Returns the dyed colour of this armour piece. This generally only applies to leather armour.
@@ -98,5 +108,16 @@ abstract class Armor extends Durable{
 		}
 
 		return 0;
+	}
+
+	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
+		if($player->getArmorInventory()->getItem($this->getArmorSlot())->isNull()){
+			$player->getArmorInventory()->setItem($this->getArmorSlot(), $this);
+
+			$this->pop();
+
+			return true;
+		}
+		return false;
 	}
 }

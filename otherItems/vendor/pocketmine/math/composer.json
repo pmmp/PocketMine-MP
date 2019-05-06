@@ -1,0 +1,15 @@
+{
+    "name": "pocketmine/math",
+    "description": "PHP library containing math related code used in PocketMine-MP",
+    "type": "library",
+    "license": "LGPL-3.0",
+	"require": {
+        "php": ">=7.2.0",
+        "php-64bit": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "pocketmine\\math\\": "src/"
+        }
+    }
+}

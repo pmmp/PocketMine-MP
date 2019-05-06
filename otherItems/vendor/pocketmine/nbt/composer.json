@@ -1,0 +1,28 @@
+{
+    "name": "pocketmine/nbt",
+    "description": "PHP library for working with Named Binary Tags",
+    "type": "library",
+    "require": {
+        "php": ">=7.2.0",
+        "php-64bit": "*",
+        "ext-zlib": "*",
+        "pocketmine/binaryutils": "^0.1.0"
+    },
+    "license": "LGPL-3.0",
+    "autoload": {
+        "psr-4": {
+            "pocketmine\\nbt\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "pocketmine\\nbt\\": "tests/phpunit/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/pmmp/BinaryUtils"
+        }
+    ]
+}

@@ -36,4 +36,8 @@ class DiamondBoots extends Armor{
 	public function getMaxDurability() : int{
 		return 430;
 	}
+
+	public function getArmorSlot() : int{
+		return 3;
+	}
 }

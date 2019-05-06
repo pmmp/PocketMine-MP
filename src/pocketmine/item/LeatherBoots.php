@@ -36,4 +36,8 @@ class LeatherBoots extends Armor{
 	public function getMaxDurability() : int{
 		return 66;
 	}
+
+	public function getArmorSlot() : int{
+		return 3;
+	}
 }

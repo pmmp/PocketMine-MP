@@ -36,4 +36,8 @@ class DiamondChestplate extends Armor{
 	public function getMaxDurability() : int{
 		return 529;
 	}
+
+	public function getArmorSlot() : int{
+		return 1;
+	}
 }

@@ -35,6 +35,7 @@ use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PaintingMotive;
 use pocketmine\entity\object\PrimedTNT;
+use pocketmine\entity\object\FireworksRocket;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\Egg;
 use pocketmine\entity\projectile\EnderPearl;
@@ -337,7 +338,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(SplashPotion::class, false, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
 		Entity::registerEntity(Squid::class, false, ['Squid', 'minecraft:squid']);
 		Entity::registerEntity(Villager::class, false, ['Villager', 'minecraft:villager']);
+		Entity::registerEntity(WanderingTrader::class, false, ['WanderingTrader', 'minecraft:wandering_trader']);
+		Entity::registerEntity(Llama::class, false, ['Llama', 'minecraft:llama']);
+		Entity::registerEntity(Ravager::class, false, ['Ravager', 'minecraft:ravager']);
 		Entity::registerEntity(Zombie::class, false, ['Zombie', 'minecraft:zombie']);
+		Entity::registerEntity(FireworksRocket::class, false, ['FireworksRocket', 'minecraft:fireworks_rocket']);
 
 		Entity::registerEntity(Human::class, true);
 

@@ -55,16 +55,36 @@ class BlockFactory{
 	 * this if you need to reset the block factory back to its original defaults for whatever reason.
 	 */
 	public static function init() : void{
-		self::$fullList = new \SplFixedArray(4096);
+		self::$fullList = new \SplFixedArray(16384);
 
-		self::$light = new \SplFixedArray(256);
-		self::$lightFilter = new \SplFixedArray(256);
-		self::$solid = new \SplFixedArray(256);
-		self::$hardness = new \SplFixedArray(256);
-		self::$transparent = new \SplFixedArray(256);
-		self::$diffusesSkyLight = new \SplFixedArray(256);
-		self::$blastResistance = new \SplFixedArray(256);
-
+		self::$light = new \SplFixedArray(16384);
+		self::$lightFilter = new \SplFixedArray(16384);
+		self::$solid = new \SplFixedArray(16384);
+		self::$hardness = new \SplFixedArray(16384);
+		self::$transparent = new \SplFixedArray(16384);
+		self::$diffusesSkyLight = new \SplFixedArray(16384);
+		self::$blastResistance = new \SplFixedArray(16384);
+		
+		/* 새로운 블럭 추가 */
+		self::registerBlock(new HardGlass(253, 0, "Hard Glass"));
+		self::registerBlock(new HardGlassPane(190, 0, "Hard Glass Pane"));
+		
+		self::registerBlock(new ChemicalHeat(192, 0, "Chemical Heat"));
+		self::registerBlock(new ChemicalTable(238, 0, "Chemical Table"));
+		
+		self::registerBlock(new ColoredTorchRg(202, 0, "Colored Torch Rg"));
+		
+		self::registerBlock(new ColoredTorchBp(204, 0, "Colored Torch Bp"));
+		
+		self::registerBlock(new UnderWaterTorch());
+		
+		self::registerBlock(new HardStainedGlass(254, 0, "Hard Stained Glass"));
+		self::registerBlock(new HardStainedGlassPane(191, 0, "Hard Stained Glass Pane"));
+		
+		self::registerBlock(new NewBlock(266, 0, "Blue Ice"));
+		self::registerBlock(new NewBlock(267, 0, "H"));
+		/* 새로운 블럭 추가 */
+		
 		self::registerBlock(new Air());
 		self::registerBlock(new Stone());
 		self::registerBlock(new Grass());
@@ -149,20 +169,20 @@ class BlockFactory{
 		self::registerBlock(new Cactus());
 		self::registerBlock(new Clay());
 		self::registerBlock(new Sugarcane());
-		//TODO: JUKEBOX
+		self::registerBlock(new Jukebox());
 		self::registerBlock(new WoodenFence());
 		self::registerBlock(new Pumpkin());
 		self::registerBlock(new Netherrack());
 		self::registerBlock(new SoulSand());
 		self::registerBlock(new Glowstone());
-		//TODO: PORTAL
+		self::registerBlock(new Portal());
 		self::registerBlock(new LitPumpkin());
 		self::registerBlock(new Cake());
 		//TODO: REPEATER_BLOCK
 		//TODO: POWERED_REPEATER
 		self::registerBlock(new InvisibleBedrock());
 		self::registerBlock(new Trapdoor());
-		//TODO: MONSTER_EGG
+		self::registerBlock(new MonsterEgg());;
 		self::registerBlock(new StoneBricks());
 		self::registerBlock(new BrownMushroomBlock());
 		self::registerBlock(new RedMushroomBlock());
@@ -184,10 +204,10 @@ class BlockFactory{
 		self::registerBlock(new EnchantingTable());
 		self::registerBlock(new BrewingStand());
 		//TODO: CAULDRON_BLOCK
-		//TODO: END_PORTAL
+		self::registerBlock(new EndPortal());
 		self::registerBlock(new EndPortalFrame());
 		self::registerBlock(new EndStone());
-		//TODO: DRAGON_EGG
+		self::registerBlock(new DragonEgg());
 		self::registerBlock(new RedstoneLamp());
 		self::registerBlock(new LitRedstoneLamp());
 		//TODO: DROPPER
@@ -203,7 +223,7 @@ class BlockFactory{
 		self::registerBlock(new WoodenStairs(Block::BIRCH_STAIRS, 0, "Birch Stairs"));
 		self::registerBlock(new WoodenStairs(Block::JUNGLE_STAIRS, 0, "Jungle Stairs"));
 		//TODO: COMMAND_BLOCK
-		//TODO: BEACON
+		self::registerBlock(new Beacon());
 		self::registerBlock(new CobblestoneWall());
 		self::registerBlock(new FlowerPot());
 		self::registerBlock(new Carrot());
@@ -219,7 +239,7 @@ class BlockFactory{
 		self::registerBlock(new DaylightSensor());
 		self::registerBlock(new Redstone());
 		self::registerBlock(new NetherQuartzOre());
-		//TODO: HOPPER_BLOCK
+		self::registerBlock(new Hopper());
 		self::registerBlock(new Quartz());
 		self::registerBlock(new QuartzStairs());
 		self::registerBlock(new DoubleWoodenSlab());
@@ -230,7 +250,7 @@ class BlockFactory{
 		self::registerBlock(new Wood2());
 		self::registerBlock(new WoodenStairs(Block::ACACIA_STAIRS, 0, "Acacia Stairs"));
 		self::registerBlock(new WoodenStairs(Block::DARK_OAK_STAIRS, 0, "Dark Oak Stairs"));
-		//TODO: SLIME
+		self::registerBlock(new Slime());
 
 		self::registerBlock(new IronTrapdoor());
 		self::registerBlock(new Prismarine());
@@ -268,7 +288,7 @@ class BlockFactory{
 
 		self::registerBlock(new PurpurStairs());
 
-		//TODO: UNDYED_SHULKER_BOX
+		self::registerBlock(new UndyedShulkerBox());
 		self::registerBlock(new EndStoneBricks());
 		//TODO: FROSTED_ICE
 		self::registerBlock(new EndRod());
@@ -279,7 +299,7 @@ class BlockFactory{
 		self::registerBlock(new NetherBrick(Block::RED_NETHER_BRICK, 0, "Red Nether Bricks"));
 		self::registerBlock(new BoneBlock());
 
-		//TODO: SHULKER_BOX
+		self::registerBlock(new ShulkerBox());
 		self::registerBlock(new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA, 0, "Purple Glazed Terracotta"));
 		self::registerBlock(new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA, 0, "White Glazed Terracotta"));
 		self::registerBlock(new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA, 0, "Orange Glazed Terracotta"));

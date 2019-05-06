@@ -105,7 +105,7 @@ interface ItemIds extends BlockIds{
 	public const SNOWBALL = 332;
 	public const BOAT = 333;
 	public const LEATHER = 334;
-	public const KELP = 335;
+	public const KELP_ITEM = 335;
 	public const BRICK = 336;
 	public const CLAY = 337, CLAY_BALL = 337;
 	public const REEDS = 338, SUGARCANE = 338;
@@ -222,19 +222,17 @@ interface ItemIds extends BlockIds{
 	public const BLEACH = 451;
 	public const IRON_NUGGET = 452;
 	public const ICE_BOMB = 453;
-
 	public const TRIDENT = 455;
-
 	public const BEETROOT = 457;
 	public const BEETROOT_SEEDS = 458;
 	public const BEETROOT_SOUP = 459;
-	public const RAW_SALMON = 460, SALMON = 460;
+	public const SALMON = 460, RAW_SALMON = 460, FISH_SALMON = 460;
 	public const CLOWNFISH = 461;
 	public const PUFFERFISH = 462;
 	public const COOKED_SALMON = 463;
 	public const DRIED_KELP = 464;
 	public const NAUTILUS_SHELL = 465;
-	public const APPLEENCHANTED = 466, APPLE_ENCHANTED = 466, ENCHANTED_GOLDEN_APPLE = 466;
+	public const APPLEENCHANTED = 466, ENCHANTED_GOLDEN_APPLE = 466;
 	public const HEART_OF_THE_SEA = 467;
 	public const TURTLE_SHELL_PIECE = 468;
 	public const TURTLE_HELMET = 469;
@@ -246,7 +244,6 @@ interface ItemIds extends BlockIds{
 	public const ACACIA_SIGN = 475;
 	public const DARKOAK_SIGN = 476;
 	public const SWEET_BERRIES = 477;
-
 	public const COMPOUND = 499;
 	public const RECORD_13 = 500;
 	public const RECORD_CAT = 501;
@@ -260,7 +257,18 @@ interface ItemIds extends BlockIds{
 	public const RECORD_WARD = 509;
 	public const RECORD_11 = 510;
 	public const RECORD_WAIT = 511;
-
 	public const SHIELD = 513;
+	public const CAMPFIRE = 720;
+
+	public const GRINDSTONE = 721;
+	public const STONECUTTER = 722;
+	public const BLAST_FURNACE = 723;
+	public const CARTOGRAPHY_TABLE = 724;
+	public const SMITHING_TABLE = 725;
+	public const FLETCHING_TABLE = 726;
+	public const LOOM = 727;
+	public const BELL = 728;
+	public const ITEM_9 = 729;
+	public const ITEM_10 = 730;
 
 }

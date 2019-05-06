@@ -41,6 +41,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 use function array_map;
@@ -60,6 +61,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
+	public const TAG_REPAIR_COST = "RepairCost";
 
 
 	/** @var LittleEndianNBTStream */
@@ -192,6 +194,8 @@ class Item implements ItemIds, \JsonSerializable{
 	public $count = 1;
 	/** @var string */
 	protected $name;
+	/** @var bool */
+	protected $onItemFrame = false;
 
 	/**
 	 * Constructs a new Item type. This constructor should ONLY be used when constructing a new item TYPE to register
@@ -762,6 +766,10 @@ class Item implements ItemIds, \JsonSerializable{
 		return 1;
 	}
 
+	public function onUpdate(Player $player) : void{
+
+	}
+
 	/**
 	 * Called when a player uses this item on a block.
 	 *
@@ -821,6 +829,18 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function onAttackEntity(Entity $victim) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when player interacted with an entity and entity didnt make anything
+	 *
+	 * @param Player $player
+	 * @param Entity $entity
+	 *
+	 * @return bool
+	 */
+	public function onInteractWithEntity(Player $player, Entity $entity) : bool{
 		return false;
 	}
 
@@ -1000,5 +1020,27 @@ class Item implements ItemIds, \JsonSerializable{
 
 	public function __clone(){
 		$this->cachedNBT = null;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isOnItemFrame() : bool{
+		return $this->onItemFrame;
+	}
+
+	/**
+	 * @param bool $onItemFrame
+	 */
+	public function setOnItemFrame(bool $onItemFrame) : void{
+		$this->onItemFrame = $onItemFrame;
+	}
+
+	public function getRepairCost() : int{
+		return $this->getNamedTag()->getInt(self::TAG_REPAIR_COST, 0);
+	}
+
+	public function setRepairCost(int $cost) : void{
+		$this->setNamedTagEntry(new IntTag(self::TAG_REPAIR_COST, $cost));
 	}
 }

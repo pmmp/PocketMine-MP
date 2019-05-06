@@ -1,0 +1,17 @@
+; http://editorconfig.org
+;
+; Sublime: https://github.com/sindresorhus/editorconfig-sublime
+; Phpstorm: https://plugins.jetbrains.com/plugin/7294-editorconfig
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[{*.md,*.php,composer.json,composer.lock}]
+indent_size = 4

@@ -26,8 +26,8 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\tile\ItemFrame as TileItemFrame;
 use pocketmine\tile\Tile;
+use pocketmine\tile\ItemFrame as TileItemFrame;
 use function lcg_value;
 
 class ItemFrame extends Flowable{

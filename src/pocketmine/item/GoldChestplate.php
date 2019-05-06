@@ -36,4 +36,8 @@ class GoldChestplate extends Armor{
 	public function getMaxDurability() : int{
 		return 113;
 	}
+
+	public function getArmorSlot() : int{
+		return 1;
+	}
 }

@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
+use pocketmine\item\Item;
 
 class IronDoor extends Door{
 

@@ -141,6 +141,9 @@ class AddEntityPacket extends DataPacket{
 		EntityIds::AGENT => "minecraft:agent",
 		EntityIds::ICE_BOMB => "minecraft:ice_bomb",
 		EntityIds::PHANTOM => "minecraft:phantom",
+		EntityIds::PILLAGER => "minecraft:pillager",
+		EntityIds::RAVAGER => "minecraft:ravager",
+		EntityIds::WANDERING_TRADER => "minecraft:wandering_trader",
 		EntityIds::TRIPOD_CAMERA => "minecraft:tripod_camera"
 	];
 

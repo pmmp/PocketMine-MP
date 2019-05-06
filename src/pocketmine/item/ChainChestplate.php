@@ -36,4 +36,8 @@ class ChainChestplate extends Armor{
 	public function getMaxDurability() : int{
 		return 241;
 	}
+
+	public function getArmorSlot() : int{
+		return 1;
+	}
 }

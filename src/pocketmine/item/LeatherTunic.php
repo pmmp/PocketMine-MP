@@ -36,4 +36,8 @@ class LeatherTunic extends Armor{
 	public function getMaxDurability() : int{
 		return 81;
 	}
+
+	public function getArmorSlot() : int{
+		return 1;
+	}
 }

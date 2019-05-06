@@ -1,0 +1,36 @@
+{
+	"name": "pocketmine/raklib",
+	"description": "A RakNet server implementation written in PHP",
+	"type": "library",
+	"license": "GPL-3.0",
+	"require": {
+		"php": ">=7.2.0",
+		"php-ipv6": "*",
+		"php-64bit": "*",
+		"ext-bcmath": "*",
+		"ext-pthreads": ">=3.1.7dev",
+		"ext-sockets": "*",
+		"pocketmine/spl": "^0.3.0",
+		"pocketmine/binaryutils": "^0.1.0",
+		"pocketmine/snooze": "^0.1.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"raklib\\": "src/"
+		}
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/pmmp/SPL"
+		},
+		{
+			"type": "vcs",
+			"url": "https://github.com/pmmp/BinaryUtils"
+		},
+		{
+			"type": "vcs",
+			"url": "https://github.com/pmmp/Snooze"
+		}
+	]
+}

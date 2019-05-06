@@ -1,0 +1,6 @@
+# standards
+/.cache/
+/.env
+/.idea/
+/vendor/
+composer.lock
