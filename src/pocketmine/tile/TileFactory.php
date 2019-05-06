@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\Utils;
+use pocketmine\world\World;
 use function assert;
 use function in_array;
 use function is_a;
@@ -97,13 +97,13 @@ final class TileFactory{
 
 	/**
 	 * @param string  $baseClass
-	 * @param Level   $level
+	 * @param World   $world
 	 * @param Vector3 $pos
 	 *
 	 * @return Tile (will be an instanceof $baseClass)
 	 * @throws \InvalidArgumentException if the specified class is not a registered tile
 	 */
-	public static function create(string $baseClass, Level $level, Vector3 $pos) : Tile{
+	public static function create(string $baseClass, World $world, Vector3 $pos) : Tile{
 		if(isset(self::$classMapping[$baseClass])){
 			$class = self::$classMapping[$baseClass];
 			assert(is_a($class, $baseClass, true));
@@ -111,7 +111,7 @@ final class TileFactory{
 			 * @var Tile $tile
 			 * @see Tile::__construct()
 			 */
-			$tile = new $class($level, $pos);
+			$tile = new $class($world, $pos);
 
 			return $tile;
 		}
@@ -120,14 +120,14 @@ final class TileFactory{
 	}
 
 	/**
-	 * @internal
-	 *
-	 * @param Level       $level
+	 * @param World       $world
 	 * @param CompoundTag $nbt
 	 *
 	 * @return Tile|null
+	 *@internal
+	 *
 	 */
-	public static function createFromData(Level $level, CompoundTag $nbt) : ?Tile{
+	public static function createFromData(World $world, CompoundTag $nbt) : ?Tile{
 		$type = $nbt->getString(Tile::TAG_ID, "", true);
 		if(!isset(self::$knownTiles[$type])){
 			return null;
@@ -138,7 +138,7 @@ final class TileFactory{
 		 * @var Tile $tile
 		 * @see Tile::__construct()
 		 */
-		$tile = new $class($level, new Vector3($nbt->getInt(Tile::TAG_X), $nbt->getInt(Tile::TAG_Y), $nbt->getInt(Tile::TAG_Z)));
+		$tile = new $class($world, new Vector3($nbt->getInt(Tile::TAG_X), $nbt->getInt(Tile::TAG_Y), $nbt->getInt(Tile::TAG_Z)));
 		$tile->readSaveData($nbt);
 
 		return $tile;

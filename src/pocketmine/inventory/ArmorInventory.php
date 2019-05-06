@@ -101,7 +101,7 @@ class ArmorInventory extends BaseInventory{
 			$pk = new MobArmorEquipmentPacket();
 			$pk->entityRuntimeId = $this->getHolder()->getId();
 			$pk->slots = $this->getContents(true);
-			$this->holder->getLevel()->getServer()->broadcastPacket($target, $pk);
+			$this->holder->getWorld()->getServer()->broadcastPacket($target, $pk);
 		}
 	}
 
@@ -123,7 +123,7 @@ class ArmorInventory extends BaseInventory{
 			$pk = new MobArmorEquipmentPacket();
 			$pk->entityRuntimeId = $this->getHolder()->getId();
 			$pk->slots = $armor;
-			$this->holder->getLevel()->getServer()->broadcastPacket($target, $pk);
+			$this->holder->getWorld()->getServer()->broadcastPacket($target, $pk);
 		}
 	}
 

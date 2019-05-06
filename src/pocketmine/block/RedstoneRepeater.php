@@ -98,13 +98,13 @@ class RedstoneRepeater extends Flowable{
 		if(++$this->delay > 4){
 			$this->delay = 1;
 		}
-		$this->level->setBlock($this, $this);
+		$this->world->setBlock($this, $this);
 		return true;
 	}
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->level->useBreakOn($this);
+			$this->world->useBreakOn($this);
 		}
 	}
 

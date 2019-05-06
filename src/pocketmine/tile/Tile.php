@@ -29,12 +29,12 @@ namespace pocketmine\tile;
 
 use pocketmine\block\Block;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\world\Position;
+use pocketmine\world\World;
 use function get_class;
 
 abstract class Tile extends Position{
@@ -51,9 +51,9 @@ abstract class Tile extends Position{
 	/** @var TimingsHandler */
 	protected $timings;
 
-	public function __construct(Level $level, Vector3 $pos){
+	public function __construct(World $world, Vector3 $pos){
 		$this->timings = Timings::getTileEntityTimings($this);
-		parent::__construct($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $level);
+		parent::__construct($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $world);
 	}
 
 	/**
@@ -104,7 +104,7 @@ abstract class Tile extends Position{
 	 * @return Block
 	 */
 	public function getBlock() : Block{
-		return $this->level->getBlockAt($this->x, $this->y, $this->z);
+		return $this->world->getBlockAt($this->x, $this->y, $this->z);
 	}
 
 	/**
@@ -118,7 +118,7 @@ abstract class Tile extends Position{
 		if($this->closed){
 			throw new \InvalidStateException("Cannot schedule update on garbage tile " . get_class($this));
 		}
-		$this->level->updateTiles[Level::blockHash($this->x, $this->y, $this->z)] = $this;
+		$this->world->updateTiles[World::blockHash($this->x, $this->y, $this->z)] = $this;
 	}
 
 	public function isClosed() : bool{
@@ -149,8 +149,8 @@ abstract class Tile extends Position{
 			$this->closed = true;
 
 			if($this->isValid()){
-				$this->level->removeTile($this);
-				$this->setLevel(null);
+				$this->world->removeTile($this);
+				$this->setWorld(null);
 			}
 		}
 	}

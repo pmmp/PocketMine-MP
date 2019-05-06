@@ -24,19 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\metadata;
 
 use pocketmine\block\Block;
-use pocketmine\level\Level;
 use pocketmine\plugin\Plugin;
+use pocketmine\world\World;
 
 class BlockMetadataStore extends MetadataStore{
-	/** @var Level */
+	/** @var World */
 	private $owningLevel;
 
-	public function __construct(Level $owningLevel){
+	public function __construct(World $owningLevel){
 		$this->owningLevel = $owningLevel;
 	}
 
 	private function disambiguate(Block $block, string $metadataKey) : string{
-		if($block->getLevel() !== $this->owningLevel){
+		if($block->getWorld() !== $this->owningLevel){
 			throw new \InvalidStateException("Block does not belong to world " . $this->owningLevel->getDisplayName());
 		}
 		return $block->x . ":" . $block->y . ":" . $block->z . ":" . $metadataKey;

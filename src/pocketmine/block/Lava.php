@@ -27,9 +27,9 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\level\sound\BucketEmptyLavaSound;
-use pocketmine\level\sound\BucketFillLavaSound;
-use pocketmine\level\sound\Sound;
+use pocketmine\world\sound\BucketEmptyLavaSound;
+use pocketmine\world\sound\BucketFillLavaSound;
+use pocketmine\world\sound\Sound;
 use pocketmine\math\Facing;
 
 class Lava extends Liquid{

@@ -24,10 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\block\utils\SkullType;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\world\World;
 
 /**
  * @deprecated
@@ -45,9 +45,9 @@ class Skull extends Spawnable{
 	/** @var int */
 	private $skullRotation = 0;
 
-	public function __construct(Level $level, Vector3 $pos){
+	public function __construct(World $world, Vector3 $pos){
 		$this->skullType = SkullType::SKELETON();
-		parent::__construct($level, $pos);
+		parent::__construct($world, $pos);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{

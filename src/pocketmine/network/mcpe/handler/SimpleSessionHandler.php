@@ -281,7 +281,7 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	private function handleUseItemOnEntityTransaction(UseItemOnEntityTransactionData $data) : bool{
-		$target = $this->player->getLevel()->getEntity($data->getEntityRuntimeId());
+		$target = $this->player->getWorld()->getEntity($data->getEntityRuntimeId());
 		if($target === null){
 			return false;
 		}
@@ -448,7 +448,7 @@ class SimpleSessionHandler extends SessionHandler{
 			return false;
 		}
 
-		$block = $this->player->getLevel()->getBlock($pos);
+		$block = $this->player->getWorld()->getBlock($pos);
 		try{
 			$offset = 0;
 			$nbt = (new NetworkNbtSerializer())->read($packet->namedtag, $offset, 512)->getTag();
@@ -466,7 +466,7 @@ class SimpleSessionHandler extends SessionHandler{
 
 				try{
 					if(!$block->updateText($this->player, $text)){
-						$this->player->getLevel()->sendBlocks([$this->player], [$block]);
+						$this->player->getWorld()->sendBlocks([$this->player], [$block]);
 					}
 				}catch(\UnexpectedValueException $e){
 					throw new BadPacketException($e->getMessage(), 0, $e);
@@ -509,7 +509,7 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
-		$block = $this->player->getLevel()->getBlockAt($packet->x, $packet->y, $packet->z);
+		$block = $this->player->getWorld()->getBlockAt($packet->x, $packet->y, $packet->z);
 		if($block instanceof ItemFrame and $block->getFramedItem() !== null){
 			return $this->player->attackBlock(new Vector3($packet->x, $packet->y, $packet->z), $block->getFacing());
 		}
@@ -588,7 +588,7 @@ class SimpleSessionHandler extends SessionHandler{
 	}
 
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
-		$this->player->getLevel()->broadcastPacketToViewers($this->player->asVector3(), $packet);
+		$this->player->getWorld()->broadcastPacketToViewers($this->player->asVector3(), $packet);
 		return true;
 	}
 

@@ -29,7 +29,7 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\level\sound\BowShootSound;
+use pocketmine\world\sound\BowShootSound;
 use pocketmine\Player;
 use function intdiv;
 use function min;
@@ -65,7 +65,7 @@ class Bow extends Tool{
 		$baseForce = min((($p ** 2) + $p * 2) / 3, 1);
 
 		/** @var ArrowEntity $entity */
-		$entity = EntityFactory::create(ArrowEntity::class, $player->getLevel(), $nbt, $player, $baseForce >= 1);
+		$entity = EntityFactory::create(ArrowEntity::class, $player->getWorld(), $nbt, $player, $baseForce >= 1);
 
 		$infinity = $this->hasEnchantment(Enchantment::INFINITY());
 		if($infinity){
@@ -106,7 +106,7 @@ class Bow extends Tool{
 			}
 
 			$ev->getProjectile()->spawnToAll();
-			$player->getLevel()->addSound($player, new BowShootSound());
+			$player->getWorld()->addSound($player, new BowShootSound());
 		}else{
 			$entity->spawnToAll();
 		}

@@ -27,10 +27,10 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\World;
 use function mt_rand;
 
 class Leaves extends Transparent{
@@ -74,7 +74,7 @@ class Leaves extends Transparent{
 
 
 	protected function findLog(Block $pos, array &$visited = [], int $distance = 0) : bool{
-		$index = Level::blockHash($pos->x, $pos->y, $pos->z);
+		$index = World::blockHash($pos->x, $pos->y, $pos->z);
 		if(isset($visited[$index])){
 			return false;
 		}
@@ -98,7 +98,7 @@ class Leaves extends Transparent{
 	public function onNearbyBlockChange() : void{
 		if(!$this->noDecay and !$this->checkDecay){
 			$this->checkDecay = true;
-			$this->getLevel()->setBlock($this, $this, false);
+			$this->getWorld()->setBlock($this, $this, false);
 		}
 	}
 
@@ -112,9 +112,9 @@ class Leaves extends Transparent{
 			$ev->call();
 			if($ev->isCancelled() or $this->findLog($this)){
 				$this->checkDecay = false;
-				$this->getLevel()->setBlock($this, $this, false);
+				$this->getWorld()->setBlock($this, $this, false);
 			}else{
-				$this->getLevel()->useBreakOn($this);
+				$this->getWorld()->useBreakOn($this);
 			}
 		}
 	}

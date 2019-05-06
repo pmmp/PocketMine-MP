@@ -67,7 +67,7 @@ class Chest extends Transparent{
 		}
 
 		if(parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
-			$tile = $this->level->getTile($this);
+			$tile = $this->world->getTile($this);
 			if($tile instanceof TileChest){
 				foreach([
 					Facing::rotateY($this->facing, true),
@@ -75,7 +75,7 @@ class Chest extends Transparent{
 				] as $side){
 					$c = $this->getSide($side);
 					if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
-						$pair = $this->level->getTile($c);
+						$pair = $this->world->getTile($c);
 						if($pair instanceof TileChest and !$pair->isPaired()){
 							$pair->pairWith($tile);
 							$tile->pairWith($pair);
@@ -94,7 +94,7 @@ class Chest extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 
-			$chest = $this->getLevel()->getTile($this);
+			$chest = $this->getWorld()->getTile($this);
 			if($chest instanceof TileChest){
 				if(
 					!$this->getSide(Facing::UP)->isTransparent() or

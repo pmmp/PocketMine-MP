@@ -52,7 +52,7 @@ class PaintingItem extends Item{
 				continue;
 			}
 
-			if(Painting::canFit($player->getLevel(), $blockReplace, $face, true, $motive)){
+			if(Painting::canFit($player->getWorld(), $blockReplace, $face, true, $motive)){
 				if($currentTotalDimension > $totalDimension){
 					$totalDimension = $currentTotalDimension;
 					/*
@@ -94,11 +94,11 @@ class PaintingItem extends Item{
 		$nbt->setInt("TileZ", $blockClicked->getFloorZ());
 
 		/** @var Painting $entity */
-		$entity = EntityFactory::create(Painting::class, $blockReplace->getLevel(), $nbt);
+		$entity = EntityFactory::create(Painting::class, $blockReplace->getWorld(), $nbt);
 		$this->pop();
 		$entity->spawnToAll();
 
-		$player->getLevel()->broadcastLevelEvent($blockReplace->add(0.5, 0.5, 0.5), LevelEventPacket::EVENT_SOUND_ITEMFRAME_PLACE); //item frame and painting have the same sound
+		$player->getWorld()->broadcastLevelEvent($blockReplace->add(0.5, 0.5, 0.5), LevelEventPacket::EVENT_SOUND_ITEMFRAME_PLACE); //item frame and painting have the same sound
 		return ItemUseResult::SUCCESS();
 	}
 }

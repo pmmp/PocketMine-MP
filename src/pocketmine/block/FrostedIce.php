@@ -50,17 +50,17 @@ class FrostedIce extends Ice{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->checkAdjacentBlocks(2)){
-			$this->level->useBreakOn($this);
+			$this->world->useBreakOn($this);
 		}else{
-			$this->level->scheduleDelayedBlockUpdate($this, mt_rand(20, 40));
+			$this->world->scheduleDelayedBlockUpdate($this, mt_rand(20, 40));
 		}
 	}
 
 	public function onRandomTick() : void{
 		if((!$this->checkAdjacentBlocks(4) or mt_rand(0, 2) === 0) and
-			max( //TODO: move this to Level
-				$this->level->getHighestAdjacentBlockLight($this->x, $this->y, $this->z),
-				$this->level->getHighestAdjacentBlockSkyLight($this->x, $this->y, $this->z) - $this->level->getSkyLightReduction()
+			max( //TODO: move this to World
+				$this->world->getHighestAdjacentBlockLight($this->x, $this->y, $this->z),
+				$this->world->getHighestAdjacentBlockSkyLight($this->x, $this->y, $this->z) - $this->world->getSkyLightReduction()
 			) >= 12 - $this->age){
 			if($this->tryMelt()){
 				foreach($this->getAllSides() as $block){
@@ -70,7 +70,7 @@ class FrostedIce extends Ice{
 				}
 			}
 		}else{
-			$this->level->scheduleDelayedBlockUpdate($this, mt_rand(20, 40));
+			$this->world->scheduleDelayedBlockUpdate($this, mt_rand(20, 40));
 		}
 	}
 
@@ -86,7 +86,7 @@ class FrostedIce extends Ice{
 					continue;
 				}
 				if(
-					$this->level->getBlockAt($this->x + $x, $this->y, $this->z + $z) instanceof FrostedIce and
+					$this->world->getBlockAt($this->x + $x, $this->y, $this->z + $z) instanceof FrostedIce and
 					++$found >= $requirement
 				){
 					return true;
@@ -103,13 +103,13 @@ class FrostedIce extends Ice{
 	 */
 	private function tryMelt() : bool{
 		if($this->age >= 3){
-			$this->level->useBreakOn($this);
+			$this->world->useBreakOn($this);
 			return true;
 		}
 
 		$this->age++;
-		$this->level->setBlock($this, $this);
-		$this->level->scheduleDelayedBlockUpdate($this, mt_rand(20, 40));
+		$this->world->setBlock($this, $this);
+		$this->world->scheduleDelayedBlockUpdate($this, mt_rand(20, 40));
 		return false;
 	}
 }

@@ -210,7 +210,7 @@ abstract class AsyncTask extends \Threaded{
 	 * leak. Usually this does not cause memory failure, but be aware that the object may be no longer usable when the
 	 * AsyncTask completes. Since a strong reference is retained, the objects still exist, but the implementation is
 	 * responsible for checking whether these objects are still usable.
-	 * (E.g. a {@link \pocketmine\Level} object is no longer usable because it is unloaded while the AsyncTask is
+	 * (E.g. a {@link \pocketmine\World} object is no longer usable because it is unloaded while the AsyncTask is
 	 * executing, or even a plugin might be unloaded).
 	 *
 	 * @param string $key

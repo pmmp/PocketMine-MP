@@ -152,7 +152,7 @@ class ExperienceOrb extends Entity{
 			return null;
 		}
 
-		$entity = $this->level->getEntity($this->targetPlayerRuntimeId);
+		$entity = $this->world->getEntity($this->targetPlayerRuntimeId);
 		if($entity instanceof Human){
 			return $entity;
 		}
@@ -180,7 +180,7 @@ class ExperienceOrb extends Entity{
 
 		if($this->lookForTargetTime >= 20){
 			if($currentTarget === null){
-				$newTarget = $this->level->getNearestEntity($this, self::MAX_TARGET_DISTANCE, Human::class);
+				$newTarget = $this->world->getNearestEntity($this, self::MAX_TARGET_DISTANCE, Human::class);
 
 				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator())){
 					$currentTarget = $newTarget;

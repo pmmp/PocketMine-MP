@@ -47,7 +47,7 @@ class Ice extends Transparent{
 
 	public function onBreak(Item $item, ?Player $player = null) : bool{
 		if(($player === null or $player->isSurvival()) and !$item->hasEnchantment(Enchantment::SILK_TOUCH())){
-			return $this->getLevel()->setBlock($this, BlockFactory::get(BlockLegacyIds::WATER));
+			return $this->getWorld()->setBlock($this, BlockFactory::get(BlockLegacyIds::WATER));
 		}
 		return parent::onBreak($item, $player);
 	}
@@ -57,8 +57,8 @@ class Ice extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if($this->level->getHighestAdjacentBlockLight($this->x, $this->y, $this->z) >= 12){
-			$this->level->useBreakOn($this);
+		if($this->world->getHighestAdjacentBlockLight($this->x, $this->y, $this->z) >= 12){
+			$this->world->useBreakOn($this);
 		}
 	}
 

@@ -51,13 +51,13 @@ class GarbageCollectorCommand extends VanillaCommand{
 
 		$memory = memory_get_usage();
 
-		foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
-			$diff = [count($level->getChunks()), count($level->getEntities())];
-			$level->doChunkGarbageCollection();
-			$level->unloadChunks(true);
-			$chunksCollected += $diff[0] - count($level->getChunks());
-			$entitiesCollected += $diff[1] - count($level->getEntities());
-			$level->clearCache(true);
+		foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+			$diff = [count($world->getChunks()), count($world->getEntities())];
+			$world->doChunkGarbageCollection();
+			$world->unloadChunks(true);
+			$chunksCollected += $diff[0] - count($world->getChunks());
+			$entitiesCollected += $diff[1] - count($world->getEntities());
+			$world->clearCache(true);
 		}
 
 		$cyclesCollected = $sender->getServer()->getMemoryManager()->triggerGarbageCollector();

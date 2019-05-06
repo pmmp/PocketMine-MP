@@ -26,11 +26,11 @@ namespace pocketmine\tile;
 use Ds\Deque;
 use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\DyeColor;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\world\World;
 
 /**
  * @deprecated
@@ -49,10 +49,10 @@ class Banner extends Spawnable{
 	/** @var BannerPattern[]|Deque */
 	private $patterns = [];
 
-	public function __construct(Level $level, Vector3 $pos){
+	public function __construct(World $world, Vector3 $pos){
 		$this->baseColor = DyeColor::BLACK();
 		$this->patterns = new Deque();
-		parent::__construct($level, $pos);
+		parent::__construct($world, $pos);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{

@@ -25,12 +25,12 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
-use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\sound\DoorSound;
 
 class FenceGate extends Transparent{
 	/** @var bool */
@@ -92,7 +92,7 @@ class FenceGate extends Transparent{
 		$inWall = $this->checkInWall();
 		if($inWall !== $this->inWall){
 			$this->inWall = $inWall;
-			$this->level->setBlock($this, $this);
+			$this->world->setBlock($this, $this);
 		}
 	}
 
@@ -105,8 +105,8 @@ class FenceGate extends Transparent{
 			}
 		}
 
-		$this->getLevel()->setBlock($this, $this);
-		$this->level->addSound($this, new DoorSound());
+		$this->getWorld()->setBlock($this, $this);
+		$this->world->addSound($this, new DoorSound());
 		return true;
 	}
 

@@ -52,7 +52,7 @@ class WaterLily extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!($this->getSide(Facing::DOWN) instanceof Water)){
-			$this->getLevel()->useBreakOn($this);
+			$this->getWorld()->useBreakOn($this);
 		}
 	}
 }

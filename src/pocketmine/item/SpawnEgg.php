@@ -57,7 +57,7 @@ class SpawnEgg extends Item{
 			$nbt->setString("CustomName", $this->getCustomName());
 		}
 
-		$entity = EntityFactory::create($this->entityClass, $player->getLevel(), $nbt);
+		$entity = EntityFactory::create($this->entityClass, $player->getWorld(), $nbt);
 		$this->pop();
 		$entity->spawnToAll();
 		//TODO: what if the entity was marked for deletion?

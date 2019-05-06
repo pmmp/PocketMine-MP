@@ -27,6 +27,7 @@ use pocketmine\level\format\PalettedBlockArray;
 
 die("This is a stub file for code completion purposes");
 
+//TODO: this can't be moved right now because of compatibility issues with the extension
 class SubChunkConverter{
 	public static function convertSubChunkXZY(string $idArray, string $metaArray) : PalettedBlockArray{}
 

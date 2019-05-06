@@ -43,7 +43,7 @@ class SaveOffCommand extends VanillaCommand{
 			return true;
 		}
 
-		$sender->getServer()->getLevelManager()->setAutoSave(false);
+		$sender->getServer()->getWorldManager()->setAutoSave(false);
 
 		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.save.disabled"));
 

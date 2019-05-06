@@ -72,13 +72,13 @@ class RedstoneOre extends Solid{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		return $this->getLevel()->setBlock($this, $this, false);
+		return $this->getWorld()->setBlock($this, $this, false);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$this->lit){
 			$this->lit = true;
-			$this->getLevel()->setBlock($this, $this); //no return here - this shouldn't prevent block placement
+			$this->getWorld()->setBlock($this, $this); //no return here - this shouldn't prevent block placement
 		}
 		return false;
 	}
@@ -86,7 +86,7 @@ class RedstoneOre extends Solid{
 	public function onNearbyBlockChange() : void{
 		if(!$this->lit){
 			$this->lit = true;
-			$this->getLevel()->setBlock($this, $this);
+			$this->getWorld()->setBlock($this, $this);
 		}
 	}
 
@@ -97,7 +97,7 @@ class RedstoneOre extends Solid{
 	public function onRandomTick() : void{
 		if($this->lit){
 			$this->lit = false;
-			$this->level->setBlock($this, $this);
+			$this->world->setBlock($this, $this);
 		}
 	}
 

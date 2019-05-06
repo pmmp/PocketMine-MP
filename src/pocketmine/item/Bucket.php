@@ -47,8 +47,8 @@ class Bucket extends Item{
 			$ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$player->getLevel()->setBlock($blockClicked, BlockFactory::get(BlockLegacyIds::AIR));
-				$player->getLevel()->addSound($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
+				$player->getWorld()->setBlock($blockClicked, BlockFactory::get(BlockLegacyIds::AIR));
+				$player->getWorld()->addSound($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
 				if($player->hasFiniteResources()){
 					if($stack->getCount() === 0){
 						$player->getInventory()->setItemInHand($ev->getItem());

@@ -42,10 +42,6 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
-use pocketmine\level\Level;
-use pocketmine\level\sound\TotemUseSound;
-use pocketmine\level\sound\XpCollectSound;
-use pocketmine\level\sound\XpLevelUpSound;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -62,6 +58,10 @@ use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerMetadataFlags;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
+use pocketmine\world\sound\TotemUseSound;
+use pocketmine\world\sound\XpCollectSound;
+use pocketmine\world\sound\XpLevelUpSound;
+use pocketmine\world\World;
 use function array_filter;
 use function array_merge;
 use function array_rand;
@@ -101,7 +101,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	protected $baseOffset = 1.62;
 
-	public function __construct(Level $level, CompoundTag $nbt){
+	public function __construct(World $world, CompoundTag $nbt){
 		if($this->skin === null){
 			$skinTag = $nbt->getCompoundTag("Skin");
 			if($skinTag === null or !self::isValidSkin($skinTag->hasTag("Data", ByteArrayTag::class) ?
@@ -112,7 +112,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 		}
 
-		parent::__construct($level, $nbt);
+		parent::__construct($world, $nbt);
 	}
 
 	/**
@@ -350,7 +350,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			if($playSound){
 				$newLevel = $this->getXpLevel();
 				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
-					$this->level->addSound($this, new XpLevelUpSound($newLevel));
+					$this->world->addSound($this, new XpLevelUpSound($newLevel));
 				}
 			}
 
@@ -442,9 +442,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			if($playSound){
 				$newLevel = $this->getXpLevel();
 				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
-					$this->level->addSound($this, new XpLevelUpSound($newLevel));
+					$this->world->addSound($this, new XpLevelUpSound($newLevel));
 				}elseif($this->getCurrentTotalXp() > $oldTotal){
-					$this->level->addSound($this, new XpCollectSound());
+					$this->world->addSound($this, new XpCollectSound());
 				}
 			}
 
@@ -696,14 +696,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($this->isAlive()){
 			$food = $this->getFood();
 			$health = $this->getHealth();
-			$difficulty = $this->level->getDifficulty();
+			$difficulty = $this->world->getDifficulty();
 
 			$this->foodTickTimer += $tickDiff;
 			if($this->foodTickTimer >= 80){
 				$this->foodTickTimer = 0;
 			}
 
-			if($difficulty === Level::DIFFICULTY_PEACEFUL and $this->foodTickTimer % 10 === 0){
+			if($difficulty === World::DIFFICULTY_PEACEFUL and $this->foodTickTimer % 10 === 0){
 				if($food < $this->getMaxFood()){
 					$this->addFood(1.0);
 					$food = $this->getFood();
@@ -720,7 +720,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 						$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
 					}
 				}elseif($food <= 0){
-					if(($difficulty === Level::DIFFICULTY_EASY and $health > 10) or ($difficulty === Level::DIFFICULTY_NORMAL and $health > 1) or $difficulty === Level::DIFFICULTY_HARD){
+					if(($difficulty === World::DIFFICULTY_EASY and $health > 10) or ($difficulty === World::DIFFICULTY_NORMAL and $health > 1) or $difficulty === World::DIFFICULTY_HARD){
 						$this->attack(new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
 					}
 				}
@@ -761,7 +761,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$this->addEffect(new EffectInstance(Effect::ABSORPTION(), 5 * 20, 1));
 
 			$this->broadcastEntityEvent(EntityEventPacket::CONSUME_TOTEM);
-			$this->level->addSound($this->add(0, $this->eyeHeight, 0), new TotemUseSound());
+			$this->world->addSound($this->add(0, $this->eyeHeight, 0), new TotemUseSound());
 
 			$hand = $this->inventory->getItemInHand();
 			if($hand instanceof Totem){

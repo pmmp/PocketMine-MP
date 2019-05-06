@@ -25,8 +25,8 @@ namespace pocketmine\item;
 
 use pocketmine\block\Liquid;
 use pocketmine\entity\Living;
-use pocketmine\level\sound\EndermanTeleportSound;
 use pocketmine\math\Vector3;
+use pocketmine\world\sound\EndermanTeleportSound;
 use function assert;
 use function min;
 use function mt_rand;
@@ -50,11 +50,11 @@ class ChorusFruit extends Food{
 	}
 
 	public function onConsume(Living $consumer) : void{
-		$level = $consumer->getLevel();
-		assert($level !== null);
+		$world = $consumer->getWorld();
+		assert($world !== null);
 
 		$minX = $consumer->getFloorX() - 8;
-		$minY = min($consumer->getFloorY(), $consumer->getLevel()->getWorldHeight()) - 8;
+		$minY = min($consumer->getFloorY(), $consumer->getWorld()->getWorldHeight()) - 8;
 		$minZ = $consumer->getFloorZ() - 8;
 
 		$maxX = $minX + 16;
@@ -66,23 +66,23 @@ class ChorusFruit extends Food{
 			$y = mt_rand($minY, $maxY);
 			$z = mt_rand($minZ, $maxZ);
 
-			while($y >= 0 and !$level->getBlockAt($x, $y, $z)->isSolid()){
+			while($y >= 0 and !$world->getBlockAt($x, $y, $z)->isSolid()){
 				$y--;
 			}
 			if($y < 0){
 				continue;
 			}
 
-			$blockUp = $level->getBlockAt($x, $y + 1, $z);
-			$blockUp2 = $level->getBlockAt($x, $y + 2, $z);
+			$blockUp = $world->getBlockAt($x, $y + 1, $z);
+			$blockUp2 = $world->getBlockAt($x, $y + 2, $z);
 			if($blockUp->isSolid() or $blockUp instanceof Liquid or $blockUp2->isSolid() or $blockUp2 instanceof Liquid){
 				continue;
 			}
 
 			//Sounds are broadcasted at both source and destination
-			$level->addSound($consumer->asVector3(), new EndermanTeleportSound());
+			$world->addSound($consumer->asVector3(), new EndermanTeleportSound());
 			$consumer->teleport($target = new Vector3($x + 0.5, $y + 1, $z + 0.5));
-			$level->addSound($target, new EndermanTeleportSound());
+			$world->addSound($target, new EndermanTeleportSound());
 
 			break;
 		}

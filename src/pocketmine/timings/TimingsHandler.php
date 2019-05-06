@@ -64,9 +64,9 @@ class TimingsHandler{
 
 		$entities = 0;
 		$livingEntities = 0;
-		foreach(Server::getInstance()->getLevelManager()->getLevels() as $level){
-			$entities += count($level->getEntities());
-			foreach($level->getEntities() as $e){
+		foreach(Server::getInstance()->getWorldManager()->getWorlds() as $world){
+			$entities += count($world->getEntities());
+			foreach($world->getEntities() as $e){
 				if($e instanceof Living){
 					++$livingEntities;
 				}

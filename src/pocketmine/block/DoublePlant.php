@@ -24,10 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\level\BlockTransaction;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\BlockTransaction;
 
 class DoublePlant extends Flowable{
 	private const BITFLAG_TOP = 0x08;
@@ -53,7 +53,7 @@ class DoublePlant extends Flowable{
 			$top = clone $this;
 			$top->top = true;
 
-			$transaction = new BlockTransaction($this->level);
+			$transaction = new BlockTransaction($this->world);
 			$transaction->addBlock($blockReplace, $this)->addBlock($blockReplace->getSide(Facing::UP), $top);
 			return $transaction->apply();
 		}
@@ -77,7 +77,7 @@ class DoublePlant extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->isValidHalfPlant() or (!$this->top and $this->getSide(Facing::DOWN)->isTransparent())){
-			$this->getLevel()->useBreakOn($this);
+			$this->getWorld()->useBreakOn($this);
 		}
 	}
 

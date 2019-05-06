@@ -24,19 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\block\utils\DyeColor;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\world\World;
 
 class Bed extends Spawnable{
 	public const TAG_COLOR = "color";
 	/** @var DyeColor */
 	private $color;
 
-	public function __construct(Level $level, Vector3 $pos){
+	public function __construct(World $world, Vector3 $pos){
 		$this->color = DyeColor::RED();
-		parent::__construct($level, $pos);
+		parent::__construct($world, $pos);
 	}
 
 	public function getColor() : DyeColor{

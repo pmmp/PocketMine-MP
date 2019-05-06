@@ -32,12 +32,12 @@ use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
-use pocketmine\level\particle\PotionSplashParticle;
-use pocketmine\level\sound\PotionSplashSound;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\utils\Color;
+use pocketmine\world\particle\PotionSplashParticle;
+use pocketmine\world\sound\PotionSplashSound;
 use function round;
 use function sqrt;
 
@@ -83,12 +83,12 @@ class SplashPotion extends Throwable{
 			$particle = new PotionSplashParticle(Color::mix(...$colors));
 		}
 
-		$this->level->addParticle($this, $particle);
-		$this->level->addSound($this, new PotionSplashSound());
+		$this->world->addParticle($this, $particle);
+		$this->world->addSound($this, new PotionSplashSound());
 
 		if($hasEffects){
 			if(!$this->willLinger()){
-				foreach($this->level->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
+				foreach($this->world->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
 					if($entity instanceof Living and $entity->isAlive()){
 						$distanceSquared = $entity->add(0, $entity->getEyeHeight(), 0)->distanceSquared($this);
 						if($distanceSquared > 16){ //4 blocks
@@ -123,11 +123,11 @@ class SplashPotion extends Throwable{
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
 			if($blockIn->getId() === BlockLegacyIds::FIRE){
-				$this->level->setBlock($blockIn, BlockFactory::get(BlockLegacyIds::AIR));
+				$this->world->setBlock($blockIn, BlockFactory::get(BlockLegacyIds::AIR));
 			}
 			foreach($blockIn->getHorizontalSides() as $horizontalSide){
 				if($horizontalSide->getId() === BlockLegacyIds::FIRE){
-					$this->level->setBlock($horizontalSide, BlockFactory::get(BlockLegacyIds::AIR));
+					$this->world->setBlock($horizontalSide, BlockFactory::get(BlockLegacyIds::AIR));
 				}
 			}
 		}

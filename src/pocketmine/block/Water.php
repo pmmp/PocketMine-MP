@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-use pocketmine\level\sound\BucketEmptyWaterSound;
-use pocketmine\level\sound\BucketFillWaterSound;
-use pocketmine\level\sound\Sound;
+use pocketmine\world\sound\BucketEmptyWaterSound;
+use pocketmine\world\sound\BucketFillWaterSound;
+use pocketmine\world\sound\Sound;
 
 class Water extends Liquid{
 

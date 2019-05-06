@@ -26,10 +26,10 @@ namespace pocketmine\tile;
 use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\DoubleChestInventory;
 use pocketmine\inventory\InventoryHolder;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\world\World;
 
 class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	use NameableTrait {
@@ -53,9 +53,9 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	/** @var int|null */
 	private $pairZ;
 
-	public function __construct(Level $level, Vector3 $pos){
+	public function __construct(World $world, Vector3 $pos){
 		$this->inventory = new ChestInventory($this);
-		parent::__construct($level, $pos);
+		parent::__construct($world, $pos);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
@@ -90,7 +90,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 			$this->inventory->removeAllViewers(true);
 
 			if($this->doubleInventory !== null){
-				if($this->isPaired() and $this->level->isChunkLoaded($this->pairX >> 4, $this->pairZ >> 4)){
+				if($this->isPaired() and $this->world->isChunkLoaded($this->pairX >> 4, $this->pairZ >> 4)){
 					$this->doubleInventory->removeAllViewers(true);
 					$this->doubleInventory->invalidate();
 					if(($pair = $this->getPair()) !== null){
@@ -129,7 +129,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	protected function checkPairing(){
-		if($this->isPaired() and !$this->getLevel()->isInLoadedTerrain(new Vector3($this->pairX, $this->y, $this->pairZ))){
+		if($this->isPaired() and !$this->getWorld()->isInLoadedTerrain(new Vector3($this->pairX, $this->y, $this->pairZ))){
 			//paired to a tile in an unloaded chunk
 			$this->doubleInventory = null;
 
@@ -171,7 +171,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	 */
 	public function getPair() : ?Chest{
 		if($this->isPaired()){
-			$tile = $this->getLevel()->getTileAt($this->pairX, $this->y, $this->pairZ);
+			$tile = $this->getWorld()->getTileAt($this->pairX, $this->y, $this->pairZ);
 			if($tile instanceof Chest){
 				return $tile;
 			}

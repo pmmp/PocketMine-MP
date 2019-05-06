@@ -25,11 +25,11 @@ namespace pocketmine\tile;
 
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\level\Position;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\world\Position;
 
 /**
  * This trait implements most methods in the {@link Container} interface. It should only be used by Tiles.
@@ -101,7 +101,7 @@ trait ContainerTrait{
 		$pos = $this->asPosition();
 
 		foreach($inv->getContents() as $k => $item){
-			$pos->level->dropItem($pos->add(0.5, 0.5, 0.5), $item);
+			$pos->world->dropItem($pos->add(0.5, 0.5, 0.5), $item);
 		}
 		$inv->clearAll(false);
 	}

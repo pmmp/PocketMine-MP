@@ -69,7 +69,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 * @return Entity|null
 	 */
 	public function getDamager() : ?Entity{
-		return $this->getEntity()->getLevel()->getServer()->getLevelManager()->findEntity($this->damagerEntityId);
+		return $this->getEntity()->getWorld()->getServer()->getWorldManager()->findEntity($this->damagerEntityId);
 	}
 
 	/**

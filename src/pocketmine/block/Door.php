@@ -25,13 +25,13 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
-use pocketmine\level\BlockTransaction;
-use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\DoorSound;
 
 
 abstract class Door extends Transparent{
@@ -99,7 +99,7 @@ abstract class Door extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getId() === BlockLegacyIds::AIR){ //Replace with common break method
-			$this->getLevel()->useBreakOn($this); //this will delete both halves if they exist
+			$this->getWorld()->useBreakOn($this); //this will delete both halves if they exist
 		}
 	}
 
@@ -125,7 +125,7 @@ abstract class Door extends Transparent{
 			$topHalf = clone $this;
 			$topHalf->top = true;
 
-			$transaction = new BlockTransaction($this->level);
+			$transaction = new BlockTransaction($this->world);
 			$transaction->addBlock($blockReplace, $this)->addBlock($blockUp, $topHalf);
 
 			return $transaction->apply();
@@ -140,11 +140,11 @@ abstract class Door extends Transparent{
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 		if($other instanceof Door and $other->isSameType($this)){
 			$other->open = $this->open;
-			$this->level->setBlock($other, $other);
+			$this->world->setBlock($other, $other);
 		}
 
-		$this->level->setBlock($this, $this);
-		$this->level->addSound($this, new DoorSound());
+		$this->world->setBlock($this, $this);
+		$this->world->addSound($this, new DoorSound());
 
 		return true;
 	}

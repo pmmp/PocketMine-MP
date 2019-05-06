@@ -25,6 +25,7 @@ namespace pocketmine\level\format;
 
 die("This is a stub file for code completion purposes");
 
+//TODO: this can't be moved right now because of compatibility issues with the extension
 class PalettedBlockArray{
 
 	public function __construct(int $fillEntry){}

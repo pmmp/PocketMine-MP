@@ -29,39 +29,39 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
-use pocketmine\level\Level;
-use pocketmine\level\particle\AngryVillagerParticle;
-use pocketmine\level\particle\BlockForceFieldParticle;
-use pocketmine\level\particle\BubbleParticle;
-use pocketmine\level\particle\CriticalParticle;
-use pocketmine\level\particle\DustParticle;
-use pocketmine\level\particle\EnchantmentTableParticle;
-use pocketmine\level\particle\EnchantParticle;
-use pocketmine\level\particle\ExplodeParticle;
-use pocketmine\level\particle\FlameParticle;
-use pocketmine\level\particle\HappyVillagerParticle;
-use pocketmine\level\particle\HeartParticle;
-use pocketmine\level\particle\HugeExplodeParticle;
-use pocketmine\level\particle\HugeExplodeSeedParticle;
-use pocketmine\level\particle\InkParticle;
-use pocketmine\level\particle\InstantEnchantParticle;
-use pocketmine\level\particle\ItemBreakParticle;
-use pocketmine\level\particle\LavaDripParticle;
-use pocketmine\level\particle\LavaParticle;
-use pocketmine\level\particle\Particle;
-use pocketmine\level\particle\PortalParticle;
-use pocketmine\level\particle\RainSplashParticle;
-use pocketmine\level\particle\RedstoneParticle;
-use pocketmine\level\particle\SmokeParticle;
-use pocketmine\level\particle\SplashParticle;
-use pocketmine\level\particle\SporeParticle;
-use pocketmine\level\particle\TerrainParticle;
-use pocketmine\level\particle\WaterDripParticle;
-use pocketmine\level\particle\WaterParticle;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\particle\AngryVillagerParticle;
+use pocketmine\world\particle\BlockForceFieldParticle;
+use pocketmine\world\particle\BubbleParticle;
+use pocketmine\world\particle\CriticalParticle;
+use pocketmine\world\particle\DustParticle;
+use pocketmine\world\particle\EnchantmentTableParticle;
+use pocketmine\world\particle\EnchantParticle;
+use pocketmine\world\particle\ExplodeParticle;
+use pocketmine\world\particle\FlameParticle;
+use pocketmine\world\particle\HappyVillagerParticle;
+use pocketmine\world\particle\HeartParticle;
+use pocketmine\world\particle\HugeExplodeParticle;
+use pocketmine\world\particle\HugeExplodeSeedParticle;
+use pocketmine\world\particle\InkParticle;
+use pocketmine\world\particle\InstantEnchantParticle;
+use pocketmine\world\particle\ItemBreakParticle;
+use pocketmine\world\particle\LavaDripParticle;
+use pocketmine\world\particle\LavaParticle;
+use pocketmine\world\particle\Particle;
+use pocketmine\world\particle\PortalParticle;
+use pocketmine\world\particle\RainSplashParticle;
+use pocketmine\world\particle\RedstoneParticle;
+use pocketmine\world\particle\SmokeParticle;
+use pocketmine\world\particle\SplashParticle;
+use pocketmine\world\particle\SporeParticle;
+use pocketmine\world\particle\TerrainParticle;
+use pocketmine\world\particle\WaterDripParticle;
+use pocketmine\world\particle\WaterParticle;
+use pocketmine\world\World;
 use function count;
 use function explode;
 use function max;
@@ -91,14 +91,14 @@ class ParticleCommand extends VanillaCommand{
 		}
 
 		if($sender instanceof Player){
-			$level = $sender->getLevel();
+			$world = $sender->getWorld();
 			$pos = new Vector3(
 				$this->getRelativeDouble($sender->getX(), $sender, $args[1]),
-				$this->getRelativeDouble($sender->getY(), $sender, $args[2], 0, Level::Y_MAX),
+				$this->getRelativeDouble($sender->getY(), $sender, $args[2], 0, World::Y_MAX),
 				$this->getRelativeDouble($sender->getZ(), $sender, $args[3])
 			);
 		}else{
-			$level = $sender->getServer()->getLevelManager()->getDefaultLevel();
+			$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
 			$pos = new Vector3((float) $args[1], (float) $args[2], (float) $args[3]);
 		}
 
@@ -125,7 +125,7 @@ class ParticleCommand extends VanillaCommand{
 		$random = new Random((int) (microtime(true) * 1000) + mt_rand());
 
 		for($i = 0; $i < $count; ++$i){
-			$level->addParticle($pos->add(
+			$world->addParticle($pos->add(
 				$random->nextSignedFloat() * $xd,
 				$random->nextSignedFloat() * $yd,
 				$random->nextSignedFloat() * $zd

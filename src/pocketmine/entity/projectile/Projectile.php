@@ -34,8 +34,6 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
@@ -43,6 +41,8 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\timings\Timings;
+use pocketmine\world\Position;
+use pocketmine\world\World;
 use function assert;
 use function atan2;
 use function ceil;
@@ -58,8 +58,8 @@ abstract class Projectile extends Entity{
 	/** @var Block|null */
 	protected $blockHit;
 
-	public function __construct(Level $level, CompoundTag $nbt, ?Entity $shootingEntity = null){
-		parent::__construct($level, $nbt);
+	public function __construct(World $world, CompoundTag $nbt, ?Entity $shootingEntity = null){
+		parent::__construct($world, $nbt);
 		if($shootingEntity !== null){
 			$this->setOwningEntity($shootingEntity);
 		}
@@ -84,7 +84,7 @@ abstract class Projectile extends Entity{
 			$blockData = null;
 
 			if($nbt->hasTag("tileX", IntTag::class) and $nbt->hasTag("tileY", IntTag::class) and $nbt->hasTag("tileZ", IntTag::class)){
-				$blockPos = new Position($nbt->getInt("tileX"), $nbt->getInt("tileY"), $nbt->getInt("tileZ"), $this->level);
+				$blockPos = new Position($nbt->getInt("tileX"), $nbt->getInt("tileY"), $nbt->getInt("tileZ"), $this->world);
 			}else{
 				break;
 			}
@@ -163,7 +163,7 @@ abstract class Projectile extends Entity{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->blockHit !== null and $this->level->isInLoadedTerrain($this->blockHit) and !$this->blockHit->isSameState($this->level->getBlock($this->blockHit))){
+		if($this->blockHit !== null and $this->world->isInLoadedTerrain($this->blockHit) and !$this->blockHit->isSameState($this->world->getBlock($this->blockHit))){
 			$this->blockHit = null;
 		}
 
@@ -187,7 +187,7 @@ abstract class Projectile extends Entity{
 		$hitResult = null;
 
 		foreach(VoxelRayTrace::betweenPoints($start, $end) as $vector3){
-			$block = $this->level->getBlockAt($vector3->x, $vector3->y, $vector3->z);
+			$block = $this->world->getBlockAt($vector3->x, $vector3->y, $vector3->z);
 
 			$blockHitResult = $this->calculateInterceptWithBlock($block, $start, $end);
 			if($blockHitResult !== null){
@@ -201,7 +201,7 @@ abstract class Projectile extends Entity{
 		$entityDistance = PHP_INT_MAX;
 
 		$newDiff = $end->subtract($start);
-		foreach($this->level->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expand(1, 1, 1), $this) as $entity){
+		foreach($this->world->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expand(1, 1, 1), $this) as $entity){
 			if($entity->getId() === $this->getOwningEntityId() and $this->ticksLived < 5){
 				continue;
 			}

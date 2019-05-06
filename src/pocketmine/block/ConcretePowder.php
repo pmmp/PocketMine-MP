@@ -42,7 +42,7 @@ class ConcretePowder extends Solid implements Fallable{
 
 	public function onNearbyBlockChange() : void{
 		if(($block = $this->checkAdjacentWater()) !== null){
-			$this->level->setBlock($this, $block);
+			$this->world->setBlock($this, $block);
 		}else{
 			$this->startFalling();
 		}

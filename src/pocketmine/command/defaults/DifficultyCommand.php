@@ -27,7 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
-use pocketmine\level\Level;
+use pocketmine\world\World;
 use function count;
 
 class DifficultyCommand extends VanillaCommand{
@@ -50,18 +50,18 @@ class DifficultyCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$difficulty = Level::getDifficultyFromString($args[0]);
+		$difficulty = World::getDifficultyFromString($args[0]);
 
 		if($sender->getServer()->isHardcore()){
-			$difficulty = Level::DIFFICULTY_HARD;
+			$difficulty = World::DIFFICULTY_HARD;
 		}
 
 		if($difficulty !== -1){
 			$sender->getServer()->setConfigInt("difficulty", $difficulty);
 
 			//TODO: add per-world support
-			foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
-				$level->setDifficulty($difficulty);
+			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+				$world->setDifficulty($difficulty);
 			}
 
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.difficulty.success", [$difficulty]));

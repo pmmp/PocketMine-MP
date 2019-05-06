@@ -25,11 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
-use pocketmine\level\sound\RedstonePowerOffSound;
-use pocketmine\level\sound\RedstonePowerOnSound;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\sound\RedstonePowerOffSound;
+use pocketmine\world\sound\RedstonePowerOnSound;
 
 class Lever extends Flowable{
 	protected const BOTTOM = 0;
@@ -106,14 +106,14 @@ class Lever extends Flowable{
 		}
 
 		if(!$this->getSide($face)->isSolid()){
-			$this->level->useBreakOn($this);
+			$this->world->useBreakOn($this);
 		}
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->powered = !$this->powered;
-		$this->level->setBlock($this, $this);
-		$this->level->addSound(
+		$this->world->setBlock($this, $this);
+		$this->world->addSound(
 			$this->add(0.5, 0.5, 0.5),
 			$this->powered ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
 		);
