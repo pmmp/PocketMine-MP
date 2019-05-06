@@ -119,7 +119,7 @@ class NetworkSession{
 	/** @var NetworkCipher */
 	private $cipher;
 
-	/** @var PacketStream|null */
+	/** @var PacketBatch|null */
 	private $sendBuffer;
 
 	/** @var \SplQueue|CompressBatchPromise[] */
@@ -264,7 +264,7 @@ class NetworkSession{
 
 		Timings::$playerNetworkReceiveDecompressTimer->startTiming();
 		try{
-			$stream = new PacketStream(NetworkCompression::decompress($payload));
+			$stream = new PacketBatch(NetworkCompression::decompress($payload));
 		}catch(\ErrorException $e){
 			$this->logger->debug("Failed to decompress packet: " . bin2hex($payload));
 			//TODO: this isn't incompatible game version if we already established protocol version
@@ -359,7 +359,7 @@ class NetworkSession{
 		$timings->startTiming();
 		try{
 			if($this->sendBuffer === null){
-				$this->sendBuffer = new PacketStream();
+				$this->sendBuffer = new PacketBatch();
 			}
 			$this->sendBuffer->putPacket($packet);
 			$this->manager->scheduleUpdate($this); //schedule flush at end of tick

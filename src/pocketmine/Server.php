@@ -67,7 +67,7 @@ use pocketmine\network\mcpe\CompressBatchTask;
 use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkCompression;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\PacketStream;
+use pocketmine\network\mcpe\PacketBatch;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -1492,7 +1492,7 @@ class Server{
 		}
 		$recipients = $ev->getTargets();
 
-		$stream = PacketStream::fromPackets(...$ev->getPackets());
+		$stream = PacketBatch::fromPackets(...$ev->getPackets());
 
 		if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->getBuffer()) < NetworkCompression::$THRESHOLD){
 			foreach($recipients as $target){
@@ -1513,12 +1513,12 @@ class Server{
 	/**
 	 * Broadcasts a list of packets in a batch to a list of players
 	 *
-	 * @param PacketStream $stream
-	 * @param bool         $forceSync
+	 * @param PacketBatch $stream
+	 * @param bool        $forceSync
 	 *
 	 * @return CompressBatchPromise
 	 */
-	public function prepareBatch(PacketStream $stream, bool $forceSync = false) : CompressBatchPromise{
+	public function prepareBatch(PacketBatch $stream, bool $forceSync = false) : CompressBatchPromise{
 		try{
 			Timings::$playerNetworkSendCompressTimer->startTiming();
 

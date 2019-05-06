@@ -27,7 +27,7 @@ use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\utils\BinaryDataException;
 
-class PacketStream extends NetworkBinaryStream{
+class PacketBatch extends NetworkBinaryStream{
 
 	public function putPacket(Packet $packet) : void{
 		if(!$packet->isEncoded()){
@@ -49,7 +49,7 @@ class PacketStream extends NetworkBinaryStream{
 	 *
 	 * @param Packet ...$packets
 	 *
-	 * @return PacketStream
+	 * @return PacketBatch
 	 */
 	public static function fromPackets(Packet ...$packets) : self{
 		$result = new self();
