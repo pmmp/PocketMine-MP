@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketPool;
+use pocketmine\utils\BinaryDataException;
 
 class PacketStream extends NetworkBinaryStream{
 
@@ -35,6 +36,10 @@ class PacketStream extends NetworkBinaryStream{
 		$this->putString($packet->getBuffer());
 	}
 
+	/**
+	 * @return Packet
+	 * @throws BinaryDataException
+	 */
 	public function getPacket() : Packet{
 		return PacketPool::getPacket($this->getString());
 	}
