@@ -43,11 +43,11 @@ interface ProtocolInfo{
 	/**
 	 * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
 	 */
-	public const MINECRAFT_VERSION = 'v1.11.0';
+	public const MINECRAFT_VERSION = 'v1.11.1';
 	/**
 	 * Version number sent to clients in ping responses.
 	 */
-	public const MINECRAFT_VERSION_NETWORK = '1.11.0';
+	public const MINECRAFT_VERSION_NETWORK = '1.11.1';
 
 	public const LOGIN_PACKET = 0x01;
 	public const PLAY_STATUS_PACKET = 0x02;

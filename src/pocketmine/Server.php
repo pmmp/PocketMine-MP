@@ -495,7 +495,7 @@ class Server{
 	 * @return string
 	 */
 	public function getLevelType() : string{
-		return $this->getConfigString("level-type", "FLAT");
+		return $this->getConfigString("level-type", "DEFALUT");
 	}
 
 	/**
