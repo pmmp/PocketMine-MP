@@ -70,7 +70,6 @@ use pocketmine\timings\Timings;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\format\ChunkException;
 use pocketmine\world\format\EmptySubChunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\exception\UnsupportedChunkFormatException;
@@ -216,9 +215,6 @@ class World implements ChunkManager, Metadatable{
 	private $neighbourBlockUpdateQueue;
 	/** @var bool[] blockhash => dummy */
 	private $neighbourBlockUpdateQueueIndex = [];
-
-	/** @var Player[][] */
-	private $chunkSendQueue = [];
 
 	/** @var bool[] */
 	private $chunkPopulationQueue = [];
@@ -865,7 +861,6 @@ class World implements ChunkManager, Metadatable{
 		foreach($this->players as $p){
 			$p->doChunkRequests();
 		}
-		$this->processChunkRequests();
 
 		if($this->sleepTicks > 0 and --$this->sleepTicks <= 0){
 			$this->checkSleep();
@@ -2407,42 +2402,6 @@ class World implements ChunkManager, Metadatable{
 		(new SpawnChangeEvent($this, $previousSpawn))->call();
 	}
 
-	public function requestChunk(int $x, int $z, Player $player){
-		$index = World::chunkHash($x, $z);
-		if(!isset($this->chunkSendQueue[$index])){
-			$this->chunkSendQueue[$index] = [];
-		}
-
-		$this->chunkSendQueue[$index][spl_object_id($player)] = $player;
-	}
-
-	private function processChunkRequests(){
-		if(count($this->chunkSendQueue) > 0){
-			$this->timings->syncChunkSendTimer->startTiming();
-
-			foreach($this->chunkSendQueue as $index => $players){
-				World::getXZ($index, $x, $z);
-
-				$this->timings->syncChunkSendPrepareTimer->startTiming();
-
-				$chunk = $this->chunks[$index] ?? null;
-				if($chunk === null or !$chunk->isGenerated() or !$chunk->isPopulated()){
-					throw new ChunkException("Invalid Chunk sent");
-				}
-
-				foreach($players as $player){
-					$player->onChunkReady($x, $z);
-				}
-
-				$this->timings->syncChunkSendPrepareTimer->stopTiming();
-			}
-
-			$this->chunkSendQueue = [];
-
-			$this->timings->syncChunkSendTimer->stopTiming();
-		}
-	}
-
 	/**
 	 * @param Entity $entity
 	 *
@@ -2670,7 +2629,6 @@ class World implements ChunkManager, Metadatable{
 		unset($this->chunks[$chunkHash]);
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
-		unset($this->chunkSendQueue[$chunkHash]);
 
 		$this->timings->doChunkUnload->stopTiming();
 
