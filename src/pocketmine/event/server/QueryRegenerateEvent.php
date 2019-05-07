@@ -79,12 +79,7 @@ class QueryRegenerateEvent extends ServerEvent{
 		$this->serverName = $server->getMotd();
 		$this->listPlugins = $server->getProperty("settings.query-plugins", true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
-		$this->players = [];
-		foreach($server->getOnlinePlayers() as $player){
-			if($player->isOnline()){
-				$this->players[] = $player;
-			}
-		}
+		$this->players = $server->getOnlinePlayers();
 
 		$this->gametype = ($server->getGamemode()->getMagicNumber() & 0x01) === 0 ? "SMP" : "CMP";
 		$this->version = $server->getVersion();

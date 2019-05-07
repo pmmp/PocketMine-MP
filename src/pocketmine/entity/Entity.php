@@ -1630,9 +1630,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			return;
 		}
 		foreach($this->world->getViewersForPosition($this) as $player){
-			if($player->isOnline()){
-				$this->spawnTo($player);
-			}
+			$this->spawnTo($player);
 		}
 	}
 

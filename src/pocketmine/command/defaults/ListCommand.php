@@ -50,7 +50,7 @@ class ListCommand extends VanillaCommand{
 		$playerNames = array_map(function(Player $player){
 			return $player->getName();
 		}, array_filter($sender->getServer()->getOnlinePlayers(), function(Player $player) use ($sender){
-			return $player->isOnline() and (!($sender instanceof Player) or $sender->canSee($player));
+			return !($sender instanceof Player) or $sender->canSee($player);
 		}));
 
 		$sender->sendMessage(new TranslationContainer("commands.players.list", [count($playerNames), $sender->getServer()->getMaxPlayers()]));

@@ -1129,10 +1129,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	public function doChunkRequests(){
-		if(!$this->isOnline()){
-			return;
-		}
-
 		if($this->nextChunkOrderRun !== PHP_INT_MAX and $this->nextChunkOrderRun-- <= 0){
 			$this->nextChunkOrderRun = PHP_INT_MAX;
 			$this->orderChunks();
@@ -1192,10 +1188,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function sleepOn(Vector3 $pos) : bool{
-		if(!$this->isOnline()){
-			return false;
-		}
-
 		$pos = $pos->floor();
 		$b = $this->world->getBlock($pos);
 
