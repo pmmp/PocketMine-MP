@@ -790,11 +790,7 @@ class NetworkSession{
 	}
 
 	public function stopUsingChunk(int $chunkX, int $chunkZ) : void{
-		foreach($this->player->getWorld()->getChunkEntities($chunkX, $chunkZ) as $entity){
-			if($entity !== $this->player){
-				$entity->despawnFrom($this->player);
-			}
-		}
+
 	}
 
 	public function tick() : bool{

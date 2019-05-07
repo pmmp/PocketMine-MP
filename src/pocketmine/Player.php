@@ -956,6 +956,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$world = $world ?? $this->world;
 		$index = World::chunkHash($x, $z);
 		if(isset($this->usedChunks[$index])){
+			foreach($this->getWorld()->getChunkEntities($x, $z) as $entity){
+				if($entity !== $this){
+					$entity->despawnFrom($this);
+				}
+			}
 			$this->networkSession->stopUsingChunk($x, $z);
 			unset($this->usedChunks[$index]);
 		}
