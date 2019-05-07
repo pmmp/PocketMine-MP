@@ -81,8 +81,10 @@ class BlockFactory{
 		self::registerBlock(new HardStainedGlass(254, 0, "Hard Stained Glass"));
 		self::registerBlock(new HardStainedGlassPane(191, 0, "Hard Stained Glass Pane"));
 		
-		self::registerBlock(new NewBlock(266, 0, "Blue Ice"));
+		self::registerBlock(new BlueIce());
 		self::registerBlock(new NewBlock(267, 0, "H"));
+
+                self::registerBlock(new Barrier());
 		/* 새로운 블럭 추가 */
 		
 		self::registerBlock(new Air());
