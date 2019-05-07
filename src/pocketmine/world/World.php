@@ -2416,16 +2416,6 @@ class World implements ChunkManager, Metadatable{
 		$this->chunkSendQueue[$index][spl_object_id($player)] = $player;
 	}
 
-	private function onChunkReady(int $x, int $z){
-		if(isset($this->chunkSendQueue[$index = World::chunkHash($x, $z)])){
-			foreach($this->chunkSendQueue[$index] as $player){
-				/** @var Player $player */
-				$player->onChunkReady($x, $z);
-			}
-			unset($this->chunkSendQueue[$index]);
-		}
-	}
-
 	private function processChunkRequests(){
 		if(count($this->chunkSendQueue) > 0){
 			$this->timings->syncChunkSendTimer->startTiming();
@@ -2439,9 +2429,15 @@ class World implements ChunkManager, Metadatable{
 				if($chunk === null or !$chunk->isGenerated() or !$chunk->isPopulated()){
 					throw new ChunkException("Invalid Chunk sent");
 				}
-				$this->onChunkReady($x, $z);
+
+				foreach($players as $player){
+					$player->onChunkReady($x, $z);
+				}
+
 				$this->timings->syncChunkSendPrepareTimer->stopTiming();
 			}
+
+			$this->chunkSendQueue = [];
 
 			$this->timings->syncChunkSendTimer->stopTiming();
 		}
