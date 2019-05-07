@@ -22,7 +22,7 @@
 declare(strict_types=1);
 
 /**
- * Noise classes used in Levels
+ * Noise classes used in world generation
  */
 namespace pocketmine\world\generator;
 

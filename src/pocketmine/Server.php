@@ -436,7 +436,7 @@ class Server{
 	}
 
 	/**
-	 * Returns Server global difficulty. Note that this may be overridden in individual Levels.
+	 * Returns Server global difficulty. Note that this may be overridden in individual worlds.
 	 * @return int
 	 */
 	public function getDifficulty() : int{

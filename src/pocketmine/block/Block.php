@@ -370,7 +370,7 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	}
 
 	/**
-	 * Called when this block is updated by the delayed blockupdate scheduler in the level.
+	 * Called when this block is updated by the delayed blockupdate scheduler in the world.
 	 */
 	public function onScheduledUpdate() : void{
 
