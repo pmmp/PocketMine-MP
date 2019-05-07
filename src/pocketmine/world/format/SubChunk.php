@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\format;
 
 use pocketmine\block\BlockLegacyIds;
-use pocketmine\level\format\PalettedBlockArray;
 use function array_values;
 use function assert;
 use function chr;

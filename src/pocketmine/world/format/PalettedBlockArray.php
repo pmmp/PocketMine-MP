@@ -21,18 +21,34 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\format\io;
-
-use pocketmine\level\format\PalettedBlockArray;
+namespace pocketmine\world\format;
 
 die("This is a stub file for code completion purposes");
 
 //TODO: this can't be moved right now because of compatibility issues with the extension
-class SubChunkConverter{
-	public static function convertSubChunkXZY(string $idArray, string $metaArray) : PalettedBlockArray{}
+class PalettedBlockArray{
 
-	public static function convertSubChunkYZX(string $idArray, string $metaArray) : PalettedBlockArray{}
+	public function __construct(int $fillEntry){}
 
-	public static function convertSubChunkFromLegacyColumn(string $idArray, string $metaArray, int $yOffset) : PalettedBlockArray{}
+	public static function fromData(int $bitsPerBlock, string $wordArray, array $palette) : PalettedBlockArray{}
 
+	public function getWordArray() : string{}
+
+	public function getPalette() : array{}
+
+	public function getMaxPaletteSize() : int{}
+
+	public function getBitsPerBlock() : int{}
+
+	public function get(int $x, int $y, int $z) : int{}
+
+	public function set(int $x, int $y, int $z, int $val){}
+
+	public function replace(int $offset, int $val){}
+
+	public function replaceAll(int $oldVal, int $newVal){}
+
+	public function collectGarbage(bool $force = null){}
+
+	public static function getExpectedWordArraySize(int $bitsPerBlock) : int{}
 }

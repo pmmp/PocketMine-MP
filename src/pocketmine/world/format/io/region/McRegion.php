@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
-use pocketmine\level\format\io\SubChunkConverter;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteArrayTag;
@@ -32,6 +31,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
+use pocketmine\world\format\io\SubChunkConverter;
 use pocketmine\world\format\SubChunk;
 use function str_repeat;
 

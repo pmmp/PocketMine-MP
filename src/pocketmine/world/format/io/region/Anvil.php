@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
-use pocketmine\level\format\io\SubChunkConverter;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\world\format\io\SubChunkConverter;
 use pocketmine\world\format\SubChunk;
 
 class Anvil extends RegionWorldProvider{

@@ -30,7 +30,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
-use pocketmine\level\format\PalettedBlockArray;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;

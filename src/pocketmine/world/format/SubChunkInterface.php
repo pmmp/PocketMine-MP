@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format;
 
-use pocketmine\level\format\PalettedBlockArray;
-
 interface SubChunkInterface{
 
 	/**
