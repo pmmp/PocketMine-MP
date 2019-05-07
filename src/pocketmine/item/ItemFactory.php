@@ -97,8 +97,7 @@ class ItemFactory{
 		ItemFactory::registerItem(new Item(-9, 0, ""), true);
 		ItemFactory::registerItem(new Item(-10, 0, ""), true);
 		ItemFactory::registerItem(new Item(-11, 0, ""), true);
-		ItemFactory::registerItem(new Item(-12, 0, "Blue Ice"), true);
-		ItemFactory::registerItem(new ItemBlock(266, 0, -12), true);
+		ItemFactory::registerItem(new ItemBlock(266, 0, -11), true);
 
 ItemFactory::registerItem(new Item(-130, 0, ''), true);
 ItemFactory::registerItem(new Item(-131, 0, ''), true);
