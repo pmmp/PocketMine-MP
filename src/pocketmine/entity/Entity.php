@@ -34,7 +34,6 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
-use pocketmine\event\entity\EntityWorldChangeEvent;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
@@ -1569,12 +1568,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 
 		if($this->isValid()){
-			$ev = new EntityWorldChangeEvent($this, $this->world, $targetWorld);
-			$ev->call();
-			if($ev->isCancelled()){
-				return false;
-			}
-
 			$this->world->removeEntity($this);
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
