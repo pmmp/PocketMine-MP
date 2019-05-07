@@ -76,15 +76,23 @@ class BlockFactory{
 		
 		self::registerBlock(new ColoredTorchBp(204, 0, "Colored Torch Bp"));
 		
-		self::registerBlock(new UnderWaterTorch());
+		self::registerBlock(new UnderWaterTorch()); /* 239 */
 		
 		self::registerBlock(new HardStainedGlass(254, 0, "Hard Stained Glass"));
 		self::registerBlock(new HardStainedGlassPane(191, 0, "Hard Stained Glass Pane"));
 		
-		self::registerBlock(new BlueIce());
-		self::registerBlock(new NewBlock(267, 0, "H"));
+		self::registerBlock(new NewBlock(257, 0, "Prismarine Stairs"));
+		self::registerBlock(new NewBlock(258, 0, "Dark Prismarine Stairs"));
+		self::registerBlock(new NewBlock(259, 0, "Prismarine Bricks Stairs"));
+		self::registerBlock(new NewBlock(260, 0, "Stripped Spruce Log"));
+		self::registerBlock(new NewBlock(261, 0, "Stripped Birch Log"));
+		self::registerBlock(new NewBlock(262, 0, "Stripped Jungle Log"));
+		self::registerBlock(new NewBlock(263, 0, "Stripped Acaica Log"));
+		self::registerBlock(new NewBlock(264, 0, "Stripped Dark Oak Log"));
+		self::registerBlock(new NewBlock(265, 0, "Stripped Oak Log"));
+		self::registerBlock(new BlueIce()); /* 266 */
 
-		self::registerBlock(new Barrier());
+		self::registerBlock(new Barrier()); /* 416 */
 		/* 새로운 블럭 추가 */
 		
 		self::registerBlock(new Air());
