@@ -84,7 +84,7 @@ class BlockFactory{
 		self::registerBlock(new BlueIce());
 		self::registerBlock(new NewBlock(267, 0, "H"));
 
-                self::registerBlock(new Barrier());
+		self::registerBlock(new Barrier());
 		/* 새로운 블럭 추가 */
 		
 		self::registerBlock(new Air());
