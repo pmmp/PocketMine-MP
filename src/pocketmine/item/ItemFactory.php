@@ -51,7 +51,7 @@ class ItemFactory{
 		self::$list = new \SplFixedArray(65536);
 
 		/*새로운 아이템 추가 작업 */
-		self::registerItem(new Item(166, 1, "Glow Stick"));
+		self::registerItem(new Item(166, 0, "Glow Stick"));
 
 		self::registerItem(new MedicineBlindness()); /* 247 */
 
