@@ -32,6 +32,10 @@ use pocketmine\Player;
 
 class BannerPattern extends Item{
 
+	public function __construct(int $meta = 0){
+		parent::__construct(self::BANNER_PATTERN, $meta, "Banner Pattern");
+	}
+
 	public function getMaxStackSize() : int{
 		return 1;
 	}
