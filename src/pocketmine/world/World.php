@@ -115,7 +115,7 @@ use const M_PI;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
-#include <rules/Level.h>
+#include <rules/World.h>
 
 class World implements ChunkManager, Metadatable{
 
