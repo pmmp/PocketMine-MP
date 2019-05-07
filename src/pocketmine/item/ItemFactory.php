@@ -89,15 +89,27 @@ class ItemFactory{
 
 		ItemFactory::registerItem(new Item(-2, 0, "Prismarine Stairrs"), true);
 		ItemFactory::registerItem(new Item(-3, 0, "Dark Prismarine Stairrs"), true);
-		ItemFactory::registerItem(new Item(-4, 0, 'Prismarine Brikcs Stairrs'), true);
-		ItemFactory::registerItem(new Item(-5, 0, ""), true);
-		ItemFactory::registerItem(new Item(-6, 0, ""), true);
-		ItemFactory::registerItem(new Item(-7, 0, ""), true);
-		ItemFactory::registerItem(new Item(-8, 0, ""), true);
-		ItemFactory::registerItem(new Item(-9, 0, ""), true);
-		ItemFactory::registerItem(new Item(-10, 0, ""), true);
-		ItemFactory::registerItem(new Item(-11, 0, ""), true);
+		ItemFactory::registerItem(new Item(-4, 0, "Prismarine Brikcs Stairrs"), true);
+		ItemFactory::registerItem(new Item(-5, 0, "Stripped Spruce Log"), true);
+		ItemFactory::registerItem(new Item(-6, 0, "Stripped Birch Log"), true);
+		ItemFactory::registerItem(new Item(-7, 0, "Stripped Jungle Log"), true);
+		ItemFactory::registerItem(new Item(-8, 0, "Stripped Acacia Log"), true);
+		ItemFactory::registerItem(new Item(-9, 0, "Stripped Dark Oak Log"), true);
+		ItemFactory::registerItem(new Item(-10, 0, "Stripped Oak Log"), true);
+		ItemFactory::registerItem(new Item(-11, 0, "Blue Ice"), true);
+
+		/* -단위 아이템 블록 설치 가능 */
+		ItemFactory::registerItem(new ItemBlock(257, 0, -2), true);
+		ItemFactory::registerItem(new ItemBlock(258, 0, -3), true);
+		ItemFactory::registerItem(new ItemBlock(259, 0, -4), true);
+		ItemFactory::registerItem(new ItemBlock(260, 0, -5), true);
+		ItemFactory::registerItem(new ItemBlock(261, 0, -6), true);
+		ItemFactory::registerItem(new ItemBlock(262, 0, -7), true);
+		ItemFactory::registerItem(new ItemBlock(263, 0, -8), true);
+		ItemFactory::registerItem(new ItemBlock(264, 0, -9), true);
+		ItemFactory::registerItem(new ItemBlock(265, 0, -10), true);
 		ItemFactory::registerItem(new ItemBlock(266, 0, -11), true);
+		/* -단위 아이템 블록 설치 가능 */
 
 ItemFactory::registerItem(new Item(-130, 0, ''), true);
 ItemFactory::registerItem(new Item(-131, 0, ''), true);
