@@ -87,16 +87,19 @@ class ItemFactory{
 		self::registerItem(new AcaciaSign());
 		self::registerItem(new DarkOakSign());
 
-ItemFactory::registerItem(new Item(-2, 0, ''), true);
-ItemFactory::registerItem(new Item(-3, 0, ''), true);
-ItemFactory::registerItem(new Item(-4, 0, ''), true);
-ItemFactory::registerItem(new Item(-5, 0, ''), true);
-ItemFactory::registerItem(new Item(-6, 0, ''), true);
-ItemFactory::registerItem(new Item(-7, 0, ''), true);
-ItemFactory::registerItem(new Item(-8, 0, ''), true);
-ItemFactory::registerItem(new Item(-9, 0, ''), true);
-ItemFactory::registerItem(new Item(-10, 0, ''), true);
-ItemFactory::registerItem(new Item(-11, 0, ''), true);
+		ItemFactory::registerItem(new Item(-2, 0, "Prismarine Stairrs"), true);
+		ItemFactory::registerItem(new Item(-3, 0, "Dark Prismarine Stairrs"), true);
+		ItemFactory::registerItem(new Item(-4, 0, 'Prismarine Brikcs Stairrs'), true);
+		ItemFactory::registerItem(new Item(-5, 0, ""), true);
+		ItemFactory::registerItem(new Item(-6, 0, ""), true);
+		ItemFactory::registerItem(new Item(-7, 0, ""), true);
+		ItemFactory::registerItem(new Item(-8, 0, ""), true);
+		ItemFactory::registerItem(new Item(-9, 0, ""), true);
+		ItemFactory::registerItem(new Item(-10, 0, ""), true);
+		ItemFactory::registerItem(new Item(-11, 0, ""), true);
+		ItemFactory::registerItem(new Item(-12, 0, "Blue Ice"), true);
+		ItemFactory::registerItem(new ItemBlock(266, 0, -12), true);
+
 ItemFactory::registerItem(new Item(-130, 0, ''), true);
 ItemFactory::registerItem(new Item(-131, 0, ''), true);
 ItemFactory::registerItem(new Item(-132, 0, ''), true);
