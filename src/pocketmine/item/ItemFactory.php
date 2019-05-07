@@ -73,7 +73,7 @@ class ItemFactory{
 
 		self::registerItem(new EndCrystal()); /* 426 */
 
-		self::registerItem(new BannerPattern(434, 0, "Banner Pattern"));
+		self::registerItem(new BannerPattern()); /* 434 */
 
 		self::registerItem(new Trident()); /* 455 */
 
