@@ -1412,7 +1412,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return $this->asLocation();
 	}
 
-	public function setPosition(Vector3 $pos) : bool{
+	protected function setPosition(Vector3 $pos) : bool{
 		if($this->closed){
 			return false;
 		}
@@ -1442,7 +1442,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->scheduleUpdate();
 	}
 
-	public function setPositionAndRotation(Vector3 $pos, float $yaw, float $pitch) : bool{
+	protected function setPositionAndRotation(Vector3 $pos, float $yaw, float $pitch) : bool{
 		if($this->setPosition($pos)){
 			$this->setRotation($yaw, $pitch);
 
