@@ -64,12 +64,12 @@ class PreSpawnSessionHandler extends SessionHandler{
 		$pk->seed = -1;
 		$pk->dimension = DimensionIds::OVERWORLD; //TODO: implement this properly
 		$pk->worldGamemode = NetworkSession::getClientFriendlyGamemode($this->server->getGamemode());
-		$pk->difficulty = $this->player->getLevel()->getDifficulty();
+		$pk->difficulty = $this->player->getWorld()->getDifficulty();
 		$pk->spawnX = $spawnPosition->getFloorX();
 		$pk->spawnY = $spawnPosition->getFloorY();
 		$pk->spawnZ = $spawnPosition->getFloorZ();
 		$pk->hasAchievementsDisabled = true;
-		$pk->time = $this->player->getLevel()->getTime();
+		$pk->time = $this->player->getWorld()->getTime();
 		$pk->eduMode = false;
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;
@@ -83,7 +83,7 @@ class PreSpawnSessionHandler extends SessionHandler{
 
 		$this->player->setImmobile(); //HACK: fix client-side falling pre-spawn
 
-		$this->player->getLevel()->sendTime($this->player);
+		$this->player->getWorld()->sendTime($this->player);
 
 		$this->session->syncAttributes($this->player, true);
 		$this->session->syncAvailableCommands();

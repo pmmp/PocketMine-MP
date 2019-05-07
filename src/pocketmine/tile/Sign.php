@@ -24,10 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\block\utils\SignText;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\world\World;
 use function array_pad;
 use function array_slice;
 use function explode;
@@ -50,9 +50,9 @@ class Sign extends Spawnable{
 	/** @var SignText */
 	protected $text;
 
-	public function __construct(Level $level, Vector3 $pos){
+	public function __construct(World $world, Vector3 $pos){
 		$this->text = new SignText();
-		parent::__construct($level, $pos);
+		parent::__construct($world, $pos);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{

@@ -21,10 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\format\io\region;
+namespace pocketmine\world\format\io\region;
 
 use PHPUnit\Framework\TestCase;
-use pocketmine\level\format\ChunkException;
+use pocketmine\world\format\ChunkException;
 use function file_exists;
 use function random_bytes;
 use function str_repeat;
@@ -105,11 +105,12 @@ class RegionLoaderTest extends TestCase{
 
 	/**
 	 * @dataProvider outOfBoundsCoordsProvider
+	 *
 	 * @param int $x
 	 * @param int $z
 	 *
 	 * @throws \InvalidArgumentException
-	 * @throws \pocketmine\level\format\io\exception\CorruptedChunkException
+	 * @throws \pocketmine\world\format\io\exception\CorruptedChunkException
 	 */
 	public function testReadChunkOutOfBounds(int $x, int $z) : void{
 		$this->expectException(\InvalidArgumentException::class);

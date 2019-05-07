@@ -30,7 +30,6 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
 use pocketmine\GameMode;
-use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\DeathSessionHandler;
@@ -70,6 +69,7 @@ use pocketmine\PlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\BinaryDataException;
+use pocketmine\world\Position;
 use function bin2hex;
 use function count;
 use function get_class;
@@ -761,18 +761,18 @@ class NetworkSession{
 	}
 
 	public function startUsingChunk(int $chunkX, int $chunkZ, bool $spawn = false) : void{
-		ChunkCache::getInstance($this->player->getLevel())->request($chunkX, $chunkZ)->onResolve(
+		ChunkCache::getInstance($this->player->getWorld())->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
 			function(CompressBatchPromise $promise) use($chunkX, $chunkZ, $spawn){
 				if(!$this->isConnected()){
 					return;
 				}
-				$this->player->level->timings->syncChunkSendTimer->startTiming();
+				$this->player->world->timings->syncChunkSendTimer->startTiming();
 				try{
 					$this->queueCompressed($promise);
 
-					foreach($this->player->getLevel()->getChunkEntities($chunkX, $chunkZ) as $entity){
+					foreach($this->player->getWorld()->getChunkEntities($chunkX, $chunkZ) as $entity){
 						if($entity !== $this->player and !$entity->isClosed() and !$entity->isFlaggedForDespawn()){
 							$entity->spawnTo($this->player);
 						}
@@ -783,14 +783,14 @@ class NetworkSession{
 						$this->onTerrainReady();
 					}
 				}finally{
-					$this->player->level->timings->syncChunkSendTimer->stopTiming();
+					$this->player->world->timings->syncChunkSendTimer->stopTiming();
 				}
 			}
 		);
 	}
 
 	public function stopUsingChunk(int $chunkX, int $chunkZ) : void{
-		foreach($this->player->getLevel()->getChunkEntities($chunkX, $chunkZ) as $entity){
+		foreach($this->player->getWorld()->getChunkEntities($chunkX, $chunkZ) as $entity){
 			if($entity !== $this->player){
 				$entity->despawnFrom($this->player);
 			}

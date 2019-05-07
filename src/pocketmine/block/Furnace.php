@@ -97,7 +97,7 @@ class Furnace extends Solid{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			$furnace = $this->getLevel()->getTile($this);
+			$furnace = $this->getWorld()->getTile($this);
 			if($furnace instanceof TileFurnace and $furnace->canOpenWith($item->getCustomName())){
 				$player->addWindow($furnace->getInventory());
 			}

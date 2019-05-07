@@ -27,7 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\level\Position;
+use pocketmine\world\Position;
 
 /**
  * Called when a entity explodes

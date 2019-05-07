@@ -98,7 +98,7 @@ class FallingBlock extends Entity{
 		if(!$this->isFlaggedForDespawn()){
 			$pos = $this->add(-$this->width / 2, $this->height, -$this->width / 2)->floor();
 
-			$this->block->position($this->level, $pos->x, $pos->y, $pos->z);
+			$this->block->position($this->world, $pos->x, $pos->y, $pos->z);
 
 			$blockTarget = null;
 			if($this->block instanceof Fallable){
@@ -108,15 +108,15 @@ class FallingBlock extends Entity{
 			if($this->onGround or $blockTarget !== null){
 				$this->flagForDespawn();
 
-				$block = $this->level->getBlock($pos);
+				$block = $this->world->getBlock($pos);
 				if($block->getId() > 0 and $block->isTransparent() and !$block->canBeReplaced()){
 					//FIXME: anvils are supposed to destroy torches
-					$this->getLevel()->dropItem($this, $this->block->asItem());
+					$this->getWorld()->dropItem($this, $this->block->asItem());
 				}else{
 					$ev = new EntityBlockChangeEvent($this, $block, $blockTarget ?? $this->block);
 					$ev->call();
 					if(!$ev->isCancelled()){
-						$this->getLevel()->setBlock($pos, $ev->getTo());
+						$this->getWorld()->setBlock($pos, $ev->getTo());
 					}
 				}
 				$hasUpdate = true;

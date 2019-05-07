@@ -93,7 +93,7 @@ class DaylightSensor extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->inverted = !$this->inverted;
-		$this->level->setBlock($this, $this);
+		$this->world->setBlock($this, $this);
 		return true;
 	}
 

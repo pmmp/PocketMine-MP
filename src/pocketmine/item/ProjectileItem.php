@@ -26,7 +26,7 @@ namespace pocketmine\item;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\projectile\Throwable;
 use pocketmine\event\entity\ProjectileLaunchEvent;
-use pocketmine\level\sound\ThrowSound;
+use pocketmine\world\sound\ThrowSound;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -60,7 +60,7 @@ abstract class ProjectileItem extends Item{
 		Utils::testValidInstance($class, Throwable::class);
 
 		/** @var Throwable $projectile */
-		$projectile = EntityFactory::create($class, $player->getLevel(), $nbt, $player);
+		$projectile = EntityFactory::create($class, $player->getWorld(), $nbt, $player);
 		$projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
 
 		$projectileEv = new ProjectileLaunchEvent($projectile);
@@ -72,7 +72,7 @@ abstract class ProjectileItem extends Item{
 
 		$projectile->spawnToAll();
 
-		$player->getLevel()->addSound($player, new ThrowSound());
+		$player->getWorld()->addSound($player, new ThrowSound());
 
 		$this->pop();
 

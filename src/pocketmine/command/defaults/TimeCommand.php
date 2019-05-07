@@ -27,9 +27,9 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
-use pocketmine\level\Level;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\World;
 use function count;
 
 class TimeCommand extends VanillaCommand{
@@ -54,8 +54,8 @@ class TimeCommand extends VanillaCommand{
 
 				return true;
 			}
-			foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
-				$level->startTime();
+			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+				$world->startTime();
 			}
 			Command::broadcastCommandMessage($sender, "Restarted the time");
 			return true;
@@ -65,8 +65,8 @@ class TimeCommand extends VanillaCommand{
 
 				return true;
 			}
-			foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
-				$level->stopTime();
+			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+				$world->stopTime();
 			}
 			Command::broadcastCommandMessage($sender, "Stopped the time");
 			return true;
@@ -77,11 +77,11 @@ class TimeCommand extends VanillaCommand{
 				return true;
 			}
 			if($sender instanceof Player){
-				$level = $sender->getLevel();
+				$world = $sender->getWorld();
 			}else{
-				$level = $sender->getServer()->getLevelManager()->getDefaultLevel();
+				$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
 			}
-			$sender->sendMessage(new TranslationContainer("commands.time.query", [$level->getTime()]));
+			$sender->sendMessage(new TranslationContainer("commands.time.query", [$world->getTime()]));
 			return true;
 		}
 
@@ -98,15 +98,15 @@ class TimeCommand extends VanillaCommand{
 			}
 
 			if($args[1] === "day"){
-				$value = Level::TIME_DAY;
+				$value = World::TIME_DAY;
 			}elseif($args[1] === "night"){
-				$value = Level::TIME_NIGHT;
+				$value = World::TIME_NIGHT;
 			}else{
 				$value = $this->getInteger($sender, $args[1], 0);
 			}
 
-			foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
-				$level->setTime($value);
+			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+				$world->setTime($value);
 			}
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.set", [$value]));
 		}elseif($args[0] === "add"){
@@ -117,8 +117,8 @@ class TimeCommand extends VanillaCommand{
 			}
 
 			$value = $this->getInteger($sender, $args[1], 0);
-			foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
-				$level->setTime($level->getTime() + $value);
+			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+				$world->setTime($world->getTime() + $value);
 			}
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.added", [$value]));
 		}else{

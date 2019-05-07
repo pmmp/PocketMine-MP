@@ -40,7 +40,6 @@ use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\level\sound\ItemBreakSound;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
@@ -54,6 +53,7 @@ use pocketmine\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Color;
+use pocketmine\world\sound\ItemBreakSound;
 use function abs;
 use function array_shift;
 use function atan2;
@@ -546,7 +546,7 @@ abstract class Living extends Entity implements Damageable{
 	private function damageItem(Durable $item, int $durabilityRemoved) : void{
 		$item->applyDamage($durabilityRemoved);
 		if($item->isBroken()){
-			$this->level->addSound($this, new ItemBreakSound());
+			$this->world->addSound($this, new ItemBreakSound());
 		}
 	}
 
@@ -598,7 +598,7 @@ abstract class Living extends Entity implements Damageable{
 					$source->getCause() === EntityDamageEvent::CAUSE_PROJECTILE or
 					$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_ATTACK
 				) and $e->isOnFire()){
-					$this->setOnFire(2 * $this->level->getDifficulty());
+					$this->setOnFire(2 * $this->world->getDifficulty());
 				}
 
 				$deltaX = $this->x - $e->x;
@@ -646,11 +646,11 @@ abstract class Living extends Entity implements Damageable{
 		$ev = new EntityDeathEvent($this, $this->getDrops(), $this->getXpDropAmount());
 		$ev->call();
 		foreach($ev->getDrops() as $item){
-			$this->getLevel()->dropItem($this, $item);
+			$this->getWorld()->dropItem($this, $item);
 		}
 
 		//TODO: check death conditions (must have been damaged by player < 5 seconds from death)
-		$this->level->dropExperience($this, $ev->getXpDropAmount());
+		$this->world->dropExperience($this, $ev->getXpDropAmount());
 
 		$this->startDeathAnimation();
 	}
@@ -864,7 +864,7 @@ abstract class Living extends Entity implements Damageable{
 		$nextIndex = 0;
 
 		foreach(VoxelRayTrace::inDirection($this->add(0, $this->eyeHeight, 0), $this->getDirectionVector(), $maxDistance) as $vector3){
-			$block = $this->level->getBlockAt($vector3->x, $vector3->y, $vector3->z);
+			$block = $this->world->getBlockAt($vector3->x, $vector3->y, $vector3->z);
 			$blocks[$nextIndex++] = $block;
 
 			if($maxLength !== 0 and count($blocks) > $maxLength){

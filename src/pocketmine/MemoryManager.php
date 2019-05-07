@@ -214,14 +214,14 @@ class MemoryManager{
 		$this->server->getLogger()->debug(sprintf("[Memory Manager] %sLow memory triggered, limit %gMB, using %gMB",
 			$global ? "Global " : "", round(($limit / 1024) / 1024, 2), round(($memory / 1024) / 1024, 2)));
 		if($this->lowMemClearWorldCache){
-			foreach($this->server->getLevelManager()->getLevels() as $level){
-				$level->clearCache(true);
+			foreach($this->server->getWorldManager()->getWorlds() as $world){
+				$world->clearCache(true);
 			}
 		}
 
 		if($this->lowMemChunkGC){
-			foreach($this->server->getLevelManager()->getLevels() as $level){
-				$level->doChunkGarbageCollection();
+			foreach($this->server->getWorldManager()->getWorlds() as $world){
+				$world->doChunkGarbageCollection();
 			}
 		}
 

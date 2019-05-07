@@ -88,9 +88,9 @@ class Fire extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Facing::DOWN)->isSolid() and !$this->hasAdjacentFlammableBlocks()){
-			$this->getLevel()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
+			$this->getWorld()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
 		}else{
-			$this->level->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
+			$this->world->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
 		}
 	}
 
@@ -124,10 +124,10 @@ class Fire extends Flowable{
 		}
 
 		if($result !== null){
-			$this->level->setBlock($this, $result);
+			$this->world->setBlock($this, $result);
 		}
 
-		$this->level->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
+		$this->world->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
 
 		if($canSpread){
 			//TODO: raise upper bound for chance in humid biomes
@@ -168,9 +168,9 @@ class Fire extends Flowable{
 				if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
 					$fire = clone $this;
 					$fire->age = min(15, $fire->age + (mt_rand(0, 4) >> 2));
-					$this->level->setBlock($block, $fire);
+					$this->world->setBlock($block, $fire);
 				}else{
-					$this->level->setBlock($block, BlockFactory::get(BlockLegacyIds::AIR));
+					$this->world->setBlock($block, BlockFactory::get(BlockLegacyIds::AIR));
 				}
 			}
 		}

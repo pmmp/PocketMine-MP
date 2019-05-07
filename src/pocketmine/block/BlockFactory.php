@@ -31,7 +31,7 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
-use pocketmine\level\Position;
+use pocketmine\world\Position;
 use pocketmine\tile\Comparator;
 use function array_fill;
 use function array_filter;
@@ -645,7 +645,7 @@ class BlockFactory{
 		}
 
 		if($pos !== null){
-			$block->position($pos->getLevel(), $pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
+			$block->position($pos->getWorld(), $pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
 		}
 
 		return $block;

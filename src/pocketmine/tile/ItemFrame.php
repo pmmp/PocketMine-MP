@@ -25,9 +25,9 @@ namespace pocketmine\tile;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\world\World;
 
 /**
  * @deprecated
@@ -45,9 +45,9 @@ class ItemFrame extends Spawnable{
 	/** @var float */
 	private $itemDropChance = 1.0;
 
-	public function __construct(Level $level, Vector3 $pos){
+	public function __construct(World $world, Vector3 $pos){
 		$this->item = ItemFactory::air();
-		parent::__construct($level, $pos);
+		parent::__construct($world, $pos);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{

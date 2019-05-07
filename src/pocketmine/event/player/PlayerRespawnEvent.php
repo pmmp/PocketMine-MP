@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\level\Position;
+use pocketmine\world\Position;
 use pocketmine\Player;
 
 /**

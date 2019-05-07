@@ -52,8 +52,8 @@ class SaveCommand extends VanillaCommand{
 			$player->save();
 		}
 
-		foreach($sender->getServer()->getLevelManager()->getLevels() as $level){
-			$level->save(true);
+		foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+			$world->save(true);
 		}
 
 		Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.save.success", [round(microtime(true) - $start, 3)]));

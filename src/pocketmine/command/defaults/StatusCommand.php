@@ -107,13 +107,13 @@ class StatusCommand extends VanillaCommand{
 			$sender->sendMessage(TextFormat::GOLD . "Maximum memory (manager): " . TextFormat::RED . number_format(round($globalLimit, 2), 2) . " MB.");
 		}
 
-		foreach($server->getLevelManager()->getLevels() as $level){
-			$levelName = $level->getFolderName() !== $level->getDisplayName() ? " (" . $level->getDisplayName() . ")" : "";
-			$timeColor = $level->getTickRateTime() > 40 ? TextFormat::RED : TextFormat::YELLOW;
-			$sender->sendMessage(TextFormat::GOLD . "World \"{$level->getFolderName()}\"$levelName: " .
-				TextFormat::RED . number_format(count($level->getChunks())) . TextFormat::GREEN . " chunks, " .
-				TextFormat::RED . number_format(count($level->getEntities())) . TextFormat::GREEN . " entities. " .
-				"Time $timeColor" . round($level->getTickRateTime(), 2) . "ms"
+		foreach($server->getWorldManager()->getWorlds() as $world){
+			$worldName = $world->getFolderName() !== $world->getDisplayName() ? " (" . $world->getDisplayName() . ")" : "";
+			$timeColor = $world->getTickRateTime() > 40 ? TextFormat::RED : TextFormat::YELLOW;
+			$sender->sendMessage(TextFormat::GOLD . "World \"{$world->getFolderName()}\"$worldName: " .
+				TextFormat::RED . number_format(count($world->getChunks())) . TextFormat::GREEN . " chunks, " .
+				TextFormat::RED . number_format(count($world->getEntities())) . TextFormat::GREEN . " entities. " .
+				"Time $timeColor" . round($world->getTickRateTime(), 2) . "ms"
 			);
 		}
 

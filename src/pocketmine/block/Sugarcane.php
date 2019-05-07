@@ -52,20 +52,20 @@ class Sugarcane extends Flowable{
 		if($item instanceof Fertilizer){
 			if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::SUGARCANE_BLOCK){
 				for($y = 1; $y < 3; ++$y){
-					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
+					$b = $this->getWorld()->getBlockAt($this->x, $this->y + $y, $this->z);
 					if($b->getId() === BlockLegacyIds::AIR){
 						$ev = new BlockGrowEvent($b, BlockFactory::get(BlockLegacyIds::SUGARCANE_BLOCK));
 						$ev->call();
 						if($ev->isCancelled()){
 							break;
 						}
-						$this->getLevel()->setBlock($b, $ev->getNewState());
+						$this->getWorld()->setBlock($b, $ev->getNewState());
 					}else{
 						break;
 					}
 				}
 				$this->age = 0;
-				$this->getLevel()->setBlock($this, $this);
+				$this->getWorld()->setBlock($this, $this);
 			}
 
 			$item->pop();
@@ -79,7 +79,7 @@ class Sugarcane extends Flowable{
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isTransparent() and $down->getId() !== BlockLegacyIds::SUGARCANE_BLOCK){
-			$this->getLevel()->useBreakOn($this);
+			$this->getWorld()->useBreakOn($this);
 		}
 	}
 
@@ -91,17 +91,17 @@ class Sugarcane extends Flowable{
 		if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::SUGARCANE_BLOCK){
 			if($this->age === 15){
 				for($y = 1; $y < 3; ++$y){
-					$b = $this->getLevel()->getBlockAt($this->x, $this->y + $y, $this->z);
+					$b = $this->getWorld()->getBlockAt($this->x, $this->y + $y, $this->z);
 					if($b->getId() === BlockLegacyIds::AIR){
-						$this->getLevel()->setBlock($b, BlockFactory::get(BlockLegacyIds::SUGARCANE_BLOCK));
+						$this->getWorld()->setBlock($b, BlockFactory::get(BlockLegacyIds::SUGARCANE_BLOCK));
 						break;
 					}
 				}
 				$this->age = 0;
-				$this->getLevel()->setBlock($this, $this);
+				$this->getWorld()->setBlock($this, $this);
 			}else{
 				++$this->age;
-				$this->getLevel()->setBlock($this, $this);
+				$this->getWorld()->setBlock($this, $this);
 			}
 		}
 	}

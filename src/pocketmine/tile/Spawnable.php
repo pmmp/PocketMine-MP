@@ -32,7 +32,7 @@ abstract class Spawnable extends Tile{
 	/** @var string|null */
 	private $spawnCompoundCache = null;
 	/** @var bool */
-	private $dirty = true; //default dirty, until it's been spawned appropriately on the level
+	private $dirty = true; //default dirty, until it's been spawned appropriately on the world
 
 	/** @var NetworkNbtSerializer|null */
 	private static $nbtWriter = null;

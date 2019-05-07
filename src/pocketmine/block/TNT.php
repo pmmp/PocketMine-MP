@@ -90,14 +90,14 @@ class TNT extends Solid{
 	}
 
 	public function ignite(int $fuse = 80) : void{
-		$this->getLevel()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
+		$this->getWorld()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
 
 		$mot = (new Random())->nextSignedFloat() * M_PI * 2;
 		$nbt = EntityFactory::createBaseNBT($this->add(0.5, 0, 0.5), new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
 		$nbt->setShort("Fuse", $fuse);
 
 		/** @var PrimedTNT $tnt */
-		$tnt = EntityFactory::create(PrimedTNT::class, $this->getLevel(), $nbt);
+		$tnt = EntityFactory::create(PrimedTNT::class, $this->getWorld(), $nbt);
 		$tnt->spawnToAll();
 	}
 

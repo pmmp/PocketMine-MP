@@ -29,11 +29,11 @@ use pocketmine\item\Hoe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\Shovel;
-use pocketmine\level\generator\object\TallGrass as TallGrassObject;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
+use pocketmine\world\generator\object\TallGrass as TallGrassObject;
 use function mt_rand;
 
 class Grass extends Solid{
@@ -57,13 +57,13 @@ class Grass extends Solid{
 	}
 
 	public function onRandomTick() : void{
-		$lightAbove = $this->level->getFullLightAt($this->x, $this->y + 1, $this->z);
-		if($lightAbove < 4 and $this->level->getBlockAt($this->x, $this->y + 1, $this->z)->getLightFilter() >= 2){
+		$lightAbove = $this->world->getFullLightAt($this->x, $this->y + 1, $this->z);
+		if($lightAbove < 4 and $this->world->getBlockAt($this->x, $this->y + 1, $this->z)->getLightFilter() >= 2){
 			//grass dies
 			$ev = new BlockSpreadEvent($this, $this, BlockFactory::get(BlockLegacyIds::DIRT));
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->level->setBlock($this, $ev->getNewState(), false);
+				$this->world->setBlock($this, $ev->getNewState(), false);
 			}
 		}elseif($lightAbove >= 9){
 			//try grass spread
@@ -72,12 +72,12 @@ class Grass extends Solid{
 				$y = mt_rand($this->y - 3, $this->y + 1);
 				$z = mt_rand($this->z - 1, $this->z + 1);
 
-				$b = $this->level->getBlockAt($x, $y, $z);
+				$b = $this->world->getBlockAt($x, $y, $z);
 				if(
 					!($b instanceof Dirt) or
 					$b instanceof CoarseDirt or
-					$this->level->getFullLightAt($x, $y + 1, $z) < 4 or
-					$this->level->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
+					$this->world->getFullLightAt($x, $y + 1, $z) < 4 or
+					$this->world->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
 				){
 					continue;
 				}
@@ -85,7 +85,7 @@ class Grass extends Solid{
 				$ev = new BlockSpreadEvent($b, $this, BlockFactory::get(BlockLegacyIds::GRASS));
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$this->level->setBlock($b, $ev->getNewState(), false);
+					$this->world->setBlock($b, $ev->getNewState(), false);
 				}
 			}
 		}
@@ -97,17 +97,17 @@ class Grass extends Solid{
 		}
 		if($item instanceof Fertilizer){
 			$item->pop();
-			TallGrassObject::growGrass($this->getLevel(), $this, new Random(mt_rand()), 8, 2);
+			TallGrassObject::growGrass($this->getWorld(), $this, new Random(mt_rand()), 8, 2);
 
 			return true;
 		}elseif($item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->getLevel()->setBlock($this, BlockFactory::get(BlockLegacyIds::FARMLAND));
+			$this->getWorld()->setBlock($this, BlockFactory::get(BlockLegacyIds::FARMLAND));
 
 			return true;
 		}elseif($item instanceof Shovel and $this->getSide(Facing::UP)->getId() === BlockLegacyIds::AIR){
 			$item->applyDamage(1);
-			$this->getLevel()->setBlock($this, BlockFactory::get(BlockLegacyIds::GRASS_PATH));
+			$this->getWorld()->setBlock($this, BlockFactory::get(BlockLegacyIds::GRASS_PATH));
 
 			return true;
 		}

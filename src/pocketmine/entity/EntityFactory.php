@@ -36,7 +36,6 @@ use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\projectile\ExperienceBottle;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -45,6 +44,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\Utils;
+use pocketmine\world\World;
 use function array_keys;
 use function assert;
 use function in_array;
@@ -174,20 +174,20 @@ final class EntityFactory{
 	}
 
 	/**
-	 * Creates an entity with the specified type, level and NBT, with optional additional arguments to pass to the
+	 * Creates an entity with the specified type, world and NBT, with optional additional arguments to pass to the
 	 * entity's constructor.
 	 *
 	 * TODO: make this NBT-independent
 	 *
 	 * @param string      $baseClass
-	 * @param Level       $level
+	 * @param World       $world
 	 * @param CompoundTag $nbt
 	 * @param mixed       ...$args
 	 *
 	 * @return Entity instanceof $baseClass
 	 * @throws \InvalidArgumentException if the class doesn't exist or is not registered
 	 */
-	public static function create(string $baseClass, Level $level, CompoundTag $nbt, ...$args) : Entity{
+	public static function create(string $baseClass, World $world, CompoundTag $nbt, ...$args) : Entity{
 		if(isset(self::$classMapping[$baseClass])){
 			$class = self::$classMapping[$baseClass];
 			assert(is_a($class, $baseClass, true));
@@ -195,7 +195,7 @@ final class EntityFactory{
 			 * @var Entity $entity
 			 * @see Entity::__construct()
 			 */
-			$entity = new $class($level, $nbt, ...$args);
+			$entity = new $class($world, $nbt, ...$args);
 
 			return $entity;
 		}
@@ -205,15 +205,16 @@ final class EntityFactory{
 
 	/**
 	 * Creates an entity from data stored on a chunk.
-	 * @internal
 	 *
-	 * @param Level       $level
+	 * @param World       $world
 	 * @param CompoundTag $nbt
 	 *
 	 * @return Entity|null
 	 * @throws \RuntimeException
+	 *@internal
+	 *
 	 */
-	public static function createFromData(Level $level, CompoundTag $nbt) : ?Entity{
+	public static function createFromData(World $world, CompoundTag $nbt) : ?Entity{
 		$saveId = $nbt->getTag("id") ?? $nbt->getTag("identifier");
 		$baseClass = null;
 		if($saveId instanceof StringTag){
@@ -230,7 +231,7 @@ final class EntityFactory{
 		 * @var Entity $entity
 		 * @see Entity::__construct()
 		 */
-		$entity = new $class($level, $nbt);
+		$entity = new $class($world, $nbt);
 
 		return $entity;
 	}

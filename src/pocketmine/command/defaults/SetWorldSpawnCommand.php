@@ -51,7 +51,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 
 		if(count($args) === 0){
 			if($sender instanceof Player){
-				$level = $sender->getLevel();
+				$world = $sender->getWorld();
 				$pos = (new Vector3($sender->x, $sender->y, $sender->z))->round();
 			}else{
 				$sender->sendMessage(TextFormat::RED . "You can only perform this command as a player");
@@ -59,13 +59,13 @@ class SetWorldSpawnCommand extends VanillaCommand{
 				return true;
 			}
 		}elseif(count($args) === 3){
-			$level = $sender->getServer()->getLevelManager()->getDefaultLevel();
+			$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
 			$pos = new Vector3($this->getInteger($sender, $args[0]), $this->getInteger($sender, $args[1]), $this->getInteger($sender, $args[2]));
 		}else{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$level->setSpawnLocation($pos);
+		$world->setSpawnLocation($pos);
 
 		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.setworldspawn.success", [round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));
 

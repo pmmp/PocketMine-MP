@@ -29,7 +29,6 @@ use pocketmine\item\Bed as ItemBed;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
-use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
@@ -37,6 +36,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Bed as TileBed;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\World;
 
 class Bed extends Transparent{
 	private const BITFLAG_OCCUPIED = 0x04;
@@ -75,7 +75,7 @@ class Bed extends Transparent{
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		//read extra state information from the tile - this is an ugly hack
-		$tile = $this->level->getTile($this);
+		$tile = $this->world->getTile($this);
 		if($tile instanceof TileBed){
 			$this->color = $tile->getColor();
 		}
@@ -84,7 +84,7 @@ class Bed extends Transparent{
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 		//extra block properties storage hack
-		$tile = $this->level->getTile($this);
+		$tile = $this->world->getTile($this);
 		if($tile instanceof TileBed){
 			$tile->setColor($this->color);
 		}
@@ -111,11 +111,11 @@ class Bed extends Transparent{
 
 	public function setOccupied(bool $occupied = true) : void{
 		$this->occupied = $occupied;
-		$this->level->setBlock($this, $this, false);
+		$this->world->setBlock($this, $this, false);
 
 		if(($other = $this->getOtherHalf()) !== null){
 			$other->occupied = $occupied;
-			$this->level->setBlock($other, $other, false);
+			$this->world->setBlock($other, $other, false);
 		}
 	}
 
@@ -150,9 +150,9 @@ class Bed extends Transparent{
 				return true;
 			}
 
-			$time = $this->getLevel()->getTime() % Level::TIME_FULL;
+			$time = $this->getWorld()->getTime() % World::TIME_FULL;
 
-			$isNight = ($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE);
+			$isNight = ($time >= World::TIME_NIGHT and $time < World::TIME_SUNRISE);
 
 			if(!$isNight){
 				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.noSleep"));
@@ -188,7 +188,7 @@ class Bed extends Transparent{
 				parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				$nextState = clone $this;
 				$nextState->head = true;
-				$this->getLevel()->setBlock($next, $nextState);
+				$this->getWorld()->setBlock($next, $nextState);
 
 				return true;
 			}

@@ -25,11 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
-use pocketmine\level\sound\RedstonePowerOffSound;
-use pocketmine\level\sound\RedstonePowerOnSound;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\sound\RedstonePowerOffSound;
+use pocketmine\world\sound\RedstonePowerOnSound;
 
 abstract class Button extends Flowable{
 
@@ -63,9 +63,9 @@ abstract class Button extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$this->powered){
 			$this->powered = true;
-			$this->level->setBlock($this, $this);
-			$this->level->scheduleDelayedBlockUpdate($this, $this->getActivationTime());
-			$this->level->addSound($this->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
+			$this->world->setBlock($this, $this);
+			$this->world->scheduleDelayedBlockUpdate($this, $this->getActivationTime());
+			$this->world->addSound($this->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
 		}
 
 		return true;
@@ -74,8 +74,8 @@ abstract class Button extends Flowable{
 	public function onScheduledUpdate() : void{
 		if($this->powered){
 			$this->powered = false;
-			$this->level->setBlock($this, $this);
-			$this->level->addSound($this->add(0.5, 0.5, 0.5), new RedstonePowerOffSound());
+			$this->world->setBlock($this, $this);
+			$this->world->addSound($this->add(0.5, 0.5, 0.5), new RedstonePowerOffSound());
 		}
 	}
 }

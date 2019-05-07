@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\level\ChunkListener;
-use pocketmine\level\format\Chunk;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
+use pocketmine\world\ChunkListener;
+use pocketmine\world\format\Chunk;
+use pocketmine\world\World;
 use function spl_object_id;
 use function strlen;
 
@@ -43,15 +43,15 @@ class ChunkCache implements ChunkListener{
 	/**
 	 * Fetches the ChunkCache instance for the given world. This lazily creates cache systems as needed.
 	 *
-	 * @param Level $world
+	 * @param World $world
 	 *
 	 * @return ChunkCache
 	 */
-	public static function getInstance(Level $world) : self{
+	public static function getInstance(World $world) : self{
 		return self::$instances[spl_object_id($world)] ?? (self::$instances[spl_object_id($world)] = new self($world));
 	}
 
-	/** @var Level */
+	/** @var World */
 	private $world;
 
 	/** @var CompressBatchPromise[] */
@@ -63,9 +63,9 @@ class ChunkCache implements ChunkListener{
 	private $misses = 0;
 
 	/**
-	 * @param Level $world
+	 * @param World $world
 	 */
-	private function __construct(Level $world){
+	private function __construct(World $world){
 		$this->world = $world;
 	}
 
@@ -79,7 +79,7 @@ class ChunkCache implements ChunkListener{
 	 */
 	public function request(int $chunkX, int $chunkZ) : CompressBatchPromise{
 		$this->world->registerChunkListener($this, $chunkX, $chunkZ);
-		$chunkHash = Level::chunkHash($chunkX, $chunkZ);
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 
 		if(isset($this->caches[$chunkHash])){
 			++$this->hits;
@@ -113,7 +113,7 @@ class ChunkCache implements ChunkListener{
 	}
 
 	private function destroy(int $chunkX, int $chunkZ) : bool{
-		$chunkHash = Level::chunkHash($chunkX, $chunkZ);
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$existing = $this->caches[$chunkHash] ?? null;
 		unset($this->caches[$chunkHash]);
 
@@ -129,7 +129,7 @@ class ChunkCache implements ChunkListener{
 	 * @throws \InvalidArgumentException
 	 */
 	private function restartPendingRequest(int $chunkX, int $chunkZ) : void{
-		$chunkHash = Level::chunkHash($chunkX, $chunkZ);
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$existing = $this->caches[$chunkHash];
 		if($existing === null or $existing->hasResult()){
 			throw new \InvalidArgumentException("Restart can only be applied to unresolved promises");
@@ -147,7 +147,7 @@ class ChunkCache implements ChunkListener{
 	 * @throws \InvalidArgumentException
 	 */
 	private function destroyOrRestart(int $chunkX, int $chunkZ) : void{
-		$cache = $this->caches[Level::chunkHash($chunkX, $chunkZ)] ?? null;
+		$cache = $this->caches[World::chunkHash($chunkX, $chunkZ)] ?? null;
 		if($cache !== null){
 			if(!$cache->hasResult()){
 				//some requesters are waiting for this chunk, so their request needs to be fulfilled

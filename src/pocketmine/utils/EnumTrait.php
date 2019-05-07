@@ -174,4 +174,15 @@ public static function %1$s() : self{
 	public function getEnumName() : string{
 		return $this->enumName;
 	}
+
+	/**
+	 * Returns whether the two objects are equivalent.
+	 *
+	 * @param self $other
+	 *
+	 * @return bool
+	 */
+	public function equals(self $other) : bool{
+		return $this->enumName === $other->enumName;
+	}
 }

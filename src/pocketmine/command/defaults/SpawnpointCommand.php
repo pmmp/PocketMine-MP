@@ -27,10 +27,10 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\Position;
+use pocketmine\world\World;
 use function count;
 use function round;
 
@@ -71,12 +71,12 @@ class SpawnpointCommand extends VanillaCommand{
 
 		if(count($args) === 4){
 			if($target->isValid()){
-				$level = $target->getLevel();
-				$pos = $sender instanceof Player ? $sender->getPosition() : $level->getSpawnLocation();
+				$world = $target->getWorld();
+				$pos = $sender instanceof Player ? $sender->getPosition() : $world->getSpawnLocation();
 				$x = $this->getRelativeDouble($pos->x, $sender, $args[1]);
-				$y = $this->getRelativeDouble($pos->y, $sender, $args[2], 0, Level::Y_MAX);
+				$y = $this->getRelativeDouble($pos->y, $sender, $args[2], 0, World::Y_MAX);
 				$z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
-				$target->setSpawn(new Position($x, $y, $z, $level));
+				$target->setSpawn(new Position($x, $y, $z, $world));
 
 				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
 
@@ -84,7 +84,7 @@ class SpawnpointCommand extends VanillaCommand{
 			}
 		}elseif(count($args) <= 1){
 			if($sender instanceof Player){
-				$pos = new Position($sender->getFloorX(), $sender->getFloorY(), $sender->getFloorZ(), $sender->getLevel());
+				$pos = new Position($sender->getFloorX(), $sender->getFloorY(), $sender->getFloorZ(), $sender->getWorld());
 				$target->setSpawn($pos);
 
 				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));

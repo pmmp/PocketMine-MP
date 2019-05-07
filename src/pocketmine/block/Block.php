@@ -31,8 +31,6 @@ use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
@@ -43,6 +41,8 @@ use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\tile\TileFactory;
+use pocketmine\world\Position;
+use pocketmine\world\World;
 use function array_merge;
 use function assert;
 use function dechex;
@@ -174,16 +174,16 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->level->getChunkAtPosition($this)->setFullBlock($this->x & 0xf, $this->y, $this->z & 0xf, $this->getFullId());
+		$this->world->getChunkAtPosition($this)->setFullBlock($this->x & 0xf, $this->y, $this->z & 0xf, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
-		$oldTile = $this->level->getTile($this);
+		$oldTile = $this->world->getTile($this);
 		if($oldTile !== null and ($tileType === null or !($oldTile instanceof $tileType))){
 			$oldTile->close();
 			$oldTile = null;
 		}
 		if($oldTile === null and $tileType !== null){
-			$this->level->addTile(TileFactory::create($tileType, $this->level, $this->asVector3()));
+			$this->world->addTile(TileFactory::create($tileType, $this->world, $this->asVector3()));
 		}
 	}
 
@@ -244,7 +244,7 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	 * @return bool
 	 */
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		return $this->getLevel()->setBlock($blockReplace, $this);
+		return $this->getWorld()->setBlock($blockReplace, $this);
 	}
 
 	/**
@@ -312,10 +312,10 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	 * @return bool
 	 */
 	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($t = $this->level->getTile($this)) !== null){
+		if(($t = $this->world->getTile($this)) !== null){
 			$t->onBlockDestroyed();
 		}
-		return $this->getLevel()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
+		return $this->getWorld()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
 	}
 
 
@@ -370,7 +370,7 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	}
 
 	/**
-	 * Called when this block is updated by the delayed blockupdate scheduler in the level.
+	 * Called when this block is updated by the delayed blockupdate scheduler in the world.
 	 */
 	public function onScheduledUpdate() : void{
 
@@ -494,18 +494,19 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	}
 
 	/**
-	 * @internal
-	 *
-	 * @param Level $level
+	 * @param World $world
 	 * @param int   $x
 	 * @param int   $y
 	 * @param int   $z
+	 *
+	 *@internal
+	 *
 	 */
-	final public function position(Level $level, int $x, int $y, int $z) : void{
+	final public function position(World $world, int $x, int $y, int $z) : void{
 		$this->x = $x;
 		$this->y = $y;
 		$this->z = $z;
-		$this->level = $level;
+		$this->world = $world;
 	}
 
 	/**
@@ -653,7 +654,7 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	 */
 	public function getSide(int $side, int $step = 1){
 		if($this->isValid()){
-			return $this->getLevel()->getBlock(Vector3::getSide($side, $step));
+			return $this->getWorld()->getBlock(Vector3::getSide($side, $step));
 		}
 
 		return BlockFactory::get(BlockLegacyIds::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
@@ -812,13 +813,13 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue) : void{
 		if($this->isValid()){
-			$this->level->getBlockMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
+			$this->world->getBlockMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
 		}
 	}
 
 	public function getMetadata(string $metadataKey){
 		if($this->isValid()){
-			return $this->level->getBlockMetadata()->getMetadata($this, $metadataKey);
+			return $this->world->getBlockMetadata()->getMetadata($this, $metadataKey);
 		}
 
 		return null;
@@ -826,7 +827,7 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 
 	public function hasMetadata(string $metadataKey) : bool{
 		if($this->isValid()){
-			return $this->level->getBlockMetadata()->hasMetadata($this, $metadataKey);
+			return $this->world->getBlockMetadata()->hasMetadata($this, $metadataKey);
 		}
 
 		return false;
@@ -834,7 +835,7 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 
 	public function removeMetadata(string $metadataKey, Plugin $owningPlugin) : void{
 		if($this->isValid()){
-			$this->level->getBlockMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
+			$this->world->getBlockMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
 		}
 	}
 }

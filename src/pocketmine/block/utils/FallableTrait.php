@@ -29,8 +29,8 @@ use pocketmine\block\Fire;
 use pocketmine\block\Liquid;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\object\FallingBlock;
-use pocketmine\level\Position;
 use pocketmine\math\Facing;
+use pocketmine\world\Position;
 
 /**
  * This trait handles falling behaviour for blocks that need them.
@@ -47,16 +47,16 @@ trait FallableTrait{
 
 	public function onNearbyBlockChange() : void{
 		$pos = $this->asPosition();
-		$down = $pos->level->getBlock($pos->getSide(Facing::DOWN));
+		$down = $pos->world->getBlock($pos->getSide(Facing::DOWN));
 		if($down->getId() === BlockLegacyIds::AIR or $down instanceof Liquid or $down instanceof Fire){
-			$pos->level->setBlock($pos, BlockFactory::get(BlockLegacyIds::AIR));
+			$pos->world->setBlock($pos, BlockFactory::get(BlockLegacyIds::AIR));
 
 			$nbt = EntityFactory::createBaseNBT($pos->add(0.5, 0, 0.5));
 			$nbt->setInt("TileID", $this->getId());
 			$nbt->setByte("Data", $this->getMeta());
 
 			/** @var FallingBlock $fall */
-			$fall = EntityFactory::create(FallingBlock::class, $pos->getLevel(), $nbt);
+			$fall = EntityFactory::create(FallingBlock::class, $pos->getWorld(), $nbt);
 			$fall->spawnToAll();
 		}
 	}

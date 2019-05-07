@@ -28,11 +28,11 @@ use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\level\sound\FizzSound;
-use pocketmine\level\sound\Sound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\world\sound\FizzSound;
+use pocketmine\world\sound\Sound;
+use pocketmine\world\World;
 use function array_fill;
 use function lcg_value;
 use function min;
@@ -189,7 +189,7 @@ abstract class Liquid extends Transparent{
 			}elseif($j === 3){
 				++$z;
 			}
-			$sideBlock = $this->level->getBlockAt($x, $y, $z);
+			$sideBlock = $this->world->getBlockAt($x, $y, $z);
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
 
 			if($blockDecay < 0){
@@ -197,7 +197,7 @@ abstract class Liquid extends Transparent{
 					continue;
 				}
 
-				$blockDecay = $this->getEffectiveFlowDecay($this->level->getBlockAt($x, $y - 1, $z));
+				$blockDecay = $this->getEffectiveFlowDecay($this->world->getBlockAt($x, $y - 1, $z));
 
 				if($blockDecay >= 0){
 					$realDecay = $blockDecay - ($decay - 8);
@@ -217,14 +217,14 @@ abstract class Liquid extends Transparent{
 
 		if($this->falling){
 			if(
-				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y, $this->z - 1)) or
-				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y, $this->z + 1)) or
-				!$this->canFlowInto($this->level->getBlockAt($this->x - 1, $this->y, $this->z)) or
-				!$this->canFlowInto($this->level->getBlockAt($this->x + 1, $this->y, $this->z)) or
-				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y + 1, $this->z - 1)) or
-				!$this->canFlowInto($this->level->getBlockAt($this->x, $this->y + 1, $this->z + 1)) or
-				!$this->canFlowInto($this->level->getBlockAt($this->x - 1, $this->y + 1, $this->z)) or
-				!$this->canFlowInto($this->level->getBlockAt($this->x + 1, $this->y + 1, $this->z))
+				!$this->canFlowInto($this->world->getBlockAt($this->x, $this->y, $this->z - 1)) or
+				!$this->canFlowInto($this->world->getBlockAt($this->x, $this->y, $this->z + 1)) or
+				!$this->canFlowInto($this->world->getBlockAt($this->x - 1, $this->y, $this->z)) or
+				!$this->canFlowInto($this->world->getBlockAt($this->x + 1, $this->y, $this->z)) or
+				!$this->canFlowInto($this->world->getBlockAt($this->x, $this->y + 1, $this->z - 1)) or
+				!$this->canFlowInto($this->world->getBlockAt($this->x, $this->y + 1, $this->z + 1)) or
+				!$this->canFlowInto($this->world->getBlockAt($this->x - 1, $this->y + 1, $this->z)) or
+				!$this->canFlowInto($this->world->getBlockAt($this->x + 1, $this->y + 1, $this->z))
 			){
 				$vector = $vector->normalize()->add(0, -6, 0);
 			}
@@ -255,7 +255,7 @@ abstract class Liquid extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		$this->checkForHarden();
-		$this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
+		$this->world->scheduleDelayedBlockUpdate($this, $this->tickRate());
 	}
 
 	public function onScheduledUpdate() : void{
@@ -264,10 +264,10 @@ abstract class Liquid extends Transparent{
 		if(!$this->isSource()){
 			$smallestFlowDecay = -100;
 			$this->adjacentSources = 0;
-			$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x, $this->y, $this->z - 1), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x, $this->y, $this->z + 1), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->world->getBlockAt($this->x, $this->y, $this->z - 1), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->world->getBlockAt($this->x, $this->y, $this->z + 1), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->world->getBlockAt($this->x - 1, $this->y, $this->z), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->world->getBlockAt($this->x + 1, $this->y, $this->z), $smallestFlowDecay);
 
 			$newDecay = $smallestFlowDecay + $multiplier;
 			$falling = false;
@@ -276,12 +276,12 @@ abstract class Liquid extends Transparent{
 				$newDecay = -1;
 			}
 
-			if($this->getEffectiveFlowDecay($this->level->getBlockAt($this->x, $this->y + 1, $this->z)) >= 0){
+			if($this->getEffectiveFlowDecay($this->world->getBlockAt($this->x, $this->y + 1, $this->z)) >= 0){
 				$falling = true;
 			}
 
 			if($this->adjacentSources >= 2 and $this instanceof Water){
-				$bottomBlock = $this->level->getBlockAt($this->x, $this->y - 1, $this->z);
+				$bottomBlock = $this->world->getBlockAt($this->x, $this->y - 1, $this->z);
 				if($bottomBlock->isSolid() or ($bottomBlock instanceof Water and $bottomBlock->isSource())){
 					$newDecay = 0;
 					$falling = false;
@@ -290,17 +290,17 @@ abstract class Liquid extends Transparent{
 
 			if($falling !== $this->falling or (!$falling and $newDecay !== $this->decay)){
 				if(!$falling and $newDecay < 0){
-					$this->level->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
+					$this->world->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
 					return;
 				}
 
 				$this->falling = $falling;
 				$this->decay = $falling ? 0 : $newDecay;
-				$this->level->setBlock($this, $this); //local block update will cause an update to be scheduled
+				$this->world->setBlock($this, $this); //local block update will cause an update to be scheduled
 			}
 		}
 
-		$bottomBlock = $this->level->getBlockAt($this->x, $this->y - 1, $this->z);
+		$bottomBlock = $this->world->getBlockAt($this->x, $this->y - 1, $this->z);
 
 		$this->flowIntoBlock($bottomBlock, 0, true);
 
@@ -315,19 +315,19 @@ abstract class Liquid extends Transparent{
 				$flags = $this->getOptimalFlowDirections();
 
 				if($flags[0]){
-					$this->flowIntoBlock($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $adjacentDecay, false);
+					$this->flowIntoBlock($this->world->getBlockAt($this->x - 1, $this->y, $this->z), $adjacentDecay, false);
 				}
 
 				if($flags[1]){
-					$this->flowIntoBlock($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $adjacentDecay, false);
+					$this->flowIntoBlock($this->world->getBlockAt($this->x + 1, $this->y, $this->z), $adjacentDecay, false);
 				}
 
 				if($flags[2]){
-					$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z - 1), $adjacentDecay, false);
+					$this->flowIntoBlock($this->world->getBlockAt($this->x, $this->y, $this->z - 1), $adjacentDecay, false);
 				}
 
 				if($flags[3]){
-					$this->flowIntoBlock($this->level->getBlockAt($this->x, $this->y, $this->z + 1), $adjacentDecay, false);
+					$this->flowIntoBlock($this->world->getBlockAt($this->x, $this->y, $this->z + 1), $adjacentDecay, false);
 				}
 			}
 		}
@@ -345,10 +345,10 @@ abstract class Liquid extends Transparent{
 			$ev->call();
 			if(!$ev->isCancelled()){
 				if($block->getId() > 0){
-					$this->level->useBreakOn($block);
+					$this->world->useBreakOn($block);
 				}
 
-				$this->level->setBlock($block, $ev->getNewState());
+				$this->world->setBlock($block, $ev->getNewState());
 			}
 		}
 	}
@@ -375,11 +375,11 @@ abstract class Liquid extends Transparent{
 				++$z;
 			}
 
-			if(!isset($this->flowCostVisited[$hash = Level::blockHash($x, $y, $z)])){
-				$blockSide = $this->level->getBlockAt($x, $y, $z);
+			if(!isset($this->flowCostVisited[$hash = World::blockHash($x, $y, $z)])){
+				$blockSide = $this->world->getBlockAt($x, $y, $z);
 				if(!$this->canFlowInto($blockSide)){
 					$this->flowCostVisited[$hash] = self::BLOCKED;
-				}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
+				}elseif($this->world->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
 					$this->flowCostVisited[$hash] = self::CAN_FLOW_DOWN;
 				}else{
 					$this->flowCostVisited[$hash] = self::CAN_FLOW;
@@ -428,16 +428,16 @@ abstract class Liquid extends Transparent{
 			}elseif($j === 3){
 				++$z;
 			}
-			$block = $this->level->getBlockAt($x, $y, $z);
+			$block = $this->world->getBlockAt($x, $y, $z);
 
 			if(!$this->canFlowInto($block)){
-				$this->flowCostVisited[Level::blockHash($x, $y, $z)] = self::BLOCKED;
+				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::BLOCKED;
 				continue;
-			}elseif($this->level->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
-				$this->flowCostVisited[Level::blockHash($x, $y, $z)] = self::CAN_FLOW_DOWN;
+			}elseif($this->world->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
+				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::CAN_FLOW_DOWN;
 				$flowCost[$j] = $maxCost = 0;
 			}elseif($maxCost > 0){
-				$this->flowCostVisited[Level::blockHash($x, $y, $z)] = self::CAN_FLOW;
+				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::CAN_FLOW;
 				$flowCost[$j] = $this->calculateFlowCost($x, $y, $z, 1, $maxCost, $j ^ 0x01, $j ^ 0x01);
 				$maxCost = min($maxCost, $flowCost[$j]);
 			}
@@ -480,13 +480,13 @@ abstract class Liquid extends Transparent{
 		$ev = new BlockFormEvent($this, $result);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$this->level->setBlock($this, $ev->getNewState());
-			$this->level->addSound($this->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
+			$this->world->setBlock($this, $ev->getNewState());
+			$this->world->addSound($this->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
 		}
 		return true;
 	}
 
 	protected function canFlowInto(Block $block) : bool{
-		return $this->level->isInWorld($block->x, $block->y, $block->z) and $block->canBeFlowedInto() and !($block instanceof Liquid and $block->isSource()); //TODO: I think this should only be liquids of the same type
+		return $this->world->isInWorld($block->x, $block->y, $block->z) and $block->canBeFlowedInto() and !($block instanceof Liquid and $block->isSource()); //TODO: I think this should only be liquids of the same type
 	}
 }

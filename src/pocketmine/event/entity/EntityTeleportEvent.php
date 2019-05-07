@@ -26,7 +26,7 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\level\Position;
+use pocketmine\world\Position;
 
 class EntityTeleportEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;

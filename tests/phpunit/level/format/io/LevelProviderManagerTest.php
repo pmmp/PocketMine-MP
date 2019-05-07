@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\level\format\io;
+namespace pocketmine\world\format\io;
 
 use PHPUnit\Framework\TestCase;
 
@@ -30,24 +30,24 @@ class LevelProviderManagerTest extends TestCase{
 	public function testAddNonClassProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		LevelProviderManager::addProvider("lol", "nope");
+		WorldProviderManager::addProvider("lol", "nope");
 	}
 
 	public function testAddAbstractClassProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		LevelProviderManager::addProvider(AbstractLevelProvider::class, "abstract");
+		WorldProviderManager::addProvider(AbstractWorldProvider::class, "abstract");
 	}
 
 	public function testAddInterfaceProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		LevelProviderManager::addProvider(InterfaceLevelProvider::class, "interface");
+		WorldProviderManager::addProvider(InterfaceWorldProvider::class, "interface");
 	}
 
 	public function testAddWrongClassProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		LevelProviderManager::addProvider(LevelProviderManagerTest::class, "bad_class");
+		WorldProviderManager::addProvider(LevelProviderManagerTest::class, "bad_class");
 	}
 }
