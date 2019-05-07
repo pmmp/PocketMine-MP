@@ -977,12 +977,27 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		assert(isset($this->usedChunks[World::chunkHash($x, $z)]));
 		$this->usedChunks[World::chunkHash($x, $z)] = true;
 
-		$spawn = $this->spawnChunkLoadCount++ === $this->spawnThreshold;
-		$this->networkSession->startUsingChunk($x, $z, $spawn);
+		$this->networkSession->startUsingChunk($x, $z, function(int $chunkX, int $chunkZ) : void{
+			if($this->spawned){
+				$this->spawnEntitiesOnChunk($chunkX, $chunkZ);
+			}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
+				$this->spawned = true;
 
-		if($spawn){
-			//TODO: not sure this should be here
-			$this->spawned = true;
+				foreach($this->usedChunks as $chunkHash => $_){
+					World::getXZ($chunkHash, $_x, $_z);
+					$this->spawnEntitiesOnChunk($_x, $_z);
+				}
+
+				$this->networkSession->onTerrainReady();
+			}
+		});
+	}
+
+	protected function spawnEntitiesOnChunk(int $chunkX, int $chunkZ) : void{
+		foreach($this->world->getChunkEntities($chunkX, $chunkZ) as $entity){
+			if($entity !== $this and !$entity->isClosed() and !$entity->isFlaggedForDespawn()){
+				$entity->spawnTo($this);
+			}
 		}
 	}
 

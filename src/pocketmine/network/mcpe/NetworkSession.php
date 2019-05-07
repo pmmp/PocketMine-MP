@@ -69,6 +69,7 @@ use pocketmine\PlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\BinaryDataException;
+use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 use function bin2hex;
 use function count;
@@ -760,28 +761,26 @@ class NetworkSession{
 		return $this->sendDataPacket($pk);
 	}
 
-	public function startUsingChunk(int $chunkX, int $chunkZ, bool $spawn = false) : void{
+	/**
+	 * Instructs the networksession to start using the chunk at the given coordinates. This may occur asynchronously.
+	 * @param int      $chunkX
+	 * @param int      $chunkZ
+	 * @param \Closure $onCompletion To be called when chunk sending has completed.
+	 */
+	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
+		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ){}, $onCompletion);
+
 		ChunkCache::getInstance($this->player->getWorld())->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use($chunkX, $chunkZ, $spawn){
+			function(CompressBatchPromise $promise) use($chunkX, $chunkZ, $onCompletion){
 				if(!$this->isConnected()){
 					return;
 				}
 				$this->player->world->timings->syncChunkSendTimer->startTiming();
 				try{
 					$this->queueCompressed($promise);
-
-					foreach($this->player->getWorld()->getChunkEntities($chunkX, $chunkZ) as $entity){
-						if($entity !== $this->player and !$entity->isClosed() and !$entity->isFlaggedForDespawn()){
-							$entity->spawnTo($this->player);
-						}
-					}
-
-					if($spawn){
-						//TODO: potential race condition during chunk sending could cause this to be called too early
-						$this->onTerrainReady();
-					}
+					$onCompletion($chunkX, $chunkZ);
 				}finally{
 					$this->player->world->timings->syncChunkSendTimer->stopTiming();
 				}
