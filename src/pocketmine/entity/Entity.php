@@ -338,10 +338,34 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(SplashPotion::class, false, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
 		Entity::registerEntity(Squid::class, false, ['Squid', 'minecraft:squid']);
 		Entity::registerEntity(Villager::class, false, ['Villager', 'minecraft:villager']);
+		
+		/* Entity::registerEntity(Creeper::class, true, ['Creeper', 'minecraft:creeper']);
+		Entity::registerEntity(ElderGuardian::class, true, ['ElderGuardian', 'minecraft:elderguardian']);
+		Entity::registerEntity(EnderDragon::class, true, ['EnderDragon', 'minecraft:enderdragon']);
+		Entity::registerEntity(Ghast::class, true, ['Ghast', 'minecraft:ghast']);
+		Entity::registerEntity(Guardian::class, true, ['Guardian', 'minecraft:guardian']);
+		Entity::registerEntity(Pig::class, true, ['Pig', 'minecraft:pig']);
+		Entity::registerEntity(PolarBear::class, true, ['PolarBear', 'minecraft:polarbear']);
+		Entity::registerEntity(Vex::class, true, ['Vex', 'minecraft:vex']);
+		Entity::registerEntity(Vindicator::class, true, ['Vindicator', 'minecraft:vindicator']);
+		Entity::registerEntity(Wither::class, true, ['Wither', 'minecraft:wither']);
+		Entity::registerEntity(Wolf::class, true, ['Wolf', 'minecraft:wolf']);
+		Entity::registerEntity(ZombieHorse::class, true, ['ZombieHorse', 'minecraft:zombiehorse']);
+		Entity::registerEntity(ZombieVillager::class, true, ['ZombieVillager', 'minecraft:zombievillager']); */
 		Entity::registerEntity(WanderingTrader::class, false, ['WanderingTrader', 'minecraft:wandering_trader']);
 		Entity::registerEntity(Llama::class, false, ['Llama', 'minecraft:llama']);
 		Entity::registerEntity(Ravager::class, false, ['Ravager', 'minecraft:ravager']);
+		Entity::registerEntity(Pillager::class, false, ['Pillager', 'minecraft:pillager']);
+		Entity::registerEntity(Panda::class, false, ['Panda', 'minecraft:panda']);
 		Entity::registerEntity(Zombie::class, false, ['Zombie', 'minecraft:zombie']);
+
+		Entity::registerEntity(Dolphin::class, false, ['Dolphin',	'minecraft:dolphin']);
+		Entity::registerEntity(CodFish::class, false, ['CodFish',	'minecraft:codfish']);
+		Entity::registerEntity(SalmonFish::class, false, ['SalmonFish',	'minecraft:salmonfish']);
+		Entity::registerEntity(PufferFish::class, false, ['PufferFish',	'minecraft:pufferfish']);
+		Entity::registerEntity(Turtle::class, false, ['Turtle', 'minecraft:turtle']);
+		
+		
 		Entity::registerEntity(FireworksRocket::class, false, ['FireworksRocket', 'minecraft:fireworks_rocket']);
 
 		Entity::registerEntity(Human::class, true);
@@ -767,7 +791,23 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$attr->setValue($value ? ($attr->getValue() * 1.3) : ($attr->getValue() / 1.3), false, true);
 		}
 	}
-
+	
+	public function isSwimming() : bool{
+		return $this->getGenericFlag(self::DATA_FLAG_SWIMMING);
+	}
+	
+	public function setSwimming(bool $value = true) : void{
+		$this->setGenericFlag(self::DATA_FLAG_SWIMMING, $value);
+	}
+	
+	public function setDead(bool $value = true) : void{
+		$this->setGenericFlag(self::DATA_FLAG_DEAD, $value);
+	}
+	
+	public function setSleeping(bool $value = true) : void{
+		$this->setGenericFlag(self::DATA_FLAG_SLEEPING, $value);
+	}
+	
 	public function isImmobile() : bool{
 		return $this->getGenericFlag(self::DATA_FLAG_IMMOBILE);
 	}

@@ -74,7 +74,7 @@ interface EntityIds{
 	public const AGENT = 56, LEARN_TO_CODE_MASCOT = 56;
 	public const VINDICATOR = 57;
 	public const PHANTOM = 58;
-  public const RAVAGER = 59;
+	public const RAVAGER = 59;
 	public const ARMOR_STAND = 61;
 	public const TRIPOD_CAMERA = 62;
 	public const PLAYER = 63;

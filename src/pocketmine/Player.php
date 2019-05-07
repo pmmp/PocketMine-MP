@@ -26,6 +26,7 @@ namespace pocketmine;
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\Water;
 use pocketmine\block\UnknownBlock;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -66,6 +67,7 @@ use pocketmine\event\player\PlayerToggleFlightEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerTransferEvent;
+use pocketmine\event\player\PlayerToggleSwimEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
@@ -372,6 +374,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * @return TranslationContainer|string
 	 */
+	 
+	
 	public function getLeaveMessage(){
 		if($this->spawned){
 			return new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.left", [
@@ -2849,9 +2853,31 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				break;
 			case PlayerActionPacket::ACTION_START_SWIMMING:
 				break; //TODO
+				$block = $this->level->getBlock($this);
+				$ev = new PlayerToggleSwimEvent($this, true);
+				$this->server->getPluginManager()->callEvent($ev);
+				if(!($block instanceof Water)){
+					$ev->setCancelled();
+				}
+				if($ev->isCancelled()){
+					$this->sendData($this);
+				}else{
+					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->width);
+					$this->setSwimming(true);
+				}
+				return true;
 			case PlayerActionPacket::ACTION_STOP_SWIMMING:
 				//TODO: handle this when it doesn't spam every damn tick (yet another spam bug!!)
 				break;
+				$ev = new PlayerToggleSwimEvent($this, false);
+				$this->server->getPluginManager()->callEvent($ev);
+				if($ev->isCancelled()){
+					$this->sendData($this);
+				}else{
+					$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->height);
+					$this->setSwimming(false);
+				}
+				return true;
 			default:
 				$this->server->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->getName());
 				return false;
@@ -3673,6 +3699,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->setSprinting(false);
 		$this->setSneaking(false);
+		$this->setSwimming(false);
 
 		$this->extinguish();
 		$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());

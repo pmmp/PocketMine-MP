@@ -19,27 +19,25 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use function mt_rand;
 
-class WanderingTrader extends Animal{
-	public const NETWORK_ID = self::WANDERING_TRADER;
+class Pillager extends Monster{
+	public const NETWORK_ID = self::PILLAGER;
 
 	public $width = 0.95;
 	public $height = 0.85;
 
 	public function getName() : string{
-		return "Wandering Trader";
+		return "Pillager";
 	}
 
 	public function getDrops() : array{
 		$drops = [
-			ItemFactory::get(Item::ELEMENT_I_1, 0, mt_rand(0, 1)),
-			ItemFactory::get(Item::ELEMENT_I_8, 0, mt_rand(0, 1)),
-			ItemFactory::get(Item::ELEMENT_I_87, 0, mt_rand(0, 1))
+			ItemFactory::get(Item::CROSSBOW, 0, mt_rand(0, 1))
 		];
 		return $drops;
 	}
 
 	public function initEntity() : void{
-		$this->setMaxHealth(35);
+		$this->setMaxHealth(20);
 		parent::initEntity();
 	}
 

@@ -1,5 +1,4 @@
 <?php
-
 /*
  *
  *  ____            _        _   __  __ _                  __  __ ____
@@ -18,11 +17,25 @@
  *
  *
 */
-
-namespace pocketmine;
-
-const NAME = "Cloud-MP";
-const BASE_VERSION = "3.8.0";
-const IS_DEVELOPMENT_BUILD = false;
-const BUILD_NUMBER = 50;
-const MP_VERSION = "1.0.3";
+declare(strict_types=1);
+namespace pocketmine\event\player;
+use pocketmine\event\Cancellable;
+use pocketmine\Player;
+class PlayerToggleSwimEvent extends PlayerEvent implements Cancellable{
+	/** @var bool */
+	protected $isSwimming;
+	/**
+	 * @param Player $player
+	 * @param bool   $isSwimming
+	 */
+	public function __construct(Player $player, bool $isSwimming){
+		$this->player = $player;
+		$this->isSwimming = $isSwimming;
+	}
+	/**
+	 * @return bool
+	 */
+	public function isSwimming() : bool{
+		return $this->isSwimming;
+	}
+}

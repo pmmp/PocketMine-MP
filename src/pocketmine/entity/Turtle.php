@@ -19,31 +19,29 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use function mt_rand;
 
-class WanderingTrader extends Animal{
-	public const NETWORK_ID = self::WANDERING_TRADER;
+class Turtle extends Animal{
+	public const NETWORK_ID = self::TURTLE;
 
-	public $width = 0.95;
-	public $height = 0.85;
+	public $width = 1.25 + M_PI - 3;
+	public $height = 0.15;
 
 	public function getName() : string{
-		return "Wandering Trader";
+		return "Turtle";
 	}
 
 	public function getDrops() : array{
 		$drops = [
-			ItemFactory::get(Item::ELEMENT_I_1, 0, mt_rand(0, 1)),
-			ItemFactory::get(Item::ELEMENT_I_8, 0, mt_rand(0, 1)),
-			ItemFactory::get(Item::ELEMENT_I_87, 0, mt_rand(0, 1))
+			ItemFactory::get(Item::TURTLE_SHELL_PIECE, 0, mt_rand(0, 3))
 		];
 		return $drops;
 	}
 
 	public function initEntity() : void{
-		$this->setMaxHealth(35);
+		$this->setMaxHealth(30);
 		parent::initEntity();
 	}
 
 	public function getXpDropAmount() : int{
-		return 15;
+		return 5;
 	}
 }
