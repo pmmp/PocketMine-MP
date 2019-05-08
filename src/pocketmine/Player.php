@@ -3312,7 +3312,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Resets the title duration settings.
+	 * Resets the title duration settings to defaults and removes any existing titles.
 	 */
 	public function resetTitles(){
 		$pk = new SetTitlePacket();
