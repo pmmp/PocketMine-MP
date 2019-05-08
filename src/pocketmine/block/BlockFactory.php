@@ -93,6 +93,11 @@ class BlockFactory{
 		self::registerBlock(new BlueIce()); /* 266 */
 
 		self::registerBlock(new Barrier()); /* 416 */
+
+		self::registerBlock(new Barrel()); /* 458 */
+		self::registerBlock(new Loom()); /* 459 */
+
+		self::registerBlock(new Composter()); /* 468 */
 		/* 새로운 블럭 추가 */
 		
 		self::registerBlock(new Air());
