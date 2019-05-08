@@ -484,6 +484,7 @@ interface BlockIds{
 	public const CAMPFIRE_BLOCK = 464;
 	public const LAVA_CAULDRON = 465;
 	public const JIGSAW = 466;
+	public const WOOD3 = 467;
 	public const COMPOSTER = 468;
 	public const LIT_BLAST_FURNACE = 469;
 
