@@ -92,10 +92,28 @@ class BlockFactory{
 		self::registerBlock(new NewBlock(265, 0, "Stripped Oak Log"));
 		self::registerBlock(new BlueIce()); /* 266 */
 
+		self::registerBlock(new NewBlock(385, 0, "SEAGRASS"));
+		self::registerBlock(new NewBlock(386, 0, "CORAL"));
+		self::registerBlock(new NewBlock(387, 0, "CORAL_BLOCK"));
+		self::registerBlock(new NewBlock(388, 0, "CORAL_FAN"));
+		self::registerBlock(new NewBlock(389, 0, "CORAL_FAN_HANG"));
+		self::registerBlock(new NewBlock(390, 0, "CORAL_FAN_HANG1"));
+		self::registerBlock(new NewBlock(391, 0, "CORAL_FAN_HANG2"));
+		self::registerBlock(new NewBlock(392, 0, "CORAL_FAN_HANG3"));
+		self::registerBlock(new NewBlock(393, 0, "Kelp"));
+
+		self::registerBlock(new NewBlock(411, 0, "SEA_PICKLE"));
+		self::registerBlock(new NewBlock(412, 0, "CONDUIT"));
+		self::registerBlock(new NewBlock(413, 0, "TURTLE_EGG"));
+
 		self::registerBlock(new Barrier()); /* 416 */
 
-		/* self::registerBlock(new Spruce Standing Sign()); 436 */
-		/* self::registerBlock(new Spruce Well Sign()); 437 */
+		self::registerBlock(new NewBlock(418, 0, "BAMBOO"));
+		self::registerBlock(new NewBlock(419, 0, "BAMBOO_SAPLING"));
+		self::registerBlock(new NewBlock(420, 0, "SCAFFOLDING"));
+
+		/* self::registerBlock(new SpruceStandingSign()); 436 */
+		/* self::registerBlock(new SpruceWellSign()); 437 */
 
 		/* self::registerBlock(new BirchStandingSign()); 441 */
 		/* self::registerBlock(new BirchWellSign()); 442 */
@@ -106,8 +124,21 @@ class BlockFactory{
 		/* self::registerBlock(new DarkOakStandingSign()); 447 */
 		/* self::registerBlock(new DarkOakWellSign()); 448 */
 
+		self::registerBlock(new NewBlock(450, 0, "GRINDSTONE_BLOCK"));
+		self::registerBlock(new NewBlock(451, 0, "BLAST_FURNACE_BLOCK"));
+		self::registerBlock(new NewBlock(452, 0, "STONECUTTER_BLOCK"));
+		self::registerBlock(new NewBlock(453, 0, "SMOKER_BLOCK"));
+
+		self::registerBlock(new NewBlock(455, 0, "CARTOGRAPHY_TABLE_BLOCK"));
+		self::registerBlock(new NewBlock(456, 0, "FLETCHING_TABLE_BLOCK"));
+		self::registerBlock(new NewBlock(457, 0, "SMITHING_TABLE_BLOCK"));
 		self::registerBlock(new Barrel()); /* 458 */
 		self::registerBlock(new Loom()); /* 459 */
+
+		self::registerBlock(new NewBlock(461, 0, "BELL_BLOCK"));
+		self::registerBlock(new NewBlock(462, 0, "SWEET_BERRY_BUSH"));
+
+		self::registerBlock(new NewBlock(464, 0, "CAMPFIRE_BLOCK"));
 
 		self::registerBlock(new Wood3()); /* 467 */
 		self::registerBlock(new Composter()); /* 468 */
