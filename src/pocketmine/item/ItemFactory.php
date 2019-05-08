@@ -1,3 +1,5 @@
+수정후
+
 <?php
 
 /*
@@ -48,12 +50,14 @@ class ItemFactory{
 	private static $list = null;
 
 	public static function init(){
-		self::$list = new \SplFixedArray(65536);
+	self::$list = new \SplFixedArray(65536);
 
 		/*새로운 아이템 추가 작업 */
 		self::registerItem(new Item(166, 0, "Glow Stick"));
 
 		self::registerItem(new MedicineBlindness()); /* 247 */
+
+		self::registerItem(new Item(335, 0, "Kelp"));
 
 		self::registerItem(new Item(342, 0, "Minecart with Chest"));
 
@@ -88,10 +92,11 @@ class ItemFactory{
 		self::registerItem(new JungleSign()); /* 474 */
 		self::registerItem(new AcaciaSign()); /* 475 */
 		self::registerItem(new DarkOakSign()); /* 476 */
+		self::registerItem(new Item(477, 0, 'SWEET_BERRIES'), true);
 
 		self::registerItem(new Shield()); /* 513 */
 
-		/* -단위 아이템 시작 */
+		/* 현재 테스트중인 아이템
 		ItemFactory::registerItem(new Item(-2, 0, "Prismarine Stairrs"), true);
 		ItemFactory::registerItem(new Item(-3, 0, "Dark Prismarine Stairrs"), true);
 		ItemFactory::registerItem(new Item(-4, 0, "Prismarine Brikcs Stairrs"), true);
@@ -102,14 +107,13 @@ class ItemFactory{
 		ItemFactory::registerItem(new Item(-9, 0, "Stripped Dark Oak Log"), true);
 		ItemFactory::registerItem(new Item(-10, 0, "Stripped Oak Log"), true);
 		ItemFactory::registerItem(new Item(-11, 0, "Blue Ice"), true);
-
 		ItemFactory::registerItem(new Item(-203, 0, "Barrel"), true);
 		ItemFactory::registerItem(new Item(-204, 0, "Loom"), true);
-
 		ItemFactory::registerItem(new Item(-212, 0, "Wood"), true);
 		ItemFactory::registerItem(new Item(-213, 0, "Composter"), true);
+		현재 테스트중인 아이템 */
 
-		/* -단위 아이템 블록 설치 가능 */
+		/* -단위 블럭 설치 가능 */
 		ItemFactory::registerItem(new ItemBlock(257, 0, -2), true);
 		ItemFactory::registerItem(new ItemBlock(258, 0, -3), true);
 		ItemFactory::registerItem(new ItemBlock(259, 0, -4), true);
@@ -121,134 +125,168 @@ class ItemFactory{
 		ItemFactory::registerItem(new ItemBlock(265, 0, -10), true);
 		ItemFactory::registerItem(new ItemBlock(266, 0, -11), true);
 
+		ItemFactory::registerItem(new ItemBlock(385, 0, -130), true);
+		ItemFactory::registerItem(new ItemBlock(386, 0, -131), true);
+		ItemFactory::registerItem(new ItemBlock(387, 0, -132), true);
+		ItemFactory::registerItem(new ItemBlock(388, 0, -133), true);
+		ItemFactory::registerItem(new ItemBlock(389, 0, -134), true);
+		ItemFactory::registerItem(new ItemBlock(390, 0, -135), true);
+		ItemFactory::registerItem(new ItemBlock(391, 0, -136), true);
+		ItemFactory::registerItem(new ItemBlock(392, 0, -137), true);
+		ItemFactory::registerItem(new ItemBlock(393, 0, -138), true);
+		ItemFactory::registerItem(new ItemBlock(393, 0, 335), true);
+
+		ItemFactory::registerItem(new ItemBlock(411, 0, -156), true);
+		ItemFactory::registerItem(new ItemBlock(412, 0, -157), true);
+		ItemFactory::registerItem(new ItemBlock(413, 0, -158), true);
+
+		ItemFactory::registerItem(
+new ItemBlock(418, 0, -163), true);
+		ItemFactory::registerItem(new ItemBlock(419, 0, -164), true);
+		ItemFactory::registerItem(new ItemBlock(420, 0, -165), true);
+
+		ItemFactory::registerItem(new ItemBlock(450, 0, -195), true);
+		ItemFactory::registerItem(new ItemBlock(451, 0, -196), true);
+		ItemFactory::registerItem(new ItemBlock(452, 0, -197), true);
+		ItemFactory::registerItem(new ItemBlock(453, 0, -198), true);
+
+		ItemFactory::registerItem(new ItemBlock(455, 0, -200), true);
+		ItemFactory::registerItem(new ItemBlock(456, 0, -201), true);
+		ItemFactory::registerItem(new ItemBlock(457, 0, -202), true);
 		ItemFactory::registerItem(new ItemBlock(458, 0, -203), true);
 		ItemFactory::registerItem(new ItemBlock(459, 0, -204), true);
 
+		ItemFactory::registerItem(new ItemBlock(461, 0, -206), true);
+		ItemFactory::registerItem(new ItemBlock(462, 0, -207), true);
+		ItemFactory::registerItem(new ItemBlock(462, 0, 477), true);
+
+		ItemFactory::registerItem(new ItemBlock(464, 0, 720), true);
+
 		ItemFactory::registerItem(new ItemBlock(467, 0, -212), true);
 		ItemFactory::registerItem(new ItemBlock(468, 0, -213), true);
-		/* -단위 아이템 블록 설치 가능 */
+		/* -단위 블럭 설치 가능 */
 
-	/* Element */
-	ItemFactory::registerItem(new Item(-12, 0, ''), true);
-	ItemFactory::registerItem(new Item(-13, 0, ''), true);
-	ItemFactory::registerItem(new Item(-14, 0, ''), true);
-	ItemFactory::registerItem(new Item(-15, 0, ''), true);
-	ItemFactory::registerItem(new Item(-16, 0, ''), true);
-	ItemFactory::registerItem(new Item(-17, 0, ''), true);
-	ItemFactory::registerItem(new Item(-18, 0, ''), true);
-	ItemFactory::registerItem(new Item(-19, 0, ''), true);
-	ItemFactory::registerItem(new Item(-20, 0, ''), true);
-	ItemFactory::registerItem(new Item(-21, 0, ''), true);
-	ItemFactory::registerItem(new Item(-22, 0, ''), true);
-	ItemFactory::registerItem(new Item(-23, 0, ''), true);
-	ItemFactory::registerItem(new Item(-24, 0, ''), true);
-	ItemFactory::registerItem(new Item(-25, 0, ''), true);
-	ItemFactory::registerItem(new Item(-26, 0, ''), true);
-	ItemFactory::registerItem(new Item(-27, 0, ''), true);
-	ItemFactory::registerItem(new Item(-28, 0, ''), true);
-	ItemFactory::registerItem(new Item(-29, 0, ''), true);
-	ItemFactory::registerItem(new Item(-30, 0, ''), true);
-	ItemFactory::registerItem(new Item(-31, 0, ''), true);
-	ItemFactory::registerItem(new Item(-32, 0, ''), true);
-	ItemFactory::registerItem(new Item(-33, 0, ''), true);
-	ItemFactory::registerItem(new Item(-34, 0, ''), true);
-	ItemFactory::registerItem(new Item(-35, 0, ''), true);
-	ItemFactory::registerItem(new Item(-36, 0, ''), true);
-	ItemFactory::registerItem(new Item(-37, 0, ''), true);
-	ItemFactory::registerItem(new Item(-38, 0, ''), true);
-	ItemFactory::registerItem(new Item(-39, 0, ''), true);
-	ItemFactory::registerItem(new Item(-40, 0, ''), true);
-	ItemFactory::registerItem(new Item(-41, 0, ''), true);
-	ItemFactory::registerItem(new Item(-42, 0, ''), true);
-	ItemFactory::registerItem(new Item(-43, 0, ''), true);
-	ItemFactory::registerItem(new Item(-44, 0, ''), true);
-	ItemFactory::registerItem(new Item(-45, 0, ''), true);
-	ItemFactory::registerItem(new Item(-46, 0, ''), true);
-	ItemFactory::registerItem(new Item(-47, 0, ''), true);
-	ItemFactory::registerItem(new Item(-48, 0, ''), true);
-	ItemFactory::registerItem(new Item(-49, 0, ''), true);
-	ItemFactory::registerItem(new Item(-50, 0, ''), true);
-	ItemFactory::registerItem(new Item(-51, 0, ''), true);
-	ItemFactory::registerItem(new Item(-52, 0, ''), true);
-	ItemFactory::registerItem(new Item(-53, 0, ''), true);
-	ItemFactory::registerItem(new Item(-54, 0, ''), true);
-	ItemFactory::registerItem(new Item(-55, 0, ''), true);
-	ItemFactory::registerItem(new Item(-56, 0, ''), true);
-	ItemFactory::registerItem(new Item(-57, 0, ''), true);
-	ItemFactory::registerItem(new Item(-58, 0, ''), true);
-	ItemFactory::registerItem(new Item(-59, 0, ''), true);
-	ItemFactory::registerItem(new Item(-60, 0, ''), true);
-	ItemFactory::registerItem(new Item(-61, 0, ''), true);
-	ItemFactory::registerItem(new Item(-62, 0, ''), true);
-	ItemFactory::registerItem(new Item(-63, 0, ''), true);
-	ItemFactory::registerItem(new Item(-64, 0, ''), true);
-	ItemFactory::registerItem(new Item(-65, 0, ''), true);
-	ItemFactory::registerItem(new Item(-66, 0, ''), true);
-	ItemFactory::registerItem(new Item(-67, 0, ''), true);
-	ItemFactory::registerItem(new Item(-68, 0, ''), true);
-	ItemFactory::registerItem(new Item(-69, 0, ''), true);
-	ItemFactory::registerItem(new Item(-70, 0, ''), true);
-	ItemFactory::registerItem(new Item(-71, 0, ''), true);
-	ItemFactory::registerItem(new Item(-72, 0, ''), true);
-	ItemFactory::registerItem(new Item(-73, 0, ''), true);
-	ItemFactory::registerItem(new Item(-74, 0, ''), true);
-	ItemFactory::registerItem(new Item(-75, 0, ''), true);
-	ItemFactory::registerItem(new Item(-76, 0, ''), true);
-	ItemFactory::registerItem(new Item(-77, 0, ''), true);
-	ItemFactory::registerItem(new Item(-78, 0, ''), true);
-	ItemFactory::registerItem(new Item(-79, 0, ''), true);
-	ItemFactory::registerItem(new Item(-80, 0, ''), true);
-	ItemFactory::registerItem(new Item(-81, 0, ''), true);
-	ItemFactory::registerItem(new Item(-82, 0, ''), true);
-	ItemFactory::registerItem(new Item(-83, 0, ''), true);
-	ItemFactory::registerItem(new Item(-84, 0, ''), true);
-	ItemFactory::registerItem(new Item(-85, 0, ''), true);
-	ItemFactory::registerItem(new Item(-86, 0, ''), true);
-	ItemFactory::registerItem(new Item(-87, 0, ''), true);
-	ItemFactory::registerItem(new Item(-88, 0, ''), true);
-	ItemFactory::registerItem(new Item(-89, 0, ''), true);
-	ItemFactory::registerItem(new Item(-90, 0, ''), true);
-	ItemFactory::registerItem(new Item(-91, 0, ''), true);
-	ItemFactory::registerItem(new Item(-92, 0, ''), true);
-	ItemFactory::registerItem(new Item(-93, 0, ''), true);
-	ItemFactory::registerItem(new Item(-94, 0, ''), true);
-	ItemFactory::registerItem(new Item(-95, 0, ''), true);
-	ItemFactory::registerItem(new Item(-96, 0, ''), true);
-	ItemFactory::registerItem(new Item(-97, 0, ''), true);
-	ItemFactory::registerItem(new Item(-98, 0, ''), true);
-	ItemFactory::registerItem(new Item(-99, 0, ''), true);
-	ItemFactory::registerItem(new Item(-100, 0, ''), true);
-	ItemFactory::registerItem(new Item(-101, 0, ''), true);
-	ItemFactory::registerItem(new Item(-102, 0, ''), true);
-	ItemFactory::registerItem(new Item(-103, 0, ''), true);
-	ItemFactory::registerItem(new Item(-104, 0, ''), true);
-	ItemFactory::registerItem(new Item(-105, 0, ''), true);
-	ItemFactory::registerItem(new Item(-106, 0, ''), true);
-	ItemFactory::registerItem(new Item(-107, 0, ''), true);
-	ItemFactory::registerItem(new Item(-108, 0, ''), true);
-	ItemFactory::registerItem(new Item(-109, 0, ''), true);
-	ItemFactory::registerItem(new Item(-110, 0, ''), true);
-	ItemFactory::registerItem(new Item(-111, 0, ''), true);
-	ItemFactory::registerItem(new Item(-112, 0, ''), true);
-	ItemFactory::registerItem(new Item(-113, 0, ''), true);
-	ItemFactory::registerItem(new Item(-114, 0, ''), true);
-	ItemFactory::registerItem(new Item(-115, 0, ''), true);
-	ItemFactory::registerItem(new Item(-116, 0, ''), true);
-	ItemFactory::registerItem(new Item(-117, 0, ''), true);
-	ItemFactory::registerItem(new Item(-118, 0, ''), true);
-	ItemFactory::registerItem(new Item(-119, 0, ''), true);
-	ItemFactory::registerItem(new Item(-120, 0, ''), true);
-	ItemFactory::registerItem(new Item(-121, 0, ''), true);
-	ItemFactory::registerItem(new Item(-122, 0, ''), true);
-	ItemFactory::registerItem(new Item(-123, 0, ''), true);
-	ItemFactory::registerItem(new Item(-124, 0, ''), true);
-	ItemFactory::registerItem(new Item(-125, 0, ''), true);
-	ItemFactory::registerItem(new Item(-126, 0, ''), true);
-	ItemFactory::registerItem(new Item(-127, 0, ''), true);
-	ItemFactory::registerItem(new Item(-128, 0, ''), true);
-	ItemFactory::registerItem(new Item(-129, 0, ''), true);
+		/* Element */
+		ItemFactory::registerItem(new Item(-12, 0, ''), true);
+		ItemFactory::registerItem(new Item(-13, 0, ''), true);
+		ItemFactory::registerItem(new Item(-14, 0, ''), true);
+		ItemFactory::registerItem(new Item(-15, 0, ''), true);
+		ItemFactory::registerItem(new Item(-16, 0, ''), true);
+		ItemFactory::registerItem(new Item(-17, 0, ''), true);
+		ItemFactory::registerItem(new Item(-18, 0, ''), true);
+		ItemFactory::registerItem(new Item(-19, 0, ''), true);
+		ItemFactory::registerItem(new Item(-20, 0, ''), true);
+		ItemFactory::registerItem(new Item(-21, 0, ''), true);
+		ItemFactory::registerItem(new Item(-22, 0, ''), true);
+		ItemFactory::registerItem(new Item(-23, 0, ''), true);
+		ItemFactory::registerItem(new Item(-24, 0, ''), true);
+		ItemFactory::registerItem(new Item(-25, 0, ''), true);
+		ItemFactory::registerItem(new Item(-26, 0, ''), true);
+		ItemFactory::registerItem(new Item(-27, 0, ''), true);
+		ItemFactory::registerItem(new Item(-28, 0, ''), true);
+		ItemFactory::registerItem(new Item(-29, 0, ''), true);
+		ItemFactory::registerItem(new Item(-30, 0, ''), true);
+		ItemFactory::registerItem(new Item(-31, 0, ''), true);
+		ItemFactory::registerItem(new Item(-32, 0, ''), true);
+		ItemFactory::registerItem(new Item(-33, 0, ''), true);
+		ItemFactory::registerItem(new Item(-34, 0, ''), true);
+		ItemFactory::registerItem(new Item(-35, 0, ''), true);
+		ItemFactory::registerItem(new Item(-36, 0, ''), true);
+		ItemFactory::registerItem(new Item(-37, 0, ''), true);
+		ItemFactory::registerItem(new Item(-38, 0, ''), true);
+		ItemFactory::registerItem(new Item(-39, 0, ''), true);
+		ItemFactory::registerItem(new Item(-40, 0, ''), true);
+		ItemFactory::registerItem(new Item(-41, 0, ''), true);
+		ItemFactory::registerItem(new Item(-42, 0, ''), true);
+		ItemFactory::registerItem(new Item(-43, 0, ''), true);
+		ItemFactory::registerItem(new Item(-44, 0, ''), true);
+		ItemFactory::registerItem(new Item(-45, 0, ''), true);
+		ItemFactory::registerItem(new Item(-46, 0, ''), true);
+		ItemFactory::registerItem(new Item(-47, 0, ''), true);
+		ItemFactory::registerItem(new Item(-48, 0, ''), true);
+		ItemFactory::registerItem(new Item(-49, 0, ''), true);
+		ItemFactory::registerItem(new Item(-50, 0, ''), true);
+		ItemFactory::registerItem(new Item(-51, 0, ''), true);
+		ItemFactory::registerItem(new Item(-52, 0, ''), true);
+		ItemFactory::registerItem(new Item(-53, 0, ''), true);
+		ItemFactory::registerItem(new Item(-54, 0, ''), true);
+		ItemFactory::registerItem(new Item(-55, 0, ''), true);
+		ItemFactory::registerItem(new Item(-56, 0, ''), true);
+		ItemFactory::registerItem(new Item(-57, 0, ''), true);
+		ItemFactory::registerItem(new Item(-58, 0, ''), true);
+		ItemFactory::registerItem(new Item(-59, 0, ''), true);
+		ItemFactory::registerItem(new Item(-60, 0, ''), true);
+		ItemFactory::registerItem(new Item(-61, 0, ''), true);
+		ItemFactory::registerItem(new Item(-62, 0, ''), true);
+		ItemFactory::registerItem(new Item(-63, 0, ''), true);
+		ItemFactory::registerItem(new Item(-64, 0, ''), true);
+		ItemFactory::registerItem(new Item(-65, 0, ''), true);
+		ItemFactory::registerItem(new Item(-66, 0, ''), true);
+		ItemFactory::registerItem(new Item(-67, 0, ''), true);
+		ItemFactory::registerItem(new Item(-68, 0, ''), true);
+		ItemFactory::registerItem(new Item(-69, 0, ''), true);
+		ItemFactory::registerItem(new Item(-70, 0, ''), true);
+		ItemFactory::registerItem(new Item(-71, 0, ''), true);
+		ItemFactory::registerItem(new Item(-72, 0, ''), true);
+		ItemFactory::registerItem(new Item(-73, 0, ''), true);
+		ItemFactory::registerItem(new Item(-74, 0, ''), true);
+		ItemFactory::registerItem(new Item(-75, 0, ''), true);
+		ItemFactory::registerItem(new Item(-76, 0, ''), true);
+		ItemFactory::registerItem(new Item(-77, 0, ''), true);
+		ItemFactory::registerItem(new Item(-78, 0, ''), true);
+		ItemFactory::registerItem(new Item(-79, 0, ''), true);
+		ItemFactory::registerItem(new Item(-80, 0, ''), true);
+		ItemFactory::registerItem(new Item(-81, 0, ''), true);
+		ItemFactory::registerItem(new Item(-82, 0, ''), true);
+		ItemFactory::registerItem(new Item(-83, 0, ''), true);
+		ItemFactory::registerItem(new Item(-84, 0, ''), true);
+		ItemFactory::registerItem(new Item(-85, 0, ''), true);
+		ItemFactory::registerItem(new Item(-86, 0, ''), true);
+		ItemFactory::registerItem(new Item(-87, 0, ''), true);
+		ItemFactory::registerItem(new Item(-88, 0, ''), true);
+		ItemFactory::registerItem(new Item(-89, 0, ''), true);
+		ItemFactory::registerItem(new Item(-90, 0, ''), true);
+		ItemFactory::registerItem(new Item(-91, 0, ''), true);
+		ItemFactory::registerItem(new Item(-92, 0, ''), true);
+		ItemFactory::registerItem(new Item(-93, 0, ''), true);
+		ItemFactory::registerItem(new Item(-94, 0, ''), true);
+		ItemFactory::registerItem(new Item(-95, 0, ''), true);
+		ItemFactory::registerItem(new Item(-96, 0, ''), true);
+		ItemFactory::registerItem(new Item(-97, 0, ''), true);
+		ItemFactory::registerItem(new Item(-98, 0, ''), true);
+		ItemFactory::registerItem(new Item(-99, 0, ''), true);
+		ItemFactory::registerItem(new Item(-100, 0, ''), true);
+		ItemFactory::registerItem(new Item(-101, 0, ''), true);
+		ItemFactory::registerItem(new Item(-102, 0, ''), true);
+		ItemFactory::registerItem(new Item(-103, 0, ''), true);
+		ItemFactory::registerItem(new Item(-104, 0, ''), true);
+		ItemFactory::registerItem(new Item(-105, 0, ''), true);
+		ItemFactory::registerItem(new Item(-106, 0, ''), true);
+		ItemFactory::registerItem(new Item(-107, 0, ''), true);
+		ItemFactory::registerItem(new Item(-108, 0, ''), true);
+		ItemFactory::registerItem(new Item(-109, 0, ''), true);
+		ItemFactory::registerItem(new Item(-110, 0, ''), true);
+		ItemFactory::registerItem(new Item(-111, 0, ''), true);
+		ItemFactory::registerItem(new Item(-112, 0, ''), true);
+		ItemFactory::registerItem(new Item(-113, 0, ''), true);
+		ItemFactory::registerItem(new Item(-114, 0, ''), true);
+		ItemFactory::registerItem(new Item(-115, 0, ''), true);
+		ItemFactory::registerItem(new Item(-116, 0, ''), true);
+		ItemFactory::registerItem(new Item(-117, 0, ''), true);
+		ItemFactory::registerItem(new Item(-118, 0, ''), true);
+		ItemFactory::registerItem(new Item(-119, 0, ''), true);
+		ItemFactory::registerItem(new Item(-120, 0, ''), true);
+		ItemFactory::registerItem(new Item(-121, 0, ''), true);
+		ItemFactory::registerItem(new Item(-122, 0, ''), true);
+		ItemFactory::registerItem(new Item(-123, 0, ''), true);
+		ItemFactory::registerItem(new Item(-124, 0, ''), true);
+		ItemFactory::registerItem(new Item(-125, 0, ''), true);
+		ItemFactory::registerItem(new Item(-126, 0, ''), true);
+		ItemFactory::registerItem(new Item(-127, 0, ''), true);
+		ItemFactory::registerItem(new Item(-128, 0, ''), true);
+		ItemFactory::registerItem(new Item(-129, 0, ''), true);
 
-	/* ELement End */
+	      /* ELement End */
 
 		/*새로운 아이템 추가 작업 */
 
