@@ -27,7 +27,7 @@ use pocketmine\item\TieredTool;
 
 class Loom extends Solid{
 
-	protected $id = self::LOOM;
+	protected $id = self::LOOM_BLOCK;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
