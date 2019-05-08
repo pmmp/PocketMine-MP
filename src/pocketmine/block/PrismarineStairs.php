@@ -24,15 +24,27 @@ use pocketmine\item\TieredTool;
 
 class PrismarineStairs extends Stair{
 
+	protected $id = self::PRISMARINE_STAIRS;
+	
+	public function __construct(int $meta = 0){
+		$this->meta = $meta;
+	}
+	public function getName() : string{
+		return "Prismarine Stairs";
+	}
+
 	public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}
+
 	public function getToolHarvestLevel() : int{
 		return TieredTool::TIER_WOODEN;
 	}
+
 	public function getHardness() : float{
 		return 2;
 	}
+
 	public function getBlastResistance() : float{
 		return 40;
 	}
