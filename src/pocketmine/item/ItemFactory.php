@@ -103,6 +103,12 @@ class ItemFactory{
 		ItemFactory::registerItem(new Item(-10, 0, "Stripped Oak Log"), true);
 		ItemFactory::registerItem(new Item(-11, 0, "Blue Ice"), true);
 
+		ItemFactory::registerItem(new Item(-203, 0, "Barrel"), true);
+		ItemFactory::registerItem(new Item(-204, 0, "Loom"), true);
+
+		ItemFactory::registerItem(new Item(-212, 0, "Wood"), true);
+		ItemFactory::registerItem(new Item(-213, 0, "Composter"), true);
+
 		/* -단위 아이템 블록 설치 가능 */
 		ItemFactory::registerItem(new ItemBlock(257, 0, -2), true);
 		ItemFactory::registerItem(new ItemBlock(258, 0, -3), true);
@@ -114,6 +120,12 @@ class ItemFactory{
 		ItemFactory::registerItem(new ItemBlock(264, 0, -9), true);
 		ItemFactory::registerItem(new ItemBlock(265, 0, -10), true);
 		ItemFactory::registerItem(new ItemBlock(266, 0, -11), true);
+
+		ItemFactory::registerItem(new ItemBlock(458, 0, -203), true);
+		ItemFactory::registerItem(new ItemBlock(459, 0, -204), true);
+
+		ItemFactory::registerItem(new ItemBlock(467, 0, -212), true);
+		ItemFactory::registerItem(new ItemBlock(468, 0, -213), true);
 		/* -단위 아이템 블록 설치 가능 */
 
 	/* Element */
