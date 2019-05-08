@@ -25,12 +25,16 @@ namespace pocketmine\world\format\io;
 
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
+use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedChunkFormatException;
+use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 
 interface WorldProvider{
 
 	/**
 	 * @param string $path
+	 * @throws CorruptedWorldException
+	 * @throws UnsupportedWorldFormatException
 	 */
 	public function __construct(string $path);
 

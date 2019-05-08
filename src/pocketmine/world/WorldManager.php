@@ -30,6 +30,7 @@ use pocketmine\event\world\WorldUnloadEvent;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\io\FormatConverter;
 use pocketmine\world\format\io\WorldProvider;
@@ -195,7 +196,7 @@ class WorldManager{
 	 */
 	public function loadWorld(string $name, bool $autoUpgrade = false) : bool{
 		if(trim($name) === ""){
-			throw new WorldException("Invalid empty world name");
+			throw new \InvalidArgumentException("Invalid empty world name");
 		}
 		if($this->isWorldLoaded($name)){
 			return true;
@@ -221,7 +222,15 @@ class WorldManager{
 		 * @var WorldProvider $provider
 		 * @see WorldProvider::__construct()
 		 */
-		$provider = new $providerClass($path);
+		try{
+			$provider = new $providerClass($path);
+		}catch(CorruptedWorldException $e){
+			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Corruption detected: " . $e->getMessage()]));
+			return false;
+		}catch(UnsupportedWorldFormatException $e){
+			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Unsupported format: " . $e->getMessage()]));
+			return false;
+		}
 		try{
 			GeneratorManager::getGenerator($provider->getWorldData()->getGenerator(), true);
 		}catch(\InvalidArgumentException $e){
@@ -230,7 +239,7 @@ class WorldManager{
 		}
 		if(!($provider instanceof WritableWorldProvider)){
 			if(!$autoUpgrade){
-				throw new WorldException("World \"$name\" is in an unsupported format and needs to be upgraded");
+				throw new UnsupportedWorldFormatException("World \"$name\" is in an unsupported format and needs to be upgraded");
 			}
 			$this->server->getLogger()->notice("Upgrading world \"$name\" to new format. This may take a while.");
 
@@ -240,12 +249,7 @@ class WorldManager{
 			$this->server->getLogger()->notice("Upgraded world \"$name\" to new format successfully. Backed up pre-conversion world at " . $converter->getBackupPath());
 		}
 
-		try{
-			$world = new World($this->server, $name, $provider);
-		}catch(UnsupportedWorldFormatException $e){
-			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, $e->getMessage()]));
-			return false;
-		}
+		$world = new World($this->server, $name, $provider);
 
 		$this->worlds[$world->getId()] = $world;
 		$world->setAutoSave($this->autoSave);

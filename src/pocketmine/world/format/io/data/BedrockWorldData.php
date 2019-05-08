@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\data;
 
 use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
@@ -31,6 +32,7 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\generator\Flat;
 use pocketmine\world\generator\Generator;
@@ -102,13 +104,17 @@ class BedrockWorldData extends BaseNbtWorldData{
 		file_put_contents($path . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 	}
 
-	protected function load() : ?CompoundTag{
+	protected function load() : CompoundTag{
 		$nbt = new LittleEndianNbtSerializer();
-		$worldData = $nbt->read(substr(file_get_contents($this->dataPath), 8))->getTag();
+		try{
+			$worldData = $nbt->read(substr(file_get_contents($this->dataPath), 8))->getTag();
+		}catch(NbtDataException $e){
+			throw new CorruptedWorldException($e->getMessage(), 0, $e);
+		}
 
 		$version = $worldData->getInt("StorageVersion", INT32_MAX, true);
 		if($version > self::CURRENT_STORAGE_VERSION){
-			throw new UnsupportedWorldFormatException("Specified LevelDB world format version ($version) is not supported by " . \pocketmine\NAME);
+			throw new UnsupportedWorldFormatException("LevelDB world format version $version is currently unsupported");
 		}
 
 		return $worldData;
@@ -130,7 +136,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 					case self::GENERATOR_LIMITED:
 						throw new UnsupportedWorldFormatException("Limited worlds are not currently supported");
 					default:
-						throw new UnsupportedWorldFormatException("Unknown LevelDB world format type, this world cannot be loaded");
+						throw new UnsupportedWorldFormatException("Unknown LevelDB generator type");
 				}
 			}else{
 				$this->compoundTag->setString("generatorName", "default");

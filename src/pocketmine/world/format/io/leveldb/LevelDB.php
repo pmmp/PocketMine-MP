@@ -37,6 +37,7 @@ use pocketmine\world\format\io\BaseWorldProvider;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\data\BedrockWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
+use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\io\SubChunkConverter;
@@ -61,6 +62,7 @@ use function ord;
 use function str_repeat;
 use function strlen;
 use function substr;
+use function trim;
 use function unpack;
 use const LEVELDB_ZLIB_RAW_COMPRESSION;
 
@@ -105,6 +107,12 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}
 	}
 
+	/**
+	 * @param string $path
+	 *
+	 * @return \LevelDB
+	 * @throws \LevelDBException
+	 */
 	private static function createDB(string $path) : \LevelDB{
 		return new \LevelDB($path . "/db", [
 			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION
@@ -115,7 +123,12 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		self::checkForLevelDBExtension();
 		parent::__construct($path);
 
-		$this->db = self::createDB($path);
+		try{
+			$this->db = self::createDB($path);
+		}catch(\LevelDBException $e){
+			//we can't tell the difference between errors caused by bad permissions and actual corruption :(
+			throw new CorruptedWorldException(trim($e->getMessage()), 0, $e);
+		}
 	}
 
 	protected function loadLevelData() : WorldData{

@@ -25,8 +25,9 @@ namespace pocketmine\world\format\io\data;
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\world\format\io\exception\CorruptedWorldException;
+use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\io\WorldData;
-use pocketmine\world\WorldException;
 use function file_exists;
 
 abstract class BaseNbtWorldData implements WorldData{
@@ -37,26 +38,38 @@ abstract class BaseNbtWorldData implements WorldData{
 	/** @var CompoundTag */
 	protected $compoundTag;
 
+	/**
+	 * @param string $dataPath
+	 *
+	 * @throws CorruptedWorldException
+	 * @throws UnsupportedWorldFormatException
+	 */
 	public function __construct(string $dataPath){
 		$this->dataPath = $dataPath;
 
 		if(!file_exists($this->dataPath)){
-			throw new WorldException("World data not found at $dataPath");
+			throw new CorruptedWorldException("World data not found at $dataPath");
 		}
 
-		$this->compoundTag = $this->load();
-		if($this->compoundTag === null){
-			throw new WorldException("Invalid world data");
+		try{
+			$this->compoundTag = $this->load();
+		}catch(CorruptedWorldException $e){
+			throw new CorruptedWorldException("Corrupted world data: " . $e->getMessage(), 0, $e);
 		}
 		$this->fix();
 	}
 
 	/**
 	 * @return CompoundTag
+	 * @throws CorruptedWorldException
+	 * @throws UnsupportedWorldFormatException
 	 */
-	abstract protected function load() : ?CompoundTag;
+	abstract protected function load() : CompoundTag;
 
-
+	/**
+	 * @throws CorruptedWorldException
+	 * @throws UnsupportedWorldFormatException
+	 */
 	abstract protected function fix() : void;
 
 	/**

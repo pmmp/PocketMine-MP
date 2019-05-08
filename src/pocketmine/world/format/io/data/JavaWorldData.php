@@ -24,11 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\data;
 
 use pocketmine\nbt\BigEndianNbtSerializer;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
@@ -67,13 +69,18 @@ class JavaWorldData extends BaseNbtWorldData{
 		file_put_contents($path . "level.dat", $buffer);
 	}
 
-	protected function load() : ?CompoundTag{
+	protected function load() : CompoundTag{
 		$nbt = new BigEndianNbtSerializer();
-		$worldData = $nbt->readCompressed(file_get_contents($this->dataPath))->getTag();
-		if($worldData->hasTag("Data", CompoundTag::class)){
-			return $worldData->getCompoundTag("Data");
+		try{
+			$worldData = $nbt->readCompressed(file_get_contents($this->dataPath))->getTag();
+		}catch(NbtDataException $e){
+			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
-		return null;
+
+		if(!$worldData->hasTag("Data", CompoundTag::class)){
+			throw new CorruptedWorldException("Missing 'Data' key or wrong type");
+		}
+		return $worldData->getCompoundTag("Data");
 	}
 
 	protected function fix() : void{

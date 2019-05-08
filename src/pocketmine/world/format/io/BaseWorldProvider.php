@@ -25,7 +25,9 @@ namespace pocketmine\world\format\io;
 
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
+use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedChunkFormatException;
+use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\WorldException;
 use function file_exists;
 
@@ -44,6 +46,11 @@ abstract class BaseWorldProvider implements WorldProvider{
 		$this->worldData = $this->loadLevelData();
 	}
 
+	/**
+	 * @return WorldData
+	 * @throws CorruptedWorldException
+	 * @throws UnsupportedWorldFormatException
+	 */
 	abstract protected function loadLevelData() : WorldData;
 
 	public function getPath() : string{
