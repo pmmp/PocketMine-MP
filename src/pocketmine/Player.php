@@ -2263,20 +2263,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * @deprecated
-	 * @see Player::sendTitle()
-	 *
-	 * @param string $title
-	 * @param string $subtitle
-	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int    $stay Duration in ticks to stay on screen for
-	 * @param int    $fadeOut Duration in ticks for fade-out.
-	 */
-	public function addTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1){
-		$this->sendTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
-	}
-
-	/**
 	 * Adds a title text to the user's screen, with an optional subtitle.
 	 *
 	 * @param string $title
@@ -2294,32 +2280,12 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * @deprecated
-	 * @see Player::sendSubTitle()
-	 *
-	 * @param string $subtitle
-	 */
-	public function addSubTitle(string $subtitle){
-		$this->sendSubTitle($subtitle);
-	}
-
-	/**
 	 * Sets the subtitle message, without sending a title.
 	 *
 	 * @param string $subtitle
 	 */
 	public function sendSubTitle(string $subtitle) : void{
 		$this->sendDataPacket(SetTitlePacket::subtitle($subtitle));
-	}
-
-	/**
-	 * @deprecated
-	 * @see Player::sendActionBarMessage()
-	 *
-	 * @param string $message
-	 */
-	public function addActionBarMessage(string $message){
-		$this->sendActionBarMessage($message);
 	}
 
 	/**
