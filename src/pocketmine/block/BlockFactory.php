@@ -81,9 +81,9 @@ class BlockFactory{
 		self::registerBlock(new HardStainedGlass(254, 0, "Hard Stained Glass"));
 		self::registerBlock(new HardStainedGlassPane(191, 0, "Hard Stained Glass Pane"));
 		
-		self::registerBlock(new NewBlock(257, 0, "Prismarine Stairs"));
-		self::registerBlock(new NewBlock(258, 0, "Dark Prismarine Stairs"));
-		self::registerBlock(new NewBlock(259, 0, "Prismarine Bricks Stairs"));
+		self::registerBlock(new PrismarineStairs(257, 0, "Prismarine Stairs"));
+		self::registerBlock(new DarkPrismarineStairs(258, 0, "Dark Prismarine Stairs"));
+		self::registerBlock(new PrismarineBricksStairs(259, 0, "Prismarine Bricks Stairs"));
 		self::registerBlock(new NewBlock(260, 0, "Stripped Spruce Log"));
 		self::registerBlock(new NewBlock(261, 0, "Stripped Birch Log"));
 		self::registerBlock(new NewBlock(262, 0, "Stripped Jungle Log"));
