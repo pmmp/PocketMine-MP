@@ -1014,7 +1014,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 				}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
 					$this->spawned = true;
 
-					foreach($this->usedChunks as $chunkHash => $_){
+					foreach($this->usedChunks as $chunkHash => $hasSent){
+						if(!$hasSent){
+							continue;
+						}
 						World::getXZ($chunkHash, $_x, $_z);
 						$this->spawnEntitiesOnChunk($_x, $_z);
 					}
