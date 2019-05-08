@@ -1,5 +1,3 @@
-수정후
-
 <?php
 
 /*
@@ -140,8 +138,7 @@ class ItemFactory{
 		ItemFactory::registerItem(new ItemBlock(412, 0, -157), true);
 		ItemFactory::registerItem(new ItemBlock(413, 0, -158), true);
 
-		ItemFactory::registerItem(
-new ItemBlock(418, 0, -163), true);
+		ItemFactory::registerItem(new ItemBlock(418, 0, -163), true);
 		ItemFactory::registerItem(new ItemBlock(419, 0, -164), true);
 		ItemFactory::registerItem(new ItemBlock(420, 0, -165), true);
 
