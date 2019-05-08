@@ -2305,7 +2305,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * Resets the title duration settings.
+	 * Resets the title duration settings to defaults and removes any existing titles.
 	 */
 	public function resetTitles(){
 		$this->sendDataPacket(SetTitlePacket::resetTitleOptions());
