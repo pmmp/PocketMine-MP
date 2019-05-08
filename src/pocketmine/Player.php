@@ -2290,7 +2290,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($subtitle !== ""){
 			$this->sendSubTitle($subtitle);
 		}
-		$this->sendTitleText($title, SetTitlePacket::TYPE_SET_TITLE);
+		$this->sendDataPacket(SetTitlePacket::title($title));
 	}
 
 	/**
@@ -2309,7 +2309,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param string $subtitle
 	 */
 	public function sendSubTitle(string $subtitle) : void{
-		$this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
+		$this->sendDataPacket(SetTitlePacket::subtitle($subtitle));
 	}
 
 	/**
@@ -2328,25 +2328,21 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param string $message
 	 */
 	public function sendActionBarMessage(string $message) : void{
-		$this->sendTitleText($message, SetTitlePacket::TYPE_SET_ACTIONBAR_MESSAGE);
+		$this->sendDataPacket(SetTitlePacket::actionBarMessage($message));
 	}
 
 	/**
 	 * Removes the title from the client's screen.
 	 */
 	public function removeTitles(){
-		$pk = new SetTitlePacket();
-		$pk->type = SetTitlePacket::TYPE_CLEAR_TITLE;
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(SetTitlePacket::clearTitle());
 	}
 
 	/**
 	 * Resets the title duration settings.
 	 */
 	public function resetTitles(){
-		$pk = new SetTitlePacket();
-		$pk->type = SetTitlePacket::TYPE_RESET_TITLE;
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(SetTitlePacket::resetTitleOptions());
 	}
 
 	/**
@@ -2358,26 +2354,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function setTitleDuration(int $fadeIn, int $stay, int $fadeOut){
 		if($fadeIn >= 0 and $stay >= 0 and $fadeOut >= 0){
-			$pk = new SetTitlePacket();
-			$pk->type = SetTitlePacket::TYPE_SET_ANIMATION_TIMES;
-			$pk->fadeInTime = $fadeIn;
-			$pk->stayTime = $stay;
-			$pk->fadeOutTime = $fadeOut;
-			$this->sendDataPacket($pk);
+			$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
 		}
-	}
-
-	/**
-	 * Internal function used for sending titles.
-	 *
-	 * @param string $title
-	 * @param int    $type
-	 */
-	protected function sendTitleText(string $title, int $type){
-		$pk = new SetTitlePacket();
-		$pk->type = $type;
-		$pk->text = $title;
-		$this->sendDataPacket($pk);
 	}
 
 	/**
