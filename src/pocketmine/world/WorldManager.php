@@ -117,7 +117,7 @@ class WorldManager{
 	 *
 	 * @return World|null
 	 */
-	public function getLevel(int $worldId) : ?World{
+	public function getWorld(int $worldId) : ?World{
 		return $this->worlds[$worldId] ?? null;
 	}
 
