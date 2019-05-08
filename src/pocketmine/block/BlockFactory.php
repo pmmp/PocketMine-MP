@@ -97,6 +97,7 @@ class BlockFactory{
 		self::registerBlock(new Barrel()); /* 458 */
 		self::registerBlock(new Loom()); /* 459 */
 
+		self::registerBlock(new Wood3()); /* 467 */
 		self::registerBlock(new Composter()); /* 468 */
 		/* 새로운 블럭 추가 */
 		
