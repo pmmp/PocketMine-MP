@@ -2515,12 +2515,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($this->isValid()){
 			foreach($this->usedChunks as $index => $d){
 				World::getXZ($index, $chunkX, $chunkZ);
-				$this->world->unregisterChunkLoader($this, $chunkX, $chunkZ);
-				$this->world->unregisterChunkListener($this, $chunkX, $chunkZ);
-				foreach($this->world->getChunkEntities($chunkX, $chunkZ) as $entity){
-					$entity->despawnFrom($this);
-				}
-				unset($this->usedChunks[$index]);
+				$this->unloadChunk($chunkX, $chunkZ);
 			}
 		}
 		$this->usedChunks = [];
