@@ -94,6 +94,18 @@ class BlockFactory{
 
 		self::registerBlock(new Barrier()); /* 416 */
 
+		/* self::registerBlock(new Spruce Standing Sign()); 436 */
+		/* self::registerBlock(new Spruce Well Sign()); 437 */
+
+		/* self::registerBlock(new Birch Standing Sign()); 441 */
+		/* self::registerBlock(new Birch Well Sign()); 442 */
+		/* self::registerBlock(new Jungle Standing Sign()); 443 */
+		/* self::registerBlock(new Jungle Well Sign()); 444 */
+		/* self::registerBlock(new Acacia Standing Sign()); 445 */
+		/* self::registerBlock(new Acacia Well Sign()); 446 */
+		/* self::registerBlock(new Dark Oak Standing Sign()); 447 */
+		/* self::registerBlock(new Dark Oak Well Sign()); 448 */
+
 		self::registerBlock(new Barrel()); /* 458 */
 		self::registerBlock(new Loom()); /* 459 */
 
