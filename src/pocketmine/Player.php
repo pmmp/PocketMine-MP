@@ -850,32 +850,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * Gets the player IP address
-	 *
-	 * @return string
-	 */
-	public function getAddress() : string{
-		return $this->networkSession->getIp();
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getPort() : int{
-		return $this->networkSession->getPort();
-	}
-
-	/**
-	 * Returns the last measured latency for this player, in milliseconds. This is measured automatically and reported
-	 * back by the network interface.
-	 *
-	 * @return int
-	 */
-	public function getPing() : int{
-		return $this->networkSession->getPing();
-	}
-
-	/**
 	 * Returns whether the player is currently using an item (right-click and hold).
 	 * @return bool
 	 */
