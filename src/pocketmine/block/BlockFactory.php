@@ -131,7 +131,7 @@ class BlockFactory{
 
 		self::registerBlock(new NewBlock(455, 0, "CARTOGRAPHY_TABLE_BLOCK"));
 		self::registerBlock(new NewBlock(456, 0, "FLETCHING_TABLE_BLOCK"));
-		self::registerBlock(new NewBlock(457, 0, "SMITHING_TABLE_BLOCK"));
+		/* self::registerBlock(new NewBlock(457, 0, "SMITHING_TABLE_BLOCK")); */
 		self::registerBlock(new Barrel()); /* 458 */
 		self::registerBlock(new Loom()); /* 459 */
 
@@ -423,7 +423,7 @@ class BlockFactory{
 		$id = $block->getId();
 
 		if(!$override and self::isRegistered($id)){
-			throw new \RuntimeException("Trying to overwrite an already registered block");
+			throw new \RuntimeException("Trying to overwrite an already registered block $id");
 		}
 
 		for($meta = 0; $meta < 16; ++$meta){
