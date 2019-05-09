@@ -21,8 +21,8 @@
 
 namespace pocketmine;
 
-const NAME = "Z3 Nano";
+const NAME = "Z3 Pro";
 const BASE_VERSION = "3.8.0";
 const IS_DEVELOPMENT_BUILD = false;
-const BUILD_NUMBER = 104;
+const BUILD_NUMBER = 205;
 const MP_VERSION = "1.3.0";
