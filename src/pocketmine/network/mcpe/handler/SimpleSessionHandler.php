@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\block\Block;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Sign;
 use pocketmine\block\utils\SignText;
@@ -78,6 +79,7 @@ use pocketmine\network\mcpe\protocol\types\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\UseItemTransactionData;
 use pocketmine\Player;
+use function array_push;
 use function base64_encode;
 use function fmod;
 use function implode;
@@ -267,10 +269,17 @@ class SimpleSessionHandler extends SessionHandler{
 					return true;
 				}
 				//TODO: end hack for client spam bug
-				$this->player->interactBlock($data->getBlockPos(), $data->getFace(), $clickPos);
+
+				$blockPos = $data->getBlockPos();
+				if(!$this->player->interactBlock($blockPos, $data->getFace(), $clickPos)){
+					$this->onFailedBlockAction($blockPos, $data->getFace());
+				}
 				return true;
 			case UseItemTransactionData::ACTION_BREAK_BLOCK:
-				$this->player->breakBlock($data->getBlockPos());
+				$blockPos = $data->getBlockPos();
+				if(!$this->player->breakBlock($blockPos)){
+					$this->onFailedBlockAction($blockPos, null);
+				}
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
 				$this->player->useHeldItem();
@@ -278,6 +287,30 @@ class SimpleSessionHandler extends SessionHandler{
 		}
 
 		return false;
+	}
+
+	/**
+	 * Internal function used to execute rollbacks when an action fails on a block.
+	 *
+	 * @param Vector3  $blockPos
+	 * @param int|null $face
+	 */
+	private function onFailedBlockAction(Vector3 $blockPos, ?int $face) : void{
+		$this->player->getInventory()->sendHeldItem($this->player);
+		if($blockPos->distanceSquared($this->player) < 10000){
+			$target = $this->player->getWorld()->getBlock($blockPos);
+
+			$blocks = $target->getAllSides();
+			if($face !== null){
+				$sideBlock = $target->getSide($face);
+
+				/** @var Block[] $blocks */
+				array_push($blocks, ...$sideBlock->getAllSides()); //getAllSides() on each of these will include $target and $sideBlock because they are next to each other
+			}else{
+				$blocks[] = $target;
+			}
+			$this->player->getWorld()->sendBlocks([$this->player], $blocks);
+		}
 	}
 
 	private function handleUseItemOnEntityTransaction(UseItemOnEntityTransactionData $data) : bool{

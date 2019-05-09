@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use pocketmine\block\Bed;
-use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\UnknownBlock;
@@ -117,7 +116,6 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function abs;
-use function array_merge;
 use function assert;
 use function ceil;
 use function count;
@@ -1952,7 +1950,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 *
 	 * @param Vector3 $pos
 	 *
-	 * @return bool if the block was successfully broken.
+	 * @return bool if the block was successfully broken, false if a rollback needs to take place.
 	 */
 	public function breakBlock(Vector3 $pos) : bool{
 		$this->doCloseInventory();
@@ -1968,16 +1966,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 				return true;
 			}
 		}
-
-		$this->inventory->sendContents($this);
-		$this->inventory->sendHeldItem($this);
-
-		$target = $this->world->getBlock($pos);
-		/** @var Block[] $blocks */
-		$blocks = $target->getAllSides();
-		$blocks[] = $target;
-
-		$this->world->sendBlocks([$this], $blocks);
 
 		return false;
 	}
@@ -2004,20 +1992,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 				return true;
 			}
 		}
-
-		$this->inventory->sendHeldItem($this);
-
-		if($pos->distanceSquared($this) > 10000){
-			return true;
-		}
-
-		$target = $this->world->getBlock($pos);
-		$block = $target->getSide($face);
-
-		/** @var Block[] $blocks */
-		$blocks = array_merge($target->getAllSides(), $block->getAllSides()); //getAllSides() on each of these will include $target and $block because they are next to each other
-
-		$this->world->sendBlocks([$this], $blocks);
 
 		return false;
 	}
