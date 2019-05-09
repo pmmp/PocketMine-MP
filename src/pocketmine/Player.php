@@ -113,6 +113,7 @@ use pocketmine\utils\UUID;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkLoader;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\particle\PunchBlockParticle;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function abs;
@@ -1932,11 +1933,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	public function continueBreakBlock(Vector3 $pos, int $face) : void{
 		$block = $this->world->getBlock($pos);
-		$this->world->broadcastLevelEvent(
-			$pos,
-			LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK,
-			$block->getRuntimeId() | ($face << 24)
-		);
+		$this->world->addParticle($pos, new PunchBlockParticle($block, $face));
 
 		//TODO: destroy-progress level event
 	}
