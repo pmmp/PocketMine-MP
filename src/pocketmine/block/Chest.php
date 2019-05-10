@@ -36,6 +36,10 @@ class Chest extends Transparent{
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::TYPE_AXE));
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->facing;
 	}
@@ -46,14 +50,6 @@ class Chest extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getHardness() : float{
-		return 2.5;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

@@ -42,8 +42,8 @@ class Leaves extends Transparent{
 	/** @var bool */
 	protected $checkDecay = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType){
-		parent::__construct($idInfo, $name);
+	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::TYPE_SHEARS));
 		$this->treeType = $treeType;
 	}
 
@@ -58,14 +58,6 @@ class Leaves extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1100;
-	}
-
-	public function getHardness() : float{
-		return 0.2;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_SHEARS;
 	}
 
 	public function diffusesSkyLight() : bool{

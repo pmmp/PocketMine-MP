@@ -37,8 +37,8 @@ class RedstoneOre extends Solid{
 	/** @var bool */
 	protected $lit = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
-		parent::__construct($idInfo, $name);
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON));
 	}
 
 	public function getId() : int{
@@ -47,10 +47,6 @@ class RedstoneOre extends Solid{
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->lit = $id === $this->idInfo->getSecondId();
-	}
-
-	public function getHardness() : float{
-		return 3;
 	}
 
 	public function isLit() : bool{
@@ -99,14 +95,6 @@ class RedstoneOre extends Solid{
 			$this->lit = false;
 			$this->world->setBlock($this, $this);
 		}
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_IRON;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

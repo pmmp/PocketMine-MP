@@ -53,8 +53,8 @@ class Sign extends Transparent{
 	/** @var SignText */
 	protected $text;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
-		parent::__construct($idInfo, $name);
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::TYPE_AXE));
 		$this->text = new SignText();
 	}
 
@@ -101,10 +101,6 @@ class Sign extends Transparent{
 		return 0b1111;
 	}
 
-	public function getHardness() : float{
-		return 1;
-	}
-
 	public function isSolid() : bool{
 		return false;
 	}
@@ -130,10 +126,6 @@ class Sign extends Transparent{
 		if($this->getSide(Facing::opposite($this->facing))->getId() === BlockLegacyIds::AIR){
 			$this->getWorld()->useBreakOn($this);
 		}
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
 	}
 
 	/**

@@ -36,6 +36,10 @@ class NetherReactor extends Solid{
 	/** @var int */
 	protected $state = self::STATE_INACTIVE;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN));
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->state;
 	}
@@ -46,18 +50,6 @@ class NetherReactor extends Solid{
 
 	public function getStateBitmask() : int{
 		return 0b11;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
-	}
-
-	public function getHardness() : float{
-		return 3;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

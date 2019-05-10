@@ -31,8 +31,8 @@ class RedstoneLamp extends Solid{
 	/** @var bool */
 	protected $lit = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
-		parent::__construct($idInfo, $name);
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.3));
 	}
 
 	public function getId() : int{
@@ -59,9 +59,5 @@ class RedstoneLamp extends Solid{
 
 	public function getLightLevel() : int{
 		return $this->lit ? 15 : 0;
-	}
-
-	public function getHardness() : float{
-		return 0.3;
 	}
 }

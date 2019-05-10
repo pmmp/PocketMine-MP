@@ -37,8 +37,8 @@ abstract class Slab extends Transparent{
 	/** @var SlabType */
 	protected $slabType;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
-		parent::__construct($idInfo, $name . " Slab");
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		parent::__construct($idInfo, $name . " Slab", $breakInfo);
 		$this->slabType = SlabType::BOTTOM();
 	}
 

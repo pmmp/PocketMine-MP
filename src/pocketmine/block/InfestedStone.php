@@ -27,8 +27,8 @@ use pocketmine\item\Item;
 
 abstract class InfestedStone extends Solid{
 
-	public function getHardness() : float{
-		return 0.75;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.75));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

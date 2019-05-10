@@ -42,6 +42,10 @@ class SnowLayer extends Flowable implements Fallable{
 	/** @var int */
 	protected $layers = 1;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.1, BlockToolType::TYPE_SHOVEL, TieredTool::TIER_WOODEN));
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->layers - 1;
 	}
@@ -56,18 +60,6 @@ class SnowLayer extends Flowable implements Fallable{
 
 	public function canBeReplaced() : bool{
 		return $this->layers < 8;
-	}
-
-	public function getHardness() : float{
-		return 0.1;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_SHOVEL;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

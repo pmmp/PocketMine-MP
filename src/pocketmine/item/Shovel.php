@@ -42,7 +42,7 @@ class Shovel extends TieredTool{
 	}
 
 	public function onDestroyBlock(Block $block) : bool{
-		if($block->getHardness() > 0){
+		if(!$block->getBreakInfo()->breaksInstantly()){
 			return $this->applyDamage(1);
 		}
 		return false;

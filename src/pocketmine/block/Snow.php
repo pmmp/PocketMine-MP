@@ -29,16 +29,8 @@ use pocketmine\item\TieredTool;
 
 class Snow extends Solid{
 
-	public function getHardness() : float{
-		return 0.2;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_SHOVEL;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::TYPE_SHOVEL, TieredTool::TIER_WOODEN));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

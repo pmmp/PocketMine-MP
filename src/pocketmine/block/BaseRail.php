@@ -80,6 +80,10 @@ abstract class BaseRail extends Flowable{
 	/** @var int[] */
 	protected $connections = [];
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.7));
+	}
+
 	protected function writeStateToMeta() : int{
 		if(empty($this->connections)){
 			return self::STRAIGHT_NORTH_SOUTH;
@@ -97,10 +101,6 @@ abstract class BaseRail extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getHardness() : float{
-		return 0.7;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

@@ -46,7 +46,6 @@ use pocketmine\world\World;
 use function array_merge;
 use function assert;
 use function dechex;
-use function get_class;
 use const PHP_INT_MAX;
 
 class Block extends Position implements BlockLegacyIds, Metadatable{
@@ -72,6 +71,9 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	/** @var string */
 	protected $fallbackName;
 
+	/** @var BlockBreakInfo */
+	protected $breakInfo;
+
 
 	/** @var AxisAlignedBB */
 	protected $boundingBox = null;
@@ -81,13 +83,15 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	/**
 	 * @param BlockIdentifier $idInfo
 	 * @param string          $name English name of the block type (TODO: implement translations)
+	 * @param BlockBreakInfo  $breakInfo
 	 */
-	public function __construct(BlockIdentifier $idInfo, string $name){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		if(($idInfo->getVariant() & $this->getStateBitmask()) !== 0){
 			throw new \InvalidArgumentException("Variant 0x" . dechex($idInfo->getVariant()) . " collides with state bitmask 0x" . dechex($this->getStateBitmask()));
 		}
 		$this->idInfo = $idInfo;
 		$this->fallbackName = $name;
+		$this->breakInfo = $breakInfo;
 	}
 
 	public function getIdInfo() : BlockIdentifier{
@@ -248,59 +252,12 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	}
 
 	/**
-	 * Returns if the block can be broken with an specific Item
+	 * Returns an object containing information about the destruction requirements of this block.
 	 *
-	 * @param Item $item
-	 *
-	 * @return bool
+	 * @return BlockBreakInfo
 	 */
-	public function isBreakable(Item $item) : bool{
-		return true;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getToolType() : int{
-		return BlockToolType::TYPE_NONE;
-	}
-
-	/**
-	 * Returns the level of tool required to harvest this block (for normal blocks). When the tool type matches the
-	 * block's required tool type, the tool must have a harvest level greater than or equal to this value to be able to
-	 * successfully harvest the block.
-	 *
-	 * If the block requires a specific minimum tier of tiered tool, the minimum tier required should be returned.
-	 * Otherwise, 1 should be returned if a tool is required, 0 if not.
-	 *
-	 * @see Item::getBlockToolHarvestLevel()
-	 *
-	 * @return int
-	 */
-	public function getToolHarvestLevel() : int{
-		return 0;
-	}
-
-	/**
-	 * Returns whether the specified item is the proper tool to use for breaking this block. This checks tool type and
-	 * harvest level requirement.
-	 *
-	 * In most cases this is also used to determine whether block drops should be created or not, except in some
-	 * special cases such as vines.
-	 *
-	 * @param Item $tool
-	 *
-	 * @return bool
-	 */
-	public function isCompatibleWithTool(Item $tool) : bool{
-		if($this->getHardness() < 0){
-			return false;
-		}
-
-		$toolType = $this->getToolType();
-		$harvestLevel = $this->getToolHarvestLevel();
-		return $toolType === BlockToolType::TYPE_NONE or $harvestLevel === 0 or (
-			($toolType & $tool->getBlockToolType()) !== 0 and $tool->getBlockToolHarvestLevel() >= $harvestLevel);
+	public function getBreakInfo() : BlockBreakInfo{
+		return $this->breakInfo;
 	}
 
 	/**
@@ -316,33 +273,6 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 			$t->onBlockDestroyed();
 		}
 		return $this->getWorld()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
-	}
-
-
-	/**
-	 * Returns the seconds that this block takes to be broken using an specific Item
-	 *
-	 * @param Item $item
-	 *
-	 * @return float
-	 * @throws \InvalidArgumentException if the item efficiency is not a positive number
-	 */
-	public function getBreakTime(Item $item) : float{
-		$base = $this->getHardness();
-		if($this->isCompatibleWithTool($item)){
-			$base *= 1.5;
-		}else{
-			$base *= 5;
-		}
-
-		$efficiency = $item->getMiningEfficiency(($this->getToolType() & $item->getBlockToolType()) !== 0);
-		if($efficiency <= 0){
-			throw new \InvalidArgumentException(get_class($item) . " has invalid mining efficiency: expected >= 0, got $efficiency");
-		}
-
-		$base /= $efficiency;
-
-		return $base;
 	}
 
 	/**
@@ -402,22 +332,6 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	 */
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
 		return false;
-	}
-
-	/**
-	 * Returns a base value used to compute block break times.
-	 * @return float
-	 */
-	public function getHardness() : float{
-		return 10;
-	}
-
-	/**
-	 * Returns the block's resistance to explosions. Usually 5x hardness.
-	 * @return float
-	 */
-	public function getBlastResistance() : float{
-		return $this->getHardness() * 5;
 	}
 
 	/**
@@ -517,7 +431,7 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	 * @return Item[]
 	 */
 	public function getDrops(Item $item) : array{
-		if($this->isCompatibleWithTool($item)){
+		if($this->breakInfo->isToolCompatible($item)){
 			if($this->isAffectedBySilkTouch() and $item->hasEnchantment(Enchantment::SILK_TOUCH())){
 				return $this->getSilkTouchDrops($item);
 			}
@@ -558,7 +472,7 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	 * @return int
 	 */
 	public function getXpDropForTool(Item $item) : int{
-		if($item->hasEnchantment(Enchantment::SILK_TOUCH()) or !$this->isCompatibleWithTool($item)){
+		if($item->hasEnchantment(Enchantment::SILK_TOUCH()) or !$this->breakInfo->isToolCompatible($item)){
 			return 0;
 		}
 

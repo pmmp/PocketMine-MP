@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 class HardenedGlassPane extends Thin{
 
-	public function getHardness() : float{
-		return 10;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(10.0));
 	}
 }

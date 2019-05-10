@@ -38,6 +38,10 @@ class EndPortalFrame extends Solid{
 	/** @var bool */
 	protected $eye = false;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible());
+	}
+
 	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing($this->facing) | ($this->eye ? 0x04 : 0);
 	}
@@ -53,18 +57,6 @@ class EndPortalFrame extends Solid{
 
 	public function getLightLevel() : int{
 		return 1;
-	}
-
-	public function getHardness() : float{
-		return -1;
-	}
-
-	public function getBlastResistance() : float{
-		return 18000000;
-	}
-
-	public function isBreakable(Item $item) : bool{
-		return false;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

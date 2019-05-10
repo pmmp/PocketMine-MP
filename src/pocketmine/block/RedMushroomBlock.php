@@ -37,6 +37,10 @@ class RedMushroomBlock extends Solid{
 	 */
 	protected $rotationData = 0;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::TYPE_AXE));
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->rotationData;
 	}
@@ -47,14 +51,6 @@ class RedMushroomBlock extends Solid{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getHardness() : float{
-		return 0.2;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

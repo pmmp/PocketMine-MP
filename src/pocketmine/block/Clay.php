@@ -28,12 +28,8 @@ use pocketmine\item\ItemFactory;
 
 class Clay extends Solid{
 
-	public function getHardness() : float{
-		return 0.6;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_SHOVEL;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::TYPE_SHOVEL));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

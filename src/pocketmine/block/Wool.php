@@ -27,21 +27,18 @@ use pocketmine\item\Item;
 
 class Wool extends Solid{
 
-	public function getHardness() : float{
-		return 0.8;
-	}
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new class(0.8, BlockToolType::TYPE_SHEARS) extends BlockBreakInfo{
+				public function getBreakTime(Item $item) : float{
+					$time = parent::getBreakTime($item);
+					if($item->getBlockToolType() === BlockToolType::TYPE_SHEARS){
+						$time *= 3; //shears break compatible blocks 15x faster, but wool 5x
+					}
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_SHEARS;
-	}
-
-	public function getBreakTime(Item $item) : float{
-		$time = parent::getBreakTime($item);
-		if($item->getBlockToolType() === BlockToolType::TYPE_SHEARS){
-			$time *= 3; //shears break compatible blocks 15x faster, but wool 5x
-		}
-
-		return $time;
+					return $time;
+				}
+			}
+		);
 	}
 
 	public function getFlameEncouragement() : int{

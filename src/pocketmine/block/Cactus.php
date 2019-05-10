@@ -39,6 +39,10 @@ class Cactus extends Transparent{
 	/** @var int */
 	protected $age = 0;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.4));
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->age;
 	}
@@ -49,10 +53,6 @@ class Cactus extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getHardness() : float{
-		return 0.4;
 	}
 
 	public function hasEntityCollision() : bool{

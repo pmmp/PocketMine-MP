@@ -35,6 +35,10 @@ class Pumpkin extends Solid{
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::TYPE_AXE));
+	}
+
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
 	}
@@ -45,14 +49,6 @@ class Pumpkin extends Solid{
 
 	public function getStateBitmask() : int{
 		return 0b11;
-	}
-
-	public function getHardness() : float{
-		return 1;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 class InfoUpdate extends Solid{
 
-	public function getHardness() : float{
-		return 1;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0));
 	}
 }

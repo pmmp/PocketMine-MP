@@ -34,6 +34,10 @@ class BrewingStand extends Transparent{
 	/** @var bool */
 	protected $southwestSlot = false;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN));
+	}
+
 	protected function writeStateToMeta() : int{
 		return ($this->eastSlot ? 0x01 : 0) | ($this->southwestSlot ? 0x02 : 0) | ($this->northwestSlot ? 0x04 : 0);
 	}
@@ -46,18 +50,6 @@ class BrewingStand extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getHardness() : float{
-		return 0.5;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
 	}
 
 	//TODO

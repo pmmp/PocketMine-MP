@@ -29,6 +29,10 @@ class Sponge extends Solid{
 	/** @var bool */
 	protected $wet = false;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6));
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->wet ? 1 : 0;
 	}
@@ -39,9 +43,5 @@ class Sponge extends Solid{
 
 	public function getStateBitmask() : int{
 		return 0b1;
-	}
-
-	public function getHardness() : float{
-		return 0.6;
 	}
 }

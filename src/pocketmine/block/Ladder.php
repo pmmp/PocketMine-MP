@@ -36,6 +36,10 @@ class Ladder extends Transparent{
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.4, BlockToolType::TYPE_AXE));
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->facing;
 	}
@@ -54,10 +58,6 @@ class Ladder extends Transparent{
 
 	public function isSolid() : bool{
 		return false;
-	}
-
-	public function getHardness() : float{
-		return 0.4;
 	}
 
 	public function canClimb() : bool{
@@ -89,9 +89,5 @@ class Ladder extends Transparent{
 		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){ //Replace with common break method
 			$this->world->useBreakOn($this);
 		}
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
 	}
 }

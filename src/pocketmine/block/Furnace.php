@@ -40,6 +40,10 @@ class Furnace extends Solid{
 	/** @var bool */
 	protected $lit = false; //this is set based on the blockID
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN));
+	}
+
 	public function getId() : int{
 		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
 	}
@@ -55,18 +59,6 @@ class Furnace extends Solid{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getHardness() : float{
-		return 3.5;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
 	}
 
 	public function getLightLevel() : int{

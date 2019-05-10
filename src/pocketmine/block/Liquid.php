@@ -60,8 +60,8 @@ abstract class Liquid extends Transparent{
 	/** @var bool */
 	protected $still = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
-		parent::__construct($idInfo, $name);
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible(500.0));
 	}
 
 	public function getId() : int{
@@ -86,10 +86,6 @@ abstract class Liquid extends Transparent{
 		return true;
 	}
 
-	public function isBreakable(Item $item) : bool{
-		return false;
-	}
-
 	public function canBeReplaced() : bool{
 		return true;
 	}
@@ -100,10 +96,6 @@ abstract class Liquid extends Transparent{
 
 	public function isSolid() : bool{
 		return false;
-	}
-
-	public function getHardness() : float{
-		return 100;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

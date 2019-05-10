@@ -32,6 +32,10 @@ use function mt_rand;
 
 class TallGrass extends Flowable{
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(BlockToolType::TYPE_SHEARS, 1));
+	}
+
 	public function canBeReplaced() : bool{
 		return true;
 	}
@@ -51,16 +55,8 @@ class TallGrass extends Flowable{
 		}
 	}
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_SHEARS;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return 1;
-	}
-
 	public function getDrops(Item $item) : array{
-		if($this->isCompatibleWithTool($item)){
+		if($this->breakInfo->isToolCompatible($item)){
 			return parent::getDrops($item);
 		}
 

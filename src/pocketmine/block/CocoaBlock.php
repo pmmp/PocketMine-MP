@@ -42,6 +42,10 @@ class CocoaBlock extends Transparent{
 	/** @var int */
 	protected $age = 0;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::TYPE_AXE, 0, 15.0));
+	}
+
 	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing(Facing::opposite($this->facing)) | ($this->age << 2);
 	}
@@ -53,14 +57,6 @@ class CocoaBlock extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getHardness() : float{
-		return 0.2;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
 	}
 
 	public function isAffectedBySilkTouch() : bool{

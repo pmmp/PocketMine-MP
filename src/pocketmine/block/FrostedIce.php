@@ -32,6 +32,10 @@ class FrostedIce extends Ice{
 	/** @var int */
 	protected $age = 0;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::TYPE_PICKAXE));
+	}
+
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->age = BlockDataValidator::readBoundedInt("age", $stateMeta, 0, 3);
 	}
@@ -42,10 +46,6 @@ class FrostedIce extends Ice{
 
 	public function getStateBitmask() : int{
 		return 0b11;
-	}
-
-	public function getHardness() : float{
-		return 2.5;
 	}
 
 	public function onNearbyBlockChange() : void{

@@ -38,6 +38,10 @@ class Cake extends Transparent implements FoodSource{
 	/** @var int */
 	protected $bites = 0;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5));
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->bites;
 	}
@@ -48,10 +52,6 @@ class Cake extends Transparent implements FoodSource{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getHardness() : float{
-		return 0.5;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

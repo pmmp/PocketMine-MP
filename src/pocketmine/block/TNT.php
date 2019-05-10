@@ -43,6 +43,10 @@ class TNT extends Solid{
 	/** @var bool */
 	protected $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	}
+
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->unstable = $stateMeta !== 0;
 	}
@@ -53,10 +57,6 @@ class TNT extends Solid{
 
 	public function getStateBitmask() : int{
 		return 0b1;
-	}
-
-	public function getHardness() : float{
-		return 0;
 	}
 
 	public function onBreak(Item $item, ?Player $player = null) : bool{

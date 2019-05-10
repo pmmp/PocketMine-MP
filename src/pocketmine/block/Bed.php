@@ -51,8 +51,8 @@ class Bed extends Transparent{
 	/** @var DyeColor */
 	protected $color;
 
-	public function __construct(BlockIdentifier $idInfo, string $name){
-		parent::__construct($idInfo, $name);
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2));
 		$this->color = DyeColor::RED();
 	}
 
@@ -88,10 +88,6 @@ class Bed extends Transparent{
 		if($tile instanceof TileBed){
 			$tile->setColor($this->color);
 		}
-	}
-
-	public function getHardness() : float{
-		return 0.2;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

@@ -38,6 +38,10 @@ class EnderChest extends Transparent{
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(22.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 3000.0));
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->facing;
 	}
@@ -50,24 +54,8 @@ class EnderChest extends Transparent{
 		return 0b111;
 	}
 
-	public function getHardness() : float{
-		return 22.5;
-	}
-
-	public function getBlastResistance() : float{
-		return 3000;
-	}
-
 	public function getLightLevel() : int{
 		return 7;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

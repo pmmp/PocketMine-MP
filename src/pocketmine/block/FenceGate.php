@@ -40,6 +40,10 @@ class FenceGate extends Transparent{
 	/** @var bool */
 	protected $inWall = false;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::TYPE_AXE));
+	}
+
 	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing($this->facing) | ($this->open ? 0x04 : 0) | ($this->inWall ? 0x08 : 0);
 	}
@@ -53,15 +57,6 @@ class FenceGate extends Transparent{
 	public function getStateBitmask() : int{
 		return 0b1111;
 	}
-
-	public function getHardness() : float{
-		return 2;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
-	}
-
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		if($this->open){

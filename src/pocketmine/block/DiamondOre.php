@@ -30,16 +30,8 @@ use function mt_rand;
 
 class DiamondOre extends Solid{
 
-	public function getHardness() : float{
-		return 3;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_IRON;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

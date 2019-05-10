@@ -30,8 +30,8 @@ class Wood extends Solid{
 	/** @var TreeType */
 	private $treeType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType){
-		parent::__construct($idInfo, $name);
+	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::TYPE_AXE));
 		$this->treeType = $treeType;
 	}
 
@@ -41,14 +41,6 @@ class Wood extends Solid{
 	 */
 	public function getTreeType() : TreeType{
 		return $this->treeType;
-	}
-
-	public function getHardness() : float{
-		return 2;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getFuelTime() : int{

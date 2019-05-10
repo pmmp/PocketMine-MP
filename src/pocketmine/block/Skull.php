@@ -46,9 +46,9 @@ class Skull extends Flowable{
 	/** @var int */
 	protected $rotation = 0; //TODO: split this into floor skull and wall skull handling
 
-	public function __construct(BlockIdentifier $idInfo, string $name){
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		$this->skullType = SkullType::SKELETON(); //TODO: this should be a parameter
-		parent::__construct($idInfo, $name);
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0));
 	}
 
 	protected function writeStateToMeta() : int{
@@ -79,10 +79,6 @@ class Skull extends Flowable{
 		assert($tile instanceof TileSkull);
 		$tile->setRotation($this->rotation);
 		$tile->setSkullType($this->skullType);
-	}
-
-	public function getHardness() : float{
-		return 1;
 	}
 
 	/**

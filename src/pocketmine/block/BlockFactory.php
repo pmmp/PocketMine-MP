@@ -31,8 +31,8 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
-use pocketmine\world\Position;
 use pocketmine\tile\Comparator;
+use pocketmine\world\Position;
 use function array_fill;
 use function array_filter;
 use function get_class;
@@ -612,7 +612,7 @@ class BlockFactory{
 		self::$fullList[$index] = $block;
 		self::$lightFilter[$index] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
 		self::$diffusesSkyLight[$index] = $block->diffusesSkyLight();
-		self::$blastResistance[$index] = $block->getBlastResistance();
+		self::$blastResistance[$index] = $block->getBreakInfo()->getBlastResistance();
 	}
 
 	/**

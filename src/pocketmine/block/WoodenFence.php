@@ -25,12 +25,8 @@ namespace pocketmine\block;
 
 class WoodenFence extends Fence{
 
-	public function getHardness() : float{
-		return 2;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::TYPE_AXE, 0, 15.0));
 	}
 
 	public function getFuelTime() : int{

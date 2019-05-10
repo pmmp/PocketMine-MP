@@ -27,12 +27,12 @@ use pocketmine\math\AxisAlignedBB;
 
 abstract class Flowable extends Transparent{
 
-	public function canBeFlowedInto() : bool{
-		return true;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
 	}
 
-	public function getHardness() : float{
-		return 0;
+	public function canBeFlowedInto() : bool{
+		return true;
 	}
 
 	public function isSolid() : bool{

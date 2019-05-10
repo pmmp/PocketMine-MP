@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\BlockToolType;
@@ -665,7 +666,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * the mined block.
 	 * This should return 1 for non-tiered tools, and the tool tier for tiered tools.
 	 *
-	 * @see Block::getToolHarvestLevel()
+	 * @see BlockBreakInfo::getToolHarvestLevel()
 	 *
 	 * @return int
 	 */

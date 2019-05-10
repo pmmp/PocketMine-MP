@@ -1680,7 +1680,7 @@ class World implements ChunkManager, Metadatable{
 		if($player !== null){
 			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative(), $drops, $xpDrop);
 
-			if($target instanceof Air or ($player->isSurvival() and !$target->isBreakable($item)) or $player->isSpectator()){
+			if($target instanceof Air or ($player->isSurvival() and !$target->getBreakInfo()->isBreakable()) or $player->isSpectator()){
 				$ev->setCancelled();
 			}
 
@@ -1710,7 +1710,7 @@ class World implements ChunkManager, Metadatable{
 			$drops = $ev->getDrops();
 			$xpDrop = $ev->getXpDropAmount();
 
-		}elseif(!$target->isBreakable($item)){
+		}elseif(!$target->getBreakInfo()->isBreakable()){
 			return false;
 		}
 

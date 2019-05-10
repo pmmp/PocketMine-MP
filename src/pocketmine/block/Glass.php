@@ -27,8 +27,8 @@ use pocketmine\item\Item;
 
 class Glass extends Transparent{
 
-	public function getHardness() : float{
-		return 0.3;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.3));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

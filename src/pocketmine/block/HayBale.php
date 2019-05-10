@@ -28,8 +28,8 @@ use pocketmine\block\utils\PillarRotationTrait;
 class HayBale extends Solid{
 	use PillarRotationTrait;
 
-	public function getHardness() : float{
-		return 0.5;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5));
 	}
 
 	public function getFlameEncouragement() : int{

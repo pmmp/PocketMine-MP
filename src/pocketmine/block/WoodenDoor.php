@@ -25,11 +25,7 @@ namespace pocketmine\block;
 
 class WoodenDoor extends Door{
 
-	public function getHardness() : float{
-		return 3;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::TYPE_AXE));
 	}
 }

@@ -27,19 +27,7 @@ use pocketmine\item\TieredTool;
 
 class Obsidian extends Solid{
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_DIAMOND;
-	}
-
-	public function getHardness() : float{
-		return 35; //50 in PC
-	}
-
-	public function getBlastResistance() : float{
-		return 6000;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(35.0 /* 50 in PC */, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_DIAMOND, 6000.0));
 	}
 }

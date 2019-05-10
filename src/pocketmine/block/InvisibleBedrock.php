@@ -23,19 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-
 class InvisibleBedrock extends Transparent{
 
-	public function getHardness() : float{
-		return -1;
-	}
-
-	public function getBlastResistance() : float{
-		return 18000000;
-	}
-
-	public function isBreakable(Item $item) : bool{
-		return false;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible());
 	}
 }

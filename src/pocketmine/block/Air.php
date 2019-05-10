@@ -23,17 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
-
 
 /**
  * Air block
  */
 class Air extends Transparent{
 
-	public function isBreakable(Item $item) : bool{
-		return false;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(-1.0, BlockToolType::TYPE_NONE, 0, 0.0));
 	}
 
 	public function canBeFlowedInto() : bool{
@@ -58,13 +56,5 @@ class Air extends Transparent{
 
 	public function getCollisionBoxes() : array{
 		return [];
-	}
-
-	public function getHardness() : float{
-		return -1;
-	}
-
-	public function getBlastResistance() : float{
-		return 0;
 	}
 }

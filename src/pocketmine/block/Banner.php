@@ -56,8 +56,8 @@ class Banner extends Transparent{
 	/** @var Deque|BannerPattern[] */
 	protected $patterns;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
-		parent::__construct($idInfo, $name);
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::TYPE_AXE));
 		$this->baseColor = DyeColor::BLACK();
 		$this->patterns = new Deque();
 	}
@@ -105,10 +105,6 @@ class Banner extends Transparent{
 		assert($tile instanceof TileBanner);
 		$tile->setBaseColor($this->baseColor);
 		$tile->setPatterns($this->patterns);
-	}
-
-	public function getHardness() : float{
-		return 1;
 	}
 
 	public function isSolid() : bool{
@@ -166,10 +162,6 @@ class Banner extends Transparent{
 		if($this->getSide(Facing::opposite($this->facing))->getId() === BlockLegacyIds::AIR){
 			$this->getWorld()->useBreakOn($this);
 		}
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

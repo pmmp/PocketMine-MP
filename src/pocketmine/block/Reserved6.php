@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 class Reserved6 extends Solid{
 
-	public function getHardness() : float{
-		return 0;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
 	}
 }

@@ -29,8 +29,8 @@ use pocketmine\Player;
 
 class Ice extends Transparent{
 
-	public function getHardness() : float{
-		return 0.5;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::TYPE_PICKAXE));
 	}
 
 	public function getLightFilter() : int{
@@ -39,10 +39,6 @@ class Ice extends Transparent{
 
 	public function getFrictionFactor() : float{
 		return 0.98;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function onBreak(Item $item, ?Player $player = null) : bool{

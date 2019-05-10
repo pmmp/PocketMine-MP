@@ -43,6 +43,10 @@ class Lever extends Flowable{
 	/** @var bool */
 	protected $powered = false;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5));
+	}
+
 	protected function writeStateToMeta() : int{
 		if($this->position === self::BOTTOM){
 			$rotationMeta = Facing::axis($this->facing) === Facing::AXIS_Z ? 7 : 0;
@@ -72,10 +76,6 @@ class Lever extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getHardness() : float{
-		return 0.5;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

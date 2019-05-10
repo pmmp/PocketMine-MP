@@ -32,6 +32,10 @@ class NetherPortal extends Transparent{
 	/** @var int */
 	protected $axis = Facing::AXIS_X;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible(0.0));
+	}
+
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->axis = $stateMeta === 2 ? Facing::AXIS_Z : Facing::AXIS_X; //mojang u dumb
 	}
@@ -72,18 +76,6 @@ class NetherPortal extends Transparent{
 
 	public function getBoundingBox() : ?AxisAlignedBB{
 		return null;
-	}
-
-	public function isBreakable(Item $item) : bool{
-		return false;
-	}
-
-	public function getHardness() : float{
-		return -1;
-	}
-
-	public function getBlastResistance() : float{
-		return 0;
 	}
 
 	public function getDrops(Item $item) : array{

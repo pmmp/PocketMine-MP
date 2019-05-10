@@ -39,16 +39,8 @@ use function mt_rand;
 class DragonEgg extends Transparent implements Fallable{
 	use FallableTrait;
 
-	public function getHardness() : float{
-		return 3;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return TieredTool::TIER_WOODEN;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN));
 	}
 
 	public function getLightLevel() : int{

@@ -30,12 +30,8 @@ use pocketmine\Player;
 
 class CraftingTable extends Solid{
 
-	public function getHardness() : float{
-		return 2.5;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::TYPE_AXE));
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

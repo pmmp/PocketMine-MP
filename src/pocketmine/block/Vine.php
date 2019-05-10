@@ -42,6 +42,10 @@ class Vine extends Flowable{
 	/** @var bool[] */
 	protected $faces = [];
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::TYPE_AXE));
+	}
+
 	protected function writeStateToMeta() : int{
 		return
 			(isset($this->faces[Facing::SOUTH]) ? self::FLAG_SOUTH : 0) |
@@ -65,10 +69,6 @@ class Vine extends Flowable{
 		if(($meta & $flag) !== 0){
 			$this->faces[$face] = true;
 		}
-	}
-
-	public function getHardness() : float{
-		return 0.2;
 	}
 
 	public function hasEntityCollision() : bool{
@@ -191,10 +191,6 @@ class Vine extends Flowable{
 		}
 
 		return [];
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getFlameEncouragement() : int{

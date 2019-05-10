@@ -34,6 +34,10 @@ class SeaPickle extends Transparent{
 	/** @var bool */
 	protected $underwater = false;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	}
+
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->count = ($stateMeta & 0x03) + 1;
 		$this->underwater = ($stateMeta & 0x04) === 0;
@@ -45,10 +49,6 @@ class SeaPickle extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getHardness() : float{
-		return 0;
 	}
 
 	public function isSolid() : bool{

@@ -34,6 +34,10 @@ class Farmland extends Transparent{
 	/** @var int */
 	protected $wetness = 0; //"moisture" blockstate property in PC
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::TYPE_SHOVEL));
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->wetness;
 	}
@@ -44,14 +48,6 @@ class Farmland extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getHardness() : float{
-		return 0.6;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

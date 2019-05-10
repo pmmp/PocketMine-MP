@@ -29,20 +29,16 @@ use function mt_rand;
 
 class DoubleTallGrass extends DoublePlant{
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(BlockToolType::TYPE_SHEARS, 1));
+	}
+
 	public function canBeReplaced() : bool{
 		return true;
 	}
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_SHEARS;
-	}
-
-	public function getToolHarvestLevel() : int{
-		return 1;
-	}
-
 	public function getDrops(Item $item) : array{
-		if($this->top and !$this->isCompatibleWithTool($item) and mt_rand(0, 7) === 0){
+		if($this->top and !$this->breakInfo->isToolCompatible($item) and mt_rand(0, 7) === 0){
 			return [
 				ItemFactory::get(Item::SEEDS)
 			];
