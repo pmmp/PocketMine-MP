@@ -31,7 +31,7 @@ use pocketmine\math\AxisAlignedBB;
 class Air extends Transparent{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(-1.0, BlockToolType::TYPE_NONE, 0, 0.0));
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible(0.0));
 	}
 
 	public function canBeFlowedInto() : bool{
