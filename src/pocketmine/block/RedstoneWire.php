@@ -30,6 +30,10 @@ class RedstoneWire extends Flowable{
 	/** @var int */
 	protected $power = 0;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	}
+
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->power = BlockDataValidator::readBoundedInt("power", $stateMeta, 0, 15);
 	}

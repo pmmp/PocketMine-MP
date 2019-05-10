@@ -34,6 +34,10 @@ class Tripwire extends Flowable{
 	/** @var bool */
 	protected $disarmed = false;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	}
+
 	protected function writeStateToMeta() : int{
 		return ($this->triggered ? 0x01 : 0) | ($this->suspended ? 0x02 : 0) | ($this->connected ? 0x04 : 0) | ($this->disarmed ? 0x08 : 0);
 	}

@@ -39,6 +39,10 @@ class TripwireHook extends Flowable{
 	/** @var bool */
 	protected $powered = false;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	}
+
 	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing($this->facing) | ($this->connected ? 0x04 : 0) | ($this->powered ? 0x08 : 0);
 	}

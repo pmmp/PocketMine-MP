@@ -42,8 +42,8 @@ class RedstoneRepeater extends Flowable{
 	/** @var int */
 	protected $delay = 1;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
-		parent::__construct($idInfo, $name);
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
 	}
 
 	public function getId() : int{

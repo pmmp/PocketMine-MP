@@ -27,10 +27,6 @@ use pocketmine\math\AxisAlignedBB;
 
 abstract class Flowable extends Transparent{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	public function canBeFlowedInto() : bool{
 		return true;
 	}

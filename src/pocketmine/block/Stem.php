@@ -31,6 +31,10 @@ use function mt_rand;
 
 abstract class Stem extends Crops{
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	}
+
 	abstract protected function getPlant() : Block;
 
 	public function onRandomTick() : void{

@@ -40,6 +40,10 @@ class Fire extends Flowable{
 	/** @var int */
 	protected $age = 0;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	}
+
 	protected function writeStateToMeta() : int{
 		return $this->age;
 	}

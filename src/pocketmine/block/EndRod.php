@@ -35,6 +35,10 @@ class EndRod extends Flowable{
 	/** @var int */
 	protected $facing = Facing::DOWN;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	}
+
 	protected function writeStateToMeta() : int{
 		if(Facing::axis($this->facing) === Facing::AXIS_Y){
 			return $this->facing;
