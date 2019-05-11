@@ -28,10 +28,6 @@ use pocketmine\nbt\tag\CompoundTag;
 
 class SplashPotion extends ProjectileItem{
 
-	public function __construct(int $variant){
-		parent::__construct(self::SPLASH_POTION, $variant, "Splash Potion");
-	}
-
 	public function getMaxStackSize() : int{
 		return 1;
 	}

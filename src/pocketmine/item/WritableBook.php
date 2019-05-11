@@ -25,7 +25,4 @@ namespace pocketmine\item;
 
 class WritableBook extends WritableBookBase{
 
-	public function __construct(){
-		parent::__construct(self::WRITABLE_BOOK, 0, "Book & Quill");
-	}
 }

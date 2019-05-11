@@ -29,8 +29,8 @@ class Boat extends Item{
 	/** @var TreeType */
 	private $woodType;
 
-	public function __construct(TreeType $woodType){
-		parent::__construct(self::BOAT, $woodType->getMagicNumber(), $woodType->getDisplayName() . " Boat");
+	public function __construct(int $id, int $variant, string $name, TreeType $woodType){
+		parent::__construct($id, $variant, $name);
 		$this->woodType = $woodType;
 	}
 

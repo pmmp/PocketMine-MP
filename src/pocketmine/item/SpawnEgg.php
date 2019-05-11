@@ -39,12 +39,13 @@ class SpawnEgg extends Item{
 	/**
 	 * @param int    $id
 	 * @param int    $variant
-	 * @param string $entityClass instanceof Entity
 	 * @param string $name
+	 *
+	 * @param string $entityClass instanceof Entity
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function __construct(int $id, int $variant, string $entityClass, string $name = "Unknown"){
+	public function __construct(int $id, int $variant, string $name, string $entityClass){
 		parent::__construct($id, $variant, $name);
 		Utils::testValidInstance($entityClass, Entity::class);
 		$this->entityClass = $entityClass;

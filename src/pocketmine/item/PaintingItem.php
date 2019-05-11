@@ -34,9 +34,6 @@ use pocketmine\Player;
 use function array_rand;
 
 class PaintingItem extends Item{
-	public function __construct(){
-		parent::__construct(self::PAINTING, 0, "Painting");
-	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		if(Facing::axis($face) === Facing::AXIS_Y){

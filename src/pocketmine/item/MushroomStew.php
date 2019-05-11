@@ -24,9 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 class MushroomStew extends Food{
-	public function __construct(){
-		parent::__construct(self::MUSHROOM_STEW, 0, "Mushroom Stew");
-	}
 
 	public function getMaxStackSize() : int{
 		return 1;

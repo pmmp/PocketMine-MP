@@ -33,10 +33,6 @@ use function mt_rand;
 
 class ChorusFruit extends Food{
 
-	public function __construct(){
-		parent::__construct(self::CHORUS_FRUIT, 0, "Chorus Fruit");
-	}
-
 	public function getFoodRestore() : int{
 		return 4;
 	}

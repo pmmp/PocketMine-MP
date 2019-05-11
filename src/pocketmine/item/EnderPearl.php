@@ -26,9 +26,6 @@ namespace pocketmine\item;
 use pocketmine\entity\projectile\EnderPearl as EnderPearlEntity;
 
 class EnderPearl extends ProjectileItem{
-	public function __construct(){
-		parent::__construct(self::ENDER_PEARL, 0, "Ender Pearl");
-	}
 
 	public function getMaxStackSize() : int{
 		return 16;

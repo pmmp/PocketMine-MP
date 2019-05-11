@@ -28,9 +28,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 
 class Redstone extends Item{
-	public function __construct(){
-		parent::__construct(self::REDSTONE, 0, "Redstone");
-	}
 
 	public function getBlock() : Block{
 		return BlockFactory::get(BlockLegacyIds::REDSTONE_WIRE);

@@ -29,10 +29,6 @@ use function lcg_value;
 
 class RottenFlesh extends Food{
 
-	public function __construct(){
-		parent::__construct(self::ROTTEN_FLESH, 0, "Rotten Flesh");
-	}
-
 	public function getFoodRestore() : int{
 		return 4;
 	}

@@ -255,10 +255,6 @@ class Potion extends Item implements Consumable{
 		return [];
 	}
 
-	public function __construct(int $variant){
-		parent::__construct(self::POTION, $variant, "Potion");
-	}
-
 	public function getMaxStackSize() : int{
 		return 1;
 	}

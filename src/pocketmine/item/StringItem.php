@@ -28,9 +28,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 
 class StringItem extends Item{
-	public function __construct(){
-		parent::__construct(self::STRING, 0, "String");
-	}
 
 	public function getBlock() : Block{
 		return BlockFactory::get(BlockLegacyIds::TRIPWIRE);

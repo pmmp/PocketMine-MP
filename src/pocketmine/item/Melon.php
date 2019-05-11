@@ -24,9 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 class Melon extends Food{
-	public function __construct(){
-		parent::__construct(self::MELON, 0, "Melon");
-	}
 
 	public function getFoodRestore() : int{
 		return 2;

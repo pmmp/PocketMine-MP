@@ -25,10 +25,6 @@ namespace pocketmine\item;
 
 class BlazeRod extends Item{
 
-	public function __construct(){
-		parent::__construct(self::BLAZE_ROD, 0, "Blaze Rod");
-	}
-
 	public function getFuelTime() : int{
 		return 2400;
 	}

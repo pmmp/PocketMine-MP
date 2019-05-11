@@ -28,10 +28,6 @@ use pocketmine\entity\effect\EffectInstance;
 
 class GoldenApple extends Food{
 
-	public function __construct(){
-		parent::__construct(self::GOLDEN_APPLE, 0, "Golden Apple");
-	}
-
 	public function requiresHunger() : bool{
 		return false;
 	}

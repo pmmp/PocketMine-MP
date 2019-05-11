@@ -28,9 +28,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 
 class WheatSeeds extends Item{
-	public function __construct(){
-		parent::__construct(self::WHEAT_SEEDS, 0, "Wheat Seeds");
-	}
 
 	public function getBlock() : Block{
 		return BlockFactory::get(BlockLegacyIds::WHEAT_BLOCK);

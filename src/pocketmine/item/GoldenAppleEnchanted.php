@@ -28,10 +28,6 @@ use pocketmine\entity\effect\EffectInstance;
 
 class GoldenAppleEnchanted extends GoldenApple{
 
-	public function __construct(){
-		Food::__construct(self::ENCHANTED_GOLDEN_APPLE, 0, "Enchanted Golden Apple"); //skip parent constructor
-	}
-
 	public function getAdditionalEffects() : array{
 		return [
 			new EffectInstance(Effect::REGENERATION(), 600, 4),

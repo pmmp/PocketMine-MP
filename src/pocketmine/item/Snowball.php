@@ -26,9 +26,6 @@ namespace pocketmine\item;
 use pocketmine\entity\projectile\Snowball as SnowballEntity;
 
 class Snowball extends ProjectileItem{
-	public function __construct(){
-		parent::__construct(self::SNOWBALL, 0, "Snowball");
-	}
 
 	public function getMaxStackSize() : int{
 		return 16;

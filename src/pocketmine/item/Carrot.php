@@ -28,9 +28,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 
 class Carrot extends Food{
-	public function __construct(){
-		parent::__construct(self::CARROT, 0, "Carrot");
-	}
 
 	public function getBlock() : Block{
 		return BlockFactory::get(BlockLegacyIds::CARROT_BLOCK);

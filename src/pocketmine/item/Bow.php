@@ -29,15 +29,12 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\world\sound\BowShootSound;
 use pocketmine\Player;
+use pocketmine\world\sound\BowShootSound;
 use function intdiv;
 use function min;
 
 class Bow extends Tool{
-	public function __construct(){
-		parent::__construct(self::BOW, 0, "Bow");
-	}
 
 	public function getFuelTime() : int{
 		return 200;

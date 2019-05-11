@@ -34,10 +34,6 @@ class WrittenBook extends WritableBookBase{
 	public const TAG_AUTHOR = "author"; //TAG_String
 	public const TAG_TITLE = "title"; //TAG_String
 
-	public function __construct(){
-		parent::__construct(self::WRITTEN_BOOK, 0, "Written Book");
-	}
-
 	public function getMaxStackSize() : int{
 		return 16;
 	}

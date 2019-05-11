@@ -28,9 +28,6 @@ use pocketmine\entity\effect\EffectInstance;
 use function mt_rand;
 
 class PoisonousPotato extends Food{
-	public function __construct(){
-		parent::__construct(self::POISONOUS_POTATO, 0, "Poisonous Potato");
-	}
 
 	public function getFoodRestore() : int{
 		return 2;
