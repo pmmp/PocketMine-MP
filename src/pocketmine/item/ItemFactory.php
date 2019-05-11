@@ -45,7 +45,7 @@ use function trim;
  */
 class ItemFactory{
 
-	/** @var \SplFixedArray */
+	/** @var Item[] */
 	private static $list = [];
 
 	/** @var Item|null */
