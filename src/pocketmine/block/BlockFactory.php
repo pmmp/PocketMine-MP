@@ -127,7 +127,7 @@ class BlockFactory{
 		self::registerBlock(new NewBlock(449, 0, "Lectern"));
 		self::registerBlock(new NewBlock(450, 0, "Grindstone"));
 		self::registerBlock(new NewBlock(451, 0, "Blast Funnace"));
-		self::registerBlock(new NewBlock(452, 0, "Stonecutter"));
+		self::registerBlock(new Stonecutter()); /* 452 */
 		self::registerBlock(new NewBlock(453, 0, "Smoker"));
 
 		self::registerBlock(new NewBlock(455, 0, "Cartography Table"));
