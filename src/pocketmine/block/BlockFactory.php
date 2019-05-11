@@ -123,7 +123,8 @@ class BlockFactory{
 		/* self::registerBlock(new AcaciaWellSign()); 446 */
 		/* self::registerBlock(new DarkOakStandingSign()); 447 */
 		/* self::registerBlock(new DarkOakWellSign()); 448 */
-
+		
+		self::registerBlock(new NewBlock(449, 0, "Lectern"));
 		self::registerBlock(new NewBlock(450, 0, "Grindstone"));
 		self::registerBlock(new NewBlock(451, 0, "Blast Funnace"));
 		self::registerBlock(new NewBlock(452, 0, "Stonecutter"));
