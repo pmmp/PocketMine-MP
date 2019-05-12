@@ -178,49 +178,14 @@ class Painting extends Entity{
 		$horizontalStart = (int) (ceil($width / 2) - 1);
 		$verticalStart = (int) (ceil($height / 2) - 1);
 
-		$thickness = 1 / 16;
+		$bb = AxisAlignedBB::one()
+			->trim($facing, 15 / 16)
+			->extend(Facing::rotateY($facing, true), $horizontalStart)
+			->extend(Facing::rotateY($facing, false), -$horizontalStart + $width - 1)
+			->extend(Facing::DOWN, $verticalStart)
+			->extend(Facing::UP, -$verticalStart + $height - 1);
 
-		$minX = $maxX = 0;
-		$minZ = $maxZ = 0;
-
-		$minY = -$verticalStart;
-		$maxY = $minY + $height;
-
-		switch($facing){
-			case Facing::NORTH:
-				$minZ = 1 - $thickness;
-				$maxZ = 1;
-				$maxX = $horizontalStart + 1;
-				$minX = $maxX - $width;
-				break;
-			case Facing::SOUTH:
-				$minZ = 0;
-				$maxZ = $thickness;
-				$minX = -$horizontalStart;
-				$maxX = $minX + $width;
-				break;
-			case Facing::WEST:
-				$minX = 1 - $thickness;
-				$maxX = 1;
-				$minZ = -$horizontalStart;
-				$maxZ = $minZ + $width;
-				break;
-			case Facing::EAST:
-				$minX = 0;
-				$maxX = $thickness;
-				$maxZ = $horizontalStart + 1;
-				$minZ = $maxZ - $width;
-				break;
-		}
-
-		return new AxisAlignedBB(
-			$blockIn->x + $minX,
-			$blockIn->y + $minY,
-			$blockIn->z + $minZ,
-			$blockIn->x + $maxX,
-			$blockIn->y + $maxY,
-			$blockIn->z + $maxZ
-		);
+		return $bb->offset($blockIn->x, $blockIn->y, $blockIn->z);
 	}
 
 	/**
