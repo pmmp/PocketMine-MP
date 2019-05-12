@@ -65,6 +65,8 @@ abstract class Tile extends Position{
 	public const SIGN = "Sign";
 	public const SKULL = "Skull";
 	public const STONE_CUTTER = "StoneCutter";
+	public const COMMAND_BLOCK = "CommandBlock";
+	
 
 	/** @var int */
 	public static $tileCount = 1;
@@ -97,6 +99,7 @@ abstract class Tile extends Position{
 		self::registerTile(Sign::class, [self::SIGN, "minecraft:sign"]);
 		self::registerTile(Skull::class, [self::SKULL, "minecraft:skull"]);
 		self::registerTile(StoneCutter::class, [self::STONE_CUTTER, "minecraft:stone_cutter"]);
+		self::registerTile(CommandBlock::class, [self::COMMAND_BLOCK, "minecraft:command_block"]);
 	}
 
 	/**
