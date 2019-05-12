@@ -1813,18 +1813,16 @@ class World implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if($hand->isSolid()){
-			foreach($hand->getCollisionBoxes() as $collisionBox){
-				if(!empty($this->getCollidingEntities($collisionBox))){
-					return false;  //Entity in block
-				}
+		foreach($hand->getCollisionBoxes() as $collisionBox){
+			if(!empty($this->getCollidingEntities($collisionBox))){
+				return false;  //Entity in block
+			}
 
-				if($player !== null){
-					if(($diff = $player->getNextPosition()->subtract($player->getPosition())) and $diff->lengthSquared() > 0.00001){
-						$bb = $player->getBoundingBox()->offsetCopy($diff->x, $diff->y, $diff->z);
-						if($collisionBox->intersectsWith($bb)){
-							return false; //Inside player BB
-						}
+			if($player !== null){
+				if(($diff = $player->getNextPosition()->subtract($player->getPosition())) and $diff->lengthSquared() > 0.00001){
+					$bb = $player->getBoundingBox()->offsetCopy($diff->x, $diff->y, $diff->z);
+					if($collisionBox->intersectsWith($bb)){
+						return false; //Inside player BB
 					}
 				}
 			}
