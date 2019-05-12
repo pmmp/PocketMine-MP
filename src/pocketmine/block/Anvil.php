@@ -61,7 +61,7 @@ class Anvil extends Transparent implements Fallable{
 		return 0b11;
 	}
 
-	public function recalculateBoundingBox() : ?AxisAlignedBB{
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return AxisAlignedBB::one()->squash(Facing::axis(Facing::rotateY($this->facing, false)), 1 / 8);
 	}
 
