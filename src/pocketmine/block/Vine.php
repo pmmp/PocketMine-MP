@@ -68,6 +68,8 @@ class Vine extends Flowable{
 	private function setFaceFromMeta(int $meta, int $flag, int $face) : void{
 		if(($meta & $flag) !== 0){
 			$this->faces[$face] = true;
+		}else{
+			unset($this->faces[$face]);
 		}
 	}
 
