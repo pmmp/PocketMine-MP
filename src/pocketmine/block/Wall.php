@@ -87,13 +87,11 @@ class Wall extends Transparent{
 			$inset = 0.3125;
 		}
 
-		return new AxisAlignedBB(
-			($west ? 0 : $inset),
-			0,
-			($north ? 0 : $inset),
-			1 - ($east ? 0 : $inset),
-			1.5,
-			1 - ($south ? 0 : $inset)
-		);
+		return AxisAlignedBB::one()
+			->extend(Facing::UP, 0.5)
+			->trim(Facing::NORTH, $north ? 0 : $inset)
+			->trim(Facing::SOUTH, $south ? 0 : $inset)
+			->trim(Facing::WEST, $west ? 0 : $inset)
+			->trim(Facing::EAST, $east ? 0 : $inset);
 	}
 }
