@@ -282,7 +282,7 @@ class BlockFactory{
 		self::registerBlock(new WoodenStairs(Block::SPRUCE_STAIRS, 0, "Spruce Stairs"));
 		self::registerBlock(new WoodenStairs(Block::BIRCH_STAIRS, 0, "Birch Stairs"));
 		self::registerBlock(new WoodenStairs(Block::JUNGLE_STAIRS, 0, "Jungle Stairs"));
-		//TODO: COMMAND_BLOCK
+		slef::registerBlock(new CommandBlock());
 		self::registerBlock(new Beacon());
 		self::registerBlock(new CobblestoneWall());
 		self::registerBlock(new FlowerPot());
