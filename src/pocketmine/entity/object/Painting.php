@@ -114,7 +114,8 @@ class Painting extends Entity{
 
 	protected function recalculateBoundingBox() : void{
 		$facing = Bearing::toFacing($this->direction);
-		$this->boundingBox->setBB(self::getPaintingBB($this->blockIn->getSide($facing), $facing, $this->getMotive()));
+		$side = $this->blockIn->getSide($facing);
+		$this->boundingBox->setBB(self::getPaintingBB($facing, $this->getMotive())->offset($side->x, $side->y, $side->z));
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -165,27 +166,24 @@ class Painting extends Entity{
 	/**
 	 * Returns the bounding-box a painting with the specified motive would have at the given position and direction.
 	 *
-	 * @param Vector3        $blockIn
 	 * @param int            $facing
 	 * @param PaintingMotive $motive
 	 *
 	 * @return AxisAlignedBB
 	 */
-	private static function getPaintingBB(Vector3 $blockIn, int $facing, PaintingMotive $motive) : AxisAlignedBB{
+	private static function getPaintingBB(int $facing, PaintingMotive $motive) : AxisAlignedBB{
 		$width = $motive->getWidth();
 		$height = $motive->getHeight();
 
 		$horizontalStart = (int) (ceil($width / 2) - 1);
 		$verticalStart = (int) (ceil($height / 2) - 1);
 
-		$bb = AxisAlignedBB::one()
+		return AxisAlignedBB::one()
 			->trim($facing, 15 / 16)
 			->extend(Facing::rotateY($facing, true), $horizontalStart)
 			->extend(Facing::rotateY($facing, false), -$horizontalStart + $width - 1)
 			->extend(Facing::DOWN, $verticalStart)
 			->extend(Facing::UP, -$verticalStart + $height - 1);
-
-		return $bb->offset($blockIn->x, $blockIn->y, $blockIn->z);
 	}
 
 	/**
@@ -224,7 +222,7 @@ class Painting extends Entity{
 		}
 
 		if($checkOverlap){
-			$bb = self::getPaintingBB($blockIn, $facing, $motive);
+			$bb = self::getPaintingBB($facing, $motive)->offset($blockIn->x, $blockIn->y, $blockIn->z);
 
 			foreach($world->getNearbyEntities($bb) as $entity){
 				if($entity instanceof self){
