@@ -71,23 +71,21 @@ abstract class Stair extends Transparent{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		$minYSlab = $this->upsideDown ? 0.5 : 0;
-
+		$topStepFace = $this->upsideDown ? Facing::DOWN : Facing::UP;
 		$bbs = [
-			new AxisAlignedBB(0, $minYSlab, 0, 1, $minYSlab + 0.5, 1)
+			AxisAlignedBB::one()->trim($topStepFace, 0.5)
 		];
 
-		$minY = $this->upsideDown ? 0 : 0.5;
-
-		$topStep = new AxisAlignedBB(0, $minY, 0, 1, $minY + 0.5, 1);
-		$topStep->trim(Facing::opposite($this->facing), 0.5);
+		$topStep = AxisAlignedBB::one()
+			->trim(Facing::opposite($topStepFace), 0.5)
+			->trim(Facing::opposite($this->facing), 0.5);
 
 		if($this->shape === self::SHAPE_OUTER_LEFT or $this->shape === self::SHAPE_OUTER_RIGHT){
 			$topStep->trim(Facing::rotateY($this->facing, $this->shape === self::SHAPE_OUTER_LEFT), 0.5);
 		}elseif($this->shape === self::SHAPE_INNER_LEFT or $this->shape === self::SHAPE_INNER_RIGHT){
 			//add an extra cube
-			$extraCube = new AxisAlignedBB(0, $minY, 0, 1, $minY + 0.5, 1);
-			$bbs[] = $extraCube
+			$bbs[] = AxisAlignedBB::one()
+				->trim(Facing::opposite($topStepFace), 0.5)
 				->trim($this->facing, 0.5) //avoid overlapping with main step
 				->trim(Facing::rotateY($this->facing, $this->shape === self::SHAPE_INNER_LEFT), 0.5);
 		}
