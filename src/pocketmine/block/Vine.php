@@ -30,8 +30,8 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use function array_intersect_key;
-use function max;
-use function min;
+use function array_keys;
+use function count;
 
 class Vine extends Flowable{
 	private const FLAG_SOUTH = 0x01;
@@ -90,55 +90,14 @@ class Vine extends Flowable{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$minX = 1;
-		$minZ = 1;
-		$maxX = 0;
-		$maxZ = 0;
-
-		$minY = 0;
-		$hasSide = false;
-
-		if(isset($this->faces[Facing::WEST])){
-			$maxX = max($maxX, 0.0625);
-			$minX = 0;
-			$minZ = 0;
-			$maxZ = 1;
-			$hasSide = true;
+		switch(count($this->faces)){
+			case 0:
+				return AxisAlignedBB::one()->trim(Facing::DOWN, 15 / 16);
+			case 1:
+				return AxisAlignedBB::one()->trim(Facing::opposite(array_keys($this->faces)[0]), 15 / 16);
+			default:
+				return AxisAlignedBB::one();
 		}
-
-		if(isset($this->faces[Facing::EAST])){
-			$minX = min($minX, 0.9375);
-			$maxX = 1;
-			$minZ = 0;
-			$maxZ = 1;
-			$hasSide = true;
-		}
-
-		if(isset($this->faces[Facing::SOUTH])){
-			$minZ = min($minZ, 0.9375);
-			$maxZ = 1;
-			$minX = 0;
-			$maxX = 1;
-			$hasSide = true;
-		}
-
-		if(isset($this->faces[Facing::NORTH])){
-			$maxZ = max($maxZ, 0.0625);
-			$minZ = 0;
-			$minX = 0;
-			$maxX = 1;
-			$hasSide = true;
-		}
-
-		if(!$hasSide){
-			$minY = 0.9375;
-			$minX = 0;
-			$maxX = 1;
-			$minZ = 0;
-			$maxZ = 1;
-		}
-
-		return new AxisAlignedBB($minX, $minY, $minZ, $maxX, 1, $maxZ);
 	}
 
 	protected function recalculateCollisionBoxes() : array{
