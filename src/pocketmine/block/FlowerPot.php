@@ -102,7 +102,6 @@ class FlowerPot extends Flowable{
 
 		return
 			$block instanceof Cactus or
-			$block instanceof Dandelion or
 			$block instanceof DeadBush or
 			$block instanceof Flower or
 			$block instanceof RedMushroom or

@@ -95,7 +95,6 @@ class BlockFactory{
 		self::register(new Cobweb(new BID(BlockLegacyIds::COBWEB), "Cobweb"));
 		self::register(new CocoaBlock(new BID(BlockLegacyIds::COCOA), "Cocoa Block"));
 		self::register(new CraftingTable(new BID(BlockLegacyIds::CRAFTING_TABLE), "Crafting Table"));
-		self::register(new Dandelion(new BID(BlockLegacyIds::DANDELION), "Dandelion"));
 		self::register(new DaylightSensor(new BlockIdentifierFlattened(BlockLegacyIds::DAYLIGHT_DETECTOR, BlockLegacyIds::DAYLIGHT_DETECTOR_INVERTED), "Daylight Sensor"));
 		self::register(new DeadBush(new BID(BlockLegacyIds::DEADBUSH), "Dead Bush"));
 		self::register(new DetectorRail(new BID(BlockLegacyIds::DETECTOR_RAIL), "Detector Rail"));
@@ -119,6 +118,7 @@ class BlockFactory{
 		self::register(new EnderChest(new BID(BlockLegacyIds::ENDER_CHEST, 0, null, \pocketmine\tile\EnderChest::class), "Ender Chest"));
 		self::register(new Farmland(new BID(BlockLegacyIds::FARMLAND), "Farmland"));
 		self::register(new Fire(new BID(BlockLegacyIds::FIRE), "Fire Block"));
+		self::register(new Flower(new BID(BlockLegacyIds::DANDELION), "Dandelion"));
 		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, Flower::TYPE_ALLIUM), "Allium"));
 		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, Flower::TYPE_AZURE_BLUET), "Azure Bluet"));
 		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, Flower::TYPE_BLUE_ORCHID), "Blue Orchid"));
