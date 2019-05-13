@@ -81,7 +81,7 @@ class TimeCommand extends VanillaCommand{
 			}else{
 				$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
 			}
-			$sender->sendMessage(new TranslationContainer("commands.time.query", [$world->getTime()]));
+			$sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.time.query", [$world->getTime()]));
 			return true;
 		}
 
