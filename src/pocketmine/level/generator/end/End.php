@@ -31,8 +31,11 @@ use pocketmine\level\generator\end\populator\EndPillar;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\noise\Simplex;
 use pocketmine\level\generator\populator\Populator;
-use pocketmine\math\Vector3 as Vector3;
+use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
+
+use function exp;
+use function abs;
 
 class End extends Generator{
 

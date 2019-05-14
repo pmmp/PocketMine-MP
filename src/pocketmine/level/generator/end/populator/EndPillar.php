@@ -29,7 +29,14 @@ use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\utils\Random;
 
-class EndPillar extends Populator{
+use function mt_rand;
+use function intval;
+use function pi;
+use function cos;
+use function deg2rad;
+use function sin;
+
+class EndPillar extends Populator {
 	/** @var ChunkManager */
 	private $level;
 	private $randomAmount;

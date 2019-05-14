@@ -27,6 +27,9 @@ namespace pocketmine\level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 
+use function strval;
+use function is_bool;
+
 class GameRules{
 
 	public const RULE_COMMAND_BLOCK_OUTPUT = "commandBlockOutput";

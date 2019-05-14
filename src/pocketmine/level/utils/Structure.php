@@ -35,6 +35,8 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\IntTag;
 
+use function is_file;
+
 class Structure{
 
 	// TODO: creating a structure nbt from an area
