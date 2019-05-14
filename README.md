@@ -33,6 +33,7 @@ Here. Some servers that using Altay software:
 - **entengames.net:19132**
 - **play.oyungg.net:19132**
 - **play.zerotouch.tk:19132**
+- **angelpe.hu:19132**
 
 By the way, you can tell us to add your server to this list from our Discord group if your server is using Altay.
 
