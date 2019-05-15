@@ -268,7 +268,7 @@ class BlockFactory{
 		self::register(new StoneBricks(new BID(BlockLegacyIds::STONEBRICK, StoneBricks::NORMAL), "Stone Bricks"));
 		self::register(new StoneButton(new BID(BlockLegacyIds::STONE_BUTTON), "Stone Button"));
 		self::register(new StonePressurePlate(new BID(BlockLegacyIds::STONE_PRESSURE_PLATE), "Stone Pressure Plate"));
-		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, 0), "Stone"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, 0), "Smooth Stone"));
 		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, 1), "Sandstone"));
 		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, 2), "Fake Wooden"));
 		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, 3), "Cobblestone"));
@@ -284,6 +284,19 @@ class BlockFactory{
 		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB2, BlockLegacyIds::DOUBLE_STONE_SLAB2, 5), "Mossy Cobblestone"));
 		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB2, BlockLegacyIds::DOUBLE_STONE_SLAB2, 6), "Smooth Sandstone"));
 		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB2, BlockLegacyIds::DOUBLE_STONE_SLAB2, 7), "Red Nether Brick"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, 0), "End Stone Brick"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, 1), "Smooth Red Sandstone"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, 2), "Polished Andesite"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, 3), "Andesite"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, 4), "Diorite"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, 5), "Polished Diorite"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, 6), "Granite"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, 7), "Polished Granite"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB4, BlockLegacyIds::DOUBLE_STONE_SLAB4, 0), "Mossy Stone Brick"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB4, BlockLegacyIds::DOUBLE_STONE_SLAB4, 1), "Smooth Quartz"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB4, BlockLegacyIds::DOUBLE_STONE_SLAB4, 2), "Stone"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB4, BlockLegacyIds::DOUBLE_STONE_SLAB4, 3), "Cut Sandstone"));
+		self::register(new StoneSlab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB4, BlockLegacyIds::DOUBLE_STONE_SLAB4, 4), "Cut Red Sandstone"));
 		self::register(new Stonecutter(new BID(BlockLegacyIds::STONECUTTER), "Stonecutter"));
 		self::register(new Sugarcane(new BID(BlockLegacyIds::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane"));
 		self::register(new TNT(new BID(BlockLegacyIds::TNT), "TNT"));
@@ -490,8 +503,6 @@ class BlockFactory{
 		//TODO: minecraft:dark_prismarine_stairs
 		//TODO: minecraft:diorite_stairs
 		//TODO: minecraft:dispenser
-		//TODO: minecraft:double_stone_slab3
-		//TODO: minecraft:double_stone_slab4
 		//TODO: minecraft:dried_kelp_block
 		//TODO: minecraft:dropper
 		//TODO: minecraft:end_brick_stairs
@@ -533,8 +544,6 @@ class BlockFactory{
 		//TODO: minecraft:smooth_sandstone_stairs
 		//TODO: minecraft:smooth_stone
 		//TODO: minecraft:sticky_piston
-		//TODO: minecraft:stone_slab3
-		//TODO: minecraft:stone_slab4
 		//TODO: minecraft:stonecutter_block
 		//TODO: minecraft:stripped_acacia_log
 		//TODO: minecraft:stripped_birch_log
