@@ -473,6 +473,7 @@ class BlockFactory{
 			self::register(new Wall(new BID(BlockLegacyIds::COBBLESTONE_WALL, $magicNumber), $prefix . " Wall"));
 		}
 
+		//region --- auto-generated TODOs ---
 		//TODO: minecraft:andesite_stairs
 		//TODO: minecraft:bamboo
 		//TODO: minecraft:bamboo_sapling
@@ -505,6 +506,125 @@ class BlockFactory{
 		//TODO: minecraft:dispenser
 		//TODO: minecraft:dried_kelp_block
 		//TODO: minecraft:dropper
+		//TODO: minecraft:element_0
+		//TODO: minecraft:element_1
+		//TODO: minecraft:element_10
+		//TODO: minecraft:element_100
+		//TODO: minecraft:element_101
+		//TODO: minecraft:element_102
+		//TODO: minecraft:element_103
+		//TODO: minecraft:element_104
+		//TODO: minecraft:element_105
+		//TODO: minecraft:element_106
+		//TODO: minecraft:element_107
+		//TODO: minecraft:element_108
+		//TODO: minecraft:element_109
+		//TODO: minecraft:element_11
+		//TODO: minecraft:element_110
+		//TODO: minecraft:element_111
+		//TODO: minecraft:element_112
+		//TODO: minecraft:element_113
+		//TODO: minecraft:element_114
+		//TODO: minecraft:element_115
+		//TODO: minecraft:element_116
+		//TODO: minecraft:element_117
+		//TODO: minecraft:element_118
+		//TODO: minecraft:element_12
+		//TODO: minecraft:element_13
+		//TODO: minecraft:element_14
+		//TODO: minecraft:element_15
+		//TODO: minecraft:element_16
+		//TODO: minecraft:element_17
+		//TODO: minecraft:element_18
+		//TODO: minecraft:element_19
+		//TODO: minecraft:element_2
+		//TODO: minecraft:element_20
+		//TODO: minecraft:element_21
+		//TODO: minecraft:element_22
+		//TODO: minecraft:element_23
+		//TODO: minecraft:element_24
+		//TODO: minecraft:element_25
+		//TODO: minecraft:element_26
+		//TODO: minecraft:element_27
+		//TODO: minecraft:element_28
+		//TODO: minecraft:element_29
+		//TODO: minecraft:element_3
+		//TODO: minecraft:element_30
+		//TODO: minecraft:element_31
+		//TODO: minecraft:element_32
+		//TODO: minecraft:element_33
+		//TODO: minecraft:element_34
+		//TODO: minecraft:element_35
+		//TODO: minecraft:element_36
+		//TODO: minecraft:element_37
+		//TODO: minecraft:element_38
+		//TODO: minecraft:element_39
+		//TODO: minecraft:element_4
+		//TODO: minecraft:element_40
+		//TODO: minecraft:element_41
+		//TODO: minecraft:element_42
+		//TODO: minecraft:element_43
+		//TODO: minecraft:element_44
+		//TODO: minecraft:element_45
+		//TODO: minecraft:element_46
+		//TODO: minecraft:element_47
+		//TODO: minecraft:element_48
+		//TODO: minecraft:element_49
+		//TODO: minecraft:element_5
+		//TODO: minecraft:element_50
+		//TODO: minecraft:element_51
+		//TODO: minecraft:element_52
+		//TODO: minecraft:element_53
+		//TODO: minecraft:element_54
+		//TODO: minecraft:element_55
+		//TODO: minecraft:element_56
+		//TODO: minecraft:element_57
+		//TODO: minecraft:element_58
+		//TODO: minecraft:element_59
+		//TODO: minecraft:element_6
+		//TODO: minecraft:element_60
+		//TODO: minecraft:element_61
+		//TODO: minecraft:element_62
+		//TODO: minecraft:element_63
+		//TODO: minecraft:element_64
+		//TODO: minecraft:element_65
+		//TODO: minecraft:element_66
+		//TODO: minecraft:element_67
+		//TODO: minecraft:element_68
+		//TODO: minecraft:element_69
+		//TODO: minecraft:element_7
+		//TODO: minecraft:element_70
+		//TODO: minecraft:element_71
+		//TODO: minecraft:element_72
+		//TODO: minecraft:element_73
+		//TODO: minecraft:element_74
+		//TODO: minecraft:element_75
+		//TODO: minecraft:element_76
+		//TODO: minecraft:element_77
+		//TODO: minecraft:element_78
+		//TODO: minecraft:element_79
+		//TODO: minecraft:element_8
+		//TODO: minecraft:element_80
+		//TODO: minecraft:element_81
+		//TODO: minecraft:element_82
+		//TODO: minecraft:element_83
+		//TODO: minecraft:element_84
+		//TODO: minecraft:element_85
+		//TODO: minecraft:element_86
+		//TODO: minecraft:element_87
+		//TODO: minecraft:element_88
+		//TODO: minecraft:element_89
+		//TODO: minecraft:element_9
+		//TODO: minecraft:element_90
+		//TODO: minecraft:element_91
+		//TODO: minecraft:element_92
+		//TODO: minecraft:element_93
+		//TODO: minecraft:element_94
+		//TODO: minecraft:element_95
+		//TODO: minecraft:element_96
+		//TODO: minecraft:element_97
+		//TODO: minecraft:element_98
+		//TODO: minecraft:element_99
 		//TODO: minecraft:end_brick_stairs
 		//TODO: minecraft:end_gateway
 		//TODO: minecraft:end_portal
@@ -518,6 +638,8 @@ class BlockFactory{
 		//TODO: minecraft:lantern
 		//TODO: minecraft:lava_cauldron
 		//TODO: minecraft:lectern
+		//TODO: minecraft:lit_blast_furnace
+		//TODO: minecraft:lit_smoker
 		//TODO: minecraft:loom
 		//TODO: minecraft:mossy_cobblestone_stairs
 		//TODO: minecraft:mossy_stone_brick_stairs
@@ -555,6 +677,7 @@ class BlockFactory{
 		//TODO: minecraft:sweet_berry_bush
 		//TODO: minecraft:turtle_egg
 		//TODO: minecraft:undyed_shulker_box
+		//endregion
 	}
 
 	public static function isInit() : bool{

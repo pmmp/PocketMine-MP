@@ -307,16 +307,15 @@ class ItemFactory{
 			self::register(new Boat(Item::BOAT, $type->getMagicNumber(), $type->getDisplayName() . " Boat", $type));
 		}
 
-		//TODO: minecraft:acacia_sign
+		//region --- auto-generated TODOs ---
 		//TODO: minecraft:armor_stand
 		//TODO: minecraft:balloon
-		//TODO: minecraft:birch_sign
+		//TODO: minecraft:banner_pattern
+		//TODO: minecraft:campfire
 		//TODO: minecraft:carrotOnAStick
 		//TODO: minecraft:chest_minecart
 		//TODO: minecraft:command_block_minecart
-		//TODO: minecraft:compound
 		//TODO: minecraft:crossbow
-		//TODO: minecraft:darkoak_sign
 		//TODO: minecraft:elytra
 		//TODO: minecraft:emptyMap
 		//TODO: minecraft:enchanted_book
@@ -332,7 +331,6 @@ class ItemFactory{
 		//TODO: minecraft:horsearmoriron
 		//TODO: minecraft:horsearmorleather
 		//TODO: minecraft:ice_bomb
-		//TODO: minecraft:jungle_sign
 		//TODO: minecraft:kelp
 		//TODO: minecraft:lead
 		//TODO: minecraft:lingering_potion
@@ -354,12 +352,14 @@ class ItemFactory{
 		//TODO: minecraft:record_wait
 		//TODO: minecraft:record_ward
 		//TODO: minecraft:saddle
+		//TODO: minecraft:shield
 		//TODO: minecraft:sparkler
 		//TODO: minecraft:spawn_egg
-		//TODO: minecraft:spruce_sign
+		//TODO: minecraft:sweet_berries
 		//TODO: minecraft:tnt_minecart
 		//TODO: minecraft:trident
 		//TODO: minecraft:turtle_helmet
+		//endregion
 	}
 
 	/**
