@@ -29,17 +29,6 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Flower extends Flowable{
-	public const TYPE_POPPY = 0;
-	public const TYPE_BLUE_ORCHID = 1;
-	public const TYPE_ALLIUM = 2;
-	public const TYPE_AZURE_BLUET = 3;
-	public const TYPE_RED_TULIP = 4;
-	public const TYPE_ORANGE_TULIP = 5;
-	public const TYPE_WHITE_TULIP = 6;
-	public const TYPE_PINK_TULIP = 7;
-	public const TYPE_OXEYE_DAISY = 8;
-	public const TYPE_CORNFLOWER = 9;
-	public const TYPE_LILY_OF_THE_VALLEY = 10;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());

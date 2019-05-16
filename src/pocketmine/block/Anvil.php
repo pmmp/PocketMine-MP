@@ -38,10 +38,6 @@ use pocketmine\Player;
 class Anvil extends Transparent implements Fallable{
 	use FallableTrait;
 
-	public const TYPE_NORMAL = 0;
-	public const TYPE_SLIGHTLY_DAMAGED = 4;
-	public const TYPE_VERY_DAMAGED = 8;
-
 	/** @var int */
 	protected $facing = Facing::NORTH;
 

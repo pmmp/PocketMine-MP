@@ -27,10 +27,6 @@ use pocketmine\item\TieredTool;
 
 class Prismarine extends Solid{
 
-	public const NORMAL = 0;
-	public const DARK = 1;
-	public const BRICKS = 2;
-
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0));
 	}

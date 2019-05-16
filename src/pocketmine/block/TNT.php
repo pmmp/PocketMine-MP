@@ -48,11 +48,11 @@ class TNT extends Solid{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->unstable = $stateMeta !== 0;
+		$this->unstable = ($stateMeta & BlockLegacyMetadata::TNT_FLAG_UNSTABLE) !== 0;
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->unstable ? 1 : 0;
+		return $this->unstable ? BlockLegacyMetadata::TNT_FLAG_UNSTABLE : 0;
 	}
 
 	public function getStateBitmask() : int{

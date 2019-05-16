@@ -39,13 +39,15 @@ class BrewingStand extends Transparent{
 	}
 
 	protected function writeStateToMeta() : int{
-		return ($this->eastSlot ? 0x01 : 0) | ($this->southwestSlot ? 0x02 : 0) | ($this->northwestSlot ? 0x04 : 0);
+		return ($this->eastSlot ? BlockLegacyMetadata::BREWING_STAND_FLAG_EAST : 0) |
+			($this->southwestSlot ? BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST : 0) |
+			($this->northwestSlot ? BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->eastSlot = ($stateMeta & 0x01) !== 0;
-		$this->southwestSlot = ($stateMeta & 0x02) !== 0;
-		$this->northwestSlot = ($stateMeta & 0x04) !== 0;
+		$this->eastSlot = ($stateMeta & BlockLegacyMetadata::BREWING_STAND_FLAG_EAST) !== 0;
+		$this->southwestSlot = ($stateMeta & BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST) !== 0;
+		$this->northwestSlot = ($stateMeta & BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST) !== 0;
 	}
 
 	public function getStateBitmask() : int{

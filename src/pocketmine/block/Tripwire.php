@@ -39,14 +39,17 @@ class Tripwire extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return ($this->triggered ? 0x01 : 0) | ($this->suspended ? 0x02 : 0) | ($this->connected ? 0x04 : 0) | ($this->disarmed ? 0x08 : 0);
+		return ($this->triggered ? BlockLegacyMetadata::TRIPWIRE_FLAG_TRIGGERED : 0) |
+			($this->suspended ? BlockLegacyMetadata::TRIPWIRE_FLAG_SUSPENDED : 0) |
+			($this->connected ? BlockLegacyMetadata::TRIPWIRE_FLAG_CONNECTED : 0) |
+			($this->disarmed ? BlockLegacyMetadata::TRIPWIRE_FLAG_DISARMED : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->triggered = ($stateMeta & 0x01) !== 0;
-		$this->suspended = ($stateMeta & 0x02) !== 0;
-		$this->connected = ($stateMeta & 0x04) !== 0;
-		$this->disarmed = ($stateMeta & 0x08) !== 0;
+		$this->triggered = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_TRIGGERED) !== 0;
+		$this->suspended = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_SUSPENDED) !== 0;
+		$this->connected = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_CONNECTED) !== 0;
+		$this->disarmed = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_DISARMED) !== 0;
 	}
 
 	public function getStateBitmask() : int{

@@ -32,8 +32,6 @@ use pocketmine\Player;
 use pocketmine\world\sound\DoorSound;
 
 abstract class Trapdoor extends Transparent{
-	private const MASK_UPPER = 0x04;
-	private const MASK_OPENED = 0x08;
 
 	/** @var int */
 	protected $facing = Facing::NORTH;
@@ -43,15 +41,15 @@ abstract class Trapdoor extends Transparent{
 	protected $top = false;
 
 	protected function writeStateToMeta() : int{
-		return (5 - $this->facing) | ($this->top ? self::MASK_UPPER : 0) | ($this->open ? self::MASK_OPENED : 0);
+		return (5 - $this->facing) | ($this->top ? BlockLegacyMetadata::TRAPDOOR_FLAG_UPPER : 0) | ($this->open ? BlockLegacyMetadata::TRAPDOOR_FLAG_OPEN : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		//TODO: in PC the values are reversed (facing - 2)
 
 		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($stateMeta & 0x03));
-		$this->top = ($stateMeta & self::MASK_UPPER) !== 0;
-		$this->open = ($stateMeta & self::MASK_OPENED) !== 0;
+		$this->top = ($stateMeta & BlockLegacyMetadata::TRAPDOOR_FLAG_UPPER) !== 0;
+		$this->open = ($stateMeta & BlockLegacyMetadata::TRAPDOOR_FLAG_OPEN) !== 0;
 	}
 
 	public function getStateBitmask() : int{

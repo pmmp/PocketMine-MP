@@ -30,8 +30,6 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Dirt extends Solid{
-	public const NORMAL = 0;
-	public const COARSE = 1;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::TYPE_SHOVEL));

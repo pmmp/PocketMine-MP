@@ -30,7 +30,6 @@ use pocketmine\Player;
 use pocketmine\world\BlockTransaction;
 
 class DoublePlant extends Flowable{
-	private const BITFLAG_TOP = 0x08;
 
 	/** @var bool */
 	protected $top = false;
@@ -40,11 +39,11 @@ class DoublePlant extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return ($this->top ? self::BITFLAG_TOP : 0);
+		return ($this->top ? BlockLegacyMetadata::DOUBLE_PLANT_FLAG_TOP : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->top = ($stateMeta & self::BITFLAG_TOP) !== 0;
+		$this->top = ($stateMeta & BlockLegacyMetadata::DOUBLE_PLANT_FLAG_TOP) !== 0;
 	}
 
 	public function getStateBitmask() : int{

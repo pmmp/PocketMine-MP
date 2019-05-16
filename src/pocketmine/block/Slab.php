@@ -48,7 +48,7 @@ abstract class Slab extends Transparent{
 
 	protected function writeStateToMeta() : int{
 		if($this->slabType !== SlabType::DOUBLE()){
-			return ($this->slabType === SlabType::TOP() ? 0x08 : 0);
+			return ($this->slabType === SlabType::TOP() ? BlockLegacyMetadata::SLAB_FLAG_UPPER : 0);
 		}
 		return 0;
 	}
@@ -57,7 +57,7 @@ abstract class Slab extends Transparent{
 		if($id === $this->idInfo->getSecondId()){
 			$this->slabType = SlabType::DOUBLE();
 		}else{
-			$this->slabType = ($stateMeta & 0x08) !== 0 ? SlabType::TOP() : SlabType::BOTTOM();
+			$this->slabType = ($stateMeta & BlockLegacyMetadata::SLAB_FLAG_UPPER) !== 0 ? SlabType::TOP() : SlabType::BOTTOM();
 		}
 	}
 

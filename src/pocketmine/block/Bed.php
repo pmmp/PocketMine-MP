@@ -39,8 +39,6 @@ use pocketmine\utils\TextFormat;
 use pocketmine\world\World;
 
 class Bed extends Transparent{
-	private const BITFLAG_OCCUPIED = 0x04;
-	private const BITFLAG_HEAD = 0x08;
 
 	/** @var int */
 	protected $facing = Facing::NORTH;
@@ -58,14 +56,14 @@ class Bed extends Transparent{
 
 	protected function writeStateToMeta() : int{
 		return Bearing::fromFacing($this->facing) |
-			($this->occupied ? self::BITFLAG_OCCUPIED : 0) |
-			($this->head ? self::BITFLAG_HEAD : 0);
+			($this->occupied ? BlockLegacyMetadata::BED_FLAG_OCCUPIED : 0) |
+			($this->head ? BlockLegacyMetadata::BED_FLAG_HEAD : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->occupied = ($stateMeta & self::BITFLAG_OCCUPIED) !== 0;
-		$this->head = ($stateMeta & self::BITFLAG_HEAD) !== 0;
+		$this->occupied = ($stateMeta & BlockLegacyMetadata::BED_FLAG_OCCUPIED) !== 0;
+		$this->head = ($stateMeta & BlockLegacyMetadata::BED_FLAG_HEAD) !== 0;
 	}
 
 	public function getStateBitmask() : int{

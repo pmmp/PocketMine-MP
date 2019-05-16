@@ -29,12 +29,9 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
 
 class NetherReactor extends Solid{
-	protected const STATE_INACTIVE = 0;
-	protected const STATE_ACTIVE = 1;
-	protected const STATE_USED = 2;
 
 	/** @var int */
-	protected $state = self::STATE_INACTIVE;
+	protected $state = BlockLegacyMetadata::NETHER_REACTOR_INACTIVE;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN));

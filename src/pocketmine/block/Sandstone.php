@@ -27,11 +27,6 @@ use pocketmine\item\TieredTool;
 
 class Sandstone extends Solid{
 
-	public const NORMAL = 0;
-	public const CHISELED = 1;
-	public const CUT = 2;
-	public const SMOOTH = 3;
-
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.8, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN));
 	}

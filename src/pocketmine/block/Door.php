@@ -50,20 +50,22 @@ abstract class Door extends Transparent{
 
 	protected function writeStateToMeta() : int{
 		if($this->top){
-			return 0x08 | ($this->hingeRight ? 0x01 : 0) | ($this->powered ? 0x02 : 0);
+			return BlockLegacyMetadata::DOOR_FLAG_TOP |
+				($this->hingeRight ? BlockLegacyMetadata::DOOR_TOP_FLAG_RIGHT : 0) |
+				($this->powered ? BlockLegacyMetadata::DOOR_TOP_FLAG_POWERED : 0);
 		}
 
-		return Bearing::fromFacing(Facing::rotateY($this->facing, true)) | ($this->open ? 0x04 : 0);
+		return Bearing::fromFacing(Facing::rotateY($this->facing, true)) | ($this->open ? BlockLegacyMetadata::DOOR_BOTTOM_FLAG_OPEN : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->top = $stateMeta & 0x08;
+		$this->top = $stateMeta & BlockLegacyMetadata::DOOR_FLAG_TOP;
 		if($this->top){
-			$this->hingeRight = ($stateMeta & 0x01) !== 0;
-			$this->powered = ($stateMeta & 0x02) !== 0;
+			$this->hingeRight = ($stateMeta & BlockLegacyMetadata::DOOR_TOP_FLAG_RIGHT) !== 0;
+			$this->powered = ($stateMeta & BlockLegacyMetadata::DOOR_TOP_FLAG_POWERED) !== 0;
 		}else{
 			$this->facing = Facing::rotateY(BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03), false);
-			$this->open = ($stateMeta & 0x04) !== 0;
+			$this->open = ($stateMeta & BlockLegacyMetadata::DOOR_BOTTOM_FLAG_OPEN) !== 0;
 		}
 	}
 

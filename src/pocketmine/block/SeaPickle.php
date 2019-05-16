@@ -40,11 +40,11 @@ class SeaPickle extends Transparent{
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->count = ($stateMeta & 0x03) + 1;
-		$this->underwater = ($stateMeta & 0x04) === 0;
+		$this->underwater = ($stateMeta & BlockLegacyMetadata::SEA_PICKLE_FLAG_NOT_UNDERWATER) === 0;
 	}
 
 	protected function writeStateToMeta() : int{
-		return ($this->count - 1) | ($this->underwater ? 0 : 0x04);
+		return ($this->count - 1) | ($this->underwater ? 0 : BlockLegacyMetadata::SEA_PICKLE_FLAG_NOT_UNDERWATER);
 	}
 
 	public function getStateBitmask() : int{

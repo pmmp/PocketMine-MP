@@ -28,25 +28,21 @@ use pocketmine\math\Facing;
 class Rail extends BaseRail{
 
 	/* extended meta values for regular rails, to allow curving */
-	public const CURVE_SOUTHEAST = 6;
-	public const CURVE_SOUTHWEST = 7;
-	public const CURVE_NORTHWEST = 8;
-	public const CURVE_NORTHEAST = 9;
 
 	private const CURVE_CONNECTIONS = [
-		self::CURVE_SOUTHEAST => [
+		BlockLegacyMetadata::RAIL_CURVE_SOUTHEAST => [
 			Facing::SOUTH,
 			Facing::EAST
 		],
-		self::CURVE_SOUTHWEST => [
+		BlockLegacyMetadata::RAIL_CURVE_SOUTHWEST => [
 			Facing::SOUTH,
 			Facing::WEST
 		],
-		self::CURVE_NORTHWEST => [
+		BlockLegacyMetadata::RAIL_CURVE_NORTHWEST => [
 			Facing::NORTH,
 			Facing::WEST
 		],
-		self::CURVE_NORTHEAST => [
+		BlockLegacyMetadata::RAIL_CURVE_NORTHEAST => [
 			Facing::NORTH,
 			Facing::EAST
 		]

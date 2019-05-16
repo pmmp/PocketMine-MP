@@ -47,11 +47,11 @@ class FlowerPot extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->occupied ? 1 : 0;
+		return $this->occupied ? BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED : 0;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->occupied = $stateMeta !== 0;
+		$this->occupied = ($stateMeta & BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED) !== 0;
 	}
 
 	public function getStateBitmask() : int{
@@ -106,7 +106,7 @@ class FlowerPot extends Flowable{
 			$block instanceof Flower or
 			$block instanceof RedMushroom or
 			$block instanceof Sapling or
-			($block instanceof TallGrass and $block->getIdInfo()->getVariant() === 2); //fern - TODO: clean up
+			($block instanceof TallGrass and $block->getIdInfo()->getVariant() === BlockLegacyMetadata::TALLGRASS_FERN); //TODO: clean up
 		//TODO: bamboo
 	}
 

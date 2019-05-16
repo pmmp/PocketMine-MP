@@ -48,12 +48,12 @@ class Leaves extends Transparent{
 	}
 
 	protected function writeStateToMeta() : int{
-		return ($this->noDecay ? 0x04 : 0) | ($this->checkDecay ? 0x08 : 0);
+		return ($this->noDecay ? BlockLegacyMetadata::LEAVES_FLAG_NO_DECAY : 0) | ($this->checkDecay ? BlockLegacyMetadata::LEAVES_FLAG_CHECK_DECAY : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->noDecay = ($stateMeta & 0x04) !== 0;
-		$this->checkDecay = ($stateMeta & 0x08) !== 0;
+		$this->noDecay = ($stateMeta & BlockLegacyMetadata::LEAVES_FLAG_NO_DECAY) !== 0;
+		$this->checkDecay = ($stateMeta & BlockLegacyMetadata::LEAVES_FLAG_CHECK_DECAY) !== 0;
 	}
 
 	public function getStateBitmask() : int{

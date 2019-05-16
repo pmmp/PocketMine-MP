@@ -50,12 +50,12 @@ class ItemFrame extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return (5 - $this->facing) | ($this->hasMap ? 0x04 : 0);
+		return (5 - $this->facing) | ($this->hasMap ? BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($stateMeta & 0x03));
-		$this->hasMap = ($stateMeta & 0x04) !== 0;
+		$this->hasMap = ($stateMeta & BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP) !== 0;
 	}
 
 	public function readStateFromWorld() : void{

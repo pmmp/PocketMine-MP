@@ -34,11 +34,11 @@ class Sponge extends Solid{
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->wet ? 1 : 0;
+		return $this->wet ? BlockLegacyMetadata::SPONGE_FLAG_WET : 0;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->wet = $stateMeta !== 0;
+		$this->wet = ($stateMeta & BlockLegacyMetadata::SPONGE_FLAG_WET) !== 0;
 	}
 
 	public function getStateBitmask() : int{

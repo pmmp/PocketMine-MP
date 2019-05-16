@@ -38,40 +38,33 @@ use function in_array;
 
 abstract class BaseRail extends Flowable{
 
-	public const STRAIGHT_NORTH_SOUTH = 0;
-	public const STRAIGHT_EAST_WEST = 1;
-	public const ASCENDING_EAST = 2;
-	public const ASCENDING_WEST = 3;
-	public const ASCENDING_NORTH = 4;
-	public const ASCENDING_SOUTH = 5;
-
 	protected const FLAG_ASCEND = 1 << 24; //used to indicate direction-up
 
 	protected const CONNECTIONS = [
 		//straights
-		self::STRAIGHT_NORTH_SOUTH => [
+		BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH => [
 			Facing::NORTH,
 			Facing::SOUTH
 		],
-		self::STRAIGHT_EAST_WEST => [
+		BlockLegacyMetadata::RAIL_STRAIGHT_EAST_WEST => [
 			Facing::EAST,
 			Facing::WEST
 		],
 
 		//ascending
-		self::ASCENDING_EAST => [
+		BlockLegacyMetadata::RAIL_ASCENDING_EAST => [
 			Facing::WEST,
 			Facing::EAST | self::FLAG_ASCEND
 		],
-		self::ASCENDING_WEST => [
+		BlockLegacyMetadata::RAIL_ASCENDING_WEST => [
 			Facing::EAST,
 			Facing::WEST | self::FLAG_ASCEND
 		],
-		self::ASCENDING_NORTH => [
+		BlockLegacyMetadata::RAIL_ASCENDING_NORTH => [
 			Facing::SOUTH,
 			Facing::NORTH | self::FLAG_ASCEND
 		],
-		self::ASCENDING_SOUTH => [
+		BlockLegacyMetadata::RAIL_ASCENDING_SOUTH => [
 			Facing::NORTH,
 			Facing::SOUTH | self::FLAG_ASCEND
 		]
@@ -86,7 +79,7 @@ abstract class BaseRail extends Flowable{
 
 	protected function writeStateToMeta() : int{
 		if(empty($this->connections)){
-			return self::STRAIGHT_NORTH_SOUTH;
+			return BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
 		}
 		return $this->getMetaForState($this->connections);
 	}

@@ -46,11 +46,11 @@ class Sapling extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return ($this->ready ? 0x08 : 0);
+		return ($this->ready ? BlockLegacyMetadata::SAPLING_FLAG_READY : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->ready = ($stateMeta & 0x08) !== 0;
+		$this->ready = ($stateMeta & BlockLegacyMetadata::SAPLING_FLAG_READY) !== 0;
 	}
 
 	public function getStateBitmask() : int{

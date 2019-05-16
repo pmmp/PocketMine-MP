@@ -33,11 +33,11 @@ class Bedrock extends Solid{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->burnsForever = $stateMeta !== 0;
+		$this->burnsForever = ($stateMeta & BlockLegacyMetadata::BEDROCK_FLAG_INFINIBURN) !== 0;
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->burnsForever ? 1 : 0;
+		return $this->burnsForever ? BlockLegacyMetadata::BEDROCK_FLAG_INFINIBURN : 0;
 	}
 
 	public function getStateBitmask() : int{

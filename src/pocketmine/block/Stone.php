@@ -26,13 +26,6 @@ namespace pocketmine\block;
 use pocketmine\item\TieredTool;
 
 class Stone extends Solid{
-	public const NORMAL = 0;
-	public const GRANITE = 1;
-	public const POLISHED_GRANITE = 2;
-	public const DIORITE = 3;
-	public const POLISHED_DIORITE = 4;
-	public const ANDESITE = 5;
-	public const POLISHED_ANDESITE = 6;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0));

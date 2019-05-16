@@ -28,20 +28,6 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
 class Wall extends Transparent{
-	public const NONE_MOSSY_WALL = 0;
-	public const MOSSY_WALL = 1;
-	public const GRANITE_WALL = 2;
-	public const DIORITE_WALL = 3;
-	public const ANDESITE_WALL = 4;
-	public const SANDSTONE_WALL = 5;
-	public const BRICK_WALL = 6;
-	public const STONE_BRICK_WALL = 7;
-	public const MOSSY_STONE_BRICK_WALL = 8;
-	public const NETHER_BRICK_WALL = 9;
-	public const END_STONE_BRICK_WALL = 10;
-	public const PRISMARINE_WALL = 11;
-	public const RED_SANDSTONE_WALL = 12;
-	public const RED_NETHER_BRICK_WALL = 13;
 
 	/** @var bool[] facing => dummy */
 	protected $connections = [];

@@ -37,11 +37,11 @@ class NetherPortal extends Transparent{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->axis = $stateMeta === 2 ? Facing::AXIS_Z : Facing::AXIS_X; //mojang u dumb
+		$this->axis = $stateMeta === BlockLegacyMetadata::NETHER_PORTAL_AXIS_Z ? Facing::AXIS_Z : Facing::AXIS_X; //mojang u dumb
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->axis === Facing::AXIS_Z ? 2 : 1;
+		return $this->axis === Facing::AXIS_Z ? BlockLegacyMetadata::NETHER_PORTAL_AXIS_Z : BlockLegacyMetadata::NETHER_PORTAL_AXIS_X;
 	}
 
 	public function getStateBitmask() : int{

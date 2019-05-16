@@ -45,12 +45,12 @@ abstract class Stair extends Transparent{
 	protected $shape = self::SHAPE_STRAIGHT;
 
 	protected function writeStateToMeta() : int{
-		return (5 - $this->facing) | ($this->upsideDown ? 0x04 : 0);
+		return (5 - $this->facing) | ($this->upsideDown ? BlockLegacyMetadata::STAIR_FLAG_UPSIDE_DOWN : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($stateMeta & 0x03));
-		$this->upsideDown = ($stateMeta & 0x04) !== 0;
+		$this->upsideDown = ($stateMeta & BlockLegacyMetadata::STAIR_FLAG_UPSIDE_DOWN) !== 0;
 	}
 
 	public function getStateBitmask() : int{

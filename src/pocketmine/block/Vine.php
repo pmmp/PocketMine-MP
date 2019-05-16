@@ -34,10 +34,6 @@ use function array_keys;
 use function count;
 
 class Vine extends Flowable{
-	private const FLAG_SOUTH = 0x01;
-	private const FLAG_WEST = 0x02;
-	private const FLAG_NORTH = 0x04;
-	private const FLAG_EAST = 0x08;
 
 	/** @var bool[] */
 	protected $faces = [];
@@ -48,17 +44,17 @@ class Vine extends Flowable{
 
 	protected function writeStateToMeta() : int{
 		return
-			(isset($this->faces[Facing::SOUTH]) ? self::FLAG_SOUTH : 0) |
-			(isset($this->faces[Facing::WEST]) ? self::FLAG_WEST : 0) |
-			(isset($this->faces[Facing::NORTH]) ? self::FLAG_NORTH : 0) |
-			(isset($this->faces[Facing::EAST]) ? self::FLAG_EAST : 0);
+			(isset($this->faces[Facing::SOUTH]) ? BlockLegacyMetadata::VINE_FLAG_SOUTH : 0) |
+			(isset($this->faces[Facing::WEST]) ? BlockLegacyMetadata::VINE_FLAG_WEST : 0) |
+			(isset($this->faces[Facing::NORTH]) ? BlockLegacyMetadata::VINE_FLAG_NORTH : 0) |
+			(isset($this->faces[Facing::EAST]) ? BlockLegacyMetadata::VINE_FLAG_EAST : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->setFaceFromMeta($stateMeta, self::FLAG_SOUTH, Facing::SOUTH);
-		$this->setFaceFromMeta($stateMeta, self::FLAG_WEST, Facing::WEST);
-		$this->setFaceFromMeta($stateMeta, self::FLAG_NORTH, Facing::NORTH);
-		$this->setFaceFromMeta($stateMeta, self::FLAG_EAST, Facing::EAST);
+		$this->setFaceFromMeta($stateMeta, BlockLegacyMetadata::VINE_FLAG_SOUTH, Facing::SOUTH);
+		$this->setFaceFromMeta($stateMeta, BlockLegacyMetadata::VINE_FLAG_WEST, Facing::WEST);
+		$this->setFaceFromMeta($stateMeta, BlockLegacyMetadata::VINE_FLAG_NORTH, Facing::NORTH);
+		$this->setFaceFromMeta($stateMeta, BlockLegacyMetadata::VINE_FLAG_EAST, Facing::EAST);
 	}
 
 	public function getStateBitmask() : int{

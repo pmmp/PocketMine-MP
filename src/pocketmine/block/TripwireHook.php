@@ -44,13 +44,15 @@ class TripwireHook extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return Bearing::fromFacing($this->facing) | ($this->connected ? 0x04 : 0) | ($this->powered ? 0x08 : 0);
+		return Bearing::fromFacing($this->facing) |
+			($this->connected ? BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_CONNECTED : 0) |
+			($this->powered ? BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_POWERED : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->connected = ($stateMeta & 0x04) !== 0;
-		$this->powered = ($stateMeta & 0x08) !== 0;
+		$this->connected = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_CONNECTED) !== 0;
+		$this->powered = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_POWERED) !== 0;
 	}
 
 	public function getStateBitmask() : int{

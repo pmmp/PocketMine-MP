@@ -45,13 +45,15 @@ class FenceGate extends Transparent{
 	}
 
 	protected function writeStateToMeta() : int{
-		return Bearing::fromFacing($this->facing) | ($this->open ? 0x04 : 0) | ($this->inWall ? 0x08 : 0);
+		return Bearing::fromFacing($this->facing) |
+			($this->open ? BlockLegacyMetadata::FENCE_GATE_FLAG_OPEN : 0) |
+			($this->inWall ? BlockLegacyMetadata::FENCE_GATE_FLAG_IN_WALL : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->open = ($stateMeta & 0x04) !== 0;
-		$this->inWall = ($stateMeta & 0x08) !== 0;
+		$this->open = ($stateMeta & BlockLegacyMetadata::FENCE_GATE_FLAG_OPEN) !== 0;
+		$this->inWall = ($stateMeta & BlockLegacyMetadata::FENCE_GATE_FLAG_IN_WALL) !== 0;
 	}
 
 	public function getStateBitmask() : int{

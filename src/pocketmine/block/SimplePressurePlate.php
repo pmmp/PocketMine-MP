@@ -29,11 +29,11 @@ abstract class SimplePressurePlate extends PressurePlate{
 	protected $powered = false;
 
 	protected function writeStateToMeta() : int{
-		return $this->powered ? 1 : 0;
+		return $this->powered ? BlockLegacyMetadata::PRESSURE_PLATE_FLAG_POWERED : 0;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->powered = $stateMeta !== 0;
+		$this->powered = ($stateMeta & BlockLegacyMetadata::PRESSURE_PLATE_FLAG_POWERED) !== 0;
 	}
 
 	public function getStateBitmask() : int{
