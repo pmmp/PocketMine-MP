@@ -140,6 +140,8 @@ class Enchantment{
 		self::register(new Enchantment(self::VANISHING, "%enchantment.curse.vanishing", self::RARITY_MYTHIC, self::SLOT_NONE, self::SLOT_ALL, 1));
 	}
 
+	//region --- auto-generated code ---
+
 	public static function BLAST_PROTECTION() : Enchantment{
 		return self::get(self::BLAST_PROTECTION);
 	}
@@ -215,6 +217,8 @@ class Enchantment{
 	public static function VANISHING() : Enchantment{
 		return self::get(self::VANISHING);
 	}
+
+	//endregion
 
 	/**
 	 * Registers an enchantment type.

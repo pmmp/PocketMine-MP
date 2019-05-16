@@ -92,7 +92,7 @@ class Effect{
 		self::register(new Effect(Effect::CONDUIT_POWER, "%potion.conduitPower", new Color(0x1d, 0xc2, 0xd1)));
 	}
 
-	/* auto-generated code */
+	//region --- auto-generated code ---
 
 	public static function ABSORPTION() : Effect{
 		return self::get(Effect::ABSORPTION);
@@ -197,6 +197,8 @@ class Effect{
 	public static function WITHER() : Effect{
 		return self::get(Effect::WITHER);
 	}
+
+	//endregion
 
 	/**
 	 * @param Effect $effect
