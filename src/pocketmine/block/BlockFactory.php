@@ -320,6 +320,8 @@ class BlockFactory{
 		self::register(new WeightedPressurePlateLight(new BID(BlockLegacyIds::LIGHT_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Light"));
 		self::register(new Wheat(new BID(BlockLegacyIds::WHEAT_BLOCK), "Wheat Block"));
 
+
+		//region ugly treetype -> blockID mapping tables
 		/** @var int[]|\SplObjectStorage $woodenStairIds */
 		$woodenStairIds = new \SplObjectStorage();
 		$woodenStairIds[TreeType::OAK()] = BlockLegacyIds::OAK_STAIRS;
@@ -382,6 +384,7 @@ class BlockFactory{
 		$woodenSignIds[TreeType::JUNGLE()] = new BlockIdentifierFlattened(BlockLegacyIds::JUNGLE_STANDING_SIGN, BlockLegacyIds::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, \pocketmine\tile\Sign::class);
 		$woodenSignIds[TreeType::ACACIA()] = new BlockIdentifierFlattened(BlockLegacyIds::ACACIA_STANDING_SIGN, BlockLegacyIds::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, \pocketmine\tile\Sign::class);
 		$woodenSignIds[TreeType::DARK_OAK()] = new BlockIdentifierFlattened(BlockLegacyIds::DARKOAK_STANDING_SIGN, BlockLegacyIds::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, \pocketmine\tile\Sign::class);
+		//endregion
 
 		foreach(TreeType::getAll() as $treeType){
 			$magicNumber = $treeType->getMagicNumber();
@@ -421,6 +424,7 @@ class BlockFactory{
 			self::register(new Sandstone(new BID(BlockLegacyIds::RED_SANDSTONE, $variant), $prefix . "Red Sandstone"));
 		}
 
+		//region ugly glazed-terracotta colour -> ID mapping table
 		/** @var int[]|\SplObjectStorage $glazedTerracottaIds */
 		$glazedTerracottaIds = new \SplObjectStorage();
 		$glazedTerracottaIds[DyeColor::WHITE()] = BlockLegacyIds::WHITE_GLAZED_TERRACOTTA;
@@ -439,6 +443,7 @@ class BlockFactory{
 		$glazedTerracottaIds[DyeColor::GREEN()] = BlockLegacyIds::GREEN_GLAZED_TERRACOTTA;
 		$glazedTerracottaIds[DyeColor::RED()] = BlockLegacyIds::RED_GLAZED_TERRACOTTA;
 		$glazedTerracottaIds[DyeColor::BLACK()] = BlockLegacyIds::BLACK_GLAZED_TERRACOTTA;
+		//endregion
 
 		foreach(DyeColor::getAll() as $color){
 			self::register(new Carpet(new BID(BlockLegacyIds::CARPET, $color->getMagicNumber()), $color->getDisplayName() . " Carpet"));
