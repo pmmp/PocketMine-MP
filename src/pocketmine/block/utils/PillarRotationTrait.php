@@ -34,6 +34,10 @@ trait PillarRotationTrait{
 	/** @var int */
 	protected $axis = Facing::AXIS_Y;
 
+	protected function getAxisMetaShift() : int{
+		return 2; //default
+	}
+
 	/**
 	 * @see Block::writeStateToMeta()
 	 * @return int
@@ -57,7 +61,7 @@ trait PillarRotationTrait{
 	 * @return int
 	 */
 	public function getStateBitmask() : int{
-		return 0b1100;
+		return 0b11 << $this->getAxisMetaShift();
 	}
 
 	protected function readAxisFromMeta(int $meta) : void{
@@ -66,7 +70,7 @@ trait PillarRotationTrait{
 			1 => Facing::AXIS_X,
 			2 => Facing::AXIS_Z
 		];
-		$axis = $meta >> 2;
+		$axis = $meta >> $this->getAxisMetaShift();
 		if(!isset($map[$axis])){
 			throw new InvalidBlockStateException("Invalid axis meta $axis");
 		}
@@ -79,7 +83,7 @@ trait PillarRotationTrait{
 			Facing::AXIS_Z => 2,
 			Facing::AXIS_X => 1
 		];
-		return $bits[$this->axis] << 2;
+		return $bits[$this->axis] << $this->getAxisMetaShift();
 	}
 
 	/**
