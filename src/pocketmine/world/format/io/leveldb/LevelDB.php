@@ -183,6 +183,47 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 	}
 
+	protected static function deserializeExtraDataKey(int $chunkVersion, int $key, ?int &$x, ?int &$y, ?int &$z) : void{
+		if($chunkVersion >= 3){
+			$x = ($key >> 12) & 0xf;
+			$z = ($key >> 8) & 0xf;
+			$y = $key & 0xff;
+		}else{ //pre-1.0, 7 bits were used because the build height limit was lower
+			$x = ($key >> 11) & 0xf;
+			$z = ($key >> 7) & 0xf;
+			$y = $key & 0x7f;
+		}
+	}
+
+	protected function deserializeLegacyExtraData(string $index, int $chunkVersion) : array{
+		if(($extraRawData = $this->db->get($index . self::TAG_BLOCK_EXTRA_DATA)) === false or $extraRawData === ""){
+			return [];
+		}
+
+		/** @var PalettedBlockArray[] $extraDataLayers */
+		$extraDataLayers = [];
+		$binaryStream = new BinaryStream($extraRawData);
+		$count = $binaryStream->getLInt();
+		for($i = 0; $i < $count; ++$i){
+			$key = $binaryStream->getLInt();
+			$value = $binaryStream->getLShort();
+
+			self::deserializeExtraDataKey($chunkVersion, $key, $x, $fullY, $z);
+
+			$ySub = ($fullY >> 4) & 0xf;
+			$y = $key & 0xf;
+
+			$blockId = $value & 0xff;
+			$blockData = ($value >> 8) & 0xf;
+			if(!isset($extraDataLayers[$ySub])){
+				$extraDataLayers[$ySub] = new PalettedBlockArray(BlockLegacyIds::AIR << 4);
+			}
+			$extraDataLayers[$ySub]->set($x, $y, $z, ($blockId << 4) | $blockData);
+		}
+
+		return $extraDataLayers;
+	}
+
 	/**
 	 * @param int $chunkX
 	 * @param int $chunkZ
@@ -216,6 +257,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case 4: //MCPE 1.1
 				//TODO: check beds
 			case 3: //MCPE 1.0
+				/** @var PalettedBlockArray[] $convertedLegacyExtraData */
+				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
+
 				for($y = 0; $y < Chunk::MAX_SUBCHUNKS; ++$y){
 					if(($data = $this->db->get($index . self::TAG_SUBCHUNK_PREFIX . chr($y))) === false){
 						continue;
@@ -250,17 +294,31 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 								throw new CorruptedChunkException($e->getMessage(), 0, $e);
 							}
 
-							$subChunks[$y] = new SubChunk([SubChunkConverter::convertSubChunkXZY($blocks, $blockData)]);
+							$storages = [SubChunkConverter::convertSubChunkXZY($blocks, $blockData)];
+							if(isset($convertedLegacyExtraData[$y])){
+								$storages[] = $convertedLegacyExtraData[$y];
+							}
+
+							$subChunks[$y] = new SubChunk($storages);
 							break;
 						case 1: //paletted v1, has a single blockstorage
-							$subChunks[$y] = new SubChunk([$this->deserializePaletted($binaryStream)]);
-							break;
-						case 8:
-							$storages = [];
-							for($k = 0, $storageCount = $binaryStream->getByte(); $k < $storageCount; ++$k){
-								$storages[] = $this->deserializePaletted($binaryStream);
+							$storages = [$this->deserializePaletted($binaryStream)];
+							if(isset($convertedLegacyExtraData[$y])){
+								$storages[] = $convertedLegacyExtraData[$y];
 							}
 							$subChunks[$y] = new SubChunk($storages);
+							break;
+						case 8:
+							//legacy extradata layers intentionally ignored because they aren't supposed to exist in v8
+							$storageCount = $binaryStream->getByte();
+							if($storageCount > 0){
+								$storages = [];
+
+								for($k = 0; $k < $storageCount; ++$k){
+									$storages[] = $this->deserializePaletted($binaryStream);
+								}
+								$subChunks[$y] = new SubChunk($storages);
+							}
 							break;
 						default:
 							//TODO: set chunks read-only so the version on disk doesn't get overwritten
@@ -280,6 +338,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				}
 				break;
 			case 2: // < MCPE 1.0
+				/** @var PalettedBlockArray[] $extraDataLayers */
+				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
+
 				$legacyTerrain = $this->db->get($index . self::TAG_LEGACY_TERRAIN);
 				if($legacyTerrain === false){
 					throw new CorruptedChunkException("Missing expected LEGACY_TERRAIN tag for format version $chunkVersion");
@@ -294,7 +355,11 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				}
 
 				for($yy = 0; $yy < 8; ++$yy){
-					$subChunks[$yy] = new SubChunk([SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $yy)]);
+					$storages = [SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $yy)];
+					if(isset($convertedLegacyExtraData[$yy])){
+						$storages[] = $convertedLegacyExtraData[$yy];
+					}
+					$subChunks[$yy] = new SubChunk($storages);
 				}
 
 				try{
@@ -330,19 +395,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
 		}
-
-		//TODO: extra data should be converted into blockstorage layers (first they need to be implemented!)
-		/*
-		$extraData = [];
-		if(($extraRawData = $this->db->get($index . self::TAG_BLOCK_EXTRA_DATA)) !== false and $extraRawData !== ""){
-			$binaryStream->setBuffer($extraRawData, 0);
-			$count = $binaryStream->getLInt();
-			for($i = 0; $i < $count; ++$i){
-				$key = $binaryStream->getLInt();
-				$value = $binaryStream->getLShort();
-				$extraData[$key] = $value;
-			}
-		}*/
 
 		$chunk = new Chunk(
 			$chunkX,
