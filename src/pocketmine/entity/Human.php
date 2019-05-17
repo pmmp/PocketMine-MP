@@ -60,6 +60,7 @@ use function array_merge;
 use function array_rand;
 use function array_values;
 use function ceil;
+use function in_array;
 use function max;
 use function min;
 use function mt_rand;
@@ -98,18 +99,36 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function __construct(Level $level, CompoundTag $nbt){
 		if($this->skin === null){
 			$skinTag = $nbt->getCompoundTag("Skin");
-			if($skinTag === null or !self::isValidSkin($skinTag->hasTag("Data", ByteArrayTag::class) ?
-				$skinTag->getByteArray("Data") :
-				$skinTag->getString("Data", "")
-			)){
+			if($skinTag === null){
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 			}
+			$this->skin = self::deserializeSkinNBT($skinTag); //this throws if the skin is invalid
 		}
 
 		parent::__construct($level, $nbt);
 	}
 
 	/**
+	 * @param CompoundTag $skinTag
+	 *
+	 * @return Skin
+	 * @throws \InvalidArgumentException
+	 */
+	protected static function deserializeSkinNBT(CompoundTag $skinTag) : Skin{
+		$skin = new Skin(
+			$skinTag->getString("Name"),
+			$skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
+			$skinTag->getByteArray("CapeData", ""),
+			$skinTag->getString("GeometryName", ""),
+			$skinTag->getByteArray("GeometryData", "")
+		);
+		$skin->validate();
+		return $skin;
+	}
+
+	/**
+	 * @deprecated
+	 *
 	 * Checks the length of a supplied skin bitmap and returns whether the length is valid.
 	 *
 	 * @param string $skin
@@ -117,7 +136,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @return bool
 	 */
 	public static function isValidSkin(string $skin) : bool{
-		return strlen($skin) === 64 * 64 * 4 or strlen($skin) === 64 * 32 * 4 or strlen($skin) === 128 * 128 * 4;
+		return in_array(strlen($skin), Skin::ACCEPTED_SKIN_SIZES, true);
 	}
 
 	/**
@@ -149,10 +168,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @param Skin $skin
 	 */
 	public function setSkin(Skin $skin) : void{
-		if(!$skin->isValid()){
-			throw new \InvalidStateException("Specified skin is not valid, must be 8KiB or 16KiB");
-		}
-
+		$skin->validate();
 		$this->skin = $skin;
 		$this->skin->debloatGeometryData();
 	}
@@ -587,17 +603,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$this->setNameTag($this->namedtag->getString("NameTag"));
 		}
 
-		$skin = $this->namedtag->getCompoundTag("Skin");
-		if($skin !== null){
-			$this->setSkin(new Skin(
-				$skin->getString("Name"),
-				$skin->hasTag("Data", StringTag::class) ? $skin->getString("Data") : $skin->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
-				$skin->getByteArray("CapeData", ""),
-				$skin->getString("GeometryName", ""),
-				$skin->getByteArray("GeometryData", "")
-			));
-		}
-
 		$this->uuid = UUID::fromData((string) $this->getId(), $this->skin->getSkinData(), $this->getNameTag());
 	}
 
@@ -836,9 +841,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
-		if(!$this->skin->isValid()){
-			throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
-		}
+		$this->skin->validate();
 
 		if(!($this instanceof Player)){
 			/* we don't use Server->updatePlayerListData() because that uses batches, which could cause race conditions in async compression mode */
