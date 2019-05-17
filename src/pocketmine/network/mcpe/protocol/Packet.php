@@ -61,8 +61,6 @@ interface Packet{
 
 	public function encode() : void;
 
-	public function isEncoded() : bool;
-
 	/**
 	 * Performs handling for this packet. Usually you'll want an appropriately named method in the session handler for
 	 * this.

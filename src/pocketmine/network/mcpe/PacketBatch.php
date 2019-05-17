@@ -30,9 +30,7 @@ use pocketmine\utils\BinaryDataException;
 class PacketBatch extends NetworkBinaryStream{
 
 	public function putPacket(Packet $packet) : void{
-		if(!$packet->isEncoded()){
-			$packet->encode();
-		}
+		$packet->encode();
 		$this->putString($packet->getBuffer());
 	}
 

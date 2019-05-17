@@ -39,9 +39,6 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 
 	public const NETWORK_ID = 0;
 
-	/** @var bool */
-	private $isEncoded = false;
-
 	/** @var int */
 	public $senderSubId = 0;
 	/** @var int */
@@ -104,11 +101,6 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 		$this->reset();
 		$this->encodeHeader();
 		$this->encodePayload();
-		$this->isEncoded = true;
-	}
-
-	final public function isEncoded() : bool{
-		return $this->isEncoded;
 	}
 
 	protected function encodeHeader() : void{
