@@ -91,10 +91,9 @@ use function preg_split;
 use function trim;
 
 /**
- * Temporary session handler implementation
- * TODO: split this up properly into different handlers
+ * This handler handles packets related to general gameplay.
  */
-class SimpleSessionHandler extends SessionHandler{
+class InGameSessionHandler extends SessionHandler{
 
 	/** @var Player */
 	private $player;

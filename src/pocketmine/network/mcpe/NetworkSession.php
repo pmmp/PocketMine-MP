@@ -34,12 +34,12 @@ use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\DeathSessionHandler;
 use pocketmine\network\mcpe\handler\HandshakeSessionHandler;
+use pocketmine\network\mcpe\handler\InGameSessionHandler;
 use pocketmine\network\mcpe\handler\LoginSessionHandler;
 use pocketmine\network\mcpe\handler\NullSessionHandler;
 use pocketmine\network\mcpe\handler\PreSpawnSessionHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksSessionHandler;
 use pocketmine\network\mcpe\handler\SessionHandler;
-use pocketmine\network\mcpe\handler\SimpleSessionHandler;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
@@ -569,7 +569,7 @@ class NetworkSession{
 	}
 
 	public function onSpawn() : void{
-		$this->setHandler(new SimpleSessionHandler($this->player, $this));
+		$this->setHandler(new InGameSessionHandler($this->player, $this));
 	}
 
 	public function onDeath() : void{
@@ -577,7 +577,7 @@ class NetworkSession{
 	}
 
 	public function onRespawn() : void{
-		$this->setHandler(new SimpleSessionHandler($this->player, $this));
+		$this->setHandler(new InGameSessionHandler($this->player, $this));
 	}
 
 	public function syncMovement(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
