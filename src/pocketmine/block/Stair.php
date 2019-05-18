@@ -49,7 +49,7 @@ abstract class Stair extends Transparent{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($stateMeta & 0x03));
+		$this->facing = BlockDataValidator::read5MinusHorizontalFacing($stateMeta);
 		$this->upsideDown = ($stateMeta & BlockLegacyMetadata::STAIR_FLAG_UPSIDE_DOWN) !== 0;
 	}
 

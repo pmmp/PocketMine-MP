@@ -76,6 +76,16 @@ final class BlockDataValidator{
 		return self::readHorizontalFacing($facing);
 	}
 
+	/**
+	 * @param int $value
+	 *
+	 * @return int
+	 * @throws InvalidBlockStateException
+	 */
+	public static function read5MinusHorizontalFacing(int $value) : int{
+		return self::readHorizontalFacing(5 - ($value & 0x03));
+	}
+
 	public static function readBoundedInt(string $name, int $v, int $min, int $max) : int{
 		if($v < $min or $v > $max){
 			throw new InvalidBlockStateException("$name should be in range $min - $max, got $v");

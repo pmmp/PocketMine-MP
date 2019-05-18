@@ -54,7 +54,7 @@ class ItemFrame extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::readHorizontalFacing(5 - ($stateMeta & 0x03));
+		$this->facing = BlockDataValidator::read5MinusHorizontalFacing($stateMeta);
 		$this->hasMap = ($stateMeta & BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP) !== 0;
 	}
 
