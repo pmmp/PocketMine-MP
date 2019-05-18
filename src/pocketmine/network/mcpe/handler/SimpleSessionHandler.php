@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\block\Block;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Sign;
 use pocketmine\block\utils\SignText;
@@ -298,16 +297,14 @@ class SimpleSessionHandler extends SessionHandler{
 	private function onFailedBlockAction(Vector3 $blockPos, ?int $face) : void{
 		$this->player->getInventory()->sendHeldItem($this->player);
 		if($blockPos->distanceSquared($this->player) < 10000){
-			$target = $this->player->getWorld()->getBlock($blockPos);
-
-			$blocks = $target->getAllSides();
+			$blocks = $blockPos->sidesArray();
 			if($face !== null){
-				$sideBlock = $target->getSide($face);
+				$sidePos = $blockPos->getSide($face);
 
-				/** @var Block[] $blocks */
-				array_push($blocks, ...$sideBlock->getAllSides()); //getAllSides() on each of these will include $target and $sideBlock because they are next to each other
+				/** @var Vector3[] $blocks */
+				array_push($blocks, ...$sidePos->sidesArray()); //getAllSides() on each of these will include $blockPos and $sidePos because they are next to each other
 			}else{
-				$blocks[] = $target;
+				$blocks[] = $blockPos;
 			}
 			$this->player->getWorld()->sendBlocks([$this->player], $blocks);
 		}
