@@ -26,9 +26,6 @@ namespace pocketmine\inventory;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\network\mcpe\protocol\InventoryContentPacket;
-use pocketmine\network\mcpe\protocol\InventorySlotPacket;
-use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
 use pocketmine\utils\Utils;
 use function array_slice;
@@ -414,16 +411,8 @@ abstract class BaseInventory implements Inventory{
 			$target = [$target];
 		}
 
-		$pk = new InventoryContentPacket();
-		$pk->items = $this->getContents(true);
-
 		foreach($target as $player){
-			if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
-				$this->close($player);
-				continue;
-			}
-			$pk->windowId = $id;
-			$player->sendDataPacket($pk);
+			$player->getNetworkSession()->syncInventoryContents($this);
 		}
 	}
 
@@ -436,17 +425,8 @@ abstract class BaseInventory implements Inventory{
 			$target = [$target];
 		}
 
-		$pk = new InventorySlotPacket();
-		$pk->inventorySlot = $index;
-		$pk->item = $this->getItem($index);
-
 		foreach($target as $player){
-			if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
-				$this->close($player);
-				continue;
-			}
-			$pk->windowId = $id;
-			$player->sendDataPacket($pk);
+			$player->getNetworkSession()->syncInventorySlot($this, $index);
 		}
 	}
 

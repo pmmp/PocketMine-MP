@@ -30,6 +30,7 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
 use pocketmine\GameMode;
+use pocketmine\inventory\Inventory;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\DeathSessionHandler;
@@ -45,6 +46,8 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
+use pocketmine\network\mcpe\protocol\InventoryContentPacket;
+use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -60,6 +63,7 @@ use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\CommandData;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\NetworkInterface;
@@ -790,6 +794,27 @@ class NetworkSession{
 
 	public function stopUsingChunk(int $chunkX, int $chunkZ) : void{
 
+	}
+
+	public function syncInventorySlot(Inventory $inventory, int $slot) : void{
+		$windowId = $this->player->getWindowId($inventory);
+		if($windowId !== ContainerIds::NONE){
+			$pk = new InventorySlotPacket();
+			$pk->inventorySlot = $slot;
+			$pk->item = $inventory->getItem($slot);
+			$pk->windowId = $windowId;
+			$this->sendDataPacket($pk);
+		}
+	}
+
+	public function syncInventoryContents(Inventory $inventory) : void{
+		$windowId = $this->player->getWindowId($inventory);
+		if($windowId !== ContainerIds::NONE){
+			$pk = new InventoryContentPacket();
+			$pk->items = $inventory->getContents(true);
+			$pk->windowId = $windowId;
+			$this->sendDataPacket($pk);
+		}
 	}
 
 	public function tick() : bool{

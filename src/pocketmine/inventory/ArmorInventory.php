@@ -25,8 +25,6 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\InventoryContentPacket;
-use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\Player;
 use function array_merge;
@@ -90,14 +88,11 @@ class ArmorInventory extends BaseInventory{
 		/** @var Player[] $target */
 
 		if(($k = array_search($this->holder, $target, true)) !== false){
-			$pk = new InventorySlotPacket();
-			$pk->windowId = $target[$k]->getWindowId($this);
-			$pk->inventorySlot = $index;
-			$pk->item = $this->getItem($index);
-			$target[$k]->sendDataPacket($pk);
+			$target[$k]->getNetworkSession()->syncInventorySlot($this, $index);
 			unset($target[$k]);
 		}
 		if(!empty($target)){
+			//TODO: this should be handled by change listeners
 			$pk = new MobArmorEquipmentPacket();
 			$pk->entityRuntimeId = $this->getHolder()->getId();
 			$pk->slots = $this->getContents(true);
@@ -113,13 +108,11 @@ class ArmorInventory extends BaseInventory{
 		$armor = $this->getContents(true);
 
 		if(($k = array_search($this->holder, $target, true)) !== false){
-			$pk = new InventoryContentPacket();
-			$pk->windowId = $target[$k]->getWindowId($this);
-			$pk->items = $armor;
-			$target[$k]->sendDataPacket($pk);
+			$target[$k]->getNetworkSession()->syncInventoryContents($this);
 			unset($target[$k]);
 		}
 		if(!empty($target)){
+			//TODO: this should be handled by change listeners
 			$pk = new MobArmorEquipmentPacket();
 			$pk->entityRuntimeId = $this->getHolder()->getId();
 			$pk->slots = $armor;
