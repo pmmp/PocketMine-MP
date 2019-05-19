@@ -27,7 +27,6 @@ use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\Player;
-use pocketmine\utils\Utils;
 use function array_slice;
 use function count;
 use function max;
@@ -42,8 +41,8 @@ abstract class BaseInventory implements Inventory{
 	protected $slots = [];
 	/** @var Player[] */
 	protected $viewers = [];
-	/** @var \Closure */
-	protected $slotChangeListener;
+	/** @var InventoryChangeListener[] */
+	protected $listeners = [];
 
 	/**
 	 * @param int    $size
@@ -121,6 +120,10 @@ abstract class BaseInventory implements Inventory{
 			}
 		}
 
+		foreach($this->listeners as $listener){
+			$listener->onContentChange($this);
+		}
+
 		if($send){
 			$this->sendContents($this->getViewers());
 		}
@@ -137,10 +140,6 @@ abstract class BaseInventory implements Inventory{
 
 		$this->slots[$index] = $item->isNull() ? null : $item;
 		$this->onSlotChange($index, $oldItem, $send);
-
-		if($this->slotChangeListener !== null){
-			($this->slotChangeListener)($this, $index);
-		}
 
 		return true;
 	}
@@ -331,13 +330,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function clearAll(bool $send = true) : void{
-		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$this->clear($i, false);
-		}
-
-		if($send){
-			$this->sendContents($this->getViewers());
-		}
+		$this->setContents([], $send);
 	}
 
 	public function swap(int $slot1, int $slot2) : void{
@@ -394,6 +387,9 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	protected function onSlotChange(int $index, Item $before, bool $send) : void{
+		foreach($this->listeners as $listener){
+			$listener->onSlotChange($this, $index);
+		}
 		if($send){
 			$this->sendSlot($index, $this->getViewers());
 		}
@@ -430,14 +426,19 @@ abstract class BaseInventory implements Inventory{
 		return $slot >= 0 and $slot < $this->slots->getSize();
 	}
 
-	public function getSlotChangeListener() : ?\Closure{
-		return $this->slotChangeListener;
+	public function addChangeListeners(InventoryChangeListener ...$listeners) : void{
+		foreach($listeners as $listener){
+			$this->listeners[spl_object_id($listener)] = $listener;
+		}
 	}
 
-	public function setSlotChangeListener(?\Closure $eventProcessor) : void{
-		if($eventProcessor !== null){
-			Utils::validateCallableSignature(function(Inventory $inventory, int $slot) : void{}, $eventProcessor);
+	public function removeChangeListeners(InventoryChangeListener ...$listeners) : void{
+		foreach($listeners as $listener){
+			unset($this->listeners[spl_object_id($listener)]);
 		}
-		$this->slotChangeListener = $eventProcessor;
+	}
+
+	public function getChangeListeners() : array{
+		return $this->listeners;
 	}
 }

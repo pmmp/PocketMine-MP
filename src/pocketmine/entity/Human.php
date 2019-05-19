@@ -618,8 +618,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$inventoryTag = $nbt->getListTag("Inventory");
 		if($inventoryTag !== null){
-			$armorListener = $this->armorInventory->getSlotChangeListener();
-			$this->armorInventory->setSlotChangeListener(null);
+			$armorListeners = $this->armorInventory->getChangeListeners();
+			$this->armorInventory->removeChangeListeners(...$armorListeners);
 
 			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
@@ -633,7 +633,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 
-			$this->armorInventory->setSlotChangeListener($armorListener);
+			$this->armorInventory->addChangeListeners(...$armorListeners);
 		}
 
 		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");

@@ -231,12 +231,17 @@ interface Inventory{
 	public function slotExists(int $slot) : bool;
 
 	/**
-	 * @return null|\Closure
+	 * @param InventoryChangeListener ...$listeners
 	 */
-	public function getSlotChangeListener() : ?\Closure;
+	public function addChangeListeners(InventoryChangeListener ...$listeners) : void;
 
 	/**
-	 * @param \Closure|null $eventProcessor
+	 * @param InventoryChangeListener ...$listeners
 	 */
-	public function setSlotChangeListener(?\Closure $eventProcessor) : void;
+	public function removeChangeListeners(InventoryChangeListener ...$listeners) : void;
+
+	/**
+	 * @return InventoryChangeListener[]
+	 */
+	public function getChangeListeners() : array;
 }

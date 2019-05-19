@@ -26,6 +26,7 @@ namespace pocketmine\tile;
 use pocketmine\block\Furnace as BlockFurnace;
 use pocketmine\event\inventory\FurnaceBurnEvent;
 use pocketmine\event\inventory\FurnaceSmeltEvent;
+use pocketmine\inventory\CallbackInventoryChangeListener;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\Inventory;
@@ -60,9 +61,11 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->inventory = new FurnaceInventory($this);
-		$this->inventory->setSlotChangeListener(function(Inventory $inventory, int $slot) : void{
-			$this->scheduleUpdate();
-		});
+		$this->inventory->addChangeListeners(CallbackInventoryChangeListener::onAnyChange(
+			function(Inventory $unused) : void{
+				$this->scheduleUpdate();
+			})
+		);
 
 		parent::__construct($world, $pos);
 	}
