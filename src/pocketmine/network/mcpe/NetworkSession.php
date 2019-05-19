@@ -48,6 +48,7 @@ use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
+use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -815,6 +816,13 @@ class NetworkSession{
 			$pk->windowId = $windowId;
 			$this->sendDataPacket($pk);
 		}
+	}
+
+	public function onMobArmorChange(Living $mob) : void{
+		$pk = new MobArmorEquipmentPacket();
+		$pk->entityRuntimeId = $mob->getId();
+		$pk->slots = $mob->getArmorInventory()->getContents(true); //beware this order might change in the future
+		$this->sendDataPacket($pk);
 	}
 
 	public function tick() : bool{

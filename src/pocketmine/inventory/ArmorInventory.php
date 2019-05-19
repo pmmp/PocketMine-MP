@@ -25,10 +25,6 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
-use pocketmine\Player;
-use function array_merge;
-use function array_search;
 
 class ArmorInventory extends BaseInventory{
 	public const SLOT_HEAD = 0;
@@ -78,52 +74,5 @@ class ArmorInventory extends BaseInventory{
 
 	public function setBoots(Item $boots) : bool{
 		return $this->setItem(self::SLOT_FEET, $boots);
-	}
-
-	public function sendSlot(int $index, $target) : void{
-		if($target instanceof Player){
-			$target = [$target];
-		}
-
-		/** @var Player[] $target */
-
-		if(($k = array_search($this->holder, $target, true)) !== false){
-			$target[$k]->getNetworkSession()->syncInventorySlot($this, $index);
-			unset($target[$k]);
-		}
-		if(!empty($target)){
-			//TODO: this should be handled by change listeners
-			$pk = new MobArmorEquipmentPacket();
-			$pk->entityRuntimeId = $this->getHolder()->getId();
-			$pk->slots = $this->getContents(true);
-			$this->holder->getWorld()->getServer()->broadcastPacket($target, $pk);
-		}
-	}
-
-	public function sendContents($target) : void{
-		if($target instanceof Player){
-			$target = [$target];
-		}
-
-		$armor = $this->getContents(true);
-
-		if(($k = array_search($this->holder, $target, true)) !== false){
-			$target[$k]->getNetworkSession()->syncInventoryContents($this);
-			unset($target[$k]);
-		}
-		if(!empty($target)){
-			//TODO: this should be handled by change listeners
-			$pk = new MobArmorEquipmentPacket();
-			$pk->entityRuntimeId = $this->getHolder()->getId();
-			$pk->slots = $armor;
-			$this->holder->getWorld()->getServer()->broadcastPacket($target, $pk);
-		}
-	}
-
-	/**
-	 * @return Player[]
-	 */
-	public function getViewers() : array{
-		return array_merge(parent::getViewers(), $this->holder->getViewers());
 	}
 }
