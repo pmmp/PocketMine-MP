@@ -60,6 +60,7 @@ use function array_merge;
 use function array_rand;
 use function array_values;
 use function ceil;
+use function in_array;
 use function max;
 use function min;
 use function mt_rand;
