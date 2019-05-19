@@ -134,17 +134,13 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		$oldItem = $this->getItem($index);
-		if($this->slotChangeListener !== null){
-			$newItem = ($this->slotChangeListener)($this, $index, $oldItem, $item);
-			if($newItem === null){
-				return false;
-			}
-		}else{
-			$newItem = $item;
-		}
 
-		$this->slots[$index] = $newItem->isNull() ? null : $newItem;
+		$this->slots[$index] = $item->isNull() ? null : $item;
 		$this->onSlotChange($index, $oldItem, $send);
+
+		if($this->slotChangeListener !== null){
+			($this->slotChangeListener)($this, $index);
+		}
 
 		return true;
 	}
@@ -440,7 +436,7 @@ abstract class BaseInventory implements Inventory{
 
 	public function setSlotChangeListener(?\Closure $eventProcessor) : void{
 		if($eventProcessor !== null){
-			Utils::validateCallableSignature(function(Inventory $inventory, int $slot, Item $oldItem, Item $newItem) : ?Item{}, $eventProcessor);
+			Utils::validateCallableSignature(function(Inventory $inventory, int $slot) : void{}, $eventProcessor);
 		}
 		$this->slotChangeListener = $eventProcessor;
 	}

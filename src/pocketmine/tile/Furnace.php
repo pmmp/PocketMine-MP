@@ -60,9 +60,8 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->inventory = new FurnaceInventory($this);
-		$this->inventory->setSlotChangeListener(function(Inventory $inventory, int $slot, Item $oldItem, Item $newItem) : ?Item{
+		$this->inventory->setSlotChangeListener(function(Inventory $inventory, int $slot) : void{
 			$this->scheduleUpdate();
-			return $newItem;
 		});
 
 		parent::__construct($world, $pos);
