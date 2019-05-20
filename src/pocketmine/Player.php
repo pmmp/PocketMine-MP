@@ -2843,7 +2843,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->windows[spl_object_id($inventory)] = $cnt;
 		if($inventory->open($this)){
 			if($isPermanent){
-				$this->permanentWindows[$cnt] = true;
+				$this->permanentWindows[spl_object_id($inventory)] = true;
 			}
 			return $cnt;
 		}else{
@@ -2862,15 +2862,15 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @throws \InvalidArgumentException if trying to remove a fixed inventory window without the `force` parameter as true
 	 */
 	public function removeWindow(Inventory $inventory, bool $force = false){
-		$id = $this->windows[$hash = spl_object_id($inventory)] ?? null;
-
-		if($id !== null and !$force and isset($this->permanentWindows[$id])){
-			throw new \InvalidArgumentException("Cannot remove fixed window $id (" . get_class($inventory) . ") from " . $this->getName());
+		$objectId = spl_object_id($inventory);
+		if(!$force and isset($this->permanentWindows[$objectId])){
+			throw new \InvalidArgumentException("Cannot remove fixed window " . get_class($inventory) . " from " . $this->getName());
 		}
 
+		$id = $this->windows[$objectId] ?? null;
 		if($id !== null){
 			$inventory->close($this);
-			unset($this->windows[$hash], $this->windowIndex[$id], $this->permanentWindows[$id]);
+			unset($this->windows[$objectId], $this->windowIndex[$id], $this->permanentWindows[$objectId]);
 		}
 	}
 
@@ -2881,7 +2881,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function removeAllWindows(bool $removePermanentWindows = false){
 		foreach($this->windowIndex as $id => $window){
-			if(!$removePermanentWindows and isset($this->permanentWindows[$id])){
+			if(!$removePermanentWindows and isset($this->permanentWindows[spl_object_id($window)])){
 				continue;
 			}
 
