@@ -74,7 +74,6 @@ use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\item\Consumable;
-use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
@@ -1723,15 +1722,13 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	public function equipItem(int $hotbarSlot) : bool{
-		if(!$this->inventory->isHotbarSlot($hotbarSlot)){
-			$this->inventory->sendContents($this);
+		if(!$this->inventory->isHotbarSlot($hotbarSlot)){ //TODO: exception here?
 			return false;
 		}
 
 		$ev = new PlayerItemHeldEvent($this, $this->inventory->getItem($hotbarSlot), $hotbarSlot);
 		$ev->call();
 		if($ev->isCancelled()){
-			$this->inventory->sendHeldItem($this);
 			return false;
 		}
 
@@ -1758,18 +1755,17 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$ev->call();
 
 		if($ev->isCancelled()){
-			$this->inventory->sendHeldItem($this);
 			return false;
 		}
 
 		$result = $item->onClickAir($this, $directionVector);
-		if($result === ItemUseResult::SUCCESS()){
-			$this->resetItemCooldown($item);
-			if($this->hasFiniteResources()){
-				$this->inventory->setItemInHand($item);
-			}
-		}elseif($result === ItemUseResult::FAIL()){
-			$this->inventory->sendHeldItem($this);
+		if($result !== ItemUseResult::SUCCESS()){
+			return false;
+		}
+
+		$this->resetItemCooldown($item);
+		if($this->hasFiniteResources()){
+			$this->inventory->setItemInHand($item);
 		}
 
 		//TODO: check if item has a release action - if it doesn't, this shouldn't be set
@@ -1781,7 +1777,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * Consumes the currently-held item.
 	 *
-	 * @return bool
+	 * @return bool if the consumption succeeded.
 	 */
 	public function consumeHeldItem() : bool{
 		$slot = $this->inventory->getItemInHand();
@@ -1793,8 +1789,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$ev->call();
 
 			if($ev->isCancelled() or !$this->consumeObject($slot)){
-				$this->inventory->sendContents($this);
-				return true;
+				return false;
 			}
 
 			$this->resetItemCooldown($slot);
@@ -1818,22 +1813,16 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function releaseHeldItem() : bool{
 		try{
-			if($this->isUsingItem()){
-				$item = $this->inventory->getItemInHand();
-				if($this->hasItemCooldown($item)){
-					$this->inventory->sendContents($this);
-					return false;
-				}
-				$result = $item->onReleaseUsing($this);
-				if($result === ItemUseResult::SUCCESS()){
-					$this->resetItemCooldown($item);
-					$this->inventory->setItemInHand($item);
-					return true;
-				}
-				if($result === ItemUseResult::FAIL()){
-					$this->inventory->sendContents($this);
-					return true;
-				}
+			$item = $this->inventory->getItemInHand();
+			if(!$this->isUsingItem() or $this->hasItemCooldown($item)){
+				return false;
+			}
+
+			$result = $item->onReleaseUsing($this);
+			if($result === ItemUseResult::SUCCESS()){
+				$this->resetItemCooldown($item);
+				$this->inventory->setItemInHand($item);
+				return true;
 			}
 
 			return false;
@@ -1894,7 +1883,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param Vector3 $pos
 	 * @param int     $face
 	 *
-	 * @return bool
+	 * @return bool if an action took place successfully
 	 */
 	public function attackBlock(Vector3 $pos, int $face) : bool{
 		if($pos->distanceSquared($this) > 10000){
@@ -1906,9 +1895,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, null, $face, PlayerInteractEvent::LEFT_CLICK_BLOCK);
 		$ev->call();
 		if($ev->isCancelled()){
-			$this->world->sendBlocks([$this], [$target]);
-			$this->inventory->sendHeldItem($this);
-			return true;
+			return false;
 		}
 		if($target->onAttack($this->inventory->getItemInHand(), $face, $this)){
 			return true;
@@ -2037,9 +2024,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$entity->attack($ev);
 
 		if($ev->isCancelled()){
-			if($heldItem instanceof Durable and $this->hasFiniteResources()){
-				$this->inventory->sendContents($this);
-			}
 			return false;
 		}
 

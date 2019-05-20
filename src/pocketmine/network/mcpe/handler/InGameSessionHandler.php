@@ -280,7 +280,9 @@ class InGameSessionHandler extends SessionHandler{
 				}
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
-				$this->player->useHeldItem();
+				if(!$this->player->useHeldItem()){
+					$this->player->getInventory()->sendHeldItem($this->player);
+				}
 				return true;
 		}
 
@@ -315,12 +317,17 @@ class InGameSessionHandler extends SessionHandler{
 			return false;
 		}
 
+		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
-				$this->player->interactEntity($target, $data->getClickPos());
+				if(!$this->player->interactEntity($target, $data->getClickPos())){
+					$this->player->getInventory()->sendHeldItem($this->player);
+				}
 				return true;
 			case UseItemOnEntityTransactionData::ACTION_ATTACK:
-				$this->player->attackEntity($target);
+				if(!$this->player->attackEntity($target)){
+					$this->player->getInventory()->sendHeldItem($this->player);
+				}
 				return true;
 		}
 
@@ -328,12 +335,17 @@ class InGameSessionHandler extends SessionHandler{
 	}
 
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
+		//TODO: use transactiondata for rollbacks here (resending entire inventory is very wasteful)
 		switch($data->getActionType()){
 			case ReleaseItemTransactionData::ACTION_RELEASE:
-				$this->player->releaseHeldItem();
+				if(!$this->player->releaseHeldItem()){
+					$this->player->getInventory()->sendContents($this->player);
+				}
 				return true;
 			case ReleaseItemTransactionData::ACTION_CONSUME:
-				$this->player->consumeHeldItem();
+				if(!$this->player->consumeHeldItem()){
+					$this->player->getInventory()->sendHeldItem($this->player);
+				}
 				return true;
 		}
 
@@ -341,7 +353,10 @@ class InGameSessionHandler extends SessionHandler{
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-		return $this->player->equipItem($packet->hotbarSlot);
+		if(!$this->player->equipItem($packet->hotbarSlot)){
+			$this->player->getInventory()->sendHeldItem($this->player);
+		}
+		return true;
 	}
 
 	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool{
@@ -373,7 +388,9 @@ class InGameSessionHandler extends SessionHandler{
 
 		switch($packet->action){
 			case PlayerActionPacket::ACTION_START_BREAK:
-				$this->player->attackBlock($pos, $packet->face);
+				if(!$this->player->attackBlock($pos, $packet->face)){
+					$this->onFailedBlockAction($pos, $packet->face);
+				}
 
 				break;
 
