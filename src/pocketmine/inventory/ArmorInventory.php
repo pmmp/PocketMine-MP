@@ -60,19 +60,19 @@ class ArmorInventory extends BaseInventory{
 		return $this->getItem(self::SLOT_FEET);
 	}
 
-	public function setHelmet(Item $helmet) : bool{
-		return $this->setItem(self::SLOT_HEAD, $helmet);
+	public function setHelmet(Item $helmet) : void{
+		$this->setItem(self::SLOT_HEAD, $helmet);
 	}
 
-	public function setChestplate(Item $chestplate) : bool{
-		return $this->setItem(self::SLOT_CHEST, $chestplate);
+	public function setChestplate(Item $chestplate) : void{
+		$this->setItem(self::SLOT_CHEST, $chestplate);
 	}
 
-	public function setLeggings(Item $leggings) : bool{
-		return $this->setItem(self::SLOT_LEGS, $leggings);
+	public function setLeggings(Item $leggings) : void{
+		$this->setItem(self::SLOT_LEGS, $leggings);
 	}
 
-	public function setBoots(Item $boots) : bool{
-		return $this->setItem(self::SLOT_FEET, $boots);
+	public function setBoots(Item $boots) : void{
+		$this->setItem(self::SLOT_FEET, $boots);
 	}
 }

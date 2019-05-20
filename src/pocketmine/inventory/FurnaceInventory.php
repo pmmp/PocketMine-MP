@@ -70,28 +70,22 @@ class FurnaceInventory extends ContainerInventory{
 
 	/**
 	 * @param Item $item
-	 *
-	 * @return bool
 	 */
-	public function setResult(Item $item) : bool{
-		return $this->setItem(2, $item);
+	public function setResult(Item $item) : void{
+		$this->setItem(2, $item);
 	}
 
 	/**
 	 * @param Item $item
-	 *
-	 * @return bool
 	 */
-	public function setFuel(Item $item) : bool{
-		return $this->setItem(1, $item);
+	public function setFuel(Item $item) : void{
+		$this->setItem(1, $item);
 	}
 
 	/**
 	 * @param Item $item
-	 *
-	 * @return bool
 	 */
-	public function setSmelting(Item $item) : bool{
-		return $this->setItem(0, $item);
+	public function setSmelting(Item $item) : void{
+		$this->setItem(0, $item);
 	}
 }

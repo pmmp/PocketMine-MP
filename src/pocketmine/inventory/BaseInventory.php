@@ -117,9 +117,7 @@ abstract class BaseInventory implements Inventory{
 					$this->clear($i, false);
 				}
 			}else{
-				if(!$this->setItem($i, $items[$i], false)){
-					$this->clear($i, false);
-				}
+				$this->setItem($i, $items[$i], false);
 			}
 		}
 
@@ -134,7 +132,7 @@ abstract class BaseInventory implements Inventory{
 		}
 	}
 
-	public function setItem(int $index, Item $item, bool $send = true) : bool{
+	public function setItem(int $index, Item $item, bool $send = true) : void{
 		if($item->isNull()){
 			$item = ItemFactory::air();
 		}else{
@@ -145,8 +143,6 @@ abstract class BaseInventory implements Inventory{
 
 		$this->slots[$index] = $item->isNull() ? null : $item;
 		$this->onSlotChange($index, $oldItem, $send);
-
-		return true;
 	}
 
 	public function contains(Item $item) : bool{
@@ -330,8 +326,8 @@ abstract class BaseInventory implements Inventory{
 		return $itemSlots;
 	}
 
-	public function clear(int $index, bool $send = true) : bool{
-		return $this->setItem($index, ItemFactory::air(), $send);
+	public function clear(int $index, bool $send = true) : void{
+		$this->setItem($index, ItemFactory::air(), $send);
 	}
 
 	public function clearAll(bool $send = true) : void{

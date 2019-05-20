@@ -119,16 +119,10 @@ class PlayerInventory extends BaseInventory{
 	 * Sets the item in the currently-held slot to the specified item.
 	 *
 	 * @param Item $item
-	 *
-	 * @return bool
 	 */
-	public function setItemInHand(Item $item) : bool{
-		if($this->setItem($this->getHeldItemIndex(), $item)){
-			$this->sendHeldItem($this->holder->getViewers());
-			return true;
-		}
-
-		return false;
+	public function setItemInHand(Item $item) : void{
+		$this->setItem($this->getHeldItemIndex(), $item);
+		$this->sendHeldItem($this->holder->getViewers());
 	}
 
 	/**

@@ -56,15 +56,12 @@ interface Inventory{
 
 	/**
 	 * Puts an Item in a slot.
-	 * If a plugin refuses the update or $index is invalid, it'll return false
 	 *
 	 * @param int  $index
 	 * @param Item $item
 	 * @param bool $send
-	 *
-	 * @return bool
 	 */
-	public function setItem(int $index, Item $item, bool $send = true) : bool;
+	public function setItem(int $index, Item $item, bool $send = true) : void;
 
 	/**
 	 * Stores the given Items in the inventory. This will try to fill
@@ -182,10 +179,8 @@ interface Inventory{
 	 *
 	 * @param int  $index
 	 * @param bool $send
-	 *
-	 * @return bool
 	 */
-	public function clear(int $index, bool $send = true) : bool;
+	public function clear(int $index, bool $send = true) : void;
 
 	/**
 	 * Clears all the slots
