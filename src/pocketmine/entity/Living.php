@@ -923,7 +923,7 @@ abstract class Living extends Entity implements Damageable{
 	protected function sendSpawnPacket(Player $player) : void{
 		parent::sendSpawnPacket($player);
 
-		$this->armorInventory->sendContents($player);
+		$player->getNetworkSession()->onMobArmorChange($this);
 	}
 
 	protected function onDispose() : void{
