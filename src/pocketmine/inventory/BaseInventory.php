@@ -108,6 +108,9 @@ abstract class BaseInventory implements Inventory{
 			$items = array_slice($items, 0, $this->getSize(), true);
 		}
 
+		$listeners = $this->listeners;
+		$this->listeners = [];
+
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			if(!isset($items[$i])){
 				if($this->slots[$i] !== null){
@@ -119,6 +122,8 @@ abstract class BaseInventory implements Inventory{
 				}
 			}
 		}
+
+		$this->addChangeListeners(...$listeners); //don't directly write, in case listeners were added while operation was in progress
 
 		foreach($this->listeners as $listener){
 			$listener->onContentChange($this);
