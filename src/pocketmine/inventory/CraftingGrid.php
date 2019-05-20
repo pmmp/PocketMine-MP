@@ -71,14 +71,6 @@ class CraftingGrid extends BaseInventory{
 		return false;
 	}
 
-	public function sendSlot(int $index, $target) : void{
-		//we can't send a slot of a client-sided inventory window
-	}
-
-	public function sendContents($target) : void{
-		//no way to do this
-	}
-
 	/**
 	 * @return Player
 	 */
