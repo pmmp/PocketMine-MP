@@ -183,7 +183,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/** @var PlayerInfo */
 	protected $playerInfo;
 
-	protected $windowCnt = 2;
+	protected $lastInventoryNetworkId = 2;
 	/** @var int[] */
 	protected $windows = [];
 	/** @var Inventory[] */
@@ -2810,7 +2810,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * player is already viewing the specified inventory.
 	 *
 	 * @param Inventory $inventory
-	 * @param int|null  $forceId Forces a special ID for the window
+	 * @param int|null  $forceNetworkId Forces a special ID for the window
 	 * @param bool      $isPermanent Prevents the window being removed if true.
 	 *
 	 * @return int
@@ -2818,34 +2818,34 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @throws \InvalidArgumentException if a forceID which is already in use is specified
 	 * @throws \InvalidStateException if trying to add a window without forceID when no slots are free
 	 */
-	public function addWindow(Inventory $inventory, ?int $forceId = null, bool $isPermanent = false) : int{
+	public function addWindow(Inventory $inventory, ?int $forceNetworkId = null, bool $isPermanent = false) : int{
 		if(($id = $this->getWindowId($inventory)) !== ContainerIds::NONE){
 			return $id;
 		}
 
-		if($forceId === null){
-			$cnt = $this->windowCnt;
+		if($forceNetworkId === null){
+			$networkId = $this->lastInventoryNetworkId;
 			do{
-				$cnt = max(ContainerIds::FIRST, ($cnt + 1) % ContainerIds::LAST);
-				if($cnt === $this->windowCnt){ //wraparound, no free slots
+				$networkId = max(ContainerIds::FIRST, ($networkId + 1) % ContainerIds::LAST);
+				if($networkId === $this->lastInventoryNetworkId){ //wraparound, no free slots
 					throw new \InvalidStateException("No free window IDs found");
 				}
-			}while(isset($this->windowIndex[$cnt]));
-			$this->windowCnt = $cnt;
+			}while(isset($this->windowIndex[$networkId]));
+			$this->lastInventoryNetworkId = $networkId;
 		}else{
-			$cnt = $forceId;
-			if(isset($this->windowIndex[$cnt])){
-				throw new \InvalidArgumentException("Requested force ID $forceId already in use");
+			$networkId = $forceNetworkId;
+			if(isset($this->windowIndex[$networkId])){
+				throw new \InvalidArgumentException("Requested force ID $forceNetworkId already in use");
 			}
 		}
 
-		$this->windowIndex[$cnt] = $inventory;
-		$this->windows[spl_object_id($inventory)] = $cnt;
+		$this->windowIndex[$networkId] = $inventory;
+		$this->windows[spl_object_id($inventory)] = $networkId;
 		if($inventory->open($this)){
 			if($isPermanent){
 				$this->permanentWindows[spl_object_id($inventory)] = true;
 			}
-			return $cnt;
+			return $networkId;
 		}else{
 			$this->removeWindow($inventory);
 
@@ -2867,10 +2867,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			throw new \InvalidArgumentException("Cannot remove fixed window " . get_class($inventory) . " from " . $this->getName());
 		}
 
-		$id = $this->windows[$objectId] ?? null;
-		if($id !== null){
+		$networkId = $this->windows[$objectId] ?? null;
+		if($networkId !== null){
 			$inventory->close($this);
-			unset($this->windows[$objectId], $this->windowIndex[$id], $this->permanentWindows[$objectId]);
+			unset($this->windows[$objectId], $this->windowIndex[$networkId], $this->permanentWindows[$objectId]);
 		}
 	}
 
@@ -2880,7 +2880,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param bool $removePermanentWindows Whether to remove permanent windows.
 	 */
 	public function removeAllWindows(bool $removePermanentWindows = false){
-		foreach($this->windowIndex as $id => $window){
+		foreach($this->windowIndex as $networkId => $window){
 			if(!$removePermanentWindows and isset($this->permanentWindows[spl_object_id($window)])){
 				continue;
 			}
@@ -2890,7 +2890,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	public function sendAllInventories(){
-		foreach($this->windowIndex as $id => $inventory){
+		foreach($this->windowIndex as $networkId => $inventory){
 			$inventory->sendContents($this);
 		}
 	}
