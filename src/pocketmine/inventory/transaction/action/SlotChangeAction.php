@@ -100,7 +100,8 @@ class SlotChangeAction extends InventoryAction{
 	 * @return bool
 	 */
 	public function execute(Player $source) : bool{
-		return $this->inventory->setItem($this->inventorySlot, $this->targetItem, false);
+		$this->inventory->setItem($this->inventorySlot, $this->targetItem, false);
+		return true;
 	}
 
 	/**
