@@ -36,6 +36,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\level\particle\GenericParticle;
 use pocketmine\level\particle\Particle;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -52,8 +53,8 @@ class FishingHook extends Projectile{
 	public const NETWORK_ID = self::FISHING_HOOK;
 
 	/** @var float */
-	public $height = 0.25;
-	public $width = 0.25;
+	public $height = 0.15;
+	public $width = 0.15;
 	protected $gravity = 0.1;
 	protected $drag = 0.05;
 
@@ -150,15 +151,18 @@ class FishingHook extends Projectile{
 					$f6 = 0.5;
 				}
 
-				$j = 5;
 				$d10 = 0;
 
-				for($k = 0; $k < $j; $k++){
-					$b = $this->level->getBlock($this->add(0, $k, 0));
-					if($b instanceof Water){
-						$d10 += 1 / $j;
-					}else{
-						break;
+				$bb = $this->getBoundingBox();
+
+				for($j = 0; $j < 5; ++$j){
+					$d1 = $bb->minY + ($bb->maxY - $bb->minY) * $j / 5 - 0.125;
+					$d3 = $bb->minY + ($bb->maxY - $bb->minY) * ($j + 1) / 5 - 0.125;
+
+					$bb2 = new AxisAlignedBB($bb->minX, $d1, $bb->minZ, $bb->maxX, $d3, $bb->maxZ);
+
+					if($this->level->isLiquidInBoundingBox($bb2, new Water())){
+						$d10 += 0.2;
 					}
 				}
 
