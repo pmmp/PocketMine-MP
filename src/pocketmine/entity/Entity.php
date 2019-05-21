@@ -1326,13 +1326,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
-		if($this->getRidingEntity() instanceof Entity and $this->getRidingEntity()->isClosed()){
+		if($this->getRidingEntity() === null and $this->ridingEid !== null){
 			$this->ridingEid = null;
 			$this->setRiding(false);
 		}
 
-		if($this->getRiddenByEntity() instanceof Entity and $this->getRiddenByEntity()->isClosed()){
+		if($this->getRiddenByEntity() === null and $this->riddenByEid !== null){
 			$this->riddenByEid = null;
+
 			unset($this->passengers[array_search($this->riddenByEid, $this->passengers, true)]);
 			$this->setGenericFlag(Entity::DATA_FLAG_WASD_CONTROLLED, false);
 		}
@@ -1781,30 +1782,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			return true;
 		}
 
-
 		$this->timings->startTiming();
 
-		if($this->hasMovementUpdate()){
-			$this->tryChangeMovement();
-
-			if(abs($this->motion->x) <= self::MOTION_THRESHOLD){
-				$this->motion->x = 0;
-			}
-			if(abs($this->motion->y) <= self::MOTION_THRESHOLD){
-				$this->motion->y = 0;
-			}
-			if(abs($this->motion->z) <= self::MOTION_THRESHOLD){
-				$this->motion->z = 0;
-			}
-
-			if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
-				$this->move($this->motion->x, $this->motion->y, $this->motion->z);
-			}
-
-			$this->forceMovementUpdate = false;
-		}
-
-		$this->updateMovement();
+		$this->onMovementUpdate($currentTick);
 
 		Timings::$timerEntityBaseTick->startTiming();
 		$hasUpdate = $this->entityBaseTick($tickDiff);
@@ -1816,6 +1796,34 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		//if($this->isStatic())
 		return ($hasUpdate or $this->hasMovementUpdate());
 		//return !($this instanceof Player);
+	}
+
+	protected function onMovementUpdate(int $currentTick) : void{
+		if($this->hasMovementUpdate()){
+			$this->tryChangeMovement();
+
+			$this->checkMotion();
+
+			if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
+				$this->move($this->motion->x, $this->motion->y, $this->motion->z);
+			}
+
+			$this->forceMovementUpdate = false;
+		}
+
+		$this->updateMovement();
+	}
+
+	protected function checkMotion() : void{
+		if(abs($this->motion->x) <= self::MOTION_THRESHOLD){
+			$this->motion->x = 0;
+		}
+		if(abs($this->motion->y) <= self::MOTION_THRESHOLD){
+			$this->motion->y = 0;
+		}
+		if(abs($this->motion->z) <= self::MOTION_THRESHOLD){
+			$this->motion->z = 0;
+		}
 	}
 
 	final public function scheduleUpdate() : void{

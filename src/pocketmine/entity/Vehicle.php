@@ -28,24 +28,31 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-abstract class Vehicle extends Entity implements Rideable {
+abstract class Vehicle extends Entity implements Rideable{
 
-    public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos): bool{
-        return $player->mountEntity($this);
-    }
+	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
+		return $player->mountEntity($this);
+	}
 
-    public function kill(): void{
-        parent::kill();
-        $this->onDeath();
-    }
+	public function setHealth(float $amount) : void{
+		parent::setHealth($amount);
 
-    protected function onDeath(): void{
-        foreach($this->getDrops() as $item){
-            $this->getLevel()->dropItem($this, $item);
-        }
-    }
+		$this->propertyManager->setInt(self::DATA_HEALTH, (int) $amount);
+	}
 
-    public function getDrops(): array{
-        return [];
-    }
+	public function getHurtTime() : int{
+		return $this->propertyManager->getInt(self::DATA_HURT_TIME) ?? 0;
+	}
+
+	public function setHurtTime(int $value) : void{
+		$this->propertyManager->setInt(self::DATA_HURT_TIME, $value);
+	}
+
+	public function getHurtDirection() : int{
+		return $this->propertyManager->getInt(self::DATA_HURT_DIRECTION) ?? 0;
+	}
+
+	public function setHurtDirection(int $value) : void{
+		$this->propertyManager->setInt(self::DATA_HURT_DIRECTION, $value);
+	}
 }

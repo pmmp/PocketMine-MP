@@ -156,7 +156,7 @@ class FishingHook extends Projectile{
 				for($k = 0; $k < $j; $k++){
 					$b = $this->level->getBlock($this->add(0, $k, 0));
 					if($b instanceof Water){
-						$d10 += 1.0 / $j;
+						$d10 += 1 / $j;
 					}else{
 						break;
 					}
@@ -238,7 +238,7 @@ class FishingHook extends Projectile{
 					}
 
 					$d11 = $d10 * 2.0 - 1.0;
-					$this->motion->y += 0.03999999910593033 * $d11;
+					$this->motion->y += 0.04 * $d11;
 
 					if($d10 > 0.0){
 						$f6 = $f6 * 0.9;

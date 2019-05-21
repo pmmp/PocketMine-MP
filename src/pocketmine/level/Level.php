@@ -29,6 +29,7 @@ namespace pocketmine\level;
 use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\Liquid;
 use pocketmine\entity\CreatureType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\ExperienceOrb;
@@ -1322,6 +1323,44 @@ class Level implements ChunkManager, Metadatable{
 
 
 		return $collides;
+	}
+
+	/**
+	 * @param AxisAlignedBB $bb
+	 * @param Liquid        $material
+	 *
+	 * @return bool
+	 */
+	public function isLiquidInBoundingBox(AxisAlignedBB $bb, Liquid $material) : bool{
+		$minX = (int) floor($bb->minX);
+		$minY = (int) floor($bb->minY);
+		$minZ = (int) floor($bb->minZ);
+		$maxX = (int) floor($bb->maxX + 1);
+		$maxY = (int) floor($bb->maxY + 1);
+		$maxZ = (int) floor($bb->maxZ + 1);
+
+		for($x = $minX; $x < $maxX; ++$x){
+			for($y = $minY; $y < $maxY; ++$y){
+				for($z = $minZ; $z < $maxZ; ++$z){
+					$block = $this->getBlockAt($x, $y, $z);
+
+					if($block instanceof $material){
+						$j2 = $block->getDamage();
+						$d0 = $y + 1;
+
+						if($j2 < 8){
+							$d0 -= $j2 / 8;
+						}
+
+						if($d0 >= $bb->minY){
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
