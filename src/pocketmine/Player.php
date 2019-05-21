@@ -3916,6 +3916,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if($this->cursorInventory !== null){
 				$this->cursorInventory->clearAll();
 			}
+            if($this->offHandInventory !== null){
+                $this->offHandInventory->clearAll();
+            }
 		}
 
 		//TODO: allow this number to be manipulated during PlayerDeathEvent
