@@ -1759,7 +1759,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		$result = $item->onClickAir($this, $directionVector);
-		if($result !== ItemUseResult::SUCCESS()){
+		if($result === ItemUseResult::FAIL()){
 			return false;
 		}
 
