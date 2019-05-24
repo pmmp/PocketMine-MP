@@ -48,7 +48,7 @@ class ForestBiome extends GrassyBiome{
 
 		$this->setElevation(63, 81);
 
-		if($type === TreeType::BIRCH()){
+		if($this->type->equals(TreeType::BIRCH())){
 			$this->temperature = 0.6;
 			$this->rainfall = 0.5;
 		}else{

@@ -1554,7 +1554,7 @@ class Server{
 			}
 		}
 
-		if($type === PluginLoadOrder::POSTWORLD()){
+		if($type->equals(PluginLoadOrder::POSTWORLD())){
 			$this->commandMap->registerServerAliases();
 			DefaultPermissions::registerCorePermissions();
 		}

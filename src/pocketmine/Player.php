@@ -1320,7 +1320,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isSurvival(bool $literal = false) : bool{
-		return $this->gamemode === GameMode::SURVIVAL() or (!$literal and $this->gamemode === GameMode::ADVENTURE());
+		return $this->gamemode->equals(GameMode::SURVIVAL()) or (!$literal and $this->gamemode->equals(GameMode::ADVENTURE()));
 	}
 
 	/**
@@ -1332,7 +1332,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isCreative(bool $literal = false) : bool{
-		return $this->gamemode === GameMode::CREATIVE() or (!$literal and $this->gamemode === GameMode::SPECTATOR());
+		return $this->gamemode->equals(GameMode::CREATIVE()) or (!$literal and $this->gamemode->equals(GameMode::SPECTATOR()));
 	}
 
 	/**
@@ -1344,14 +1344,14 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isAdventure(bool $literal = false) : bool{
-		return $this->gamemode === GameMode::ADVENTURE() or (!$literal and $this->gamemode === GameMode::SPECTATOR());
+		return $this->gamemode->equals(GameMode::ADVENTURE()) or (!$literal and $this->gamemode->equals(GameMode::SPECTATOR()));
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isSpectator() : bool{
-		return $this->gamemode === GameMode::SPECTATOR();
+		return $this->gamemode->equals(GameMode::SPECTATOR());
 	}
 
 	/**
@@ -1360,7 +1360,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function hasFiniteResources() : bool{
-		return $this->gamemode === GameMode::SURVIVAL() or $this->gamemode === GameMode::ADVENTURE();
+		return $this->gamemode->equals(GameMode::SURVIVAL()) or $this->gamemode->equals(GameMode::ADVENTURE());
 	}
 
 	public function isFireProof() : bool{
@@ -1759,7 +1759,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		$result = $item->onClickAir($this, $directionVector);
-		if($result === ItemUseResult::FAIL()){
+		if($result->equals(ItemUseResult::FAIL())){
 			return false;
 		}
 
@@ -1819,7 +1819,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			}
 
 			$result = $item->onReleaseUsing($this);
-			if($result === ItemUseResult::SUCCESS()){
+			if($result->equals(ItemUseResult::SUCCESS())){
 				$this->resetItemCooldown($item);
 				$this->inventory->setItemInHand($item);
 				return true;

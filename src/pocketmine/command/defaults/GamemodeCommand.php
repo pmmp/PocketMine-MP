@@ -72,7 +72,7 @@ class GamemodeCommand extends VanillaCommand{
 		}
 
 		$target->setGamemode($gameMode);
-		if($gameMode !== $target->getGamemode()){
+		if(!$gameMode->equals($target->getGamemode())){
 			$sender->sendMessage("Game mode change for " . $target->getName() . " failed!");
 		}else{
 			if($target === $sender){

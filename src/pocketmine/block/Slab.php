@@ -43,12 +43,12 @@ abstract class Slab extends Transparent{
 	}
 
 	public function getId() : int{
-		return $this->slabType === SlabType::DOUBLE() ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->slabType->equals(SlabType::DOUBLE()) ? $this->idInfo->getSecondId() : parent::getId();
 	}
 
 	protected function writeStateToMeta() : int{
-		if($this->slabType !== SlabType::DOUBLE()){
-			return ($this->slabType === SlabType::TOP() ? BlockLegacyMetadata::SLAB_FLAG_UPPER : 0);
+		if(!$this->slabType->equals(SlabType::DOUBLE())){
+			return ($this->slabType->equals(SlabType::TOP()) ? BlockLegacyMetadata::SLAB_FLAG_UPPER : 0);
 		}
 		return 0;
 	}
@@ -66,7 +66,7 @@ abstract class Slab extends Transparent{
 	}
 
 	public function isTransparent() : bool{
-		return $this->slabType !== SlabType::DOUBLE();
+		return !$this->slabType->equals(SlabType::DOUBLE());
 	}
 
 	/**
@@ -93,8 +93,8 @@ abstract class Slab extends Transparent{
 			return true;
 		}
 
-		if($blockReplace instanceof Slab and $blockReplace->slabType !== SlabType::DOUBLE() and $blockReplace->isSameType($this)){
-			if($blockReplace->slabType === SlabType::TOP()){ //Trying to combine with top slab
+		if($blockReplace instanceof Slab and !$blockReplace->slabType->equals(SlabType::DOUBLE()) and $blockReplace->isSameType($this)){
+			if($blockReplace->slabType->equals(SlabType::TOP())){ //Trying to combine with top slab
 				return $clickVector->y <= 0.5 or (!$isClickedBlock and $face === Facing::UP);
 			}else{
 				return $clickVector->y >= 0.5 or (!$isClickedBlock and $face === Facing::DOWN);
@@ -105,9 +105,9 @@ abstract class Slab extends Transparent{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockReplace instanceof Slab and $blockReplace->slabType !== SlabType::DOUBLE() and $blockReplace->isSameType($this) and (
-			($blockReplace->slabType === SlabType::TOP() and ($clickVector->y <= 0.5 or $face === Facing::UP)) or
-			($blockReplace->slabType === SlabType::BOTTOM() and ($clickVector->y >= 0.5 or $face === Facing::DOWN))
+		if($blockReplace instanceof Slab and !$blockReplace->slabType->equals(SlabType::DOUBLE()) and $blockReplace->isSameType($this) and (
+			($blockReplace->slabType->equals(SlabType::TOP()) and ($clickVector->y <= 0.5 or $face === Facing::UP)) or
+			($blockReplace->slabType->equals(SlabType::BOTTOM()) and ($clickVector->y >= 0.5 or $face === Facing::DOWN))
 		)){
 			//Clicked in empty half of existing slab
 			$this->slabType = SlabType::DOUBLE();
@@ -119,13 +119,13 @@ abstract class Slab extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		if($this->slabType === SlabType::DOUBLE()){
+		if($this->slabType->equals(SlabType::DOUBLE())){
 			return parent::recalculateBoundingBox();
 		}
-		return AxisAlignedBB::one()->trim($this->slabType === SlabType::TOP() ? Facing::DOWN : Facing::UP, 0.5);
+		return AxisAlignedBB::one()->trim($this->slabType->equals(SlabType::TOP()) ? Facing::DOWN : Facing::UP, 0.5);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [$this->asItem()->setCount($this->slabType === SlabType::DOUBLE() ? 2 : 1)];
+		return [$this->asItem()->setCount($this->slabType->equals(SlabType::DOUBLE()) ? 2 : 1)];
 	}
 }

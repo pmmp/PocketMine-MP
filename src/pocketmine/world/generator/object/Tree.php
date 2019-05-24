@@ -64,17 +64,17 @@ abstract class Tree{
 		/** @var null|Tree $tree */
 		$tree = null;
 		$type = $type ?? TreeType::OAK();
-		if($type === TreeType::SPRUCE()){
+		if($type->equals(TreeType::SPRUCE())){
 			$tree = new SpruceTree();
-		}elseif($type === TreeType::BIRCH()){
+		}elseif($type->equals(TreeType::BIRCH())){
 			if($random->nextBoundedInt(39) === 0){
 				$tree = new BirchTree(true);
 			}else{
 				$tree = new BirchTree();
 			}
-		}elseif($type === TreeType::JUNGLE()){
+		}elseif($type->equals(TreeType::JUNGLE())){
 			$tree = new JungleTree();
-		}elseif($type === TreeType::OAK()){ //default
+		}elseif($type->equals(TreeType::OAK())){ //default
 			$tree = new OakTree();
 			/*if($random->nextRange(0, 9) === 0){
 				$tree = new BigTree();

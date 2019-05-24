@@ -852,7 +852,7 @@ class NetworkSession{
 	 * @return int
 	 */
 	public static function getClientFriendlyGamemode(GameMode $gamemode) : int{
-		if($gamemode === GameMode::SPECTATOR()){
+		if($gamemode->equals(GameMode::SPECTATOR())){
 			return GameMode::CREATIVE()->getMagicNumber();
 		}
 

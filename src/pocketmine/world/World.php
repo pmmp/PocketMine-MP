@@ -1788,8 +1788,8 @@ class World implements ChunkManager, Metadatable{
 
 				if(!$player->isSneaking()){
 					$result = $item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector);
-					if($result !== ItemUseResult::NONE()){
-						return $result === ItemUseResult::SUCCESS();
+					if(!$result->equals(ItemUseResult::NONE())){
+						return $result->equals(ItemUseResult::SUCCESS());
 					}
 				}
 			}else{
