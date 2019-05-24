@@ -96,8 +96,9 @@ class BlockFactory{
 
 		$cobblestoneBreakInfo = new BlockBreakInfo(2.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
 		self::register(new Solid(new BID(BlockLegacyIds::COBBLESTONE), "Cobblestone", $cobblestoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::MOSSY_COBBLESTONE), "Moss Stone", $cobblestoneBreakInfo));
+		self::register(new Solid(new BID(BlockLegacyIds::MOSSY_COBBLESTONE), "Mossy Cobblestone", $cobblestoneBreakInfo));
 		self::register(new Stair(new BID(BlockLegacyIds::COBBLESTONE_STAIRS), "Cobblestone Stairs", $cobblestoneBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::MOSSY_COBBLESTONE_STAIRS), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
 		self::register(new Cobweb(new BID(BlockLegacyIds::COBWEB), "Cobweb"));
 		self::register(new CocoaBlock(new BID(BlockLegacyIds::COCOA), "Cocoa Block"));
@@ -122,7 +123,11 @@ class BlockFactory{
 		self::register(new EndPortalFrame(new BID(BlockLegacyIds::END_PORTAL_FRAME), "End Portal Frame"));
 		self::register(new EndRod(new BID(BlockLegacyIds::END_ROD), "End Rod"));
 		self::register(new Solid(new BID(BlockLegacyIds::END_STONE), "End Stone", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 45.0)));
-		self::register(new Solid(new BID(BlockLegacyIds::END_BRICKS), "End Stone Bricks", new BlockBreakInfo(0.8, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 4.0)));
+
+		$endBrickBreakInfo = new BlockBreakInfo(0.8, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 4.0);
+		self::register(new Solid(new BID(BlockLegacyIds::END_BRICKS), "End Stone Bricks", $endBrickBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::END_BRICK_STAIRS), "End Stone Brick Stairs", $endBrickBreakInfo));
+
 		self::register(new EnderChest(new BID(BlockLegacyIds::ENDER_CHEST, 0, null, \pocketmine\tile\EnderChest::class), "Ender Chest"));
 		self::register(new Farmland(new BID(BlockLegacyIds::FARMLAND), "Farmland"));
 		self::register(new Fire(new BID(BlockLegacyIds::FIRE), "Fire Block"));
@@ -213,6 +218,7 @@ class BlockFactory{
 		self::register(new Solid(new BID(BlockLegacyIds::RED_NETHER_BRICK), "Red Nether Bricks", $netherBrickBreakInfo));
 		self::register(new Fence(new BID(BlockLegacyIds::NETHER_BRICK_FENCE), "Nether Brick Fence", $netherBrickBreakInfo));
 		self::register(new Stair(new BID(BlockLegacyIds::NETHER_BRICK_STAIRS), "Nether Brick Stairs", $netherBrickBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::RED_NETHER_BRICK_STAIRS), "Red Nether Brick Stairs", $netherBrickBreakInfo));
 		self::register(new NetherPortal(new BID(BlockLegacyIds::PORTAL), "Nether Portal"));
 		self::register(new NetherQuartzOre(new BID(BlockLegacyIds::NETHER_QUARTZ_ORE), "Nether Quartz Ore"));
 		self::register(new NetherReactor(new BID(BlockLegacyIds::NETHERREACTOR), "Nether Reactor Core"));
@@ -228,8 +234,11 @@ class BlockFactory{
 
 		$prismarineBreakInfo = new BlockBreakInfo(1.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
 		self::register(new Solid(new BID(BlockLegacyIds::PRISMARINE, BlockLegacyMetadata::PRISMARINE_BRICKS), "Prismarine Bricks", $prismarineBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::PRISMARINE_BRICKS_STAIRS), "Prismarine Bricks Stairs", $prismarineBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::PRISMARINE, BlockLegacyMetadata::PRISMARINE_DARK), "Dark Prismarine", $prismarineBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::DARK_PRISMARINE_STAIRS), "Dark Prismarine Stairs", $prismarineBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::PRISMARINE, BlockLegacyMetadata::PRISMARINE_NORMAL), "Prismarine", $prismarineBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::PRISMARINE_STAIRS), "Prismarine Stairs", $prismarineBreakInfo));
 
 		self::register(new Pumpkin(new BID(BlockLegacyIds::PUMPKIN), "Pumpkin"));
 		self::register(new PumpkinStem(new BID(BlockLegacyIds::PUMPKIN_STEM, 0, ItemIds::PUMPKIN_SEEDS), "Pumpkin Stem"));
@@ -243,6 +252,7 @@ class BlockFactory{
 
 		$quartzBreakInfo = new BlockBreakInfo(0.8, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN);
 		self::register(new Solid(new BID(BlockLegacyIds::QUARTZ_BLOCK, BlockLegacyMetadata::QUARTZ_NORMAL), "Quartz Block", $quartzBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::QUARTZ_STAIRS), "Quartz Stairs", $quartzBreakInfo));
 		self::register(new class(new BID(BlockLegacyIds::QUARTZ_BLOCK, BlockLegacyMetadata::QUARTZ_CHISELED), "Chiseled Quartz Block", $quartzBreakInfo) extends Solid{
 			use PillarRotationTrait;
 		});
@@ -250,7 +260,7 @@ class BlockFactory{
 			use PillarRotationTrait;
 		});
 		self::register(new Solid(new BID(BlockLegacyIds::QUARTZ_BLOCK, BlockLegacyMetadata::QUARTZ_SMOOTH), "Smooth Quartz Block", $quartzBreakInfo)); //TODO: this has axis rotation in 1.9, unsure if a bug (https://bugs.mojang.com/browse/MCPE-39074)
-		self::register(new Stair(new BID(BlockLegacyIds::QUARTZ_STAIRS), "Quartz Stairs", $quartzBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::SMOOTH_QUARTZ_STAIRS), "Smooth Quartz Stairs", $quartzBreakInfo));
 
 		self::register(new Rail(new BID(BlockLegacyIds::RAIL), "Rail"));
 		self::register(new RedMushroom(new BID(BlockLegacyIds::RED_MUSHROOM), "Red Mushroom"));
@@ -282,16 +292,25 @@ class BlockFactory{
 				return [ItemFactory::get(Item::COBBLESTONE)];
 			}
 		});
+		self::register(new Stair(new BID(BlockLegacyIds::NORMAL_STONE_STAIRS), "Stone Stairs", $stoneBreakInfo));
+		self::register(new Solid(new BID(BlockLegacyIds::SMOOTH_STONE), "Smooth Stone", $stoneBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_ANDESITE), "Andesite", $stoneBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::ANDESITE_STAIRS), "Andesite Stairs", $stoneBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_DIORITE), "Diorite", $stoneBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::DIORITE_STAIRS), "Diorite Stairs", $stoneBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_GRANITE), "Granite", $stoneBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::GRANITE_STAIRS), "Granite Stairs", $stoneBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_POLISHED_ANDESITE), "Polished Andesite", $stoneBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::POLISHED_ANDESITE_STAIRS), "Polished Andesite Stairs", $stoneBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_POLISHED_DIORITE), "Polished Diorite", $stoneBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::POLISHED_DIORITE_STAIRS), "Polished Diorite Stairs", $stoneBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_POLISHED_GRANITE), "Polished Granite", $stoneBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::POLISHED_GRANITE_STAIRS), "Polished Granite Stairs", $stoneBreakInfo));
 		self::register(new Stair(new BID(BlockLegacyIds::STONE_BRICK_STAIRS), "Stone Brick Stairs", $stoneBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::STONEBRICK, BlockLegacyMetadata::STONE_BRICK_CHISELED), "Chiseled Stone Bricks", $stoneBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::STONEBRICK, BlockLegacyMetadata::STONE_BRICK_CRACKED), "Cracked Stone Bricks", $stoneBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::STONEBRICK, BlockLegacyMetadata::STONE_BRICK_MOSSY), "Mossy Stone Bricks", $stoneBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::MOSSY_STONE_BRICK_STAIRS), "Mossy Stone Brick Stairs", $stoneBreakInfo));
 		self::register(new Solid(new BID(BlockLegacyIds::STONEBRICK, BlockLegacyMetadata::STONE_BRICK_NORMAL), "Stone Bricks", $stoneBreakInfo));
 		self::register(new StoneButton(new BID(BlockLegacyIds::STONE_BUTTON), "Stone Button"));
 		self::register(new StonePressurePlate(new BID(BlockLegacyIds::STONE_PRESSURE_PLATE), "Stone Pressure Plate"));
@@ -451,7 +470,9 @@ class BlockFactory{
 		];
 		$sandstoneBreakInfo = new BlockBreakInfo(0.8, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN);
 		self::register(new Stair(new BID(BlockLegacyIds::RED_SANDSTONE_STAIRS), "Red Sandstone Stairs", $sandstoneBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::SMOOTH_RED_SANDSTONE_STAIRS), "Smooth Red Sandstone Stairs", $sandstoneBreakInfo));
 		self::register(new Stair(new BID(BlockLegacyIds::SANDSTONE_STAIRS), "Sandstone Stairs", $sandstoneBreakInfo));
+		self::register(new Stair(new BID(BlockLegacyIds::SMOOTH_SANDSTONE_STAIRS), "Smooth Sandstone Stairs", $sandstoneBreakInfo));
 		foreach($sandstoneTypes as $variant => $prefix){
 			self::register(new Solid(new BID(BlockLegacyIds::SANDSTONE, $variant), $prefix . "Sandstone", $sandstoneBreakInfo));
 			self::register(new Solid(new BID(BlockLegacyIds::RED_SANDSTONE, $variant), $prefix . "Red Sandstone", $sandstoneBreakInfo));
@@ -512,7 +533,6 @@ class BlockFactory{
 		}
 
 		//region --- auto-generated TODOs ---
-		//TODO: minecraft:andesite_stairs
 		//TODO: minecraft:bamboo
 		//TODO: minecraft:bamboo_sapling
 		//TODO: minecraft:barrel
@@ -539,8 +559,6 @@ class BlockFactory{
 		//TODO: minecraft:coral_fan_hang
 		//TODO: minecraft:coral_fan_hang2
 		//TODO: minecraft:coral_fan_hang3
-		//TODO: minecraft:dark_prismarine_stairs
-		//TODO: minecraft:diorite_stairs
 		//TODO: minecraft:dispenser
 		//TODO: minecraft:dried_kelp_block
 		//TODO: minecraft:dropper
@@ -663,11 +681,9 @@ class BlockFactory{
 		//TODO: minecraft:element_97
 		//TODO: minecraft:element_98
 		//TODO: minecraft:element_99
-		//TODO: minecraft:end_brick_stairs
 		//TODO: minecraft:end_gateway
 		//TODO: minecraft:end_portal
 		//TODO: minecraft:fletching_table
-		//TODO: minecraft:granite_stairs
 		//TODO: minecraft:grindstone
 		//TODO: minecraft:hopper
 		//TODO: minecraft:jigsaw
@@ -679,19 +695,10 @@ class BlockFactory{
 		//TODO: minecraft:lit_blast_furnace
 		//TODO: minecraft:lit_smoker
 		//TODO: minecraft:loom
-		//TODO: minecraft:mossy_cobblestone_stairs
-		//TODO: minecraft:mossy_stone_brick_stairs
 		//TODO: minecraft:movingBlock
-		//TODO: minecraft:normal_stone_stairs
 		//TODO: minecraft:observer
 		//TODO: minecraft:piston
 		//TODO: minecraft:pistonArmCollision
-		//TODO: minecraft:polished_andesite_stairs
-		//TODO: minecraft:polished_diorite_stairs
-		//TODO: minecraft:polished_granite_stairs
-		//TODO: minecraft:prismarine_bricks_stairs
-		//TODO: minecraft:prismarine_stairs
-		//TODO: minecraft:red_nether_brick_stairs
 		//TODO: minecraft:repeating_command_block
 		//TODO: minecraft:scaffolding
 		//TODO: minecraft:seagrass
@@ -699,10 +706,6 @@ class BlockFactory{
 		//TODO: minecraft:slime
 		//TODO: minecraft:smithing_table
 		//TODO: minecraft:smoker
-		//TODO: minecraft:smooth_quartz_stairs
-		//TODO: minecraft:smooth_red_sandstone_stairs
-		//TODO: minecraft:smooth_sandstone_stairs
-		//TODO: minecraft:smooth_stone
 		//TODO: minecraft:sticky_piston
 		//TODO: minecraft:stonecutter_block
 		//TODO: minecraft:stripped_acacia_log
