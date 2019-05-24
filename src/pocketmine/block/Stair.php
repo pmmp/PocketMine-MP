@@ -30,7 +30,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-abstract class Stair extends Transparent{
+class Stair extends Transparent{
 	private const SHAPE_STRAIGHT = "straight";
 	private const SHAPE_INNER_LEFT = "inner_left";
 	private const SHAPE_INNER_RIGHT = "inner_right";

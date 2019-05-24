@@ -34,7 +34,7 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\DoorSound;
 
 
-abstract class Door extends Transparent{
+class Door extends Transparent{
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var bool */

@@ -30,7 +30,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-abstract class Slab extends Transparent{
+class Slab extends Transparent{
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
 

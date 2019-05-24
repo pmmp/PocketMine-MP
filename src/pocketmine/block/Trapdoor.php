@@ -31,7 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\world\sound\DoorSound;
 
-abstract class Trapdoor extends Transparent{
+class Trapdoor extends Transparent{
 
 	/** @var int */
 	protected $facing = Facing::NORTH;

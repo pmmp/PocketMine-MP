@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-abstract class Thin extends Transparent{
+class Thin extends Transparent{
 	/** @var bool[] facing => dummy */
 	protected $connections = [];
 
