@@ -27,7 +27,7 @@ use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\tile\Chest as TileChest;
-use pocketmine\block\tile\Comparator;
+use pocketmine\block\tile\Comparator as TileComparator;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
@@ -279,7 +279,7 @@ class BlockFactory{
 		self::register(new RedMushroom(new BID(BlockLegacyIds::RED_MUSHROOM), "Red Mushroom"));
 		self::register(new RedMushroomBlock(new BID(BlockLegacyIds::RED_MUSHROOM_BLOCK), "Red Mushroom Block"));
 		self::register(new Redstone(new BID(BlockLegacyIds::REDSTONE_BLOCK), "Redstone Block"));
-		self::register(new RedstoneComparator(new BlockIdentifierFlattened(BlockLegacyIds::UNPOWERED_COMPARATOR, BlockLegacyIds::POWERED_COMPARATOR, 0, ItemIds::COMPARATOR, Comparator::class), "Redstone Comparator"));
+		self::register(new RedstoneComparator(new BlockIdentifierFlattened(BlockLegacyIds::UNPOWERED_COMPARATOR, BlockLegacyIds::POWERED_COMPARATOR, 0, ItemIds::COMPARATOR, TileComparator::class), "Redstone Comparator"));
 		self::register(new RedstoneLamp(new BlockIdentifierFlattened(BlockLegacyIds::REDSTONE_LAMP, BlockLegacyIds::LIT_REDSTONE_LAMP), "Redstone Lamp"));
 		self::register(new RedstoneOre(new BlockIdentifierFlattened(BlockLegacyIds::REDSTONE_ORE, BlockLegacyIds::LIT_REDSTONE_ORE), "Redstone Ore"));
 		self::register(new RedstoneRepeater(new BlockIdentifierFlattened(BlockLegacyIds::UNPOWERED_REPEATER, BlockLegacyIds::POWERED_REPEATER, 0, ItemIds::REPEATER), "Redstone Repeater"));
