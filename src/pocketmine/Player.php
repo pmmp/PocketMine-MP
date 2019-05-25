@@ -105,7 +105,6 @@ use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
 use pocketmine\permission\PermissionManager;
 use pocketmine\plugin\Plugin;
-use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
@@ -1837,17 +1836,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			return true;
 		}
 
-		$item = $block->getPickedItem();
-		if($addTileNBT){
-			$tile = $this->getWorld()->getTile($block);
-			if($tile instanceof Tile){
-				$nbt = $tile->getCleanedNBT();
-				if($nbt instanceof CompoundTag){
-					$item->setCustomBlockData($nbt);
-					$item->setLore(["+(DATA)"]);
-				}
-			}
-		}
+		$item = $block->getPickedItem($addTileNBT);
 
 		$ev = new PlayerBlockPickEvent($this, $block, $item);
 		$ev->call();

@@ -105,7 +105,7 @@ class Farmland extends Transparent{
 		return false;
 	}
 
-	public function getPickedItem() : Item{
+	public function getPickedItem(bool $addUserData = false) : Item{
 		return ItemFactory::get(Item::DIRT);
 	}
 }

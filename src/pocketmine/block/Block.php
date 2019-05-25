@@ -37,9 +37,11 @@ use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
+use pocketmine\tile\Tile;
 use pocketmine\tile\TileFactory;
 use pocketmine\world\Position;
 use pocketmine\world\World;
@@ -500,10 +502,24 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 
 	/**
 	 * Returns the item that players will equip when middle-clicking on this block.
+	 *
+	 * @param bool $addUserData
+	 *
 	 * @return Item
 	 */
-	public function getPickedItem() : Item{
-		return $this->asItem();
+	public function getPickedItem(bool $addUserData = false) : Item{
+		$item = $this->asItem();
+		if($addUserData){
+			$tile = $this->world->getTile($this);
+			if($tile instanceof Tile){
+				$nbt = $tile->getCleanedNBT();
+				if($nbt instanceof CompoundTag){
+					$item->setCustomBlockData($nbt);
+					$item->setLore(["+(DATA)"]);
+				}
+			}
+		}
+		return $item;
 	}
 
 	/**

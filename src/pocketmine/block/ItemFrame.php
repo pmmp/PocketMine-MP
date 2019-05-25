@@ -197,8 +197,8 @@ class ItemFrame extends Flowable{
 		return $drops;
 	}
 
-	public function getPickedItem() : Item{
-		return $this->framedItem !== null ? clone $this->framedItem : parent::getPickedItem();
+	public function getPickedItem(bool $addUserData = false) : Item{
+		return $this->framedItem !== null ? clone $this->framedItem : parent::getPickedItem($addUserData);
 	}
 
 	public function isAffectedBySilkTouch() : bool{

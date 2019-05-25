@@ -35,7 +35,7 @@ class Carrot extends Crops{
 		];
 	}
 
-	public function getPickedItem() : Item{
+	public function getPickedItem(bool $addUserData = false) : Item{
 		return ItemFactory::get(Item::CARROT);
 	}
 }
