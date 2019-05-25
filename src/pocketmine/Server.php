@@ -82,7 +82,6 @@ use pocketmine\scheduler\AsyncPool;
 use pocketmine\scheduler\SendUsageTask;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\snooze\SleeperNotifier;
-use pocketmine\tile\TileFactory;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\AutoUpdater;
@@ -1187,7 +1186,6 @@ class Server{
 			$this->commandMap = new SimpleCommandMap($this);
 
 			EntityFactory::init();
-			TileFactory::init();
 			BlockFactory::init();
 			Enchantment::init();
 			ItemFactory::init();

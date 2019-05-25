@@ -23,12 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\tile\FlowerPot as TileFlowerPot;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\tile\FlowerPot as TileFlowerPot;
 use function assert;
 
 class FlowerPot extends Flowable{

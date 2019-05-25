@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\block\tile\Chest;
 use pocketmine\item\Item;
 use pocketmine\Player;
-use pocketmine\tile\Chest;
 use function array_merge;
 use function array_slice;
 use function count;

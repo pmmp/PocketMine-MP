@@ -25,7 +25,7 @@ declare(strict_types=1);
  * All the Tile classes and related classes
  */
 
-namespace pocketmine\tile;
+namespace pocketmine\block\tile;
 
 use pocketmine\block\Block;
 use pocketmine\item\Item;

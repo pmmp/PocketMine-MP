@@ -26,6 +26,8 @@ declare(strict_types=1);
  */
 namespace pocketmine\block;
 
+use pocketmine\block\tile\Tile;
+use pocketmine\block\tile\TileFactory;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
@@ -41,8 +43,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
-use pocketmine\tile\Tile;
-use pocketmine\tile\TileFactory;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function array_merge;

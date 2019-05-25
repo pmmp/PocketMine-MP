@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\block\tile\EnderChest;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
-use pocketmine\tile\EnderChest;
 use pocketmine\world\Position;
 use pocketmine\world\sound\EnderChestCloseSound;
 use pocketmine\world\sound\EnderChestOpenSound;

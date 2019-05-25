@@ -23,13 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\tile\Furnace as TileFurnace;
 
 class Furnace extends Solid{
 	/** @var BlockIdentifierFlattened */

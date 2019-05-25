@@ -28,15 +28,15 @@ namespace pocketmine\world\format;
 
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\tile\Spawnable;
+use pocketmine\block\tile\Tile;
+use pocketmine\block\tile\TileFactory;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\Player;
-use pocketmine\tile\Spawnable;
-use pocketmine\tile\Tile;
-use pocketmine\tile\TileFactory;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\World;
 use function array_fill;

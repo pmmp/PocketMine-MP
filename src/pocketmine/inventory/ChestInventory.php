@@ -23,13 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\world\sound\ChestCloseSound;
-use pocketmine\world\sound\ChestOpenSound;
-use pocketmine\world\sound\Sound;
+use pocketmine\block\tile\Chest;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
-use pocketmine\tile\Chest;
+use pocketmine\world\sound\ChestCloseSound;
+use pocketmine\world\sound\ChestOpenSound;
+use pocketmine\world\sound\Sound;
 use function count;
 
 class ChestInventory extends ContainerInventory{

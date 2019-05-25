@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\item\Bed as ItemBed;
@@ -34,7 +35,6 @@ use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\tile\Bed as TileBed;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\World;
 

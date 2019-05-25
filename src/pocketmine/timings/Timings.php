@@ -23,12 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\timings;
 
+use pocketmine\block\tile\Tile;
 use pocketmine\entity\Entity;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\Player;
 use pocketmine\scheduler\TaskHandler;
-use pocketmine\tile\Tile;
 use function dechex;
 
 abstract class Timings{

@@ -21,40 +21,44 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\tile;
+namespace pocketmine\block\tile;
 
-use pocketmine\block\RedstoneComparator;
+use pocketmine\block\utils\DyeColor;
+use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\world\World;
 
-/**
- * @deprecated
- * @see RedstoneComparator
- */
-class Comparator extends Tile{
-	private const TAG_OUTPUT_SIGNAL = "OutputSignal"; //int
+class Bed extends Spawnable{
+	public const TAG_COLOR = "color";
+	/** @var DyeColor */
+	private $color;
 
-	/** @var int */
-	protected $signalStrength = 0;
-
-	/**
-	 * @return int
-	 */
-	public function getSignalStrength() : int{
-		return $this->signalStrength;
+	public function __construct(World $world, Vector3 $pos){
+		$this->color = DyeColor::RED();
+		parent::__construct($world, $pos);
 	}
 
-	/**
-	 * @param int $signalStrength
-	 */
-	public function setSignalStrength(int $signalStrength) : void{
-		$this->signalStrength = $signalStrength;
+	public function getColor() : DyeColor{
+		return $this->color;
+	}
+
+	public function setColor(DyeColor $color) : void{
+		$this->color = $color;
+		$this->onChanged();
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		$this->signalStrength = $nbt->getInt(self::TAG_OUTPUT_SIGNAL, 0, true);
+		if($nbt->hasTag(self::TAG_COLOR, ByteTag::class)){
+			$this->color = DyeColor::fromMagicNumber($nbt->getByte(self::TAG_COLOR));
+		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setInt(self::TAG_OUTPUT_SIGNAL, $this->signalStrength);
+		$nbt->setByte(self::TAG_COLOR, $this->color->getMagicNumber());
+	}
+
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+		$nbt->setByte(self::TAG_COLOR, $this->color->getMagicNumber());
 	}
 }

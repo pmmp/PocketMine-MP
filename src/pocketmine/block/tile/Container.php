@@ -21,28 +21,30 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\tile;
+namespace pocketmine\block\tile;
 
-interface Nameable{
-	public const TAG_CUSTOM_NAME = "CustomName";
+use pocketmine\inventory\Inventory;
+
+interface Container{
+	public const TAG_ITEMS = "Items";
+	public const TAG_LOCK = "Lock";
 
 	/**
-	 * @return string
+	 * @return Inventory
 	 */
-	public function getDefaultName() : string;
+	public function getInventory();
 
 	/**
-	 * @return string
+	 * @return Inventory
 	 */
-	public function getName() : string;
+	public function getRealInventory();
 
 	/**
-	 * @param string $str
-	 */
-	public function setName(string $str) : void;
-
-	/**
+	 * Returns whether this container can be opened by an item with the given custom name.
+	 *
+	 * @param string $key
+	 *
 	 * @return bool
 	 */
-	public function hasName() : bool;
+	public function canOpenWith(string $key) : bool;
 }

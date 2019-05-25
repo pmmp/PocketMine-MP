@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\tile;
+namespace pocketmine\block\tile;
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;

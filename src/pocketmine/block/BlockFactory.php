@@ -24,6 +24,18 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\BlockIdentifier as BID;
+use pocketmine\block\tile\Banner as TileBanner;
+use pocketmine\block\tile\Bed as TileBed;
+use pocketmine\block\tile\Chest as TileChest;
+use pocketmine\block\tile\Comparator;
+use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
+use pocketmine\block\tile\EnderChest as TileEnderChest;
+use pocketmine\block\tile\FlowerPot as TileFlowerPot;
+use pocketmine\block\tile\Furnace as TileFurnace;
+use pocketmine\block\tile\ItemFrame as TileItemFrame;
+use pocketmine\block\tile\Sign as TileSign;
+use pocketmine\block\tile\Skull as TileSkull;
+use pocketmine\block\tile\TileFactory;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PillarRotationTrait;
@@ -32,7 +44,6 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\item\TieredTool;
-use pocketmine\tile\Comparator;
 use pocketmine\world\Position;
 use function array_fill;
 use function array_filter;
@@ -58,6 +69,8 @@ class BlockFactory{
 	 * this if you need to reset the block factory back to its original defaults for whatever reason.
 	 */
 	public static function init() : void{
+		TileFactory::init();
+
 		self::$fullList = new \SplFixedArray(8192);
 
 		self::$lightFilter = \SplFixedArray::fromArray(array_fill(0, 8192, 1));
@@ -69,9 +82,9 @@ class BlockFactory{
 		self::register(new Anvil(new BID(BlockLegacyIds::ANVIL, BlockLegacyMetadata::ANVIL_NORMAL), "Anvil"));
 		self::register(new Anvil(new BID(BlockLegacyIds::ANVIL, BlockLegacyMetadata::ANVIL_SLIGHTLY_DAMAGED), "Slightly Damaged Anvil"));
 		self::register(new Anvil(new BID(BlockLegacyIds::ANVIL, BlockLegacyMetadata::ANVIL_VERY_DAMAGED), "Very Damaged Anvil"));
-		self::register(new Banner(new BlockIdentifierFlattened(BlockLegacyIds::STANDING_BANNER, BlockLegacyIds::WALL_BANNER, 0, ItemIds::BANNER, \pocketmine\tile\Banner::class), "Banner"));
+		self::register(new Banner(new BlockIdentifierFlattened(BlockLegacyIds::STANDING_BANNER, BlockLegacyIds::WALL_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Banner"));
 		self::register(new Transparent(new BID(BlockLegacyIds::BARRIER), "Barrier", BlockBreakInfo::indestructible()));
-		self::register(new Bed(new BID(BlockLegacyIds::BED_BLOCK, 0, ItemIds::BED, \pocketmine\tile\Bed::class), "Bed Block"));
+		self::register(new Bed(new BID(BlockLegacyIds::BED_BLOCK, 0, ItemIds::BED, TileBed::class), "Bed Block"));
 		self::register(new Bedrock(new BID(BlockLegacyIds::BEDROCK), "Bedrock"));
 		self::register(new Beetroot(new BID(BlockLegacyIds::BEETROOT_BLOCK), "Beetroot Block"));
 		self::register(new BlueIce(new BID(BlockLegacyIds::BLUE_ICE), "Blue Ice"));
@@ -88,7 +101,7 @@ class BlockFactory{
 		self::register(new Cactus(new BID(BlockLegacyIds::CACTUS), "Cactus"));
 		self::register(new Cake(new BID(BlockLegacyIds::CAKE_BLOCK, 0, ItemIds::CAKE), "Cake"));
 		self::register(new Carrot(new BID(BlockLegacyIds::CARROTS), "Carrot Block"));
-		self::register(new Chest(new BID(BlockLegacyIds::CHEST, 0, null, \pocketmine\tile\Chest::class), "Chest"));
+		self::register(new Chest(new BID(BlockLegacyIds::CHEST, 0, null, TileChest::class), "Chest"));
 		self::register(new Clay(new BID(BlockLegacyIds::CLAY_BLOCK), "Clay Block"));
 		self::register(new Coal(new BID(BlockLegacyIds::COAL_BLOCK), "Coal Block"));
 		self::register(new CoalOre(new BID(BlockLegacyIds::COAL_ORE), "Coal Ore"));
@@ -119,7 +132,7 @@ class BlockFactory{
 		self::register(new DragonEgg(new BID(BlockLegacyIds::DRAGON_EGG), "Dragon Egg"));
 		self::register(new Solid(new BID(BlockLegacyIds::EMERALD_BLOCK), "Emerald Block", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON, 30.0)));
 		self::register(new EmeraldOre(new BID(BlockLegacyIds::EMERALD_ORE), "Emerald Ore"));
-		self::register(new EnchantingTable(new BID(BlockLegacyIds::ENCHANTING_TABLE, 0, null, \pocketmine\tile\EnchantTable::class), "Enchanting Table"));
+		self::register(new EnchantingTable(new BID(BlockLegacyIds::ENCHANTING_TABLE, 0, null, TileEnchantingTable::class), "Enchanting Table"));
 		self::register(new EndPortalFrame(new BID(BlockLegacyIds::END_PORTAL_FRAME), "End Portal Frame"));
 		self::register(new EndRod(new BID(BlockLegacyIds::END_ROD), "End Rod"));
 		self::register(new Solid(new BID(BlockLegacyIds::END_STONE), "End Stone", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 45.0)));
@@ -128,7 +141,7 @@ class BlockFactory{
 		self::register(new Solid(new BID(BlockLegacyIds::END_BRICKS), "End Stone Bricks", $endBrickBreakInfo));
 		self::register(new Stair(new BID(BlockLegacyIds::END_BRICK_STAIRS), "End Stone Brick Stairs", $endBrickBreakInfo));
 
-		self::register(new EnderChest(new BID(BlockLegacyIds::ENDER_CHEST, 0, null, \pocketmine\tile\EnderChest::class), "Ender Chest"));
+		self::register(new EnderChest(new BID(BlockLegacyIds::ENDER_CHEST, 0, null, TileEnderChest::class), "Ender Chest"));
 		self::register(new Farmland(new BID(BlockLegacyIds::FARMLAND), "Farmland"));
 		self::register(new Fire(new BID(BlockLegacyIds::FIRE), "Fire Block"));
 		self::register(new Flower(new BID(BlockLegacyIds::DANDELION), "Dandelion"));
@@ -143,9 +156,9 @@ class BlockFactory{
 		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_POPPY), "Poppy"));
 		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_RED_TULIP), "Red Tulip"));
 		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_WHITE_TULIP), "White Tulip"));
-		self::register(new FlowerPot(new BID(BlockLegacyIds::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, \pocketmine\tile\FlowerPot::class), "Flower Pot"));
+		self::register(new FlowerPot(new BID(BlockLegacyIds::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, TileFlowerPot::class), "Flower Pot"));
 		self::register(new FrostedIce(new BID(BlockLegacyIds::FROSTED_ICE), "Frosted Ice"));
-		self::register(new Furnace(new BlockIdentifierFlattened(BlockLegacyIds::FURNACE, BlockLegacyIds::LIT_FURNACE, 0, null, \pocketmine\tile\Furnace::class), "Furnace"));
+		self::register(new Furnace(new BlockIdentifierFlattened(BlockLegacyIds::FURNACE, BlockLegacyIds::LIT_FURNACE, 0, null, TileFurnace::class), "Furnace"));
 		self::register(new Glass(new BID(BlockLegacyIds::GLASS), "Glass"));
 		self::register(new GlassPane(new BID(BlockLegacyIds::GLASS_PANE), "Glass Pane"));
 		self::register(new GlowingObsidian(new BID(BlockLegacyIds::GLOWINGOBSIDIAN), "Glowing Obsidian"));
@@ -200,7 +213,7 @@ class BlockFactory{
 		self::register(new Door(new BID(BlockLegacyIds::IRON_DOOR_BLOCK, 0, ItemIds::IRON_DOOR), "Iron Door", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 25.0)));
 		self::register(new Solid(new BID(BlockLegacyIds::IRON_ORE), "Iron Ore", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_STONE)));
 		self::register(new Trapdoor(new BID(BlockLegacyIds::IRON_TRAPDOOR), "Iron Trapdoor", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 25.0)));
-		self::register(new ItemFrame(new BID(BlockLegacyIds::FRAME_BLOCK, 0, ItemIds::FRAME, \pocketmine\tile\ItemFrame::class), "Item Frame"));
+		self::register(new ItemFrame(new BID(BlockLegacyIds::FRAME_BLOCK, 0, ItemIds::FRAME, TileItemFrame::class), "Item Frame"));
 		self::register(new Ladder(new BID(BlockLegacyIds::LADDER), "Ladder"));
 		self::register(new Solid(new BID(BlockLegacyIds::LAPIS_BLOCK), "Lapis Lazuli Block", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_STONE)));
 		self::register(new LapisOre(new BID(BlockLegacyIds::LAPIS_ORE), "Lapis Lazuli Ore"));
@@ -277,7 +290,7 @@ class BlockFactory{
 		self::register(new Sand(new BID(BlockLegacyIds::SAND, 1), "Red Sand"));
 		self::register(new SeaLantern(new BID(BlockLegacyIds::SEALANTERN), "Sea Lantern"));
 		self::register(new SeaPickle(new BID(BlockLegacyIds::SEA_PICKLE), "Sea Pickle"));
-		self::register(new Skull(new BID(BlockLegacyIds::MOB_HEAD_BLOCK, 0, null, \pocketmine\tile\Skull::class), "Mob Head"));
+		self::register(new Skull(new BID(BlockLegacyIds::MOB_HEAD_BLOCK, 0, null, TileSkull::class), "Mob Head"));
 
 
 
@@ -358,7 +371,7 @@ class BlockFactory{
 		self::register(new Torch(new BID(BlockLegacyIds::COLORED_TORCH_RG), "Red Torch"));
 		self::register(new Torch(new BID(BlockLegacyIds::COLORED_TORCH_RG, 8), "Green Torch"));
 		self::register(new Torch(new BID(BlockLegacyIds::TORCH), "Torch"));
-		self::register(new TrappedChest(new BID(BlockLegacyIds::TRAPPED_CHEST, 0, null, \pocketmine\tile\Chest::class), "Trapped Chest"));
+		self::register(new TrappedChest(new BID(BlockLegacyIds::TRAPPED_CHEST, 0, null, TileChest::class), "Trapped Chest"));
 		self::register(new Tripwire(new BID(BlockLegacyIds::TRIPWIRE, 0, ItemIds::STRING), "Tripwire"));
 		self::register(new TripwireHook(new BID(BlockLegacyIds::TRIPWIRE_HOOK), "Tripwire Hook"));
 		self::register(new UnderwaterTorch(new BID(BlockLegacyIds::UNDERWATER_TORCH), "Underwater Torch"));
@@ -427,12 +440,12 @@ class BlockFactory{
 
 		/** @var BlockIdentifierFlattened[]|\SplObjectStorage $woodenSignIds */
 		$woodenSignIds = new \SplObjectStorage();
-		$woodenSignIds[TreeType::OAK()] = new BlockIdentifierFlattened(BlockLegacyIds::SIGN_POST, BlockLegacyIds::WALL_SIGN, 0, ItemIds::SIGN, \pocketmine\tile\Sign::class);
-		$woodenSignIds[TreeType::SPRUCE()] = new BlockIdentifierFlattened(BlockLegacyIds::SPRUCE_STANDING_SIGN, BlockLegacyIds::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, \pocketmine\tile\Sign::class);
-		$woodenSignIds[TreeType::BIRCH()] = new BlockIdentifierFlattened(BlockLegacyIds::BIRCH_STANDING_SIGN, BlockLegacyIds::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, \pocketmine\tile\Sign::class);
-		$woodenSignIds[TreeType::JUNGLE()] = new BlockIdentifierFlattened(BlockLegacyIds::JUNGLE_STANDING_SIGN, BlockLegacyIds::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, \pocketmine\tile\Sign::class);
-		$woodenSignIds[TreeType::ACACIA()] = new BlockIdentifierFlattened(BlockLegacyIds::ACACIA_STANDING_SIGN, BlockLegacyIds::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, \pocketmine\tile\Sign::class);
-		$woodenSignIds[TreeType::DARK_OAK()] = new BlockIdentifierFlattened(BlockLegacyIds::DARKOAK_STANDING_SIGN, BlockLegacyIds::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, \pocketmine\tile\Sign::class);
+		$woodenSignIds[TreeType::OAK()] = new BlockIdentifierFlattened(BlockLegacyIds::SIGN_POST, BlockLegacyIds::WALL_SIGN, 0, ItemIds::SIGN, TileSign::class);
+		$woodenSignIds[TreeType::SPRUCE()] = new BlockIdentifierFlattened(BlockLegacyIds::SPRUCE_STANDING_SIGN, BlockLegacyIds::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class);
+		$woodenSignIds[TreeType::BIRCH()] = new BlockIdentifierFlattened(BlockLegacyIds::BIRCH_STANDING_SIGN, BlockLegacyIds::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class);
+		$woodenSignIds[TreeType::JUNGLE()] = new BlockIdentifierFlattened(BlockLegacyIds::JUNGLE_STANDING_SIGN, BlockLegacyIds::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class);
+		$woodenSignIds[TreeType::ACACIA()] = new BlockIdentifierFlattened(BlockLegacyIds::ACACIA_STANDING_SIGN, BlockLegacyIds::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, TileSign::class);
+		$woodenSignIds[TreeType::DARK_OAK()] = new BlockIdentifierFlattened(BlockLegacyIds::DARKOAK_STANDING_SIGN, BlockLegacyIds::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class);
 		//endregion
 
 		foreach(TreeType::getAll() as $treeType){

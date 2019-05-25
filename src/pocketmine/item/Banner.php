@@ -27,11 +27,11 @@ use Ds\Deque;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\tile\Banner as TileBanner;
 
 class Banner extends Item{
 	public const TAG_PATTERNS = TileBanner::TAG_PATTERNS;

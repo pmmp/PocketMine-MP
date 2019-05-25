@@ -21,30 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\tile;
+namespace pocketmine\block\tile;
 
-use pocketmine\inventory\Inventory;
+use pocketmine\nbt\tag\CompoundTag;
 
-interface Container{
-	public const TAG_ITEMS = "Items";
-	public const TAG_LOCK = "Lock";
+class EnderChest extends Spawnable{
 
-	/**
-	 * @return Inventory
-	 */
-	public function getInventory();
+	public function readSaveData(CompoundTag $nbt) : void{
 
-	/**
-	 * @return Inventory
-	 */
-	public function getRealInventory();
+	}
 
-	/**
-	 * Returns whether this container can be opened by an item with the given custom name.
-	 *
-	 * @param string $key
-	 *
-	 * @return bool
-	 */
-	public function canOpenWith(string $key) : bool;
+	protected function writeSaveData(CompoundTag $nbt) : void{
+
+	}
+
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+
+	}
 }

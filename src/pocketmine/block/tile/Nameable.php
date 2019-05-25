@@ -21,18 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\tile;
+namespace pocketmine\block\tile;
 
-class EnchantTable extends Spawnable implements Nameable{
-	use NameableTrait {
-		loadName as public readSaveData;
-		saveName as writeSaveData;
-	}
+interface Nameable{
+	public const TAG_CUSTOM_NAME = "CustomName";
 
 	/**
 	 * @return string
 	 */
-	public function getDefaultName() : string{
-		return "Enchanting Table";
-	}
+	public function getDefaultName() : string;
+
+	/**
+	 * @return string
+	 */
+	public function getName() : string;
+
+	/**
+	 * @param string $str
+	 */
+	public function setName(string $str) : void;
+
+	/**
+	 * @return bool
+	 */
+	public function hasName() : bool;
 }

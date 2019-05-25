@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\block\utils\SignText;
 use pocketmine\event\block\SignChangeEvent;
@@ -31,7 +32,6 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\tile\Sign as TileSign;
 use pocketmine\utils\TextFormat;
 use function array_map;
 use function assert;

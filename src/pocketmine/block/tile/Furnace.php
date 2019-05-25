@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\tile;
+namespace pocketmine\block\tile;
 
 use pocketmine\block\Furnace as BlockFurnace;
 use pocketmine\event\inventory\FurnaceBurnEvent;
