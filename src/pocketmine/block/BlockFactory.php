@@ -24,6 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\BlockIdentifier as BID;
+use pocketmine\block\BlockIdentifierFlattened as BIDFlattened;
+use pocketmine\block\BlockLegacyIds as Ids;
+use pocketmine\block\BlockLegacyMetadata as Meta;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\tile\Chest as TileChest;
@@ -77,392 +80,392 @@ class BlockFactory{
 		self::$diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 8192, false));
 		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 8192, 0));
 
-		self::register(new ActivatorRail(new BID(BlockLegacyIds::ACTIVATOR_RAIL), "Activator Rail"));
-		self::register(new Air(new BID(BlockLegacyIds::AIR), "Air"));
-		self::register(new Anvil(new BID(BlockLegacyIds::ANVIL, BlockLegacyMetadata::ANVIL_NORMAL), "Anvil"));
-		self::register(new Anvil(new BID(BlockLegacyIds::ANVIL, BlockLegacyMetadata::ANVIL_SLIGHTLY_DAMAGED), "Slightly Damaged Anvil"));
-		self::register(new Anvil(new BID(BlockLegacyIds::ANVIL, BlockLegacyMetadata::ANVIL_VERY_DAMAGED), "Very Damaged Anvil"));
-		self::register(new Banner(new BlockIdentifierFlattened(BlockLegacyIds::STANDING_BANNER, BlockLegacyIds::WALL_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Banner"));
-		self::register(new Transparent(new BID(BlockLegacyIds::BARRIER), "Barrier", BlockBreakInfo::indestructible()));
-		self::register(new Bed(new BID(BlockLegacyIds::BED_BLOCK, 0, ItemIds::BED, TileBed::class), "Bed Block"));
-		self::register(new Bedrock(new BID(BlockLegacyIds::BEDROCK), "Bedrock"));
-		self::register(new Beetroot(new BID(BlockLegacyIds::BEETROOT_BLOCK), "Beetroot Block"));
-		self::register(new BlueIce(new BID(BlockLegacyIds::BLUE_ICE), "Blue Ice"));
-		self::register(new BoneBlock(new BID(BlockLegacyIds::BONE_BLOCK), "Bone Block"));
-		self::register(new Bookshelf(new BID(BlockLegacyIds::BOOKSHELF), "Bookshelf"));
-		self::register(new BrewingStand(new BID(BlockLegacyIds::BREWING_STAND_BLOCK, 0, ItemIds::BREWING_STAND), "Brewing Stand"));
+		self::register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail"));
+		self::register(new Air(new BID(Ids::AIR), "Air"));
+		self::register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_NORMAL), "Anvil"));
+		self::register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_SLIGHTLY_DAMAGED), "Slightly Damaged Anvil"));
+		self::register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_VERY_DAMAGED), "Very Damaged Anvil"));
+		self::register(new Banner(new BIDFlattened(Ids::STANDING_BANNER, Ids::WALL_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Banner"));
+		self::register(new Transparent(new BID(Ids::BARRIER), "Barrier", BlockBreakInfo::indestructible()));
+		self::register(new Bed(new BID(Ids::BED_BLOCK, 0, ItemIds::BED, TileBed::class), "Bed Block"));
+		self::register(new Bedrock(new BID(Ids::BEDROCK), "Bedrock"));
+		self::register(new Beetroot(new BID(Ids::BEETROOT_BLOCK), "Beetroot Block"));
+		self::register(new BlueIce(new BID(Ids::BLUE_ICE), "Blue Ice"));
+		self::register(new BoneBlock(new BID(Ids::BONE_BLOCK), "Bone Block"));
+		self::register(new Bookshelf(new BID(Ids::BOOKSHELF), "Bookshelf"));
+		self::register(new BrewingStand(new BID(Ids::BREWING_STAND_BLOCK, 0, ItemIds::BREWING_STAND), "Brewing Stand"));
 
 		$bricksBreakInfo = new BlockBreakInfo(2.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
-		self::register(new Stair(new BID(BlockLegacyIds::BRICK_STAIRS), "Brick Stairs", $bricksBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::BRICK_BLOCK), "Bricks", $bricksBreakInfo));
+		self::register(new Stair(new BID(Ids::BRICK_STAIRS), "Brick Stairs", $bricksBreakInfo));
+		self::register(new Solid(new BID(Ids::BRICK_BLOCK), "Bricks", $bricksBreakInfo));
 
-		self::register(new BrownMushroom(new BID(BlockLegacyIds::BROWN_MUSHROOM), "Brown Mushroom"));
-		self::register(new BrownMushroomBlock(new BID(BlockLegacyIds::BROWN_MUSHROOM_BLOCK), "Brown Mushroom Block"));
-		self::register(new Cactus(new BID(BlockLegacyIds::CACTUS), "Cactus"));
-		self::register(new Cake(new BID(BlockLegacyIds::CAKE_BLOCK, 0, ItemIds::CAKE), "Cake"));
-		self::register(new Carrot(new BID(BlockLegacyIds::CARROTS), "Carrot Block"));
-		self::register(new Chest(new BID(BlockLegacyIds::CHEST, 0, null, TileChest::class), "Chest"));
-		self::register(new Clay(new BID(BlockLegacyIds::CLAY_BLOCK), "Clay Block"));
-		self::register(new Coal(new BID(BlockLegacyIds::COAL_BLOCK), "Coal Block"));
-		self::register(new CoalOre(new BID(BlockLegacyIds::COAL_ORE), "Coal Ore"));
-		self::register(new CoarseDirt(new BID(BlockLegacyIds::DIRT, BlockLegacyMetadata::DIRT_COARSE), "Coarse Dirt"));
+		self::register(new BrownMushroom(new BID(Ids::BROWN_MUSHROOM), "Brown Mushroom"));
+		self::register(new BrownMushroomBlock(new BID(Ids::BROWN_MUSHROOM_BLOCK), "Brown Mushroom Block"));
+		self::register(new Cactus(new BID(Ids::CACTUS), "Cactus"));
+		self::register(new Cake(new BID(Ids::CAKE_BLOCK, 0, ItemIds::CAKE), "Cake"));
+		self::register(new Carrot(new BID(Ids::CARROTS), "Carrot Block"));
+		self::register(new Chest(new BID(Ids::CHEST, 0, null, TileChest::class), "Chest"));
+		self::register(new Clay(new BID(Ids::CLAY_BLOCK), "Clay Block"));
+		self::register(new Coal(new BID(Ids::COAL_BLOCK), "Coal Block"));
+		self::register(new CoalOre(new BID(Ids::COAL_ORE), "Coal Ore"));
+		self::register(new CoarseDirt(new BID(Ids::DIRT, Meta::DIRT_COARSE), "Coarse Dirt"));
 
 		$cobblestoneBreakInfo = new BlockBreakInfo(2.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
-		self::register(new Solid(new BID(BlockLegacyIds::COBBLESTONE), "Cobblestone", $cobblestoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::MOSSY_COBBLESTONE), "Mossy Cobblestone", $cobblestoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::COBBLESTONE_STAIRS), "Cobblestone Stairs", $cobblestoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::MOSSY_COBBLESTONE_STAIRS), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
+		self::register(new Solid(new BID(Ids::COBBLESTONE), "Cobblestone", $cobblestoneBreakInfo));
+		self::register(new Solid(new BID(Ids::MOSSY_COBBLESTONE), "Mossy Cobblestone", $cobblestoneBreakInfo));
+		self::register(new Stair(new BID(Ids::COBBLESTONE_STAIRS), "Cobblestone Stairs", $cobblestoneBreakInfo));
+		self::register(new Stair(new BID(Ids::MOSSY_COBBLESTONE_STAIRS), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
-		self::register(new Cobweb(new BID(BlockLegacyIds::COBWEB), "Cobweb"));
-		self::register(new CocoaBlock(new BID(BlockLegacyIds::COCOA), "Cocoa Block"));
-		self::register(new CraftingTable(new BID(BlockLegacyIds::CRAFTING_TABLE), "Crafting Table"));
-		self::register(new DaylightSensor(new BlockIdentifierFlattened(BlockLegacyIds::DAYLIGHT_DETECTOR, BlockLegacyIds::DAYLIGHT_DETECTOR_INVERTED), "Daylight Sensor"));
-		self::register(new DeadBush(new BID(BlockLegacyIds::DEADBUSH), "Dead Bush"));
-		self::register(new DetectorRail(new BID(BlockLegacyIds::DETECTOR_RAIL), "Detector Rail"));
+		self::register(new Cobweb(new BID(Ids::COBWEB), "Cobweb"));
+		self::register(new CocoaBlock(new BID(Ids::COCOA), "Cocoa Block"));
+		self::register(new CraftingTable(new BID(Ids::CRAFTING_TABLE), "Crafting Table"));
+		self::register(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_DETECTOR, Ids::DAYLIGHT_DETECTOR_INVERTED), "Daylight Sensor"));
+		self::register(new DeadBush(new BID(Ids::DEADBUSH), "Dead Bush"));
+		self::register(new DetectorRail(new BID(Ids::DETECTOR_RAIL), "Detector Rail"));
 
-		self::register(new Solid(new BID(BlockLegacyIds::DIAMOND_BLOCK), "Diamond Block", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON, 30.0)));
-		self::register(new DiamondOre(new BID(BlockLegacyIds::DIAMOND_ORE), "Diamond Ore"));
-		self::register(new Dirt(new BID(BlockLegacyIds::DIRT, BlockLegacyMetadata::DIRT_NORMAL), "Dirt"));
-		self::register(new DoublePlant(new BID(BlockLegacyIds::DOUBLE_PLANT, BlockLegacyMetadata::DOUBLE_PLANT_SUNFLOWER), "Sunflower"));
-		self::register(new DoublePlant(new BID(BlockLegacyIds::DOUBLE_PLANT, BlockLegacyMetadata::DOUBLE_PLANT_LILAC), "Lilac"));
-		self::register(new DoublePlant(new BID(BlockLegacyIds::DOUBLE_PLANT, BlockLegacyMetadata::DOUBLE_PLANT_ROSE_BUSH), "Rose Bush"));
-		self::register(new DoublePlant(new BID(BlockLegacyIds::DOUBLE_PLANT, BlockLegacyMetadata::DOUBLE_PLANT_PEONY), "Peony"));
-		self::register(new DoubleTallGrass(new BID(BlockLegacyIds::DOUBLE_PLANT, BlockLegacyMetadata::DOUBLE_PLANT_TALLGRASS), "Double Tallgrass"));
-		self::register(new DoubleTallGrass(new BID(BlockLegacyIds::DOUBLE_PLANT, BlockLegacyMetadata::DOUBLE_PLANT_LARGE_FERN), "Large Fern"));
-		self::register(new DragonEgg(new BID(BlockLegacyIds::DRAGON_EGG), "Dragon Egg"));
-		self::register(new Solid(new BID(BlockLegacyIds::EMERALD_BLOCK), "Emerald Block", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON, 30.0)));
-		self::register(new EmeraldOre(new BID(BlockLegacyIds::EMERALD_ORE), "Emerald Ore"));
-		self::register(new EnchantingTable(new BID(BlockLegacyIds::ENCHANTING_TABLE, 0, null, TileEnchantingTable::class), "Enchanting Table"));
-		self::register(new EndPortalFrame(new BID(BlockLegacyIds::END_PORTAL_FRAME), "End Portal Frame"));
-		self::register(new EndRod(new BID(BlockLegacyIds::END_ROD), "End Rod"));
-		self::register(new Solid(new BID(BlockLegacyIds::END_STONE), "End Stone", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 45.0)));
+		self::register(new Solid(new BID(Ids::DIAMOND_BLOCK), "Diamond Block", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON, 30.0)));
+		self::register(new DiamondOre(new BID(Ids::DIAMOND_ORE), "Diamond Ore"));
+		self::register(new Dirt(new BID(Ids::DIRT, Meta::DIRT_NORMAL), "Dirt"));
+		self::register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_SUNFLOWER), "Sunflower"));
+		self::register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_LILAC), "Lilac"));
+		self::register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_ROSE_BUSH), "Rose Bush"));
+		self::register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_PEONY), "Peony"));
+		self::register(new DoubleTallGrass(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_TALLGRASS), "Double Tallgrass"));
+		self::register(new DoubleTallGrass(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_LARGE_FERN), "Large Fern"));
+		self::register(new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg"));
+		self::register(new Solid(new BID(Ids::EMERALD_BLOCK), "Emerald Block", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON, 30.0)));
+		self::register(new EmeraldOre(new BID(Ids::EMERALD_ORE), "Emerald Ore"));
+		self::register(new EnchantingTable(new BID(Ids::ENCHANTING_TABLE, 0, null, TileEnchantingTable::class), "Enchanting Table"));
+		self::register(new EndPortalFrame(new BID(Ids::END_PORTAL_FRAME), "End Portal Frame"));
+		self::register(new EndRod(new BID(Ids::END_ROD), "End Rod"));
+		self::register(new Solid(new BID(Ids::END_STONE), "End Stone", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 45.0)));
 
 		$endBrickBreakInfo = new BlockBreakInfo(0.8, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 4.0);
-		self::register(new Solid(new BID(BlockLegacyIds::END_BRICKS), "End Stone Bricks", $endBrickBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::END_BRICK_STAIRS), "End Stone Brick Stairs", $endBrickBreakInfo));
+		self::register(new Solid(new BID(Ids::END_BRICKS), "End Stone Bricks", $endBrickBreakInfo));
+		self::register(new Stair(new BID(Ids::END_BRICK_STAIRS), "End Stone Brick Stairs", $endBrickBreakInfo));
 
-		self::register(new EnderChest(new BID(BlockLegacyIds::ENDER_CHEST, 0, null, TileEnderChest::class), "Ender Chest"));
-		self::register(new Farmland(new BID(BlockLegacyIds::FARMLAND), "Farmland"));
-		self::register(new Fire(new BID(BlockLegacyIds::FIRE), "Fire Block"));
-		self::register(new Flower(new BID(BlockLegacyIds::DANDELION), "Dandelion"));
-		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_ALLIUM), "Allium"));
-		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_AZURE_BLUET), "Azure Bluet"));
-		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_BLUE_ORCHID), "Blue Orchid"));
-		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_CORNFLOWER), "Cornflower"));
-		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_LILY_OF_THE_VALLEY), "Lily of the Valley"));
-		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_ORANGE_TULIP), "Orange Tulip"));
-		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_OXEYE_DAISY), "Oxeye Daisy"));
-		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_PINK_TULIP), "Pink Tulip"));
-		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_POPPY), "Poppy"));
-		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_RED_TULIP), "Red Tulip"));
-		self::register(new Flower(new BID(BlockLegacyIds::RED_FLOWER, BlockLegacyMetadata::FLOWER_WHITE_TULIP), "White Tulip"));
-		self::register(new FlowerPot(new BID(BlockLegacyIds::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, TileFlowerPot::class), "Flower Pot"));
-		self::register(new FrostedIce(new BID(BlockLegacyIds::FROSTED_ICE), "Frosted Ice"));
-		self::register(new Furnace(new BlockIdentifierFlattened(BlockLegacyIds::FURNACE, BlockLegacyIds::LIT_FURNACE, 0, null, TileFurnace::class), "Furnace"));
-		self::register(new Glass(new BID(BlockLegacyIds::GLASS), "Glass"));
-		self::register(new GlassPane(new BID(BlockLegacyIds::GLASS_PANE), "Glass Pane"));
-		self::register(new GlowingObsidian(new BID(BlockLegacyIds::GLOWINGOBSIDIAN), "Glowing Obsidian"));
-		self::register(new Glowstone(new BID(BlockLegacyIds::GLOWSTONE), "Glowstone"));
-		self::register(new Solid(new BID(BlockLegacyIds::GOLD_BLOCK), "Gold Block", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON, 30.0)));
-		self::register(new Solid(new BID(BlockLegacyIds::GOLD_ORE), "Gold Ore", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON)));
-		self::register(new Grass(new BID(BlockLegacyIds::GRASS), "Grass"));
-		self::register(new GrassPath(new BID(BlockLegacyIds::GRASS_PATH), "Grass Path"));
-		self::register(new Gravel(new BID(BlockLegacyIds::GRAVEL), "Gravel"));
-		self::register(new HardenedClay(new BID(BlockLegacyIds::HARDENED_CLAY), "Hardened Clay"));
-		self::register(new HardenedGlass(new BID(BlockLegacyIds::HARD_GLASS), "Hardened Glass"));
-		self::register(new HardenedGlassPane(new BID(BlockLegacyIds::HARD_GLASS_PANE), "Hardened Glass Pane"));
-		self::register(new HayBale(new BID(BlockLegacyIds::HAY_BALE), "Hay Bale"));
-		self::register(new Ice(new BID(BlockLegacyIds::ICE), "Ice"));
-		self::register(new class(new BID(BlockLegacyIds::MONSTER_EGG, BlockLegacyMetadata::INFESTED_STONE), "Infested Stone") extends InfestedStone{
+		self::register(new EnderChest(new BID(Ids::ENDER_CHEST, 0, null, TileEnderChest::class), "Ender Chest"));
+		self::register(new Farmland(new BID(Ids::FARMLAND), "Farmland"));
+		self::register(new Fire(new BID(Ids::FIRE), "Fire Block"));
+		self::register(new Flower(new BID(Ids::DANDELION), "Dandelion"));
+		self::register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_ALLIUM), "Allium"));
+		self::register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_AZURE_BLUET), "Azure Bluet"));
+		self::register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_BLUE_ORCHID), "Blue Orchid"));
+		self::register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_CORNFLOWER), "Cornflower"));
+		self::register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_LILY_OF_THE_VALLEY), "Lily of the Valley"));
+		self::register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_ORANGE_TULIP), "Orange Tulip"));
+		self::register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_OXEYE_DAISY), "Oxeye Daisy"));
+		self::register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_PINK_TULIP), "Pink Tulip"));
+		self::register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_POPPY), "Poppy"));
+		self::register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_RED_TULIP), "Red Tulip"));
+		self::register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_WHITE_TULIP), "White Tulip"));
+		self::register(new FlowerPot(new BID(Ids::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, TileFlowerPot::class), "Flower Pot"));
+		self::register(new FrostedIce(new BID(Ids::FROSTED_ICE), "Frosted Ice"));
+		self::register(new Furnace(new BIDFlattened(Ids::FURNACE, Ids::LIT_FURNACE, 0, null, TileFurnace::class), "Furnace"));
+		self::register(new Glass(new BID(Ids::GLASS), "Glass"));
+		self::register(new GlassPane(new BID(Ids::GLASS_PANE), "Glass Pane"));
+		self::register(new GlowingObsidian(new BID(Ids::GLOWINGOBSIDIAN), "Glowing Obsidian"));
+		self::register(new Glowstone(new BID(Ids::GLOWSTONE), "Glowstone"));
+		self::register(new Solid(new BID(Ids::GOLD_BLOCK), "Gold Block", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON, 30.0)));
+		self::register(new Solid(new BID(Ids::GOLD_ORE), "Gold Ore", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON)));
+		self::register(new Grass(new BID(Ids::GRASS), "Grass"));
+		self::register(new GrassPath(new BID(Ids::GRASS_PATH), "Grass Path"));
+		self::register(new Gravel(new BID(Ids::GRAVEL), "Gravel"));
+		self::register(new HardenedClay(new BID(Ids::HARDENED_CLAY), "Hardened Clay"));
+		self::register(new HardenedGlass(new BID(Ids::HARD_GLASS), "Hardened Glass"));
+		self::register(new HardenedGlassPane(new BID(Ids::HARD_GLASS_PANE), "Hardened Glass Pane"));
+		self::register(new HayBale(new BID(Ids::HAY_BALE), "Hay Bale"));
+		self::register(new Ice(new BID(Ids::ICE), "Ice"));
+		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE), "Infested Stone") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
 				return [ItemFactory::get(ItemIds::STONE)];
 			}
 		});
-		self::register(new class(new BID(BlockLegacyIds::MONSTER_EGG, BlockLegacyMetadata::INFESTED_COBBLESTONE), "Infested Cobblestone") extends InfestedStone{
+		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_COBBLESTONE), "Infested Cobblestone") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
 				return [ItemFactory::get(ItemIds::COBBLESTONE)];
 			}
 		});
-		self::register(new class(new BID(BlockLegacyIds::MONSTER_EGG, BlockLegacyMetadata::INFESTED_STONE_BRICK), "Infested Stone Brick") extends InfestedStone{
+		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK), "Infested Stone Brick") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
 				return [ItemFactory::get(ItemIds::STONE_BRICK)];
 			}
 		});
-		self::register(new class(new BID(BlockLegacyIds::MONSTER_EGG, BlockLegacyMetadata::INFESTED_STONE_BRICK_MOSSY), "Infested Mossy Stone Brick") extends InfestedStone{
+		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_MOSSY), "Infested Mossy Stone Brick") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
-				return [ItemFactory::get(ItemIds::STONE_BRICK, BlockLegacyMetadata::STONE_BRICK_MOSSY)];
+				return [ItemFactory::get(ItemIds::STONE_BRICK, Meta::STONE_BRICK_MOSSY)];
 			}
 		});
-		self::register(new class(new BID(BlockLegacyIds::MONSTER_EGG, BlockLegacyMetadata::INFESTED_STONE_BRICK_CRACKED), "Infested Cracked Stone Brick") extends InfestedStone{
+		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CRACKED), "Infested Cracked Stone Brick") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
-				return [ItemFactory::get(ItemIds::STONE_BRICK, BlockLegacyMetadata::STONE_BRICK_CRACKED)];
+				return [ItemFactory::get(ItemIds::STONE_BRICK, Meta::STONE_BRICK_CRACKED)];
 			}
 		});
-		self::register(new class(new BID(BlockLegacyIds::MONSTER_EGG, BlockLegacyMetadata::INFESTED_STONE_BRICK_CHISELED), "Infested Chiseled Stone Brick") extends InfestedStone{
+		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CHISELED), "Infested Chiseled Stone Brick") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
-				return [ItemFactory::get(ItemIds::STONE_BRICK, BlockLegacyMetadata::STONE_BRICK_CHISELED)];
+				return [ItemFactory::get(ItemIds::STONE_BRICK, Meta::STONE_BRICK_CHISELED)];
 			}
 		});
 
 		$updateBlockBreakInfo = new BlockBreakInfo(1.0);
-		self::register(new Solid(new BID(BlockLegacyIds::INFO_UPDATE), "update!", $updateBlockBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::INFO_UPDATE2), "ate!upd", $updateBlockBreakInfo));
-		self::register(new Transparent(new BID(BlockLegacyIds::INVISIBLEBEDROCK), "Invisible Bedrock", BlockBreakInfo::indestructible()));
-		self::register(new Solid(new BID(BlockLegacyIds::IRON_BLOCK), "Iron Block", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_STONE, 30.0)));
-		self::register(new Thin(new BID(BlockLegacyIds::IRON_BARS), "Iron Bars", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0)));
-		self::register(new Door(new BID(BlockLegacyIds::IRON_DOOR_BLOCK, 0, ItemIds::IRON_DOOR), "Iron Door", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 25.0)));
-		self::register(new Solid(new BID(BlockLegacyIds::IRON_ORE), "Iron Ore", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_STONE)));
-		self::register(new Trapdoor(new BID(BlockLegacyIds::IRON_TRAPDOOR), "Iron Trapdoor", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 25.0)));
-		self::register(new ItemFrame(new BID(BlockLegacyIds::FRAME_BLOCK, 0, ItemIds::FRAME, TileItemFrame::class), "Item Frame"));
-		self::register(new Ladder(new BID(BlockLegacyIds::LADDER), "Ladder"));
-		self::register(new Solid(new BID(BlockLegacyIds::LAPIS_BLOCK), "Lapis Lazuli Block", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_STONE)));
-		self::register(new LapisOre(new BID(BlockLegacyIds::LAPIS_ORE), "Lapis Lazuli Ore"));
-		self::register(new Lava(new BlockIdentifierFlattened(BlockLegacyIds::FLOWING_LAVA, BlockLegacyIds::STILL_LAVA), "Lava"));
-		self::register(new Lever(new BID(BlockLegacyIds::LEVER), "Lever"));
-		self::register(new LitPumpkin(new BID(BlockLegacyIds::JACK_O_LANTERN), "Jack o'Lantern"));
-		self::register(new Magma(new BID(BlockLegacyIds::MAGMA), "Magma Block"));
-		self::register(new Melon(new BID(BlockLegacyIds::MELON_BLOCK), "Melon Block"));
-		self::register(new MelonStem(new BID(BlockLegacyIds::MELON_STEM, 0, ItemIds::MELON_SEEDS), "Melon Stem"));
-		self::register(new MonsterSpawner(new BID(BlockLegacyIds::MOB_SPAWNER), "Monster Spawner"));
-		self::register(new Mycelium(new BID(BlockLegacyIds::MYCELIUM), "Mycelium"));
+		self::register(new Solid(new BID(Ids::INFO_UPDATE), "update!", $updateBlockBreakInfo));
+		self::register(new Solid(new BID(Ids::INFO_UPDATE2), "ate!upd", $updateBlockBreakInfo));
+		self::register(new Transparent(new BID(Ids::INVISIBLEBEDROCK), "Invisible Bedrock", BlockBreakInfo::indestructible()));
+		self::register(new Solid(new BID(Ids::IRON_BLOCK), "Iron Block", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_STONE, 30.0)));
+		self::register(new Thin(new BID(Ids::IRON_BARS), "Iron Bars", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0)));
+		self::register(new Door(new BID(Ids::IRON_DOOR_BLOCK, 0, ItemIds::IRON_DOOR), "Iron Door", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 25.0)));
+		self::register(new Solid(new BID(Ids::IRON_ORE), "Iron Ore", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_STONE)));
+		self::register(new Trapdoor(new BID(Ids::IRON_TRAPDOOR), "Iron Trapdoor", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 25.0)));
+		self::register(new ItemFrame(new BID(Ids::FRAME_BLOCK, 0, ItemIds::FRAME, TileItemFrame::class), "Item Frame"));
+		self::register(new Ladder(new BID(Ids::LADDER), "Ladder"));
+		self::register(new Solid(new BID(Ids::LAPIS_BLOCK), "Lapis Lazuli Block", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_STONE)));
+		self::register(new LapisOre(new BID(Ids::LAPIS_ORE), "Lapis Lazuli Ore"));
+		self::register(new Lava(new BIDFlattened(Ids::FLOWING_LAVA, Ids::STILL_LAVA), "Lava"));
+		self::register(new Lever(new BID(Ids::LEVER), "Lever"));
+		self::register(new LitPumpkin(new BID(Ids::JACK_O_LANTERN), "Jack o'Lantern"));
+		self::register(new Magma(new BID(Ids::MAGMA), "Magma Block"));
+		self::register(new Melon(new BID(Ids::MELON_BLOCK), "Melon Block"));
+		self::register(new MelonStem(new BID(Ids::MELON_STEM, 0, ItemIds::MELON_SEEDS), "Melon Stem"));
+		self::register(new MonsterSpawner(new BID(Ids::MOB_SPAWNER), "Monster Spawner"));
+		self::register(new Mycelium(new BID(Ids::MYCELIUM), "Mycelium"));
 
 		$netherBrickBreakInfo = new BlockBreakInfo(2.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
-		self::register(new Solid(new BID(BlockLegacyIds::NETHER_BRICK_BLOCK), "Nether Bricks", $netherBrickBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::RED_NETHER_BRICK), "Red Nether Bricks", $netherBrickBreakInfo));
-		self::register(new Fence(new BID(BlockLegacyIds::NETHER_BRICK_FENCE), "Nether Brick Fence", $netherBrickBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::NETHER_BRICK_STAIRS), "Nether Brick Stairs", $netherBrickBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::RED_NETHER_BRICK_STAIRS), "Red Nether Brick Stairs", $netherBrickBreakInfo));
-		self::register(new NetherPortal(new BID(BlockLegacyIds::PORTAL), "Nether Portal"));
-		self::register(new NetherQuartzOre(new BID(BlockLegacyIds::NETHER_QUARTZ_ORE), "Nether Quartz Ore"));
-		self::register(new NetherReactor(new BID(BlockLegacyIds::NETHERREACTOR), "Nether Reactor Core"));
-		self::register(new Solid(new BID(BlockLegacyIds::NETHER_WART_BLOCK), "Nether Wart Block", new BlockBreakInfo(1.0)));
-		self::register(new NetherWartPlant(new BID(BlockLegacyIds::NETHER_WART_PLANT, 0, ItemIds::NETHER_WART), "Nether Wart"));
-		self::register(new Netherrack(new BID(BlockLegacyIds::NETHERRACK), "Netherrack"));
-		self::register(new NoteBlock(new BID(BlockLegacyIds::NOTEBLOCK), "Note Block"));
-		self::register(new Solid(new BID(BlockLegacyIds::OBSIDIAN), "Obsidian", new BlockBreakInfo(35.0 /* 50 in PC */, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_DIAMOND, 6000.0)));
-		self::register(new PackedIce(new BID(BlockLegacyIds::PACKED_ICE), "Packed Ice"));
-		self::register(new Podzol(new BID(BlockLegacyIds::PODZOL), "Podzol"));
-		self::register(new Potato(new BID(BlockLegacyIds::POTATOES), "Potato Block"));
-		self::register(new PoweredRail(new BID(BlockLegacyIds::GOLDEN_RAIL, BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH), "Powered Rail"));
+		self::register(new Solid(new BID(Ids::NETHER_BRICK_BLOCK), "Nether Bricks", $netherBrickBreakInfo));
+		self::register(new Solid(new BID(Ids::RED_NETHER_BRICK), "Red Nether Bricks", $netherBrickBreakInfo));
+		self::register(new Fence(new BID(Ids::NETHER_BRICK_FENCE), "Nether Brick Fence", $netherBrickBreakInfo));
+		self::register(new Stair(new BID(Ids::NETHER_BRICK_STAIRS), "Nether Brick Stairs", $netherBrickBreakInfo));
+		self::register(new Stair(new BID(Ids::RED_NETHER_BRICK_STAIRS), "Red Nether Brick Stairs", $netherBrickBreakInfo));
+		self::register(new NetherPortal(new BID(Ids::PORTAL), "Nether Portal"));
+		self::register(new NetherQuartzOre(new BID(Ids::NETHER_QUARTZ_ORE), "Nether Quartz Ore"));
+		self::register(new NetherReactor(new BID(Ids::NETHERREACTOR), "Nether Reactor Core"));
+		self::register(new Solid(new BID(Ids::NETHER_WART_BLOCK), "Nether Wart Block", new BlockBreakInfo(1.0)));
+		self::register(new NetherWartPlant(new BID(Ids::NETHER_WART_PLANT, 0, ItemIds::NETHER_WART), "Nether Wart"));
+		self::register(new Netherrack(new BID(Ids::NETHERRACK), "Netherrack"));
+		self::register(new NoteBlock(new BID(Ids::NOTEBLOCK), "Note Block"));
+		self::register(new Solid(new BID(Ids::OBSIDIAN), "Obsidian", new BlockBreakInfo(35.0 /* 50 in PC */, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_DIAMOND, 6000.0)));
+		self::register(new PackedIce(new BID(Ids::PACKED_ICE), "Packed Ice"));
+		self::register(new Podzol(new BID(Ids::PODZOL), "Podzol"));
+		self::register(new Potato(new BID(Ids::POTATOES), "Potato Block"));
+		self::register(new PoweredRail(new BID(Ids::GOLDEN_RAIL, Meta::RAIL_STRAIGHT_NORTH_SOUTH), "Powered Rail"));
 
 		$prismarineBreakInfo = new BlockBreakInfo(1.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
-		self::register(new Solid(new BID(BlockLegacyIds::PRISMARINE, BlockLegacyMetadata::PRISMARINE_BRICKS), "Prismarine Bricks", $prismarineBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::PRISMARINE_BRICKS_STAIRS), "Prismarine Bricks Stairs", $prismarineBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::PRISMARINE, BlockLegacyMetadata::PRISMARINE_DARK), "Dark Prismarine", $prismarineBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::DARK_PRISMARINE_STAIRS), "Dark Prismarine Stairs", $prismarineBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::PRISMARINE, BlockLegacyMetadata::PRISMARINE_NORMAL), "Prismarine", $prismarineBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::PRISMARINE_STAIRS), "Prismarine Stairs", $prismarineBreakInfo));
+		self::register(new Solid(new BID(Ids::PRISMARINE, Meta::PRISMARINE_BRICKS), "Prismarine Bricks", $prismarineBreakInfo));
+		self::register(new Stair(new BID(Ids::PRISMARINE_BRICKS_STAIRS), "Prismarine Bricks Stairs", $prismarineBreakInfo));
+		self::register(new Solid(new BID(Ids::PRISMARINE, Meta::PRISMARINE_DARK), "Dark Prismarine", $prismarineBreakInfo));
+		self::register(new Stair(new BID(Ids::DARK_PRISMARINE_STAIRS), "Dark Prismarine Stairs", $prismarineBreakInfo));
+		self::register(new Solid(new BID(Ids::PRISMARINE, Meta::PRISMARINE_NORMAL), "Prismarine", $prismarineBreakInfo));
+		self::register(new Stair(new BID(Ids::PRISMARINE_STAIRS), "Prismarine Stairs", $prismarineBreakInfo));
 
-		self::register(new Pumpkin(new BID(BlockLegacyIds::PUMPKIN), "Pumpkin"));
-		self::register(new PumpkinStem(new BID(BlockLegacyIds::PUMPKIN_STEM, 0, ItemIds::PUMPKIN_SEEDS), "Pumpkin Stem"));
+		self::register(new Pumpkin(new BID(Ids::PUMPKIN), "Pumpkin"));
+		self::register(new PumpkinStem(new BID(Ids::PUMPKIN_STEM, 0, ItemIds::PUMPKIN_SEEDS), "Pumpkin Stem"));
 
 		$purpurBreakInfo = new BlockBreakInfo(1.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
-		self::register(new Solid(new BID(BlockLegacyIds::PURPUR_BLOCK, BlockLegacyMetadata::PURPUR_NORMAL), "Purpur Block", $purpurBreakInfo));
-		self::register(new class(new BID(BlockLegacyIds::PURPUR_BLOCK, BlockLegacyMetadata::PURPUR_PILLAR), "Purpur Pillar", $purpurBreakInfo) extends Solid{
+		self::register(new Solid(new BID(Ids::PURPUR_BLOCK, Meta::PURPUR_NORMAL), "Purpur Block", $purpurBreakInfo));
+		self::register(new class(new BID(Ids::PURPUR_BLOCK, Meta::PURPUR_PILLAR), "Purpur Pillar", $purpurBreakInfo) extends Solid{
 			use PillarRotationTrait;
 		});
-		self::register(new Stair(new BID(BlockLegacyIds::PURPUR_STAIRS), "Purpur Stairs", $purpurBreakInfo));
+		self::register(new Stair(new BID(Ids::PURPUR_STAIRS), "Purpur Stairs", $purpurBreakInfo));
 
 		$quartzBreakInfo = new BlockBreakInfo(0.8, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN);
-		self::register(new Solid(new BID(BlockLegacyIds::QUARTZ_BLOCK, BlockLegacyMetadata::QUARTZ_NORMAL), "Quartz Block", $quartzBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::QUARTZ_STAIRS), "Quartz Stairs", $quartzBreakInfo));
-		self::register(new class(new BID(BlockLegacyIds::QUARTZ_BLOCK, BlockLegacyMetadata::QUARTZ_CHISELED), "Chiseled Quartz Block", $quartzBreakInfo) extends Solid{
+		self::register(new Solid(new BID(Ids::QUARTZ_BLOCK, Meta::QUARTZ_NORMAL), "Quartz Block", $quartzBreakInfo));
+		self::register(new Stair(new BID(Ids::QUARTZ_STAIRS), "Quartz Stairs", $quartzBreakInfo));
+		self::register(new class(new BID(Ids::QUARTZ_BLOCK, Meta::QUARTZ_CHISELED), "Chiseled Quartz Block", $quartzBreakInfo) extends Solid{
 			use PillarRotationTrait;
 		});
-		self::register(new class(new BID(BlockLegacyIds::QUARTZ_BLOCK, BlockLegacyMetadata::QUARTZ_PILLAR), "Quartz Pillar", $quartzBreakInfo) extends Solid{
+		self::register(new class(new BID(Ids::QUARTZ_BLOCK, Meta::QUARTZ_PILLAR), "Quartz Pillar", $quartzBreakInfo) extends Solid{
 			use PillarRotationTrait;
 		});
-		self::register(new Solid(new BID(BlockLegacyIds::QUARTZ_BLOCK, BlockLegacyMetadata::QUARTZ_SMOOTH), "Smooth Quartz Block", $quartzBreakInfo)); //TODO: this has axis rotation in 1.9, unsure if a bug (https://bugs.mojang.com/browse/MCPE-39074)
-		self::register(new Stair(new BID(BlockLegacyIds::SMOOTH_QUARTZ_STAIRS), "Smooth Quartz Stairs", $quartzBreakInfo));
+		self::register(new Solid(new BID(Ids::QUARTZ_BLOCK, Meta::QUARTZ_SMOOTH), "Smooth Quartz Block", $quartzBreakInfo)); //TODO: this has axis rotation in 1.9, unsure if a bug (https://bugs.mojang.com/browse/MCPE-39074)
+		self::register(new Stair(new BID(Ids::SMOOTH_QUARTZ_STAIRS), "Smooth Quartz Stairs", $quartzBreakInfo));
 
-		self::register(new Rail(new BID(BlockLegacyIds::RAIL), "Rail"));
-		self::register(new RedMushroom(new BID(BlockLegacyIds::RED_MUSHROOM), "Red Mushroom"));
-		self::register(new RedMushroomBlock(new BID(BlockLegacyIds::RED_MUSHROOM_BLOCK), "Red Mushroom Block"));
-		self::register(new Redstone(new BID(BlockLegacyIds::REDSTONE_BLOCK), "Redstone Block"));
-		self::register(new RedstoneComparator(new BlockIdentifierFlattened(BlockLegacyIds::UNPOWERED_COMPARATOR, BlockLegacyIds::POWERED_COMPARATOR, 0, ItemIds::COMPARATOR, TileComparator::class), "Redstone Comparator"));
-		self::register(new RedstoneLamp(new BlockIdentifierFlattened(BlockLegacyIds::REDSTONE_LAMP, BlockLegacyIds::LIT_REDSTONE_LAMP), "Redstone Lamp"));
-		self::register(new RedstoneOre(new BlockIdentifierFlattened(BlockLegacyIds::REDSTONE_ORE, BlockLegacyIds::LIT_REDSTONE_ORE), "Redstone Ore"));
-		self::register(new RedstoneRepeater(new BlockIdentifierFlattened(BlockLegacyIds::UNPOWERED_REPEATER, BlockLegacyIds::POWERED_REPEATER, 0, ItemIds::REPEATER), "Redstone Repeater"));
-		self::register(new RedstoneTorch(new BlockIdentifierFlattened(BlockLegacyIds::REDSTONE_TORCH, BlockLegacyIds::UNLIT_REDSTONE_TORCH), "Redstone Torch"));
-		self::register(new RedstoneWire(new BID(BlockLegacyIds::REDSTONE_WIRE, 0, ItemIds::REDSTONE), "Redstone"));
-		self::register(new Reserved6(new BID(BlockLegacyIds::RESERVED6), "reserved6"));
-		self::register(new Sand(new BID(BlockLegacyIds::SAND), "Sand"));
-		self::register(new Sand(new BID(BlockLegacyIds::SAND, 1), "Red Sand"));
-		self::register(new SeaLantern(new BID(BlockLegacyIds::SEALANTERN), "Sea Lantern"));
-		self::register(new SeaPickle(new BID(BlockLegacyIds::SEA_PICKLE), "Sea Pickle"));
-		self::register(new Skull(new BID(BlockLegacyIds::MOB_HEAD_BLOCK, 0, null, TileSkull::class), "Mob Head"));
+		self::register(new Rail(new BID(Ids::RAIL), "Rail"));
+		self::register(new RedMushroom(new BID(Ids::RED_MUSHROOM), "Red Mushroom"));
+		self::register(new RedMushroomBlock(new BID(Ids::RED_MUSHROOM_BLOCK), "Red Mushroom Block"));
+		self::register(new Redstone(new BID(Ids::REDSTONE_BLOCK), "Redstone Block"));
+		self::register(new RedstoneComparator(new BIDFlattened(Ids::UNPOWERED_COMPARATOR, Ids::POWERED_COMPARATOR, 0, ItemIds::COMPARATOR, TileComparator::class), "Redstone Comparator"));
+		self::register(new RedstoneLamp(new BIDFlattened(Ids::REDSTONE_LAMP, Ids::LIT_REDSTONE_LAMP), "Redstone Lamp"));
+		self::register(new RedstoneOre(new BIDFlattened(Ids::REDSTONE_ORE, Ids::LIT_REDSTONE_ORE), "Redstone Ore"));
+		self::register(new RedstoneRepeater(new BIDFlattened(Ids::UNPOWERED_REPEATER, Ids::POWERED_REPEATER, 0, ItemIds::REPEATER), "Redstone Repeater"));
+		self::register(new RedstoneTorch(new BIDFlattened(Ids::REDSTONE_TORCH, Ids::UNLIT_REDSTONE_TORCH), "Redstone Torch"));
+		self::register(new RedstoneWire(new BID(Ids::REDSTONE_WIRE, 0, ItemIds::REDSTONE), "Redstone"));
+		self::register(new Reserved6(new BID(Ids::RESERVED6), "reserved6"));
+		self::register(new Sand(new BID(Ids::SAND), "Sand"));
+		self::register(new Sand(new BID(Ids::SAND, 1), "Red Sand"));
+		self::register(new SeaLantern(new BID(Ids::SEALANTERN), "Sea Lantern"));
+		self::register(new SeaPickle(new BID(Ids::SEA_PICKLE), "Sea Pickle"));
+		self::register(new Skull(new BID(Ids::MOB_HEAD_BLOCK, 0, null, TileSkull::class), "Mob Head"));
 
 
 
-		self::register(new Snow(new BID(BlockLegacyIds::SNOW), "Snow Block"));
-		self::register(new SnowLayer(new BID(BlockLegacyIds::SNOW_LAYER), "Snow Layer"));
-		self::register(new SoulSand(new BID(BlockLegacyIds::SOUL_SAND), "Soul Sand"));
-		self::register(new Sponge(new BID(BlockLegacyIds::SPONGE), "Sponge"));
+		self::register(new Snow(new BID(Ids::SNOW), "Snow Block"));
+		self::register(new SnowLayer(new BID(Ids::SNOW_LAYER), "Snow Layer"));
+		self::register(new SoulSand(new BID(Ids::SOUL_SAND), "Soul Sand"));
+		self::register(new Sponge(new BID(Ids::SPONGE), "Sponge"));
 
 		$stoneBreakInfo = new BlockBreakInfo(1.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
-		self::register(new class(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_NORMAL), "Stone", $stoneBreakInfo) extends Solid{
+		self::register(new class(new BID(Ids::STONE, Meta::STONE_NORMAL), "Stone", $stoneBreakInfo) extends Solid{
 			public function getDropsForCompatibleTool(Item $item) : array{
 				return [ItemFactory::get(Item::COBBLESTONE)];
 			}
 		});
-		self::register(new Stair(new BID(BlockLegacyIds::NORMAL_STONE_STAIRS), "Stone Stairs", $stoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::SMOOTH_STONE), "Smooth Stone", $stoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_ANDESITE), "Andesite", $stoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::ANDESITE_STAIRS), "Andesite Stairs", $stoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_DIORITE), "Diorite", $stoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::DIORITE_STAIRS), "Diorite Stairs", $stoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_GRANITE), "Granite", $stoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::GRANITE_STAIRS), "Granite Stairs", $stoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_POLISHED_ANDESITE), "Polished Andesite", $stoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::POLISHED_ANDESITE_STAIRS), "Polished Andesite Stairs", $stoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_POLISHED_DIORITE), "Polished Diorite", $stoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::POLISHED_DIORITE_STAIRS), "Polished Diorite Stairs", $stoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::STONE, BlockLegacyMetadata::STONE_POLISHED_GRANITE), "Polished Granite", $stoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::POLISHED_GRANITE_STAIRS), "Polished Granite Stairs", $stoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::STONE_BRICK_STAIRS), "Stone Brick Stairs", $stoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::STONEBRICK, BlockLegacyMetadata::STONE_BRICK_CHISELED), "Chiseled Stone Bricks", $stoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::STONEBRICK, BlockLegacyMetadata::STONE_BRICK_CRACKED), "Cracked Stone Bricks", $stoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::STONEBRICK, BlockLegacyMetadata::STONE_BRICK_MOSSY), "Mossy Stone Bricks", $stoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::MOSSY_STONE_BRICK_STAIRS), "Mossy Stone Brick Stairs", $stoneBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::STONEBRICK, BlockLegacyMetadata::STONE_BRICK_NORMAL), "Stone Bricks", $stoneBreakInfo));
-		self::register(new StoneButton(new BID(BlockLegacyIds::STONE_BUTTON), "Stone Button"));
-		self::register(new StonePressurePlate(new BID(BlockLegacyIds::STONE_PRESSURE_PLATE), "Stone Pressure Plate"));
+		self::register(new Stair(new BID(Ids::NORMAL_STONE_STAIRS), "Stone Stairs", $stoneBreakInfo));
+		self::register(new Solid(new BID(Ids::SMOOTH_STONE), "Smooth Stone", $stoneBreakInfo));
+		self::register(new Solid(new BID(Ids::STONE, Meta::STONE_ANDESITE), "Andesite", $stoneBreakInfo));
+		self::register(new Stair(new BID(Ids::ANDESITE_STAIRS), "Andesite Stairs", $stoneBreakInfo));
+		self::register(new Solid(new BID(Ids::STONE, Meta::STONE_DIORITE), "Diorite", $stoneBreakInfo));
+		self::register(new Stair(new BID(Ids::DIORITE_STAIRS), "Diorite Stairs", $stoneBreakInfo));
+		self::register(new Solid(new BID(Ids::STONE, Meta::STONE_GRANITE), "Granite", $stoneBreakInfo));
+		self::register(new Stair(new BID(Ids::GRANITE_STAIRS), "Granite Stairs", $stoneBreakInfo));
+		self::register(new Solid(new BID(Ids::STONE, Meta::STONE_POLISHED_ANDESITE), "Polished Andesite", $stoneBreakInfo));
+		self::register(new Stair(new BID(Ids::POLISHED_ANDESITE_STAIRS), "Polished Andesite Stairs", $stoneBreakInfo));
+		self::register(new Solid(new BID(Ids::STONE, Meta::STONE_POLISHED_DIORITE), "Polished Diorite", $stoneBreakInfo));
+		self::register(new Stair(new BID(Ids::POLISHED_DIORITE_STAIRS), "Polished Diorite Stairs", $stoneBreakInfo));
+		self::register(new Solid(new BID(Ids::STONE, Meta::STONE_POLISHED_GRANITE), "Polished Granite", $stoneBreakInfo));
+		self::register(new Stair(new BID(Ids::POLISHED_GRANITE_STAIRS), "Polished Granite Stairs", $stoneBreakInfo));
+		self::register(new Stair(new BID(Ids::STONE_BRICK_STAIRS), "Stone Brick Stairs", $stoneBreakInfo));
+		self::register(new Solid(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CHISELED), "Chiseled Stone Bricks", $stoneBreakInfo));
+		self::register(new Solid(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CRACKED), "Cracked Stone Bricks", $stoneBreakInfo));
+		self::register(new Solid(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_MOSSY), "Mossy Stone Bricks", $stoneBreakInfo));
+		self::register(new Stair(new BID(Ids::MOSSY_STONE_BRICK_STAIRS), "Mossy Stone Brick Stairs", $stoneBreakInfo));
+		self::register(new Solid(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_NORMAL), "Stone Bricks", $stoneBreakInfo));
+		self::register(new StoneButton(new BID(Ids::STONE_BUTTON), "Stone Button"));
+		self::register(new StonePressurePlate(new BID(Ids::STONE_PRESSURE_PLATE), "Stone Pressure Plate"));
 
 		//TODO: in the future this won't be the same for all the types
 		$stoneSlabBreakInfo = new BlockBreakInfo(2.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, BlockLegacyMetadata::STONE_SLAB_BRICK), "Brick", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, BlockLegacyMetadata::STONE_SLAB_COBBLESTONE), "Cobblestone", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, BlockLegacyMetadata::STONE_SLAB_FAKE_WOODEN), "Fake Wooden", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, BlockLegacyMetadata::STONE_SLAB_NETHER_BRICK), "Nether Brick", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, BlockLegacyMetadata::STONE_SLAB_QUARTZ), "Quartz", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, BlockLegacyMetadata::STONE_SLAB_SANDSTONE), "Sandstone", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, BlockLegacyMetadata::STONE_SLAB_SMOOTH_STONE), "Smooth Stone", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB, BlockLegacyIds::DOUBLE_STONE_SLAB, BlockLegacyMetadata::STONE_SLAB_STONE_BRICK), "Stone Brick", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB2, BlockLegacyIds::DOUBLE_STONE_SLAB2, BlockLegacyMetadata::STONE_SLAB2_DARK_PRISMARINE), "Dark Prismarine", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB2, BlockLegacyIds::DOUBLE_STONE_SLAB2, BlockLegacyMetadata::STONE_SLAB2_MOSSY_COBBLESTONE), "Mossy Cobblestone", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB2, BlockLegacyIds::DOUBLE_STONE_SLAB2, BlockLegacyMetadata::STONE_SLAB2_PRISMARINE), "Prismarine", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB2, BlockLegacyIds::DOUBLE_STONE_SLAB2, BlockLegacyMetadata::STONE_SLAB2_PRISMARINE_BRICKS), "Prismarine Bricks", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB2, BlockLegacyIds::DOUBLE_STONE_SLAB2, BlockLegacyMetadata::STONE_SLAB2_PURPUR), "Purpur", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB2, BlockLegacyIds::DOUBLE_STONE_SLAB2, BlockLegacyMetadata::STONE_SLAB2_RED_NETHER_BRICK), "Red Nether Brick", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB2, BlockLegacyIds::DOUBLE_STONE_SLAB2, BlockLegacyMetadata::STONE_SLAB2_RED_SANDSTONE), "Red Sandstone", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB2, BlockLegacyIds::DOUBLE_STONE_SLAB2, BlockLegacyMetadata::STONE_SLAB2_SMOOTH_SANDSTONE), "Smooth Sandstone", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, BlockLegacyMetadata::STONE_SLAB3_ANDESITE), "Andesite", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, BlockLegacyMetadata::STONE_SLAB3_DIORITE), "Diorite", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, BlockLegacyMetadata::STONE_SLAB3_END_STONE_BRICK), "End Stone Brick", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, BlockLegacyMetadata::STONE_SLAB3_GRANITE), "Granite", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, BlockLegacyMetadata::STONE_SLAB3_POLISHED_ANDESITE), "Polished Andesite", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, BlockLegacyMetadata::STONE_SLAB3_POLISHED_DIORITE), "Polished Diorite", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, BlockLegacyMetadata::STONE_SLAB3_POLISHED_GRANITE), "Polished Granite", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB3, BlockLegacyIds::DOUBLE_STONE_SLAB3, BlockLegacyMetadata::STONE_SLAB3_SMOOTH_RED_SANDSTONE), "Smooth Red Sandstone", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB4, BlockLegacyIds::DOUBLE_STONE_SLAB4, BlockLegacyMetadata::STONE_SLAB4_CUT_RED_SANDSTONE), "Cut Red Sandstone", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB4, BlockLegacyIds::DOUBLE_STONE_SLAB4, BlockLegacyMetadata::STONE_SLAB4_CUT_SANDSTONE), "Cut Sandstone", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB4, BlockLegacyIds::DOUBLE_STONE_SLAB4, BlockLegacyMetadata::STONE_SLAB4_MOSSY_STONE_BRICK), "Mossy Stone Brick", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB4, BlockLegacyIds::DOUBLE_STONE_SLAB4, BlockLegacyMetadata::STONE_SLAB4_SMOOTH_QUARTZ), "Smooth Quartz", $stoneSlabBreakInfo));
-		self::register(new Slab(new BlockIdentifierFlattened(BlockLegacyIds::STONE_SLAB4, BlockLegacyIds::DOUBLE_STONE_SLAB4, BlockLegacyMetadata::STONE_SLAB4_STONE), "Stone", $stoneSlabBreakInfo));
-		self::register(new Solid(new BID(BlockLegacyIds::STONECUTTER), "Stonecutter", new BlockBreakInfo(3.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN)));
-		self::register(new Sugarcane(new BID(BlockLegacyIds::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane"));
-		self::register(new TNT(new BID(BlockLegacyIds::TNT), "TNT"));
-		self::register(new TallGrass(new BID(BlockLegacyIds::TALLGRASS), "Fern")); //TODO: remap this to normal fern
-		self::register(new TallGrass(new BID(BlockLegacyIds::TALLGRASS, BlockLegacyMetadata::TALLGRASS_NORMAL), "Tall Grass"));
-		self::register(new TallGrass(new BID(BlockLegacyIds::TALLGRASS, BlockLegacyMetadata::TALLGRASS_FERN), "Fern"));
-		self::register(new TallGrass(new BID(BlockLegacyIds::TALLGRASS, 3), "Fern")); //TODO: remap this to normal fern
-		self::register(new Torch(new BID(BlockLegacyIds::COLORED_TORCH_BP), "Blue Torch"));
-		self::register(new Torch(new BID(BlockLegacyIds::COLORED_TORCH_BP, 8), "Purple Torch"));
-		self::register(new Torch(new BID(BlockLegacyIds::COLORED_TORCH_RG), "Red Torch"));
-		self::register(new Torch(new BID(BlockLegacyIds::COLORED_TORCH_RG, 8), "Green Torch"));
-		self::register(new Torch(new BID(BlockLegacyIds::TORCH), "Torch"));
-		self::register(new TrappedChest(new BID(BlockLegacyIds::TRAPPED_CHEST, 0, null, TileChest::class), "Trapped Chest"));
-		self::register(new Tripwire(new BID(BlockLegacyIds::TRIPWIRE, 0, ItemIds::STRING), "Tripwire"));
-		self::register(new TripwireHook(new BID(BlockLegacyIds::TRIPWIRE_HOOK), "Tripwire Hook"));
-		self::register(new UnderwaterTorch(new BID(BlockLegacyIds::UNDERWATER_TORCH), "Underwater Torch"));
-		self::register(new Vine(new BID(BlockLegacyIds::VINE), "Vines"));
-		self::register(new Water(new BlockIdentifierFlattened(BlockLegacyIds::FLOWING_WATER, BlockLegacyIds::STILL_WATER), "Water"));
-		self::register(new WaterLily(new BID(BlockLegacyIds::LILY_PAD), "Lily Pad"));
-		self::register(new WeightedPressurePlateHeavy(new BID(BlockLegacyIds::HEAVY_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Heavy"));
-		self::register(new WeightedPressurePlateLight(new BID(BlockLegacyIds::LIGHT_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Light"));
-		self::register(new Wheat(new BID(BlockLegacyIds::WHEAT_BLOCK), "Wheat Block"));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_BRICK), "Brick", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_COBBLESTONE), "Cobblestone", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_FAKE_WOODEN), "Fake Wooden", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_NETHER_BRICK), "Nether Brick", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_QUARTZ), "Quartz", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_SANDSTONE), "Sandstone", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_SMOOTH_STONE), "Smooth Stone", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_STONE_BRICK), "Stone Brick", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_DARK_PRISMARINE), "Dark Prismarine", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_MOSSY_COBBLESTONE), "Mossy Cobblestone", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_PRISMARINE), "Prismarine", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_PRISMARINE_BRICKS), "Prismarine Bricks", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_PURPUR), "Purpur", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_RED_NETHER_BRICK), "Red Nether Brick", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_RED_SANDSTONE), "Red Sandstone", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_SMOOTH_SANDSTONE), "Smooth Sandstone", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_ANDESITE), "Andesite", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_DIORITE), "Diorite", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_END_STONE_BRICK), "End Stone Brick", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_GRANITE), "Granite", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_POLISHED_ANDESITE), "Polished Andesite", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_POLISHED_DIORITE), "Polished Diorite", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_POLISHED_GRANITE), "Polished Granite", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_SMOOTH_RED_SANDSTONE), "Smooth Red Sandstone", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4, Meta::STONE_SLAB4_CUT_RED_SANDSTONE), "Cut Red Sandstone", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4, Meta::STONE_SLAB4_CUT_SANDSTONE), "Cut Sandstone", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4, Meta::STONE_SLAB4_MOSSY_STONE_BRICK), "Mossy Stone Brick", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4, Meta::STONE_SLAB4_SMOOTH_QUARTZ), "Smooth Quartz", $stoneSlabBreakInfo));
+		self::register(new Slab(new BIDFlattened(Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4, Meta::STONE_SLAB4_STONE), "Stone", $stoneSlabBreakInfo));
+		self::register(new Solid(new BID(Ids::STONECUTTER), "Stonecutter", new BlockBreakInfo(3.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN)));
+		self::register(new Sugarcane(new BID(Ids::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane"));
+		self::register(new TNT(new BID(Ids::TNT), "TNT"));
+		self::register(new TallGrass(new BID(Ids::TALLGRASS), "Fern")); //TODO: remap this to normal fern
+		self::register(new TallGrass(new BID(Ids::TALLGRASS, Meta::TALLGRASS_NORMAL), "Tall Grass"));
+		self::register(new TallGrass(new BID(Ids::TALLGRASS, Meta::TALLGRASS_FERN), "Fern"));
+		self::register(new TallGrass(new BID(Ids::TALLGRASS, 3), "Fern")); //TODO: remap this to normal fern
+		self::register(new Torch(new BID(Ids::COLORED_TORCH_BP), "Blue Torch"));
+		self::register(new Torch(new BID(Ids::COLORED_TORCH_BP, 8), "Purple Torch"));
+		self::register(new Torch(new BID(Ids::COLORED_TORCH_RG), "Red Torch"));
+		self::register(new Torch(new BID(Ids::COLORED_TORCH_RG, 8), "Green Torch"));
+		self::register(new Torch(new BID(Ids::TORCH), "Torch"));
+		self::register(new TrappedChest(new BID(Ids::TRAPPED_CHEST, 0, null, TileChest::class), "Trapped Chest"));
+		self::register(new Tripwire(new BID(Ids::TRIPWIRE, 0, ItemIds::STRING), "Tripwire"));
+		self::register(new TripwireHook(new BID(Ids::TRIPWIRE_HOOK), "Tripwire Hook"));
+		self::register(new UnderwaterTorch(new BID(Ids::UNDERWATER_TORCH), "Underwater Torch"));
+		self::register(new Vine(new BID(Ids::VINE), "Vines"));
+		self::register(new Water(new BIDFlattened(Ids::FLOWING_WATER, Ids::STILL_WATER), "Water"));
+		self::register(new WaterLily(new BID(Ids::LILY_PAD), "Lily Pad"));
+		self::register(new WeightedPressurePlateHeavy(new BID(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Heavy"));
+		self::register(new WeightedPressurePlateLight(new BID(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Light"));
+		self::register(new Wheat(new BID(Ids::WHEAT_BLOCK), "Wheat Block"));
 
 
 		//region ugly treetype -> blockID mapping tables
 		/** @var int[]|\SplObjectStorage $woodenStairIds */
 		$woodenStairIds = new \SplObjectStorage();
-		$woodenStairIds[TreeType::OAK()] = BlockLegacyIds::OAK_STAIRS;
-		$woodenStairIds[TreeType::SPRUCE()] = BlockLegacyIds::SPRUCE_STAIRS;
-		$woodenStairIds[TreeType::BIRCH()] = BlockLegacyIds::BIRCH_STAIRS;
-		$woodenStairIds[TreeType::JUNGLE()] = BlockLegacyIds::JUNGLE_STAIRS;
-		$woodenStairIds[TreeType::ACACIA()] = BlockLegacyIds::ACACIA_STAIRS;
-		$woodenStairIds[TreeType::DARK_OAK()] = BlockLegacyIds::DARK_OAK_STAIRS;
+		$woodenStairIds[TreeType::OAK()] = Ids::OAK_STAIRS;
+		$woodenStairIds[TreeType::SPRUCE()] = Ids::SPRUCE_STAIRS;
+		$woodenStairIds[TreeType::BIRCH()] = Ids::BIRCH_STAIRS;
+		$woodenStairIds[TreeType::JUNGLE()] = Ids::JUNGLE_STAIRS;
+		$woodenStairIds[TreeType::ACACIA()] = Ids::ACACIA_STAIRS;
+		$woodenStairIds[TreeType::DARK_OAK()] = Ids::DARK_OAK_STAIRS;
 
 		/** @var int[]|\SplObjectStorage $fenceGateIds */
 		$fenceGateIds = new \SplObjectStorage();
-		$fenceGateIds[TreeType::OAK()] = BlockLegacyIds::OAK_FENCE_GATE;
-		$fenceGateIds[TreeType::SPRUCE()] = BlockLegacyIds::SPRUCE_FENCE_GATE;
-		$fenceGateIds[TreeType::BIRCH()] = BlockLegacyIds::BIRCH_FENCE_GATE;
-		$fenceGateIds[TreeType::JUNGLE()] = BlockLegacyIds::JUNGLE_FENCE_GATE;
-		$fenceGateIds[TreeType::ACACIA()] = BlockLegacyIds::ACACIA_FENCE_GATE;
-		$fenceGateIds[TreeType::DARK_OAK()] = BlockLegacyIds::DARK_OAK_FENCE_GATE;
+		$fenceGateIds[TreeType::OAK()] = Ids::OAK_FENCE_GATE;
+		$fenceGateIds[TreeType::SPRUCE()] = Ids::SPRUCE_FENCE_GATE;
+		$fenceGateIds[TreeType::BIRCH()] = Ids::BIRCH_FENCE_GATE;
+		$fenceGateIds[TreeType::JUNGLE()] = Ids::JUNGLE_FENCE_GATE;
+		$fenceGateIds[TreeType::ACACIA()] = Ids::ACACIA_FENCE_GATE;
+		$fenceGateIds[TreeType::DARK_OAK()] = Ids::DARK_OAK_FENCE_GATE;
 
 		/** @var BID[]|\SplObjectStorage $woodenDoorIds */
 		$woodenDoorIds = new \SplObjectStorage();
-		$woodenDoorIds[TreeType::OAK()] = new BID(BlockLegacyIds::OAK_DOOR_BLOCK, 0, ItemIds::OAK_DOOR);
-		$woodenDoorIds[TreeType::SPRUCE()] = new BID(BlockLegacyIds::SPRUCE_DOOR_BLOCK, 0, ItemIds::SPRUCE_DOOR);
-		$woodenDoorIds[TreeType::BIRCH()] = new BID(BlockLegacyIds::BIRCH_DOOR_BLOCK, 0, ItemIds::BIRCH_DOOR);
-		$woodenDoorIds[TreeType::JUNGLE()] = new BID(BlockLegacyIds::JUNGLE_DOOR_BLOCK, 0, ItemIds::JUNGLE_DOOR);
-		$woodenDoorIds[TreeType::ACACIA()] = new BID(BlockLegacyIds::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR);
-		$woodenDoorIds[TreeType::DARK_OAK()] = new BID(BlockLegacyIds::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR);
+		$woodenDoorIds[TreeType::OAK()] = new BID(Ids::OAK_DOOR_BLOCK, 0, ItemIds::OAK_DOOR);
+		$woodenDoorIds[TreeType::SPRUCE()] = new BID(Ids::SPRUCE_DOOR_BLOCK, 0, ItemIds::SPRUCE_DOOR);
+		$woodenDoorIds[TreeType::BIRCH()] = new BID(Ids::BIRCH_DOOR_BLOCK, 0, ItemIds::BIRCH_DOOR);
+		$woodenDoorIds[TreeType::JUNGLE()] = new BID(Ids::JUNGLE_DOOR_BLOCK, 0, ItemIds::JUNGLE_DOOR);
+		$woodenDoorIds[TreeType::ACACIA()] = new BID(Ids::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR);
+		$woodenDoorIds[TreeType::DARK_OAK()] = new BID(Ids::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR);
 
 		/** @var int[]|\SplObjectStorage $woodenPressurePlateIds */
 		$woodenPressurePlateIds = new \SplObjectStorage();
-		$woodenPressurePlateIds[TreeType::OAK()] = BlockLegacyIds::WOODEN_PRESSURE_PLATE;
-		$woodenPressurePlateIds[TreeType::SPRUCE()] = BlockLegacyIds::SPRUCE_PRESSURE_PLATE;
-		$woodenPressurePlateIds[TreeType::BIRCH()] = BlockLegacyIds::BIRCH_PRESSURE_PLATE;
-		$woodenPressurePlateIds[TreeType::JUNGLE()] = BlockLegacyIds::JUNGLE_PRESSURE_PLATE;
-		$woodenPressurePlateIds[TreeType::ACACIA()] = BlockLegacyIds::ACACIA_PRESSURE_PLATE;
-		$woodenPressurePlateIds[TreeType::DARK_OAK()] = BlockLegacyIds::DARK_OAK_PRESSURE_PLATE;
+		$woodenPressurePlateIds[TreeType::OAK()] = Ids::WOODEN_PRESSURE_PLATE;
+		$woodenPressurePlateIds[TreeType::SPRUCE()] = Ids::SPRUCE_PRESSURE_PLATE;
+		$woodenPressurePlateIds[TreeType::BIRCH()] = Ids::BIRCH_PRESSURE_PLATE;
+		$woodenPressurePlateIds[TreeType::JUNGLE()] = Ids::JUNGLE_PRESSURE_PLATE;
+		$woodenPressurePlateIds[TreeType::ACACIA()] = Ids::ACACIA_PRESSURE_PLATE;
+		$woodenPressurePlateIds[TreeType::DARK_OAK()] = Ids::DARK_OAK_PRESSURE_PLATE;
 
 		/** @var int[]|\SplObjectStorage $woodenButtonIds */
 		$woodenButtonIds = new \SplObjectStorage();
-		$woodenButtonIds[TreeType::OAK()] = BlockLegacyIds::WOODEN_BUTTON;
-		$woodenButtonIds[TreeType::SPRUCE()] = BlockLegacyIds::SPRUCE_BUTTON;
-		$woodenButtonIds[TreeType::BIRCH()] = BlockLegacyIds::BIRCH_BUTTON;
-		$woodenButtonIds[TreeType::JUNGLE()] = BlockLegacyIds::JUNGLE_BUTTON;
-		$woodenButtonIds[TreeType::ACACIA()] = BlockLegacyIds::ACACIA_BUTTON;
-		$woodenButtonIds[TreeType::DARK_OAK()] = BlockLegacyIds::DARK_OAK_BUTTON;
+		$woodenButtonIds[TreeType::OAK()] = Ids::WOODEN_BUTTON;
+		$woodenButtonIds[TreeType::SPRUCE()] = Ids::SPRUCE_BUTTON;
+		$woodenButtonIds[TreeType::BIRCH()] = Ids::BIRCH_BUTTON;
+		$woodenButtonIds[TreeType::JUNGLE()] = Ids::JUNGLE_BUTTON;
+		$woodenButtonIds[TreeType::ACACIA()] = Ids::ACACIA_BUTTON;
+		$woodenButtonIds[TreeType::DARK_OAK()] = Ids::DARK_OAK_BUTTON;
 
 		/** @var int[]|\SplObjectStorage $woodenTrapdoorIds */
 		$woodenTrapdoorIds = new \SplObjectStorage();
-		$woodenTrapdoorIds[TreeType::OAK()] = BlockLegacyIds::WOODEN_TRAPDOOR;
-		$woodenTrapdoorIds[TreeType::SPRUCE()] = BlockLegacyIds::SPRUCE_TRAPDOOR;
-		$woodenTrapdoorIds[TreeType::BIRCH()] = BlockLegacyIds::BIRCH_TRAPDOOR;
-		$woodenTrapdoorIds[TreeType::JUNGLE()] = BlockLegacyIds::JUNGLE_TRAPDOOR;
-		$woodenTrapdoorIds[TreeType::ACACIA()] = BlockLegacyIds::ACACIA_TRAPDOOR;
-		$woodenTrapdoorIds[TreeType::DARK_OAK()] = BlockLegacyIds::DARK_OAK_TRAPDOOR;
+		$woodenTrapdoorIds[TreeType::OAK()] = Ids::WOODEN_TRAPDOOR;
+		$woodenTrapdoorIds[TreeType::SPRUCE()] = Ids::SPRUCE_TRAPDOOR;
+		$woodenTrapdoorIds[TreeType::BIRCH()] = Ids::BIRCH_TRAPDOOR;
+		$woodenTrapdoorIds[TreeType::JUNGLE()] = Ids::JUNGLE_TRAPDOOR;
+		$woodenTrapdoorIds[TreeType::ACACIA()] = Ids::ACACIA_TRAPDOOR;
+		$woodenTrapdoorIds[TreeType::DARK_OAK()] = Ids::DARK_OAK_TRAPDOOR;
 
-		/** @var BlockIdentifierFlattened[]|\SplObjectStorage $woodenSignIds */
+		/** @var BIDFlattened[]|\SplObjectStorage $woodenSignIds */
 		$woodenSignIds = new \SplObjectStorage();
-		$woodenSignIds[TreeType::OAK()] = new BlockIdentifierFlattened(BlockLegacyIds::SIGN_POST, BlockLegacyIds::WALL_SIGN, 0, ItemIds::SIGN, TileSign::class);
-		$woodenSignIds[TreeType::SPRUCE()] = new BlockIdentifierFlattened(BlockLegacyIds::SPRUCE_STANDING_SIGN, BlockLegacyIds::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class);
-		$woodenSignIds[TreeType::BIRCH()] = new BlockIdentifierFlattened(BlockLegacyIds::BIRCH_STANDING_SIGN, BlockLegacyIds::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class);
-		$woodenSignIds[TreeType::JUNGLE()] = new BlockIdentifierFlattened(BlockLegacyIds::JUNGLE_STANDING_SIGN, BlockLegacyIds::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class);
-		$woodenSignIds[TreeType::ACACIA()] = new BlockIdentifierFlattened(BlockLegacyIds::ACACIA_STANDING_SIGN, BlockLegacyIds::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, TileSign::class);
-		$woodenSignIds[TreeType::DARK_OAK()] = new BlockIdentifierFlattened(BlockLegacyIds::DARKOAK_STANDING_SIGN, BlockLegacyIds::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class);
+		$woodenSignIds[TreeType::OAK()] = new BIDFlattened(Ids::SIGN_POST, Ids::WALL_SIGN, 0, ItemIds::SIGN, TileSign::class);
+		$woodenSignIds[TreeType::SPRUCE()] = new BIDFlattened(Ids::SPRUCE_STANDING_SIGN, Ids::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class);
+		$woodenSignIds[TreeType::BIRCH()] = new BIDFlattened(Ids::BIRCH_STANDING_SIGN, Ids::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class);
+		$woodenSignIds[TreeType::JUNGLE()] = new BIDFlattened(Ids::JUNGLE_STANDING_SIGN, Ids::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class);
+		$woodenSignIds[TreeType::ACACIA()] = new BIDFlattened(Ids::ACACIA_STANDING_SIGN, Ids::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, TileSign::class);
+		$woodenSignIds[TreeType::DARK_OAK()] = new BIDFlattened(Ids::DARKOAK_STANDING_SIGN, Ids::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class);
 		//endregion
 
 		foreach(TreeType::getAll() as $treeType){
 			$magicNumber = $treeType->getMagicNumber();
 			$name = $treeType->getDisplayName();
-			self::register(new Planks(new BID(BlockLegacyIds::PLANKS, $magicNumber), $name . " Planks"));
-			self::register(new Sapling(new BID(BlockLegacyIds::SAPLING, $magicNumber), $name . " Sapling", $treeType));
-			self::register(new WoodenFence(new BID(BlockLegacyIds::FENCE, $magicNumber), $name . " Fence"));
-			self::register(new WoodenSlab(new BlockIdentifierFlattened(BlockLegacyIds::WOODEN_SLAB, BlockLegacyIds::DOUBLE_WOODEN_SLAB, $treeType->getMagicNumber()), $treeType->getDisplayName()));
+			self::register(new Planks(new BID(Ids::PLANKS, $magicNumber), $name . " Planks"));
+			self::register(new Sapling(new BID(Ids::SAPLING, $magicNumber), $name . " Sapling", $treeType));
+			self::register(new WoodenFence(new BID(Ids::FENCE, $magicNumber), $name . " Fence"));
+			self::register(new WoodenSlab(new BIDFlattened(Ids::WOODEN_SLAB, Ids::DOUBLE_WOODEN_SLAB, $treeType->getMagicNumber()), $treeType->getDisplayName()));
 
 			//TODO: find a better way to deal with this split
-			self::register(new Leaves(new BID($magicNumber >= 4 ? BlockLegacyIds::LEAVES2 : BlockLegacyIds::LEAVES, $magicNumber & 0x03), $name . " Leaves", $treeType));
-			self::register(new Log(new BID($magicNumber >= 4 ? BlockLegacyIds::LOG2 : BlockLegacyIds::LOG, $magicNumber & 0x03), $name . " Log", $treeType));
+			self::register(new Leaves(new BID($magicNumber >= 4 ? Ids::LEAVES2 : Ids::LEAVES, $magicNumber & 0x03), $name . " Leaves", $treeType));
+			self::register(new Log(new BID($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, $magicNumber & 0x03), $name . " Log", $treeType));
 
 			//TODO: the old bug-block needs to be remapped to the new dedicated block
-			self::register(new Wood(new BID($magicNumber >= 4 ? BlockLegacyIds::LOG2 : BlockLegacyIds::LOG, ($magicNumber & 0x03) | 0b1100), $name . " Wood", $treeType));
-			self::register(new Wood(new BID(BlockLegacyIds::WOOD, $magicNumber), $name . " Wood", $treeType));
+			self::register(new Wood(new BID($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, ($magicNumber & 0x03) | 0b1100), $name . " Wood", $treeType));
+			self::register(new Wood(new BID(Ids::WOOD, $magicNumber), $name . " Wood", $treeType));
 
 			self::register(new FenceGate(new BID($fenceGateIds[$treeType]), $treeType->getDisplayName() . " Fence Gate"));
 			self::register(new WoodenStairs(new BID($woodenStairIds[$treeType]), $treeType->getDisplayName() . " Stairs"));
@@ -476,73 +479,73 @@ class BlockFactory{
 		}
 
 		static $sandstoneTypes = [
-			BlockLegacyMetadata::SANDSTONE_NORMAL => "",
-			BlockLegacyMetadata::SANDSTONE_CHISELED => "Chiseled ",
-			BlockLegacyMetadata::SANDSTONE_CUT => "Cut ",
-			BlockLegacyMetadata::SANDSTONE_SMOOTH => "Smooth "
+			Meta::SANDSTONE_NORMAL => "",
+			Meta::SANDSTONE_CHISELED => "Chiseled ",
+			Meta::SANDSTONE_CUT => "Cut ",
+			Meta::SANDSTONE_SMOOTH => "Smooth "
 		];
 		$sandstoneBreakInfo = new BlockBreakInfo(0.8, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN);
-		self::register(new Stair(new BID(BlockLegacyIds::RED_SANDSTONE_STAIRS), "Red Sandstone Stairs", $sandstoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::SMOOTH_RED_SANDSTONE_STAIRS), "Smooth Red Sandstone Stairs", $sandstoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::SANDSTONE_STAIRS), "Sandstone Stairs", $sandstoneBreakInfo));
-		self::register(new Stair(new BID(BlockLegacyIds::SMOOTH_SANDSTONE_STAIRS), "Smooth Sandstone Stairs", $sandstoneBreakInfo));
+		self::register(new Stair(new BID(Ids::RED_SANDSTONE_STAIRS), "Red Sandstone Stairs", $sandstoneBreakInfo));
+		self::register(new Stair(new BID(Ids::SMOOTH_RED_SANDSTONE_STAIRS), "Smooth Red Sandstone Stairs", $sandstoneBreakInfo));
+		self::register(new Stair(new BID(Ids::SANDSTONE_STAIRS), "Sandstone Stairs", $sandstoneBreakInfo));
+		self::register(new Stair(new BID(Ids::SMOOTH_SANDSTONE_STAIRS), "Smooth Sandstone Stairs", $sandstoneBreakInfo));
 		foreach($sandstoneTypes as $variant => $prefix){
-			self::register(new Solid(new BID(BlockLegacyIds::SANDSTONE, $variant), $prefix . "Sandstone", $sandstoneBreakInfo));
-			self::register(new Solid(new BID(BlockLegacyIds::RED_SANDSTONE, $variant), $prefix . "Red Sandstone", $sandstoneBreakInfo));
+			self::register(new Solid(new BID(Ids::SANDSTONE, $variant), $prefix . "Sandstone", $sandstoneBreakInfo));
+			self::register(new Solid(new BID(Ids::RED_SANDSTONE, $variant), $prefix . "Red Sandstone", $sandstoneBreakInfo));
 		}
 
 		//region ugly glazed-terracotta colour -> ID mapping table
 		/** @var int[]|\SplObjectStorage $glazedTerracottaIds */
 		$glazedTerracottaIds = new \SplObjectStorage();
-		$glazedTerracottaIds[DyeColor::WHITE()] = BlockLegacyIds::WHITE_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::ORANGE()] = BlockLegacyIds::ORANGE_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::MAGENTA()] = BlockLegacyIds::MAGENTA_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::LIGHT_BLUE()] = BlockLegacyIds::LIGHT_BLUE_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::YELLOW()] = BlockLegacyIds::YELLOW_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::LIME()] = BlockLegacyIds::LIME_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::PINK()] = BlockLegacyIds::PINK_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::GRAY()] = BlockLegacyIds::GRAY_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::LIGHT_GRAY()] = BlockLegacyIds::SILVER_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::CYAN()] = BlockLegacyIds::CYAN_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::PURPLE()] = BlockLegacyIds::PURPLE_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::BLUE()] = BlockLegacyIds::BLUE_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::BROWN()] = BlockLegacyIds::BROWN_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::GREEN()] = BlockLegacyIds::GREEN_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::RED()] = BlockLegacyIds::RED_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::BLACK()] = BlockLegacyIds::BLACK_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::WHITE()] = Ids::WHITE_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::ORANGE()] = Ids::ORANGE_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::MAGENTA()] = Ids::MAGENTA_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::LIGHT_BLUE()] = Ids::LIGHT_BLUE_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::YELLOW()] = Ids::YELLOW_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::LIME()] = Ids::LIME_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::PINK()] = Ids::PINK_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::GRAY()] = Ids::GRAY_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::LIGHT_GRAY()] = Ids::SILVER_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::CYAN()] = Ids::CYAN_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::PURPLE()] = Ids::PURPLE_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::BLUE()] = Ids::BLUE_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::BROWN()] = Ids::BROWN_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::GREEN()] = Ids::GREEN_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::RED()] = Ids::RED_GLAZED_TERRACOTTA;
+		$glazedTerracottaIds[DyeColor::BLACK()] = Ids::BLACK_GLAZED_TERRACOTTA;
 		//endregion
 
 		foreach(DyeColor::getAll() as $color){
-			self::register(new Carpet(new BID(BlockLegacyIds::CARPET, $color->getMagicNumber()), $color->getDisplayName() . " Carpet"));
-			self::register(new Concrete(new BID(BlockLegacyIds::CONCRETE, $color->getMagicNumber()), $color->getDisplayName() . " Concrete"));
-			self::register(new ConcretePowder(new BID(BlockLegacyIds::CONCRETE_POWDER, $color->getMagicNumber()), $color->getDisplayName() . " Concrete Powder"));
-			self::register(new Glass(new BID(BlockLegacyIds::STAINED_GLASS, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass"));
-			self::register(new GlassPane(new BID(BlockLegacyIds::STAINED_GLASS_PANE, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass Pane"));
+			self::register(new Carpet(new BID(Ids::CARPET, $color->getMagicNumber()), $color->getDisplayName() . " Carpet"));
+			self::register(new Concrete(new BID(Ids::CONCRETE, $color->getMagicNumber()), $color->getDisplayName() . " Concrete"));
+			self::register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER, $color->getMagicNumber()), $color->getDisplayName() . " Concrete Powder"));
+			self::register(new Glass(new BID(Ids::STAINED_GLASS, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass"));
+			self::register(new GlassPane(new BID(Ids::STAINED_GLASS_PANE, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass Pane"));
 			self::register(new GlazedTerracotta(new BID($glazedTerracottaIds[$color]), $color->getDisplayName() . " Glazed Terracotta"));
-			self::register(new HardenedClay(new BID(BlockLegacyIds::STAINED_CLAY, $color->getMagicNumber()), $color->getDisplayName() . " Stained Clay"));
-			self::register(new HardenedGlass(new BID(BlockLegacyIds::HARD_STAINED_GLASS, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass"));
-			self::register(new HardenedGlassPane(new BID(BlockLegacyIds::HARD_STAINED_GLASS_PANE, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass Pane"));
-			self::register(new Wool(new BID(BlockLegacyIds::WOOL, $color->getMagicNumber()), $color->getDisplayName() . " Wool"));
+			self::register(new HardenedClay(new BID(Ids::STAINED_CLAY, $color->getMagicNumber()), $color->getDisplayName() . " Stained Clay"));
+			self::register(new HardenedGlass(new BID(Ids::HARD_STAINED_GLASS, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass"));
+			self::register(new HardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass Pane"));
+			self::register(new Wool(new BID(Ids::WOOL, $color->getMagicNumber()), $color->getDisplayName() . " Wool"));
 		}
 
 		static $wallTypes = [
-			BlockLegacyMetadata::WALL_ANDESITE => "Andesite",
-			BlockLegacyMetadata::WALL_BRICK => "Brick",
-			BlockLegacyMetadata::WALL_DIORITE => "Diorite",
-			BlockLegacyMetadata::WALL_END_STONE_BRICK => "End Stone Brick",
-			BlockLegacyMetadata::WALL_GRANITE => "Granite",
-			BlockLegacyMetadata::WALL_MOSSY_STONE_BRICK => "Mossy Stone Brick",
-			BlockLegacyMetadata::WALL_MOSSY_COBBLESTONE => "Mossy Cobblestone",
-			BlockLegacyMetadata::WALL_NETHER_BRICK => "Nether Brick",
-			BlockLegacyMetadata::WALL_COBBLESTONE => "Cobblestone",
-			BlockLegacyMetadata::WALL_PRISMARINE => "Prismarine",
-			BlockLegacyMetadata::WALL_RED_NETHER_BRICK => "Red Nether Brick",
-			BlockLegacyMetadata::WALL_RED_SANDSTONE => "Red Sandstone",
-			BlockLegacyMetadata::WALL_SANDSTONE => "Sandstone",
-			BlockLegacyMetadata::WALL_STONE_BRICK => "Stone Brick"
+			Meta::WALL_ANDESITE => "Andesite",
+			Meta::WALL_BRICK => "Brick",
+			Meta::WALL_DIORITE => "Diorite",
+			Meta::WALL_END_STONE_BRICK => "End Stone Brick",
+			Meta::WALL_GRANITE => "Granite",
+			Meta::WALL_MOSSY_STONE_BRICK => "Mossy Stone Brick",
+			Meta::WALL_MOSSY_COBBLESTONE => "Mossy Cobblestone",
+			Meta::WALL_NETHER_BRICK => "Nether Brick",
+			Meta::WALL_COBBLESTONE => "Cobblestone",
+			Meta::WALL_PRISMARINE => "Prismarine",
+			Meta::WALL_RED_NETHER_BRICK => "Red Nether Brick",
+			Meta::WALL_RED_SANDSTONE => "Red Sandstone",
+			Meta::WALL_SANDSTONE => "Sandstone",
+			Meta::WALL_STONE_BRICK => "Stone Brick"
 		];
 		foreach($wallTypes as $magicNumber => $prefix){
-			self::register(new Wall(new BID(BlockLegacyIds::COBBLESTONE_WALL, $magicNumber), $prefix . " Wall"));
+			self::register(new Wall(new BID(Ids::COBBLESTONE_WALL, $magicNumber), $prefix . " Wall"));
 		}
 
 		//region --- auto-generated TODOs ---
