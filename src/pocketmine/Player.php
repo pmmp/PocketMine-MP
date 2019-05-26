@@ -2594,7 +2594,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->sendData($this->getViewers());
 
 		$this->networkSession->syncAdventureSettings($this);
-		$this->sendAllInventories();
+		$this->networkSession->syncAllInventoryContents();
 
 		$this->spawnToAll();
 		$this->scheduleUpdate();
@@ -2878,10 +2878,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 	}
 
-	public function sendAllInventories(){
-		foreach($this->windowIndex as $networkId => $inventory){
-			$inventory->sendContents($this);
-		}
+	/**
+	 * @return Inventory[]
+	 */
+	public function getAllWindows() : array{
+		return $this->windowIndex;
 	}
 
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue) : void{

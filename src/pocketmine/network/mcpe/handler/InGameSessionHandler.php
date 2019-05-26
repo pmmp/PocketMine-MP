@@ -158,7 +158,7 @@ class InGameSessionHandler extends SessionHandler{
 
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
 		if($this->player->isSpectator()){
-			$this->player->sendAllInventories();
+			$this->session->syncAllInventoryContents();
 			return true;
 		}
 
@@ -167,7 +167,7 @@ class InGameSessionHandler extends SessionHandler{
 		if($packet->trData instanceof NormalTransactionData){
 			$result = $this->handleNormalTransaction($packet->trData);
 		}elseif($packet->trData instanceof MismatchTransactionData){
-			$this->player->sendAllInventories();
+			$this->session->syncAllInventoryContents();
 			$result = true;
 		}elseif($packet->trData instanceof UseItemTransactionData){
 			$result = $this->handleUseItemTransaction($packet->trData);
@@ -178,7 +178,7 @@ class InGameSessionHandler extends SessionHandler{
 		}
 
 		if(!$result){
-			$this->player->sendAllInventories();
+			$this->session->syncAllInventoryContents();
 		}
 		return $result;
 	}

@@ -91,7 +91,7 @@ class PreSpawnSessionHandler extends SessionHandler{
 		$this->player->sendPotionEffects($this->player);
 		$this->player->sendData($this->player);
 
-		$this->player->sendAllInventories();
+		$this->session->syncAllInventoryContents();
 		$this->player->getInventory()->sendCreativeContents();
 		$this->player->getInventory()->sendHeldItem($this->player);
 		$this->session->queueCompressed($this->server->getCraftingManager()->getCraftingDataPacket());

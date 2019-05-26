@@ -819,6 +819,12 @@ class NetworkSession{
 		}
 	}
 
+	public function syncAllInventoryContents() : void{
+		foreach($this->player->getAllWindows() as $inventory){
+			$this->syncInventoryContents($inventory);
+		}
+	}
+
 	public function syncInventoryData(Inventory $inventory, int $propertyId, int $value) : void{
 		$windowId = $this->player->getWindowId($inventory);
 		if($windowId !== ContainerIds::NONE){
