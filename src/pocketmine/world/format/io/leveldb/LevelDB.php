@@ -251,6 +251,11 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$binaryStream = new BinaryStream();
 
 		switch($chunkVersion){
+			case 15: //MCPE 1.12.0.4 beta (???)
+			case 14: //MCPE 1.11.1.2 (???)
+			case 13: //MCPE 1.11.0.4 beta (???)
+			case 12: //MCPE 1.11.0.3 beta (???)
+			case 11: //MCPE 1.11.0.1 beta (???)
 			case 10: //MCPE 1.9 (???)
 			case 9: //MCPE 1.8 (???)
 			case 7: //MCPE 1.2 (???)
