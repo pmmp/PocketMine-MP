@@ -259,6 +259,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case 10: //MCPE 1.9 (???)
 			case 9: //MCPE 1.8 (???)
 			case 7: //MCPE 1.2 (???)
+			case 6: //MCPE 1.2.0.2 beta (???)
 			case 4: //MCPE 1.1
 				//TODO: check beds
 			case 3: //MCPE 1.0
@@ -343,6 +344,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				}
 				break;
 			case 2: // < MCPE 1.0
+			case 1:
+			case 0: //MCPE 0.9.0.1 beta (first version)
 				/** @var PalettedBlockArray[] $extraDataLayers */
 				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
 
