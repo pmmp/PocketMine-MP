@@ -113,9 +113,7 @@ abstract class BaseInventory implements Inventory{
 
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			if(!isset($items[$i])){
-				if($this->slots[$i] !== null){
-					$this->clear($i, false);
-				}
+				$this->clear($i, false);
 			}else{
 				$this->setItem($i, $items[$i], false);
 			}

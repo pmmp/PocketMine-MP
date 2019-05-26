@@ -27,7 +27,6 @@ use pocketmine\block\tile\Chest;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use function array_merge;
-use function array_slice;
 use function count;
 
 class DoubleChestInventory extends ChestInventory implements InventoryHolder{
@@ -73,29 +72,6 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		}
 
 		return $result;
-	}
-
-	/**
-	 * @param Item[] $items
-	 * @param bool   $send
-	 */
-	public function setContents(array $items, bool $send = true) : void{
-		$size = $this->getSize();
-		if(count($items) > $size){
-			$items = array_slice($items, 0, $size, true);
-		}
-
-		for($i = 0; $i < $size; ++$i){
-			if(!isset($items[$i])){
-				$this->clear($i, false);
-			}else{
-				$this->setItem($i, $items[$i], false);
-			}
-		}
-
-		if($send){
-			$this->sendContents($this->getViewers());
-		}
 	}
 
 	protected function onOpen(Player $who) : void{
