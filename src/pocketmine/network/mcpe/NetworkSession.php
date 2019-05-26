@@ -45,6 +45,7 @@ use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
+use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
@@ -813,6 +814,17 @@ class NetworkSession{
 		if($windowId !== ContainerIds::NONE){
 			$pk = new InventoryContentPacket();
 			$pk->items = $inventory->getContents(true);
+			$pk->windowId = $windowId;
+			$this->sendDataPacket($pk);
+		}
+	}
+
+	public function syncInventoryData(Inventory $inventory, int $propertyId, int $value) : void{
+		$windowId = $this->player->getWindowId($inventory);
+		if($windowId !== ContainerIds::NONE){
+			$pk = new ContainerSetDataPacket();
+			$pk->property = $propertyId;
+			$pk->value = $value;
 			$pk->windowId = $windowId;
 			$this->sendDataPacket($pk);
 		}

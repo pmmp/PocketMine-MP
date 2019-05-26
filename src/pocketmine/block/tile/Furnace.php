@@ -207,32 +207,16 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 			$this->burnTime = $this->cookTime = $this->maxTime = 0;
 		}
 
-		/** @var ContainerSetDataPacket[] $packets */
-		$packets = [];
 		if($prevCookTime !== $this->cookTime){
-			$pk = new ContainerSetDataPacket();
-			$pk->property = ContainerSetDataPacket::PROPERTY_FURNACE_TICK_COUNT;
-			$pk->value = $this->cookTime;
-			$packets[] = $pk;
+			foreach($this->inventory->getViewers() as $v){
+				$v->getNetworkSession()->syncInventoryData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_TICK_COUNT, $this->cookTime);
+			}
 		}
 
 		$fuelTicksLeft = $this->getFuelTicksLeft();
 		if($prevFuelTicksLeft !== $fuelTicksLeft){
-			$pk = new ContainerSetDataPacket();
-			$pk->property = ContainerSetDataPacket::PROPERTY_FURNACE_LIT_TIME;
-			$pk->value = $fuelTicksLeft;
-			$packets[] = $pk;
-		}
-
-		if(!empty($packets)){
-			foreach($this->getInventory()->getViewers() as $player){
-				$windowId = $player->getWindowId($this->getInventory());
-				if($windowId > 0){
-					foreach($packets as $pk){
-						$pk->windowId = $windowId;
-						$player->sendDataPacket(clone $pk);
-					}
-				}
+			foreach($this->inventory->getViewers() as $v){
+				$v->getNetworkSession()->syncInventoryData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_LIT_TIME, $fuelTicksLeft);
 			}
 		}
 
