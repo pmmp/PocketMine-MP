@@ -57,6 +57,35 @@ final class TileFactory{
 		self::register(ItemFrame::class, ["ItemFrame"]); //this is an entity in PC
 		self::register(Sign::class, ["Sign", "minecraft:sign"]);
 		self::register(Skull::class, ["Skull", "minecraft:skull"]);
+
+		//TODO: Barrel
+		//TODO: Beacon
+		//TODO: Bell
+		//TODO: BlastFurnace
+		//TODO: BrewingStand
+		//TODO: Campfire
+		//TODO: Cauldron
+		//TODO: ChalkboardBlock
+		//TODO: ChemistryTable
+		//TODO: CommandBlock
+		//TODO: Conduit
+		//TODO: DaylightDetector
+		//TODO: Dispenser
+		//TODO: Dropper
+		//TODO: EndGateway
+		//TODO: EndPortal
+		//TODO: Hopper
+		//TODO: JigsawBlock
+		//TODO: Jukebox
+		//TODO: Lectern
+		//TODO: MobSpawner
+		//TODO: MovingBlock
+		//TODO: Music
+		//TODO: NetherReactor
+		//TODO: PistonArm
+		//TODO: ShulkerBox
+		//TODO: Smoker
+		//TODO: StructureBlock
 	}
 
 	/**
