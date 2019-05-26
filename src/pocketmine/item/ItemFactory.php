@@ -485,4 +485,8 @@ class ItemFactory{
 		}
 		return (($id & 0xffff) << 16) | ($variant & 0xffff);
 	}
+
+	public static function getAllRegistered() : array{
+		return self::$list;
+	}
 }
