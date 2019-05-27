@@ -43,7 +43,7 @@ class Wool extends Solid{
 	}
 
 	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Wool";
+		return ColorBlockMetaHelper::getColorFromMeta($this->getVariant()) . " Wool";
 	}
 
 	public function getBreakTime(Item $item) : float{

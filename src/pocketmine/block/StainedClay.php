@@ -30,6 +30,6 @@ class StainedClay extends HardenedClay{
 	protected $id = self::STAINED_CLAY;
 
 	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Stained Clay";
+		return ColorBlockMetaHelper::getColorFromMeta($this->getVariant()) . " Stained Clay";
 	}
 }

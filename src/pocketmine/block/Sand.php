@@ -40,7 +40,7 @@ class Sand extends Fallable{
 	}
 
 	public function getName() : string{
-		if($this->meta === 0x01){
+		if($this->getVariant() === 0x01){
 			return "Red Sand";
 		}
 
