@@ -135,7 +135,7 @@ class Boat extends Vehicle{
 		}
 
 		if($waterCount < 1){
-			$this->motion->y += 0.39 * ($waterCount * 2 - 1);
+			$this->motion->y += 0.04 * ($waterCount * 2 - 1);
 		}else{
 			if($this->motion->y < 0){
 				$this->motion->y /= 2;

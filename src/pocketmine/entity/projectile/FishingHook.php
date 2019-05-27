@@ -129,22 +129,29 @@ class FishingHook extends Projectile{
 		$this->motion->z += $z;
 	}
 
-	/**
-	 * @param int $tickDiff
-	 *
-	 * @return bool
-	 */
-	public function entityBaseTick(int $tickDiff = 1) : bool{
-		$hasUpdate = parent::entityBaseTick($tickDiff);
+	public function onUpdate(int $currentTick) : bool{
+		if($this->closed) return false;
 
 		$owner = $this->getOwningEntity();
+
+		$inGround = $this->level->getBlock($this)->isSolid();
+
+		if($inGround){
+			$this->motion->x *= $this->random->nextFloat() * 0.2;
+			$this->motion->y *= $this->random->nextFloat() * 0.2;
+			$this->motion->z *= $this->random->nextFloat() * 0.2;
+		}
+
+		$hasUpdate = parent::onUpdate($currentTick);
 
 		if($owner instanceof Player){
 			if(!($owner->getInventory()->getItemInHand() instanceof FishingRod) or !$owner->isAlive() or $owner->isClosed() or $owner->distanceSquared($this) > 1024){
 				$this->flagForDespawn();
 			}
 
-			if($this->isUnderwater()){
+			if(!$inGround){
+				$hasUpdate = true;
+
 				$f6 = 0.92;
 
 				if($this->onGround or $this->isCollidedHorizontally){
@@ -156,8 +163,8 @@ class FishingHook extends Projectile{
 				$bb = $this->getBoundingBox();
 
 				for($j = 0; $j < 5; ++$j){
-					$d1 = $bb->minY + ($bb->maxY - $bb->minY) * $j / 5 - 0.125;
-					$d3 = $bb->minY + ($bb->maxY - $bb->minY) * ($j + 1) / 5 - 0.125;
+					$d1 = $bb->minY + ($bb->maxY - $bb->minY) * $j / 5;
+					$d3 = $bb->minY + ($bb->maxY - $bb->minY) * ($j + 1) / 5;
 
 					$bb2 = new AxisAlignedBB($bb->minX, $d1, $bb->minZ, $bb->maxX, $d3, $bb->maxZ);
 
@@ -240,19 +247,19 @@ class FishingHook extends Projectile{
 					if($this->ticksCatchable > 0){
 						$this->motion->y -= ($this->random->nextFloat() * $this->random->nextFloat() * $this->random->nextFloat()) * 0.2;
 					}
-
-					$d11 = $d10 * 2.0 - 1.0;
-					$this->motion->y += 0.04 * $d11;
-
-					if($d10 > 0.0){
-						$f6 = $f6 * 0.9;
-						$this->motion->y *= 0.8;
-					}
-
-					$this->motion->x *= $f6;
-					$this->motion->y *= $f6;
-					$this->motion->z *= $f6;
 				}
+
+				$d11 = $d10 * 2.0 - 1.0;
+				$this->motion->y += 0.04 * $d11;
+
+				if($d10 > 0.0){
+					$f6 = $f6 * 0.9;
+					$this->motion->y *= 0.8;
+				}
+
+				$this->motion->x *= $f6;
+				$this->motion->y *= $f6;
+				$this->motion->z *= $f6;
 			}
 		}else{
 			$this->flagForDespawn();
@@ -317,11 +324,7 @@ class FishingHook extends Projectile{
 		}
 	}
 
-	public function applyGravity() : void{
-		if(!$this->isUnderwater()){
-			parent::applyGravity();
-		}else{
-			$this->motion->y += $this->gravity;
-		}
+	protected function tryChangeMovement() : void{
+		// NOOP
 	}
 }
