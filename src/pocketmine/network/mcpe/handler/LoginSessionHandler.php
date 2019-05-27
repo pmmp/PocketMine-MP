@@ -75,14 +75,16 @@ class LoginSessionHandler extends SessionHandler{
 			return true;
 		}
 
-		$skin = new Skin(
-			$packet->clientData[LoginPacket::I_SKIN_ID],
-			base64_decode($packet->clientData[LoginPacket::I_SKIN_DATA]),
-			base64_decode($packet->clientData[LoginPacket::I_CAPE_DATA]),
-			$packet->clientData[LoginPacket::I_GEOMETRY_NAME],
-			base64_decode($packet->clientData[LoginPacket::I_GEOMETRY_DATA])
-		);
-		if(!$skin->isValid()){
+		try{
+			$skin = new Skin(
+				$packet->clientData[LoginPacket::I_SKIN_ID],
+				base64_decode($packet->clientData[LoginPacket::I_SKIN_DATA]),
+				base64_decode($packet->clientData[LoginPacket::I_CAPE_DATA]),
+				$packet->clientData[LoginPacket::I_GEOMETRY_NAME],
+				base64_decode($packet->clientData[LoginPacket::I_GEOMETRY_DATA])
+			);
+		}catch(\InvalidArgumentException $e){
+			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
 			$this->session->disconnect("disconnectionScreen.invalidSkin");
 
 			return true;

@@ -820,10 +820,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function changeSkin(Skin $skin, string $newSkinName, string $oldSkinName) : bool{
-		if(!$skin->isValid()){
-			return false;
-		}
-
 		$ev = new PlayerChangeSkinEvent($this, $this->getSkin(), $skin);
 		$ev->call();
 

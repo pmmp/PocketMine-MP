@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\entity\Skin;
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use function count;
@@ -59,13 +60,17 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 				$geometryName = $this->getString();
 				$geometryData = $this->getString();
 
-				$entry->skin = new Skin(
-					$skinId,
-					$skinData,
-					$capeData,
-					$geometryName,
-					$geometryData
-				);
+				try{
+					$entry->skin = new Skin(
+						$skinId,
+						$skinData,
+						$capeData,
+						$geometryName,
+						$geometryData
+					);
+				}catch(\InvalidArgumentException $e){
+					throw new BadPacketException($e->getMessage(), 0, $e);
+				}
 				$entry->xboxUserId = $this->getString();
 				$entry->platformChatId = $this->getString();
 			}else{

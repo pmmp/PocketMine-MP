@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\entity\Skin;
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\SessionHandler;
 use pocketmine\utils\UUID;
 
@@ -54,7 +55,11 @@ class PlayerSkinPacket extends DataPacket implements ClientboundPacket, Serverbo
 		$geometryModel = $this->getString();
 		$geometryData = $this->getString();
 
-		$this->skin = new Skin($skinId, $skinData, $capeData, $geometryModel, $geometryData);
+		try{
+			$this->skin = new Skin($skinId, $skinData, $capeData, $geometryModel, $geometryData);
+		}catch(\InvalidArgumentException $e){
+			throw new BadPacketException($e->getMessage(), 0, $e);
+		}
 
 		$this->premiumSkin = $this->getBool();
 	}
