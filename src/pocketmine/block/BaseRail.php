@@ -98,11 +98,14 @@ abstract class BaseRail extends Flowable{
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$blockReplace->getSide(Facing::DOWN)->isTransparent()){
-			$this->tryReconnect();
 			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
+	}
+
+	public function onPostPlace() : void{
+		$this->tryReconnect();
 	}
 
 	protected static function searchState(array $connections, array $lookup) : int{
@@ -253,6 +256,7 @@ abstract class BaseRail extends Flowable{
 
 		if($changed){
 			$this->setConnections($thisConnections);
+			$this->world->setBlock($this, $this);
 		}
 	}
 
