@@ -70,15 +70,12 @@ use function preg_match_all;
 use function preg_replace;
 use function rmdir;
 use function scandir;
-use function sha1;
-use function spl_object_hash;
 use function str_pad;
 use function str_replace;
 use function str_split;
 use function stripos;
 use function strlen;
 use function strpos;
-use function strtolower;
 use function strval;
 use function substr;
 use function sys_get_temp_dir;
@@ -101,21 +98,6 @@ class Utils{
 	private static $os;
 	/** @var UUID|null */
 	private static $serverUniqueId = null;
-
-	/**
-	 * Generates an unique identifier to a callable
-	 *
-	 * @param callable $variable
-	 *
-	 * @return string
-	 */
-	public static function getCallableIdentifier(callable $variable) : string{
-		if(is_array($variable)){
-			return sha1(strtolower(spl_object_hash($variable[0])) . "::" . strtolower($variable[1]));
-		}else{
-			return sha1(strtolower($variable));
-		}
-	}
 
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
