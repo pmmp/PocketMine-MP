@@ -39,7 +39,7 @@ class RegisteredListener{
 	private $plugin;
 
 	/** @var bool */
-	private $ignoreCancelled;
+	private $handleCancelled;
 
 	/** @var TimingsHandler */
 	private $timings;
@@ -49,14 +49,14 @@ class RegisteredListener{
 	 * @param \Closure       $handler
 	 * @param int            $priority
 	 * @param Plugin         $plugin
-	 * @param bool           $ignoreCancelled
+	 * @param bool           $handleCancelled
 	 * @param TimingsHandler $timings
 	 */
-	public function __construct(\Closure $handler, int $priority, Plugin $plugin, bool $ignoreCancelled, TimingsHandler $timings){
+	public function __construct(\Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled, TimingsHandler $timings){
 		$this->handler = $handler;
 		$this->priority = $priority;
 		$this->plugin = $plugin;
-		$this->ignoreCancelled = $ignoreCancelled;
+		$this->handleCancelled = $handleCancelled;
 		$this->timings = $timings;
 	}
 
@@ -82,7 +82,7 @@ class RegisteredListener{
 	 * @param Event $event
 	 */
 	public function callEvent(Event $event) : void{
-		if($event instanceof Cancellable and $event->isCancelled() and $this->isIgnoringCancelled()){
+		if($event instanceof Cancellable and $event->isCancelled() and !$this->isHandlingCancelled()){
 			return;
 		}
 		$this->timings->startTiming();
@@ -97,7 +97,7 @@ class RegisteredListener{
 	/**
 	 * @return bool
 	 */
-	public function isIgnoringCancelled() : bool{
-		return $this->ignoreCancelled;
+	public function isHandlingCancelled() : bool{
+		return $this->handleCancelled;
 	}
 }

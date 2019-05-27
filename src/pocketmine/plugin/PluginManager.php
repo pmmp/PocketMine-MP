@@ -532,22 +532,21 @@ class PluginManager{
 					throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid/unknown priority \"" . $tags["priority"] . "\"");
 				}
 
-				$ignoreCancelled = false;
-				if(isset($tags["ignoreCancelled"])){
-					switch(strtolower($tags["ignoreCancelled"])){
+				$handleCancelled = false;
+				if(isset($tags["handleCancelled"])){
+					switch(strtolower($tags["handleCancelled"])){
 						case "true":
 						case "":
-							$ignoreCancelled = true;
+							$handleCancelled = true;
 							break;
 						case "false":
-							$ignoreCancelled = false;
 							break;
 						default:
-							throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @ignoreCancelled value \"" . $tags["ignoreCancelled"] . "\"");
+							throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @handleCancelled value \"" . $tags["handleCancelled"] . "\"");
 					}
 				}
 
-				$this->registerEvent($eventClass->getName(), $handlerClosure, $priority, $plugin, $ignoreCancelled);
+				$this->registerEvent($eventClass->getName(), $handlerClosure, $priority, $plugin, $handleCancelled);
 			}
 		}
 	}
@@ -557,11 +556,11 @@ class PluginManager{
 	 * @param \Closure $handler
 	 * @param int      $priority
 	 * @param Plugin   $plugin
-	 * @param bool     $ignoreCancelled
+	 * @param bool     $handleCancelled
 	 *
 	 * @throws \ReflectionException
 	 */
-	public function registerEvent(string $event, \Closure $handler, int $priority, Plugin $plugin, bool $ignoreCancelled = false) : void{
+	public function registerEvent(string $event, \Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled = false) : void{
 		if(!is_subclass_of($event, Event::class)){
 			throw new PluginException($event . " is not an Event");
 		}
@@ -584,7 +583,7 @@ class PluginManager{
 
 		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . $handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")");
 
-		$this->getEventListeners($event)->register(new RegisteredListener($handler, $priority, $plugin, $ignoreCancelled, $timings));
+		$this->getEventListeners($event)->register(new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings));
 	}
 
 	/**
