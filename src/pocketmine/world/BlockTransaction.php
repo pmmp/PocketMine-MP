@@ -134,9 +134,9 @@ class BlockTransaction{
 	 * The callable signature should be the same as the below dummy function.
 	 * @see BlockTransaction::dummyValidator()
 	 *
-	 * @param callable $validator
+	 * @param \Closure $validator
 	 */
-	public function addValidator(callable $validator) : void{
+	public function addValidator(\Closure $validator) : void{
 		Utils::validateCallableSignature([$this, 'dummyValidator'], $validator);
 		$this->validators[] = $validator;
 	}

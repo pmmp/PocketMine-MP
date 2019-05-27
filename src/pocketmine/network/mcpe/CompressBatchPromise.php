@@ -27,7 +27,7 @@ use pocketmine\utils\Utils;
 use function array_push;
 
 class CompressBatchPromise{
-	/** @var callable[] */
+	/** @var \Closure[] */
 	private $callbacks = [];
 
 	/** @var string|null */
@@ -36,7 +36,7 @@ class CompressBatchPromise{
 	/** @var bool */
 	private $cancelled = false;
 
-	public function onResolve(callable ...$callbacks) : void{
+	public function onResolve(\Closure ...$callbacks) : void{
 		$this->checkCancelled();
 		foreach($callbacks as $callback){
 			Utils::validateCallableSignature(function(CompressBatchPromise $promise){}, $callback);
@@ -64,7 +64,7 @@ class CompressBatchPromise{
 	}
 
 	/**
-	 * @return callable[]
+	 * @return \Closure[]
 	 */
 	public function getResolveCallbacks() : array{
 		return $this->callbacks;
