@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\entity\Skin;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkSession;
@@ -31,7 +32,10 @@ use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\Player;
+use pocketmine\PlayerInfo;
 use pocketmine\Server;
+use pocketmine\utils\UUID;
+use function base64_decode;
 
 /**
  * Handles the initial login phase of the session. This handler is used as the initial state.
@@ -50,8 +54,6 @@ class LoginSessionHandler extends SessionHandler{
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-		$this->session->setPlayerInfo($packet->playerInfo);
-
 		if(!$this->isCompatibleProtocol($packet->protocol)){
 			$pk = new PlayStatusPacket();
 			$pk->status = $packet->protocol < ProtocolInfo::CURRENT_PROTOCOL ?
@@ -67,20 +69,36 @@ class LoginSessionHandler extends SessionHandler{
 			return true;
 		}
 
-		if(!Player::isValidUserName($packet->playerInfo->getUsername())){
+		if(!Player::isValidUserName($packet->extraData[LoginPacket::I_USERNAME])){
 			$this->session->disconnect("disconnectionScreen.invalidName");
 
 			return true;
 		}
 
-		if(!$packet->playerInfo->getSkin()->isValid()){
+		$skin = new Skin(
+			$packet->clientData[LoginPacket::I_SKIN_ID],
+			base64_decode($packet->clientData[LoginPacket::I_SKIN_DATA]),
+			base64_decode($packet->clientData[LoginPacket::I_CAPE_DATA]),
+			$packet->clientData[LoginPacket::I_GEOMETRY_NAME],
+			base64_decode($packet->clientData[LoginPacket::I_GEOMETRY_DATA])
+		);
+		if(!$skin->isValid()){
 			$this->session->disconnect("disconnectionScreen.invalidSkin");
 
 			return true;
 		}
 
+		$this->session->setPlayerInfo(new PlayerInfo(
+			$packet->extraData[LoginPacket::I_USERNAME],
+			UUID::fromString($packet->extraData[LoginPacket::I_UUID]),
+			$skin,
+			$packet->clientData[LoginPacket::I_LANGUAGE_CODE],
+			$packet->extraData[LoginPacket::I_XUID],
+			$packet->clientData[LoginPacket::I_CLIENT_RANDOM_ID]
+		));
+
 		$ev = new PlayerPreLoginEvent(
-			$packet->playerInfo,
+			$this->session->getPlayerInfo(),
 			$this->session->getIp(),
 			$this->session->getPort(),
 			$this->server->requiresAuthentication()
@@ -88,10 +106,10 @@ class LoginSessionHandler extends SessionHandler{
 		if($this->server->getNetwork()->getConnectionCount() > $this->server->getMaxPlayers()){
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, "disconnectionScreen.serverFull");
 		}
-		if(!$this->server->isWhitelisted($packet->playerInfo->getUsername())){
+		if(!$this->server->isWhitelisted($this->session->getPlayerInfo()->getUsername())){
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_WHITELISTED, "Server is whitelisted");
 		}
-		if($this->server->getNameBans()->isBanned($packet->playerInfo->getUsername()) or $this->server->getIPBans()->isBanned($this->session->getIp())){
+		if($this->server->getNameBans()->isBanned($this->session->getPlayerInfo()->getUsername()) or $this->server->getIPBans()->isBanned($this->session->getIp())){
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_BANNED, "You are banned");
 		}
 
