@@ -1863,6 +1863,7 @@ class World implements ChunkManager, Metadatable{
 			//TODO: seal this up inside block placement
 			$tile->copyDataFromItem($item);
 		}
+		$hand->onPostPlace();
 
 		if($playSound){
 			$this->addSound($hand, new BlockPlaceSound($hand));

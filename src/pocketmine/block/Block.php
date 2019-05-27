@@ -253,6 +253,10 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 		return $this->getWorld()->setBlock($blockReplace, $this);
 	}
 
+	public function onPostPlace() : void{
+
+	}
+
 	/**
 	 * Returns an object containing information about the destruction requirements of this block.
 	 *
