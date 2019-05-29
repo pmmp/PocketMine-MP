@@ -34,7 +34,7 @@ class ConcretePowder extends Fallable{
 	}
 
 	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Concrete Powder";
+		return ColorBlockMetaHelper::getColorFromMeta($this->getVariant()) . " Concrete Powder";
 	}
 
 	public function getHardness() : float{

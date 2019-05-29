@@ -30,6 +30,6 @@ class StainedGlass extends Glass{
 	protected $id = self::STAINED_GLASS;
 
 	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Stained Glass";
+		return ColorBlockMetaHelper::getColorFromMeta($this->getVariant()) . " Stained Glass";
 	}
 }

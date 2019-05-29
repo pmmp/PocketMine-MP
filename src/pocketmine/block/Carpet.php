@@ -46,7 +46,7 @@ class Carpet extends Flowable{
 	}
 
 	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Carpet";
+		return ColorBlockMetaHelper::getColorFromMeta($this->getVariant()) . " Carpet";
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
