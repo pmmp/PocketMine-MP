@@ -277,7 +277,7 @@
                 {
                     "name": "Berry Langerak",
                     "email": "berry@berryllium.nl",
-                    "role": "Developer"
+                    "role": "developer"
                 },
                 {
                     "name": "Rick van der Staaij",
@@ -413,12 +413,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "3b075c62693824b44b50ea3787b88116c7c56926"
+                "reference": "b4799d6ecc0914b6d47ead8c70b50e53b043d828"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/3b075c62693824b44b50ea3787b88116c7c56926",
-                "reference": "3b075c62693824b44b50ea3787b88116c7c56926",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/b4799d6ecc0914b6d47ead8c70b50e53b043d828",
+                "reference": "b4799d6ecc0914b6d47ead8c70b50e53b043d828",
                 "shasum": ""
             },
             "require": {
@@ -446,7 +446,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-05-02T15:09:56+00:00"
+            "time": "2019-05-13T17:14:39+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -488,19 +488,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "463152d5d2ee052a89fe44dcc27b56663f891912"
+                "reference": "7b80cbebd90a320b109154a7ff594688c1e0efcf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/463152d5d2ee052a89fe44dcc27b56663f891912",
-                "reference": "463152d5d2ee052a89fe44dcc27b56663f891912",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/7b80cbebd90a320b109154a7ff594688c1e0efcf",
+                "reference": "7b80cbebd90a320b109154a7ff594688c1e0efcf",
                 "shasum": ""
             },
             "type": "library",
             "autoload": {
-                "exclude-from-classmap": [
-                    "stubs"
-                ],
                 "classmap": [
                     "./"
                 ]
@@ -512,7 +509,7 @@
             "support": {
                 "source": "https://github.com/pmmp/SPL/tree/master"
             },
-            "time": "2019-03-31T16:30:20+00:00"
+            "time": "2019-05-18T14:07:32+00:00"
         }
     ],
     "packages-dev": [],
