@@ -31,6 +31,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
@@ -105,7 +106,11 @@ class NetworkBinaryStream extends BinaryStream{
 			if($c !== 1){
 				throw new BadPacketException("Unexpected NBT count $c");
 			}
-			$compound = (new NetworkNbtSerializer())->read($this->buffer, $this->offset, 512)->getTag();
+			try{
+				$compound = (new NetworkNbtSerializer())->read($this->buffer, $this->offset, 512)->getTag();
+			}catch(NbtDataException $e){
+				throw new BadPacketException($e->getMessage(), 0, $e);
+			}
 		}elseif($nbtLen !== 0){
 			throw new BadPacketException("Unexpected fake NBT length $nbtLen");
 		}
