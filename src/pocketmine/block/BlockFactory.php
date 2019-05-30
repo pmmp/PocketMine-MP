@@ -37,6 +37,7 @@ use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
+use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\tile\Skull as TileSkull;
@@ -228,7 +229,7 @@ class BlockFactory{
 		self::register(new Magma(new BID(Ids::MAGMA), "Magma Block"));
 		self::register(new Melon(new BID(Ids::MELON_BLOCK), "Melon Block"));
 		self::register(new MelonStem(new BID(Ids::MELON_STEM, 0, ItemIds::MELON_SEEDS), "Melon Stem"));
-		self::register(new MonsterSpawner(new BID(Ids::MOB_SPAWNER), "Monster Spawner"));
+		self::register(new MonsterSpawner(new BID(Ids::MOB_SPAWNER, 0, null, TileMonsterSpawner::class), "Monster Spawner"));
 		self::register(new Mycelium(new BID(Ids::MYCELIUM), "Mycelium"));
 
 		$netherBrickBreakInfo = new BlockBreakInfo(2.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
