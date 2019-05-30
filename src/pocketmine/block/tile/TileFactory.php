@@ -50,6 +50,7 @@ final class TileFactory{
 		self::register(Bed::class, ["Bed", "minecraft:bed"]);
 		self::register(Chest::class, ["Chest", "minecraft:chest"]);
 		self::register(Comparator::class, ["Comparator", "minecraft:comparator"]);
+		self::register(DaylightSensor::class, ["DaylightDetector", "minecraft:daylight_detector"]);
 		self::register(EnchantTable::class, ["EnchantTable", "minecraft:enchanting_table"]);
 		self::register(EnderChest::class, ["EnderChest", "minecraft:ender_chest"]);
 		self::register(FlowerPot::class, ["FlowerPot", "minecraft:flower_pot"]);
@@ -70,7 +71,6 @@ final class TileFactory{
 		//TODO: ChemistryTable
 		//TODO: CommandBlock
 		//TODO: Conduit
-		//TODO: DaylightDetector
 		//TODO: Dispenser
 		//TODO: Dropper
 		//TODO: EndGateway

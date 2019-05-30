@@ -31,6 +31,7 @@ use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\Comparator as TileComparator;
+use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
@@ -120,7 +121,7 @@ class BlockFactory{
 		self::register(new Cobweb(new BID(Ids::COBWEB), "Cobweb"));
 		self::register(new CocoaBlock(new BID(Ids::COCOA), "Cocoa Block"));
 		self::register(new CraftingTable(new BID(Ids::CRAFTING_TABLE), "Crafting Table"));
-		self::register(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_DETECTOR, Ids::DAYLIGHT_DETECTOR_INVERTED), "Daylight Sensor"));
+		self::register(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_DETECTOR, Ids::DAYLIGHT_DETECTOR_INVERTED, 0, null, TileDaylightSensor::class), "Daylight Sensor"));
 		self::register(new DeadBush(new BID(Ids::DEADBUSH), "Dead Bush"));
 		self::register(new DetectorRail(new BID(Ids::DETECTOR_RAIL), "Detector Rail"));
 
