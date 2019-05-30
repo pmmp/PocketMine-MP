@@ -36,6 +36,7 @@ use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
+use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\TileFactory;
@@ -241,7 +242,7 @@ class BlockFactory{
 		self::register(new Solid(new BID(Ids::NETHER_WART_BLOCK), "Nether Wart Block", new BlockBreakInfo(1.0)));
 		self::register(new NetherWartPlant(new BID(Ids::NETHER_WART_PLANT, 0, ItemIds::NETHER_WART), "Nether Wart"));
 		self::register(new Netherrack(new BID(Ids::NETHERRACK), "Netherrack"));
-		self::register(new NoteBlock(new BID(Ids::NOTEBLOCK), "Note Block"));
+		self::register(new Note(new BID(Ids::NOTEBLOCK, 0, null, TileNote::class), "Note Block"));
 		self::register(new Solid(new BID(Ids::OBSIDIAN), "Obsidian", new BlockBreakInfo(35.0 /* 50 in PC */, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_DIAMOND, 6000.0)));
 		self::register(new PackedIce(new BID(Ids::PACKED_ICE), "Packed Ice"));
 		self::register(new Podzol(new BID(Ids::PODZOL), "Podzol"));

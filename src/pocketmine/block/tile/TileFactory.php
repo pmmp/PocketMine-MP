@@ -55,6 +55,7 @@ final class TileFactory{
 		self::register(FlowerPot::class, ["FlowerPot", "minecraft:flower_pot"]);
 		self::register(Furnace::class, ["Furnace", "minecraft:furnace"]);
 		self::register(ItemFrame::class, ["ItemFrame"]); //this is an entity in PC
+		self::register(Note::class, ["Music", "minecraft:noteblock"]);
 		self::register(Sign::class, ["Sign", "minecraft:sign"]);
 		self::register(Skull::class, ["Skull", "minecraft:skull"]);
 
@@ -80,7 +81,6 @@ final class TileFactory{
 		//TODO: Lectern
 		//TODO: MobSpawner
 		//TODO: MovingBlock
-		//TODO: Music
 		//TODO: NetherReactor
 		//TODO: PistonArm
 		//TODO: ShulkerBox

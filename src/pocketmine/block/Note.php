@@ -23,14 +23,56 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class NoteBlock extends Solid{
+use pocketmine\block\tile\Note as TileNote;
+use function assert;
+
+class Note extends Solid{
+	public const MIN_PITCH = 0;
+	public const MAX_PITCH = 24;
+
+	/** @var int */
+	private $pitch = self::MIN_PITCH;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.8, BlockToolType::TYPE_AXE));
 	}
 
+	public function readStateFromWorld() : void{
+		parent::readStateFromWorld();
+		$tile = $this->world->getTile($this);
+		if($tile instanceof TileNote){
+			$this->pitch = $tile->getPitch();
+		}else{
+			$this->pitch = self::MIN_PITCH;
+		}
+	}
+
+	public function writeStateToWorld() : void{
+		parent::writeStateToWorld();
+		$tile = $this->world->getTile($this);
+		assert($tile instanceof TileNote);
+		$tile->setPitch($this->pitch);
+	}
+
 	public function getFuelTime() : int{
 		return 300;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getPitch() : int{
+		return $this->pitch;
+	}
+
+	/**
+	 * @param int $pitch
+	 */
+	public function setPitch(int $pitch) : void{
+		if($pitch < self::MIN_PITCH or $pitch > self::MAX_PITCH){
+			throw new \InvalidArgumentException("Pitch must be in range " . self::MIN_PITCH . " - " . self::MAX_PITCH);
+		}
+		$this->pitch = $pitch;
 	}
 
 	//TODO
