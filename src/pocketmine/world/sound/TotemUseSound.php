@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class TotemUseSound implements Sound{
 
-	public function encode(Vector3 $pos){
+	public function encode(?Vector3 $pos){
 		return LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_TOTEM, 0, $pos);
 	}
 }

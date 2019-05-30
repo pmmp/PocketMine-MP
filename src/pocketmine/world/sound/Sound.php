@@ -29,9 +29,9 @@ use pocketmine\network\mcpe\protocol\ClientboundPacket;
 interface Sound{
 
 	/**
-	 * @param Vector3 $pos
+	 * @param Vector3|null $pos
 	 *
 	 * @return ClientboundPacket|ClientboundPacket[]
 	 */
-	public function encode(Vector3 $pos);
+	public function encode(?Vector3 $pos);
 }
