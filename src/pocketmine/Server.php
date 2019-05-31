@@ -73,6 +73,7 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginGraylist;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
@@ -1209,8 +1210,6 @@ class Server{
 				return;
 			}
 			$this->pluginManager = new PluginManager($this, ((bool) $this->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR, $pluginGraylist);
-			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
-			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
 			WorldProviderManager::init();
 			if(
@@ -1231,8 +1230,12 @@ class Server{
 
 			register_shutdown_function([$this, "crashDump"]);
 
-			$this->pluginManager->loadPlugins($this->pluginPath);
-			$this->enablePlugins(PluginLoadOrder::STARTUP());
+			ScriptPluginLoader::scanPlugins($this->pluginManager, $this->pluginPath);
+			PharPluginLoader::scanPlugins($this->pluginManager, $this->autoloader, $this->pluginPath);
+			$this->pluginManager->enablePlugins(PluginLoadOrder::SCAN());
+
+			$this->pluginManager->sortPlugins();
+			$this->pluginManager->enablePlugins(PluginLoadOrder::STARTUP());
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
 				if($options === null){
@@ -1281,7 +1284,10 @@ class Server{
 				$this->worldManager->setDefaultWorld($world);
 			}
 
-			$this->enablePlugins(PluginLoadOrder::POSTWORLD());
+			$this->pluginManager->enablePlugins(PluginLoadOrder::POSTWORLD());
+
+			$this->commandMap->registerServerAliases();
+			DefaultPermissions::registerCorePermissions();
 
 			$this->network->registerInterface(new RakLibInterface($this));
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
@@ -1543,22 +1549,6 @@ class Server{
 	}
 
 	/**
-	 * @param PluginLoadOrder $type
-	 */
-	public function enablePlugins(PluginLoadOrder $type) : void{
-		foreach($this->pluginManager->getPlugins() as $plugin){
-			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder() === $type){
-				$this->pluginManager->enablePlugin($plugin);
-			}
-		}
-
-		if($type->equals(PluginLoadOrder::POSTWORLD())){
-			$this->commandMap->registerServerAliases();
-			DefaultPermissions::registerCorePermissions();
-		}
-	}
-
-	/**
 	 * Executes a command from a CommandSender
 	 *
 	 * @param CommandSender $sender
@@ -1742,7 +1732,7 @@ class Server{
 				$plugin = $dump->getData()["plugin"];
 				if(is_string($plugin)){
 					$p = $this->pluginManager->getPlugin($plugin);
-					if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
+					if(!($p instanceof PluginBase && $p->isPhar())){
 						$this->logger->debug("Not sending crashdump due to caused by non-phar plugin");
 						$report = false;
 					}

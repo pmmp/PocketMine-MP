@@ -23,25 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\Server;
 
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever enum members are added, removed or changed.
- * @see EnumTrait::_generateMethodAnnotations()
- *
- * @method static self SCAN() when the server is scanning for new plugins
- * @method static self STARTUP() when all plugins are loaded, before loading default worlds
- * @method static self POSTWORLD() after loading default worlds
- */
-final class PluginLoadOrder{
-	use EnumTrait;
-
-	protected static function setup() : array{
-		return [
-			new self("scan"),
-			new self("startup"),
-			new self("postworld")
-		];
+class ScriptPlugin extends PluginImpl{
+	final public function __construct(Server $server, PluginDescription $description, string $dataFolder){
+		parent::__construct($server, $description, $dataFolder);
 	}
 }

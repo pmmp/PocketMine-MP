@@ -38,7 +38,8 @@
       "pocketmine/snooze": "^0.1.0",
       "daverandom/callback-validator": "dev-master",
       "adhocore/json-comment": "^0.0.7",
-      "particle/validator": "^2.3"
+      "particle/validator": "^2.3",
+      "marcj/topsort": "^1.1"
    },
    "autoload": {
       "psr-4": {

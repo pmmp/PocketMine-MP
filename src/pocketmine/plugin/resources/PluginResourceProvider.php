@@ -21,42 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\plugin;
+namespace pocketmine\plugin\resources;
 
-/**
- * Handles different types of plugins
- */
-interface PluginLoader{
+use Generator;
+use SplFileInfo;
+
+interface PluginResourceProvider{
+	/**
+	 * Gets an embedded resource on the plugin file.
+	 * WARNING: You must close the resource given using fclose()
+	 *
+	 * @param string $filename
+	 *
+	 * @return null|resource Resource data, or null
+	 */
+	public function getResource(string $filename);
 
 	/**
-	 * Returns whether this PluginLoader can load the plugin in the given path.
+	 * Yields all the resources packaged with the plugin in the form ["path/in/resources" => SplFileInfo]
 	 *
-	 * @param string $path
-	 *
-	 * @return bool
+	 * @return Generator|SplFileInfo[]
 	 */
-	public function canLoadPlugin(string $path) : bool;
-
-	/**
-	 * Loads the plugin contained in $file
-	 *
-	 * @param string $file
-	 */
-	public function loadPlugin(string $file) : void;
-
-	/**
-	 * Gets the PluginDescription from the file
-	 *
-	 * @param string $file
-	 *
-	 * @return null|PluginDescription
-	 */
-	public function getPluginDescription(string $file) : ?PluginDescription;
-
-	/**
-	 * Returns the protocol prefix used to access files in this plugin, e.g. file://, phar://
-	 *
-	 * @return string
-	 */
-	public function getAccessProtocol() : string;
+	public function listResources() : Generator;
 }

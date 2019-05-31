@@ -23,12 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use function class_exists;
 use function file;
+use function glob;
+use function is_a;
 use function is_file;
 use function preg_match;
-use function strlen;
+use function realpath;
 use function strpos;
-use function substr;
 use function trim;
 use const FILE_IGNORE_NEW_LINES;
 use const FILE_SKIP_EMPTY_LINES;
@@ -37,20 +39,46 @@ use const FILE_SKIP_EMPTY_LINES;
  * Simple script loader, not for plugin development
  * For an example see https://gist.github.com/shoghicp/516105d470cf7d140757
  */
-class ScriptPluginLoader implements PluginLoader{
-
-	public function canLoadPlugin(string $path) : bool{
-		$ext = ".php";
-		return is_file($path) and substr($path, -strlen($ext)) === $ext;
+final class ScriptPluginLoader{
+	/**
+	 * Load script plugins in the directory $dir into the provided PluginManager
+	 *
+	 * @param PluginManager $manager
+	 * @param string        $dir
+	 */
+	public static function scanPlugins(PluginManager $manager, string $dir) : void{
+		foreach(glob("$dir/*.php") as $file){
+			if(is_file($file)){
+				self::loadPlugin($manager, $file);
+			}
+		}
 	}
 
-	/**
-	 * Loads the plugin contained in $file
-	 *
-	 * @param string $file
-	 */
-	public function loadPlugin(string $file) : void{
-		include_once $file;
+	public static function loadPlugin(PluginManager $manager, string $file) : bool{
+		$description = self::getPluginDescription($file);
+		if($description === null){
+			return false;
+		}
+		$file = realpath($file);
+
+		$dataFolder = $manager->getDataDirectory($file, $description->getName());
+		$manager->loadPlugin($description, $dataFolder, function(PluginDescription $description, string $dataFolder) use ($manager, $file){
+			include_once $file;
+
+			$main = $description->getMain();
+			if(!class_exists($main)){
+				$manager->getServer()->getLogger()->error("Main class for plugin " . $description->getName() . " not found");
+				return null;
+			}
+			if(!is_a($main, ScriptPlugin::class, true)){
+				throw new PluginException("$main does not extend " . ScriptPlugin::class . ", so it cannot be loaded by ScriptPluginLoader");
+			}
+
+			/** @var ScriptPlugin $ret */
+			$ret = new $main($manager->getServer(), $description, $dataFolder);
+			return $ret;
+		});
+		return true;
 	}
 
 	/**
@@ -60,7 +88,7 @@ class ScriptPluginLoader implements PluginLoader{
 	 *
 	 * @return null|PluginDescription
 	 */
-	public function getPluginDescription(string $file) : ?PluginDescription{
+	public static function getPluginDescription(string $file) : ?PluginDescription{
 		$content = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
 		$data = [];
@@ -91,9 +119,5 @@ class ScriptPluginLoader implements PluginLoader{
 		}
 
 		return null;
-	}
-
-	public function getAccessProtocol() : string{
-		return "";
 	}
 }

@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use InvalidStateException;
+use MJS\TopSort\Implementations\ArraySort;
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
 use pocketmine\event\HandlerList;
@@ -37,22 +39,22 @@ use pocketmine\utils\Utils;
 use function array_intersect;
 use function array_map;
 use function array_pad;
-use function class_exists;
+use function array_reverse;
 use function count;
 use function dirname;
 use function explode;
 use function file_exists;
 use function get_class;
 use function implode;
-use function is_a;
-use function is_array;
 use function is_dir;
 use function is_subclass_of;
 use function mkdir;
+use function shuffle;
 use function stripos;
 use function strpos;
 use function strtolower;
 use function strtoupper;
+use function var_dump;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -63,20 +65,16 @@ class PluginManager{
 	/** @var Server */
 	private $server;
 
+	/** @var PluginFoetus[][] */
+	private $foeti = [];
+	/** @var PluginLoadOrder[] */
+	private $foetusOrders = [];
 	/**
 	 * @var Plugin[]
 	 */
-	protected $plugins = [];
+	private $plugins = [];
 
-	/**
-	 * @var Plugin[]
-	 */
-	protected $enabledPlugins = [];
-
-	/**
-	 * @var PluginLoader[]
-	 */
-	protected $fileAssociations = [];
+	private $sorted = false;
 
 	/** @var string|null */
 	private $pluginDataDirectory;
@@ -102,6 +100,10 @@ class PluginManager{
 		$this->graylist = $graylist;
 	}
 
+	public function getServer() : Server{
+		return $this->server;
+	}
+
 	/**
 	 * @param string $name
 	 *
@@ -116,261 +118,63 @@ class PluginManager{
 	}
 
 	/**
-	 * @param PluginLoader $loader
-	 */
-	public function registerInterface(PluginLoader $loader) : void{
-		$this->fileAssociations[get_class($loader)] = $loader;
-	}
-
-	/**
 	 * @return Plugin[]
 	 */
 	public function getPlugins() : array{
 		return $this->plugins;
 	}
 
-	private function getDataDirectory(string $pluginPath, string $pluginName) : string{
+	public function getDataDirectory(string $pluginPath, string $pluginName) : string{
 		if($this->pluginDataDirectory !== null){
 			return $this->pluginDataDirectory . $pluginName;
 		}
 		return dirname($pluginPath) . DIRECTORY_SEPARATOR . $pluginName;
 	}
 
+
 	/**
-	 * @param string         $path
-	 * @param PluginLoader[] $loaders
+	 * @param PluginDescription $description
+	 * @param string            $dataFolder
+	 * @param callable          $createInstance
 	 *
 	 * @return Plugin|null
 	 */
-	public function loadPlugin(string $path, ?array $loaders = null) : ?Plugin{
-		foreach($loaders ?? $this->fileAssociations as $loader){
-			if($loader->canLoadPlugin($path)){
-				$description = $loader->getPluginDescription($path);
-				if($description instanceof PluginDescription){
-					$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.load", [$description->getFullName()]));
-					try{
-						$description->checkRequiredExtensions();
-					}catch(PluginException $ex){
-						$this->server->getLogger()->error($ex->getMessage());
-						return null;
-					}
-
-					$dataFolder = $this->getDataDirectory($path, $description->getName());
-					if(file_exists($dataFolder) and !is_dir($dataFolder)){
-						$this->server->getLogger()->error("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
-						return null;
-					}
-					if(!file_exists($dataFolder)){
-						mkdir($dataFolder, 0777, true);
-					}
-
-					$prefixed = $loader->getAccessProtocol() . $path;
-					$loader->loadPlugin($prefixed);
-
-					$mainClass = $description->getMain();
-					if(!class_exists($mainClass, true)){
-						$this->server->getLogger()->error("Main class for plugin " . $description->getName() . " not found");
-						return null;
-					}
-					if(!is_a($mainClass, Plugin::class, true)){
-						$this->server->getLogger()->error("Main class for plugin " . $description->getName() . " is not an instance of " . Plugin::class);
-						return null;
-					}
-
-					/**
-					 * @var Plugin $plugin
-					 * @see Plugin::__construct()
-					 */
-					$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed);
-					$this->plugins[$plugin->getDescription()->getName()] = $plugin;
-
-					return $plugin;
-				}
-			}
+	public function loadPlugin(PluginDescription $description, string $dataFolder, callable $createInstance) : bool{
+		if($this->sorted){
+			throw new InvalidStateException("Plugins calling PluginManager->loadPlugin() must use \"load: SCAN\"");
 		}
 
-		return null;
-	}
-
-	/**
-	 * @param string $directory
-	 * @param array  $newLoaders
-	 *
-	 * @return Plugin[]
-	 */
-	public function loadPlugins(string $directory, ?array $newLoaders = null) : array{
-		if(!is_dir($directory)){
-			return [];
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.load", [$description->getFullName()]));
+		if(!$this->checkRequirements($description)){
+			return false;
 		}
 
-		$plugins = [];
-		$loadedPlugins = [];
-		$dependencies = [];
-		$softDependencies = [];
-		if(is_array($newLoaders)){
-			$loaders = [];
-			foreach($newLoaders as $key){
-				if(isset($this->fileAssociations[$key])){
-					$loaders[$key] = $this->fileAssociations[$key];
-				}
-			}
-		}else{
-			$loaders = $this->fileAssociations;
+		$pluginName = $description->getName();
+		if(file_exists($dataFolder) and !is_dir($dataFolder)){
+			$this->server->getLogger()->error("Projected dataFolder '$dataFolder' for $pluginName exists and is not a directory");
+			return false;
 		}
-		foreach($loaders as $loader){
-			foreach(new \DirectoryIterator($directory) as $file){
-				if($file === "." or $file === ".."){
-					continue;
-				}
-				$file = $directory . $file;
-				if(!$loader->canLoadPlugin($file)){
-					continue;
-				}
-				try{
-					$description = $loader->getPluginDescription($file);
-				}catch(\RuntimeException $e){ //TODO: more specific exception handling
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [$file, $directory, $e->getMessage()]));
-					$this->server->getLogger()->logException($e);
-					continue;
-				}
-				if($description === null){
-					continue;
-				}
-
-				$name = $description->getName();
-				if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.restrictedName"]));
-					continue;
-				}
-				if(strpos($name, " ") !== false){
-					$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.spacesDiscouraged", [$name]));
-				}
-
-				if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.duplicateError", [$name]));
-					continue;
-				}
-
-				if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
-						$name,
-						$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleAPI", [implode(", ", $description->getCompatibleApis())])
-					]));
-					continue;
-				}
-				$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
-				if(!empty($ambiguousVersions)){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
-						$name,
-						$this->server->getLanguage()->translateString("pocketmine.plugin.ambiguousMinAPI", [implode(", ", $ambiguousVersions)])
-					]));
-					continue;
-				}
-
-				if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
-					$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
-					if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
-						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
-							$name,
-							$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleProtocol", [implode(", ", $pluginMcpeProtocols)])
-						]));
-						continue;
-					}
-				}
-
-				if($this->graylist !== null and !$this->graylist->isAllowed($name)){
-					$this->server->getLogger()->notice($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
-						$name,
-						"Disallowed by graylist"
-					]));
-					continue;
-				}
-				$plugins[$name] = $file;
-
-				$softDependencies[$name] = $description->getSoftDepend();
-				$dependencies[$name] = $description->getDepend();
-
-				foreach($description->getLoadBefore() as $before){
-					if(isset($softDependencies[$before])){
-						$softDependencies[$before][] = $name;
-					}else{
-						$softDependencies[$before] = [$name];
-					}
-				}
-			}
+		if(!file_exists($dataFolder)){
+			mkdir($dataFolder, 0777, true);
 		}
 
+		$foetus = new PluginFoetus($description, $dataFolder, $createInstance);
 
-		while(count($plugins) > 0){
-			$missingDependency = true;
-			foreach($plugins as $name => $file){
-				if(isset($dependencies[$name])){
-					foreach($dependencies[$name] as $key => $dependency){
-						if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
-							unset($dependencies[$name][$key]);
-						}elseif(!isset($plugins[$dependency])){
-							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
-								$name,
-								$this->server->getLanguage()->translateString("%pocketmine.plugin.unknownDependency", [$dependency])
-							]));
-							unset($plugins[$name]);
-							continue 2;
-						}
-					}
+		$order = $description->getOrder();
 
-					if(count($dependencies[$name]) === 0){
-						unset($dependencies[$name]);
-					}
-				}
-
-				if(isset($softDependencies[$name])){
-					foreach($softDependencies[$name] as $key => $dependency){
-						if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
-							unset($softDependencies[$name][$key]);
-						}
-					}
-
-					if(count($softDependencies[$name]) === 0){
-						unset($softDependencies[$name]);
-					}
-				}
-
-				if(!isset($dependencies[$name]) and !isset($softDependencies[$name])){
-					unset($plugins[$name]);
-					$missingDependency = false;
-					if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
-						$loadedPlugins[$name] = $plugin;
-					}else{
-						$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.genericLoadError", [$name]));
-					}
-				}
-			}
-
-			if($missingDependency){
-				foreach($plugins as $name => $file){
-					if(!isset($dependencies[$name])){
-						unset($softDependencies[$name]);
-						unset($plugins[$name]);
-						$missingDependency = false;
-						if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
-							$loadedPlugins[$name] = $plugin;
-						}else{
-							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.genericLoadError", [$name]));
-						}
-					}
-				}
-
-				//No plugins loaded :(
-				if($missingDependency){
-					foreach($plugins as $name => $file){
-						$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.circularDependency"]));
-					}
-					$plugins = [];
-				}
-			}
+		if(isset($this->foetusOrders[$pluginName])){
+			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.duplicateError"
+				, [$pluginName]));
+			return false;
 		}
+		$this->foetusOrders[$pluginName] = $order;
 
-		return $loadedPlugins;
+		if(!isset($this->foeti[$order->getEnumName()])){
+			$this->foeti[$order->getEnumName()] = [];
+		}
+		$this->foeti[$order->getEnumName()][$pluginName] = $foetus;
+
+		return true;
 	}
 
 	/**
@@ -425,28 +229,179 @@ class PluginManager{
 		return isset($this->plugins[$plugin->getDescription()->getName()]) and $plugin->isEnabled();
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 */
-	public function enablePlugin(Plugin $plugin) : void{
-		if(!$plugin->isEnabled()){
-			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
+	private function checkRequirements(PluginDescription $description) : bool{
+		try{
+			$description->checkRequiredExtensions();
+		}catch(PluginException $ex){
+			$this->server->getLogger()->error($ex->getMessage());
+			return false;
+		}
 
-			$permManager = PermissionManager::getInstance();
-			foreach($plugin->getDescription()->getPermissions() as $perm){
-				$permManager->addPermission($perm);
+		$name = $description->getName();
+		foreach(["pocketmine", "minecraft", "mojang"] as $taboo){
+			if(stripos($name, $taboo) !== false){
+				$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+					$name, "%pocketmine.plugin.restrictedName"
+				]));
+				return false;
 			}
-			$plugin->getScheduler()->setEnabled(true);
-			$plugin->onEnableStateChange(true);
+		}
+		if(strpos($name, " ") !== false){
+			$this->server->getLogger()->warning($this->server->getLanguage()->translateString("
+pocketmine.plugin.spacesDiscouraged", [$name]));
+		}
+		if($this->graylist !== null and !$this->graylist->isAllowed($name)){
+			$this->server->getLogger()->notice($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+				$name,
+				"Disallowed by graylist"
+			]));
+			return false;
+		}
 
-			$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
+		if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){
+			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+				$name,
+				$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleAPI", [implode(", ", $description->
+				getCompatibleApis())])
+			]));
+			return false;
+		}
+		$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
+		if(!empty($ambiguousVersions)){
+			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+				$name,
+				$this->server->getLanguage()->translateString("pocketmine.plugin.ambiguousMinAPI", [implode(", ",
+					$ambiguousVersions)])
+			]));
+			return false;
+		}
 
-			(new PluginEnableEvent($plugin))->call();
+		if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
+			$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
+			if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
+				$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+					$name,
+					$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleProtocol", [implode(", ",
+						$pluginMcpeProtocols)])
+				]));
+				return false;
+			}
+		}
+
+		if($description->getOrder() === PluginLoadOrder::SCAN() && count($description->getDepend()) + count($description->getSoftDepend()) + count($description->getLoadBefore()) > 0){
+			$this->server->getLogger()->error("Plugins at SCAN level must not depend/softDepend/loadBefore anything"); // TODO multilang
+			return false;
+		}
+
+		return true;
+	}
+
+	public function sortPlugins() : void{
+		$history = [];
+
+		foreach($this->foeti as $order => $plugins){
+			foreach($plugins as $name => $plugin){
+				if(isset($history[$name])){
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.duplicateError"
+						, [$name])); // TODO fix error message
+					unset($plugins[$name]); // not loading the later one
+					continue;
+				}
+				$history[$name] = true;
+			}
+
+			if($order === PluginLoadOrder::SCAN()->getEnumName()){
+				// put this after $history so as to detect duplicates with SCAN()
+				continue;
+			}
+
+			foreach($plugins as $name => $plugin){
+				foreach($plugin->getDescription()->getDepend() as $depend){
+					if(!isset($this->foetusOrders[$depend])){
+						$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+							$name,
+							$this->server->getLanguage()->translateString("%pocketmine.plugin.unknownDependency", [$depend])
+						]));
+						unset($plugins[$name]); // not loading the child as parent is unresolved
+						continue;
+					}
+				}
+			}
+
+			$sorted = self::topoSort($plugins);
+			$this->foeti[$order] = $sorted;
+		}
+
+		$this->sorted = true;
+	}
+
+	/**
+	 * @param PluginFoetus[] $plugins
+	 *
+	 * @return array
+	 */
+	private static function topoSort(array $plugins) : array{
+		$deps = [];
+		$shuffled = $plugins;
+		shuffle($shuffled); // to remind plugins to handle dependencies properly
+		foreach($shuffled as $plugin){
+			$name = $plugin->getDescription()->getName(); // shuffle() does not preserve keys
+			if(!isset($deps[$name])){
+				$deps[$name] = [];
+			}
+			foreach($plugin->getDescription()->getDepend() as $dep){
+				$deps[$name][] = $dep;
+			}
+			foreach($plugin->getDescription()->getSoftDepend() as $dep){
+				$deps[$name][] = $dep;
+			}
+			foreach($plugin->getDescription()->getLoadBefore() as $before){
+				if(!isset($deps[$before])){
+					$deps[$before] = [];
+				}
+				$deps[$before][] = $name;
+			}
+
+		}
+
+		$sort = new ArraySort();
+		$sort->set($deps);
+		$sorted = $sort->sort();
+
+		$result = [];
+		foreach($sorted as $name){
+			$result[$name] = $plugins[$name];
+		}
+		return $result;
+	}
+
+	/**
+	 * @param PluginLoadOrder $type
+	 */
+	public function enablePlugins(PluginLoadOrder $type) : void{
+		foreach($this->foeti[$type->getEnumName()] ?? [] as $foetus){
+			$this->enablePlugin($foetus);
 		}
 	}
 
+	public function enablePlugin(PluginFoetus $foetus) : void{
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$foetus->getDescription()->getFullName()]));
+
+		$permManager = PermissionManager::getInstance();
+		foreach($foetus->getDescription()->getPermissions() as $perm){
+			$permManager->addPermission($perm);
+		}
+		$plugin = $foetus->callCreateInstance();
+		$plugin->getScheduler()->setEnabled(true);
+		$plugin->onEnableStateChange(true);
+
+		$this->plugins[$plugin->getDescription()->getName()] = $plugin;
+
+		(new PluginEnableEvent($plugin))->call();
+	}
+
 	public function disablePlugins() : void{
-		foreach($this->getPlugins() as $plugin){
+		foreach(array_reverse($this->getPlugins()) as $plugin){ // First-In-Last-Out to fulfill dependency requirements
 			$this->disablePlugin($plugin);
 		}
 	}
@@ -456,10 +411,9 @@ class PluginManager{
 	 */
 	public function disablePlugin(Plugin $plugin) : void{
 		if($plugin->isEnabled()){
+			// TODO remove
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.disable", [$plugin->getDescription()->getFullName()]));
 			(new PluginDisableEvent($plugin))->call();
-
-			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);
 
 			$plugin->onEnableStateChange(false);
 			$plugin->getScheduler()->shutdown();
@@ -472,16 +426,9 @@ class PluginManager{
 	}
 
 	public function tickSchedulers(int $currentTick) : void{
-		foreach($this->enabledPlugins as $p){
+		foreach($this->plugins as $p){
 			$p->getScheduler()->mainThreadHeartbeat($currentTick);
 		}
-	}
-
-	public function clearPlugins() : void{
-		$this->disablePlugins();
-		$this->plugins = [];
-		$this->enabledPlugins = [];
-		$this->fileAssociations = [];
 	}
 
 	/**

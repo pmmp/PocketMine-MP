@@ -34,8 +34,6 @@ use pocketmine\Server;
  */
 interface Plugin{
 
-	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file);
-
 	/**
 	 * @return bool
 	 */
@@ -51,11 +49,6 @@ interface Plugin{
 	 * @param bool $enabled
 	 */
 	public function onEnableStateChange(bool $enabled) : void;
-
-	/**
-	 * @return bool
-	 */
-	public function isDisabled() : bool;
 
 	/**
 	 * Gets the plugin's data folder to save files and configuration.
@@ -84,11 +77,6 @@ interface Plugin{
 	 * @return PluginLogger
 	 */
 	public function getLogger() : PluginLogger;
-
-	/**
-	 * @return PluginLoader
-	 */
-	public function getPluginLoader() : PluginLoader;
 
 	/**
 	 * @return TaskScheduler

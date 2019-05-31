@@ -23,14 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use BadMethodCallException;
+use Generator;
 use pocketmine\command\Command;
 use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use pocketmine\command\PluginIdentifiableCommand;
-use pocketmine\scheduler\TaskScheduler;
+use pocketmine\plugin\resources\PluginResourceProvider;
 use pocketmine\Server;
 use pocketmine\utils\Config;
+use RuntimeException;
+use SplFileInfo;
 use function count;
 use function dirname;
 use function fclose;
@@ -39,133 +43,55 @@ use function fopen;
 use function gettype;
 use function is_array;
 use function is_bool;
-use function is_dir;
 use function is_string;
 use function mkdir;
-use function rtrim;
-use function str_replace;
 use function stream_copy_to_stream;
-use function strlen;
 use function strpos;
 use function strtolower;
-use function substr;
-use function trim;
-use const DIRECTORY_SEPARATOR;
 
-abstract class PluginBase implements Plugin, CommandExecutor{
+abstract class PluginBase extends PluginImpl implements CommandExecutor{
 
-	/** @var PluginLoader */
-	private $loader;
-
-	/** @var Server */
-	private $server;
-
-	/** @var bool */
-	private $isEnabled = false;
-
-	/** @var PluginDescription */
-	private $description;
-
+	/** @var PluginResourceProvider */
+	private $resourceProvider;
 	/** @var string */
-	private $dataFolder;
+	private $file;
+
 	/** @var Config|null */
 	private $config = null;
 	/** @var string */
 	private $configFile;
-	/** @var string */
-	private $file;
 
-	/** @var PluginLogger */
-	private $logger;
-
-	/** @var TaskScheduler */
-	private $scheduler;
-
-	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file){
-		$this->loader = $loader;
-		$this->server = $server;
-		$this->description = $description;
-		$this->dataFolder = rtrim($dataFolder, "\\/") . "/";
-		$this->file = rtrim($file, "\\/") . "/";
-		$this->configFile = $this->dataFolder . "config.yml";
-		$this->logger = new PluginLogger($this);
-		$this->scheduler = new TaskScheduler($this->getFullName());
-
-		$this->onLoad();
+	final public function __construct(Server $server, PluginDescription $description, string $dataFolder, PluginResourceProvider $resourceProvider, string $file){
+		parent::__construct($server, $description, $dataFolder);
+		$this->resourceProvider = $resourceProvider;
+		$this->file = $file;
+		$this->configFile = $this->getDataFolder() . "config.yml";
 
 		$this->registerYamlCommands();
 	}
 
-	/**
-	 * Called when the plugin is loaded, before calling onEnable()
-	 */
-	protected function onLoad()/* : void /* TODO: uncomment this for next major version */{
-
-	}
 
 	/**
-	 * Called when the plugin is enabled
+	 * To trigger a warning if plugins try to override the old onLoad() method
 	 */
-	protected function onEnable()/* : void /* TODO: uncomment this for next major version */{
-
-	}
-
-	/**
-	 * Called when the plugin is disabled
-	 * Use this to free open things and finish actions
-	 */
-	protected function onDisable()/* : void /* TODO: uncomment this for next major version */{
-
-	}
-
-	/**
-	 * @return bool
-	 */
-	final public function isEnabled() : bool{
-		return $this->isEnabled;
-	}
-
-	/**
-	 * Called by the plugin manager when the plugin is enabled or disabled to inform the plugin of its enabled state.
-	 *
-	 * @internal This is intended for core use only and should not be used by plugins
-	 * @see PluginManager::enablePlugin()
-	 * @see PluginManager::disablePlugin()
-	 *
-	 * @param bool $enabled
-	 */
-	final public function onEnableStateChange(bool $enabled) : void{
-		if($this->isEnabled !== $enabled){
-			$this->isEnabled = $enabled;
-			if($this->isEnabled){
-				$this->onEnable();
-			}else{
-				$this->onDisable();
-			}
-		}
+	final protected function onLoad() : void{
+		throw new BadMethodCallException("PluginBase::onLoad() should never be called");
 	}
 
 	/**
 	 * @return bool
 	 */
 	final public function isDisabled() : bool{
-		return !$this->isEnabled;
-	}
-
-	final public function getDataFolder() : string{
-		return $this->dataFolder;
-	}
-
-	final public function getDescription() : PluginDescription{
-		return $this->description;
+		return !$this->isEnabled();
 	}
 
 	/**
-	 * @return PluginLogger
+	 * @return string
 	 */
-	public function getLogger() : PluginLogger{
-		return $this->logger;
+	final public function getFullName() : string{
+		return $this->getDescription()->getFullName();
 	}
+
 
 	/**
 	 * Registers commands declared in the plugin manifest
@@ -175,7 +101,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 		foreach($this->getDescription()->getCommands() as $key => $data){
 			if(strpos($key, ":") !== false){
-				$this->logger->error($this->server->getLanguage()->translateString("pocketmine.plugin.commandError", [$key, $this->getDescription()->getFullName()]));
+				$this->getLogger()->error($this->getServer()->getLanguage()->translateString("pocketmine.plugin.commandError", [$key, $this->getDescription()->getFullName()]));
 				continue;
 			}
 			if(is_array($data)){ //TODO: error out if it isn't
@@ -192,7 +118,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 					$aliasList = [];
 					foreach($data["aliases"] as $alias){
 						if(strpos($alias, ":") !== false){
-							$this->logger->error($this->server->getLanguage()->translateString("pocketmine.plugin.aliasError", [$alias, $this->getDescription()->getFullName()]));
+							$this->getLogger()->error($this->getServer()->getLanguage()->translateString("pocketmine.plugin.aliasError", [$alias, $this->getDescription()->getFullName()]));
 							continue;
 						}
 						$aliasList[] = $alias;
@@ -207,7 +133,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 					}elseif(is_string($data["permission"])){
 						$newCmd->setPermission($data["permission"]);
 					}else{
-						$this->logger->error("Permission must be a string, " . gettype($data["permission"]) . " given for command $key");
+						$this->getLogger()->error("Permission must be a string, " . gettype($data["permission"]) . " given for command $key");
 					}
 				}
 
@@ -220,7 +146,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		}
 
 		if(count($pluginCmds) > 0){
-			$this->server->getCommandMap()->registerAll($this->getDescription()->getName(), $pluginCmds);
+			$this->getServer()->getCommandMap()->registerAll($this->getDescription()->getName(), $pluginCmds);
 		}
 	}
 
@@ -232,14 +158,10 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	public function getCommand(string $name){
 		$command = $this->getServer()->getPluginCommand($name);
 		if($command === null or $command->getPlugin() !== $this){
-			$command = $this->getServer()->getPluginCommand(strtolower($this->description->getName()) . ":" . $name);
+			$command = $this->getServer()->getPluginCommand(strtolower($this->getDescription()->getName()) . ":" . $name);
 		}
 
-		if($command instanceof PluginIdentifiableCommand and $command->getPlugin() === $this){
-			return $command;
-		}else{
-			return null;
-		}
+		return ($command instanceof PluginIdentifiableCommand and $command->getPlugin() === $this) ? $command : null;
 	}
 
 	/**
@@ -254,12 +176,14 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return false;
 	}
 
+
 	/**
 	 * @return bool
 	 */
-	protected function isPhar() : bool{
+	public function isPhar() : bool{
 		return strpos($this->file, "phar://") === 0;
 	}
+
 
 	/**
 	 * Gets an embedded resource on the plugin file.
@@ -270,12 +194,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @return null|resource Resource data, or null
 	 */
 	public function getResource(string $filename){
-		$filename = rtrim(str_replace("\\", "/", $filename), "/");
-		if(file_exists($this->file . "resources/" . $filename)){
-			return fopen($this->file . "resources/" . $filename, "rb");
-		}
-
-		return null;
+		return $this->resourceProvider->getResource($filename);
 	}
 
 	/**
@@ -287,15 +206,12 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @return bool
 	 */
 	public function saveResource(string $filename, bool $replace = false) : bool{
-		if(trim($filename) === ""){
-			return false;
+		$resource = $this->getResource($filename);
+		if($resource === null){
+			throw new RuntimeException("Resource $filename does not exist");
 		}
 
-		if(($resource = $this->getResource($filename)) === null){
-			return false;
-		}
-
-		$out = $this->dataFolder . $filename;
+		$out = $this->getDataFolder() . $filename;
 		if(!file_exists(dirname($out))){
 			mkdir(dirname($out), 0755, true);
 		}
@@ -311,23 +227,14 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * Returns all the resources packaged with the plugin in the form ["path/in/resources" => SplFileInfo]
+	 * Yields all the resources packaged with the plugin in the form ["path/in/resources" => SplFileInfo]
 	 *
-	 * @return \SplFileInfo[]
+	 * @return Generator|SplFileInfo[]
 	 */
-	public function getResources() : array{
-		$resources = [];
-		if(is_dir($this->file . "resources/")){
-			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file . "resources/")) as $resource){
-				if($resource->isFile()){
-					$path = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($this->file . "resources/")));
-					$resources[$path] = $resource;
-				}
-			}
-		}
-
-		return $resources;
+	public function getResources() : Generator{
+		yield from $this->resourceProvider->listResources();
 	}
+
 
 	/**
 	 * @return Config
@@ -356,45 +263,11 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$this->config = new Config($this->configFile);
 	}
 
-	/**
-	 * @return Server
-	 */
-	final public function getServer() : Server{
-		return $this->server;
-	}
-
-	/**
-	 * @return string
-	 */
-	final public function getName() : string{
-		return $this->description->getName();
-	}
-
-	/**
-	 * @return string
-	 */
-	final public function getFullName() : string{
-		return $this->description->getFullName();
-	}
 
 	/**
 	 * @return string
 	 */
 	protected function getFile() : string{
 		return $this->file;
-	}
-
-	/**
-	 * @return PluginLoader
-	 */
-	public function getPluginLoader() : PluginLoader{
-		return $this->loader;
-	}
-
-	/**
-	 * @return TaskScheduler
-	 */
-	public function getScheduler() : TaskScheduler{
-		return $this->scheduler;
 	}
 }

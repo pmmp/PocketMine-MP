@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7d9bec9f6226ca3ec19b06f6ed406718",
+    "content-hash": "13b3711a18c0b3f4dbc9e8b08eb4d46b",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -88,7 +88,7 @@
                 }
             ],
             "description": "Tools for validating callback signatures",
-            "time": "2017-04-03T15:22:41+00:00"
+            "time": "2017-04-03 15:22:41"
         },
         {
             "name": "fgrosse/phpasn1",
@@ -158,6 +158,53 @@
                 "x690"
             ],
             "time": "2018-12-02T01:34:34+00:00"
+        },
+        {
+            "name": "marcj/topsort",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/marcj/topsort.php.git",
+                "reference": "387086c2db60ee0a27ac5df588c0f0b30c6bdc4b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/marcj/topsort.php/zipball/387086c2db60ee0a27ac5df588c0f0b30c6bdc4b",
+                "reference": "387086c2db60ee0a27ac5df588c0f0b30c6bdc4b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "phpunit/phpunit": "~4.0",
+                "symfony/console": "~2.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MJS\\TopSort\\": "src/",
+                    "MJS\\TopSort\\Tests\\": "tests/Tests/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marc J. Schmidt",
+                    "email": "marc@marcjschmidt.de"
+                }
+            ],
+            "description": "High-Performance TopSort/Dependency resolving algorithm",
+            "keywords": [
+                "dependency resolving",
+                "topological sort",
+                "topsort"
+            ],
+            "time": "2016-11-19T14:58:11+00:00"
         },
         {
             "name": "mdanter/ecc",
@@ -364,7 +411,7 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2019-04-18T18:03:11+00:00"
+            "time": "2019-04-18 18:03:11"
         },
         {
             "name": "pocketmine/nbt",
@@ -405,7 +452,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2019-04-25T18:53:18+00:00"
+            "time": "2019-04-25 18:53:18"
         },
         {
             "name": "pocketmine/raklib",
@@ -446,7 +493,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-05-13T17:14:39+00:00"
+            "time": "2019-05-13 17:14:39"
         },
         {
             "name": "pocketmine/snooze",
@@ -509,7 +556,7 @@
             "support": {
                 "source": "https://github.com/pmmp/SPL/tree/master"
             },
-            "time": "2019-05-18T14:07:32+00:00"
+            "time": "2019-05-18 14:07:32"
         }
     ],
     "packages-dev": [],
