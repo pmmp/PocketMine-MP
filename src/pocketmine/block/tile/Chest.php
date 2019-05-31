@@ -25,13 +25,12 @@ namespace pocketmine\block\tile;
 
 use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\DoubleChestInventory;
-use pocketmine\inventory\InventoryHolder;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\world\World;
 
-class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
+class Chest extends Spawnable implements Container, Nameable{
 	use NameableTrait {
 		addAdditionalSpawnData as addNameSpawnData;
 	}
