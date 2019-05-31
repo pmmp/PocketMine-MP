@@ -36,6 +36,7 @@ use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
 use pocketmine\block\tile\Furnace as TileFurnace;
+use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\Note as TileNote;
@@ -178,6 +179,7 @@ class BlockFactory{
 		self::register(new HardenedGlass(new BID(Ids::HARD_GLASS), "Hardened Glass"));
 		self::register(new HardenedGlassPane(new BID(Ids::HARD_GLASS_PANE), "Hardened Glass Pane"));
 		self::register(new HayBale(new BID(Ids::HAY_BALE), "Hay Bale"));
+		self::register(new Hopper(new BID(Ids::HOPPER_BLOCK, 0, ItemIds::HOPPER, TileHopper::class), "Hopper", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 15.0)));
 		self::register(new Ice(new BID(Ids::ICE), "Ice"));
 		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE), "Infested Stone") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{

@@ -55,6 +55,7 @@ final class TileFactory{
 		self::register(EnderChest::class, ["EnderChest", "minecraft:ender_chest"]);
 		self::register(FlowerPot::class, ["FlowerPot", "minecraft:flower_pot"]);
 		self::register(Furnace::class, ["Furnace", "minecraft:furnace"]);
+		self::register(Hopper::class, ["Hopper", "minecraft:hopper"]);
 		self::register(ItemFrame::class, ["ItemFrame"]); //this is an entity in PC
 		self::register(MonsterSpawner::class, ["MobSpawner", "minecraft:mob_spawner"]);
 		self::register(Note::class, ["Music", "minecraft:noteblock"]);
@@ -76,7 +77,6 @@ final class TileFactory{
 		//TODO: Dropper
 		//TODO: EndGateway
 		//TODO: EndPortal
-		//TODO: Hopper
 		//TODO: JigsawBlock
 		//TODO: Jukebox
 		//TODO: Lectern
