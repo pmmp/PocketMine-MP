@@ -61,8 +61,8 @@ abstract class PluginBase extends PluginImpl implements CommandExecutor{
 	/** @var string */
 	private $configFile;
 
-	final public function __construct(Server $server, PluginDescription $description, string $dataFolder, PluginResourceProvider $resourceProvider, string $file){
-		parent::__construct($server, $description, $dataFolder);
+	final public function __construct(Server $server, PluginDescription $description, string $dataFolder, string $loaderType, PluginResourceProvider $resourceProvider, string $file){
+		parent::__construct($server, $description, $dataFolder, $loaderType);
 		$this->resourceProvider = $resourceProvider;
 		$this->file = $file;
 		$this->configFile = $this->getDataFolder() . "config.yml";

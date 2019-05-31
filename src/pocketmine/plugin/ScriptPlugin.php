@@ -23,10 +23,5 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use pocketmine\Server;
-
 class ScriptPlugin extends PluginImpl{
-	final public function __construct(Server $server, PluginDescription $description, string $dataFolder){
-		parent::__construct($server, $description, $dataFolder);
-	}
 }

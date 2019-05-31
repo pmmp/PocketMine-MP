@@ -75,7 +75,7 @@ final class ScriptPluginLoader{
 			}
 
 			/** @var ScriptPlugin $ret */
-			$ret = new $main($manager->getServer(), $description, $dataFolder);
+			$ret = new $main($manager->getServer(), $description, $dataFolder, self::class);
 			return $ret;
 		});
 		return true;

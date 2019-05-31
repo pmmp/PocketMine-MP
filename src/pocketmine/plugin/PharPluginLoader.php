@@ -102,7 +102,7 @@ final class PharPluginLoader{
 
 			$resourceProvider = new FileSystemPluginResourceProvider($file);
 			/** @var PluginBase $ret */
-			$ret = new $main($manager->getServer(), $description, $dataFolder, $resourceProvider, $file);
+			$ret = new $main($manager->getServer(), $description, $dataFolder, self::class, $resourceProvider, $file);
 			return $ret;
 		});
 	}

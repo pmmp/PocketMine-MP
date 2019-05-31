@@ -48,18 +48,20 @@ abstract class PluginImpl implements Plugin{
 	private $scheduler;
 
 	private $isEnabled = false;
+	/**
+	 * @var string
+	 */
+	private $loaderType;
 
-	public function __construct(Server $server, PluginDescription $description, string $dataFolder){
+	public function __construct(Server $server, PluginDescription $description, string $dataFolder, string $loaderType){
 		$this->server = $server;
 		$this->description = $description;
 		$this->dataFolder = rtrim($dataFolder, "\\/") . "/";
+		$this->loaderType = $loaderType;
 		$this->logger = new PluginLogger($this);
 		$this->scheduler = new TaskScheduler($this->getDescription()->getFullName());
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isEnabled() : bool{
 		return $this->isEnabled;
 	}
@@ -83,6 +85,10 @@ abstract class PluginImpl implements Plugin{
 
 	public function getDataFolder() : string{
 		return $this->dataFolder;
+	}
+
+	public function getLoaderType() : string{
+		return $this->loaderType;
 	}
 
 	public function getName() : string{

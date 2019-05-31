@@ -59,6 +59,15 @@ interface Plugin{
 	public function getDataFolder() : string;
 
 	/**
+	 * Returns a string that uniquely identifies the method used to load this plugin.
+	 *
+	 * There is no specification over the format of the string, although it is classically in the form a.b.c
+	 *
+	 * @return string
+	 */
+	public function getLoaderType() : string;
+
+	/**
 	 * @return PluginDescription
 	 */
 	public function getDescription() : PluginDescription;
