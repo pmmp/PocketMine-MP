@@ -55,7 +55,9 @@ use function is_bool;
 use function is_dir;
 use function is_string;
 use function is_subclass_of;
+use function iterator_to_array;
 use function mkdir;
+use function shuffle;
 use function stripos;
 use function strpos;
 use function strtolower;
@@ -236,12 +238,11 @@ class PluginManager{
 		}else{
 			$loaders = $this->fileAssociations;
 		}
+
+		$files = iterator_to_array(new \FilesystemIterator($directory, \FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS));
+		shuffle($files); //this prevents plugins implicitly relying on the filesystem name order when they should be using dependency properties
 		foreach($loaders as $loader){
-			foreach(new \DirectoryIterator($directory) as $file){
-				if($file === "." or $file === ".."){
-					continue;
-				}
-				$file = $directory . $file;
+			foreach($files as $file){
 				if(!$loader->canLoadPlugin($file)){
 					continue;
 				}
