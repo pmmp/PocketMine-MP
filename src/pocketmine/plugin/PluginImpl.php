@@ -35,7 +35,7 @@ use function rtrim;
  * @see PluginBase
  * @see ScriptPlugin
  */
-class PluginImpl implements Plugin{
+abstract class PluginImpl implements Plugin{
 	/** @var Server */
 	private $server;
 	/** @var PluginDescription */
