@@ -90,6 +90,8 @@ class LevelEventPacket extends DataPacket{
 	public const EVENT_STOP_RAIN = 3003;
 	public const EVENT_STOP_THUNDER = 3004;
 	public const EVENT_PAUSE_GAME = 3005; //data: 1 to pause, 0 to resume
+	public const EVENT_PAUSE_GAME_NO_SCREEN = 3006; //data: 1 to pause, 0 to resume - same effect as normal pause but without screen
+	public const EVENT_SET_GAME_SPEED = 3007; //x coordinate of pos = scale factor (default 1.0)
 
 	public const EVENT_REDSTONE_TRIGGER = 3500;
 	public const EVENT_CAULDRON_EXPLODE = 3501;
