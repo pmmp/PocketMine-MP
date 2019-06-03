@@ -59,6 +59,9 @@ class Effect{
 	public const LEVITATION = 24; //TODO
 	public const FATAL_POISON = 25;
 	public const CONDUIT_POWER = 26;
+	public const SLOW_FALLING = 27;
+	public const BAD_OMEN = 28;
+	public const VILLAGE_HERO = 29;
 
 	/** @var Effect[] */
 	protected static $effects = [];
