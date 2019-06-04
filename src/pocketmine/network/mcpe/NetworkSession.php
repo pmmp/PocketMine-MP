@@ -841,7 +841,11 @@ class NetworkSession{
 	public function onMobArmorChange(Living $mob) : void{
 		$pk = new MobArmorEquipmentPacket();
 		$pk->entityRuntimeId = $mob->getId();
-		$pk->slots = $mob->getArmorInventory()->getContents(true); //beware this order might change in the future
+		$inv = $mob->getArmorInventory();
+		$pk->head = $inv->getHelmet();
+		$pk->chest = $inv->getChestplate();
+		$pk->legs = $inv->getLeggings();
+		$pk->feet = $inv->getBoots();
 		$this->sendDataPacket($pk);
 	}
 
