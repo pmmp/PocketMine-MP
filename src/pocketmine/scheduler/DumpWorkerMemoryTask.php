@@ -54,7 +54,7 @@ class DumpWorkerMemoryTask extends AsyncTask{
 			$this->outputFolder . DIRECTORY_SEPARATOR . "AsyncWorker#" . $this->worker->getAsyncWorkerId(),
 			$this->maxNesting,
 			$this->maxStringSize,
-			$this->worker->getLogger()
+			new \PrefixedLogger($this->worker->getLogger(), "Memory Dump")
 		);
 	}
 }
