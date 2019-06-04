@@ -30,7 +30,6 @@ use pocketmine\permission\PermissionAttachment;
 use pocketmine\permission\PermissionAttachmentInfo;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
-use pocketmine\utils\MainLogger;
 use function explode;
 use function trim;
 use const PHP_INT_MAX;
@@ -106,14 +105,15 @@ class ConsoleCommandSender implements CommandSender{
 	 * @param TextContainer|string $message
 	 */
 	public function sendMessage($message) : void{
+		$server = $this->getServer();
 		if($message instanceof TextContainer){
-			$message = $this->getServer()->getLanguage()->translate($message);
+			$message = $server->getLanguage()->translate($message);
 		}else{
-			$message = $this->getServer()->getLanguage()->translateString($message);
+			$message = $server->getLanguage()->translateString($message);
 		}
 
 		foreach(explode("\n", trim($message)) as $line){
-			MainLogger::getLogger()->info($line);
+			$server->getLogger()->info($line);
 		}
 	}
 
