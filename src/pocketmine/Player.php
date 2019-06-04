@@ -802,9 +802,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function setDisplayName(string $name){
 		$this->displayName = $name;
-		if($this->spawned){
-			$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getDisplayName(), $this->getSkin(), $this->getXuid());
-		}
 	}
 
 	/**

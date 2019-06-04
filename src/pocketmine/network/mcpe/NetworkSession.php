@@ -55,6 +55,7 @@ use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
 use pocketmine\network\mcpe\protocol\Packet;
+use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
@@ -66,6 +67,7 @@ use pocketmine\network\mcpe\protocol\types\CommandData;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\NetworkInterface;
@@ -841,6 +843,32 @@ class NetworkSession{
 		$pk->entityRuntimeId = $mob->getId();
 		$pk->slots = $mob->getArmorInventory()->getContents(true); //beware this order might change in the future
 		$this->sendDataPacket($pk);
+	}
+
+	public function syncPlayerList() : void{
+		$pk = new PlayerListPacket();
+		$pk->type = PlayerListPacket::TYPE_ADD;
+		foreach($this->server->getOnlinePlayers() as $player){
+			$pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXuid());
+		}
+
+		$this->sendDataPacket($pk);
+	}
+
+	public function onPlayerAdded(Player $p) : void{
+		$pk = new PlayerListPacket();
+		$pk->type = PlayerListPacket::TYPE_ADD;
+		$pk->entries[] = PlayerListEntry::createAdditionEntry($p->getUniqueId(), $p->getId(), $p->getName(), $p->getSkin(), $p->getXuid());
+		$this->sendDataPacket($pk);
+	}
+
+	public function onPlayerRemoved(Player $p) : void{
+		if($p !== $this->player){
+			$pk = new PlayerListPacket();
+			$pk->type = PlayerListPacket::TYPE_REMOVE;
+			$pk->entries[] = PlayerListEntry::createRemovalEntry($p->getUniqueId());
+			$this->sendDataPacket($pk);
+		}
 	}
 
 	public function tick() : bool{
