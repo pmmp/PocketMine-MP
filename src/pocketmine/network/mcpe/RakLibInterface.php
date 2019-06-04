@@ -152,7 +152,6 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 			//get this now for blocking in case the player was closed before the exception was raised
 			$session = $this->sessions[$sessionId];
 			$address = $session->getIp();
-			$port = $session->getPort();
 			$buf = substr($packet->buffer, 1);
 			try{
 				$session->handleEncoded($buf);
