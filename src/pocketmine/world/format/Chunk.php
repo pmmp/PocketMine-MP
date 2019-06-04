@@ -587,12 +587,12 @@ class Chunk{
 						try{
 							$entity = EntityFactory::createFromData($world, $nbt);
 							if(!($entity instanceof Entity)){
-								$world->getServer()->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type " . $nbt->getString("id", $nbt->getString("identifier", "<unknown>", true), true));
+								$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type " . $nbt->getString("id", $nbt->getString("identifier", "<unknown>", true), true));
 								$changed = true;
 								continue;
 							}
 						}catch(\Exception $t){ //TODO: this shouldn't be here
-							$world->getServer()->getLogger()->logException($t);
+							$world->getLogger()->logException($t);
 							$changed = true;
 							continue;
 						}
@@ -606,7 +606,7 @@ class Chunk{
 						if(($tile = TileFactory::createFromData($world, $nbt)) !== null){
 							$world->addTile($tile);
 						}else{
-							$world->getServer()->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>", true));
+							$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>", true));
 							$changed = true;
 							continue;
 						}

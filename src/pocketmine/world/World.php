@@ -266,6 +266,9 @@ class World implements ChunkManager, Metadatable{
 	/** @var SkyLightUpdate|null */
 	private $skyLightUpdate = null;
 
+	/** @var \Logger */
+	private $logger;
+
 	public static function chunkHash(int $x, int $z) : int{
 		return (($x & 0xFFFFFFFF) << 32) | ($z & 0xFFFFFFFF);
 	}
@@ -352,6 +355,8 @@ class World implements ChunkManager, Metadatable{
 		$this->provider = $provider;
 
 		$this->displayName = $this->provider->getWorldData()->getName();
+		$this->logger = new \PrefixedLogger($server->getLogger(), "World: $this->displayName");
+
 		$this->worldHeight = $this->provider->getWorldHeight();
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->displayName]));
@@ -417,6 +422,10 @@ class World implements ChunkManager, Metadatable{
 
 	public function getServer() : Server{
 		return $this->server;
+	}
+
+	public function getLogger() : \Logger{
+		return $this->logger;
 	}
 
 	final public function getProvider() : WritableWorldProvider{
@@ -2526,8 +2535,7 @@ class World implements ChunkManager, Metadatable{
 		try{
 			$chunk = $this->provider->loadChunk($x, $z);
 		}catch(CorruptedChunkException | UnsupportedChunkFormatException $e){
-			$logger = $this->server->getLogger();
-			$logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
+			$this->logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
 		}
 
 		if($chunk === null and $create){
@@ -2553,7 +2561,7 @@ class World implements ChunkManager, Metadatable{
 		}
 
 		if(!$this->isChunkInUse($x, $z)){
-			$this->server->getLogger()->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
+			$this->logger->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
 			$this->unloadChunkRequest($x, $z);
 		}
 		foreach($this->getChunkListeners($x, $z) as $listener){

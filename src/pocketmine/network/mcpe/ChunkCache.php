@@ -99,7 +99,7 @@ class ChunkCache implements ChunkListener{
 					$this->world->getChunk($chunkX, $chunkZ),
 					$this->caches[$chunkHash],
 					function() use($chunkX, $chunkZ){
-						$this->world->getServer()->getLogger()->error("Failed preparing chunk for " . $this->world->getDisplayName() . " chunk $chunkX $chunkZ, retrying");
+						$this->world->getLogger()->error("Failed preparing chunk $chunkX $chunkZ, retrying");
 
 						$this->restartPendingRequest($chunkX, $chunkZ);
 					}
