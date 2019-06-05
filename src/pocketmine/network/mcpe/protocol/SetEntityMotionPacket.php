@@ -37,6 +37,13 @@ class SetEntityMotionPacket extends DataPacket implements ClientboundPacket{
 	/** @var Vector3 */
 	public $motion;
 
+	public static function create(int $entityRuntimeId, Vector3 $motion) : self{
+		$result = new self;
+		$result->entityRuntimeId = $entityRuntimeId;
+		$result->motion = $motion->asVector3();
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->motion = $this->getVector3();

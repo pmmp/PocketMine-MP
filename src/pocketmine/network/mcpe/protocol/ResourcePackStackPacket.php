@@ -45,6 +45,25 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $isExperimental = false;
 
+	/**
+	 * @param ResourcePack[] $resourcePacks
+	 * @param ResourcePack[] $behaviorPacks
+	 * @param bool           $mustAccept
+	 * @param bool           $isExperimental
+	 *
+	 * @return ResourcePackStackPacket
+	 */
+	public static function create(array $resourcePacks, array $behaviorPacks, bool $mustAccept, bool $isExperimental = false) : self{
+		(function(ResourcePack ...$_){})($resourcePacks);
+		(function(ResourcePack ...$_){})($behaviorPacks);
+		$result = new self;
+		$result->mustAccept = $mustAccept;
+		$result->resourcePackStack = $resourcePacks;
+		$result->behaviorPackStack = $behaviorPacks;
+		$result->isExperimental = $isExperimental;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->mustAccept = $this->getBool();
 		$behaviorPackCount = $this->getUnsignedVarInt();

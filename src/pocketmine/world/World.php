@@ -715,8 +715,7 @@ class World implements ChunkManager, Metadatable{
 	 * @param Player ...$targets If empty, will send to all players in the world.
 	 */
 	public function sendTime(Player ...$targets){
-		$pk = new SetTimePacket();
-		$pk->time = $this->time & 0xffffffff; //avoid overflowing the field, since the packet uses an int32
+		$pk = SetTimePacket::create($this->time & 0xffffffff); //avoid overflowing the field, since the packet uses an int32
 
 		if(empty($targets)){
 			$this->broadcastGlobalPacket($pk);
@@ -934,28 +933,17 @@ class World implements ChunkManager, Metadatable{
 			if(!($b instanceof Vector3)){
 				throw new \TypeError("Expected Vector3 in blocks array, got " . (is_object($b) ? get_class($b) : gettype($b)));
 			}
-			$pk = new UpdateBlockPacket();
-
-			$pk->x = $b->x;
-			$pk->y = $b->y;
-			$pk->z = $b->z;
 
 			if($b instanceof Block){
-				$pk->blockRuntimeId = $b->getRuntimeId();
+				$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, $b->getRuntimeId());
 			}else{
 				$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-				$pk->blockRuntimeId = RuntimeBlockMapping::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf);
+				$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, RuntimeBlockMapping::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf));
 			}
-			$packets[] = $pk;
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){
-				$tilepk = new BlockEntityDataPacket();
-				$tilepk->x = $tile->x;
-				$tilepk->y = $tile->y;
-				$tilepk->z = $tile->z;
-				$tilepk->namedtag = $tile->getSerializedSpawnCompound();
-				$packets[] = $tilepk;
+				$packets[] = BlockEntityDataPacket::create($tile->x, $tile->y, $tile->z, $tile->getSerializedSpawnCompound());
 			}
 		}
 

@@ -90,6 +90,14 @@ class EntityEventPacket extends DataPacket implements ClientboundPacket, Serverb
 	/** @var int */
 	public $data = 0;
 
+	public static function create(int $entityRuntimeId, int $eventId, int $eventData) : self{
+		$result = new self;
+		$result->entityRuntimeId = $entityRuntimeId;
+		$result->event = $eventId;
+		$result->data = $eventData;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->event = $this->getByte();

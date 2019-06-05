@@ -37,6 +37,20 @@ class InventoryContentPacket extends DataPacket implements ClientboundPacket{
 	/** @var Item[] */
 	public $items = [];
 
+	/**
+	 * @param int    $windowId
+	 * @param Item[] $items
+	 *
+	 * @return InventoryContentPacket
+	 */
+	public static function create(int $windowId, array $items) : self{
+		(function(Item ...$items){})(...$items); //type check
+		$result = new self;
+		$result->windowId = $windowId;
+		$result->items = $items;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->windowId = $this->getUnsignedVarInt();
 		$count = $this->getUnsignedVarInt();

@@ -84,20 +84,14 @@ class FloatingTextParticle implements Particle{
 		if($this->entityId === null){
 			$this->entityId = EntityFactory::nextRuntimeId();
 		}else{
-			$pk0 = new RemoveEntityPacket();
-			$pk0->entityUniqueId = $this->entityId;
-
-			$p[] = $pk0;
+			$p[] = RemoveEntityPacket::create($this->entityId);
 		}
 
 		if(!$this->invisible){
 			$uuid = UUID::fromRandom();
 			$name = $this->title . ($this->text !== "" ? "\n" . $this->text : "");
 
-			$add = new PlayerListPacket();
-			$add->type = PlayerListPacket::TYPE_ADD;
-			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, new Skin("Standard_Custom", str_repeat("\x00", 8192)))];
-			$p[] = $add;
+			$p[] = PlayerListPacket::add([PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, new Skin("Standard_Custom", str_repeat("\x00", 8192)))]);
 
 			$pk = new AddPlayerPacket();
 			$pk->uuid = $uuid;
@@ -116,10 +110,7 @@ class FloatingTextParticle implements Particle{
 
 			$p[] = $pk;
 
-			$remove = new PlayerListPacket();
-			$remove->type = PlayerListPacket::TYPE_REMOVE;
-			$remove->entries = [PlayerListEntry::createRemovalEntry($uuid)];
-			$p[] = $remove;
+			$p[] = PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($uuid)]);
 		}
 
 		return $p;

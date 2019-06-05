@@ -45,6 +45,21 @@ class SetSpawnPositionPacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $spawnForced;
 
+	public static function playerSpawn(int $x, int $y, int $z, bool $forced) : self{
+		$result = new self;
+		$result->spawnType = self::TYPE_PLAYER_SPAWN;
+		[$result->x, $result->y, $result->z] = [$x, $y, $z];
+		$result->spawnForced = $forced;
+		return $result;
+	}
+
+	public static function worldSpawn(int $x, int $y, int $z) : self{
+		$result = new self;
+		$result->spawnType = self::TYPE_WORLD_SPAWN;
+		[$result->x, $result->y, $result->z] = [$x, $y, $z];
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->spawnType = $this->getVarInt();
 		$this->getBlockPosition($this->x, $this->y, $this->z);

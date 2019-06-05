@@ -79,6 +79,7 @@ use pocketmine\timings\Timings;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
+use function array_map;
 use function bin2hex;
 use function count;
 use function get_class;
@@ -460,10 +461,7 @@ class NetworkSession{
 	 */
 	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
 		$this->tryDisconnect(function() use($ip, $port, $reason){
-			$pk = new TransferPacket();
-			$pk->address = $ip;
-			$pk->port = $port;
-			$this->sendDataPacket($pk, true);
+			$this->sendDataPacket(TransferPacket::create($ip, $port), true);
 			$this->disconnect($reason, false);
 			if($this->player !== null){
 				$this->player->disconnect($reason, null, false);
@@ -492,10 +490,7 @@ class NetworkSession{
 	 */
 	private function doServerDisconnect(string $reason, bool $notify = true) : void{
 		if($notify){
-			$pk = new DisconnectPacket();
-			$pk->message = $reason;
-			$pk->hideDisconnectionScreen = $reason === "";
-			$this->sendDataPacket($pk, true);
+			$this->sendDataPacket($reason === "" ? DisconnectPacket::silent() : DisconnectPacket::message($reason), true);
 		}
 
 		$this->interface->close($this, $notify ? $reason : "");
@@ -544,9 +539,7 @@ class NetworkSession{
 	}
 
 	public function enableEncryption(string $encryptionKey, string $handshakeJwt) : void{
-		$pk = new ServerToClientHandshakePacket();
-		$pk->jwt = $handshakeJwt;
-		$this->sendDataPacket($pk, true); //make sure this gets sent before encryption is enabled
+		$this->sendDataPacket(ServerToClientHandshakePacket::create($handshakeJwt), true); //make sure this gets sent before encryption is enabled
 
 		$this->cipher = new NetworkCipher($encryptionKey);
 
@@ -557,9 +550,7 @@ class NetworkSession{
 	public function onLoginSuccess() : void{
 		$this->loggedIn = true;
 
-		$pk = new PlayStatusPacket();
-		$pk->status = PlayStatusPacket::LOGIN_SUCCESS;
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::LOGIN_SUCCESS));
 
 		$this->setHandler(new ResourcePacksSessionHandler($this, $this->server->getResourcePackManager()));
 	}
@@ -571,9 +562,7 @@ class NetworkSession{
 	}
 
 	public function onTerrainReady() : void{
-		$pk = new PlayStatusPacket();
-		$pk->status = PlayStatusPacket::PLAYER_SPAWN;
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::PLAYER_SPAWN));
 	}
 
 	public function onSpawn() : void{
@@ -604,34 +593,19 @@ class NetworkSession{
 	}
 
 	public function syncViewAreaRadius(int $distance) : void{
-		$pk = new ChunkRadiusUpdatedPacket();
-		$pk->radius = $distance;
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(ChunkRadiusUpdatedPacket::create($distance));
 	}
 
 	public function syncViewAreaCenterPoint(Vector3 $newPos, int $viewDistance) : void{
-		$pk = new NetworkChunkPublisherUpdatePacket();
-		$pk->x = $newPos->getFloorX();
-		$pk->y = $newPos->getFloorY();
-		$pk->z = $newPos->getFloorZ();
-		$pk->radius = $viewDistance * 16; //blocks, not chunks >.>
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(NetworkChunkPublisherUpdatePacket::create($newPos->getFloorX(), $newPos->getFloorY(), $newPos->getFloorZ(), $viewDistance * 16)); //blocks, not chunks >.>
 	}
 
 	public function syncPlayerSpawnPoint(Position $newSpawn) : void{
-		$pk = new SetSpawnPositionPacket();
-		$pk->x = $newSpawn->getFloorX();
-		$pk->y = $newSpawn->getFloorY();
-		$pk->z = $newSpawn->getFloorZ();
-		$pk->spawnType = SetSpawnPositionPacket::TYPE_PLAYER_SPAWN;
-		$pk->spawnForced = false;
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(SetSpawnPositionPacket::playerSpawn($newSpawn->getFloorX(), $newSpawn->getFloorY(), $newSpawn->getFloorZ(), false)); //TODO: spawn forced
 	}
 
 	public function syncGameMode(GameMode $mode) : void{
-		$pk = new SetPlayerGameTypePacket();
-		$pk->gamemode = self::getClientFriendlyGamemode($mode);
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(SetPlayerGameTypePacket::create(self::getClientFriendlyGamemode($mode)));
 	}
 
 	/**
@@ -661,10 +635,7 @@ class NetworkSession{
 	public function syncAttributes(Living $entity, bool $sendAll = false){
 		$entries = $sendAll ? $entity->getAttributeMap()->getAll() : $entity->getAttributeMap()->needSend();
 		if(count($entries) > 0){
-			$pk = new UpdateAttributesPacket();
-			$pk->entityRuntimeId = $entity->getId();
-			$pk->entries = $entries;
-			$this->sendDataPacket($pk);
+			$this->sendDataPacket(UpdateAttributesPacket::create($entity->getId(), $entries));
 			foreach($entries as $entry){
 				$entry->markSynchronized();
 			}
@@ -672,24 +643,11 @@ class NetworkSession{
 	}
 
 	public function onEntityEffectAdded(Living $entity, EffectInstance $effect, bool $replacesOldEffect) : void{
-		$pk = new MobEffectPacket();
-		$pk->entityRuntimeId = $entity->getId();
-		$pk->eventId = $replacesOldEffect ? MobEffectPacket::EVENT_MODIFY : MobEffectPacket::EVENT_ADD;
-		$pk->effectId = $effect->getId();
-		$pk->amplifier = $effect->getAmplifier();
-		$pk->particles = $effect->isVisible();
-		$pk->duration = $effect->getDuration();
-
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(MobEffectPacket::add($entity->getId(), $replacesOldEffect, $effect->getId(), $effect->getAmplifier(), $effect->isVisible(), $effect->getDuration()));
 	}
 
 	public function onEntityEffectRemoved(Living $entity, EffectInstance $effect) : void{
-		$pk = new MobEffectPacket();
-		$pk->entityRuntimeId = $entity->getId();
-		$pk->eventId = MobEffectPacket::EVENT_REMOVE;
-		$pk->effectId = $effect->getId();
-
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(MobEffectPacket::remove($entity->getId(), $effect->getId()));
 	}
 
 	public function syncAvailableCommands() : void{
@@ -730,43 +688,27 @@ class NetworkSession{
 	}
 
 	public function onRawChatMessage(string $message) : void{
-		$pk = new TextPacket();
-		$pk->type = TextPacket::TYPE_RAW;
-		$pk->message = $message;
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(TextPacket::raw($message));
 	}
 
 	public function onTranslatedChatMessage(string $key, array $parameters) : void{
-		$pk = new TextPacket();
-		$pk->type = TextPacket::TYPE_TRANSLATION;
-		$pk->needsTranslation = true;
-		$pk->message = $key;
-		$pk->parameters = $parameters;
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(TextPacket::translation($key, $parameters));
 	}
 
 	public function onPopup(string $message) : void{
-		$pk = new TextPacket();
-		$pk->type = TextPacket::TYPE_POPUP;
-		$pk->message = $message;
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(TextPacket::popup($message));
 	}
 
 	public function onTip(string $message) : void{
-		$pk = new TextPacket();
-		$pk->type = TextPacket::TYPE_TIP;
-		$pk->message = $message;
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(TextPacket::tip($message));
 	}
 
 	public function onFormSent(int $id, Form $form) : bool{
-		$pk = new ModalFormRequestPacket();
-		$pk->formId = $id;
-		$pk->formData = json_encode($form);
-		if($pk->formData === false){
+		$formData = json_encode($form);
+		if($formData === false){
 			throw new \InvalidArgumentException("Failed to encode form JSON: " . json_last_error_msg());
 		}
-		return $this->sendDataPacket($pk);
+		return $this->sendDataPacket(ModalFormRequestPacket::create($id, $formData));
 	}
 
 	/**
@@ -803,21 +745,14 @@ class NetworkSession{
 	public function syncInventorySlot(Inventory $inventory, int $slot) : void{
 		$windowId = $this->player->getWindowId($inventory);
 		if($windowId !== ContainerIds::NONE){
-			$pk = new InventorySlotPacket();
-			$pk->inventorySlot = $slot;
-			$pk->item = $inventory->getItem($slot);
-			$pk->windowId = $windowId;
-			$this->sendDataPacket($pk);
+			$this->sendDataPacket(InventorySlotPacket::create($windowId, $slot, $inventory->getItem($slot)));
 		}
 	}
 
 	public function syncInventoryContents(Inventory $inventory) : void{
 		$windowId = $this->player->getWindowId($inventory);
 		if($windowId !== ContainerIds::NONE){
-			$pk = new InventoryContentPacket();
-			$pk->items = $inventory->getContents(true);
-			$pk->windowId = $windowId;
-			$this->sendDataPacket($pk);
+			$this->sendDataPacket(InventoryContentPacket::create($windowId, $inventory->getContents(true)));
 		}
 	}
 
@@ -830,48 +765,28 @@ class NetworkSession{
 	public function syncInventoryData(Inventory $inventory, int $propertyId, int $value) : void{
 		$windowId = $this->player->getWindowId($inventory);
 		if($windowId !== ContainerIds::NONE){
-			$pk = new ContainerSetDataPacket();
-			$pk->property = $propertyId;
-			$pk->value = $value;
-			$pk->windowId = $windowId;
-			$this->sendDataPacket($pk);
+			$this->sendDataPacket(ContainerSetDataPacket::create($windowId, $propertyId, $value));
 		}
 	}
 
 	public function onMobArmorChange(Living $mob) : void{
-		$pk = new MobArmorEquipmentPacket();
-		$pk->entityRuntimeId = $mob->getId();
 		$inv = $mob->getArmorInventory();
-		$pk->head = $inv->getHelmet();
-		$pk->chest = $inv->getChestplate();
-		$pk->legs = $inv->getLeggings();
-		$pk->feet = $inv->getBoots();
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(MobArmorEquipmentPacket::create($mob->getId(), $inv->getHelmet(), $inv->getChestplate(), $inv->getLeggings(), $inv->getBoots()));
 	}
 
 	public function syncPlayerList() : void{
-		$pk = new PlayerListPacket();
-		$pk->type = PlayerListPacket::TYPE_ADD;
-		foreach($this->server->getOnlinePlayers() as $player){
-			$pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXuid());
-		}
-
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(PlayerListPacket::add(array_map(function(Player $player){
+			return PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXuid());
+		}, $this->server->getOnlinePlayers())));
 	}
 
 	public function onPlayerAdded(Player $p) : void{
-		$pk = new PlayerListPacket();
-		$pk->type = PlayerListPacket::TYPE_ADD;
-		$pk->entries[] = PlayerListEntry::createAdditionEntry($p->getUniqueId(), $p->getId(), $p->getName(), $p->getSkin(), $p->getXuid());
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($p->getUniqueId(), $p->getId(), $p->getName(), $p->getSkin(), $p->getXuid())]));
 	}
 
 	public function onPlayerRemoved(Player $p) : void{
 		if($p !== $this->player){
-			$pk = new PlayerListPacket();
-			$pk->type = PlayerListPacket::TYPE_REMOVE;
-			$pk->entries[] = PlayerListEntry::createRemovalEntry($p->getUniqueId());
-			$this->sendDataPacket($pk);
+			$this->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($p->getUniqueId())]));
 		}
 	}
 

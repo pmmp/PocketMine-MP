@@ -44,6 +44,22 @@ class ContainerOpenPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $entityUniqueId = -1;
 
+	public static function blockInv(int $windowId, int $windowType, int $x, int $y, int $z) : self{
+		$result = new self;
+		$result->windowId = $windowId;
+		$result->type = $windowType;
+		[$result->x, $result->y, $result->z] = [$x, $y, $z];
+		return $result;
+	}
+
+	public static function entityInv(int $windowId, int $windowType, int $entityUniqueId) : self{
+		$result = new self;
+		$result->windowId = $windowId;
+		$result->type = $windowType;
+		$result->entityUniqueId = $entityUniqueId;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->windowId = $this->getByte();
 		$this->type = $this->getByte();

@@ -48,6 +48,14 @@ class ContainerSetDataPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $value;
 
+	public static function create(int $windowId, int $propertyId, int $value) : self{
+		$result = new self;
+		$result->property = $propertyId;
+		$result->value = $value;
+		$result->windowId = $windowId;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->windowId = $this->getByte();
 		$this->property = $this->getVarInt();

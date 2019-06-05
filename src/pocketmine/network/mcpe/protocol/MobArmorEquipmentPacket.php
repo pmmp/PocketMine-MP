@@ -46,6 +46,16 @@ class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, S
 	/** @var Item */
 	public $feet;
 
+	public static function create(int $entityRuntimeId, Item $head, Item $chest, Item $legs, Item $feet) : self{
+		$result = new self;
+		$result->entityRuntimeId = $entityRuntimeId;
+		$result->head = $head;
+		$result->chest = $chest;
+		$result->legs = $legs;
+		$result->feet = $feet;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->head = $this->getSlot();

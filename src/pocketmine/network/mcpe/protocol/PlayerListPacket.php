@@ -43,6 +43,22 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $type;
 
+	public static function add(array $entries) : self{
+		(function(PlayerListEntry ...$_){})($entries);
+		$result = new self;
+		$result->type = self::TYPE_ADD;
+		$result->entries = $entries;
+		return $result;
+	}
+
+	public static function remove(array $entries) : self{
+		(function(PlayerListEntry ...$_){})($entries);
+		$result = new self;
+		$result->type = self::TYPE_REMOVE;
+		$result->entries = $entries;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->type = $this->getByte();
 		$count = $this->getUnsignedVarInt();

@@ -38,6 +38,20 @@ class UpdateAttributesPacket extends DataPacket implements ClientboundPacket{
 	/** @var Attribute[] */
 	public $entries = [];
 
+	/**
+	 * @param int         $entityRuntimeId
+	 * @param Attribute[] $attributes
+	 *
+	 * @return UpdateAttributesPacket
+	 */
+	public static function create(int $entityRuntimeId, array $attributes) : self{
+		(function(Attribute ...$attributes){})(...$attributes);
+		$result = new self;
+		$result->entityRuntimeId = $entityRuntimeId;
+		$result->entries = $attributes;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->entries = $this->getAttributeList();

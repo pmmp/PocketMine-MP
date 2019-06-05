@@ -36,6 +36,19 @@ class DisconnectPacket extends DataPacket implements ClientboundPacket, Serverbo
 	/** @var string */
 	public $message = "";
 
+	public static function silent() : self{
+		$result = new self;
+		$result->hideDisconnectionScreen = true;
+		return $result;
+	}
+
+	public static function message(string $message) : self{
+		$result = new self;
+		$result->hideDisconnectionScreen = false;
+		$result->message = $message;
+		return $result;
+	}
+
 	public function canBeSentBeforeLogin() : bool{
 		return true;
 	}
