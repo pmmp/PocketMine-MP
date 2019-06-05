@@ -82,10 +82,6 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 		return true;
 	}
 
-	public function mayHaveUnreadBytes() : bool{
-		return $this->protocol !== null and $this->protocol !== ProtocolInfo::CURRENT_PROTOCOL;
-	}
-
 	protected function decodePayload() : void{
 		$this->protocol = $this->getInt();
 		$this->decodeConnectionRequest();

@@ -319,7 +319,7 @@ class NetworkSession{
 
 		try{
 			$packet->decode();
-			if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
+			if(!$packet->feof()){
 				$remains = substr($packet->getBuffer(), $packet->getOffset());
 				$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
 			}
