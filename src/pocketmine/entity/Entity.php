@@ -24,10 +24,12 @@ declare(strict_types=1);
 /**
  * All the entity classes
  */
+
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\Lava;
 use pocketmine\block\Portal;
 use pocketmine\block\Water;
 use pocketmine\entity\hostile\Blaze;
@@ -476,18 +478,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public static function createBaseNBT(Vector3 $pos, ?Vector3 $motion = null, float $yaw = 0.0, float $pitch = 0.0) : CompoundTag{
 		return new CompoundTag("", [
 			new ListTag("Pos", [
-				new DoubleTag("", $pos->x),
-				new DoubleTag("", $pos->y),
-				new DoubleTag("", $pos->z)
-			]),
-			new ListTag("Motion", [
-				new DoubleTag("", $motion ? $motion->x : 0.0),
-				new DoubleTag("", $motion ? $motion->y : 0.0),
+				new DoubleTag("", $pos->x), new DoubleTag("", $pos->y), new DoubleTag("", $pos->z)
+			]), new ListTag("Motion", [
+				new DoubleTag("", $motion ? $motion->x : 0.0), new DoubleTag("", $motion ? $motion->y : 0.0),
 				new DoubleTag("", $motion ? $motion->z : 0.0)
-			]),
-			new ListTag("Rotation", [
-				new FloatTag("", $yaw),
-				new FloatTag("", $pitch)
+			]), new ListTag("Rotation", [
+				new FloatTag("", $yaw), new FloatTag("", $pitch)
 			])
 		]);
 	}
@@ -640,6 +636,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $timeUntilPortal = 0;
 	/** @var int */
 	protected $portalCounter = 0;
+	public $headYaw = null;
 	/** @var bool */
 	private $closeInFlight = false;
 
@@ -897,14 +894,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected function recalculateBoundingBox() : void{
 		$halfWidth = $this->width / 2;
 
-		$this->boundingBox->setBounds(
-			$this->x - $halfWidth,
-			$this->y,
-			$this->z - $halfWidth,
-			$this->x + $halfWidth,
-			$this->y + $this->height,
-			$this->z + $halfWidth
-		);
+		$this->boundingBox->setBounds($this->x - $halfWidth, $this->y, $this->z - $halfWidth, $this->x + $halfWidth, $this->y + $this->height, $this->z + $halfWidth);
 	}
 
 	public function isAffectedByGravity() : bool{
@@ -1153,20 +1143,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 
 		$this->namedtag->setTag(new ListTag("Pos", [
-			new DoubleTag("", $this->x),
-			new DoubleTag("", $this->y),
-			new DoubleTag("", $this->z)
+			new DoubleTag("", $this->x), new DoubleTag("", $this->y), new DoubleTag("", $this->z)
 		]));
 
 		$this->namedtag->setTag(new ListTag("Motion", [
-			new DoubleTag("", $this->motion->x),
-			new DoubleTag("", $this->motion->y),
+			new DoubleTag("", $this->motion->x), new DoubleTag("", $this->motion->y),
 			new DoubleTag("", $this->motion->z)
 		]));
 
 		$this->namedtag->setTag(new ListTag("Rotation", [
-			new FloatTag("", $this->yaw),
-			new FloatTag("", $this->pitch)
+			new FloatTag("", $this->yaw), new FloatTag("", $this->pitch)
 		]));
 
 		$this->namedtag->setFloat("FallDistance", $this->fallDistance);
@@ -1442,6 +1428,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/**
 	 * @param int $fireTicks
+	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function setFireTicks(int $fireTicks) : void{
@@ -1507,7 +1494,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$diffMotion = $this->motion->subtract($this->lastMotion)->lengthSquared();
 
-		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0){
+		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0 or ($this instanceof Mob)){
 			$this->lastX = $this->x;
 			$this->lastY = $this->y;
 			$this->lastZ = $this->z;
@@ -1539,8 +1526,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			//for arrows this is actually x/y/z rotation
 			//for mobs x and z are used for pitch and yaw, and y is used for headyaw
 			$pk->xRot = $this->pitch;
-			$pk->yRot = $this->yaw; //TODO: head yaw
-			$pk->zRot = $this->yaw;
+			$pk->yRot = $this->yaw;
+			$pk->zRot = $this->headYaw ?? 90;
 
 			if($teleport){
 				$pk->flags |= MoveEntityAbsolutePacket::FLAG_TELEPORT;
@@ -1606,13 +1593,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function tryChangeMovement() : void{
-		$friction = 1 - $this->drag;
+		$friction = 0.91;
 
 		if($this->applyDragBeforeGravity()){
 			$this->motion->y *= $friction;
 		}
 
-		$this->applyGravity();
+		if(!$this->onGround or $this->forceMovementUpdate){
+			$this->applyGravity();
+		}
 
 		if(!$this->applyDragBeforeGravity()){
 			$this->motion->y *= $friction;
@@ -1640,10 +1629,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$diffZ = $z - $floorZ;
 
 		if(BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ)]){
-			$westNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX - 1, $floorY, $floorZ)];
-			$eastNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX + 1, $floorY, $floorZ)];
-			$downNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY - 1, $floorZ)];
-			$upNonSolid    = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY + 1, $floorZ)];
+			$westNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX - 1, $floorY, $floorZ)];
+			$eastNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX + 1, $floorY, $floorZ)];
+			$downNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY - 1, $floorZ)];
+			$upNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY + 1, $floorZ)];
 			$northNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ - 1)];
 			$southNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ + 1)];
 
@@ -1784,7 +1773,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->timings->startTiming();
 
-		$this->onMovementUpdate($currentTick);
+		if($this->hasMovementUpdate()){
+			$this->onMovementUpdate();
+
+			$this->forceMovementUpdate = false;
+			$this->updateMovement();
+		}
 
 		Timings::$timerEntityBaseTick->startTiming();
 		$hasUpdate = $this->entityBaseTick($tickDiff);
@@ -1798,20 +1792,20 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		//return !($this instanceof Player);
 	}
 
-	protected function onMovementUpdate(int $currentTick) : void{
-		if($this->hasMovementUpdate()){
-			$this->tryChangeMovement();
+	protected function onMovementUpdate() : void{
+		$f = 1 - $this->drag;
 
-			$this->checkMotion();
+		$this->motion->x *= $f;
+		$this->motion->y *= $f;
+		$this->motion->z *= $f;
 
-			if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
-				$this->move($this->motion->x, $this->motion->y, $this->motion->z);
-			}
+		$this->checkMotion();
 
-			$this->forceMovementUpdate = false;
+		if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
+			$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 		}
 
-		$this->updateMovement();
+		$this->tryChangeMovement();
 	}
 
 	protected function checkMotion() : void{
@@ -1855,13 +1849,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @return bool
 	 */
 	public function hasMovementUpdate() : bool{
-		return (
-			$this->forceMovementUpdate or
-			$this->motion->x != 0 or
-			$this->motion->y != 0 or
-			$this->motion->z != 0 or
-			!$this->onGround
-		);
+		return ($this->forceMovementUpdate or $this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0 or !$this->onGround);
 	}
 
 	public function canTriggerWalking() : bool{
@@ -1881,7 +1869,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param bool  $onGround
 	 */
 	protected function updateFallState(float $distanceThisTick, bool $onGround) : void{
-		$block = $this->level->getBlock($this->subtract(0, 0.20000000298023224, 0));
+		$block = $this->level->getBlock($this->subtract(0, 0.2, 0));
 		if($onGround){
 			if($this->fallDistance > 0){
 				if($block->isSolid()){
@@ -1893,13 +1881,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			}
 		}elseif($distanceThisTick < 0){
 			$this->fallDistance -= $distanceThisTick;
-		}
-	}
-
-	public function handleWaterMovement() : void{
-		if($this->isUnderwater()){
-			$this->motion->x *= 0.2;
-			$this->motion->z *= 0.2;
 		}
 	}
 
@@ -2065,7 +2046,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function moveFlying(float $strafe, float $forward, float $friction) : bool{
 		$f = $strafe * $strafe + $forward * $forward;
-		if($f >= 1){
+		if($f >= self::MOTION_THRESHOLD){
 			$f = sqrt($f);
 
 			if($f < 1) $f = 1;
@@ -2114,6 +2095,18 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$block = $this->level->getBlockAt((int) floor($this->x), (int) floor($y = ($this->y + $this->getEyeHeight())), (int) floor($this->z));
 
 		return $block->isSolid() and !$block->isTransparent() and $block->collidesWithBB($this->getBoundingBox());
+	}
+
+	public function isInsideOfLava() : bool{
+		$block = $this->level->getBlockAt((int) floor($this->x), (int) floor($this->y + $this->getEyeHeight()), (int) floor($this->z));
+
+		return $block instanceof Lava;
+	}
+
+	public function isInsideOfWater() : bool{
+		$block = $this->level->getBlockAt((int) floor($this->x), (int) floor($this->y + $this->getEyeHeight()), (int) floor($this->z));
+
+		return $block instanceof Water;
 	}
 
 	public function fastMove(float $dx, float $dy, float $dz) : bool{
@@ -2602,7 +2595,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pk->position = $this->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
-		$pk->headYaw = $this->yaw; //TODO
+		$pk->headYaw = $this->headYaw ?? 90;
 		$pk->pitch = $this->pitch;
 		$pk->attributes = $this->attributeMap->getAll();
 		$pk->metadata = $this->propertyManager->getAll();
@@ -2891,7 +2884,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * TODO: remove this BC hack in 4.0
 	 *
 	 * @param string $name
-	 * @param mixed $value
+	 * @param mixed  $value
 	 *
 	 * @throws \ErrorException
 	 * @throws \InvalidArgumentException

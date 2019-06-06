@@ -22,35 +22,36 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\behavior;
+namespace pocketmine\entity\helper;
 
 use pocketmine\entity\Mob;
-use pocketmine\math\Vector3;
 
-class FloatBehavior extends Behavior{
+class EntityJumpHelper{
+
+	protected $isJumping = false;
+	/** @var Mob */
+	protected $entity;
 
 	public function __construct(Mob $mob){
-		parent::__construct($mob);
-		$this->mutexBits = 4;
+		$this->entity = $mob;
 	}
 
-	public function canStart() : bool{
-		return $this->mob->isInsideOfWater();
+	/**
+	 * @return bool
+	 */
+	public function isJumping() : bool{
+		return $this->isJumping;
 	}
 
-	public function onStart() : void{
-		$this->mob->setSwimmer(true);
+	/**
+	 * @param bool $isJumping
+	 */
+	public function setJumping(bool $isJumping) : void{
+		$this->isJumping = $isJumping;
 	}
 
-	public function onEnd() : void{
-		$this->mob->setSwimmer(false);
-	}
-
-	public function onTick() : void{
-		if($this->mob->isInsideOfWater()){
-			if($this->random->nextFloat() < 0.8){
-				$this->mob->getJumpHelper()->setJumping(true);
-			}
-		}
+	public function doJump() : void{
+		$this->entity->setJumping($this->isJumping);
+		$this->isJumping = false;
 	}
 }

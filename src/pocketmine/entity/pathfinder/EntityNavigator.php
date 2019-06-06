@@ -77,9 +77,10 @@ class EntityNavigator{
 	/** @var float */
 	protected $speedMultiplier = 1.0;
 
-	protected $lastPoint = null;
+	/** @var Vector3|null */
+	protected $lastPoint;
 	protected $stuckTick = 0;
-	/** @var Vector3 */
+	/** @var Vector3|null */
 	protected $movePoint;
 	/** @var int */
 	protected $processorType = self::PROCESSOR_TYPE_WALK;
@@ -181,7 +182,8 @@ class EntityNavigator{
 
 				if($this->mob->isSwimmer()){
 					$currentBlock = $this->mob->level->getBlock($this->mob);
-					while($currentBlock instanceof Water){
+					$attempts = 0;
+					while($currentBlock instanceof Water and $attempts++ < 10){
 						$currentBlock = $currentBlock->getSide(Vector3::SIDE_UP);
 						$y++;
 					}
@@ -278,7 +280,7 @@ class EntityNavigator{
 
 			$coord = new Vector3((int) $item->x, $block->y, (int) $item->y);
 			$tb = $this->mob->level->getBlock($coord);
-			if($tb->isSolid()){
+			if(!$tb->isPassable()){
 				if(!$this->canJumpAt($block)){
 					continue; // can't jump because top block is solid
 				}
@@ -299,9 +301,9 @@ class EntityNavigator{
 					if(!$canMove or $this->isObstructed($blockUp)) continue;
 
 					$cache[$item->getHashCode()] = $blockUp;
-				}elseif($tb->isPassable($this->mob)){
+				}else{
 					$blockUp = $this->mob->level->getBlock($coord->getSide(Vector3::SIDE_UP));
-					if($blockUp->isSolid()){
+					if(!$blockUp->isPassable()){
 						// Can't jump
 						continue;
 					}
@@ -309,11 +311,9 @@ class EntityNavigator{
 					if($this->isObstructed($blockUp)) continue;
 
 					$cache[$item->getHashCode()] = $blockUp;
-				}else{
-					continue; // cannot jump
 				}
 			}else{
-				$blockDown = $this->mob->level->getBlock($coord->add(0, -1, 0));
+				$blockDown = $this->mob->level->getBlock($coord->down());
 				if(!$blockDown->isSolid() and !$this->mob->isSwimmer() and !($blockDown instanceof Liquid) and !$this->mob->canFly()){ // TODO: bug?
 					if($this->mob->canClimb()){
 						$canClimb = false;
@@ -346,15 +346,17 @@ class EntityNavigator{
 						$cache[$item->getHashCode()] = $blockDown;
 					}
 				}else{
-					if($this->isObstructed($coord) or (!$this->mob->isSwimmer() and $this->avoidsWater and $this->mob->level->getBlock($coord->getSide(Vector3::SIDE_DOWN)) instanceof Liquid)) continue;
+					if($this->isObstructed($coord) or (!$this->mob->isSwimmer() and $this->avoidsWater and $blockDown instanceof Liquid)) continue;
 
-					$cache[$item->getHashCode()] = $this->mob->level->getBlock($coord);
+					$cache[$item->getHashCode()] = $block;
 				}
 			}
 			$item->height = $cache[$item->getHashCode()]->y;
 			$list[$index] = $item;
 		}
+
 		$this->checkDiagonals($list);
+
 		return $list;
 	}
 
@@ -413,7 +415,7 @@ class EntityNavigator{
 	 */
 	public function isBlocked(Vector3 $coord) : bool{
 		$block = $this->mob->level->getBlock($coord);
-		return !$block->isPassable($this->mob);
+		return !$block->isPassable();
 	}
 
 	/**
@@ -549,7 +551,6 @@ class EntityNavigator{
 		$this->stuckTick = 0;
 		if($all){
 			$this->movePoint = null;
-			$this->mob->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->resetToDefault();
 		}
 	}
 
@@ -635,11 +636,8 @@ class EntityNavigator{
 		}
 
 		if($this->movePoint !== null){
-			$this->mob->lookAt(new Vector3($this->movePoint->x + 0.5, $this->mob->y, $this->movePoint->y + 0.5));
-			if(!$this->mob->moveForward($this->speedMultiplier)){
-				$this->clearPath();
-				return;
-			}
+			$f = floor($this->mob->width + 1) / 2;
+			$this->mob->getMoveHelper()->moveTo($this->movePoint->x + $f, $this->movePoint->height, $this->movePoint->y + $f, $this->speedMultiplier);
 
 			$currentPos = $this->mob->floor();
 
@@ -647,7 +645,7 @@ class EntityNavigator{
 				$this->movePoint = null;
 			}
 
-			if($this->lastPoint !== null and $currentPos->equals($this->lastPoint)){
+			if($this->lastPoint !== null and $currentPos->x == $this->lastPoint->x and $currentPos->z == $this->lastPoint->z){
 				$this->stuckTick++;
 
 				if($this->stuckTick > 100){
@@ -672,7 +670,6 @@ class EntityNavigator{
 	 */
 	public function setSpeedMultiplier(float $speedMultiplier) : void{
 		$this->speedMultiplier = $speedMultiplier;
-		$this->mob->setMovementSpeed($this->mob->getDefaultMovementSpeed() * $this->speedMultiplier);
 	}
 
 	/**

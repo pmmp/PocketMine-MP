@@ -64,7 +64,7 @@ class FollowOwnerBehavior extends Behavior{
 
 		if($distanceToPlayer < 1.75){
 			$this->mob->getNavigator()->clearPath();
-			$this->mob->setLookPosition($owner);
+			$this->mob->getLookHelper()->setLookPositionWithEntity($owner, 10, $this->mob->getVerticalFaceSpeed());
 			return;
 		}
 
@@ -81,7 +81,7 @@ class FollowOwnerBehavior extends Behavior{
 			}
 		}
 
-		$this->mob->setLookPosition($owner);
+		$this->mob->getLookHelper()->setLookPositionWithEntity($owner, 10, $this->mob->getVerticalFaceSpeed());
 	}
 
 	public function onEnd() : void{

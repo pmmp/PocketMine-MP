@@ -97,7 +97,7 @@ class MeleeAttackBehavior extends Behavior{
 			}
 		}
 
-		$this->mob->setLookPosition($target);
+		$this->mob->getLookHelper()->setLookPositionWithEntity($target, 30, 30);
 
 		$this->attackCooldown = max($this->attackCooldown - 1, 0);
 		if($this->attackCooldown <= 0 && $distanceToPlayer < $this->getAttackReach()){

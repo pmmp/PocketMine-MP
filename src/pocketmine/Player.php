@@ -39,6 +39,7 @@ use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\FishingHook;
 use pocketmine\entity\Skin;
+use pocketmine\entity\vehicle\Boat;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
@@ -3113,6 +3114,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$ev->call();
 		if($ev->isCancelled()){
 			return true;
+		}
+
+		$riding = $this->getRidingEntity();
+		if($riding instanceof Boat){
+			if($packet->action === AnimatePacket::ACTION_ROW_RIGHT){
+				$riding->setPaddleTimeRight($packet->rowingTime);
+			}elseif($packet->action === AnimatePacket::ACTION_ROW_LEFT){
+				$riding->setPaddleTimeLeft($packet->rowingTime);
+			}
 		}
 
 		$pk = new AnimatePacket();

@@ -55,6 +55,12 @@ class Boat extends Vehicle{
 		parent::initEntity();
 	}
 
+	protected function recalculateBoundingBox() : void{
+		parent::recalculateBoundingBox();
+
+		$this->boundingBox->minY -= 0.3;
+	}
+
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
 		return new Vector3($seatNumber * 0.2, 0, 0);
 	}
@@ -149,29 +155,39 @@ class Boat extends Vehicle{
 		return parent::onUpdate($currentTick);
 	}
 
-	protected function onMovementUpdate(int $currentTick) : void{
-		if($this->hasMovementUpdate()){
-			if($this->onGround){
-				$this->motion = $this->motion->multiply(0.5);
-			}
-
-			$this->checkMotion();
-
-			if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
-				$this->move($this->motion->x, $this->motion->y, $this->motion->z);
-			}
-
-			$this->forceMovementUpdate = false;
-
-			$this->motion->x *= 0.99;
-			$this->motion->y *= 0.95;
-			$this->motion->z *= 0.99;
+	protected function onMovementUpdate() : void{
+		if($this->onGround){
+			$this->motion = $this->motion->multiply(0.5);
 		}
 
-		$this->updateMovement();
+		$this->checkMotion();
+
+		if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
+			$this->move($this->motion->x, $this->motion->y, $this->motion->z);
+		}
+
+		$this->motion->x *= 0.99;
+		$this->motion->y *= 0.95;
+		$this->motion->z *= 0.99;
 	}
 
 	public function getSeatCount() : int{
 		return 2;
+	}
+
+	public function setPaddleTimeLeft(float $value) : void{
+		$this->propertyManager->setFloat(self::DATA_PADDLE_TIME_LEFT, $value);
+	}
+
+	public function getPaddleTimeLeft() : float{
+		return $this->propertyManager->getFloat(self::DATA_PADDLE_TIME_LEFT) ?? 0.0;
+	}
+
+	public function setPaddleTimeRight(float $value) : void{
+		$this->propertyManager->setFloat(self::DATA_PADDLE_TIME_RIGHT, $value);
+	}
+
+	public function getPaddleTimeRight() : float{
+		return $this->propertyManager->getFloat(self::DATA_PADDLE_TIME_RIGHT) ?? 0.0;
 	}
 }

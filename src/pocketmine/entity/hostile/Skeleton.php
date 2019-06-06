@@ -60,13 +60,8 @@ class Skeleton extends Monster implements RangedAttackerMob{
 		parent::initEntity();
 
 		$this->equipment = new AltayEntityEquipment($this);
-		$loot = $this->level->random->nextBoundedInt(100);
-		$bow = ItemFactory::get(Item::BOW);
-		if($loot <= 89){
-			$this->equipment->setItemInHand($bow);
-		}else{
-			$this->equipment->setOffhandItem($bow);
-		}
+
+		$this->equipment->setItemInHand(ItemFactory::get(Item::BOW));
 
 		// TODO: Armors
 	}
@@ -112,7 +107,7 @@ class Skeleton extends Monster implements RangedAttackerMob{
 
 	public function entityBaseTick(int $diff = 1) : bool{
 		if(!$this->isOnFire() and $this->level->isDayTime() and !$this->isImmobile()){
-			if(!$this->isUnderwater() and $this->level->canSeeSky($this)){
+			if(!$this->isInsideOfWater() and $this->level->canSeeSky($this)){
 				$this->setOnFire(5);
 			}
 		}

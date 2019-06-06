@@ -64,12 +64,11 @@ class LookAtPlayerBehavior extends Behavior{
 
 	public function onTick() : void{
 		if($this->player instanceof Player){
-			$this->mob->lookAt($this->player);
+			$this->mob->getLookHelper()->setLookPositionWithEntity($this->player, 10, $this->mob->getVerticalFaceSpeed());
 		}
 	}
 
 	public function onEnd() : void{
-		$this->mob->pitch = 0;
 		$this->player = null;
 	}
 }

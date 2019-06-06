@@ -47,7 +47,7 @@ class Spider extends Monster implements Ageable{
 
 	protected function initEntity() : void{
 		$this->setMaxHealth(16);
-		$this->setMovementSpeed(0.30000001192092896);
+		$this->setMovementSpeed(0.3);
 		$this->setFollowRange(35);
 		$this->setAttackDamage(2);
 		$this->setCanClimb(true);

@@ -39,6 +39,9 @@ class FenceGate extends Transparent{
 		return BlockToolType::TYPE_AXE;
 	}
 
+	public function isPassable() : bool{
+		return ($this->getDamage() & 0x04) > 0;
+	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 

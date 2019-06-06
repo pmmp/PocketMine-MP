@@ -88,8 +88,7 @@ class RangedAttackBehavior extends Behavior{
 			$this->mob->getNavigator()->tryMoveTo($targetEntity, $this->speedMultiplier);
 		}
 
-		$this->mob->setLookPosition($targetEntity);
-		$this->mob->lookAt($targetEntity);
+		$this->mob->getLookHelper()->setLookPositionWithEntity($targetEntity, 30, 30);
 
 		if(--$this->rangedAttackTime <= 0){
 			if($dist > $this->maxAttackDistance or !$flag){

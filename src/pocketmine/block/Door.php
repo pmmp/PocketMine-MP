@@ -36,6 +36,10 @@ abstract class Door extends Transparent{
 		return false;
 	}
 
+	public function isPassable() : bool{
+		return ($this->getFullDamage() & 0x04) > 0;
+	}
+
 	private function getFullDamage(){
 		$damage = $this->getDamage();
 		$isUp = ($damage & 0x08) > 0;

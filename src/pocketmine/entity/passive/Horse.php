@@ -60,7 +60,7 @@ class Horse extends AbstractHorse implements InventoryHolder{
 	public const HORSE_MARK_VARIANT_WHITE_DOTS = 3;
 	public const HORSE_MARK_VARIANT_BLACK_DOTS = 4;
 
-	public $width = 1.3965;
+	public $width = 1.4;
 	public $height = 1.6;
 
 	/** @var HorseInventory */

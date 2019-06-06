@@ -80,7 +80,7 @@ class TemptedBehavior extends Behavior{
 	}
 
 	public function onTick() : void{
-		$this->mob->setLookPosition($this->temptingPlayer);
+		$this->mob->getLookHelper()->setLookPositionWithEntity($this->temptingPlayer, 30, $this->mob->getVerticalFaceSpeed());
 
 		if($this->temptingPlayer->distanceSquared($this->mob) < 6.25){
 			$this->mob->getNavigator()->clearPath();

@@ -42,6 +42,10 @@ abstract class Fence extends Transparent{
 		return 0.25;
 	}
 
+	public function isPassable() : bool{
+		return false;
+	}
+
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		$width = 0.5 - $this->getThickness() / 2;
 

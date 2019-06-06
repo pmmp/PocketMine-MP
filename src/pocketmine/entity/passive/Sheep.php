@@ -66,8 +66,11 @@ class Sheep extends Animal{
 	}
 
 	protected function initEntity() : void{
+		$this->eyeHeight = $this->height * 0.95;
+		$this->baseOffset = $this->eyeHeight;
+
 		$this->setMaxHealth(8);
-		$this->setMovementSpeed(0.23000000417232513);
+		$this->setMovementSpeed(0.25);
 		$this->setFollowRange(10);
 		$this->propertyManager->setByte(self::DATA_COLOR, $this->namedtag->getByte("Color", $this->getRandomColor($this->level->random)));
 		$this->setSheared(boolval($this->namedtag->getByte("Sheared", 0)));

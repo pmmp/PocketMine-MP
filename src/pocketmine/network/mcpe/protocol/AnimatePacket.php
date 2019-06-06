@@ -36,26 +36,29 @@ class AnimatePacket extends DataPacket{
 	public const ACTION_STOP_SLEEP = 3;
 	public const ACTION_CRITICAL_HIT = 4;
 
+	public const ACTION_ROW_RIGHT = 128;
+	public const ACTION_ROW_LEFT = 129;
+
 	/** @var int */
 	public $action;
 	/** @var int */
 	public $entityRuntimeId;
 	/** @var float */
-	public $float = 0.0; //TODO (Boat rowing time?)
+	public $rowingTime = 0.0; // Boat rowing time
 
 	protected function decodePayload(){
 		$this->action = $this->getVarInt();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		if($this->action & 0x80){
-			$this->float = $this->getLFloat();
+		if($this->action === self::ACTION_ROW_LEFT or $this->action === self::ACTION_ROW_RIGHT){
+			$this->rowingTime = $this->getLFloat();
 		}
 	}
 
 	protected function encodePayload(){
 		$this->putVarInt($this->action);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		if($this->action & 0x80){
-			$this->putLFloat($this->float);
+		if($this->action === self::ACTION_ROW_LEFT or $this->action === self::ACTION_ROW_RIGHT){
+			$this->putLFloat($this->rowingTime);
 		}
 	}
 

@@ -52,6 +52,10 @@ class Trapdoor extends Transparent{
 		return 3;
 	}
 
+	public function isPassable() : bool{
+		return ($this->getDamage() & self::MASK_OPENED) > 0;
+	}
+
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 
 		$damage = $this->getDamage();

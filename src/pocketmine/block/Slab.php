@@ -126,4 +126,8 @@ abstract class Slab extends Transparent{
 			);
 		}
 	}
+
+	public function isPassable() : bool{
+		return ($this->meta & 0x08) < 0;
+	}
 }

@@ -42,10 +42,10 @@ class Zombie extends Monster implements Ageable{
 	public const NETWORK_ID = self::ZOMBIE;
 
 	public $width = 0.6;
-	public $height = 1.95;
+	public $height = 1.8;
 
 	protected function initEntity() : void{
-		$this->setMovementSpeed($this->isBaby() ? 0.345 : 0.23);
+		$this->setMovementSpeed($this->isBaby() ? 0.35 : 0.23);
 		$this->setFollowRange(35);
 		$this->setAttackDamage(3);
 
@@ -96,7 +96,7 @@ class Zombie extends Monster implements Ageable{
 
 	public function entityBaseTick(int $diff = 1) : bool{
 		if(!$this->isOnFire() and $this->level->isDayTime() and !$this->isImmobile()){
-			if(!$this->isUnderwater() and $this->level->canSeeSky($this)){
+			if(!$this->isInsideOfWater() and $this->level->canSeeSky($this)){
 				$this->setOnFire(5);
 			}
 		}
