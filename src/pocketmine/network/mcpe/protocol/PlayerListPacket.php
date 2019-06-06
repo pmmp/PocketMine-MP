@@ -44,7 +44,6 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	public $type;
 
 	public static function add(array $entries) : self{
-		(function(PlayerListEntry ...$_){})(...$entries);
 		$result = new self;
 		$result->type = self::TYPE_ADD;
 		$result->entries = $entries;
@@ -52,7 +51,6 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	public static function remove(array $entries) : self{
-		(function(PlayerListEntry ...$_){})(...$entries);
 		$result = new self;
 		$result->type = self::TYPE_REMOVE;
 		$result->entries = $entries;

@@ -66,7 +66,6 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 	}
 
 	private static function baseTranslation(int $type, string $key, array $parameters) : self{
-		(function(string ...$_){})(...$parameters);
 		$result = new self;
 		$result->type = $type;
 		$result->needsTranslation = true;

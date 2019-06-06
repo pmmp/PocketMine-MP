@@ -44,7 +44,6 @@ class InventoryContentPacket extends DataPacket implements ClientboundPacket{
 	 * @return InventoryContentPacket
 	 */
 	public static function create(int $windowId, array $items) : self{
-		(function(Item ...$items){})(...$items); //type check
 		$result = new self;
 		$result->windowId = $windowId;
 		$result->items = $items;

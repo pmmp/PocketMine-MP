@@ -51,8 +51,6 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	 * @return ResourcePacksInfoPacket
 	 */
 	public static function create(array $resourcePacks, array $behaviorPacks, bool $mustAccept, bool $hasScripts = false) : self{
-		(function(ResourcePack ...$_){})(...$resourcePacks);
-		(function(ResourcePack ...$_){})(...$behaviorPacks);
 		$result = new self;
 		$result->mustAccept = $mustAccept;
 		$result->hasScripts = $hasScripts;

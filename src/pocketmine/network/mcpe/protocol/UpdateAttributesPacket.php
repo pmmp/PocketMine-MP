@@ -45,7 +45,6 @@ class UpdateAttributesPacket extends DataPacket implements ClientboundPacket{
 	 * @return UpdateAttributesPacket
 	 */
 	public static function create(int $entityRuntimeId, array $attributes) : self{
-		(function(Attribute ...$attributes){})(...$attributes);
 		$result = new self;
 		$result->entityRuntimeId = $entityRuntimeId;
 		$result->entries = $attributes;
