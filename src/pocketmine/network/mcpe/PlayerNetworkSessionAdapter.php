@@ -68,6 +68,7 @@ use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use function base64_encode;
 use function bin2hex;
 use function implode;
 use function json_decode;
@@ -107,7 +108,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		$ev = new DataPacketReceiveEvent($this->player, $packet);
 		$ev->call();
 		if(!$ev->isCancelled() and !$packet->handle($this)){
-			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": 0x" . bin2hex($packet->buffer));
+			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": " . base64_encode($packet->buffer));
 		}
 
 		$timings->stopTiming();

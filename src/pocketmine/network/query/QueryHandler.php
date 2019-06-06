@@ -30,7 +30,7 @@ namespace pocketmine\network\query;
 use pocketmine\network\AdvancedSourceInterface;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
-use function bin2hex;
+use function base64_encode;
 use function chr;
 use function hash;
 use function microtime;
@@ -134,7 +134,7 @@ class QueryHandler{
 				$interface->sendRawPacket($address, $port, $reply);
 				break;
 			default:
-				$this->debug("Unhandled packet from $address $port: 0x" . bin2hex($packet));
+				$this->debug("Unhandled packet from $address $port: " . base64_encode($packet));
 				break;
 		}
 	}
