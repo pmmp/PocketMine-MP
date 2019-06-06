@@ -255,13 +255,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @return bool
-	 */
-	protected function isPhar() : bool{
-		return strpos($this->file, "phar://") === 0;
-	}
-
-	/**
 	 * Gets an embedded resource on the plugin file.
 	 * WARNING: You must close the resource given using fclose()
 	 *
