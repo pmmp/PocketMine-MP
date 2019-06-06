@@ -48,7 +48,7 @@ class ExplodePacket extends DataPacket implements ClientboundPacket{
 	 * @return ExplodePacket
 	 */
 	public static function create(Vector3 $center, float $radius, array $records) : self{
-		(function(Vector3 ...$_){})($records);
+		(function(Vector3 ...$_){})(...$records);
 		$result = new self;
 		$result->position = $center;
 		$result->radius = $radius;
