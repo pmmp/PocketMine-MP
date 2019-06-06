@@ -66,9 +66,6 @@ class Sheep extends Animal{
 	}
 
 	protected function initEntity() : void{
-		$this->eyeHeight = $this->height * 0.95;
-		$this->baseOffset = $this->eyeHeight;
-
 		$this->setMaxHealth(8);
 		$this->setMovementSpeed(0.25);
 		$this->setFollowRange(10);
