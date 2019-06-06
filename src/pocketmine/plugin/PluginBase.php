@@ -39,18 +39,13 @@ use function fopen;
 use function gettype;
 use function is_array;
 use function is_bool;
-use function is_dir;
 use function is_string;
 use function mkdir;
 use function rtrim;
-use function str_replace;
 use function stream_copy_to_stream;
-use function strlen;
 use function strpos;
 use function strtolower;
-use function substr;
 use function trim;
-use const DIRECTORY_SEPARATOR;
 
 abstract class PluginBase implements Plugin, CommandExecutor{
 
@@ -81,15 +76,20 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	/** @var TaskScheduler */
 	private $scheduler;
 
-	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file){
+	/** @var ResourceProvider */
+	private $resourceProvider;
+
+	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file, ResourceProvider $resourceProvider){
 		$this->loader = $loader;
 		$this->server = $server;
 		$this->description = $description;
 		$this->dataFolder = rtrim($dataFolder, "\\/") . "/";
+		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "\\/") . "/";
 		$this->configFile = $this->dataFolder . "config.yml";
 		$this->logger = new PluginLogger($this);
 		$this->scheduler = new TaskScheduler($this->getFullName());
+		$this->resourceProvider = $resourceProvider;
 
 		$this->onLoad();
 
@@ -263,12 +263,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @return null|resource Resource data, or null
 	 */
 	public function getResource(string $filename){
-		$filename = rtrim(str_replace("\\", "/", $filename), "/");
-		if(file_exists($this->file . "resources/" . $filename)){
-			return fopen($this->file . "resources/" . $filename, "rb");
-		}
-
-		return null;
+		return $this->resourceProvider->getResource($filename);
 	}
 
 	/**
@@ -309,17 +304,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @return \SplFileInfo[]
 	 */
 	public function getResources() : array{
-		$resources = [];
-		if(is_dir($this->file . "resources/")){
-			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file . "resources/")) as $resource){
-				if($resource->isFile()){
-					$path = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($this->file . "resources/")));
-					$resources[$path] = $resource;
-				}
-			}
-		}
-
-		return $resources;
+		return $this->resourceProvider->getResources();
 	}
 
 	/**

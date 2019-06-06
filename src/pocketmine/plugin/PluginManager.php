@@ -183,7 +183,7 @@ class PluginManager{
 					 * @var Plugin $plugin
 					 * @see Plugin::__construct()
 					 */
-					$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed);
+					$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed . "/"));
 					$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 
 					return $plugin;
