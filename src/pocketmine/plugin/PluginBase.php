@@ -371,13 +371,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @return string
-	 */
-	protected function getFile() : string{
-		return $this->file;
-	}
-
-	/**
 	 * @return PluginLoader
 	 */
 	public function getPluginLoader() : PluginLoader{
