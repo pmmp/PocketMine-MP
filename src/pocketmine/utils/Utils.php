@@ -589,10 +589,11 @@ class Utils{
 
 	/**
 	 * @param array $trace
+	 * @param int   $maxStringLength
 	 *
 	 * @return array
 	 */
-	public static function printableTrace(array $trace) : array{
+	public static function printableTrace(array $trace, int $maxStringLength = 80) : array{
 		$messages = [];
 		for($i = 0; isset($trace[$i]); ++$i){
 			$params = "";
@@ -603,7 +604,7 @@ class Utils{
 					$args = $trace[$i]["params"];
 				}
 
-				$params = implode(", ", array_map(function($value){
+				$params = implode(", ", array_map(function($value) use($maxStringLength){
 					if(is_object($value)){
 						return "object " . self::getNiceClassName($value);
 					}
@@ -611,7 +612,7 @@ class Utils{
 						return "array[" . count($value) . "]";
 					}
 					if(is_string($value)){
-						return "string[" . strlen($value) . "] " . Utils::printable($value);
+						return "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength);
 					}
 					return gettype($value) . " " . Utils::printable((string) $value);
 				}, $args));
