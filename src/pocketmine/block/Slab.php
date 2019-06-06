@@ -78,7 +78,7 @@ abstract class Slab extends Transparent{
 			}
 		}else{ //TODO: collision
 			if($blockReplace->getId() === $this->id){
-				if($blockReplace->getVariant() === $this->meta){
+				if($blockReplace->getVariant() === $this->getVariant()){
 					$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
 
 					return true;

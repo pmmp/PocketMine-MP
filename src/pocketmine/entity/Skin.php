@@ -23,11 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use function implode;
+use function in_array;
 use function json_decode;
 use function json_encode;
 use function strlen;
 
 class Skin{
+	public const ACCEPTED_SKIN_SIZES = [
+		64 * 32 * 4,
+		64 * 64 * 4,
+		128 * 128 * 4
+	];
 
 	/** @var string */
 	private $skinId;
@@ -48,12 +55,34 @@ class Skin{
 		$this->geometryData = $geometryData;
 	}
 
+	/**
+	 * @deprecated
+	 * @return bool
+	 */
 	public function isValid() : bool{
-		return (
-			$this->skinId !== "" and
-			(($s = strlen($this->skinData)) === 16384 or $s === 8192 or $s === 65536) and
-			($this->capeData === "" or strlen($this->capeData) === 8192)
-		);
+		try{
+			$this->validate();
+			return true;
+		}catch(\InvalidArgumentException $e){
+			return false;
+		}
+	}
+
+	/**
+	 * @throws \InvalidArgumentException
+	 */
+	public function validate() : void{
+		if($this->skinId === ""){
+			throw new \InvalidArgumentException("Skin ID must not be empty");
+		}
+		$len = strlen($this->skinData);
+		if(!in_array($len, self::ACCEPTED_SKIN_SIZES, true)){
+			throw new \InvalidArgumentException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
+		}
+		if($this->capeData !== "" and strlen($this->capeData) !== 8192){
+			throw new \InvalidArgumentException("Invalid cape data size " . strlen($this->capeData) . " bytes (must be exactly 8192 bytes)");
+		}
+		//TODO: validate geometry
 	}
 
 	/**

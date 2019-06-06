@@ -44,6 +44,6 @@ class Leaves2 extends Leaves{
 	}
 
 	public function canDropApples() : bool{
-		return $this->meta === self::DARK_OAK;
+		return $this->getVariant() === self::DARK_OAK;
 	}
 }

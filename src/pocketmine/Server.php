@@ -812,6 +812,7 @@ class Server{
 	 * @return bool
 	 */
 	public function hasOfflinePlayerData(string $name) : bool{
+		$name = strtolower($name);
 		return file_exists($this->getDataPath() . "players/$name.dat");
 	}
 
@@ -2354,6 +2355,51 @@ class Server{
 			$dump = new CrashDump($this);
 
 			$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.submit", [$dump->getPath()]));
+
+			if($this->getProperty("auto-report.enabled", true) !== false){
+				$report = true;
+
+				$stamp = $this->getDataPath() . "crashdumps/.last_crash";
+				$crashInterval = 120; //2 minutes
+				if(file_exists($stamp) and !($report = (filemtime($stamp) + $crashInterval < time()))){
+					$this->logger->debug("Not sending crashdump due to last crash less than $crashInterval seconds ago");
+				}
+				@touch($stamp); //update file timestamp
+
+				$plugin = $dump->getData()["plugin"];
+				if(is_string($plugin)){
+					$p = $this->pluginManager->getPlugin($plugin);
+					if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
+						$this->logger->debug("Not sending crashdump due to caused by non-phar plugin");
+						$report = false;
+					}
+				}
+
+				if($dump->getData()["error"]["type"] === \ParseError::class){
+					$report = false;
+				}
+
+				if(strrpos(\pocketmine\GIT_COMMIT, "-dirty") !== false or \pocketmine\GIT_COMMIT === str_repeat("00", 20)){
+					$this->logger->debug("Not sending crashdump due to locally modified");
+					$report = false; //Don't send crashdumps for locally modified builds
+				}
+
+				if($report){
+					$url = ($this->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
+					$reply = Internet::postURL($url, [
+						"report" => "yes",
+						"name" => $this->getName() . " " . $this->getPocketMineVersion(),
+						"email" => "crash@pocketmine.net",
+						"reportPaste" => base64_encode($dump->getEncodedData())
+					]);
+
+					if($reply !== false and ($data = json_decode($reply)) !== null and isset($data->crashId) and isset($data->crashUrl)){
+						$reportId = $data->crashId;
+						$reportUrl = $data->crashUrl;
+						$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
+					}
+				}
+			}
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			try{

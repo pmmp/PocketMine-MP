@@ -104,7 +104,7 @@ class TimeCommand extends VanillaCommand{
 			}else{
 				$level = $sender->getServer()->getDefaultLevel();
 			}
-			$sender->sendMessage(new TranslationContainer("commands.time.query", [$level->getTime()]));
+			$sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.time.query", [$level->getTime()]));
 			return true;
 		}
 
