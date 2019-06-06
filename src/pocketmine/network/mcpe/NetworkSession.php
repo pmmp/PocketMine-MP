@@ -278,7 +278,7 @@ class NetworkSession{
 		}catch(\ErrorException $e){
 			$this->logger->debug("Failed to decompress packet: " . bin2hex($payload));
 			//TODO: this isn't incompatible game version if we already established protocol version
-			throw new BadPacketException("Compressed packet batch decode error (incompatible game version?)", 0, $e);
+			throw new BadPacketException("Compressed packet batch decode error: " . $e->getMessage(), 0, $e);
 		}finally{
 			Timings::$playerNetworkReceiveDecompressTimer->stopTiming();
 		}
