@@ -23,7 +23,7 @@ fi
 
 #Run PHPUnit tests
 curl https://phar.phpunit.de/phpunit-7.phar --silent --location -o phpunit.phar
-"$PHP_BINARY" phpunit.phar --bootstrap vendor/autoload.php tests/phpunit || exit 1
+"$PHP_BINARY" phpunit.phar --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit || exit 1
 
 #Run-the-server tests
 DATA_DIR="test_data"
