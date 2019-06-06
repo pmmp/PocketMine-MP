@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
+use function error_reporting;
+
 /**
  * This class must be extended by all custom threading classes
  */
@@ -72,6 +74,17 @@ abstract class Worker extends \Worker{
 		}
 		return parent::start($options);
 	}
+
+	final public function run() : void{
+		error_reporting(-1);
+		$this->registerClassLoader();
+		$this->onRun();
+	}
+
+	/**
+	 * Runs code on the thread.
+	 */
+	abstract protected function onRun() : void;
 
 	/**
 	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.

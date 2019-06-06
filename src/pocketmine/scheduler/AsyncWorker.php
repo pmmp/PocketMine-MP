@@ -25,7 +25,6 @@ namespace pocketmine\scheduler;
 
 use pocketmine\utils\MainLogger;
 use pocketmine\Worker;
-use function error_reporting;
 use function gc_enable;
 use function ini_set;
 
@@ -45,14 +44,7 @@ class AsyncWorker extends Worker{
 		$this->memoryLimit = $memoryLimit;
 	}
 
-	public function run() : void{
-		error_reporting(-1);
-
-		$this->registerClassLoader();
-
-		//set this after the autoloader is registered
-		\ErrorUtils::setErrorExceptionHandler();
-
+	protected function onRun() : void{
 		\GlobalLogger::set($this->logger);
 		if($this->logger instanceof MainLogger){
 			$this->logger->registerStatic();
