@@ -80,6 +80,7 @@ use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 use function array_map;
+use function base64_encode;
 use function bin2hex;
 use function count;
 use function get_class;
@@ -265,7 +266,7 @@ class NetworkSession{
 			try{
 				$payload = $this->cipher->decrypt($payload);
 			}catch(\UnexpectedValueException $e){
-				$this->logger->debug("Encrypted packet: " . bin2hex($payload));
+				$this->logger->debug("Encrypted packet: " . base64_encode($payload));
 				throw new BadPacketException("Packet decryption error: " . $e->getMessage(), 0, $e);
 			}finally{
 				Timings::$playerNetworkReceiveDecryptTimer->stopTiming();
@@ -276,7 +277,7 @@ class NetworkSession{
 		try{
 			$stream = new PacketBatch(NetworkCompression::decompress($payload));
 		}catch(\ErrorException $e){
-			$this->logger->debug("Failed to decompress packet: " . bin2hex($payload));
+			$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
 			//TODO: this isn't incompatible game version if we already established protocol version
 			throw new BadPacketException("Compressed packet batch decode error: " . $e->getMessage(), 0, $e);
 		}finally{
@@ -291,14 +292,14 @@ class NetworkSession{
 			try{
 				$pk = $stream->getPacket();
 			}catch(BinaryDataException $e){
-				$this->logger->debug("Packet batch: " . bin2hex($stream->getBuffer()));
+				$this->logger->debug("Packet batch: " . base64_encode($stream->getBuffer()));
 				throw new BadPacketException("Packet batch decode error: " . $e->getMessage(), 0, $e);
 			}
 
 			try{
 				$this->handleDataPacket($pk);
 			}catch(BadPacketException $e){
-				$this->logger->debug($pk->getName() . ": " . bin2hex($pk->getBuffer()));
+				$this->logger->debug($pk->getName() . ": " . base64_encode($pk->getBuffer()));
 				throw new BadPacketException("Error processing " . $pk->getName() . ": " . $e->getMessage(), 0, $e);
 			}
 		}
@@ -327,7 +328,7 @@ class NetworkSession{
 			$ev = new DataPacketReceiveEvent($this, $packet);
 			$ev->call();
 			if(!$ev->isCancelled() and !$packet->handle($this->handler)){
-				$this->logger->debug("Unhandled " . $packet->getName() . ": " . bin2hex($packet->getBuffer()));
+				$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($packet->getBuffer()));
 			}
 		}finally{
 			$timings->stopTiming();

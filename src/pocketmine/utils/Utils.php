@@ -44,7 +44,6 @@ use function file;
 use function file_exists;
 use function file_get_contents;
 use function function_exists;
-use function get_class;
 use function get_current_user;
 use function get_loaded_extensions;
 use function getenv;
@@ -76,7 +75,6 @@ use function str_split;
 use function stripos;
 use function strlen;
 use function strpos;
-use function strval;
 use function substr;
 use function sys_get_temp_dir;
 use function trim;
@@ -405,10 +403,11 @@ class Utils{
 
 	/**
 	 * @param array $trace
+	 * @param int   $maxStringLength
 	 *
 	 * @return array
 	 */
-	public static function printableTrace(array $trace) : array{
+	public static function printableTrace(array $trace, int $maxStringLength = 80) : array{
 		$messages = [];
 		for($i = 0; isset($trace[$i]); ++$i){
 			$params = "";
@@ -419,8 +418,17 @@ class Utils{
 					$args = $trace[$i]["params"];
 				}
 
-				$params = implode(", ", array_map(function($value){
-					return (is_object($value) ? get_class($value) . " object" : gettype($value) . " " . (is_array($value) ? "Array()" : Utils::printable(@strval($value))));
+				$params = implode(", ", array_map(function($value) use($maxStringLength){
+					if(is_object($value)){
+						return "object " . self::getNiceClassName($value);
+					}
+					if(is_array($value)){
+						return "array[" . count($value) . "]";
+					}
+					if(is_string($value)){
+						return "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength);
+					}
+					return gettype($value) . " " . Utils::printable((string) $value);
 				}, $args));
 			}
 			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? self::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
