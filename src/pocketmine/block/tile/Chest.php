@@ -29,6 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\world\World;
+use function abs;
 
 class Chest extends Spawnable implements Container, Nameable{
 	use NameableTrait {
@@ -59,8 +60,17 @@ class Chest extends Spawnable implements Container, Nameable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_PAIRX, IntTag::class) and $nbt->hasTag(self::TAG_PAIRZ, IntTag::class)){
-			$this->pairX = $nbt->getInt(self::TAG_PAIRX);
-			$this->pairZ = $nbt->getInt(self::TAG_PAIRZ);
+			$pairX = $nbt->getInt(self::TAG_PAIRX);
+			$pairZ = $nbt->getInt(self::TAG_PAIRZ);
+			if(
+				($this->x === $pairX and abs($this->z - $pairZ) === 1) or
+				($this->z === $pairZ and abs($this->x - $pairX) === 1)
+			){
+				$this->pairX = $pairX;
+				$this->pairZ = $pairZ;
+			}else{
+				$this->pairX = $this->pairZ = null;
+			}
 		}
 		$this->loadName($nbt);
 		$this->loadItems($nbt);
