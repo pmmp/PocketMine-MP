@@ -36,7 +36,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\world\World;
-use function ceil;
 use function max;
 
 class Furnace extends Spawnable implements Container, Nameable{
@@ -145,10 +144,6 @@ class Furnace extends Spawnable implements Container, Nameable{
 		}
 	}
 
-	protected function getFuelTicksLeft() : int{
-		return $this->maxTime > 0 ? (int) ceil($this->burnTime / $this->maxTime * 200) : 0;
-	}
-
 	public function onUpdate() : bool{
 		if($this->closed){
 			return false;
@@ -157,7 +152,8 @@ class Furnace extends Spawnable implements Container, Nameable{
 		$this->timings->startTiming();
 
 		$prevCookTime = $this->cookTime;
-		$prevFuelTicksLeft = $this->getFuelTicksLeft();
+		$prevBurnTime = $this->burnTime;
+		$prevMaxTime = $this->maxTime;
 
 		$ret = false;
 
@@ -211,11 +207,14 @@ class Furnace extends Spawnable implements Container, Nameable{
 				$v->getNetworkSession()->syncInventoryData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_TICK_COUNT, $this->cookTime);
 			}
 		}
-
-		$fuelTicksLeft = $this->getFuelTicksLeft();
-		if($prevFuelTicksLeft !== $fuelTicksLeft){
+		if($prevBurnTime !== $this->burnTime){
 			foreach($this->inventory->getViewers() as $v){
-				$v->getNetworkSession()->syncInventoryData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_LIT_TIME, $fuelTicksLeft);
+				$v->getNetworkSession()->syncInventoryData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_LIT_TIME, $this->burnTime);
+			}
+		}
+		if($prevMaxTime !== $this->maxTime){
+			foreach($this->inventory->getViewers() as $v){
+				$v->getNetworkSession()->syncInventoryData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_LIT_DURATION, $this->maxTime);
 			}
 		}
 
