@@ -803,6 +803,13 @@ class BlockFactory{
 		}
 	}
 
+	public static function remap(int $id, int $meta, Block $block) : void{
+		if(self::isRegistered($id, $meta)){
+			throw new \InvalidArgumentException("$id:$meta is already mapped");
+		}
+		self::fillStaticArrays(($id << 4) | $meta, $block);
+	}
+
 	private static function fillStaticArrays(int $index, Block $block) : void{
 		self::$fullList[$index] = $block;
 		self::$lightFilter[$index] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
