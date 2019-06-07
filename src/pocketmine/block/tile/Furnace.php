@@ -39,9 +39,7 @@ use pocketmine\world\World;
 use function max;
 
 class Furnace extends Spawnable implements Container, Nameable{
-	use NameableTrait {
-		addAdditionalSpawnData as addNameSpawnData;
-	}
+	use NameableTrait;
 	use ContainerTrait;
 
 	public const TAG_BURN_TIME = "BurnTime";
@@ -221,12 +219,5 @@ class Furnace extends Spawnable implements Container, Nameable{
 		$this->timings->stopTiming();
 
 		return $ret;
-	}
-
-	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setShort(self::TAG_BURN_TIME, $this->burnTime);
-		$nbt->setShort(self::TAG_COOK_TIME, $this->cookTime);
-
-		$this->addNameSpawnData($nbt);
 	}
 }
