@@ -31,9 +31,9 @@ use pocketmine\network\mcpe\handler\SessionHandler;
 class ContainerSetDataPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CONTAINER_SET_DATA_PACKET;
 
-	public const PROPERTY_FURNACE_TICK_COUNT = 0;
-	public const PROPERTY_FURNACE_LIT_TIME = 1;
-	public const PROPERTY_FURNACE_LIT_DURATION = 2;
+	public const PROPERTY_FURNACE_SMELT_PROGRESS = 0;
+	public const PROPERTY_FURNACE_REMAINING_FUEL_TIME = 1;
+	public const PROPERTY_FURNACE_MAX_FUEL_TIME = 2;
 	public const PROPERTY_FURNACE_STORED_XP = 3;
 	public const PROPERTY_FURNACE_FUEL_AUX = 4;
 
