@@ -40,8 +40,8 @@ use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketBroadcastEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\inventory\CraftingManager;
+use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
@@ -1186,7 +1186,7 @@ class Server{
 			BlockFactory::init();
 			Enchantment::init();
 			ItemFactory::init();
-			Item::initCreativeItems();
+			CreativeInventory::init();
 			Biome::init();
 
 			$this->craftingManager = new CraftingManager();

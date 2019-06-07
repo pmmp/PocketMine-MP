@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction\action;
 
+use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
@@ -53,7 +54,7 @@ class CreativeInventoryAction extends InventoryAction{
 	 */
 	public function isValid(Player $source) : bool{
 		return !$source->hasFiniteResources() and
-			($this->actionType === self::TYPE_DELETE_ITEM or Item::getCreativeItemIndex($this->sourceItem) !== -1);
+			($this->actionType === self::TYPE_DELETE_ITEM or CreativeInventory::getItemIndex($this->sourceItem) !== -1);
 	}
 
 	/**

@@ -165,7 +165,7 @@ class PlayerInventory extends BaseInventory{
 
 		$items = [];
 		if(!$holder->isSpectator()){ //fill it for all gamemodes except spectator
-			foreach(Item::getCreativeItems() as $i => $item){
+			foreach(CreativeInventory::getAll() as $i => $item){
 				$items[$i] = clone $item;
 			}
 		}
