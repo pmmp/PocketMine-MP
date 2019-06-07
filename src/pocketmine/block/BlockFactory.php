@@ -469,9 +469,9 @@ class BlockFactory{
 			self::register(new Leaves(new BID($magicNumber >= 4 ? Ids::LEAVES2 : Ids::LEAVES, $magicNumber & 0x03), $name . " Leaves", $treeType));
 			self::register(new Log(new BID($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, $magicNumber & 0x03), $name . " Log", $treeType));
 
-			//TODO: the old bug-block needs to be remapped to the new dedicated block
-			self::register(new Wood(new BID($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, ($magicNumber & 0x03) | 0b1100), $name . " Wood", $treeType));
-			self::register(new Wood(new BID(Ids::WOOD, $magicNumber), $name . " Wood", $treeType));
+			$wood = new Wood(new BID(Ids::WOOD, $magicNumber), $name . " Wood", $treeType);
+			self::register($wood);
+			self::remap($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, ($magicNumber & 0x03) | 0b1100, $wood);
 
 			self::register(new FenceGate(new BID($fenceGateIds[$treeType]), $treeType->getDisplayName() . " Fence Gate"));
 			self::register(new WoodenStairs(new BID($woodenStairIds[$treeType]), $treeType->getDisplayName() . " Stairs"));
