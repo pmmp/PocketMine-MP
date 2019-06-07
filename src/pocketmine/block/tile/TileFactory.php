@@ -48,6 +48,7 @@ final class TileFactory{
 	public static function init() : void{
 		self::register(Banner::class, ["Banner", "minecraft:banner"]);
 		self::register(Bed::class, ["Bed", "minecraft:bed"]);
+		self::register(BrewingStand::class, ["BrewingStand", "minecraft:brewing_stand"]);
 		self::register(Chest::class, ["Chest", "minecraft:chest"]);
 		self::register(Comparator::class, ["Comparator", "minecraft:comparator"]);
 		self::register(DaylightSensor::class, ["DaylightDetector", "minecraft:daylight_detector"]);
@@ -66,7 +67,6 @@ final class TileFactory{
 		//TODO: Beacon
 		//TODO: Bell
 		//TODO: BlastFurnace
-		//TODO: BrewingStand
 		//TODO: Campfire
 		//TODO: Cauldron
 		//TODO: ChalkboardBlock

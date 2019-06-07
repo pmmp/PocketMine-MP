@@ -29,6 +29,7 @@ use pocketmine\block\BlockLegacyIds as Ids;
 use pocketmine\block\BlockLegacyMetadata as Meta;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\tile\Bed as TileBed;
+use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\Comparator as TileComparator;
 use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
@@ -97,7 +98,7 @@ class BlockFactory{
 		self::register(new BlueIce(new BID(Ids::BLUE_ICE), "Blue Ice"));
 		self::register(new BoneBlock(new BID(Ids::BONE_BLOCK), "Bone Block"));
 		self::register(new Bookshelf(new BID(Ids::BOOKSHELF), "Bookshelf"));
-		self::register(new BrewingStand(new BID(Ids::BREWING_STAND_BLOCK, 0, ItemIds::BREWING_STAND), "Brewing Stand"));
+		self::register(new BrewingStand(new BID(Ids::BREWING_STAND_BLOCK, 0, ItemIds::BREWING_STAND, TileBrewingStand::class), "Brewing Stand"));
 
 		$bricksBreakInfo = new BlockBreakInfo(2.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
 		self::register(new Stair(new BID(Ids::BRICK_STAIRS), "Brick Stairs", $bricksBreakInfo));
