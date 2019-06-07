@@ -137,6 +137,7 @@ class BlockFactory{
 		self::register(new DoubleTallGrass(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_TALLGRASS), "Double Tallgrass"));
 		self::register(new DoubleTallGrass(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_LARGE_FERN), "Large Fern"));
 		self::register(new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg"));
+		self::register(new DriedKelp(new BID(Ids::DRIED_KELP_BLOCK), "Dried Kelp Block", new BlockBreakInfo(0.5, BlockToolType::TYPE_NONE, 0, 12.5)));
 		self::register(new Solid(new BID(Ids::EMERALD_BLOCK), "Emerald Block", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON, 30.0)));
 		self::register(new EmeraldOre(new BID(Ids::EMERALD_ORE), "Emerald Ore"));
 		self::register(new EnchantingTable(new BID(Ids::ENCHANTING_TABLE, 0, null, TileEnchantingTable::class), "Enchanting Table"));
