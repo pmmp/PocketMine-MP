@@ -43,9 +43,10 @@ class FlowerPot extends Spawnable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_ITEM, ShortTag::class) and $nbt->hasTag(self::TAG_ITEM_DATA, IntTag::class)){
-			//prevent stupidity with wrong items
-			if(($id = $nbt->getShort(self::TAG_ITEM)) >= 0 and $id <= 255 and ($data = $nbt->getInt(self::TAG_ITEM_DATA)) >= 0 and $data <= 15){
-				$this->setPlant(BlockFactory::get($id, $data));
+			try{
+				$this->setPlant(BlockFactory::get($nbt->getShort(self::TAG_ITEM), $nbt->getInt(self::TAG_ITEM_DATA)));
+			}catch(\InvalidArgumentException $e){
+				//noop
 			}
 		}else{
 			//TODO: new PlantBlock tag
