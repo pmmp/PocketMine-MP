@@ -89,5 +89,7 @@ class DaylightSensor extends Transparent{
 		return true;
 	}
 
-	//TODO
+	public function onScheduledUpdate() : void{
+		//TODO
+	}
 }

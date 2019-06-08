@@ -59,7 +59,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 		$this->inventory = new FurnaceInventory($this);
 		$this->inventory->addChangeListeners(CallbackInventoryChangeListener::onAnyChange(
 			function(Inventory $unused) : void{
-				$this->scheduleUpdate();
+				$this->world->scheduleDelayedBlockUpdate($this->asVector3(), 1);
 			})
 		);
 
@@ -143,6 +143,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 	}
 
 	public function onUpdate() : bool{
+		//TODO: move this to Block
 		if($this->closed){
 			return false;
 		}

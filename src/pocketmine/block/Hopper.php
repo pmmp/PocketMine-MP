@@ -84,5 +84,9 @@ class Hopper extends Transparent{
 		return false;
 	}
 
+	public function onScheduledUpdate() : void{
+		//TODO
+	}
+
 	//TODO: redstone logic, sucking logic
 }

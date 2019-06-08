@@ -97,4 +97,11 @@ class Furnace extends Solid{
 
 		return true;
 	}
+
+	public function onScheduledUpdate() : void{
+		$furnace = $this->getWorld()->getTile($this);
+		if($furnace instanceof TileFurnace and $furnace->onUpdate()){
+			$this->world->scheduleDelayedBlockUpdate($this, 1); //TODO: check this
+		}
+	}
 }

@@ -196,8 +196,8 @@ class Chest extends Spawnable implements Container, Nameable{
 
 		$this->createPair($tile);
 
-		$this->onChanged();
-		$tile->onChanged();
+		$this->setDirty();
+		$tile->setDirty();
 		$this->checkPairing();
 
 		return true;
@@ -219,12 +219,12 @@ class Chest extends Spawnable implements Container, Nameable{
 		$tile = $this->getPair();
 		$this->pairX = $this->pairZ = null;
 
-		$this->onChanged();
+		$this->setDirty();
 
 		if($tile instanceof Chest){
 			$tile->pairX = $tile->pairZ = null;
 			$tile->checkPairing();
-			$tile->onChanged();
+			$tile->setDirty();
 		}
 		$this->checkPairing();
 

@@ -109,7 +109,6 @@ class Banner extends Spawnable{
 	 */
 	public function setBaseColor(DyeColor $color) : void{
 		$this->baseColor = $color;
-		$this->onChanged();
 	}
 
 	/**
@@ -124,7 +123,6 @@ class Banner extends Spawnable{
 	 */
 	public function setPatterns(Deque $patterns) : void{
 		$this->patterns = $patterns;
-		$this->onChanged();
 	}
 
 	public function getDefaultName() : string{

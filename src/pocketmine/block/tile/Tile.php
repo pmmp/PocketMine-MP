@@ -107,20 +107,6 @@ abstract class Tile extends Position{
 		return $this->world->getBlockAt($this->x, $this->y, $this->z);
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function onUpdate() : bool{
-		return false;
-	}
-
-	final public function scheduleUpdate() : void{
-		if($this->closed){
-			throw new \InvalidStateException("Cannot schedule update on garbage tile " . get_class($this));
-		}
-		$this->world->updateTiles[World::blockHash($this->x, $this->y, $this->z)] = $this;
-	}
-
 	public function isClosed() : bool{
 		return $this->closed;
 	}

@@ -149,8 +149,4 @@ class MonsterSpawner extends Spawnable{
 
 		$nbt->setFloat(self::TAG_ENTITY_SCALE, $this->displayEntityScale);
 	}
-
-	public function onUpdate() : bool{
-		return false; //TODO
-	}
 }

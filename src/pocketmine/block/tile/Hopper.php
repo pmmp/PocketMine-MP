@@ -86,8 +86,4 @@ class Hopper extends Spawnable implements Container, Nameable{
 	public function getRealInventory(){
 		return $this->inventory;
 	}
-
-	public function onUpdate() : bool{
-		return false; //TODO
-	}
 }

@@ -69,5 +69,7 @@ class BrewingStand extends Transparent{
 		return true;
 	}
 
-	//TODO
+	public function onScheduledUpdate() : void{
+		//TODO
+	}
 }

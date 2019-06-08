@@ -41,8 +41,4 @@ class DaylightSensor extends Tile{
 	protected function writeSaveData(CompoundTag $nbt) : void{
 
 	}
-
-	public function onUpdate() : bool{
-		return false; //TODO: we'll need this for implementing daylight sensor until https://github.com/pmmp/PocketMine-MP/issues/2099 is fixed
-	}
 }

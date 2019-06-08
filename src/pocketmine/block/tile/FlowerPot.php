@@ -69,7 +69,6 @@ class FlowerPot extends Spawnable{
 		}else{
 			$this->plant = clone $plant;
 		}
-		$this->onChanged();
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{

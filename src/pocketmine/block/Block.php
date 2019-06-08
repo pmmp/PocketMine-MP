@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\block;
 
+use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\block\utils\InvalidBlockStateException;
@@ -184,9 +185,13 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $this->world->getTile($this);
-		if($oldTile !== null and ($tileType === null or !($oldTile instanceof $tileType))){
-			$oldTile->close();
-			$oldTile = null;
+		if($oldTile !== null){
+			if($tileType === null or !($oldTile instanceof $tileType)){
+				$oldTile->close();
+				$oldTile = null;
+			}elseif($oldTile instanceof Spawnable){
+				$oldTile->setDirty(); //destroy old network cache
+			}
 		}
 		if($oldTile === null and $tileType !== null){
 			$this->world->addTile(TileFactory::create($tileType, $this->world, $this->asVector3()));

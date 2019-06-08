@@ -90,7 +90,6 @@ class Sign extends Spawnable{
 	 */
 	public function setText(SignText $text) : void{
 		$this->text = $text;
-		$this->onChanged();
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{

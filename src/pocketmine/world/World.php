@@ -143,8 +143,6 @@ class World implements ChunkManager, Metadatable{
 
 	/** @var Entity[] */
 	public $updateEntities = [];
-	/** @var Tile[] */
-	public $updateTiles = [];
 	/** @var Block[][] */
 	private $blockCache = [];
 
@@ -817,26 +815,6 @@ class World implements ChunkManager, Metadatable{
 		}
 		Timings::$tickEntityTimer->stopTiming();
 		$this->timings->entityTick->stopTiming();
-
-		$this->timings->tileEntityTick->startTiming();
-		Timings::$tickTileEntityTimer->startTiming();
-		//Update tiles that need update
-		foreach($this->updateTiles as $blockHash => $tile){
-			if(!$tile->onUpdate()){
-				unset($this->updateTiles[$blockHash]);
-			}
-			if(!$tile->isClosed() and $tile instanceof Spawnable and $tile->isDirty()){
-				$chunkHash = World::chunkHash($tile->getFloorX() >> 4, $tile->getFloorZ() >> 4);
-				if(!isset($this->changedBlocks[$chunkHash])){
-					$this->changedBlocks[$chunkHash] = [$blockHash => $tile];
-				}else{
-					$this->changedBlocks[$chunkHash][$blockHash] = $tile;
-				}
-				$tile->setDirty(false);
-			}
-		}
-		Timings::$tickTileEntityTimer->stopTiming();
-		$this->timings->tileEntityTick->stopTiming();
 
 		$this->timings->doTickTiles->startTiming();
 		$this->tickChunks();
@@ -2460,7 +2438,8 @@ class World implements ChunkManager, Metadatable{
 			throw new \InvalidStateException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
 		}
 
-		$tile->scheduleUpdate();
+		//delegate tile ticking to the corresponding block
+		$this->scheduleDelayedBlockUpdate($tile->asVector3(), 1);
 	}
 
 	/**
@@ -2472,8 +2451,6 @@ class World implements ChunkManager, Metadatable{
 		if($tile->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
-
-		unset($this->updateTiles[World::blockHash($tile->x, $tile->y, $tile->z)]);
 
 		$chunkX = $tile->getFloorX() >> 4;
 		$chunkZ = $tile->getFloorZ() >> 4;
