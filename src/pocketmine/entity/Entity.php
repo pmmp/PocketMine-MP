@@ -636,7 +636,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $timeUntilPortal = 0;
 	/** @var int */
 	protected $portalCounter = 0;
-	public $headYaw = null;
+	/** @var float|null */
+	public $headYaw;
+	/** @var float */
+	public $lastHeadYaw = 0;
 	/** @var bool */
 	private $closeInFlight = false;
 
@@ -1492,15 +1495,20 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$diffPosition = ($this->x - $this->lastX) ** 2 + ($this->y - $this->lastY) ** 2 + ($this->z - $this->lastZ) ** 2;
 		$diffRotation = ($this->yaw - $this->lastYaw) ** 2 + ($this->pitch - $this->lastPitch) ** 2;
 
+		if($this->headYaw !== null){
+			$diffRotation += ($this->headYaw - $this->lastHeadYaw) ** 2;
+		}
+
 		$diffMotion = $this->motion->subtract($this->lastMotion)->lengthSquared();
 
-		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0 or ($this instanceof Mob)){
+		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0){
 			$this->lastX = $this->x;
 			$this->lastY = $this->y;
 			$this->lastZ = $this->z;
 
 			$this->lastYaw = $this->yaw;
 			$this->lastPitch = $this->pitch;
+			$this->lastHeadYaw = $this->headYaw ?? 0;
 
 			$this->broadcastMovement($teleport);
 		}
@@ -1527,7 +1535,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			//for mobs x and z are used for pitch and yaw, and y is used for headyaw
 			$pk->xRot = $this->pitch;
 			$pk->yRot = $this->yaw;
-			$pk->zRot = $this->headYaw ?? 90;
+			$pk->zRot = $this->headYaw ?? $this->yaw;
 
 			if($teleport){
 				$pk->flags |= MoveEntityAbsolutePacket::FLAG_TELEPORT;
@@ -2595,7 +2603,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pk->position = $this->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
-		$pk->headYaw = $this->headYaw ?? 90;
+		$pk->headYaw = $this->headYaw ?? $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->attributes = $this->attributeMap->getAll();
 		$pk->metadata = $this->propertyManager->getAll();
