@@ -2521,7 +2521,7 @@ class World implements ChunkManager, Metadatable{
 
 		(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()))->call();
 
-		if($chunk->isPopulated() and $this->getServer()->getProperty("chunk-ticking.light-updates", false)){
+		if(!$chunk->isLightPopulated() and $chunk->isPopulated()){
 			$this->getServer()->getAsyncPool()->submitTask(new LightPopulationTask($this, $chunk));
 		}
 
