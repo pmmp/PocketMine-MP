@@ -101,8 +101,6 @@ abstract class Living extends Entity implements Damageable{
 	/** @var int|null */
 	protected $leashedToEntityId = null;
 
-	public $headYaw = 0;
-
 	abstract public function getName() : string;
 
 	/**
