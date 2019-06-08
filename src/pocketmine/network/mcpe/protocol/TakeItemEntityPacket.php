@@ -38,8 +38,8 @@ class TakeItemEntityPacket extends DataPacket implements ClientboundPacket{
 
 	public static function create(int $takerEntityRuntimeId, int $itemEntityRuntimeId) : self{
 		$result = new self;
-		$result->target = $takerEntityRuntimeId;
-		$result->eid = $itemEntityRuntimeId;
+		$result->target = $itemEntityRuntimeId;
+		$result->eid = $takerEntityRuntimeId;
 		return $result;
 	}
 
