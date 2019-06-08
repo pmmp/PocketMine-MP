@@ -1830,15 +1830,19 @@ class World implements ChunkManager, Metadatable{
 			}
 		}
 
-		if(!$hand->place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+		$tx = new BlockTransaction($this);
+		if(!$hand->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player) or !$tx->apply()){
 			return false;
 		}
-		$tile = $this->getTile($hand);
-		if($tile !== null){
-			//TODO: seal this up inside block placement
-			$tile->copyDataFromItem($item);
+		foreach($tx->getBlocks() as [$x, $y, $z, $_]){
+			$tile = $this->getTileAt($x, $y, $z);
+			if($tile !== null){
+				//TODO: seal this up inside block placement
+				$tile->copyDataFromItem($item);
+			}
+
+			$this->getBlockAt($x, $y, $z)->onPostPlace();
 		}
-		$hand->onPostPlace();
 
 		if($playSound){
 			$this->addSound($hand, new BlockPlaceSound($hand));

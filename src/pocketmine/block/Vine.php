@@ -29,6 +29,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\BlockTransaction;
 use function array_intersect_key;
 use function array_keys;
 use function count;
@@ -100,7 +101,7 @@ class Vine extends Flowable{
 		return [];
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$blockClicked->isSolid() or Facing::axis($face) === Facing::AXIS_Y){
 			return false;
 		}
@@ -108,7 +109,7 @@ class Vine extends Flowable{
 		$this->faces = $blockReplace instanceof Vine ? $blockReplace->faces : [];
 		$this->faces[Facing::opposite($face)] = true;
 
-		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{

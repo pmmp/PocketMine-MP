@@ -30,6 +30,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\BlockTransaction;
 
 class Ladder extends Transparent{
 
@@ -76,10 +77,10 @@ class Ladder extends Transparent{
 	}
 
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$blockClicked->isTransparent() and Facing::axis($face) !== Facing::AXIS_Y){
 			$this->facing = $face;
-			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;

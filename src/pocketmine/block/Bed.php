@@ -36,6 +36,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
 
 class Bed extends Transparent{
@@ -169,7 +170,7 @@ class Bed extends Transparent{
 
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof ItemBed){ //TODO: the item should do this
 			$this->color = $item->getColor();
 		}
@@ -179,11 +180,9 @@ class Bed extends Transparent{
 
 			$next = $this->getSide($this->getOtherHalfSide());
 			if($next->canBeReplaced() and !$next->getSide(Facing::DOWN)->isTransparent()){
-				parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				$nextState = clone $this;
 				$nextState->head = true;
-				$this->getWorld()->setBlock($next, $nextState);
-
+				$tx->addBlock($blockReplace, $this)->addBlock($next, $nextState);
 				return true;
 			}
 		}

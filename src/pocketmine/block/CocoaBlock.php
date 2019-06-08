@@ -33,6 +33,7 @@ use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class CocoaBlock extends Transparent{
@@ -72,10 +73,10 @@ class CocoaBlock extends Transparent{
 			->trim($this->facing, (11 - $this->age * 2) / 16); //outward face
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(Facing::axis($face) !== Facing::AXIS_Y and $blockClicked instanceof Wood and $blockClicked->getTreeType()->equals(TreeType::JUNGLE())){
 			$this->facing = $face;
-			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;

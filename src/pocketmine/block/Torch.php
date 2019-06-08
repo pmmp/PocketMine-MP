@@ -28,6 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\BlockTransaction;
 
 class Torch extends Flowable{
 
@@ -63,13 +64,13 @@ class Torch extends Flowable{
 		}
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockClicked->canBeReplaced() and !$blockClicked->getSide(Facing::DOWN)->isTransparent()){
 			$this->facing = Facing::UP;
-			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}elseif($face !== Facing::DOWN and (!$blockClicked->isTransparent() or ($face === Facing::UP and ($blockClicked->getId() === BlockLegacyIds::FENCE or $blockClicked->getId() === BlockLegacyIds::COBBLESTONE_WALL)))){
 			$this->facing = $face;
-			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}else{
 			static $faces = [
 				Facing::SOUTH,
@@ -82,7 +83,7 @@ class Torch extends Flowable{
 				$block = $this->getSide($side);
 				if(!$block->isTransparent()){
 					$this->facing = Facing::opposite($side);
-					return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
 			}
 		}

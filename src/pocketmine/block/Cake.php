@@ -32,6 +32,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\BlockTransaction;
 
 class Cake extends Transparent implements FoodSource{
 
@@ -61,10 +62,10 @@ class Cake extends Transparent implements FoodSource{
 			->trim(Facing::WEST, $this->bites / 8);
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() !== BlockLegacyIds::AIR){
-			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;

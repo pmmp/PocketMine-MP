@@ -33,6 +33,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\BlockTransaction;
 use function floor;
 use function max;
 
@@ -67,7 +68,7 @@ class SnowLayer extends Flowable implements Fallable{
 		return AxisAlignedBB::one()->trim(Facing::UP, $this->layers >= 4 ? 0.5 : 1);
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockReplace instanceof SnowLayer){
 			if($blockReplace->layers >= 8){
 				return false;
@@ -76,7 +77,7 @@ class SnowLayer extends Flowable implements Fallable{
 		}
 		if($blockReplace->getSide(Facing::DOWN)->isSolid()){
 			//TODO: fix placement
-			return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
