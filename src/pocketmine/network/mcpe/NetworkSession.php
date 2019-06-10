@@ -567,6 +567,7 @@ class NetworkSession{
 	}
 
 	public function onSpawn() : void{
+		$this->player->doFirstSpawn();
 		$this->setHandler(new InGameSessionHandler($this->player, $this));
 	}
 

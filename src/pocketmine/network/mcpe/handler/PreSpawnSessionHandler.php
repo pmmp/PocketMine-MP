@@ -108,7 +108,7 @@ class PreSpawnSessionHandler extends SessionHandler{
 	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
 		$this->player->setImmobile(false); //HACK: this is set to prevent client-side falling before spawn
 
-		$this->player->doFirstSpawn();
+		$this->session->onSpawn();
 
 		return true;
 	}
