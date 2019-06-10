@@ -32,6 +32,21 @@ use function array_pop;
 use function count;
 use function intdiv;
 
+/**
+ * This transaction type is specialized for crafting validation. It shares most of the same semantics of the base
+ * inventory transaction type, but the requirement for validity is slightly different.
+ *
+ * It is expected that the actions in this transaction type will produce an **unbalanced result**, i.e. some inputs won't
+ * have corresponding outputs, and vice versa. The reason why is because the unmatched inputs are recipe inputs, and
+ * the unmatched outputs are recipe results.
+ *
+ * Therefore, the validity requirement is that the imbalance of the transaction should match the expected inputs and
+ * outputs of a registered crafting recipe.
+ *
+ * This transaction allows multiple repetitions of the same recipe to be crafted in a single batch. In the case of batch
+ * crafting, the number of unmatched inputs and outputs must be exactly divisible by the expected recipe ingredients and
+ * results, with no remainder. Any leftovers are expected to be emitted back to the crafting grid.
+ */
 class CraftingTransaction extends InventoryTransaction{
 	/** @var CraftingRecipe|null */
 	protected $recipe;
