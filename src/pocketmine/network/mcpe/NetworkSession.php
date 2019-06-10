@@ -560,13 +560,16 @@ class NetworkSession{
 		$this->createPlayer();
 
 		$this->setHandler(new PreSpawnSessionHandler($this->server, $this->player, $this));
+		$this->logger->debug("Waiting for spawn chunks");
 	}
 
 	public function onTerrainReady() : void{
+		$this->logger->debug("Sending spawn notification, waiting for spawn response");
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::PLAYER_SPAWN));
 	}
 
 	public function onSpawn() : void{
+		$this->logger->debug("Received spawn response, entering in-game phase");
 		$this->player->doFirstSpawn();
 		$this->setHandler(new InGameSessionHandler($this->player, $this));
 	}
