@@ -27,7 +27,6 @@ use pocketmine\block\Bed;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\UnknownBlock;
-use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
@@ -1262,11 +1261,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * Sets the gamemode, and if needed, kicks the Player.
 	 *
 	 * @param GameMode $gm
-	 * @param bool     $client if the client made this change in their GUI
 	 *
 	 * @return bool
 	 */
-	public function setGamemode(GameMode $gm, bool $client = false) : bool{
+	public function setGamemode(GameMode $gm) : bool{
 		if($this->gamemode === $gm){
 			return false;
 		}
@@ -1274,9 +1272,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$ev = new PlayerGameModeChangeEvent($this, $gm);
 		$ev->call();
 		if($ev->isCancelled()){
-			if($client){ //gamemode change by client in the GUI
-				$this->networkSession->syncGameMode($this->gamemode);
-			}
 			return false;
 		}
 
@@ -1295,15 +1290,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->spawnToAll();
 		}
 
-		if(!$client){ //Gamemode changed by server, do not send for client changes
-			$this->networkSession->syncGameMode($this->gamemode);
-		}else{
-			Command::broadcastCommandMessage($this, new TranslationContainer("commands.gamemode.success.self", [$gm->getTranslationKey()]));
-		}
-
-		$this->networkSession->syncAdventureSettings($this);
-		$this->networkSession->syncCreativeInventoryContents();
-
+		$this->networkSession->syncGameMode($this->gamemode);
 		return true;
 	}
 

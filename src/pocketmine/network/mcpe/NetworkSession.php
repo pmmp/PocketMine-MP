@@ -610,8 +610,12 @@ class NetworkSession{
 		$this->sendDataPacket(SetSpawnPositionPacket::playerSpawn($newSpawn->getFloorX(), $newSpawn->getFloorY(), $newSpawn->getFloorZ(), false)); //TODO: spawn forced
 	}
 
-	public function syncGameMode(GameMode $mode) : void{
+	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
 		$this->sendDataPacket(SetPlayerGameTypePacket::create(self::getClientFriendlyGamemode($mode)));
+		$this->syncAdventureSettings($this->player);
+		if(!$isRollback){
+			$this->syncCreativeInventoryContents();
+		}
 	}
 
 	/**

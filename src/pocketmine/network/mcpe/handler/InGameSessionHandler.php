@@ -534,8 +534,7 @@ class InGameSessionHandler extends SessionHandler{
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
 		if($packet->gamemode !== $this->player->getGamemode()->getMagicNumber()){
 			//Set this back to default. TODO: handle this properly
-			$this->session->syncGameMode($this->player->getGamemode());
-			$this->session->syncAdventureSettings($this->player);
+			$this->session->syncGameMode($this->player->getGamemode(), true);
 		}
 		return true;
 	}
