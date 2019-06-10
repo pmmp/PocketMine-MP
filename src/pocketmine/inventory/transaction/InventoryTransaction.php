@@ -36,7 +36,19 @@ use function min;
 use function spl_object_hash;
 
 /**
- * This InventoryTransaction only allows doing Transaction between one / two inventories
+ * This is the basic type for an inventory transaction. This is used for moving items between inventories, dropping
+ * items and more. It allows transactions with multiple inputs and outputs.
+ *
+ * Validation **does not** depend on ordering. This means that the actions can appear in any order and still be valid.
+ * The only validity requirement for this transaction type is that the balance of items must add up to zero. This means:
+ * - No new outputs without matching input amounts
+ * - No inputs without matching output amounts
+ * - No userdata changes (item state, NBT, etc)
+ *
+ * A transaction is composed of "actions", which are pairs of inputs and outputs which target a specific itemstack in
+ * a specific location. There are multiple types of inventory actions which might be involved in a transaction.
+ *
+ * @see InventoryAction
  */
 class InventoryTransaction{
 	protected $hasExecuted = false;
