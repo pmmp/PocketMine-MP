@@ -30,6 +30,7 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
 use pocketmine\GameMode;
+use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
@@ -772,6 +773,17 @@ class NetworkSession{
 		if($windowId !== ContainerIds::NONE){
 			$this->sendDataPacket(ContainerSetDataPacket::create($windowId, $propertyId, $value));
 		}
+	}
+
+	public function syncCreativeInventoryContents() : void{
+		$items = [];
+		if(!$this->player->isSpectator()){ //fill it for all gamemodes except spectator
+			foreach(CreativeInventory::getAll() as $i => $item){
+				$items[$i] = clone $item;
+			}
+		}
+
+		$this->sendDataPacket(InventoryContentPacket::create(ContainerIds::CREATIVE, $items));
 	}
 
 	public function onMobArmorChange(Living $mob) : void{

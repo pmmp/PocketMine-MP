@@ -1302,7 +1302,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		$this->networkSession->syncAdventureSettings($this);
-		$this->inventory->sendCreativeContents();
+		$this->networkSession->syncCreativeInventoryContents();
 
 		return true;
 	}

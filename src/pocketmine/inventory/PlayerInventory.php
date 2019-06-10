@@ -25,7 +25,6 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\Human;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
@@ -154,23 +153,6 @@ class PlayerInventory extends BaseInventory{
 	 */
 	public function getHotbarSize() : int{
 		return 9;
-	}
-
-	public function sendCreativeContents() : void{
-		//TODO: this mess shouldn't be in here
-		$holder = $this->getHolder();
-		if(!($holder instanceof Player)){
-			throw new \LogicException("Cannot send creative inventory contents to non-player inventory holder");
-		}
-
-		$items = [];
-		if(!$holder->isSpectator()){ //fill it for all gamemodes except spectator
-			foreach(CreativeInventory::getAll() as $i => $item){
-				$items[$i] = clone $item;
-			}
-		}
-
-		$holder->sendDataPacket(InventoryContentPacket::create(ContainerIds::CREATIVE, $items));
 	}
 
 	/**
