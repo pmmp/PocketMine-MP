@@ -240,11 +240,7 @@ class Explosion{
 			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
 		}
 
-		$pk = new ExplodePacket();
-		$pk->position = $this->source->asVector3();
-		$pk->radius = $this->size;
-		$pk->records = $send;
-		$this->world->broadcastPacketToViewers($source, $pk);
+		$this->world->broadcastPacketToViewers($source, ExplodePacket::create($this->source->asVector3(), $this->size, $send));
 
 		$this->world->addParticle($source, new HugeExplodeSeedParticle());
 		$this->world->addSound($source, new ExplodeSound());

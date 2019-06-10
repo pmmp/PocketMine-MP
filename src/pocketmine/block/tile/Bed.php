@@ -45,7 +45,6 @@ class Bed extends Spawnable{
 
 	public function setColor(DyeColor $color) : void{
 		$this->color = $color;
-		$this->onChanged();
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{

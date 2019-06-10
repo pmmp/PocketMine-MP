@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\block;
 
+use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\block\utils\InvalidBlockStateException;
@@ -43,6 +44,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
+use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function array_merge;
@@ -184,9 +186,13 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $this->world->getTile($this);
-		if($oldTile !== null and ($tileType === null or !($oldTile instanceof $tileType))){
-			$oldTile->close();
-			$oldTile = null;
+		if($oldTile !== null){
+			if($tileType === null or !($oldTile instanceof $tileType)){
+				$oldTile->close();
+				$oldTile = null;
+			}elseif($oldTile instanceof Spawnable){
+				$oldTile->setDirty(); //destroy old network cache
+			}
 		}
 		if($oldTile === null and $tileType !== null){
 			$this->world->addTile(TileFactory::create($tileType, $this->world, $this->asVector3()));
@@ -240,17 +246,19 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
-	 * @param Item        $item
-	 * @param Block       $blockReplace
-	 * @param Block       $blockClicked
-	 * @param int         $face
-	 * @param Vector3     $clickVector
-	 * @param Player|null $player
+	 * @param BlockTransaction $tx
+	 * @param Item             $item
+	 * @param Block            $blockReplace
+	 * @param Block            $blockClicked
+	 * @param int              $face
+	 * @param Vector3          $clickVector
+	 * @param Player|null      $player
 	 *
 	 * @return bool
 	 */
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		return $this->getWorld()->setBlock($blockReplace, $this);
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		$tx->addBlock($blockReplace, $this);
+		return true;
 	}
 
 	public function onPostPlace() : void{

@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class RedstonePowerOnSound implements Sound{
 
-	public function encode(Vector3 $pos){
+	public function encode(?Vector3 $pos){
 		return LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_POWER_ON, $pos);
 	}
 }

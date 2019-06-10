@@ -46,12 +46,16 @@ class AutoUpdater{
 	/** @var VersionString|null */
 	protected $newVersion;
 
+	/** @var \Logger */
+	private $logger;
+
 	/**
 	 * @param Server $server
 	 * @param string $endpoint
 	 */
 	public function __construct(Server $server, string $endpoint){
 		$this->server = $server;
+		$this->logger = new \PrefixedLogger($server->getLogger(), "Auto Updater");
 		$this->endpoint = "http://$endpoint/api/";
 
 		if($server->getProperty("auto-updater.enabled", true)){
@@ -60,7 +64,7 @@ class AutoUpdater{
 	}
 
 	public function checkUpdateError(string $error) : void{
-		$this->server->getLogger()->debug("[AutoUpdater] Async update check failed due to \"$error\"");
+		$this->logger->debug("Async update check failed due to \"$error\"");
 	}
 
 	/**
@@ -134,14 +138,12 @@ class AutoUpdater{
 	}
 
 	protected function printConsoleMessage(array $lines, string $logLevel = \LogLevel::INFO) : void{
-		$logger = $this->server->getLogger();
-
 		$title = $this->server->getName() . ' Auto Updater';
-		$logger->log($logLevel, sprintf('----- %s -----', $title));
+		$this->logger->log($logLevel, sprintf('----- %s -----', $title));
 		foreach($lines as $line){
-			$logger->log($logLevel, $line);
+			$this->logger->log($logLevel, $line);
 		}
-		$logger->log($logLevel, sprintf('----- %s -----', str_repeat('-', strlen($title))));
+		$this->logger->log($logLevel, sprintf('----- %s -----', str_repeat('-', strlen($title))));
 	}
 
 	/**
@@ -172,7 +174,7 @@ class AutoUpdater{
 			$newVersion = new VersionString($this->updateInfo["base_version"], $this->updateInfo["is_dev"], $this->updateInfo["build"]);
 		}catch(\InvalidArgumentException $e){
 			//Invalid version returned from API, assume there's no update
-			$this->server->getLogger()->debug("[AutoUpdater] Assuming no update because \"" . $e->getMessage() . "\"");
+			$this->logger->debug("Assuming no update because \"" . $e->getMessage() . "\"");
 			return;
 		}
 

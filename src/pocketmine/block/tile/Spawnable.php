@@ -38,16 +38,6 @@ abstract class Spawnable extends Tile{
 	private static $nbtWriter = null;
 
 	/**
-	 * Flags the tile as modified, so that updates will be broadcasted at the next available opportunity.
-	 * This MUST be called any time a change is made that players must be able to see.
-	 */
-	protected function onChanged() : void{
-		$this->spawnCompoundCache = null;
-		$this->dirty = true;
-		$this->scheduleUpdate();
-	}
-
-	/**
 	 * Returns whether the tile needs to be respawned to viewers.
 	 *
 	 * @return bool
@@ -60,6 +50,9 @@ abstract class Spawnable extends Tile{
 	 * @param bool $dirty
 	 */
 	public function setDirty(bool $dirty = true) : void{
+		if($dirty){
+			$this->spawnCompoundCache = null;
+		}
 		$this->dirty = $dirty;
 	}
 

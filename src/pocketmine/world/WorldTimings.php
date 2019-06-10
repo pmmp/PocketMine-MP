@@ -46,8 +46,6 @@ class WorldTimings{
 	/** @var TimingsHandler */
 	public $entityTick;
 	/** @var TimingsHandler */
-	public $tileEntityTick;
-	/** @var TimingsHandler */
 	public $doTick;
 
 	/** @var TimingsHandler */
@@ -78,7 +76,6 @@ class WorldTimings{
 		$this->doTickTiles = new TimingsHandler("** " . $name . "doTickTiles");
 		$this->doChunkGC = new TimingsHandler("** " . $name . "doChunkGC");
 		$this->entityTick = new TimingsHandler("** " . $name . "entityTick");
-		$this->tileEntityTick = new TimingsHandler("** " . $name . "tileEntityTick");
 
 		$this->syncChunkSendTimer = new TimingsHandler("** " . $name . "syncChunkSend");
 		$this->syncChunkSendPrepareTimer = new TimingsHandler("** " . $name . "syncChunkSendPrepare");

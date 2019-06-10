@@ -874,11 +874,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function broadcastMotion() : void{
-		$pk = new SetEntityMotionPacket();
-		$pk->entityRuntimeId = $this->id;
-		$pk->motion = $this->getMotion();
-
-		$this->world->broadcastPacketToViewers($this, $pk);
+		$this->world->broadcastPacketToViewers($this, SetEntityMotionPacket::create($this->id, $this->getMotion()));
 	}
 
 	public function hasGravity() : bool{
@@ -1649,9 +1645,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$id = spl_object_id($player);
 		if(isset($this->hasSpawned[$id])){
 			if($send){
-				$pk = new RemoveEntityPacket();
-				$pk->entityUniqueId = $this->id;
-				$player->sendDataPacket($pk);
+				$player->sendDataPacket(RemoveEntityPacket::create($this->id));
 			}
 			unset($this->hasSpawned[$id]);
 		}
@@ -1778,9 +1772,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$player = [$player];
 		}
 
-		$pk = new SetEntityDataPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->metadata = $data ?? $this->propertyManager->getAll();
+		$pk = SetEntityDataPacket::create($this->getId(), $data ?? $this->propertyManager->getAll());
 
 		foreach($player as $p){
 			if($p === $this){
@@ -1795,19 +1787,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
-		$pk = new EntityEventPacket();
-		$pk->entityRuntimeId = $this->id;
-		$pk->event = $eventId;
-		$pk->data = $eventData ?? 0;
-
-		$this->server->broadcastPacket($players ?? $this->getViewers(), $pk);
+		$this->server->broadcastPacket($players ?? $this->getViewers(), EntityEventPacket::create($this->id, $eventId, $eventData ?? 0));
 	}
 
 	public function broadcastAnimation(?array $players, int $animationId) : void{
-		$pk = new AnimatePacket();
-		$pk->entityRuntimeId = $this->id;
-		$pk->action = $animationId;
-		$this->server->broadcastPacket($players ?? $this->getViewers(), $pk);
+		$this->server->broadcastPacket($players ?? $this->getViewers(), AnimatePacket::create($this->id, $animationId));
 	}
 
 	public function __destruct(){

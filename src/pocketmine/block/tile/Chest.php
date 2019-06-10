@@ -25,13 +25,13 @@ namespace pocketmine\block\tile;
 
 use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\DoubleChestInventory;
-use pocketmine\inventory\InventoryHolder;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\world\World;
+use function abs;
 
-class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
+class Chest extends Spawnable implements Container, Nameable{
 	use NameableTrait {
 		addAdditionalSpawnData as addNameSpawnData;
 	}
@@ -60,8 +60,17 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_PAIRX, IntTag::class) and $nbt->hasTag(self::TAG_PAIRZ, IntTag::class)){
-			$this->pairX = $nbt->getInt(self::TAG_PAIRX);
-			$this->pairZ = $nbt->getInt(self::TAG_PAIRZ);
+			$pairX = $nbt->getInt(self::TAG_PAIRX);
+			$pairZ = $nbt->getInt(self::TAG_PAIRZ);
+			if(
+				($this->x === $pairX and abs($this->z - $pairZ) === 1) or
+				($this->z === $pairZ and abs($this->x - $pairX) === 1)
+			){
+				$this->pairX = $pairX;
+				$this->pairZ = $pairZ;
+			}else{
+				$this->pairX = $this->pairZ = null;
+			}
 		}
 		$this->loadName($nbt);
 		$this->loadItems($nbt);
@@ -187,8 +196,8 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 
 		$this->createPair($tile);
 
-		$this->onChanged();
-		$tile->onChanged();
+		$this->setDirty();
+		$tile->setDirty();
 		$this->checkPairing();
 
 		return true;
@@ -210,12 +219,12 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		$tile = $this->getPair();
 		$this->pairX = $this->pairZ = null;
 
-		$this->onChanged();
+		$this->setDirty();
 
 		if($tile instanceof Chest){
 			$tile->pairX = $tile->pairZ = null;
 			$tile->checkPairing();
-			$tile->onChanged();
+			$tile->setDirty();
 		}
 		$this->checkPairing();
 

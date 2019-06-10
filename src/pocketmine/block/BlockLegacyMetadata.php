@@ -84,6 +84,8 @@ interface BlockLegacyMetadata{
 
 	public const FLOWER_POT_FLAG_OCCUPIED = 0x01;
 
+	public const HOPPER_FLAG_POWERED = 0x08;
+
 	public const INFESTED_STONE = 0;
 	public const INFESTED_COBBLESTONE = 1;
 	public const INFESTED_STONE_BRICK = 2;

@@ -54,7 +54,7 @@ class FormatConverter{
 		$this->oldProvider = $oldProvider;
 		Utils::testValidInstance($newProvider, WritableWorldProvider::class);
 		$this->newProvider = $newProvider;
-		$this->logger = new \PrefixedLogger($logger, "World Converter - " . $this->oldProvider->getWorldData()->getName());
+		$this->logger = new \PrefixedLogger($logger, "World Converter: " . $this->oldProvider->getWorldData()->getName());
 
 		if(!file_exists($backupPath)){
 			@mkdir($backupPath, 0777, true);

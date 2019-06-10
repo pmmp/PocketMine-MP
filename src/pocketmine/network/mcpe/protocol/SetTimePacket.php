@@ -33,6 +33,12 @@ class SetTimePacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $time;
 
+	public static function create(int $time) : self{
+		$result = new self;
+		$result->time = $time;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->time = $this->getVarInt();
 	}

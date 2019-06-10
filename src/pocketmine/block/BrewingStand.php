@@ -23,7 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\tile\BrewingStand as TileBrewingStand;
+use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
+use pocketmine\math\Vector3;
+use pocketmine\Player;
 
 class BrewingStand extends Transparent{
 
@@ -54,5 +58,18 @@ class BrewingStand extends Transparent{
 		return 0b111;
 	}
 
-	//TODO
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($player instanceof Player){
+			$stand = $this->getWorld()->getTile($this);
+			if($stand instanceof TileBrewingStand and $stand->canOpenWith($item->getCustomName())){
+				$player->addWindow($stand->getInventory());
+			}
+		}
+
+		return true;
+	}
+
+	public function onScheduledUpdate() : void{
+		//TODO
+	}
 }

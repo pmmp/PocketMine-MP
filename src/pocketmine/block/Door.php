@@ -105,7 +105,7 @@ class Door extends Transparent{
 		}
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP){
 			$blockUp = $this->getSide(Facing::UP);
 			$blockDown = $this->getSide(Facing::DOWN);
@@ -127,10 +127,8 @@ class Door extends Transparent{
 			$topHalf = clone $this;
 			$topHalf->top = true;
 
-			$transaction = new BlockTransaction($this->world);
-			$transaction->addBlock($blockReplace, $this)->addBlock($blockUp, $topHalf);
-
-			return $transaction->apply();
+			$tx->addBlock($blockReplace, $this)->addBlock($blockUp, $topHalf);
+			return true;
 		}
 
 		return false;

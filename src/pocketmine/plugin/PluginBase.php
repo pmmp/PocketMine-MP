@@ -23,18 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use BadMethodCallException;
-use Generator;
 use pocketmine\command\Command;
 use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use pocketmine\command\PluginIdentifiableCommand;
-use pocketmine\plugin\resources\PluginResourceProvider;
 use pocketmine\Server;
 use pocketmine\utils\Config;
-use RuntimeException;
-use SplFileInfo;
 use function count;
 use function dirname;
 use function fclose;
@@ -51,7 +46,7 @@ use function strtolower;
 
 abstract class PluginBase extends PluginImpl implements CommandExecutor{
 
-	/** @var PluginResourceProvider */
+	/** @var ResourceProvider */
 	private $resourceProvider;
 	/** @var string */
 	private $file;
@@ -61,7 +56,7 @@ abstract class PluginBase extends PluginImpl implements CommandExecutor{
 	/** @var string */
 	private $configFile;
 
-	final public function __construct(Server $server, PluginDescription $description, string $dataFolder, string $loaderType, PluginResourceProvider $resourceProvider, string $file){
+	final public function __construct(Server $server, PluginDescription $description, string $dataFolder, string $loaderType, ResourceProvider $resourceProvider, string $file){
 		parent::__construct($server, $description, $dataFolder, $loaderType);
 		$this->resourceProvider = $resourceProvider;
 		$this->file = $file;
@@ -75,7 +70,7 @@ abstract class PluginBase extends PluginImpl implements CommandExecutor{
 	 * To trigger a warning if plugins try to override the old onLoad() method
 	 */
 	final protected function onLoad() : void{
-		throw new BadMethodCallException("PluginBase::onLoad() should never be called");
+		throw new \BadMethodCallException("PluginBase::onLoad() should never be called");
 	}
 
 	/**
@@ -178,14 +173,6 @@ abstract class PluginBase extends PluginImpl implements CommandExecutor{
 
 
 	/**
-	 * @return bool
-	 */
-	public function isPhar() : bool{
-		return strpos($this->file, "phar://") === 0;
-	}
-
-
-	/**
 	 * Gets an embedded resource on the plugin file.
 	 * WARNING: You must close the resource given using fclose()
 	 *
@@ -208,7 +195,7 @@ abstract class PluginBase extends PluginImpl implements CommandExecutor{
 	public function saveResource(string $filename, bool $replace = false) : bool{
 		$resource = $this->getResource($filename);
 		if($resource === null){
-			throw new RuntimeException("Resource $filename does not exist");
+			throw new \RuntimeException("Resource $filename does not exist");
 		}
 
 		$out = $this->getDataFolder() . $filename;
@@ -227,14 +214,13 @@ abstract class PluginBase extends PluginImpl implements CommandExecutor{
 	}
 
 	/**
-	 * Yields all the resources packaged with the plugin in the form ["path/in/resources" => SplFileInfo]
+	 * Returns all the resources packaged with the plugin in the form ["path/in/resources" => SplFileInfo]
 	 *
-	 * @return Generator|SplFileInfo[]
+	 * @return \SplFileInfo[]
 	 */
-	public function getResources() : Generator{
-		yield from $this->resourceProvider->listResources();
+	public function getResources() : array{
+		return $this->resourceProvider->getResources();
 	}
-
 
 	/**
 	 * @return Config

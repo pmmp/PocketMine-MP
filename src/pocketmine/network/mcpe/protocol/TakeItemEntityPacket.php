@@ -36,6 +36,13 @@ class TakeItemEntityPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $eid;
 
+	public static function create(int $takerEntityRuntimeId, int $itemEntityRuntimeId) : self{
+		$result = new self;
+		$result->target = $itemEntityRuntimeId;
+		$result->eid = $takerEntityRuntimeId;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->target = $this->getEntityRuntimeId();
 		$this->eid = $this->getEntityRuntimeId();

@@ -184,9 +184,7 @@ class CommandReader extends Thread{
 		return null;
 	}
 
-	public function run() : void{
-		$this->registerClassLoader();
-
+	protected function onRun() : void{
 		if($this->type !== self::TYPE_READLINE){
 			$this->initStdin();
 		}

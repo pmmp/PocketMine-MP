@@ -71,7 +71,6 @@ class Skull extends Spawnable{
 
 	public function setSkullType(SkullType $type) : void{
 		$this->skullType = $type;
-		$this->onChanged();
 	}
 
 	public function getSkullType() : SkullType{
@@ -84,7 +83,6 @@ class Skull extends Spawnable{
 
 	public function setRotation(int $rotation) : void{
 		$this->skullRotation = $rotation;
-		$this->onChanged();
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{

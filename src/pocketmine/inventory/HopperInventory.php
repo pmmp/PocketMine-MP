@@ -21,26 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\plugin\resources;
+namespace pocketmine\inventory;
 
-use Generator;
-use SplFileInfo;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
-interface PluginResourceProvider{
-	/**
-	 * Gets an embedded resource on the plugin file.
-	 * WARNING: You must close the resource given using fclose()
-	 *
-	 * @param string $filename
-	 *
-	 * @return null|resource Resource data, or null
-	 */
-	public function getResource(string $filename);
+class HopperInventory extends ContainerInventory{
 
-	/**
-	 * Yields all the resources packaged with the plugin in the form ["path/in/resources" => SplFileInfo]
-	 *
-	 * @return Generator|SplFileInfo[]
-	 */
-	public function listResources() : Generator;
+	public function __construct(Vector3 $holder, int $size = 5, array $items = []){
+		parent::__construct($holder, $size, $items);
+	}
+
+	public function getNetworkType() : int{
+		return WindowTypes::HOPPER;
+	}
 }

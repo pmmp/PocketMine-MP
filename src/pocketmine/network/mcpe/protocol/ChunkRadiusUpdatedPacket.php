@@ -34,6 +34,12 @@ class ChunkRadiusUpdatedPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $radius;
 
+	public static function create(int $radius) : self{
+		$result = new self;
+		$result->radius = $radius;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->radius = $this->getVarInt();
 	}

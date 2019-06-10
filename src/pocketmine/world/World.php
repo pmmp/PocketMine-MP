@@ -143,8 +143,6 @@ class World implements ChunkManager, Metadatable{
 
 	/** @var Entity[] */
 	public $updateEntities = [];
-	/** @var Tile[] */
-	public $updateTiles = [];
 	/** @var Block[][] */
 	private $blockCache = [];
 
@@ -266,6 +264,9 @@ class World implements ChunkManager, Metadatable{
 	/** @var SkyLightUpdate|null */
 	private $skyLightUpdate = null;
 
+	/** @var \Logger */
+	private $logger;
+
 	public static function chunkHash(int $x, int $z) : int{
 		return (($x & 0xFFFFFFFF) << 32) | ($z & 0xFFFFFFFF);
 	}
@@ -352,6 +353,8 @@ class World implements ChunkManager, Metadatable{
 		$this->provider = $provider;
 
 		$this->displayName = $this->provider->getWorldData()->getName();
+		$this->logger = new \PrefixedLogger($server->getLogger(), "World: $this->displayName");
+
 		$this->worldHeight = $this->provider->getWorldHeight();
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->displayName]));
@@ -417,6 +420,10 @@ class World implements ChunkManager, Metadatable{
 
 	public function getServer() : Server{
 		return $this->server;
+	}
+
+	public function getLogger() : \Logger{
+		return $this->logger;
 	}
 
 	final public function getProvider() : WritableWorldProvider{
@@ -706,8 +713,7 @@ class World implements ChunkManager, Metadatable{
 	 * @param Player ...$targets If empty, will send to all players in the world.
 	 */
 	public function sendTime(Player ...$targets){
-		$pk = new SetTimePacket();
-		$pk->time = $this->time & 0xffffffff; //avoid overflowing the field, since the packet uses an int32
+		$pk = SetTimePacket::create($this->time & 0xffffffff); //avoid overflowing the field, since the packet uses an int32
 
 		if(empty($targets)){
 			$this->broadcastGlobalPacket($pk);
@@ -810,26 +816,6 @@ class World implements ChunkManager, Metadatable{
 		Timings::$tickEntityTimer->stopTiming();
 		$this->timings->entityTick->stopTiming();
 
-		$this->timings->tileEntityTick->startTiming();
-		Timings::$tickTileEntityTimer->startTiming();
-		//Update tiles that need update
-		foreach($this->updateTiles as $blockHash => $tile){
-			if(!$tile->onUpdate()){
-				unset($this->updateTiles[$blockHash]);
-			}
-			if(!$tile->isClosed() and $tile instanceof Spawnable and $tile->isDirty()){
-				$chunkHash = World::chunkHash($tile->getFloorX() >> 4, $tile->getFloorZ() >> 4);
-				if(!isset($this->changedBlocks[$chunkHash])){
-					$this->changedBlocks[$chunkHash] = [$blockHash => $tile];
-				}else{
-					$this->changedBlocks[$chunkHash][$blockHash] = $tile;
-				}
-				$tile->setDirty(false);
-			}
-		}
-		Timings::$tickTileEntityTimer->stopTiming();
-		$this->timings->tileEntityTick->stopTiming();
-
 		$this->timings->doTickTiles->startTiming();
 		$this->tickChunks();
 		$this->timings->doTickTiles->stopTiming();
@@ -925,28 +911,17 @@ class World implements ChunkManager, Metadatable{
 			if(!($b instanceof Vector3)){
 				throw new \TypeError("Expected Vector3 in blocks array, got " . (is_object($b) ? get_class($b) : gettype($b)));
 			}
-			$pk = new UpdateBlockPacket();
-
-			$pk->x = $b->x;
-			$pk->y = $b->y;
-			$pk->z = $b->z;
 
 			if($b instanceof Block){
-				$pk->blockRuntimeId = $b->getRuntimeId();
+				$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, $b->getRuntimeId());
 			}else{
 				$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-				$pk->blockRuntimeId = RuntimeBlockMapping::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf);
+				$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, RuntimeBlockMapping::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf));
 			}
-			$packets[] = $pk;
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){
-				$tilepk = new BlockEntityDataPacket();
-				$tilepk->x = $tile->x;
-				$tilepk->y = $tile->y;
-				$tilepk->z = $tile->z;
-				$tilepk->namedtag = $tile->getSerializedSpawnCompound();
-				$packets[] = $tilepk;
+				$packets[] = BlockEntityDataPacket::create($tile->x, $tile->y, $tile->z, $tile->getSerializedSpawnCompound());
 			}
 		}
 
@@ -1855,15 +1830,19 @@ class World implements ChunkManager, Metadatable{
 			}
 		}
 
-		if(!$hand->place($item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+		$tx = new BlockTransaction($this);
+		if(!$hand->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player) or !$tx->apply()){
 			return false;
 		}
-		$tile = $this->getTile($hand);
-		if($tile !== null){
-			//TODO: seal this up inside block placement
-			$tile->copyDataFromItem($item);
+		foreach($tx->getBlocks() as [$x, $y, $z, $_]){
+			$tile = $this->getTileAt($x, $y, $z);
+			if($tile !== null){
+				//TODO: seal this up inside block placement
+				$tile->copyDataFromItem($item);
+			}
+
+			$this->getBlockAt($x, $y, $z)->onPostPlace();
 		}
-		$hand->onPostPlace();
 
 		if($playSound){
 			$this->addSound($hand, new BlockPlaceSound($hand));
@@ -2463,7 +2442,8 @@ class World implements ChunkManager, Metadatable{
 			throw new \InvalidStateException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
 		}
 
-		$tile->scheduleUpdate();
+		//delegate tile ticking to the corresponding block
+		$this->scheduleDelayedBlockUpdate($tile->asVector3(), 1);
 	}
 
 	/**
@@ -2475,8 +2455,6 @@ class World implements ChunkManager, Metadatable{
 		if($tile->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
-
-		unset($this->updateTiles[World::blockHash($tile->x, $tile->y, $tile->z)]);
 
 		$chunkX = $tile->getFloorX() >> 4;
 		$chunkZ = $tile->getFloorZ() >> 4;
@@ -2526,8 +2504,7 @@ class World implements ChunkManager, Metadatable{
 		try{
 			$chunk = $this->provider->loadChunk($x, $z);
 		}catch(CorruptedChunkException | UnsupportedChunkFormatException $e){
-			$logger = $this->server->getLogger();
-			$logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
+			$this->logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
 		}
 
 		if($chunk === null and $create){
@@ -2548,12 +2525,12 @@ class World implements ChunkManager, Metadatable{
 
 		(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()))->call();
 
-		if($chunk->isPopulated() and $this->getServer()->getProperty("chunk-ticking.light-updates", false)){
+		if(!$chunk->isLightPopulated() and $chunk->isPopulated()){
 			$this->getServer()->getAsyncPool()->submitTask(new LightPopulationTask($this, $chunk));
 		}
 
 		if(!$this->isChunkInUse($x, $z)){
-			$this->server->getLogger()->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
+			$this->logger->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
 			$this->unloadChunkRequest($x, $z);
 		}
 		foreach($this->getChunkListeners($x, $z) as $listener){

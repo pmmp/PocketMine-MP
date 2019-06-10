@@ -110,8 +110,12 @@ class MemoryManager{
 	/** @var bool */
 	private $dumpWorkers = true;
 
+	/** @var \Logger */
+	private $logger;
+
 	public function __construct(Server $server){
 		$this->server = $server;
+		$this->logger = new \PrefixedLogger($server->getLogger(), "Memory Manager");
 
 		$this->init();
 	}
@@ -211,7 +215,7 @@ class MemoryManager{
 	 * @param int  $triggerCount
 	 */
 	public function trigger(int $memory, int $limit, bool $global = false, int $triggerCount = 0) : void{
-		$this->server->getLogger()->debug(sprintf("[Memory Manager] %sLow memory triggered, limit %gMB, using %gMB",
+		$this->logger->debug(sprintf("%sLow memory triggered, limit %gMB, using %gMB",
 			$global ? "Global " : "", round(($limit / 1024) / 1024, 2), round(($memory / 1024) / 1024, 2)));
 		if($this->lowMemClearWorldCache){
 			foreach($this->server->getWorldManager()->getWorlds() as $world){
@@ -233,7 +237,7 @@ class MemoryManager{
 			$cycles = $this->triggerGarbageCollector();
 		}
 
-		$this->server->getLogger()->debug(sprintf("[Memory Manager] Freed %gMB, $cycles cycles", round(($ev->getMemoryFreed() / 1024) / 1024, 2)));
+		$this->logger->debug(sprintf("Freed %gMB, $cycles cycles", round(($ev->getMemoryFreed() / 1024) / 1024, 2)));
 	}
 
 	/**
@@ -285,7 +289,7 @@ class MemoryManager{
 		if($this->garbageCollectionAsync){
 			$pool = $this->server->getAsyncPool();
 			if(($w = $pool->shutdownUnusedWorkers()) > 0){
-				$this->server->getLogger()->debug("Shut down $w idle async pool workers");
+				$this->logger->debug("Shut down $w idle async pool workers");
 			}
 			foreach($pool->getRunningWorkers() as $i){
 				$pool->submitTaskToWorker(new GarbageCollectionTask(), $i);
@@ -307,8 +311,9 @@ class MemoryManager{
 	 * @param int    $maxStringSize
 	 */
 	public function dumpServerMemory(string $outputFolder, int $maxNesting, int $maxStringSize) : void{
-		$this->server->getLogger()->notice("[Dump] After the memory dump is done, the server might crash");
-		self::dumpMemory($this->server, $outputFolder, $maxNesting, $maxStringSize, $this->server->getLogger());
+		$logger = new \PrefixedLogger($this->server->getLogger(), "Memory Dump");
+		$logger->notice("After the memory dump is done, the server might crash");
+		self::dumpMemory($this->server, $outputFolder, $maxNesting, $maxStringSize, $logger);
 
 		if($this->dumpWorkers){
 			$pool = $this->server->getAsyncPool();
@@ -373,7 +378,7 @@ class MemoryManager{
 		}
 
 		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-		$logger->info("[Dump] Wrote $staticCount static properties");
+		$logger->info("Wrote $staticCount static properties");
 
 		if(isset($GLOBALS)){ //This might be null if we're on a different thread
 			$globalVariables = [];
@@ -401,7 +406,7 @@ class MemoryManager{
 			}
 
 			file_put_contents($outputFolder . "/globalVariables.js", json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-			$logger->info("[Dump] Wrote $globalCount global variables");
+			$logger->info("Wrote $globalCount global variables");
 		}
 
 		self::continueDump($startingObject, $data, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
@@ -462,7 +467,7 @@ class MemoryManager{
 
 		}while($continue);
 
-		$logger->info("[Dump] Wrote " . count($objects) . " objects");
+		$logger->info("Wrote " . count($objects) . " objects");
 
 		fclose($obData);
 
@@ -472,7 +477,7 @@ class MemoryManager{
 		arsort($instanceCounts, SORT_NUMERIC);
 		file_put_contents($outputFolder . "/instanceCounts.js", json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
-		$logger->info("[Dump] Finished!");
+		$logger->info("Finished!");
 
 		ini_set('memory_limit', $hardLimit);
 		gc_enable();

@@ -8,6 +8,9 @@ __A highly customisable, open source server software for Minecraft: Bedrock Edit
 Head over to the [documentation site](http://pmmp.readthedocs.org/).
 If you don't find what you're looking for there, [talk to a human](#discussion). Please do not use our issue tracker for support requests.
 
+### Docker
+We provide an official docker image on Docker Hub: [`pmmp/pocketmine-mp`](https://hub.docker.com/r/pmmp/pocketmine-mp).
+
 ### Discussion
 - [Forums](https://forums.pmmp.io/)
 - [Community Discord](https://discord.gg/bge7dYQ)

@@ -48,6 +48,7 @@ use function get_class;
 use function implode;
 use function is_dir;
 use function is_subclass_of;
+use function iterator_to_array;
 use function mkdir;
 use function shuffle;
 use function stripos;

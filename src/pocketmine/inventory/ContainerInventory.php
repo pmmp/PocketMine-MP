@@ -40,31 +40,20 @@ abstract class ContainerInventory extends BaseInventory{
 
 	protected function onOpen(Player $who) : void{
 		parent::onOpen($who);
-		$pk = new ContainerOpenPacket();
-		$pk->windowId = $who->getWindowId($this);
-		$pk->type = $this->getNetworkType();
+
+		$windowId = $who->getWindowId($this);
 		$holder = $this->getHolder();
-
-		$pk->x = $pk->y = $pk->z = 0;
-		$pk->entityUniqueId = -1;
-
 		if($holder instanceof Entity){
-			$pk->entityUniqueId = $holder->getId();
+			$who->sendDataPacket(ContainerOpenPacket::entityInv($windowId, $this->getNetworkType(), $holder->getId()));
 		}elseif($holder instanceof Vector3){
-			$pk->x = $holder->getFloorX();
-			$pk->y = $holder->getFloorY();
-			$pk->z = $holder->getFloorZ();
+			$who->sendDataPacket(ContainerOpenPacket::blockInv($windowId, $this->getNetworkType(), $holder->getFloorX(), $holder->getFloorY(), $holder->getFloorZ()));
 		}
-
-		$who->sendDataPacket($pk);
 
 		$this->sendContents($who);
 	}
 
 	protected function onClose(Player $who) : void{
-		$pk = new ContainerClosePacket();
-		$pk->windowId = $who->getWindowId($this);
-		$who->sendDataPacket($pk);
+		$who->sendDataPacket(ContainerClosePacket::create($who->getWindowId($this)));
 		parent::onClose($who);
 	}
 

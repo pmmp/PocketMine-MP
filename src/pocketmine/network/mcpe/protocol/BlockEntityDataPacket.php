@@ -40,6 +40,13 @@ class BlockEntityDataPacket extends DataPacket implements ClientboundPacket, Ser
 	/** @var string */
 	public $namedtag;
 
+	public static function create(int $x, int $y, int $z, string $nbt) : self{
+		$result = new self;
+		[$result->x, $result->y, $result->z] = [$x, $y, $z];
+		$result->namedtag = $nbt;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->namedtag = $this->getRemaining();

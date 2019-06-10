@@ -29,6 +29,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\world\BlockTransaction;
 
 class Slab extends Transparent{
 	/** @var BlockIdentifierFlattened */
@@ -104,7 +105,7 @@ class Slab extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockReplace instanceof Slab and !$blockReplace->slabType->equals(SlabType::DOUBLE()) and $blockReplace->isSameType($this) and (
 			($blockReplace->slabType->equals(SlabType::TOP()) and ($clickVector->y <= 0.5 or $face === Facing::UP)) or
 			($blockReplace->slabType->equals(SlabType::BOTTOM()) and ($clickVector->y >= 0.5 or $face === Facing::DOWN))
@@ -115,7 +116,7 @@ class Slab extends Transparent{
 			$this->slabType = (($face !== Facing::UP && $clickVector->y > 0.5) || $face === Facing::DOWN) ? SlabType::TOP() : SlabType::BOTTOM();
 		}
 
-		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

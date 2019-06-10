@@ -29,6 +29,10 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use function cos;
+use function max;
+use function round;
+use const M_PI;
 
 class DaylightSensor extends Transparent{
 	/** @var BlockIdentifierFlattened */
@@ -85,8 +89,25 @@ class DaylightSensor extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->inverted = !$this->inverted;
+		$this->power = $this->recalculatePower();
 		$this->world->setBlock($this, $this);
 		return true;
+	}
+
+	public function onScheduledUpdate() : void{
+		$this->power = $this->recalculatePower();
+		$this->world->setBlock($this, $this);
+		$this->world->scheduleDelayedBlockUpdate($this, 20);
+	}
+
+	private function recalculatePower() : int{
+		$lightLevel = $this->world->getRealBlockSkyLightAt($this->x, $this->y, $this->z);
+		if($this->inverted){
+			return 15 - $lightLevel;
+		}
+
+		$sunAngle = $this->world->getSunAnglePercentage();
+		return max(0, (int) round(15 * cos(($sunAngle + ((($sunAngle < 0.5 ? 0 : 1) - $sunAngle) / 5)) * 2 * M_PI)));
 	}
 
 	//TODO

@@ -46,7 +46,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\Player;
@@ -356,15 +355,7 @@ abstract class Living extends Entity implements Damageable{
 	 */
 	public function sendPotionEffects(Player $player) : void{
 		foreach($this->effects as $effect){
-			$pk = new MobEffectPacket();
-			$pk->entityRuntimeId = $this->id;
-			$pk->effectId = $effect->getId();
-			$pk->amplifier = $effect->getAmplifier();
-			$pk->particles = $effect->isVisible();
-			$pk->duration = $effect->getDuration();
-			$pk->eventId = MobEffectPacket::EVENT_ADD;
-
-			$player->sendDataPacket($pk);
+			$player->getNetworkSession()->onEntityEffectAdded($this, $effect, false);
 		}
 	}
 

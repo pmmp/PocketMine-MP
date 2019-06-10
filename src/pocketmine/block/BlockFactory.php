@@ -29,13 +29,18 @@ use pocketmine\block\BlockLegacyIds as Ids;
 use pocketmine\block\BlockLegacyMetadata as Meta;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\tile\Bed as TileBed;
+use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\Comparator as TileComparator;
+use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
 use pocketmine\block\tile\Furnace as TileFurnace;
+use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
+use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
+use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\TileFactory;
@@ -93,7 +98,7 @@ class BlockFactory{
 		self::register(new BlueIce(new BID(Ids::BLUE_ICE), "Blue Ice"));
 		self::register(new BoneBlock(new BID(Ids::BONE_BLOCK), "Bone Block"));
 		self::register(new Bookshelf(new BID(Ids::BOOKSHELF), "Bookshelf"));
-		self::register(new BrewingStand(new BID(Ids::BREWING_STAND_BLOCK, 0, ItemIds::BREWING_STAND), "Brewing Stand"));
+		self::register(new BrewingStand(new BID(Ids::BREWING_STAND_BLOCK, 0, ItemIds::BREWING_STAND, TileBrewingStand::class), "Brewing Stand"));
 
 		$bricksBreakInfo = new BlockBreakInfo(2.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
 		self::register(new Stair(new BID(Ids::BRICK_STAIRS), "Brick Stairs", $bricksBreakInfo));
@@ -119,7 +124,7 @@ class BlockFactory{
 		self::register(new Cobweb(new BID(Ids::COBWEB), "Cobweb"));
 		self::register(new CocoaBlock(new BID(Ids::COCOA), "Cocoa Block"));
 		self::register(new CraftingTable(new BID(Ids::CRAFTING_TABLE), "Crafting Table"));
-		self::register(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_DETECTOR, Ids::DAYLIGHT_DETECTOR_INVERTED), "Daylight Sensor"));
+		self::register(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_DETECTOR, Ids::DAYLIGHT_DETECTOR_INVERTED, 0, null, TileDaylightSensor::class), "Daylight Sensor"));
 		self::register(new DeadBush(new BID(Ids::DEADBUSH), "Dead Bush"));
 		self::register(new DetectorRail(new BID(Ids::DETECTOR_RAIL), "Detector Rail"));
 
@@ -133,6 +138,7 @@ class BlockFactory{
 		self::register(new DoubleTallGrass(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_TALLGRASS), "Double Tallgrass"));
 		self::register(new DoubleTallGrass(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_LARGE_FERN), "Large Fern"));
 		self::register(new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg"));
+		self::register(new DriedKelp(new BID(Ids::DRIED_KELP_BLOCK), "Dried Kelp Block", new BlockBreakInfo(0.5, BlockToolType::TYPE_NONE, 0, 12.5)));
 		self::register(new Solid(new BID(Ids::EMERALD_BLOCK), "Emerald Block", new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON, 30.0)));
 		self::register(new EmeraldOre(new BID(Ids::EMERALD_ORE), "Emerald Ore"));
 		self::register(new EnchantingTable(new BID(Ids::ENCHANTING_TABLE, 0, null, TileEnchantingTable::class), "Enchanting Table"));
@@ -175,6 +181,7 @@ class BlockFactory{
 		self::register(new HardenedGlass(new BID(Ids::HARD_GLASS), "Hardened Glass"));
 		self::register(new HardenedGlassPane(new BID(Ids::HARD_GLASS_PANE), "Hardened Glass Pane"));
 		self::register(new HayBale(new BID(Ids::HAY_BALE), "Hay Bale"));
+		self::register(new Hopper(new BID(Ids::HOPPER_BLOCK, 0, ItemIds::HOPPER, TileHopper::class), "Hopper", new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 15.0)));
 		self::register(new Ice(new BID(Ids::ICE), "Ice"));
 		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE), "Infested Stone") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
@@ -226,7 +233,7 @@ class BlockFactory{
 		self::register(new Magma(new BID(Ids::MAGMA), "Magma Block"));
 		self::register(new Melon(new BID(Ids::MELON_BLOCK), "Melon Block"));
 		self::register(new MelonStem(new BID(Ids::MELON_STEM, 0, ItemIds::MELON_SEEDS), "Melon Stem"));
-		self::register(new MonsterSpawner(new BID(Ids::MOB_SPAWNER), "Monster Spawner"));
+		self::register(new MonsterSpawner(new BID(Ids::MOB_SPAWNER, 0, null, TileMonsterSpawner::class), "Monster Spawner"));
 		self::register(new Mycelium(new BID(Ids::MYCELIUM), "Mycelium"));
 
 		$netherBrickBreakInfo = new BlockBreakInfo(2.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0);
@@ -241,7 +248,7 @@ class BlockFactory{
 		self::register(new Solid(new BID(Ids::NETHER_WART_BLOCK), "Nether Wart Block", new BlockBreakInfo(1.0)));
 		self::register(new NetherWartPlant(new BID(Ids::NETHER_WART_PLANT, 0, ItemIds::NETHER_WART), "Nether Wart"));
 		self::register(new Netherrack(new BID(Ids::NETHERRACK), "Netherrack"));
-		self::register(new NoteBlock(new BID(Ids::NOTEBLOCK), "Note Block"));
+		self::register(new Note(new BID(Ids::NOTEBLOCK, 0, null, TileNote::class), "Note Block"));
 		self::register(new Solid(new BID(Ids::OBSIDIAN), "Obsidian", new BlockBreakInfo(35.0 /* 50 in PC */, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_DIAMOND, 6000.0)));
 		self::register(new PackedIce(new BID(Ids::PACKED_ICE), "Packed Ice"));
 		self::register(new Podzol(new BID(Ids::PODZOL), "Podzol"));
@@ -463,9 +470,9 @@ class BlockFactory{
 			self::register(new Leaves(new BID($magicNumber >= 4 ? Ids::LEAVES2 : Ids::LEAVES, $magicNumber & 0x03), $name . " Leaves", $treeType));
 			self::register(new Log(new BID($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, $magicNumber & 0x03), $name . " Log", $treeType));
 
-			//TODO: the old bug-block needs to be remapped to the new dedicated block
-			self::register(new Wood(new BID($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, ($magicNumber & 0x03) | 0b1100), $name . " Wood", $treeType));
-			self::register(new Wood(new BID(Ids::WOOD, $magicNumber), $name . " Wood", $treeType));
+			$wood = new Wood(new BID(Ids::WOOD, $magicNumber), $name . " Wood", $treeType);
+			self::register($wood);
+			self::remap($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, ($magicNumber & 0x03) | 0b1100, $wood);
 
 			self::register(new FenceGate(new BID($fenceGateIds[$treeType]), $treeType->getDisplayName() . " Fence Gate"));
 			self::register(new WoodenStairs(new BID($woodenStairIds[$treeType]), $treeType->getDisplayName() . " Stairs"));
@@ -795,6 +802,13 @@ class BlockFactory{
 				self::fillStaticArrays(($id << 4) | $variant, $block); //register default state mapped to variant, for blocks which don't use 0 as valid state
 			}
 		}
+	}
+
+	public static function remap(int $id, int $meta, Block $block) : void{
+		if(self::isRegistered($id, $meta)){
+			throw new \InvalidArgumentException("$id:$meta is already mapped");
+		}
+		self::fillStaticArrays(($id << 4) | $meta, $block);
 	}
 
 	private static function fillStaticArrays(int $index, Block $block) : void{

@@ -48,11 +48,8 @@ use pocketmine\utils\Binary;
 use function array_map;
 use function base64_decode;
 use function base64_encode;
-use function file_get_contents;
 use function get_class;
 use function hex2bin;
-use function json_decode;
-use const DIRECTORY_SEPARATOR;
 
 class Item implements ItemIds, \JsonSerializable{
 	public const TAG_ENCH = "ench";
@@ -90,66 +87,6 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public static function fromString(string $str) : Item{
 		return ItemFactory::fromString($str);
-	}
-
-
-	/** @var Item[] */
-	private static $creative = [];
-
-	public static function initCreativeItems(){
-		self::clearCreativeItems();
-
-		$creativeItems = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "creativeitems.json"), true);
-
-		foreach($creativeItems as $data){
-			$item = Item::jsonDeserialize($data);
-			if($item->getName() === "Unknown"){
-				continue;
-			}
-			self::addCreativeItem($item);
-		}
-	}
-
-	public static function clearCreativeItems(){
-		Item::$creative = [];
-	}
-
-	public static function getCreativeItems() : array{
-		return Item::$creative;
-	}
-
-	public static function addCreativeItem(Item $item){
-		Item::$creative[] = clone $item;
-	}
-
-	public static function removeCreativeItem(Item $item){
-		$index = self::getCreativeItemIndex($item);
-		if($index !== -1){
-			unset(Item::$creative[$index]);
-		}
-	}
-
-	public static function isCreativeItem(Item $item) : bool{
-		return Item::getCreativeItemIndex($item) !== -1;
-	}
-
-	/**
-	 * @param int $index
-	 *
-	 * @return Item|null
-	 */
-	public static function getCreativeItem(int $index) : ?Item{
-		return Item::$creative[$index] ?? null;
-	}
-
-	public static function getCreativeItemIndex(Item $item) : int{
-		foreach(Item::$creative as $i => $d){
-			if($item->equals($d, !($item instanceof Durable))){
-				return $i;
-			}
-		}
-
-		return -1;
 	}
 
 	/** @var int */

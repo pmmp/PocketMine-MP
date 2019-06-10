@@ -268,10 +268,7 @@ class ItemEntity extends Entity{
 			$player->awardAchievement("diamond");
 		}
 
-		$pk = new TakeItemEntityPacket();
-		$pk->eid = $player->getId();
-		$pk->target = $this->getId();
-		$this->server->broadcastPacket($this->getViewers(), $pk);
+		$this->server->broadcastPacket($this->getViewers(), TakeItemEntityPacket::create($player->getId(), $this->getId()));
 
 		$playerInventory->addItem(clone $item);
 		$this->flagForDespawn();

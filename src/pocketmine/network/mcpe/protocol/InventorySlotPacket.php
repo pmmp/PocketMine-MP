@@ -38,6 +38,14 @@ class InventorySlotPacket extends DataPacket implements ClientboundPacket{
 	/** @var Item */
 	public $item;
 
+	public static function create(int $windowId, int $slot, Item $item) : self{
+		$result = new self;
+		$result->inventorySlot = $slot;
+		$result->item = $item;
+		$result->windowId = $windowId;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->windowId = $this->getUnsignedVarInt();
 		$this->inventorySlot = $this->getUnsignedVarInt();

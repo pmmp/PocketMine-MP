@@ -43,6 +43,12 @@ class PlayStatusPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $status;
 
+	public static function create(int $status) : self{
+		$result = new self;
+		$result->status = $status;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->status = $this->getInt();
 	}

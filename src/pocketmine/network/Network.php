@@ -29,7 +29,7 @@ namespace pocketmine\network;
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
 use pocketmine\network\mcpe\protocol\PacketPool;
-use function bin2hex;
+use function base64_encode;
 use function get_class;
 use function preg_match;
 use function spl_object_id;
@@ -248,7 +248,7 @@ class Network{
 			}
 		}
 		if(!$handled){
-			$this->logger->debug("Unhandled raw packet from /$address:$port: " . bin2hex($packet));
+			$this->logger->debug("Unhandled raw packet from /$address:$port: " . base64_encode($packet));
 		}
 	}
 }

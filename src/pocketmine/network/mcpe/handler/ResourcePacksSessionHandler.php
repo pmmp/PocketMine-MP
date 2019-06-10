@@ -59,10 +59,7 @@ class ResourcePacksSessionHandler extends SessionHandler{
 	}
 
 	public function setUp() : void{
-		$pk = new ResourcePacksInfoPacket();
-		$pk->resourcePackEntries = $this->resourcePackManager->getResourceStack();
-		$pk->mustAccept = $this->resourcePackManager->resourcePacksRequired();
-		$this->session->sendDataPacket($pk);
+		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($this->resourcePackManager->getResourceStack(), [], $this->resourcePackManager->resourcePacksRequired(), false));
 	}
 
 	private function disconnectWithError(string $error) : void{
@@ -91,21 +88,18 @@ class ResourcePacksSessionHandler extends SessionHandler{
 						return false;
 					}
 
-					$pk = new ResourcePackDataInfoPacket();
-					$pk->packId = $pack->getPackId();
-					$pk->maxChunkSize = self::PACK_CHUNK_SIZE; //1MB
-					$pk->chunkCount = (int) ceil($pack->getPackSize() / self::PACK_CHUNK_SIZE);
-					$pk->compressedPackSize = $pack->getPackSize();
-					$pk->sha256 = $pack->getSha256();
-					$this->session->sendDataPacket($pk);
+					$this->session->sendDataPacket(ResourcePackDataInfoPacket::create(
+						$pack->getPackId(),
+						self::PACK_CHUNK_SIZE,
+						(int) ceil($pack->getPackSize() / self::PACK_CHUNK_SIZE),
+						$pack->getPackSize(),
+						$pack->getSha256()
+					));
 				}
 
 				break;
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
-				$pk = new ResourcePackStackPacket();
-				$pk->resourcePackStack = $this->resourcePackManager->getResourceStack();
-				$pk->mustAccept = $this->resourcePackManager->resourcePacksRequired();
-				$this->session->sendDataPacket($pk);
+				$this->session->sendDataPacket(ResourcePackStackPacket::create($this->resourcePackManager->getResourceStack(), [], $this->resourcePackManager->resourcePacksRequired(), false));
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
 				$this->session->onResourcePacksDone();
@@ -143,12 +137,7 @@ class ResourcePacksSessionHandler extends SessionHandler{
 			$this->downloadedChunks[$packId][$packet->chunkIndex] = true;
 		}
 
-		$pk = new ResourcePackChunkDataPacket();
-		$pk->packId = $packId;
-		$pk->chunkIndex = $packet->chunkIndex;
-		$pk->data = $pack->getPackChunk($offset, self::PACK_CHUNK_SIZE);
-		$pk->progress = $offset;
-		$this->session->sendDataPacket($pk);
+		$this->session->sendDataPacket(ResourcePackChunkDataPacket::create($packId, $packet->chunkIndex, $offset, $pack->getPackChunk($offset, self::PACK_CHUNK_SIZE)));
 
 		return true;
 	}

@@ -269,6 +269,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/** @var Form[] */
 	protected $forms = [];
 
+	/** @var \Logger */
+	protected $logger;
+
 	/**
 	 * @param Server         $server
 	 * @param NetworkSession $session
@@ -276,13 +279,16 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param bool           $authenticated
 	 */
 	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated){
+		$username = TextFormat::clean($playerInfo->getUsername());
+		$this->logger = new \PrefixedLogger($server->getLogger(), "Player: $username");
+
 		$this->server = $server;
 		$this->networkSession = $session;
 		$this->playerInfo = $playerInfo;
 		$this->authenticated = $authenticated;
 		$this->skin = $this->playerInfo->getSkin();
 
-		$this->username = TextFormat::clean($this->playerInfo->getUsername());
+		$this->username = $username;
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);
 		$this->locale = $this->playerInfo->getLocale();
@@ -648,7 +654,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->networkSession->syncViewAreaRadius($this->viewDistance);
 
-		$this->server->getLogger()->debug("Setting view distance for " . $this->getName() . " to " . $this->viewDistance . " (requested " . $distance . ")");
+		$this->logger->debug("Setting view distance to " . $this->viewDistance . " (requested " . $distance . ")");
 	}
 
 	/**
@@ -796,9 +802,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function setDisplayName(string $name){
 		$this->displayName = $name;
-		if($this->spawned){
-			$this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getDisplayName(), $this->getSkin(), $this->getXuid());
-		}
 	}
 
 	/**
@@ -1428,7 +1431,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$newPos = $newPos->asVector3();
 		if($this->isTeleporting and $newPos->distanceSquared($this) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
 			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
-			$this->server->getLogger()->debug("Got outdated pre-teleport movement from " . $this->getName() . ", received " . $newPos . ", expected " . $this->asVector3());
+			$this->logger->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $this->asVector3());
 			//Still getting movements from before teleport, ignore them
 			return false;
 		}
@@ -1470,8 +1473,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			 * If you must tamper with this code, be aware that this can cause very nasty results. Do not waste our time
 			 * asking for help if you suffer the consequences of messing with this.
 			 */
-			$this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
-			$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
+			$this->logger->warning("Moved too fast, reverting movement");
+			$this->logger->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
 			$revert = true;
 		}elseif(!$this->world->isInLoadedTerrain($newPos) or !$this->world->isChunkGenerated($newPos->getFloorX() >> 4, $newPos->getFloorZ() >> 4)){
 			$revert = true;
@@ -1495,8 +1498,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 				if(!$ev->isCancelled()){
 					$revert = true;
-					$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
-					$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
+					$this->logger->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
+					$this->logger->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
 				}
 			}
 
@@ -1979,7 +1982,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 		if($entity instanceof ItemEntity or $entity instanceof Arrow){
 			$this->kick("Attempting to attack an invalid entity");
-			$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
+			$this->logger->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
 			return false;
 		}
 
@@ -2308,15 +2311,15 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function onFormSubmit(int $formId, $responseData) : bool{
 		if(!isset($this->forms[$formId])){
-			$this->server->getLogger()->debug("Got unexpected response for form $formId");
+			$this->logger->debug("Got unexpected response for form $formId");
 			return false;
 		}
 
 		try{
 			$this->forms[$formId]->handleResponse($this, $responseData);
 		}catch(FormValidationException $e){
-			$this->server->getLogger()->critical("Failed to validate form " . get_class($this->forms[$formId]) . ": " . $e->getMessage());
-			$this->server->getLogger()->logException($e);
+			$this->logger->critical("Failed to validate form " . get_class($this->forms[$formId]) . ": " . $e->getMessage());
+			$this->logger->logException($e);
 		}finally{
 			unset($this->forms[$formId]);
 		}

@@ -57,14 +57,6 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	}
 
 	/**
-	 * Returns whether the packet may legally have unread bytes left in the buffer.
-	 * @return bool
-	 */
-	public function mayHaveUnreadBytes() : bool{
-		return false;
-	}
-
-	/**
 	 * @throws BadPacketException
 	 */
 	final public function decode() : void{

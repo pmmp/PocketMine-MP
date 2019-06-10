@@ -48,13 +48,18 @@ final class TileFactory{
 	public static function init() : void{
 		self::register(Banner::class, ["Banner", "minecraft:banner"]);
 		self::register(Bed::class, ["Bed", "minecraft:bed"]);
+		self::register(BrewingStand::class, ["BrewingStand", "minecraft:brewing_stand"]);
 		self::register(Chest::class, ["Chest", "minecraft:chest"]);
 		self::register(Comparator::class, ["Comparator", "minecraft:comparator"]);
+		self::register(DaylightSensor::class, ["DaylightDetector", "minecraft:daylight_detector"]);
 		self::register(EnchantTable::class, ["EnchantTable", "minecraft:enchanting_table"]);
 		self::register(EnderChest::class, ["EnderChest", "minecraft:ender_chest"]);
 		self::register(FlowerPot::class, ["FlowerPot", "minecraft:flower_pot"]);
 		self::register(Furnace::class, ["Furnace", "minecraft:furnace"]);
+		self::register(Hopper::class, ["Hopper", "minecraft:hopper"]);
 		self::register(ItemFrame::class, ["ItemFrame"]); //this is an entity in PC
+		self::register(MonsterSpawner::class, ["MobSpawner", "minecraft:mob_spawner"]);
+		self::register(Note::class, ["Music", "minecraft:noteblock"]);
 		self::register(Sign::class, ["Sign", "minecraft:sign"]);
 		self::register(Skull::class, ["Skull", "minecraft:skull"]);
 
@@ -62,25 +67,20 @@ final class TileFactory{
 		//TODO: Beacon
 		//TODO: Bell
 		//TODO: BlastFurnace
-		//TODO: BrewingStand
 		//TODO: Campfire
 		//TODO: Cauldron
 		//TODO: ChalkboardBlock
 		//TODO: ChemistryTable
 		//TODO: CommandBlock
 		//TODO: Conduit
-		//TODO: DaylightDetector
 		//TODO: Dispenser
 		//TODO: Dropper
 		//TODO: EndGateway
 		//TODO: EndPortal
-		//TODO: Hopper
 		//TODO: JigsawBlock
 		//TODO: Jukebox
 		//TODO: Lectern
-		//TODO: MobSpawner
 		//TODO: MovingBlock
-		//TODO: Music
 		//TODO: NetherReactor
 		//TODO: PistonArm
 		//TODO: ShulkerBox

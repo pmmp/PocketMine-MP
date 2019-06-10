@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use ClassLoader;
-use pocketmine\plugin\resources\FileSystemPluginResourceProvider;
 use function class_exists;
 use function glob;
 use function is_a;
@@ -100,7 +99,7 @@ final class PharPluginLoader{
 				throw new PluginException("$main does not extend " . PluginBase::class);
 			}
 
-			$resourceProvider = new FileSystemPluginResourceProvider($file);
+			$resourceProvider = new DiskResourceProvider($file);
 			/** @var PluginBase $ret */
 			$ret = new $main($manager->getServer(), $description, $dataFolder, self::class, $resourceProvider, $file);
 			return $ret;

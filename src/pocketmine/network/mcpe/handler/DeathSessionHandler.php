@@ -41,9 +41,7 @@ class DeathSessionHandler extends SessionHandler{
 	}
 
 	public function setUp() : void{
-		$pk = new RespawnPacket();
-		$pk->position = $this->player->getOffsetPosition($this->player->getSpawn());
-		$this->session->sendDataPacket($pk);
+		$this->session->sendDataPacket(RespawnPacket::create($this->player->getOffsetPosition($this->player->getSpawn())));
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{

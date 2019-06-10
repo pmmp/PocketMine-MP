@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\world\format\Chunk;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\world\format\Chunk;
 
 class ChunkRequestTask extends AsyncTask{
 	private const TLS_KEY_PROMISE = "promise";
@@ -52,12 +52,7 @@ class ChunkRequestTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$pk = new FullChunkDataPacket();
-		$pk->chunkX = $this->chunkX;
-		$pk->chunkZ = $this->chunkZ;
-		$pk->data = $this->chunk;
-
-		$this->setResult(NetworkCompression::compress(PacketBatch::fromPackets($pk)->getBuffer(), $this->compressionLevel));
+		$this->setResult(NetworkCompression::compress(PacketBatch::fromPackets(FullChunkDataPacket::create($this->chunkX, $this->chunkZ, $this->chunk))->getBuffer(), $this->compressionLevel));
 	}
 
 	public function onError() : void{

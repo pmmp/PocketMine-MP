@@ -44,4 +44,8 @@ class MonsterSpawner extends Transparent{
 	protected function getXpDropAmount() : int{
 		return mt_rand(15, 43);
 	}
+
+	public function onScheduledUpdate() : void{
+		//TODO
+	}
 }

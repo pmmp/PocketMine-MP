@@ -42,6 +42,23 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	/** @var ResourcePack[] */
 	public $resourcePackEntries = [];
 
+	/**
+	 * @param ResourcePack[] $resourcePacks
+	 * @param ResourcePack[] $behaviorPacks
+	 * @param bool           $mustAccept
+	 * @param bool           $hasScripts
+	 *
+	 * @return ResourcePacksInfoPacket
+	 */
+	public static function create(array $resourcePacks, array $behaviorPacks, bool $mustAccept, bool $hasScripts = false) : self{
+		$result = new self;
+		$result->mustAccept = $mustAccept;
+		$result->hasScripts = $hasScripts;
+		$result->resourcePackEntries = $resourcePacks;
+		$result->behaviorPackEntries = $behaviorPacks;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->mustAccept = $this->getBool();
 		$this->hasScripts = $this->getBool();

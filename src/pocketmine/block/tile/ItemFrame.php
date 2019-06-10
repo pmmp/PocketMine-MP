@@ -78,7 +78,6 @@ class ItemFrame extends Spawnable{
 		}else{
 			$this->item = ItemFactory::air();
 		}
-		$this->onChanged();
 	}
 
 	public function getItemRotation() : int{
@@ -87,7 +86,6 @@ class ItemFrame extends Spawnable{
 
 	public function setItemRotation(int $rotation) : void{
 		$this->itemRotation = $rotation;
-		$this->onChanged();
 	}
 
 	public function getItemDropChance() : float{
@@ -96,7 +94,6 @@ class ItemFrame extends Spawnable{
 
 	public function setItemDropChance(float $chance) : void{
 		$this->itemDropChance = $chance;
-		$this->onChanged();
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{

@@ -21,17 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\plugin;
 
-class NoteBlock extends Solid{
+interface ResourceProvider{
+	/**
+	 * Gets an embedded resource on the plugin file.
+	 * WARNING: You must close the resource given using fclose()
+	 *
+	 * @param string $filename
+	 *
+	 * @return null|resource Resource data, or null
+	 */
+	public function getResource(string $filename);
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.8, BlockToolType::TYPE_AXE));
-	}
-
-	public function getFuelTime() : int{
-		return 300;
-	}
-
-	//TODO
+	/**
+	 * Returns all the resources packaged with the plugin in the form ["path/in/resources" => SplFileInfo]
+	 *
+	 * @return \SplFileInfo[]
+	 */
+	public function getResources() : array;
 }

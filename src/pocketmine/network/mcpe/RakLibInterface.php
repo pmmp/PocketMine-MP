@@ -152,14 +152,14 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 			//get this now for blocking in case the player was closed before the exception was raised
 			$session = $this->sessions[$sessionId];
 			$address = $session->getIp();
-			$port = $session->getPort();
 			$buf = substr($packet->buffer, 1);
 			try{
 				$session->handleEncoded($buf);
 			}catch(BadPacketException $e){
 				$errorId = bin2hex(random_bytes(6));
-				$logger = $this->server->getLogger();
-				$logger->error("Bad packet from $address $port (error ID $errorId): " . $e->getMessage());
+
+				$logger = $session->getLogger();
+				$logger->error("Bad packet (error ID $errorId): " . $e->getMessage());
 
 				//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
 				$logger->debug("Origin: " . Utils::cleanPath($e->getFile()) . "(" . $e->getLine() . ")");

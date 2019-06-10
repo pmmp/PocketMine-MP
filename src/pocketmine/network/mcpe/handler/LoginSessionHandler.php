@@ -55,10 +55,7 @@ class LoginSessionHandler extends SessionHandler{
 
 	public function handleLogin(LoginPacket $packet) : bool{
 		if(!$this->isCompatibleProtocol($packet->protocol)){
-			$pk = new PlayStatusPacket();
-			$pk->status = $packet->protocol < ProtocolInfo::CURRENT_PROTOCOL ?
-				PlayStatusPacket::LOGIN_FAILED_CLIENT : PlayStatusPacket::LOGIN_FAILED_SERVER;
-			$this->session->sendDataPacket($pk, true);
+			$this->session->sendDataPacket(PlayStatusPacket::create($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL ? PlayStatusPacket::LOGIN_FAILED_CLIENT : PlayStatusPacket::LOGIN_FAILED_SERVER), true);
 
 			//This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
 			$this->session->disconnect(

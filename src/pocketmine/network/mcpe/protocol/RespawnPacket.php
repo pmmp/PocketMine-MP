@@ -35,6 +35,12 @@ class RespawnPacket extends DataPacket implements ClientboundPacket{
 	/** @var Vector3 */
 	public $position;
 
+	public static function create(Vector3 $position) : self{
+		$result = new self;
+		$result->position = $position->asVector3();
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->position = $this->getVector3();
 	}

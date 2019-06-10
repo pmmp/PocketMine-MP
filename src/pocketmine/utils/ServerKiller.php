@@ -38,8 +38,7 @@ class ServerKiller extends Thread{
 		$this->time = $time;
 	}
 
-	public function run() : void{
-		$this->registerClassLoader();
+	protected function onRun() : void{
 		$start = time();
 		$this->synchronized(function(){
 			if(!$this->stopped){
