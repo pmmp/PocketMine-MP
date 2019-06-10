@@ -29,10 +29,12 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\Player;
+use function array_keys;
 use function assert;
 use function count;
 use function get_class;
 use function min;
+use function shuffle;
 use function spl_object_hash;
 
 /**
@@ -108,6 +110,19 @@ class InventoryTransaction{
 		}else{
 			throw new \InvalidArgumentException("Tried to add the same action to a transaction twice");
 		}
+	}
+
+	/**
+	 * Shuffles actions in the transaction to prevent external things relying on any implicit ordering.
+	 */
+	private function shuffleActions() : void{
+		$keys = array_keys($this->actions);
+		shuffle($keys);
+		$actions = [];
+		foreach($keys as $key){
+			$actions[$key] = $this->actions[$key];
+		}
+		$this->actions = $actions;
 	}
 
 	/**
