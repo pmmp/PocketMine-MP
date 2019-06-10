@@ -75,6 +75,11 @@ class InventoryTransaction{
 	}
 
 	/**
+	 * Returns an **unordered** set of actions involved in this transaction.
+	 *
+	 * WARNING: This system is **explicitly designed NOT to care about ordering**. Any order seen in this set has NO
+	 * significance and should not be relied on.
+	 *
 	 * @return InventoryAction[]
 	 */
 	public function getActions() : array{
@@ -270,6 +275,8 @@ class InventoryTransaction{
 			$this->sendInventories();
 			return false;
 		}
+
+		$this->shuffleActions();
 
 		$this->validate();
 
