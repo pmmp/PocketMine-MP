@@ -184,6 +184,12 @@ class TimingsHandler{
 		}
 	}
 
+	public function time(\Closure $closure) : void{
+		$this->startTiming();
+		$closure();
+		$this->stopTiming();
+	}
+
 	public function reset() : void{
 		$this->count = 0;
 		$this->curCount = 0;
