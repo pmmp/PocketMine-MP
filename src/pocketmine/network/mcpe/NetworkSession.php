@@ -554,6 +554,7 @@ class NetworkSession{
 
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::LOGIN_SUCCESS));
 
+		$this->logger->debug("Initiating resource packs phase");
 		$this->setHandler(new ResourcePacksSessionHandler($this, $this->server->getResourcePackManager()));
 	}
 
