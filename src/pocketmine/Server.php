@@ -1309,8 +1309,6 @@ class Server{
 				$this->properties->save();
 			}
 
-			$this->tickCounter = 0;
-
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [$this->getGamemode()->getTranslationKey()]));
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
