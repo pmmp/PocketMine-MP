@@ -1542,7 +1542,7 @@ class Server{
 	 */
 	public function enablePlugins(PluginLoadOrder $type) : void{
 		foreach($this->pluginManager->getPlugins() as $plugin){
-			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder() === $type){
+			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder()->equals($type)){
 				$this->pluginManager->enablePlugin($plugin);
 			}
 		}
