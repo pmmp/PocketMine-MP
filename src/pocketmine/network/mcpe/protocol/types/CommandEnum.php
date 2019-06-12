@@ -25,8 +25,30 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 class CommandEnum{
 	/** @var string */
-	public $enumName;
+	private $enumName;
 	/** @var string[] */
-	public $enumValues = [];
+	private $enumValues = [];
 
+	/**
+	 * @param string   $enumName
+	 * @param string[] $enumValues
+	 */
+	public function __construct(string $enumName, array $enumValues){
+		$this->enumName = $enumName;
+		$this->enumValues = $enumValues;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getName() : string{
+		return $this->enumName;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getValues() : array{
+		return $this->enumValues;
+	}
 }

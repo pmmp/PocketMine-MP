@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+
 class CommandParameter{
 	/** @var string */
 	public $paramName;
@@ -36,4 +38,29 @@ class CommandParameter{
 	public $enum;
 	/** @var string|null */
 	public $postfix;
+
+	private static function baseline(string $name, int $type, bool $optional) : self{
+		$result = new self;
+		$result->paramName = $name;
+		$result->paramType = $type;
+		$result->isOptional = $optional;
+		return $result;
+	}
+
+	public static function standard(string $name, int $type, bool $optional = false) : self{
+		return self::baseline($name, AvailableCommandsPacket::ARG_FLAG_VALID | $type, $optional);
+	}
+
+	public static function postfixed(string $name, string $postfix, bool $optional = false) : self{
+		$result = self::baseline($name, AvailableCommandsPacket::ARG_FLAG_POSTFIX, $optional);
+		$result->postfix = $postfix;
+		return $result;
+	}
+
+	public static function enum(string $name, CommandEnum $enum, int $flags, bool $optional = false) : self{
+		$result = self::baseline($name, AvailableCommandsPacket::ARG_FLAG_ENUM | AvailableCommandsPacket::ARG_FLAG_VALID, $optional);
+		$result->enum = $enum;
+		$result->byte1 = $flags;
+		return $result;
+	}
 }

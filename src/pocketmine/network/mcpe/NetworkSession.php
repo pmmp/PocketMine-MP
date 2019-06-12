@@ -668,29 +668,27 @@ class NetworkSession{
 				continue;
 			}
 
-			$data = new CommandData();
-			//TODO: commands containing uppercase letters in the name crash 1.9.0 client
-			$data->commandName = strtolower($command->getName());
-			$data->commandDescription = $this->server->getLanguage()->translateString($command->getDescription());
-			$data->flags = 0;
-			$data->permission = 0;
-
-			$parameter = new CommandParameter();
-			$parameter->paramName = "args";
-			$parameter->paramType = AvailableCommandsPacket::ARG_FLAG_VALID | AvailableCommandsPacket::ARG_TYPE_RAWTEXT;
-			$parameter->isOptional = true;
-			$data->overloads[0][0] = $parameter;
-
+			$lname = strtolower($command->getName());
 			$aliases = $command->getAliases();
+			$aliasObj = null;
 			if(!empty($aliases)){
-				if(!in_array($data->commandName, $aliases, true)){
+				if(!in_array($lname, $aliases, true)){
 					//work around a client bug which makes the original name not show when aliases are used
-					$aliases[] = $data->commandName;
+					$aliases[] = $lname;
 				}
-				$data->aliases = new CommandEnum();
-				$data->aliases->enumName = ucfirst($command->getName()) . "Aliases";
-				$data->aliases->enumValues = $aliases;
+				$aliasObj = new CommandEnum(ucfirst($command->getName()) . "Aliases", $aliases);
 			}
+
+			$data = new CommandData(
+				$lname, //TODO: commands containing uppercase letters in the name crash 1.9.0 client
+				$this->server->getLanguage()->translateString($command->getDescription()),
+				0,
+				0,
+				$aliasObj,
+				[
+					[CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, true)]
+				]
+			);
 
 			$pk->commandData[$command->getName()] = $data;
 		}
