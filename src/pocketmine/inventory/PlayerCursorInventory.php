@@ -34,10 +34,6 @@ class PlayerCursorInventory extends BaseInventory{
 		parent::__construct(1);
 	}
 
-	public function setSize(int $size) : void{
-		throw new \BadMethodCallException("Cursor can only carry one item at a time");
-	}
-
 	/**
 	 * This override is here for documentation and code completion purposes only.
 	 * @return Player

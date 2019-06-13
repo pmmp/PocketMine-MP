@@ -62,16 +62,6 @@ abstract class BaseInventory implements Inventory{
 		return $this->slots->getSize();
 	}
 
-	/**
-	 * Sets the new size of the inventory.
-	 * WARNING: If the size is smaller, any items past the new size will be lost.
-	 *
-	 * @param int $size
-	 */
-	public function setSize(int $size) : void{
-		$this->slots->setSize($size);
-	}
-
 	public function getMaxStackSize() : int{
 		return $this->maxStackSize;
 	}
