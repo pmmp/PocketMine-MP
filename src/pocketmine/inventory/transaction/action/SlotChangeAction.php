@@ -110,7 +110,9 @@ class SlotChangeAction extends InventoryAction{
 	 */
 	public function onExecuteSuccess(Player $source) : void{
 		foreach($this->inventory->getViewers() as $viewer){
-			$viewer->getNetworkSession()->syncInventorySlot($this->inventory, $this->inventorySlot);
+			if($viewer !== $source){
+				$viewer->getNetworkSession()->syncInventorySlot($this->inventory, $this->inventorySlot);
+			}
 		}
 	}
 
