@@ -55,19 +55,8 @@ class DropItemAction extends InventoryAction{
 	 * Drops the target item in front of the player.
 	 *
 	 * @param Player $source
-	 *
-	 * @return bool
 	 */
-	public function execute(Player $source) : bool{
+	public function execute(Player $source) : void{
 		$source->dropItem($this->targetItem);
-		return true;
-	}
-
-	public function onExecuteSuccess(Player $source) : void{
-
-	}
-
-	public function onExecuteFail(Player $source) : void{
-
 	}
 }

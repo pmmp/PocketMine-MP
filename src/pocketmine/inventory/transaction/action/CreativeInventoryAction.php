@@ -68,18 +68,8 @@ class CreativeInventoryAction extends InventoryAction{
 	 * No need to do anything extra here: this type just provides a place for items to disappear or appear from.
 	 *
 	 * @param Player $source
-	 *
-	 * @return bool
 	 */
-	public function execute(Player $source) : bool{
-		return true;
-	}
-
-	public function onExecuteSuccess(Player $source) : void{
-
-	}
-
-	public function onExecuteFail(Player $source) : void{
+	public function execute(Player $source) : void{
 
 	}
 }

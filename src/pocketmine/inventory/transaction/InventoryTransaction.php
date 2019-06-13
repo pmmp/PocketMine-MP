@@ -321,11 +321,7 @@ class InventoryTransaction{
 		}
 
 		foreach($this->actions as $action){
-			if($action->execute($this->source)){
-				$action->onExecuteSuccess($this->source);
-			}else{
-				$action->onExecuteFail($this->source);
-			}
+			$action->execute($this->source);
 		}
 
 		$this->hasExecuted = true;

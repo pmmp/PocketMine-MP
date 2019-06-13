@@ -95,33 +95,13 @@ class SlotChangeAction extends InventoryAction{
 	 * Sets the item into the target inventory.
 	 *
 	 * @param Player $source
-	 *
-	 * @return bool
 	 */
-	public function execute(Player $source) : bool{
+	public function execute(Player $source) : void{
 		$this->inventory->setItem($this->inventorySlot, $this->targetItem, false);
-		return true;
-	}
-
-	/**
-	 * Sends slot changes to other viewers of the inventory. This will not send any change back to the source Player.
-	 *
-	 * @param Player $source
-	 */
-	public function onExecuteSuccess(Player $source) : void{
 		foreach($this->inventory->getViewers() as $viewer){
 			if($viewer !== $source){
 				$viewer->getNetworkSession()->syncInventorySlot($this->inventory, $this->inventorySlot);
 			}
 		}
-	}
-
-	/**
-	 * Sends the original slot contents to the source player to revert the action.
-	 *
-	 * @param Player $source
-	 */
-	public function onExecuteFail(Player $source) : void{
-		$source->getNetworkSession()->syncInventorySlot($this->inventory, $this->inventorySlot);
 	}
 }

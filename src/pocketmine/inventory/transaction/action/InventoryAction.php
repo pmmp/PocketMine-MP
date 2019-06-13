@@ -88,28 +88,10 @@ abstract class InventoryAction{
 	}
 
 	/**
-	 * Performs actions needed to complete the inventory-action server-side. Returns if it was successful. Will return
-	 * false if plugins cancelled events. This will only be called if the transaction which it is part of is considered
-	 * valid.
-	 *
-	 * @param Player $source
-	 *
-	 * @return bool
-	 */
-	abstract public function execute(Player $source) : bool;
-
-	/**
-	 * Performs additional actions when this inventory-action completed successfully.
+	 * Performs actions needed to complete the inventory-action server-side. This will only be called if the transaction
+	 * which it is part of is considered valid.
 	 *
 	 * @param Player $source
 	 */
-	abstract public function onExecuteSuccess(Player $source) : void;
-
-	/**
-	 * Performs additional actions when this inventory-action did not complete successfully.
-	 *
-	 * @param Player $source
-	 */
-	abstract public function onExecuteFail(Player $source) : void;
-
+	abstract public function execute(Player $source) : void;
 }
