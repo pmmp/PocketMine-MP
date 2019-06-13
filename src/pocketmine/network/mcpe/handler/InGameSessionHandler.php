@@ -167,6 +167,7 @@ class InGameSessionHandler extends SessionHandler{
 		if($packet->trData instanceof NormalTransactionData){
 			$result = $this->handleNormalTransaction($packet->trData);
 		}elseif($packet->trData instanceof MismatchTransactionData){
+			$this->session->getLogger()->debug("Mismatch transaction received");
 			$this->session->syncAllInventoryContents();
 			$result = true;
 		}elseif($packet->trData instanceof UseItemTransactionData){
