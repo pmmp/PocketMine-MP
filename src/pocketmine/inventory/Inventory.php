@@ -108,17 +108,6 @@ interface Inventory{
 	public function setContents(array $items, bool $send = true) : void;
 
 	/**
-	 * @param Player|Player[] $target
-	 */
-	public function sendContents($target) : void;
-
-	/**
-	 * @param int             $index
-	 * @param Player|Player[] $target
-	 */
-	public function sendSlot(int $index, $target) : void;
-
-	/**
 	 * Checks if the inventory contains any Item with the same material data.
 	 * It will check id, amount, and metadata (if not null)
 	 *

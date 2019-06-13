@@ -27,7 +27,6 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\Player;
-use function spl_object_id;
 
 /**
  * Represents an action causing a change in an inventory slot.
@@ -110,9 +109,9 @@ class SlotChangeAction extends InventoryAction{
 	 * @param Player $source
 	 */
 	public function onExecuteSuccess(Player $source) : void{
-		$viewers = $this->inventory->getViewers();
-		unset($viewers[spl_object_id($source)]);
-		$this->inventory->sendSlot($this->inventorySlot, $viewers);
+		foreach($this->inventory->getViewers() as $viewer){
+			$viewer->getNetworkSession()->syncInventorySlot($this->inventory, $this->inventorySlot);
+		}
 	}
 
 	/**
@@ -121,6 +120,6 @@ class SlotChangeAction extends InventoryAction{
 	 * @param Player $source
 	 */
 	public function onExecuteFail(Player $source) : void{
-		$this->inventory->sendSlot($this->inventorySlot, $source);
+		$source->getNetworkSession()->syncInventorySlot($this->inventory, $this->inventorySlot);
 	}
 }

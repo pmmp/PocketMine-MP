@@ -116,7 +116,9 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		if($send){
-			$this->sendContents($this->getViewers());
+			foreach($this->getViewers() as $viewer){
+				$viewer->getNetworkSession()->syncInventoryContents($this);
+			}
 		}
 	}
 
@@ -380,34 +382,9 @@ abstract class BaseInventory implements Inventory{
 			$listener->onSlotChange($this, $index);
 		}
 		if($send){
-			$this->sendSlot($index, $this->getViewers());
-		}
-	}
-
-	/**
-	 * @param Player|Player[] $target
-	 */
-	public function sendContents($target) : void{
-		if($target instanceof Player){
-			$target = [$target];
-		}
-
-		foreach($target as $player){
-			$player->getNetworkSession()->syncInventoryContents($this);
-		}
-	}
-
-	/**
-	 * @param int             $index
-	 * @param Player|Player[] $target
-	 */
-	public function sendSlot(int $index, $target) : void{
-		if($target instanceof Player){
-			$target = [$target];
-		}
-
-		foreach($target as $player){
-			$player->getNetworkSession()->syncInventorySlot($this, $index);
+			foreach($this->viewers as $viewer){
+				$viewer->getNetworkSession()->syncInventorySlot($this, $index);
+			}
 		}
 	}
 

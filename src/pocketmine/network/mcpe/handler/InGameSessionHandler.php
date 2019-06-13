@@ -339,7 +339,7 @@ class InGameSessionHandler extends SessionHandler{
 		switch($data->getActionType()){
 			case ReleaseItemTransactionData::ACTION_RELEASE:
 				if(!$this->player->releaseHeldItem()){
-					$this->player->getInventory()->sendContents($this->player);
+					$this->session->syncInventoryContents($this->player->getInventory());
 				}
 				return true;
 			case ReleaseItemTransactionData::ACTION_CONSUME:

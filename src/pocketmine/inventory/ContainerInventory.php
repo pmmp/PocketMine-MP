@@ -49,7 +49,7 @@ abstract class ContainerInventory extends BaseInventory{
 			$who->sendDataPacket(ContainerOpenPacket::blockInv($windowId, $this->getNetworkType(), $holder->getFloorX(), $holder->getFloorY(), $holder->getFloorZ()));
 		}
 
-		$this->sendContents($who);
+		$who->getNetworkSession()->syncInventoryContents($this);
 	}
 
 	protected function onClose(Player $who) : void{
