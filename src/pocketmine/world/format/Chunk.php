@@ -65,9 +65,6 @@ class Chunk{
 	protected $hasChanged = false;
 
 	/** @var bool */
-	protected $isInit = false;
-
-	/** @var bool */
 	protected $lightPopulated = false;
 	/** @var bool */
 	protected $terrainGenerated = false;
@@ -464,7 +461,7 @@ class Chunk{
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to a chunk");
 		}
 		$this->entities[$entity->getId()] = $entity;
-		if(!($entity instanceof Player) and $this->isInit){
+		if(!($entity instanceof Player)){
 			$this->hasChanged = true;
 		}
 	}
@@ -474,7 +471,7 @@ class Chunk{
 	 */
 	public function removeEntity(Entity $entity) : void{
 		unset($this->entities[$entity->getId()]);
-		if(!($entity instanceof Player) and $this->isInit){
+		if(!($entity instanceof Player)){
 			$this->hasChanged = true;
 		}
 	}
@@ -491,9 +488,7 @@ class Chunk{
 			$this->tiles[$index]->close();
 		}
 		$this->tiles[$index] = $tile;
-		if($this->isInit){
-			$this->hasChanged = true;
-		}
+		$this->hasChanged = true;
 	}
 
 	/**
@@ -501,9 +496,7 @@ class Chunk{
 	 */
 	public function removeTile(Tile $tile) : void{
 		unset($this->tiles[Chunk::blockHash($tile->x, $tile->y, $tile->z)]);
-		if($this->isInit){
-			$this->hasChanged = true;
-		}
+		$this->hasChanged = true;
 	}
 
 	/**
@@ -578,47 +571,43 @@ class Chunk{
 	 * @param World $world
 	 */
 	public function initChunk(World $world) : void{
-		if(!$this->isInit){
-			if($this->NBTentities !== null){
-				$this->hasChanged = true;
-				$world->timings->syncChunkLoadEntitiesTimer->startTiming();
-				foreach($this->NBTentities as $nbt){
-					if($nbt instanceof CompoundTag){
-						try{
-							$entity = EntityFactory::createFromData($world, $nbt);
-							if(!($entity instanceof Entity)){
-								$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type " . $nbt->getString("id", $nbt->getString("identifier", "<unknown>", true), true));
-								continue;
-							}
-						}catch(\Exception $t){ //TODO: this shouldn't be here
-							$world->getLogger()->logException($t);
+		if($this->NBTentities !== null){
+			$this->hasChanged = true;
+			$world->timings->syncChunkLoadEntitiesTimer->startTiming();
+			foreach($this->NBTentities as $nbt){
+				if($nbt instanceof CompoundTag){
+					try{
+						$entity = EntityFactory::createFromData($world, $nbt);
+						if(!($entity instanceof Entity)){
+							$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type " . $nbt->getString("id", $nbt->getString("identifier", "<unknown>", true), true));
 							continue;
 						}
+					}catch(\Exception $t){ //TODO: this shouldn't be here
+						$world->getLogger()->logException($t);
+						continue;
 					}
 				}
-
-				$this->NBTentities = null;
-				$world->timings->syncChunkLoadEntitiesTimer->stopTiming();
 			}
-			if($this->NBTtiles !== null){
-				$this->hasChanged = true;
-				$world->timings->syncChunkLoadTileEntitiesTimer->startTiming();
-				foreach($this->NBTtiles as $nbt){
-					if($nbt instanceof CompoundTag){
-						if(($tile = TileFactory::createFromData($world, $nbt)) !== null){
-							$world->addTile($tile);
-						}else{
-							$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>", true));
-							continue;
-						}
+
+			$this->NBTentities = null;
+			$world->timings->syncChunkLoadEntitiesTimer->stopTiming();
+		}
+		if($this->NBTtiles !== null){
+			$this->hasChanged = true;
+			$world->timings->syncChunkLoadTileEntitiesTimer->startTiming();
+			foreach($this->NBTtiles as $nbt){
+				if($nbt instanceof CompoundTag){
+					if(($tile = TileFactory::createFromData($world, $nbt)) !== null){
+						$world->addTile($tile);
+					}else{
+						$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>", true));
+						continue;
 					}
 				}
-
-				$this->NBTtiles = null;
-				$world->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 			}
 
-			$this->isInit = true;
+			$this->NBTtiles = null;
+			$world->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 		}
 	}
 
