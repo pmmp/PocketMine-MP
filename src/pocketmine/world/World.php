@@ -1056,7 +1056,7 @@ class World implements ChunkManager, Metadatable{
 		$this->timings->syncChunkSaveTimer->startTiming();
 		try{
 			foreach($this->chunks as $chunk){
-				if(($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0) and $chunk->isGenerated()){
+				if($chunk->hasChanged() and $chunk->isGenerated()){
 					$this->provider->saveChunk($chunk);
 					$chunk->setChanged(false);
 				}
@@ -2584,14 +2584,12 @@ class World implements ChunkManager, Metadatable{
 				return false;
 			}
 
-			if($trySave and $this->getAutoSave() and $chunk->isGenerated()){
-				if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0){
-					$this->timings->syncChunkSaveTimer->startTiming();
-					try{
-						$this->provider->saveChunk($chunk);
-					}finally{
-						$this->timings->syncChunkSaveTimer->stopTiming();
-					}
+			if($trySave and $this->getAutoSave() and $chunk->isGenerated() and $chunk->hasChanged()){
+				$this->timings->syncChunkSaveTimer->startTiming();
+				try{
+					$this->provider->saveChunk($chunk);
+				}finally{
+					$this->timings->syncChunkSaveTimer->stopTiming();
 				}
 			}
 
