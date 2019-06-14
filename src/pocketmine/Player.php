@@ -2812,14 +2812,14 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			}
 		}
 
-		$this->windowIndex[$networkId] = $inventory;
-		$this->windows[spl_object_id($inventory)] = $networkId;
-
 		$ev = new InventoryOpenEvent($inventory, $this);
 		$ev->call();
 		if($ev->isCancelled()){
 			return -1;
 		}
+
+		$this->windowIndex[$networkId] = $inventory;
+		$this->windows[spl_object_id($inventory)] = $networkId;
 		$inventory->onOpen($this);
 		if($isPermanent){
 			$this->permanentWindows[spl_object_id($inventory)] = true;
