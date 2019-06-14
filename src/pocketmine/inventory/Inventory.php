@@ -195,13 +195,13 @@ interface Inventory{
 	public function getViewers() : array;
 
 	/**
-	 * Tries to open the inventory to a player
+	 * Called when a player opens this inventory.
 	 *
 	 * @param Player $who
 	 */
-	public function open(Player $who) : void;
+	public function onOpen(Player $who) : void;
 
-	public function close(Player $who) : void;
+	public function onClose(Player $who) : void;
 
 	/**
 	 * Returns whether the specified slot exists in the inventory.

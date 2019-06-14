@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\world\Position;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
+use pocketmine\world\Position;
 
 class AnvilInventory extends ContainerInventory{
 
@@ -48,7 +48,7 @@ class AnvilInventory extends ContainerInventory{
 		return $this->holder;
 	}
 
-	protected function onClose(Player $who) : void{
+	public function onClose(Player $who) : void{
 		parent::onClose($who);
 
 		foreach($this->getContents() as $item){

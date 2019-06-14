@@ -353,19 +353,11 @@ abstract class BaseInventory implements Inventory{
 		$this->maxStackSize = $size;
 	}
 
-	public function open(Player $who) : void{
-		$this->onOpen($who);
-	}
-
-	public function close(Player $who) : void{
-		$this->onClose($who);
-	}
-
-	protected function onOpen(Player $who) : void{
+	public function onOpen(Player $who) : void{
 		$this->viewers[spl_object_id($who)] = $who;
 	}
 
-	protected function onClose(Player $who) : void{
+	public function onClose(Player $who) : void{
 		unset($this->viewers[spl_object_id($who)]);
 	}
 

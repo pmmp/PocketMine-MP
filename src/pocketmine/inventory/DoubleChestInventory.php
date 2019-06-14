@@ -74,7 +74,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		return $result;
 	}
 
-	protected function onOpen(Player $who) : void{
+	public function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1 and $this->right->getHolder()->isValid()){
@@ -82,7 +82,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		}
 	}
 
-	protected function onClose(Player $who) : void{
+	public function onClose(Player $who) : void{
 		if(count($this->getViewers()) === 1 and $this->right->getHolder()->isValid()){
 			$this->right->broadcastBlockEventPacket(false);
 		}

@@ -2821,7 +2821,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($ev->isCancelled()){
 			return -1;
 		}
-		$inventory->open($this);
+		$inventory->onOpen($this);
 		if($isPermanent){
 			$this->permanentWindows[spl_object_id($inventory)] = true;
 		}
@@ -2844,7 +2844,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$networkId = $this->windows[$objectId] ?? null;
 		if($networkId !== null){
-			$inventory->close($this);
+			$inventory->onClose($this);
 			unset($this->windows[$objectId], $this->windowIndex[$networkId], $this->permanentWindows[$objectId]);
 		}
 	}
