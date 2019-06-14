@@ -2744,7 +2744,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->doCloseInventory();
 
 		if(isset($this->windowIndex[$windowId])){
-			(new InventoryCloseEvent($this->windowIndex[$windowId], $this))->call();
 			$this->removeWindow($this->windowIndex[$windowId]);
 			return true;
 		}
@@ -2844,6 +2843,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$networkId = $this->windows[$objectId] ?? null;
 		if($networkId !== null){
+			(new InventoryCloseEvent($inventory, $this))->call();
 			$inventory->onClose($this);
 			unset($this->windows[$objectId], $this->windowIndex[$networkId], $this->permanentWindows[$objectId]);
 		}
