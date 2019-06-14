@@ -579,8 +579,8 @@ class Chunk{
 	 */
 	public function initChunk(World $world) : void{
 		if(!$this->isInit){
-			$changed = false;
 			if($this->NBTentities !== null){
+				$this->hasChanged = true;
 				$world->timings->syncChunkLoadEntitiesTimer->startTiming();
 				foreach($this->NBTentities as $nbt){
 					if($nbt instanceof CompoundTag){
@@ -588,12 +588,10 @@ class Chunk{
 							$entity = EntityFactory::createFromData($world, $nbt);
 							if(!($entity instanceof Entity)){
 								$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type " . $nbt->getString("id", $nbt->getString("identifier", "<unknown>", true), true));
-								$changed = true;
 								continue;
 							}
 						}catch(\Exception $t){ //TODO: this shouldn't be here
 							$world->getLogger()->logException($t);
-							$changed = true;
 							continue;
 						}
 					}
@@ -603,6 +601,7 @@ class Chunk{
 				$world->timings->syncChunkLoadEntitiesTimer->stopTiming();
 			}
 			if($this->NBTtiles !== null){
+				$this->hasChanged = true;
 				$world->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 				foreach($this->NBTtiles as $nbt){
 					if($nbt instanceof CompoundTag){
@@ -610,7 +609,6 @@ class Chunk{
 							$world->addTile($tile);
 						}else{
 							$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>", true));
-							$changed = true;
 							continue;
 						}
 					}
@@ -619,8 +617,6 @@ class Chunk{
 				$this->NBTtiles = null;
 				$world->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 			}
-
-			$this->hasChanged = $changed;
 
 			$this->isInit = true;
 		}
