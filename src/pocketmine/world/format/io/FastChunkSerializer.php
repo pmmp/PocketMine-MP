@@ -34,7 +34,7 @@ use function pack;
 use function unpack;
 
 /**
- * This class provides a serializer used for transmitting chunks between chunks.
+ * This class provides a serializer used for transmitting chunks between threads.
  * The serialization format **is not intended for permanent storage** and may change without warning.
  */
 final class FastChunkSerializer{
