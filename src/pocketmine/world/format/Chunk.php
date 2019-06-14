@@ -28,14 +28,11 @@ namespace pocketmine\world\format;
 
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
-use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\NetworkBinaryStream;
-use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\Player;
 use pocketmine\world\World;
 use function array_fill;
@@ -45,7 +42,6 @@ use function assert;
 use function chr;
 use function count;
 use function ord;
-use function pack;
 use function str_repeat;
 use function strlen;
 
@@ -721,46 +717,6 @@ class Chunk{
 				}
 			}
 		}
-	}
-
-	/**
-	 * Serializes the chunk for sending to players
-	 *
-	 * @return string
-	 */
-	public function networkSerialize() : string{
-		$stream = new NetworkBinaryStream();
-		$subChunkCount = $this->getSubChunkSendCount();
-		$stream->putByte($subChunkCount);
-
-		for($y = 0; $y < $subChunkCount; ++$y){
-			$layers = $this->subChunks[$y]->getBlockLayers();
-			$stream->putByte(8); //version
-
-			$stream->putByte(count($layers));
-
-			foreach($layers as $blocks){
-				$stream->putByte(($blocks->getBitsPerBlock() << 1) | 1); //last 1-bit means "network format", but seems pointless
-				$stream->put($blocks->getWordArray());
-				$palette = $blocks->getPalette();
-				$stream->putVarInt(count($palette)); //yes, this is intentionally zigzag
-				foreach($palette as $p){
-					$stream->putVarInt(RuntimeBlockMapping::toStaticRuntimeId($p >> 4, $p & 0xf));
-				}
-			}
-		}
-		$stream->put(pack("v*", ...$this->heightMap));
-		$stream->put($this->biomeIds);
-		$stream->putByte(0); //border block array count
-		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
-
-		foreach($this->tiles as $tile){
-			if($tile instanceof Spawnable){
-				$stream->put($tile->getSerializedSpawnCompound());
-			}
-		}
-
-		return $stream->getBuffer();
 	}
 
 	/**
