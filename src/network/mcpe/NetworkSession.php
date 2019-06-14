@@ -753,8 +753,8 @@ class NetworkSession{
 		$this->sendDataPacket(TextPacket::tip($message));
 	}
 
-	public function onFormSent(int $id, Form $form) : bool{
-		$formData = json_encode($form);
+	public function onFormSent(int $id, array $data) : bool{
+		$formData = json_encode($data);
 		if($formData === false){
 			throw new \InvalidArgumentException("Failed to encode form JSON: " . json_last_error_msg());
 		}
