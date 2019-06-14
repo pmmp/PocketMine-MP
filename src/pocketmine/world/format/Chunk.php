@@ -37,12 +37,10 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\Player;
-use pocketmine\utils\BinaryStream;
 use pocketmine\world\World;
 use function array_fill;
 use function array_filter;
 use function array_map;
-use function array_values;
 use function assert;
 use function chr;
 use function count;
@@ -50,7 +48,6 @@ use function ord;
 use function pack;
 use function str_repeat;
 use function strlen;
-use function unpack;
 
 class Chunk{
 
@@ -764,116 +761,6 @@ class Chunk{
 		}
 
 		return $stream->getBuffer();
-	}
-
-	/**
-	 * Fast-serializes the chunk for passing between threads
-	 * TODO: tiles and entities
-	 *
-	 * @return string
-	 */
-	public function fastSerialize() : string{
-		$stream = new BinaryStream();
-		$stream->putInt($this->x);
-		$stream->putInt($this->z);
-		$stream->putByte(($this->lightPopulated ? 4 : 0) | ($this->terrainPopulated ? 2 : 0) | ($this->terrainGenerated ? 1 : 0));
-		if($this->terrainGenerated){
-			//subchunks
-			$count = 0;
-			$subStream = new BinaryStream();
-			foreach($this->subChunks as $y => $subChunk){
-				if($subChunk instanceof EmptySubChunk){
-					continue;
-				}
-				++$count;
-
-				$subStream->putByte($y);
-				$layers = $subChunk->getBlockLayers();
-				$subStream->putByte(count($subChunk->getBlockLayers()));
-				foreach($layers as $blocks){
-					$wordArray = $blocks->getWordArray();
-					$palette = $blocks->getPalette();
-
-					$subStream->putByte($blocks->getBitsPerBlock());
-					$subStream->put($wordArray);
-					$subStream->putInt(count($palette));
-					foreach($palette as $p){
-						$subStream->putInt($p);
-					}
-				}
-
-				if($this->lightPopulated){
-					$subStream->put($subChunk->getBlockSkyLightArray());
-					$subStream->put($subChunk->getBlockLightArray());
-				}
-			}
-			$stream->putByte($count);
-			$stream->put($subStream->getBuffer());
-
-			//biomes
-			$stream->put($this->biomeIds);
-			if($this->lightPopulated){
-				$stream->put(pack("v*", ...$this->heightMap));
-			}
-		}
-
-		return $stream->getBuffer();
-	}
-
-	/**
-	 * Deserializes a fast-serialized chunk
-	 *
-	 * @param string $data
-	 *
-	 * @return Chunk
-	 */
-	public static function fastDeserialize(string $data) : Chunk{
-		$stream = new BinaryStream($data);
-
-		$x = $stream->getInt();
-		$z = $stream->getInt();
-		$flags = $stream->getByte();
-		$lightPopulated = (bool) ($flags & 4);
-		$terrainPopulated = (bool) ($flags & 2);
-		$terrainGenerated = (bool) ($flags & 1);
-
-		$subChunks = [];
-		$biomeIds = "";
-		$heightMap = [];
-		if($terrainGenerated){
-			$count = $stream->getByte();
-			for($subCount = 0; $subCount < $count; ++$subCount){
-				$y = $stream->getByte();
-
-				/** @var PalettedBlockArray[] $layers */
-				$layers = [];
-				for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
-					$bitsPerBlock = $stream->getByte();
-					$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
-					$palette = [];
-					for($k = 0, $paletteSize = $stream->getInt(); $k < $paletteSize; ++$k){
-						$palette[] = $stream->getInt();
-					}
-
-					$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
-				}
-				$subChunks[$y] = new SubChunk(
-					$layers, $lightPopulated ? $stream->get(2048) : "", $lightPopulated ? $stream->get(2048) : "" //blocklight
-				);
-			}
-
-			$biomeIds = $stream->get(256);
-			if($lightPopulated){
-				$heightMap = array_values(unpack("v*", $stream->get(512)));
-			}
-		}
-
-		$chunk = new Chunk($x, $z, $subChunks, null, null, $biomeIds, $heightMap);
-		$chunk->setGenerated($terrainGenerated);
-		$chunk->setPopulated($terrainPopulated);
-		$chunk->setLightPopulated($lightPopulated);
-
-		return $chunk;
 	}
 
 	/**

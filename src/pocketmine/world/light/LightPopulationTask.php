@@ -26,6 +26,7 @@ namespace pocketmine\world\light;
 use pocketmine\block\BlockFactory;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\World;
 
 class LightPopulationTask extends AsyncTask{
@@ -35,7 +36,7 @@ class LightPopulationTask extends AsyncTask{
 
 	public function __construct(World $world, Chunk $chunk){
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
-		$this->chunk = $chunk->fastSerialize();
+		$this->chunk = FastChunkSerializer::serialize($chunk);
 	}
 
 	public function onRun() : void{
@@ -43,13 +44,13 @@ class LightPopulationTask extends AsyncTask{
 			BlockFactory::init();
 		}
 		/** @var Chunk $chunk */
-		$chunk = Chunk::fastDeserialize($this->chunk);
+		$chunk = FastChunkSerializer::deserialize($this->chunk);
 
 		$chunk->recalculateHeightMap();
 		$chunk->populateSkyLight();
 		$chunk->setLightPopulated();
 
-		$this->chunk = $chunk->fastSerialize();
+		$this->chunk = FastChunkSerializer::serialize($chunk);
 	}
 
 	public function onCompletion() : void{
@@ -57,7 +58,7 @@ class LightPopulationTask extends AsyncTask{
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
 		if(!$world->isClosed()){
 			/** @var Chunk $chunk */
-			$chunk = Chunk::fastDeserialize($this->chunk);
+			$chunk = FastChunkSerializer::deserialize($this->chunk);
 			$world->generateChunkCallback($chunk->getX(), $chunk->getZ(), $chunk);
 		}
 	}
