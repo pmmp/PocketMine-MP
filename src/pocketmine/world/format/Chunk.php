@@ -598,8 +598,11 @@ class Chunk{
 						}
 					}
 				}
-				$world->timings->syncChunkLoadEntitiesTimer->stopTiming();
 
+				$this->NBTentities = null;
+				$world->timings->syncChunkLoadEntitiesTimer->stopTiming();
+			}
+			if($this->NBTtiles !== null){
 				$world->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 				foreach($this->NBTtiles as $nbt){
 					if($nbt instanceof CompoundTag){
@@ -613,10 +616,8 @@ class Chunk{
 					}
 				}
 
-				$world->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
-
-				$this->NBTentities = null;
 				$this->NBTtiles = null;
+				$world->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 			}
 
 			$this->hasChanged = $changed;
