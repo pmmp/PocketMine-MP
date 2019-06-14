@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\Player;
@@ -354,15 +353,8 @@ abstract class BaseInventory implements Inventory{
 		$this->maxStackSize = $size;
 	}
 
-	public function open(Player $who) : bool{
-		$ev = new InventoryOpenEvent($this, $who);
-		$ev->call();
-		if($ev->isCancelled()){
-			return false;
-		}
+	public function open(Player $who) : void{
 		$this->onOpen($who);
-
-		return true;
 	}
 
 	public function close(Player $who) : void{

@@ -39,6 +39,7 @@ use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
+use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\event\player\cheat\PlayerIllegalMoveEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerAnimationEvent;
@@ -2814,16 +2815,17 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->windowIndex[$networkId] = $inventory;
 		$this->windows[spl_object_id($inventory)] = $networkId;
-		if($inventory->open($this)){
-			if($isPermanent){
-				$this->permanentWindows[spl_object_id($inventory)] = true;
-			}
-			return $networkId;
-		}else{
-			$this->removeWindow($inventory);
 
+		$ev = new InventoryOpenEvent($inventory, $this);
+		$ev->call();
+		if($ev->isCancelled()){
 			return -1;
 		}
+		$inventory->open($this);
+		if($isPermanent){
+			$this->permanentWindows[spl_object_id($inventory)] = true;
+		}
+		return $networkId;
 	}
 
 	/**

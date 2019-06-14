@@ -198,10 +198,8 @@ interface Inventory{
 	 * Tries to open the inventory to a player
 	 *
 	 * @param Player $who
-	 *
-	 * @return bool
 	 */
-	public function open(Player $who) : bool;
+	public function open(Player $who) : void;
 
 	public function close(Player $who) : void;
 
