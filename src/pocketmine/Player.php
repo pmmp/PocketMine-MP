@@ -183,8 +183,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $playerInfo;
 
 	protected $lastInventoryNetworkId = 2;
-	/** @var int[] */
-	protected $windows = [];
+	/** @var int[] object ID => network ID */
+	protected $inventoryNetworkIdMap = [];
 	/** @var Inventory[] */
 	protected $windowIndex = [];
 	/** @var bool[] */
@@ -2428,8 +2428,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		foreach($this->permanentWindows as $networkId => $bool){
 			$this->closeInventoryInternal($this->windowIndex[$networkId], true);
 		}
-		assert(empty($this->windowIndex) && empty($this->windows));
-		$this->windows = [];
+		assert(empty($this->windowIndex) && empty($this->inventoryNetworkIdMap));
+		$this->inventoryNetworkIdMap = [];
 		$this->windowIndex = [];
 
 		$this->perm->clearPermissions();
@@ -2767,7 +2767,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return int
 	 */
 	public function getWindowId(Inventory $inventory) : int{
-		return $this->windows[spl_object_id($inventory)] ?? ContainerIds::NONE;
+		return $this->inventoryNetworkIdMap[spl_object_id($inventory)] ?? ContainerIds::NONE;
 	}
 
 	/**
@@ -2784,7 +2784,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	protected function openInventoryInternal(Inventory $inventory, int $networkId, bool $permanent) : void{
 		$this->windowIndex[$networkId] = $inventory;
-		$this->windows[spl_object_id($inventory)] = $networkId;
+		$this->inventoryNetworkIdMap[spl_object_id($inventory)] = $networkId;
 		$inventory->onOpen($this);
 		if($permanent){
 			$this->logger->debug("Opening permanent inventory " . get_class($inventory) . " with network ID $networkId");
@@ -2794,7 +2794,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	protected function closeInventoryInternal(Inventory $inventory, bool $force) : bool{
 		$objectId = spl_object_id($inventory);
-		$networkId = $this->windows[$objectId] ?? null;
+		$networkId = $this->inventoryNetworkIdMap[$objectId] ?? null;
 		if($networkId !== null){
 			if(isset($this->permanentWindows[$networkId])){
 				if(!$force){
@@ -2804,7 +2804,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			}
 
 			$inventory->onClose($this);
-			unset($this->windows[$objectId], $this->windowIndex[$networkId], $this->permanentWindows[$networkId]);
+			unset($this->inventoryNetworkIdMap[$objectId], $this->windowIndex[$networkId], $this->permanentWindows[$networkId]);
 			return true;
 		}
 		return false;
