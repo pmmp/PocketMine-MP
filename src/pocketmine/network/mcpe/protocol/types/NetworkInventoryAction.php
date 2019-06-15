@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\inventory\AnvilInventory;
+use pocketmine\inventory\EnchantInventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -202,6 +204,20 @@ class NetworkInventoryAction{
 					case self::SOURCE_TYPE_CRAFTING_RESULT:
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						return null;
+					case self::SOURCE_TYPE_ANVIL_INPUT:
+					case self::SOURCE_TYPE_ANVIL_MATERIAL:
+						$window = $player->getCurrentWindow();
+						if(!($window instanceof AnvilInventory)){
+							throw new \UnexpectedValueException("Current open container is not an anvil");
+						}
+						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_ENCHANT_INPUT:
+					case self::SOURCE_TYPE_ENCHANT_MATERIAL:
+						$window = $player->getCurrentWindow();
+						if(!($window instanceof EnchantInventory)){
+							throw new \UnexpectedValueException("Current open container is not an enchanting table");
+						}
+						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}
 
 				//TODO: more stuff
