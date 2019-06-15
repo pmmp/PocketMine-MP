@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\inventory\transaction\action\CreativeInventoryAction;
+use pocketmine\inventory\transaction\action\CreateItemAction;
+use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
@@ -183,17 +184,13 @@ class NetworkInventoryAction{
 			case self::SOURCE_CREATIVE:
 				switch($this->inventorySlot){
 					case self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
-						$type = CreativeInventoryAction::TYPE_DELETE_ITEM;
-						break;
+						return new DestroyItemAction($this->newItem);
 					case self::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
-						$type = CreativeInventoryAction::TYPE_CREATE_ITEM;
-						break;
+						return new CreateItemAction($this->oldItem);
 					default:
 						throw new \UnexpectedValueException("Unexpected creative action type $this->inventorySlot");
 
 				}
-
-				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
 			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				//These types need special handling.
