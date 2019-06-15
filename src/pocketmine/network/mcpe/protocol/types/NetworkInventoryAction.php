@@ -173,7 +173,7 @@ class NetworkInventoryAction{
 					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}
 
-				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
+				throw new \UnexpectedValueException("No open container with window ID $this->windowId");
 			case self::SOURCE_WORLD:
 				if($this->inventorySlot !== self::ACTION_MAGIC_SLOT_DROP_ITEM){
 					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
@@ -208,7 +208,7 @@ class NetworkInventoryAction{
 				}
 
 				//TODO: more stuff
-				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
+				throw new \UnexpectedValueException("No open container with window ID $this->windowId");
 			default:
 				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
 		}
