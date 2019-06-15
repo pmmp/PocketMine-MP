@@ -855,8 +855,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function onDispose() : void{
-		$this->inventory->removeAllViewers(true);
-		$this->enderChestInventory->removeAllViewers(true);
+		$this->inventory->removeAllViewers();
+		$this->enderChestInventory->removeAllViewers();
 		parent::onDispose();
 	}
 

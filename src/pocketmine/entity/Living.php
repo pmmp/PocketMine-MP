@@ -918,7 +918,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	protected function onDispose() : void{
-		$this->armorInventory->removeAllViewers(true);
+		$this->armorInventory->removeAllViewers();
 		parent::onDispose();
 	}
 

@@ -2424,7 +2424,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->usedChunks = [];
 		$this->loadQueue = [];
 
-		$this->removeAllWindows(true);
+		$this->removeAllWindows();
+		foreach($this->permanentWindows as $networkId => $bool){
+			$this->closeInventoryInternal($this->windowIndex[$networkId], true);
+		}
+		assert(empty($this->windowIndex) && empty($this->windows));
 		$this->windows = [];
 		$this->windowIndex = [];
 
@@ -2435,8 +2439,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	protected function onDispose() : void{
 		$this->disconnect("Player destroyed");
-		$this->cursorInventory->removeAllViewers(true);
-		$this->craftingGrid->removeAllViewers(true);
+		$this->cursorInventory->removeAllViewers();
+		$this->craftingGrid->removeAllViewers();
 		parent::onDispose();
 	}
 
@@ -2678,12 +2682,12 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	protected function addDefaultWindows(){
-		$this->addWindow($this->getInventory(), ContainerIds::INVENTORY, true);
+		$this->openInventoryInternal($this->getInventory(), ContainerIds::INVENTORY, true);
 
-		$this->addWindow($this->getArmorInventory(), ContainerIds::ARMOR, true);
+		$this->openInventoryInternal($this->getArmorInventory(), ContainerIds::ARMOR, true);
 
 		$this->cursorInventory = new PlayerCursorInventory($this);
-		$this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
+		$this->openInventoryInternal($this->cursorInventory, ContainerIds::CURSOR, true);
 
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
 
@@ -2778,39 +2782,58 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->windowIndex[$windowId] ?? null;
 	}
 
+	protected function openInventoryInternal(Inventory $inventory, int $networkId, bool $permanent) : void{
+		$this->windowIndex[$networkId] = $inventory;
+		$this->windows[spl_object_id($inventory)] = $networkId;
+		$inventory->onOpen($this);
+		if($permanent){
+			$this->logger->debug("Opening permanent inventory " . get_class($inventory) . " with network ID $networkId");
+			$this->permanentWindows[$networkId] = true;
+		}
+	}
+
+	protected function closeInventoryInternal(Inventory $inventory, bool $force) : bool{
+		$objectId = spl_object_id($inventory);
+		$networkId = $this->windows[$objectId] ?? null;
+		if($networkId !== null){
+			if(isset($this->permanentWindows[$networkId])){
+				if(!$force){
+					throw new \InvalidArgumentException("Cannot remove fixed window " . get_class($inventory) . " from " . $this->getName());
+				}
+				$this->logger->debug("Closing permanent inventory " . get_class($inventory) . " with network ID $networkId");
+			}
+
+			$inventory->onClose($this);
+			unset($this->windows[$objectId], $this->windowIndex[$networkId], $this->permanentWindows[$networkId]);
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Opens an inventory window to the player. Returns the ID of the created window, or the existing window ID if the
 	 * player is already viewing the specified inventory.
 	 *
 	 * @param Inventory $inventory
-	 * @param int|null  $forceNetworkId Forces a special ID for the window
-	 * @param bool      $isPermanent Prevents the window being removed if true.
 	 *
 	 * @return int
 	 *
 	 * @throws \InvalidArgumentException if a forceID which is already in use is specified
 	 * @throws \InvalidStateException if trying to add a window without forceID when no slots are free
 	 */
-	public function addWindow(Inventory $inventory, ?int $forceNetworkId = null, bool $isPermanent = false) : int{
+	public function addWindow(Inventory $inventory) : int{
 		if(($id = $this->getWindowId($inventory)) !== ContainerIds::NONE){
 			return $id;
 		}
 
-		if($forceNetworkId === null){
-			$networkId = $this->lastInventoryNetworkId;
-			do{
-				$networkId = max(ContainerIds::FIRST, ($networkId + 1) % ContainerIds::LAST);
-				if($networkId === $this->lastInventoryNetworkId){ //wraparound, no free slots
-					throw new \InvalidStateException("No free window IDs found");
-				}
-			}while(isset($this->windowIndex[$networkId]));
-			$this->lastInventoryNetworkId = $networkId;
-		}else{
-			$networkId = $forceNetworkId;
-			if(isset($this->windowIndex[$networkId])){
-				throw new \InvalidArgumentException("Requested force ID $forceNetworkId already in use");
+		$networkId = $this->lastInventoryNetworkId;
+		do{
+			$networkId = max(ContainerIds::FIRST, ($networkId + 1) % ContainerIds::LAST);
+			if($networkId === $this->lastInventoryNetworkId){ //wraparound, no free slots
+				throw new \InvalidStateException("No free window IDs found");
 			}
-		}
+		}while(isset($this->windowIndex[$networkId]));
+		$this->lastInventoryNetworkId = $networkId;
 
 		$ev = new InventoryOpenEvent($inventory, $this);
 		$ev->call();
@@ -2818,12 +2841,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			return -1;
 		}
 
-		$this->windowIndex[$networkId] = $inventory;
-		$this->windows[spl_object_id($inventory)] = $networkId;
-		$inventory->onOpen($this);
-		if($isPermanent){
-			$this->permanentWindows[spl_object_id($inventory)] = true;
-		}
+		$this->openInventoryInternal($inventory, $networkId, false);
 		return $networkId;
 	}
 
@@ -2831,36 +2849,26 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * Removes an inventory window from the player.
 	 *
 	 * @param Inventory $inventory
-	 * @param bool      $force Forces removal of permanent windows such as normal inventory, cursor
 	 *
-	 * @throws \InvalidArgumentException if trying to remove a fixed inventory window without the `force` parameter as true
+	 * @throws \InvalidArgumentException if trying to remove a fixed inventory window
 	 */
-	public function removeWindow(Inventory $inventory, bool $force = false){
-		$objectId = spl_object_id($inventory);
-		if(!$force and isset($this->permanentWindows[$objectId])){
-			throw new \InvalidArgumentException("Cannot remove fixed window " . get_class($inventory) . " from " . $this->getName());
-		}
-
-		$networkId = $this->windows[$objectId] ?? null;
-		if($networkId !== null){
+	public function removeWindow(Inventory $inventory){
+		if($this->closeInventoryInternal($inventory, false)){
 			(new InventoryCloseEvent($inventory, $this))->call();
-			$inventory->onClose($this);
-			unset($this->windows[$objectId], $this->windowIndex[$networkId], $this->permanentWindows[$objectId]);
 		}
 	}
 
 	/**
-	 * Removes all inventory windows from the player. By default this WILL NOT remove permanent windows.
-	 *
-	 * @param bool $removePermanentWindows Whether to remove permanent windows.
+	 * Removes all inventory windows from the player. This WILL NOT remove permanent inventories such as the player's
+	 * own inventory.
 	 */
-	public function removeAllWindows(bool $removePermanentWindows = false){
+	public function removeAllWindows(){
 		foreach($this->windowIndex as $networkId => $window){
-			if(!$removePermanentWindows and isset($this->permanentWindows[spl_object_id($window)])){
+			if(isset($this->permanentWindows[$networkId])){
 				continue;
 			}
 
-			$this->removeWindow($window, $removePermanentWindows);
+			$this->removeWindow($window);
 		}
 	}
 
