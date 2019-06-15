@@ -78,7 +78,7 @@ class Hopper extends Transparent{
 		if($player !== null){
 			$tile = $this->world->getTile($this);
 			if($tile instanceof TileHopper){ //TODO: find a way to have inventories open on click without this boilerplate in every block
-				$player->addWindow($tile->getInventory());
+				$player->setCurrentWindow($tile->getInventory());
 			}
 			return true;
 		}

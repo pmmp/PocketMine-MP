@@ -92,7 +92,7 @@ class Furnace extends Solid{
 		if($player instanceof Player){
 			$furnace = $this->getWorld()->getTile($this);
 			if($furnace instanceof TileFurnace and $furnace->canOpenWith($item->getCustomName())){
-				$player->addWindow($furnace->getInventory());
+				$player->setCurrentWindow($furnace->getInventory());
 			}
 		}
 

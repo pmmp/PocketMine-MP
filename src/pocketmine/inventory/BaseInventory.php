@@ -342,7 +342,9 @@ abstract class BaseInventory implements Inventory{
 	 */
 	public function removeAllViewers() : void{
 		foreach($this->viewers as $hash => $viewer){
-			$viewer->removeWindow($this);
+			if($viewer->getCurrentWindow() === $this){ //this might not be the case for the player's own inventory
+				$viewer->removeCurrentWindow();
+			}
 			unset($this->viewers[$hash]);
 		}
 	}

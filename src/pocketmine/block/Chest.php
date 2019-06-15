@@ -99,7 +99,7 @@ class Chest extends Transparent{
 					return true;
 				}
 
-				$player->addWindow($chest->getInventory());
+				$player->setCurrentWindow($chest->getInventory());
 			}
 		}
 

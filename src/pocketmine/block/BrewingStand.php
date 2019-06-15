@@ -62,7 +62,7 @@ class BrewingStand extends Transparent{
 		if($player instanceof Player){
 			$stand = $this->getWorld()->getTile($this);
 			if($stand instanceof TileBrewingStand and $stand->canOpenWith($item->getCustomName())){
-				$player->addWindow($stand->getInventory());
+				$player->setCurrentWindow($stand->getInventory());
 			}
 		}
 

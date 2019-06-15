@@ -753,14 +753,14 @@ class NetworkSession{
 
 	public function syncInventorySlot(Inventory $inventory, int $slot) : void{
 		$windowId = $this->player->getWindowId($inventory);
-		if($windowId !== ContainerIds::NONE){
+		if($windowId !== null){
 			$this->sendDataPacket(InventorySlotPacket::create($windowId, $slot, $inventory->getItem($slot)));
 		}
 	}
 
 	public function syncInventoryContents(Inventory $inventory) : void{
 		$windowId = $this->player->getWindowId($inventory);
-		if($windowId !== ContainerIds::NONE){
+		if($windowId !== null){
 			$this->sendDataPacket(InventoryContentPacket::create($windowId, $inventory->getContents(true)));
 		}
 	}
@@ -773,7 +773,7 @@ class NetworkSession{
 
 	public function syncInventoryData(Inventory $inventory, int $propertyId, int $value) : void{
 		$windowId = $this->player->getWindowId($inventory);
-		if($windowId !== ContainerIds::NONE){
+		if($windowId !== null){
 			$this->sendDataPacket(ContainerSetDataPacket::create($windowId, $propertyId, $value));
 		}
 	}
