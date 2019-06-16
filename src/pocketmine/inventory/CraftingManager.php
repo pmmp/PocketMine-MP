@@ -54,6 +54,7 @@ class CraftingManager{
 	public function init() : void{
 		$recipes = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "recipes.json"), true);
 
+		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
 		foreach($recipes as $recipe){
 			switch($recipe["type"]){
 				case "shapeless":
@@ -61,8 +62,8 @@ class CraftingManager{
 						break;
 					}
 					$this->registerShapelessRecipe(new ShapelessRecipe(
-						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]),
-						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
+						array_map($itemDeserializerFunc, $recipe["input"]),
+						array_map($itemDeserializerFunc, $recipe["output"])
 					));
 					break;
 				case "shaped":
@@ -71,8 +72,8 @@ class CraftingManager{
 					}
 					$this->registerShapedRecipe(new ShapedRecipe(
 						$recipe["shape"],
-						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]),
-						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
+						array_map($itemDeserializerFunc, $recipe["input"]),
+						array_map($itemDeserializerFunc, $recipe["output"])
 					));
 					break;
 				case "smelting":
