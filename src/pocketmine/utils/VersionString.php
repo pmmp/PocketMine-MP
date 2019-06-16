@@ -70,7 +70,7 @@ class VersionString{
 	}
 
 	public function getNumber() : int{
-		return (($this->major << 9) + ($this->minor << 5) + $this->patch);
+		return (($this->major << 9) | ($this->minor << 5) | $this->patch);
 	}
 
 	public function getBaseVersion() : string{
