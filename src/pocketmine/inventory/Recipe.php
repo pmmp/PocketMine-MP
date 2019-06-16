@@ -25,5 +25,10 @@ namespace pocketmine\inventory;
 
 interface Recipe{
 
+	/**
+	 * @deprecated
+	 *
+	 * @param CraftingManager $manager
+	 */
 	public function registerToCraftingManager(CraftingManager $manager) : void;
 }
