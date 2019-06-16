@@ -1930,12 +1930,10 @@ class Server{
 			$this->currentTPS = 20;
 			$this->currentUse = 0;
 
+			($this->queryRegenerateTask = new QueryRegenerateEvent($this))->call();
+
 			$this->network->updateName();
 			$this->network->resetStatistics();
-		}
-
-		if(($this->tickCounter & 0b111111111) === 0){
-			($this->queryRegenerateTask = new QueryRegenerateEvent($this))->call();
 		}
 
 		if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){
