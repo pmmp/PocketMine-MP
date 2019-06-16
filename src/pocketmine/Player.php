@@ -1086,7 +1086,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->noDamageTicks = 60;
 
-		foreach($this->usedChunks as $index => $c){
+		foreach($this->usedChunks as $index => $hasSent){
+			if(!$hasSent){
+				continue; //this will happen when the chunk is ready to send
+			}
 			Level::getXZ($index, $chunkX, $chunkZ);
 			foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
 				if($entity !== $this and !$entity->isClosed() and $entity->isAlive() and !$entity->isFlaggedForDespawn()){
@@ -3343,7 +3346,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Resets the title duration settings.
+	 * Resets the title duration settings to defaults and removes any existing titles.
 	 */
 	public function resetTitles(){
 		$pk = new SetTitlePacket();

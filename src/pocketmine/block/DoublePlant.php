@@ -39,7 +39,7 @@ class DoublePlant extends Flowable{
 	}
 
 	public function canBeReplaced() : bool{
-		return $this->meta === 2 or $this->meta === 3; //grass or fern
+		return $this->getVariant() === 2 or $this->getVariant() === 3; //grass or fern
 	}
 
 	public function getName() : string{
@@ -95,11 +95,11 @@ class DoublePlant extends Flowable{
 	}
 
 	public function getToolType() : int{
-		return ($this->meta === 2 or $this->meta === 3) ? BlockToolType::TYPE_SHEARS : BlockToolType::TYPE_NONE;
+		return ($this->getVariant() === 2 or $this->getVariant() === 3) ? BlockToolType::TYPE_SHEARS : BlockToolType::TYPE_NONE;
 	}
 
 	public function getToolHarvestLevel() : int{
-		return ($this->meta === 2 or $this->meta === 3) ? 1 : 0; //only grass or fern require shears
+		return ($this->getVariant() === 2 or $this->getVariant() === 3) ? 1 : 0; //only grass or fern require shears
 	}
 
 	public function getDrops(Item $item) : array{
