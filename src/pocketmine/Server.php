@@ -1720,7 +1720,7 @@ class Server{
 
 			register_shutdown_function([$this, "crashDump"]);
 
-			$this->queryRegenerateTask = new QueryRegenerateEvent($this, 5);
+			$this->queryRegenerateTask = new QueryRegenerateEvent($this);
 
 			$this->pluginManager->loadPlugins($this->pluginPath);
 
@@ -2587,15 +2587,10 @@ class Server{
 			$this->currentTPS = 20;
 			$this->currentUse = 0;
 
+			($this->queryRegenerateTask = new QueryRegenerateEvent($this))->call();
+
 			$this->network->updateName();
 			$this->network->resetStatistics();
-		}
-
-		if(($this->tickCounter & 0b111111111) === 0){
-			($this->queryRegenerateTask = new QueryRegenerateEvent($this, 5))->call();
-			if($this->queryHandler !== null){
-				$this->queryHandler->regenerateInfo();
-			}
 		}
 
 		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
