@@ -64,7 +64,6 @@ use function max;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
-use function spl_object_id;
 use function sqrt;
 use const M_PI;
 
@@ -219,7 +218,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @param Effect $effectType
 	 */
 	public function removeEffect(Effect $effectType) : void{
-		$index = spl_object_id($effectType);
+		$index = $effectType->getId();
 		if(isset($this->effects[$index])){
 			$effect = $this->effects[$index];
 			$hasExpired = $effect->hasExpired();
@@ -249,7 +248,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return EffectInstance|null
 	 */
 	public function getEffect(Effect $effect) : ?EffectInstance{
-		return $this->effects[spl_object_id($effect)] ?? null;
+		return $this->effects[$effect->getId()] ?? null;
 	}
 
 	/**
@@ -260,7 +259,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return bool
 	 */
 	public function hasEffect(Effect $effect) : bool{
-		return isset($this->effects[spl_object_id($effect)]);
+		return isset($this->effects[$effect->getId()]);
 	}
 
 	/**
@@ -284,8 +283,7 @@ abstract class Living extends Entity implements Damageable{
 		$oldEffect = null;
 		$cancelled = false;
 
-		$type = $effect->getType();
-		$index = spl_object_id($type);
+		$index = $effect->getType()->getId();
 		if(isset($this->effects[$index])){
 			$oldEffect = $this->effects[$index];
 			if(
