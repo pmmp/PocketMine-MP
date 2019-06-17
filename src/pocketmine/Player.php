@@ -315,7 +315,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$spawn = new Vector3($pos[0], $pos[1], $pos[2]);
 		}else{
 			$world = $this->server->getWorldManager()->getDefaultWorld(); //TODO: default world might be null
-			$spawn = $world->getSpawnLocation();
+			$spawn = $world->getSafeSpawn();
 			$spawnReset = true;
 		}
 
@@ -323,9 +323,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$world->registerChunkLoader($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);
 		$world->registerChunkListener($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4);
 		$this->usedChunks[World::chunkHash($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4)] = false;
-		if($spawnReset){
-			$spawn = $world->getSafeSpawn($spawn);
-		}
 
 		if($namedtag === null){
 			$namedtag = EntityFactory::createBaseNBT($spawn);
