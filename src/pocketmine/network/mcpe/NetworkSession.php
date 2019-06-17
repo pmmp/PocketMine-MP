@@ -821,7 +821,7 @@ class NetworkSession{
 	}
 
 	public function tick() : bool{
-		if($this->handler instanceof LoginSessionHandler){
+		if($this->info === null){
 			if(time() >= $this->connectTime + 10){
 				$this->disconnect("Login timeout");
 				return false;
