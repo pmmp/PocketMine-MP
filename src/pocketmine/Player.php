@@ -894,7 +894,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	protected function spawnEntitiesOnChunk(int $chunkX, int $chunkZ) : void{
 		foreach($this->world->getChunkEntities($chunkX, $chunkZ) as $entity){
-			if($entity !== $this and !$entity->isClosed() and !$entity->isFlaggedForDespawn()){
+			if($entity !== $this and !$entity->isFlaggedForDespawn()){
 				$entity->spawnTo($this);
 			}
 		}
