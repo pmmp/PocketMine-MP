@@ -586,6 +586,11 @@ class NetworkSession{
 	}
 
 	public function onRespawn() : void{
+		$this->player->sendData($this->player);
+		$this->player->sendData($this->player->getViewers());
+
+		$this->syncAdventureSettings($this->player);
+		$this->syncAllInventoryContents();
 		$this->setHandler(new InGameSessionHandler($this->player, $this));
 	}
 

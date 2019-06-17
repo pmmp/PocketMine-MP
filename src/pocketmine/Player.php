@@ -2530,12 +2530,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$attr->resetToDefault();
 		}
 
-		$this->sendData($this);
-		$this->sendData($this->getViewers());
-
-		$this->networkSession->syncAdventureSettings($this);
-		$this->networkSession->syncAllInventoryContents();
-
 		$this->spawnToAll();
 		$this->scheduleUpdate();
 
