@@ -29,7 +29,10 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\SessionHandler;
 
-class SetEntityMotionPacket extends DataPacket implements ClientboundPacket{
+/**
+ * TODO: This packet is (erroneously) sent to the server when the client is riding a vehicle.
+ */
+class SetEntityMotionPacket extends DataPacket implements ClientboundPacket, GarbageServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_ENTITY_MOTION_PACKET;
 
 	/** @var int */
