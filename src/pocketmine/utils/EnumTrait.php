@@ -42,11 +42,11 @@ trait EnumTrait{
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function register(self $member) : void{
-		$name = strtoupper($member->getEnumName());
+		$name = strtoupper($member->name());
 		if(isset(self::$members[$name])){
 			throw new \InvalidArgumentException("Enum member name \"$name\" is already reserved");
 		}
-		self::$members[strtoupper($member->getEnumName())] = $member;
+		self::$members[strtoupper($member->name())] = $member;
 	}
 
 	/**
@@ -171,7 +171,7 @@ public static function %1$s() : self{
 	/**
 	 * @return string
 	 */
-	public function getEnumName() : string{
+	public function name() : string{
 		return $this->enumName;
 	}
 

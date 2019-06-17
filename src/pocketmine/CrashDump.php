@@ -158,7 +158,7 @@ class CrashDump{
 					"depends" => $d->getDepend(),
 					"softDepends" => $d->getSoftDepend(),
 					"main" => $d->getMain(),
-					"load" => strtoupper($d->getOrder()->getEnumName()),
+					"load" => strtoupper($d->getOrder()->name()),
 					"website" => $d->getWebsite()
 				];
 				$this->addLine($d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . " for API(s) " . implode(", ", $d->getCompatibleApis()));
