@@ -356,7 +356,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 		/** @var CommandEnum[] $enums */
 		$enums = [];
 
-		$addEnumFn = static function(CommandEnum $enum) use(&$enums, &$enumIndexes, &$enumValueIndexes){
+		$addEnumFn = static function(CommandEnum $enum) use (&$enums, &$enumIndexes, &$enumValueIndexes){
 			if(!isset($enumIndexes[$enum->getName()])){
 				$enums[$enumIndexes[$enum->getName()] = count($enumIndexes)] = $enum;
 			}

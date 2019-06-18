@@ -449,7 +449,7 @@ class NetworkSession{
 	 * @param bool   $notify
 	 */
 	public function disconnect(string $reason, bool $notify = true) : void{
-		$this->tryDisconnect(function() use($reason, $notify){
+		$this->tryDisconnect(function() use ($reason, $notify){
 			if($this->player !== null){
 				$this->player->disconnect($reason, null, $notify);
 			}
@@ -467,7 +467,7 @@ class NetworkSession{
 	 * @throws \UnsupportedOperationException
 	 */
 	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
-		$this->tryDisconnect(function() use($ip, $port, $reason){
+		$this->tryDisconnect(function() use ($ip, $port, $reason){
 			$this->sendDataPacket(TransferPacket::create($ip, $port), true);
 			$this->disconnect($reason, false);
 			if($this->player !== null){
@@ -484,7 +484,7 @@ class NetworkSession{
 	 * @param bool   $notify
 	 */
 	public function onPlayerDestroyed(string $reason, bool $notify = true) : void{
-		$this->tryDisconnect(function() use($reason, $notify){
+		$this->tryDisconnect(function() use ($reason, $notify){
 			$this->doServerDisconnect($reason, $notify);
 		});
 	}
@@ -510,7 +510,7 @@ class NetworkSession{
 	 * @param string $reason
 	 */
 	public function onClientDisconnect(string $reason) : void{
-		$this->tryDisconnect(function() use($reason){
+		$this->tryDisconnect(function() use ($reason){
 			if($this->player !== null){
 				$this->player->disconnect($reason, null, false);
 			}
@@ -742,7 +742,7 @@ class NetworkSession{
 		ChunkCache::getInstance($this->player->getWorld())->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use($chunkX, $chunkZ, $onCompletion){
+			function(CompressBatchPromise $promise) use ($chunkX, $chunkZ, $onCompletion){
 				if(!$this->isConnected()){
 					return;
 				}
