@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class PlayerCursorInventory extends BaseInventory{
 	/** @var Player */

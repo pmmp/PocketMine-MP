@@ -25,7 +25,7 @@ namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 /**
  * Represents an action involving a change that applies in some way to an inventory or other item-source.

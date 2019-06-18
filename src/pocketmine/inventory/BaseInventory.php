@@ -25,7 +25,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use function array_slice;
 use function count;
 use function max;

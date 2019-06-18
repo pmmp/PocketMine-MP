@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\player;
 
 use pocketmine\block\Bed;
 use pocketmine\block\BlockFactory;
@@ -104,6 +104,7 @@ use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\permission\PermissionManager;
 use pocketmine\plugin\Plugin;
+use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;

@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\event\Event;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 abstract class PlayerEvent extends Event{
 	/** @var Player */

@@ -53,7 +53,7 @@ use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataTypes;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerMetadataFlags;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\utils\UUID;
 use pocketmine\world\sound\TotemUseSound;
 use pocketmine\world\sound\XpCollectSound;

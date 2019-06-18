@@ -29,7 +29,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use function sqrt;
 
 class ExperienceOrb extends Entity{

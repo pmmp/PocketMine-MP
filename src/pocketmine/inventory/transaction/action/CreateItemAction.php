@@ -26,7 +26,7 @@ namespace pocketmine\inventory\transaction\action;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 /**
  * This action is used by creative players to balance transactions involving the creative inventory menu.

@@ -26,7 +26,7 @@ namespace pocketmine\inventory\transaction\action;
 use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 /**
  * Represents an action involving dropping an item into the world.

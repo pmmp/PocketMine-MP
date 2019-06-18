@@ -28,7 +28,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use function array_keys;
 use function assert;
 use function count;

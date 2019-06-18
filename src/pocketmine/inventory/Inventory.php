@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 interface Inventory{
 	public const MAX_STACK = 64;

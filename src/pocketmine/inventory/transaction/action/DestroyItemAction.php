@@ -25,7 +25,7 @@ namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 /**
  * This action type shows up when a creative player puts an item into the creative inventory menu to destroy it.

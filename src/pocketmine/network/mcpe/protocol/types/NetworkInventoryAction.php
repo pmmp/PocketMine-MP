@@ -33,7 +33,7 @@ use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\NetworkBinaryStream;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\utils\BinaryDataException;
 
 class NetworkInventoryAction{

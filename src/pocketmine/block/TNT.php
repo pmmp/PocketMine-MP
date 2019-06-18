@@ -32,7 +32,7 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FlintSteel;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use function cos;
 use function sin;

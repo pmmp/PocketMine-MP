@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\updater;
 
 use pocketmine\event\server\UpdateNotifyEvent;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\VersionString;

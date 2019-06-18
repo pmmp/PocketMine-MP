@@ -29,7 +29,7 @@ use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\Liquid;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class Bucket extends Item{
 

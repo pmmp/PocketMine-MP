@@ -27,7 +27,7 @@ use pocketmine\item\Hoe;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class CoarseDirt extends Dirt{
 

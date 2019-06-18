@@ -27,7 +27,7 @@ use pocketmine\entity\Human;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use function in_array;
 use function is_array;
 

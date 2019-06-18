@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\lang\TextContainer;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 /**
  * Called when the player spawns in the world after logging in, when they first see the terrain.

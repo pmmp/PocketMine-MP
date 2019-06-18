@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class DeathPacketHandler extends PacketHandler{
 

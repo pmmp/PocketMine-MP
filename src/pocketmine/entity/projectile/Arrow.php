@@ -34,7 +34,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\world\sound\ArrowHitSound;
 use pocketmine\world\World;
 use function mt_rand;

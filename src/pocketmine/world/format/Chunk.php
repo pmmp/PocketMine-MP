@@ -33,7 +33,7 @@ use pocketmine\block\tile\TileFactory;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\world\World;
 use function array_fill;
 use function array_filter;

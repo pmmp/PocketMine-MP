@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use function max;
 use function min;
 use const PHP_INT_MAX;

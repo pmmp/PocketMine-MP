@@ -26,11 +26,11 @@ namespace pocketmine\item;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\projectile\Throwable;
 use pocketmine\event\entity\ProjectileLaunchEvent;
-use pocketmine\world\sound\ThrowSound;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\utils\Utils;
+use pocketmine\world\sound\ThrowSound;
 
 abstract class ProjectileItem extends Item{
 

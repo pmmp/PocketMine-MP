@@ -77,7 +77,7 @@ use pocketmine\network\mcpe\protocol\types\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\UseItemTransactionData;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use function array_push;
 use function base64_encode;
 use function fmod;

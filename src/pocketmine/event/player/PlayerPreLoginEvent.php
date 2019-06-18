@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\event\Event;
-use pocketmine\PlayerInfo;
+use pocketmine\player\PlayerInfo;
 use function array_keys;
 
 /**

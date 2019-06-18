@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\player;
 
 use pocketmine\entity\Skin;
 use pocketmine\utils\TextFormat;

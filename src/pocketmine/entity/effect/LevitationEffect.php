@@ -25,7 +25,7 @@ namespace pocketmine\entity\effect;
 
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class LevitationEffect extends Effect{
 
