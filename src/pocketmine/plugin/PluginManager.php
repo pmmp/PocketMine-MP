@@ -236,7 +236,8 @@ class PluginManager{
 		}else{
 			$loaders = $this->fileAssociations;
 		}
-		foreach($loaders as $loader){
+
+        foreach($loaders as $loader){
 			foreach(new \DirectoryIterator($directory) as $file){
 				if($file === "." or $file === ".."){
 					continue;
