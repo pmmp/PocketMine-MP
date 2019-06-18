@@ -1789,8 +1789,11 @@ class Server{
 
 			$this->queryRegenerateTask = new QueryRegenerateEvent($this, 5);
 
-			$additionalPluginDirs = $this->getAdditionalPluginDirs();
-			$this->pluginManager->loadPlugins($this->pluginPath, $additionalPluginDirs);
+			$this->pluginManager->loadPlugins($this->pluginPath);
+			
+			foreach($this->getAdditionalPluginDirs() as $path){
+				$this->pluginManager->loadPlugins($path);
+			}
 
 			$this->enablePlugins(PluginLoadOrder::STARTUP);
 
@@ -2168,8 +2171,12 @@ class Server{
 
 		$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 		$this->pluginManager->registerInterface(new ScriptPluginLoader());
-        $additionalPluginDirs = $this->getAdditionalPluginDirs();
-        $this->pluginManager->loadPlugins($this->pluginPath, $additionalPluginDirs);
+        $this->pluginManager->loadPlugins($this->pluginPath);
+		
+		foreach($this->getAdditionalPluginDirs() as $path){
+			$this->pluginManager->loadPlugins($path);
+		}
+		
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 		$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 		TimingsHandler::reload();
@@ -2627,8 +2634,8 @@ class Server{
 		//TODO: add raw packet events
 	}
 
-    private function getAdditionalPluginDirs(){
-        return $this->getAltayProperty("additional-plugin-dirs");
+    private function getAdditionalPluginDirs() : array{
+        return $this->getAltayProperty("additional-plugin-dirs", []);
     }
 
 	/**
