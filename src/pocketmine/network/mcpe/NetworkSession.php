@@ -34,14 +34,14 @@ use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\handler\DeathSessionHandler;
-use pocketmine\network\mcpe\handler\HandshakeSessionHandler;
-use pocketmine\network\mcpe\handler\InGameSessionHandler;
-use pocketmine\network\mcpe\handler\LoginSessionHandler;
-use pocketmine\network\mcpe\handler\NullSessionHandler;
-use pocketmine\network\mcpe\handler\PreSpawnSessionHandler;
-use pocketmine\network\mcpe\handler\ResourcePacksSessionHandler;
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\DeathPacketHandler;
+use pocketmine\network\mcpe\handler\HandshakePacketHandler;
+use pocketmine\network\mcpe\handler\InGamePacketHandler;
+use pocketmine\network\mcpe\handler\LoginPacketHandler;
+use pocketmine\network\mcpe\handler\NullPacketHandler;
+use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
+use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
@@ -116,7 +116,7 @@ class NetworkSession{
 	/** @var int */
 	private $ping;
 
-	/** @var SessionHandler */
+	/** @var PacketHandler */
 	private $handler;
 
 	/** @var bool */
@@ -152,7 +152,7 @@ class NetworkSession{
 
 		$this->connectTime = time();
 
-		$this->setHandler(new LoginSessionHandler($this->server, $this));
+		$this->setHandler(new LoginPacketHandler($this->server, $this));
 
 		$this->manager->add($this);
 		$this->logger->info("Session opened");
@@ -245,11 +245,11 @@ class NetworkSession{
 		$this->ping = $ping;
 	}
 
-	public function getHandler() : SessionHandler{
+	public function getHandler() : PacketHandler{
 		return $this->handler;
 	}
 
-	public function setHandler(SessionHandler $handler) : void{
+	public function setHandler(PacketHandler $handler) : void{
 		if($this->connected){ //TODO: this is fine since we can't handle anything from a disconnected session, but it might produce surprises in some cases
 			$this->handler = $handler;
 			$this->handler->setUp();
@@ -439,7 +439,7 @@ class NetworkSession{
 			$this->disconnectGuard = true;
 			$func();
 			$this->disconnectGuard = false;
-			$this->setHandler(NullSessionHandler::getInstance());
+			$this->setHandler(NullPacketHandler::getInstance());
 			$this->connected = false;
 			$this->manager->remove($this);
 			$this->logger->info("Session closed due to $reason");
@@ -554,7 +554,7 @@ class NetworkSession{
 
 		$this->cipher = new NetworkCipher($encryptionKey);
 
-		$this->setHandler(new HandshakeSessionHandler($this));
+		$this->setHandler(new HandshakePacketHandler($this));
 		$this->logger->debug("Enabled encryption");
 	}
 
@@ -564,13 +564,13 @@ class NetworkSession{
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::LOGIN_SUCCESS));
 
 		$this->logger->debug("Initiating resource packs phase");
-		$this->setHandler(new ResourcePacksSessionHandler($this, $this->server->getResourcePackManager()));
+		$this->setHandler(new ResourcePacksPacketHandler($this, $this->server->getResourcePackManager()));
 	}
 
 	public function onResourcePacksDone() : void{
 		$this->createPlayer();
 
-		$this->setHandler(new PreSpawnSessionHandler($this->server, $this->player, $this));
+		$this->setHandler(new PreSpawnPacketHandler($this->server, $this->player, $this));
 		$this->logger->debug("Waiting for spawn chunks");
 	}
 
@@ -582,11 +582,11 @@ class NetworkSession{
 	public function onSpawn() : void{
 		$this->logger->debug("Received spawn response, entering in-game phase");
 		$this->player->doFirstSpawn();
-		$this->setHandler(new InGameSessionHandler($this->player, $this));
+		$this->setHandler(new InGamePacketHandler($this->player, $this));
 	}
 
 	public function onDeath() : void{
-		$this->setHandler(new DeathSessionHandler($this->player, $this));
+		$this->setHandler(new DeathPacketHandler($this->player, $this));
 	}
 
 	public function onRespawn() : void{
@@ -595,7 +595,7 @@ class NetworkSession{
 
 		$this->syncAdventureSettings($this->player);
 		$this->syncAllInventoryContents();
-		$this->setHandler(new InGameSessionHandler($this->player, $this));
+		$this->setHandler(new InGamePacketHandler($this->player, $this));
 	}
 
 	public function syncMovement(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{

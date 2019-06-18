@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 
 class ChangeDimensionPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CHANGE_DIMENSION_PACKET;
@@ -51,7 +51,7 @@ class ChangeDimensionPacket extends DataPacket implements ClientboundPacket{
 		$this->putBool($this->respawn);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleChangeDimension($this);
 	}
 }

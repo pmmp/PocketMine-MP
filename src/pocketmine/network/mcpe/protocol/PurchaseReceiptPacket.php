@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use function count;
 
 class PurchaseReceiptPacket extends DataPacket implements ServerboundPacket{
@@ -48,7 +48,7 @@ class PurchaseReceiptPacket extends DataPacket implements ServerboundPacket{
 		}
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handlePurchaseReceipt($this);
 	}
 }

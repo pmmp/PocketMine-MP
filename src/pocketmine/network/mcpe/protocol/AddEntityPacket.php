@@ -29,7 +29,7 @@ use pocketmine\entity\Attribute;
 use pocketmine\entity\EntityIds;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use function array_search;
 use function count;
@@ -239,7 +239,7 @@ class AddEntityPacket extends DataPacket implements ClientboundPacket{
 		}
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleAddEntity($this);
 	}
 }

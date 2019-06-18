@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\utils\BinaryDataException;
 
 class MoveEntityDeltaPacket extends DataPacket implements ClientboundPacket{
@@ -115,7 +115,7 @@ class MoveEntityDeltaPacket extends DataPacket implements ClientboundPacket{
 		$this->maybeWriteRotation(self::FLAG_HAS_ROT_Z, $this->zRot);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleMoveEntityDelta($this);
 	}
 }

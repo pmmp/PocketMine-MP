@@ -36,7 +36,7 @@ use pocketmine\Server;
 /**
  * Handler used for the pre-spawn phase of the session.
  */
-class PreSpawnSessionHandler extends SessionHandler{
+class PreSpawnPacketHandler extends PacketHandler{
 
 	/** @var Server */
 	private $server;

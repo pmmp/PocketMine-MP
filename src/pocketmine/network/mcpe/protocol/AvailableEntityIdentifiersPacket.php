@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use function base64_decode;
 
 class AvailableEntityIdentifiersPacket extends DataPacket implements ClientboundPacket{
@@ -47,7 +47,7 @@ class AvailableEntityIdentifiersPacket extends DataPacket implements Clientbound
 		$this->put($this->namedtag ?? base64_decode(self::HARDCODED_NBT_BLOB));
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleAvailableEntityIdentifiers($this);
 	}
 }

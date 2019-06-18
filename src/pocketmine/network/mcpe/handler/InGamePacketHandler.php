@@ -93,7 +93,7 @@ use function trim;
 /**
  * This handler handles packets related to general gameplay.
  */
-class InGameSessionHandler extends SessionHandler{
+class InGamePacketHandler extends PacketHandler{
 
 	/** @var Player */
 	private $player;

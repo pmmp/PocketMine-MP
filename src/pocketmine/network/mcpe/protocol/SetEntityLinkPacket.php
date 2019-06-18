@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 
 class SetEntityLinkPacket extends DataPacket implements ClientboundPacket{
@@ -43,7 +43,7 @@ class SetEntityLinkPacket extends DataPacket implements ClientboundPacket{
 		$this->putEntityLink($this->link);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleSetEntityLink($this);
 	}
 }

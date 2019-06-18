@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\Player;
 
-class DeathSessionHandler extends SessionHandler{
+class DeathPacketHandler extends PacketHandler{
 
 	/** @var Player */
 	private $player;

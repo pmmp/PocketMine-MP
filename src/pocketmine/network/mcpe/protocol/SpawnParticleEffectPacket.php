@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 
 class SpawnParticleEffectPacket extends DataPacket implements ClientboundPacket{
@@ -55,7 +55,7 @@ class SpawnParticleEffectPacket extends DataPacket implements ClientboundPacket{
 		$this->putString($this->particleName);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleSpawnParticleEffect($this);
 	}
 }

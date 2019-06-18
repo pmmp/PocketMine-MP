@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use function count;
 
 class InventoryContentPacket extends DataPacket implements ClientboundPacket{
@@ -66,7 +66,7 @@ class InventoryContentPacket extends DataPacket implements ClientboundPacket{
 		}
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleInventoryContent($this);
 	}
 }

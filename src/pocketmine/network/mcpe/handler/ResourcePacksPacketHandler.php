@@ -42,7 +42,7 @@ use function substr;
  * Handler used for the resource packs sequence phase of the session. This handler takes care of downloading resource
  * packs to the client.
  */
-class ResourcePacksSessionHandler extends SessionHandler{
+class ResourcePacksPacketHandler extends PacketHandler{
 	private const PACK_CHUNK_SIZE = 1048576; //1MB
 
 	/** @var NetworkSession */

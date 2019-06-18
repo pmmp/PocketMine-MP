@@ -25,7 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol;
 
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use function ord;
 use function strlen;
 
@@ -62,7 +62,7 @@ class UnknownPacket extends DataPacket{
 		$this->put($this->payload);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return false;
 	}
 }

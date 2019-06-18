@@ -23,23 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
-
 /**
- * Handler responsible for awaiting client response from crypto handshake.
+ * Handler which simply ignores all packets received.
  */
-class HandshakeSessionHandler extends SessionHandler{
+final class NullPacketHandler extends PacketHandler{
+	/** @var self|null */
+	private static $instance = null;
 
-	/** @var NetworkSession */
-	private $session;
-
-	public function __construct(NetworkSession $session){
-		$this->session = $session;
+	public static function getInstance() : self{
+		return self::$instance ?? (self::$instance = new self);
 	}
 
-	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool{
-		$this->session->onLoginSuccess();
-		return true;
+	private function __construct(){
+
 	}
 }

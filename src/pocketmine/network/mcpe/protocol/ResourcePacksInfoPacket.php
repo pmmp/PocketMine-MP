@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\resourcepacks\ResourcePack;
 use function count;
 
@@ -110,7 +110,7 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		}
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleResourcePacksInfo($this);
 	}
 }

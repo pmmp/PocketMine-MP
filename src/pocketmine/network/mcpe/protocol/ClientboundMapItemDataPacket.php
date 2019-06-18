@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\MapTrackedObject;
 use pocketmine\utils\Color;
@@ -207,7 +207,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 		}
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleClientboundMapItemData($this);
 	}
 }
