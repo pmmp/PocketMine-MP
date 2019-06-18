@@ -2344,13 +2344,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 		$this->save();
 
-		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
-			TextFormat::AQUA . $this->getName() . TextFormat::WHITE,
-			$this->networkSession->getIp(),
-			$this->networkSession->getPort(),
-			$this->getServer()->getLanguage()->translateString($reason)
-		]));
-
 		$this->spawned = false;
 
 		$this->stopSleep();
