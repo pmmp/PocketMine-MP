@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use pocketmine\thread\Worker;
 use pocketmine\utils\MainLogger;
-use pocketmine\Worker;
 use function gc_enable;
 use function ini_set;
 

@@ -28,6 +28,7 @@ namespace {
 
 namespace pocketmine {
 
+	use pocketmine\thread\ThreadManager;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Process;
 	use pocketmine\utils\ServerKiller;

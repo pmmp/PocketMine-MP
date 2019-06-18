@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use pocketmine\Thread;
+use pocketmine\thread\Thread;
 use function getmypid;
 use function time;
 

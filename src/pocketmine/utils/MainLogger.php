@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use LogLevel;
-use pocketmine\Thread;
-use pocketmine\Worker;
+use pocketmine\thread\Thread;
+use pocketmine\thread\Worker;
 use function fclose;
 use function fopen;
 use function fwrite;
