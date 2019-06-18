@@ -237,23 +237,8 @@ class PluginManager{
 			$loaders = $this->fileAssociations;
 		}
 
-        $directories[] = $directory;
-        $files = [];
-        if(is_array($additionalDirectories)){
-            foreach($additionalDirectories as $directory_){
-                if(is_dir($directory_)){
-                    $directories[] = $directory_;
-                }
-            }
-        }
-        foreach($directories as $directory_){
-            foreach(new \DirectoryIterator($directory_) as $file){
-                $files[] = $file->getRealPath();
-            }
-        }
-
         foreach($loaders as $loader){
-            foreach($files as $file){
+			foreach(new \DirectoryIterator($directory) as $file){
 				if($file === "." or $file === ".."){
 					continue;
 				}
