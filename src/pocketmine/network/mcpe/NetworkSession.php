@@ -79,6 +79,7 @@ use pocketmine\PlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\BinaryDataException;
+use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 use function array_map;
@@ -154,6 +155,7 @@ class NetworkSession{
 		$this->setHandler(new LoginSessionHandler($this->server, $this));
 
 		$this->manager->add($this);
+		$this->logger->info("Session opened");
 	}
 
 	private function getLogPrefix() : string{
@@ -195,6 +197,7 @@ class NetworkSession{
 			throw new \InvalidStateException("Player info has already been set");
 		}
 		$this->info = $info;
+		$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
 		$this->logger->setPrefix($this->getLogPrefix());
 	}
 
@@ -431,7 +434,7 @@ class NetworkSession{
 		$this->interface->putPacket($this, $payload, $immediate);
 	}
 
-	private function tryDisconnect(\Closure $func) : void{
+	private function tryDisconnect(\Closure $func, string $reason) : void{
 		if($this->connected and !$this->disconnectGuard){
 			$this->disconnectGuard = true;
 			$func();
@@ -439,6 +442,7 @@ class NetworkSession{
 			$this->setHandler(NullSessionHandler::getInstance());
 			$this->connected = false;
 			$this->manager->remove($this);
+			$this->logger->info("Session closed due to $reason");
 		}
 	}
 
@@ -454,7 +458,7 @@ class NetworkSession{
 				$this->player->disconnect($reason, null, $notify);
 			}
 			$this->doServerDisconnect($reason, $notify);
-		});
+		}, $reason);
 	}
 
 	/**
@@ -474,7 +478,7 @@ class NetworkSession{
 				$this->player->disconnect($reason, null, false);
 			}
 			$this->doServerDisconnect($reason, false);
-		});
+		}, $reason);
 	}
 
 	/**
@@ -486,7 +490,7 @@ class NetworkSession{
 	public function onPlayerDestroyed(string $reason, bool $notify = true) : void{
 		$this->tryDisconnect(function() use ($reason, $notify){
 			$this->doServerDisconnect($reason, $notify);
-		});
+		}, $reason);
 	}
 
 	/**
@@ -514,7 +518,7 @@ class NetworkSession{
 			if($this->player !== null){
 				$this->player->disconnect($reason, null, false);
 			}
-		});
+		}, $reason);
 	}
 
 	public function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error) : bool{
