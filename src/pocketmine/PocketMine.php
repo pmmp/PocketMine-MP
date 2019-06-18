@@ -157,6 +157,9 @@ namespace pocketmine {
 
 	if(\pocketmine\COMPOSER_AUTOLOADER_PATH !== false and is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
 		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+		if(extension_loaded('parallel')){
+			\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+		}
 	}else{
 		critical_error("Composer autoloader not found at " . $bootstrap);
 		critical_error("Please install/update Composer dependencies or use provided builds.");
