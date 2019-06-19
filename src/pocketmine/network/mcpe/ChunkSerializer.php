@@ -26,10 +26,17 @@ namespace pocketmine\network\mcpe;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\PalettedBlockArray;
+use pocketmine\world\format\SubChunk;
+use function assert;
+use function ceil;
 use function count;
+use function floor;
 use function pack;
+use function unpack;
 
 final class ChunkSerializer{
+	private const CURRENT_CHUNK_VERSION = 8;
 
 	private function __construct(){
 		//NOOP
@@ -47,7 +54,7 @@ final class ChunkSerializer{
 
 		for($y = 0; $y < $subChunkCount; ++$y){
 			$layers = $chunk->getSubChunk($y)->getBlockLayers();
-			$stream->putByte(8); //version
+			$stream->putByte(static::CURRENT_CHUNK_VERSION); //version
 
 			$stream->putByte(count($layers));
 
@@ -73,5 +80,50 @@ final class ChunkSerializer{
 		}
 
 		return $stream->getBuffer();
+	}
+
+	public static function deserialize(int $chunkX, int $chunkZ, string $buffer) : Chunk{
+		$stream = new NetworkBinaryStream($buffer);
+
+		$subChunkCount = $stream->getByte();
+		/** @var SubChunk[] $subChunks */
+		$subChunks = [];
+
+		for($y = 0; $y < $subChunkCount; ++$y){
+			$version = $stream->getByte();
+			assert($version === static::CURRENT_CHUNK_VERSION);
+			/** @var PalettedBlockArray[] $layers */
+			$layers = [];
+
+			$layersCount = $stream->getByte();
+			for($i = 0; $i < $layersCount; ++$i){
+				$bitsPerBlock = ($stream->getByte() ^ 1) >> 1;
+				$blocksPerWord = (int) floor(32 / $bitsPerBlock);
+				$wordCount = (int) ceil(4096 / $blocksPerWord) << 2;
+
+				$wordArray = $stream->get($wordCount);
+
+				$palette = [];
+				$paletteCount = $stream->getVarInt();
+
+				for($i = 0; $i < $paletteCount; ++$i){
+					list($id, $meta) = RuntimeBlockMapping::fromStaticRuntimeId($stream->getVarInt());
+					$palette[] = $id << 4 | $meta & 0xf;
+				}
+
+				$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $wordArray, $palette);
+			}
+
+			$subChunks[] = new SubChunk($layers);
+		}
+
+		$heightMap = unpack("v*", $stream->get(512));
+		$biomeIds = $stream->get(256);
+
+		$stream->getByte(); //border block array count
+
+		//TODO: tiles
+
+		return new Chunk($chunkX, $chunkZ, $subChunks, [], [], $biomeIds, $heightMap);
 	}
 }
