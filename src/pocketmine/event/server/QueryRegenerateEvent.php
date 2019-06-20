@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\server;
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\utils\Binary;

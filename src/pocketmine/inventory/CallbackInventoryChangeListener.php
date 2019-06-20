@@ -46,10 +46,10 @@ class CallbackInventoryChangeListener implements InventoryChangeListener{
 
 	public static function onAnyChange(\Closure $onChange) : self{
 		return new self(
-			static function(Inventory $inventory, int $unused) use($onChange) : void{
+			static function(Inventory $inventory, int $unused) use ($onChange) : void{
 				$onChange($inventory);
 			},
-			static function(Inventory $inventory) use($onChange) : void{
+			static function(Inventory $inventory) use ($onChange) : void{
 				$onChange($inventory);
 			}
 		);

@@ -29,7 +29,7 @@ use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Furnace extends Solid{
@@ -92,7 +92,7 @@ class Furnace extends Solid{
 		if($player instanceof Player){
 			$furnace = $this->getWorld()->getTile($this);
 			if($furnace instanceof TileFurnace and $furnace->canOpenWith($item->getCustomName())){
-				$player->addWindow($furnace->getInventory());
+				$player->setCurrentWindow($furnace->getInventory());
 			}
 		}
 

@@ -26,7 +26,7 @@ namespace pocketmine\inventory\transaction\action;
 use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 /**
  * Represents an action involving dropping an item into the world.
@@ -55,19 +55,8 @@ class DropItemAction extends InventoryAction{
 	 * Drops the target item in front of the player.
 	 *
 	 * @param Player $source
-	 *
-	 * @return bool
 	 */
-	public function execute(Player $source) : bool{
+	public function execute(Player $source) : void{
 		$source->dropItem($this->targetItem);
-		return true;
-	}
-
-	public function onExecuteSuccess(Player $source) : void{
-
-	}
-
-	public function onExecuteFail(Player $source) : void{
-
 	}
 }

@@ -36,7 +36,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\world\particle\DestroyBlockParticle;
 use pocketmine\world\World;
 use function ceil;

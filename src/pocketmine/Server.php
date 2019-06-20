@@ -68,6 +68,9 @@ use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
+use pocketmine\player\GameMode;
+use pocketmine\player\OfflinePlayer;
+use pocketmine\player\Player;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginBase;
@@ -666,6 +669,11 @@ class Server{
 	}
 
 	/**
+	 * Returns an online player whose name begins with or equals the given string (case insensitive).
+	 * The closest match will be returned, or null if there are no online matches.
+	 *
+	 * @see Server::getPlayerExact()
+	 *
 	 * @param string $name
 	 *
 	 * @return Player|null
@@ -691,6 +699,8 @@ class Server{
 	}
 
 	/**
+	 * Returns an online player with the given name (case insensitive), or null if not found.
+	 *
 	 * @param string $name
 	 *
 	 * @return Player|null
@@ -707,6 +717,9 @@ class Server{
 	}
 
 	/**
+	 * Returns a list of online players whose names contain with the given string (case insensitive).
+	 * If an exact match is found, only that match is returned.
+	 *
 	 * @param string $partialName
 	 *
 	 * @return Player[]
@@ -1315,8 +1328,6 @@ class Server{
 				$this->properties->save();
 			}
 
-			$this->tickCounter = 0;
-
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [$this->getGamemode()->getTranslationKey()]));
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
@@ -1912,12 +1923,10 @@ class Server{
 			$this->currentTPS = 20;
 			$this->currentUse = 0;
 
+			($this->queryRegenerateTask = new QueryRegenerateEvent($this))->call();
+
 			$this->network->updateName();
 			$this->network->resetStatistics();
-		}
-
-		if(($this->tickCounter & 0b111111111) === 0){
-			($this->queryRegenerateTask = new QueryRegenerateEvent($this))->call();
 		}
 
 		if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){

@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\entity\Attribute;
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use function array_values;
 
 class UpdateAttributesPacket extends DataPacket implements ClientboundPacket{
@@ -61,7 +61,7 @@ class UpdateAttributesPacket extends DataPacket implements ClientboundPacket{
 		$this->putAttributeList(...array_values($this->entries));
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleUpdateAttributes($this);
 	}
 }

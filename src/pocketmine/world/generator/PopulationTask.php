@@ -25,6 +25,7 @@ namespace pocketmine\world\generator;
 
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\SimpleChunkManager;
 use pocketmine\world\World;
 
@@ -48,10 +49,10 @@ class PopulationTask extends AsyncTask{
 	public function __construct(World $world, Chunk $chunk){
 		$this->state = true;
 		$this->worldId = $world->getId();
-		$this->chunk = $chunk->fastSerialize();
+		$this->chunk = FastChunkSerializer::serialize($chunk);
 
 		foreach($world->getAdjacentChunks($chunk->getX(), $chunk->getZ()) as $i => $c){
-			$this->{"chunk$i"} = $c !== null ? $c->fastSerialize() : null;
+			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serialize($c) : null;
 		}
 
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
@@ -70,7 +71,7 @@ class PopulationTask extends AsyncTask{
 		/** @var Chunk[] $chunks */
 		$chunks = [];
 
-		$chunk = Chunk::fastDeserialize($this->chunk);
+		$chunk = FastChunkSerializer::deserialize($this->chunk);
 
 		for($i = 0; $i < 9; ++$i){
 			if($i === 4){
@@ -82,7 +83,7 @@ class PopulationTask extends AsyncTask{
 			if($ck === null){
 				$chunks[$i] = new Chunk($chunk->getX() + $xx, $chunk->getZ() + $zz);
 			}else{
-				$chunks[$i] = Chunk::fastDeserialize($ck);
+				$chunks[$i] = FastChunkSerializer::deserialize($ck);
 			}
 		}
 
@@ -110,7 +111,7 @@ class PopulationTask extends AsyncTask{
 		$chunk->populateSkyLight();
 		$chunk->setLightPopulated();
 		$chunk->setPopulated();
-		$this->chunk = $chunk->fastSerialize();
+		$this->chunk = FastChunkSerializer::serialize($chunk);
 
 		$manager->setChunk($chunk->getX(), $chunk->getZ(), null);
 
@@ -133,7 +134,7 @@ class PopulationTask extends AsyncTask{
 				continue;
 			}
 
-			$this->{"chunk$i"} = $chunks[$i] !== null ? $chunks[$i]->fastSerialize() : null;
+			$this->{"chunk$i"} = $chunks[$i] !== null ? FastChunkSerializer::serialize($chunks[$i]) : null;
 		}
 	}
 
@@ -145,7 +146,7 @@ class PopulationTask extends AsyncTask{
 				$world->registerGeneratorToWorker($this->worker->getAsyncWorkerId());
 			}
 
-			$chunk = Chunk::fastDeserialize($this->chunk);
+			$chunk = FastChunkSerializer::deserialize($this->chunk);
 
 			for($i = 0; $i < 9; ++$i){
 				if($i === 4){
@@ -153,7 +154,7 @@ class PopulationTask extends AsyncTask{
 				}
 				$c = $this->{"chunk$i"};
 				if($c !== null){
-					$c = Chunk::fastDeserialize($c);
+					$c = FastChunkSerializer::deserialize($c);
 					$world->generateChunkCallback($c->getX(), $c->getZ(), $this->state ? $c : null);
 				}
 			}

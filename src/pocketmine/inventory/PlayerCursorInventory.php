@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class PlayerCursorInventory extends BaseInventory{
 	/** @var Player */
@@ -32,10 +32,6 @@ class PlayerCursorInventory extends BaseInventory{
 	public function __construct(Player $holder){
 		$this->holder = $holder;
 		parent::__construct(1);
-	}
-
-	public function setSize(int $size) : void{
-		throw new \BadMethodCallException("Cursor can only carry one item at a time");
 	}
 
 	/**

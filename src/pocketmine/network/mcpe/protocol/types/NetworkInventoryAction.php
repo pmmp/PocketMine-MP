@@ -23,14 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\inventory\transaction\action\CreativeInventoryAction;
+use pocketmine\inventory\AnvilInventory;
+use pocketmine\inventory\EnchantInventory;
+use pocketmine\inventory\transaction\action\CreateItemAction;
+use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\NetworkBinaryStream;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\utils\BinaryDataException;
 
 class NetworkInventoryAction{
@@ -173,7 +176,7 @@ class NetworkInventoryAction{
 					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}
 
-				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
+				throw new \UnexpectedValueException("No open container with window ID $this->windowId");
 			case self::SOURCE_WORLD:
 				if($this->inventorySlot !== self::ACTION_MAGIC_SLOT_DROP_ITEM){
 					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
@@ -183,17 +186,13 @@ class NetworkInventoryAction{
 			case self::SOURCE_CREATIVE:
 				switch($this->inventorySlot){
 					case self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
-						$type = CreativeInventoryAction::TYPE_DELETE_ITEM;
-						break;
+						return new DestroyItemAction($this->newItem);
 					case self::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
-						$type = CreativeInventoryAction::TYPE_CREATE_ITEM;
-						break;
+						return new CreateItemAction($this->oldItem);
 					default:
 						throw new \UnexpectedValueException("Unexpected creative action type $this->inventorySlot");
 
 				}
-
-				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
 			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				//These types need special handling.
@@ -205,10 +204,24 @@ class NetworkInventoryAction{
 					case self::SOURCE_TYPE_CRAFTING_RESULT:
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						return null;
+					case self::SOURCE_TYPE_ANVIL_INPUT:
+					case self::SOURCE_TYPE_ANVIL_MATERIAL:
+						$window = $player->getCurrentWindow();
+						if(!($window instanceof AnvilInventory)){
+							throw new \UnexpectedValueException("Current open container is not an anvil");
+						}
+						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_ENCHANT_INPUT:
+					case self::SOURCE_TYPE_ENCHANT_MATERIAL:
+						$window = $player->getCurrentWindow();
+						if(!($window instanceof EnchantInventory)){
+							throw new \UnexpectedValueException("Current open container is not an enchanting table");
+						}
+						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}
 
 				//TODO: more stuff
-				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
+				throw new \UnexpectedValueException("No open container with window ID $this->windowId");
 			default:
 				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
 		}

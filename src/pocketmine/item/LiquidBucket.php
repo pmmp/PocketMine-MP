@@ -29,7 +29,7 @@ use pocketmine\block\Lava;
 use pocketmine\block\Liquid;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class LiquidBucket extends Item{
 	/** @var int|null */

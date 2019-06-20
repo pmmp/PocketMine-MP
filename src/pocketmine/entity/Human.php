@@ -53,7 +53,7 @@ use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataTypes;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerMetadataFlags;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\utils\UUID;
 use pocketmine\world\sound\TotemUseSound;
 use pocketmine\world\sound\XpCollectSound;
@@ -855,8 +855,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function onDispose() : void{
-		$this->inventory->removeAllViewers(true);
-		$this->enderChestInventory->removeAllViewers(true);
+		$this->inventory->removeAllViewers();
+		$this->enderChestInventory->removeAllViewers();
 		parent::onDispose();
 	}
 

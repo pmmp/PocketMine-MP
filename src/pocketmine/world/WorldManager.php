@@ -408,18 +408,18 @@ class WorldManager{
 	}
 
 	/**
-	 * Returns the period after which loaded worlds will be automatically saved to disk.
+	 * Returns the period in ticks after which loaded worlds will be automatically saved to disk.
 	 *
 	 * @return int
 	 */
-	public function getAutoSaveTicks() : int{
+	public function getAutoSaveInterval() : int{
 		return $this->autoSaveTicks;
 	}
 
 	/**
 	 * @param int $autoSaveTicks
 	 */
-	public function setAutoSaveTicks(int $autoSaveTicks) : void{
+	public function setAutoSaveInterval(int $autoSaveTicks) : void{
 		if($autoSaveTicks <= 0){
 			throw new \InvalidArgumentException("Autosave ticks must be positive");
 		}

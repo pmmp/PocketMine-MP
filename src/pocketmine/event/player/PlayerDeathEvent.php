@@ -32,7 +32,7 @@ use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\item\Item;
 use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class PlayerDeathEvent extends EntityDeathEvent{
 	/** @var Player */

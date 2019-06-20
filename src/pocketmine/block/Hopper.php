@@ -30,7 +30,7 @@ use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Hopper extends Transparent{
@@ -78,7 +78,7 @@ class Hopper extends Transparent{
 		if($player !== null){
 			$tile = $this->world->getTile($this);
 			if($tile instanceof TileHopper){ //TODO: find a way to have inventories open on click without this boilerplate in every block
-				$player->addWindow($tile->getInventory());
+				$player->setCurrentWindow($tile->getInventory());
 			}
 			return true;
 		}

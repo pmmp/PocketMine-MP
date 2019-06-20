@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 
 /**
  * Useless leftover from a 1.9 refactor, does nothing
@@ -65,7 +65,7 @@ class LevelSoundEventPacketV2 extends DataPacket{
 		$this->putBool($this->disableRelativeVolume);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleLevelSoundEventPacketV2($this);
 	}
 }

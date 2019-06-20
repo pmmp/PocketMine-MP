@@ -63,7 +63,7 @@ use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -1056,7 +1056,7 @@ class World implements ChunkManager, Metadatable{
 		$this->timings->syncChunkSaveTimer->startTiming();
 		try{
 			foreach($this->chunks as $chunk){
-				if(($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0) and $chunk->isGenerated()){
+				if($chunk->hasChanged() and $chunk->isGenerated()){
 					$this->provider->saveChunk($chunk);
 					$chunk->setChanged(false);
 				}
@@ -1958,7 +1958,7 @@ class World implements ChunkManager, Metadatable{
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				foreach($this->getChunkEntities($x, $z) as $entity){
-					if(!($entity instanceof $entityType) or $entity->isClosed() or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
+					if(!($entity instanceof $entityType) or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
 						continue;
 					}
 					$distSq = $entity->distanceSquared($pos);
@@ -2584,14 +2584,12 @@ class World implements ChunkManager, Metadatable{
 				return false;
 			}
 
-			if($trySave and $this->getAutoSave() and $chunk->isGenerated()){
-				if($chunk->hasChanged() or count($chunk->getTiles()) > 0 or count($chunk->getSavableEntities()) > 0){
-					$this->timings->syncChunkSaveTimer->startTiming();
-					try{
-						$this->provider->saveChunk($chunk);
-					}finally{
-						$this->timings->syncChunkSaveTimer->stopTiming();
-					}
+			if($trySave and $this->getAutoSave() and $chunk->isGenerated() and $chunk->hasChanged()){
+				$this->timings->syncChunkSaveTimer->startTiming();
+				try{
+					$this->provider->saveChunk($chunk);
+				}finally{
+					$this->timings->syncChunkSaveTimer->stopTiming();
 				}
 			}
 

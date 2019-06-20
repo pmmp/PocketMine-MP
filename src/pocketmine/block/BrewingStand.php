@@ -27,7 +27,7 @@ use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class BrewingStand extends Transparent{
 
@@ -62,7 +62,7 @@ class BrewingStand extends Transparent{
 		if($player instanceof Player){
 			$stand = $this->getWorld()->getTile($this);
 			if($stand instanceof TileBrewingStand and $stand->canOpenWith($item->getCustomName())){
-				$player->addWindow($stand->getInventory());
+				$player->setCurrentWindow($stand->getInventory());
 			}
 		}
 

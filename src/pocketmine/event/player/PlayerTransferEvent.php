@@ -25,7 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class PlayerTransferEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;

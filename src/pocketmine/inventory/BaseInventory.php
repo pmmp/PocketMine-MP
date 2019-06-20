@@ -23,10 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use function array_slice;
 use function count;
 use function max;
@@ -60,16 +59,6 @@ abstract class BaseInventory implements Inventory{
 	 */
 	public function getSize() : int{
 		return $this->slots->getSize();
-	}
-
-	/**
-	 * Sets the new size of the inventory.
-	 * WARNING: If the size is smaller, any items past the new size will be lost.
-	 *
-	 * @param int $size
-	 */
-	public function setSize(int $size) : void{
-		$this->slots->setSize($size);
 	}
 
 	public function getMaxStackSize() : int{
@@ -126,7 +115,9 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		if($send){
-			$this->sendContents($this->getViewers());
+			foreach($this->getViewers() as $viewer){
+				$viewer->getNetworkSession()->syncInventoryContents($this);
+			}
 		}
 	}
 
@@ -348,12 +339,12 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * Removes the inventory window from all players currently viewing it.
-	 *
-	 * @param bool $force Force removal of permanent windows such as the player's own inventory. Used internally.
 	 */
-	public function removeAllViewers(bool $force = false) : void{
+	public function removeAllViewers() : void{
 		foreach($this->viewers as $hash => $viewer){
-			$viewer->removeWindow($this, $force);
+			if($viewer->getCurrentWindow() === $this){ //this might not be the case for the player's own inventory
+				$viewer->removeCurrentWindow();
+			}
 			unset($this->viewers[$hash]);
 		}
 	}
@@ -362,26 +353,11 @@ abstract class BaseInventory implements Inventory{
 		$this->maxStackSize = $size;
 	}
 
-	public function open(Player $who) : bool{
-		$ev = new InventoryOpenEvent($this, $who);
-		$ev->call();
-		if($ev->isCancelled()){
-			return false;
-		}
-		$this->onOpen($who);
-
-		return true;
-	}
-
-	public function close(Player $who) : void{
-		$this->onClose($who);
-	}
-
-	protected function onOpen(Player $who) : void{
+	public function onOpen(Player $who) : void{
 		$this->viewers[spl_object_id($who)] = $who;
 	}
 
-	protected function onClose(Player $who) : void{
+	public function onClose(Player $who) : void{
 		unset($this->viewers[spl_object_id($who)]);
 	}
 
@@ -390,34 +366,9 @@ abstract class BaseInventory implements Inventory{
 			$listener->onSlotChange($this, $index);
 		}
 		if($send){
-			$this->sendSlot($index, $this->getViewers());
-		}
-	}
-
-	/**
-	 * @param Player|Player[] $target
-	 */
-	public function sendContents($target) : void{
-		if($target instanceof Player){
-			$target = [$target];
-		}
-
-		foreach($target as $player){
-			$player->getNetworkSession()->syncInventoryContents($this);
-		}
-	}
-
-	/**
-	 * @param int             $index
-	 * @param Player|Player[] $target
-	 */
-	public function sendSlot(int $index, $target) : void{
-		if($target instanceof Player){
-			$target = [$target];
-		}
-
-		foreach($target as $player){
-			$player->getNetworkSession()->syncInventorySlot($this, $index);
+			foreach($this->viewers as $viewer){
+				$viewer->getNetworkSession()->syncInventorySlot($this, $index);
+			}
 		}
 	}
 

@@ -32,10 +32,12 @@ use function defined;
 use function ord;
 use function str_repeat;
 use function strlen;
-use function substr_count;
 
 if(!defined(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY')){
 	define(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY', str_repeat("\x00", 2048));
+}
+if(!defined(__NAMESPACE__ . '\FIFTEEN_NIBBLE_ARRAY')){
+	define(__NAMESPACE__ . '\FIFTEEN_NIBBLE_ARRAY', str_repeat("\xff", 2048));
 }
 
 class SubChunk implements SubChunkInterface{
@@ -47,10 +49,12 @@ class SubChunk implements SubChunkInterface{
 	/** @var string */
 	protected $skyLight;
 
-	private static function assignData(&$target, string $data, int $length, string $value = "\x00") : void{
-		if(strlen($data) !== $length){
-			assert($data === "", "Invalid non-zero length given, expected $length, got " . strlen($data));
-			$target = str_repeat($value, $length);
+	private static function assignData(&$target, string $data, string $default) : void{
+		if($data === "" or $data === $default){
+			$target = $default;
+		}elseif(strlen($data) !== 2048){
+			assert(false, "Invalid length given, expected 2048, got " . strlen($data));
+			$target = $default;
 		}else{
 			$target = $data;
 		}
@@ -66,8 +70,8 @@ class SubChunk implements SubChunkInterface{
 	public function __construct(array $blocks, string $skyLight = "", string $blockLight = ""){
 		$this->blockLayers = $blocks;
 
-		self::assignData($this->skyLight, $skyLight, 2048, "\xff");
-		self::assignData($this->blockLight, $blockLight, 2048);
+		self::assignData($this->skyLight, $skyLight, FIFTEEN_NIBBLE_ARRAY);
+		self::assignData($this->blockLight, $blockLight, ZERO_NIBBLE_ARRAY);
 	}
 
 	public function isEmpty(bool $checkLight = true) : bool{
@@ -81,7 +85,7 @@ class SubChunk implements SubChunkInterface{
 		}
 		return
 			(!$checkLight or (
-				substr_count($this->skyLight, "\xff") === 2048 and
+				$this->skyLight === FIFTEEN_NIBBLE_ARRAY and
 				$this->blockLight === ZERO_NIBBLE_ARRAY
 			)
 		);

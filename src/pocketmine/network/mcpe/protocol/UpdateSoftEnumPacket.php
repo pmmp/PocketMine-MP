@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use function count;
 
 class UpdateSoftEnumPacket extends DataPacket implements ClientboundPacket{
@@ -59,7 +59,7 @@ class UpdateSoftEnumPacket extends DataPacket implements ClientboundPacket{
 		$this->putByte($this->type);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleUpdateSoftEnum($this);
 	}
 }

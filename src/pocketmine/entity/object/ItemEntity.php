@@ -33,7 +33,7 @@ use pocketmine\item\ItemIds;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use function get_class;
 use function max;
 

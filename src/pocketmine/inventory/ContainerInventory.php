@@ -27,7 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 abstract class ContainerInventory extends BaseInventory{
 	/** @var Vector3 */
@@ -38,7 +38,7 @@ abstract class ContainerInventory extends BaseInventory{
 		parent::__construct($size, $items);
 	}
 
-	protected function onOpen(Player $who) : void{
+	public function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
 		$windowId = $who->getWindowId($this);
@@ -49,10 +49,10 @@ abstract class ContainerInventory extends BaseInventory{
 			$who->sendDataPacket(ContainerOpenPacket::blockInv($windowId, $this->getNetworkType(), $holder->getFloorX(), $holder->getFloorY(), $holder->getFloorZ()));
 		}
 
-		$this->sendContents($who);
+		$who->getNetworkSession()->syncInventoryContents($this);
 	}
 
-	protected function onClose(Player $who) : void{
+	public function onClose(Player $who) : void{
 		$who->sendDataPacket(ContainerClosePacket::create($who->getWindowId($this)));
 		parent::onClose($who);
 	}

@@ -29,7 +29,7 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\world\sound\BowShootSound;
 use function intdiv;
 use function min;

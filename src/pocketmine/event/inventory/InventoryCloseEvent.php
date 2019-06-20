@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\inventory;
 
 use pocketmine\inventory\Inventory;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class InventoryCloseEvent extends InventoryEvent{
 	/** @var Player */

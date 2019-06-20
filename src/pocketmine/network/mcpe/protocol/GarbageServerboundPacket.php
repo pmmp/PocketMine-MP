@@ -21,25 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\handler;
-
-use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
+namespace pocketmine\network\mcpe\protocol;
 
 /**
- * Handler responsible for awaiting client response from crypto handshake.
+ * This interface can be implemented by packets which are erroneously sent to the server by a buggy client to filter
+ * them out.
  */
-class HandshakeSessionHandler extends SessionHandler{
+interface GarbageServerboundPacket extends Packet{
 
-	/** @var NetworkSession */
-	private $session;
-
-	public function __construct(NetworkSession $session){
-		$this->session = $session;
-	}
-
-	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool{
-		$this->session->onLoginSuccess();
-		return true;
-	}
 }

@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use function max;
 use function min;
 use const PHP_INT_MAX;
@@ -55,10 +55,6 @@ class CraftingGrid extends BaseInventory{
 
 	public function getGridWidth() : int{
 		return $this->gridWidth;
-	}
-
-	public function setSize(int $size) : void{
-		throw new \BadMethodCallException("Cannot change the size of a crafting grid");
 	}
 
 	public function setItem(int $index, Item $item, bool $send = true) : void{

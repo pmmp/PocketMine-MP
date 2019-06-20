@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 
 class EntityFallPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ENTITY_FALL_PACKET;
@@ -50,7 +50,7 @@ class EntityFallPacket extends DataPacket implements ServerboundPacket{
 		$this->putBool($this->isInVoid);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleEntityFall($this);
 	}
 }

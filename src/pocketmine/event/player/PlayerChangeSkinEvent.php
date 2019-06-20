@@ -26,7 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\entity\Skin;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 /**
  * Called when a player changes their skin in-game.

@@ -21,9 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\player;
 
 use pocketmine\lang\TranslationContainer;
+use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
 /**

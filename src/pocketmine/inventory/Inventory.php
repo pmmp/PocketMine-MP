@@ -27,7 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 interface Inventory{
 	public const MAX_STACK = 64;
@@ -106,17 +106,6 @@ interface Inventory{
 	 * @param bool   $send
 	 */
 	public function setContents(array $items, bool $send = true) : void;
-
-	/**
-	 * @param Player|Player[] $target
-	 */
-	public function sendContents($target) : void;
-
-	/**
-	 * @param int             $index
-	 * @param Player|Player[] $target
-	 */
-	public function sendSlot(int $index, $target) : void;
 
 	/**
 	 * Checks if the inventory contains any Item with the same material data.
@@ -206,15 +195,13 @@ interface Inventory{
 	public function getViewers() : array;
 
 	/**
-	 * Tries to open the inventory to a player
+	 * Called when a player opens this inventory.
 	 *
 	 * @param Player $who
-	 *
-	 * @return bool
 	 */
-	public function open(Player $who) : bool;
+	public function onOpen(Player $who) : void;
 
-	public function close(Player $who) : void;
+	public function onClose(Player $who) : void;
 
 	/**
 	 * Returns whether the specified slot exists in the inventory.

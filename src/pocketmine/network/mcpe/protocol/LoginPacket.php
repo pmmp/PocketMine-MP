@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use Particle\Validator\Validator;
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
@@ -178,7 +178,7 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 		//TODO
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleLogin($this);
 	}
 }

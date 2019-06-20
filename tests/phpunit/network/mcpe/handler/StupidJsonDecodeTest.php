@@ -47,7 +47,7 @@ class StupidJsonDecodeTest extends TestCase{
 	 * @throws \ReflectionException
 	 */
 	public function testStupidJsonDecode(string $brokenJson, $expect){
-		$func = new \ReflectionMethod(InGameSessionHandler::class, 'stupid_json_decode');
+		$func = new \ReflectionMethod(InGamePacketHandler::class, 'stupid_json_decode');
 		$func->setAccessible(true);
 
 		$decoded = $func->invoke(null, $brokenJson, true);

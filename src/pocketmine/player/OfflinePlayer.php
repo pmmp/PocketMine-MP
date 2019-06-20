@@ -21,13 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\player;
 
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\plugin\Plugin;
+use pocketmine\Server;
 
 class OfflinePlayer implements IPlayer, Metadatable{
 

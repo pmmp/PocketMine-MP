@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class CraftingTable extends Solid{
 

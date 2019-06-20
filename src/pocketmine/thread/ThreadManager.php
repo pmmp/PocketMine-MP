@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\thread;
 
 use function spl_object_id;
 

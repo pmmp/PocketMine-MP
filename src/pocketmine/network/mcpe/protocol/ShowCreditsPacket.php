@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 
 class ShowCreditsPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SHOW_CREDITS_PACKET;
@@ -50,7 +50,7 @@ class ShowCreditsPacket extends DataPacket implements ClientboundPacket, Serverb
 		$this->putVarInt($this->status);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleShowCredits($this);
 	}
 }

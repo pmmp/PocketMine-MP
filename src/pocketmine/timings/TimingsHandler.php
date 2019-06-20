@@ -184,6 +184,20 @@ class TimingsHandler{
 		}
 	}
 
+	/**
+	 * @param \Closure $closure
+	 *
+	 * @return mixed the result of the given closure
+	 */
+	public function time(\Closure $closure){
+		$this->startTiming();
+		try{
+			return $closure();
+		}finally{
+			$this->stopTiming();
+		}
+	}
+
 	public function reset() : void{
 		$this->count = 0;
 		$this->curCount = 0;

@@ -26,7 +26,7 @@ namespace pocketmine\inventory;
 use pocketmine\block\tile\Chest;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\world\sound\ChestCloseSound;
 use pocketmine\world\sound\ChestOpenSound;
 use pocketmine\world\sound\Sound;
@@ -64,7 +64,7 @@ class ChestInventory extends ContainerInventory{
 		return new ChestCloseSound();
 	}
 
-	protected function onOpen(Player $who) : void{
+	public function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
@@ -74,7 +74,7 @@ class ChestInventory extends ContainerInventory{
 		}
 	}
 
-	protected function onClose(Player $who) : void{
+	public function onClose(Player $who) : void{
 		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
 			//TODO: this crap really shouldn't be managed by the inventory
 			$this->broadcastBlockEventPacket(false);

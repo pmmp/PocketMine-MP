@@ -33,7 +33,7 @@ use function unserialize;
  *
  * An AsyncTask does not have its own thread. It is queued into an AsyncPool and executed if there is an async worker
  * with no AsyncTask running. Therefore, an AsyncTask SHOULD NOT execute for more than a few seconds. For tasks that
- * run for a long time or infinitely, start another {@link \pocketmine\Thread} instead.
+ * run for a long time or infinitely, start another {@link \pocketmine\thread\Thread} instead.
  *
  * WARNING: Any non-Threaded objects WILL BE SERIALIZED when assigned to members of AsyncTasks or other Threaded object.
  * If later accessed from said Threaded object, you will be operating on a COPY OF THE OBJECT, NOT THE ORIGINAL OBJECT.

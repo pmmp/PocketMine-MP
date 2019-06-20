@@ -22,7 +22,8 @@ if [ $? -ne 0 ]; then
 fi
 
 #Run PHPUnit tests
-curl https://phar.phpunit.de/phpunit-7.phar --silent --location -o phpunit.phar
+#7.5.12 introduces changes that set the build on fire because we don't ship libxml - TODO FIX
+curl https://phar.phpunit.de/phpunit-7.5.11.phar --silent --location -o phpunit.phar
 "$PHP_BINARY" phpunit.phar --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit || exit 1
 
 #Run-the-server tests

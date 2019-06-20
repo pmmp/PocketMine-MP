@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\snooze\SleeperNotifier;
-use pocketmine\Thread;
+use pocketmine\thread\Thread;
 use pocketmine\utils\Utils;
 use function extension_loaded;
 use function fclose;

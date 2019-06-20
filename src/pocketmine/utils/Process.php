@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use pocketmine\ThreadManager;
+use pocketmine\thread\ThreadManager;
 use function count;
 use function exec;
 use function fclose;

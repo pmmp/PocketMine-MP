@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 
 class ItemFrameDropItemPacket extends DataPacket implements ServerboundPacket{
 
@@ -46,7 +46,7 @@ class ItemFrameDropItemPacket extends DataPacket implements ServerboundPacket{
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleItemFrameDropItem($this);
 	}
 }

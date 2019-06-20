@@ -21,14 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\thread;
 
+use pocketmine\Server;
 use function error_reporting;
 
 /**
  * This class must be extended by all custom threading classes
  */
-abstract class Thread extends \Thread{
+abstract class Worker extends \Worker{
 
 	/** @var \ClassLoader|null */
 	protected $classLoader;
@@ -78,8 +79,6 @@ abstract class Thread extends \Thread{
 	final public function run() : void{
 		error_reporting(-1);
 		$this->registerClassLoader();
-		//set this after the autoloader is registered
-		\ErrorUtils::setErrorExceptionHandler();
 		$this->onRun();
 	}
 
@@ -94,9 +93,10 @@ abstract class Thread extends \Thread{
 	public function quit() : void{
 		$this->isKilled = true;
 
-		if(!$this->isJoined()){
+		if($this->isRunning()){
+			while($this->unstack() !== null);
 			$this->notify();
-			$this->join();
+			$this->shutdown();
 		}
 
 		ThreadManager::getInstance()->remove($this);

@@ -77,7 +77,7 @@ use pocketmine\network\mcpe\protocol\types\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\UseItemTransactionData;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use function array_push;
 use function base64_encode;
 use function fmod;
@@ -93,7 +93,7 @@ use function trim;
 /**
  * This handler handles packets related to general gameplay.
  */
-class InGameSessionHandler extends SessionHandler{
+class InGamePacketHandler extends PacketHandler{
 
 	/** @var Player */
 	private $player;
@@ -167,6 +167,7 @@ class InGameSessionHandler extends SessionHandler{
 		if($packet->trData instanceof NormalTransactionData){
 			$result = $this->handleNormalTransaction($packet->trData);
 		}elseif($packet->trData instanceof MismatchTransactionData){
+			$this->session->getLogger()->debug("Mismatch transaction received");
 			$this->session->syncAllInventoryContents();
 			$result = true;
 		}elseif($packet->trData instanceof UseItemTransactionData){
@@ -339,7 +340,7 @@ class InGameSessionHandler extends SessionHandler{
 		switch($data->getActionType()){
 			case ReleaseItemTransactionData::ACTION_RELEASE:
 				if(!$this->player->releaseHeldItem()){
-					$this->player->getInventory()->sendContents($this->player);
+					$this->session->syncInventoryContents($this->player->getInventory());
 				}
 				return true;
 			case ReleaseItemTransactionData::ACTION_CONSUME:
@@ -534,8 +535,7 @@ class InGameSessionHandler extends SessionHandler{
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
 		if($packet->gamemode !== $this->player->getGamemode()->getMagicNumber()){
 			//Set this back to default. TODO: handle this properly
-			$this->session->syncGameMode($this->player->getGamemode());
-			$this->session->syncAdventureSettings($this->player);
+			$this->session->syncGameMode($this->player->getGamemode(), true);
 		}
 		return true;
 	}

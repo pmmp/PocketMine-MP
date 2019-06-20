@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use LogLevel;
-use pocketmine\Thread;
-use pocketmine\Worker;
+use pocketmine\thread\Thread;
+use pocketmine\thread\Worker;
 use function fclose;
 use function fopen;
 use function fwrite;
@@ -33,7 +33,6 @@ use function get_class;
 use function is_resource;
 use function preg_replace;
 use function sprintf;
-use function time;
 use function touch;
 use function trim;
 use const PHP_EOL;
@@ -250,12 +249,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	protected function send($message, $level, $prefix, $color) : void{
-		/** @var \DateTime|null $time */
-		static $time = null;
-		if($time === null){ //thread-local
-			$time = new \DateTime('now', new \DateTimeZone($this->timezone));
-		}
-		$time->setTimestamp(time());
+		$time = new \DateTime('now', new \DateTimeZone($this->timezone));
 
 		$thread = \Thread::getCurrentThread();
 		if($thread === null){
@@ -266,7 +260,7 @@ class MainLogger extends \AttachableThreadedLogger{
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
 		}
 
-		$message = sprintf($this->format, $time->format("H:i:s"), $color, $threadName, $prefix, $message);
+		$message = sprintf($this->format, $time->format("H:i:s.v"), $color, $threadName, $prefix, $message);
 
 		if(!Terminal::isInit()){
 			Terminal::init($this->mainThreadHasFormattingCodes); //lazy-init colour codes because we don't know if they've been registered on this thread

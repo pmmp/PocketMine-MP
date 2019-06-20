@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\form;
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 /**
  * Form implementations must implement this interface to be able to utilize the Player form-sending mechanism.

@@ -31,8 +31,8 @@ use pocketmine\network\mcpe\ProcessLoginTask;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\Player;
-use pocketmine\PlayerInfo;
+use pocketmine\player\Player;
+use pocketmine\player\PlayerInfo;
 use pocketmine\Server;
 use pocketmine\utils\UUID;
 use function base64_decode;
@@ -40,7 +40,7 @@ use function base64_decode;
 /**
  * Handles the initial login phase of the session. This handler is used as the initial state.
  */
-class LoginSessionHandler extends SessionHandler{
+class LoginPacketHandler extends PacketHandler{
 
 	/** @var Server */
 	private $server;
@@ -134,7 +134,7 @@ class LoginSessionHandler extends SessionHandler{
 	 */
 	protected function processLogin(LoginPacket $packet, bool $authRequired) : void{
 		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($this->session, $packet, $authRequired, NetworkCipher::$ENABLED));
-		$this->session->setHandler(NullSessionHandler::getInstance()); //drop packets received during login verification
+		$this->session->setHandler(NullPacketHandler::getInstance()); //drop packets received during login verification
 	}
 
 	protected function isCompatibleProtocol(int $protocolVersion) : bool{

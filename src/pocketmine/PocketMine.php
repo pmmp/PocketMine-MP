@@ -28,6 +28,7 @@ namespace {
 
 namespace pocketmine {
 
+	use pocketmine\thread\ThreadManager;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Process;
 	use pocketmine\utils\ServerKiller;
@@ -157,6 +158,9 @@ namespace pocketmine {
 
 	if(\pocketmine\COMPOSER_AUTOLOADER_PATH !== false and is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
 		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+		if(extension_loaded('parallel')){
+			\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+		}
 	}else{
 		critical_error("Composer autoloader not found at " . $bootstrap);
 		critical_error("Please install/update Composer dependencies or use provided builds.");
@@ -192,12 +196,20 @@ namespace pocketmine {
 	}
 
 	define('pocketmine\LOCK_FILE_PATH', \pocketmine\DATA . 'server.lock');
-	define('pocketmine\LOCK_FILE', fopen(\pocketmine\LOCK_FILE_PATH, "cb"));
+	define('pocketmine\LOCK_FILE', fopen(\pocketmine\LOCK_FILE_PATH, "a+b"));
 	if(!flock(\pocketmine\LOCK_FILE, LOCK_EX | LOCK_NB)){
-		critical_error("Another " . \pocketmine\NAME . " instance is already using this folder (" . realpath(\pocketmine\DATA) . ").");
+		//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
+		//other server wrote its PID and released exclusive lock before we get our lock
+		flock(\pocketmine\LOCK_FILE, LOCK_SH);
+		$pid = stream_get_contents(\pocketmine\LOCK_FILE);
+		critical_error("Another " . \pocketmine\NAME . " instance (PID $pid) is already using this folder (" . realpath(\pocketmine\DATA) . ").");
 		critical_error("Please stop the other server first before running a new one.");
 		exit(1);
 	}
+	ftruncate(\pocketmine\LOCK_FILE, 0);
+	fwrite(\pocketmine\LOCK_FILE, (string) getmypid());
+	fflush(\pocketmine\LOCK_FILE);
+	flock(\pocketmine\LOCK_FILE, LOCK_SH); //prevent acquiring an exclusive lock from another process, but allow reading
 
 	//Logger has a dependency on timezone
 	Timezone::init();

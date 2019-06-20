@@ -27,7 +27,7 @@ use pocketmine\block\Sign;
 use pocketmine\block\utils\SignText;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 /**
  * Called when a sign's text is changed by a player.

@@ -26,8 +26,7 @@ namespace pocketmine\inventory\transaction\action;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
-use pocketmine\Player;
-use function spl_object_id;
+use pocketmine\player\Player;
 
 /**
  * Represents an action causing a change in an inventory slot.
@@ -96,31 +95,13 @@ class SlotChangeAction extends InventoryAction{
 	 * Sets the item into the target inventory.
 	 *
 	 * @param Player $source
-	 *
-	 * @return bool
 	 */
-	public function execute(Player $source) : bool{
+	public function execute(Player $source) : void{
 		$this->inventory->setItem($this->inventorySlot, $this->targetItem, false);
-		return true;
-	}
-
-	/**
-	 * Sends slot changes to other viewers of the inventory. This will not send any change back to the source Player.
-	 *
-	 * @param Player $source
-	 */
-	public function onExecuteSuccess(Player $source) : void{
-		$viewers = $this->inventory->getViewers();
-		unset($viewers[spl_object_id($source)]);
-		$this->inventory->sendSlot($this->inventorySlot, $viewers);
-	}
-
-	/**
-	 * Sends the original slot contents to the source player to revert the action.
-	 *
-	 * @param Player $source
-	 */
-	public function onExecuteFail(Player $source) : void{
-		$this->inventory->sendSlot($this->inventorySlot, $source);
+		foreach($this->inventory->getViewers() as $viewer){
+			if($viewer !== $source){
+				$viewer->getNetworkSession()->syncInventorySlot($this->inventory, $this->inventorySlot);
+			}
+		}
 	}
 }

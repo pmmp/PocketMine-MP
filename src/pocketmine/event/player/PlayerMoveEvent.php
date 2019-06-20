@@ -25,8 +25,8 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\player\Player;
 use pocketmine\world\Location;
-use pocketmine\Player;
 
 class PlayerMoveEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;

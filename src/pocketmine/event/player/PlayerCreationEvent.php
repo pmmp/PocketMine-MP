@@ -26,7 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\NetworkInterface;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use function is_a;
 
 /**

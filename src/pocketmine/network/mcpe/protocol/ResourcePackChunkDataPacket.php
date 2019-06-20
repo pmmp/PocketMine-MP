@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 use function strlen;
 
 class ResourcePackChunkDataPacket extends DataPacket implements ClientboundPacket{
@@ -66,7 +66,7 @@ class ResourcePackChunkDataPacket extends DataPacket implements ClientboundPacke
 		$this->put($this->data);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleResourcePackChunkData($this);
 	}
 }

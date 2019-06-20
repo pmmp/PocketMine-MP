@@ -30,13 +30,13 @@ use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 
 /**
  * Handler used for the pre-spawn phase of the session.
  */
-class PreSpawnSessionHandler extends SessionHandler{
+class PreSpawnPacketHandler extends PacketHandler{
 
 	/** @var Server */
 	private $server;
@@ -92,7 +92,7 @@ class PreSpawnSessionHandler extends SessionHandler{
 		$this->player->sendData($this->player);
 
 		$this->session->syncAllInventoryContents();
-		$this->player->getInventory()->sendCreativeContents();
+		$this->session->syncCreativeInventoryContents();
 		$this->player->getInventory()->sendHeldItem($this->player);
 		$this->session->queueCompressed($this->server->getCraftingManager()->getCraftingDataPacket());
 
@@ -108,7 +108,7 @@ class PreSpawnSessionHandler extends SessionHandler{
 	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
 		$this->player->setImmobile(false); //HACK: this is set to prevent client-side falling before spawn
 
-		$this->player->doFirstSpawn();
+		$this->session->onSpawn();
 
 		return true;
 	}

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use function count;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
@@ -41,7 +42,7 @@ use function substr;
  * Handler used for the resource packs sequence phase of the session. This handler takes care of downloading resource
  * packs to the client.
  */
-class ResourcePacksSessionHandler extends SessionHandler{
+class ResourcePacksPacketHandler extends PacketHandler{
 	private const PACK_CHUNK_SIZE = 1048576; //1MB
 
 	/** @var NetworkSession */
@@ -60,6 +61,7 @@ class ResourcePacksSessionHandler extends SessionHandler{
 
 	public function setUp() : void{
 		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($this->resourcePackManager->getResourceStack(), [], $this->resourcePackManager->resourcePacksRequired(), false));
+		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 
 	private function disconnectWithError(string $error) : void{
@@ -96,12 +98,15 @@ class ResourcePacksSessionHandler extends SessionHandler{
 						$pack->getSha256()
 					));
 				}
+				$this->session->getLogger()->debug("Player requested download of " . count($packet->packIds) . " resource packs");
 
 				break;
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
 				$this->session->sendDataPacket(ResourcePackStackPacket::create($this->resourcePackManager->getResourceStack(), [], $this->resourcePackManager->resourcePacksRequired(), false));
+				$this->session->getLogger()->debug("Applying resource pack stack");
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
+				$this->session->getLogger()->debug("Resource packs sequence completed");
 				$this->session->onResourcePacksDone();
 				break;
 			default:

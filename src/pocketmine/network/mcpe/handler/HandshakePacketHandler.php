@@ -24,36 +24,22 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\PlayerActionPacket;
-use pocketmine\network\mcpe\protocol\RespawnPacket;
-use pocketmine\Player;
+use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 
-class DeathSessionHandler extends SessionHandler{
+/**
+ * Handler responsible for awaiting client response from crypto handshake.
+ */
+class HandshakePacketHandler extends PacketHandler{
 
-	/** @var Player */
-	private $player;
 	/** @var NetworkSession */
 	private $session;
 
-	public function __construct(Player $player, NetworkSession $session){
-		$this->player = $player;
+	public function __construct(NetworkSession $session){
 		$this->session = $session;
 	}
 
-	public function setUp() : void{
-		$this->session->sendDataPacket(RespawnPacket::create($this->player->getOffsetPosition($this->player->getSpawn())));
-	}
-
-	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-		switch($packet->action){
-			case PlayerActionPacket::ACTION_RESPAWN:
-				$this->player->respawn();
-				return true;
-			case PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST:
-				//TODO: players send this when they die in another dimension
-				break;
-		}
-
-		return false;
+	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool{
+		$this->session->onLoginSuccess();
+		return true;
 	}
 }

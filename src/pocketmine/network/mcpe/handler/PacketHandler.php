@@ -155,7 +155,7 @@ use pocketmine\network\mcpe\protocol\VideoStreamConnectPacket;
  *
  * This class is an automatically generated stub. Do not edit it manually.
  */
-abstract class SessionHandler{
+abstract class PacketHandler{
 
 	public function setUp() : void{
 

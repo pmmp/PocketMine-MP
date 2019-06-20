@@ -33,7 +33,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Anvil extends Transparent implements Fallable{
@@ -64,7 +64,7 @@ class Anvil extends Transparent implements Fallable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			$player->addWindow(new AnvilInventory($this));
+			$player->setCurrentWindow(new AnvilInventory($this));
 		}
 
 		return true;

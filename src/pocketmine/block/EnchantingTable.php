@@ -29,7 +29,7 @@ use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class EnchantingTable extends Transparent{
 
@@ -45,7 +45,7 @@ class EnchantingTable extends Transparent{
 		if($player instanceof Player){
 			//TODO lock
 
-			$player->addWindow(new EnchantInventory($this));
+			$player->setCurrentWindow(new EnchantInventory($this));
 		}
 
 		return true;

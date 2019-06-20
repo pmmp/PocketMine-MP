@@ -26,7 +26,7 @@ namespace pocketmine\event\inventory;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\inventory\Inventory;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class InventoryOpenEvent extends InventoryEvent implements Cancellable{
 	use CancellableTrait;

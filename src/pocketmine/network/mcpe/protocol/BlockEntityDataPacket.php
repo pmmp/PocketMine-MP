@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\handler\SessionHandler;
+use pocketmine\network\mcpe\handler\PacketHandler;
 
 class BlockEntityDataPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::BLOCK_ENTITY_DATA_PACKET;
@@ -57,7 +57,7 @@ class BlockEntityDataPacket extends DataPacket implements ClientboundPacket, Ser
 		$this->put($this->namedtag);
 	}
 
-	public function handle(SessionHandler $handler) : bool{
+	public function handle(PacketHandler $handler) : bool{
 		return $handler->handleBlockEntityData($this);
 	}
 }
