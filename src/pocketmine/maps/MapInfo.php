@@ -31,8 +31,7 @@ class MapInfo{
 
 	/** @var Player */
 	public $player;
-	public $textureCheckCounter = 0;
-	public $colorIndexes = [];
+	public $currentCheckX = 0;
 	public $packetSendTimer = 0;
 	public $dirty = true;
 
@@ -43,8 +42,6 @@ class MapInfo{
 
 	public function __construct(Player $player){
 		$this->player = $player;
-
-		$this->colorIndexes = array_fill(0, 128, 0);
 	}
 
 	public function getPacket(MapData $mapData) : ?ClientboundMapItemDataPacket{

@@ -36,22 +36,15 @@ use pocketmine\utils\Color;
 
 class VanillaMapRenderer extends MapRenderer{
 
-	protected $indexes = [];
-
 	public function initialize(MapData $mapData) : void{
-		$i = 0;
-		for($x = 0; $x < 128; $x += 16){
-			for($y = 0; $y < 128; $y += 16){
-				$this->indexes[$i++] = [$x, $y];
-			}
-		}
+
 	}
 
 	public function onMapCreated(Player $player, MapData $mapData) : void{
 		// TODO: make this async
-		/*for($i = 0; $i < 64; $i++){
+		for($i = 0; $i < 128; $i++){
 			$this->render($mapData, $player);
-		}*/
+		}
 	}
 
 	/**
@@ -63,100 +56,110 @@ class VanillaMapRenderer extends MapRenderer{
 	public function render(MapData $mapData, Player $player) : void{
 		if($player->level->getDimension() === $mapData->getDimension() and !$mapData->isFullyExplored()){
 			$i = 1 << $mapData->getScale();
+
 			$j = $mapData->getCenterX();
 			$k = $mapData->getCenterZ();
+
 			$l = (int) (floor($player->x - $j) / $i + 64);
 			$i1 = (int) (floor($player->z - $k) / $i + 64);
-			$a1 = intval($l / 8);
-			$a2 = intval($i1 / 8);
 			$j1 = 128 / $i;
-			$f5 = 16 / $i;
+
 			$info = $mapData->getMapInfo($player);
 			$world = $player->level;
 			$air = new Air();
 
-			$current = $this->indexes[$info->textureCheckCounter++];
-			for($x = max(0, $a1 - $f5 + 1); $x < min(16, $a1 + $f5); $x++){
-				$d0 = $info->colorIndexes[$ci = $current[0] + $x];
-				for($y = max(0, $a2 - $f5 + 1); $y < min(16, $a2 + $f5); $y++){
-					$k1 = $current[0] + $x;
-					$l1 = $current[1] + $y;
+			$avgY = 0;
 
-					if($k1 >= 0 and $l1 >= -1 and $k1 < 128 and $l1 < 128){
-						$i2 = $k1 - $l;
-						$j2 = $l1 - $i1;
-						$flag1 = $i2 * $i2 + $j2 * $j2 > ($j1 - 2) * ($j1 - 2);
-						$k2 = ($j / $i + $k1 - 64) * $i;
-						$l2 = ($k / $i + $l1 - 64) * $i;
-						if($world->isChunkLoaded($k2 >> 4, $l2 >> 4)){
-							$k3 = 0;
-							$d1 = 0.0;
-							$chunk = $world->getChunk($k2 >> 4, $l2 >> 4);
-							$k4 = $chunk->getHeightMap($k2 & 15, $l2 & 15) + 1;
-							$block = clone $air;
-							if($k4 > 1){
-								while(true){
-									$k4--;
-									$block = $world->getBlockAt($k2, $k4, $l2);
-									if($block->getId() !== Block::AIR or $k4 <= 0){
+			for($y = max(0, $i1 - $j1 + 1); $y < min(128, $i1 + $j1); $y++){
+				$k1 = $info->currentCheckX;
+				$l1 = $y;
+
+				if($k1 >= 0 and $l1 >= -1 and $k1 < 128 and $l1 < 128){
+					$i2 = $k1 - $l;
+					$j2 = $l1 - $i1;
+					$flag1 = $i2 * $i2 + $j2 * $j2 > ($j1 - 2) * ($j1 - 2);
+					$k2 = ($j / $i + $k1 - 64) * $i;
+					$l2 = ($k / $i + $l1 - 64) * $i;
+
+					if($world->isChunkLoaded($k2 >> 4, $l2 >> 4)){
+						$k3 = 0;
+						$d1 = 0.0;
+						$chunk = $world->getChunk($k2 >> 4, $l2 >> 4);
+						$k4 = $chunk->getHeightMap($k2 & 15, $l2 & 15) + 1;
+						$block = clone $air;
+
+						if($k4 > 1){
+							while(true){
+								$k4--;
+								$block = $world->getBlockAt($k2, $k4, $l2);
+
+								if($block->getId() !== Block::AIR or $k4 <= 0){
+									break;
+								}
+							}
+							if($k4 > 0 and $block instanceof Liquid){
+								$attempt = 0;
+								$l4 = $k4 - 1;
+
+								while($attempt++ <= 10){
+									$b = $world->getBlockAt($k2, $l4--, $l2);
+									$k3++;
+
+									if($l4 <= 0 or !($b instanceof Liquid)){
 										break;
 									}
 								}
-								if($k4 > 0 and $block instanceof Liquid){
-									$attempt = 0;
-									$l4 = $k4 - 1;
-									while($attempt++ <= 10){
-										$b = $world->getBlockAt($k2, $l4--, $l2);
-										$k3++;
-
-										if($l4 <= 0 or !($b instanceof Liquid)){
-											break;
-										}
-									}
-								}
-								$d1 += (int) $k4 / (int) ($i * $i);
-								$mapColor = self::getMapColorByBlock($block);
-							}else{
-								$mapColor = new Color(0, 0, 0);
 							}
-							$k3 = $k3 / ($i * $i);
-							$d2 = ($d1 - $d0) * 4.0 / (int) ($i + 4) + ((int) ($k1 + $l1 & 1) - 0.5) * 0.4;
+
+							$d1 += (int) $k4 / (int) ($i * $i);
+							$mapColor = self::getMapColorByBlock($block);
+						}else{
+							$mapColor = new Color(0, 0, 0);
+						}
+
+						$k3 = $k3 / ($i * $i);
+						$d2 = ($d1 - $avgY) * 4.0 / (int) ($i + 4) + ((int) ($k1 + $l1 & 1) - 0.5) * 0.4;
+						$i5 = 1;
+
+						if($d2 > 0.6){
+							$i5 = 2;
+						}
+
+						if($d2 < -0.6){
+							$i5 = 0;
+						}
+
+						if($mapColor->getR() === 64 and $mapColor->getG() === 64 and $mapColor->getB() === 255){ // water color
+							$d2 = (int) $k3 * 0.1 + (int) ($k1 + $l1 & 1) * 0.2;
 							$i5 = 1;
-							if($d2 > 0.6){
+
+							if($d2 < 0.5){
 								$i5 = 2;
 							}
-							if($d2 < -0.6){
+
+							if($d2 > 0.9){
 								$i5 = 0;
 							}
-							if($mapColor->getR() === 64 and $mapColor->getG() === 64 and $mapColor->getB() === 255){ // water color
-								$d2 = (int) $k3 * 0.1 + (int) ($k1 + $l1 & 1) * 0.2;
-								$i5 = 1;
-								if($d2 < 0.5){
-									$i5 = 2;
-								}
-								if($d2 > 0.9){
-									$i5 = 0;
-								}
-							}
+						}
 
-							$d0 = $d1;
-							if($l1 >= 0 and $i2 * $i2 + $j2 * $j2 < $j1 * $j1 and (!$flag1 || ($k1 + $l1 & 1) != 0)){
-								$b0 = $mapData->getColorAt($k1, $l1)->toABGR();
-								$b1 = self::colorizeMapColor($mapColor->toABGR(), $i5);
-								if($b0 !== $b1){
-									$mapData->setColorAt($k1, $l1, Color::fromABGR($b1));
+						$avgY = $d1;
 
-									$mapData->updateTextureAt($k1, $l1);
-								}
+						if($l1 >= 0 and $i2 * $i2 + $j2 * $j2 < $j1 * $j1 and (!$flag1 || ($k1 + $l1 & 1) != 0)){
+							$b0 = $mapData->getColorAt($k1, $l1)->toABGR();
+							$b1 = self::colorizeMapColor($mapColor->toABGR(), $i5);
+
+							if($b0 !== $b1){
+								$mapData->setColorAt($k1, $l1, Color::fromABGR($b1));
+
+								$mapData->updateTextureAt($k1, $l1);
 							}
 						}
 					}
 				}
-
-				$info->colorIndexes[$ci] = $d0;
 			}
 
-			$info->textureCheckCounter %= 64;
+			$info->currentCheckX++;
+			$info->currentCheckX %= 128;
 		}
 	}
 
