@@ -107,7 +107,7 @@ abstract class Biome{
 		$this->spawnableCreatureList[] = new SpawnListEntry(Pig::class, 10, 4, 4);
 		$this->spawnableCreatureList[] = new SpawnListEntry(Chicken::class, 10, 4, 4);
 		$this->spawnableCreatureList[] = new SpawnListEntry(Cow::class, 8, 4, 4);
-		$this->spawnableCreatureList[] = new SpawnListEntry(Cat::class, 100, 4, 4);
+		$this->spawnableCreatureList[] = new SpawnListEntry(Cat::class, 8, 4, 4);
 		$this->spawnableMonsterList[] = new SpawnListEntry(Spider::class, 100, 4, 4);
 		$this->spawnableMonsterList[] = new SpawnListEntry(Zombie::class, 100, 4, 4);
 		$this->spawnableMonsterList[] = new SpawnListEntry(Skeleton::class, 100, 4, 4);

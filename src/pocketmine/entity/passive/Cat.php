@@ -67,7 +67,7 @@ class Cat extends Tamable{
 		$this->setMovementSpeed(0.3);
 		$this->setFollowRange(16);
 		$this->setAttackDamage(3);
-		$this->propertyManager->setInt(self::DATA_TYPE_INT, intval($this->namedtag->getInt("CatType", mt_rand(0, 10))));
+		$this->propertyManager->setInt(self::DATA_VARIANT, intval($this->namedtag->getInt("CatType", mt_rand(0, 10))));
 		$this->propertyManager->setInt(self::DATA_COLOR, intval($this->namedtag->getInt("CollarColor", mt_rand(0, 15))));
 
 		parent::initEntity();
@@ -86,15 +86,13 @@ class Cat extends Tamable{
 				if($this->isTamed()){
 					$this->setInLove(true);
 					$this->setHealth(min($this->getMaxHealth(), $this->getHealth() + 2));
+				}elseif(mt_rand(0, 2) == 0){
+					$this->setOwningEntity($player);
+					$this->setTamed();
+					$this->setSitting();
+					$this->broadcastEntityEvent(EntityEventPacket::TAME_SUCCESS);
 				}else{
-					if(mt_rand(0, 2) == 0 ){
-						$this->setOwningEntity($player);
-						$this->setTamed();
-						$this->setSitting();
-						$this->broadcastEntityEvent(EntityEventPacket::TAME_SUCCESS);
-					}else{
-						$this->broadcastEntityEvent(EntityEventPacket::TAME_FAIL);
-					}
+					$this->broadcastEntityEvent(EntityEventPacket::TAME_FAIL);
 				}
 				return true;
 			}else{
