@@ -96,7 +96,11 @@ class Sapling extends Flowable{
 	public function onRandomTick() : void{
 		if($this->world->getFullLightAt($this->x, $this->y, $this->z) >= 8 and mt_rand(1, 7) === 1){
 			if($this->ready){
-				Tree::growTree($this->getWorld(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->treeType);
+                $ev = new StructureGrowEvent($this->getWorld(), $this->asVector3(), $this->treeType, false);
+                $ev->call();
+                if(!$ev->isCancelled()){
+                    Tree::growTree($this->getWorld(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->treeType);
+                }
 			}else{
 				$this->ready = true;
 				$this->getWorld()->setBlock($this, $this);
