@@ -28,6 +28,10 @@ developer:
   # This setting allows developer commands (extractplugin, makeserver... etc)
   commands: true
 
+additional-plugin-dirs:
+  # Example:
+  # - plugins2/
+
 level:
   # If enabled, mobs can move around
   # Note: this feature can be cause lag in your server when lots of mob are spawned
