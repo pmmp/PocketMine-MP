@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\TreeType;
+use pocketmine\event\world\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -69,11 +70,14 @@ class Sapling extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
-			Tree::growTree($this->getWorld(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->treeType);
+            $ev = new StructureGrowEvent($this->getWorld(), $this->asVector3(), $this->treeType, true, $player);
+            $ev->call();
+            if(!$ev->isCancelled()){
+                Tree::growTree($this->getWorld(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->treeType);
+                $item->pop();
 
-			$item->pop();
-
-			return true;
+                return true;
+            }
 		}
 
 		return false;
