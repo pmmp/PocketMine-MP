@@ -29,22 +29,22 @@ use function count;
 
 class Color{
 
-	public const COLOR_DYE_BLACK = 0;
-	public const COLOR_DYE_RED = 1;
-	public const COLOR_DYE_GREEN = 2;
-	public const COLOR_DYE_BROWN = 3;
-	public const COLOR_DYE_BLUE = 4;
-	public const COLOR_DYE_PURPLE = 5;
-	public const COLOR_DYE_CYAN = 6;
-	public const COLOR_DYE_LIGHT_GRAY = 7;
-	public const COLOR_DYE_GRAY = 8;
-	public const COLOR_DYE_PINK = 9;
-	public const COLOR_DYE_LIME = 10;
-	public const COLOR_DYE_YELLOW = 11;
-	public const COLOR_DYE_LIGHT_BLUE = 12;
-	public const COLOR_DYE_MAGENTA = 13;
-	public const COLOR_DYE_ORANGE = 14;
-	public const COLOR_DYE_WHITE = 15;
+	public const COLOR_DYE_BLACK = 0, COLOR_SHEEP_BLACK = 15;
+	public const COLOR_DYE_RED = 1, COLOR_SHEEP_RED = 14;
+	public const COLOR_DYE_GREEN = 2, COLOR_SHEEP_GREEN = 13;
+	public const COLOR_DYE_BROWN = 3, COLOR_SHEEP_BROWN = 12;
+	public const COLOR_DYE_BLUE = 4, COLOR_SHEEP_BLUE = 11;
+	public const COLOR_DYE_PURPLE = 5, COLOR_SHEEP_PURPLE = 10;
+	public const COLOR_DYE_CYAN = 6, COLOR_SHEEP_CYAN = 9;
+	public const COLOR_DYE_LIGHT_GRAY = 7, COLOR_SHEEP_LIGHT_GRAY = 8;
+	public const COLOR_DYE_GRAY = 8, COLOR_SHEEP_GRAY = 7;
+	public const COLOR_DYE_PINK = 9, COLOR_SHEEP_PINK = 6;
+	public const COLOR_DYE_LIME = 10, COLOR_SHEEP_LIME = 5;
+	public const COLOR_DYE_YELLOW = 11, COLOR_SHEEP_YELLOW = 4;
+	public const COLOR_DYE_LIGHT_BLUE = 12, COLOR_SHEEP_LIGHT_BLUE = 19;
+	public const COLOR_DYE_MAGENTA = 13, COLOR_SHEEP_MAGENTA = 19;
+	public const COLOR_DYE_ORANGE = 14, COLOR_SHEEP_ORANGE = 1;
+	public const COLOR_DYE_WHITE = 15, COLOR_SHEEP_WHITE = 0;
 
 	/** @var int */
 	protected $a;

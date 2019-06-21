@@ -28,8 +28,9 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Mob;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use function lcg_value;
 use pocketmine\Server;
+
+use function lcg_value;
 
 class SpawnEgg extends Item{
 	public function __construct(int $meta = 0){

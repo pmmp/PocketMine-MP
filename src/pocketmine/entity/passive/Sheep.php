@@ -42,9 +42,11 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Color;
 use pocketmine\utils\Random;
+
 use function boolval;
 use function intval;
 use function rand;
+use function var_dump;
 
 class Sheep extends Animal{
 
@@ -142,25 +144,9 @@ class Sheep extends Animal{
 	 */
 	public function getRandomColor(Random $random) : int{
 		$i = $random->nextBoundedInt(100);
-
-		if($i < 5){
-			return Color::COLOR_DYE_BLACK;
-		}elseif($i < 10){
-			return Color::COLOR_DYE_GRAY;
-		}elseif($i < 15){
-			return Color::COLOR_DYE_LIGHT_GRAY;
-		}elseif($i < 18){
-			return Color::COLOR_DYE_BROWN;
-		}elseif($random->nextBoundedInt(500) === 0){
-			return Color::COLOR_DYE_PINK;
-		}else{
-			return Color::COLOR_DYE_WHITE;
-		}
+        return $i < 5 ? Color::COLOR_SHEEP_BLACK : ($i < 10 ? Color::COLOR_SHEEP_GRAY : ($i < 15 ? Color::COLOR_SHEEP_LIGHT_GRAY : ($i < 18 ? Color::COLOR_SHEEP_BROWN : ($random->nextBoundedInt(500) === 0 ? Color::COLOR_SHEEP_PINK : Color::COLOR_SHEEP_WHITE))));
 	}
-
-	/**
-	 * @param Vector3 $pos
-	 */
+	
 	public function eatGrassBonus(Vector3 $pos) : void{
 		if(!$this->isBaby()){
 			if($this->isSheared()){
