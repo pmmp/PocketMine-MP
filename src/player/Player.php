@@ -166,6 +166,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/** @var string */
 	protected $displayName;
 	/** @var string */
+	protected $playerListName;
+	/** @var string */
 	protected $xuid = "";
 	/** @var bool */
 	protected $authenticated;
@@ -272,6 +274,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->username = $username;
 		$this->displayName = $this->username;
+		$this->playerListName = $this->username;
 		$this->locale = $this->playerInfo->getLocale();
 
 		$this->uuid = $this->playerInfo->getUuid();
@@ -555,6 +558,26 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev->call();
 
 		$this->displayName = $ev->getNewName();
+	}
+
+	/**
+	 * Gets the name that is shown on the player list.
+	 * 
+	 * @return string
+	 */
+	public function getPlayerListName(): string {
+		return $this->playerListName;
+	}
+
+	/**
+	 * @param string $name
+	 */
+	public function setPlayerListName(string $name): void {
+		$this->playerListName = $name;
+
+		foreach($this->server->getOnlinePlayers() as $player) {
+			$player->getNetworkSession()->syncPlayerList();
+		}
 	}
 
 	/**
