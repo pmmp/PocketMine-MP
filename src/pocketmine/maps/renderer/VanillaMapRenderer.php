@@ -159,7 +159,7 @@ class VanillaMapRenderer extends MapRenderer{
 			}
 
 			$info->currentCheckX++;
-			$info->currentCheckX %= 128;
+			$info->currentCheckX %= 129;
 		}
 	}
 
