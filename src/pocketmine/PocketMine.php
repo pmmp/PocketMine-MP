@@ -187,12 +187,20 @@ namespace pocketmine {
 	}
 
 	define('pocketmine\LOCK_FILE_PATH', \pocketmine\DATA . 'server.lock');
-	define('pocketmine\LOCK_FILE', fopen(\pocketmine\LOCK_FILE_PATH, "cb"));
+	define('pocketmine\LOCK_FILE', fopen(\pocketmine\LOCK_FILE_PATH, "a+b"));
 	if(!flock(\pocketmine\LOCK_FILE, LOCK_EX | LOCK_NB)){
-		critical_error("Another " . \pocketmine\NAME . " instance is already using this folder (" . realpath(\pocketmine\DATA) . ").");
+		//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
+		//other server wrote its PID and released exclusive lock before we get our lock
+		flock(\pocketmine\LOCK_FILE, LOCK_SH);
+		$pid = stream_get_contents(\pocketmine\LOCK_FILE);
+		critical_error("Another " . \pocketmine\NAME . " instance (PID $pid) is already using this folder (" . realpath(\pocketmine\DATA) . ").");
 		critical_error("Please stop the other server first before running a new one.");
 		exit(1);
 	}
+	ftruncate(\pocketmine\LOCK_FILE, 0);
+	fwrite(\pocketmine\LOCK_FILE, (string) getmypid());
+	fflush(\pocketmine\LOCK_FILE);
+	flock(\pocketmine\LOCK_FILE, LOCK_SH); //prevent acquiring an exclusive lock from another process, but allow reading
 
 	//Logger has a dependency on timezone
 	$tzError = Timezone::init();

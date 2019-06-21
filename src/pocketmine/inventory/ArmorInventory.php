@@ -94,11 +94,12 @@ class ArmorInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		$armor = $this->getContents(true);
-
 		$pk = new MobArmorEquipmentPacket();
 		$pk->entityRuntimeId = $this->getHolder()->getId();
-		$pk->slots = $armor;
+		$pk->head = $this->getHelmet();
+		$pk->chest = $this->getChestplate();
+		$pk->legs = $this->getLeggings();
+		$pk->feet = $this->getBoots();
 		$pk->encode();
 
 		foreach($target as $player){
@@ -121,18 +122,19 @@ class ArmorInventory extends BaseInventory{
 			$target = [$target];
 		}
 
-		$armor = $this->getContents(true);
-
 		$pk = new MobArmorEquipmentPacket();
 		$pk->entityRuntimeId = $this->getHolder()->getId();
-		$pk->slots = $armor;
+		$pk->head = $this->getHelmet();
+		$pk->chest = $this->getChestplate();
+		$pk->legs = $this->getLeggings();
+		$pk->feet = $this->getBoots();
 		$pk->encode();
 
 		foreach($target as $player){
 			if($player === $this->getHolder()){
 				$pk2 = new InventoryContentPacket();
 				$pk2->windowId = $player->getWindowId($this);
-				$pk2->items = $armor;
+				$pk2->items = $this->getContents(true);
 				$player->dataPacket($pk2);
 			}else{
 				$player->dataPacket($pk);

@@ -40,7 +40,11 @@ class Attribute{
 	public const ATTACK_DAMAGE = 8;
 	public const EXPERIENCE_LEVEL = 9;
 	public const EXPERIENCE = 10;
-	public const JUMP_STRENGTH = 11;
+	public const UNDERWATER_MOVEMENT = 11;
+	public const LUCK = 12;
+	public const FALL_DAMAGE = 13;
+	public const HORSE_JUMP_STRENGTH = 14;
+	public const ZOMBIE_SPAWN_REINFORCEMENTS = 15;
 
 	private $id;
 	protected $minValue;
@@ -67,9 +71,11 @@ class Attribute{
 		self::addAttribute(self::ATTACK_DAMAGE, "minecraft:attack_damage", 0.00, 340282346638528859811704183484516925440.00, 1.00, false);
 		self::addAttribute(self::EXPERIENCE_LEVEL, "minecraft:player.level", 0.00, 24791.00, 0.00);
 		self::addAttribute(self::EXPERIENCE, "minecraft:player.experience", 0.00, 1.00, 0.00);
-		self::addAttribute(self::JUMP_STRENGTH, "minecraft:horse.jump_strength", 0.00, 2.00, 0.70);
-		//TODO: minecraft:luck (for fishing?)
-		//TODO: minecraft:fall_damage
+		self::addAttribute(self::UNDERWATER_MOVEMENT, "minecraft:underwater_movement", 0.0, 340282346638528859811704183484516925440.0, 0.02);
+		self::addAttribute(self::LUCK, "minecraft:luck", -1024.0, 1024.0, 0.0);
+		self::addAttribute(self::FALL_DAMAGE, "minecraft:fall_damage", 0.0, 340282346638528859811704183484516925440.0, 1.0);
+		self::addAttribute(self::HORSE_JUMP_STRENGTH, "minecraft:horse.jump_strength", 0.0, 2.0, 0.7);
+		self::addAttribute(self::ZOMBIE_SPAWN_REINFORCEMENTS, "minecraft:zombie.spawn_reinforcements", 0.0, 1.0, 0.0);
 	}
 
 	/**

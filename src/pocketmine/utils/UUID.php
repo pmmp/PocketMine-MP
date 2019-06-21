@@ -38,8 +38,10 @@ use function trim;
 
 class UUID{
 
-	private $parts = [0, 0, 0, 0];
-	private $version = null;
+	/** @var int[] */
+	private $parts;
+	/** @var int */
+	private $version;
 
 	public function __construct(int $part1 = 0, int $part2 = 0, int $part3 = 0, int $part4 = 0, int $version = null){
 		$this->parts = [$part1, $part2, $part3, $part4];

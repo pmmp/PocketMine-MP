@@ -35,8 +35,6 @@ use function substr;
 class QueryRegenerateEvent extends ServerEvent{
 	public const GAME_ID = "MINECRAFTPE";
 
-	/** @var int */
-	private $timeout;
 	/** @var string */
 	private $serverName;
 	/** @var bool */
@@ -68,13 +66,16 @@ class QueryRegenerateEvent extends ServerEvent{
 	/** @var array */
 	private $extraData = [];
 
+	/** @var string|null */
+	private $longQueryCache = null;
+	/** @var string|null */
+	private $shortQueryCache = null;
+
 
 	/**
 	 * @param Server $server
-	 * @param int    $timeout
 	 */
-	public function __construct(Server $server, int $timeout = 5){
-		$this->timeout = $timeout;
+	public function __construct(Server $server){
 		$this->serverName = $server->getMotd();
 		$this->listPlugins = $server->getProperty("settings.query-plugins", true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
@@ -98,19 +99,25 @@ class QueryRegenerateEvent extends ServerEvent{
 	}
 
 	/**
-	 * Gets the min. timeout for Query Regeneration
+	 * @deprecated
 	 *
 	 * @return int
 	 */
 	public function getTimeout() : int{
-		return $this->timeout;
+		return 0;
 	}
 
 	/**
+	 * @deprecated
 	 * @param int $timeout
 	 */
 	public function setTimeout(int $timeout) : void{
-		$this->timeout = $timeout;
+
+	}
+
+	private function destroyCache() : void{
+		$this->longQueryCache = null;
+		$this->shortQueryCache = null;
 	}
 
 	/**
@@ -125,6 +132,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	 */
 	public function setServerName(string $serverName) : void{
 		$this->serverName = $serverName;
+		$this->destroyCache();
 	}
 
 	/**
@@ -139,6 +147,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	 */
 	public function setListPlugins(bool $value) : void{
 		$this->listPlugins = $value;
+		$this->destroyCache();
 	}
 
 	/**
@@ -153,6 +162,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	 */
 	public function setPlugins(array $plugins) : void{
 		$this->plugins = $plugins;
+		$this->destroyCache();
 	}
 
 	/**
@@ -167,6 +177,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	 */
 	public function setPlayerList(array $players) : void{
 		$this->players = $players;
+		$this->destroyCache();
 	}
 
 	/**
@@ -181,6 +192,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	 */
 	public function setPlayerCount(int $count) : void{
 		$this->numPlayers = $count;
+		$this->destroyCache();
 	}
 
 	/**
@@ -195,6 +207,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	 */
 	public function setMaxPlayerCount(int $count) : void{
 		$this->maxPlayers = $count;
+		$this->destroyCache();
 	}
 
 	/**
@@ -209,6 +222,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	 */
 	public function setWorld(string $world) : void{
 		$this->map = $world;
+		$this->destroyCache();
 	}
 
 	/**
@@ -225,12 +239,16 @@ class QueryRegenerateEvent extends ServerEvent{
 	 */
 	public function setExtraData(array $extraData) : void{
 		$this->extraData = $extraData;
+		$this->destroyCache();
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getLongQuery() : string{
+		if($this->longQueryCache !== null){
+			return $this->longQueryCache;
+		}
 		$query = "";
 
 		$plist = $this->server_engine;
@@ -273,13 +291,13 @@ class QueryRegenerateEvent extends ServerEvent{
 		}
 		$query .= "\x00";
 
-		return $query;
+		return $this->longQueryCache = $query;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getShortQuery() : string{
-		return $this->serverName . "\x00" . $this->gametype . "\x00" . $this->map . "\x00" . $this->numPlayers . "\x00" . $this->maxPlayers . "\x00" . Binary::writeLShort($this->port) . $this->ip . "\x00";
+		return $this->shortQueryCache ?? ($this->shortQueryCache = $this->serverName . "\x00" . $this->gametype . "\x00" . $this->map . "\x00" . $this->numPlayers . "\x00" . $this->maxPlayers . "\x00" . Binary::writeLShort($this->port) . $this->ip . "\x00");
 	}
 }
