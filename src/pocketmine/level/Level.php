@@ -3006,7 +3006,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Gets the current time of day
+	 * Returns the current time of day
 	 * 
 	 * @return int
 	 */
