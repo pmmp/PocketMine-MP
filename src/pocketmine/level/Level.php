@@ -936,7 +936,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($resetTime){
-			$time = $this->getTime() % Level::TIME_FULL;
+			$time = $this->getTimeOfDay();
 
 			if($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE){
 				$this->setTime($this->getTime() + Level::TIME_FULL - $time);
@@ -3003,6 +3003,15 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function getTime() : int{
 		return $this->time;
+	}
+
+	/**
+	 * Returns the current time of day
+	 * 
+	 * @return int
+	 */
+	public function getTimeOfDay() : int{
+		return $this->time % self::TIME_FULL;
 	}
 
 	/**
