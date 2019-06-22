@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\event\block\ChestPairEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -77,8 +78,26 @@ class Chest extends Transparent{
 				if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
 					$pair = $this->world->getTile($c);
 					if($pair instanceof TileChest and !$pair->isPaired()){
-						$pair->pairWith($tile);
-						$tile->pairWith($pair);
+						if($this->facing === Facing::NORTH or $this->facing === Facing::EAST){
+							if((($c->x + ($c->z << 15)) > ($this->x + ($this->z << 15)))){
+								$ev = new ChestPairEvent($c, $this);
+							}else{
+								$ev = new ChestPairEvent($this, $c);
+							}
+						}else{
+							if((($c->x + ($c->z << 15)) < ($this->x + ($this->z << 15)))){
+								$ev = new ChestPairEvent($c, $this);
+							}else{
+								$ev = new ChestPairEvent($this, $c);
+							}
+						}
+
+						$ev->call();
+						if(!$ev->isCancelled()){
+							$pair->pairWith($tile);
+							$tile->pairWith($pair);
+						}
+
 						break;
 					}
 				}
