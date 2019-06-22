@@ -138,6 +138,9 @@ class StartGamePacket extends DataPacket{
 	/** @var string */
 	public $multiplayerCorrelationId = ""; //TODO: this should be filled with a UUID of some sort
 
+	/** @var bool */
+	public $onlySpawnV1Villagers = false;
+
 	/** @var array|null each entry must have a "name" (string) and "data" (int16) element */
 	public $runtimeIdTable = null;
 
@@ -202,6 +205,7 @@ class StartGamePacket extends DataPacket{
 		$this->runtimeIdTable = $table;
 
 		$this->multiplayerCorrelationId = $this->getString();
+		$this->onlySpawnV1Villagers = $this->getBool();
 	}
 
 	protected function encodePayload(){
@@ -265,6 +269,7 @@ class StartGamePacket extends DataPacket{
 		}
 
 		$this->putString($this->multiplayerCorrelationId);
+		$this->putBool($this->onlySpawnV1Villagers);
 	}
 
 	private static function serializeBlockTable(array $table) : string{
