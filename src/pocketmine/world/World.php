@@ -123,6 +123,8 @@ class World implements ChunkManager, Metadatable{
 	public const Y_MASK = 0xFF;
 	public const Y_MAX = 0x100; //256
 
+	public const HALF_Y_MAX = self::Y_MAX / 2;
+
 	public const TIME_DAY = 0;
 	public const TIME_SUNSET = 12000;
 	public const TIME_NIGHT = 14000;
@@ -272,10 +274,11 @@ class World implements ChunkManager, Metadatable{
 	}
 
 	public static function blockHash(int $x, int $y, int $z) : int{
-		if($y < 0 or $y >= World::Y_MAX){
+		$shiftedY = $y - self::HALF_Y_MAX;
+		if($shiftedY < -512 or $shiftedY >= 512){
 			throw new \InvalidArgumentException("Y coordinate $y is out of range!");
 		}
-		return (($x & 0xFFFFFFF) << 36) | (($y & World::Y_MASK) << 28) | ($z & 0xFFFFFFF);
+		return (($x & 0x7ffffff) << 37) | (($shiftedY & 0x3ff) << 27) | ($z & 0x7ffffff);
 	}
 
 	/**
@@ -292,9 +295,9 @@ class World implements ChunkManager, Metadatable{
 	}
 
 	public static function getBlockXYZ(int $hash, ?int &$x, ?int &$y, ?int &$z) : void{
-		$x = $hash >> 36;
-		$y = ($hash >> 28) & World::Y_MASK; //it's always positive
-		$z = ($hash & 0xFFFFFFF) << 36 >> 36;
+		$x = $hash >> 37;
+		$y = ($hash << 27 >> 54) + self::HALF_Y_MAX;
+		$z = $hash << 37 >> 37;
 	}
 
 	/**
