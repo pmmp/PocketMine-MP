@@ -936,10 +936,8 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($resetTime){
-			$time = $this->getTime() % Level::TIME_FULL;
-
-			if($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE){
-				$this->setTime($this->getTime() + Level::TIME_FULL - $time);
+			if($this->getTimeOfDay() >= Level::TIME_NIGHT and $this->getTimeOfDay() < Level::TIME_SUNRISE){
+				$this->setTime($this->getTime() + Level::TIME_FULL - $this->getTimeOfDay());
 
 				foreach($this->getPlayers() as $p){
 					$p->stopSleep();
@@ -3003,6 +3001,15 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function getTime() : int{
 		return $this->time;
+	}
+
+	/**
+	 * Gets the current time of day
+	 * 
+	 * @return int
+	 */
+	public function getTimeOfDay() : int{
+		return $this->getTime() % self::TIME_FULL;
 	}
 
 	/**

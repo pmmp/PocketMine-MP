@@ -146,7 +146,7 @@ class Bed extends Transparent{
 				return true;
 			}
 
-			$time = $this->getLevel()->getTime() % Level::TIME_FULL;
+			$time = $this->getLevel()->getTimeOfDay();
 
 			$isNight = ($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE);
 
