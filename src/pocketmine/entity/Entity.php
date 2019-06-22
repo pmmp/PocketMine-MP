@@ -49,6 +49,7 @@ use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PaintingMotive;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\passive\Cat;
 use pocketmine\entity\passive\Chicken;
 use pocketmine\entity\passive\Cow;
 use pocketmine\entity\passive\Horse;
@@ -379,6 +380,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(Sheep::class, false, ['Sheep', 'minecraft:sheep']);
 		Entity::registerEntity(Mooshroom::class, false, ['Mooshroom', 'minecraft:mooshroom']);
 		Entity::registerEntity(Pig::class, false, ['Pig', 'minecraft:pig']);
+		Entity::registerEntity(Cat::class, false, ['Cat', 'minecraft:cat']);
 		Entity::registerEntity(Skeleton::class, false, ['Skeleton', 'minecraft:skeleton']);
 		Entity::registerEntity(Stray::class, false, ['Stray', 'minecraft:stray']);
 		Entity::registerEntity(Husk::class, false, ['Husk', 'minecraft:husk']);
