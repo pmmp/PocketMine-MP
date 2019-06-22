@@ -887,7 +887,7 @@ class World implements ChunkManager, Metadatable{
 		}
 
 		if($resetTime){
-			$time = $this->getTime() % World::TIME_FULL;
+			$time = $this->getTimeOfDay();
 
 			if($time >= World::TIME_NIGHT and $time < World::TIME_SUNRISE){
 				$this->setTime($this->getTime() + World::TIME_FULL - $time);
@@ -2680,6 +2680,15 @@ class World implements ChunkManager, Metadatable{
 	 */
 	public function getTime() : int{
 		return $this->time;
+	}
+
+	/**
+	 * Returns the current time of day
+	 *
+	 * @return int
+	 */
+	public function getTimeOfDay() : int{
+		return $this->time % self::TIME_FULL;
 	}
 
 	/**
