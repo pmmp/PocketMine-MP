@@ -87,7 +87,9 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "\\/") . "/";
 		$this->configFile = $this->dataFolder . "config.yml";
-		$this->logger = new PluginLogger($this);
+
+		$prefix = $this->getDescription()->getPrefix();
+		$this->logger = new PluginLogger($server->getLogger(), $prefix !== "" ? $prefix : $this->getName());
 		$this->scheduler = new TaskScheduler($this->getFullName());
 		$this->resourceProvider = $resourceProvider;
 
