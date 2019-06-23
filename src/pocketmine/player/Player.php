@@ -50,7 +50,6 @@ use pocketmine\event\player\PlayerChangeSkinEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
-use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
@@ -78,8 +77,6 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
-use pocketmine\item\WritableBook;
-use pocketmine\item\WrittenBook;
 use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
@@ -91,7 +88,6 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
-use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -2039,55 +2035,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function dropItem(Item $item) : void{
 		$this->world->dropItem($this->add(0, 1.3, 0), $item, $this->getDirectionVector()->multiply(0.4), 40);
-	}
-
-	public function handleBookEdit(BookEditPacket $packet) : bool{
-		/** @var WritableBook $oldBook */
-		$oldBook = $this->inventory->getItem($packet->inventorySlot);
-		if(!($oldBook instanceof WritableBook)){
-			return false;
-		}
-
-		$newBook = clone $oldBook;
-		$modifiedPages = [];
-
-		switch($packet->type){
-			case BookEditPacket::TYPE_REPLACE_PAGE:
-				$newBook->setPageText($packet->pageNumber, $packet->text);
-				$modifiedPages[] = $packet->pageNumber;
-				break;
-			case BookEditPacket::TYPE_ADD_PAGE:
-				$newBook->insertPage($packet->pageNumber, $packet->text);
-				$modifiedPages[] = $packet->pageNumber;
-				break;
-			case BookEditPacket::TYPE_DELETE_PAGE:
-				$newBook->deletePage($packet->pageNumber);
-				$modifiedPages[] = $packet->pageNumber;
-				break;
-			case BookEditPacket::TYPE_SWAP_PAGES:
-				$newBook->swapPages($packet->pageNumber, $packet->secondaryPageNumber);
-				$modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
-				break;
-			case BookEditPacket::TYPE_SIGN_BOOK:
-				/** @var WrittenBook $newBook */
-				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
-				$newBook->setAuthor($packet->author);
-				$newBook->setTitle($packet->title);
-				$newBook->setGeneration(WrittenBook::GENERATION_ORIGINAL);
-				break;
-			default:
-				return false;
-		}
-
-		$event = new PlayerEditBookEvent($this, $oldBook, $newBook, $packet->type, $modifiedPages);
-		$event->call();
-		if($event->isCancelled()){
-			return true;
-		}
-
-		$this->getInventory()->setItem($packet->inventorySlot, $event->getNewBook());
-
-		return true;
 	}
 
 	/**
