@@ -2346,6 +2346,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return [];
 	}
 
+	public function __destruct(){
+		parent::__destruct();
+		$this->logger->debug("Destroyed by garbage collector");
+	}
+
 	public function canSaveWithChunk() : bool{
 		return false;
 	}
