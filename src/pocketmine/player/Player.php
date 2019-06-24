@@ -2677,7 +2677,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	public function removeCurrentWindow() : void{
 		if($this->currentWindow !== null){
-			(new InventoryCloseEvent($this->craftingGrid, $this))->call();
+			(new InventoryCloseEvent($this->currentWindow, $this))->call();
 			$this->closeInventoryInternal($this->currentWindow, false);
 		}
 	}
