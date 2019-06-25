@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\math\Vector3;
 use pocketmine\world\ChunkListener;
+use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
 use function spl_object_id;
@@ -159,6 +160,13 @@ class ChunkCache implements ChunkListener{
 		}
 	}
 
+	use ChunkListenerNoOpTrait {
+		//force overriding of these
+		onChunkChanged as private;
+		onBlockChanged as private;
+		onChunkUnloaded as private;
+	}
+
 	/**
 	 * @see ChunkListener::onChunkChanged()
 	 * @param Chunk $chunk
@@ -185,22 +193,6 @@ class ChunkCache implements ChunkListener{
 	public function onChunkUnloaded(Chunk $chunk) : void{
 		$this->destroy($chunk->getX(), $chunk->getZ());
 		$this->world->unregisterChunkListener($this, $chunk->getX(), $chunk->getZ());
-	}
-
-	/**
-	 * @see ChunkListener::onChunkLoaded()
-	 * @param Chunk $chunk
-	 */
-	public function onChunkLoaded(Chunk $chunk) : void{
-		//NOOP
-	}
-
-	/**
-	 * @see ChunkListener::onChunkPopulated()
-	 * @param Chunk $chunk
-	 */
-	public function onChunkPopulated(Chunk $chunk) : void{
-		//NOOP - we also receive this in onChunkChanged, so we don't care here
 	}
 
 	/**

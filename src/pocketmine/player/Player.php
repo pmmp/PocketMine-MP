@@ -104,6 +104,7 @@ use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 use pocketmine\world\ChunkListener;
+use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\ChunkLoader;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\particle\PunchBlockParticle;
@@ -2701,26 +2702,14 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->server->getPlayerMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
 	}
 
+	use ChunkListenerNoOpTrait {
+		onChunkChanged as private;
+	}
+
 	public function onChunkChanged(Chunk $chunk) : void{
 		if(isset($this->usedChunks[$hash = World::chunkHash($chunk->getX(), $chunk->getZ())])){
 			$this->usedChunks[$hash] = false;
 			$this->nextChunkOrderRun = 0;
 		}
-	}
-
-	public function onChunkLoaded(Chunk $chunk) : void{
-
-	}
-
-	public function onChunkPopulated(Chunk $chunk) : void{
-
-	}
-
-	public function onChunkUnloaded(Chunk $chunk) : void{
-
-	}
-
-	public function onBlockChanged(Vector3 $block) : void{
-
 	}
 }
