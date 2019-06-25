@@ -33,6 +33,12 @@ class SetDefaultGameTypePacket extends DataPacket implements ClientboundPacket, 
 	/** @var int */
 	public $gamemode;
 
+	public static function create(int $gameMode) : self{
+		$result = new self;
+		$result->gamemode = $gameMode;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->gamemode = $this->getVarInt();
 	}
