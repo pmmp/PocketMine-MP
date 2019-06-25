@@ -80,22 +80,22 @@ final class EntityFactory{
 		//define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC
 		//TODO: index them by version to allow proper multi-save compatibility
 
-		self::register(Arrow::class, false, ['Arrow', 'minecraft:arrow']);
-		self::register(Egg::class, false, ['Egg', 'minecraft:egg']);
-		self::register(EnderPearl::class, false, ['ThrownEnderpearl', 'minecraft:ender_pearl']);
-		self::register(ExperienceBottle::class, false, ['ThrownExpBottle', 'minecraft:xp_bottle']);
-		self::register(ExperienceOrb::class, false, ['XPOrb', 'minecraft:xp_orb']);
-		self::register(FallingBlock::class, false, ['FallingSand', 'minecraft:falling_block']);
-		self::register(ItemEntity::class, false, ['Item', 'minecraft:item']);
-		self::register(Painting::class, false, ['Painting', 'minecraft:painting']);
-		self::register(PrimedTNT::class, false, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt']);
-		self::register(Snowball::class, false, ['Snowball', 'minecraft:snowball']);
-		self::register(SplashPotion::class, false, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
-		self::register(Squid::class, false, ['Squid', 'minecraft:squid']);
-		self::register(Villager::class, false, ['Villager', 'minecraft:villager']);
-		self::register(Zombie::class, false, ['Zombie', 'minecraft:zombie']);
+		self::register(Arrow::class, ['Arrow', 'minecraft:arrow'], EntityIds::ARROW);
+		self::register(Egg::class, ['Egg', 'minecraft:egg'], EntityIds::EGG);
+		self::register(EnderPearl::class, ['ThrownEnderpearl', 'minecraft:ender_pearl'], EntityIds::ENDER_PEARL);
+		self::register(ExperienceBottle::class, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityIds::XP_BOTTLE);
+		self::register(ExperienceOrb::class, ['XPOrb', 'minecraft:xp_orb'], EntityIds::XP_ORB);
+		self::register(FallingBlock::class, ['FallingSand', 'minecraft:falling_block'], EntityIds::FALLING_BLOCK);
+		self::register(ItemEntity::class, ['Item', 'minecraft:item'], EntityIds::ITEM);
+		self::register(Painting::class, ['Painting', 'minecraft:painting'], EntityIds::PAINTING);
+		self::register(PrimedTNT::class, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt'], EntityIds::TNT);
+		self::register(Snowball::class, ['Snowball', 'minecraft:snowball'], EntityIds::SNOWBALL);
+		self::register(SplashPotion::class, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityIds::SPLASH_POTION);
+		self::register(Squid::class, ['Squid', 'minecraft:squid'], EntityIds::SQUID);
+		self::register(Villager::class, ['Villager', 'minecraft:villager'], EntityIds::VILLAGER);
+		self::register(Zombie::class, ['Zombie', 'minecraft:zombie'], EntityIds::ZOMBIE);
 
-		self::register(Human::class, true);
+		self::register(Human::class, ['Human']);
 
 		Attribute::init();
 		Effect::init();
@@ -106,23 +106,17 @@ final class EntityFactory{
 	 * Registers an entity type into the index.
 	 *
 	 * @param string   $className Class that extends Entity
-	 * @param bool     $force Force registration even if the entity does not have a valid network ID
 	 * @param string[] $saveNames An array of save names which this entity might be saved under. Defaults to the short name of the class itself if empty.
+	 * @param int|null $legacyMcpeSaveId
 	 *
 	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
 	 * name of the class will be appended to the end and only used if no other save names are specified.
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function register(string $className, bool $force = false, array $saveNames = []) : void{
+	public static function register(string $className, array $saveNames, ?int $legacyMcpeSaveId = null) : void{
 		Utils::testValidInstance($className, Entity::class);
 
-		/** @var Entity $className */
-		if($className::NETWORK_ID !== -1){
-			self::$knownEntities[$className::NETWORK_ID] = $className;
-		}elseif(!$force){
-			throw new \InvalidArgumentException("Class $className does not declare a valid NETWORK_ID and not force-registering");
-		}
 		self::$classMapping[$className] = $className;
 
 		$shortName = (new \ReflectionClass($className))->getShortName();
@@ -132,6 +126,9 @@ final class EntityFactory{
 
 		foreach($saveNames as $name){
 			self::$knownEntities[$name] = $className;
+		}
+		if($legacyMcpeSaveId !== null){
+			self::$knownEntities[$legacyMcpeSaveId] = $className;
 		}
 
 		self::$saveNames[$className] = $saveNames;
