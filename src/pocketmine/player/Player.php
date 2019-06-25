@@ -2164,9 +2164,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * TODO: add translation type popups
 	 *
 	 * @param string $message
-	 * @param string $subtitle @deprecated
 	 */
-	public function sendPopup(string $message, string $subtitle = ""){
+	public function sendPopup(string $message){
 		$this->networkSession->onPopup($message);
 	}
 
