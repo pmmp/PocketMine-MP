@@ -29,9 +29,9 @@ abstract class BlockInventory extends BaseInventory{
 	/** @var Vector3 */
 	protected $holder;
 
-	public function __construct(Vector3 $holder, int $size, array $items = []){
+	public function __construct(Vector3 $holder, int $size){
 		$this->holder = $holder;
-		parent::__construct($size, $items);
+		parent::__construct($size);
 	}
 
 	/**

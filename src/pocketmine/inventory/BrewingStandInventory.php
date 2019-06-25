@@ -27,7 +27,7 @@ use pocketmine\math\Vector3;
 
 class BrewingStandInventory extends BlockInventory{
 
-	public function __construct(Vector3 $holder, int $size = 5, array $items = []){
-		parent::__construct($holder, $size, $items);
+	public function __construct(Vector3 $holder, int $size = 5){
+		parent::__construct($holder, $size);
 	}
 }

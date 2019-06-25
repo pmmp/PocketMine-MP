@@ -26,7 +26,6 @@ namespace pocketmine\inventory;
 use pocketmine\block\tile\Chest;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
-use function array_merge;
 use function count;
 
 class DoubleChestInventory extends ChestInventory implements InventoryHolder{
@@ -38,8 +37,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	public function __construct(Chest $left, Chest $right){
 		$this->left = $left->getRealInventory();
 		$this->right = $right->getRealInventory();
-		$items = array_merge($this->left->getContents(true), $this->right->getContents(true));
-		BaseInventory::__construct($this->left->getSize() + $this->right->getSize(), $items);
+		BaseInventory::__construct($this->left->getSize() + $this->right->getSize());
 	}
 
 	public function getInventory(){

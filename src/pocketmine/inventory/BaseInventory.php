@@ -44,13 +44,10 @@ abstract class BaseInventory implements Inventory{
 	protected $listeners = [];
 
 	/**
-	 * @param int    $size
-	 * @param Item[] $items
+	 * @param int $size
 	 */
-	public function __construct(int $size, array $items = []){
+	public function __construct(int $size){
 		$this->slots = new \SplFixedArray($size);
-
-		$this->setContents($items, false);
 	}
 
 	/**
