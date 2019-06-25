@@ -23,51 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\thread;
 
-use pocketmine\Server;
-use function error_reporting;
-
 /**
  * This class must be extended by all custom threading classes
  */
 abstract class Thread extends \Thread{
-
-	/** @var \ClassLoader|null */
-	protected $classLoader;
-	/** @var string|null */
-	protected $composerAutoloaderPath;
-
-	protected $isKilled = false;
-
-	public function getClassLoader(){
-		return $this->classLoader;
-	}
-
-	public function setClassLoader(?\ClassLoader $loader = null) : void{
-		$this->composerAutoloaderPath = \pocketmine\COMPOSER_AUTOLOADER_PATH;
-
-		if($loader === null){
-			$loader = Server::getInstance()->getLoader();
-		}
-		$this->classLoader = $loader;
-	}
-
-	/**
-	 * Registers the class loader for this thread.
-	 *
-	 * WARNING: This method MUST be called from any descendent threads' run() method to make autoloading usable.
-	 * If you do not do this, you will not be able to use new classes that were not loaded when the thread was started
-	 * (unless you are using a custom autoloader).
-	 */
-	public function registerClassLoader() : void{
-		if($this->composerAutoloaderPath !== null){
-			require $this->composerAutoloaderPath;
-		}
-		if($this->classLoader !== null){
-			$this->classLoader->register(false);
-		}
-	}
+	use CommonThreadPartsTrait;
 
 	public function start(?int $options = \PTHREADS_INHERIT_ALL) : bool{
+		//this is intentionally not traitified
 		ThreadManager::getInstance()->add($this);
 
 		if($this->getClassLoader() === null){
@@ -75,19 +38,6 @@ abstract class Thread extends \Thread{
 		}
 		return parent::start($options);
 	}
-
-	final public function run() : void{
-		error_reporting(-1);
-		$this->registerClassLoader();
-		//set this after the autoloader is registered
-		\ErrorUtils::setErrorExceptionHandler();
-		$this->onRun();
-	}
-
-	/**
-	 * Runs code on the thread.
-	 */
-	abstract protected function onRun() : void;
 
 	/**
 	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.
@@ -101,9 +51,5 @@ abstract class Thread extends \Thread{
 		}
 
 		ThreadManager::getInstance()->remove($this);
-	}
-
-	public function getThreadName() : string{
-		return (new \ReflectionClass($this))->getShortName();
 	}
 }
