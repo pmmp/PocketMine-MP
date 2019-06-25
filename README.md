@@ -9,7 +9,7 @@
 - [Documentation](http://pmmp.readthedocs.org/)
 - [Installation instructions](https://pmmp.readthedocs.io/en/rtfd/installation.html)
 - [Docker image](https://hub.docker.com/r/pmmp/pocketmine-mp)
-- [Plugin repository](https://poggit.pmmp.io)
+- [Plugin repository](https://poggit.pmmp.io/plugins)
 
 ### Discussion
 - [Forums](https://forums.pmmp.io/)
@@ -22,8 +22,8 @@
  * [Contributing Guidelines](CONTRIBUTING.md)
 
 ### Donate
-- Bitcoin Cash (BCH): `qz9p8dqkv0r7aahdatu5uewqfkvstrglv58f8yle07`
-- Bitcoin (BTC): `1PVAyDJ2g7kcjCxAC3C89oxpV2ZYcLad8T`
+- Bitcoin Cash (BCH): `qq3r46hn6ljnhnqnfwxt5pg3g447eq9jhvw5ddfear`
+- Bitcoin (BTC): `171u8K9e4FtU6j3e5sqNoxKUgEw9qWQdRV`
 - [Patreon](https://www.patreon.com/pocketminemp)
 
 ## Licensing information
