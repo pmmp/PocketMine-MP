@@ -25,7 +25,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\math\Vector3;
 
-abstract class BlockInventory extends BaseInventory{
+class BlockInventory extends BaseInventory{
 	/** @var Vector3 */
 	protected $holder;
 
