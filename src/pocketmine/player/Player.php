@@ -1769,17 +1769,20 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$item = $block->getPickedItem($addTileNBT);
 
 		$ev = new PlayerBlockPickEvent($this, $block, $item);
+		$existingSlot = $this->inventory->first($item);
+		if($existingSlot === -1 and $this->hasFiniteResources()){
+			$ev->setCancelled();
+		}
 		$ev->call();
 
 		if(!$ev->isCancelled()){
-			$existing = $this->inventory->first($item);
-			if($existing !== -1){
-				if($existing < $this->inventory->getHotbarSize()){
-					$this->inventory->setHeldItemIndex($existing);
+			if($existingSlot !== -1){
+				if($existingSlot < $this->inventory->getHotbarSize()){
+					$this->inventory->setHeldItemIndex($existingSlot);
 				}else{
-					$this->inventory->swap($this->inventory->getHeldItemIndex(), $existing);
+					$this->inventory->swap($this->inventory->getHeldItemIndex(), $existingSlot);
 				}
-			}elseif(!$this->hasFiniteResources()){ //TODO: plugins won't know this isn't going to execute
+			}else{
 				$firstEmpty = $this->inventory->firstEmpty();
 				if($firstEmpty === -1){ //full inventory
 					$this->inventory->setItemInHand($item);
