@@ -77,6 +77,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 use function array_map;
+use function assert;
 use function base64_encode;
 use function bin2hex;
 use function count;
@@ -744,11 +745,17 @@ class NetworkSession{
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
 		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ){}, $onCompletion);
 
-		ChunkCache::getInstance($this->player->getWorld())->request($chunkX, $chunkZ)->onResolve(
+		$world = $this->player->getWorld();
+		assert($world !== null);
+		ChunkCache::getInstance($world)->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use ($chunkX, $chunkZ, $onCompletion){
+			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion){
 				if(!$this->isConnected()){
+					return;
+				}
+				if($world !== $this->player->getWorld() or !$this->player->isUsingChunk($chunkX, $chunkZ)){
+					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
 				}
 				$this->player->world->timings->syncChunkSendTimer->startTiming();

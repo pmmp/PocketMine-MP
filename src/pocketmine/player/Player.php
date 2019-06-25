@@ -1039,6 +1039,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		Timings::$playerChunkOrderTimer->stopTiming();
 	}
 
+	public function isUsingChunk(int $chunkX, int $chunkZ) : bool{
+		return isset($this->usedChunks[World::chunkHash($chunkX, $chunkZ)]);
+	}
+
 	public function doChunkRequests(){
 		if($this->nextChunkOrderRun !== PHP_INT_MAX and $this->nextChunkOrderRun-- <= 0){
 			$this->nextChunkOrderRun = PHP_INT_MAX;
