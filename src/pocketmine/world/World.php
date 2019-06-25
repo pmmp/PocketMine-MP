@@ -2772,8 +2772,7 @@ class World implements ChunkManager, Metadatable{
 	 * @param Player ...$targets
 	 */
 	public function sendDifficulty(Player ...$targets){
-		$pk = new SetDifficultyPacket();
-		$pk->difficulty = $this->getDifficulty();
+		$pk = SetDifficultyPacket::create($this->getDifficulty());
 		if(empty($targets)){
 			$this->broadcastGlobalPacket($pk);
 		}else{

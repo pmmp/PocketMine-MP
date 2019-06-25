@@ -34,6 +34,12 @@ class SetDifficultyPacket extends DataPacket implements ClientboundPacket, Serve
 	/** @var int */
 	public $difficulty;
 
+	public static function create(int $difficulty) : self{
+		$result = new self;
+		$result->difficulty = $difficulty;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->difficulty = $this->getUnsignedVarInt();
 	}
