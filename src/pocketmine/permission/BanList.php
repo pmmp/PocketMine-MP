@@ -23,15 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use pocketmine\Server;
 use function fclose;
 use function fgets;
 use function fopen;
 use function fwrite;
 use function is_resource;
-use function strftime;
 use function strtolower;
-use function time;
 use function trim;
 
 class BanList{
@@ -181,7 +178,6 @@ class BanList{
 		$fp = @fopen($this->file, "w");
 		if(is_resource($fp)){
 			if($writeHeader){
-				fwrite($fp, "# Updated " . strftime("%x %H:%M", time()) . " by " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion() . "\n");
 				fwrite($fp, "# victim name | ban date | banned by | banned until | reason\n\n");
 			}
 
