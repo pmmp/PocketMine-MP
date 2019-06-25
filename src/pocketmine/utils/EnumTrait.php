@@ -54,9 +54,9 @@ trait EnumTrait{
 	 *
 	 * (This ought to be private, but traits suck too much for that.)
 	 *
-	 * @return self[]
+	 * @return self[]|iterable
 	 */
-	abstract protected static function setup() : array;
+	abstract protected static function setup() : iterable;
 
 	/**
 	 * @internal Lazy-inits the enum if necessary.

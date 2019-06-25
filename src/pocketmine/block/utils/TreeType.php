@@ -46,7 +46,7 @@ final class TreeType{
 	/** @var TreeType[] */
 	private static $numericIdMap = [];
 
-	protected static function setup() : array{
+	protected static function setup() : iterable{
 		return [
 			new TreeType("oak", "Oak", 0),
 			new TreeType("spruce", "Spruce", 1),

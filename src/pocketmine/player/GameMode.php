@@ -47,7 +47,7 @@ final class GameMode{
 	/** @var self[] */
 	protected static $magicNumberMap = [];
 
-	protected static function setup() : array{
+	protected static function setup() : iterable{
 		return [
 			new self("survival", 0, "Survival", "gameMode.survival", ["s", "0"]),
 			new self("creative", 1, "Creative", "gameMode.creative", ["c", "1"]),

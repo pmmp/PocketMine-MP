@@ -37,7 +37,7 @@ use pocketmine\utils\EnumTrait;
 final class SlabType{
 	use EnumTrait;
 
-	protected static function setup() : array{
+	protected static function setup() : iterable{
 		return [
 			new self("bottom"),
 			new self("top"),

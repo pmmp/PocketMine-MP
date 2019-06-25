@@ -41,7 +41,7 @@ class NoteInstrument{
 		__construct as Enum___construct;
 	}
 
-	protected static function setup() : array{
+	protected static function setup() : iterable{
 		return [
 			new self("piano", 0),
 			new self("bass_drum", 1),

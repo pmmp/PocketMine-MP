@@ -57,7 +57,7 @@ final class DyeColor{
 	/** @var DyeColor[] */
 	private static $numericIdMap = [];
 
-	protected static function setup() : array{
+	protected static function setup() : iterable{
 		return [
 			new DyeColor("white", "White", 0, new Color(0xf0, 0xf0, 0xf0)),
 			new DyeColor("orange", "Orange", 1, new Color(0xf9, 0x80, 0x1d)),

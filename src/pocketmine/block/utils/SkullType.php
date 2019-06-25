@@ -46,7 +46,7 @@ final class SkullType{
 	/** @var SkullType[] */
 	private static $numericIdMap = [];
 
-	protected static function setup() : array{
+	protected static function setup() : iterable{
 		return [
 			new SkullType("skeleton", "Skeleton Skull", 0),
 			new SkullType("wither_skeleton", "Wither Skeleton Skull", 1),

@@ -36,7 +36,7 @@ use pocketmine\utils\EnumTrait;
 final class PluginLoadOrder{
 	use EnumTrait;
 
-	protected static function setup() : array{
+	protected static function setup() : iterable{
 		return [
 			new self("startup"),
 			new self("postworld")

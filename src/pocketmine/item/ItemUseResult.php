@@ -37,7 +37,7 @@ use pocketmine\utils\EnumTrait;
 final class ItemUseResult{
 	use EnumTrait;
 
-	protected static function setup() : array{
+	protected static function setup() : iterable{
 		return [
 			new self("none"),
 			new self("fail"),
