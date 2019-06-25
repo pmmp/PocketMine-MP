@@ -9,7 +9,7 @@
 - [Documentation](http://pmmp.readthedocs.org/)
 - [Installation instructions](https://pmmp.readthedocs.io/en/rtfd/installation.html)
 - [Docker image](https://hub.docker.com/r/pmmp/pocketmine-mp)
-- [Plugin repository](https://poggit.pmmp.io)
+- [Plugin repository](https://poggit.pmmp.io/plugins)
 
 ### Discussion
 - [Forums](https://forums.pmmp.io/)
