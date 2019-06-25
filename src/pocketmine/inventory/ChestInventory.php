@@ -25,14 +25,13 @@ namespace pocketmine\inventory;
 
 use pocketmine\block\tile\Chest;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ChestCloseSound;
 use pocketmine\world\sound\ChestOpenSound;
 use pocketmine\world\sound\Sound;
 use function count;
 
-class ChestInventory extends ContainerInventory{
+class ChestInventory extends BlockInventory{
 
 	/** @var Chest */
 	protected $holder;
@@ -42,10 +41,6 @@ class ChestInventory extends ContainerInventory{
 	 */
 	public function __construct(Chest $tile){
 		parent::__construct($tile, 27);
-	}
-
-	public function getNetworkType() : int{
-		return WindowTypes::CONTAINER;
 	}
 
 	/**

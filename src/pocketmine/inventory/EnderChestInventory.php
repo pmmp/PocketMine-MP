@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\block\tile\EnderChest;
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\world\Position;
 use pocketmine\world\sound\EnderChestCloseSound;
 use pocketmine\world\sound\EnderChestOpenSound;
@@ -36,11 +35,7 @@ class EnderChestInventory extends ChestInventory{
 	protected $holder;
 
 	public function __construct(){
-		ContainerInventory::__construct(new Position(), 27);
-	}
-
-	public function getNetworkType() : int{
-		return WindowTypes::CONTAINER;
+		BlockInventory::__construct(new Position(), 27);
 	}
 
 	/**

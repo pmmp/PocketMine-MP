@@ -24,15 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
-class HopperInventory extends ContainerInventory{
+class HopperInventory extends BlockInventory{
 
 	public function __construct(Vector3 $holder, int $size = 5, array $items = []){
 		parent::__construct($holder, $size, $items);
-	}
-
-	public function getNetworkType() : int{
-		return WindowTypes::HOPPER;
 	}
 }

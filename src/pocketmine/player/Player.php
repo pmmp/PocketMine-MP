@@ -92,7 +92,6 @@ use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
-use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\PlayerMetadataFlags;
@@ -111,7 +110,6 @@ use pocketmine\world\particle\PunchBlockParticle;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function abs;
-use function array_search;
 use function assert;
 use function ceil;
 use function count;
@@ -119,7 +117,6 @@ use function explode;
 use function floor;
 use function get_class;
 use function is_int;
-use function max;
 use function microtime;
 use function min;
 use function preg_match;
@@ -182,10 +179,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/** @var PlayerInfo */
 	protected $playerInfo;
 
-	/** @var int */
-	protected $lastInventoryNetworkId = 2;
-	/** @var Inventory[] network ID => inventory */
-	protected $networkIdToInventoryMap = [];
 	/** @var Inventory|null */
 	protected $currentWindow = null;
 	/** @var Inventory[] */
@@ -2316,10 +2309,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->loadQueue = [];
 
 		$this->removeCurrentWindow();
-		foreach($this->permanentWindows as $objectId => $inventory){
-			$this->closeInventoryInternal($inventory, true);
-		}
-		assert(empty($this->networkIdToInventoryMap));
+		$this->removePermanentInventories();
 
 		$this->perm->clearPermissions();
 
@@ -2570,14 +2560,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	protected function addDefaultWindows(){
-		$this->openInventoryInternal($this->getInventory(), ContainerIds::INVENTORY, true);
-
-		$this->openInventoryInternal($this->getArmorInventory(), ContainerIds::ARMOR, true);
-
 		$this->cursorInventory = new PlayerCursorInventory($this);
-		$this->openInventoryInternal($this->cursorInventory, ContainerIds::CURSOR, true);
-
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
+
+		$this->addPermanentInventories($this->inventory, $this->armorInventory, $this->cursorInventory);
 
 		//TODO: more windows
 	}
@@ -2622,29 +2608,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * @internal Called by the network session when a player closes a window.
-	 *
-	 * @param int $windowId
-	 *
-	 * @return bool
-	 */
-	public function doCloseWindow(int $windowId) : bool{
-		$this->doCloseInventory();
-
-		if($windowId === $this->lastInventoryNetworkId and $this->currentWindow !== null){
-			$this->removeCurrentWindow();
-			return true;
-		}
-		if($windowId === 255){
-			//Closed a fake window
-			return true;
-		}
-
-		$this->logger->debug("Attempted to close inventory with network ID $windowId, but current is $this->lastInventoryNetworkId");
-		return false;
-	}
-
-	/**
 	 * Returns the inventory the player is currently viewing. This might be a chest, furnace, or any other container.
 	 *
 	 * @return Inventory|null
@@ -2673,9 +2636,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		//TODO: client side race condition here makes the opening work incorrectly
 		$this->removeCurrentWindow();
 
-		$networkId = $this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % ContainerIds::LAST);
-
-		$this->openInventoryInternal($inventory, $networkId, false);
+		$this->logger->debug("Opening inventory " . get_class($inventory) . "#" . spl_object_id($inventory));
+		$this->networkSession->getInvManager()->onCurrentWindowChange($inventory);
+		$inventory->onOpen($this);
 		$this->currentWindow = $inventory;
 		return true;
 	}
@@ -2683,61 +2646,28 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function removeCurrentWindow() : void{
 		if($this->currentWindow !== null){
 			(new InventoryCloseEvent($this->currentWindow, $this))->call();
-			$this->closeInventoryInternal($this->currentWindow, false);
+
+			$this->logger->debug("Closing inventory " . get_class($this->currentWindow) . "#" . spl_object_id($this->currentWindow));
+			$this->currentWindow->onClose($this);
+			if($this->isConnected()){
+				$this->networkSession->getInvManager()->onCurrentWindowRemove();
+			}
+			$this->currentWindow = null;
 		}
 	}
 
-	/**
-	 * Returns the window ID which the inventory has for this player, or -1 if the window is not open to the player.
-	 *
-	 * @param Inventory $inventory
-	 *
-	 * @return int|null
-	 */
-	public function getWindowId(Inventory $inventory) : ?int{
-		return ($id = array_search($inventory, $this->networkIdToInventoryMap, true)) !== false ? $id : null;
-	}
-
-	/**
-	 * Returns the inventory window open to the player with the specified window ID, or null if no window is open with
-	 * that ID.
-	 *
-	 * @param int $windowId
-	 *
-	 * @return Inventory|null
-	 */
-	public function getWindow(int $windowId) : ?Inventory{
-		return $this->networkIdToInventoryMap[$windowId] ?? null;
-	}
-
-	protected function openInventoryInternal(Inventory $inventory, int $networkId, bool $permanent) : void{
-		$this->logger->debug("Opening inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " with network ID $networkId");
-		$this->networkIdToInventoryMap[$networkId] = $inventory;
-		$inventory->onOpen($this);
-		if($permanent){
+	protected function addPermanentInventories(Inventory ...$inventories) : void{
+		foreach($inventories as $inventory){
+			$inventory->onOpen($this);
 			$this->permanentWindows[spl_object_id($inventory)] = $inventory;
 		}
 	}
 
-	protected function closeInventoryInternal(Inventory $inventory, bool $force) : bool{
-		$this->logger->debug("Closing inventory " . get_class($inventory) . "#" . spl_object_id($inventory));
-		$objectId = spl_object_id($inventory);
-		if($inventory === $this->currentWindow){
-			$this->currentWindow = null;
-		}elseif(isset($this->permanentWindows[$objectId])){
-			if(!$force){
-				throw new \InvalidArgumentException("Cannot remove fixed window " . get_class($inventory) . " from " . $this->getName());
-			}
-			unset($this->permanentWindows[$objectId]);
-		}else{
-			return false;
+	protected function removePermanentInventories() : void{
+		foreach($this->permanentWindows as $inventory){
+			$inventory->onClose($this);
 		}
-
-		$inventory->onClose($this);
-		$networkId = $this->getWindowId($inventory);
-		assert($networkId !== null);
-		unset($this->networkIdToInventoryMap[$networkId]);
-		return true;
+		$this->permanentWindows = [];
 	}
 
 	/**

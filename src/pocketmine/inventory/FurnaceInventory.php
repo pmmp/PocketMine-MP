@@ -25,18 +25,13 @@ namespace pocketmine\inventory;
 
 use pocketmine\block\tile\Furnace;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
-class FurnaceInventory extends ContainerInventory{
+class FurnaceInventory extends BlockInventory{
 	/** @var Furnace */
 	protected $holder;
 
 	public function __construct(Furnace $tile){
 		parent::__construct($tile, 3);
-	}
-
-	public function getNetworkType() : int{
-		return WindowTypes::FURNACE;
 	}
 
 	/**

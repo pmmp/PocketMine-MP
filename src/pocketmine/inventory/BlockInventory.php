@@ -23,32 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\player\Player;
-use pocketmine\world\Position;
+use pocketmine\math\Vector3;
 
-class EnchantInventory extends BlockInventory{
-
-	/** @var Position */
+abstract class BlockInventory extends BaseInventory{
+	/** @var Vector3 */
 	protected $holder;
 
-	public function __construct(Position $pos){
-		parent::__construct($pos->asPosition(), 2);
+	public function __construct(Vector3 $holder, int $size, array $items = []){
+		$this->holder = $holder;
+		parent::__construct($size, $items);
 	}
 
 	/**
-	 * This override is here for documentation and code completion purposes only.
-	 * @return Position
+	 * @return Vector3
 	 */
 	public function getHolder(){
 		return $this->holder;
-	}
-
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
-		foreach($this->getContents() as $item){
-			$who->dropItem($item);
-		}
-		$this->clearAll();
 	}
 }

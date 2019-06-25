@@ -171,7 +171,7 @@ class NetworkInventoryAction{
 	public function createInventoryAction(Player $player) : ?InventoryAction{
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
-				$window = $player->getWindow($this->windowId);
+				$window = $player->getNetworkSession()->getInvManager()->getWindow($this->windowId);
 				if($window !== null){
 					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}

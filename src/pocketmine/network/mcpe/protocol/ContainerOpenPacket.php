@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
 
 class ContainerOpenPacket extends DataPacket implements ClientboundPacket{
@@ -50,6 +51,10 @@ class ContainerOpenPacket extends DataPacket implements ClientboundPacket{
 		$result->type = $windowType;
 		[$result->x, $result->y, $result->z] = [$x, $y, $z];
 		return $result;
+	}
+
+	public static function blockInvVec3(int $windowId, int $windowType, Vector3 $vector3) : self{
+		return self::blockInv($windowId, $windowType, $vector3->getFloorX(), $vector3->getFloorY(), $vector3->getFloorZ());
 	}
 
 	public static function entityInv(int $windowId, int $windowType, int $entityUniqueId) : self{

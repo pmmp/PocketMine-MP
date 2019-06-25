@@ -23,21 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-class AnvilInventory extends ContainerInventory{
+class AnvilInventory extends BlockInventory{
 
 	/** @var Position */
 	protected $holder;
 
 	public function __construct(Position $pos){
 		parent::__construct($pos->asPosition(), 2);
-	}
-
-	public function getNetworkType() : int{
-		return WindowTypes::ANVIL;
 	}
 
 	/**

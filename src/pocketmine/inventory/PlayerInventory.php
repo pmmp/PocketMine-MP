@@ -137,12 +137,12 @@ class PlayerInventory extends BaseInventory{
 		if(!is_array($target)){
 			$target->sendDataPacket($pk);
 			if($target === $this->getHolder()){
-				$target->getNetworkSession()->syncInventorySlot($this, $this->getHeldItemIndex());
+				$target->getNetworkSession()->getInvManager()->syncSlot($this, $this->getHeldItemIndex());
 			}
 		}else{
 			$this->getHolder()->getWorld()->getServer()->broadcastPacket($target, $pk);
 			if(in_array($this->getHolder(), $target, true)){
-				$target->getNetworkSession()->syncInventorySlot($this, $this->getHeldItemIndex());
+				$target->getNetworkSession()->getInvManager()->syncSlot($this, $this->getHeldItemIndex());
 			}
 		}
 	}

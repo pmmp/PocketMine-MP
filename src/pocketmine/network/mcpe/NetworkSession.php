@@ -29,8 +29,6 @@ use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
-use pocketmine\inventory\CreativeInventory;
-use pocketmine\inventory\Inventory;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\DeathPacketHandler;
@@ -45,11 +43,8 @@ use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
-use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\GarbageServerboundPacket;
-use pocketmine\network\mcpe\protocol\InventoryContentPacket;
-use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
@@ -67,7 +62,6 @@ use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\CommandData;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
-use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
@@ -139,6 +133,9 @@ class NetworkSession{
 	/** @var \SplQueue|CompressBatchPromise[] */
 	private $compressedQueue;
 
+	/** @var InventoryManager|null */
+	private $invManager = null;
+
 	public function __construct(Server $server, NetworkSessionManager $manager, NetworkInterface $interface, string $ip, int $port){
 		$this->server = $server;
 		$this->manager = $manager;
@@ -176,6 +173,8 @@ class NetworkSession{
 		 * @see Player::__construct()
 		 */
 		$this->player = new $class($this->server, $this, $this->info, $this->authenticated);
+
+		$this->invManager = new InventoryManager($this->player, $this);
 	}
 
 	public function getPlayer() : ?Player{
@@ -443,6 +442,8 @@ class NetworkSession{
 			$this->connected = false;
 			$this->manager->remove($this);
 			$this->logger->info("Session closed due to $reason");
+
+			$this->invManager = null; //break cycles - TODO: this really ought to be deferred until it's safe
 		}
 	}
 
@@ -594,7 +595,7 @@ class NetworkSession{
 		$this->player->sendData($this->player->getViewers());
 
 		$this->syncAdventureSettings($this->player);
-		$this->syncAllInventoryContents();
+		$this->invManager->syncAll();
 		$this->setHandler(new InGamePacketHandler($this->player, $this));
 	}
 
@@ -629,7 +630,7 @@ class NetworkSession{
 		$this->sendDataPacket(SetPlayerGameTypePacket::create(self::getClientFriendlyGamemode($mode)));
 		$this->syncAdventureSettings($this->player);
 		if(!$isRollback){
-			$this->syncCreativeInventoryContents();
+			$this->invManager->syncCreative();
 		}
 	}
 
@@ -765,42 +766,11 @@ class NetworkSession{
 
 	}
 
-	public function syncInventorySlot(Inventory $inventory, int $slot) : void{
-		$windowId = $this->player->getWindowId($inventory);
-		if($windowId !== null){
-			$this->sendDataPacket(InventorySlotPacket::create($windowId, $slot, $inventory->getItem($slot)));
-		}
-	}
-
-	public function syncInventoryContents(Inventory $inventory) : void{
-		$windowId = $this->player->getWindowId($inventory);
-		if($windowId !== null){
-			$this->sendDataPacket(InventoryContentPacket::create($windowId, $inventory->getContents(true)));
-		}
-	}
-
-	public function syncAllInventoryContents() : void{
-		foreach($this->player->getAllWindows() as $inventory){
-			$this->syncInventoryContents($inventory);
-		}
-	}
-
-	public function syncInventoryData(Inventory $inventory, int $propertyId, int $value) : void{
-		$windowId = $this->player->getWindowId($inventory);
-		if($windowId !== null){
-			$this->sendDataPacket(ContainerSetDataPacket::create($windowId, $propertyId, $value));
-		}
-	}
-
-	public function syncCreativeInventoryContents() : void{
-		$items = [];
-		if(!$this->player->isSpectator()){ //fill it for all gamemodes except spectator
-			foreach(CreativeInventory::getAll() as $i => $item){
-				$items[$i] = clone $item;
-			}
-		}
-
-		$this->sendDataPacket(InventoryContentPacket::create(ContainerIds::CREATIVE, $items));
+	/**
+	 * @return InventoryManager
+	 */
+	public function getInvManager() : InventoryManager{
+		return $this->invManager;
 	}
 
 	public function onMobArmorChange(Living $mob) : void{

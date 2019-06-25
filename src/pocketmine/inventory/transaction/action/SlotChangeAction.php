@@ -100,7 +100,7 @@ class SlotChangeAction extends InventoryAction{
 		$this->inventory->setItem($this->inventorySlot, $this->targetItem, false);
 		foreach($this->inventory->getViewers() as $viewer){
 			if($viewer !== $source){
-				$viewer->getNetworkSession()->syncInventorySlot($this->inventory, $this->inventorySlot);
+				$viewer->getNetworkSession()->getInvManager()->syncSlot($this->inventory, $this->inventorySlot);
 			}
 		}
 	}

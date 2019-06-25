@@ -162,7 +162,7 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
 		if($this->player->isSpectator()){
-			$this->session->syncAllInventoryContents();
+			$this->session->getInvManager()->syncAll();
 			return true;
 		}
 
@@ -172,7 +172,7 @@ class InGamePacketHandler extends PacketHandler{
 			$result = $this->handleNormalTransaction($packet->trData);
 		}elseif($packet->trData instanceof MismatchTransactionData){
 			$this->session->getLogger()->debug("Mismatch transaction received");
-			$this->session->syncAllInventoryContents();
+			$this->session->getInvManager()->syncAll();
 			$result = true;
 		}elseif($packet->trData instanceof UseItemTransactionData){
 			$result = $this->handleUseItemTransaction($packet->trData);
@@ -183,7 +183,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		if(!$result){
-			$this->session->syncAllInventoryContents();
+			$this->session->getInvManager()->syncAll();
 		}
 		return $result;
 	}
@@ -344,7 +344,7 @@ class InGamePacketHandler extends PacketHandler{
 		switch($data->getActionType()){
 			case ReleaseItemTransactionData::ACTION_RELEASE:
 				if(!$this->player->releaseHeldItem()){
-					$this->session->syncInventoryContents($this->player->getInventory());
+					$this->session->getInvManager()->syncContents($this->player->getInventory());
 				}
 				return true;
 			case ReleaseItemTransactionData::ACTION_CONSUME:
@@ -462,7 +462,21 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
-		return $this->player->doCloseWindow($packet->windowId);
+		$this->player->doCloseInventory();
+
+		if($packet->windowId === 255){
+			//Closed a fake window
+			return true;
+		}
+
+		$window = $this->player->getCurrentWindow();
+		if($window !== null and $packet->windowId === $this->session->getInvManager()->getCurrentWindowId()){
+			$this->player->removeCurrentWindow();
+			return true;
+		}
+
+		$this->session->getLogger()->debug("Attempted to close inventory with network ID $packet->windowId, but current is " . $this->session->getInvManager()->getCurrentWindowId());
+		return false;
 	}
 
 	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{

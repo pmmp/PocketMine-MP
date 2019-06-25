@@ -282,7 +282,7 @@ class InventoryTransaction{
 
 	protected function sendInventories() : void{
 		foreach($this->inventories as $inventory){
-			$this->source->getNetworkSession()->syncInventoryContents($inventory);
+			$this->source->getNetworkSession()->getInvManager()->syncContents($inventory);
 		}
 	}
 

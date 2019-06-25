@@ -91,8 +91,8 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$this->player->sendPotionEffects($this->player);
 		$this->player->sendData($this->player);
 
-		$this->session->syncAllInventoryContents();
-		$this->session->syncCreativeInventoryContents();
+		$this->session->getInvManager()->syncAll();
+		$this->session->getInvManager()->syncCreative();
 		$this->player->getInventory()->sendHeldItem($this->player);
 		$this->session->queueCompressed($this->server->getCraftingManager()->getCraftingDataPacket());
 
