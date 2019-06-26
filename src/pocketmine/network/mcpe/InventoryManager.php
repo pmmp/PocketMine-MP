@@ -36,6 +36,7 @@ use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
+use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\player\Player;
@@ -142,6 +143,10 @@ class InventoryManager{
 		if($windowId !== null){
 			$this->session->sendDataPacket(ContainerSetDataPacket::create($windowId, $propertyId, $value));
 		}
+	}
+
+	public function syncSelectedHotbarSlot() : void{
+		$this->session->sendDataPacket(PlayerHotbarPacket::create($this->player->getInventory()->getHeldItemIndex(), ContainerIds::INVENTORY));
 	}
 
 	public function syncCreative() : void{

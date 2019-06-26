@@ -93,7 +93,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 		$this->session->getInvManager()->syncAll();
 		$this->session->getInvManager()->syncCreative();
-		$this->player->getInventory()->sendHeldItem($this->player);
+		$this->session->getInvManager()->syncSelectedHotbarSlot();
 		$this->session->queueCompressed($this->server->getCraftingManager()->getCraftingDataPacket());
 
 		$this->session->syncPlayerList();

@@ -25,11 +25,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\Human;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
-use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\player\Player;
-use function in_array;
-use function is_array;
 
 class PlayerInventory extends BaseInventory{
 
@@ -98,11 +94,12 @@ class PlayerInventory extends BaseInventory{
 
 		$this->itemInHandIndex = $hotbarSlot;
 
-		if($this->getHolder() instanceof Player and $send){
-			$this->sendHeldItem($this->getHolder());
+		if($this->holder instanceof Player and $send){
+			$this->holder->getNetworkSession()->getInvManager()->syncSelectedHotbarSlot();
 		}
-
-		$this->sendHeldItem($this->getHolder()->getViewers());
+		foreach($this->holder->getViewers() as $viewer){
+			$viewer->getNetworkSession()->onMobEquipmentChange($this->holder);
+		}
 	}
 
 	/**
@@ -121,29 +118,8 @@ class PlayerInventory extends BaseInventory{
 	 */
 	public function setItemInHand(Item $item) : void{
 		$this->setItem($this->getHeldItemIndex(), $item);
-		$this->sendHeldItem($this->holder->getViewers());
-	}
-
-	/**
-	 * Sends the currently-held item to specified targets.
-	 *
-	 * @param Player|Player[] $target
-	 */
-	public function sendHeldItem($target) : void{
-		$item = $this->getItemInHand();
-
-		$pk = MobEquipmentPacket::create($this->getHolder()->getId(), $item, $this->getHeldItemIndex(), ContainerIds::INVENTORY);
-
-		if(!is_array($target)){
-			$target->sendDataPacket($pk);
-			if($target === $this->getHolder()){
-				$target->getNetworkSession()->getInvManager()->syncSlot($this, $this->getHeldItemIndex());
-			}
-		}else{
-			$this->getHolder()->getWorld()->getServer()->broadcastPacket($target, $pk);
-			if(in_array($this->getHolder(), $target, true)){
-				$target->getNetworkSession()->getInvManager()->syncSlot($this, $this->getHeldItemIndex());
-			}
+		foreach($this->holder->getViewers() as $viewer){
+			$viewer->getNetworkSession()->onMobEquipmentChange($this->holder);
 		}
 	}
 

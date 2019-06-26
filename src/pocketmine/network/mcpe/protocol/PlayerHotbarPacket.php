@@ -28,9 +28,6 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 
-/**
- * One of the most useless packets.
- */
 class PlayerHotbarPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_HOTBAR_PACKET;
 
@@ -40,6 +37,14 @@ class PlayerHotbarPacket extends DataPacket implements ClientboundPacket, Server
 	public $windowId = ContainerIds::INVENTORY;
 	/** @var bool */
 	public $selectHotbarSlot = true;
+
+	public static function create(int $slot, int $windowId, bool $selectSlot = true) : self{
+		$result = new self;
+		$result->selectedHotbarSlot = $slot;
+		$result->windowId = $windowId;
+		$result->selectHotbarSlot = $selectSlot;
+		return $result;
+	}
 
 	protected function decodePayload() : void{
 		$this->selectedHotbarSlot = $this->getUnsignedVarInt();
