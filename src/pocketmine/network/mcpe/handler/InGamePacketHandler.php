@@ -286,7 +286,7 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
 				if(!$this->player->useHeldItem()){
-					$this->player->getInventory()->sendHeldItem($this->player);
+					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
 				return true;
 		}
@@ -301,7 +301,7 @@ class InGamePacketHandler extends PacketHandler{
 	 * @param int|null $face
 	 */
 	private function onFailedBlockAction(Vector3 $blockPos, ?int $face) : void{
-		$this->player->getInventory()->sendHeldItem($this->player);
+		$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 		if($blockPos->distanceSquared($this->player) < 10000){
 			$blocks = $blockPos->sidesArray();
 			if($face !== null){
@@ -326,12 +326,12 @@ class InGamePacketHandler extends PacketHandler{
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
 				if(!$this->player->interactEntity($target, $data->getClickPos())){
-					$this->player->getInventory()->sendHeldItem($this->player);
+					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
 				return true;
 			case UseItemOnEntityTransactionData::ACTION_ATTACK:
 				if(!$this->player->attackEntity($target)){
-					$this->player->getInventory()->sendHeldItem($this->player);
+					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
 				return true;
 		}
@@ -349,7 +349,7 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			case ReleaseItemTransactionData::ACTION_CONSUME:
 				if(!$this->player->consumeHeldItem()){
-					$this->player->getInventory()->sendHeldItem($this->player);
+					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
 				return true;
 		}
