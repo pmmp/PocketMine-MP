@@ -21,7 +21,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\network\mcpe\raklib;
+
+use pocketmine\network\mcpe\PacketSender;
 
 class RakLibPacketSender implements PacketSender{
 

@@ -58,7 +58,7 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBatch;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\RakLibInterface;
+use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\Network;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\upnp\UPnP;

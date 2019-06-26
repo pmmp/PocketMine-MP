@@ -21,10 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\network\mcpe\raklib;
 
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\BadPacketException;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
 use pocketmine\Server;
