@@ -132,7 +132,7 @@ class InventoryManager{
 	}
 
 	public function syncAll() : void{
-		foreach($this->player->getAllWindows() as $inventory){
+		foreach($this->windowMap as $inventory){
 			$this->syncContents($inventory);
 		}
 	}

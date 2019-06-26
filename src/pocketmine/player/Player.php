@@ -2677,17 +2677,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->permanentWindows = [];
 	}
 
-	/**
-	 * @return Inventory[]
-	 */
-	public function getAllWindows() : array{
-		$windows = $this->permanentWindows;
-		if($this->currentWindow !== null){
-			$windows[] = $this->currentWindow;
-		}
-		return $windows;
-	}
-
 	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue) : void{
 		$this->server->getPlayerMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
 	}
