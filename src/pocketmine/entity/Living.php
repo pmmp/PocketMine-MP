@@ -346,17 +346,6 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
-	/**
-	 * Sends the mob's potion effects to the specified player.
-	 *
-	 * @param Player $player
-	 */
-	public function sendPotionEffects(Player $player) : void{
-		foreach($this->effects as $effect){
-			$player->getNetworkSession()->onEntityEffectAdded($this, $effect, false);
-		}
-	}
-
 	protected function onEffectAdded(EffectInstance $effect, bool $replacesOldEffect) : void{
 
 	}

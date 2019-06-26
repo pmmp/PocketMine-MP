@@ -86,7 +86,9 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$this->session->syncAttributes($this->player, true);
 		$this->session->syncAvailableCommands();
 		$this->session->syncAdventureSettings($this->player);
-		$this->player->sendPotionEffects($this->player);
+		foreach($this->player->getEffects() as $effect){
+			$this->session->onEntityEffectAdded($this->player, $effect, false);
+		}
 		$this->player->sendData($this->player);
 
 		$this->session->getInvManager()->syncAll();
