@@ -1652,6 +1652,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if(!$this->inventory->isHotbarSlot($hotbarSlot)){ //TODO: exception here?
 			return false;
 		}
+		if($hotbarSlot === $this->inventory->getHeldItemIndex()){
+			return true;
+		}
 
 		$ev = new PlayerItemHeldEvent($this, $this->inventory->getItem($hotbarSlot), $hotbarSlot);
 		$ev->call();
