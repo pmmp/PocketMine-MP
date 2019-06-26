@@ -94,7 +94,10 @@ class HorseInventory extends AbstractHorseInventory{
 
 		$pk = new MobArmorEquipmentPacket();
 		$pk->entityRuntimeId = $this->getHolder()->getId();
-		$pk->slots = [0 => $air, 1 => $this->getItem(1), 2 => $air, 3 => $air];
+		$pk->head = $air;
+		$pk->chest = $this->getItem(1);
+		$pk->legs = $air;
+		$pk->feet = $air;
 
 		$player->sendDataPacket($pk);
 	}

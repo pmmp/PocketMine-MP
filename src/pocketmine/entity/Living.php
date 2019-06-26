@@ -101,6 +101,11 @@ abstract class Living extends Entity implements Damageable{
 	/** @var int|null */
 	protected $leashedToEntityId = null;
 
+	/** @var float */
+	protected $moveForward = 0.0;
+	/** @var float */
+	protected $moveStrafing = 0.0;
+
 	abstract public function getName() : string;
 
 	/**
@@ -1189,5 +1194,33 @@ abstract class Living extends Entity implements Damageable{
 	 */
 	public function getMaxSpawnedInChunk() : int{
 		return 4;
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getMoveForward() : float{
+		return $this->moveForward;
+	}
+
+	/**
+	 * @param float $moveForward
+	 */
+	public function setMoveForward(float $moveForward) : void{
+		$this->moveForward = $moveForward;
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getMoveStrafing() : float{
+		return $this->moveStrafing;
+	}
+
+	/**
+	 * @param float $moveStrafing
+	 */
+	public function setMoveStrafing(float $moveStrafing) : void{
+		$this->moveStrafing = $moveStrafing;
 	}
 }

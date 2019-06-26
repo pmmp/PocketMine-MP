@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\vehicle;
 
 use pocketmine\block\Water;
+use pocketmine\entity\Mob;
 use pocketmine\entity\Vehicle;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -43,6 +44,15 @@ class Boat extends Vehicle{
 	public $height = 0.455;
 	public $width = 1.4;
 
+	/** @var Vector3|null */
+	protected $boatPos;
+	protected $boatYaw = 0.0;
+	protected $boatPitch = 0.0;
+	/** @var Vector3 */
+	protected $velocity;
+
+	protected $clientMoveTicks = 0;
+
 	protected function initEntity() : void{
 		$this->setMaxHealth(40);
 		$this->setGenericFlag(self::DATA_FLAG_STACKABLE);
@@ -52,13 +62,9 @@ class Boat extends Vehicle{
 		$this->setHurtDirection(1);
 		$this->setHurtTime(0);
 
+		$this->velocity = new Vector3();
+
 		parent::initEntity();
-	}
-
-	protected function recalculateBoundingBox() : void{
-		parent::recalculateBoundingBox();
-
-		$this->boundingBox->minY -= 0.3;
 	}
 
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
@@ -75,6 +81,37 @@ class Boat extends Vehicle{
 
 	public function setBoatType(int $boatType) : void{
 		$this->propertyManager->setInt(self::DATA_VARIANT, $boatType);
+	}
+
+	public function setClientPositionAndRotation(Vector3 $pos, float $yaw, float $pitch, int $clientMoveTicks, bool $immediate) : void{
+		$riddenByEntity = $this->getRiddenByEntity();
+
+		if($immediate and $riddenByEntity !== null){
+			$this->setPositionAndRotation($pos, $yaw, $pitch);
+			$this->clientMoveTicks = 0;
+			$this->resetMotion();
+
+			$this->velocity->setComponents(0, 0, 0);
+		}else{
+			if($riddenByEntity === null){
+				$this->clientMoveTicks = $clientMoveTicks + 5;
+			}else{
+				if($this->distanceSquared($pos) > 1){
+					$this->clientMoveTicks  = 3;
+				}else{
+					return;
+				}
+			}
+
+			$this->boatPos = $pos;
+			$this->boatYaw = $yaw;
+			$this->boatPitch = $pitch;
+			$this->motion = $this->velocity;
+		}
+	}
+
+	public function setClientMotion(Vector3 $motion) : void{
+		$this->velocity = $motion;
 	}
 
 	public function saveNBT() : void{
@@ -131,13 +168,23 @@ class Boat extends Vehicle{
 		}
 
 		if($this->getRiddenByEntity() === null){
-			if($this->onGround){
-				$this->motion = $this->motion->multiply(0.5);
-			}
+			if($this->clientMoveTicks > 0){
+				$newPos = $this->add(($this->boatPos->subtract($this))->divide($this->clientMoveTicks));
+				$newYaw = $this->yaw + ($this->boatYaw - $this->yaw) / $this->clientMoveTicks;
+				$newPitch = $this->pitch + ($this->boatPitch - $this->pitch) / $this->clientMoveTicks;
 
-			$this->motion->x *= 0.99;
-			$this->motion->y *= 0.95;
-			$this->motion->z *= 0.99;
+				$this->setPositionAndRotation($newPos, $newYaw, $newPitch);
+
+				$this->clientMoveTicks--;
+			}else{
+				if($this->onGround){
+					$this->motion = $this->motion->multiply(0.5);
+				}
+
+				$this->motion->x *= 0.99;
+				$this->motion->y *= 0.95;
+				$this->motion->z *= 0.99;
+			}
 		}
 
 		if($waterCount < 1){

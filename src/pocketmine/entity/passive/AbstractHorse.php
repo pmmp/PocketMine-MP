@@ -25,9 +25,10 @@ declare(strict_types=1);
 namespace pocketmine\entity\passive;
 
 use pocketmine\entity\Attribute;
+use pocketmine\entity\Effect;
 use pocketmine\entity\EntityIds;
+use pocketmine\entity\Living;
 use pocketmine\entity\Tamable;
-use pocketmine\item\Saddle;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
@@ -40,10 +41,10 @@ use function mt_rand;
 
 abstract class AbstractHorse extends Tamable{
 
-	//TODO: implement moveWithHeading function for riding, also remove onRidingUpdate function
-
 	protected $jumpPower = 0.0;
 	protected $rearingCounter = 0;
+
+	protected $horseJumping = false;
 
 	public function getJumpPower() : float{
 		return $this->jumpPower;
@@ -64,6 +65,20 @@ abstract class AbstractHorse extends Tamable{
 				$this->jumpPower = 0.4 + 0.4 * $jumpPowerIn / 90;
 			}
 		}
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isHorseJumping() : bool{
+		return $this->horseJumping;
+	}
+
+	/**
+	 * @param bool $horseJumping
+	 */
+	public function setHorseJumping(bool $horseJumping) : void{
+		$this->horseJumping = $horseJumping;
 	}
 
 	protected function initEntity() : void{
@@ -194,12 +209,72 @@ abstract class AbstractHorse extends Tamable{
 		}
 	}
 
+	public function moveWithHeading(float $strafe, float $forward){
+		$riddenByEntity = $this->getRiddenByEntity();
+		if($riddenByEntity instanceof Living and $this->isSaddled()){
+			$this->yaw = $riddenByEntity->yaw;
+			$this->pitch = $riddenByEntity->pitch / 2;
+			$this->headYaw = $this->yawOffset = $this->yaw;
+
+			$strafe = $riddenByEntity->getMoveStrafing() / 2;
+			$forward = $riddenByEntity->getMoveForward();
+
+			if($forward <= 0){
+				$forward *= 0.25;
+			}
+
+			if($this->onGround and $this->jumpPower == 0 and $this->isRearing()){
+				$strafe = 0;
+				$forward = 0;
+			}
+
+			if($this->jumpPower > 0 and !$this->isHorseJumping() and $this->onGround){
+				$this->motion->y = $this->getJumpStrength() * $this->jumpPower;
+
+				if($this->hasEffect(Effect::JUMP)){
+					$this->motion->y += ($this->getEffect(Effect::JUMP)->getAmplifier() + 1) * 0.1;
+				}
+
+				$this->setHorseJumping(true);
+
+				if($forward > 0){
+					$f = sin($this->yaw * M_PI / 180);
+					$f1 = cos($this->yaw * M_PI / 180);
+					$this->motion->x += (-0.4 * $f * $this->jumpPower);
+					$this->motion->z += (0.4 * $f1 * $this->jumpPower);
+
+					$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_JUMP, -1, self::NETWORK_ID);
+				}
+
+				$this->jumpPower = 0;
+			}
+
+			$this->stepHeight = 1.0;
+			$this->jumpMovementFactor = $this->getAIMoveSpeed() * 0.1;
+
+			$this->setAIMoveSpeed($this->getMovementSpeed());
+
+			parent::moveWithHeading($strafe, $forward);
+
+			if($this->onGround){
+				$this->jumpPower = 0;
+
+				$this->setHorseJumping(false);
+			}
+		}else{
+			$this->stepHeight = 0.5;
+			$this->jumpMovementFactor = 0.02;
+
+			parent::moveWithHeading($strafe, $forward);
+		}
+	}
+
 	public function getJumpStrength() : float{
-		return $this->attributeMap->getAttribute(Attribute::JUMP_STRENGTH)->getValue();
+		return $this->attributeMap->getAttribute(Attribute::HORSE_JUMP_STRENGTH)->getValue();
 	}
 
 	public function setJumpStrength(float $value) : void{
-		$this->attributeMap->getAttribute(Attribute::JUMP_STRENGTH)->setValue($value);
+		$this->attributeMap->getAttribute(Attribute::HORSE_JUMP_STRENGTH)->setValue($value);
 	}
 
 	public function throwRider() : void{

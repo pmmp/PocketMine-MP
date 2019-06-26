@@ -210,13 +210,9 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handlePlayerInput(PlayerInputPacket $packet) : bool{
-		if($this->player->isRiding()){
-			$entity = $this->player->getRidingEntity();
-			if($entity !== null and $entity->isAlive()){
-				// TODO: Remove this, this is not right
-				$entity->onRidingUpdate($this->player, $packet->motionX, $packet->motionY, $packet->jumping, $packet->sneaking);
-			}
-		}
+		$this->player->setMoveForward($packet->motionY);
+		$this->player->setMoveStrafing($packet->motionX);
+
 		return true;
 	}
 
@@ -224,10 +220,8 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		if($this->player->isRiding()){
 			$horse = $this->player->getRidingEntity();
 			if($horse instanceof AbstractHorse){
-				if($horse->onGround){
-					// This is useless for now, only may usable for plugins
-					$horse->setJumpPower($packet->jumpStrength);
-				}
+				$horse->setJumpPower($packet->jumpStrength);
+
 				return true;
 			}
 		}
@@ -348,21 +342,26 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleMoveEntityAbsolute(MoveEntityAbsolutePacket $packet) : bool{
-		// TODO: remove this
 		$target = $this->player->getServer()->findEntity($packet->entityRuntimeId);
 		if($target !== null){
-			if($this->player->isRiding() and $this->player->getRidingEntity() !== null and $this->player->getRidingEntity()->getId() === $target->getId()){
-				$target->setPositionAndRotation($packet->position, $packet->yRot, $packet->xRot);
+			$target->setClientPositionAndRotation($packet->position, $packet->yRot, $packet->xRot, 3, ($packet->flags & MoveEntityAbsolutePacket::FLAG_TELEPORT) !== 0);
+			$target->onGround = ($packet->flags & MoveEntityAbsolutePacket::FLAG_GROUND) !== 0;
 
-				return true;
-			}
+			return true;
 		}
 
 		return false;
 	}
 
 	public function handleSetEntityMotion(SetEntityMotionPacket $packet) : bool{
-		return true; // WTF, spam??
+		$target = $this->player->getServer()->findEntity($packet->entityRuntimeId);
+		if($target !== null){
+			$target->setClientMotion($packet->motion);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{

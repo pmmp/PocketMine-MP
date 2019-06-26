@@ -2837,16 +2837,21 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
-	 * Called when riding by a player
-	 *
-	 * @param Player $player
-	 * @param float  $motX
-	 * @param float  $motY
-	 * @param bool   $jumping
-	 * @param bool   $sneaking
+	 * @param Vector3 $pos
+	 * @param float   $yaw
+	 * @param float   $pitch
+	 * @param int     $clientMoveTicks
+	 * @param bool    $immediate
 	 */
-	public function onRidingUpdate(Player $player, float $motX, float $motY, bool $jumping = false, bool $sneaking = false) : void{
+	public function setClientPositionAndRotation(Vector3 $pos, float $yaw, float $pitch, int $clientMoveTicks, bool $immediate) : void{
+		// NOOP
+	}
 
+	/**
+	 * @param Vector3 $motion
+	 */
+	public function setClientMotion(Vector3 $motion) : void{
+		// NOOP
 	}
 
 	public function __destruct(){

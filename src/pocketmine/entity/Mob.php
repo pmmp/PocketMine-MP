@@ -58,9 +58,6 @@ abstract class Mob extends Living{
 	/** @var int */
 	protected $livingSoundTime = 0;
 
-	protected $moveForward = 0.0;
-	protected $moveStrafing = 0.0;
-
 	protected $landMovementFactor = 0.0;
 	protected $jumpMovementFactor = 0.02;
 
@@ -108,34 +105,6 @@ abstract class Mob extends Living{
 
 	public function setAIMoveSpeed(float $value) : void{
 		$this->landMovementFactor = $value;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getMoveForward() : float{
-		return $this->moveForward;
-	}
-
-	/**
-	 * @param float $moveForward
-	 */
-	public function setMoveForward(float $moveForward) : void{
-		$this->moveForward = $moveForward;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getMoveStrafing() : float{
-		return $this->moveStrafing;
-	}
-
-	/**
-	 * @param float $moveStrafing
-	 */
-	public function setMoveStrafing(float $moveStrafing) : void{
-		$this->moveStrafing = $moveStrafing;
 	}
 
 	/**

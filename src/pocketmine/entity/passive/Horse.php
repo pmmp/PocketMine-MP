@@ -119,7 +119,7 @@ class Horse extends AbstractHorse implements InventoryHolder{
 	public function addAttributes() : void{
 		parent::addAttributes();
 
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::JUMP_STRENGTH));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HORSE_JUMP_STRENGTH));
 	}
 
 	public function getRiderSeatPosition(int $seatNumber = 0) : Vector3{
