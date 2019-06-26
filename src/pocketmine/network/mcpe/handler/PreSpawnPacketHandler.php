@@ -83,8 +83,6 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 		$this->player->setImmobile(); //HACK: fix client-side falling pre-spawn
 
-		$this->player->getWorld()->sendTime($this->player);
-
 		$this->session->syncAttributes($this->player, true);
 		$this->session->syncAvailableCommands();
 		$this->session->syncAdventureSettings($this->player);
