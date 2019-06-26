@@ -42,7 +42,6 @@ use function bin2hex;
 use function implode;
 use function random_bytes;
 use function rtrim;
-use function spl_object_id;
 use function substr;
 use function unserialize;
 use const PTHREADS_INHERIT_CONSTANTS;
@@ -67,9 +66,6 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 
 	/** @var NetworkSession[] */
 	private $sessions = [];
-
-	/** @var int[] */
-	private $identifiers = [];
 
 	/** @var ServerHandler */
 	private $interface;
@@ -119,17 +115,15 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	public function closeSession(int $sessionId, string $reason) : void{
 		if(isset($this->sessions[$sessionId])){
 			$session = $this->sessions[$sessionId];
-			unset($this->identifiers[spl_object_id($session)]);
 			unset($this->sessions[$sessionId]);
 			$session->onClientDisconnect($reason);
 		}
 	}
 
-	public function close(NetworkSession $session, string $reason = "unknown reason") : void{
-		if(isset($this->identifiers[$h = spl_object_id($session)])){
-			unset($this->sessions[$this->identifiers[$h]]);
-			$this->interface->closeSession($this->identifiers[$h], $reason);
-			unset($this->identifiers[$h]);
+	public function close(int $sessionId, string $reason = "unknown reason") : void{
+		if(isset($this->sessions[$sessionId])){
+			unset($this->sessions[$sessionId]);
+			$this->interface->closeSession($sessionId, $reason);
 		}
 	}
 
@@ -139,9 +133,8 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	}
 
 	public function openSession(int $sessionId, string $address, int $port, int $clientID) : void{
-		$session = new NetworkSession($this->server, $this->network->getSessionManager(), $this, $address, $port);
+		$session = new NetworkSession($this->server, $this->network->getSessionManager(), $this, new RakLibPacketSender($sessionId, $this), $address, $port);
 		$this->sessions[$sessionId] = $session;
-		$this->identifiers[spl_object_id($session)] = $sessionId;
 	}
 
 	public function handleEncapsulated(int $sessionId, EncapsulatedPacket $packet, int $flags) : void{
@@ -225,16 +218,14 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		}
 	}
 
-	public function putPacket(NetworkSession $session, string $payload, bool $immediate = true) : void{
-		if(isset($this->identifiers[$h = spl_object_id($session)])){
-			$identifier = $this->identifiers[$h];
-
+	public function putPacket(int $sessionId, string $payload, bool $immediate = true) : void{
+		if(isset($this->sessions[$sessionId])){
 			$pk = new EncapsulatedPacket();
 			$pk->buffer = self::MCPE_RAKNET_PACKET_ID . $payload;
 			$pk->reliability = PacketReliability::RELIABLE_ORDERED;
 			$pk->orderChannel = 0;
 
-			$this->interface->sendEncapsulated($identifier, $pk, ($immediate ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
+			$this->interface->sendEncapsulated($sessionId, $pk, ($immediate ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
 		}
 	}
 

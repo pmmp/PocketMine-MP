@@ -21,33 +21,22 @@
 
 declare(strict_types=1);
 
-/**
- * Network-related classes
- */
-namespace pocketmine\network;
+namespace pocketmine\network\mcpe;
 
-/**
- * Network interfaces are transport layers which can be used to transmit packets between the server and clients.
- */
-interface NetworkInterface{
+interface PacketSender{
 
 	/**
-	 * Performs actions needed to start the interface after it is registered.
+	 * Pushes a packet into the channel to be processed.
+	 *
+	 * @param string $payload
+	 * @param bool   $immediate
 	 */
-	public function start() : void;
+	public function send(string $payload, bool $immediate) : void;
 
 	/**
-	 * @param string $name
+	 * Closes the channel, terminating the connection.
+	 *
+	 * @param string $reason
 	 */
-	public function setName(string $name) : void;
-
-	/**
-	 * Called every tick to process events on the interface.
-	 */
-	public function tick() : void;
-
-	/**
-	 * Gracefully shuts down the network interface.
-	 */
-	public function shutdown() : void;
+	public function close(string $reason = "unknown reason") : void;
 }

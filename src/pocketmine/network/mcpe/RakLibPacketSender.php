@@ -21,33 +21,33 @@
 
 declare(strict_types=1);
 
-/**
- * Network-related classes
- */
-namespace pocketmine\network;
+namespace pocketmine\network\mcpe;
 
-/**
- * Network interfaces are transport layers which can be used to transmit packets between the server and clients.
- */
-interface NetworkInterface{
+class RakLibPacketSender implements PacketSender{
 
-	/**
-	 * Performs actions needed to start the interface after it is registered.
-	 */
-	public function start() : void;
+	/** @var int */
+	private $sessionId;
+	/** @var RakLibInterface */
+	private $handler;
 
-	/**
-	 * @param string $name
-	 */
-	public function setName(string $name) : void;
+	/** @var bool */
+	private $closed = false;
 
-	/**
-	 * Called every tick to process events on the interface.
-	 */
-	public function tick() : void;
+	public function __construct(int $sessionId, RakLibInterface $handler){
+		$this->sessionId = $sessionId;
+		$this->handler = $handler;
+	}
 
-	/**
-	 * Gracefully shuts down the network interface.
-	 */
-	public function shutdown() : void;
+	public function send(string $payload, bool $immediate) : void{
+		if(!$this->closed){
+			$this->handler->putPacket($this->sessionId, $payload, $immediate);
+		}
+	}
+
+	public function close(string $reason = "unknown reason") : void{
+		if(!$this->closed){
+			$this->closed = true;
+			$this->handler->closeSession($this->sessionId, $reason);
+		}
+	}
 }

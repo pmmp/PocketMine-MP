@@ -137,10 +137,14 @@ class NetworkSession{
 	/** @var InventoryManager|null */
 	private $invManager = null;
 
-	public function __construct(Server $server, NetworkSessionManager $manager, NetworkInterface $interface, string $ip, int $port){
+	/** @var PacketSender */
+	private $sender;
+
+	public function __construct(Server $server, NetworkSessionManager $manager, NetworkInterface $interface, PacketSender $sender, string $ip, int $port){
 		$this->server = $server;
 		$this->manager = $manager;
 		$this->interface = $interface;
+		$this->sender = $sender;
 		$this->ip = $ip;
 		$this->port = $port;
 
@@ -431,7 +435,7 @@ class NetworkSession{
 			$payload = $this->cipher->encrypt($payload);
 			Timings::$playerNetworkSendEncryptTimer->stopTiming();
 		}
-		$this->interface->putPacket($this, $payload, $immediate);
+		$this->sender->send($payload, $immediate);
 	}
 
 	private function tryDisconnect(\Closure $func, string $reason) : void{
@@ -506,7 +510,7 @@ class NetworkSession{
 			$this->sendDataPacket($reason === "" ? DisconnectPacket::silent() : DisconnectPacket::message($reason), true);
 		}
 
-		$this->interface->close($this, $notify ? $reason : "");
+		$this->sender->close($notify ? $reason : "");
 	}
 
 	/**
