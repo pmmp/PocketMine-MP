@@ -1648,7 +1648,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return true;
 	}
 
-	public function equipItem(int $hotbarSlot) : bool{
+	public function selectHotbarSlot(int $hotbarSlot) : bool{
 		if(!$this->inventory->isHotbarSlot($hotbarSlot)){ //TODO: exception here?
 			return false;
 		}

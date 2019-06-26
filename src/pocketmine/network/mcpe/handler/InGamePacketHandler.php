@@ -358,7 +358,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-		if(!$this->player->equipItem($packet->hotbarSlot)){
+		if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
 			$this->player->getInventory()->sendHeldItem($this->player);
 		}
 		return true;
