@@ -25,7 +25,6 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\NetworkInterface;
 use pocketmine\player\Player;
 use function is_a;
 
@@ -48,13 +47,6 @@ class PlayerCreationEvent extends Event{
 	 */
 	public function __construct(NetworkSession $session){
 		$this->session = $session;
-	}
-
-	/**
-	 * @return NetworkInterface
-	 */
-	public function getInterface() : NetworkInterface{
-		return $this->session->getInterface();
 	}
 
 	/**

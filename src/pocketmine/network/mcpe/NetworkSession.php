@@ -65,7 +65,6 @@ use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
-use pocketmine\network\NetworkInterface;
 use pocketmine\network\NetworkSessionManager;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -100,8 +99,6 @@ class NetworkSession{
 	private $player = null;
 	/** @var NetworkSessionManager */
 	private $manager;
-	/** @var NetworkInterface */
-	private $interface;
 	/** @var string */
 	private $ip;
 	/** @var int */
@@ -140,10 +137,9 @@ class NetworkSession{
 	/** @var PacketSender */
 	private $sender;
 
-	public function __construct(Server $server, NetworkSessionManager $manager, NetworkInterface $interface, PacketSender $sender, string $ip, int $port){
+	public function __construct(Server $server, NetworkSessionManager $manager, PacketSender $sender, string $ip, int $port){
 		$this->server = $server;
 		$this->manager = $manager;
-		$this->interface = $interface;
 		$this->sender = $sender;
 		$this->ip = $ip;
 		$this->port = $port;
@@ -207,10 +203,6 @@ class NetworkSession{
 
 	public function isConnected() : bool{
 		return $this->connected;
-	}
-
-	public function getInterface() : NetworkInterface{
-		return $this->interface;
 	}
 
 	/**
