@@ -149,7 +149,8 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 
 		$resultE->setRepairCost($repairCost);
 
-		if($result->equalsExact($resultE)){
+		// TODO: implement this
+		//if($result->equalsExact($resultE)){
 			$this->clear(0);
 
 			if(!$this->getItem(1)->isNull()){
@@ -160,8 +161,8 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 			}
 
 			return true;
-		}
-		return false;
+		//}
+		//return false;
 	}
 
 	/**
