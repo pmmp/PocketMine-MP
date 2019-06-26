@@ -72,7 +72,6 @@ use pocketmine\world\biome\Biome;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\EmptySubChunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
-use pocketmine\world\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
@@ -2506,7 +2505,7 @@ class World implements ChunkManager, Metadatable{
 
 		try{
 			$chunk = $this->provider->loadChunk($x, $z);
-		}catch(CorruptedChunkException | UnsupportedChunkFormatException $e){
+		}catch(CorruptedChunkException $e){
 			$this->logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
 		}
 

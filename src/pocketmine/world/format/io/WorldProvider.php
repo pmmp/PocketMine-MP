@@ -26,7 +26,6 @@ namespace pocketmine\world\format\io;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
-use pocketmine\world\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 
 interface WorldProvider{
@@ -69,7 +68,6 @@ interface WorldProvider{
 	 * @return null|Chunk
 	 *
 	 * @throws CorruptedChunkException
-	 * @throws UnsupportedChunkFormatException
 	 */
 	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk;
 

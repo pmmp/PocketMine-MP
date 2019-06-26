@@ -38,7 +38,6 @@ use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\data\BedrockWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
-use pocketmine\world\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\io\SubChunkConverter;
 use pocketmine\world\format\io\WorldData;
@@ -230,7 +229,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 *
 	 * @return Chunk|null
 	 * @throws CorruptedChunkException
-	 * @throws UnsupportedChunkFormatException
 	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
@@ -328,7 +326,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 							break;
 						default:
 							//TODO: set chunks read-only so the version on disk doesn't get overwritten
-							throw new UnsupportedChunkFormatException("don't know how to decode LevelDB subchunk format version $subChunkVersion");
+							throw new CorruptedChunkException("don't know how to decode LevelDB subchunk format version $subChunkVersion");
 					}
 				}
 
@@ -379,7 +377,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				break;
 			default:
 				//TODO: set chunks read-only so the version on disk doesn't get overwritten
-				throw new UnsupportedChunkFormatException("don't know how to decode chunk format version $chunkVersion");
+				throw new CorruptedChunkException("don't know how to decode chunk format version $chunkVersion");
 		}
 
 		$nbt = new LittleEndianNbtSerializer();

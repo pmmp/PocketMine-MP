@@ -26,7 +26,6 @@ namespace pocketmine\world\format\io;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
-use pocketmine\world\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\WorldException;
 use function file_exists;
@@ -70,7 +69,6 @@ abstract class BaseWorldProvider implements WorldProvider{
 	 *
 	 * @return Chunk|null
 	 * @throws CorruptedChunkException
-	 * @throws UnsupportedChunkFormatException
 	 */
 	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		return $this->readChunk($chunkX, $chunkZ);
@@ -88,7 +86,6 @@ abstract class BaseWorldProvider implements WorldProvider{
 	 * @param int $chunkZ
 	 *
 	 * @return Chunk|null
-	 * @throws UnsupportedChunkFormatException
 	 * @throws CorruptedChunkException
 	 */
 	abstract protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk;
