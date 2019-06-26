@@ -51,9 +51,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemUseResult;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\metadata\BlockMetadataStore;
-use pocketmine\metadata\Metadatable;
-use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
@@ -64,7 +61,6 @@ use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\player\Player;
-use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\ReversePriorityQueue;
@@ -115,7 +111,7 @@ use const PHP_INT_MIN;
 
 #include <rules/World.h>
 
-class World implements ChunkManager, Metadatable{
+class World implements ChunkManager{
 
 	private static $worldIdCounter = 1;
 
@@ -226,9 +222,6 @@ class World implements ChunkManager, Metadatable{
 
 	/** @var bool */
 	private $autoSave = true;
-
-	/** @var BlockMetadataStore */
-	private $blockMetadata;
 
 	/** @var Position */
 	private $temporalPosition;
@@ -349,7 +342,6 @@ class World implements ChunkManager, Metadatable{
 	 */
 	public function __construct(Server $server, string $name, WritableWorldProvider $provider){
 		$this->worldId = static::$worldIdCounter++;
-		$this->blockMetadata = new BlockMetadataStore($this);
 		$this->server = $server;
 
 		$this->provider = $provider;
@@ -416,10 +408,6 @@ class World implements ChunkManager, Metadatable{
 		$this->generatorRegisteredWorkers = [];
 	}
 
-	public function getBlockMetadata() : BlockMetadataStore{
-		return $this->blockMetadata;
-	}
-
 	public function getServer() : Server{
 		return $this->server;
 	}
@@ -461,7 +449,6 @@ class World implements ChunkManager, Metadatable{
 
 		$this->provider->close();
 		$this->provider = null;
-		$this->blockMetadata = null;
 		$this->blockCache = [];
 		$this->temporalPosition = null;
 
@@ -2856,21 +2843,5 @@ class World implements ChunkManager, Metadatable{
 				}
 			}
 		}
-	}
-
-	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue) : void{
-		$this->server->getWorldMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
-	}
-
-	public function getMetadata(string $metadataKey){
-		return $this->server->getWorldMetadata()->getMetadata($this, $metadataKey);
-	}
-
-	public function hasMetadata(string $metadataKey) : bool{
-		return $this->server->getWorldMetadata()->hasMetadata($this, $metadataKey);
-	}
-
-	public function removeMetadata(string $metadataKey, Plugin $owningPlugin) : void{
-		$this->server->getWorldMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
 	}
 }

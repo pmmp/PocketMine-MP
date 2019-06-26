@@ -46,9 +46,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\TextContainer;
-use pocketmine\metadata\EntityMetadataStore;
-use pocketmine\metadata\PlayerMetadataStore;
-use pocketmine\metadata\WorldMetadataStore;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
@@ -245,15 +242,6 @@ class Server{
 
 	/** @var bool */
 	private $onlineMode = true;
-
-	/** @var EntityMetadataStore */
-	private $entityMetadata;
-
-	/** @var PlayerMetadataStore */
-	private $playerMetadata;
-
-	/** @var WorldMetadataStore */
-	private $worldMetadata;
 
 	/** @var Network */
 	private $network;
@@ -475,27 +463,6 @@ class Server{
 	 */
 	public function getLogger(){
 		return $this->logger;
-	}
-
-	/**
-	 * @return EntityMetadataStore
-	 */
-	public function getEntityMetadata(){
-		return $this->entityMetadata;
-	}
-
-	/**
-	 * @return PlayerMetadataStore
-	 */
-	public function getPlayerMetadata(){
-		return $this->playerMetadata;
-	}
-
-	/**
-	 * @return WorldMetadataStore
-	 */
-	public function getWorldMetadata(){
-		return $this->worldMetadata;
 	}
 
 	/**
@@ -1137,10 +1104,6 @@ class Server{
 			NetworkCipher::$ENABLED = (bool) $this->getProperty("network.enable-encryption", true);
 
 			$this->doTitleTick = ((bool) $this->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
-
-			$this->entityMetadata = new EntityMetadataStore();
-			$this->playerMetadata = new PlayerMetadataStore();
-			$this->worldMetadata = new WorldMetadataStore();
 
 			$this->operators = new Config($this->dataPath . "ops.txt", Config::ENUM);
 			$this->whitelist = new Config($this->dataPath . "white-list.txt", Config::ENUM);

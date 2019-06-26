@@ -39,8 +39,6 @@ use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
-use pocketmine\metadata\Metadatable;
-use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
@@ -58,7 +56,6 @@ use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataTypes;
 use pocketmine\player\Player;
-use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
@@ -81,7 +78,7 @@ use function sin;
 use function spl_object_id;
 use const M_PI_2;
 
-abstract class Entity extends Location implements Metadatable, EntityIds{
+abstract class Entity extends Location implements EntityIds{
 
 	public const MOTION_THRESHOLD = 0.00001;
 
@@ -1796,22 +1793,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function __destruct(){
 		$this->close();
-	}
-
-	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue) : void{
-		$this->server->getEntityMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
-	}
-
-	public function getMetadata(string $metadataKey){
-		return $this->server->getEntityMetadata()->getMetadata($this, $metadataKey);
-	}
-
-	public function hasMetadata(string $metadataKey) : bool{
-		return $this->server->getEntityMetadata()->hasMetadata($this, $metadataKey);
-	}
-
-	public function removeMetadata(string $metadataKey, Plugin $owningPlugin) : void{
-		$this->server->getEntityMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
 	}
 
 	public function __toString(){

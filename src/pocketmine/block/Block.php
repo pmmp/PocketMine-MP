@@ -38,12 +38,9 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
-use pocketmine\metadata\Metadatable;
-use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\player\Player;
-use pocketmine\plugin\Plugin;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
 use pocketmine\world\World;
@@ -52,7 +49,7 @@ use function assert;
 use function dechex;
 use const PHP_INT_MAX;
 
-class Block extends Position implements BlockLegacyIds, Metadatable{
+class Block extends Position implements BlockLegacyIds{
 
 	/**
 	 * Returns a new Block instance with the specified ID, meta and position.
@@ -751,33 +748,5 @@ class Block extends Position implements BlockLegacyIds, Metadatable{
 		}
 
 		return $currentHit;
-	}
-
-	public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue) : void{
-		if($this->isValid()){
-			$this->world->getBlockMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
-		}
-	}
-
-	public function getMetadata(string $metadataKey){
-		if($this->isValid()){
-			return $this->world->getBlockMetadata()->getMetadata($this, $metadataKey);
-		}
-
-		return null;
-	}
-
-	public function hasMetadata(string $metadataKey) : bool{
-		if($this->isValid()){
-			return $this->world->getBlockMetadata()->hasMetadata($this, $metadataKey);
-		}
-
-		return false;
-	}
-
-	public function removeMetadata(string $metadataKey, Plugin $owningPlugin) : void{
-		if($this->isValid()){
-			$this->world->getBlockMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
-		}
 	}
 }
