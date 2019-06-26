@@ -1722,6 +1722,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 				return false;
 			}
 
+			$this->setUsingItem(false);
 			$this->resetItemCooldown($slot);
 
 			if($this->hasFiniteResources()){
