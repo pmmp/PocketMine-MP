@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
@@ -522,7 +523,10 @@ class NetworkSession{
 		}, $reason);
 	}
 
-	public function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error) : bool{
+	public function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error, PublicKeyInterface $clientPubKey) : void{
+		if(!$this->connected){
+			return;
+		}
 		if($authenticated and $this->info->getXuid() === ""){
 			$error = "Expected XUID but none found";
 		}
@@ -530,7 +534,7 @@ class NetworkSession{
 		if($error !== null){
 			$this->disconnect($this->server->getLanguage()->translateString("pocketmine.disconnect.invalidSession", [$error]));
 
-			return false;
+			return;
 		}
 
 		$this->authenticated = $authenticated;
@@ -538,7 +542,7 @@ class NetworkSession{
 		if(!$this->authenticated){
 			if($authRequired){
 				$this->disconnect("disconnectionScreen.notAuthenticated");
-				return false;
+				return;
 			}
 
 			if($this->info->getXuid() !== ""){
@@ -547,10 +551,19 @@ class NetworkSession{
 		}
 		$this->logger->debug("Xbox Live authenticated: " . ($this->authenticated ? "YES" : "NO"));
 
-		return $this->manager->kickDuplicates($this);
+		if($this->manager->kickDuplicates($this)){
+			if(NetworkCipher::$ENABLED){
+				$this->server->getAsyncPool()->submitTask(new PrepareEncryptionTask($this, $clientPubKey));
+			}else{
+				$this->onLoginSuccess();
+			}
+		}
 	}
 
 	public function enableEncryption(string $encryptionKey, string $handshakeJwt) : void{
+		if(!$this->connected){
+			return;
+		}
 		$this->sendDataPacket(ServerToClientHandshakePacket::create($handshakeJwt), true); //make sure this gets sent before encryption is enabled
 
 		$this->cipher = new NetworkCipher($encryptionKey);

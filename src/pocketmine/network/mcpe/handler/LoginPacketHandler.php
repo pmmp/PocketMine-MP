@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\entity\Skin;
 use pocketmine\event\player\PlayerPreLoginEvent;
-use pocketmine\network\mcpe\NetworkCipher;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\ProcessLoginTask;
 use pocketmine\network\mcpe\protocol\LoginPacket;
@@ -133,7 +132,7 @@ class LoginPacketHandler extends PacketHandler{
 	 * @throws \InvalidArgumentException
 	 */
 	protected function processLogin(LoginPacket $packet, bool $authRequired) : void{
-		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($this->session, $packet, $authRequired, NetworkCipher::$ENABLED));
+		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($this->session, $packet, $authRequired));
 		$this->session->setHandler(NullPacketHandler::getInstance()); //drop packets received during login verification
 	}
 

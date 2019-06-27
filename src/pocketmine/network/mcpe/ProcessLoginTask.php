@@ -23,12 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use Mdanter\Ecc\Crypto\Signature\Signature;
-use Mdanter\Ecc\EccFactory;
-use Mdanter\Ecc\Serializer\PrivateKey\DerPrivateKeySerializer;
-use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use Mdanter\Ecc\Serializer\PublicKey\PemPublicKeySerializer;
 use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
@@ -36,26 +32,16 @@ use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\scheduler\AsyncTask;
 use function assert;
 use function base64_decode;
-use function base64_encode;
 use function bin2hex;
 use function explode;
 use function gmp_init;
-use function gmp_strval;
-use function hex2bin;
 use function json_decode;
-use function json_encode;
-use function openssl_digest;
-use function openssl_sign;
 use function openssl_verify;
-use function random_bytes;
-use function rtrim;
-use function str_pad;
 use function str_repeat;
 use function str_split;
 use function strlen;
 use function time;
 use const OPENSSL_ALGO_SHA384;
-use const STR_PAD_LEFT;
 
 class ProcessLoginTask extends AsyncTask{
 	private const TLS_KEY_SESSION = "session";
@@ -63,9 +49,6 @@ class ProcessLoginTask extends AsyncTask{
 	public const MOJANG_ROOT_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V";
 
 	private const CLOCK_DRIFT_MAX = 60;
-
-	/** @var PrivateKeyInterface|null */
-	private static $SERVER_PRIVATE_KEY = null;
 
 	/** @var LoginPacket */
 	private $packet;
@@ -86,52 +69,22 @@ class ProcessLoginTask extends AsyncTask{
 	/** @var bool */
 	private $authRequired;
 
-	/**
-	 * @var bool
-	 * Whether or not to enable encryption for the session that sent this login.
-	 */
-	private $useEncryption = true;
+	/** @var PublicKeyInterface|null */
+	private $clientPublicKey = null;
 
-	/** @var PrivateKeyInterface|null */
-	private $serverPrivateKey = null;
-
-	/** @var string|null */
-	private $aesKey = null;
-	/** @var string|null */
-	private $handshakeJwt = null;
-
-	public function __construct(NetworkSession $session, LoginPacket $packet, bool $authRequired, bool $useEncryption = true){
+	public function __construct(NetworkSession $session, LoginPacket $packet, bool $authRequired){
 		$this->storeLocal(self::TLS_KEY_SESSION, $session);
 		$this->packet = $packet;
 		$this->authRequired = $authRequired;
-		$this->useEncryption = $useEncryption;
-		if($useEncryption){
-			if(self::$SERVER_PRIVATE_KEY === null){
-				self::$SERVER_PRIVATE_KEY = EccFactory::getNistCurves()->generator384()->createPrivateKey();
-			}
-
-			$this->serverPrivateKey = self::$SERVER_PRIVATE_KEY;
-		}
 	}
 
 	public function onRun() : void{
 		try{
-			$clientPub = $this->validateChain();
+			$this->clientPublicKey = $this->validateChain();
+			$this->error = null;
 		}catch(VerifyLoginException $e){
 			$this->error = $e->getMessage();
-			return;
 		}
-
-		if($this->useEncryption){
-			$serverPriv = $this->serverPrivateKey;
-			$salt = random_bytes(16);
-			$sharedSecret = $serverPriv->createExchange($clientPub)->calculateSharedKey();
-
-			$this->aesKey = openssl_digest($salt . hex2bin(str_pad(gmp_strval($sharedSecret, 16), 96, "0", STR_PAD_LEFT)), 'sha256', true);
-			$this->handshakeJwt = $this->generateServerHandshakeJwt($serverPriv, $salt);
-		}
-
-		$this->error = null;
 	}
 
 	private function validateChain() : PublicKeyInterface{
@@ -210,27 +163,6 @@ class ProcessLoginTask extends AsyncTask{
 		$currentPublicKey = $claims["identityPublicKey"] ?? null; //if there are further links, the next link should be signed with this
 	}
 
-	private function generateServerHandshakeJwt(PrivateKeyInterface $serverPriv, string $salt) : string{
-		$jwtBody = self::b64UrlEncode(json_encode([
-				"x5u" => base64_encode((new DerPublicKeySerializer())->serialize($serverPriv->getPublicKey())),
-				"alg" => "ES384"
-			])
-		) . "." . self::b64UrlEncode(json_encode([
-				"salt" => base64_encode($salt)
-			])
-		);
-
-		openssl_sign($jwtBody, $sig, (new PemPrivateKeySerializer(new DerPrivateKeySerializer()))->serialize($serverPriv), OPENSSL_ALGO_SHA384);
-
-		$decodedSig = (new DerSignatureSerializer())->parse($sig);
-		$jwtSig = self::b64UrlEncode(
-			hex2bin(str_pad(gmp_strval($decodedSig->getR(), 16), 96, "0", STR_PAD_LEFT)) .
-			hex2bin(str_pad(gmp_strval($decodedSig->getS(), 16), 96, "0", STR_PAD_LEFT))
-		);
-
-		return "$jwtBody.$jwtSig";
-	}
-
 	private static function b64UrlDecode(string $str) : string{
 		if(($len = strlen($str) % 4) !== 0){
 			$str .= str_repeat('=', 4 - $len);
@@ -238,21 +170,9 @@ class ProcessLoginTask extends AsyncTask{
 		return base64_decode(strtr($str, '-_', '+/'), true);
 	}
 
-	private static function b64UrlEncode(string $str) : string{
-		return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
-	}
-
 	public function onCompletion() : void{
 		/** @var NetworkSession $session */
 		$session = $this->fetchLocal(self::TLS_KEY_SESSION);
-		if(!$session->isConnected()){
-			$session->getLogger()->debug("Disconnected before login could be verified");
-		}elseif($session->setAuthenticationStatus($this->authenticated, $this->authRequired, $this->error)){
-			if(!$this->useEncryption){
-				$session->onLoginSuccess();
-			}else{
-				$session->enableEncryption($this->aesKey, $this->handshakeJwt);
-			}
-		}
+		$session->setAuthenticationStatus($this->authenticated, $this->authRequired, $this->error, $this->clientPublicKey);
 	}
 }
