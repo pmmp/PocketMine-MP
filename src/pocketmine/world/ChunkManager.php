@@ -52,48 +52,6 @@ interface ChunkManager{
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : bool;
 
 	/**
-	 * Returns the raw block light level
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int
-	 */
-	public function getBlockLightAt(int $x, int $y, int $z) : int;
-
-	/**
-	 * Sets the raw block light level
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $level
-	 */
-	public function setBlockLightAt(int $x, int $y, int $z, int $level) : void;
-
-	/**
-	 * Returns the highest amount of sky light can reach the specified coordinates.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int
-	 */
-	public function getBlockSkyLightAt(int $x, int $y, int $z) : int;
-
-	/**
-	 * Sets the raw block sky light level.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $level
-	 */
-	public function setBlockSkyLightAt(int $x, int $y, int $z, int $level) : void;
-
-	/**
 	 * @param int  $chunkX
 	 * @param int  $chunkZ
 	 * @param bool $create

@@ -66,34 +66,6 @@ class SimpleChunkManager implements ChunkManager{
 		return false;
 	}
 
-	public function getBlockLightAt(int $x, int $y, int $z) : int{
-		if($this->terrainPointer->moveTo($x, $y, $z, false)){
-			return $this->terrainPointer->currentSubChunk->getBlockLight($x & 0xf, $y & 0xf, $z & 0xf);
-		}
-
-		return 0;
-	}
-
-	public function setBlockLightAt(int $x, int $y, int $z, int $level) : void{
-		if($this->terrainPointer->moveTo($x, $y, $z, false)){
-			$this->terrainPointer->currentSubChunk->setBlockLight($x & 0xf, $y & 0xf, $z & 0xf, $level);
-		}
-	}
-
-	public function getBlockSkyLightAt(int $x, int $y, int $z) : int{
-		if($this->terrainPointer->moveTo($x, $y, $z, false)){
-			return $this->terrainPointer->currentSubChunk->getBlockSkyLight($x & 0xf, $y & 0xf, $z & 0xf);
-		}
-
-		return 0;
-	}
-
-	public function setBlockSkyLightAt(int $x, int $y, int $z, int $level) : void{
-		if($this->terrainPointer->moveTo($x, $y, $z, false)){
-			$this->terrainPointer->currentSubChunk->setBlockSkyLight($x & 0xf, $y & 0xf, $z & 0xf, $level);
-		}
-	}
-
 	/**
 	 * @param int  $chunkX
 	 * @param int  $chunkZ
