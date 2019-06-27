@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\network\mcpe\encryption;
 
 use Crypto\Cipher;
 use pocketmine\utils\Binary;

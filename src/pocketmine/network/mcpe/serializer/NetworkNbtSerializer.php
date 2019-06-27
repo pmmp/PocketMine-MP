@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\network\mcpe\serializer;
 
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use function count;

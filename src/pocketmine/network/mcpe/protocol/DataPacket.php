@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\NetworkBinaryStream;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\Utils;
 use function bin2hex;

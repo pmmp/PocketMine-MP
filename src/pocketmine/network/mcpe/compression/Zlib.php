@@ -21,13 +21,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\network\mcpe\compression;
 
 use function zlib_decode;
 use function zlib_encode;
 use const ZLIB_ENCODING_DEFLATE;
 
-final class NetworkCompression{
+final class Zlib{
 	public static $LEVEL = 7;
 	public static $THRESHOLD = 256;
 

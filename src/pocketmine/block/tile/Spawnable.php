@@ -25,7 +25,7 @@ namespace pocketmine\block\tile;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\NetworkNbtSerializer;
+use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 use function get_class;
 
 abstract class Spawnable extends Tile{

@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\network\mcpe\compression;
 
 use pocketmine\scheduler\AsyncTask;
 
@@ -44,7 +44,7 @@ class CompressBatchTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$this->setResult(NetworkCompression::compress($this->data, $this->level));
+		$this->setResult(Zlib::compress($this->data, $this->level));
 	}
 
 	public function onCompletion() : void{

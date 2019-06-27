@@ -32,7 +32,7 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\NetworkBinaryStream;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\player\Player;
 use pocketmine\utils\BinaryDataException;
 
@@ -97,7 +97,7 @@ class NetworkInventoryAction{
 	public $newItem;
 
 	/**
-	 * @param NetworkBinaryStream $packet
+	 * @param \pocketmine\network\mcpe\serializer\NetworkBinaryStream $packet
 	 *
 	 * @return $this
 	 *
@@ -132,7 +132,7 @@ class NetworkInventoryAction{
 	}
 
 	/**
-	 * @param NetworkBinaryStream $packet
+	 * @param \pocketmine\network\mcpe\serializer\NetworkBinaryStream $packet
 	 *
 	 * @throws \InvalidArgumentException
 	 */

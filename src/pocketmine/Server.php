@@ -50,10 +50,10 @@ use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\CompressBatchPromise;
-use pocketmine\network\mcpe\CompressBatchTask;
-use pocketmine\network\mcpe\NetworkCipher;
-use pocketmine\network\mcpe\NetworkCompression;
+use pocketmine\network\mcpe\compression\CompressBatchPromise;
+use pocketmine\network\mcpe\compression\CompressBatchTask;
+use pocketmine\network\mcpe\compression\Zlib as ZlibNetworkCompression;
+use pocketmine\network\mcpe\encryption\NetworkCipher;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBatch;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
@@ -1089,15 +1089,15 @@ class Server{
 			$this->asyncPool = new AsyncPool($poolSize, (int) max(-1, (int) $this->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger);
 
 			if($this->getProperty("network.batch-threshold", 256) >= 0){
-				NetworkCompression::$THRESHOLD = (int) $this->getProperty("network.batch-threshold", 256);
+				ZlibNetworkCompression::$THRESHOLD = (int) $this->getProperty("network.batch-threshold", 256);
 			}else{
-				NetworkCompression::$THRESHOLD = -1;
+				ZlibNetworkCompression::$THRESHOLD = -1;
 			}
 
-			NetworkCompression::$LEVEL = $this->getProperty("network.compression-level", 7);
-			if(NetworkCompression::$LEVEL < 1 or NetworkCompression::$LEVEL > 9){
-				$this->logger->warning("Invalid network compression level " . NetworkCompression::$LEVEL . " set, setting to default 7");
-				NetworkCompression::$LEVEL = 7;
+			ZlibNetworkCompression::$LEVEL = $this->getProperty("network.compression-level", 7);
+			if(ZlibNetworkCompression::$LEVEL < 1 or ZlibNetworkCompression::$LEVEL > 9){
+				$this->logger->warning("Invalid network compression level " . ZlibNetworkCompression::$LEVEL . " set, setting to default 7");
+				ZlibNetworkCompression::$LEVEL = 7;
 			}
 			$this->networkCompressionAsync = (bool) $this->getProperty("network.async-compression", true);
 
@@ -1463,7 +1463,7 @@ class Server{
 
 		$stream = PacketBatch::fromPackets(...$ev->getPackets());
 
-		if(NetworkCompression::$THRESHOLD < 0 or strlen($stream->getBuffer()) < NetworkCompression::$THRESHOLD){
+		if(ZlibNetworkCompression::$THRESHOLD < 0 or strlen($stream->getBuffer()) < ZlibNetworkCompression::$THRESHOLD){
 			foreach($recipients as $target){
 				foreach($ev->getPackets() as $pk){
 					$target->addToSendBuffer($pk);
@@ -1491,9 +1491,9 @@ class Server{
 		try{
 			Timings::$playerNetworkSendCompressTimer->startTiming();
 
-			$compressionLevel = NetworkCompression::$LEVEL;
+			$compressionLevel = ZlibNetworkCompression::$LEVEL;
 			$buffer = $stream->getBuffer();
-			if(NetworkCompression::$THRESHOLD < 0 or strlen($buffer) < NetworkCompression::$THRESHOLD){
+			if(ZlibNetworkCompression::$THRESHOLD < 0 or strlen($buffer) < ZlibNetworkCompression::$THRESHOLD){
 				$compressionLevel = 0; //Do not compress packets under the threshold
 				$forceSync = true;
 			}
@@ -1503,7 +1503,7 @@ class Server{
 				$task = new CompressBatchTask($buffer, $compressionLevel, $promise);
 				$this->asyncPool->submitTask($task);
 			}else{
-				$promise->resolve(NetworkCompression::compress($buffer, $compressionLevel));
+				$promise->resolve(ZlibNetworkCompression::compress($buffer, $compressionLevel));
 			}
 
 			return $promise;

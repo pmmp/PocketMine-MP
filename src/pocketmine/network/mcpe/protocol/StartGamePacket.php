@@ -28,9 +28,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class StartGamePacket extends DataPacket implements ClientboundPacket{

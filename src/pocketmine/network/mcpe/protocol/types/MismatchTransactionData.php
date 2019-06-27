@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class MismatchTransactionData extends TransactionData{

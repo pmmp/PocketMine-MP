@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\entity\Skin;
 use pocketmine\event\player\PlayerPreLoginEvent;
+use pocketmine\network\mcpe\auth\ProcessLoginTask;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\ProcessLoginTask;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;

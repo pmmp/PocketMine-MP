@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketPool;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\BinaryDataException;
 
 class PacketBatch extends NetworkBinaryStream{

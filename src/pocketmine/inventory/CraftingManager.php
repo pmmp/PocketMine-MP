@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\CompressBatchPromise;
-use pocketmine\network\mcpe\NetworkCompression;
+use pocketmine\network\mcpe\compression\CompressBatchPromise;
+use pocketmine\network\mcpe\compression\Zlib;
 use pocketmine\network\mcpe\PacketBatch;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\timings\Timings;
@@ -117,7 +117,7 @@ class CraftingManager{
 		}
 
 		$this->craftingDataCache = new CompressBatchPromise();
-		$this->craftingDataCache->resolve(NetworkCompression::compress(PacketBatch::fromPackets($pk)->getBuffer()));
+		$this->craftingDataCache->resolve(Zlib::compress(PacketBatch::fromPackets($pk)->getBuffer()));
 
 		Timings::$craftingDataCacheRebuildTimer->stopTiming();
 	}

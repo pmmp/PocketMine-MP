@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\network\mcpe\compression;
 
 use pocketmine\utils\Utils;
 use function array_push;

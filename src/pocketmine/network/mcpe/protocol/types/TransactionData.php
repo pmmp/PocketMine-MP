@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\NetworkBinaryStream;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\BinaryDataException;
 use function count;
 
@@ -45,7 +45,7 @@ abstract class TransactionData{
 	abstract public function getTypeId() : int;
 
 	/**
-	 * @param NetworkBinaryStream $stream
+	 * @param \pocketmine\network\mcpe\serializer\NetworkBinaryStream $stream
 	 *
 	 * @throws BinaryDataException
 	 * @throws BadPacketException
@@ -59,7 +59,7 @@ abstract class TransactionData{
 	}
 
 	/**
-	 * @param NetworkBinaryStream $stream
+	 * @param \pocketmine\network\mcpe\serializer\NetworkBinaryStream $stream
 	 *
 	 * @throws BinaryDataException
 	 * @throws BadPacketException

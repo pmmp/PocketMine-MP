@@ -33,7 +33,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\network\mcpe\NetworkBinaryStream;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 use function str_repeat;
 
