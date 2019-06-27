@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\io\FastChunkSerializer;
 
 class ChunkRequestTask extends AsyncTask{
 	private const TLS_KEY_PROMISE = "promise";
@@ -40,19 +41,24 @@ class ChunkRequestTask extends AsyncTask{
 
 	protected $compressionLevel;
 
+	/** @var string */
+	private $tiles = "";
+
 	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise, ?\Closure $onError = null){
 		$this->compressionLevel = NetworkCompression::$LEVEL;
 
-		$this->chunk = ChunkSerializer::serialize($chunk);
+		$this->chunk = FastChunkSerializer::serialize($chunk);
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
+		$this->tiles = ChunkSerializer::serializeTiles($chunk);
 
 		$this->storeLocal(self::TLS_KEY_PROMISE, $promise);
 		$this->storeLocal(self::TLS_KEY_ERROR_HOOK, $onError);
 	}
 
 	public function onRun() : void{
-		$this->setResult(NetworkCompression::compress(PacketBatch::fromPackets(FullChunkDataPacket::create($this->chunkX, $this->chunkZ, $this->chunk))->getBuffer(), $this->compressionLevel));
+		$chunk = ChunkSerializer::serialize(FastChunkSerializer::deserialize($this->chunk), $this->tiles);
+		$this->setResult(NetworkCompression::compress(PacketBatch::fromPackets(FullChunkDataPacket::create($this->chunkX, $this->chunkZ, $chunk))->getBuffer(), $this->compressionLevel));
 	}
 
 	public function onError() : void{

@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\block\tile\Spawnable;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
+use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use function count;
 use function pack;
@@ -36,11 +37,13 @@ final class ChunkSerializer{
 	}
 
 	/**
-	 * @param Chunk $chunk
+	 * @param Chunk       $chunk
+	 *
+	 * @param string|null $tiles
 	 *
 	 * @return string
 	 */
-	public static function serialize(Chunk $chunk) : string{
+	public static function serialize(Chunk $chunk, ?string $tiles = null) : string{
 		$stream = new NetworkBinaryStream();
 		$subChunkCount = $chunk->getSubChunkSendCount();
 		$stream->putByte($subChunkCount);
@@ -66,6 +69,16 @@ final class ChunkSerializer{
 		$stream->putByte(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
 
+		if($tiles !== null){
+			$stream->put($tiles);
+		}else{
+			$stream->put(self::serializeTiles($chunk));
+		}
+		return $stream->getBuffer();
+	}
+
+	public static function serializeTiles(Chunk $chunk) : string{
+		$stream = new BinaryStream();
 		foreach($chunk->getTiles() as $tile){
 			if($tile instanceof Spawnable){
 				$stream->put($tile->getSerializedSpawnCompound());
