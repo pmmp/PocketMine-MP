@@ -1268,9 +1268,8 @@ class Server{
 			}
 
 			if($this->getProperty("network.upnp-forwarding", false)){
-				$this->logger->info("[UPnP] Trying to port forward...");
 				try{
-					UPnP::PortForward($this->getPort());
+					$this->network->registerInterface(new UPnP($this->logger, Internet::getInternalIP(), $this->getPort()));
 				}catch(\RuntimeException $e){
 					$this->logger->alert("UPnP portforward failed: " . $e->getMessage());
 				}
@@ -1583,11 +1582,6 @@ class Server{
 			$this->hasStopped = true;
 
 			$this->shutdown();
-
-			if($this->getProperty("network.upnp-forwarding", false)){
-				$this->logger->info("[UPnP] Removing port forward...");
-				UPnP::RemovePortForward($this->getPort());
-			}
 
 			if($this->pluginManager instanceof PluginManager){
 				$this->getLogger()->debug("Disabling all plugins");

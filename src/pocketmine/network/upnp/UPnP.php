@@ -26,19 +26,25 @@ declare(strict_types=1);
  */
 namespace pocketmine\network\upnp;
 
+use pocketmine\network\NetworkInterface;
 use pocketmine\utils\Internet;
 use pocketmine\utils\Utils;
 use function class_exists;
 use function is_object;
 
-abstract class UPnP{
+class UPnP implements NetworkInterface{
 
-	/**
-	 * @param int $port
-	 *
-	 * @throws \RuntimeException
-	 */
-	public static function PortForward(int $port) : void{
+	/** @var string */
+	private $ip;
+	/** @var int */
+	private $port;
+
+	/** @var object|null */
+	private $staticPortMappingCollection = null;
+	/** @var \Logger */
+	private $logger;
+
+	public function __construct(\Logger $logger, string $ip, int $port){
 		if(!Internet::$online){
 			throw new \RuntimeException("Server is offline");
 		}
@@ -48,48 +54,46 @@ abstract class UPnP{
 		if(!class_exists("COM")){
 			throw new \RuntimeException("UPnP requires the com_dotnet extension");
 		}
+		$this->ip = $ip;
+		$this->port = $port;
+		$this->logger = new \PrefixedLogger($logger, "UPnP Port Forwarder");
+	}
 
-		$myLocalIP = Internet::getInternalIP();
-
+	public function start() : void{
 		/** @noinspection PhpUndefinedClassInspection */
 		$com = new \COM("HNetCfg.NATUPnP");
 		/** @noinspection PhpUndefinedFieldInspection */
 
 		if($com === false or !is_object($com->StaticPortMappingCollection)){
-			throw new \RuntimeException("Failed to portforward using UPnP. Ensure that network discovery is enabled in Control Panel.");
+			throw new \RuntimeException("UPnP unsupported or network discovery is not enabled");
 		}
+		/** @noinspection PhpUndefinedFieldInspection */
+		$this->staticPortMappingCollection = $com->StaticPortMappingCollection;
 
 		try{
-			/** @noinspection PhpUndefinedFieldInspection */
-			$com->StaticPortMappingCollection->Add($port, "UDP", $port, $myLocalIP, true, "PocketMine-MP");
+			$this->staticPortMappingCollection->Add($this->port, "UDP", $this->port, $this->ip, true, "PocketMine-MP");
 		}catch(\com_exception $e){
 			throw new \RuntimeException($e->getMessage(), 0, $e);
 		}
+		$this->logger->info("Forwarded $this->ip:$this->port to external port $this->port");
 	}
 
-	public static function RemovePortForward(int $port) : bool{
-		if(!Internet::$online){
-			return false;
-		}
-		if(Utils::getOS() != "win" or !class_exists("COM")){
-			return false;
-		}
+	public function setName(string $name) : void{
 
-		/** @noinspection PhpUndefinedClassInspection */
-		$com = new \COM("HNetCfg.NATUPnP");
-		/** @noinspection PhpUndefinedFieldInspection */
-		if($com === false or !is_object($com->StaticPortMappingCollection)){
-			return false;
-		}
+	}
 
-		try{
-			/** @noinspection PhpUndefinedFieldInspection */
-			$com->StaticPortMappingCollection->Remove($port, "UDP");
-		}catch(\com_exception $e){
-			//TODO: should this really be silenced?
-			return false;
-		}
+	public function tick() : void{
 
-		return true;
+	}
+
+	public function shutdown() : void{
+		if($this->staticPortMappingCollection !== null){
+			try{
+				/** @noinspection PhpUndefinedFieldInspection */
+				$this->staticPortMappingCollection->Remove($this->port, "UDP");
+			}catch(\com_exception $e){
+				//TODO: should this really be silenced?
+			}
+		}
 	}
 }
