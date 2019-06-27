@@ -31,6 +31,7 @@ use pocketmine\world\format\SubChunk;
 use function array_values;
 use function count;
 use function pack;
+use function strlen;
 use function unpack;
 
 /**
@@ -75,10 +76,9 @@ final class FastChunkSerializer{
 
 					$subStream->putByte($blocks->getBitsPerBlock());
 					$subStream->put($wordArray);
-					$subStream->putInt(count($palette));
-					foreach($palette as $p){
-						$subStream->putInt($p);
-					}
+					$serialPalette = pack("N*", ...$palette);
+					$subStream->putInt(strlen($serialPalette));
+					$subStream->put($serialPalette);
 				}
 
 				if($chunk->isLightPopulated()){
@@ -129,10 +129,7 @@ final class FastChunkSerializer{
 				for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
 					$bitsPerBlock = $stream->getByte();
 					$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
-					$palette = [];
-					for($k = 0, $paletteSize = $stream->getInt(); $k < $paletteSize; ++$k){
-						$palette[] = $stream->getInt();
-					}
+					$palette = array_values(unpack("N*", $stream->get($stream->getInt())));
 
 					$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 				}
