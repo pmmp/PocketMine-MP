@@ -114,6 +114,8 @@ class BossEventPacket extends DataPacket implements ClientboundPacket, Serverbou
 	public static function unknown6(int $bossEntityUniqueId, int $unknownShort) : self{
 		$result = self::base($bossEntityUniqueId, self::TYPE_UNKNOWN_6);
 		$result->unknownShort = $unknownShort;
+		$result->color = 0; //hardcoded due to being useless
+		$result->overlay = 0;
 		return $result;
 	}
 
