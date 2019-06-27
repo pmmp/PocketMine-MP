@@ -43,21 +43,18 @@ class SubChunkIteratorManager{
 	protected $currentY;
 	/** @var int */
 	protected $currentZ;
-	/** @var bool */
-	protected $allocateEmptySubs = true;
 
-	public function __construct(ChunkManager $world, bool $allocateEmptySubs = true){
+	public function __construct(ChunkManager $world){
 		$this->world = $world;
-		$this->allocateEmptySubs = $allocateEmptySubs;
 	}
 
-	public function moveTo(int $x, int $y, int $z) : bool{
+	public function moveTo(int $x, int $y, int $z, bool $create) : bool{
 		if($this->currentChunk === null or $this->currentX !== ($x >> 4) or $this->currentZ !== ($z >> 4)){
 			$this->currentX = $x >> 4;
 			$this->currentZ = $z >> 4;
 			$this->currentSubChunk = null;
 
-			$this->currentChunk = $this->world->getChunk($this->currentX, $this->currentZ);
+			$this->currentChunk = $this->world->getChunk($this->currentX, $this->currentZ, $create);
 			if($this->currentChunk === null){
 				return false;
 			}
@@ -66,7 +63,7 @@ class SubChunkIteratorManager{
 		if($this->currentSubChunk === null or $this->currentY !== ($y >> 4)){
 			$this->currentY = $y >> 4;
 
-			$this->currentSubChunk = $this->currentChunk->getSubChunk($y >> 4, $this->allocateEmptySubs);
+			$this->currentSubChunk = $this->currentChunk->getSubChunk($y >> 4, $create);
 			if($this->currentSubChunk instanceof EmptySubChunk){
 				return false;
 			}

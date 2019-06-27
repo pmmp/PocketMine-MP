@@ -67,7 +67,7 @@ abstract class LightUpdate{
 
 	private function prepareNodes() : void{
 		foreach($this->updateNodes as $blockHash => [$x, $y, $z, $newLevel]){
-			if($this->subChunkHandler->moveTo($x, $y, $z)){
+			if($this->subChunkHandler->moveTo($x, $y, $z, false)){
 				$oldLevel = $this->getLight($x, $y, $z);
 
 				if($oldLevel !== $newLevel){
@@ -100,7 +100,7 @@ abstract class LightUpdate{
 			];
 
 			foreach($points as list($cx, $cy, $cz)){
-				if($this->subChunkHandler->moveTo($cx, $cy, $cz)){
+				if($this->subChunkHandler->moveTo($cx, $cy, $cz, true)){
 					$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight);
 				}
 			}
@@ -111,7 +111,7 @@ abstract class LightUpdate{
 
 			unset($this->spreadVisited[World::blockHash($x, $y, $z)]);
 
-			if(!$this->subChunkHandler->moveTo($x, $y, $z)){
+			if(!$this->subChunkHandler->moveTo($x, $y, $z, false)){
 				continue;
 			}
 
@@ -130,7 +130,7 @@ abstract class LightUpdate{
 			];
 
 			foreach($points as list($cx, $cy, $cz)){
-				if($this->subChunkHandler->moveTo($cx, $cy, $cz)){
+				if($this->subChunkHandler->moveTo($cx, $cy, $cz, true)){
 					$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight);
 				}
 			}

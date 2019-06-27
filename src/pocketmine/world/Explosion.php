@@ -83,7 +83,7 @@ class Explosion{
 		$this->size = $size;
 
 		$this->what = $what;
-		$this->subChunkHandler = new SubChunkIteratorManager($this->world, false);
+		$this->subChunkHandler = new SubChunkIteratorManager($this->world);
 	}
 
 	/**
@@ -119,7 +119,7 @@ class Explosion{
 							$vBlock->y = $pointerY >= $y ? $y : $y - 1;
 							$vBlock->z = $pointerZ >= $z ? $z : $z - 1;
 
-							if(!$this->subChunkHandler->moveTo($vBlock->x, $vBlock->y, $vBlock->z)){
+							if(!$this->subChunkHandler->moveTo($vBlock->x, $vBlock->y, $vBlock->z, false)){
 								continue;
 							}
 
