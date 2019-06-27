@@ -27,7 +27,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 
-class Villager extends Creature implements NPC, Ageable{
+class Villager extends Living implements Ageable{
 	public const PROFESSION_FARMER = 0;
 	public const PROFESSION_LIBRARIAN = 1;
 	public const PROFESSION_PRIEST = 2;

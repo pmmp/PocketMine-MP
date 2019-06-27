@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use function mt_rand;
 
-class Zombie extends Monster{
+class Zombie extends Living{
 	public const NETWORK_ID = self::ZOMBIE;
 
 	public $width = 0.6;

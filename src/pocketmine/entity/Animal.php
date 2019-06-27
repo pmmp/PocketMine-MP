@@ -26,7 +26,7 @@ namespace pocketmine\entity;
 
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 
-abstract class Animal extends Creature implements Ageable{
+abstract class Animal extends Living implements Ageable{
 
 	public function isBaby() : bool{
 		return $this->getGenericFlag(EntityMetadataFlags::BABY);

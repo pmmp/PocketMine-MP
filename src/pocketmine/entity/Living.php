@@ -67,7 +67,7 @@ use function mt_rand;
 use function sqrt;
 use const M_PI;
 
-abstract class Living extends Entity implements Damageable{
+abstract class Living extends Entity{
 
 	protected $gravity = 0.08;
 	protected $drag = 0.02;

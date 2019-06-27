@@ -72,7 +72,7 @@ use function strlen;
 use const INT32_MAX;
 use const INT32_MIN;
 
-class Human extends Creature implements ProjectileSource, InventoryHolder{
+class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	/** @var PlayerInventory */
 	protected $inventory;
