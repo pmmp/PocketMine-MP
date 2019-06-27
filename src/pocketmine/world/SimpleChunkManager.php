@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\utils\SubChunkIteratorManager;
 use const INT32_MAX;
 use const INT32_MIN;
 
@@ -37,6 +38,9 @@ class SimpleChunkManager implements ChunkManager{
 
 	protected $worldHeight;
 
+	/** @var SubChunkIteratorManager */
+	protected $terrainPointer;
+
 	/**
 	 * SimpleChunkManager constructor.
 	 *
@@ -44,48 +48,49 @@ class SimpleChunkManager implements ChunkManager{
 	 */
 	public function __construct(int $worldHeight = World::Y_MAX){
 		$this->worldHeight = $worldHeight;
+		$this->terrainPointer = new SubChunkIteratorManager($this);
 	}
 
 	public function getBlockAt(int $x, int $y, int $z) : Block{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			return BlockFactory::fromFullBlock($chunk->getFullBlock($x & 0xf, $y, $z & 0xf));
+		if($this->terrainPointer->moveTo($x, $y, $z, false)){
+			return BlockFactory::fromFullBlock($this->terrainPointer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf));
 		}
 		return BlockFactory::get(BlockLegacyIds::AIR);
 	}
 
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : bool{
-		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
-			$chunk->setFullBlock($x & 0xf, $y, $z & 0xf, $block->getFullId());
+		if($this->terrainPointer->moveTo($x, $y, $z, false)){
+			$this->terrainPointer->currentSubChunk->setFullBlock($x & 0xf, $y & 0xf, $z & 0xf, $block->getFullId());
 			return true;
 		}
 		return false;
 	}
 
 	public function getBlockLightAt(int $x, int $y, int $z) : int{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			return $chunk->getBlockLight($x & 0xf, $y, $z & 0xf);
+		if($this->terrainPointer->moveTo($x, $y, $z, false)){
+			return $this->terrainPointer->currentSubChunk->getBlockLight($x & 0xf, $y & 0xf, $z & 0xf);
 		}
 
 		return 0;
 	}
 
 	public function setBlockLightAt(int $x, int $y, int $z, int $level) : void{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			$chunk->setBlockLight($x & 0xf, $y, $z & 0xf, $level);
+		if($this->terrainPointer->moveTo($x, $y, $z, false)){
+			$this->terrainPointer->currentSubChunk->setBlockLight($x & 0xf, $y & 0xf, $z & 0xf, $level);
 		}
 	}
 
 	public function getBlockSkyLightAt(int $x, int $y, int $z) : int{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			return $chunk->getBlockSkyLight($x & 0xf, $y, $z & 0xf);
+		if($this->terrainPointer->moveTo($x, $y, $z, false)){
+			return $this->terrainPointer->currentSubChunk->getBlockSkyLight($x & 0xf, $y & 0xf, $z & 0xf);
 		}
 
 		return 0;
 	}
 
 	public function setBlockSkyLightAt(int $x, int $y, int $z, int $level) : void{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
-			$chunk->setBlockSkyLight($x & 0xf, $y, $z & 0xf, $level);
+		if($this->terrainPointer->moveTo($x, $y, $z, false)){
+			$this->terrainPointer->currentSubChunk->setBlockSkyLight($x & 0xf, $y & 0xf, $z & 0xf, $level);
 		}
 	}
 
