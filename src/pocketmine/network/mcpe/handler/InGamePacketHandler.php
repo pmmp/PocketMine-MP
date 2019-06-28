@@ -458,7 +458,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
-		return $this->player->animate($packet->action);
+		return true; //Not used
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{

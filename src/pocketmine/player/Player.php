@@ -42,7 +42,6 @@ use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\event\player\cheat\PlayerIllegalMoveEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
-use pocketmine\event\player\PlayerAnimationEvent;
 use pocketmine\event\player\PlayerBedEnterEvent;
 use pocketmine\event\player\PlayerBedLeaveEvent;
 use pocketmine\event\player\PlayerBlockPickEvent;
@@ -88,6 +87,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
+use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
@@ -1821,6 +1821,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($ev->isCancelled()){
 			return false;
 		}
+		$this->broadcastEntityEvent(EntityEventPacket::ARM_SWING, null, $this->getViewers());
 		if($target->onAttack($this->inventory->getItemInHand(), $face, $this)){
 			return true;
 		}
@@ -1845,6 +1846,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function continueBreakBlock(Vector3 $pos, int $face) : void{
 		$block = $this->world->getBlock($pos);
 		$this->world->addParticle($pos, new PunchBlockParticle($block, $face));
+		$this->broadcastEntityEvent(EntityEventPacket::ARM_SWING, null, $this->getViewers());
 
 		//TODO: destroy-progress level event
 	}
@@ -1864,6 +1866,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->doCloseInventory();
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7) and !$this->isSpectator()){
+			$this->broadcastEntityEvent(EntityEventPacket::ARM_SWING, null, $this->getViewers());
 			$item = $this->inventory->getItemInHand();
 			$oldItem = clone $item;
 			if($this->world->useBreakOn($pos, $item, $this, true)){
@@ -1891,6 +1894,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->setUsingItem(false);
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), 13) and !$this->isSpectator()){
+			$this->broadcastEntityEvent(EntityEventPacket::ARM_SWING, null, $this->getViewers());
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
 			if($this->world->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
@@ -1950,6 +1954,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($ev->isCancelled()){
 			return false;
 		}
+		$this->broadcastEntityEvent(EntityEventPacket::ARM_SWING, null, $this->getViewers());
 
 		if($ev->getModifier(EntityDamageEvent::MODIFIER_CRITICAL) > 0){
 			$entity->broadcastAnimation(null, AnimatePacket::ACTION_CRITICAL_HIT);
@@ -2020,23 +2025,13 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return true;
 	}
 
-	public function animate(int $action) : bool{
-		$ev = new PlayerAnimationEvent($this, $action);
-		$ev->call();
-		if($ev->isCancelled()){
-			return true;
-		}
-
-		$this->broadcastAnimation($this->getViewers(), $ev->getAnimationType());
-		return true;
-	}
-
 	/**
 	 * Drops an item on the ground in front of the player.
 	 *
 	 * @param Item $item
 	 */
 	public function dropItem(Item $item) : void{
+		$this->broadcastEntityEvent(EntityEventPacket::ARM_SWING, null, $this->getViewers());
 		$this->world->dropItem($this->add(0, 1.3, 0), $item, $this->getDirectionVector()->multiply(0.4), 40);
 	}
 
