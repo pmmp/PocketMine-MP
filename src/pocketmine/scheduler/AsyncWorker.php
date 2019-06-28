@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pocketmine\thread\Worker;
-use pocketmine\utils\MainLogger;
 use function gc_enable;
 use function ini_set;
 
@@ -46,9 +45,6 @@ class AsyncWorker extends Worker{
 
 	protected function onRun() : void{
 		\GlobalLogger::set($this->logger);
-		if($this->logger instanceof MainLogger){
-			$this->logger->registerStatic();
-		}
 
 		gc_enable();
 

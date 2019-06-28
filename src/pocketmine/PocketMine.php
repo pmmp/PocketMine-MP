@@ -223,7 +223,6 @@ namespace pocketmine {
 	}
 
 	$logger = new MainLogger(\pocketmine\DATA . "server.log");
-	$logger->registerStatic();
 	\GlobalLogger::set($logger);
 
 	if(extension_loaded("xdebug")){

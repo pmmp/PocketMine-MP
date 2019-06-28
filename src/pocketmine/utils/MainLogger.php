@@ -48,8 +48,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	protected $shutdown;
 	/** @var bool */
 	protected $logDebug;
-	/** @var MainLogger */
-	public static $logger = null;
 	/** @var bool */
 	private $syncFlush = false;
 
@@ -70,9 +68,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	 */
 	public function __construct(string $logFile, bool $logDebug = false){
 		parent::__construct();
-		if(static::$logger instanceof MainLogger){
-			throw new \RuntimeException("MainLogger has been already created");
-		}
 		touch($logFile);
 		$this->logFile = $logFile;
 		$this->logDebug = $logDebug;
@@ -83,33 +78,6 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->timezone = Timezone::get();
 
 		$this->start(PTHREADS_INHERIT_NONE);
-	}
-
-	/**
-	 * @return MainLogger
-	 */
-	public static function getLogger() : MainLogger{
-		return static::$logger;
-	}
-
-	/**
-	 * Returns whether a MainLogger instance is statically registered on this thread.
-	 * @return bool
-	 */
-	public static function isRegisteredStatic() : bool{
-		return static::$logger !== null;
-	}
-
-	/**
-	 * Assigns the MainLogger instance to the {@link MainLogger#logger} static property.
-	 *
-	 * WARNING: Because static properties are thread-local, this MUST be called from the body of every Thread if you
-	 * want the logger to be accessible via {@link MainLogger#getLogger}.
-	 */
-	public function registerStatic() : void{
-		if(static::$logger === null){
-			static::$logger = $this;
-		}
 	}
 
 	/**
