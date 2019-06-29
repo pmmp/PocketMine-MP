@@ -40,7 +40,6 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
-use pocketmine\event\player\cheat\PlayerIllegalMoveEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerBedEnterEvent;
 use pocketmine\event\player\PlayerBedLeaveEvent;
@@ -228,8 +227,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $inAirTicks = 0;
 	/** @var float */
 	protected $stepHeight = 0.6;
-	/** @var bool */
-	protected $allowMovementCheats = false;
 
 	/** @var Vector3|null */
 	protected $sleeping = null;
@@ -291,8 +288,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->perm = new PermissibleBase($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
-
-		$this->allowMovementCheats = (bool) $this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
 
 		$namedtag = $this->server->getOfflinePlayerData($this->username); //TODO: make this async
 
@@ -369,7 +364,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		$this->allowFlight = $this->isCreative();
-		$this->keepMovement = $this->isSpectator() || $this->allowMovementCheats();
+		$this->keepMovement = true;
 		if($this->isOp()){
 			$this->setRemoveFormat(false);
 		}
@@ -531,14 +526,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	public function hasAutoJump() : bool{
 		return $this->autoJump;
-	}
-
-	public function allowMovementCheats() : bool{
-		return $this->allowMovementCheats;
-	}
-
-	public function setAllowMovementCheats(bool $value = true){
-		$this->allowMovementCheats = $value;
 	}
 
 	/**
@@ -1224,10 +1211,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->allowFlight = $this->isCreative();
 		if($this->isSpectator()){
 			$this->setFlying(true);
-			$this->keepMovement = true;
 			$this->despawnFromAll();
 		}else{
-			$this->keepMovement = $this->allowMovementCheats;
 			if($this->isSurvival()){
 				$this->setFlying(false);
 			}
@@ -1416,25 +1401,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$dz = $newPos->z - $this->z;
 
 			$this->move($dx, $dy, $dz);
-
-			$diff = $this->distanceSquared($newPos) / $tickDiff ** 2;
-
-			if($this->isSurvival() and !$revert and $diff > 0.0625){
-				$ev = new PlayerIllegalMoveEvent($this, $newPos, $this->lastLocation->asVector3());
-				$ev->setCancelled($this->allowMovementCheats);
-
-				$ev->call();
-
-				if(!$ev->isCancelled()){
-					$revert = true;
-					$this->logger->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
-					$this->logger->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
-				}
-			}
-
-			if($diff > 0 and !$revert){
-				$this->setPosition($newPos);
-			}
 		}
 
 		$from = clone $this->lastLocation;

@@ -105,9 +105,6 @@ debug:
 player:
   #Choose whether to enable player data saving.
   save-player-data: true
-  anti-cheat:
-    #If false, will try to prevent speed and noclip cheats. May cause movement issues.
-    allow-movement-cheats: true
 
 level-settings:
   #The default format that levels will use when created
