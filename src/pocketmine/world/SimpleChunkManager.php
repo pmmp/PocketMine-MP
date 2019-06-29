@@ -59,7 +59,7 @@ class SimpleChunkManager implements ChunkManager{
 	}
 
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : bool{
-		if($this->terrainPointer->moveTo($x, $y, $z, false)){
+		if($this->terrainPointer->moveTo($x, $y, $z, true)){
 			$this->terrainPointer->currentSubChunk->setFullBlock($x & 0xf, $y & 0xf, $z & 0xf, $block->getFullId());
 			return true;
 		}
