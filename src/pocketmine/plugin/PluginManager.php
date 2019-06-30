@@ -29,6 +29,7 @@ use pocketmine\event\HandlerList;
 use pocketmine\event\Listener;
 use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
+use pocketmine\event\RegisteredListener;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
