@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\biome;
 
+use pocketmine\utils\Random;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\UnknownBiome;
 use pocketmine\world\generator\noise\Simplex;
-use pocketmine\utils\Random;
 
 abstract class BiomeSelector{
 	/** @var Simplex */

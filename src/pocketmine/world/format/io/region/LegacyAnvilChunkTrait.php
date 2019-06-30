@@ -23,15 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
-use pocketmine\world\format\Chunk;
-use pocketmine\world\format\io\ChunkUtils;
-use pocketmine\world\format\io\exception\CorruptedChunkException;
-use pocketmine\world\format\SubChunk;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\world\format\Chunk;
+use pocketmine\world\format\io\ChunkUtils;
+use pocketmine\world\format\io\exception\CorruptedChunkException;
+use pocketmine\world\format\SubChunk;
 
 /**
  * Trait containing I/O methods for handling legacy Anvil-style chunks.

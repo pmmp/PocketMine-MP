@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
+use pocketmine\utils\Binary;
 use pocketmine\world\format\ChunkException;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
-use pocketmine\utils\Binary;
 use function ceil;
 use function chr;
 use function fclose;
