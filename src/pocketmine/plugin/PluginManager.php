@@ -26,6 +26,7 @@ namespace pocketmine\plugin;
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
 use pocketmine\event\HandlerList;
+use pocketmine\event\HandlerListManager;
 use pocketmine\event\Listener;
 use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
@@ -465,7 +466,7 @@ class PluginManager{
 
 			$plugin->onEnableStateChange(false);
 			$plugin->getScheduler()->shutdown();
-			HandlerList::unregisterAll($plugin);
+			HandlerListManager::global()->unregisterAll($plugin);
 			$permManager = PermissionManager::getInstance();
 			foreach($plugin->getDescription()->getPermissions() as $perm){
 				$permManager->removePermission($perm);
@@ -594,7 +595,7 @@ class PluginManager{
 	 * @return HandlerList
 	 */
 	private function getEventListeners(string $event) : HandlerList{
-		$list = HandlerList::getHandlerListFor($event);
+		$list = HandlerListManager::global()->getListFor($event);
 		if($list === null){
 			throw new PluginException("Abstract events not declaring @allowHandle cannot be handled (tried to register listener for $event)");
 		}

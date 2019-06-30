@@ -55,7 +55,7 @@ abstract class Event{
 			throw new \RuntimeException("Recursive event call detected (reached max depth of " . self::MAX_EVENT_CALL_DEPTH . " calls)");
 		}
 
-		$handlerList = HandlerList::getHandlerListFor(get_class($this));
+		$handlerList = HandlerListManager::global()->getListFor(get_class($this));
 		assert($handlerList !== null, "Called event should have a valid HandlerList");
 
 		++self::$eventCallDepth;

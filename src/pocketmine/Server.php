@@ -34,7 +34,7 @@ use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\entity\EntityFactory;
-use pocketmine\event\HandlerList;
+use pocketmine\event\HandlerListManager;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketBroadcastEvent;
@@ -1600,7 +1600,7 @@ class Server{
 			}
 
 			$this->getLogger()->debug("Removing event handlers");
-			HandlerList::unregisterAll();
+			HandlerListManager::global()->unregisterAll();
 
 			if($this->asyncPool instanceof AsyncPool){
 				$this->getLogger()->debug("Shutting down async task worker pool");

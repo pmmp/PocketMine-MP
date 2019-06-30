@@ -24,77 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\event;
 
 use pocketmine\plugin\Plugin;
-use pocketmine\utils\Utils;
 use function array_fill_keys;
 use function in_array;
 use function spl_object_id;
 
 class HandlerList{
-	/**
-	 * @var HandlerList[] classname => HandlerList
-	 */
-	private static $allLists = [];
-
-	/**
-	 * Unregisters all the listeners
-	 * If a Plugin or Listener is passed, all the listeners with that object will be removed
-	 *
-	 * @param Plugin|Listener|null $object
-	 */
-	public static function unregisterAll($object = null) : void{
-		if($object instanceof Listener or $object instanceof Plugin){
-			foreach(self::$allLists as $h){
-				$h->unregister($object);
-			}
-		}else{
-			foreach(self::$allLists as $h){
-				foreach($h->handlerSlots as $key => $list){
-					$h->handlerSlots[$key] = [];
-				}
-			}
-		}
-	}
-
-	/**
-	 * Returns the HandlerList for listeners that explicitly handle this event.
-	 *
-	 * Calling this method also lazily initializes the $classMap inheritance tree of handler lists.
-	 *
-	 * @param string $event
-	 *
-	 * @return null|HandlerList
-	 * @throws \ReflectionException
-	 */
-	public static function getHandlerListFor(string $event) : ?HandlerList{
-		if(isset(self::$allLists[$event])){
-			return self::$allLists[$event];
-		}
-
-		$class = new \ReflectionClass($event);
-		$tags = Utils::parseDocComment((string) $class->getDocComment());
-
-		if($class->isAbstract() && !isset($tags["allowHandle"])){
-			return null;
-		}
-
-		$super = $class;
-		$parentList = null;
-		while($parentList === null && ($super = $super->getParentClass()) !== false){
-			// skip $noHandle events in the inheritance tree to go to the nearest ancestor
-			// while loop to allow skipping $noHandle events in the inheritance tree
-			$parentList = self::getHandlerListFor($super->getName());
-		}
-
-		return new HandlerList($event, $parentList);
-	}
-
-	/**
-	 * @return HandlerList[]
-	 */
-	public static function getHandlerLists() : array{
-		return self::$allLists;
-	}
-
 
 	/** @var string */
 	private $class;
@@ -107,7 +41,6 @@ class HandlerList{
 		$this->class = $class;
 		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
 		$this->parentList = $parentList;
-		self::$allLists[$this->class] = $this;
 	}
 
 	/**
@@ -153,6 +86,10 @@ class HandlerList{
 				unset($this->handlerSlots[$object->getPriority()][spl_object_id($object)]);
 			}
 		}
+	}
+
+	public function clear() : void{
+		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
 	}
 
 	/**
