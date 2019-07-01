@@ -375,7 +375,7 @@ class WorldManager{
 			$tickMs = (microtime(true) - $worldTime) * 1000;
 			$world->tickRateTime = $tickMs;
 			if($tickMs >= 50){
-				$this->server->getLogger()->debug(sprintf("World \"%s\" took too long to tick: %gms (%g ticks)", $world->getDisplayName(), $tickMs, round($tickMs / 50, 2)));
+				$world->getLogger()->debug(sprintf("Tick took too long: %gms (%g ticks)", $tickMs, round($tickMs / 50, 2)));
 			}
 		}
 
