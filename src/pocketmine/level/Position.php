@@ -103,6 +103,47 @@ class Position extends Vector3{
 			return new Position($this->x + $x, $this->y + $y, $this->z + $z);
 		}
 	}
+	
+	/**
+	 * @param Position|int $x
+	 * @param int         $y
+	 * @param int         $z
+	 *
+	 * @return Vector3
+	 */
+	public function subtract($x = 0, $y = 0, $z = 0) : Position{
+		if($x instanceof Position){
+			return $this->add(-$x->x, -$x->y, -$x->z);
+		}else{
+			return $this->add(-$x, -$y, -$z);
+		}
+	}
+	
+	public function multiply(float $number) : Position{
+		return new Position($this->x * $number, $this->y * $number, $this->z * $number, $this->level);
+	}
+	
+	public function divide(float $number) : Position{
+		return new Position($this->x / $number, $this->y / $number, $this->z / $number, $this->level);
+	}
+	
+	public function ceil() : Position{
+		return new Position((int) ceil($this->x), (int) ceil($this->y), (int) ceil($this->z), $this->level);
+	}
+	
+	public function floor() : Position{
+		return new Position((int) floor($this->x), (int) floor($this->y), (int) floor($this->z), $this->level);
+	}
+	
+	public function round(int $precision = 0, int $mode = PHP_ROUND_HALF_UP) : Position{
+		return $precision > 0 ?
+			new Position(round($this->x, $precision, $mode), round($this->y, $precision, $mode), round($this->z, $precision, $mode), $this->level) :
+			new Position((int) round($this->x, $precision, $mode), (int) round($this->y, $precision, $mode), (int) round($this->z, $precision, $mode), $this->level);
+	}
+	
+	public function abs() : Position{
+		return new Position(abs($this->x), abs($this->y), abs($this->z), $this->level);
+	}
 
 	/**
 	 * Checks if this object has a valid reference to a loaded Level
