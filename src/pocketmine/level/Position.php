@@ -90,6 +90,21 @@ class Position extends Vector3{
 	}
 
 	/**
+	 * @param Position|int $x
+	 * @param int         $y
+	 * @param int         $z
+	 *
+	 * @return Vector3
+	 */
+	public function add($x, $y = 0, $z = 0) : Position{
+		if($x instanceof Position){
+			return new Position($this->x + $x->x, $this->y + $x->y, $this->z + $x->z);
+		}else{
+			return new Position($this->x + $x, $this->y + $y, $this->z + $z);
+		}
+	}
+
+	/**
 	 * Checks if this object has a valid reference to a loaded Level
 	 *
 	 * @return bool
