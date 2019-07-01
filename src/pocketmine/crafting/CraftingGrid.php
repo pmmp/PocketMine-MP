@@ -21,8 +21,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory;
+namespace pocketmine\crafting;
 
+use pocketmine\inventory\BaseInventory;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 use function max;

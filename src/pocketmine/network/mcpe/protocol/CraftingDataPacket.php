@@ -26,9 +26,9 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\inventory\FurnaceRecipe;
-use pocketmine\inventory\ShapedRecipe;
-use pocketmine\inventory\ShapelessRecipe;
+use pocketmine\crafting\FurnaceRecipe;
+use pocketmine\crafting\ShapedRecipe;
+use pocketmine\crafting\ShapelessRecipe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\network\BadPacketException;

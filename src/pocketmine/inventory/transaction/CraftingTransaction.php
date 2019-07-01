@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction;
 
+use pocketmine\crafting\CraftingRecipe;
 use pocketmine\event\inventory\CraftItemEvent;
-use pocketmine\inventory\CraftingRecipe;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;

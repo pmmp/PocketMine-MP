@@ -28,6 +28,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\UnknownBlock;
 use pocketmine\command\CommandSender;
+use pocketmine\crafting\CraftingGrid;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Entity;
@@ -67,7 +68,6 @@ use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
-use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\item\Consumable;
@@ -183,7 +183,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $permanentWindows = [];
 	/** @var PlayerCursorInventory */
 	protected $cursorInventory;
-	/** @var CraftingGrid */
+	/** @var \pocketmine\crafting\CraftingGrid */
 	protected $craftingGrid = null;
 
 	/** @var int */

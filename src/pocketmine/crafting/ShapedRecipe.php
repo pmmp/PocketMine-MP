@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory;
+namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
