@@ -183,7 +183,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $permanentWindows = [];
 	/** @var PlayerCursorInventory */
 	protected $cursorInventory;
-	/** @var \pocketmine\crafting\CraftingGrid */
+	/** @var CraftingGrid */
 	protected $craftingGrid = null;
 
 	/** @var int */

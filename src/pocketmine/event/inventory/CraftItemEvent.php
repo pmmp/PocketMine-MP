@@ -36,7 +36,7 @@ class CraftItemEvent extends Event implements Cancellable{
 
 	/** @var CraftingTransaction */
 	private $transaction;
-	/** @var \pocketmine\crafting\CraftingRecipe */
+	/** @var CraftingRecipe */
 	private $recipe;
 	/** @var int */
 	private $repetitions;
@@ -46,13 +46,13 @@ class CraftItemEvent extends Event implements Cancellable{
 	private $outputs;
 
 	/**
-	 * @param CraftingTransaction                 $transaction
-	 * @param \pocketmine\crafting\CraftingRecipe $recipe
-	 * @param int                                 $repetitions
-	 * @param Item[]                              $inputs
-	 * @param Item[]                              $outputs
+	 * @param CraftingTransaction $transaction
+	 * @param CraftingRecipe      $recipe
+	 * @param int                 $repetitions
+	 * @param Item[]              $inputs
+	 * @param Item[]              $outputs
 	 */
-	public function __construct(CraftingTransaction $transaction, \pocketmine\crafting\CraftingRecipe $recipe, int $repetitions, array $inputs, array $outputs){
+	public function __construct(CraftingTransaction $transaction, CraftingRecipe $recipe, int $repetitions, array $inputs, array $outputs){
 		$this->transaction = $transaction;
 		$this->recipe = $recipe;
 		$this->repetitions = $repetitions;
@@ -72,9 +72,9 @@ class CraftItemEvent extends Event implements Cancellable{
 	/**
 	 * Returns the recipe crafted.
 	 *
-	 * @return \pocketmine\crafting\CraftingRecipe
+	 * @return CraftingRecipe
 	 */
-	public function getRecipe() : \pocketmine\crafting\CraftingRecipe{
+	public function getRecipe() : CraftingRecipe{
 		return $this->recipe;
 	}
 
