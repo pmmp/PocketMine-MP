@@ -61,7 +61,7 @@ class DragonEgg extends Transparent implements Fallable{
 		return true;
 	}
 
-	protected function teleport() : void{
+	public function teleport() : void{
 		for($tries = 0; $tries < 16; ++$tries){
 			$block = $this->world->getBlockAt(
 				$this->x + mt_rand(-16, 16),
