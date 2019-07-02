@@ -90,41 +90,33 @@ class Position extends Vector3{
 	}
 
 	/**
-	 * @param Position|int $x
+	 * @param Vector3|int $x
 	 * @param int         $y
 	 * @param int         $z
 	 *
-	 * @return Vector3
+	 * @return Position
 	 */
 	public function add($x, $y = 0, $z = 0) : Position{
-		if($x instanceof Position){
-			return new Position($this->x + $x->x, $this->y + $x->y, $this->z + $x->z);
+		if($x instanceof Vector3){
+			return new Position($this->x + $x->x, $this->y + $x->y, $this->z + $x->z, $this->level);
 		}else{
-			return new Position($this->x + $x, $this->y + $y, $this->z + $z);
+			return new Position($this->x + $x, $this->y + $y, $this->z + $z, $this->level);
 		}
 	}
 	
 	/**
-	 * @param Position|int $x
+	 * @param Vector3|int $x
 	 * @param int         $y
 	 * @param int         $z
 	 *
-	 * @return Vector3
+	 * @return Position
 	 */
 	public function subtract($x = 0, $y = 0, $z = 0) : Position{
-		if($x instanceof Position){
-			return $this->add(-$x->x, -$x->y, -$x->z);
+		if($x instanceof Vector3){
+			return $this->add(-$x->x, -$x->y, -$x->z, $this->level);
 		}else{
-			return $this->add(-$x, -$y, -$z);
+			return $this->add(-$x, -$y, -$z, $this->leve;);
 		}
-	}
-	
-	public function multiply(float $number) : Position{
-		return new Position($this->x * $number, $this->y * $number, $this->z * $number, $this->level);
-	}
-	
-	public function divide(float $number) : Position{
-		return new Position($this->x / $number, $this->y / $number, $this->z / $number, $this->level);
 	}
 	
 	public function ceil() : Position{
@@ -139,10 +131,6 @@ class Position extends Vector3{
 		return $precision > 0 ?
 			new Position(round($this->x, $precision, $mode), round($this->y, $precision, $mode), round($this->z, $precision, $mode), $this->level) :
 			new Position((int) round($this->x, $precision, $mode), (int) round($this->y, $precision, $mode), (int) round($this->z, $precision, $mode), $this->level);
-	}
-	
-	public function abs() : Position{
-		return new Position(abs($this->x), abs($this->y), abs($this->z), $this->level);
 	}
 
 	/**
