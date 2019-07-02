@@ -109,7 +109,7 @@ class FallingBlock extends Entity{
 				$this->flagForDespawn();
 
 				$block = $this->world->getBlock($pos);
-				if($block->getId() > 0 and $block->isTransparent() and !$block->canBeReplaced()){
+				if($block->isTransparent() and !$block->canBeReplaced()){
 					//FIXME: anvils are supposed to destroy torches
 					$this->getWorld()->dropItem($this, $this->block->asItem());
 				}else{
