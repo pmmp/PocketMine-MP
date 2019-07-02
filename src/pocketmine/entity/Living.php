@@ -579,7 +579,7 @@ abstract class Living extends Entity{
 
 				$deltaX = $this->x - $e->x;
 				$deltaZ = $this->z - $e->z;
-				$this->knockBack($e, $source->getBaseDamage(), $deltaX, $deltaZ, $source->getKnockBack());
+				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack());
 			}
 		}
 
@@ -593,7 +593,7 @@ abstract class Living extends Entity{
 		$this->broadcastEntityEvent(EntityEventPacket::HURT_ANIMATION);
 	}
 
-	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4) : void{
+	public function knockBack(float $x, float $z, float $base = 0.4) : void{
 		$f = sqrt($x * $x + $z * $z);
 		if($f <= 0){
 			return;
