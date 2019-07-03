@@ -34,7 +34,7 @@ use pocketmine\player\Player;
 class EnchantingTable extends Transparent{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 6000.0));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(5.0, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN, 6000.0));
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

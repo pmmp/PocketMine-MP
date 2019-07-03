@@ -30,7 +30,7 @@ use pocketmine\player\Player;
 class Ice extends Transparent{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::TYPE_PICKAXE));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE));
 	}
 
 	public function getLightFilter() : int{

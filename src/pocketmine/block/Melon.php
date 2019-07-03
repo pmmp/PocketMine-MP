@@ -30,7 +30,7 @@ use function mt_rand;
 class Melon extends Transparent{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::TYPE_AXE));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::AXE));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

@@ -43,19 +43,19 @@ class BlockBreakInfo{
 	 * @param int        $toolHarvestLevel
 	 * @param float|null $blastResistance default 5x hardness
 	 */
-	public function __construct(float $hardness, int $toolType = BlockToolType::TYPE_NONE, int $toolHarvestLevel = 0, ?float $blastResistance = null){
+	public function __construct(float $hardness, int $toolType = BlockToolType::NONE, int $toolHarvestLevel = 0, ?float $blastResistance = null){
 		$this->hardness = $hardness;
 		$this->toolType = $toolType;
 		$this->toolHarvestLevel = $toolHarvestLevel;
 		$this->blastResistance = $blastResistance ?? $hardness * 5;
 	}
 
-	public static function instant(int $toolType = BlockToolType::TYPE_NONE, int $toolHarvestLevel = 0) : self{
+	public static function instant(int $toolType = BlockToolType::NONE, int $toolHarvestLevel = 0) : self{
 		return new self(0.0, $toolType, $toolHarvestLevel, 0.0);
 	}
 
 	public static function indestructible(float $blastResistance = 18000000.0) : self{
-		return new self(-1.0, BlockToolType::TYPE_NONE, 0, $blastResistance);
+		return new self(-1.0, BlockToolType::NONE, 0, $blastResistance);
 	}
 
 	/**
@@ -133,7 +133,7 @@ class BlockBreakInfo{
 			return false;
 		}
 
-		return $this->toolType === BlockToolType::TYPE_NONE or $this->toolHarvestLevel === 0 or (
+		return $this->toolType === BlockToolType::NONE or $this->toolHarvestLevel === 0 or (
 				($this->toolType & $tool->getBlockToolType()) !== 0 and $tool->getBlockToolHarvestLevel() >= $this->toolHarvestLevel);
 	}
 

@@ -33,7 +33,7 @@ class Shears extends Tool{
 	}
 
 	public function getBlockToolType() : int{
-		return BlockToolType::TYPE_SHEARS;
+		return BlockToolType::SHEARS;
 	}
 
 	public function getBlockToolHarvestLevel() : int{

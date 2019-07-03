@@ -30,7 +30,7 @@ use pocketmine\item\TieredTool;
 class Snow extends Solid{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::TYPE_SHOVEL, TieredTool::TIER_WOODEN));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::SHOVEL, TieredTool::TIER_WOODEN));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

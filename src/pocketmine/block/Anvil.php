@@ -43,7 +43,7 @@ class Anvil extends Transparent implements Fallable{
 	protected $facing = Facing::NORTH;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(5.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 6000.0));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(5.0, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN, 6000.0));
 	}
 
 	protected function writeStateToMeta() : int{

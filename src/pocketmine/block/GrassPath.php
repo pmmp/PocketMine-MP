@@ -31,7 +31,7 @@ use pocketmine\math\Facing;
 class GrassPath extends Transparent{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::TYPE_SHOVEL));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL));
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{

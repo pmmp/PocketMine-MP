@@ -29,7 +29,7 @@ use pocketmine\item\TieredTool;
 class GlowingObsidian extends Solid{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(10.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_DIAMOND, 50.0));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(10.0, BlockToolType::PICKAXE, TieredTool::TIER_DIAMOND, 50.0));
 	}
 
 	public function getLightLevel() : int{

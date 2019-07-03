@@ -28,7 +28,7 @@ use pocketmine\item\Item;
 class BlueIce extends Solid{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.8, BlockToolType::TYPE_PICKAXE));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.8, BlockToolType::PICKAXE));
 	}
 
 	public function getLightLevel() : int{

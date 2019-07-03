@@ -44,7 +44,7 @@ class Leaves extends Transparent{
 	protected $checkDecay = false;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::TYPE_SHEARS));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::SHEARS));
 		$this->treeType = $treeType;
 	}
 
@@ -118,7 +118,7 @@ class Leaves extends Transparent{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->getBlockToolType() & BlockToolType::TYPE_SHEARS){
+		if($item->getBlockToolType() & BlockToolType::SHEARS){
 			return $this->getDropsForCompatibleTool($item);
 		}
 

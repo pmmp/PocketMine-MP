@@ -26,7 +26,7 @@ namespace pocketmine\block;
 class WoodenButton extends Button{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::TYPE_AXE));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::AXE));
 	}
 
 	protected function getActivationTime() : int{

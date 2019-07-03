@@ -28,6 +28,6 @@ use pocketmine\item\TieredTool;
 class Concrete extends Solid{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.8, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.8, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN));
 	}
 }

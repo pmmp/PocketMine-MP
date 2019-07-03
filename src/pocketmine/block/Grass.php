@@ -39,7 +39,7 @@ use function mt_rand;
 class Grass extends Solid{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::TYPE_SHOVEL));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

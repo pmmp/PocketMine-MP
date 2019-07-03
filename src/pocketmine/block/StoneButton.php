@@ -26,7 +26,7 @@ namespace pocketmine\block;
 class StoneButton extends Button{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::TYPE_PICKAXE));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE));
 	}
 
 	protected function getActivationTime() : int{

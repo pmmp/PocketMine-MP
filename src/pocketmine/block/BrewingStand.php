@@ -39,7 +39,7 @@ class BrewingStand extends Transparent{
 	protected $southwestSlot = false;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN));
 	}
 
 	protected function writeStateToMeta() : int{

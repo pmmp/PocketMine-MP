@@ -38,7 +38,7 @@ class Ladder extends Transparent{
 	protected $facing = Facing::NORTH;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.4, BlockToolType::TYPE_AXE));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.4, BlockToolType::AXE));
 	}
 
 	protected function writeStateToMeta() : int{

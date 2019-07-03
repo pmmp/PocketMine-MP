@@ -37,7 +37,7 @@ class Pumpkin extends Solid{
 	protected $facing = Facing::NORTH;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::TYPE_AXE));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::AXE));
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{

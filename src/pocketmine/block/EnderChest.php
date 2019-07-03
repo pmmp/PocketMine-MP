@@ -40,7 +40,7 @@ class EnderChest extends Transparent{
 	protected $facing = Facing::NORTH;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(22.5, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 3000.0));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(22.5, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN, 3000.0));
 	}
 
 	protected function writeStateToMeta() : int{

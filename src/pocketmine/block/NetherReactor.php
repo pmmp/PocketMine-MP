@@ -34,7 +34,7 @@ class NetherReactor extends Solid{
 	protected $state = BlockLegacyMetadata::NETHER_REACTOR_INACTIVE;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN));
 	}
 
 	protected function writeStateToMeta() : int{

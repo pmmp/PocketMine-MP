@@ -40,7 +40,7 @@ class Vine extends Flowable{
 	protected $faces = [];
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::TYPE_AXE));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::AXE));
 	}
 
 	protected function writeStateToMeta() : int{
@@ -144,7 +144,7 @@ class Vine extends Flowable{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->getBlockToolType() & BlockToolType::TYPE_SHEARS){
+		if($item->getBlockToolType() & BlockToolType::SHEARS){
 			return $this->getDropsForCompatibleTool($item);
 		}
 

@@ -31,7 +31,7 @@ use function mt_rand;
 class EmeraldOre extends Solid{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_IRON));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, TieredTool::TIER_IRON));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

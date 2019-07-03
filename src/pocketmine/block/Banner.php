@@ -58,7 +58,7 @@ class Banner extends Transparent{
 	protected $patterns;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::TYPE_AXE));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::AXE));
 		$this->baseColor = DyeColor::BLACK();
 		$this->patterns = new Deque();
 	}

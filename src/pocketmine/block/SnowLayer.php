@@ -44,7 +44,7 @@ class SnowLayer extends Flowable implements Fallable{
 	protected $layers = 1;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.1, BlockToolType::TYPE_SHOVEL, TieredTool::TIER_WOODEN));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.1, BlockToolType::SHOVEL, TieredTool::TIER_WOODEN));
 	}
 
 	protected function writeStateToMeta() : int{

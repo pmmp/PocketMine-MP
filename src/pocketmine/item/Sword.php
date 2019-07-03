@@ -30,7 +30,7 @@ use pocketmine\entity\Entity;
 class Sword extends TieredTool{
 
 	public function getBlockToolType() : int{
-		return BlockToolType::TYPE_SWORD;
+		return BlockToolType::SWORD;
 	}
 
 	public function getAttackPoints() : int{

@@ -35,7 +35,7 @@ class Wall extends Transparent{
 	protected $up = false;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN, 30.0));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN, 30.0));
 	}
 
 	public function readStateFromWorld() : void{

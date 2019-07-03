@@ -595,7 +595,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return int
 	 */
 	public function getBlockToolType() : int{
-		return BlockToolType::TYPE_NONE;
+		return BlockToolType::NONE;
 	}
 
 	/**

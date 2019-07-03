@@ -38,7 +38,7 @@ class GlazedTerracotta extends Solid{
 	protected $facing = Facing::NORTH;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.4, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.4, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN));
 	}
 
 	protected function writeStateToMeta() : int{

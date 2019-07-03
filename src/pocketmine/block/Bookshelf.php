@@ -29,7 +29,7 @@ use pocketmine\item\ItemFactory;
 class Bookshelf extends Solid{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.5, BlockToolType::TYPE_AXE));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.5, BlockToolType::AXE));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

@@ -28,7 +28,7 @@ use pocketmine\item\TieredTool;
 class Netherrack extends Solid{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.4, BlockToolType::TYPE_PICKAXE, TieredTool::TIER_WOODEN));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.4, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN));
 	}
 
 	public function burnsForever() : bool{

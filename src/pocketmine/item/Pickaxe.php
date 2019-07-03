@@ -30,7 +30,7 @@ use pocketmine\entity\Entity;
 class Pickaxe extends TieredTool{
 
 	public function getBlockToolType() : int{
-		return BlockToolType::TYPE_PICKAXE;
+		return BlockToolType::PICKAXE;
 	}
 
 	public function getBlockToolHarvestLevel() : int{

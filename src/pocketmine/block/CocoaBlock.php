@@ -44,7 +44,7 @@ class CocoaBlock extends Transparent{
 	protected $age = 0;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::TYPE_AXE, 0, 15.0));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::AXE, 0, 15.0));
 	}
 
 	protected function writeStateToMeta() : int{

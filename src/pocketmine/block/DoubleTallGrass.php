@@ -30,7 +30,7 @@ use function mt_rand;
 class DoubleTallGrass extends DoublePlant{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(BlockToolType::TYPE_SHEARS, 1));
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(BlockToolType::SHEARS, 1));
 	}
 
 	public function canBeReplaced() : bool{

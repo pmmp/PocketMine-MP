@@ -26,7 +26,7 @@ namespace pocketmine\block;
 class WoodenTrapdoor extends Trapdoor{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::TYPE_AXE, 0, 15.0));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::AXE, 0, 15.0));
 	}
 
 	public function getFuelTime() : int{
