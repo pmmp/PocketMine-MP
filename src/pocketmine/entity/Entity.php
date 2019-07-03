@@ -279,7 +279,7 @@ abstract class Entity extends Location implements EntityIds{
 	 * @return bool
 	 */
 	public function isNameTagAlwaysVisible() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::ALWAYS_SHOW_NAMETAG);
+		return $this->propertyManager->getByte(EntityMetadataProperties::ALWAYS_SHOW_NAMETAG) === 1;
 	}
 
 
