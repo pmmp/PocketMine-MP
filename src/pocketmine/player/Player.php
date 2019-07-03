@@ -283,7 +283,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->rawUUID = $this->uuid->toBinary();
-		$this->xuid = $authenticated ? $this->playerInfo->getXuid() : "";
+		$this->xuid = $this->playerInfo->getXuid();
 
 		$this->perm = new PermissibleBase($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);

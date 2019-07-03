@@ -533,6 +533,8 @@ class NetworkSession{
 		}
 		if($authenticated and $this->info->getXuid() === ""){
 			$error = "Expected XUID but none found";
+		}elseif(!$authenticated and $this->info->getXuid() !== ""){
+			$error = "Unexpected XUID for non-XBOX-authenticated player";
 		}
 
 		if($error !== null){
@@ -543,15 +545,9 @@ class NetworkSession{
 
 		$this->authenticated = $authenticated;
 
-		if(!$this->authenticated){
-			if($authRequired){
-				$this->disconnect("disconnectionScreen.notAuthenticated");
-				return;
-			}
-
-			if($this->info->getXuid() !== ""){
-				$this->logger->warning("Found XUID, but login keychain is not signed by Mojang");
-			}
+		if(!$this->authenticated and $authRequired){
+			$this->disconnect("disconnectionScreen.notAuthenticated");
+			return;
 		}
 		$this->logger->debug("Xbox Live authenticated: " . ($this->authenticated ? "YES" : "NO"));
 
