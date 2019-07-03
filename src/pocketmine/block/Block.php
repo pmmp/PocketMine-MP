@@ -49,7 +49,7 @@ use function assert;
 use function dechex;
 use const PHP_INT_MAX;
 
-class Block implements BlockLegacyIds{
+class Block extends Position implements BlockLegacyIds{
 
 	/**
 	 * Returns a new Block instance with the specified ID, meta and position.
