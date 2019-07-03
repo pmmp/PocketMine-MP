@@ -555,6 +555,8 @@ class BlockFactory{
 			self::register(new Wall(new BID(Ids::COBBLESTONE_WALL, $magicNumber), $prefix . " Wall"));
 		}
 
+		self::registerElements();
+
 		//region --- auto-generated TODOs ---
 		//TODO: minecraft:bamboo
 		//TODO: minecraft:bamboo_sapling
@@ -585,125 +587,6 @@ class BlockFactory{
 		//TODO: minecraft:dispenser
 		//TODO: minecraft:dried_kelp_block
 		//TODO: minecraft:dropper
-		//TODO: minecraft:element_0
-		//TODO: minecraft:element_1
-		//TODO: minecraft:element_10
-		//TODO: minecraft:element_100
-		//TODO: minecraft:element_101
-		//TODO: minecraft:element_102
-		//TODO: minecraft:element_103
-		//TODO: minecraft:element_104
-		//TODO: minecraft:element_105
-		//TODO: minecraft:element_106
-		//TODO: minecraft:element_107
-		//TODO: minecraft:element_108
-		//TODO: minecraft:element_109
-		//TODO: minecraft:element_11
-		//TODO: minecraft:element_110
-		//TODO: minecraft:element_111
-		//TODO: minecraft:element_112
-		//TODO: minecraft:element_113
-		//TODO: minecraft:element_114
-		//TODO: minecraft:element_115
-		//TODO: minecraft:element_116
-		//TODO: minecraft:element_117
-		//TODO: minecraft:element_118
-		//TODO: minecraft:element_12
-		//TODO: minecraft:element_13
-		//TODO: minecraft:element_14
-		//TODO: minecraft:element_15
-		//TODO: minecraft:element_16
-		//TODO: minecraft:element_17
-		//TODO: minecraft:element_18
-		//TODO: minecraft:element_19
-		//TODO: minecraft:element_2
-		//TODO: minecraft:element_20
-		//TODO: minecraft:element_21
-		//TODO: minecraft:element_22
-		//TODO: minecraft:element_23
-		//TODO: minecraft:element_24
-		//TODO: minecraft:element_25
-		//TODO: minecraft:element_26
-		//TODO: minecraft:element_27
-		//TODO: minecraft:element_28
-		//TODO: minecraft:element_29
-		//TODO: minecraft:element_3
-		//TODO: minecraft:element_30
-		//TODO: minecraft:element_31
-		//TODO: minecraft:element_32
-		//TODO: minecraft:element_33
-		//TODO: minecraft:element_34
-		//TODO: minecraft:element_35
-		//TODO: minecraft:element_36
-		//TODO: minecraft:element_37
-		//TODO: minecraft:element_38
-		//TODO: minecraft:element_39
-		//TODO: minecraft:element_4
-		//TODO: minecraft:element_40
-		//TODO: minecraft:element_41
-		//TODO: minecraft:element_42
-		//TODO: minecraft:element_43
-		//TODO: minecraft:element_44
-		//TODO: minecraft:element_45
-		//TODO: minecraft:element_46
-		//TODO: minecraft:element_47
-		//TODO: minecraft:element_48
-		//TODO: minecraft:element_49
-		//TODO: minecraft:element_5
-		//TODO: minecraft:element_50
-		//TODO: minecraft:element_51
-		//TODO: minecraft:element_52
-		//TODO: minecraft:element_53
-		//TODO: minecraft:element_54
-		//TODO: minecraft:element_55
-		//TODO: minecraft:element_56
-		//TODO: minecraft:element_57
-		//TODO: minecraft:element_58
-		//TODO: minecraft:element_59
-		//TODO: minecraft:element_6
-		//TODO: minecraft:element_60
-		//TODO: minecraft:element_61
-		//TODO: minecraft:element_62
-		//TODO: minecraft:element_63
-		//TODO: minecraft:element_64
-		//TODO: minecraft:element_65
-		//TODO: minecraft:element_66
-		//TODO: minecraft:element_67
-		//TODO: minecraft:element_68
-		//TODO: minecraft:element_69
-		//TODO: minecraft:element_7
-		//TODO: minecraft:element_70
-		//TODO: minecraft:element_71
-		//TODO: minecraft:element_72
-		//TODO: minecraft:element_73
-		//TODO: minecraft:element_74
-		//TODO: minecraft:element_75
-		//TODO: minecraft:element_76
-		//TODO: minecraft:element_77
-		//TODO: minecraft:element_78
-		//TODO: minecraft:element_79
-		//TODO: minecraft:element_8
-		//TODO: minecraft:element_80
-		//TODO: minecraft:element_81
-		//TODO: minecraft:element_82
-		//TODO: minecraft:element_83
-		//TODO: minecraft:element_84
-		//TODO: minecraft:element_85
-		//TODO: minecraft:element_86
-		//TODO: minecraft:element_87
-		//TODO: minecraft:element_88
-		//TODO: minecraft:element_89
-		//TODO: minecraft:element_9
-		//TODO: minecraft:element_90
-		//TODO: minecraft:element_91
-		//TODO: minecraft:element_92
-		//TODO: minecraft:element_93
-		//TODO: minecraft:element_94
-		//TODO: minecraft:element_95
-		//TODO: minecraft:element_96
-		//TODO: minecraft:element_97
-		//TODO: minecraft:element_98
-		//TODO: minecraft:element_99
 		//TODO: minecraft:end_gateway
 		//TODO: minecraft:end_portal
 		//TODO: minecraft:fletching_table
@@ -742,6 +625,129 @@ class BlockFactory{
 		//TODO: minecraft:turtle_egg
 		//TODO: minecraft:undyed_shulker_box
 		//endregion
+	}
+
+	private static function registerElements() : void{
+		self::register(new Solid(new BID(Ids::ELEMENT_0), "???", BlockBreakInfo::instant()));
+
+		self::register(new Element(new BID(Ids::ELEMENT_1), "Hydrogen", BlockBreakInfo::instant(), "h", 1, 5));
+		self::register(new Element(new BID(Ids::ELEMENT_2), "Helium", BlockBreakInfo::instant(), "he", 2, 7));
+		self::register(new Element(new BID(Ids::ELEMENT_3), "Lithium", BlockBreakInfo::instant(), "li", 3, 0));
+		self::register(new Element(new BID(Ids::ELEMENT_4), "Beryllium", BlockBreakInfo::instant(), "be", 4, 1));
+		self::register(new Element(new BID(Ids::ELEMENT_5), "Boron", BlockBreakInfo::instant(), "b", 5, 4));
+		self::register(new Element(new BID(Ids::ELEMENT_6), "Carbon", BlockBreakInfo::instant(), "c", 6, 5));
+		self::register(new Element(new BID(Ids::ELEMENT_7), "Nitrogen", BlockBreakInfo::instant(), "n", 7, 5));
+		self::register(new Element(new BID(Ids::ELEMENT_8), "Oxygen", BlockBreakInfo::instant(), "o", 8, 5));
+		self::register(new Element(new BID(Ids::ELEMENT_9), "Fluorine", BlockBreakInfo::instant(), "f", 9, 6));
+		self::register(new Element(new BID(Ids::ELEMENT_10), "Neon", BlockBreakInfo::instant(), "ne", 10, 7));
+		self::register(new Element(new BID(Ids::ELEMENT_11), "Sodium", BlockBreakInfo::instant(), "na", 11, 0));
+		self::register(new Element(new BID(Ids::ELEMENT_12), "Magnesium", BlockBreakInfo::instant(), "mg", 12, 1));
+		self::register(new Element(new BID(Ids::ELEMENT_13), "Aluminum", BlockBreakInfo::instant(), "al", 13, 3));
+		self::register(new Element(new BID(Ids::ELEMENT_14), "Silicon", BlockBreakInfo::instant(), "si", 14, 4));
+		self::register(new Element(new BID(Ids::ELEMENT_15), "Phosphorus", BlockBreakInfo::instant(), "p", 15, 5));
+		self::register(new Element(new BID(Ids::ELEMENT_16), "Sulfur", BlockBreakInfo::instant(), "s", 16, 5));
+		self::register(new Element(new BID(Ids::ELEMENT_17), "Chlorine", BlockBreakInfo::instant(), "cl", 17, 6));
+		self::register(new Element(new BID(Ids::ELEMENT_18), "Argon", BlockBreakInfo::instant(), "ar", 18, 7));
+		self::register(new Element(new BID(Ids::ELEMENT_19), "Potassium", BlockBreakInfo::instant(), "k", 19, 0));
+		self::register(new Element(new BID(Ids::ELEMENT_20), "Calcium", BlockBreakInfo::instant(), "ca", 20, 1));
+		self::register(new Element(new BID(Ids::ELEMENT_21), "Scandium", BlockBreakInfo::instant(), "sc", 21, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_22), "Titanium", BlockBreakInfo::instant(), "ti", 22, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_23), "Vanadium", BlockBreakInfo::instant(), "v", 23, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_24), "Chromium", BlockBreakInfo::instant(), "cr", 24, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_25), "Manganese", BlockBreakInfo::instant(), "mn", 25, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_26), "Iron", BlockBreakInfo::instant(), "fe", 26, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_27), "Cobalt", BlockBreakInfo::instant(), "co", 27, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_28), "Nickel", BlockBreakInfo::instant(), "ni", 28, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_29), "Copper", BlockBreakInfo::instant(), "cu", 29, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_30), "Zinc", BlockBreakInfo::instant(), "zn", 30, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_31), "Gallium", BlockBreakInfo::instant(), "ga", 31, 3));
+		self::register(new Element(new BID(Ids::ELEMENT_32), "Germanium", BlockBreakInfo::instant(), "ge", 32, 4));
+		self::register(new Element(new BID(Ids::ELEMENT_33), "Arsenic", BlockBreakInfo::instant(), "as", 33, 4));
+		self::register(new Element(new BID(Ids::ELEMENT_34), "Selenium", BlockBreakInfo::instant(), "se", 34, 5));
+		self::register(new Element(new BID(Ids::ELEMENT_35), "Bromine", BlockBreakInfo::instant(), "br", 35, 6));
+		self::register(new Element(new BID(Ids::ELEMENT_36), "Krypton", BlockBreakInfo::instant(), "kr", 36, 7));
+		self::register(new Element(new BID(Ids::ELEMENT_37), "Rubidium", BlockBreakInfo::instant(), "rb", 37, 0));
+		self::register(new Element(new BID(Ids::ELEMENT_38), "Strontium", BlockBreakInfo::instant(), "sr", 38, 1));
+		self::register(new Element(new BID(Ids::ELEMENT_39), "Yttrium", BlockBreakInfo::instant(), "y", 39, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_40), "Zirconium", BlockBreakInfo::instant(), "zr", 40, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_41), "Niobium", BlockBreakInfo::instant(), "nb", 41, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_42), "Molybdenum", BlockBreakInfo::instant(), "mo", 42, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_43), "Technetium", BlockBreakInfo::instant(), "tc", 43, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_44), "Ruthenium", BlockBreakInfo::instant(), "ru", 44, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_45), "Rhodium", BlockBreakInfo::instant(), "rh", 45, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_46), "Palladium", BlockBreakInfo::instant(), "pd", 46, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_47), "Silver", BlockBreakInfo::instant(), "ag", 47, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_48), "Cadmium", BlockBreakInfo::instant(), "cd", 48, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_49), "Indium", BlockBreakInfo::instant(), "in", 49, 3));
+		self::register(new Element(new BID(Ids::ELEMENT_50), "Tin", BlockBreakInfo::instant(), "sn", 50, 3));
+		self::register(new Element(new BID(Ids::ELEMENT_51), "Antimony", BlockBreakInfo::instant(), "sb", 51, 4));
+		self::register(new Element(new BID(Ids::ELEMENT_52), "Tellurium", BlockBreakInfo::instant(), "te", 52, 4));
+		self::register(new Element(new BID(Ids::ELEMENT_53), "Iodine", BlockBreakInfo::instant(), "i", 53, 6));
+		self::register(new Element(new BID(Ids::ELEMENT_54), "Xenon", BlockBreakInfo::instant(), "xe", 54, 7));
+		self::register(new Element(new BID(Ids::ELEMENT_55), "Cesium", BlockBreakInfo::instant(), "cs", 55, 0));
+		self::register(new Element(new BID(Ids::ELEMENT_56), "Barium", BlockBreakInfo::instant(), "ba", 56, 1));
+		self::register(new Element(new BID(Ids::ELEMENT_57), "Lanthanum", BlockBreakInfo::instant(), "la", 57, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_58), "Cerium", BlockBreakInfo::instant(), "ce", 58, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_59), "Praseodymium", BlockBreakInfo::instant(), "pr", 59, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_60), "Neodymium", BlockBreakInfo::instant(), "nd", 60, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_61), "Promethium", BlockBreakInfo::instant(), "pm", 61, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_62), "Samarium", BlockBreakInfo::instant(), "sm", 62, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_63), "Europium", BlockBreakInfo::instant(), "eu", 63, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_64), "Gadolinium", BlockBreakInfo::instant(), "gd", 64, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_65), "Terbium", BlockBreakInfo::instant(), "tb", 65, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_66), "Dysprosium", BlockBreakInfo::instant(), "dy", 66, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_67), "Holmium", BlockBreakInfo::instant(), "ho", 67, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_68), "Erbium", BlockBreakInfo::instant(), "er", 68, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_69), "Thulium", BlockBreakInfo::instant(), "tm", 69, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_70), "Ytterbium", BlockBreakInfo::instant(), "yb", 70, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_71), "Lutetium", BlockBreakInfo::instant(), "lu", 71, 8));
+		self::register(new Element(new BID(Ids::ELEMENT_72), "Hafnium", BlockBreakInfo::instant(), "hf", 72, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_73), "Tantalum", BlockBreakInfo::instant(), "ta", 73, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_74), "Tungsten", BlockBreakInfo::instant(), "w", 74, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_75), "Rhenium", BlockBreakInfo::instant(), "re", 75, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_76), "Osmium", BlockBreakInfo::instant(), "os", 76, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_77), "Iridium", BlockBreakInfo::instant(), "ir", 77, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_78), "Platinum", BlockBreakInfo::instant(), "pt", 78, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_79), "Gold", BlockBreakInfo::instant(), "au", 79, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_80), "Mercury", BlockBreakInfo::instant(), "hg", 80, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_81), "Thallium", BlockBreakInfo::instant(), "tl", 81, 3));
+		self::register(new Element(new BID(Ids::ELEMENT_82), "Lead", BlockBreakInfo::instant(), "pb", 82, 3));
+		self::register(new Element(new BID(Ids::ELEMENT_83), "Bismuth", BlockBreakInfo::instant(), "bi", 83, 3));
+		self::register(new Element(new BID(Ids::ELEMENT_84), "Polonium", BlockBreakInfo::instant(), "po", 84, 4));
+		self::register(new Element(new BID(Ids::ELEMENT_85), "Astatine", BlockBreakInfo::instant(), "at", 85, 6));
+		self::register(new Element(new BID(Ids::ELEMENT_86), "Radon", BlockBreakInfo::instant(), "rn", 86, 7));
+		self::register(new Element(new BID(Ids::ELEMENT_87), "Francium", BlockBreakInfo::instant(), "fr", 87, 0));
+		self::register(new Element(new BID(Ids::ELEMENT_88), "Radium", BlockBreakInfo::instant(), "ra", 88, 1));
+		self::register(new Element(new BID(Ids::ELEMENT_89), "Actinium", BlockBreakInfo::instant(), "ac", 89, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_90), "Thorium", BlockBreakInfo::instant(), "th", 90, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_91), "Protactinium", BlockBreakInfo::instant(), "pa", 91, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_92), "Uranium", BlockBreakInfo::instant(), "u", 92, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_93), "Neptunium", BlockBreakInfo::instant(), "np", 93, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_94), "Plutonium", BlockBreakInfo::instant(), "pu", 94, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_95), "Americium", BlockBreakInfo::instant(), "am", 95, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_96), "Curium", BlockBreakInfo::instant(), "cm", 96, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_97), "Berkelium", BlockBreakInfo::instant(), "bk", 97, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_98), "Californium", BlockBreakInfo::instant(), "cf", 98, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_99), "Einsteinium", BlockBreakInfo::instant(), "es", 99, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_100), "Fermium", BlockBreakInfo::instant(), "fm", 100, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_101), "Mendelevium", BlockBreakInfo::instant(), "md", 101, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_102), "Nobelium", BlockBreakInfo::instant(), "no", 102, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_103), "Lawrencium", BlockBreakInfo::instant(), "lr", 103, 9));
+		self::register(new Element(new BID(Ids::ELEMENT_104), "Rutherfordium", BlockBreakInfo::instant(), "rf", 104, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_105), "Dubnium", BlockBreakInfo::instant(), "db", 105, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_106), "Seaborgium", BlockBreakInfo::instant(), "sg", 106, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_107), "Bohrium", BlockBreakInfo::instant(), "bh", 107, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_108), "Hassium", BlockBreakInfo::instant(), "hs", 108, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_109), "Meitnerium", BlockBreakInfo::instant(), "mt", 109, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_110), "Darmstadtium", BlockBreakInfo::instant(), "ds", 110, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_111), "Roentgenium", BlockBreakInfo::instant(), "rg", 111, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_112), "Copernicium", BlockBreakInfo::instant(), "cn", 112, 2));
+		self::register(new Element(new BID(Ids::ELEMENT_113), "Nihonium", BlockBreakInfo::instant(), "nh", 113, 3));
+		self::register(new Element(new BID(Ids::ELEMENT_114), "Flerovium", BlockBreakInfo::instant(), "fl", 114, 3));
+		self::register(new Element(new BID(Ids::ELEMENT_115), "Moscovium", BlockBreakInfo::instant(), "mc", 115, 3));
+		self::register(new Element(new BID(Ids::ELEMENT_116), "Livermorium", BlockBreakInfo::instant(), "lv", 116, 3));
+		self::register(new Element(new BID(Ids::ELEMENT_117), "Tennessine", BlockBreakInfo::instant(), "ts", 117, 6));
+		self::register(new Element(new BID(Ids::ELEMENT_118), "Oganesson", BlockBreakInfo::instant(), "og", 118, 7));
 	}
 
 	public static function isInit() : bool{
