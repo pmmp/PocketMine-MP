@@ -585,13 +585,11 @@ class BlockFactory{
 		//TODO: minecraft:coral_fan_hang2
 		//TODO: minecraft:coral_fan_hang3
 		//TODO: minecraft:dispenser
-		//TODO: minecraft:dried_kelp_block
 		//TODO: minecraft:dropper
 		//TODO: minecraft:end_gateway
 		//TODO: minecraft:end_portal
 		//TODO: minecraft:fletching_table
 		//TODO: minecraft:grindstone
-		//TODO: minecraft:hopper
 		//TODO: minecraft:jigsaw
 		//TODO: minecraft:jukebox
 		//TODO: minecraft:kelp
