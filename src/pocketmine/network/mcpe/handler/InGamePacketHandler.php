@@ -92,6 +92,7 @@ use function json_last_error_msg;
 use function microtime;
 use function preg_match;
 use function preg_split;
+use function strpos;
 use function trim;
 
 /**
@@ -589,7 +590,11 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
-		return $this->player->chat($packet->command);
+		if(strpos($packet->command, '/') === 0){
+			$this->player->chat($packet->command);
+			return true;
+		}
+		return false;
 	}
 
 	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
