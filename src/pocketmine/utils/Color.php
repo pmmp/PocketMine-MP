@@ -26,6 +26,7 @@ namespace pocketmine\utils;
 
 
 use function count;
+use function intdiv;
 
 class Color{
 
@@ -99,7 +100,7 @@ class Color{
 			$b += $color->b;
 		}
 
-		return new Color((int) ($r / $count), (int) ($g / $count), (int) ($b / $count), (int) ($a / $count));
+		return new Color(intdiv($r, $count), intdiv($g, $count), intdiv($b, $count), intdiv($a, $count));
 	}
 
 	/**
