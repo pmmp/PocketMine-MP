@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
+use pocketmine\block\BlockFactory;
+use function max;
+
 class BlockLightUpdate extends LightUpdate{
 
 	public function getLight(int $x, int $y, int $z) : int{
@@ -31,5 +34,10 @@ class BlockLightUpdate extends LightUpdate{
 
 	public function setLight(int $x, int $y, int $z, int $level) : void{
 		$this->subChunkHandler->currentSubChunk->setBlockLight($x & 0x0f, $y & 0x0f, $z & 0x0f, $level);
+	}
+
+	public function recalculateNode(int $x, int $y, int $z) : void{
+		$block = $this->world->getBlockAt($x, $y, $z);
+		$this->setAndUpdateLight($x, $y, $z, max($block->getLightLevel(), $this->getHighestAdjacentLight($x, $y, $z) - BlockFactory::$lightFilter[$block->getFullId()]));
 	}
 }

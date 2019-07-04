@@ -1397,39 +1397,10 @@ class World implements ChunkManager{
 	public function updateBlockSkyLight(int $x, int $y, int $z){
 		$this->timings->doBlockSkyLightUpdates->startTiming();
 
-		$oldHeightMap = $this->getHeightMap($x, $z);
-		$source = $this->getBlockAt($x, $y, $z);
-
-		$yPlusOne = $y + 1;
-
-		if($yPlusOne === $oldHeightMap){ //Block changed directly beneath the heightmap. Check if a block was removed or changed to a different light-filter.
-			$newHeightMap = $this->getChunk($x >> 4, $z >> 4)->recalculateHeightMapColumn($x & 0x0f, $z & 0x0f);
-		}elseif($yPlusOne > $oldHeightMap){ //Block changed above the heightmap.
-			if($source->getLightFilter() > 0 or $source->diffusesSkyLight()){
-				$this->setHeightMap($x, $z, $yPlusOne);
-				$newHeightMap = $yPlusOne;
-			}else{ //Block changed which has no effect on direct sky light, for example placing or removing glass.
-				$this->timings->doBlockSkyLightUpdates->stopTiming();
-				return;
-			}
-		}else{ //Block changed below heightmap
-			$newHeightMap = $oldHeightMap;
-		}
-
 		if($this->skyLightUpdate === null){
 			$this->skyLightUpdate = new SkyLightUpdate($this);
 		}
-		if($newHeightMap > $oldHeightMap){ //Heightmap increase, block placed, remove sky light
-			for($i = $y; $i >= $oldHeightMap; --$i){
-				$this->skyLightUpdate->setAndUpdateLight($x, $i, $z, 0); //Remove all light beneath, adjacent recalculation will handle the rest.
-			}
-		}elseif($newHeightMap < $oldHeightMap){ //Heightmap decrease, block changed or removed, add sky light
-			for($i = $y; $i >= $newHeightMap; --$i){
-				$this->skyLightUpdate->setAndUpdateLight($x, $i, $z, 15);
-			}
-		}else{ //No heightmap change, block changed "underground"
-			$this->skyLightUpdate->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentBlockSkyLight($x, $y, $z) - BlockFactory::$lightFilter[($source->getId() << 4) | $source->getMeta()]));
-		}
+		$this->skyLightUpdate->recalculateNode($x, $y, $z);
 
 		$this->timings->doBlockSkyLightUpdates->stopTiming();
 	}
@@ -1457,13 +1428,10 @@ class World implements ChunkManager{
 	public function updateBlockLight(int $x, int $y, int $z){
 		$this->timings->doBlockLightUpdates->startTiming();
 
-		$block = $this->getBlockAt($x, $y, $z);
-		$newLevel = max($block->getLightLevel(), $this->getHighestAdjacentBlockLight($x, $y, $z) - BlockFactory::$lightFilter[($block->getId() << 4) | $block->getMeta()]);
-
 		if($this->blockLightUpdate === null){
 			$this->blockLightUpdate = new BlockLightUpdate($this);
 		}
-		$this->blockLightUpdate->setAndUpdateLight($x, $y, $z, $newLevel);
+		$this->blockLightUpdate->recalculateNode($x, $y, $z);
 
 		$this->timings->doBlockLightUpdates->stopTiming();
 	}

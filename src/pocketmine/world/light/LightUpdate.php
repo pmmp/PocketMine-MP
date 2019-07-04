@@ -27,6 +27,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\utils\SubChunkIteratorManager;
 use pocketmine\world\World;
+use function max;
 
 //TODO: make light updates asynchronous
 abstract class LightUpdate{
@@ -60,6 +61,25 @@ abstract class LightUpdate{
 	abstract protected function getLight(int $x, int $y, int $z) : int;
 
 	abstract protected function setLight(int $x, int $y, int $z, int $level) : void;
+
+	abstract public function recalculateNode(int $x, int $y, int $z) : void;
+
+	protected function getHighestAdjacentLight(int $x, int $y, int $z) : int{
+		$adjacent = 0;
+		foreach([
+			[$x + 1, $y, $z],
+			[$x - 1, $y, $z],
+			[$x, $y + 1, $z],
+			[$x, $y - 1, $z],
+			[$x, $y, $z + 1],
+			[$x, $y, $z - 1]
+		] as [$x1, $y1, $z1]){
+			if($this->subChunkHandler->moveTo($x1, $y1, $z1, false) and ($adjacent = max($adjacent, $this->getLight($x1, $y1, $z1))) === 15){
+				break;
+			}
+		}
+		return $adjacent;
+	}
 
 	public function setAndUpdateLight(int $x, int $y, int $z, int $newLevel) : void{
 		$this->updateNodes[World::blockHash($x, $y, $z)] = [$x, $y, $z, $newLevel];
