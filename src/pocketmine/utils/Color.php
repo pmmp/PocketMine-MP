@@ -54,29 +54,11 @@ class Color{
 	}
 
 	/**
-	 * Sets the alpha (opacity) value of this colour, lower = more transparent
-	 *
-	 * @param int $a
-	 */
-	public function setA(int $a) : void{
-		$this->a = $a & 0xff;
-	}
-
-	/**
 	 * Retuns the red value of this colour.
 	 * @return int
 	 */
 	public function getR() : int{
 		return $this->r;
-	}
-
-	/**
-	 * Sets the red value of this colour.
-	 *
-	 * @param int $r
-	 */
-	public function setR(int $r) : void{
-		$this->r = $r & 0xff;
 	}
 
 	/**
@@ -88,29 +70,11 @@ class Color{
 	}
 
 	/**
-	 * Sets the green value of this colour.
-	 *
-	 * @param int $g
-	 */
-	public function setG(int $g) : void{
-		$this->g = $g & 0xff;
-	}
-
-	/**
 	 * Returns the blue value of this colour.
 	 * @return int
 	 */
 	public function getB() : int{
 		return $this->b;
-	}
-
-	/**
-	 * Sets the blue value of this colour.
-	 *
-	 * @param int $b
-	 */
-	public function setB(int $b) : void{
-		$this->b = $b & 0xff;
 	}
 
 	/**
