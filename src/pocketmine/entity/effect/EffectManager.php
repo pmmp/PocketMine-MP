@@ -23,12 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
-use function abs;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\utils\Color;
+use function abs;
 
 class EffectManager{
 
