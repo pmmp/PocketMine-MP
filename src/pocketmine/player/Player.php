@@ -282,7 +282,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->randomClientId = $this->playerInfo->getClientId();
 
 		$this->uuid = $this->playerInfo->getUuid();
-		$this->rawUUID = $this->uuid->toBinary();
 		$this->xuid = $this->playerInfo->getXuid();
 
 		$this->perm = new PermissibleBase($this);
@@ -575,7 +574,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function canSee(Player $player) : bool{
-		return !isset($this->hiddenPlayers[$player->getRawUniqueId()]);
+		return !isset($this->hiddenPlayers[$player->getUniqueId()->toBinary()]);
 	}
 
 	/**
@@ -585,7 +584,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($player === $this){
 			return;
 		}
-		$this->hiddenPlayers[$player->getRawUniqueId()] = true;
+		$this->hiddenPlayers[$player->getUniqueId()->toBinary()] = true;
 		$player->despawnFrom($this);
 	}
 
@@ -596,7 +595,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($player === $this){
 			return;
 		}
-		unset($this->hiddenPlayers[$player->getRawUniqueId()]);
+		unset($this->hiddenPlayers[$player->getUniqueId()->toBinary()]);
 		if($player->isOnline()){
 			$player->spawnTo($this);
 		}

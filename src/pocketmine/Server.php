@@ -1781,16 +1781,17 @@ class Server{
 		foreach($this->playerList as $p){
 			$p->getNetworkSession()->onPlayerAdded($player);
 		}
-		$this->playerList[$player->getRawUniqueId()] = $player;
+		$rawUUID = $player->getUniqueId()->toBinary();
+		$this->playerList[$rawUUID] = $player;
 
 		if($this->sendUsageTicker > 0){
-			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
+			$this->uniquePlayers[$rawUUID] = $rawUUID;
 		}
 	}
 
 	public function removeOnlinePlayer(Player $player) : void{
-		if(isset($this->playerList[$player->getRawUniqueId()])){
-			unset($this->playerList[$player->getRawUniqueId()]);
+		if(isset($this->playerList[$rawUUID = $player->getUniqueId()->toBinary()])){
+			unset($this->playerList[$rawUUID]);
 			foreach($this->playerList as $p){
 				$p->getNetworkSession()->onPlayerRemoved($player);
 			}

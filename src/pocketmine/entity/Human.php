@@ -82,7 +82,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	/** @var UUID */
 	protected $uuid;
-	protected $rawUUID;
 
 	public $width = 0.6;
 	public $height = 1.8;
@@ -135,13 +134,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 */
 	public function getUniqueId() : UUID{
 		return $this->uuid;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getRawUniqueId() : string{
-		return $this->rawUUID;
 	}
 
 	/**
