@@ -165,8 +165,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/** @var string */
 	protected $username;
 	/** @var string */
-	protected $iusername;
-	/** @var string */
 	protected $displayName;
 	/** @var int */
 	protected $randomClientId;
@@ -277,7 +275,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->username = $username;
 		$this->displayName = $this->username;
-		$this->iusername = strtolower($this->username);
 		$this->locale = $this->playerInfo->getLocale();
 		$this->randomClientId = $this->playerInfo->getClientId();
 
@@ -704,13 +701,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function getName() : string{
 		return $this->username;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getLowerCaseName() : string{
-		return $this->iusername;
 	}
 
 	/**
