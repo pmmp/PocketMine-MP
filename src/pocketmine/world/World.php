@@ -2483,6 +2483,7 @@ class World implements ChunkManager{
 		(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()))->call();
 
 		if(!$chunk->isLightPopulated() and $chunk->isPopulated()){
+			$this->lockChunk($x, $z);
 			$this->getServer()->getAsyncPool()->submitTask(new LightPopulationTask($this, $chunk));
 		}
 
@@ -2738,17 +2739,19 @@ class World implements ChunkManager{
 		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){
 			return false;
 		}
-		for($xx = -1; $xx <= 1; ++$xx){
-			for($zz = -1; $zz <= 1; ++$zz){
-				if($this->isChunkLocked($x + $xx, $z + $zz)){
-					return false;
-				}
-			}
-		}
+
 
 		$chunk = $this->getChunk($x, $z, true);
 		if(!$chunk->isPopulated()){
 			Timings::$populationTimer->startTiming();
+
+			for($xx = -1; $xx <= 1; ++$xx){
+				for($zz = -1; $zz <= 1; ++$zz){
+					if($this->isChunkLocked($x + $xx, $z + $zz)){
+						return false;
+					}
+				}
+			}
 
 			$this->chunkPopulationQueue[$index] = true;
 			for($xx = -1; $xx <= 1; ++$xx){
