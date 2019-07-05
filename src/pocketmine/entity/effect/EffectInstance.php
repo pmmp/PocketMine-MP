@@ -198,7 +198,7 @@ class EffectInstance{
 	 * @return Color
 	 */
 	public function getColor() : Color{
-		return clone $this->color;
+		return $this->color;
 	}
 
 	/**
@@ -209,7 +209,7 @@ class EffectInstance{
 	 * @return EffectInstance
 	 */
 	public function setColor(Color $color) : EffectInstance{
-		$this->color = clone $color;
+		$this->color = $color;
 
 		return $this;
 	}

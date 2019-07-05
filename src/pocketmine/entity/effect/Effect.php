@@ -279,7 +279,7 @@ class Effect{
 	 * @return Color
 	 */
 	public function getColor() : Color{
-		return clone $this->color;
+		return $this->color;
 	}
 
 	/**
@@ -349,9 +349,5 @@ class Effect{
 	 */
 	public function remove(Living $entity, EffectInstance $instance) : void{
 
-	}
-
-	public function __clone(){
-		$this->color = clone $this->color;
 	}
 }
