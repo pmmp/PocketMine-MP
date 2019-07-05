@@ -1543,11 +1543,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->isCreative() or parent::canBreathe();
 	}
 
-	protected function onEffectAdded(EffectInstance $effect, bool $replacesOldEffect) : void{
+	public function onEffectAdded(EffectInstance $effect, bool $replacesOldEffect) : void{
 	    $this->networkSession->onEntityEffectAdded($this, $effect, $replacesOldEffect);
 	}
 
-	protected function onEffectRemoved(EffectInstance $effect) : void{
+	public function onEffectRemoved(EffectInstance $effect) : void{
 	    $this->networkSession->onEntityEffectRemoved($this, $effect);
 	}
 
@@ -1911,7 +1911,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 		$ev->setModifier($meleeEnchantmentDamage, EntityDamageEvent::MODIFIER_WEAPON_ENCHANTMENTS);
 
-		if(!$this->isSprinting() and !$this->isFlying() and $this->fallDistance > 0 and !$this->hasEffect(Effect::BLINDNESS()) and !$this->isUnderwater()){
+		if(!$this->isSprinting() and !$this->isFlying() and $this->fallDistance > 0 and !$this->effectManager->has(Effect::BLINDNESS()) and !$this->isUnderwater()){
 			$ev->setModifier($ev->getFinalDamage() / 2, EntityDamageEvent::MODIFIER_CRITICAL);
 		}
 
@@ -2426,7 +2426,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->deadTicks = 0;
 		$this->noDamageTicks = 60;
 
-		$this->removeAllEffects();
+		$this->effectManager->clear();
 		$this->setHealth($this->getMaxHealth());
 
 		foreach($this->attributeMap->getAll() as $attr){

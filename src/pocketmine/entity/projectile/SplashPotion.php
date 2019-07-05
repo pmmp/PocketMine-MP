@@ -109,7 +109,7 @@ class SplashPotion extends Throwable{
 									continue;
 								}
 								$effect->setDuration($newDuration);
-								$entity->addEffect($effect);
+								$entity->getEffects()->add($effect);
 							}else{
 								$effect->getType()->applyEffect($entity, $effect, $distanceMultiplier, $this);
 							}

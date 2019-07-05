@@ -732,11 +732,11 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		parent::applyPostDamageEffects($source);
 		$totemModifier = $source->getModifier(EntityDamageEvent::MODIFIER_TOTEM);
 		if($totemModifier < 0){ //Totem prevented death
-			$this->removeAllEffects();
+			$this->effectManager->clear();
 
-			$this->addEffect(new EffectInstance(Effect::REGENERATION(), 40 * 20, 1));
-			$this->addEffect(new EffectInstance(Effect::FIRE_RESISTANCE(), 40 * 20, 1));
-			$this->addEffect(new EffectInstance(Effect::ABSORPTION(), 5 * 20, 1));
+			$this->effectManager->add(new EffectInstance(Effect::REGENERATION(), 40 * 20, 1));
+			$this->effectManager->add(new EffectInstance(Effect::FIRE_RESISTANCE(), 40 * 20, 1));
+			$this->effectManager->add(new EffectInstance(Effect::ABSORPTION(), 5 * 20, 1));
 
 			$this->broadcastEntityEvent(EntityEventPacket::CONSUME_TOTEM);
 			$this->world->addSound($this->add(0, $this->eyeHeight, 0), new TotemUseSound());

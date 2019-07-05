@@ -59,11 +59,10 @@ class EffectCommand extends VanillaCommand{
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
 			return true;
 		}
+		$effectManager = $player->getEffects();
 
 		if(strtolower($args[1]) === "clear"){
-			foreach($player->getEffects() as $effect){
-				$player->removeEffect($effect->getType());
-			}
+			$effectManager->clear();
 
 			$sender->sendMessage(new TranslationContainer("commands.effect.success.removed.all", [$player->getDisplayName()]));
 			return true;
@@ -107,8 +106,8 @@ class EffectCommand extends VanillaCommand{
 		}
 
 		if($duration === 0){
-			if(!$player->hasEffect($effect)){
-				if(count($player->getEffects()) === 0){
+			if(!$effectManager->has($effect)){
+				if(count($effectManager->all()) === 0){
 					$sender->sendMessage(new TranslationContainer("commands.effect.failure.notActive.all", [$player->getDisplayName()]));
 				}else{
 					$sender->sendMessage(new TranslationContainer("commands.effect.failure.notActive", [$effect->getName(), $player->getDisplayName()]));
@@ -116,11 +115,11 @@ class EffectCommand extends VanillaCommand{
 				return true;
 			}
 
-			$player->removeEffect($effect);
+			$effectManager->remove($effect);
 			$sender->sendMessage(new TranslationContainer("commands.effect.success.removed", [$effect->getName(), $player->getDisplayName()]));
 		}else{
 			$instance = new EffectInstance($effect, $duration, $amplification, $visible);
-			$player->addEffect($instance);
+			$effectManager->add($instance);
 			self::broadcastCommandMessage($sender, new TranslationContainer("%commands.effect.success", [$effect->getName(), $instance->getAmplifier(), $player->getDisplayName(), $instance->getDuration() / 20, $effect->getId()]));
 		}
 

@@ -26,6 +26,7 @@ namespace pocketmine\entity;
 use pocketmine\block\Block;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\EffectManager;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -81,8 +82,8 @@ abstract class Living extends Entity{
 
 	protected $jumpVelocity = 0.42;
 
-	/** @var EffectInstance[] */
-	protected $effects = [];
+	/** @var EffectManager */
+	protected $effectManager;
 
 	/** @var ArmorInventory */
 	protected $armorInventory;
@@ -91,6 +92,8 @@ abstract class Living extends Entity{
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
+
+		$this->effectManager = new EffectManager($this);
 
 		$this->armorInventory = new ArmorInventory($this);
 		//TODO: load/save armor inventory contents
@@ -122,7 +125,7 @@ abstract class Living extends Entity{
 					continue;
 				}
 
-				$this->addEffect(new EffectInstance(
+				$this->effectManager->add(new EffectInstance(
 					$effect,
 					$e->getInt("Duration"),
 					Binary::unsignByte($e->getByte("Amplifier")),
@@ -171,9 +174,9 @@ abstract class Living extends Entity{
 		$nbt = parent::saveNBT();
 		$nbt->setFloat("Health", $this->getHealth());
 
-		if(count($this->effects) > 0){
+		if(!empty($this->effectManager->all())){
 			$effects = [];
-			foreach($this->effects as $effect){
+			foreach($this->effectManager->all() as $effect){
 				$effects[] = CompoundTag::create()
 					->setByte("Id", $effect->getId())
 					->setByte("Amplifier", Binary::signByte($effect->getAmplifier()))
@@ -195,162 +198,25 @@ abstract class Living extends Entity{
 		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
-	/**
-	 * Returns an array of Effects currently active on the mob.
-	 * @return EffectInstance[]
-	 */
-	public function getEffects() : array{
-		return $this->effects;
+	public function getEffects() : EffectManager{
+		return $this->effectManager;
 	}
 
 	/**
-	 * Removes all effects from the mob.
-	 */
-	public function removeAllEffects() : void{
-		foreach($this->effects as $effect){
-			$this->removeEffect($effect->getType());
-		}
-	}
-
-	/**
-	 * Removes the effect with the specified ID from the mob.
-	 *
-	 * @param Effect $effectType
-	 */
-	public function removeEffect(Effect $effectType) : void{
-		$index = $effectType->getId();
-		if(isset($this->effects[$index])){
-			$effect = $this->effects[$index];
-			$hasExpired = $effect->hasExpired();
-			$ev = new EntityEffectRemoveEvent($this, $effect);
-			$ev->call();
-			if($ev->isCancelled()){
-				if($hasExpired and !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
-					$this->onEffectAdded($ev->getEffect(), true);
-				}
-				return;
-			}
-
-			unset($this->effects[$index]);
-			$effect->getType()->remove($this, $effect);
-			$this->onEffectRemoved($effect);
-
-			$this->recalculateEffectColor();
-		}
-	}
-
-	/**
-	 * Returns the effect instance active on this entity with the specified ID, or null if the mob does not have the
-	 * effect.
-	 *
-	 * @param Effect $effect
-	 *
-	 * @return EffectInstance|null
-	 */
-	public function getEffect(Effect $effect) : ?EffectInstance{
-		return $this->effects[$effect->getId()] ?? null;
-	}
-
-	/**
-	 * Returns whether the specified effect is active on the mob.
-	 *
-	 * @param Effect $effect
-	 *
-	 * @return bool
-	 */
-	public function hasEffect(Effect $effect) : bool{
-		return isset($this->effects[$effect->getId()]);
-	}
-
-	/**
-	 * Returns whether the mob has any active effects.
-	 * @return bool
-	 */
-	public function hasEffects() : bool{
-		return !empty($this->effects);
-	}
-
-	/**
-	 * Adds an effect to the mob.
-	 * If a weaker effect of the same type is already applied, it will be replaced.
-	 * If a weaker or equal-strength effect is already applied but has a shorter duration, it will be replaced.
+	 * @internal
 	 *
 	 * @param EffectInstance $effect
-	 *
-	 * @return bool whether the effect has been successfully applied.
+	 * @param bool           $replacesOldEffect
 	 */
-	public function addEffect(EffectInstance $effect) : bool{
-		$oldEffect = null;
-		$cancelled = false;
+	public function onEffectAdded(EffectInstance $effect, bool $replacesOldEffect) : void{
 
-		$index = $effect->getType()->getId();
-		if(isset($this->effects[$index])){
-			$oldEffect = $this->effects[$index];
-			if(
-				abs($effect->getAmplifier()) < $oldEffect->getAmplifier()
-				or (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) and $effect->getDuration() < $oldEffect->getDuration())
-			){
-				$cancelled = true;
-			}
-		}
-
-		$ev = new EntityEffectAddEvent($this, $effect, $oldEffect);
-		$ev->setCancelled($cancelled);
-
-		$ev->call();
-		if($ev->isCancelled()){
-			return false;
-		}
-
-		if($oldEffect !== null){
-			$oldEffect->getType()->remove($this, $oldEffect);
-		}
-
-		$effect->getType()->add($this, $effect);
-		$this->onEffectAdded($effect, $oldEffect !== null);
-
-		$this->effects[$index] = $effect;
-
-		$this->recalculateEffectColor();
-
-		return true;
 	}
 
 	/**
-	 * Recalculates the mob's potion bubbles colour based on the active effects.
+	 * @internal
+	 * @param EffectInstance $effect
 	 */
-	protected function recalculateEffectColor() : void{
-		/** @var Color[] $colors */
-		$colors = [];
-		$ambient = true;
-		foreach($this->effects as $effect){
-			if($effect->isVisible() and $effect->getType()->hasBubbles()){
-				$level = $effect->getEffectLevel();
-				$color = $effect->getColor();
-				for($i = 0; $i < $level; ++$i){
-					$colors[] = $color;
-				}
-
-				if(!$effect->isAmbient()){
-					$ambient = false;
-				}
-			}
-		}
-
-		if(!empty($colors)){
-			$this->propertyManager->setInt(EntityMetadataProperties::POTION_COLOR, Color::mix(...$colors)->toARGB());
-			$this->propertyManager->setByte(EntityMetadataProperties::POTION_AMBIENT, $ambient ? 1 : 0);
-		}else{
-			$this->propertyManager->setInt(EntityMetadataProperties::POTION_COLOR, 0);
-			$this->propertyManager->setByte(EntityMetadataProperties::POTION_AMBIENT, 0);
-		}
-	}
-
-	protected function onEffectAdded(EffectInstance $effect, bool $replacesOldEffect) : void{
-
-	}
-
-	protected function onEffectRemoved(EffectInstance $effect) : void{
+	public function onEffectRemoved(EffectInstance $effect) : void{
 
 	}
 
@@ -364,7 +230,7 @@ abstract class Living extends Entity{
 	 */
 	public function consumeObject(Consumable $consumable) : bool{
 		foreach($consumable->getAdditionalEffects() as $effect){
-			$this->addEffect($effect);
+			$this->effectManager->add($effect);
 		}
 
 		$consumable->onConsume($this);
@@ -377,7 +243,7 @@ abstract class Living extends Entity{
 	 * @return float
 	 */
 	public function getJumpVelocity() : float{
-		return $this->jumpVelocity + ($this->hasEffect(Effect::JUMP_BOOST()) ? ($this->getEffect(Effect::JUMP_BOOST())->getEffectLevel() / 10) : 0);
+		return $this->jumpVelocity + ($this->effectManager->has(Effect::JUMP_BOOST()) ? ($this->effectManager->get(Effect::JUMP_BOOST())->getEffectLevel() / 10) : 0);
 	}
 
 	/**
@@ -390,7 +256,7 @@ abstract class Living extends Entity{
 	}
 
 	public function fall(float $fallDistance) : void{
-		$damage = ceil($fallDistance - 3 - ($this->hasEffect(Effect::JUMP_BOOST()) ? $this->getEffect(Effect::JUMP_BOOST())->getEffectLevel() : 0));
+		$damage = ceil($fallDistance - 3 - ($this->effectManager->has(Effect::JUMP_BOOST()) ? $this->effectManager->get(Effect::JUMP_BOOST())->getEffectLevel() : 0));
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
@@ -453,8 +319,8 @@ abstract class Living extends Entity{
 		}
 
 		$cause = $source->getCause();
-		if($this->hasEffect(Effect::RESISTANCE()) and $cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
-			$source->setModifier(-$source->getFinalDamage() * min(1, 0.2 * $this->getEffect(Effect::RESISTANCE())->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
+		if($this->effectManager->has(Effect::RESISTANCE()) and $cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
+			$source->setModifier(-$source->getFinalDamage() * min(1, 0.2 * $this->effectManager->get(Effect::RESISTANCE())->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
 		}
 
 		$totalEpf = 0;
@@ -534,7 +400,7 @@ abstract class Living extends Entity{
 			}
 		}
 
-		if($this->hasEffect(Effect::FIRE_RESISTANCE()) and (
+		if($this->effectManager->has(Effect::FIRE_RESISTANCE()) and (
 				$source->getCause() === EntityDamageEvent::CAUSE_FIRE
 				or $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK
 				or $source->getCause() === EntityDamageEvent::CAUSE_LAVA
@@ -656,7 +522,7 @@ abstract class Living extends Entity{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if($this->isAlive()){
-			if($this->doEffectsTick($tickDiff)){
+			if($this->effectManager->tick($tickDiff)){
 				$hasUpdate = true;
 			}
 
@@ -678,21 +544,6 @@ abstract class Living extends Entity{
 		Timings::$timerLivingEntityBaseTick->stopTiming();
 
 		return $hasUpdate;
-	}
-
-	protected function doEffectsTick(int $tickDiff = 1) : bool{
-		foreach($this->effects as $instance){
-			$type = $instance->getType();
-			if($type->canTick($instance)){
-				$type->applyEffect($this, $instance);
-			}
-			$instance->decreaseDuration($tickDiff);
-			if($instance->hasExpired()){
-				$this->removeEffect($instance->getType());
-			}
-		}
-
-		return !empty($this->effects);
 	}
 
 	/**
@@ -739,7 +590,7 @@ abstract class Living extends Entity{
 	 * @return bool
 	 */
 	public function canBreathe() : bool{
-		return $this->hasEffect(Effect::WATER_BREATHING()) or $this->hasEffect(Effect::CONDUIT_POWER()) or !$this->isUnderwater();
+		return $this->effectManager->has(Effect::WATER_BREATHING()) or $this->effectManager->has(Effect::CONDUIT_POWER()) or !$this->isUnderwater();
 	}
 
 	/**
