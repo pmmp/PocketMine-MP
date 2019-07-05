@@ -595,7 +595,7 @@ class Block extends Position implements BlockLegacyIds{
 			return $this->getWorld()->getBlock(Vector3::getSide($side, $step));
 		}
 
-		return BlockFactory::get(BlockLegacyIds::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
+		throw new \InvalidStateException("Block does not have a valid world");
 	}
 
 	/**
