@@ -372,10 +372,12 @@ class BlockFactory{
 		self::register(new Solid(new BID(Ids::STONECUTTER), "Stonecutter", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN)));
 		self::register(new Sugarcane(new BID(Ids::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane"));
 		self::register(new TNT(new BID(Ids::TNT), "TNT"));
-		self::register(new TallGrass(new BID(Ids::TALLGRASS), "Fern")); //TODO: remap this to normal fern
+
+		$fern = new TallGrass(new BID(Ids::TALLGRASS, Meta::TALLGRASS_FERN), "Fern");
+		self::register($fern);
+		self::remap(Ids::TALLGRASS, 0, $fern);
+		self::remap(Ids::TALLGRASS, 3, $fern);
 		self::register(new TallGrass(new BID(Ids::TALLGRASS, Meta::TALLGRASS_NORMAL), "Tall Grass"));
-		self::register(new TallGrass(new BID(Ids::TALLGRASS, Meta::TALLGRASS_FERN), "Fern"));
-		self::register(new TallGrass(new BID(Ids::TALLGRASS, 3), "Fern")); //TODO: remap this to normal fern
 		self::register(new Torch(new BID(Ids::COLORED_TORCH_BP), "Blue Torch"));
 		self::register(new Torch(new BID(Ids::COLORED_TORCH_BP, 8), "Purple Torch"));
 		self::register(new Torch(new BID(Ids::COLORED_TORCH_RG), "Red Torch"));
