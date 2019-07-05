@@ -44,8 +44,6 @@ abstract class Tile extends Position{
 	public const TAG_Y = "y";
 	public const TAG_Z = "z";
 
-	/** @var string */
-	public $name = "";
 	/** @var bool */
 	public $closed = false;
 	/** @var TimingsHandler */
@@ -139,9 +137,5 @@ abstract class Tile extends Position{
 				$this->setWorld(null);
 			}
 		}
-	}
-
-	public function getName() : string{
-		return $this->name;
 	}
 }
