@@ -129,7 +129,7 @@ class Explosion{
 								$blastForce -= (BlockFactory::$blastResistance[$state] / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[$index = World::blockHash($vBlock->x, $vBlock->y, $vBlock->z)])){
-										$this->affectedBlocks[$index] = BlockFactory::get($state >> 4, $state & 0xf, $vBlock);
+										$this->affectedBlocks[$index] = BlockFactory::fromFullBlock($state, $vBlock);
 									}
 								}
 							}
