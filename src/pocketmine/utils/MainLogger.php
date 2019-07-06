@@ -300,7 +300,7 @@ class MainLogger extends \AttachableThreadedLogger{
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
 		}
 
-		$message = sprintf($this->format, $time->format("H:i:s"), $color, $threadName, $prefix, $message);
+		$message = sprintf($this->format, $time->format("H:i:s"), $color, $threadName, $prefix, TextFormat::clean($message, false));
 
 		if(!Terminal::isInit()){
 			Terminal::init($this->mainThreadHasFormattingCodes); //lazy-init colour codes because we don't know if they've been registered on this thread

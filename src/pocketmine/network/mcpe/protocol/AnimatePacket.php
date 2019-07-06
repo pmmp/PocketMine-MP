@@ -35,7 +35,6 @@ class AnimatePacket extends DataPacket{
 
 	public const ACTION_STOP_SLEEP = 3;
 	public const ACTION_CRITICAL_HIT = 4;
-
 	public const ACTION_ROW_RIGHT = 128;
 	public const ACTION_ROW_LEFT = 129;
 
