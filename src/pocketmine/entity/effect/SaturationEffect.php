@@ -31,8 +31,9 @@ class SaturationEffect extends InstantEffect{
 
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{
 		if($entity instanceof Human){
-			$entity->addFood($instance->getEffectLevel());
-			$entity->addSaturation($instance->getEffectLevel() * 2);
+			$manager = $entity->getHungerManager();
+			$manager->addFood($instance->getEffectLevel());
+			$manager->addSaturation($instance->getEffectLevel() * 2);
 		}
 	}
 }

@@ -1198,6 +1198,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->gamemode = $gm;
 
 		$this->allowFlight = $this->isCreative();
+		$this->hungerManager->setEnabled($this->isSurvival());
+
 		if($this->isSpectator()){
 			$this->setFlying(true);
 			$this->despawnFromAll();
@@ -1414,9 +1416,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 					$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
 					//TODO: check swimming (adds 0.015 exhaustion in MCPE)
 					if($this->isSprinting()){
-						$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
+						$this->hungerManager->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
 					}else{
-						$this->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
+						$this->hungerManager->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
 					}
 				}
 			}
@@ -1508,24 +1510,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->timings->stopTiming();
 
 		return true;
-	}
-
-	protected function doFoodTick(int $tickDiff = 1) : void{
-		if($this->isSurvival()){
-			parent::doFoodTick($tickDiff);
-		}
-	}
-
-	public function exhaust(float $amount, int $cause = PlayerExhaustEvent::CAUSE_CUSTOM) : float{
-		if($this->isSurvival()){
-			return parent::exhaust($amount, $cause);
-		}
-
-		return 0.0;
-	}
-
-	public function isHungry() : bool{
-		return $this->isSurvival() and parent::isHungry();
 	}
 
 	public function canBreathe() : bool{
@@ -1828,7 +1812,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 				if($this->hasFiniteResources() and !$item->equalsExact($oldItem)){
 					$this->inventory->setItemInHand($item);
 				}
-				$this->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
+				$this->hungerManager->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
 				return true;
 			}
 		}
@@ -1928,7 +1912,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 				$this->inventory->setItemInHand($heldItem);
 			}
 
-			$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_ATTACK);
+			$this->hungerManager->exhaust(0.3, PlayerExhaustEvent::CAUSE_ATTACK);
 		}
 
 		return true;
@@ -2431,7 +2415,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		parent::applyPostDamageEffects($source);
 
-		$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
+		$this->hungerManager->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
 	}
 
 	public function attack(EntityDamageEvent $source) : void{

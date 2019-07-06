@@ -28,7 +28,6 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
@@ -65,7 +64,6 @@ use function array_rand;
 use function array_values;
 use function ceil;
 use function in_array;
-use function max;
 use function min;
 use function random_int;
 use function strlen;
@@ -90,7 +88,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	/** @var Skin */
 	protected $skin;
 
-	protected $foodTickTimer = 0;
+	/** @var HungerManager */
+	protected $hungerManager;
 
 	protected $totalXp = 0;
 	protected $xpSeed;
@@ -170,139 +169,27 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function jump() : void{
 		parent::jump();
 		if($this->isSprinting()){
-			$this->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
+			$this->hungerManager->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
 		}else{
-			$this->exhaust(0.2, PlayerExhaustEvent::CAUSE_JUMPING);
+			$this->hungerManager->exhaust(0.2, PlayerExhaustEvent::CAUSE_JUMPING);
 		}
 	}
 
-	public function getFood() : float{
-		return $this->attributeMap->getAttribute(Attribute::HUNGER)->getValue();
-	}
-
 	/**
-	 * WARNING: This method does not check if full and may throw an exception if out of bounds.
-	 * Use {@link Human::addFood()} for this purpose
-	 *
-	 * @param float $new
-	 *
-	 * @throws \InvalidArgumentException
+	 * @return HungerManager
 	 */
-	public function setFood(float $new) : void{
-		$attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
-		$old = $attr->getValue();
-		$attr->setValue($new);
-
-		// ranges: 18-20 (regen), 7-17 (none), 1-6 (no sprint), 0 (health depletion)
-		foreach([17, 6, 0] as $bound){
-			if(($old > $bound) !== ($new > $bound)){
-				$this->foodTickTimer = 0;
-				break;
-			}
-		}
-	}
-
-	public function getMaxFood() : float{
-		return $this->attributeMap->getAttribute(Attribute::HUNGER)->getMaxValue();
-	}
-
-	public function addFood(float $amount) : void{
-		$attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
-		$amount += $attr->getValue();
-		$amount = max(min($amount, $attr->getMaxValue()), $attr->getMinValue());
-		$this->setFood($amount);
-	}
-
-	/**
-	 * Returns whether this Human may consume objects requiring hunger.
-	 *
-	 * @return bool
-	 */
-	public function isHungry() : bool{
-		return $this->getFood() < $this->getMaxFood();
-	}
-
-	public function getSaturation() : float{
-		return $this->attributeMap->getAttribute(Attribute::SATURATION)->getValue();
-	}
-
-	/**
-	 * WARNING: This method does not check if saturated and may throw an exception if out of bounds.
-	 * Use {@link Human::addSaturation()} for this purpose
-	 *
-	 * @param float $saturation
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public function setSaturation(float $saturation) : void{
-		$this->attributeMap->getAttribute(Attribute::SATURATION)->setValue($saturation);
-	}
-
-	public function addSaturation(float $amount) : void{
-		$attr = $this->attributeMap->getAttribute(Attribute::SATURATION);
-		$attr->setValue($attr->getValue() + $amount, true);
-	}
-
-	public function getExhaustion() : float{
-		return $this->attributeMap->getAttribute(Attribute::EXHAUSTION)->getValue();
-	}
-
-	/**
-	 * WARNING: This method does not check if exhausted and does not consume saturation/food.
-	 * Use {@link Human::exhaust()} for this purpose.
-	 *
-	 * @param float $exhaustion
-	 */
-	public function setExhaustion(float $exhaustion) : void{
-		$this->attributeMap->getAttribute(Attribute::EXHAUSTION)->setValue($exhaustion);
-	}
-
-	/**
-	 * Increases a human's exhaustion level.
-	 *
-	 * @param float $amount
-	 * @param int   $cause
-	 *
-	 * @return float the amount of exhaustion level increased
-	 */
-	public function exhaust(float $amount, int $cause = PlayerExhaustEvent::CAUSE_CUSTOM) : float{
-		$ev = new PlayerExhaustEvent($this, $amount, $cause);
-		$ev->call();
-		if($ev->isCancelled()){
-			return 0.0;
-		}
-
-		$exhaustion = $this->getExhaustion();
-		$exhaustion += $ev->getAmount();
-
-		while($exhaustion >= 4.0){
-			$exhaustion -= 4.0;
-
-			$saturation = $this->getSaturation();
-			if($saturation > 0){
-				$saturation = max(0, $saturation - 1.0);
-				$this->setSaturation($saturation);
-			}else{
-				$food = $this->getFood();
-				if($food > 0){
-					$food--;
-					$this->setFood(max($food, 0));
-				}
-			}
-		}
-		$this->setExhaustion($exhaustion);
-
-		return $ev->getAmount();
+	public function getHungerManager() : HungerManager{
+		return $this->hungerManager;
 	}
 
 	public function consumeObject(Consumable $consumable) : bool{
 		if($consumable instanceof FoodSource){
-			if($consumable->requiresHunger() and !$this->isHungry()){
+			if($consumable->requiresHunger() and !$this->hungerManager->isHungry()){
 				return false;
 			}
 
-			$this->addFood($consumable->getFoodRestore());
-			$this->addSaturation($consumable->getSaturationRestore());
+			$this->hungerManager->addFood($consumable->getFoodRestore());
+			$this->hungerManager->addSaturation($consumable->getSaturationRestore());
 		}
 
 		return parent::consumeObject($consumable);
@@ -587,6 +474,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
+		$this->hungerManager = new HungerManager($this);
+
 		$this->setPlayerFlag(PlayerMetadataFlags::SLEEP, false);
 		$this->propertyManager->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, null);
 
@@ -624,10 +513,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0), false);
 
-		$this->setFood((float) $nbt->getInt("foodLevel", (int) $this->getFood(), true));
-		$this->setExhaustion($nbt->getFloat("foodExhaustionLevel", $this->getExhaustion(), true));
-		$this->setSaturation($nbt->getFloat("foodSaturationLevel", $this->getSaturation(), true));
-		$this->foodTickTimer = $nbt->getInt("foodTickTimer", $this->foodTickTimer, true);
+		$this->hungerManager->setFood((float) $nbt->getInt("foodLevel", (int) $this->hungerManager->getFood(), true));
+		$this->hungerManager->setExhaustion($nbt->getFloat("foodExhaustionLevel", $this->hungerManager->getExhaustion(), true));
+		$this->hungerManager->setSaturation($nbt->getFloat("foodSaturationLevel", $this->hungerManager->getSaturation(), true));
+		$this->hungerManager->setFoodTickTimer($nbt->getInt("foodTickTimer", $this->hungerManager->getFoodTickTimer(), true));
 
 		$this->setXpLevel($nbt->getInt("XpLevel", $this->getXpLevel(), true));
 		$this->setXpProgress($nbt->getFloat("XpP", $this->getXpProgress(), true));
@@ -643,9 +532,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected function addAttributes() : void{
 		parent::addAttributes();
 
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::SATURATION));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXHAUSTION));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HUNGER));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE_LEVEL));
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE));
 	}
@@ -653,53 +539,13 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$this->doFoodTick($tickDiff);
+		$this->hungerManager->tick($tickDiff);
 
 		if($this->xpCooldown > 0){
 			$this->xpCooldown--;
 		}
 
 		return $hasUpdate;
-	}
-
-	protected function doFoodTick(int $tickDiff = 1) : void{
-		if($this->isAlive()){
-			$food = $this->getFood();
-			$health = $this->getHealth();
-			$difficulty = $this->world->getDifficulty();
-
-			$this->foodTickTimer += $tickDiff;
-			if($this->foodTickTimer >= 80){
-				$this->foodTickTimer = 0;
-			}
-
-			if($difficulty === World::DIFFICULTY_PEACEFUL and $this->foodTickTimer % 10 === 0){
-				if($food < $this->getMaxFood()){
-					$this->addFood(1.0);
-					$food = $this->getFood();
-				}
-				if($this->foodTickTimer % 20 === 0 and $health < $this->getMaxHealth()){
-					$this->heal(new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
-				}
-			}
-
-			if($this->foodTickTimer === 0){
-				if($food >= 18){
-					if($health < $this->getMaxHealth()){
-						$this->heal(new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
-						$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
-					}
-				}elseif($food <= 0){
-					if(($difficulty === World::DIFFICULTY_EASY and $health > 10) or ($difficulty === World::DIFFICULTY_NORMAL and $health > 1) or $difficulty === World::DIFFICULTY_HARD){
-						$this->attack(new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
-					}
-				}
-			}
-
-			if($food <= 6){
-				$this->setSprinting(false);
-			}
-		}
 	}
 
 	public function getName() : string{
@@ -751,10 +597,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 
-		$nbt->setInt("foodLevel", (int) $this->getFood());
-		$nbt->setFloat("foodExhaustionLevel", $this->getExhaustion());
-		$nbt->setFloat("foodSaturationLevel", $this->getSaturation());
-		$nbt->setInt("foodTickTimer", $this->foodTickTimer);
+		$nbt->setInt("foodLevel", (int) $this->hungerManager->getFood());
+		$nbt->setFloat("foodExhaustionLevel", $this->hungerManager->getExhaustion());
+		$nbt->setFloat("foodSaturationLevel", $this->hungerManager->getSaturation());
+		$nbt->setInt("foodTickTimer", $this->hungerManager->getFoodTickTimer());
 
 		$nbt->setInt("XpLevel", $this->getXpLevel());
 		$nbt->setFloat("XpP", $this->getXpProgress());
@@ -855,6 +701,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected function destroyCycles() : void{
 		$this->inventory = null;
 		$this->enderChestInventory = null;
+		$this->hungerManager = null;
 		parent::destroyCycles();
 	}
 
