@@ -26,15 +26,12 @@ namespace pocketmine\entity;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\projectile\ProjectileSource;
-use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
-use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Consumable;
-use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
@@ -55,14 +52,10 @@ use pocketmine\network\mcpe\protocol\types\PlayerMetadataFlags;
 use pocketmine\player\Player;
 use pocketmine\utils\UUID;
 use pocketmine\world\sound\TotemUseSound;
-use pocketmine\world\sound\XpCollectSound;
-use pocketmine\world\sound\XpLevelUpSound;
 use pocketmine\world\World;
 use function array_filter;
 use function array_merge;
-use function array_rand;
 use function array_values;
-use function ceil;
 use function in_array;
 use function min;
 use function random_int;
@@ -90,10 +83,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	/** @var HungerManager */
 	protected $hungerManager;
+	/** @var ExperienceManager */
+	protected $xpManager;
 
-	protected $totalXp = 0;
 	protected $xpSeed;
-	protected $xpCooldown = 0;
 
 	protected $baseOffset = 1.62;
 
@@ -196,258 +189,16 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	/**
-	 * Returns the player's experience level.
-	 * @return int
+	 * @return ExperienceManager
 	 */
-	public function getXpLevel() : int{
-		return (int) $this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->getValue();
-	}
-
-	/**
-	 * Sets the player's experience level. This does not affect their total XP or their XP progress.
-	 *
-	 * @param int $level
-	 *
-	 * @return bool
-	 */
-	public function setXpLevel(int $level) : bool{
-		return $this->setXpAndProgress($level, null);
-	}
-
-	/**
-	 * Adds a number of XP levels to the player.
-	 *
-	 * @param int  $amount
-	 * @param bool $playSound
-	 *
-	 * @return bool
-	 */
-	public function addXpLevels(int $amount, bool $playSound = true) : bool{
-		$oldLevel = $this->getXpLevel();
-		if($this->setXpLevel($oldLevel + $amount)){
-			if($playSound){
-				$newLevel = $this->getXpLevel();
-				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
-					$this->world->addSound($this, new XpLevelUpSound($newLevel));
-				}
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Subtracts a number of XP levels from the player.
-	 *
-	 * @param int $amount
-	 *
-	 * @return bool
-	 */
-	public function subtractXpLevels(int $amount) : bool{
-		return $this->addXpLevels(-$amount);
-	}
-
-	/**
-	 * Returns a value between 0.0 and 1.0 to indicate how far through the current level the player is.
-	 * @return float
-	 */
-	public function getXpProgress() : float{
-		return $this->attributeMap->getAttribute(Attribute::EXPERIENCE)->getValue();
-	}
-
-	/**
-	 * Sets the player's progress through the current level to a value between 0.0 and 1.0.
-	 *
-	 * @param float $progress
-	 *
-	 * @return bool
-	 */
-	public function setXpProgress(float $progress) : bool{
-		return $this->setXpAndProgress(null, $progress);
-	}
-
-	/**
-	 * Returns the number of XP points the player has progressed into their current level.
-	 * @return int
-	 */
-	public function getRemainderXp() : int{
-		return (int) (ExperienceUtils::getXpToCompleteLevel($this->getXpLevel()) * $this->getXpProgress());
-	}
-
-	/**
-	 * Returns the amount of XP points the player currently has, calculated from their current level and progress
-	 * through their current level. This will be reduced by enchanting deducting levels and is used to calculate the
-	 * amount of XP the player drops on death.
-	 *
-	 * @return int
-	 */
-	public function getCurrentTotalXp() : int{
-		return ExperienceUtils::getXpToReachLevel($this->getXpLevel()) + $this->getRemainderXp();
-	}
-
-	/**
-	 * Sets the current total of XP the player has, recalculating their XP level and progress.
-	 * Note that this DOES NOT update the player's lifetime total XP.
-	 *
-	 * @param int $amount
-	 *
-	 * @return bool
-	 */
-	public function setCurrentTotalXp(int $amount) : bool{
-		$newLevel = ExperienceUtils::getLevelFromXp($amount);
-
-		return $this->setXpAndProgress((int) $newLevel, $newLevel - ((int) $newLevel));
-	}
-
-	/**
-	 * Adds an amount of XP to the player, recalculating their XP level and progress. XP amount will be added to the
-	 * player's lifetime XP.
-	 *
-	 * @param int  $amount
-	 * @param bool $playSound Whether to play level-up and XP gained sounds.
-	 *
-	 * @return bool
-	 */
-	public function addXp(int $amount, bool $playSound = true) : bool{
-		$this->totalXp += $amount;
-
-		$oldLevel = $this->getXpLevel();
-		$oldTotal = $this->getCurrentTotalXp();
-
-		if($this->setCurrentTotalXp($oldTotal + $amount)){
-			if($playSound){
-				$newLevel = $this->getXpLevel();
-				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
-					$this->world->addSound($this, new XpLevelUpSound($newLevel));
-				}elseif($this->getCurrentTotalXp() > $oldTotal){
-					$this->world->addSound($this, new XpCollectSound());
-				}
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Takes an amount of XP from the player, recalculating their XP level and progress.
-	 *
-	 * @param int $amount
-	 *
-	 * @return bool
-	 */
-	public function subtractXp(int $amount) : bool{
-		return $this->addXp(-$amount);
-	}
-
-	protected function setXpAndProgress(?int $level, ?float $progress) : bool{
-		if(!$this->justCreated){
-			$ev = new PlayerExperienceChangeEvent($this, $this->getXpLevel(), $this->getXpProgress(), $level, $progress);
-			$ev->call();
-
-			if($ev->isCancelled()){
-				return false;
-			}
-
-			$level = $ev->getNewLevel();
-			$progress = $ev->getNewProgress();
-		}
-
-		if($level !== null){
-			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($level);
-		}
-
-		if($progress !== null){
-			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue($progress);
-		}
-
-		return true;
-	}
-
-	/**
-	 * Returns the total XP the player has collected in their lifetime. Resets when the player dies.
-	 * XP levels being removed in enchanting do not reduce this number.
-	 *
-	 * @return int
-	 */
-	public function getLifetimeTotalXp() : int{
-		return $this->totalXp;
-	}
-
-	/**
-	 * Sets the lifetime total XP of the player. This does not recalculate their level or progress. Used for player
-	 * score when they die. (TODO: add this when MCPE supports it)
-	 *
-	 * @param int $amount
-	 */
-	public function setLifetimeTotalXp(int $amount) : void{
-		if($amount < 0){
-			throw new \InvalidArgumentException("XP must be greater than 0");
-		}
-
-		$this->totalXp = $amount;
-	}
-
-	/**
-	 * Returns whether the human can pickup XP orbs (checks cooldown time)
-	 * @return bool
-	 */
-	public function canPickupXp() : bool{
-		return $this->xpCooldown === 0;
-	}
-
-	public function onPickupXp(int $xpValue) : void{
-		static $mainHandIndex = -1;
-
-		//TODO: replace this with a more generic equipment getting/setting interface
-		/** @var Durable[] $equipment */
-		$equipment = [];
-
-		if(($item = $this->inventory->getItemInHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING())){
-			$equipment[$mainHandIndex] = $item;
-		}
-		//TODO: check offhand
-		foreach($this->armorInventory->getContents() as $k => $item){
-			if($item instanceof Durable and $item->hasEnchantment(Enchantment::MENDING())){
-				$equipment[$k] = $item;
-			}
-		}
-
-		if(!empty($equipment)){
-			$repairItem = $equipment[$k = array_rand($equipment)];
-			if($repairItem->getDamage() > 0){
-				$repairAmount = min($repairItem->getDamage(), $xpValue * 2);
-				$repairItem->setDamage($repairItem->getDamage() - $repairAmount);
-				$xpValue -= (int) ceil($repairAmount / 2);
-
-				if($k === $mainHandIndex){
-					$this->inventory->setItemInHand($repairItem);
-				}else{
-					$this->armorInventory->setItem($k, $repairItem);
-				}
-			}
-		}
-
-		$this->addXp($xpValue); //this will still get fired even if the value is 0 due to mending, to play sounds
-		$this->resetXpCooldown();
-	}
-
-	/**
-	 * Sets the duration in ticks until the human can pick up another XP orb.
-	 *
-	 * @param int $value
-	 */
-	public function resetXpCooldown(int $value = 2) : void{
-		$this->xpCooldown = $value;
+	public function getXpManager() : ExperienceManager{
+		return $this->xpManager;
 	}
 
 	public function getXpDropAmount() : int{
 		//this causes some XP to be lost on death when above level 1 (by design), dropping at most enough points for
 		//about 7.5 levels of XP.
-		return (int) min(100, 7 * $this->getXpLevel());
+		return (int) min(100, 7 * $this->xpManager->getXpLevel());
 	}
 
 	public function getInventory(){
@@ -475,6 +226,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		parent::initEntity($nbt);
 
 		$this->hungerManager = new HungerManager($this);
+		$this->xpManager = new ExperienceManager($this);
 
 		$this->setPlayerFlag(PlayerMetadataFlags::SLEEP, false);
 		$this->propertyManager->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, null);
@@ -518,9 +270,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->hungerManager->setSaturation($nbt->getFloat("foodSaturationLevel", $this->hungerManager->getSaturation(), true));
 		$this->hungerManager->setFoodTickTimer($nbt->getInt("foodTickTimer", $this->hungerManager->getFoodTickTimer(), true));
 
-		$this->setXpLevel($nbt->getInt("XpLevel", $this->getXpLevel(), true));
-		$this->setXpProgress($nbt->getFloat("XpP", $this->getXpProgress(), true));
-		$this->totalXp = $nbt->getInt("XpTotal", $this->totalXp, true);
+		$this->xpManager->setXpAndProgressNoEvent(
+			$nbt->getInt("XpLevel", 0, true),
+			$nbt->getFloat("XpP", 0.0, true));
+		$this->xpManager->setLifetimeTotalXp($nbt->getInt("XpTotal", 0, true));
 
 		if($nbt->hasTag("XpSeed", IntTag::class)){
 			$this->xpSeed = $nbt->getInt("XpSeed");
@@ -529,21 +282,11 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 	}
 
-	protected function addAttributes() : void{
-		parent::addAttributes();
-
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE_LEVEL));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE));
-	}
-
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		$this->hungerManager->tick($tickDiff);
-
-		if($this->xpCooldown > 0){
-			$this->xpCooldown--;
-		}
+		$this->xpManager->tick($tickDiff);
 
 		return $hasUpdate;
 	}
@@ -602,9 +345,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$nbt->setFloat("foodSaturationLevel", $this->hungerManager->getSaturation());
 		$nbt->setInt("foodTickTimer", $this->hungerManager->getFoodTickTimer());
 
-		$nbt->setInt("XpLevel", $this->getXpLevel());
-		$nbt->setFloat("XpP", $this->getXpProgress());
-		$nbt->setInt("XpTotal", $this->totalXp);
+		$nbt->setInt("XpLevel", $this->xpManager->getXpLevel());
+		$nbt->setFloat("XpP", $this->xpManager->getXpProgress());
+		$nbt->setInt("XpTotal", $this->xpManager->getLifetimeTotalXp());
 		$nbt->setInt("XpSeed", $this->xpSeed);
 
 		$inventoryTag = new ListTag([], NBT::TAG_Compound);
@@ -702,6 +445,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->inventory = null;
 		$this->enderChestInventory = null;
 		$this->hungerManager = null;
+		$this->xpManager = null;
 		parent::destroyCycles();
 	}
 

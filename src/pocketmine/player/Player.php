@@ -2363,7 +2363,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		$this->world->dropExperience($this, $ev->getXpDropAmount());
-		$this->setXpAndProgress(0, 0);
+		$this->xpManager->setXpAndProgress(0, 0.0);
 
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcastMessage($ev->getDeathMessage());

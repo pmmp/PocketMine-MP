@@ -206,10 +206,10 @@ class ExperienceOrb extends Entity{
 				$this->motion->z += $diff->z;
 			}
 
-			if($currentTarget->canPickupXp() and $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){
+			if($currentTarget->getXpManager()->canPickupXp() and $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){
 				$this->flagForDespawn();
 
-				$currentTarget->onPickupXp($this->getXpValue());
+				$currentTarget->getXpManager()->onPickupXp($this->getXpValue());
 			}
 		}
 
