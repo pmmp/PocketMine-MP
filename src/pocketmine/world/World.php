@@ -931,16 +931,15 @@ class World implements ChunkManager{
 		return $this->randomTickBlocks;
 	}
 
-	public function addRandomTickedBlock(int $id, int $variant = 0){
-		$block = BlockFactory::get($id, $variant);
+	public function addRandomTickedBlock(Block $block){
 		if($block instanceof UnknownBlock){
-			throw new \InvalidArgumentException("ID $id variant $variant is unknown, cannot do random-tick");
+			throw new \InvalidArgumentException("Cannot do random-tick on unknown block");
 		}
-		$this->randomTickBlocks[($id << 4) | $variant] = true;
+		$this->randomTickBlocks[$block->getFullId()] = true;
 	}
 
-	public function removeRandomTickedBlock(int $id, int $variant = 0){
-		unset($this->randomTickBlocks[($id << 4) | $variant]);
+	public function removeRandomTickedBlock(Block $block){
+		unset($this->randomTickBlocks[$block->getFullId()]);
 	}
 
 	private function tickChunks(){
