@@ -235,8 +235,8 @@ class World implements ChunkManager{
 	private $chunkTickRadius;
 	/** @var int */
 	private $chunksPerTick;
-	/** @var \SplFixedArray<bool> */
-	private $randomTickBlocks = null;
+	/** @var bool[] */
+	private $randomTickBlocks = [];
 
 	/** @var WorldTimings */
 	public $timings;
@@ -370,17 +370,9 @@ class World implements ChunkManager{
 
 		$dontTickBlocks = array_fill_keys($this->server->getProperty("chunk-ticking.disable-block-ticking", []), true);
 
-		$this->randomTickBlocks = new \SplFixedArray(16384);
-		foreach($this->randomTickBlocks as $i => $null){
-			$id = $i >> 4;
-			$meta = $i & 0xf;
-			try{
-				$block = BlockFactory::get($id, $meta); //Make sure it's a copy
-			}catch(\InvalidArgumentException $e){
-				continue;
-			}
-			if(!isset($dontTickBlocks[$id]) and $block->ticksRandomly()){
-				$this->randomTickBlocks[($id << 4) | $meta] = true;
+		foreach(BlockFactory::getAllKnownStates() as $state){
+			if(!isset($dontTickBlocks[$state->getId()]) and $state->ticksRandomly()){
+				$this->randomTickBlocks[$state->getFullId()] = true;
 			}
 		}
 
@@ -932,7 +924,10 @@ class World implements ChunkManager{
 		}
 	}
 
-	public function getRandomTickedBlocks() : \SplFixedArray{
+	/**
+	 * @return bool[] fullID => bool
+	 */
+	public function getRandomTickedBlocks() : array{
 		return $this->randomTickBlocks;
 	}
 
@@ -945,7 +940,7 @@ class World implements ChunkManager{
 	}
 
 	public function removeRandomTickedBlock(int $id, int $variant = 0){
-		$this->randomTickBlocks[($id << 4) | $variant] = null;
+		unset($this->randomTickBlocks[($id << 4) | $variant]);
 	}
 
 	private function tickChunks(){
@@ -1002,7 +997,7 @@ class World implements ChunkManager{
 
 						$state = $subChunk->getFullBlock($x, $y, $z);
 
-						if($this->randomTickBlocks[$state]){
+						if(isset($this->randomTickBlocks[$state])){
 							/** @var Block $block */
 							$block = BlockFactory::fromFullBlock($state, $this->temporalPosition->setComponents(
 								$chunkX * 16 + $x,
