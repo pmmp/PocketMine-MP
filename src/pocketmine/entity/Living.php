@@ -758,6 +758,7 @@ abstract class Living extends Entity{
 
 	protected function destroyCycles() : void{
 		$this->armorInventory = null;
+		$this->effectManager = null;
 		parent::destroyCycles();
 	}
 }
