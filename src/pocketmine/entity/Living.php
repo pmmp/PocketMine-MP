@@ -1175,7 +1175,7 @@ abstract class Living extends Entity implements Damageable{
 				return true;
 			}
 		}
-		return $this->onInteract($player, $item, $clickPos) ? true : parent::onFirstInteract($player, $item, $clickPos);
+		return $this->onInteract($player, $item, $clickPos) ?? parent::onFirstInteract($player, $item, $clickPos);
 	}
 
 	public function onInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
