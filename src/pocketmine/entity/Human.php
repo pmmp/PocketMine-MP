@@ -628,7 +628,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					//Old hotbar saving stuff, ignore it
 				}elseif($slot >= 100 and $slot < 104){ //Armor
 					$this->armorInventory->setItem($slot - 100, Item::nbtDeserialize($item));
-				}else{
+				}elseif($slot >= 9 and $slot < $this->inventory->getSize() + 9){
 					$this->inventory->setItem($slot - 9, Item::nbtDeserialize($item));
 				}
 			}
