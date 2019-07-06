@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\vehicle;
 
 use pocketmine\block\Water;
+use pocketmine\entity\Entity;
 use pocketmine\entity\Mob;
 use pocketmine\entity\Vehicle;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -55,7 +56,7 @@ class Boat extends Vehicle{
 
 	protected function initEntity() : void{
 		$this->setMaxHealth(40);
-		$this->setGenericFlag(self::DATA_FLAG_STACKABLE);
+		$this->setGenericFlag(self::DATA_FLAG_STACKABLE, true);
 		$this->setImmobile(false);
 
 		$this->setBoatType($this->namedtag->getInt(self::TAG_VARIANT, 0));
@@ -108,6 +109,18 @@ class Boat extends Vehicle{
 			$this->boatPitch = $pitch;
 			$this->motion = $this->velocity;
 		}
+	}
+
+	public function onRiderMount(Entity $entity) : void{
+		$entity->getDataPropertyManager()->setByte(self::DATA_RIDER_ROTATION_LOCKED, 1);
+		$entity->getDataPropertyManager()->setFloat(self::DATA_RIDER_MAX_ROTATION, 90.0);
+		$entity->getDataPropertyManager()->setFloat(self::DATA_RIDER_MIN_ROTATION, 0.0);
+	}
+
+	public function onRiderLeave(Entity $entity) : void{
+		$entity->getDataPropertyManager()->setByte(self::DATA_RIDER_ROTATION_LOCKED, 0);
+		$entity->getDataPropertyManager()->setFloat(self::DATA_RIDER_MAX_ROTATION, 360.0);
+		$entity->getDataPropertyManager()->setFloat(self::DATA_RIDER_MIN_ROTATION, 0.0);
 	}
 
 	public function setClientMotion(Vector3 $motion) : void{
@@ -203,7 +216,7 @@ class Boat extends Vehicle{
 	}
 
 	protected function onMovementUpdate() : void{
-		if($this->onGround){
+		if($this->onGround and $this->clientMoveTicks === 0){
 			$this->motion = $this->motion->multiply(0.5);
 		}
 
