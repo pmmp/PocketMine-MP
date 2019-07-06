@@ -23,18 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\world\biome;
 
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\VanillaBlocks;
 
 abstract class GrassyBiome extends Biome{
 
 	public function __construct(){
 		$this->setGroundCover([
-			BlockFactory::get(BlockLegacyIds::GRASS),
-			BlockFactory::get(BlockLegacyIds::DIRT),
-			BlockFactory::get(BlockLegacyIds::DIRT),
-			BlockFactory::get(BlockLegacyIds::DIRT),
-			BlockFactory::get(BlockLegacyIds::DIRT)
+			VanillaBlocks::GRASS(),
+			VanillaBlocks::DIRT(),
+			VanillaBlocks::DIRT(),
+			VanillaBlocks::DIRT(),
+			VanillaBlocks::DIRT()
 		]);
 	}
 }

@@ -77,7 +77,7 @@ class DragonEgg extends Transparent implements Fallable{
 					$block = $ev->getTo();
 				}
 				$this->world->addParticle($this, new DragonEggTeleportParticle($this->x - $block->x, $this->y - $block->y, $this->z - $block->z));
-				$this->world->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
+				$this->world->setBlock($this, VanillaBlocks::AIR());
 				$this->world->setBlock($block, $this);
 				break;
 			}

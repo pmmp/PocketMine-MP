@@ -89,7 +89,7 @@ class SnowLayer extends Flowable implements Fallable{
 
 	public function onRandomTick() : void{
 		if($this->world->getBlockLightAt($this->x, $this->y, $this->z) >= 12){
-			$this->getWorld()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR), false);
+			$this->getWorld()->setBlock($this, VanillaBlocks::AIR(), false);
 		}
 	}
 

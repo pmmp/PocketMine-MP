@@ -25,8 +25,8 @@ namespace pocketmine\world;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\TNT;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockUpdateEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
@@ -200,7 +200,7 @@ class Explosion{
 
 
 		$air = ItemFactory::air();
-		$airBlock = BlockFactory::get(BlockLegacyIds::AIR);
+		$airBlock = VanillaBlocks::AIR();
 
 		foreach($this->affectedBlocks as $block){
 			if($block instanceof TNT){

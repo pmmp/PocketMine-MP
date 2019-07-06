@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
 use pocketmine\block\Lava;
 use pocketmine\block\Liquid;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
@@ -32,12 +31,13 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 class LiquidBucket extends Item{
-	/** @var int|null */
-	protected $liquidId;
 
-	public function __construct(int $id, int $meta, string $name, int $liquidId){
+	/** @var Liquid */
+	private $liquid;
+
+	public function __construct(int $id, int $meta, string $name, Liquid $liquid){
 		parent::__construct($id, $meta, $name);
-		$this->liquidId = $liquidId;
+		$this->liquid = $liquid;
 	}
 
 	public function getMaxStackSize() : int{
@@ -45,7 +45,7 @@ class LiquidBucket extends Item{
 	}
 
 	public function getFuelTime() : int{
-		if(BlockFactory::get($this->liquidId) instanceof Lava){
+		if($this->liquid instanceof Lava){
 			return 20000;
 		}
 
@@ -58,23 +58,20 @@ class LiquidBucket extends Item{
 		}
 
 		//TODO: move this to generic placement logic
-		$resultBlock = BlockFactory::get($this->liquidId);
-		if($resultBlock instanceof Liquid){ //TODO: this should never be false
-			$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, ItemFactory::get(Item::BUCKET));
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$player->getWorld()->setBlock($blockReplace, $resultBlock->getFlowingForm());
-				$player->getWorld()->addSound($blockClicked->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
+		$resultBlock = clone $this->liquid;
 
-				if($player->hasFiniteResources()){
-					$player->getInventory()->setItemInHand($ev->getItem());
-				}
-				return ItemUseResult::SUCCESS();
+		$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, ItemFactory::get(Item::BUCKET));
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$player->getWorld()->setBlock($blockReplace, $resultBlock->getFlowingForm());
+			$player->getWorld()->addSound($blockClicked->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
+
+			if($player->hasFiniteResources()){
+				$player->getInventory()->setItemInHand($ev->getItem());
 			}
-
-			return ItemUseResult::FAIL();
+			return ItemUseResult::SUCCESS();
 		}
 
-		return ItemUseResult::NONE();
+		return ItemUseResult::FAIL();
 	}
 }

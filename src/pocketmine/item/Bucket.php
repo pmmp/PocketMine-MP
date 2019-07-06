@@ -24,9 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\Liquid;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -47,7 +46,7 @@ class Bucket extends Item{
 			$ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$player->getWorld()->setBlock($blockClicked, BlockFactory::get(BlockLegacyIds::AIR));
+				$player->getWorld()->setBlock($blockClicked, VanillaBlocks::AIR());
 				$player->getWorld()->addSound($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
 				if($player->hasFiniteResources()){
 					if($stack->getCount() === 0){

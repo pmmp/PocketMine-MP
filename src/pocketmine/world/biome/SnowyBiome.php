@@ -23,18 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\world\biome;
 
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\VanillaBlocks;
 
 abstract class SnowyBiome extends Biome{
 
 	public function __construct(){
 		$this->setGroundCover([
-			BlockFactory::get(BlockLegacyIds::SNOW_LAYER),
-			BlockFactory::get(BlockLegacyIds::GRASS),
-			BlockFactory::get(BlockLegacyIds::DIRT),
-			BlockFactory::get(BlockLegacyIds::DIRT),
-			BlockFactory::get(BlockLegacyIds::DIRT)
+			VanillaBlocks::SNOW_LAYER(),
+			VanillaBlocks::GRASS(),
+			VanillaBlocks::DIRT(),
+			VanillaBlocks::DIRT(),
+			VanillaBlocks::DIRT()
 		]);
 	}
 }

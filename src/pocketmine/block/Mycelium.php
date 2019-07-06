@@ -53,7 +53,7 @@ class Mycelium extends Solid{
 		$block = $this->getWorld()->getBlockAt($x, $y, $z);
 		if($block->getId() === BlockLegacyIds::DIRT){
 			if($block->getSide(Facing::UP) instanceof Transparent){
-				$ev = new BlockSpreadEvent($block, $this, BlockFactory::get(BlockLegacyIds::MYCELIUM));
+				$ev = new BlockSpreadEvent($block, $this, VanillaBlocks::MYCELIUM());
 				$ev->call();
 				if(!$ev->isCancelled()){
 					$this->getWorld()->setBlock($block, $ev->getNewState());

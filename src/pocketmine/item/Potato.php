@@ -24,13 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\VanillaBlocks;
 
 class Potato extends Food{
 
 	public function getBlock() : Block{
-		return BlockFactory::get(BlockLegacyIds::POTATO_BLOCK);
+		return VanillaBlocks::POTATOES();
 	}
 
 	public function getFoodRestore() : int{

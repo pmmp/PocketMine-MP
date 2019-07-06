@@ -73,7 +73,7 @@ class Cake extends Transparent implements FoodSource{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getId() === BlockLegacyIds::AIR){ //Replace with common break method
-			$this->getWorld()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
+			$this->getWorld()->setBlock($this, VanillaBlocks::AIR());
 		}
 	}
 
@@ -113,7 +113,7 @@ class Cake extends Transparent implements FoodSource{
 		$clone = clone $this;
 		$clone->bites++;
 		if($clone->bites > 6){
-			$clone = BlockFactory::get(BlockLegacyIds::AIR);
+			$clone = VanillaBlocks::AIR();
 		}
 		return $clone;
 	}

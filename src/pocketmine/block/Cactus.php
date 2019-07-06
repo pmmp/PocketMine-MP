@@ -95,7 +95,7 @@ class Cactus extends Transparent{
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getWorld()->getBlockAt($this->x, $this->y + $y, $this->z);
 					if($b->getId() === BlockLegacyIds::AIR){
-						$ev = new BlockGrowEvent($b, BlockFactory::get(BlockLegacyIds::CACTUS));
+						$ev = new BlockGrowEvent($b, VanillaBlocks::CACTUS());
 						$ev->call();
 						if($ev->isCancelled()){
 							break;

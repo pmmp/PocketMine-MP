@@ -28,6 +28,7 @@ use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\TreeType;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Living;
 use pocketmine\nbt\tag\CompoundTag;
@@ -218,8 +219,8 @@ class ItemFactory{
 		self::register(new Leggings(Item::LEATHER_LEGGINGS, 0, "Leather Pants", new ArmorTypeInfo(2, 76)));
 		//TODO: fix metadata for buckets with still liquid in them
 		//the meta values are intentionally hardcoded because block IDs will change in the future
-		self::register(new LiquidBucket(Item::BUCKET, 8, "Water Bucket", BlockLegacyIds::FLOWING_WATER));
-		self::register(new LiquidBucket(Item::BUCKET, 10, "Lava Bucket", BlockLegacyIds::FLOWING_LAVA));
+		self::register(new LiquidBucket(Item::BUCKET, 8, "Water Bucket", VanillaBlocks::WATER()));
+		self::register(new LiquidBucket(Item::BUCKET, 10, "Lava Bucket", VanillaBlocks::LAVA()));
 		self::register(new Melon(Item::MELON, 0, "Melon"));
 		self::register(new MelonSeeds(Item::MELON_SEEDS, 0, "Melon Seeds"));
 		self::register(new MilkBucket(Item::BUCKET, 1, "Milk Bucket"));

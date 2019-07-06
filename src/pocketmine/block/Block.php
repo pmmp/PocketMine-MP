@@ -283,7 +283,7 @@ class Block extends Position implements BlockLegacyIds{
 		if(($t = $this->world->getTile($this)) !== null){
 			$t->onBlockDestroyed();
 		}
-		return $this->getWorld()->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
+		return $this->getWorld()->setBlock($this, VanillaBlocks::AIR());
 	}
 
 	/**
@@ -747,5 +747,17 @@ class Block extends Position implements BlockLegacyIds{
 		}
 
 		return $currentHit;
+	}
+
+	/**
+	 * @param self $self
+	 *
+	 * @return static
+	 */
+	public static function cast(self $self){
+		if(!($self instanceof static)){
+			throw new \TypeError("Cannot cast from " . self::class . " to " . static::class);
+		}
+		return $self;
 	}
 }
