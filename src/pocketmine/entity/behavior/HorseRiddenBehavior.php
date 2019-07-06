@@ -65,6 +65,8 @@ class HorseRiddenBehavior extends Behavior{
 			}else{
 				if($this->mob->isSaddled()){
 					$this->mutexBits = 7; // This a nasty hack
+				}else{
+					$this->mutexBits = 2;
 				}
 			}
 		}
