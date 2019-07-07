@@ -211,7 +211,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public const VIEW = Player::SPECTATOR;
 
 	/**
-	 * Checks a supplied username and checks it is valid.
+	 * Validates the given username.
 	 *
 	 * @param string $name
 	 *
