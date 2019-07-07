@@ -68,6 +68,6 @@ file_put_contents($versionInfoPath, $mod =  preg_replace(
 ));
 system('git add "' . $versionInfoPath . '"');
 system('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"');
-echo "pushing changes in 10 seconds";
+echo "pushing changes in 10 seconds\n";
 sleep(10);
 system('git push origin HEAD ' . BASE_VERSION);

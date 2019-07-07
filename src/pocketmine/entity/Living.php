@@ -389,7 +389,9 @@ abstract class Living extends Entity{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
-		if($this->attackTime > 0 or $this->noDamageTicks > 0){
+		if($this->noDamageTicks > 0){
+			$source->setCancelled();
+		}elseif($this->attackTime > 0){
 			$lastCause = $this->getLastDamageCause();
 			if($lastCause !== null and $lastCause->getBaseDamage() >= $source->getBaseDamage()){
 				$source->setCancelled();

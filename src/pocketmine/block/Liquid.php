@@ -34,6 +34,7 @@ use pocketmine\world\sound\FizzSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use function array_fill;
+use function intdiv;
 use function lcg_value;
 use function min;
 
@@ -405,7 +406,7 @@ abstract class Liquid extends Transparent{
 	 */
 	private function getOptimalFlowDirections() : array{
 		$flowCost = array_fill(0, 4, 1000);
-		$maxCost = 4 / $this->getFlowDecayPerBlock();
+		$maxCost = intdiv(4, $this->getFlowDecayPerBlock());
 		for($j = 0; $j < 4; ++$j){
 			$x = $this->x;
 			$y = $this->y;
