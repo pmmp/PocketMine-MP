@@ -800,7 +800,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Gets the "friendly" name to display of this player to use in the chat.
+	 * Returns the "friendly" display name of this player to use in the chat.
 	 *
 	 * @return string
 	 */
