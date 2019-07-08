@@ -1755,7 +1755,7 @@ class World implements ChunkManager{
 		}
 
 		$tx = new BlockTransaction($this);
-		if(!$hand->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player) or !$tx->apply()){
+		if(!$hand->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
 			return false;
 		}
 		
@@ -1783,6 +1783,10 @@ class World implements ChunkManager{
 			if($ev->isCancelled()){
 				return false;
 			}
+		}
+		
+		if(!$tx->apply()){
+			return false;
 		}
 		
 		foreach($tx->getBlocks() as [$x, $y, $z, $_]){
