@@ -303,14 +303,14 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 								$storages[] = $convertedLegacyExtraData[$y];
 							}
 
-							$subChunks[$y] = new SubChunk($storages);
+							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
 							break;
 						case 1: //paletted v1, has a single blockstorage
 							$storages = [$this->deserializePaletted($binaryStream)];
 							if(isset($convertedLegacyExtraData[$y])){
 								$storages[] = $convertedLegacyExtraData[$y];
 							}
-							$subChunks[$y] = new SubChunk($storages);
+							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
 							break;
 						case 8:
 							//legacy extradata layers intentionally ignored because they aren't supposed to exist in v8
@@ -321,7 +321,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 								for($k = 0; $k < $storageCount; ++$k){
 									$storages[] = $this->deserializePaletted($binaryStream);
 								}
-								$subChunks[$y] = new SubChunk($storages);
+								$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
 							}
 							break;
 						default:
@@ -365,7 +365,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					if(isset($convertedLegacyExtraData[$yy])){
 						$storages[] = $convertedLegacyExtraData[$yy];
 					}
-					$subChunks[$yy] = new SubChunk($storages);
+					$subChunks[$yy] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
 				}
 
 				try{

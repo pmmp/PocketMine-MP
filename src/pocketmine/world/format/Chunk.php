@@ -644,7 +644,7 @@ class Chunk{
 		if($y < 0 or $y >= $this->height){
 			return $this->emptySubChunk;
 		}elseif($generateNew and $this->subChunks[$y] instanceof EmptySubChunk){
-			$this->subChunks[$y] = new SubChunk([new PalettedBlockArray(BlockLegacyIds::AIR << 4)]);
+			$this->subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, []);
 		}
 
 		return $this->subChunks[$y];

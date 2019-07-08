@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\EmptySubChunk;
@@ -135,7 +136,7 @@ final class FastChunkSerializer{
 					$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 				}
 				$subChunks[$y] = new SubChunk(
-					$layers, $lightPopulated ? new LightArray($stream->get(2048)) : null, $lightPopulated ? new LightArray($stream->get(2048)) : null
+					BlockLegacyIds::AIR << 4, $layers, $lightPopulated ? new LightArray($stream->get(2048)) : null, $lightPopulated ? new LightArray($stream->get(2048)) : null
 				);
 			}
 

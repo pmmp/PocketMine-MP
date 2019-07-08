@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteArrayTag;
@@ -71,7 +72,7 @@ class McRegion extends RegionWorldProvider{
 		$fullData = $chunk->hasTag("Data", ByteArrayTag::class) ? $chunk->getByteArray("Data") : str_repeat("\x00", 16384);
 
 		for($y = 0; $y < 8; ++$y){
-			$subChunks[$y] = new SubChunk([SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $y)]);
+			$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, [SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $y)]);
 		}
 
 		if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
