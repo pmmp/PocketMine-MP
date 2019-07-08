@@ -112,7 +112,9 @@ abstract class Tree{
 		$this->placeTrunk($x, $y, $z, $random, $this->generateChunkHeight($random), $transaction);
 		$this->placeCanopy($x, $y, $z, $random, $transaction);
 
-		$transaction->apply(); //TODO: handle return value on failure
+		if($transaction->validate()){
+			$transaction->apply(); //TODO: handle return value on failure
+		}
 	}
 
 	protected function generateChunkHeight(Random $random) : int{

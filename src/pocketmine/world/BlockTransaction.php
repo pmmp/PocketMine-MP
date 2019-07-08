@@ -37,6 +37,9 @@ class BlockTransaction{
 	/** @var \Closure[] */
 	private $validators = [];
 
+	/**@var boolean|null */
+	private $isValid;
+
 	public function __construct(ChunkManager $world){
 		$this->world = $world;
 		$this->addValidator(function(ChunkManager $world, int $x, int $y, int $z) : bool{
@@ -68,6 +71,7 @@ class BlockTransaction{
 	 */
 	public function addBlockAt(int $x, int $y, int $z, Block $state) : self{
 		$this->blocks[$x][$y][$z] = $state;
+
 		return $this;
 	}
 
@@ -97,23 +101,38 @@ class BlockTransaction{
 	}
 
 	/**
-	 * Validates and attempts to apply the transaction to the given world. If any part of the transaction fails to
+	 * Validates the transaction to the given world. If any part of the transaction fails to
 	 * validate, no changes will be made to the world.
 	 *
-	 * @return bool if the application was successful
+	 * @return bool if validation was successful
 	 */
-	public function apply() : bool{
+	public function validate() : bool{
+		$this->isValid = true;
 		foreach($this->getBlocks() as [$x, $y, $z, $_]){
 			foreach($this->validators as $validator){
 				if(!$validator($this->world, $x, $y, $z)){
-					return false;
+					$this->isValid = false;
+					break 2;
 				}
 			}
 		}
-		foreach($this->getBlocks() as [$x, $y, $z, $block]){
-			$this->world->setBlockAt($x, $y, $z, $block);
+
+		return $this->isValid;
+	}
+
+	/**
+	 * Attempts to apply the transaction to the given world.
+	 */
+	public function apply() : void{
+		if($this->isValid === null){
+			throw new \UnexpectedValueException("The transaction must be validated before applying.");
 		}
-		return true;
+
+		if($this->isValid){
+			foreach($this->getBlocks() as [$x, $y, $z, $block]){
+				$this->world->setBlockAt($x, $y, $z, $block);
+			}
+		}
 	}
 
 	/**
