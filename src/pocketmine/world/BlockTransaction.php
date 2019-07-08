@@ -104,7 +104,7 @@ class BlockTransaction{
 	 * Validates the transaction to the given world. If any part of the transaction fails to
 	 * validate, no changes will be made to the world.
 	 *
-	 * @return bool if validation was successful
+	 * @return bool if the validation was successful
 	 */
 	public function validate() : bool{
 		$this->isValid = true;
