@@ -53,7 +53,7 @@ class SubChunk implements SubChunkInterface{
 		foreach($this->blockLayers as $layer){
 			$palette = $layer->getPalette();
 			foreach($palette as $p){
-				if(($p >> 4) !== BlockLegacyIds::AIR){
+				if($p !== (BlockLegacyIds::AIR << 4)){
 					return false;
 				}
 			}
@@ -112,7 +112,7 @@ class SubChunk implements SubChunkInterface{
 			return -1;
 		}
 		for($y = 15; $y >= 0; --$y){
-			if(($this->blockLayers[0]->get($x, $y, $z) >> 4) !== BlockLegacyIds::AIR){
+			if($this->blockLayers[0]->get($x, $y, $z) !== (BlockLegacyIds::AIR << 4)){
 				return $y;
 			}
 		}
@@ -145,7 +145,7 @@ class SubChunk implements SubChunkInterface{
 			$layer->collectGarbage();
 
 			foreach($layer->getPalette() as $p){
-				if(($p >> 4) !== BlockLegacyIds::AIR){
+				if($p !== (BlockLegacyIds::AIR << 4)){
 					continue 2;
 				}
 			}
