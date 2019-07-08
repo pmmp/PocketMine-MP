@@ -24,11 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\object;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\Leaves;
 use pocketmine\block\Sapling;
 use pocketmine\block\utils\TreeType;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\ChunkManager;
@@ -121,7 +120,7 @@ abstract class Tree{
 
 	protected function placeTrunk(int $x, int $y, int $z, Random $random, int $trunkHeight, BlockTransaction $transaction) : void{
 		// The base dirt block
-		$transaction->addBlockAt($x, $y - 1, $z, BlockFactory::get(BlockLegacyIds::DIRT));
+		$transaction->addBlockAt($x, $y - 1, $z, VanillaBlocks::DIRT());
 
 		for($yy = 0; $yy < $trunkHeight; ++$yy){
 			if($this->canOverride($transaction->fetchBlockAt($x, $y + $yy, $z))){

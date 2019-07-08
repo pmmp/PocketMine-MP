@@ -24,12 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\VanillaBlocks;
 
 class MelonSeeds extends Item{
 
 	public function getBlock() : Block{
-		return BlockFactory::get(BlockLegacyIds::MELON_STEM);
+		return VanillaBlocks::MELON_STEM();
 	}
 }

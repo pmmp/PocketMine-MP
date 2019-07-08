@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\object;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
@@ -36,9 +36,9 @@ class TallGrass{
 	public static function growGrass(ChunkManager $world, Vector3 $pos, Random $random, int $count = 15, int $radius = 10) : void{
 		/** @var Block[] $arr */
 		$arr = [
-			BlockFactory::get(BlockLegacyIds::DANDELION),
-			BlockFactory::get(BlockLegacyIds::POPPY),
-			$tallGrass = BlockFactory::get(BlockLegacyIds::TALL_GRASS, 1),
+			VanillaBlocks::DANDELION(),
+			VanillaBlocks::POPPY(),
+			$tallGrass = VanillaBlocks::TALL_GRASS(),
 			$tallGrass,
 			$tallGrass,
 			$tallGrass

@@ -283,7 +283,7 @@ abstract class Liquid extends Transparent{
 
 			if($falling !== $this->falling or (!$falling and $newDecay !== $this->decay)){
 				if(!$falling and $newDecay < 0){
-					$this->world->setBlock($this, BlockFactory::get(BlockLegacyIds::AIR));
+					$this->world->setBlock($this, VanillaBlocks::AIR());
 					return;
 				}
 

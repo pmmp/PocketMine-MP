@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\object;
 
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
-use pocketmine\block\utils\TreeType;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
 
@@ -34,7 +32,7 @@ class BirchTree extends Tree{
 	protected $superBirch = false;
 
 	public function __construct(bool $superBirch = false){
-		parent::__construct(BlockFactory::get(BlockLegacyIds::LOG, TreeType::BIRCH()->getMagicNumber()), BlockFactory::get(BlockLegacyIds::LEAVES, TreeType::BIRCH()->getMagicNumber()));
+		parent::__construct(VanillaBlocks::BIRCH_LOG(), VanillaBlocks::BIRCH_LEAVES());
 		$this->superBirch = $superBirch;
 	}
 

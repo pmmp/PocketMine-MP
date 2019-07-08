@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\normal;
 
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\generator\biome\BiomeSelector;
@@ -120,14 +119,14 @@ class Normal extends Generator{
 
 		$ores = new Ore();
 		$ores->setOreTypes([
-			new OreType(BlockFactory::get(BlockLegacyIds::COAL_ORE), 20, 16, 0, 128),
-			new OreType(BlockFactory::get(BlockLegacyIds::IRON_ORE), 20, 8, 0, 64),
-			new OreType(BlockFactory::get(BlockLegacyIds::REDSTONE_ORE), 8, 7, 0, 16),
-			new OreType(BlockFactory::get(BlockLegacyIds::LAPIS_ORE), 1, 6, 0, 32),
-			new OreType(BlockFactory::get(BlockLegacyIds::GOLD_ORE), 2, 8, 0, 32),
-			new OreType(BlockFactory::get(BlockLegacyIds::DIAMOND_ORE), 1, 7, 0, 16),
-			new OreType(BlockFactory::get(BlockLegacyIds::DIRT), 20, 32, 0, 128),
-			new OreType(BlockFactory::get(BlockLegacyIds::GRAVEL), 10, 16, 0, 128)
+			new OreType(VanillaBlocks::COAL_ORE(), 20, 16, 0, 128),
+			new OreType(VanillaBlocks::IRON_ORE(), 20, 8, 0, 64),
+			new OreType(VanillaBlocks::REDSTONE_ORE(), 8, 7, 0, 16),
+			new OreType(VanillaBlocks::LAPIS_LAZULI_ORE(), 1, 6, 0, 32),
+			new OreType(VanillaBlocks::GOLD_ORE(), 2, 8, 0, 32),
+			new OreType(VanillaBlocks::DIAMOND_ORE(), 1, 7, 0, 16),
+			new OreType(VanillaBlocks::DIRT(), 20, 32, 0, 128),
+			new OreType(VanillaBlocks::GRAVEL(), 10, 16, 0, 128)
 		]);
 		$this->populators[] = $ores;
 	}
@@ -173,9 +172,9 @@ class Normal extends Generator{
 
 		$biomeCache = [];
 
-		$bedrock = BlockFactory::get(BlockLegacyIds::BEDROCK)->getFullId();
-		$stillWater = BlockFactory::get(BlockLegacyIds::STILL_WATER)->getFullId();
-		$stone = BlockFactory::get(BlockLegacyIds::STONE)->getFullId();
+		$bedrock = VanillaBlocks::BEDROCK()->getFullId();
+		$stillWater = VanillaBlocks::WATER()->getFullId();
+		$stone = VanillaBlocks::STONE()->getFullId();
 
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){

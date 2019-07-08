@@ -26,6 +26,6 @@ namespace pocketmine\block;
 class PumpkinStem extends Stem{
 
 	protected function getPlant() : Block{
-		return BlockFactory::get(BlockLegacyIds::PUMPKIN);
+		return VanillaBlocks::PUMPKIN();
 	}
 }

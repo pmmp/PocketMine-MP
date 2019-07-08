@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\InstantEffect;
 use pocketmine\entity\Living;
@@ -123,11 +123,11 @@ class SplashPotion extends Throwable{
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
 			if($blockIn->getId() === BlockLegacyIds::FIRE){
-				$this->world->setBlock($blockIn, BlockFactory::get(BlockLegacyIds::AIR));
+				$this->world->setBlock($blockIn, VanillaBlocks::AIR());
 			}
 			foreach($blockIn->getHorizontalSides() as $horizontalSide){
 				if($horizontalSide->getId() === BlockLegacyIds::FIRE){
-					$this->world->setBlock($horizontalSide, BlockFactory::get(BlockLegacyIds::AIR));
+					$this->world->setBlock($horizontalSide, VanillaBlocks::AIR());
 				}
 			}
 		}

@@ -23,19 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\world\biome;
 
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\world\generator\populator\TallGrass;
 
 class OceanBiome extends Biome{
 
 	public function __construct(){
 		$this->setGroundCover([
-			BlockFactory::get(BlockLegacyIds::GRAVEL),
-			BlockFactory::get(BlockLegacyIds::GRAVEL),
-			BlockFactory::get(BlockLegacyIds::GRAVEL),
-			BlockFactory::get(BlockLegacyIds::GRAVEL),
-			BlockFactory::get(BlockLegacyIds::GRAVEL)
+			VanillaBlocks::GRAVEL(),
+			VanillaBlocks::GRAVEL(),
+			VanillaBlocks::GRAVEL(),
+			VanillaBlocks::GRAVEL(),
+			VanillaBlocks::GRAVEL()
 		]);
 
 		$tallGrass = new TallGrass();

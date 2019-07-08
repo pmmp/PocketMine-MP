@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\populator;
 
-use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
 
@@ -46,7 +46,7 @@ class TallGrass extends Populator{
 		$this->world = $world;
 		$amount = $random->nextRange(0, $this->randomAmount + 1) + $this->baseAmount;
 
-		$block = BlockFactory::get(BlockLegacyIds::TALL_GRASS, 1);
+		$block = VanillaBlocks::TALL_GRASS();
 		for($i = 0; $i < $amount; ++$i){
 			$x = $random->nextRange($chunkX * 16, $chunkX * 16 + 15);
 			$z = $random->nextRange($chunkZ * 16, $chunkZ * 16 + 15);

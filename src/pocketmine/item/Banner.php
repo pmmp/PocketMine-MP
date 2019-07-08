@@ -25,11 +25,10 @@ namespace pocketmine\item;
 
 use Ds\Deque;
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 
@@ -54,7 +53,7 @@ class Banner extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(BlockLegacyIds::STANDING_BANNER);
+		return VanillaBlocks::BANNER();
 	}
 
 	public function getMaxStackSize() : int{

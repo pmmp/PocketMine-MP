@@ -69,16 +69,16 @@ class Lava extends Liquid{
 
 		if($colliding !== null){
 			if($this->decay === 0){
-				$this->liquidCollide($colliding, BlockFactory::get(BlockLegacyIds::OBSIDIAN));
+				$this->liquidCollide($colliding, VanillaBlocks::OBSIDIAN());
 			}elseif($this->decay <= 4){
-				$this->liquidCollide($colliding, BlockFactory::get(BlockLegacyIds::COBBLESTONE));
+				$this->liquidCollide($colliding, VanillaBlocks::COBBLESTONE());
 			}
 		}
 	}
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling) : void{
 		if($block instanceof Water){
-			$block->liquidCollide($this, BlockFactory::get(BlockLegacyIds::STONE));
+			$block->liquidCollide($this, VanillaBlocks::STONE());
 		}else{
 			parent::flowIntoBlock($block, $newFlowDecay, $falling);
 		}

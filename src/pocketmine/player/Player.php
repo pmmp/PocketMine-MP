@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\player;
 
 use pocketmine\block\Bed;
-use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\UnknownBlock;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\entity\effect\Effect;
@@ -1767,7 +1767,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$block = $target->getSide($face);
 		if($block->getId() === BlockLegacyIds::FIRE){
-			$this->world->setBlock($block, BlockFactory::get(BlockLegacyIds::AIR));
+			$this->world->setBlock($block, VanillaBlocks::AIR());
 			return true;
 		}
 
