@@ -70,6 +70,7 @@ class BlockTransaction{
 	 * @return $this
 	 */
 	public function addBlockAt(int $x, int $y, int $z, Block $state) : self{
+		$this->isValid = null;
 		$this->blocks[$x][$y][$z] = $state;
 
 		return $this;
@@ -125,7 +126,7 @@ class BlockTransaction{
 	 */
 	public function apply() : void{
 		if($this->isValid === null){
-			throw new \UnexpectedValueException("The transaction must be validated before applying.");
+			throw new \BadMethodCallException("The transaction must be validated before applying.");
 		}
 
 		if($this->isValid){
