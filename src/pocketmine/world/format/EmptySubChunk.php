@@ -73,19 +73,19 @@ class EmptySubChunk implements SubChunkInterface{
 		return -1;
 	}
 
-	public function getBlockLightArray() : string{
-		return str_repeat("\x00", 2048);
+	public function getBlockLightArray() : LightArray{
+		return new LightArray(str_repeat("\x00", 2048));
 	}
 
-	public function setBlockLightArray(string $data) : void{
+	public function setBlockLightArray(LightArray $data) : void{
 
 	}
 
-	public function getBlockSkyLightArray() : string{
-		return str_repeat("\xff", 2048);
+	public function getBlockSkyLightArray() : LightArray{
+		return new LightArray(str_repeat("\xff", 2048));
 	}
 
-	public function setBlockSkyLightArray(string $data) : void{
+	public function setBlockSkyLightArray(LightArray $data) : void{
 
 	}
 }

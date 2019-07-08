@@ -101,22 +101,22 @@ interface SubChunkInterface{
 	public function getHighestBlockAt(int $x, int $z) : int;
 
 	/**
-	 * @return string
+	 * @return LightArray
 	 */
-	public function getBlockSkyLightArray() : string;
+	public function getBlockSkyLightArray() : LightArray;
 
 	/**
-	 * @param string $data
+	 * @param LightArray $data
 	 */
-	public function setBlockSkyLightArray(string $data) : void;
+	public function setBlockSkyLightArray(LightArray $data) : void;
 
 	/**
-	 * @return string
+	 * @return LightArray
 	 */
-	public function getBlockLightArray() : string;
+	public function getBlockLightArray() : LightArray;
 
 	/**
-	 * @param string $data
+	 * @param LightArray $data
 	 */
-	public function setBlockLightArray(string $data) : void;
+	public function setBlockLightArray(LightArray $data) : void;
 }

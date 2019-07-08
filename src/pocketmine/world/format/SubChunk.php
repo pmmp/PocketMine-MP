@@ -25,53 +25,28 @@ namespace pocketmine\world\format;
 
 use pocketmine\block\BlockLegacyIds;
 use function array_values;
-use function assert;
-use function chr;
-use function define;
-use function defined;
-use function ord;
-use function str_repeat;
-use function strlen;
-
-if(!defined(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY')){
-	define(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY', str_repeat("\x00", 2048));
-}
-if(!defined(__NAMESPACE__ . '\FIFTEEN_NIBBLE_ARRAY')){
-	define(__NAMESPACE__ . '\FIFTEEN_NIBBLE_ARRAY', str_repeat("\xff", 2048));
-}
 
 class SubChunk implements SubChunkInterface{
 	/** @var PalettedBlockArray[] */
 	private $blockLayers;
 
-	/** @var string */
+	/** @var LightArray */
 	protected $blockLight;
-	/** @var string */
+	/** @var LightArray */
 	protected $skyLight;
-
-	private static function assignData(&$target, string $data, string $default) : void{
-		if($data === "" or $data === $default){
-			$target = $default;
-		}elseif(strlen($data) !== 2048){
-			assert(false, "Invalid length given, expected 2048, got " . strlen($data));
-			$target = $default;
-		}else{
-			$target = $data;
-		}
-	}
 
 	/**
 	 * SubChunk constructor.
 	 *
 	 * @param PalettedBlockArray[] $blocks
-	 * @param string               $skyLight
-	 * @param string               $blockLight
+	 * @param LightArray|null      $skyLight
+	 * @param LightArray|null      $blockLight
 	 */
-	public function __construct(array $blocks, string $skyLight = "", string $blockLight = ""){
+	public function __construct(array $blocks, ?LightArray $skyLight = null, ?LightArray $blockLight = null){
 		$this->blockLayers = $blocks;
 
-		self::assignData($this->skyLight, $skyLight, FIFTEEN_NIBBLE_ARRAY);
-		self::assignData($this->blockLight, $blockLight, ZERO_NIBBLE_ARRAY);
+		$this->skyLight = $skyLight ?? new LightArray(LightArray::FIFTEEN);
+		$this->blockLight = $blockLight ?? new LightArray(LightArray::ZERO);
 	}
 
 	public function isEmpty(bool $checkLight = true) : bool{
@@ -85,8 +60,8 @@ class SubChunk implements SubChunkInterface{
 		}
 		return
 			(!$checkLight or (
-				$this->skyLight === FIFTEEN_NIBBLE_ARRAY and
-				$this->blockLight === ZERO_NIBBLE_ARRAY
+				$this->skyLight->getData() === LightArray::FIFTEEN and
+				$this->blockLight->getData() === LightArray::ZERO
 			)
 		);
 	}
@@ -113,29 +88,21 @@ class SubChunk implements SubChunkInterface{
 	}
 
 	public function getBlockLight(int $x, int $y, int $z) : int{
-		return (ord($this->blockLight{($x << 7) | ($z << 3) | ($y >> 1)}) >> (($y & 1) << 2)) & 0xf;
+		return $this->blockLight->get($x, $y, $z);
 	}
 
 	public function setBlockLight(int $x, int $y, int $z, int $level) : bool{
-		$i = ($x << 7) | ($z << 3) | ($y >> 1);
-
-		$shift = ($y & 1) << 2;
-		$byte = ord($this->blockLight{$i});
-		$this->blockLight{$i} = chr(($byte & ~(0xf << $shift)) | (($level & 0xf) << $shift));
+		$this->blockLight->set($x, $y, $z, $level);
 
 		return true;
 	}
 
 	public function getBlockSkyLight(int $x, int $y, int $z) : int{
-		return (ord($this->skyLight{($x << 7) | ($z << 3) | ($y >> 1)}) >> (($y & 1) << 2)) & 0xf;
+		return $this->skyLight->get($x, $y, $z);
 	}
 
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : bool{
-		$i = ($x << 7) | ($z << 3) | ($y >> 1);
-
-		$shift = ($y & 1) << 2;
-		$byte = ord($this->skyLight{$i});
-		$this->skyLight{$i} = chr(($byte & ~(0xf << $shift)) | (($level & 0xf) << $shift));
+		$this->skyLight->set($x, $y, $z, $level);
 
 		return true;
 	}
@@ -153,23 +120,19 @@ class SubChunk implements SubChunkInterface{
 		return -1; //highest block not in this subchunk
 	}
 
-	public function getBlockSkyLightArray() : string{
-		assert(strlen($this->skyLight) === 2048, "Wrong length of skylight array, expecting 2048 bytes, got " . strlen($this->skyLight));
+	public function getBlockSkyLightArray() : LightArray{
 		return $this->skyLight;
 	}
 
-	public function setBlockSkyLightArray(string $data) : void{
-		assert(strlen($data) === 2048, "Wrong length of skylight array, expecting 2048 bytes, got " . strlen($data));
+	public function setBlockSkyLightArray(LightArray $data) : void{
 		$this->skyLight = $data;
 	}
 
-	public function getBlockLightArray() : string{
-		assert(strlen($this->blockLight) === 2048, "Wrong length of light array, expecting 2048 bytes, got " . strlen($this->blockLight));
+	public function getBlockLightArray() : LightArray{
 		return $this->blockLight;
 	}
 
-	public function setBlockLightArray(string $data) : void{
-		assert(strlen($data) === 2048, "Wrong length of light array, expecting 2048 bytes, got " . strlen($data));
+	public function setBlockLightArray(LightArray $data) : void{
 		$this->blockLight = $data;
 	}
 
@@ -190,16 +153,7 @@ class SubChunk implements SubChunkInterface{
 		}
 		$this->blockLayers = array_values($this->blockLayers);
 
-		/*
-		 * This strange looking code is designed to exploit PHP's copy-on-write behaviour. Assigning will copy a
-		 * reference to the const instead of duplicating the whole string. The string will only be duplicated when
-		 * modified, which is perfect for this purpose.
-		 */
-		if($this->skyLight === ZERO_NIBBLE_ARRAY){
-			$this->skyLight = ZERO_NIBBLE_ARRAY;
-		}
-		if($this->blockLight === ZERO_NIBBLE_ARRAY){
-			$this->blockLight = ZERO_NIBBLE_ARRAY;
-		}
+		$this->skyLight->collectGarbage();
+		$this->blockLight->collectGarbage();
 	}
 }

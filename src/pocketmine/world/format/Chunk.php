@@ -224,7 +224,7 @@ class Chunk{
 		$char = chr(($level & 0x0f) | ($level << 4));
 		$data = str_repeat($char, 2048);
 		for($y = $this->getHighestSubChunkIndex(); $y >= 0; --$y){
-			$this->getSubChunk($y, true)->setBlockSkyLightArray($data);
+			$this->getSubChunk($y, true)->setBlockSkyLightArray(new LightArray($data));
 		}
 	}
 
@@ -260,7 +260,7 @@ class Chunk{
 		$char = chr(($level & 0x0f) | ($level << 4));
 		$data = str_repeat($char, 2048);
 		for($y = $this->getHighestSubChunkIndex(); $y >= 0; --$y){
-			$this->getSubChunk($y, true)->setBlockLightArray($data);
+			$this->getSubChunk($y, true)->setBlockLightArray(new LightArray($data));
 		}
 	}
 

@@ -26,6 +26,7 @@ namespace pocketmine\world\format\io;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\EmptySubChunk;
+use pocketmine\world\format\LightArray;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use function array_values;
@@ -82,8 +83,8 @@ final class FastChunkSerializer{
 				}
 
 				if($chunk->isLightPopulated()){
-					$subStream->put($subChunk->getBlockSkyLightArray());
-					$subStream->put($subChunk->getBlockLightArray());
+					$subStream->put($subChunk->getBlockSkyLightArray()->getData());
+					$subStream->put($subChunk->getBlockLightArray()->getData());
 				}
 			}
 			$stream->putByte($count);
@@ -134,7 +135,7 @@ final class FastChunkSerializer{
 					$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 				}
 				$subChunks[$y] = new SubChunk(
-					$layers, $lightPopulated ? $stream->get(2048) : "", $lightPopulated ? $stream->get(2048) : "" //blocklight
+					$layers, $lightPopulated ? new LightArray($stream->get(2048)) : null, $lightPopulated ? new LightArray($stream->get(2048)) : null
 				);
 			}
 
