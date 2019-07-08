@@ -27,13 +27,8 @@ use pocketmine\block\BlockFactory;
 use function max;
 
 class SkyLightUpdate extends LightUpdate{
-
-	public function getLight(int $x, int $y, int $z) : int{
-		return $this->subChunkHandler->currentSubChunk->getBlockSkyLight($x & 0x0f, $y & 0x0f, $z & 0x0f);
-	}
-
-	public function setLight(int $x, int $y, int $z, int $level) : void{
-		$this->subChunkHandler->currentSubChunk->setBlockSkyLight($x & 0x0f, $y & 0x0f, $z & 0x0f, $level);
+	protected function updateLightArrayRef() : void{
+		$this->currentLightArray = $this->subChunkHandler->currentSubChunk->getBlockSkyLightArray();
 	}
 
 	public function recalculateNode(int $x, int $y, int $z) : void{

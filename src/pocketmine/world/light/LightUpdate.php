@@ -25,6 +25,7 @@ namespace pocketmine\world\light;
 
 use pocketmine\block\BlockFactory;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\format\LightArray;
 use pocketmine\world\utils\SubChunkIteratorManager;
 use pocketmine\world\World;
 use function max;
@@ -50,17 +51,19 @@ abstract class LightUpdate{
 	/** @var SubChunkIteratorManager */
 	protected $subChunkHandler;
 
+	/** @var LightArray|null */
+	protected $currentLightArray = null;
+
 	public function __construct(ChunkManager $world){
 		$this->world = $world;
 		$this->removalQueue = new \SplQueue();
 		$this->spreadQueue = new \SplQueue();
 
 		$this->subChunkHandler = new SubChunkIteratorManager($this->world);
+		$this->subChunkHandler->onSubChunkChange(\Closure::fromCallable([$this, 'updateLightArrayRef']));
 	}
 
-	abstract protected function getLight(int $x, int $y, int $z) : int;
-
-	abstract protected function setLight(int $x, int $y, int $z, int $level) : void;
+	abstract protected function updateLightArrayRef() : void;
 
 	abstract public function recalculateNode(int $x, int $y, int $z) : void;
 
@@ -74,7 +77,7 @@ abstract class LightUpdate{
 			[$x, $y, $z + 1],
 			[$x, $y, $z - 1]
 		] as [$x1, $y1, $z1]){
-			if($this->subChunkHandler->moveTo($x1, $y1, $z1, false) and ($adjacent = max($adjacent, $this->getLight($x1, $y1, $z1))) === 15){
+			if($this->subChunkHandler->moveTo($x1, $y1, $z1, false) and ($adjacent = max($adjacent, $this->currentLightArray->get($x1 & 0xf, $y1 & 0xf, $z1 & 0xf))) === 15){
 				break;
 			}
 		}
@@ -88,10 +91,10 @@ abstract class LightUpdate{
 	private function prepareNodes() : void{
 		foreach($this->updateNodes as $blockHash => [$x, $y, $z, $newLevel]){
 			if($this->subChunkHandler->moveTo($x, $y, $z, false)){
-				$oldLevel = $this->getLight($x, $y, $z);
+				$oldLevel = $this->currentLightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
 
 				if($oldLevel !== $newLevel){
-					$this->setLight($x, $y, $z, $newLevel);
+					$this->currentLightArray->set($x & 0xf, $y & 0xf, $z & 0xf, $newLevel);
 					if($oldLevel < $newLevel){ //light increased
 						$this->spreadVisited[$blockHash] = true;
 						$this->spreadQueue->enqueue([$x, $y, $z]);
@@ -135,7 +138,7 @@ abstract class LightUpdate{
 				continue;
 			}
 
-			$newAdjacentLight = $this->getLight($x, $y, $z);
+			$newAdjacentLight = $this->currentLightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
 			if($newAdjacentLight <= 0){
 				continue;
 			}
@@ -158,10 +161,10 @@ abstract class LightUpdate{
 	}
 
 	protected function computeRemoveLight(int $x, int $y, int $z, int $oldAdjacentLevel) : void{
-		$current = $this->getLight($x, $y, $z);
+		$current = $this->currentLightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
 
 		if($current !== 0 and $current < $oldAdjacentLevel){
-			$this->setLight($x, $y, $z, 0);
+			$this->currentLightArray->set($x & 0xf, $y & 0xf, $z & 0xf, 0);
 
 			if(!isset($this->removalVisited[$index = World::blockHash($x, $y, $z)])){
 				$this->removalVisited[$index] = true;
@@ -178,11 +181,11 @@ abstract class LightUpdate{
 	}
 
 	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel) : void{
-		$current = $this->getLight($x, $y, $z);
+		$current = $this->currentLightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
 		$potentialLight = $newAdjacentLevel - BlockFactory::$lightFilter[$this->subChunkHandler->currentSubChunk->getFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f)];
 
 		if($current < $potentialLight){
-			$this->setLight($x, $y, $z, $potentialLight);
+			$this->currentLightArray->set($x & 0xf, $y & 0xf, $z & 0xf, $potentialLight);
 
 			if(!isset($this->spreadVisited[$index = World::blockHash($x, $y, $z)]) and $potentialLight > 1){
 				$this->spreadVisited[$index] = true;

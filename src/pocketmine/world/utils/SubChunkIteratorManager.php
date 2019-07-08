@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\utils;
 
+use pocketmine\utils\Utils;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\EmptySubChunk;
@@ -43,6 +44,9 @@ class SubChunkIteratorManager{
 	protected $currentY;
 	/** @var int */
 	protected $currentZ;
+
+	/** @var \Closure|null */
+	private $onSubChunkChangeFunc = null;
 
 	public function __construct(ChunkManager $world){
 		$this->world = $world;
@@ -65,11 +69,20 @@ class SubChunkIteratorManager{
 
 			$this->currentSubChunk = $this->currentChunk->getSubChunk($y >> 4, $create);
 			if($this->currentSubChunk instanceof EmptySubChunk){
+				$this->currentSubChunk = null;
 				return false;
+			}
+			if($this->onSubChunkChangeFunc !== null){
+				($this->onSubChunkChangeFunc)();
 			}
 		}
 
 		return true;
+	}
+
+	public function onSubChunkChange(\Closure $callback) : void{
+		Utils::validateCallableSignature(function(){}, $callback);
+		$this->onSubChunkChangeFunc = $callback;
 	}
 
 	public function invalidate() : void{
