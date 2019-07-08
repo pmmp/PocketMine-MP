@@ -26,7 +26,6 @@ namespace pocketmine\world\generator;
 use pocketmine\block\BlockFactory;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\biome\Biome;
-use pocketmine\world\SimpleChunkManager;
 use pocketmine\world\World;
 use function serialize;
 use function unserialize;
@@ -50,7 +49,7 @@ class GeneratorRegisterTask extends AsyncTask{
 	public function onRun() : void{
 		BlockFactory::init();
 		Biome::init();
-		$manager = new SimpleChunkManager($this->worldHeight);
+		$manager = new GeneratorChunkManager($this->worldHeight);
 		$this->worker->saveToThreadStore("generation.world{$this->worldId}.manager", $manager);
 
 		/**
