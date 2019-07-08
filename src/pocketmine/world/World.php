@@ -1754,7 +1754,11 @@ class World implements ChunkManager{
 			}
 		}
 
-
+		$tx = new BlockTransaction($this);
+		if(!$hand->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player) or !$tx->apply()){
+			return false;
+		}
+		
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
 			if($player->isAdventure(true) and !$ev->isCancelled()){
@@ -1780,11 +1784,7 @@ class World implements ChunkManager{
 				return false;
 			}
 		}
-
-		$tx = new BlockTransaction($this);
-		if(!$hand->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player) or !$tx->apply()){
-			return false;
-		}
+		
 		foreach($tx->getBlocks() as [$x, $y, $z, $_]){
 			$tile = $this->getTileAt($x, $y, $z);
 			if($tile !== null){
