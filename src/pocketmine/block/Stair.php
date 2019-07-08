@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\StairShape;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -32,18 +33,19 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Stair extends Transparent{
-	private const SHAPE_STRAIGHT = "straight";
-	private const SHAPE_INNER_LEFT = "inner_left";
-	private const SHAPE_INNER_RIGHT = "inner_right";
-	private const SHAPE_OUTER_LEFT = "outer_left";
-	private const SHAPE_OUTER_RIGHT = "outer_right";
 
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $upsideDown = false;
-	/** @var string */
-	protected $shape = self::SHAPE_STRAIGHT;
+
+	/** @var StairShape */
+	protected $shape;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->shape = StairShape::STRAIGHT();
+		parent::__construct($idInfo, $name, $breakInfo);
+	}
 
 	protected function writeStateToMeta() : int{
 		return (5 - $this->facing) | ($this->upsideDown ? BlockLegacyMetadata::STAIR_FLAG_UPSIDE_DOWN : 0);
@@ -63,11 +65,11 @@ class Stair extends Transparent{
 
 		$clockwise = Facing::rotateY($this->facing, true);
 		if(($backFacing = $this->getPossibleCornerFacing(false)) !== null){
-			$this->shape = $backFacing === $clockwise ? self::SHAPE_OUTER_RIGHT : self::SHAPE_OUTER_LEFT;
+			$this->shape = $backFacing === $clockwise ? StairShape::OUTER_RIGHT() : StairShape::OUTER_LEFT();
 		}elseif(($frontFacing = $this->getPossibleCornerFacing(true)) !== null){
-			$this->shape = $frontFacing === $clockwise ? self::SHAPE_INNER_RIGHT : self::SHAPE_INNER_LEFT;
+			$this->shape = $frontFacing === $clockwise ? StairShape::INNER_RIGHT() : StairShape::INNER_LEFT();
 		}else{
-			$this->shape = self::SHAPE_STRAIGHT;
+			$this->shape = StairShape::STRAIGHT();
 		}
 	}
 
@@ -81,14 +83,14 @@ class Stair extends Transparent{
 			->trim(Facing::opposite($topStepFace), 0.5)
 			->trim(Facing::opposite($this->facing), 0.5);
 
-		if($this->shape === self::SHAPE_OUTER_LEFT or $this->shape === self::SHAPE_OUTER_RIGHT){
-			$topStep->trim(Facing::rotateY($this->facing, $this->shape === self::SHAPE_OUTER_LEFT), 0.5);
-		}elseif($this->shape === self::SHAPE_INNER_LEFT or $this->shape === self::SHAPE_INNER_RIGHT){
+		if($this->shape->equals(StairShape::OUTER_LEFT()) or $this->shape->equals(StairShape::OUTER_RIGHT())){
+			$topStep->trim(Facing::rotateY($this->facing, $this->shape->equals(StairShape::OUTER_LEFT())), 0.5);
+		}elseif($this->shape->equals(StairShape::INNER_LEFT()) or $this->shape->equals(StairShape::INNER_RIGHT())){
 			//add an extra cube
 			$bbs[] = AxisAlignedBB::one()
 				->trim(Facing::opposite($topStepFace), 0.5)
 				->trim($this->facing, 0.5) //avoid overlapping with main step
-				->trim(Facing::rotateY($this->facing, $this->shape === self::SHAPE_INNER_LEFT), 0.5);
+				->trim(Facing::rotateY($this->facing, $this->shape->equals(StairShape::INNER_LEFT())), 0.5);
 		}
 
 		$bbs[] = $topStep;
