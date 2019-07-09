@@ -29,7 +29,7 @@ class ScorePacketEntry{
 	public const TYPE_FAKE_PLAYER = 3;
 
 	/** @var int */
-	public $scoreboardId;
+	public $entryUniqueId;
 	/** @var string */
 	public $objectiveName;
 	/** @var int */

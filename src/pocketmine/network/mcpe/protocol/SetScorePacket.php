@@ -45,7 +45,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 		$this->type = $this->getByte();
 		for($i = 0, $i2 = $this->getUnsignedVarInt(); $i < $i2; ++$i){
 			$entry = new ScorePacketEntry();
-			$entry->scoreboardId = $this->getVarLong();
+			$entry->entryUniqueId = $this->getVarLong();
 			$entry->objectiveName = $this->getString();
 			$entry->score = $this->getLInt();
 			if($this->type !== self::TYPE_REMOVE){
@@ -70,7 +70,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 		$this->putByte($this->type);
 		$this->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
-			$this->putVarLong($entry->scoreboardId);
+			$this->putVarLong($entry->entryUniqueId);
 			$this->putString($entry->objectiveName);
 			$this->putLInt($entry->score);
 			if($this->type !== self::TYPE_REMOVE){

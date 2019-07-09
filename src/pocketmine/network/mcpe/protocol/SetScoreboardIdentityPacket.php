@@ -44,7 +44,7 @@ class SetScoreboardIdentityPacket extends DataPacket implements ClientboundPacke
 		$this->type = $this->getByte();
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			$entry = new ScoreboardIdentityPacketEntry();
-			$entry->scoreboardId = $this->getVarLong();
+			$entry->entryUniqueId = $this->getVarLong();
 			if($this->type === self::TYPE_REGISTER_IDENTITY){
 				$entry->entityUniqueId = $this->getEntityUniqueId();
 			}
@@ -57,7 +57,7 @@ class SetScoreboardIdentityPacket extends DataPacket implements ClientboundPacke
 		$this->putByte($this->type);
 		$this->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
-			$this->putVarLong($entry->scoreboardId);
+			$this->putVarLong($entry->entryUniqueId);
 			if($this->type === self::TYPE_REGISTER_IDENTITY){
 				$this->putEntityUniqueId($entry->entityUniqueId);
 			}
