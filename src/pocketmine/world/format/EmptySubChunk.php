@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format;
 
-use function str_repeat;
-
 class EmptySubChunk implements SubChunkInterface{
 	/** @var EmptySubChunk */
 	private static $instance;
@@ -74,7 +72,7 @@ class EmptySubChunk implements SubChunkInterface{
 	}
 
 	public function getBlockLightArray() : LightArray{
-		return new LightArray(str_repeat("\x00", 2048));
+		return new LightArray(LightArray::ZERO);
 	}
 
 	public function setBlockLightArray(LightArray $data) : void{
@@ -82,7 +80,7 @@ class EmptySubChunk implements SubChunkInterface{
 	}
 
 	public function getBlockSkyLightArray() : LightArray{
-		return new LightArray(str_repeat("\xff", 2048));
+		return new LightArray(LightArray::FIFTEEN);
 	}
 
 	public function setBlockSkyLightArray(LightArray $data) : void{
