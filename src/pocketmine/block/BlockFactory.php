@@ -229,7 +229,6 @@ class BlockFactory{
 		self::register(new LapisOre(new BID(Ids::LAPIS_ORE), "Lapis Lazuli Ore"));
 		self::register(new Lava(new BIDFlattened(Ids::FLOWING_LAVA, Ids::STILL_LAVA), "Lava"));
 		self::register(new Lever(new BID(Ids::LEVER), "Lever"));
-		self::register(new LitPumpkin(new BID(Ids::JACK_O_LANTERN), "Jack o'Lantern"));
 		self::register(new Magma(new BID(Ids::MAGMA), "Magma Block"));
 		self::register(new Melon(new BID(Ids::MELON_BLOCK), "Melon Block"));
 		self::register(new MelonStem(new BID(Ids::MELON_STEM, 0, ItemIds::MELON_SEEDS), "Melon Stem"));
@@ -263,7 +262,14 @@ class BlockFactory{
 		self::register(new Solid(new BID(Ids::PRISMARINE, Meta::PRISMARINE_NORMAL), "Prismarine", $prismarineBreakInfo));
 		self::register(new Stair(new BID(Ids::PRISMARINE_STAIRS), "Prismarine Stairs", $prismarineBreakInfo));
 
-		self::register(new Pumpkin(new BID(Ids::PUMPKIN), "Pumpkin"));
+		$pumpkinBreakInfo = new BlockBreakInfo(1.0, BlockToolType::AXE);
+		self::register($pumpkin = new Solid(new BID(Ids::PUMPKIN), "Pumpkin", $pumpkinBreakInfo));
+		for($i = 1; $i <= 3; ++$i){
+			self::remap(Ids::PUMPKIN, $i, $pumpkin);
+		}
+		self::register(new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN), "Carved Pumpkin", $pumpkinBreakInfo));
+		self::register(new LitPumpkin(new BID(Ids::JACK_O_LANTERN), "Jack o'Lantern", $pumpkinBreakInfo));
+
 		self::register(new PumpkinStem(new BID(Ids::PUMPKIN_STEM, 0, ItemIds::PUMPKIN_SEEDS), "Pumpkin Stem"));
 
 		$purpurBreakInfo = new BlockBreakInfo(1.5, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN, 30.0);
@@ -569,7 +575,6 @@ class BlockFactory{
 		//TODO: minecraft:bubble_column
 		//TODO: minecraft:campfire
 		//TODO: minecraft:cartography_table
-		//TODO: minecraft:carved_pumpkin
 		//TODO: minecraft:cauldron
 		//TODO: minecraft:chain_command_block
 		//TODO: minecraft:chemical_heat

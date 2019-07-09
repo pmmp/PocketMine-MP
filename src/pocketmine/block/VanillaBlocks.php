@@ -113,6 +113,7 @@ use function assert;
  * @method static Cactus CACTUS()
  * @method static Cake CAKE()
  * @method static Carrot CARROTS()
+ * @method static CarvedPumpkin CARVED_PUMPKIN()
  * @method static Chest CHEST()
  * @method static Solid CHISELED_QUARTZ()
  * @method static Solid CHISELED_RED_SANDSTONE()
@@ -533,7 +534,7 @@ use function assert;
  * @method static Slab PRISMARINE_SLAB()
  * @method static Stair PRISMARINE_STAIRS()
  * @method static Wall PRISMARINE_WALL()
- * @method static Pumpkin PUMPKIN()
+ * @method static Solid PUMPKIN()
  * @method static PumpkinStem PUMPKIN_STEM()
  * @method static Carpet PURPLE_CARPET()
  * @method static Concrete PURPLE_CONCRETE()
@@ -777,6 +778,7 @@ final class VanillaBlocks{
 		self::register("cactus", BlockFactory::get(81));
 		self::register("cake", BlockFactory::get(92));
 		self::register("carrots", BlockFactory::get(141));
+		self::register("carved_pumpkin", BlockFactory::get(410));
 		self::register("chest", BlockFactory::get(54, 2));
 		self::register("chiseled_quartz", BlockFactory::get(155, 1));
 		self::register("chiseled_red_sandstone", BlockFactory::get(179, 1));
