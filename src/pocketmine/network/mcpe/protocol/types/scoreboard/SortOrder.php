@@ -46,7 +46,7 @@ final class SortOrder{
 	public static function fromMagicNumber(int $magicNumber) : self{
 		self::checkInit();
 		if(!isset(self::$numericIdMap[$magicNumber])){
-			throw new \InvalidArgumentException("Unknown display slot magic number $magicNumber");
+			throw new \InvalidArgumentException("Unknown sort order magic number $magicNumber");
 		}
 		return self::$numericIdMap[$magicNumber];
 	}
