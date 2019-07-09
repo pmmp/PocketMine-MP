@@ -56,44 +56,6 @@ interface SubChunkInterface{
 
 	/**
 	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int
-	 */
-	public function getBlockLight(int $x, int $y, int $z) : int;
-
-	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $level
-	 *
-	 * @return bool
-	 */
-	public function setBlockLight(int $x, int $y, int $z, int $level) : bool;
-
-	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int
-	 */
-	public function getBlockSkyLight(int $x, int $y, int $z) : int;
-
-	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $level
-	 *
-	 * @return bool
-	 */
-	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : bool;
-
-	/**
-	 * @param int $x
 	 * @param int $z
 	 *
 	 * @return int

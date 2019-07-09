@@ -90,26 +90,6 @@ class SubChunk implements SubChunkInterface{
 		return $this->blockLayers;
 	}
 
-	public function getBlockLight(int $x, int $y, int $z) : int{
-		return $this->blockLight->get($x, $y, $z);
-	}
-
-	public function setBlockLight(int $x, int $y, int $z, int $level) : bool{
-		$this->blockLight->set($x, $y, $z, $level);
-
-		return true;
-	}
-
-	public function getBlockSkyLight(int $x, int $y, int $z) : int{
-		return $this->skyLight->get($x, $y, $z);
-	}
-
-	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : bool{
-		$this->skyLight->set($x, $y, $z, $level);
-
-		return true;
-	}
-
 	public function getHighestBlockAt(int $x, int $z) : int{
 		if(empty($this->blockLayers)){
 			return -1;

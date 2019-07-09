@@ -202,7 +202,7 @@ class Chunk{
 	 * @return int 0-15
 	 */
 	public function getBlockSkyLight(int $x, int $y, int $z) : int{
-		return $this->getSubChunk($y >> 4)->getBlockSkyLight($x, $y & 0x0f, $z);
+		return $this->getSubChunk($y >> 4)->getBlockSkyLightArray()->get($x & 0xf, $y & 0x0f, $z & 0xf);
 	}
 
 	/**
@@ -214,7 +214,7 @@ class Chunk{
 	 * @param int $level 0-15
 	 */
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : void{
-		$this->getSubChunk($y >> 4, true)->setBlockSkyLight($x, $y & 0x0f, $z, $level);
+		$this->getSubChunk($y >> 4, true)->getBlockSkyLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
 	}
 
 	/**
@@ -238,7 +238,7 @@ class Chunk{
 	 * @return int 0-15
 	 */
 	public function getBlockLight(int $x, int $y, int $z) : int{
-		return $this->getSubChunk($y >> 4)->getBlockLight($x, $y & 0x0f, $z);
+		return $this->getSubChunk($y >> 4)->getBlockLightArray()->get($x & 0xf, $y & 0x0f, $z & 0xf);
 	}
 
 	/**
@@ -250,7 +250,7 @@ class Chunk{
 	 * @param int $level 0-15
 	 */
 	public function setBlockLight(int $x, int $y, int $z, int $level) : void{
-		$this->getSubChunk($y >> 4, true)->setBlockLight($x, $y & 0x0f, $z, $level);
+		$this->getSubChunk($y >> 4, true)->getBlockLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
 	}
 
 	/**
