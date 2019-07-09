@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
@@ -97,7 +96,7 @@ class Farmland extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::DIRT)
+			VanillaBlocks::DIRT()->asItem()
 		];
 	}
 
@@ -106,6 +105,6 @@ class Farmland extends Transparent{
 	}
 
 	public function getPickedItem(bool $addUserData = false) : Item{
-		return ItemFactory::get(Item::DIRT);
+		return VanillaBlocks::DIRT()->asItem();
 	}
 }

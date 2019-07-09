@@ -23,16 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use function count;
-use function implode;
 use function preg_match;
-use function sprintf;
-use function strtoupper;
 
 trait EnumTrait{
-
-	/** @var self[] */
-	private static $members = null;
+	use RegistryTrait {
+		fromString as private Registry_fromString;
+		getAll as private Registry_getAll;
+		register as private Registry_register;
+	}
 
 	/**
 	 * Registers the given object as an enum member.
@@ -42,11 +40,7 @@ trait EnumTrait{
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function register(self $member) : void{
-		$name = strtoupper($member->name());
-		if(isset(self::$members[$name])){
-			throw new \InvalidArgumentException("Enum member name \"$name\" is already reserved");
-		}
-		self::$members[strtoupper($member->name())] = $member;
+		self::Registry_register($member->name(), $member);
 	}
 
 	/**
@@ -63,7 +57,7 @@ trait EnumTrait{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	private static function checkInit() : void{
+	protected static function checkInit() : void{
 		if(self::$members === null){
 			self::$members = [];
 			foreach(self::setup() as $item){
@@ -73,84 +67,26 @@ trait EnumTrait{
 	}
 
 	/**
-	 * @param string $name
+	 * Returns all members of the enum.
+	 * This is overridden to change the return typehint.
 	 *
-	 * @return self
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromString(string $name) : self{
-		self::checkInit();
-		$name = strtoupper($name);
-		if(!isset(self::$members[$name])){
-			throw new \InvalidArgumentException("Undefined enum member: " . self::class . "::" . $name);
-		}
-		return self::$members[$name];
-	}
-
-	/**
-	 * @param string $name
-	 * @param array $arguments
-	 *
-	 * @return self
-	 */
-	public static function __callStatic($name, $arguments){
-		if(!empty($arguments)){
-			throw new \ArgumentCountError("Expected exactly 0 arguments, " . count($arguments) . " passed");
-		}
-		try{
-			return self::fromString($name);
-		}catch(\InvalidArgumentException $e){
-			throw new \Error($e->getMessage(), 0, $e);
-		}
-	}
-
-	/**
 	 * @return self[]
 	 */
 	public static function getAll() : array{
-		self::checkInit();
-		return self::$members;
+		return self::Registry_getAll();
 	}
 
 	/**
-	 * Generates code for static methods for all known enum members.
+	 * Returns the enum member matching the given name.
+	 * This is overridden to change the return typehint.
 	 *
-	 * @return string
-	 */
-	public static function _generateGetters() : string{
-		$lines = [];
-
-		static $fnTmpl = '
-public static function %1$s() : self{
-	return self::fromString("%1$s");
-}';
-
-		foreach(self::getAll() as $name => $member){
-			$lines[] = sprintf($fnTmpl, $name);
-		}
-		return "/* --- auto-generated code start --- */\n" . implode("\n", $lines) . "\n\n/* --- auto-generated code end --- */\n";
-	}
-
-	/**
-	 * Generates a block of @ method annotations for accessors for this enum's known members.
+	 * @param string $name
 	 *
-	 * @return string
+	 * @return self
+	 * @throws \InvalidArgumentException if no member matches.
 	 */
-	public static function _generateMethodAnnotations() : string{
-		$traitName = (new \ReflectionClass(__TRAIT__))->getShortName();
-		$fnName = (new \ReflectionMethod(__METHOD__))->getShortName();
-		$lines = ["/**"];
-		$lines[] = " * This doc-block is generated automatically, do not modify it manually.";
-		$lines[] = " * This must be regenerated whenever enum members are added, removed or changed.";
-		$lines[] = " * @see $traitName::$fnName()";
-		$lines[] = " *";
-		static $lineTmpl = " * @method static self %s()";
-
-		foreach(self::getAll() as $name => $member){
-			$lines[] = sprintf($lineTmpl, $name);
-		}
-		$lines[] = " */\n";
-		return implode("\n", $lines);
+	public static function fromString(string $name) : self{
+		return self::Registry_fromString($name);
 	}
 
 	/** @var string */

@@ -31,6 +31,7 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -165,13 +166,25 @@ class Banner extends Transparent{
 		}
 	}
 
+	public function asItem() : Item{
+		return ItemFactory::get(ItemIds::BANNER, $this->baseColor->getInvertedMagicNumber());
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
-		$drop = ItemFactory::get(Item::BANNER, $this->baseColor->getInvertedMagicNumber());
+		$drop = $this->asItem();
 		if($drop instanceof ItemBanner and !$this->patterns->isEmpty()){
 			$drop->setPatterns($this->patterns);
 		}
 
 		return [$drop];
+	}
+
+	public function getPickedItem(bool $addUserData = false) : Item{
+		$result = $this->asItem();
+		if($addUserData and $result instanceof ItemBanner and !$this->patterns->isEmpty()){
+			$result->setPatterns($this->patterns);
+		}
+		return $result;
 	}
 
 	public function isAffectedBySilkTouch() : bool{
