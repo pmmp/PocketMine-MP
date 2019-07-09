@@ -62,6 +62,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 						throw new BadPacketException("Unknown entry type $entry->type");
 				}
 			}
+			$this->entries[] = $entry;
 		}
 	}
 
