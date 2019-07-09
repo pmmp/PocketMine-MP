@@ -221,10 +221,8 @@ class Chunk{
 	 * @param int $level
 	 */
 	public function setAllBlockSkyLight(int $level) : void{
-		$char = chr(($level & 0x0f) | ($level << 4));
-		$data = str_repeat($char, 2048);
 		for($y = $this->getHighestSubChunkIndex(); $y >= 0; --$y){
-			$this->getSubChunk($y, true)->setBlockSkyLightArray(new LightArray($data));
+			$this->getSubChunk($y, true)->setBlockSkyLightArray(LightArray::fill($level));
 		}
 	}
 
@@ -257,10 +255,8 @@ class Chunk{
 	 * @param int $level
 	 */
 	public function setAllBlockLight(int $level) : void{
-		$char = chr(($level & 0x0f) | ($level << 4));
-		$data = str_repeat($char, 2048);
 		for($y = $this->getHighestSubChunkIndex(); $y >= 0; --$y){
-			$this->getSubChunk($y, true)->setBlockLightArray(new LightArray($data));
+			$this->getSubChunk($y, true)->setBlockLightArray(LightArray::fill($level));
 		}
 	}
 

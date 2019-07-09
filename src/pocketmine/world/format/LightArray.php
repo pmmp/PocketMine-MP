@@ -54,6 +54,16 @@ final class LightArray{
 		$this->collectGarbage();
 	}
 
+	public static function fill(int $level) : self{
+		if($level === 0){
+			return new self(self::ZERO);
+		}
+		if($level === 15){
+			return new self(self::FIFTEEN);
+		}
+		return new self(str_repeat(chr(($level & 0x0f) | ($level << 4)), 2048));
+	}
+
 	public function get(int $x, int $y, int $z) : int{
 		return (ord($this->data{($x << 7) | ($z << 3) | ($y >> 1)}) >> (($y & 1) << 2)) & 0xf;
 	}
