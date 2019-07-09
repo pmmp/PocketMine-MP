@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -85,7 +84,7 @@ class EnderChest extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::OBSIDIAN, 0, 8)
+			VanillaBlocks::OBSIDIAN()->asItem()->setCount(8)
 		];
 	}
 }

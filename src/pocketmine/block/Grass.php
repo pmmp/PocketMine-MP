@@ -27,7 +27,6 @@ use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Hoe;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\Shovel;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -44,7 +43,7 @@ class Grass extends Solid{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::DIRT)
+			VanillaBlocks::DIRT()->asItem()
 		];
 	}
 

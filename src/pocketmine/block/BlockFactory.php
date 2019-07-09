@@ -49,7 +49,6 @@ use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\TreeType;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\item\TieredTool;
 use pocketmine\world\Position;
@@ -185,32 +184,32 @@ class BlockFactory{
 		self::register(new Ice(new BID(Ids::ICE), "Ice"));
 		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE), "Infested Stone") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
-				return [ItemFactory::get(ItemIds::STONE)];
+				return [VanillaBlocks::STONE()->asItem()];
 			}
 		});
 		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_COBBLESTONE), "Infested Cobblestone") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
-				return [ItemFactory::get(ItemIds::COBBLESTONE)];
+				return [VanillaBlocks::COBBLESTONE()->asItem()];
 			}
 		});
 		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK), "Infested Stone Brick") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
-				return [ItemFactory::get(ItemIds::STONE_BRICK)];
+				return [VanillaBlocks::STONE_BRICKS()->asItem()];
 			}
 		});
 		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_MOSSY), "Infested Mossy Stone Brick") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
-				return [ItemFactory::get(ItemIds::STONE_BRICK, Meta::STONE_BRICK_MOSSY)];
+				return [VanillaBlocks::MOSSY_STONE_BRICKS()->asItem()];
 			}
 		});
 		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CRACKED), "Infested Cracked Stone Brick") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
-				return [ItemFactory::get(ItemIds::STONE_BRICK, Meta::STONE_BRICK_CRACKED)];
+				return [VanillaBlocks::CRACKED_STONE_BRICKS()->asItem()];
 			}
 		});
 		self::register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CHISELED), "Infested Chiseled Stone Brick") extends InfestedStone{
 			public function getSilkTouchDrops(Item $item) : array{
-				return [ItemFactory::get(ItemIds::STONE_BRICK, Meta::STONE_BRICK_CHISELED)];
+				return [VanillaBlocks::CHISELED_STONE_BRICKS()->asItem()];
 			}
 		});
 
@@ -318,7 +317,7 @@ class BlockFactory{
 		$stoneBreakInfo = new BlockBreakInfo(1.5, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN, 30.0);
 		self::register(new class(new BID(Ids::STONE, Meta::STONE_NORMAL), "Stone", $stoneBreakInfo) extends Solid{
 			public function getDropsForCompatibleTool(Item $item) : array{
-				return [ItemFactory::get(Item::COBBLESTONE)];
+				return [VanillaBlocks::COBBLESTONE()->asItem()];
 			}
 		});
 		self::register(new Stair(new BID(Ids::NORMAL_STONE_STAIRS), "Stone Stairs", $stoneBreakInfo));
