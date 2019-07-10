@@ -96,6 +96,7 @@ use pocketmine\network\mcpe\protocol\types\PlayerMetadataFlags;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\permission\PermissionManager;
+use pocketmine\scoreboard\Scoreboard;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
@@ -254,6 +255,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/** @var Form[] */
 	protected $forms = [];
 
+	/** @var Scoreboard[] */
+	protected $scoreboards = [];
 	/** @var \Logger */
 	protected $logger;
 
@@ -2148,6 +2151,34 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
+	 * @internal
+	 * @param Scoreboard $scoreboard
+	 */
+	public function addScoreboard(Scoreboard $scoreboard) : void{
+		$this->scoreboards[spl_object_id($scoreboard)] = $scoreboard;
+		$this->networkSession->onScoreboardAdded($scoreboard);
+	}
+
+	/**
+	 * @internal
+	 * @param Scoreboard $scoreboard
+	 */
+	public function removeScoreboard(Scoreboard $scoreboard) : void{
+		$id = spl_object_id($scoreboard);
+		if(isset($this->scoreboards[$id])){
+			$this->getNetworkSession()->onScoreboardRemoved($scoreboard);
+			unset($this->scoreboards[$id]);
+		}
+	}
+
+	protected function removeScoreboards() : void{
+		foreach($this->scoreboards as $scoreboard){
+			$scoreboard->removeViewer($this, false);
+		}
+		$this->scoreboards = [];
+	}
+
+	/**
 	 * Transfers a player to another server.
 	 *
 	 * @param string $address The IP address or hostname of the destination server
@@ -2253,6 +2284,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->removeCurrentWindow();
 		$this->removePermanentInventories();
+
+		$this->removeScoreboards();
 
 		$this->perm->clearPermissions();
 

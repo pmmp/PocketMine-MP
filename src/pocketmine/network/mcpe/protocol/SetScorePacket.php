@@ -41,6 +41,20 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 	/** @var ScorePacketEntry[] */
 	public $entries = [];
 
+	public static function change(array $entries) : self{
+		$result = new self;
+		$result->type = self::TYPE_CHANGE;
+		$result->entries = $entries;
+		return $result;
+	}
+
+	public static function remove(array $entries) : self{
+		$result = new self;
+		$result->type = self::TYPE_REMOVE;
+		$result->entries = $entries;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->type = $this->getByte();
 		for($i = 0, $i2 = $this->getUnsignedVarInt(); $i < $i2; ++$i){

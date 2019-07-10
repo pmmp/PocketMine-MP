@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\scoreboard;
 
+use function random_bytes;
+
 class Objective{
 	/** @var DisplaySlot */
 	public $displaySlot;
@@ -34,7 +36,8 @@ class Objective{
 		$this->sortOrder = $sortOrder;
 	}
 
-	public static function create(string $objectiveName, string $displayName, DisplaySlot $displaySlot, SortOrder $sortOrder, string $criteriaName = "dummy") : self{
-		return new self($displaySlot, $objectiveName, $displayName, $criteriaName, $sortOrder);
+	public static function create(string $displayName, DisplaySlot $displaySlot, SortOrder $sortOrder) : self{
+		//this avoid plugin conflicts and remove useless argument
+		return new self($displaySlot, random_bytes(8), $displayName, "dummy", $sortOrder);
 	}
 }

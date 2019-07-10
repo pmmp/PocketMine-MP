@@ -60,9 +60,12 @@ use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
+use pocketmine\network\mcpe\protocol\RemoveObjectivePacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
+use pocketmine\network\mcpe\protocol\SetDisplayObjectivePacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
+use pocketmine\network\mcpe\protocol\SetScorePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
@@ -72,11 +75,14 @@ use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\network\mcpe\protocol\types\scoreboard\Objective;
+use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\NetworkSessionManager;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
+use pocketmine\scoreboard\Scoreboard;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\BinaryDataException;
@@ -823,6 +829,20 @@ class NetworkSession{
 		if($p !== $this->player){
 			$this->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($p->getUniqueId())]));
 		}
+	}
+
+	public function onScoreboardAdded(Scoreboard $scoreboard) : void{
+		$this->sendDataPacket(SetDisplayObjectivePacket::create($scoreboard->getObjective()));
+		$this->sendDataPacket(SetScorePacket::change($scoreboard->getEntries()));
+	}
+
+	public function onScoreboardChanged(ScorePacketEntry $entry, bool $remove) : void{
+		$this->sendDataPacket($remove ? SetScorePacket::remove([$entry]) : SetScorePacket::change([$entry]));
+	}
+
+	public function onScoreboardRemoved(Scoreboard $scoreboard) : void{
+		$this->sendDataPacket(RemoveObjectivePacket::create($scoreboard->getObjective()->objectiveName));
+		$this->sendDataPacket(SetScorePacket::remove($scoreboard->getEntries()));
 	}
 
 	public function tick() : bool{
