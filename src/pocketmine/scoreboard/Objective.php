@@ -37,26 +37,13 @@ class Objective{
 	/** @var SortOrder */
 	public $sortOrder;
 
-	/**
-	 * @internal
-	 * @see Objective::create()
-	 *
-	 * @param DisplaySlot $displaySlot
-	 * @param string      $objectiveName
-	 * @param string      $displayName
-	 * @param string      $criteriaName
-	 * @param SortOrder   $sortOrder
-	 */
-	public function __construct(DisplaySlot $displaySlot, string $objectiveName, string $displayName, string $criteriaName, SortOrder $sortOrder){
-		$this->displaySlot = $displaySlot;
-		$this->objectiveName = $objectiveName;
-		$this->displayName = $displayName;
-		$this->criteriaName = $criteriaName;
-		$this->sortOrder = $sortOrder;
-	}
-
 	public static function create(string $displayName, DisplaySlot $displaySlot, SortOrder $sortOrder) : self{
-		//this avoid plugin conflicts and remove useless argument
-		return new self($displaySlot, random_bytes(8), $displayName, "dummy", $sortOrder);
+		$result = new self;
+		$result->displaySlot = $displaySlot;
+		$result->objectiveName = random_bytes(8); //this avoid plugin conflicts and remove useless argument
+		$result->displayName = $displayName;
+		$result->criteriaName = "dummy";
+		$result->sortOrder = $sortOrder;
+		return $result;
 	}
 }
