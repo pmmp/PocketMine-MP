@@ -26,47 +26,35 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\network\mcpe\protocol\types\scoreboard\DisplaySlot;
-use pocketmine\network\mcpe\protocol\types\scoreboard\Objective;
-use pocketmine\network\mcpe\protocol\types\scoreboard\SortOrder;
 
 class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_DISPLAY_OBJECTIVE_PACKET;
 
-	/** @var Objective */
-	public $objective;
-
-	public static function create(Objective $objective) : self{
-		$result = new self;
-		$result->objective = $objective;
-		return $result;
-	}
-
-	protected function getObjective() : Objective{
-		return new Objective(
-			DisplaySlot::fromString($this->getString()),
-			$this->getString(),
-			$this->getString(),
-			$this->getString(),
-			SortOrder::fromMagicNumber($this->getVarInt())
-		);
-	}
-
-	protected function putObjective(Objective $objective) : void{
-		$this->putString($objective->displaySlot->name());
-		$this->putString($objective->objectiveName);
-		$this->putString($objective->displayName);
-		$this->putString($objective->criteriaName);
-		$this->putVarInt($objective->sortOrder->getMagicNumber());
-	}
-
+	/** @var string */
+	public $displaySlot;
+	/** @var string */
+	public $objectiveName;
+	/** @var string */
+	public $displayName;
+	/** @var string */
+	public $criteriaName;
+	/** @var int */
+	public $sortOrder;
 
 	protected function decodePayload() : void{
-		$this->objective = $this->getObjective();
+		$this->displaySlot = $this->getString();
+		$this->objectiveName = $this->getString();
+		$this->displayName = $this->getString();
+		$this->criteriaName = $this->getString();
+		$this->sortOrder = $this->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putObjective($this->objective);
+		$this->putString($this->displaySlot);
+		$this->putString($this->objectiveName);
+		$this->putString($this->displayName);
+		$this->putString($this->criteriaName);
+		$this->putVarInt($this->sortOrder);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
