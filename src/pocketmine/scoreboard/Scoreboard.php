@@ -119,13 +119,6 @@ class Scoreboard{
 	}
 
 	/**
-	 * @param Player[] $viewers
-	 */
-	public function setViewers(array $viewers) : void{
-		$this->viewers = $viewers;
-	}
-
-	/**
 	 * @param Player $player
 	 */
 	public function addViewer(Player $player) : void{
