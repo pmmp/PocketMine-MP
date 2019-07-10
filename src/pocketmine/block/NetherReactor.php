@@ -25,8 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
+use pocketmine\item\VanillaItems;
 
 class NetherReactor extends Solid{
 
@@ -51,8 +51,8 @@ class NetherReactor extends Solid{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::IRON_INGOT, 0, 6),
-			ItemFactory::get(Item::DIAMOND, 0, 3)
+			VanillaItems::IRON_INGOT()->setCount(6),
+			VanillaItems::DIAMOND()->setCount(3)
 		];
 	}
 }

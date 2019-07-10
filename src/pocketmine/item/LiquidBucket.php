@@ -60,7 +60,7 @@ class LiquidBucket extends Item{
 		//TODO: move this to generic placement logic
 		$resultBlock = clone $this->liquid;
 
-		$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, ItemFactory::get(Item::BUCKET));
+		$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, VanillaItems::BUCKET());
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$player->getWorld()->setBlock($blockReplace, $resultBlock->getFlowingForm());

@@ -27,7 +27,7 @@ use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\block\utils\TreeType;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
@@ -115,11 +115,11 @@ class CocoaBlock extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::DYE, 3, $this->age === 2 ? mt_rand(2, 3) : 1)
+			VanillaItems::COCOA_BEANS()->setCount($this->age === 2 ? mt_rand(2, 3) : 1)
 		];
 	}
 
 	public function getPickedItem(bool $addUserData = false) : Item{
-		return ItemFactory::get(Item::DYE, 3); //cocoa beans
+		return VanillaItems::COCOA_BEANS();
 	}
 }

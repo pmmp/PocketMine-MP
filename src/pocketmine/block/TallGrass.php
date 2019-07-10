@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -63,7 +63,7 @@ class TallGrass extends Flowable{
 
 		if(mt_rand(0, 15) === 0){
 			return [
-				ItemFactory::get(Item::WHEAT_SEEDS)
+				VanillaItems::WHEAT_SEEDS()
 			];
 		}
 

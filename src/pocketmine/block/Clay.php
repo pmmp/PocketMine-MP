@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 
 class Clay extends Solid{
 
@@ -34,7 +34,7 @@ class Clay extends Solid{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::CLAY_BALL, 0, 4)
+			VanillaItems::CLAY()->setCount(4)
 		];
 	}
 }

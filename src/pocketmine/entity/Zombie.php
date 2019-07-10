@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use function mt_rand;
 
 class Zombie extends Living{
@@ -39,19 +38,19 @@ class Zombie extends Living{
 
 	public function getDrops() : array{
 		$drops = [
-			ItemFactory::get(Item::ROTTEN_FLESH, 0, mt_rand(0, 2))
+			VanillaItems::ROTTEN_FLESH()->setCount(mt_rand(0, 2))
 		];
 
 		if(mt_rand(0, 199) < 5){
 			switch(mt_rand(0, 2)){
 				case 0:
-					$drops[] = ItemFactory::get(Item::IRON_INGOT, 0, 1);
+					$drops[] = VanillaItems::IRON_INGOT();
 					break;
 				case 1:
-					$drops[] = ItemFactory::get(Item::CARROT, 0, 1);
+					$drops[] = VanillaItems::CARROT();
 					break;
 				case 2:
-					$drops[] = ItemFactory::get(Item::POTATO, 0, 1);
+					$drops[] = VanillaItems::POTATO();
 					break;
 			}
 		}

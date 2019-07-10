@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
@@ -95,7 +95,7 @@ class RedstoneOre extends Solid{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::REDSTONE_DUST, 0, mt_rand(4, 5))
+			VanillaItems::REDSTONE_DUST()->setCount(mt_rand(4, 5))
 		];
 	}
 

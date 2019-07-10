@@ -24,18 +24,18 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use function mt_rand;
 
 class Potato extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::POTATO, 0, $this->age >= 7 ? mt_rand(1, 4) : 1)
+			VanillaItems::POTATO()->setCount($this->age >= 7 ? mt_rand(1, 4) : 1)
 		];
 	}
 
 	public function getPickedItem(bool $addUserData = false) : Item{
-		return ItemFactory::get(Item::POTATO);
+		return VanillaItems::POTATO();
 	}
 }

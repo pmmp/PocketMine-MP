@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use function mt_rand;
 
 class Beetroot extends Crops{
@@ -32,17 +32,17 @@ class Beetroot extends Crops{
 	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->age >= 7){
 			return [
-				ItemFactory::get(Item::BEETROOT),
-				ItemFactory::get(Item::BEETROOT_SEEDS, 0, mt_rand(0, 3))
+				VanillaItems::BEETROOT(),
+				VanillaItems::BEETROOT_SEEDS()->setCount(mt_rand(0, 3))
 			];
 		}
 
 		return [
-			ItemFactory::get(Item::BEETROOT_SEEDS)
+			VanillaItems::BEETROOT_SEEDS()
 		];
 	}
 
 	public function getPickedItem(bool $addUserData = false) : Item{
-		return ItemFactory::get(Item::BEETROOT_SEEDS);
+		return VanillaItems::BEETROOT_SEEDS();
 	}
 }
