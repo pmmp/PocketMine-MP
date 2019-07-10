@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\scoreboard;
+namespace pocketmine\scoreboard;
 
 use pocketmine\utils\EnumTrait;
 

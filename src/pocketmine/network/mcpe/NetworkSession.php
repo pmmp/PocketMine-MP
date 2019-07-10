@@ -75,7 +75,6 @@ use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
-use pocketmine\network\mcpe\protocol\types\scoreboard\Objective;
 use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\NetworkSessionManager;
@@ -832,7 +831,14 @@ class NetworkSession{
 	}
 
 	public function onScoreboardAdded(Scoreboard $scoreboard) : void{
-		$this->sendDataPacket(SetDisplayObjectivePacket::create($scoreboard->getObjective()));
+		$objective = $scoreboard->getObjective();
+		$this->sendDataPacket(SetDisplayObjectivePacket::create(
+			$objective->displaySlot->name(),
+			$objective->objectiveName,
+			$objective->displayName,
+			$objective->criteriaName,
+			$objective->sortOrder->getMagicNumber()
+		));
 		$this->sendDataPacket(SetScorePacket::change($scoreboard->getEntries()));
 	}
 

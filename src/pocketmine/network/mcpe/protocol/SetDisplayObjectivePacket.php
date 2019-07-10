@@ -41,6 +41,16 @@ class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $sortOrder;
 
+	public static function create(string $displaySlot, string $objectiveName, string $displayName, string $criteriaName, int $sortOrder) : self{
+		$result = new self;
+		$result->displaySlot = $displaySlot;
+		$result->objectiveName = $objectiveName;
+		$result->displayName = $displayName;
+		$result->criteriaName = $criteriaName;
+		$result->sortOrder = $sortOrder;
+		return $result;
+	}
+
 	protected function decodePayload() : void{
 		$this->displaySlot = $this->getString();
 		$this->objectiveName = $this->getString();
