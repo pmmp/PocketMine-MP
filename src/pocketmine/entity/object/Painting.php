@@ -26,8 +26,7 @@ namespace pocketmine\entity\object;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
@@ -106,7 +105,7 @@ class Painting extends Entity{
 
 		if($drops){
 			//non-living entities don't have a way to create drops generically yet
-			$this->world->dropItem($this, ItemFactory::get(Item::PAINTING));
+			$this->world->dropItem($this, VanillaItems::PAINTING());
 		}
 		$this->world->addParticle($this->add(0.5, 0.5, 0.5), new DestroyBlockParticle(VanillaBlocks::OAK_PLANKS()));
 	}

@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 
 class Cobweb extends Flowable{
 
@@ -43,7 +43,7 @@ class Cobweb extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::STRING)
+			VanillaItems::STRING()
 		];
 	}
 

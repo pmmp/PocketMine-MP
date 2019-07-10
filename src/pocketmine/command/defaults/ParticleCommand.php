@@ -26,8 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -180,9 +180,9 @@ class ParticleCommand extends VanillaCommand{
 			case "reddust":
 				return new RedstoneParticle($data ?? 1);
 			case "snowballpoof":
-				return new ItemBreakParticle(ItemFactory::get(Item::SNOWBALL));
+				return new ItemBreakParticle(VanillaItems::SNOWBALL());
 			case "slime":
-				return new ItemBreakParticle(ItemFactory::get(Item::SLIMEBALL));
+				return new ItemBreakParticle(VanillaItems::SLIMEBALL());
 			case "itembreak":
 				if($data !== null and $data !== 0){
 					return new ItemBreakParticle(ItemFactory::get($data));

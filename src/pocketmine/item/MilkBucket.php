@@ -32,7 +32,7 @@ class MilkBucket extends Item implements Consumable{
 	}
 
 	public function getResidue(){
-		return ItemFactory::get(Item::BUCKET, 0, 1);
+		return VanillaItems::BUCKET();
 	}
 
 	public function getAdditionalEffects() : array{

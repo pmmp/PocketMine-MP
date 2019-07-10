@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -54,7 +54,7 @@ class DeadBush extends Flowable{
 	public function getDrops(Item $item) : array{
 		if(!$this->breakInfo->isToolCompatible($item)){
 			return [
-				ItemFactory::get(Item::STICK, 0, mt_rand(0, 2))
+				VanillaItems::STICK()->setCount(mt_rand(0, 2))
 			];
 		}
 

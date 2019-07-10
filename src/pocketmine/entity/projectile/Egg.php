@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\projectile;
 
 use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\world\particle\ItemBreakParticle;
 
 class Egg extends Throwable{
@@ -35,7 +34,7 @@ class Egg extends Throwable{
 
 	protected function onHit(ProjectileHitEvent $event) : void{
 		for($i = 0; $i < 6; ++$i){
-			$this->world->addParticle($this, new ItemBreakParticle(ItemFactory::get(Item::EGG)));
+			$this->world->addParticle($this, new ItemBreakParticle(VanillaItems::EGG()));
 		}
 	}
 }

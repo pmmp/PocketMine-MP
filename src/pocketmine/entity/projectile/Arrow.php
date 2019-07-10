@@ -27,8 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
@@ -177,7 +176,7 @@ class Arrow extends Projectile{
 			return;
 		}
 
-		$item = ItemFactory::get(Item::ARROW, 0, 1);
+		$item = VanillaItems::ARROW();
 
 		$playerInventory = $player->getInventory();
 		if($player->hasFiniteResources() and !$playerInventory->canAddItem($item)){

@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
+use pocketmine\item\VanillaItems;
 use function mt_rand;
 
 class NetherQuartzOre extends Solid{
@@ -36,7 +36,7 @@ class NetherQuartzOre extends Solid{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			ItemFactory::get(Item::QUARTZ)
+			VanillaItems::NETHER_QUARTZ()
 		];
 	}
 
