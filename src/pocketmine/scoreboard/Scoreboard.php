@@ -25,6 +25,9 @@ namespace pocketmine\scoreboard;
 
 use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
 use pocketmine\player\Player;
+use function get_class;
+use function gettype;
+use function is_object;
 use function is_string;
 use function spl_object_id;
 
@@ -58,7 +61,7 @@ class Scoreboard{
 
 	private function validate($player) : void{
 		if(!$player instanceof Player and !is_string($player)){
-			throw new \InvalidArgumentException("Argument must be instance of Player or string");
+			throw new \InvalidArgumentException("Argument must be instance of " . Player::class . " or string, got " . (is_object($value) ? " instance of " . get_class($value) : gettype($value)));
 		}
 	}
 
