@@ -56,13 +56,6 @@ class Scoreboard{
 	}
 
 	/**
-	 * @param ScorePacketEntry[] $entries
-	 */
-	public function setEntries(array $entries) : void{
-		$this->entries = $entries;
-	}
-
-	/**
 	 * @param Player|string $player
 	 * @return int|null
 	 */
