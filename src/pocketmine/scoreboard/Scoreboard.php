@@ -25,6 +25,7 @@ namespace pocketmine\scoreboard;
 
 use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
 use pocketmine\player\Player;
+use function is_string;
 use function spl_object_id;
 
 class Scoreboard{
@@ -55,11 +56,18 @@ class Scoreboard{
 		return $this->entries;
 	}
 
+	private function validate($player) : void{
+		if(!$player instanceof Player and !is_string($player)){
+			throw new \InvalidArgumentException("Argument must be instance of Player or string");
+		}
+	}
+
 	/**
 	 * @param Player|string $player
 	 * @return int|null
 	 */
 	public function getScore($player) : ?int{
+		$this->validate($player);
 		return $this->entries[$player instanceof Player ? spl_object_id($player) : $player]->score ?? null;
 	}
 
@@ -68,6 +76,7 @@ class Scoreboard{
 	 * @param int           $score
 	 */
 	public function setScore($player, int $score) : void{
+		$this->validate($player);
 		$entry = new ScorePacketEntry();
 		$entry->entryUniqueId = $this->entryUniqueId++;
 		$entry->objectiveName = $this->objective->objectiveName;
