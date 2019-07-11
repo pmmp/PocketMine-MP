@@ -41,6 +41,10 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 	/** @var ScorePacketEntry[] */
 	public $entries = [];
 
+	/**
+	 * @param ScorePacketEntry[] $entries
+	 * @return self
+	 */
 	public static function change(array $entries) : self{
 		$result = new self;
 		$result->type = self::TYPE_CHANGE;
@@ -48,6 +52,10 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
+	/**
+	 * @param ScorePacketEntry[] $entries
+	 * @return self
+	 */
 	public static function remove(array $entries) : self{
 		$result = new self;
 		$result->type = self::TYPE_REMOVE;
