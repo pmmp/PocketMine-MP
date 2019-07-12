@@ -842,8 +842,12 @@ class NetworkSession{
 		$this->sendDataPacket(SetScorePacket::change($scoreboard->getEntries()));
 	}
 
-	public function onScoreboardChanged(ScorePacketEntry $entry, bool $remove) : void{
-		$this->sendDataPacket($remove ? SetScorePacket::remove([$entry]) : SetScorePacket::change([$entry]));
+	public function onScoreboardEntryChanged(ScorePacketEntry $entry) : void{
+		$this->sendDataPacket(SetScorePacket::change([$entry]));
+	}
+
+	public function onScoreboardEntryRemoved(ScorePacketEntry $entry) : void{
+		$this->sendDataPacket(SetScorePacket::remove([$entry]));
 	}
 
 	public function onScoreboardRemoved(Scoreboard $scoreboard) : void{

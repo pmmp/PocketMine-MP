@@ -2166,7 +2166,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function removeScoreboard(Scoreboard $scoreboard) : void{
 		$id = spl_object_id($scoreboard);
 		if(isset($this->scoreboards[$id])){
-			$this->getNetworkSession()->onScoreboardRemoved($scoreboard);
+			$this->networkSession->onScoreboardRemoved($scoreboard);
 			unset($this->scoreboards[$id]);
 		}
 	}

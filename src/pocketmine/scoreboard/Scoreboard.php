@@ -25,10 +25,6 @@ namespace pocketmine\scoreboard;
 
 use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
 use pocketmine\player\Player;
-use function get_class;
-use function gettype;
-use function is_object;
-use function is_string;
 use function spl_object_id;
 
 class Scoreboard{
@@ -59,60 +55,38 @@ class Scoreboard{
 		return $this->entries;
 	}
 
-	private function validate($player) : void{
-		if(!$player instanceof Player and !is_string($player)){
-			throw new \InvalidArgumentException("Argument must be instance of " . Player::class . " or string, got " . (is_object($value) ? " instance of " . get_class($value) : gettype($value)));
-		}
-	}
-
 	/**
-	 * @param Player|string $player
+	 * @param string $player
 	 * @return int|null
 	 */
-	public function getScore($player) : ?int{
-		$this->validate($player);
-		return $this->entries[$player instanceof Player ? spl_object_id($player) : $player]->score ?? null;
+	public function getScore(string $player) : ?int{
+		return $this->entries[$player]->score ?? null;
 	}
 
 	/**
-	 * @param Player|string $player
-	 * @param int           $score
+	 * @param string $player
+	 * @param int    $score
 	 */
-	public function setScore($player, int $score) : void{
-		$this->validate($player);
-		$entry = new ScorePacketEntry();
-		$entry->entryUniqueId = $this->entryUniqueId++;
-		$entry->objectiveName = $this->objective->objectiveName;
+	public function setScore(string $player, int $score) : void{
+		$entry = $this->entries[$player] ?? ScorePacketEntry::create($this->entryUniqueId++, $this->objective->objectiveName, $score, $player);
 		$entry->score = $score;
-
-		if($player instanceof Player){
-			$entry->type = ScorePacketEntry::TYPE_PLAYER;
-			$entry->entityUniqueId = $player->getId();
-
-			$this->entries[spl_object_id($player)] = $entry;
-		}else{
-			$entry->type = ScorePacketEntry::TYPE_FAKE_PLAYER;
-			$entry->customName = $player;
-
-			$this->entries[$player] = $entry;
-		}
+		$this->entries[$player] = $entry;
 
 		foreach($this->viewers as $viewer){
-			$viewer->getNetworkSession()->onScoreboardChanged($entry, false);
+			$viewer->getNetworkSession()->onScoreboardEntryChanged($entry);
 		}
 	}
 
 	/**
-	 * @param Player|string $player
+	 * @param string $player
 	 */
-	public function resetScore($player) : void{
-		$key = $player instanceof Player ? spl_object_id($player) : $player;
-		if(isset($this->entries[$key])){
-			$entry = $this->entries[$key];
+	public function resetScore(string $player) : void{
+		if(isset($this->entries[$player])){
+			$entry = $this->entries[$player];
 			foreach($this->viewers as $viewer){
-				$viewer->getNetworkSession()->onScoreboardChanged($entry, true);
+				$viewer->getNetworkSession()->onScoreboardEntryRemoved($entry);
 			}
-			unset($this->entries[$key]);
+			unset($this->entries[$player]);
 		}
 	}
 

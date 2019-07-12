@@ -42,4 +42,14 @@ class ScorePacketEntry{
 	public $entityUniqueId;
 	/** @var string|null (if type fake player) */
 	public $customName;
+
+	public static function create(int $entryUniqueId, string $objectiveName, int $score, string $customName) : self{
+		$result = new self;
+		$result->entryUniqueId = $entryUniqueId;
+		$result->objectiveName = $objectiveName;
+		$result->score = $score;
+		$result->type = self::TYPE_FAKE_PLAYER;
+		$result->customName = $customName;
+		return $result;
+	}
 }
