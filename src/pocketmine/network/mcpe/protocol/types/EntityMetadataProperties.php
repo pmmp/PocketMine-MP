@@ -49,7 +49,7 @@ final class EntityMetadataProperties{
 	public const PADDLE_TIME_LEFT = 13; //float
 	public const PADDLE_TIME_RIGHT = 14; //float
 	public const EXPERIENCE_VALUE = 15; //int (xp orb)
-	public const MINECART_DISPLAY_BLOCK = 16; //int (static runtime id)
+	public const MINECART_DISPLAY_BLOCK = 16; //int (runtime id)
 	public const HORSE_FLAGS = 16; //int
 	/* 16 (byte) used by wither skull */
 	public const MINECART_DISPLAY_OFFSET = 17; //int
