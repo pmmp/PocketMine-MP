@@ -19,9 +19,26 @@
  *
 */
 
-namespace pocketmine;
+declare(strict_types=1);
 
-const NAME = "Altay";
-const BASE_VERSION = "3.9.1";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;
+namespace pocketmine\network\mcpe\protocol;
+
+#include <rules/DataPacket.h>
+
+use pocketmine\network\mcpe\NetworkSession;
+
+class StructureTemplateDataExportResponsePacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_RESPONSE_PACKET;
+
+	protected function decodePayload() : void{
+		//TODO
+	}
+
+	protected function encodePayload() : void{
+		//TODO
+	}
+
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleStructureTemplateDataExportResponse($this);
+	}
+}

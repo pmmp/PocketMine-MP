@@ -47,7 +47,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
@@ -250,7 +250,7 @@ abstract class Living extends Entity implements Damageable{
 		parent::setHealth($amount);
 		$this->attributeMap->getAttribute(Attribute::HEALTH)->setValue(ceil($this->getHealth()), true);
 		if($this->isAlive() and !$wasAlive){
-			$this->broadcastEntityEvent(EntityEventPacket::RESPAWN);
+			$this->broadcastEntityEvent(ActorEventPacket::RESPAWN);
 		}
 	}
 
@@ -664,7 +664,9 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
-		if($this->attackTime > 0 or $this->noDamageTicks > 0){
+		if($this->noDamageTicks > 0){
+			$source->setCancelled();
+		}elseif($this->attackTime > 0){
 			$lastCause = $this->getLastDamageCause();
 			if($lastCause !== null and $lastCause->getBaseDamage() >= $source->getBaseDamage()){
 				$source->setCancelled();
@@ -737,7 +739,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	protected function doHitAnimation() : void{
-		$this->broadcastEntityEvent(EntityEventPacket::HURT_ANIMATION);
+		$this->broadcastEntityEvent(ActorEventPacket::HURT_ANIMATION);
 	}
 
 	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4) : void{
@@ -749,18 +751,18 @@ abstract class Living extends Entity implements Damageable{
 			$f = 1 / $f;
 
 			$motion = clone $this->motion;
-			
+
 			$motion->x /= 2;
 			$motion->y /= 2;
 			$motion->z /= 2;
 			$motion->x += $x * $f * $base;
 			$motion->y += $base;
 			$motion->z += $z * $f * $base;
-			
+
 			if($motion->y > $base){
 				$motion->y = $base;
 			}
-			
+
 			$this->setMotion($motion);
 		}
 	}
@@ -795,7 +797,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	protected function startDeathAnimation() : void{
-		$this->broadcastEntityEvent(EntityEventPacket::DEATH_ANIMATION);
+		$this->broadcastEntityEvent(ActorEventPacket::DEATH_ANIMATION);
 	}
 
 	protected function endDeathAnimation() : void{

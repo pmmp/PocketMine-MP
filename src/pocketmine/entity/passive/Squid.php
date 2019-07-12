@@ -29,7 +29,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use function atan2;
 use function mt_rand;
 use function sqrt;
@@ -69,7 +69,7 @@ class Squid extends WaterAnimal{
 				$this->swimDirection = (new Vector3($this->x - $e->x, $this->y - $e->y, $this->z - $e->z))->normalize();
 			}
 
-			$this->broadcastEntityEvent(EntityEventPacket::SQUID_INK_CLOUD);
+			$this->broadcastEntityEvent(ActorEventPacket::SQUID_INK_CLOUD);
 		}
 	}
 

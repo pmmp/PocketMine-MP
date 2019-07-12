@@ -21,53 +21,31 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class ResourcePackDataInfoPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
+class ActorPickRequestPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::ACTOR_PICK_REQUEST_PACKET;
 
-	/** @var string */
-	public $packId;
 	/** @var int */
-	public $maxChunkSize;
+	public $entityUniqueId;
 	/** @var int */
-	public $chunkCount;
-	/** @var int */
-	public $compressedPackSize;
-	/** @var string */
-	public $sha256;
-	/** @var bool */
-	public $isPremium = false;
-	/** @var int */
-	public $packType = 0; //TODO: check the values for this
+	public $hotbarSlot;
 
 	protected function decodePayload(){
-		$this->packId = $this->getString();
-		$this->maxChunkSize = $this->getLInt();
-		$this->chunkCount = $this->getLInt();
-		$this->compressedPackSize = $this->getLLong();
-		$this->sha256 = $this->getString();
-		$this->isPremium = $this->getBool();
-		$this->packType = $this->getByte();
+		$this->entityUniqueId = $this->getLLong();
+		$this->hotbarSlot = $this->getByte();
 	}
 
 	protected function encodePayload(){
-		$this->putString($this->packId);
-		$this->putLInt($this->maxChunkSize);
-		$this->putLInt($this->chunkCount);
-		$this->putLLong($this->compressedPackSize);
-		$this->putString($this->sha256);
-		$this->putBool($this->isPremium);
-		$this->putByte($this->packType);
+		$this->putLLong($this->entityUniqueId);
+		$this->putByte($this->hotbarSlot);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleResourcePackDataInfo($this);
+		return $session->handleActorPickRequest($this);
 	}
 }

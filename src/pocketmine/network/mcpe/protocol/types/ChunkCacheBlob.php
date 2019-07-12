@@ -21,36 +21,36 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
-
-
-use pocketmine\network\mcpe\NetworkSession;
-
-class FullChunkDataPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::FULL_CHUNK_DATA_PACKET;
-
+class ChunkCacheBlob{
 	/** @var int */
-	public $chunkX;
-	/** @var int */
-	public $chunkZ;
+	private $hash;
 	/** @var string */
-	public $data;
+	private $payload;
 
-	protected function decodePayload(){
-		$this->chunkX = $this->getVarInt();
-		$this->chunkZ = $this->getVarInt();
-		$this->data = $this->getString();
+	/**
+	 * ChunkCacheBlob constructor.
+	 *
+	 * @param int    $hash
+	 * @param string $payload
+	 */
+	public function __construct(int $hash, string $payload){
+		$this->hash = $hash;
+		$this->payload = $payload;
 	}
 
-	protected function encodePayload(){
-		$this->putVarInt($this->chunkX);
-		$this->putVarInt($this->chunkZ);
-		$this->putString($this->data);
+	/**
+	 * @return int
+	 */
+	public function getHash() : int{
+		return $this->hash;
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleFullChunkData($this);
+	/**
+	 * @return string
+	 */
+	public function getPayload() : string{
+		return $this->payload;
 	}
 }

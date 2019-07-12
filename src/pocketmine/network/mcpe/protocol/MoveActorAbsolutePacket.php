@@ -26,27 +26,47 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
-class SetEntityDataPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::SET_ENTITY_DATA_PACKET;
+class MoveActorAbsolutePacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::MOVE_ACTOR_ABSOLUTE_PACKET;
+
+	public const FLAG_GROUND = 0x01;
+	public const FLAG_TELEPORT = 0x02;
 
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var array */
-	public $metadata;
+	/** @var int */
+	public $flags = 0;
+	/** @var Vector3 */
+	public $position;
+	/** @var float */
+	public $xRot;
+	/** @var float */
+	public $yRot;
+	/** @var float */
+	public $zRot;
 
 	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->metadata = $this->getEntityMetadata();
+		$this->flags = $this->getByte();
+		$this->position = $this->getVector3();
+		$this->xRot = $this->getByteRotation();
+		$this->yRot = $this->getByteRotation();
+		$this->zRot = $this->getByteRotation();
 	}
 
 	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putEntityMetadata($this->metadata);
+		$this->putByte($this->flags);
+		$this->putVector3($this->position);
+		$this->putByteRotation($this->xRot);
+		$this->putByteRotation($this->yRot);
+		$this->putByteRotation($this->zRot);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetEntityData($this);
+		return $session->handleMoveActorAbsolute($this);
 	}
 }

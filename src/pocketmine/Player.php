@@ -112,10 +112,10 @@ use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
-use pocketmine\network\mcpe\protocol\AvailableEntityIdentifiersPacket;
+use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
-use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
+use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
@@ -124,7 +124,7 @@ use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
@@ -220,7 +220,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public const VIEW = Player::SPECTATOR;
 
 	/**
-	 * Checks a supplied username and checks it is valid.
+	 * Validates the given username.
 	 *
 	 * @param string $name
 	 *
@@ -830,7 +830,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Gets the "friendly" name to display of this player to use in the chat.
+	 * Returns the "friendly" display name of this player to use in the chat.
 	 *
 	 * @return string
 	 */
@@ -2294,7 +2294,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->worldName = $this->server->getMotd();
 		$this->dataPacket($pk);
 
-		$this->sendDataPacket(new AvailableEntityIdentifiersPacket());
+		$this->sendDataPacket(new AvailableActorIdentifiersPacket());
 		$this->sendDataPacket(new BiomeDefinitionListPacket());
 
 		$this->level->sendTime($this);
@@ -2416,14 +2416,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
-	public function handleEntityEvent(EntityEventPacket $packet) : bool{
+	public function handleEntityEvent(ActorEventPacket $packet) : bool{
 		if(!$this->spawned or !$this->isAlive()){
 			return true;
 		}
 		$this->doCloseInventory();
 
 		switch($packet->event){
-			case EntityEventPacket::PLAYER_ADD_XP_LEVELS:
+			case ActorEventPacket::PLAYER_ADD_XP_LEVELS:
 				if($packet->data === 0){
 					return false;
 				}
@@ -2437,7 +2437,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 
 				break;
-			case EntityEventPacket::EATING_ITEM:
+			case ActorEventPacket::EATING_ITEM:
 				if($packet->data === 0){
 					return false;
 				}
@@ -2445,7 +2445,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->dataPacket($packet);
 				$this->server->broadcastPacket($this->getViewers(), $packet);
 				break;
-			case EntityEventPacket::COMPLETE_TRADE:
+			case ActorEventPacket::COMPLETE_TRADE:
 				//TODO
 				break;
 			default:
@@ -3229,7 +3229,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $handled;
 	}
 
-	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
+	public function handleBlockEntityData(BlockActorDataPacket $packet) : bool{
 		if(!$this->spawned or !$this->isAlive()){
 			return true;
 		}

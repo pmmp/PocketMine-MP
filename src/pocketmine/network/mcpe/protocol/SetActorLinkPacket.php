@@ -19,9 +19,31 @@
  *
 */
 
-namespace pocketmine;
+declare(strict_types=1);
 
-const NAME = "Altay";
-const BASE_VERSION = "3.9.1";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;
+namespace pocketmine\network\mcpe\protocol;
+
+#include <rules/DataPacket.h>
+
+
+use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\EntityLink;
+
+class SetActorLinkPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::SET_ACTOR_LINK_PACKET;
+
+	/** @var EntityLink */
+	public $link;
+
+	protected function decodePayload(){
+		$this->link = $this->getEntityLink();
+	}
+
+	protected function encodePayload(){
+		$this->putEntityLink($this->link);
+	}
+
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleSetActorLink($this);
+	}
+}

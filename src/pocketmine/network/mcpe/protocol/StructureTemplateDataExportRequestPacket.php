@@ -25,32 +25,20 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class BlockEntityDataPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::BLOCK_ENTITY_DATA_PACKET;
+class StructureTemplateDataExportRequestPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_REQUEST_PACKET;
 
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-	/** @var string */
-	public $namedtag;
-
-	protected function decodePayload(){
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->namedtag = $this->getRemaining();
+	protected function decodePayload() : void{
+		//TODO
 	}
 
-	protected function encodePayload(){
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->put($this->namedtag);
+	protected function encodePayload() : void{
+		//TODO
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleBlockEntityData($this);
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleStructureTemplateDataExportRequest($this);
 	}
 }

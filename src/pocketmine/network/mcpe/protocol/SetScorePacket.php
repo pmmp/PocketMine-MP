@@ -61,6 +61,7 @@ class SetScorePacket extends DataPacket{
 						throw new \UnexpectedValueException("Unknown entry type $entry->type");
 				}
 			}
+			$this->entries[] = $entry;
 		}
 	}
 

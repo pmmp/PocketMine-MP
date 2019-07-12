@@ -25,36 +25,50 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\nbt\NetworkLittleEndianNBTStream;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\NetworkSession;
 
-class RemoveEntityPacket extends DataPacket/* implements ClientboundPacket*/{
-	public const NETWORK_ID = ProtocolInfo::REMOVE_ENTITY_PACKET;
+class LevelEventGenericPacket extends DataPacket/* implements ClientboundPacket*/{
+	public const NETWORK_ID = ProtocolInfo::LEVEL_EVENT_GENERIC_PACKET;
 
 	/** @var int */
-	private $uvarint1;
+	private $eventId;
+	/** @var string network-format NBT */
+	private $eventData;
 
-	public static function create(int $uvarint1) : self{
+	public static function create(int $eventId, CompoundTag $data) : self{
 		$result = new self;
-		$result->uvarint1 = $uvarint1;
+		$result->eventId = $eventId;
+		$result->eventData = (new NetworkLittleEndianNBTStream())->write($data);
 		return $result;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getUvarint1() : int{
-		return $this->uvarint1;
+	public function getEventId() : int{
+		return $this->eventId;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getEventData() : string{
+		return $this->eventData;
 	}
 
 	protected function decodePayload() : void{
-		$this->uvarint1 = $this->getUnsignedVarInt();
+		$this->eventId = $this->getVarInt();
+		$this->eventData = $this->getRemaining();
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->uvarint1);
+		$this->putVarInt($this->eventId);
+		$this->put($this->eventData);
 	}
 
 	public function handle(NetworkSession $handler) : bool{
-		return $handler->handleRemoveEntity($this);
+		return $handler->handleLevelEventGeneric($this);
 	}
 }
