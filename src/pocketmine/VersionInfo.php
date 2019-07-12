@@ -22,6 +22,6 @@
 namespace pocketmine;
 
 const NAME = "PocketMine-MP";
-const BASE_VERSION = "3.8.7";
+const BASE_VERSION = "3.9.0";
 const IS_DEVELOPMENT_BUILD = false;
 const BUILD_NUMBER = 0;
