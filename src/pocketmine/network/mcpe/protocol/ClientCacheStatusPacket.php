@@ -27,25 +27,34 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class EntityPickRequestPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::ENTITY_PICK_REQUEST_PACKET;
+class ClientCacheStatusPacket extends DataPacket/* implements ServerboundPacket*/{
+	public const NETWORK_ID = ProtocolInfo::CLIENT_CACHE_STATUS_PACKET;
 
-	/** @var int */
-	public $entityUniqueId;
-	/** @var int */
-	public $hotbarSlot;
+	/** @var bool */
+	private $enabled;
 
-	protected function decodePayload(){
-		$this->entityUniqueId = $this->getLLong();
-		$this->hotbarSlot = $this->getByte();
+	public static function create(bool $enabled) : self{
+		$result = new self;
+		$result->enabled = $enabled;
+		return $result;
 	}
 
-	protected function encodePayload(){
-		$this->putLLong($this->entityUniqueId);
-		$this->putByte($this->hotbarSlot);
+	/**
+	 * @return bool
+	 */
+	public function isEnabled() : bool{
+		return $this->enabled;
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleEntityPickRequest($this);
+	protected function decodePayload() : void{
+		$this->enabled = $this->getBool();
+	}
+
+	protected function encodePayload() : void{
+		$this->putBool($this->enabled);
+	}
+
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleClientCacheStatus($this);
 	}
 }

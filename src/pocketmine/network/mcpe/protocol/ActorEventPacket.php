@@ -28,8 +28,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class EntityEventPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::ENTITY_EVENT_PACKET;
+class ActorEventPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::ACTOR_EVENT_PACKET;
 
 	public const HURT_ANIMATION = 2;
 	public const DEATH_ANIMATION = 3;
@@ -103,6 +103,6 @@ class EntityEventPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleEntityEvent($this);
+		return $session->handleActorEvent($this);
 	}
 }

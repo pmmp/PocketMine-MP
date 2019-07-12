@@ -27,8 +27,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class MoveEntityDeltaPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_DELTA_PACKET;
+class MoveActorDeltaPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::MOVE_ACTOR_DELTA_PACKET;
 
 	public const FLAG_HAS_X = 0x01;
 	public const FLAG_HAS_Y = 0x02;
@@ -103,6 +103,6 @@ class MoveEntityDeltaPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleMoveEntityDelta($this);
+		return $session->handleMoveActorDelta($this);
 	}
 }

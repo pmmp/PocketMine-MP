@@ -56,9 +56,11 @@ final class RuntimeBlockMapping{
 		foreach($compressedTable as $prefix => $entries){
 			foreach($entries as $shortStringId => $states){
 				foreach($states as $state){
+					$name = "$prefix:$shortStringId";
 					$decompressed[] = [
-						"name" => "$prefix:$shortStringId",
-						"data" => $state
+						"name" => $name,
+						"data" => $state,
+						"legacy_id" => $legacyIdMap[$name]
 					];
 				}
 			}
@@ -66,11 +68,12 @@ final class RuntimeBlockMapping{
 		self::$bedrockKnownStates = self::randomizeTable($decompressed);
 
 		foreach(self::$bedrockKnownStates as $k => $obj){
-			//this has to use the json offset to make sure the mapping is consistent with what we send over network, even though we aren't using all the entries
-			if(!isset($legacyIdMap[$obj["name"]])){
+			if($obj["data"] > 15){
+				//TODO: in 1.12 they started using data values bigger than 4 bits which we can't handle right now
 				continue;
 			}
-			self::registerMapping($k, $legacyIdMap[$obj["name"]], $obj["data"]);
+			//this has to use the json offset to make sure the mapping is consistent with what we send over network, even though we aren't using all the entries
+			self::registerMapping($k, $obj["legacy_id"], $obj["data"]);
 		}
 	}
 

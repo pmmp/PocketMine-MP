@@ -25,36 +25,54 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use function count;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\ChunkCacheBlob;
 
-class RemoveEntityPacket extends DataPacket/* implements ClientboundPacket*/{
-	public const NETWORK_ID = ProtocolInfo::REMOVE_ENTITY_PACKET;
+class ClientCacheMissResponsePacket extends DataPacket/* implements ClientboundPacket*/{
+	public const NETWORK_ID = ProtocolInfo::CLIENT_CACHE_MISS_RESPONSE_PACKET;
 
-	/** @var int */
-	private $uvarint1;
+	/** @var ChunkCacheBlob[] */
+	private $blobs = [];
 
-	public static function create(int $uvarint1) : self{
+	/**
+	 * @param ChunkCacheBlob[] $blobs
+	 *
+	 * @return self
+	 */
+	public static function create(array $blobs) : self{
+		//type check
+		(static function(ChunkCacheBlob ...$blobs){})($blobs);
+
 		$result = new self;
-		$result->uvarint1 = $uvarint1;
+		$result->blobs = $blobs;
 		return $result;
 	}
 
 	/**
-	 * @return int
+	 * @return ChunkCacheBlob[]
 	 */
-	public function getUvarint1() : int{
-		return $this->uvarint1;
+	public function getBlobs() : array{
+		return $this->blobs;
 	}
 
 	protected function decodePayload() : void{
-		$this->uvarint1 = $this->getUnsignedVarInt();
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$hash = $this->getLLong();
+			$payload = $this->getString();
+			$this->blobs[] = new ChunkCacheBlob($hash, $payload);
+		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->uvarint1);
+		$this->putUnsignedVarInt(count($this->blobs));
+		foreach($this->blobs as $blob){
+			$this->putLLong($blob->getHash());
+			$this->putString($blob->getPayload());
+		}
 	}
 
 	public function handle(NetworkSession $handler) : bool{
-		return $handler->handleRemoveEntity($this);
+		return $handler->handleClientCacheMissResponse($this);
 	}
 }

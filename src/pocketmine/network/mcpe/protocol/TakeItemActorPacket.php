@@ -28,8 +28,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class TakeItemEntityPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::TAKE_ITEM_ENTITY_PACKET;
+class TakeItemActorPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::TAKE_ITEM_ACTOR_PACKET;
 
 	/** @var int */
 	public $target;
@@ -47,6 +47,6 @@ class TakeItemEntityPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleTakeItemEntity($this);
+		return $session->handleTakeItemActor($this);
 	}
 }
