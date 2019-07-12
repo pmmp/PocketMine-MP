@@ -71,9 +71,6 @@ class TradeInventory extends ContainerInventory implements FakeInventory{
 
 			$pk = new UpdateTradePacket();
 			$pk->windowId = $who->getWindowId($this);
-			$pk->varint1 = 0;
-			$pk->varint2 = 0;
-			$pk->varint3 = 0;
 			$pk->isWilling = $this->holder->isWilling();
 			$pk->traderEid = $this->holder->getId();
 			$pk->playerEid = $who->getId();

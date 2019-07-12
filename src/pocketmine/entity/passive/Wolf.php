@@ -39,7 +39,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Tamable;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\Player;
 use function mt_rand;
 
@@ -99,9 +99,9 @@ class Wolf extends Tamable{
 						$this->setAngry(false);
 						$this->setAttackDamage(4);
 
-						$this->broadcastEntityEvent(EntityEventPacket::TAME_SUCCESS);
+						$this->broadcastEntityEvent(ActorEventPacket::TAME_SUCCESS);
 					}else{
-						$this->broadcastEntityEvent(EntityEventPacket::TAME_FAIL);
+						$this->broadcastEntityEvent(ActorEventPacket::TAME_FAIL);
 					}
 
 					return true;

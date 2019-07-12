@@ -37,7 +37,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\Player;
 use function mt_rand;
 
@@ -90,9 +90,9 @@ class Cat extends Tamable{
 					$this->setOwningEntity($player);
 					$this->setTamed();
 					$this->setSitting();
-					$this->broadcastEntityEvent(EntityEventPacket::TAME_SUCCESS);
+					$this->broadcastEntityEvent(ActorEventPacket::TAME_SUCCESS);
 				}else{
-					$this->broadcastEntityEvent(EntityEventPacket::TAME_FAIL);
+					$this->broadcastEntityEvent(ActorEventPacket::TAME_FAIL);
 				}
 				return true;
 			}else{

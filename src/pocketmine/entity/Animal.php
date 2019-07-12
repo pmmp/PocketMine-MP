@@ -27,7 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\Grass;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\Player;
 use function max;
 
@@ -74,7 +74,7 @@ abstract class Animal extends Mob implements Ageable{
 	public function entityBaseTick(int $diff = 1) : bool{
 		if($this->isInLove()){
 			if($this->inLove-- > 0 and $this->inLove % 10 === 0){
-				$this->broadcastEntityEvent(EntityEventPacket::LOVE_PARTICLES);
+				$this->broadcastEntityEvent(ActorEventPacket::LOVE_PARTICLES);
 			}
 		}
 		return parent::entityBaseTick($diff);
@@ -88,7 +88,7 @@ abstract class Animal extends Mob implements Ageable{
 	}
 
 	public function eatItem(Item $item) : void{
-		$this->broadcastEntityEvent(EntityEventPacket::EATING_ITEM, $item->getId());
+		$this->broadcastEntityEvent(ActorEventPacket::EATING_ITEM, $item->getId());
 	}
 
 	public function eatGrassBonus(Vector3 $pos) : void{

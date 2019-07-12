@@ -97,7 +97,7 @@ use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
-use pocketmine\network\mcpe\protocol\SetEntityLinkPacket;
+use pocketmine\network\mcpe\protocol\SetActorLinkPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
@@ -1947,7 +1947,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param bool     $immediate
 	 */
 	public function sendLink(array $targets, Entity $entity, int $type = EntityLink::TYPE_RIDER, bool $immediate = false) : void{
-		$pk = new SetEntityLinkPacket();
+		$pk = new SetActorLinkPacket();
 		$pk->link = new EntityLink($this->id, $entity->getId(), $type, $immediate);
 
 		$this->server->broadcastPacket($targets, $pk);

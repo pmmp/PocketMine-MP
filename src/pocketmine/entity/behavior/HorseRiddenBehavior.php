@@ -25,7 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\passive\AbstractHorse;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 
 class HorseRiddenBehavior extends Behavior{
 
@@ -55,7 +55,7 @@ class HorseRiddenBehavior extends Behavior{
 						$this->mob->setRearing(true);
 					}
 				}elseif($this->rideTime > 120){
-					$this->mob->broadcastEntityEvent(EntityEventPacket::TAME_FAIL);
+					$this->mob->broadcastEntityEvent(ActorEventPacket::TAME_FAIL);
 					$this->mob->throwRider();
 					$this->mob->setRearing(false);
 				}

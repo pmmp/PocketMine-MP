@@ -30,7 +30,7 @@ use pocketmine\block\TallGrass;
 use pocketmine\entity\Animal;
 use pocketmine\level\GameRules;
 use pocketmine\level\particle\DestroyBlockParticle;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use function max;
 
 class EatBlockBehavior extends Behavior{
@@ -49,7 +49,7 @@ class EatBlockBehavior extends Behavior{
 	}
 
 	public function onStart() : void{
-		$this->mob->broadcastEntityEvent(EntityEventPacket::EAT_GRASS_ANIMATION);
+		$this->mob->broadcastEntityEvent(ActorEventPacket::EAT_GRASS_ANIMATION);
 		$this->duration = 40;
 		$this->mob->getNavigator()->clearPath();
 	}

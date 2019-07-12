@@ -720,7 +720,7 @@ abstract class Living extends Entity implements Damageable{
 				$deltaZ = $this->z - $e->z;
 				$this->knockBack($e, $source->getBaseDamage(), $deltaX, $deltaZ, $source->getKnockBack());
 
-				$e->broadcastEntityEvent(EntityEventPacket::ARM_SWING);
+				$e->broadcastEntityEvent(ActorEventPacket::ARM_SWING);
 
 				if($e instanceof Living){
 					$e->setTargetEntity($this);
@@ -1113,7 +1113,7 @@ abstract class Living extends Entity implements Damageable{
 				$this->setGenericFlag(self::DATA_FLAG_LEASHED, false);
 				$this->propertyManager->setLong(self::DATA_LEAD_HOLDER_EID, -1);
 
-				$this->broadcastEntityEvent(EntityEventPacket::REMOVE_LEASH);
+				$this->broadcastEntityEvent(ActorEventPacket::REMOVE_LEASH);
 			}
 		}
 	}

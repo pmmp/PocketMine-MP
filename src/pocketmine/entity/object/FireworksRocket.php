@@ -28,7 +28,7 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Fireworks;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class FireworksRocket extends Entity{
@@ -117,6 +117,6 @@ class FireworksRocket extends Entity{
 			}
 		}
 
-		$this->broadcastEntityEvent(EntityEventPacket::FIREWORK_PARTICLES);
+		$this->broadcastEntityEvent(ActorEventPacket::FIREWORK_PARTICLES);
 	}
 }

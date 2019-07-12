@@ -40,7 +40,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\Player;
 use function cos;
 use function floor;
@@ -189,7 +189,7 @@ class FishingHook extends Projectile{
 						$this->ticksCatchableDelay -= $l;
 
 						if($this->ticksCatchableDelay <= 0){
-							$this->broadcastEntityEvent(EntityEventPacket::FISH_HOOK_HOOK);
+							$this->broadcastEntityEvent(ActorEventPacket::FISH_HOOK_HOOK);
 							$this->motion->y -= 0.2;
 							$this->ticksCatchable = mt_rand(10, 30);
 						}else{
