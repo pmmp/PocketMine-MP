@@ -39,14 +39,17 @@ use const STDIN;
 require_once dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-$currentVer = new VersionString(BASE_VERSION);
-$nextVer = new VersionString(sprintf(
-	"%u.%u.%u",
-	$currentVer->getMajor(),
-	$currentVer->getMinor(),
-	$currentVer->getPatch() + 1
-));
-
+if(isset($argv[1])){
+	$nextVer = new VersionString($argv[1]);
+}else{
+	$currentVer = new VersionString(BASE_VERSION);
+	$nextVer = new VersionString(sprintf(
+		"%u.%u.%u",
+		$currentVer->getMajor(),
+		$currentVer->getMinor(),
+		$currentVer->getPatch() + 1
+	));
+}
 
 $versionInfoPath = dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
 $versionInfo = file_get_contents($versionInfoPath);
