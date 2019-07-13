@@ -26,15 +26,14 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use function file_get_contents;
-use function json_decode;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use function count;
-use pocketmine\network\mcpe\protocol\types\RuntimeItemMapping;
+use function file_get_contents;
+use function json_decode;
 use const pocketmine\RESOURCE_PATH;
 
 class StartGamePacket extends DataPacket{

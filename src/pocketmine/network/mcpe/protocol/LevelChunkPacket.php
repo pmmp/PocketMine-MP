@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use function count;
 use pocketmine\network\mcpe\NetworkSession;
+use function count;
 
 class LevelChunkPacket extends DataPacket/* implements ClientboundPacket*/{
 	public const NETWORK_ID = ProtocolInfo::LEVEL_CHUNK_PACKET;
