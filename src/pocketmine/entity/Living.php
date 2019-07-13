@@ -44,7 +44,7 @@ use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\player\Player;
@@ -146,7 +146,7 @@ abstract class Living extends Entity{
 		parent::setHealth($amount);
 		$this->attributeMap->getAttribute(Attribute::HEALTH)->setValue(ceil($this->getHealth()), true);
 		if($this->isAlive() and !$wasAlive){
-			$this->broadcastEntityEvent(EntityEventPacket::RESPAWN);
+			$this->broadcastEntityEvent(ActorEventPacket::RESPAWN);
 		}
 	}
 
@@ -454,7 +454,7 @@ abstract class Living extends Entity{
 	}
 
 	protected function doHitAnimation() : void{
-		$this->broadcastEntityEvent(EntityEventPacket::HURT_ANIMATION);
+		$this->broadcastEntityEvent(ActorEventPacket::HURT_ANIMATION);
 	}
 
 	public function knockBack(float $x, float $z, float $base = 0.4) : void{
@@ -507,7 +507,7 @@ abstract class Living extends Entity{
 	}
 
 	protected function startDeathAnimation() : void{
-		$this->broadcastEntityEvent(EntityEventPacket::DEATH_ANIMATION);
+		$this->broadcastEntityEvent(ActorEventPacket::DEATH_ANIMATION);
 	}
 
 	protected function endDeathAnimation() : void{

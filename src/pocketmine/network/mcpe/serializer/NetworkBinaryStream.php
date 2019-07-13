@@ -26,12 +26,14 @@ namespace pocketmine\network\mcpe\serializer;
 #include <rules/DataPacket.h>
 
 use pocketmine\entity\Attribute;
+use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
@@ -44,6 +46,9 @@ use function count;
 use function strlen;
 
 class NetworkBinaryStream extends BinaryStream{
+
+	private const DAMAGE_TAG = "Damage"; //TAG_Int
+	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
 
 	/**
 	 * @return string
@@ -93,12 +98,10 @@ class NetworkBinaryStream extends BinaryStream{
 
 		$auxValue = $this->getVarInt();
 		$data = $auxValue >> 8;
-		if($data === 0x7fff){
-			$data = -1;
-		}
 		$cnt = $auxValue & 0xff;
 
 		$nbtLen = $this->getLShort();
+
 		/** @var CompoundTag|null $compound */
 		$compound = null;
 		if($nbtLen === 0xffff){
@@ -129,6 +132,21 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->getVarLong(); //"blocking tick" (ffs mojang)
 		}
 
+		if($compound !== null){
+			if($compound->hasTag(self::DAMAGE_TAG, IntTag::class)){
+				$data = $compound->getInt(self::DAMAGE_TAG);
+				$compound->removeTag(self::DAMAGE_TAG);
+				if($compound->count() === 0){
+					$compound = null;
+					goto end;
+				}
+			}
+			if(($conflicted = $compound->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
+				$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
+				$compound->setTag(self::DAMAGE_TAG, $conflicted);
+			}
+		}
+		end:
 		try{
 			return ItemFactory::get($id, $data, $cnt, $compound);
 		}catch(\InvalidArgumentException $e){
@@ -148,10 +166,26 @@ class NetworkBinaryStream extends BinaryStream{
 		$auxValue = (($item->getMeta() & 0x7fff) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 
+		$nbt = null;
 		if($item->hasNamedTag()){
+			$nbt = clone $item->getNamedTag();
+		}
+		if($item instanceof Durable and $item->getDamage() > 0){
+			if($nbt !== null){
+				if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
+					$nbt->removeTag(self::DAMAGE_TAG);
+					$nbt->setTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION, $existing);
+				}
+			}else{
+				$nbt = new CompoundTag();
+			}
+			$nbt->setInt(self::DAMAGE_TAG, $item->getDamage());
+		}
+
+		if($nbt !== null){
 			$this->putLShort(0xffff);
 			$this->putByte(1); //TODO: some kind of count field? always 1 as of 1.9.0
-			$this->put((new NetworkNbtSerializer())->write(new TreeRoot($item->getNamedTag())));
+			$this->put((new NetworkNbtSerializer())->write(new TreeRoot($nbt)));
 		}else{
 			$this->putLShort(0);
 		}
@@ -161,6 +195,29 @@ class NetworkBinaryStream extends BinaryStream{
 
 		if($item->getId() === ItemIds::SHIELD){
 			$this->putVarLong(0); //"blocking tick" (ffs mojang)
+		}
+	}
+
+	public function getRecipeIngredient() : Item{
+		$id = $this->getVarInt();
+		if($id === 0){
+			return ItemFactory::get(ItemIds::AIR, 0, 0);
+		}
+		$meta = $this->getVarInt();
+		if($meta === 0x7fff){
+			$meta = -1;
+		}
+		$count = $this->getVarInt();
+		return ItemFactory::get($id, $meta, $count);
+	}
+
+	public function putRecipeIngredient(Item $item) : void{
+		if($item->isNull()){
+			$this->putVarInt(0);
+		}else{
+			$this->putVarInt($item->getId());
+			$this->putVarInt($item->getMeta() & 0x7fff);
+			$this->putVarInt($item->getCount());
 		}
 	}
 

@@ -26,47 +26,31 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
 
-class MoveEntityAbsolutePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_ABSOLUTE_PACKET;
-
-	public const FLAG_GROUND = 0x01;
-	public const FLAG_TELEPORT = 0x02;
+class ActorFallPacket extends DataPacket implements ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::ACTOR_FALL_PACKET;
 
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var int */
-	public $flags = 0;
-	/** @var Vector3 */
-	public $position;
 	/** @var float */
-	public $xRot;
-	/** @var float */
-	public $yRot;
-	/** @var float */
-	public $zRot;
+	public $fallDistance;
+	/** @var bool */
+	public $isInVoid;
 
 	protected function decodePayload() : void{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->flags = $this->getByte();
-		$this->position = $this->getVector3();
-		$this->xRot = $this->getByteRotation();
-		$this->yRot = $this->getByteRotation();
-		$this->zRot = $this->getByteRotation();
+		$this->fallDistance = $this->getLFloat();
+		$this->isInVoid = $this->getBool();
 	}
 
 	protected function encodePayload() : void{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putByte($this->flags);
-		$this->putVector3($this->position);
-		$this->putByteRotation($this->xRot);
-		$this->putByteRotation($this->yRot);
-		$this->putByteRotation($this->zRot);
+		$this->putLFloat($this->fallDistance);
+		$this->putBool($this->isInVoid);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleMoveEntityAbsolute($this);
+		return $handler->handleActorFall($this);
 	}
 }

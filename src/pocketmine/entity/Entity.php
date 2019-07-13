@@ -44,18 +44,18 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\MoveEntityAbsolutePacket;
-use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
-use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
-use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
 use pocketmine\network\mcpe\protocol\types\DataPropertyManager;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataTypes;
 use pocketmine\player\Player;
+use pocketmine\network\mcpe\protocol\AddActorPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
+use pocketmine\network\mcpe\protocol\RemoveActorPacket;
+use pocketmine\network\mcpe\protocol\SetActorDataPacket;
+use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
@@ -852,7 +852,7 @@ abstract class Entity extends Location implements EntityIds{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
-		$pk = new MoveEntityAbsolutePacket();
+		$pk = new MoveActorAbsolutePacket();
 		$pk->entityRuntimeId = $this->id;
 		$pk->position = $this->getOffsetPosition($this);
 
@@ -864,14 +864,14 @@ abstract class Entity extends Location implements EntityIds{
 		$pk->zRot = $this->yaw;
 
 		if($teleport){
-			$pk->flags |= MoveEntityAbsolutePacket::FLAG_TELEPORT;
+			$pk->flags |= MoveActorAbsolutePacket::FLAG_TELEPORT;
 		}
 
 		$this->world->broadcastPacketToViewers($this, $pk);
 	}
 
 	protected function broadcastMotion() : void{
-		$this->world->broadcastPacketToViewers($this, SetEntityMotionPacket::create($this->id, $this->getMotion()));
+		$this->world->broadcastPacketToViewers($this, SetActorMotionPacket::create($this->id, $this->getMotion()));
 	}
 
 	public function hasGravity() : bool{
@@ -1592,7 +1592,7 @@ abstract class Entity extends Location implements EntityIds{
 	 * @param Player $player
 	 */
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddEntityPacket();
+		$pk = new AddActorPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->type = static::NETWORK_ID;
 		$pk->position = $this->asVector3();
@@ -1642,7 +1642,7 @@ abstract class Entity extends Location implements EntityIds{
 		$id = spl_object_id($player);
 		if(isset($this->hasSpawned[$id])){
 			if($send){
-				$player->sendDataPacket(RemoveEntityPacket::create($this->id));
+				$player->sendDataPacket(RemoveActorPacket::create($this->id));
 			}
 			unset($this->hasSpawned[$id]);
 		}
@@ -1769,7 +1769,7 @@ abstract class Entity extends Location implements EntityIds{
 			$player = [$player];
 		}
 
-		$pk = SetEntityDataPacket::create($this->getId(), $data ?? $this->propertyManager->getAll());
+		$pk = SetActorDataPacket::create($this->getId(), $data ?? $this->propertyManager->getAll());
 
 		foreach($player as $p){
 			if($p === $this){
@@ -1784,7 +1784,7 @@ abstract class Entity extends Location implements EntityIds{
 	}
 
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
-		$this->server->broadcastPacket($players ?? $this->getViewers(), EntityEventPacket::create($this->id, $eventId, $eventData ?? 0));
+		$this->server->broadcastPacket($players ?? $this->getViewers(), ActorEventPacket::create($this->id, $eventId, $eventData ?? 0));
 	}
 
 	public function broadcastAnimation(?array $players, int $animationId) : void{

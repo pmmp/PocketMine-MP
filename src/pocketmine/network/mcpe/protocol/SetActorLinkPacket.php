@@ -27,30 +27,23 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\EntityLink;
 
-class EntityFallPacket extends DataPacket implements ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::ENTITY_FALL_PACKET;
+class SetActorLinkPacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::SET_ACTOR_LINK_PACKET;
 
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var float */
-	public $fallDistance;
-	/** @var bool */
-	public $isInVoid;
+	/** @var EntityLink */
+	public $link;
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->fallDistance = $this->getLFloat();
-		$this->isInVoid = $this->getBool();
+		$this->link = $this->getEntityLink();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putLFloat($this->fallDistance);
-		$this->putBool($this->isInVoid);
+		$this->putEntityLink($this->link);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleEntityFall($this);
+		return $handler->handleSetActorLink($this);
 	}
 }

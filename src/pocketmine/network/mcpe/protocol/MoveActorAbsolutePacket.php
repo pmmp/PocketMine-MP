@@ -25,40 +25,48 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
 
-class AddPaintingPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::ADD_PAINTING_PACKET;
+class MoveActorAbsolutePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::MOVE_ACTOR_ABSOLUTE_PACKET;
 
-	/** @var int|null */
-	public $entityUniqueId = null;
+	public const FLAG_GROUND = 0x01;
+	public const FLAG_TELEPORT = 0x02;
+
 	/** @var int */
 	public $entityRuntimeId;
+	/** @var int */
+	public $flags = 0;
 	/** @var Vector3 */
 	public $position;
-	/** @var int */
-	public $direction;
-	/** @var string */
-	public $title;
+	/** @var float */
+	public $xRot;
+	/** @var float */
+	public $yRot;
+	/** @var float */
+	public $zRot;
 
 	protected function decodePayload() : void{
-		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->flags = $this->getByte();
 		$this->position = $this->getVector3();
-		$this->direction = $this->getVarInt();
-		$this->title = $this->getString();
+		$this->xRot = $this->getByteRotation();
+		$this->yRot = $this->getByteRotation();
+		$this->zRot = $this->getByteRotation();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putByte($this->flags);
 		$this->putVector3($this->position);
-		$this->putVarInt($this->direction);
-		$this->putString($this->title);
+		$this->putByteRotation($this->xRot);
+		$this->putByteRotation($this->yRot);
+		$this->putByteRotation($this->zRot);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleAddPainting($this);
+		return $handler->handleMoveActorAbsolute($this);
 	}
 }

@@ -27,23 +27,37 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\network\mcpe\protocol\types\EntityLink;
 
-class SetEntityLinkPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::SET_ENTITY_LINK_PACKET;
+class BlockActorDataPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::BLOCK_ACTOR_DATA_PACKET;
 
-	/** @var EntityLink */
-	public $link;
+	/** @var int */
+	public $x;
+	/** @var int */
+	public $y;
+	/** @var int */
+	public $z;
+	/** @var string */
+	public $namedtag;
+
+	public static function create(int $x, int $y, int $z, string $nbt) : self{
+		$result = new self;
+		[$result->x, $result->y, $result->z] = [$x, $y, $z];
+		$result->namedtag = $nbt;
+		return $result;
+	}
 
 	protected function decodePayload() : void{
-		$this->link = $this->getEntityLink();
+		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->namedtag = $this->getRemaining();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityLink($this->link);
+		$this->putBlockPosition($this->x, $this->y, $this->z);
+		$this->put($this->namedtag);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleSetEntityLink($this);
+		return $handler->handleBlockActorData($this);
 	}
 }

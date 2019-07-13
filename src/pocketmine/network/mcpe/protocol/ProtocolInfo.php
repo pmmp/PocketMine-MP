@@ -39,15 +39,15 @@ interface ProtocolInfo{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	public const CURRENT_PROTOCOL = 354;
+	public const CURRENT_PROTOCOL = 361;
 	/**
 	 * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
 	 */
-	public const MINECRAFT_VERSION = 'v1.11.0';
+	public const MINECRAFT_VERSION = 'v1.12.0';
 	/**
 	 * Version number sent to clients in ping responses.
 	 */
-	public const MINECRAFT_VERSION_NETWORK = '1.11.0';
+	public const MINECRAFT_VERSION_NETWORK = '1.12.0';
 
 	public const LOGIN_PACKET = 0x01;
 	public const PLAY_STATUS_PACKET = 0x02;
@@ -61,12 +61,12 @@ interface ProtocolInfo{
 	public const SET_TIME_PACKET = 0x0a;
 	public const START_GAME_PACKET = 0x0b;
 	public const ADD_PLAYER_PACKET = 0x0c;
-	public const ADD_ENTITY_PACKET = 0x0d;
-	public const REMOVE_ENTITY_PACKET = 0x0e;
-	public const ADD_ITEM_ENTITY_PACKET = 0x0f;
+	public const ADD_ACTOR_PACKET = 0x0d;
+	public const REMOVE_ACTOR_PACKET = 0x0e;
+	public const ADD_ITEM_ACTOR_PACKET = 0x0f;
 
-	public const TAKE_ITEM_ENTITY_PACKET = 0x11;
-	public const MOVE_ENTITY_ABSOLUTE_PACKET = 0x12;
+	public const TAKE_ITEM_ACTOR_PACKET = 0x11;
+	public const MOVE_ACTOR_ABSOLUTE_PACKET = 0x12;
 	public const MOVE_PLAYER_PACKET = 0x13;
 	public const RIDER_JUMP_PACKET = 0x14;
 	public const UPDATE_BLOCK_PACKET = 0x15;
@@ -75,7 +75,7 @@ interface ProtocolInfo{
 	public const LEVEL_SOUND_EVENT_PACKET_V1 = 0x18;
 	public const LEVEL_EVENT_PACKET = 0x19;
 	public const BLOCK_EVENT_PACKET = 0x1a;
-	public const ENTITY_EVENT_PACKET = 0x1b;
+	public const ACTOR_EVENT_PACKET = 0x1b;
 	public const MOB_EFFECT_PACKET = 0x1c;
 	public const UPDATE_ATTRIBUTES_PACKET = 0x1d;
 	public const INVENTORY_TRANSACTION_PACKET = 0x1e;
@@ -83,13 +83,13 @@ interface ProtocolInfo{
 	public const MOB_ARMOR_EQUIPMENT_PACKET = 0x20;
 	public const INTERACT_PACKET = 0x21;
 	public const BLOCK_PICK_REQUEST_PACKET = 0x22;
-	public const ENTITY_PICK_REQUEST_PACKET = 0x23;
+	public const ACTOR_PICK_REQUEST_PACKET = 0x23;
 	public const PLAYER_ACTION_PACKET = 0x24;
-	public const ENTITY_FALL_PACKET = 0x25;
+	public const ACTOR_FALL_PACKET = 0x25;
 	public const HURT_ARMOR_PACKET = 0x26;
-	public const SET_ENTITY_DATA_PACKET = 0x27;
-	public const SET_ENTITY_MOTION_PACKET = 0x28;
-	public const SET_ENTITY_LINK_PACKET = 0x29;
+	public const SET_ACTOR_DATA_PACKET = 0x27;
+	public const SET_ACTOR_MOTION_PACKET = 0x28;
+	public const SET_ACTOR_LINK_PACKET = 0x29;
 	public const SET_HEALTH_PACKET = 0x2a;
 	public const SET_SPAWN_POSITION_PACKET = 0x2b;
 	public const ANIMATE_PACKET = 0x2c;
@@ -104,9 +104,9 @@ interface ProtocolInfo{
 	public const CRAFTING_EVENT_PACKET = 0x35;
 	public const GUI_DATA_PICK_ITEM_PACKET = 0x36;
 	public const ADVENTURE_SETTINGS_PACKET = 0x37;
-	public const BLOCK_ENTITY_DATA_PACKET = 0x38;
+	public const BLOCK_ACTOR_DATA_PACKET = 0x38;
 	public const PLAYER_INPUT_PACKET = 0x39;
-	public const FULL_CHUNK_DATA_PACKET = 0x3a;
+	public const LEVEL_CHUNK_PACKET = 0x3a;
 	public const SET_COMMANDS_ENABLED_PACKET = 0x3b;
 	public const SET_DIFFICULTY_PACKET = 0x3c;
 	public const CHANGE_DIMENSION_PACKET = 0x3d;
@@ -159,7 +159,7 @@ interface ProtocolInfo{
 	public const SET_SCORE_PACKET = 0x6c;
 	public const LAB_TABLE_PACKET = 0x6d;
 	public const UPDATE_BLOCK_SYNCED_PACKET = 0x6e;
-	public const MOVE_ENTITY_DELTA_PACKET = 0x6f;
+	public const MOVE_ACTOR_DELTA_PACKET = 0x6f;
 	public const SET_SCOREBOARD_IDENTITY_PACKET = 0x70;
 	public const SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET = 0x71;
 	public const UPDATE_SOFT_ENUM_PACKET = 0x72;
@@ -167,14 +167,23 @@ interface ProtocolInfo{
 
 	public const SCRIPT_CUSTOM_EVENT_PACKET = 0x75;
 	public const SPAWN_PARTICLE_EFFECT_PACKET = 0x76;
-	public const AVAILABLE_ENTITY_IDENTIFIERS_PACKET = 0x77;
+	public const AVAILABLE_ACTOR_IDENTIFIERS_PACKET = 0x77;
 	public const LEVEL_SOUND_EVENT_PACKET_V2 = 0x78;
 	public const NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET = 0x79;
 	public const BIOME_DEFINITION_LIST_PACKET = 0x7a;
 	public const LEVEL_SOUND_EVENT_PACKET = 0x7b;
-	public const LECTERN_UPDATE_PACKET = 0x7c;
-	public const VIDEO_STREAM_CONNECT_PACKET = 0x7d;
-	public const MAP_CREATE_LOCKED_COPY_PACKET = 0x7e;
-	public const ON_SCREEN_TEXTURE_ANIMATION_PACKET = 0x7f;
+	public const LEVEL_EVENT_GENERIC_PACKET = 0x7c;
+	public const LECTERN_UPDATE_PACKET = 0x7d;
+	public const VIDEO_STREAM_CONNECT_PACKET = 0x7e;
+	public const ADD_ENTITY_PACKET = 0x7f;
+	public const REMOVE_ENTITY_PACKET = 0x80;
+	public const CLIENT_CACHE_STATUS_PACKET = 0x81;
+	public const ON_SCREEN_TEXTURE_ANIMATION_PACKET = 0x82;
+	public const MAP_CREATE_LOCKED_COPY_PACKET = 0x83;
+	public const STRUCTURE_TEMPLATE_DATA_EXPORT_REQUEST_PACKET = 0x84;
+	public const STRUCTURE_TEMPLATE_DATA_EXPORT_RESPONSE_PACKET = 0x85;
+	public const UPDATE_BLOCK_PROPERTIES_PACKET = 0x86;
+	public const CLIENT_CACHE_BLOB_STATUS_PACKET = 0x87;
+	public const CLIENT_CACHE_MISS_RESPONSE_PACKET = 0x88;
 
 }

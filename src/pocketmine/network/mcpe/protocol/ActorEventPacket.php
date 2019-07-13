@@ -25,11 +25,10 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
 
-class EntityEventPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::ENTITY_EVENT_PACKET;
+class ActorEventPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::ACTOR_EVENT_PACKET;
 
 	public const HURT_ANIMATION = 2;
 	public const DEATH_ANIMATION = 3;
@@ -111,6 +110,6 @@ class EntityEventPacket extends DataPacket implements ClientboundPacket, Serverb
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleEntityEvent($this);
+		return $handler->handleActorEvent($this);
 	}
 }

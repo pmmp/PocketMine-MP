@@ -39,9 +39,12 @@ use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\ActorFallPacket;
+use pocketmine\network\mcpe\protocol\ActorPickRequestPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
-use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
+use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
@@ -49,9 +52,6 @@ use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\EntityFallPacket;
-use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
@@ -143,16 +143,16 @@ class InGamePacketHandler extends PacketHandler{
 		return true; //useless leftover from 1.8
 	}
 
-	public function handleEntityEvent(EntityEventPacket $packet) : bool{
+	public function handleActorEvent(ActorEventPacket $packet) : bool{
 		$this->player->doCloseInventory();
 
 		switch($packet->event){
-			case EntityEventPacket::EATING_ITEM: //TODO: ignore this and handle it server-side
+			case ActorEventPacket::EATING_ITEM: //TODO: ignore this and handle it server-side
 				if($packet->data === 0){
 					return false;
 				}
 
-				$this->player->broadcastEntityEvent(EntityEventPacket::EATING_ITEM, $packet->data);
+				$this->player->broadcastEntityEvent(ActorEventPacket::EATING_ITEM, $packet->data);
 				break;
 			default:
 				return false;
@@ -385,7 +385,7 @@ class InGamePacketHandler extends PacketHandler{
 		return $this->player->pickBlock(new Vector3($packet->blockX, $packet->blockY, $packet->blockZ), $packet->addUserData);
 	}
 
-	public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool{
+	public function handleActorPickRequest(ActorPickRequestPacket $packet) : bool{
 		return false; //TODO
 	}
 
@@ -454,7 +454,7 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	public function handleEntityFall(EntityFallPacket $packet) : bool{
+	public function handleActorFall(ActorFallPacket $packet) : bool{
 		return true; //Not used
 	}
 
@@ -508,7 +508,7 @@ class InGamePacketHandler extends PacketHandler{
 		return $handled;
 	}
 
-	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
+	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
 		$pos = new Vector3($packet->x, $packet->y, $packet->z);
 		if($pos->distanceSquared($this->player) > 10000){
 			return false;

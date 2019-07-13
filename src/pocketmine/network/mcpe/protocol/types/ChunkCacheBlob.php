@@ -21,40 +21,36 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
-
-use pocketmine\network\mcpe\handler\PacketHandler;
-
-class RemoveEntityPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::REMOVE_ENTITY_PACKET;
-
+class ChunkCacheBlob{
 	/** @var int */
-	private $uvarint1;
+	private $hash;
+	/** @var string */
+	private $payload;
 
-	public static function create(int $uvarint1) : self{
-		$result = new self;
-		$result->uvarint1 = $uvarint1;
-		return $result;
+	/**
+	 * ChunkCacheBlob constructor.
+	 *
+	 * @param int    $hash
+	 * @param string $payload
+	 */
+	public function __construct(int $hash, string $payload){
+		$this->hash = $hash;
+		$this->payload = $payload;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getUvarint1() : int{
-		return $this->uvarint1;
+	public function getHash() : int{
+		return $this->hash;
 	}
 
-	protected function decodePayload() : void{
-		$this->uvarint1 = $this->getUnsignedVarInt();
-	}
-
-	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->uvarint1);
-	}
-
-	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleRemoveEntity($this);
+	/**
+	 * @return string
+	 */
+	public function getPayload() : string{
+		return $this->payload;
 	}
 }

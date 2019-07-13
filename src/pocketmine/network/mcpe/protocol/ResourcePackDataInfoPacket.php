@@ -42,6 +42,10 @@ class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket
 	public $compressedPackSize;
 	/** @var string */
 	public $sha256;
+	/** @var bool */
+	public $isPremium = false;
+	/** @var int */
+	public $packType = 0; //TODO: check the values for this
 
 	public static function create(string $packId, int $maxChunkSize, int $chunkCount, int $compressedPackSize, string $sha256sum) : self{
 		$result = new self;
@@ -59,6 +63,8 @@ class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket
 		$this->chunkCount = $this->getLInt();
 		$this->compressedPackSize = $this->getLLong();
 		$this->sha256 = $this->getString();
+		$this->isPremium = $this->getBool();
+		$this->packType = $this->getByte();
 	}
 
 	protected function encodePayload() : void{
@@ -67,6 +73,8 @@ class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket
 		$this->putLInt($this->chunkCount);
 		$this->putLLong($this->compressedPackSize);
 		$this->putString($this->sha256);
+		$this->putBool($this->isPremium);
+		$this->putByte($this->packType);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

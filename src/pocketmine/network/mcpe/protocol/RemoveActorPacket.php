@@ -28,32 +28,27 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 
-class TakeItemEntityPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::TAKE_ITEM_ENTITY_PACKET;
+class RemoveActorPacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::REMOVE_ACTOR_PACKET;
 
 	/** @var int */
-	public $target;
-	/** @var int */
-	public $eid;
+	public $entityUniqueId;
 
-	public static function create(int $takerEntityRuntimeId, int $itemEntityRuntimeId) : self{
+	public static function create(int $entityUniqueId) : self{
 		$result = new self;
-		$result->target = $itemEntityRuntimeId;
-		$result->eid = $takerEntityRuntimeId;
+		$result->entityUniqueId = $entityUniqueId;
 		return $result;
 	}
 
 	protected function decodePayload() : void{
-		$this->target = $this->getEntityRuntimeId();
-		$this->eid = $this->getEntityRuntimeId();
+		$this->entityUniqueId = $this->getEntityUniqueId();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->target);
-		$this->putEntityRuntimeId($this->eid);
+		$this->putEntityUniqueId($this->entityUniqueId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleTakeItemEntity($this);
+		return $handler->handleRemoveActor($this);
 	}
 }

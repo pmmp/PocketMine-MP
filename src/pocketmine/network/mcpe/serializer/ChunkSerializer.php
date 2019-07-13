@@ -28,7 +28,6 @@ use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use function count;
-use function pack;
 
 final class ChunkSerializer{
 
@@ -46,8 +45,6 @@ final class ChunkSerializer{
 	public static function serialize(Chunk $chunk, ?string $tiles = null) : string{
 		$stream = new NetworkBinaryStream();
 		$subChunkCount = $chunk->getSubChunkSendCount();
-		$stream->putByte($subChunkCount);
-
 		for($y = 0; $y < $subChunkCount; ++$y){
 			$layers = $chunk->getSubChunk($y)->getBlockLayers();
 			$stream->putByte(8); //version
@@ -64,7 +61,6 @@ final class ChunkSerializer{
 				}
 			}
 		}
-		$stream->put(pack("v*", ...$chunk->getHeightMapArray()));
 		$stream->put($chunk->getBiomeIdArray());
 		$stream->putByte(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
