@@ -151,19 +151,19 @@ use function assert;
  * @method static GlassBottle GLASS_BOTTLE()
  * @method static Item GLISTERING_MELON()
  * @method static Item GLOWSTONE_DUST()
- * @method static Axe GOLD_AXE()
- * @method static Boots GOLD_BOOTS()
- * @method static Chestplate GOLD_CHESTPLATE()
- * @method static Helmet GOLD_HELMET()
  * @method static Item GOLD_INGOT()
- * @method static Leggings GOLD_LEGGINGS()
  * @method static Item GOLD_NUGGET()
- * @method static Pickaxe GOLD_PICKAXE()
- * @method static Shovel GOLD_SHOVEL()
- * @method static Sword GOLD_SWORD()
  * @method static GoldenApple GOLDEN_APPLE()
+ * @method static Axe GOLDEN_AXE()
+ * @method static Boots GOLDEN_BOOTS()
  * @method static GoldenCarrot GOLDEN_CARROT()
+ * @method static Chestplate GOLDEN_CHESTPLATE()
+ * @method static Helmet GOLDEN_HELMET()
  * @method static Hoe GOLDEN_HOE()
+ * @method static Leggings GOLDEN_LEGGINGS()
+ * @method static Pickaxe GOLDEN_PICKAXE()
+ * @method static Shovel GOLDEN_SHOVEL()
+ * @method static Sword GOLDEN_SWORD()
  * @method static Banner GRAY_BANNER()
  * @method static Bed GRAY_BED()
  * @method static Dye GRAY_DYE()
@@ -444,19 +444,19 @@ final class VanillaItems{
 		self::register("glass_bottle", ItemFactory::get(374));
 		self::register("glistering_melon", ItemFactory::get(382));
 		self::register("glowstone_dust", ItemFactory::get(348));
-		self::register("gold_axe", ItemFactory::get(286));
-		self::register("gold_boots", ItemFactory::get(317));
-		self::register("gold_chestplate", ItemFactory::get(315));
-		self::register("gold_helmet", ItemFactory::get(314));
 		self::register("gold_ingot", ItemFactory::get(266));
-		self::register("gold_leggings", ItemFactory::get(316));
 		self::register("gold_nugget", ItemFactory::get(371));
-		self::register("gold_pickaxe", ItemFactory::get(285));
-		self::register("gold_shovel", ItemFactory::get(284));
-		self::register("gold_sword", ItemFactory::get(283));
 		self::register("golden_apple", ItemFactory::get(322));
+		self::register("golden_axe", ItemFactory::get(286));
+		self::register("golden_boots", ItemFactory::get(317));
 		self::register("golden_carrot", ItemFactory::get(396));
+		self::register("golden_chestplate", ItemFactory::get(315));
+		self::register("golden_helmet", ItemFactory::get(314));
 		self::register("golden_hoe", ItemFactory::get(294));
+		self::register("golden_leggings", ItemFactory::get(316));
+		self::register("golden_pickaxe", ItemFactory::get(285));
+		self::register("golden_shovel", ItemFactory::get(284));
+		self::register("golden_sword", ItemFactory::get(283));
 		self::register("gray_banner", ItemFactory::get(446, 8));
 		self::register("gray_bed", ItemFactory::get(355, 7));
 		self::register("gray_dye", ItemFactory::get(351, 8));
