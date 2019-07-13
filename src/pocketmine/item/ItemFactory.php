@@ -58,7 +58,7 @@ class ItemFactory{
 		self::register(new Apple(Item::APPLE, 0, "Apple"));
 		self::register(new Arrow(Item::ARROW, 0, "Arrow"));
 		self::register(new Axe(Item::DIAMOND_AXE, "Diamond Axe", TieredTool::TIER_DIAMOND));
-		self::register(new Axe(Item::GOLDEN_AXE, "Gold Axe", TieredTool::TIER_GOLD));
+		self::register(new Axe(Item::GOLDEN_AXE, "Golden Axe", TieredTool::TIER_GOLD));
 		self::register(new Axe(Item::IRON_AXE, "Iron Axe", TieredTool::TIER_IRON));
 		self::register(new Axe(Item::STONE_AXE, "Stone Axe", TieredTool::TIER_STONE));
 		self::register(new Axe(Item::WOODEN_AXE, "Wooden Axe", TieredTool::TIER_WOODEN));
@@ -70,7 +70,7 @@ class ItemFactory{
 		self::register(new Book(Item::BOOK, 0, "Book"));
 		self::register(new Boots(Item::CHAIN_BOOTS, 0, "Chainmail Boots", new ArmorTypeInfo(1, 196)));
 		self::register(new Boots(Item::DIAMOND_BOOTS, 0, "Diamond Boots", new ArmorTypeInfo(3, 430)));
-		self::register(new Boots(Item::GOLDEN_BOOTS, 0, "Gold Boots", new ArmorTypeInfo(1, 92)));
+		self::register(new Boots(Item::GOLDEN_BOOTS, 0, "Golden Boots", new ArmorTypeInfo(1, 92)));
 		self::register(new Boots(Item::IRON_BOOTS, 0, "Iron Boots", new ArmorTypeInfo(2, 196)));
 		self::register(new Boots(Item::LEATHER_BOOTS, 0, "Leather Boots", new ArmorTypeInfo(1, 66)));
 		self::register(new Bow(Item::BOW, 0, "Bow"));
@@ -80,7 +80,7 @@ class ItemFactory{
 		self::register(new Carrot(Item::CARROT, 0, "Carrot"));
 		self::register(new Chestplate(Item::CHAIN_CHESTPLATE, 0, "Chainmail Chestplate", new ArmorTypeInfo(5, 241)));
 		self::register(new Chestplate(Item::DIAMOND_CHESTPLATE, 0, "Diamond Chestplate", new ArmorTypeInfo(8, 529)));
-		self::register(new Chestplate(Item::GOLDEN_CHESTPLATE, 0, "Gold Chestplate", new ArmorTypeInfo(5, 113)));
+		self::register(new Chestplate(Item::GOLDEN_CHESTPLATE, 0, "Golden Chestplate", new ArmorTypeInfo(5, 113)));
 		self::register(new Chestplate(Item::IRON_CHESTPLATE, 0, "Iron Chestplate", new ArmorTypeInfo(6, 241)));
 		self::register(new Chestplate(Item::LEATHER_CHESTPLATE, 0, "Leather Tunic", new ArmorTypeInfo(3, 81)));
 		self::register(new ChorusFruit(Item::CHORUS_FRUIT, 0, "Chorus Fruit"));
@@ -110,7 +110,7 @@ class ItemFactory{
 		self::register(new GoldenCarrot(Item::GOLDEN_CARROT, 0, "Golden Carrot"));
 		self::register(new Helmet(Item::CHAIN_HELMET, 0, "Chainmail Helmet", new ArmorTypeInfo(2, 166)));
 		self::register(new Helmet(Item::DIAMOND_HELMET, 0, "Diamond Helmet", new ArmorTypeInfo(3, 364)));
-		self::register(new Helmet(Item::GOLDEN_HELMET, 0, "Gold Helmet", new ArmorTypeInfo(2, 78)));
+		self::register(new Helmet(Item::GOLDEN_HELMET, 0, "Golden Helmet", new ArmorTypeInfo(2, 78)));
 		self::register(new Helmet(Item::IRON_HELMET, 0, "Iron Helmet", new ArmorTypeInfo(2, 166)));
 		self::register(new Helmet(Item::LEATHER_HELMET, 0, "Leather Cap", new ArmorTypeInfo(1, 56)));
 		self::register(new Hoe(Item::DIAMOND_HOE, "Diamond Hoe", TieredTool::TIER_DIAMOND));
@@ -214,7 +214,7 @@ class ItemFactory{
 		self::register(new ItemBlock(BlockLegacyIds::SUGARCANE_BLOCK, 0, Item::SUGARCANE));
 		self::register(new Leggings(Item::CHAIN_LEGGINGS, 0, "Chainmail Leggings", new ArmorTypeInfo(4, 226)));
 		self::register(new Leggings(Item::DIAMOND_LEGGINGS, 0, "Diamond Leggings", new ArmorTypeInfo(6, 496)));
-		self::register(new Leggings(Item::GOLDEN_LEGGINGS, 0, "Gold Leggings", new ArmorTypeInfo(3, 106)));
+		self::register(new Leggings(Item::GOLDEN_LEGGINGS, 0, "Golden Leggings", new ArmorTypeInfo(3, 106)));
 		self::register(new Leggings(Item::IRON_LEGGINGS, 0, "Iron Leggings", new ArmorTypeInfo(5, 226)));
 		self::register(new Leggings(Item::LEATHER_LEGGINGS, 0, "Leather Pants", new ArmorTypeInfo(2, 76)));
 		//TODO: fix metadata for buckets with still liquid in them
@@ -228,7 +228,7 @@ class ItemFactory{
 		self::register(new MushroomStew(Item::MUSHROOM_STEW, 0, "Mushroom Stew"));
 		self::register(new PaintingItem(Item::PAINTING, 0, "Painting"));
 		self::register(new Pickaxe(Item::DIAMOND_PICKAXE, "Diamond Pickaxe", TieredTool::TIER_DIAMOND));
-		self::register(new Pickaxe(Item::GOLDEN_PICKAXE, "Gold Pickaxe", TieredTool::TIER_GOLD));
+		self::register(new Pickaxe(Item::GOLDEN_PICKAXE, "Golden Pickaxe", TieredTool::TIER_GOLD));
 		self::register(new Pickaxe(Item::IRON_PICKAXE, "Iron Pickaxe", TieredTool::TIER_IRON));
 		self::register(new Pickaxe(Item::STONE_PICKAXE, "Stone Pickaxe", TieredTool::TIER_STONE));
 		self::register(new Pickaxe(Item::WOODEN_PICKAXE, "Wooden Pickaxe", TieredTool::TIER_WOODEN));
@@ -249,7 +249,7 @@ class ItemFactory{
 		self::register(new RottenFlesh(Item::ROTTEN_FLESH, 0, "Rotten Flesh"));
 		self::register(new Shears(Item::SHEARS, 0, "Shears"));
 		self::register(new Shovel(Item::DIAMOND_SHOVEL, "Diamond Shovel", TieredTool::TIER_DIAMOND));
-		self::register(new Shovel(Item::GOLDEN_SHOVEL, "Gold Shovel", TieredTool::TIER_GOLD));
+		self::register(new Shovel(Item::GOLDEN_SHOVEL, "Golden Shovel", TieredTool::TIER_GOLD));
 		self::register(new Shovel(Item::IRON_SHOVEL, "Iron Shovel", TieredTool::TIER_IRON));
 		self::register(new Shovel(Item::STONE_SHOVEL, "Stone Shovel", TieredTool::TIER_STONE));
 		self::register(new Shovel(Item::WOODEN_SHOVEL, "Wooden Shovel", TieredTool::TIER_WOODEN));
@@ -265,7 +265,7 @@ class ItemFactory{
 		self::register(new Stick(Item::STICK, 0, "Stick"));
 		self::register(new StringItem(Item::STRING, 0, "String"));
 		self::register(new Sword(Item::DIAMOND_SWORD, "Diamond Sword", TieredTool::TIER_DIAMOND));
-		self::register(new Sword(Item::GOLDEN_SWORD, "Gold Sword", TieredTool::TIER_GOLD));
+		self::register(new Sword(Item::GOLDEN_SWORD, "Golden Sword", TieredTool::TIER_GOLD));
 		self::register(new Sword(Item::IRON_SWORD, "Iron Sword", TieredTool::TIER_IRON));
 		self::register(new Sword(Item::STONE_SWORD, "Stone Sword", TieredTool::TIER_STONE));
 		self::register(new Sword(Item::WOODEN_SWORD, "Wooden Sword", TieredTool::TIER_WOODEN));
