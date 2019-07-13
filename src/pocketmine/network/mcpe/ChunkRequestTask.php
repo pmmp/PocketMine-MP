@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Zlib;
-use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
+use pocketmine\network\mcpe\protocol\LevelChunkPacket;
 use pocketmine\network\mcpe\serializer\ChunkSerializer;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
@@ -60,8 +60,10 @@ class ChunkRequestTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$chunk = ChunkSerializer::serialize(FastChunkSerializer::deserialize($this->chunk), $this->tiles);
-		$this->setResult(Zlib::compress(PacketBatch::fromPackets(FullChunkDataPacket::create($this->chunkX, $this->chunkZ, $chunk))->getBuffer(), $this->compressionLevel));
+		$chunk = FastChunkSerializer::deserialize($this->chunk);
+		$subCount = $chunk->getSubChunkSendCount();
+		$payload = ChunkSerializer::serialize($chunk, $this->tiles);
+		$this->setResult(Zlib::compress(PacketBatch::fromPackets(LevelChunkPacket::withoutCache($this->chunkX, $this->chunkZ, $subCount, $payload))->getBuffer(), $this->compressionLevel));
 	}
 
 	public function onError() : void{

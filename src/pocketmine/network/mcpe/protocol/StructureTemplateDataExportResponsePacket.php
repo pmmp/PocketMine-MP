@@ -25,40 +25,20 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
 
-class FullChunkDataPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::FULL_CHUNK_DATA_PACKET;
-
-	/** @var int */
-	public $chunkX;
-	/** @var int */
-	public $chunkZ;
-	/** @var string */
-	public $data;
-
-	public static function create(int $chunkX, int $chunkZ, string $payload) : self{
-		$result = new self;
-		$result->chunkX = $chunkX;
-		$result->chunkZ = $chunkZ;
-		$result->data = $payload;
-		return $result;
-	}
+class StructureTemplateDataExportResponsePacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_RESPONSE_PACKET;
 
 	protected function decodePayload() : void{
-		$this->chunkX = $this->getVarInt();
-		$this->chunkZ = $this->getVarInt();
-		$this->data = $this->getString();
+		//TODO
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->chunkX);
-		$this->putVarInt($this->chunkZ);
-		$this->putString($this->data);
+		//TODO
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleFullChunkData($this);
+		return $handler->handleStructureTemplateDataExportResponse($this);
 	}
 }

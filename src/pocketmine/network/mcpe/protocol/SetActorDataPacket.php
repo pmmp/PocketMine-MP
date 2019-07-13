@@ -26,38 +26,34 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
 
-/**
- * TODO: This packet is (erroneously) sent to the server when the client is riding a vehicle.
- */
-class SetEntityMotionPacket extends DataPacket implements ClientboundPacket, GarbageServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::SET_ENTITY_MOTION_PACKET;
+class SetActorDataPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{ //TODO: check why this is serverbound
+	public const NETWORK_ID = ProtocolInfo::SET_ACTOR_DATA_PACKET;
 
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var Vector3 */
-	public $motion;
+	/** @var array */
+	public $metadata;
 
-	public static function create(int $entityRuntimeId, Vector3 $motion) : self{
+	public static function create(int $entityRuntimeId, array $metadata) : self{
 		$result = new self;
 		$result->entityRuntimeId = $entityRuntimeId;
-		$result->motion = $motion->asVector3();
+		$result->metadata = $metadata;
 		return $result;
 	}
 
 	protected function decodePayload() : void{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->motion = $this->getVector3();
+		$this->metadata = $this->getEntityMetadata();
 	}
 
 	protected function encodePayload() : void{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVector3($this->motion);
+		$this->putEntityMetadata($this->metadata);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleSetEntityMotion($this);
+		return $handler->handleSetActorData($this);
 	}
 }

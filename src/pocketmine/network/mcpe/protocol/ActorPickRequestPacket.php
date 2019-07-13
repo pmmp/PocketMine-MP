@@ -27,8 +27,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 
-class EntityPickRequestPacket extends DataPacket implements ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::ENTITY_PICK_REQUEST_PACKET;
+class ActorPickRequestPacket extends DataPacket implements ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::ACTOR_PICK_REQUEST_PACKET;
 
 	/** @var int */
 	public $entityUniqueId;
@@ -46,6 +46,6 @@ class EntityPickRequestPacket extends DataPacket implements ServerboundPacket{
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleEntityPickRequest($this);
+		return $handler->handleActorPickRequest($this);
 	}
 }

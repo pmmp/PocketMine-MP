@@ -25,39 +25,54 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\ChunkCacheBlob;
+use function count;
 
-class BlockEntityDataPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::BLOCK_ENTITY_DATA_PACKET;
+class ClientCacheMissResponsePacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::CLIENT_CACHE_MISS_RESPONSE_PACKET;
 
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-	/** @var string */
-	public $namedtag;
+	/** @var ChunkCacheBlob[] */
+	private $blobs = [];
 
-	public static function create(int $x, int $y, int $z, string $nbt) : self{
+	/**
+	 * @param ChunkCacheBlob[] $blobs
+	 *
+	 * @return self
+	 */
+	public static function create(array $blobs) : self{
+		//type check
+		(static function(ChunkCacheBlob ...$blobs){})($blobs);
+
 		$result = new self;
-		[$result->x, $result->y, $result->z] = [$x, $y, $z];
-		$result->namedtag = $nbt;
+		$result->blobs = $blobs;
 		return $result;
 	}
 
+	/**
+	 * @return ChunkCacheBlob[]
+	 */
+	public function getBlobs() : array{
+		return $this->blobs;
+	}
+
 	protected function decodePayload() : void{
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->namedtag = $this->getRemaining();
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$hash = $this->getLLong();
+			$payload = $this->getString();
+			$this->blobs[] = new ChunkCacheBlob($hash, $payload);
+		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->put($this->namedtag);
+		$this->putUnsignedVarInt(count($this->blobs));
+		foreach($this->blobs as $blob){
+			$this->putLLong($blob->getHash());
+			$this->putString($blob->getPayload());
+		}
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleBlockEntityData($this);
+		return $handler->handleClientCacheMissResponse($this);
 	}
 }

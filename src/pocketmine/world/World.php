@@ -53,7 +53,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
+use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
@@ -902,7 +902,7 @@ class World implements ChunkManager{
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){
-				$packets[] = BlockEntityDataPacket::create($tile->x, $tile->y, $tile->z, $tile->getSerializedSpawnCompound());
+				$packets[] = BlockActorDataPacket::create($tile->x, $tile->y, $tile->z, $tile->getSerializedSpawnCompound());
 			}
 		}
 

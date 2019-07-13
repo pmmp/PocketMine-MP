@@ -76,68 +76,74 @@ final class EntityMetadataProperties{
 	public const LEAD_HOLDER_EID = 37; //long
 	public const SCALE = 38; //float
 	public const HAS_NPC_COMPONENT = 39; //byte (???)
-	public const SKIN_ID = 40; //string
-	public const NPC_SKIN_ID = 41; //string
-	public const URL_TAG = 42; //string
-	public const MAX_AIR = 43; //short
-	public const MARK_VARIANT = 44; //int
-	public const CONTAINER_TYPE = 45; //byte (ContainerComponent)
-	public const CONTAINER_BASE_SIZE = 46; //int (ContainerComponent)
-	public const CONTAINER_EXTRA_SLOTS_PER_STRENGTH = 47; //int (used for llamas, inventory size is baseSize + thisProp * strength)
-	public const BLOCK_TARGET = 48; //block coords (ender crystal)
-	public const WITHER_INVULNERABLE_TICKS = 49; //int
-	public const WITHER_TARGET_1 = 50; //long
-	public const WITHER_TARGET_2 = 51; //long
-	public const WITHER_TARGET_3 = 52; //long
-	/* 53 (short) */
-	public const BOUNDING_BOX_WIDTH = 54; //float
-	public const BOUNDING_BOX_HEIGHT = 55; //float
-	public const FUSE_LENGTH = 56; //int
-	public const RIDER_SEAT_POSITION = 57; //vector3f
-	public const RIDER_ROTATION_LOCKED = 58; //byte
-	public const RIDER_MAX_ROTATION = 59; //float
-	public const RIDER_MIN_ROTATION = 60; //float
-	public const AREA_EFFECT_CLOUD_RADIUS = 61; //float
-	public const AREA_EFFECT_CLOUD_WAITING = 62; //int
-	public const AREA_EFFECT_CLOUD_PARTICLE_ID = 63; //int
-	/* 64 (int) shulker-related */
-	public const SHULKER_ATTACH_FACE = 65; //byte
-	/* 66 (short) shulker-related */
-	public const SHULKER_ATTACH_POS = 67; //block coords
-	public const TRADING_PLAYER_EID = 68; //long
+	public const NPC_SKIN_INDEX = 40; //string
+	public const NPC_ACTIONS = 41; //string (maybe JSON blob?)
+	public const MAX_AIR = 42; //short
+	public const MARK_VARIANT = 43; //int
+	public const CONTAINER_TYPE = 44; //byte (ContainerComponent)
+	public const CONTAINER_BASE_SIZE = 45; //int (ContainerComponent)
+	public const CONTAINER_EXTRA_SLOTS_PER_STRENGTH = 46; //int (used for llamas, inventory size is baseSize + thisProp * strength)
+	public const BLOCK_TARGET = 47; //block coords (ender crystal)
+	public const WITHER_INVULNERABLE_TICKS = 48; //int
+	public const WITHER_TARGET_1 = 49; //long
+	public const WITHER_TARGET_2 = 50; //long
+	public const WITHER_TARGET_3 = 51; //long
+	/* 52 (short) */
+	public const BOUNDING_BOX_WIDTH = 53; //float
+	public const BOUNDING_BOX_HEIGHT = 54; //float
+	public const FUSE_LENGTH = 55; //int
+	public const RIDER_SEAT_POSITION = 56; //vector3f
+	public const RIDER_ROTATION_LOCKED = 57; //byte
+	public const RIDER_MAX_ROTATION = 58; //float
+	public const RIDER_MIN_ROTATION = 59; //float
+	public const AREA_EFFECT_CLOUD_RADIUS = 60; //float
+	public const AREA_EFFECT_CLOUD_WAITING = 61; //int
+	public const AREA_EFFECT_CLOUD_PARTICLE_ID = 62; //int
+	/* 63 (int) shulker-related */
+	public const SHULKER_ATTACH_FACE = 64; //byte
+	/* 65 (short) shulker-related */
+	public const SHULKER_ATTACH_POS = 66; //block coords
+	public const TRADING_PLAYER_EID = 67; //long
 
-	/* 70 (byte) command-block */
-	public const COMMAND_BLOCK_COMMAND = 71; //string
-	public const COMMAND_BLOCK_LAST_OUTPUT = 72; //string
-	public const COMMAND_BLOCK_TRACK_OUTPUT = 73; //byte
-	public const CONTROLLING_RIDER_SEAT_NUMBER = 74; //byte
-	public const STRENGTH = 75; //int
-	public const MAX_STRENGTH = 76; //int
-	/* 77 (int) */
-	public const LIMITED_LIFE = 78;
-	public const ARMOR_STAND_POSE_INDEX = 79; //int
-	public const ENDER_CRYSTAL_TIME_OFFSET = 80; //int
-	public const ALWAYS_SHOW_NAMETAG = 81; //byte: -1 = default, 0 = only when looked at, 1 = always
-	public const COLOR_2 = 82; //byte
-	/* 83 (unknown) */
-	public const SCORE_TAG = 84; //string
-	public const BALLOON_ATTACHED_ENTITY = 85; //int64, entity unique ID of owner
-	public const PUFFERFISH_SIZE = 86; //byte
-	public const BOAT_BUBBLE_TIME = 87; //int (time in bubble column)
-	public const PLAYER_AGENT_EID = 88; //long
-	/* 89 (float) related to panda sitting
-	 * 90 (float) related to panda sitting */
-	public const EAT_COUNTER = 91; //int (used by pandas)
-	public const FLAGS2 = 92; //long (extended data flags)
-	/* 93 (float) related to panda lying down
-	 * 94 (float) related to panda lying down */
-	public const AREA_EFFECT_CLOUD_DURATION = 95; //int
-	public const AREA_EFFECT_CLOUD_SPAWN_TIME = 96; //int
-	public const AREA_EFFECT_CLOUD_RADIUS_PER_TICK = 97; //float, usually negative
-	public const AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP = 98; //float
-	public const AREA_EFFECT_CLOUD_PICKUP_COUNT = 99; //int
-	public const INTERACTIVE_TAG = 100; //string (button text)
-	public const TRADE_TIER = 101; //int
-	public const MAX_TRADE_TIER = 102; //int
-	public const TRADE_XP = 103; //int
+	/* 69 (byte) command-block */
+	public const COMMAND_BLOCK_COMMAND = 70; //string
+	public const COMMAND_BLOCK_LAST_OUTPUT = 71; //string
+	public const COMMAND_BLOCK_TRACK_OUTPUT = 72; //byte
+	public const CONTROLLING_RIDER_SEAT_NUMBER = 73; //byte
+	public const STRENGTH = 74; //int
+	public const MAX_STRENGTH = 75; //int
+	/* 76 (int) */
+	public const LIMITED_LIFE = 77;
+	public const ARMOR_STAND_POSE_INDEX = 78; //int
+	public const ENDER_CRYSTAL_TIME_OFFSET = 79; //int
+	public const ALWAYS_SHOW_NAMETAG = 80; //byte: -1 = default, 0 = only when looked at, 1 = always
+	public const COLOR_2 = 81; //byte
+	/* 82 (unknown) */
+	public const SCORE_TAG = 83; //string
+	public const BALLOON_ATTACHED_ENTITY = 84; //int64, entity unique ID of owner
+	public const PUFFERFISH_SIZE = 85; //byte
+	public const BOAT_BUBBLE_TIME = 86; //int (time in bubble column)
+	public const PLAYER_AGENT_EID = 87; //long
+	/* 88 (float) related to panda sitting
+	 * 89 (float) related to panda sitting */
+	public const EAT_COUNTER = 90; //int (used by pandas)
+	public const FLAGS2 = 91; //long (extended data flags)
+	/* 92 (float) related to panda lying down
+	 * 93 (float) related to panda lying down */
+	public const AREA_EFFECT_CLOUD_DURATION = 94; //int
+	public const AREA_EFFECT_CLOUD_SPAWN_TIME = 95; //int
+	public const AREA_EFFECT_CLOUD_RADIUS_PER_TICK = 96; //float, usually negative
+	public const AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP = 97; //float
+	public const AREA_EFFECT_CLOUD_PICKUP_COUNT = 98; //int
+	public const INTERACTIVE_TAG = 99; //string (button text)
+	public const TRADE_TIER = 100; //int
+	public const MAX_TRADE_TIER = 101; //int
+	public const TRADE_XP = 102; //int
+	public const SKIN_ID = 103; //int ???
+	/* 104 (int) related to wither */
+	public const COMMAND_BLOCK_TICK_DELAY = 105; //int
+	public const COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = 106; //byte
+	public const AMBIENT_SOUND_INTERVAL_MIN = 107; //float
+	public const AMBIENT_SOUND_INTERVAL_RANGE = 108; //float
+	public const AMBIENT_SOUND_EVENT = 109; //string
 }

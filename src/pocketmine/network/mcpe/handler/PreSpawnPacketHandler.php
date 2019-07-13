@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\AvailableEntityIdentifiersPacket;
+use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
@@ -78,7 +78,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->worldName = $this->server->getMotd();
 		$this->session->sendDataPacket($pk);
 
-		$this->session->sendDataPacket(new AvailableEntityIdentifiersPacket());
+		$this->session->sendDataPacket(new AvailableActorIdentifiersPacket());
 		$this->session->sendDataPacket(new BiomeDefinitionListPacket());
 
 		$this->player->setImmobile(); //HACK: fix client-side falling pre-spawn

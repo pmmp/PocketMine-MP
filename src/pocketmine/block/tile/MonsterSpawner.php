@@ -27,7 +27,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\AddActorPacket;
 
 /**
  * @deprecated
@@ -97,7 +97,7 @@ class MonsterSpawner extends Spawnable{
 	public function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_LEGACY_ENTITY_TYPE_ID, IntTag::class)){
 			//TODO: this will cause unexpected results when there's no mapping for the entity
-			$this->entityTypeId = AddEntityPacket::LEGACY_ID_MAP_BC[$nbt->getInt(self::TAG_LEGACY_ENTITY_TYPE_ID)] ?? ":";
+			$this->entityTypeId = AddActorPacket::LEGACY_ID_MAP_BC[$nbt->getInt(self::TAG_LEGACY_ENTITY_TYPE_ID)] ?? ":";
 		}elseif($nbt->hasTag(self::TAG_ENTITY_TYPE_ID, StringTag::class)){
 			$this->entityTypeId = $nbt->getString(self::TAG_ENTITY_TYPE_ID);
 		}else{

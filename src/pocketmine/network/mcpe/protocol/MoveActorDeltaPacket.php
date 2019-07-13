@@ -28,8 +28,8 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\utils\BinaryDataException;
 
-class MoveEntityDeltaPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_DELTA_PACKET;
+class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::MOVE_ACTOR_DELTA_PACKET;
 
 	public const FLAG_HAS_X = 0x01;
 	public const FLAG_HAS_Y = 0x02;
@@ -116,6 +116,6 @@ class MoveEntityDeltaPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleMoveEntityDelta($this);
+		return $handler->handleMoveActorDelta($this);
 	}
 }

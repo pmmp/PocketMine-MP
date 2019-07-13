@@ -59,6 +59,10 @@ class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 	public $name;
 	/** @var bool */
 	public $shouldTrackOutput;
+	/** @var int */
+	public $tickDelay;
+	/** @var bool */
+	public $executeOnFirstTick;
 
 	protected function decodePayload() : void{
 		$this->isBlock = $this->getBool();
@@ -78,6 +82,8 @@ class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 		$this->name = $this->getString();
 
 		$this->shouldTrackOutput = $this->getBool();
+		$this->tickDelay = $this->getLInt();
+		$this->executeOnFirstTick = $this->getBool();
 	}
 
 	protected function encodePayload() : void{
@@ -97,6 +103,8 @@ class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 		$this->putString($this->name);
 
 		$this->putBool($this->shouldTrackOutput);
+		$this->putLInt($this->tickDelay);
+		$this->putBool($this->executeOnFirstTick);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

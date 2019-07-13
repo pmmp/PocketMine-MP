@@ -34,7 +34,7 @@ class Bookshelf extends Solid{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::BOOK()
+			VanillaItems::BOOK()->setCount(3)
 		];
 	}
 

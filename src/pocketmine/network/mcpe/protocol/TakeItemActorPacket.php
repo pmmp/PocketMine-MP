@@ -28,32 +28,32 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 
-class SetEntityDataPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{ //TODO: check why this is serverbound
-	public const NETWORK_ID = ProtocolInfo::SET_ENTITY_DATA_PACKET;
+class TakeItemActorPacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::TAKE_ITEM_ACTOR_PACKET;
 
 	/** @var int */
-	public $entityRuntimeId;
-	/** @var array */
-	public $metadata;
+	public $target;
+	/** @var int */
+	public $eid;
 
-	public static function create(int $entityRuntimeId, array $metadata) : self{
+	public static function create(int $takerEntityRuntimeId, int $itemEntityRuntimeId) : self{
 		$result = new self;
-		$result->entityRuntimeId = $entityRuntimeId;
-		$result->metadata = $metadata;
+		$result->target = $itemEntityRuntimeId;
+		$result->eid = $takerEntityRuntimeId;
 		return $result;
 	}
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->metadata = $this->getEntityMetadata();
+		$this->target = $this->getEntityRuntimeId();
+		$this->eid = $this->getEntityRuntimeId();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putEntityMetadata($this->metadata);
+		$this->putEntityRuntimeId($this->target);
+		$this->putEntityRuntimeId($this->eid);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleSetEntityData($this);
+		return $handler->handleTakeItemActor($this);
 	}
 }

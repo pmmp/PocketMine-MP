@@ -29,7 +29,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
-use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
+use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataTypes;
@@ -84,7 +84,7 @@ class FloatingTextParticle implements Particle{
 		if($this->entityId === null){
 			$this->entityId = EntityFactory::nextRuntimeId();
 		}else{
-			$p[] = RemoveEntityPacket::create($this->entityId);
+			$p[] = RemoveActorPacket::create($this->entityId);
 		}
 
 		if(!$this->invisible){

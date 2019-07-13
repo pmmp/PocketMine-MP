@@ -30,8 +30,8 @@ use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ArrowHitSound;
@@ -143,7 +143,7 @@ class Arrow extends Projectile{
 
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
 		parent::onHitBlock($blockHit, $hitResult);
-		$this->broadcastEntityEvent(EntityEventPacket::ARROW_SHAKE, 7); //7 ticks
+		$this->broadcastEntityEvent(ActorEventPacket::ARROW_SHAKE, 7); //7 ticks
 	}
 
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
@@ -193,7 +193,7 @@ class Arrow extends Projectile{
 			return;
 		}
 
-		$this->server->broadcastPacket($this->getViewers(), TakeItemEntityPacket::create($player->getId(), $this->getId()));
+		$this->server->broadcastPacket($this->getViewers(), TakeItemActorPacket::create($player->getId(), $this->getId()));
 
 		$playerInventory->addItem(clone $item);
 		$this->flagForDespawn();
