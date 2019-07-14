@@ -35,7 +35,7 @@ use function array_search;
 use function count;
 
 class AddActorPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::ADD_ENTITY_PACKET;
+	public const NETWORK_ID = ProtocolInfo::ADD_ACTOR_PACKET;
 
 	/*
 	 * Really really really really really nasty hack, to preserve backwards compatibility.
