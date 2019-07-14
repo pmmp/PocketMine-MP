@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\ResourcePackType;
 
 class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
@@ -45,7 +46,7 @@ class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket
 	/** @var bool */
 	public $isPremium = false;
 	/** @var int */
-	public $packType = 0; //TODO: check the values for this
+	public $packType = ResourcePackType::RESOURCES; //TODO: check the values for this
 
 	public static function create(string $packId, int $maxChunkSize, int $chunkCount, int $compressedPackSize, string $sha256sum) : self{
 		$result = new self;

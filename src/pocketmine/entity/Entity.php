@@ -759,7 +759,7 @@ abstract class Entity extends Location implements EntityIds{
 			$this->setFireTicks($ticks);
 		}
 
-		$this->setGenericFlag(EntityMetadataFlags::ONFIRE, true);
+		$this->setGenericFlag(EntityMetadataFlags::ONFIRE, $this->isOnFire());
 	}
 
 	/**

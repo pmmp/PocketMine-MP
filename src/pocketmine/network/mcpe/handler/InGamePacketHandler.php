@@ -444,6 +444,8 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerActionPacket::ACTION_STOP_SWIMMING:
 				//TODO: handle this when it doesn't spam every damn tick (yet another spam bug!!)
 				break;
+			case PlayerActionPacket::ACTION_INTERACT_BLOCK: //ignored (for now)
+				break;
 			default:
 				$this->session->getLogger()->debug("Unhandled/unknown player action type " . $packet->action);
 				return false;
