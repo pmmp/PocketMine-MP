@@ -1143,7 +1143,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->setFireTicks($ticks);
 		}
 
-		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, true);
+		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, $this->isOnFire());
 	}
 
 	/**
