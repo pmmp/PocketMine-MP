@@ -640,10 +640,11 @@ class InGamePacketHandler extends PacketHandler{
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
 				/** @var WrittenBook $newBook */
-				$newBook = VanillaItems::WRITTEN_BOOK()->setNamedTag($oldBook->getNamedTag());
-				$newBook->setAuthor($packet->author);
-				$newBook->setTitle($packet->title);
-				$newBook->setGeneration(WrittenBook::GENERATION_ORIGINAL);
+				$newBook = VanillaItems::WRITTEN_BOOK()
+					->setPages($oldBook->getPages())
+					->setAuthor($packet->author)
+					->setTitle($packet->title)
+					->setGeneration(WrittenBook::GENERATION_ORIGINAL);
 				break;
 			default:
 				return false;
