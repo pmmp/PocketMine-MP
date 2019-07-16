@@ -1596,7 +1596,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			 * If you must tamper with this code, be aware that this can cause very nasty results. Do not waste our time
 			 * asking for help if you suffer the consequences of messing with this.
 			 */
-			$this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
+			$this->server->getLogger()->debug($this->getName() . " moved too fast, reverting movement");
 			$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
 			$revert = true;
 		}elseif(!$this->level->isInLoadedTerrain($newPos) or !$this->level->isChunkGenerated($newPos->getFloorX() >> 4, $newPos->getFloorZ() >> 4)){
@@ -1621,7 +1621,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 				if(!$ev->isCancelled()){
 					$revert = true;
-					$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
+					$this->server->getLogger()->debug($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
 					$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
 				}
 			}
