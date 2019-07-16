@@ -31,7 +31,7 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
-use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
 use pocketmine\math\Vector3;
@@ -640,7 +640,7 @@ class InGamePacketHandler extends PacketHandler{
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
 				/** @var WrittenBook $newBook */
-				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
+				$newBook = VanillaItems::WRITTEN_BOOK()->setNamedTag($oldBook->getNamedTag());
 				$newBook->setAuthor($packet->author);
 				$newBook->setTitle($packet->title);
 				$newBook->setGeneration(WrittenBook::GENERATION_ORIGINAL);

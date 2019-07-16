@@ -30,7 +30,7 @@ class BrownMushroomBlock extends RedMushroomBlock{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			Item::get(Item::BROWN_MUSHROOM, 0, mt_rand(0, 2))
+			VanillaBlocks::BROWN_MUSHROOM()->asItem()->setCount(mt_rand(0, 2))
 		];
 	}
 }

@@ -55,7 +55,7 @@ class RedMushroomBlock extends Solid{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			Item::get(Item::RED_MUSHROOM, 0, mt_rand(0, 2))
+			VanillaBlocks::RED_MUSHROOM()->asItem()->setCount(mt_rand(0, 2))
 		];
 	}
 }
