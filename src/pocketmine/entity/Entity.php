@@ -977,14 +977,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$this->setNameTagVisible($this->namedtag->getString("CustomNameVisible") !== "");
 				$this->namedtag->removeTag("CustomNameVisible");
 			}else{
-				$this->setNameTagVisible($this->namedtag->getByte("CustomNameVisible", 0) !== 0);
+				$this->setNameTagVisible($this->namedtag->getByte("CustomNameVisible", 1) !== 0);
 			}
 			
 			if($this->namedtag->hasTag("CustomNameAlwaysVisible", StringTag::class)){
-                $this->setNameTagAlwaysVisible($this->namedtag->getString("CustomNameAlwaysVisible") !== "");
-                $this->namedtag->removeTag("CustomNameAlwaysVisible");
+				$this->setNameTagAlwaysVisible($this->namedtag->getString("CustomNameAlwaysVisible") !== "");
+				$this->namedtag->removeTag("CustomNameAlwaysVisible");
             }else{
-			    $this->setNameTagAlwaysVisible($this->namedtag->getByte("CustomNameAlwaysVisible", 1) !== 0);
+				$this->setNameTagAlwaysVisible($this->namedtag->getByte("CustomNameAlwaysVisible", 0) !== 0);
             }
 		}
 	}
