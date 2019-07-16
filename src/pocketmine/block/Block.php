@@ -51,21 +51,6 @@ use const PHP_INT_MAX;
 
 class Block extends Position implements BlockLegacyIds{
 
-	/**
-	 * Returns a new Block instance with the specified ID, meta and position.
-	 *
-	 * This function redirects to {@link BlockFactory#get}.
-	 *
-	 * @param int           $id
-	 * @param int           $meta
-	 * @param Position|null $pos
-	 *
-	 * @return Block
-	 */
-	public static function get(int $id, int $meta = 0, ?Position $pos = null) : Block{
-		return BlockFactory::get($id, $meta, $pos);
-	}
-
 	/** @var BlockIdentifier */
 	protected $idInfo;
 

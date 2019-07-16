@@ -58,36 +58,6 @@ class Item implements ItemIds, \JsonSerializable{
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
 
-	/**
-	 * Returns a new Item instance with the specified ID, damage, count and NBT.
-	 *
-	 * This function redirects to {@link ItemFactory#get}.
-	 *
-	 * @param int         $id
-	 * @param int         $meta
-	 * @param int         $count
-	 * @param CompoundTag $tags
-	 *
-	 * @return Item
-	 */
-	public static function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
-		return ItemFactory::get($id, $meta, $count, $tags);
-	}
-
-	/**
-	 * Tries to parse the specified string into Item types.
-	 *
-	 * This function redirects to {@link ItemFactory#fromString}.
-	 *
-	 * @param string $str
-	 *
-	 * @return Item
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromString(string $str) : Item{
-		return ItemFactory::fromString($str);
-	}
-
 	/** @var int */
 	protected $id;
 	/** @var int */
