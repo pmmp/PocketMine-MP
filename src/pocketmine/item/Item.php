@@ -26,7 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\item;
 
-use function array_map;
 use Ds\Set;
 use pocketmine\block\Block;
 use pocketmine\block\BlockBreakInfo;
@@ -46,6 +45,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\player\Player;
 use pocketmine\utils\Binary;
+use function array_map;
 use function base64_decode;
 use function base64_encode;
 use function get_class;
@@ -129,7 +129,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param CompoundTag $compound
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setCustomBlockData(CompoundTag $compound) : Item{
 		$this->blockEntityTag = clone $compound;
@@ -175,7 +175,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @param Enchantment $enchantment
 	 * @param int         $level
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function removeEnchantment(Enchantment $enchantment, int $level = -1) : Item{
 		$instance = $this->getEnchantment($enchantment);
@@ -187,7 +187,7 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @return Item
+	 * @return $this
 	 */
 	public function removeEnchantments() : Item{
 		$this->enchantments = [];
@@ -197,7 +197,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param EnchantmentInstance $enchantment
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function addEnchantment(EnchantmentInstance $enchantment) : Item{
 		$this->enchantments[$enchantment->getId()] = $enchantment;
@@ -240,7 +240,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param string $name
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setCustomName(string $name) : Item{
 		//TODO: encoding might need to be checked here
@@ -249,7 +249,7 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @return Item
+	 * @return $this
 	 */
 	public function clearCustomName() : Item{
 		$this->setCustomName("");
@@ -266,7 +266,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param string[] $lines
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setLore(array $lines) : Item{
 		foreach($lines as $line){
@@ -333,7 +333,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @param CompoundTag $tag
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setNamedTag(CompoundTag $tag) : Item{
 		if($tag->getCount() === 0){
@@ -348,7 +348,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * Removes the Item's NBT.
-	 * @return Item
+	 * @return $this
 	 */
 	public function clearNamedTag() : Item{
 		$this->nbt = new CompoundTag();
@@ -476,7 +476,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param int $count
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setCount(int $count) : Item{
 		$this->count = $count;
