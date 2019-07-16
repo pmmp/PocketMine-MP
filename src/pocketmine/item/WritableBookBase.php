@@ -157,9 +157,12 @@ abstract class WritableBookBase extends Item{
 
 	/**
 	 * @param WritableBookPage[] $pages
+	 *
+	 * @return $this
 	 */
-	public function setPages(array $pages) : void{
+	public function setPages(array $pages) : self{
 		$this->pages = new Deque($pages);
+		return $this;
 	}
 
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
