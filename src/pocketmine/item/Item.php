@@ -704,18 +704,9 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		if($this->id === $item->getId() and (!$checkDamage or $this->getMeta() === $item->getMeta())){
-			if($checkCompound){
-				$tag1 = $this->getNamedTag();
-				$tag2 = $item->getNamedTag();
-
-				return ($tag1 === null and $tag2 === null) or ($tag1 !== null and $tag2 !== null and $tag1->equals($tag2));
-			}else{
-				return true;
-			}
-		}
-
-		return false;
+		return $this->id === $item->getId() and
+			(!$checkDamage or $this->getMeta() === $item->getMeta()) and
+			(!$checkCompound or $this->getNamedTag()->equals($item->getNamedTag()));
 	}
 
 	/**
