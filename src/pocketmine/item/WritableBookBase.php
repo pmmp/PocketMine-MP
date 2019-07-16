@@ -23,15 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\nbt\NBT;
+use Ds\Deque;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 
 abstract class WritableBookBase extends Item{
-
 	public const TAG_PAGES = "pages"; //TAG_List<TAG_Compound>
 	public const TAG_PAGE_TEXT = "text"; //TAG_String
 	public const TAG_PAGE_PHOTONAME = "photoname"; //TAG_String - TODO
+
+	/** @var WritableBookPage[]|Deque */
+	private $pages;
+
+	public function __construct(int $id, int $variant, string $name){
+		parent::__construct($id, $variant, $name);
+		$this->pages = new Deque();
+	}
 
 	/**
 	 * Returns whether the given page exists in this book.
@@ -41,7 +48,7 @@ abstract class WritableBookBase extends Item{
 	 * @return bool
 	 */
 	public function pageExists(int $pageId) : bool{
-		return $this->getPagesTag()->isset($pageId);
+		return isset($this->pages[$pageId]);
 	}
 
 	/**
@@ -49,20 +56,11 @@ abstract class WritableBookBase extends Item{
 	 *
 	 * @param int $pageId
 	 *
-	 * @return string|null
+	 * @return string
+	 * @throws \OutOfRangeException if requesting a nonexisting page
 	 */
-	public function getPageText(int $pageId) : ?string{
-		$pages = $this->getNamedTag()->getListTag(self::TAG_PAGES);
-		if($pages === null){
-			return null;
-		}
-
-		$page = $pages->get($pageId);
-		if($page instanceof CompoundTag){
-			return $page->getString(self::TAG_PAGE_TEXT, "");
-		}
-
-		return null;
+	public function getPageText(int $pageId) : string{
+		return $this->pages[$pageId]->getText();
 	}
 
 	/**
@@ -78,14 +76,7 @@ abstract class WritableBookBase extends Item{
 			$this->addPage($pageId);
 		}
 
-		/** @var CompoundTag[]|ListTag $pagesTag */
-		$pagesTag = $this->getPagesTag();
-		/** @var CompoundTag $page */
-		$page = $pagesTag->get($pageId);
-		$page->setString(self::TAG_PAGE_TEXT, $pageText);
-
-		$this->getNamedTag()->setTag(self::TAG_PAGES, $pagesTag);
-
+		$this->pages->set($pageId, new WritableBookPage($pageText));
 		return $this;
 	}
 
@@ -102,16 +93,9 @@ abstract class WritableBookBase extends Item{
 			throw new \InvalidArgumentException("Page number \"$pageId\" is out of range");
 		}
 
-		$pagesTag = $this->getPagesTag();
-
-		for($current = $pagesTag->count(); $current <= $pageId; $current++){
-			$pagesTag->push(CompoundTag::create()
-				->setString(self::TAG_PAGE_TEXT, "")
-				->setString(self::TAG_PAGE_PHOTONAME, "")
-			);
+		for($current = $this->pages->count(); $current <= $pageId; $current++){
+			$this->pages->push(new WritableBookPage(""));
 		}
-
-		$this->getNamedTag()->setTag(self::TAG_PAGES, $pagesTag);
 		return $this;
 	}
 
@@ -123,9 +107,7 @@ abstract class WritableBookBase extends Item{
 	 * @return $this
 	 */
 	public function deletePage(int $pageId) : self{
-		$pagesTag = $this->getPagesTag();
-		$pagesTag->remove($pageId);
-
+		$this->pages->remove($pageId);
 		return $this;
 	}
 
@@ -138,15 +120,7 @@ abstract class WritableBookBase extends Item{
 	 * @return $this
 	 */
 	public function insertPage(int $pageId, string $pageText = "") : self{
-		$pagesTag = $this->getPagesTag();
-
-		$pagesTag->insert($pageId, CompoundTag::create()
-			->setString(self::TAG_PAGE_TEXT, $pageText)
-			->setString(self::TAG_PAGE_PHOTONAME, "")
-		);
-
-		$this->getNamedTag()->setTag(self::TAG_PAGES, $pagesTag);
-
+		$this->pages->insert($pageId, new WritableBookPage($pageText));
 		return $this;
 	}
 
@@ -157,12 +131,9 @@ abstract class WritableBookBase extends Item{
 	 * @param int $pageId2
 	 *
 	 * @return bool indicating success
+	 * @throws \OutOfRangeException if either of the pages does not exist
 	 */
 	public function swapPages(int $pageId1, int $pageId2) : bool{
-		if(!$this->pageExists($pageId1) or !$this->pageExists($pageId2)){
-			return false;
-		}
-
 		$pageContents1 = $this->getPageText($pageId1);
 		$pageContents2 = $this->getPageText($pageId2);
 		$this->setPageText($pageId1, $pageContents2);
@@ -178,30 +149,51 @@ abstract class WritableBookBase extends Item{
 	/**
 	 * Returns an array containing all pages of this book.
 	 *
-	 * @return CompoundTag[]
+	 * @return WritableBookPage[]|Deque
 	 */
-	public function getPages() : array{
-		$pages = $this->getNamedTag()->getListTag(self::TAG_PAGES);
-		if($pages === null){
-			return [];
-		}
-
-		return $pages->getValue();
-	}
-
-	protected function getPagesTag() : ListTag{
-		return $this->getNamedTag()->getListTag(self::TAG_PAGES) ?? new ListTag([], NBT::TAG_Compound);
+	public function getPages() : Deque{
+		return $this->pages;
 	}
 
 	/**
-	 * @param CompoundTag[] $pages
-	 *
-	 * @return $this
+	 * @param WritableBookPage[]|Deque $pages
 	 */
-	public function setPages(array $pages) : self{
-		$nbt = $this->getNamedTag();
-		$nbt->setTag(self::TAG_PAGES, new ListTag($pages, NBT::TAG_Compound));
-		$this->setNamedTag($nbt);
-		return $this;
+	public function setPages(Deque $pages) : void{
+		$this->pages = $pages;
+	}
+
+	protected function deserializeCompoundTag(CompoundTag $tag) : void{
+		parent::deserializeCompoundTag($tag);
+		$this->pages = new Deque();
+
+		$pages = $tag->getListTag(self::TAG_PAGES);
+		if($pages !== null){
+			/** @var CompoundTag $page */
+			foreach($pages as $page){
+				$this->pages->push(new WritableBookPage($page->getString(self::TAG_PAGE_TEXT), $page->getString(self::TAG_PAGE_PHOTONAME, "")));
+			}
+		}
+	}
+
+	protected function serializeCompoundTag(CompoundTag $tag) : void{
+		parent::serializeCompoundTag($tag);
+		if(!$this->pages->isEmpty()){
+			$pages = new ListTag();
+			foreach($this->pages as $page){
+				$pages->push(CompoundTag::create()
+					->setString(self::TAG_PAGE_TEXT, $page->getText())
+					->setString(self::TAG_PAGE_PHOTONAME, $page->getPhotoName())
+				);
+			}
+			$tag->setTag(self::TAG_PAGES, $pages);
+		}else{
+			$tag->removeTag(self::TAG_PAGES);
+		}
+	}
+
+	public function __clone(){
+		parent::__clone();
+		//no need to deep-copy each page, the objects are immutable
+		$this->pages = $this->pages->copy();
 	}
 }

@@ -40,9 +40,14 @@ class Banner extends Item{
 	/** @var DyeColor */
 	private $color;
 
+	/** @var BannerPattern[]|Deque */
+	private $patterns;
+
 	public function __construct(int $id, int $variant, string $name, DyeColor $color){
 		parent::__construct($id, $variant, $name);
 		$this->color = $color;
+
+		$this->patterns = new Deque();
 	}
 
 	/**
@@ -64,15 +69,7 @@ class Banner extends Item{
 	 * @return Deque|BannerPattern[]
 	 */
 	public function getPatterns() : Deque{
-		$result = new Deque();
-		$tag = $this->getNamedTag()->getListTag(self::TAG_PATTERNS);
-		if($tag !== null){
-			/** @var CompoundTag $t */
-			foreach($tag as $t){
-				$result->push(new BannerPattern($t->getString(self::TAG_PATTERN_NAME), DyeColor::fromMagicNumber($t->getInt(self::TAG_PATTERN_COLOR), true)));
-			}
-		}
-		return $result;
+		return $this->patterns;
 	}
 
 	/**
@@ -81,19 +78,51 @@ class Banner extends Item{
 	 * @return $this
 	 */
 	public function setPatterns(Deque $patterns) : self{
-		$tag = new ListTag();
-		/** @var BannerPattern $pattern */
-		foreach($patterns as $pattern){
-			$tag->push(CompoundTag::create()
-				->setString(self::TAG_PATTERN_NAME, $pattern->getId())
-				->setInt(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
-			);
-		}
-		$this->getNamedTag()->setTag(self::TAG_PATTERNS, $tag);
+		$this->patterns = $patterns;
 		return $this;
 	}
 
 	public function getFuelTime() : int{
 		return 300;
+	}
+
+	protected function deserializeCompoundTag(CompoundTag $tag) : void{
+		parent::deserializeCompoundTag($tag);
+
+		$this->patterns = new Deque();
+
+		$patterns = $tag->getListTag(self::TAG_PATTERNS);
+		if($patterns !== null){
+			/** @var CompoundTag $t */
+			foreach($patterns as $t){
+				$this->patterns->push(new BannerPattern($t->getString(self::TAG_PATTERN_NAME), DyeColor::fromMagicNumber($t->getInt(self::TAG_PATTERN_COLOR), true)));
+			}
+		}
+	}
+
+	protected function serializeCompoundTag(CompoundTag $tag) : void{
+		parent::serializeCompoundTag($tag);
+
+		if(!$this->patterns->isEmpty()){
+			$patterns = new ListTag();
+			/** @var BannerPattern $pattern */
+			foreach($this->patterns as $pattern){
+				$patterns->push(CompoundTag::create()
+					->setString(self::TAG_PATTERN_NAME, $pattern->getId())
+					->setInt(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
+				);
+			}
+
+
+			$tag->setTag(self::TAG_PATTERNS, $patterns);
+		}else{
+			$tag->removeTag(self::TAG_PATTERNS);
+		}
+	}
+
+	public function __clone(){
+		parent::__clone();
+		//we don't need to duplicate the individual patterns because they are immutable
+		$this->patterns = $this->patterns->copy();
 	}
 }

@@ -30,6 +30,7 @@ use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\ProtectionEnchantment;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\player\Player;
 use pocketmine\utils\Binary;
@@ -43,6 +44,9 @@ abstract class Armor extends Durable{
 
 	/** @var ArmorTypeInfo */
 	private $armorInfo;
+
+	/** @var Color|null */
+	protected $customColor = null;
 
 	public function __construct(int $id, int $variant, string $name, ArmorTypeInfo $info){
 		parent::__construct($id, $variant, $name);
@@ -72,11 +76,7 @@ abstract class Armor extends Durable{
 	 * @return Color|null
 	 */
 	public function getCustomColor() : ?Color{
-		if($this->getNamedTag()->hasTag(self::TAG_CUSTOM_COLOR, IntTag::class)){
-			return Color::fromARGB(Binary::unsignInt($this->getNamedTag()->getInt(self::TAG_CUSTOM_COLOR)));
-		}
-
-		return null;
+		return $this->customColor;
 	}
 
 	/**
@@ -87,7 +87,7 @@ abstract class Armor extends Durable{
 	 * @return $this
 	 */
 	public function setCustomColor(Color $color) : self{
-		$this->getNamedTag()->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($color->toARGB()));
+		$this->customColor = $color;
 		return $this;
 	}
 
@@ -136,5 +136,21 @@ abstract class Armor extends Durable{
 		}
 		$player->getArmorInventory()->setItem($this->getArmorSlot(), $this->pop());
 		return ItemUseResult::SUCCESS();
+	}
+
+	protected function deserializeCompoundTag(CompoundTag $tag) : void{
+		parent::deserializeCompoundTag($tag);
+		if($tag->hasTag(self::TAG_CUSTOM_COLOR, IntTag::class)){
+			$this->customColor = Color::fromARGB(Binary::unsignInt($tag->getInt(self::TAG_CUSTOM_COLOR)));
+		}else{
+			$this->customColor = null;
+		}
+	}
+
+	protected function serializeCompoundTag(CompoundTag $tag) : void{
+		parent::serializeCompoundTag($tag);
+		$this->customColor !== null ?
+			$tag->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customColor->toARGB())) :
+			$tag->removeTag(self::TAG_CUSTOM_COLOR);
 	}
 }

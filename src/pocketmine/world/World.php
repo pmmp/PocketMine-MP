@@ -51,8 +51,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemUseResult;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -1611,17 +1609,12 @@ class World implements ChunkManager{
 			}
 
 			if($player->isAdventure(true) and !$ev->isCancelled()){
-				$tag = $item->getNamedTag()->getListTag("CanDestroy");
 				$canBreak = false;
-				if($tag instanceof ListTag){
-					foreach($tag as $v){
-						if($v instanceof StringTag){
-							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getBlock()->isSameType($target)){
-								$canBreak = true;
-								break;
-							}
-						}
+				foreach($item->getCanDestroy() as $v){
+					$entry = ItemFactory::fromString($v);
+					if($entry->getBlock()->isSameType($target)){
+						$canBreak = true;
+						break;
 					}
 				}
 
@@ -1759,16 +1752,11 @@ class World implements ChunkManager{
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
 			if($player->isAdventure(true) and !$ev->isCancelled()){
 				$canPlace = false;
-				$tag = $item->getNamedTag()->getListTag("CanPlaceOn");
-				if($tag instanceof ListTag){
-					foreach($tag as $v){
-						if($v instanceof StringTag){
-							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getBlock()->isSameType($blockClicked)){
-								$canPlace = true;
-								break;
-							}
-						}
+				foreach($item->getCanPlaceOn() as $v){
+					$entry = ItemFactory::fromString($v);
+					if($entry->getBlock()->isSameType($blockClicked)){
+						$canPlace = true;
+						break;
 					}
 				}
 
