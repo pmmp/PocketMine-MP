@@ -44,6 +44,7 @@ use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
@@ -105,9 +106,10 @@ abstract class Living extends Entity{
 
 		if($nbt->hasTag("HealF", FloatTag::class)){
 			$health = $nbt->getFloat("HealF");
-		}elseif($nbt->hasTag("Health")){
-			$healthTag = $nbt->getTag("Health");
-			$health = (float) $healthTag->getValue(); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
+		}elseif($nbt->hasTag("Health", ShortTag::class)){
+			$health = $nbt->getShort("Health"); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
+		}elseif($nbt->hasTag("Health", FloatTag::class)){
+			$health = $nbt->getFloat("Health");
 		}
 
 		$this->setHealth($health);
