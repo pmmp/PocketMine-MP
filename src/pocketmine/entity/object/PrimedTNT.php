@@ -32,6 +32,7 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\world\Explosion;
+use pocketmine\world\Position;
 use pocketmine\world\sound\IgniteSound;
 
 class PrimedTNT extends Entity implements Explosive{
@@ -110,7 +111,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$ev = new ExplosionPrimeEvent($this, 4);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$explosion = new Explosion($this, $ev->getForce(), $this);
+			$explosion = new Explosion(Position::fromObject($this->add(0, $this->height / 2, 0), $this->world), $ev->getForce(), $this);
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
 			}
