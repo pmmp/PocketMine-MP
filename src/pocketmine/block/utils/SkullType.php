@@ -81,7 +81,7 @@ final class SkullType{
 	/** @var int */
 	private $magicNumber;
 
-	public function __construct(string $enumName, string $displayName, int $magicNumber){
+	private function __construct(string $enumName, string $displayName, int $magicNumber){
 		$this->Enum___construct($enumName);
 		$this->displayName = $displayName;
 		$this->magicNumber = $magicNumber;

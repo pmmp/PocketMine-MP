@@ -36,7 +36,7 @@ use pocketmine\utils\EnumTrait;
  * @method static self CLICKS_AND_STICKS()
  * @method static self DOUBLE_BASS()
  */
-class NoteInstrument{
+final class NoteInstrument{
 	use EnumTrait {
 		__construct as Enum___construct;
 	}
@@ -54,7 +54,7 @@ class NoteInstrument{
 	/** @var int */
 	private $magicNumber;
 
-	public function __construct(string $name, int $magicNumber){
+	private function __construct(string $name, int $magicNumber){
 		$this->Enum___construct($name);
 		$this->magicNumber = $magicNumber;
 	}
