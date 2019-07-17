@@ -26,7 +26,7 @@ namespace pocketmine\utils;
 use function count;
 use function intdiv;
 
-class Color{
+final class Color{
 
 	/** @var int */
 	protected $a;

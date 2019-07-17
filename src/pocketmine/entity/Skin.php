@@ -30,7 +30,7 @@ use function json_encode;
 use function json_last_error_msg;
 use function strlen;
 
-class Skin{
+final class Skin{
 	public const ACCEPTED_SKIN_SIZES = [
 		64 * 32 * 4,
 		64 * 64 * 4,

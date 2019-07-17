@@ -36,7 +36,7 @@ use function substr;
 use function time;
 use function trim;
 
-class UUID{
+final class UUID{
 
 	/** @var int[] */
 	private $parts;
