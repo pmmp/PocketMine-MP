@@ -25,8 +25,10 @@ namespace pocketmine\item\enchantment;
 
 /**
  * Container for enchantment data applied to items.
+ *
+ * Note: This class is assumed to be immutable. Consider this before making alterations.
  */
-class EnchantmentInstance{
+final class EnchantmentInstance{
 	/** @var Enchantment */
 	private $enchantment;
 	/** @var int */
@@ -65,18 +67,5 @@ class EnchantmentInstance{
 	 */
 	public function getLevel() : int{
 		return $this->level;
-	}
-
-	/**
-	 * Sets the level of the enchantment.
-	 *
-	 * @param int $level
-	 *
-	 * @return $this
-	 */
-	public function setLevel(int $level){
-		$this->level = $level;
-
-		return $this;
 	}
 }

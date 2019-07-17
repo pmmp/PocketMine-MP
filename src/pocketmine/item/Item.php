@@ -45,7 +45,6 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\player\Player;
 use pocketmine\utils\Binary;
-use function array_map;
 use function base64_decode;
 use function base64_encode;
 use function get_class;
@@ -848,6 +847,5 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 		$this->canPlaceOn = $this->canPlaceOn->copy();
 		$this->canDestroy = $this->canDestroy->copy();
-		$this->enchantments = array_map(function(EnchantmentInstance $i){ return clone $i; }, $this->enchantments);
 	}
 }
