@@ -34,11 +34,11 @@ class Pickaxe extends TieredTool{
 	}
 
 	public function getBlockToolHarvestLevel() : int{
-		return $this->tier;
+		return $this->tier->getHarvestLevel();
 	}
 
 	public function getAttackPoints() : int{
-		return self::getBaseDamageFromTier($this->tier) - 2;
+		return $this->tier->getBaseAttackPoints() - 2;
 	}
 
 	public function onDestroyBlock(Block $block) : bool{

@@ -27,7 +27,7 @@ use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\event\block\BlockTeleportEvent;
 use pocketmine\item\Item;
-use pocketmine\item\TieredTool;
+use pocketmine\item\ToolTier;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\particle\DragonEggTeleportParticle;
@@ -40,7 +40,7 @@ class DragonEgg extends Transparent implements Fallable{
 	use FallableTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
 	}
 
 	public function getLightLevel() : int{

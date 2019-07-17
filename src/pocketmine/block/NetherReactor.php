@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\item\Item;
-use pocketmine\item\TieredTool;
+use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 
 class NetherReactor extends Solid{
@@ -34,7 +34,7 @@ class NetherReactor extends Solid{
 	protected $state = BlockLegacyMetadata::NETHER_REACTOR_INACTIVE;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, TieredTool::TIER_WOODEN));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
 	}
 
 	protected function writeStateToMeta() : int{

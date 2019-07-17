@@ -34,7 +34,7 @@ class Sword extends TieredTool{
 	}
 
 	public function getAttackPoints() : int{
-		return self::getBaseDamageFromTier($this->tier);
+		return $this->tier->getBaseAttackPoints();
 	}
 
 	public function getBlockToolHarvestLevel() : int{
