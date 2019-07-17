@@ -53,6 +53,8 @@ use function hex2bin;
 use function is_string;
 
 class Item implements ItemIds, \JsonSerializable{
+	use ItemEnchantmentHandlingTrait;
+
 	public const TAG_ENCH = "ench";
 	public const TAG_DISPLAY = "display";
 	public const TAG_BLOCK_ENTITY_TAG = "BlockEntityTag";
@@ -73,8 +75,6 @@ class Item implements ItemIds, \JsonSerializable{
 
 	//TODO: this stuff should be moved to itemstack properties, not mushed in with type properties
 
-	/** @var EnchantmentInstance[] */
-	protected $enchantments = [];
 	/** @var string */
 	protected $customName = "";
 	/** @var string[] */
@@ -141,85 +141,6 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function getCustomBlockData() : ?CompoundTag{
 		return $this->blockEntityTag;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasEnchantments() : bool{
-		return !empty($this->enchantments);
-	}
-
-	/**
-	 * @param Enchantment $enchantment
-	 * @param int         $level
-	 *
-	 * @return bool
-	 */
-	public function hasEnchantment(Enchantment $enchantment, int $level = -1) : bool{
-		$id = $enchantment->getId();
-		return isset($this->enchantments[$id]) and ($level === -1 or $this->enchantments[$id]->getLevel() === $level);
-	}
-
-	/**
-	 * @param Enchantment $enchantment
-	 *
-	 * @return EnchantmentInstance|null
-	 */
-	public function getEnchantment(Enchantment $enchantment) : ?EnchantmentInstance{
-		return $this->enchantments[$enchantment->getId()] ?? null;
-	}
-
-	/**
-	 * @param Enchantment $enchantment
-	 * @param int         $level
-	 *
-	 * @return $this
-	 */
-	public function removeEnchantment(Enchantment $enchantment, int $level = -1) : Item{
-		$instance = $this->getEnchantment($enchantment);
-		if($instance !== null and ($level === -1 or $instance->getLevel() === $level)){
-			unset($this->enchantments[$enchantment->getId()]);
-		}
-
-		return $this;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function removeEnchantments() : Item{
-		$this->enchantments = [];
-		return $this;
-	}
-
-	/**
-	 * @param EnchantmentInstance $enchantment
-	 *
-	 * @return $this
-	 */
-	public function addEnchantment(EnchantmentInstance $enchantment) : Item{
-		$this->enchantments[$enchantment->getId()] = $enchantment;
-		return $this;
-	}
-
-	/**
-	 * @return EnchantmentInstance[]
-	 */
-	public function getEnchantments() : array{
-		return $this->enchantments;
-	}
-
-	/**
-	 * Returns the level of the enchantment on this item with the specified ID, or 0 if the item does not have the
-	 * enchantment.
-	 *
-	 * @param Enchantment $enchantment
-	 *
-	 * @return int
-	 */
-	public function getEnchantmentLevel(Enchantment $enchantment) : int{
-		return ($instance = $this->getEnchantment($enchantment)) !== null ? $instance->getLevel() : 0;
 	}
 
 	/**
