@@ -113,7 +113,7 @@ class BlockTransaction{
 			foreach($this->validators as $validator){
 				if(!$validator($this->world, $x, $y, $z)){
 					$this->isValid = false;
-					break 2;
+					return false;
 				}
 			}
 		}
