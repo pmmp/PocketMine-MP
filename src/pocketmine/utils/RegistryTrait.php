@@ -44,7 +44,7 @@ trait RegistryTrait{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected static function register(string $name, object $member) : void{
+	private static function _registryRegister(string $name, object $member) : void{
 		$name = strtoupper($name);
 		if(isset(self::$members[$name])){
 			throw new \InvalidArgumentException("\"$name\" is already reserved");
@@ -77,7 +77,7 @@ trait RegistryTrait{
 	 * @return object
 	 * @throws \InvalidArgumentException
 	 */
-	public static function fromString(string $name) : object{
+	private static function _registryFromString(string $name) : object{
 		self::checkInit();
 		$name = strtoupper($name);
 		if(!isset(self::$members[$name])){
@@ -106,7 +106,7 @@ trait RegistryTrait{
 	/**
 	 * @return object[]
 	 */
-	public static function getAll() : array{
+	private static function _registryGetAll() : array{
 		self::checkInit();
 		return self::$members;
 	}

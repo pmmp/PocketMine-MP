@@ -26,11 +26,7 @@ namespace pocketmine\utils;
 use function preg_match;
 
 trait EnumTrait{
-	use RegistryTrait {
-		fromString as private Registry_fromString;
-		getAll as private Registry_getAll;
-		register as private Registry_register;
-	}
+	use RegistryTrait;
 
 	/**
 	 * Registers the given object as an enum member.
@@ -40,7 +36,7 @@ trait EnumTrait{
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function register(self $member) : void{
-		self::Registry_register($member->name(), $member);
+		self::_registryRegister($member->name(), $member);
 	}
 
 	/**
@@ -73,7 +69,7 @@ trait EnumTrait{
 	 * @return self[]
 	 */
 	public static function getAll() : array{
-		return self::Registry_getAll();
+		return self::_registryGetAll();
 	}
 
 	/**
@@ -86,7 +82,7 @@ trait EnumTrait{
 	 * @throws \InvalidArgumentException if no member matches.
 	 */
 	public static function fromString(string $name) : self{
-		return self::Registry_fromString($name);
+		return self::_registryFromString($name);
 	}
 
 	/** @var string */

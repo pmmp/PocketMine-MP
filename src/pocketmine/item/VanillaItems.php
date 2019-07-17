@@ -292,18 +292,14 @@ use function assert;
  * @method static Skull ZOMBIE_HEAD()
  */
 final class VanillaItems{
-	use RegistryTrait {
-		fromString as private Registry_fromString;
-		getAll as private Registry_getAll;
-		register as private Registry_register;
-	}
+	use RegistryTrait;
 
 	private function __construct(){
 		//NOOP
 	}
 
 	protected static function register(string $name, Item $item) : void{
-		self::Registry_register($name, $item);
+		self::_registryRegister($name, $item);
 	}
 
 	/**
@@ -312,7 +308,7 @@ final class VanillaItems{
 	 * @return Item
 	 */
 	public static function fromString(string $name) : Item{
-		$result = self::Registry_fromString($name);
+		$result = self::_registryFromString($name);
 		assert($result instanceof Item);
 		return clone $result;
 	}
@@ -321,7 +317,7 @@ final class VanillaItems{
 	 * @return Item[]
 	 */
 	public static function getAll() : array{
-		return array_map(function(Item $member){ return clone $member; }, self::Registry_getAll());
+		return array_map(function(Item $member){ return clone $member; }, self::_registryGetAll());
 	}
 
 	protected static function setup() : void{
