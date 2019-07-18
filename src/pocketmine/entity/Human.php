@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
@@ -315,9 +315,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if($totemModifier < 0){ //Totem prevented death
 			$this->effectManager->clear();
 
-			$this->effectManager->add(new EffectInstance(Effect::REGENERATION(), 40 * 20, 1));
-			$this->effectManager->add(new EffectInstance(Effect::FIRE_RESISTANCE(), 40 * 20, 1));
-			$this->effectManager->add(new EffectInstance(Effect::ABSORPTION(), 5 * 20, 1));
+			$this->effectManager->add(new EffectInstance(VanillaEffects::REGENERATION(), 40 * 20, 1));
+			$this->effectManager->add(new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 40 * 20, 1));
+			$this->effectManager->add(new EffectInstance(VanillaEffects::ABSORPTION(), 5 * 20, 1));
 
 			$this->broadcastEntityEvent(ActorEventPacket::CONSUME_TOTEM);
 			$this->world->addSound($this->add(0, $this->eyeHeight, 0), new TotemUseSound());

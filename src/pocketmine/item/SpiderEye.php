@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\VanillaEffects;
 
 class SpiderEye extends Food{
 
@@ -37,6 +37,6 @@ class SpiderEye extends Food{
 	}
 
 	public function getAdditionalEffects() : array{
-		return [new EffectInstance(Effect::POISON(), 80)];
+		return [new EffectInstance(VanillaEffects::POISON(), 80)];
 	}
 }

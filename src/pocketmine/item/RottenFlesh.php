@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\VanillaEffects;
 use function lcg_value;
 
 class RottenFlesh extends Food{
@@ -40,7 +40,7 @@ class RottenFlesh extends Food{
 	public function getAdditionalEffects() : array{
 		if(lcg_value() <= 0.8){
 			return [
-				new EffectInstance(Effect::HUNGER(), 600)
+				new EffectInstance(VanillaEffects::HUNGER(), 600)
 			];
 		}
 

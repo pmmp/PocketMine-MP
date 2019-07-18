@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\VanillaEffects;
 use function mt_rand;
 
 class PoisonousPotato extends Food{
@@ -40,7 +40,7 @@ class PoisonousPotato extends Food{
 	public function getAdditionalEffects() : array{
 		if(mt_rand(0, 100) > 40){
 			return [
-				new EffectInstance(Effect::POISON(), 100)
+				new EffectInstance(VanillaEffects::POISON(), 100)
 			];
 		}
 		return [];

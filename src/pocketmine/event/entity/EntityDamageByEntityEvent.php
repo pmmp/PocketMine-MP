@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\entity;
 
-use pocketmine\entity\effect\Effect;
+use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 
@@ -54,12 +54,12 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	protected function addAttackerModifiers(Entity $damager) : void{
 		if($damager instanceof Living){ //TODO: move this to entity classes
 			$effects = $damager->getEffects();
-			if($effects->has(Effect::STRENGTH())){
-				$this->setModifier($this->getBaseDamage() * 0.3 * $effects->get(Effect::STRENGTH())->getEffectLevel(), self::MODIFIER_STRENGTH);
+			if($effects->has(VanillaEffects::STRENGTH())){
+				$this->setModifier($this->getBaseDamage() * 0.3 * $effects->get(VanillaEffects::STRENGTH())->getEffectLevel(), self::MODIFIER_STRENGTH);
 			}
 
-			if($effects->has(Effect::WEAKNESS())){
-				$this->setModifier(-($this->getBaseDamage() * 0.2 * $effects->get(Effect::WEAKNESS())->getEffectLevel()), self::MODIFIER_WEAKNESS);
+			if($effects->has(VanillaEffects::WEAKNESS())){
+				$this->setModifier(-($this->getBaseDamage() * 0.2 * $effects->get(VanillaEffects::WEAKNESS())->getEffectLevel()), self::MODIFIER_WEAKNESS);
 			}
 		}
 	}

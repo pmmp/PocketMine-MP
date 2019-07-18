@@ -25,8 +25,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -68,10 +68,10 @@ class EffectCommand extends VanillaCommand{
 			return true;
 		}
 
-		$effect = Effect::fromString($args[1]);
+		$effect = VanillaEffects::fromString($args[1]);
 
 		if($effect === null){
-			$effect = Effect::get((int) $args[1]);
+			$effect = VanillaEffects::byMcpeId((int) $args[1]);
 		}
 
 		if($effect === null){

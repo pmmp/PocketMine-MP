@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
-use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\EffectManager;
+use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -118,7 +118,7 @@ abstract class Living extends Entity{
 		$activeEffectsTag = $nbt->getListTag("ActiveEffects");
 		if($activeEffectsTag !== null){
 			foreach($activeEffectsTag as $e){
-				$effect = Effect::get($e->getByte("Id"));
+				$effect = VanillaEffects::byMcpeId($e->getByte("Id"));
 				if($effect === null){
 					continue;
 				}
@@ -241,7 +241,7 @@ abstract class Living extends Entity{
 	 * @return float
 	 */
 	public function getJumpVelocity() : float{
-		return $this->jumpVelocity + ($this->effectManager->has(Effect::JUMP_BOOST()) ? ($this->effectManager->get(Effect::JUMP_BOOST())->getEffectLevel() / 10) : 0);
+		return $this->jumpVelocity + ($this->effectManager->has(VanillaEffects::JUMP_BOOST()) ? ($this->effectManager->get(VanillaEffects::JUMP_BOOST())->getEffectLevel() / 10) : 0);
 	}
 
 	/**
@@ -254,7 +254,7 @@ abstract class Living extends Entity{
 	}
 
 	public function fall(float $fallDistance) : void{
-		$damage = ceil($fallDistance - 3 - ($this->effectManager->has(Effect::JUMP_BOOST()) ? $this->effectManager->get(Effect::JUMP_BOOST())->getEffectLevel() : 0));
+		$damage = ceil($fallDistance - 3 - ($this->effectManager->has(VanillaEffects::JUMP_BOOST()) ? $this->effectManager->get(VanillaEffects::JUMP_BOOST())->getEffectLevel() : 0));
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
@@ -317,8 +317,8 @@ abstract class Living extends Entity{
 		}
 
 		$cause = $source->getCause();
-		if($this->effectManager->has(Effect::RESISTANCE()) and $cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
-			$source->setModifier(-$source->getFinalDamage() * min(1, 0.2 * $this->effectManager->get(Effect::RESISTANCE())->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
+		if($this->effectManager->has(VanillaEffects::RESISTANCE()) and $cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
+			$source->setModifier(-$source->getFinalDamage() * min(1, 0.2 * $this->effectManager->get(VanillaEffects::RESISTANCE())->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
 		}
 
 		$totalEpf = 0;
@@ -400,7 +400,7 @@ abstract class Living extends Entity{
 			}
 		}
 
-		if($this->effectManager->has(Effect::FIRE_RESISTANCE()) and (
+		if($this->effectManager->has(VanillaEffects::FIRE_RESISTANCE()) and (
 				$source->getCause() === EntityDamageEvent::CAUSE_FIRE
 				or $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK
 				or $source->getCause() === EntityDamageEvent::CAUSE_LAVA
@@ -590,7 +590,7 @@ abstract class Living extends Entity{
 	 * @return bool
 	 */
 	public function canBreathe() : bool{
-		return $this->effectManager->has(Effect::WATER_BREATHING()) or $this->effectManager->has(Effect::CONDUIT_POWER()) or !$this->isUnderwater();
+		return $this->effectManager->has(VanillaEffects::WATER_BREATHING()) or $this->effectManager->has(VanillaEffects::CONDUIT_POWER()) or !$this->isUnderwater();
 	}
 
 	/**

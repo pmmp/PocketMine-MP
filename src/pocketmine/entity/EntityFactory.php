@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\entity\effect\Effect;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\ItemEntity;
@@ -98,7 +97,6 @@ final class EntityFactory{
 		self::register(Human::class, ['Human']);
 
 		Attribute::init();
-		Effect::init();
 		PaintingMotive::init();
 	}
 

@@ -29,8 +29,8 @@ use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
 use pocketmine\crafting\CraftingGrid;
-use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Human;
@@ -1884,7 +1884,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 		$ev->setModifier($meleeEnchantmentDamage, EntityDamageEvent::MODIFIER_WEAPON_ENCHANTMENTS);
 
-		if(!$this->isSprinting() and !$this->isFlying() and $this->fallDistance > 0 and !$this->effectManager->has(Effect::BLINDNESS()) and !$this->isUnderwater()){
+		if(!$this->isSprinting() and !$this->isFlying() and $this->fallDistance > 0 and !$this->effectManager->has(VanillaEffects::BLINDNESS()) and !$this->isUnderwater()){
 			$ev->setModifier($ev->getFinalDamage() / 2, EntityDamageEvent::MODIFIER_CRITICAL);
 		}
 

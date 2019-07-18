@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\VanillaEffects;
 
 class Pufferfish extends Food{
 
@@ -38,9 +38,9 @@ class Pufferfish extends Food{
 
 	public function getAdditionalEffects() : array{
 		return [
-			new EffectInstance(Effect::HUNGER(), 300, 2),
-			new EffectInstance(Effect::POISON(), 1200, 3),
-			new EffectInstance(Effect::NAUSEA(), 300, 1)
+			new EffectInstance(VanillaEffects::HUNGER(), 300, 2),
+			new EffectInstance(VanillaEffects::POISON(), 1200, 3),
+			new EffectInstance(VanillaEffects::NAUSEA(), 300, 1)
 		];
 	}
 }
