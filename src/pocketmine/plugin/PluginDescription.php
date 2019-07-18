@@ -140,7 +140,7 @@ class PluginDescription{
 			$this->authors[] = $plugin["author"];
 		}
 		if(isset($plugin["authors"])){
-			$this->authors = (array) $plugin["authors"];
+			$this->authors[] = (array) $plugin["authors"];
 		}
 
 		if(isset($plugin["permissions"])){
