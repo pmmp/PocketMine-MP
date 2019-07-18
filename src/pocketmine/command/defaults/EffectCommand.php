@@ -69,11 +69,6 @@ class EffectCommand extends VanillaCommand{
 		}
 
 		$effect = VanillaEffects::fromString($args[1]);
-
-		if($effect === null){
-			$effect = VanillaEffects::byMcpeId((int) $args[1]);
-		}
-
 		if($effect === null){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.effect.notFound", [(string) $args[1]]));
 			return true;
