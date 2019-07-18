@@ -644,7 +644,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . (($tag = $this->getNamedTag()) !== null ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($tag))) : "");
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
 	}
 
 	/**
@@ -665,8 +665,8 @@ class Item implements ItemIds, \JsonSerializable{
 			$data["count"] = $this->getCount();
 		}
 
-		if(($tag = $this->getNamedTag()) !== null){
-			$data["nbt_b64"] = base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($tag)));
+		if($this->hasNamedTag()){
+			$data["nbt_b64"] = base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag())));
 		}
 
 		return $data;
@@ -710,8 +710,8 @@ class Item implements ItemIds, \JsonSerializable{
 			->setByte("Count", Binary::signByte($this->count))
 			->setShort("Damage", $this->getMeta());
 
-		if(($itemNBT = $this->getNamedTag()) !== null){
-			$result->setTag("tag", $itemNBT);
+		if($this->hasNamedTag()){
+			$result->setTag("tag", $this->getNamedTag());
 		}
 
 		if($slot !== -1){
