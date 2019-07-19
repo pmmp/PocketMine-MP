@@ -527,14 +527,18 @@ class NetworkSession{
 		}, $reason);
 	}
 
-	public function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error, PublicKeyInterface $clientPubKey) : void{
+	public function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void{
 		if(!$this->connected){
 			return;
 		}
-		if($authenticated and $this->info->getXuid() === ""){
-			$error = "Expected XUID but none found";
-		}elseif(!$authenticated and $this->info->getXuid() !== ""){
-			$error = "Unexpected XUID for non-XBOX-authenticated player";
+		if($error === null){
+			if($authenticated and $this->info->getXuid() === ""){
+				$error = "Expected XUID but none found";
+			}elseif(!$authenticated and $this->info->getXuid() !== ""){
+				$error = "Unexpected XUID for non-XBOX-authenticated player";
+			}elseif($clientPubKey === null){
+				$error = "Missing client public key"; //failsafe
+			}
 		}
 
 		if($error !== null){
