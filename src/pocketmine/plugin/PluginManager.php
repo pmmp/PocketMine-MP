@@ -290,7 +290,7 @@ class PluginManager{
 				}
 				$plugins[$name] = $file;
 
-				$softDependencies[$name] = $description->getSoftDepend();
+				$softDependencies[$name] = array_merge($softDependencies[$name] ?? [], $description->getSoftDepend());
 				$dependencies[$name] = $description->getDepend();
 
 				foreach($description->getLoadBefore() as $before){
