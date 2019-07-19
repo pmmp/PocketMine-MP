@@ -27,6 +27,7 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -125,7 +126,7 @@ class Leaves extends Transparent{
 
 		$drops = [];
 		if(mt_rand(1, 20) === 1){ //Saplings
-			$drops[] = ItemFactory::get(Item::SAPLING, $this->treeType->getMagicNumber());
+			$drops[] = ItemFactory::get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
 		}
 		if(($this->treeType->equals(TreeType::OAK()) or $this->treeType->equals(TreeType::DARK_OAK())) and mt_rand(1, 200) === 1){ //Apples
 			$drops[] = VanillaItems::APPLE();

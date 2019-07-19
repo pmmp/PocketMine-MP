@@ -52,7 +52,7 @@ use function gettype;
 use function hex2bin;
 use function is_string;
 
-class Item implements ItemIds, \JsonSerializable{
+class Item implements \JsonSerializable{
 	use ItemEnchantmentHandlingTrait;
 
 	public const TAG_ENCH = "ench";
@@ -426,7 +426,7 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	public function isNull() : bool{
-		return $this->count <= 0 or $this->id === Item::AIR;
+		return $this->count <= 0 or $this->id === ItemIds::AIR;
 	}
 
 	/**

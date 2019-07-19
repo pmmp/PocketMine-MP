@@ -28,6 +28,7 @@ use pocketmine\block\utils\BlockDataValidator;
 use pocketmine\block\utils\SkullType;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
 use pocketmine\item\Skull as ItemSkull;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -110,6 +111,6 @@ class Skull extends Flowable{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::get(Item::SKULL, $this->skullType->getMagicNumber());
+		return ItemFactory::get(ItemIds::SKULL, $this->skullType->getMagicNumber());
 	}
 }

@@ -42,7 +42,7 @@ class Bucket extends Item{
 			$stack = clone $this;
 			$stack->pop();
 
-			$resultItem = ItemFactory::get(Item::BUCKET, $blockClicked->getFlowingForm()->getId());
+			$resultItem = ItemFactory::get(ItemIds::BUCKET, $blockClicked->getFlowingForm()->getId());
 			$ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem);
 			$ev->call();
 			if(!$ev->isCancelled()){

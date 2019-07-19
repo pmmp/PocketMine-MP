@@ -71,10 +71,10 @@ class ItemFactoryTest extends TestCase{
 	 * Test that durable items are correctly created by the item factory
 	 */
 	public function testGetDurableItem() : void{
-		self::assertInstanceOf(Sword::class, $i1 = ItemFactory::get(Item::WOODEN_SWORD));
+		self::assertInstanceOf(Sword::class, $i1 = ItemFactory::get(ItemIds::WOODEN_SWORD));
 		/** @var Sword $i1 */
 		self::assertSame(0, $i1->getDamage());
-		self::assertInstanceOf(Sword::class, $i2 = ItemFactory::get(Item::WOODEN_SWORD, 1));
+		self::assertInstanceOf(Sword::class, $i2 = ItemFactory::get(ItemIds::WOODEN_SWORD, 1));
 		/** @var Sword $i2 */
 		self::assertSame(1, $i2->getDamage());
 	}
