@@ -62,6 +62,21 @@ class ItemTest extends TestCase{
 		self::assertTrue($item1->equals($item2));
 	}
 
+	/**
+	 * Tests whether items retain their display properties
+	 * after being deserialized
+	 */
+	public function testItemPersistsDisplayProperties() : void{
+		$lore = ["Line A", "Line B"];
+		$name = "HI";
+		$item = ItemFactory::get(Item::DIAMOND_SWORD);
+		$item->setCustomName($name);
+		$item->setLore($lore);
+		$item = Item::nbtDeserialize($item->nbtSerialize());
+		self::assertTrue($item->getCustomName() === $name);
+		self::assertTrue($item->getLore() === $lore);
+	}
+
 	public function testHasEnchantment() : void{
 		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::EFFICIENCY(), 5));
 		self::assertTrue($this->item->hasEnchantment(Enchantment::EFFICIENCY()));
