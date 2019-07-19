@@ -283,7 +283,7 @@ class Item implements ItemIds, \JsonSerializable{
 		$display = $tag->getCompoundTag(self::TAG_DISPLAY);
 		if($display !== null){
 			$this->customName = $display->getString(self::TAG_DISPLAY_NAME, $this->customName, true);
-			$lore = $tag->getListTag(self::TAG_DISPLAY_LORE);
+			$lore = $display->getListTag(self::TAG_DISPLAY_LORE);
 			if($lore !== null and $lore->getTagType() === NBT::TAG_String){
 				/** @var StringTag $t */
 				foreach($lore as $t){
