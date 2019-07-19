@@ -1150,7 +1150,12 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->achievements[$achievementId] = true;
-				Achievement::broadcast($this, $achievementId);
+				$translation = new TranslationContainer("chat.type.achievement", [$this->getDisplayName(), TextFormat::GREEN . Achievement::$list[$achievementId]["name"] . TextFormat::RESET]);
+				if($this->server->getConfigBool("announce-player-achievements", true)){
+					$this->server->broadcastMessage($translation);
+				}else{
+					$this->sendMessage($translation);
+				}
 
 				return true;
 			}else{
