@@ -108,6 +108,7 @@ use pocketmine\world\particle\PunchBlockParticle;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function abs;
+use function array_filter;
 use function assert;
 use function ceil;
 use function count;
@@ -1146,15 +1147,19 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 					return false;
 				}
 			}
-			$ev = new PlayerAchievementAwardedEvent($this, $achievementId);
+			$ev = new PlayerAchievementAwardedEvent(
+				$this,
+				$achievementId,
+				new TranslationContainer("chat.type.achievement", [$this->getDisplayName(), TextFormat::GREEN . Achievement::$list[$achievementId]["name"] . TextFormat::RESET]),
+				$this->server->getConfigBool("announce-player-achievements", true) ? array_filter(PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_USERS), function($v){
+					return $v instanceof CommandSender;
+				}) : [$this]
+			);
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->achievements[$achievementId] = true;
-				$translation = new TranslationContainer("chat.type.achievement", [$this->getDisplayName(), TextFormat::GREEN . Achievement::$list[$achievementId]["name"] . TextFormat::RESET]);
-				if($this->server->getConfigBool("announce-player-achievements", true)){
-					$this->server->broadcastMessage($translation);
-				}else{
-					$this->sendMessage($translation);
+				if(($message = $ev->getMessage()) !== null){
+					$this->server->broadcastMessage($message, $ev->getBroadcastRecipients());
 				}
 
 				return true;
