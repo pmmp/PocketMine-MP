@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
-use function array_map;
+use pocketmine\utils\Utils;
 use function count;
 
 class ShapelessRecipe implements CraftingRecipe{
@@ -49,11 +49,11 @@ class ShapelessRecipe implements CraftingRecipe{
 			}
 		}
 
-		$this->results = array_map(function(Item $item) : Item{ return clone $item; }, $results);
+		$this->results = Utils::cloneObjectArray($results);
 	}
 
 	public function getResults() : array{
-		return array_map(function(Item $item) : Item{ return clone $item; }, $this->results);
+		return Utils::cloneObjectArray($this->results);
 	}
 
 	public function getResultsFor(CraftingGrid $grid) : array{
@@ -64,7 +64,7 @@ class ShapelessRecipe implements CraftingRecipe{
 	 * @return Item[]
 	 */
 	public function getIngredientList() : array{
-		return array_map(function(Item $item) : Item{ return clone $item; }, $this->ingredients);
+		return Utils::cloneObjectArray($this->ingredients);
 	}
 
 	/**

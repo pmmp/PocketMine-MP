@@ -25,7 +25,7 @@ namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use function array_map;
+use pocketmine\utils\Utils;
 use function array_values;
 use function count;
 use function implode;
@@ -95,7 +95,7 @@ class ShapedRecipe implements CraftingRecipe{
 			$this->ingredientList[$char] = clone $i;
 		}
 
-		$this->results = array_map(function(Item $item) : Item{ return clone $item; }, $results);
+		$this->results = Utils::cloneObjectArray($results);
 	}
 
 	public function getWidth() : int{
@@ -110,7 +110,7 @@ class ShapedRecipe implements CraftingRecipe{
 	 * @return Item[]
 	 */
 	public function getResults() : array{
-		return array_map(function(Item $item) : Item{ return clone $item; }, $this->results);
+		return Utils::cloneObjectArray($this->results);
 	}
 
 	/**

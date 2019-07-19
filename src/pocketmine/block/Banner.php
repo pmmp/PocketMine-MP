@@ -36,6 +36,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 use pocketmine\world\BlockTransaction;
 use function assert;
 use function floor;
@@ -65,7 +66,7 @@ class Banner extends Transparent{
 	}
 
 	public function __clone(){
-		$this->patterns = $this->patterns->map(function(BannerPattern $pattern) : BannerPattern{ return clone $pattern; });
+		$this->patterns = $this->patterns->map(Utils::cloneCallback());
 	}
 
 	public function getId() : int{

@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\utils\RegistryTrait;
-use function array_map;
+use pocketmine\utils\Utils;
 use function assert;
 
 /**
@@ -317,7 +317,7 @@ final class VanillaItems{
 	 * @return Item[]
 	 */
 	public static function getAll() : array{
-		return array_map(function(Item $member){ return clone $member; }, self::_registryGetAll());
+		return Utils::cloneObjectArray(self::_registryGetAll());
 	}
 
 	protected static function setup() : void{

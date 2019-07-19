@@ -142,6 +142,16 @@ class Utils{
 		return $reflect->getName();
 	}
 
+	public static function cloneCallback() : \Closure{
+		return static function(object $o){
+			return clone $o;
+		};
+	}
+
+	public static function cloneObjectArray(array $array) : array{
+		return array_map(self::cloneCallback(), $array);
+	}
+
 	/**
 	 * Gets this machine / server instance unique ID
 	 * Returns a hash, the first 32 characters (or 16 if raw)
