@@ -68,8 +68,9 @@ class EffectCommand extends VanillaCommand{
 			return true;
 		}
 
-		$effect = VanillaEffects::fromString($args[1]);
-		if($effect === null){
+		try{
+			$effect = VanillaEffects::fromString($args[1]);
+		}catch(\InvalidArgumentException $e){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.effect.notFound", [(string) $args[1]]));
 			return true;
 		}
