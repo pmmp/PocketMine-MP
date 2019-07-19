@@ -28,12 +28,13 @@ use pocketmine\entity\Human;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\player\Player;
 use function sqrt;
 
 class ExperienceOrb extends Entity{
-	public const NETWORK_ID = self::XP_ORB;
+	public const NETWORK_ID = EntityLegacyIds::XP_ORB;
 
 	public const TAG_VALUE_PC = "Value"; //short
 	public const TAG_VALUE_PE = "experience value"; //int (WTF?)

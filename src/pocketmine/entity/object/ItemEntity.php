@@ -31,14 +31,15 @@ use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\player\Player;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
+use pocketmine\player\Player;
 use function get_class;
 use function max;
 
 class ItemEntity extends Entity{
-	public const NETWORK_ID = self::ITEM;
+	public const NETWORK_ID = EntityLegacyIds::ITEM;
 
 	public const DEFAULT_DESPAWN_DELAY = 6000; //5 minutes
 	public const NEVER_DESPAWN = -1;

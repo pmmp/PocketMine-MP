@@ -33,6 +33,7 @@ use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\utils\Color;
@@ -43,7 +44,7 @@ use function sqrt;
 
 class SplashPotion extends Throwable{
 
-	public const NETWORK_ID = self::SPLASH_POTION;
+	public const NETWORK_ID = EntityLegacyIds::SPLASH_POTION;
 
 	protected $gravity = 0.05;
 	protected $drag = 0.01;

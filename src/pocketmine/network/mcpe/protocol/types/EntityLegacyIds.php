@@ -21,9 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\network\mcpe\protocol\types;
 
-interface EntityIds{
+
+final class EntityLegacyIds{
 
 	public const CHICKEN = 10;
 	public const COW = 11;
@@ -127,4 +128,8 @@ interface EntityIds{
 	public const TROPICALFISH = 111, TROPICAL_FISH = 111;
 	public const COD = 112, FISH = 112;
 	public const PANDA = 113;
+
+	private function __construct(){
+		//NOOP
+	}
 }

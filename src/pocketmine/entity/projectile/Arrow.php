@@ -32,6 +32,7 @@ use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ArrowHitSound;
@@ -40,7 +41,7 @@ use function mt_rand;
 use function sqrt;
 
 class Arrow extends Projectile{
-	public const NETWORK_ID = self::ARROW;
+	public const NETWORK_ID = EntityLegacyIds::ARROW;
 
 	public const PICKUP_NONE = 0;
 	public const PICKUP_ANY = 1;

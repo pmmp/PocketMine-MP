@@ -25,10 +25,11 @@ namespace pocketmine\entity\projectile;
 
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\VanillaItems;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use pocketmine\world\particle\ItemBreakParticle;
 
 class Egg extends Throwable{
-	public const NETWORK_ID = self::EGG;
+	public const NETWORK_ID = EntityLegacyIds::EGG;
 
 	//TODO: spawn chickens on collision
 

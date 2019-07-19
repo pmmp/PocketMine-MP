@@ -34,13 +34,14 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use pocketmine\player\Player;
 use pocketmine\world\particle\DestroyBlockParticle;
 use pocketmine\world\World;
 use function ceil;
 
 class Painting extends Entity{
-	public const NETWORK_ID = self::PAINTING;
+	public const NETWORK_ID = EntityLegacyIds::PAINTING;
 
 	/** @var float */
 	protected $gravity = 0.0;

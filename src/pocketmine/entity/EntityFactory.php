@@ -42,6 +42,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use pocketmine\utils\Utils;
 use pocketmine\world\World;
 use function array_keys;
@@ -79,20 +80,20 @@ final class EntityFactory{
 		//define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC
 		//TODO: index them by version to allow proper multi-save compatibility
 
-		self::register(Arrow::class, ['Arrow', 'minecraft:arrow'], EntityIds::ARROW);
-		self::register(Egg::class, ['Egg', 'minecraft:egg'], EntityIds::EGG);
-		self::register(EnderPearl::class, ['ThrownEnderpearl', 'minecraft:ender_pearl'], EntityIds::ENDER_PEARL);
-		self::register(ExperienceBottle::class, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityIds::XP_BOTTLE);
-		self::register(ExperienceOrb::class, ['XPOrb', 'minecraft:xp_orb'], EntityIds::XP_ORB);
-		self::register(FallingBlock::class, ['FallingSand', 'minecraft:falling_block'], EntityIds::FALLING_BLOCK);
-		self::register(ItemEntity::class, ['Item', 'minecraft:item'], EntityIds::ITEM);
-		self::register(Painting::class, ['Painting', 'minecraft:painting'], EntityIds::PAINTING);
-		self::register(PrimedTNT::class, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt'], EntityIds::TNT);
-		self::register(Snowball::class, ['Snowball', 'minecraft:snowball'], EntityIds::SNOWBALL);
-		self::register(SplashPotion::class, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityIds::SPLASH_POTION);
-		self::register(Squid::class, ['Squid', 'minecraft:squid'], EntityIds::SQUID);
-		self::register(Villager::class, ['Villager', 'minecraft:villager'], EntityIds::VILLAGER);
-		self::register(Zombie::class, ['Zombie', 'minecraft:zombie'], EntityIds::ZOMBIE);
+		self::register(Arrow::class, ['Arrow', 'minecraft:arrow'], EntityLegacyIds::ARROW);
+		self::register(Egg::class, ['Egg', 'minecraft:egg'], EntityLegacyIds::EGG);
+		self::register(EnderPearl::class, ['ThrownEnderpearl', 'minecraft:ender_pearl'], EntityLegacyIds::ENDER_PEARL);
+		self::register(ExperienceBottle::class, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityLegacyIds::XP_BOTTLE);
+		self::register(ExperienceOrb::class, ['XPOrb', 'minecraft:xp_orb'], EntityLegacyIds::XP_ORB);
+		self::register(FallingBlock::class, ['FallingSand', 'minecraft:falling_block'], EntityLegacyIds::FALLING_BLOCK);
+		self::register(ItemEntity::class, ['Item', 'minecraft:item'], EntityLegacyIds::ITEM);
+		self::register(Painting::class, ['Painting', 'minecraft:painting'], EntityLegacyIds::PAINTING);
+		self::register(PrimedTNT::class, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt'], EntityLegacyIds::TNT);
+		self::register(Snowball::class, ['Snowball', 'minecraft:snowball'], EntityLegacyIds::SNOWBALL);
+		self::register(SplashPotion::class, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
+		self::register(Squid::class, ['Squid', 'minecraft:squid'], EntityLegacyIds::SQUID);
+		self::register(Villager::class, ['Villager', 'minecraft:villager'], EntityLegacyIds::VILLAGER);
+		self::register(Zombie::class, ['Zombie', 'minecraft:zombie'], EntityLegacyIds::ZOMBIE);
 
 		self::register(Human::class, ['Human']);
 

@@ -29,13 +29,14 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use function atan2;
 use function mt_rand;
 use function sqrt;
 use const M_PI;
 
 class Squid extends WaterAnimal{
-	public const NETWORK_ID = self::SQUID;
+	public const NETWORK_ID = EntityLegacyIds::SQUID;
 
 	public $width = 0.95;
 	public $height = 0.95;

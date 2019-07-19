@@ -24,10 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\item\VanillaItems;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use function mt_rand;
 
 class Zombie extends Living{
-	public const NETWORK_ID = self::ZOMBIE;
+	public const NETWORK_ID = EntityLegacyIds::ZOMBIE;
 
 	public $width = 0.6;
 	public $height = 1.8;

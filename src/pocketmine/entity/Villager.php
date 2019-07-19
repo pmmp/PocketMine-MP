@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 
@@ -34,7 +35,7 @@ class Villager extends Living implements Ageable{
 	public const PROFESSION_BLACKSMITH = 3;
 	public const PROFESSION_BUTCHER = 4;
 
-	public const NETWORK_ID = self::VILLAGER;
+	public const NETWORK_ID = EntityLegacyIds::VILLAGER;
 
 	public $width = 0.6;
 	public $height = 1.8;

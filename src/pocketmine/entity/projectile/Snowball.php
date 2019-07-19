@@ -24,10 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\entity\projectile;
 
 use pocketmine\event\entity\ProjectileHitEvent;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use pocketmine\world\particle\SnowballPoofParticle;
 
 class Snowball extends Throwable{
-	public const NETWORK_ID = self::SNOWBALL;
+	public const NETWORK_ID = EntityLegacyIds::SNOWBALL;
 
 	protected function onHit(ProjectileHitEvent $event) : void{
 		for($i = 0; $i < 6; ++$i){

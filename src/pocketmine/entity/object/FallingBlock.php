@@ -32,11 +32,12 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use function get_class;
 
 class FallingBlock extends Entity{
-	public const NETWORK_ID = self::FALLING_BLOCK;
+	public const NETWORK_ID = EntityLegacyIds::FALLING_BLOCK;
 
 	public $width = 0.98;
 	public $height = 0.98;

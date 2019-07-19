@@ -30,11 +30,12 @@ use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
 use pocketmine\world\particle\EndermanTeleportParticle;
 use pocketmine\world\sound\EndermanTeleportSound;
 
 class EnderPearl extends Throwable{
-	public const NETWORK_ID = self::ENDER_PEARL;
+	public const NETWORK_ID = EntityLegacyIds::ENDER_PEARL;
 
 	protected function calculateInterceptWithBlock(Block $block, Vector3 $start, Vector3 $end) : ?RayTraceResult{
 		if($block->getId() !== BlockLegacyIds::AIR and empty($block->getCollisionBoxes())){
