@@ -2086,7 +2086,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function sendTranslation(string $message, array $parameters = []){
 		if(!$this->server->isLanguageForced()){
 			foreach($parameters as $i => $p){
-				$parameters[$i] = $this->server->getLanguage()->translateString($p, $parameters, "pocketmine.");
+				$parameters[$i] = $this->server->getLanguage()->translateString($p, [], "pocketmine.");
 			}
 			$this->networkSession->onTranslatedChatMessage($this->server->getLanguage()->translateString($message, $parameters, "pocketmine."), $parameters);
 		}else{
