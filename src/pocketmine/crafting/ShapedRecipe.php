@@ -88,7 +88,11 @@ class ShapedRecipe implements CraftingRecipe{
 		$this->shape = $shape;
 
 		foreach($ingredients as $char => $i){
-			$this->setIngredient($char, $i);
+			if(strpos(implode($this->shape), $char) === false){
+				throw new \InvalidArgumentException("Symbol '$char' does not appear in the recipe shape");
+			}
+
+			$this->ingredientList[$char] = clone $i;
 		}
 
 		$this->results = array_map(function(Item $item) : Item{ return clone $item; }, $results);
@@ -116,23 +120,6 @@ class ShapedRecipe implements CraftingRecipe{
 	 */
 	public function getResultsFor(CraftingGrid $grid) : array{
 		return $this->getResults();
-	}
-
-	/**
-	 * @param string $key
-	 * @param Item   $item
-	 *
-	 * @return $this
-	 * @throws \InvalidArgumentException
-	 */
-	public function setIngredient(string $key, Item $item){
-		if(strpos(implode($this->shape), $key) === false){
-			throw new \InvalidArgumentException("Symbol '$key' does not appear in the recipe shape");
-		}
-
-		$this->ingredientList[$key] = clone $item;
-
-		return $this;
 	}
 
 	/**

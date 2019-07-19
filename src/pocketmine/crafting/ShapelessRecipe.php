@@ -40,7 +40,13 @@ class ShapelessRecipe implements CraftingRecipe{
 	public function __construct(array $ingredients, array $results){
 		foreach($ingredients as $item){
 			//Ensure they get split up properly
-			$this->addIngredient($item);
+			if(count($this->ingredients) + $item->getCount() > 9){
+				throw new \InvalidArgumentException("Shapeless recipes cannot have more than 9 ingredients");
+			}
+
+			while($item->getCount() > 0){
+				$this->ingredients[] = $item->pop();
+			}
 		}
 
 		$this->results = array_map(function(Item $item) : Item{ return clone $item; }, $results);
@@ -52,44 +58,6 @@ class ShapelessRecipe implements CraftingRecipe{
 
 	public function getResultsFor(CraftingGrid $grid) : array{
 		return $this->getResults();
-	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return ShapelessRecipe
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public function addIngredient(Item $item) : ShapelessRecipe{
-		if(count($this->ingredients) + $item->getCount() > 9){
-			throw new \InvalidArgumentException("Shapeless recipes cannot have more than 9 ingredients");
-		}
-
-		while($item->getCount() > 0){
-			$this->ingredients[] = $item->pop();
-		}
-
-		return $this;
-	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return $this
-	 */
-	public function removeIngredient(Item $item){
-		foreach($this->ingredients as $index => $ingredient){
-			if($item->getCount() <= 0){
-				break;
-			}
-			if($ingredient->equals($item, !$item->hasAnyDamageValue(), $item->hasNamedTag())){
-				unset($this->ingredients[$index]);
-				$item->pop();
-			}
-		}
-
-		return $this;
 	}
 
 	/**

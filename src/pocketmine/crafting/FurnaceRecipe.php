@@ -43,13 +43,6 @@ class FurnaceRecipe{
 	}
 
 	/**
-	 * @param Item $item
-	 */
-	public function setInput(Item $item) : void{
-		$this->ingredient = clone $item;
-	}
-
-	/**
 	 * @return Item
 	 */
 	public function getInput() : Item{
