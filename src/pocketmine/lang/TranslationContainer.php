@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
-use function count;
-
 class TranslationContainer extends TextContainer{
 
 	/** @var string[] $params */
@@ -37,7 +35,12 @@ class TranslationContainer extends TextContainer{
 	public function __construct(string $text, array $params = []){
 		parent::__construct($text);
 
-		$this->setParameters($params);
+		$i = 0;
+		foreach($params as $str){
+			$this->params[$i] = (string) $str;
+
+			++$i;
+		}
 	}
 
 	/**
@@ -54,29 +57,5 @@ class TranslationContainer extends TextContainer{
 	 */
 	public function getParameter(int $i) : ?string{
 		return $this->params[$i] ?? null;
-	}
-
-	/**
-	 * @param int    $i
-	 * @param string $str
-	 */
-	public function setParameter(int $i, string $str) : void{
-		if($i < 0 or $i > count($this->params)){ //Intended, allow to set the last
-			throw new \InvalidArgumentException("Invalid index $i, have " . count($this->params));
-		}
-
-		$this->params[$i] = $str;
-	}
-
-	/**
-	 * @param string[] $params
-	 */
-	public function setParameters(array $params) : void{
-		$i = 0;
-		foreach($params as $str){
-			$this->params[$i] = (string) $str;
-
-			++$i;
-		}
 	}
 }
