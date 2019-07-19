@@ -49,7 +49,7 @@ use function assert;
 use function dechex;
 use const PHP_INT_MAX;
 
-class Block extends Position implements BlockLegacyIds{
+class Block extends Position{
 
 	/** @var BlockIdentifier */
 	protected $idInfo;
