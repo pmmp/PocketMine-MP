@@ -410,6 +410,7 @@ use function assert;
  * @method static WoodenTrapdoor JUNGLE_TRAPDOOR()
  * @method static Wood JUNGLE_WOOD()
  * @method static Ladder LADDER()
+ * @method static Lantern LANTERN()
  * @method static Solid LAPIS_LAZULI()
  * @method static LapisOre LAPIS_LAZULI_ORE()
  * @method static DoubleTallGrass LARGE_FERN()
@@ -1071,6 +1072,7 @@ final class VanillaBlocks{
 		self::register("jungle_trapdoor", BlockFactory::get(403));
 		self::register("jungle_wood", BlockFactory::get(467, 3));
 		self::register("ladder", BlockFactory::get(65, 2));
+		self::register("lantern", BlockFactory::get(463));
 		self::register("lapis_lazuli", BlockFactory::get(22));
 		self::register("lapis_lazuli_ore", BlockFactory::get(21));
 		self::register("large_fern", BlockFactory::get(175, 3));

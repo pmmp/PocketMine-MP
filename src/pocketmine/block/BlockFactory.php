@@ -224,6 +224,7 @@ class BlockFactory{
 		self::register(new Trapdoor(new BID(Ids::IRON_TRAPDOOR), "Iron Trapdoor", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0)));
 		self::register(new ItemFrame(new BID(Ids::FRAME_BLOCK, 0, ItemIds::FRAME, TileItemFrame::class), "Item Frame"));
 		self::register(new Ladder(new BID(Ids::LADDER), "Ladder"));
+		self::register(new Lantern(new BID(Ids::LANTERN), "Lantern", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		self::register(new Solid(new BID(Ids::LAPIS_BLOCK), "Lapis Lazuli Block", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		self::register(new LapisOre(new BID(Ids::LAPIS_ORE), "Lapis Lazuli Ore"));
 		self::register(new Lava(new BIDFlattened(Ids::FLOWING_LAVA, Ids::STILL_LAVA), "Lava"));
@@ -599,7 +600,6 @@ class BlockFactory{
 		//TODO: minecraft:jigsaw
 		//TODO: minecraft:jukebox
 		//TODO: minecraft:kelp
-		//TODO: minecraft:lantern
 		//TODO: minecraft:lava_cauldron
 		//TODO: minecraft:lectern
 		//TODO: minecraft:lit_blast_furnace

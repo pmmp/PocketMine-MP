@@ -95,6 +95,8 @@ interface BlockLegacyMetadata{
 
 	public const ITEM_FRAME_FLAG_HAS_MAP = 0x04;
 
+	public const LANTERN_FLAG_HANGING = 0x01;
+
 	public const LEAVES_FLAG_NO_DECAY = 0x04;
 	public const LEAVES_FLAG_CHECK_DECAY = 0x08;
 
