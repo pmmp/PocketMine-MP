@@ -1446,6 +1446,7 @@ class World implements ChunkManager{
 
 	/**
 	 * Sets the block at the given Vector3 coordinates.
+	 * @see World::setBlockAt()
 	 *
 	 * @param Vector3 $pos
 	 * @param Block   $block
@@ -1454,8 +1455,6 @@ class World implements ChunkManager{
 	 * @return bool Whether the block has been updated or not
 	 *
 	 * @throws \InvalidArgumentException if the position is out of the world bounds
-	 *@see World::setBlockAt()
-	 *
 	 */
 	public function setBlock(Vector3 $pos, Block $block, bool $update = true) : bool{
 		return $this->setBlockAt((int) floor($pos->x), (int) floor($pos->y), (int) floor($pos->z), $block, $update);
