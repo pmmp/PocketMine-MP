@@ -268,7 +268,8 @@ class Block extends Position{
 		if(($t = $this->world->getTile($this)) !== null){
 			$t->onBlockDestroyed();
 		}
-		return $this->getWorld()->setBlock($this, VanillaBlocks::AIR());
+		$this->getWorld()->setBlock($this, VanillaBlocks::AIR());
+		return true;
 	}
 
 	/**

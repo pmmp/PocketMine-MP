@@ -47,9 +47,9 @@ interface ChunkManager{
 	 * @param int   $z
 	 * @param Block $block
 	 *
-	 * @return bool TODO: remove
+	 * @throws \InvalidArgumentException
 	 */
-	public function setBlockAt(int $x, int $y, int $z, Block $block) : bool;
+	public function setBlockAt(int $x, int $y, int $z, Block $block) : void;
 
 	/**
 	 * @param int  $chunkX

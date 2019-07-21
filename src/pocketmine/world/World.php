@@ -1446,18 +1446,15 @@ class World implements ChunkManager{
 
 	/**
 	 * Sets the block at the given Vector3 coordinates.
-	 * @see World::setBlockAt()
 	 *
 	 * @param Vector3 $pos
 	 * @param Block   $block
 	 * @param bool    $update
 	 *
-	 * @return bool Whether the block has been updated or not
-	 *
 	 * @throws \InvalidArgumentException if the position is out of the world bounds
 	 */
-	public function setBlock(Vector3 $pos, Block $block, bool $update = true) : bool{
-		return $this->setBlockAt((int) floor($pos->x), (int) floor($pos->y), (int) floor($pos->z), $block, $update);
+	public function setBlock(Vector3 $pos, Block $block, bool $update = true) : void{
+		$this->setBlockAt((int) floor($pos->x), (int) floor($pos->y), (int) floor($pos->z), $block, $update);
 	}
 
 	/**
@@ -1472,11 +1469,9 @@ class World implements ChunkManager{
 	 * @param Block $block
 	 * @param bool  $update
 	 *
-	 * @return bool Whether the block has been updated or not
-	 *
 	 * @throws \InvalidArgumentException if the position is out of the world bounds
 	 */
-	public function setBlockAt(int $x, int $y, int $z, Block $block, bool $update = true) : bool{
+	public function setBlockAt(int $x, int $y, int $z, Block $block, bool $update = true) : void{
 		if(!$this->isInWorld($x, $y, $z)){
 			throw new \InvalidArgumentException("Pos x=$x,y=$y,z=$z is outside of the world bounds");
 		}
@@ -1511,8 +1506,6 @@ class World implements ChunkManager{
 		}
 
 		$this->timings->setBlock->stopTiming();
-
-		return true;
 	}
 
 	/**
