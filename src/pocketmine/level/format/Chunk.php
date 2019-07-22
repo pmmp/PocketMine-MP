@@ -460,7 +460,7 @@ class Chunk{
 	 * @return int 0-255
 	 */
 	public function getBiomeId(int $x, int $z) : int{
-		return ord($this->biomeIds{($z << 4) | $x});
+		return ord($this->biomeIds[($z << 4) | $x]);
 	}
 
 	/**
@@ -472,7 +472,7 @@ class Chunk{
 	 */
 	public function setBiomeId(int $x, int $z, int $biomeId){
 		$this->hasChanged = true;
-		$this->biomeIds{($z << 4) | $x} = chr($biomeId & 0xff);
+		$this->biomeIds[($z << 4) | $x] = chr($biomeId & 0xff);
 	}
 
 	/**

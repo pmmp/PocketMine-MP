@@ -190,7 +190,7 @@ class BaseLang{
 
 		$len = strlen($text);
 		for($i = 0; $i < $len; ++$i){
-			$c = $text{$i};
+			$c = $text[$i];
 			if($replaceString !== null){
 				$ord = ord($c);
 				if(
