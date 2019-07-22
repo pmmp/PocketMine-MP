@@ -72,7 +72,7 @@ class Cactus extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() !== BlockLegacyIds::SAND and $down->getId() !== BlockLegacyIds::CACTUS){
+		if($down->getId() !== BlockLegacyIds::SAND and !$down->isSameType($this)){
 			$this->getWorld()->useBreakOn($this);
 		}else{
 			foreach(Facing::HORIZONTAL as $side){
@@ -90,7 +90,7 @@ class Cactus extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::CACTUS){
+		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
 			if($this->age === 15){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getWorld()->getBlockAt($this->x, $this->y + $y, $this->z);
@@ -116,7 +116,7 @@ class Cactus extends Transparent{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === BlockLegacyIds::SAND or $down->getId() === BlockLegacyIds::CACTUS){
+		if($down->getId() === BlockLegacyIds::SAND or $down->isSameType($this)){
 			foreach(Facing::HORIZONTAL as $side){
 				if($this->getSide($side)->isSolid()){
 					return false;

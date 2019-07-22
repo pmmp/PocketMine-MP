@@ -55,7 +55,7 @@ class Sugarcane extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
-			if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::SUGARCANE_BLOCK){
+			if(!$this->getSide(Facing::DOWN)->isSameType($this)){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getWorld()->getBlockAt($this->x, $this->y + $y, $this->z);
 					if($b->getId() === BlockLegacyIds::AIR){
@@ -83,7 +83,7 @@ class Sugarcane extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->isTransparent() and $down->getId() !== BlockLegacyIds::SUGARCANE_BLOCK){
+		if($down->isTransparent() and !$down->isSameType($this)){
 			$this->getWorld()->useBreakOn($this);
 		}
 	}
@@ -93,7 +93,7 @@ class Sugarcane extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::SUGARCANE_BLOCK){
+		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
 			if($this->age === 15){
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->getWorld()->getBlockAt($this->x, $this->y + $y, $this->z);
@@ -113,7 +113,7 @@ class Sugarcane extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === BlockLegacyIds::SUGARCANE_BLOCK){
+		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}elseif($down->getId() === BlockLegacyIds::GRASS or $down->getId() === BlockLegacyIds::DIRT or $down->getId() === BlockLegacyIds::SAND){
 			foreach(Facing::HORIZONTAL as $side){
