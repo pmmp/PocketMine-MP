@@ -37,7 +37,7 @@ class UnknownPacket extends DataPacket{
 
 	public function pid() : int{
 		if(strlen($this->payload ?? "") > 0){
-			return ord($this->payload{0});
+			return ord($this->payload[0]);
 		}
 		return self::NETWORK_ID;
 	}

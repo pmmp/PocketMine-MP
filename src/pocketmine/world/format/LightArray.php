@@ -65,15 +65,15 @@ final class LightArray{
 	}
 
 	public function get(int $x, int $y, int $z) : int{
-		return (ord($this->data{($x << 7) | ($z << 3) | ($y >> 1)}) >> (($y & 1) << 2)) & 0xf;
+		return (ord($this->data[($x << 7) | ($z << 3) | ($y >> 1)]) >> (($y & 1) << 2)) & 0xf;
 	}
 
 	public function set(int $x, int $y, int $z, int $level) : void{
 		$i = ($x << 7) | ($z << 3) | ($y >> 1);
 
 		$shift = ($y & 1) << 2;
-		$byte = ord($this->data{$i});
-		$this->data{$i} = chr(($byte & ~(0xf << $shift)) | (($level & 0xf) << $shift));
+		$byte = ord($this->data[$i]);
+		$this->data[$i] = chr(($byte & ~(0xf << $shift)) | (($level & 0xf) << $shift));
 	}
 
 	public function collectGarbage() : void{

@@ -351,7 +351,7 @@ class Utils{
 	public static function javaStringHash(string $string) : int{
 		$hash = 0;
 		for($i = 0, $len = strlen($string); $i < $len; $i++){
-			$ord = ord($string{$i});
+			$ord = ord($string[$i]);
 			if($ord & 0x80){
 				$ord -= 0x100;
 			}
