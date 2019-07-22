@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Note as TileNote;
 use function assert;
 
-class Note extends Solid{
+class Note extends Opaque{
 	public const MIN_PITCH = 0;
 	public const MAX_PITCH = 24;
 

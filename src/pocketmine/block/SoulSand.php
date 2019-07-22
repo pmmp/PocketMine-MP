@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-class SoulSand extends Solid{
+class SoulSand extends Opaque{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::SHOVEL));

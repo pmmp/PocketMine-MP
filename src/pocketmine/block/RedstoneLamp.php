@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class RedstoneLamp extends Solid{
+class RedstoneLamp extends Opaque{
 
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;

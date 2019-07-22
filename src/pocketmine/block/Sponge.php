@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 
-class Sponge extends Solid{
+class Sponge extends Opaque{
 
 	/** @var bool */
 	protected $wet = false;

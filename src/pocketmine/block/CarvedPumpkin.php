@@ -31,7 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class CarvedPumpkin extends Solid{
+class CarvedPumpkin extends Opaque{
 
 	/** @var int */
 	protected $facing = Facing::NORTH;

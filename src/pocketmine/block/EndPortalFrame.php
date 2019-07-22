@@ -32,7 +32,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class EndPortalFrame extends Solid{
+class EndPortalFrame extends Opaque{
 
 	/** @var int */
 	protected $facing = Facing::NORTH;

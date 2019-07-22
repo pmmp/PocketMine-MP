@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\item\ToolTier;
 
-class BoneBlock extends Solid{
+class BoneBlock extends Opaque{
 	use PillarRotationTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){

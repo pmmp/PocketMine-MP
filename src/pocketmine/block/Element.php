@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class Element extends Solid{
+class Element extends Opaque{
 
 	/** @var int */
 	private $atomicWeight;

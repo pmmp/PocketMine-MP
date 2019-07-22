@@ -29,7 +29,7 @@ use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
 
-class Gravel extends Solid implements Fallable{
+class Gravel extends Opaque implements Fallable{
 	use FallableTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){

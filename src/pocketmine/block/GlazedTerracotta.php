@@ -32,7 +32,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class GlazedTerracotta extends Solid{
+class GlazedTerracotta extends Opaque{
 
 	/** @var int */
 	protected $facing = Facing::NORTH;

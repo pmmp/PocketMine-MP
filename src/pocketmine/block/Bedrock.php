@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class Bedrock extends Solid{
+class Bedrock extends Opaque{
 
 	/** @var bool */
 	private $burnsForever = false;

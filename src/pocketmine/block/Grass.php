@@ -35,7 +35,7 @@ use pocketmine\utils\Random;
 use pocketmine\world\generator\object\TallGrass as TallGrassObject;
 use function mt_rand;
 
-class Grass extends Solid{
+class Grass extends Opaque{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL));

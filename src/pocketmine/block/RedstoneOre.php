@@ -30,7 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
 
-class RedstoneOre extends Solid{
+class RedstoneOre extends Opaque{
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
 

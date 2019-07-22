@@ -28,7 +28,7 @@ use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
 
-class EmeraldOre extends Solid{
+class EmeraldOre extends Opaque{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel()));

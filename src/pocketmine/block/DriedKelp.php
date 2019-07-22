@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class DriedKelp extends Solid{
+class DriedKelp extends Opaque{
 
 	public function getFlameEncouragement() : int{
 		return 30;

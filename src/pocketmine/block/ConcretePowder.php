@@ -27,7 +27,7 @@ use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\math\Facing;
 
-class ConcretePowder extends Solid implements Fallable{
+class ConcretePowder extends Opaque implements Fallable{
 	use FallableTrait {
 		onNearbyBlockChange as protected startFalling;
 	}

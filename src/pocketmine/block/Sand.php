@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 
-class Sand extends Solid implements Fallable{
+class Sand extends Opaque implements Fallable{
 	use FallableTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){

@@ -28,7 +28,7 @@ use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
 
-class NetherQuartzOre extends Solid{
+class NetherQuartzOre extends Opaque{
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));

@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\TreeType;
 
-class Wood extends Solid{
+class Wood extends Opaque{
 
 	/** @var TreeType */
 	private $treeType;

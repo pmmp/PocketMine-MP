@@ -38,7 +38,7 @@ use function cos;
 use function sin;
 use const M_PI;
 
-class TNT extends Solid{
+class TNT extends Opaque{
 
 	/** @var bool */
 	protected $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla

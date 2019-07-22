@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\PillarRotationTrait;
 
-class HayBale extends Solid{
+class HayBale extends Opaque{
 	use PillarRotationTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){

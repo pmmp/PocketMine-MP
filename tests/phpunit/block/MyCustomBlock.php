@@ -23,6 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class MyCustomBlock extends Solid{
+class MyCustomBlock extends Opaque{
 
 }

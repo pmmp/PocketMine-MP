@@ -28,7 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 
-class NetherReactor extends Solid{
+class NetherReactor extends Opaque{
 
 	/** @var int */
 	protected $state = BlockLegacyMetadata::NETHER_REACTOR_INACTIVE;

@@ -32,7 +32,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Furnace extends Solid{
+class Furnace extends Opaque{
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
 

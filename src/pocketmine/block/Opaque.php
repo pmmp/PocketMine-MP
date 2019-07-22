@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class Solid extends Block{
+class Opaque extends Block{
 
 	public function isSolid() : bool{
 		return true;
