@@ -26,6 +26,7 @@ namespace pocketmine\block\tile;
 use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\item\ItemFactory;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
@@ -37,19 +38,27 @@ use pocketmine\nbt\tag\ShortTag;
 class FlowerPot extends Spawnable{
 	private const TAG_ITEM = "item";
 	private const TAG_ITEM_DATA = "mData";
+	private const TAG_PLANT_BLOCK = "PlantBlock";
+	private const TAG_PLANT_BLOCK_NAME = "name";
+	private const TAG_PLANT_BLOCK_VAL = "val";
 
 	/** @var Block|null */
 	private $plant = null;
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		if($nbt->hasTag(self::TAG_ITEM, ShortTag::class) and $nbt->hasTag(self::TAG_ITEM_DATA, IntTag::class)){
-			try{
+		try{
+			if($nbt->hasTag(self::TAG_ITEM, ShortTag::class) and $nbt->hasTag(self::TAG_ITEM_DATA, IntTag::class)){
 				$this->setPlant(BlockFactory::get($nbt->getShort(self::TAG_ITEM), $nbt->getInt(self::TAG_ITEM_DATA)));
-			}catch(\InvalidArgumentException $e){
-				//noop
+			}elseif($nbt->hasTag(self::TAG_PLANT_BLOCK, CompoundTag::class)){
+				$blockPlant = $nbt->getCompoundTag(self::TAG_PLANT_BLOCK);
+
+				$name = $blockPlant->getString(self::TAG_PLANT_BLOCK_NAME);
+				$val = $blockPlant->getShort(self::TAG_PLANT_BLOCK_VAL);
+
+				$this->setPlant(ItemFactory::fromString("$name:$val")->getBlock());
 			}
-		}else{
-			//TODO: new PlantBlock tag
+		}catch(\InvalidArgumentException $e){
+			//noop
 		}
 	}
 
