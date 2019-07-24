@@ -23,11 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\level\biome;
 
+use pocketmine\level\generator\populator\Cactus;
 
 class DesertBiome extends SandyBiome{
 
 	public function __construct(){
 		parent::__construct();
+        $cactus = new Cactus();
+        $cactus->setBaseAmount(1);
+        $this->addPopulator($cactus);
+
 		$this->setElevation(63, 74);
 
 		$this->temperature = 2;
