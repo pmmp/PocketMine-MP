@@ -67,7 +67,6 @@ class RangedAttackBehavior extends Behavior{
 	public function onEnd() : void{
 		$this->targetSeenTicks = 0;
 		$this->rangedAttackTime = -1;
-		$this->mob->getNavigator()->clearPath();
 	}
 
 	public function onTick() : void{

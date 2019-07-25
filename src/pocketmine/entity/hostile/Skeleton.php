@@ -93,13 +93,16 @@ class Skeleton extends Monster implements RangedAttackerMob{
 	}
 
 	public function onRangedAttackToTarget(Entity $target, float $power) : void{
-		$dir = $this->getDirectionVector();
+		$pos = $this->add(0, $this->getEyeHeight() - 0.1, 0);
+		$motion = $target->add(0, $target->height / 3, 0)->subtract($pos)->normalize();
+		$f = sqrt($motion->x ** 2 + $motion->z ** 2);
+
 		/** @var Arrow $arrow */
-		$arrow = Entity::createEntity("Arrow", $this->level, Entity::createBaseNBT($this->add($dir->add(0, $this->getEyeHeight(), 0))));
+		$arrow = Entity::createEntity("Arrow", $this->level, Entity::createBaseNBT($pos->add($motion)));
 		// TODO: Enchants
-		$arrow->setMotion($dir->multiply($power * 2.5)->add($this->level->random->nextFloat() * 0.02, $this->level->random->nextFloat() * 0.01, $this->level->random->nextFloat() * 0.02));
+		$arrow->setThrowableMotion($motion->add(0, $f * 0.2, 0), 1.6, (14 - $this->level->getDifficulty() * 4));
 		$arrow->setPickupMode(Arrow::PICKUP_NONE);
-		$arrow->setBaseDamage(2);
+		$arrow->setBaseDamage($power * 2 + $this->random->nextFloat() * 0.25 + ($this->level->getDifficulty() * 0.11));
 
 		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BOW);
 		$arrow->spawnToAll();

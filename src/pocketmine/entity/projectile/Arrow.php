@@ -31,6 +31,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\RayTraceResult;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -76,6 +77,14 @@ class Arrow extends Projectile{
 
 		$this->pickupMode = $this->namedtag->getByte(self::TAG_PICKUP, self::PICKUP_ANY, true);
 		$this->collideTicks = $this->namedtag->getShort("life", $this->collideTicks);
+	}
+
+	public function setThrowableMotion(Vector3 $motion, float $velocity, float $inaccuracy) : void{
+		$this->setMotion($motion->add(
+			$this->random->nextFloat() * ($this->random->nextBoolean() ? 1 : -1) * 0.0075 * $inaccuracy,
+			$this->random->nextFloat() * ($this->random->nextBoolean() ? 1 : -1) * 0.0075 * $inaccuracy,
+			$this->random->nextFloat() * ($this->random->nextBoolean() ? 1 : -1) * 0.0075 * $inaccuracy)
+		->multiply($velocity));
 	}
 
 	public function saveNBT() : void{

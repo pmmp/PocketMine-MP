@@ -437,4 +437,16 @@ abstract class Mob extends Living{
 
 		return $angle;
 	}
+
+	/**
+	 * @return Vector3
+	 */
+	public function getLookVector() : Vector3{
+		$y = -sin(deg2rad($this->pitch));
+		$xz = cos(deg2rad($this->pitch));
+		$x = -$xz * sin(deg2rad($this->headYaw));
+		$z = $xz * cos(deg2rad($this->headYaw));
+
+		return $this->temporalVector->setComponents($x, $y, $z)->normalize();
+	}
 }

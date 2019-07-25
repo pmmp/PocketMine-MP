@@ -61,11 +61,6 @@ class FleeSunBehavior extends Behavior{
 		return $this->mob->getNavigator()->isBusy();
 	}
 
-	public function onEnd() : void{
-		$this->mob->resetMotion();
-		$this->mob->getNavigator()->clearPath();
-	}
-
 	public function findPossibleShelter() : ?Block{
 		for($i = 0; $i < 10; $i++){
 			$block = $this->mob->level->getBlock($this->mob->add($this->random->nextBoundedInt(20) - 10, $this->random->nextBoundedInt(6) - 3, $this->random->nextBoundedInt(20) - 10));
