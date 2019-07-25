@@ -30,6 +30,8 @@ Here. Some servers that using Altay software:
 - **play.zerotouch.tk:19132**
 - **angelpe.hu:19132**
 - **rushnation.net:19132**
+- **play.minetopya.tk:19132**
+- **oyna.deathmcpe.com:19132**
 
 By the way, you can tell us to add your server to this list from our Discord group if your server is using Altay.
 
