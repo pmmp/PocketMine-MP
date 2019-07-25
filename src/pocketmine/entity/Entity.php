@@ -91,9 +91,9 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
@@ -1427,7 +1427,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->setFireTicks($ticks);
 		}
 
-		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, true);
+		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, $this->isOnFire());
 	}
 
 	/**

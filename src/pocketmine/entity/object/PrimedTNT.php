@@ -28,6 +28,7 @@ use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Explosion;
+use pocketmine\level\Position;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
@@ -105,7 +106,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$ev = new ExplosionPrimeEvent($this, 4);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$explosion = new Explosion($this, $ev->getForce(), $this);
+			$explosion = new Explosion(Position::fromObject($this->add(0, $this->height / 2, 0), $this->level), $ev->getForce(), $this);
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
 			}

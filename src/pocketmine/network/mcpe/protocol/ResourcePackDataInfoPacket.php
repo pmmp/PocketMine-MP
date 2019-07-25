@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\ResourcePackType;
 
 class ResourcePackDataInfoPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
@@ -45,7 +46,7 @@ class ResourcePackDataInfoPacket extends DataPacket{
 	/** @var bool */
 	public $isPremium = false;
 	/** @var int */
-	public $packType = 0; //TODO: check the values for this
+	public $packType = ResourcePackType::RESOURCES; //TODO: check the values for this
 
 	protected function decodePayload(){
 		$this->packId = $this->getString();

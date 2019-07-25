@@ -74,14 +74,14 @@ class FormattedCommandAlias extends Command{
 		$index = strpos($formatString, '$');
 		while($index !== false){
 			$start = $index;
-			if($index > 0 and $formatString{$start - 1} === "\\"){
+			if($index > 0 and $formatString[$start - 1] === "\\"){
 				$formatString = substr($formatString, 0, $start - 1) . substr($formatString, $start);
 				$index = strpos($formatString, '$', $index);
 				continue;
 			}
 
 			$required = false;
-			if($formatString{$index + 1} == '$'){
+			if($formatString[$index + 1] == '$'){
 				$required = true;
 
 				++$index;
@@ -91,7 +91,7 @@ class FormattedCommandAlias extends Command{
 
 			$argStart = $index;
 
-			while($index < strlen($formatString) and self::inRange(ord($formatString{$index}) - 48, 0, 9)){
+			while($index < strlen($formatString) and self::inRange(ord($formatString[$index]) - 48, 0, 9)){
 				++$index;
 			}
 
@@ -109,7 +109,7 @@ class FormattedCommandAlias extends Command{
 
 			$rest = false;
 
-			if($index < strlen($formatString) and $formatString{$index} === "-"){
+			if($index < strlen($formatString) and $formatString[$index] === "-"){
 				$rest = true;
 				++$index;
 			}

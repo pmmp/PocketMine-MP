@@ -41,7 +41,6 @@ use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
 use function count;
 use function strlen;
-use function var_dump;
 
 class NetworkBinaryStream extends BinaryStream{
 

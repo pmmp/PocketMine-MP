@@ -19,9 +19,20 @@
  *
 */
 
-namespace pocketmine;
+declare(strict_types=1);
 
-const NAME = "Altay";
-const BASE_VERSION = "3.9.3";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;
+namespace pocketmine\network\mcpe\protocol\types;
+
+final class ResourcePackType{
+
+	private function __construct(){
+		//NOOP
+	}
+
+	public const INVALID = 0;
+	public const RESOURCES = 1;
+	public const BEHAVIORS = 2;
+	public const WORLD_TEMPLATE = 3;
+	public const ADDON = 4; //scripts?
+	public const SKINS = 5;
+}

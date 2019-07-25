@@ -79,8 +79,8 @@ class ShapedRecipe implements CraftingRecipe{
 			}
 
 			for($x = 0; $x < $this->width; ++$x){
-				if($row{$x} !== ' ' and !isset($ingredients[$row{$x}])){
-					throw new \InvalidArgumentException("No item specified for symbol '" . $row{$x} . "'");
+				if($row[$x] !== ' ' and !isset($ingredients[$row[$x]])){
+					throw new \InvalidArgumentException("No item specified for symbol '" . $row[$x] . "'");
 				}
 			}
 		}
