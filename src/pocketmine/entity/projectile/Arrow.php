@@ -79,8 +79,8 @@ class Arrow extends Projectile{
 		$this->collideTicks = $this->namedtag->getShort("life", $this->collideTicks);
 	}
 
-	public function setThrowableMotion(Vector3 $motion, float $velocity, float $inaccuracy) : void{
-		$this->setMotion($motion->add(
+	public function setThrowableMotion(Vector3 $motion, float $velocity, float $inaccuracy) : bool{
+		return $this->setMotion($motion->add(
 			$this->random->nextFloat() * ($this->random->nextBoolean() ? 1 : -1) * 0.0075 * $inaccuracy,
 			$this->random->nextFloat() * ($this->random->nextBoolean() ? 1 : -1) * 0.0075 * $inaccuracy,
 			$this->random->nextFloat() * ($this->random->nextBoolean() ? 1 : -1) * 0.0075 * $inaccuracy)
