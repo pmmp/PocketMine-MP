@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 interface ItemIds{
 
+	public const LIT_BLAST_FURNACE = -214;
 	public const COMPOSTER = -213;
 	public const WOOD = -212;
 	public const JIGSAW = -211;
@@ -39,7 +40,7 @@ interface ItemIds{
 	public const SMITHING_TABLE = -202;
 	public const FLETCHING_TABLE = -201;
 	public const CARTOGRAPHY_TABLE = -200;
-
+	public const LIT_SMOKER = -199;
 	public const SMOKER = -198;
 	public const STONECUTTER_BLOCK = -197;
 	public const BLAST_FURNACE = -196;

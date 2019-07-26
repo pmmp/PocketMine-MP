@@ -477,7 +477,7 @@ interface BlockLegacyIds{
 	public const BLAST_FURNACE = 451;
 	public const STONECUTTER_BLOCK = 452;
 	public const SMOKER = 453;
-
+	public const LIT_SMOKER = 454;
 	public const CARTOGRAPHY_TABLE = 455;
 	public const FLETCHING_TABLE = 456;
 	public const SMITHING_TABLE = 457;
@@ -492,5 +492,6 @@ interface BlockLegacyIds{
 	public const JIGSAW = 466;
 	public const WOOD = 467;
 	public const COMPOSTER = 468;
+	public const LIT_BLAST_FURNACE = 469;
 
 }
