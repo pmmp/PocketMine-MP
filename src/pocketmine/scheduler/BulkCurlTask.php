@@ -31,7 +31,7 @@ use function unserialize;
 /**
  * Executes a consecutive list of cURL operations.
  *
- * The result of this AsyncTask is an array of arrays (returned from {@link Utils::simpleCurl}) or InternetException objects.
+ * The result of this AsyncTask is an array of arrays (returned from {@link Internet::simpleCurl}) or InternetException objects.
  */
 class BulkCurlTask extends AsyncTask{
 	private $operations;
