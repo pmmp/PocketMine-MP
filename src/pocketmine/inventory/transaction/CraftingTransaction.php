@@ -26,7 +26,6 @@ namespace pocketmine\inventory\transaction;
 use pocketmine\crafting\CraftingRecipe;
 use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\item\Item;
-use pocketmine\item\ItemIds;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use function array_pop;
@@ -169,48 +168,5 @@ class CraftingTransaction extends InventoryTransaction{
 		 * transaction goes wrong.
 		 */
 		$this->source->sendDataPacket(ContainerClosePacket::create(ContainerIds::NONE));
-	}
-
-	public function execute() : bool{
-		if(parent::execute()){
-			foreach($this->outputs as $item){
-				switch($item->getId()){
-					case ItemIds::CRAFTING_TABLE:
-						$this->source->awardAchievement("buildWorkBench");
-						break;
-					case ItemIds::WOODEN_PICKAXE:
-						$this->source->awardAchievement("buildPickaxe");
-						break;
-					case ItemIds::FURNACE:
-						$this->source->awardAchievement("buildFurnace");
-						break;
-					case ItemIds::WOODEN_HOE:
-						$this->source->awardAchievement("buildHoe");
-						break;
-					case ItemIds::BREAD:
-						$this->source->awardAchievement("makeBread");
-						break;
-					case ItemIds::CAKE:
-						$this->source->awardAchievement("bakeCake");
-						break;
-					case ItemIds::STONE_PICKAXE:
-					case ItemIds::GOLDEN_PICKAXE:
-					case ItemIds::IRON_PICKAXE:
-					case ItemIds::DIAMOND_PICKAXE:
-						$this->source->awardAchievement("buildBetterPickaxe");
-						break;
-					case ItemIds::WOODEN_SWORD:
-						$this->source->awardAchievement("buildSword");
-						break;
-					case ItemIds::DIAMOND:
-						$this->source->awardAchievement("diamond");
-						break;
-				}
-			}
-
-			return true;
-		}
-
-		return false;
 	}
 }

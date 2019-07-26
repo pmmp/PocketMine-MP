@@ -250,8 +250,6 @@ class InGamePacketHandler extends PacketHandler{
 
 				return false;
 			}
-
-			//TODO: fix achievement for getting iron from furnace
 		}
 
 		return true;

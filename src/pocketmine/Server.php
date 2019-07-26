@@ -1006,7 +1006,6 @@ class Server{
 				"motd" => \pocketmine\NAME . " Server",
 				"server-port" => 19132,
 				"white-list" => false,
-				"announce-player-achievements" => true,
 				"max-players" => 20,
 				"gamemode" => 0,
 				"force-gamemode" => false,

@@ -41,7 +41,6 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
-use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerBedEnterEvent;
 use pocketmine\event\player\PlayerBedLeaveEvent;
 use pocketmine\event\player\PlayerBlockPickEvent;
@@ -78,7 +77,6 @@ use pocketmine\item\ItemUseResult;
 use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\IntTag;
@@ -108,7 +106,6 @@ use pocketmine\world\particle\PunchBlockParticle;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function abs;
-use function array_filter;
 use function assert;
 use function ceil;
 use function count;
@@ -190,8 +187,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/** @var bool */
 	protected $removeFormat = true;
 
-	/** @var bool[] name of achievement => bool */
-	protected $achievements = [];
 	/** @var int */
 	protected $firstPlayed;
 	/** @var int */
@@ -369,15 +364,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->setNameTagVisible();
 		$this->setNameTagAlwaysVisible();
 		$this->setCanClimb();
-
-		$this->achievements = [];
-		$achievements = $nbt->getCompoundTag("Achievements");
-		if($achievements !== null){
-			/** @var ByteTag $tag */
-			foreach($achievements as $name => $tag){
-				$this->achievements[$name] = $tag->getValue() !== 0;
-			}
-		}
 
 		if(!$this->hasValidSpawnPosition()){
 			if(($world = $this->server->getWorldManager()->getWorldByName($nbt->getString("SpawnLevel", ""))) instanceof World){
@@ -1119,64 +1105,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->world->setSleepTicks(0);
 
 			$this->broadcastAnimation([$this], AnimatePacket::ACTION_STOP_SLEEP);
-		}
-	}
-
-	/**
-	 * @param string $achievementId
-	 *
-	 * @return bool
-	 */
-	public function hasAchievement(string $achievementId) : bool{
-		if(!isset(Achievement::$list[$achievementId])){
-			return false;
-		}
-
-		return $this->achievements[$achievementId] ?? false;
-	}
-
-	/**
-	 * @param string $achievementId
-	 *
-	 * @return bool
-	 */
-	public function awardAchievement(string $achievementId) : bool{
-		if(isset(Achievement::$list[$achievementId]) and !$this->hasAchievement($achievementId)){
-			foreach(Achievement::$list[$achievementId]["requires"] as $requirementId){
-				if(!$this->hasAchievement($requirementId)){
-					return false;
-				}
-			}
-			$ev = new PlayerAchievementAwardedEvent(
-				$this,
-				$achievementId,
-				new TranslationContainer("chat.type.achievement", [$this->getDisplayName(), TextFormat::GREEN . Achievement::$list[$achievementId]["name"] . TextFormat::RESET]),
-				$this->server->getConfigBool("announce-player-achievements", true) ? array_filter(PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_USERS), function($v){
-					return $v instanceof CommandSender;
-				}) : [$this]
-			);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$this->achievements[$achievementId] = true;
-				if(($message = $ev->getMessage()) !== null){
-					$this->server->broadcastMessage($message, $ev->getBroadcastRecipients());
-				}
-
-				return true;
-			}else{
-				return false;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * @param string $achievementId
-	 */
-	public function removeAchievement(string $achievementId){
-		if($this->hasAchievement($achievementId)){
-			$this->achievements[$achievementId] = false;
 		}
 	}
 
@@ -2333,12 +2261,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 				]));
 			}
 		}
-
-		$achievements = new CompoundTag();
-		foreach($this->achievements as $achievement => $status){
-			$achievements->setByte($achievement, $status ? 1 : 0);
-		}
-		$nbt->setTag("Achievements", $achievements);
 
 		$nbt->setInt("playerGameType", $this->gamemode->getMagicNumber());
 		$nbt->setLong("firstPlayed", $this->firstPlayed);
