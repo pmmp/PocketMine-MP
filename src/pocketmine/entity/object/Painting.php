@@ -152,9 +152,11 @@ class Painting extends Entity{
 	protected function sendSpawnPacket(Player $player) : void{
 		$pk = new AddPaintingPacket();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->x = $this->blockIn->x;
-		$pk->y = $this->blockIn->y;
-		$pk->z = $this->blockIn->z;
+		$pk->position = new Vector3(
+			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
+			($this->boundingBox->minY + $this->boundingBox->maxY) / 2,
+			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
+		);
 		$pk->direction = $this->direction;
 		$pk->title = $this->motive;
 

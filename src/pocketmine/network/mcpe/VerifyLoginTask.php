@@ -120,12 +120,12 @@ class VerifyLoginTask extends AsyncTask{
 		[$rString, $sString] = str_split($plainSignature, 48);
 
 		$rString = ltrim($rString, "\x00");
-		if(ord($rString{0}) >= 128){ //Would be considered signed, pad it with an extra zero
+		if(ord($rString[0]) >= 128){ //Would be considered signed, pad it with an extra zero
 			$rString = "\x00" . $rString;
 		}
 
 		$sString = ltrim($sString, "\x00");
-		if(ord($sString{0}) >= 128){ //Would be considered signed, pad it with an extra zero
+		if(ord($sString[0]) >= 128){ //Would be considered signed, pad it with an extra zero
 			$sString = "\x00" . $sString;
 		}
 

@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\ResourcePackType;
 
 class ResourcePackDataInfoPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
@@ -42,6 +43,10 @@ class ResourcePackDataInfoPacket extends DataPacket{
 	public $compressedPackSize;
 	/** @var string */
 	public $sha256;
+	/** @var bool */
+	public $isPremium = false;
+	/** @var int */
+	public $packType = ResourcePackType::RESOURCES; //TODO: check the values for this
 
 	protected function decodePayload(){
 		$this->packId = $this->getString();
@@ -49,6 +54,8 @@ class ResourcePackDataInfoPacket extends DataPacket{
 		$this->chunkCount = $this->getLInt();
 		$this->compressedPackSize = $this->getLLong();
 		$this->sha256 = $this->getString();
+		$this->isPremium = $this->getBool();
+		$this->packType = $this->getByte();
 	}
 
 	protected function encodePayload(){
@@ -57,6 +64,8 @@ class ResourcePackDataInfoPacket extends DataPacket{
 		$this->putLInt($this->chunkCount);
 		$this->putLLong($this->compressedPackSize);
 		$this->putString($this->sha256);
+		$this->putBool($this->isPremium);
+		$this->putByte($this->packType);
 	}
 
 	public function handle(NetworkSession $session) : bool{

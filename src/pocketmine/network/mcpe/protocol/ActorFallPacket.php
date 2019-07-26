@@ -26,28 +26,31 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
-class SetEntityMotionPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::SET_ENTITY_MOTION_PACKET;
+class ActorFallPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::ACTOR_FALL_PACKET;
 
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var Vector3 */
-	public $motion;
+	/** @var float */
+	public $fallDistance;
+	/** @var bool */
+	public $isInVoid;
 
 	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->motion = $this->getVector3();
+		$this->fallDistance = $this->getLFloat();
+		$this->isInVoid = $this->getBool();
 	}
 
 	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVector3($this->motion);
+		$this->putLFloat($this->fallDistance);
+		$this->putBool($this->isInVoid);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetEntityMotion($this);
+		return $session->handleActorFall($this);
 	}
 }

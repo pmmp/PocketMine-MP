@@ -21,31 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
+final class ResourcePackType{
 
-use pocketmine\network\mcpe\NetworkSession;
-
-class EntityPickRequestPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::ENTITY_PICK_REQUEST_PACKET;
-
-	/** @var int */
-	public $entityUniqueId;
-	/** @var int */
-	public $hotbarSlot;
-
-	protected function decodePayload(){
-		$this->entityUniqueId = $this->getLLong();
-		$this->hotbarSlot = $this->getByte();
+	private function __construct(){
+		//NOOP
 	}
 
-	protected function encodePayload(){
-		$this->putLLong($this->entityUniqueId);
-		$this->putByte($this->hotbarSlot);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleEntityPickRequest($this);
-	}
+	public const INVALID = 0;
+	public const RESOURCES = 1;
+	public const BEHAVIORS = 2;
+	public const WORLD_TEMPLATE = 3;
+	public const ADDON = 4; //scripts?
+	public const SKINS = 5;
 }

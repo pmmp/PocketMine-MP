@@ -25,32 +25,36 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class FullChunkDataPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::FULL_CHUNK_DATA_PACKET;
+class ClientCacheStatusPacket extends DataPacket/* implements ServerboundPacket*/{
+	public const NETWORK_ID = ProtocolInfo::CLIENT_CACHE_STATUS_PACKET;
 
-	/** @var int */
-	public $chunkX;
-	/** @var int */
-	public $chunkZ;
-	/** @var string */
-	public $data;
+	/** @var bool */
+	private $enabled;
 
-	protected function decodePayload(){
-		$this->chunkX = $this->getVarInt();
-		$this->chunkZ = $this->getVarInt();
-		$this->data = $this->getString();
+	public static function create(bool $enabled) : self{
+		$result = new self;
+		$result->enabled = $enabled;
+		return $result;
 	}
 
-	protected function encodePayload(){
-		$this->putVarInt($this->chunkX);
-		$this->putVarInt($this->chunkZ);
-		$this->putString($this->data);
+	/**
+	 * @return bool
+	 */
+	public function isEnabled() : bool{
+		return $this->enabled;
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleFullChunkData($this);
+	protected function decodePayload() : void{
+		$this->enabled = $this->getBool();
+	}
+
+	protected function encodePayload() : void{
+		$this->putBool($this->enabled);
+	}
+
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleClientCacheStatus($this);
 	}
 }

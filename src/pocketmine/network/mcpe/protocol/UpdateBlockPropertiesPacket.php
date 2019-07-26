@@ -25,36 +25,31 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\nbt\NetworkLittleEndianNBTStream;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\NetworkSession;
 
-class RemoveEntityPacket extends DataPacket/* implements ClientboundPacket*/{
-	public const NETWORK_ID = ProtocolInfo::REMOVE_ENTITY_PACKET;
+class UpdateBlockPropertiesPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_PROPERTIES_PACKET;
 
-	/** @var int */
-	private $uvarint1;
+	/** @var string */
+	private $nbt;
 
-	public static function create(int $uvarint1) : self{
+	public static function create(CompoundTag $data) : self{
 		$result = new self;
-		$result->uvarint1 = $uvarint1;
+		$result->nbt = (new NetworkLittleEndianNBTStream())->write($data);
 		return $result;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getUvarint1() : int{
-		return $this->uvarint1;
-	}
-
 	protected function decodePayload() : void{
-		$this->uvarint1 = $this->getUnsignedVarInt();
+		$this->nbt = $this->getRemaining();
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->uvarint1);
+		$this->put($this->nbt);
 	}
 
 	public function handle(NetworkSession $handler) : bool{
-		return $handler->handleRemoveEntity($this);
+		return $handler->handleUpdateBlockProperties($this);
 	}
 }

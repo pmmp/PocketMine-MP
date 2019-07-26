@@ -467,7 +467,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function setCustomName(string $name) : Item{
 		if($name === ""){
-			$this->clearCustomName();
+			return $this->clearCustomName();
 		}
 
 		/** @var CompoundTag $display */
