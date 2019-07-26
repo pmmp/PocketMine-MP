@@ -127,6 +127,7 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	/**
+	 * @deprecated
 	 * @see AsyncWorker::getFromThreadStore()
 	 *
 	 * @param string $identifier
@@ -141,6 +142,7 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	/**
+	 * @deprecated
 	 * @see AsyncWorker::saveToThreadStore()
 	 *
 	 * @param string $identifier
@@ -154,6 +156,7 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	/**
+	 * @deprecated
 	 * @see AsyncWorker::removeFromThreadStore()
 	 *
 	 * @param string $identifier
