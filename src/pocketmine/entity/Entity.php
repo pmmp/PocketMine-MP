@@ -51,7 +51,7 @@ use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
-use pocketmine\network\mcpe\protocol\types\DataPropertyManager;
+use pocketmine\network\mcpe\protocol\types\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\EntityMetadataTypes;
@@ -92,7 +92,7 @@ abstract class Entity extends Location{
 	/** @var int */
 	protected $id;
 
-	/** @var DataPropertyManager */
+	/** @var EntityMetadataCollection */
 	protected $propertyManager;
 
 	/** @var Chunk|null */
@@ -232,7 +232,7 @@ abstract class Entity extends Location{
 
 		$this->resetLastMovements();
 
-		$this->propertyManager = new DataPropertyManager();
+		$this->propertyManager = new EntityMetadataCollection();
 
 		$this->propertyManager->setLong(EntityMetadataProperties::FLAGS, 0);
 		$this->propertyManager->setShort(EntityMetadataProperties::MAX_AIR, 400);
@@ -708,7 +708,7 @@ abstract class Entity extends Location{
 		return $this->attributeMap;
 	}
 
-	public function getDataPropertyManager() : DataPropertyManager{
+	public function getDataPropertyManager() : EntityMetadataCollection{
 		return $this->propertyManager;
 	}
 

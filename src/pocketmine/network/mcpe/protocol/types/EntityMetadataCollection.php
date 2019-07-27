@@ -30,7 +30,7 @@ use function is_float;
 use function is_int;
 use function is_string;
 
-class DataPropertyManager{
+class EntityMetadataCollection{
 
 	private $properties = [];
 
