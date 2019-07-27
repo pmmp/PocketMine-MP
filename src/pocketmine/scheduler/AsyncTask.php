@@ -229,13 +229,6 @@ abstract class AsyncTask extends Collectable{
 	 * Objects stored in this storage MUST be retrieved through {@link AsyncTask::fetchLocal} when {@link AsyncTask::onCompletion} is called.
 	 * Otherwise, a NOTICE level message will be raised and the reference will be removed after onCompletion exits.
 	 *
-	 * WARNING: Use this method carefully. It might take a long time before an AsyncTask is completed. PocketMine will
-	 * keep a strong reference to objects passed in this method. This may result in a light memory leak. Usually this
-	 * does not cause memory failure, but be aware that the object may be no longer usable when the AsyncTask completes.
-	 * (E.g. a Level object is no longer usable because it is unloaded while the AsyncTask is executing, or even a
-	 * plugin might be unloaded). Since PocketMine keeps a strong reference, the objects are still valid, but the
-	 * implementation is responsible for checking whether these objects are still usable.
-	 *
 	 * WARNING: THIS METHOD SHOULD ONLY BE CALLED FROM THE MAIN THREAD!
 	 *
 	 * @param mixed $complexData the data to store
