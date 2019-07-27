@@ -595,7 +595,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * @return \pocketmine\network\mcpe\protocol\types\entity\EntityLink
+	 * @return EntityLink
 	 *
 	 * @throws BinaryDataException
 	 */
@@ -611,7 +611,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * @param \pocketmine\network\mcpe\protocol\types\entity\EntityLink $link
+	 * @param EntityLink $link
 	 */
 	protected function putEntityLink(EntityLink $link) : void{
 		$this->putEntityUniqueId($link->fromEntityUniqueId);
@@ -621,7 +621,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * @return \pocketmine\network\mcpe\protocol\types\command\CommandOriginData
+	 * @return CommandOriginData
 	 * @throws BinaryDataException
 	 */
 	protected function getCommandOriginData() : CommandOriginData{

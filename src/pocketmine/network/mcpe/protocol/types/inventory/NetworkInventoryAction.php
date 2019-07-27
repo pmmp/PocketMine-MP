@@ -97,7 +97,7 @@ class NetworkInventoryAction{
 	public $newItem;
 
 	/**
-	 * @param \pocketmine\network\mcpe\serializer\NetworkBinaryStream $packet
+	 * @param NetworkBinaryStream $packet
 	 *
 	 * @return $this
 	 *
@@ -132,7 +132,7 @@ class NetworkInventoryAction{
 	}
 
 	/**
-	 * @param \pocketmine\network\mcpe\serializer\NetworkBinaryStream $packet
+	 * @param NetworkBinaryStream $packet
 	 *
 	 * @throws \InvalidArgumentException
 	 */
