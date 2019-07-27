@@ -33,12 +33,12 @@ use function unserialize;
  *
  * An AsyncTask does not have its own thread. It is queued into an AsyncPool and executed if there is an async worker
  * with no AsyncTask running. Therefore, an AsyncTask SHOULD NOT execute for more than a few seconds. For tasks that
- * run for a long time or infinitely, start another {@link \pocketmine\thread\Thread} instead.
+ * run for a long time or infinitely, start another thread instead.
  *
  * WARNING: Any non-Threaded objects WILL BE SERIALIZED when assigned to members of AsyncTasks or other Threaded object.
  * If later accessed from said Threaded object, you will be operating on a COPY OF THE OBJECT, NOT THE ORIGINAL OBJECT.
  * If you want to store non-serializable objects to access when the task completes, store them using
- * {@link AsyncTask#storeLocal}.
+ * {@link AsyncTask::storeLocal}.
  *
  * WARNING: As of pthreads v3.1.6, arrays are converted to Volatile objects when assigned as members of Threaded objects.
  * Keep this in mind when using arrays stored as members of your AsyncTask.
@@ -152,8 +152,8 @@ abstract class AsyncTask extends \Threaded{
 	}
 
 	/**
-	 * Call this method from {@link AsyncTask#onRun} (AsyncTask execution thread) to schedule a call to
-	 * {@link AsyncTask#onProgressUpdate} from the main thread with the given progress parameter.
+	 * Call this method from {@link AsyncTask::onRun} (AsyncTask execution thread) to schedule a call to
+	 * {@link AsyncTask::onProgressUpdate} from the main thread with the given progress parameter.
 	 *
 	 * @param mixed $progress A value that can be safely serialize()'ed.
 	 */
@@ -172,9 +172,9 @@ abstract class AsyncTask extends \Threaded{
 	}
 
 	/**
-	 * Called from the main thread after {@link AsyncTask#publishProgress} is called.
-	 * All {@link AsyncTask#publishProgress} calls should result in {@link AsyncTask#onProgressUpdate} calls before
-	 * {@link AsyncTask#onCompletion} is called.
+	 * Called from the main thread after {@link AsyncTask::publishProgress} is called.
+	 * All {@link AsyncTask::publishProgress} calls should result in {@link AsyncTask::onProgressUpdate} calls before
+	 * {@link AsyncTask::onCompletion} is called.
 	 *
 	 * @param mixed $progress The parameter passed to {@link AsyncTask#publishProgress}. It is serialize()'ed
 	 *                         and then unserialize()'ed, as if it has been cloned.
@@ -204,14 +204,6 @@ abstract class AsyncTask extends \Threaded{
 	 *
 	 * Objects stored in this storage can be retrieved using fetchLocal() on the same thread that this method was called
 	 * from.
-	 *
-	 * WARNING: Use this method carefully. It might take a long time before an AsyncTask is completed. The thread this
-	 * is called on will keep a strong reference to variables stored using method. This may result in a light memory
-	 * leak. Usually this does not cause memory failure, but be aware that the object may be no longer usable when the
-	 * AsyncTask completes. Since a strong reference is retained, the objects still exist, but the implementation is
-	 * responsible for checking whether these objects are still usable.
-	 * (E.g. a {@link \pocketmine\World} object is no longer usable because it is unloaded while the AsyncTask is
-	 * executing, or even a plugin might be unloaded).
 	 *
 	 * @param string $key
 	 * @param mixed  $complexData the data to store
