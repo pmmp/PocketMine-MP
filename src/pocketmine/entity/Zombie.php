@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\item\VanillaItems;
-use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use function mt_rand;
 
 class Zombie extends Living{

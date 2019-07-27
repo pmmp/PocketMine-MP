@@ -21,14 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\command;
 
-final class PlayerMetadataFlags{
+class CommandOutputMessage{
+	/** @var bool */
+	public $isInternal;
+	/** @var string */
+	public $messageId;
+	/** @var string[] */
+	public $parameters = [];
 
-	private function __construct(){
-		//NOOP
-	}
-
-	public const SLEEP = 1;
-	public const DEAD = 2; //TODO: CHECK
 }

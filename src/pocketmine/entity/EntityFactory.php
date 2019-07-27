@@ -42,7 +42,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\utils\Utils;
 use pocketmine\world\World;
 use function array_keys;

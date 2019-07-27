@@ -34,7 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
-use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\player\Player;
 use pocketmine\world\particle\DestroyBlockParticle;
 use pocketmine\world\World;

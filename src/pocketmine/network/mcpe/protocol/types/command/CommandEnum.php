@@ -21,19 +21,34 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\command;
 
-interface ContainerIds{
+class CommandEnum{
+	/** @var string */
+	private $enumName;
+	/** @var string[] */
+	private $enumValues = [];
 
-	public const NONE = -1;
-	public const INVENTORY = 0;
-	public const FIRST = 1;
-	public const LAST = 100;
-	public const OFFHAND = 119;
-	public const ARMOR = 120;
-	public const CREATIVE = 121;
-	public const HOTBAR = 122;
-	public const FIXED_INVENTORY = 123;
-	public const CURSOR = 124;
+	/**
+	 * @param string   $enumName
+	 * @param string[] $enumValues
+	 */
+	public function __construct(string $enumName, array $enumValues){
+		$this->enumName = $enumName;
+		$this->enumValues = $enumValues;
+	}
 
+	/**
+	 * @return string
+	 */
+	public function getName() : string{
+		return $this->enumName;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getValues() : array{
+		return $this->enumValues;
+	}
 }

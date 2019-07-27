@@ -21,33 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\inventory;
 
-use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+interface ContainerIds{
 
-class NormalTransactionData extends TransactionData{
+	public const NONE = -1;
+	public const INVENTORY = 0;
+	public const FIRST = 1;
+	public const LAST = 100;
+	public const OFFHAND = 119;
+	public const ARMOR = 120;
+	public const CREATIVE = 121;
+	public const HOTBAR = 122;
+	public const FIXED_INVENTORY = 123;
+	public const CURSOR = 124;
 
-	public function getTypeId() : int{
-		return InventoryTransactionPacket::TYPE_NORMAL;
-	}
-
-	protected function decodeData(NetworkBinaryStream $stream) : void{
-
-	}
-
-	protected function encodeData(NetworkBinaryStream $stream) : void{
-
-	}
-
-	/**
-	 * @param NetworkInventoryAction[] $actions
-	 *
-	 * @return NormalTransactionData
-	 */
-	public static function new(array $actions) : self{
-		$result = new self();
-		$result->actions = $actions;
-		return $result;
-	}
 }

@@ -26,8 +26,8 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\network\mcpe\protocol\types\CommandOriginData;
-use pocketmine\network\mcpe\protocol\types\CommandOutputMessage;
+use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
+use pocketmine\network\mcpe\protocol\types\command\CommandOutputMessage;
 use pocketmine\utils\BinaryDataException;
 use function count;
 

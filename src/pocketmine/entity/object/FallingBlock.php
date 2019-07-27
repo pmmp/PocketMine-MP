@@ -32,8 +32,8 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\protocol\types\EntityLegacyIds;
-use pocketmine\network\mcpe\protocol\types\EntityMetadataProperties;
+use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use function get_class;
 
 class FallingBlock extends Entity{

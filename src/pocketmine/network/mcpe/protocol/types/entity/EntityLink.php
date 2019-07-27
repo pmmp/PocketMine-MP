@@ -21,34 +21,27 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\entity;
 
-class CommandEnum{
-	/** @var string */
-	private $enumName;
-	/** @var string[] */
-	private $enumValues = [];
+class EntityLink{
 
-	/**
-	 * @param string   $enumName
-	 * @param string[] $enumValues
-	 */
-	public function __construct(string $enumName, array $enumValues){
-		$this->enumName = $enumName;
-		$this->enumValues = $enumValues;
-	}
+	public const TYPE_REMOVE = 0;
+	public const TYPE_RIDER = 1;
+	public const TYPE_PASSENGER = 2;
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return $this->enumName;
-	}
+	/** @var int */
+	public $fromEntityUniqueId;
+	/** @var int */
+	public $toEntityUniqueId;
+	/** @var int */
+	public $type;
+	/** @var bool */
+	public $immediate; //for dismounting on mount death
 
-	/**
-	 * @return string[]
-	 */
-	public function getValues() : array{
-		return $this->enumValues;
+	public function __construct(?int $fromEntityUniqueId = null, ?int $toEntityUniqueId = null, ?int $type = null, bool $immediate = false){
+		$this->fromEntityUniqueId = $fromEntityUniqueId;
+		$this->toEntityUniqueId = $toEntityUniqueId;
+		$this->type = $type;
+		$this->immediate = $immediate;
 	}
 }

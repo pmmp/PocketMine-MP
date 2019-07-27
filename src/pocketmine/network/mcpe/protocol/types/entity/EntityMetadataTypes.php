@@ -21,27 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\entity;
 
-class EntityLink{
+final class EntityMetadataTypes{
 
-	public const TYPE_REMOVE = 0;
-	public const TYPE_RIDER = 1;
-	public const TYPE_PASSENGER = 2;
-
-	/** @var int */
-	public $fromEntityUniqueId;
-	/** @var int */
-	public $toEntityUniqueId;
-	/** @var int */
-	public $type;
-	/** @var bool */
-	public $immediate; //for dismounting on mount death
-
-	public function __construct(?int $fromEntityUniqueId = null, ?int $toEntityUniqueId = null, ?int $type = null, bool $immediate = false){
-		$this->fromEntityUniqueId = $fromEntityUniqueId;
-		$this->toEntityUniqueId = $toEntityUniqueId;
-		$this->type = $type;
-		$this->immediate = $immediate;
+	private function __construct(){
+		//NOOP
 	}
+
+	public const BYTE = 0;
+	public const SHORT = 1;
+	public const INT = 2;
+	public const FLOAT = 3;
+	public const STRING = 4;
+	public const SLOT = 5;
+	public const POS = 6;
+	public const LONG = 7;
+	public const VECTOR3F = 8;
 }

@@ -27,12 +27,12 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\network\mcpe\protocol\types\MismatchTransactionData;
-use pocketmine\network\mcpe\protocol\types\NormalTransactionData;
-use pocketmine\network\mcpe\protocol\types\ReleaseItemTransactionData;
-use pocketmine\network\mcpe\protocol\types\TransactionData;
-use pocketmine\network\mcpe\protocol\types\UseItemOnEntityTransactionData;
-use pocketmine\network\mcpe\protocol\types\UseItemTransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\TransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 
 /**
  * This packet effectively crams multiple packets into one.

@@ -21,54 +21,32 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\TransactionData;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-class UseItemTransactionData extends TransactionData{
-	public const ACTION_CLICK_BLOCK = 0;
-	public const ACTION_CLICK_AIR = 1;
-	public const ACTION_BREAK_BLOCK = 2;
+class ReleaseItemTransactionData extends TransactionData{
+	public const ACTION_RELEASE = 0; //bow shoot
+	public const ACTION_CONSUME = 1; //eat food, drink potion
 
 	/** @var int */
 	private $actionType;
-	/** @var Vector3 */
-	private $blockPos;
-	/** @var int */
-	private $face;
 	/** @var int */
 	private $hotbarSlot;
 	/** @var Item */
 	private $itemInHand;
 	/** @var Vector3 */
-	private $playerPos;
-	/** @var Vector3 */
-	private $clickPos;
-	/** @var int */
-	private $blockRuntimeId;
+	private $headPos;
 
 	/**
 	 * @return int
 	 */
 	public function getActionType() : int{
 		return $this->actionType;
-	}
-
-	/**
-	 * @return Vector3
-	 */
-	public function getBlockPos() : Vector3{
-		return $this->blockPos;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getFace() : int{
-		return $this->face;
 	}
 
 	/**
@@ -88,62 +66,35 @@ class UseItemTransactionData extends TransactionData{
 	/**
 	 * @return Vector3
 	 */
-	public function getPlayerPos() : Vector3{
-		return $this->playerPos;
-	}
-
-	/**
-	 * @return Vector3
-	 */
-	public function getClickPos() : Vector3{
-		return $this->clickPos;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getBlockRuntimeId() : int{
-		return $this->blockRuntimeId;
+	public function getHeadPos() : Vector3{
+		return $this->headPos;
 	}
 
 	public function getTypeId() : int{
-		return InventoryTransactionPacket::TYPE_USE_ITEM;
+		return InventoryTransactionPacket::TYPE_RELEASE_ITEM;
 	}
 
 	protected function decodeData(NetworkBinaryStream $stream) : void{
 		$this->actionType = $stream->getUnsignedVarInt();
-		$this->blockPos = new Vector3();
-		$stream->getBlockPosition($this->blockPos->x, $this->blockPos->y, $this->blockPos->z);
-		$this->face = $stream->getVarInt();
 		$this->hotbarSlot = $stream->getVarInt();
 		$this->itemInHand = $stream->getSlot();
-		$this->playerPos = $stream->getVector3();
-		$this->clickPos = $stream->getVector3();
-		$this->blockRuntimeId = $stream->getUnsignedVarInt();
+		$this->headPos = $stream->getVector3();
 	}
 
 	protected function encodeData(NetworkBinaryStream $stream) : void{
 		$stream->putUnsignedVarInt($this->actionType);
-		$stream->putBlockPosition($this->blockPos->x, $this->blockPos->y, $this->blockPos->z);
-		$stream->putVarInt($this->face);
 		$stream->putVarInt($this->hotbarSlot);
 		$stream->putSlot($this->itemInHand);
-		$stream->putVector3($this->playerPos);
-		$stream->putVector3($this->clickPos);
-		$stream->putUnsignedVarInt($this->blockRuntimeId);
+		$stream->putVector3($this->headPos);
 	}
 
-	public static function new(array $actions, int $actionType, Vector3 $blockPos, int $face, int $hotbarSlot, Item $itemInHand, Vector3 $playerPos, Vector3 $clickPos, int $blockRuntimeId) : self{
+	public static function new(array $actions, int $actionType, int $hotbarSlot, Item $itemInHand, Vector3 $headPos) : self{
 		$result = new self;
 		$result->actions = $actions;
 		$result->actionType = $actionType;
-		$result->blockPos = $blockPos;
-		$result->face = $face;
 		$result->hotbarSlot = $hotbarSlot;
 		$result->itemInHand = $itemInHand;
-		$result->playerPos = $playerPos;
-		$result->clickPos = $clickPos;
-		$result->blockRuntimeId = $blockRuntimeId;
+		$result->headPos = $headPos;
 		return $result;
 	}
 }

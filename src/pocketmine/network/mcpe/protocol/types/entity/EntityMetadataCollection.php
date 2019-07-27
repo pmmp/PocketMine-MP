@@ -21,10 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\entity;
 
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataTypes;
 use function assert;
 use function is_float;
 use function is_int;

@@ -36,9 +36,9 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\protocol\types\CommandOriginData;
-use pocketmine\network\mcpe\protocol\types\EntityLink;
-use pocketmine\network\mcpe\protocol\types\EntityMetadataTypes;
+use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
+use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataTypes;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
@@ -595,7 +595,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * @return EntityLink
+	 * @return \pocketmine\network\mcpe\protocol\types\entity\EntityLink
 	 *
 	 * @throws BinaryDataException
 	 */
@@ -611,7 +611,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * @param EntityLink $link
+	 * @param \pocketmine\network\mcpe\protocol\types\entity\EntityLink $link
 	 */
 	protected function putEntityLink(EntityLink $link) : void{
 		$this->putEntityUniqueId($link->fromEntityUniqueId);
@@ -621,7 +621,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * @return CommandOriginData
+	 * @return \pocketmine\network\mcpe\protocol\types\command\CommandOriginData
 	 * @throws BinaryDataException
 	 */
 	protected function getCommandOriginData() : CommandOriginData{
