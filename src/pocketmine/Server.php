@@ -177,6 +177,8 @@ class Server{
 
 	/** @var bool */
 	private $isRunning = true;
+	/** @var bool */
+	private $startedTicking = false;
 
 	/** @var bool */
 	private $hasStopped = false;
@@ -292,6 +294,13 @@ class Server{
 	 */
 	public function isRunning() : bool{
 		return $this->isRunning;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasStartedTicking() : bool{
+		return $this->startedTicking;
 	}
 
 	/**
@@ -1766,6 +1775,7 @@ class Server{
 	}
 
 	private function tickProcessor() : void{
+		$this->startedTicking = true;
 		$this->nextTick = microtime(true);
 
 		while($this->isRunning){
