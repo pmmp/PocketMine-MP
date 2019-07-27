@@ -28,7 +28,6 @@ use pocketmine\utils\Utils;
 use function array_keys;
 use function assert;
 use function count;
-use function get_class;
 use function spl_object_hash;
 use function time;
 use const PHP_INT_MAX;
@@ -318,9 +317,6 @@ class AsyncPool{
 					 */
 					$task->checkProgressUpdates($this->server);
 					$task->onCompletion($this->server);
-					if($task->removeDanglingStoredObjects()){
-						$this->logger->notice("AsyncTask " . get_class($task) . " stored local complex data but did not remove them after completion");
-					}
 				}
 
 				$this->removeTask($task);
