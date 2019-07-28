@@ -66,6 +66,7 @@ use function sqrt;
 use const M_PI;
 
 abstract class Living extends Entity{
+	protected const DEFAULT_BREATH_TICKS = 300;
 
 	protected $gravity = 0.08;
 	protected $drag = 0.02;
@@ -84,6 +85,13 @@ abstract class Living extends Entity{
 
 	/** @var ArmorInventory */
 	protected $armorInventory;
+
+	/** @var bool */
+	protected $breathing = true;
+	/** @var int */
+	protected $breathTicks = self::DEFAULT_BREATH_TICKS;
+	/** @var int */
+	protected $maxBreathTicks = self::DEFAULT_BREATH_TICKS;
 
 	abstract public function getName() : string;
 
@@ -113,6 +121,8 @@ abstract class Living extends Entity{
 		}
 
 		$this->setHealth($health);
+
+		$this->setAirSupplyTicks($nbt->getShort("Air", self::DEFAULT_BREATH_TICKS));
 
 		/** @var CompoundTag[]|ListTag $activeEffectsTag */
 		$activeEffectsTag = $nbt->getListTag("ActiveEffects");
@@ -171,6 +181,8 @@ abstract class Living extends Entity{
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 		$nbt->setFloat("Health", $this->getHealth());
+
+		$nbt->setShort("Air", $this->getAirSupplyTicks());
 
 		if(!empty($this->effectManager->all())){
 			$effects = [];
@@ -598,7 +610,7 @@ abstract class Living extends Entity{
 	 * @return bool
 	 */
 	public function isBreathing() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::BREATHING);
+		return $this->breathing;
 	}
 
 	/**
@@ -608,7 +620,7 @@ abstract class Living extends Entity{
 	 * @param bool $value
 	 */
 	public function setBreathing(bool $value = true) : void{
-		$this->setGenericFlag(EntityMetadataFlags::BREATHING, $value);
+		$this->breathing = $value;
 	}
 
 	/**
@@ -618,7 +630,7 @@ abstract class Living extends Entity{
 	 * @return int
 	 */
 	public function getAirSupplyTicks() : int{
-		return $this->propertyManager->getShort(EntityMetadataProperties::AIR);
+		return $this->breathTicks;
 	}
 
 	/**
@@ -627,7 +639,7 @@ abstract class Living extends Entity{
 	 * @param int $ticks
 	 */
 	public function setAirSupplyTicks(int $ticks) : void{
-		$this->propertyManager->setShort(EntityMetadataProperties::AIR, $ticks);
+		$this->breathTicks = $ticks;
 	}
 
 	/**
@@ -635,7 +647,7 @@ abstract class Living extends Entity{
 	 * @return int
 	 */
 	public function getMaxAirSupplyTicks() : int{
-		return $this->propertyManager->getShort(EntityMetadataProperties::MAX_AIR);
+		return $this->maxBreathTicks;
 	}
 
 	/**
@@ -644,7 +656,7 @@ abstract class Living extends Entity{
 	 * @param int $ticks
 	 */
 	public function setMaxAirSupplyTicks(int $ticks) : void{
-		$this->propertyManager->setShort(EntityMetadataProperties::MAX_AIR, $ticks);
+		$this->maxBreathTicks = $ticks;
 	}
 
 	/**
@@ -753,6 +765,17 @@ abstract class Living extends Entity{
 		parent::sendSpawnPacket($player);
 
 		$player->getNetworkSession()->onMobArmorChange($this);
+	}
+
+	protected function syncNetworkData() : void{
+		parent::syncNetworkData();
+
+		$this->propertyManager->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
+		$this->propertyManager->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectManager->getBubbleColor()->toARGB()));
+		$this->propertyManager->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
+		$this->propertyManager->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
+
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
 	}
 
 	protected function onDispose() : void{

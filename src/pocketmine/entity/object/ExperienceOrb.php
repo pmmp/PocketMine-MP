@@ -107,12 +107,15 @@ class ExperienceOrb extends Entity{
 	 */
 	protected $targetPlayerRuntimeId = null;
 
+	/** @var int */
+	protected $xpValue = 1;
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
 		$this->age = $nbt->getShort("Age", 0);
 
-		$value = 0;
+		$value = 1;
 		if($nbt->hasTag(self::TAG_VALUE_PC, ShortTag::class)){ //PC
 			$value = $nbt->getShort(self::TAG_VALUE_PC);
 		}elseif($nbt->hasTag(self::TAG_VALUE_PE, IntTag::class)){ //PE save format
@@ -134,14 +137,14 @@ class ExperienceOrb extends Entity{
 	}
 
 	public function getXpValue() : int{
-		return $this->propertyManager->getInt(EntityMetadataProperties::EXPERIENCE_VALUE) ?? 0;
+		return $this->xpValue;
 	}
 
 	public function setXpValue(int $amount) : void{
 		if($amount <= 0){
 			throw new \InvalidArgumentException("XP amount must be greater than 0, got $amount");
 		}
-		$this->propertyManager->setInt(EntityMetadataProperties::EXPERIENCE_VALUE, $amount);
+		$this->xpValue = $amount;
 	}
 
 	public function hasTargetPlayer() : bool{
@@ -224,5 +227,11 @@ class ExperienceOrb extends Entity{
 
 	public function canBeCollidedWith() : bool{
 		return false;
+	}
+
+	protected function syncNetworkData() : void{
+		parent::syncNetworkData();
+
+		$this->propertyManager->setInt(EntityMetadataProperties::EXPERIENCE_VALUE, $this->xpValue);
 	}
 }

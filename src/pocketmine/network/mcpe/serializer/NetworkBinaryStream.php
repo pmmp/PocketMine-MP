@@ -37,8 +37,17 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
+use pocketmine\network\mcpe\protocol\types\entity\BlockPosMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\ByteMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataTypes;
+use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\IntMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\ItemStackMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\ShortMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\Vec3MetadataProperty;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
@@ -224,108 +233,51 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Decodes entity metadata from the stream.
 	 *
-	 * @param bool $types Whether to include metadata types along with values in the returned array
-	 *
-	 * @return array
+	 * @return MetadataProperty[]
 	 *
 	 * @throws BadPacketException
 	 * @throws BinaryDataException
 	 */
-	public function getEntityMetadata(bool $types = true) : array{
+	public function getEntityMetadata() : array{
 		$count = $this->getUnsignedVarInt();
 		$data = [];
 		for($i = 0; $i < $count; ++$i){
 			$key = $this->getUnsignedVarInt();
 			$type = $this->getUnsignedVarInt();
-			$value = null;
-			switch($type){
-				case EntityMetadataTypes::BYTE:
-					$value = $this->getByte();
-					break;
-				case EntityMetadataTypes::SHORT:
-					$value = $this->getSignedLShort();
-					break;
-				case EntityMetadataTypes::INT:
-					$value = $this->getVarInt();
-					break;
-				case EntityMetadataTypes::FLOAT:
-					$value = $this->getLFloat();
-					break;
-				case EntityMetadataTypes::STRING:
-					$value = $this->getString();
-					break;
-				case EntityMetadataTypes::SLOT:
-					$value = $this->getSlot();
-					break;
-				case EntityMetadataTypes::POS:
-					$value = new Vector3();
-					$this->getSignedBlockPosition($value->x, $value->y, $value->z);
-					break;
-				case EntityMetadataTypes::LONG:
-					$value = $this->getVarLong();
-					break;
-				case EntityMetadataTypes::VECTOR3F:
-					$value = $this->getVector3();
-					break;
-				default:
-					throw new BadPacketException("Unknown entity metadata type " . $type);
-			}
-			if($types){
-				$data[$key] = [$type, $value];
-			}else{
-				$data[$key] = $value;
-			}
+
+			$data[$key] = $this->readMetadataProperty($type);
 		}
 
 		return $data;
 	}
 
+	private function readMetadataProperty(int $type) : MetadataProperty{
+		switch($type){
+			case ByteMetadataProperty::id(): return ByteMetadataProperty::read($this);
+			case ShortMetadataProperty::id(): return ShortMetadataProperty::read($this);
+			case IntMetadataProperty::id(): return IntMetadataProperty::read($this);
+			case FloatMetadataProperty::id(): return FloatMetadataProperty::read($this);
+			case StringMetadataProperty::id(): return StringMetadataProperty::read($this);
+			case ItemStackMetadataProperty::id(): return ItemStackMetadataProperty::read($this);
+			case BlockPosMetadataProperty::id(): return BlockPosMetadataProperty::read($this);
+			case LongMetadataProperty::id(): return LongMetadataProperty::read($this);
+			case Vec3MetadataProperty::id(): return Vec3MetadataProperty::read($this);
+			default:
+				throw new BadPacketException("Unknown entity metadata type " . $type);
+		}
+	}
+
 	/**
 	 * Writes entity metadata to the packet buffer.
 	 *
-	 * @param array $metadata
+	 * @param MetadataProperty[] $metadata
 	 */
 	public function putEntityMetadata(array $metadata) : void{
 		$this->putUnsignedVarInt(count($metadata));
 		foreach($metadata as $key => $d){
-			$this->putUnsignedVarInt($key); //data key
-			$this->putUnsignedVarInt($d[0]); //data type
-			switch($d[0]){
-				case EntityMetadataTypes::BYTE:
-					$this->putByte($d[1]);
-					break;
-				case EntityMetadataTypes::SHORT:
-					$this->putLShort($d[1]); //SIGNED short!
-					break;
-				case EntityMetadataTypes::INT:
-					$this->putVarInt($d[1]);
-					break;
-				case EntityMetadataTypes::FLOAT:
-					$this->putLFloat($d[1]);
-					break;
-				case EntityMetadataTypes::STRING:
-					$this->putString($d[1]);
-					break;
-				case EntityMetadataTypes::SLOT:
-					$this->putSlot($d[1]);
-					break;
-				case EntityMetadataTypes::POS:
-					$v = $d[1];
-					if($v !== null){
-						$this->putSignedBlockPosition($v->x, $v->y, $v->z);
-					}else{
-						$this->putSignedBlockPosition(0, 0, 0);
-					}
-					break;
-				case EntityMetadataTypes::LONG:
-					$this->putVarLong($d[1]);
-					break;
-				case EntityMetadataTypes::VECTOR3F:
-					$this->putVector3Nullable($d[1]);
-					break;
-				default:
-					throw new \InvalidArgumentException("Invalid data type " . $d[0]);
-			}
+			$this->putUnsignedVarInt($key);
+			$this->putUnsignedVarInt($d::id());
+			$d->write($this);
 		}
 	}
 

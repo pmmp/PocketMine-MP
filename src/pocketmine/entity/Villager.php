@@ -40,6 +40,11 @@ class Villager extends Living implements Ageable{
 	public $width = 0.6;
 	public $height = 1.8;
 
+	/** @var bool */
+	private $baby = false;
+	/** @var int */
+	private $profession = self::PROFESSION_FARMER;
+
 	public function getName() : string{
 		return "Villager";
 	}
@@ -70,14 +75,21 @@ class Villager extends Living implements Ageable{
 	 * @param int $profession
 	 */
 	public function setProfession(int $profession) : void{
-		$this->propertyManager->setInt(EntityMetadataProperties::VARIANT, $profession);
+		$this->profession = $profession; //TODO: validation
 	}
 
 	public function getProfession() : int{
-		return $this->propertyManager->getInt(EntityMetadataProperties::VARIANT);
+		return $this->profession;
 	}
 
 	public function isBaby() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::BABY);
+		return $this->baby;
+	}
+
+	protected function syncNetworkData() : void{
+		parent::syncNetworkData();
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
+
+		$this->propertyManager->setInt(EntityMetadataProperties::VARIANT, $this->profession);
 	}
 }

@@ -27,9 +27,11 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 
 abstract class WaterAnimal extends Living implements Ageable{
+	/** @var bool */
+	protected $baby = false;
 
 	public function isBaby() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::BABY);
+		return $this->baby;
 	}
 
 	public function canBreathe() : bool{
@@ -39,5 +41,10 @@ abstract class WaterAnimal extends Living implements Ageable{
 	public function onAirExpired() : void{
 		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
 		$this->attack($ev);
+	}
+
+	protected function syncNetworkData() : void{
+		parent::syncNetworkData();
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
 	}
 }

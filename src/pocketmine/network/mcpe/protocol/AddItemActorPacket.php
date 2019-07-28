@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 
 class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_ITEM_ACTOR_PACKET;
@@ -42,7 +43,7 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	public $position;
 	/** @var Vector3|null */
 	public $motion;
-	/** @var array */
+	/** @var MetadataProperty[] */
 	public $metadata = [];
 	/** @var bool */
 	public $isFromFishing = false;

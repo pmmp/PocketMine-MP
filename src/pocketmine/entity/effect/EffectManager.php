@@ -26,7 +26,6 @@ namespace pocketmine\entity\effect;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\utils\Color;
 use function abs;
 
@@ -38,8 +37,14 @@ class EffectManager{
 	/** @var EffectInstance[] */
 	protected $effects = [];
 
+	/** @var Color */
+	protected $bubbleColor;
+	/** @var bool */
+	protected $onlyAmbientEffects = false;
+
 	public function __construct(Living $entity){
 		$this->entity = $entity;
+		$this->bubbleColor = new Color(0, 0, 0, 0);
 	}
 
 	/**
@@ -176,14 +181,27 @@ class EffectManager{
 			}
 		}
 
-		$propManager = $this->entity->getDataPropertyManager();
 		if(!empty($colors)){
-			$propManager->setInt(EntityMetadataProperties::POTION_COLOR, Color::mix(...$colors)->toARGB());
-			$propManager->setByte(EntityMetadataProperties::POTION_AMBIENT, $ambient ? 1 : 0);
+			$this->bubbleColor = Color::mix(...$colors);
+			$this->onlyAmbientEffects = $ambient;
 		}else{
-			$propManager->setInt(EntityMetadataProperties::POTION_COLOR, 0);
-			$propManager->setByte(EntityMetadataProperties::POTION_AMBIENT, 0);
+			$this->bubbleColor = new Color(0, 0, 0, 0);
+			$this->onlyAmbientEffects = false;
 		}
+	}
+
+	/**
+	 * @return Color
+	 */
+	public function getBubbleColor() : Color{
+		return $this->bubbleColor;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasOnlyAmbientEffects() : bool{
+		return $this->onlyAmbientEffects;
 	}
 
 	public function tick(int $tickDiff = 1) : bool{

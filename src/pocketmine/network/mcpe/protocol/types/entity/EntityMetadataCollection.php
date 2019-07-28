@@ -25,31 +25,17 @@ namespace pocketmine\network\mcpe\protocol\types\entity;
 
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataTypes;
-use function assert;
-use function is_float;
-use function is_int;
-use function is_string;
+use function get_class;
 
 class EntityMetadataCollection{
 
+	/** @var MetadataProperty[] */
 	private $properties = [];
-
+	/** @var MetadataProperty[] */
 	private $dirtyProperties = [];
 
 	public function __construct(){
 
-	}
-
-	/**
-	 * @param int $key
-	 *
-	 * @return int|null
-	 */
-	public function getByte(int $key) : ?int{
-		$value = $this->getPropertyValue($key, EntityMetadataTypes::BYTE);
-		assert(is_int($value) or $value === null);
-		return $value;
 	}
 
 	/**
@@ -58,18 +44,8 @@ class EntityMetadataCollection{
 	 * @param bool $force
 	 */
 	public function setByte(int $key, int $value, bool $force = false) : void{
-		$this->setPropertyValue($key, EntityMetadataTypes::BYTE, $value, $force);
-	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return int|null
-	 */
-	public function getShort(int $key) : ?int{
-		$value = $this->getPropertyValue($key, EntityMetadataTypes::SHORT);
-		assert(is_int($value) or $value === null);
-		return $value;
+		$this->set($key, new ByteMetadataProperty($value), $force);
 	}
 
 	/**
@@ -78,18 +54,7 @@ class EntityMetadataCollection{
 	 * @param bool $force
 	 */
 	public function setShort(int $key, int $value, bool $force = false) : void{
-		$this->setPropertyValue($key, EntityMetadataTypes::SHORT, $value, $force);
-	}
-
-	/**
-	 * @param int $key
-	 *
-	 * @return int|null
-	 */
-	public function getInt(int $key) : ?int{
-		$value = $this->getPropertyValue($key, EntityMetadataTypes::INT);
-		assert(is_int($value) or $value === null);
-		return $value;
+		$this->set($key, new ShortMetadataProperty($value), $force);
 	}
 
 	/**
@@ -98,18 +63,7 @@ class EntityMetadataCollection{
 	 * @param bool $force
 	 */
 	public function setInt(int $key, int $value, bool $force = false) : void{
-		$this->setPropertyValue($key, EntityMetadataTypes::INT, $value, $force);
-	}
-
-	/**
-	 * @param int $key
-	 *
-	 * @return float|null
-	 */
-	public function getFloat(int $key) : ?float{
-		$value = $this->getPropertyValue($key, EntityMetadataTypes::FLOAT);
-		assert(is_float($value) or $value === null);
-		return $value;
+		$this->set($key, new IntMetadataProperty($value), $force);
 	}
 
 	/**
@@ -118,18 +72,7 @@ class EntityMetadataCollection{
 	 * @param bool  $force
 	 */
 	public function setFloat(int $key, float $value, bool $force = false) : void{
-		$this->setPropertyValue($key, EntityMetadataTypes::FLOAT, $value, $force);
-	}
-
-	/**
-	 * @param int $key
-	 *
-	 * @return null|string
-	 */
-	public function getString(int $key) : ?string{
-		$value = $this->getPropertyValue($key, EntityMetadataTypes::STRING);
-		assert(is_string($value) or $value === null);
-		return $value;
+		$this->set($key, new FloatMetadataProperty($value), $force);
 	}
 
 	/**
@@ -138,19 +81,7 @@ class EntityMetadataCollection{
 	 * @param bool   $force
 	 */
 	public function setString(int $key, string $value, bool $force = false) : void{
-		$this->setPropertyValue($key, EntityMetadataTypes::STRING, $value, $force);
-	}
-
-	/**
-	 * @param int $key
-	 *
-	 * @return null|Item
-	 */
-	public function getItem(int $key) : ?Item{
-		$value = $this->getPropertyValue($key, EntityMetadataTypes::SLOT);
-		assert($value instanceof Item or $value === null);
-
-		return $value;
+		$this->set($key, new StringMetadataProperty($value), $force);
 	}
 
 	/**
@@ -159,18 +90,7 @@ class EntityMetadataCollection{
 	 * @param bool $force
 	 */
 	public function setItem(int $key, Item $value, bool $force = false) : void{
-		$this->setPropertyValue($key, EntityMetadataTypes::SLOT, $value, $force);
-	}
-
-	/**
-	 * @param int $key
-	 *
-	 * @return null|Vector3
-	 */
-	public function getBlockPos(int $key) : ?Vector3{
-		$value = $this->getPropertyValue($key, EntityMetadataTypes::POS);
-		assert($value instanceof Vector3 or $value === null);
-		return $value;
+		$this->set($key, new ItemStackMetadataProperty($value), $force);
 	}
 
 	/**
@@ -179,18 +99,7 @@ class EntityMetadataCollection{
 	 * @param bool         $force
 	 */
 	public function setBlockPos(int $key, ?Vector3 $value, bool $force = false) : void{
-		$this->setPropertyValue($key, EntityMetadataTypes::POS, $value ? $value->floor() : null, $force);
-	}
-
-	/**
-	 * @param int $key
-	 *
-	 * @return int|null
-	 */
-	public function getLong(int $key) : ?int{
-		$value = $this->getPropertyValue($key, EntityMetadataTypes::LONG);
-		assert(is_int($value) or $value === null);
-		return $value;
+		$this->set($key, new BlockPosMetadataProperty($value ?? new Vector3(0, 0, 0)), $force);
 	}
 
 	/**
@@ -199,18 +108,7 @@ class EntityMetadataCollection{
 	 * @param bool $force
 	 */
 	public function setLong(int $key, int $value, bool $force = false) : void{
-		$this->setPropertyValue($key, EntityMetadataTypes::LONG, $value, $force);
-	}
-
-	/**
-	 * @param int $key
-	 *
-	 * @return null|Vector3
-	 */
-	public function getVector3(int $key) : ?Vector3{
-		$value = $this->getPropertyValue($key, EntityMetadataTypes::VECTOR3F);
-		assert($value instanceof Vector3 or $value === null);
-		return $value;
+		$this->set($key, new LongMetadataProperty($value), $force);
 	}
 
 	/**
@@ -219,74 +117,60 @@ class EntityMetadataCollection{
 	 * @param bool         $force
 	 */
 	public function setVector3(int $key, ?Vector3 $value, bool $force = false) : void{
-		$this->setPropertyValue($key, EntityMetadataTypes::VECTOR3F, $value ? $value->asVector3() : null, $force);
-	}
-
-	/**
-	 * @param int $key
-	 */
-	public function removeProperty(int $key) : void{
-		unset($this->properties[$key]);
-	}
-
-	/**
-	 * @param int $key
-	 *
-	 * @return bool
-	 */
-	public function hasProperty(int $key) : bool{
-		return isset($this->properties[$key]);
-	}
-
-	/**
-	 * @param int $key
-	 *
-	 * @return int
-	 */
-	public function getPropertyType(int $key) : int{
-		if(isset($this->properties[$key])){
-			return $this->properties[$key][0];
-		}
-
-		return -1;
-	}
-
-	private function checkType(int $key, int $type) : void{
-		if(isset($this->properties[$key]) and $this->properties[$key][0] !== $type){
-			throw new \RuntimeException("Expected type $type, but have " . $this->properties[$key][0]);
-		}
-	}
-
-	/**
-	 * @param int $key
-	 * @param int $type
-	 *
-	 * @return mixed
-	 */
-	public function getPropertyValue(int $key, int $type){
-		if($type !== -1){
-			$this->checkType($key, $type);
-		}
-		return isset($this->properties[$key]) ? $this->properties[$key][1] : null;
+		$this->set($key, new Vec3MetadataProperty($value ?? new Vector3(0, 0, 0)), $force);
 	}
 
 	/**
 	 * @param int   $key
-	 * @param int   $type
 	 * @param mixed $value
 	 * @param bool  $force
 	 */
-	public function setPropertyValue(int $key, int $type, $value, bool $force = false) : void{
-		if(!$force){
-			$this->checkType($key, $type);
+	public function set(int $key, MetadataProperty $value, bool $force = false) : void{
+		if(!$force and isset($this->properties[$key]) and !($this->properties[$key] instanceof $value)){
+			throw new \InvalidArgumentException("Can't overwrite property with mismatching types (have " . get_class($this->properties[$key]) . ")");
 		}
-		$this->properties[$key] = $this->dirtyProperties[$key] = [$type, $value];
+		if(!isset($this->properties[$key]) or !$this->properties[$key]->equals($value)){
+			$this->properties[$key] = $this->dirtyProperties[$key] = $value;
+		}
+	}
+
+	public function setGenericFlag(int $flagId, bool $value) : void{
+		$propertyId = $flagId >= 64 ? EntityMetadataProperties::FLAGS2 : EntityMetadataProperties::FLAGS;
+		$realFlagId = $flagId % 64;
+		$flagSetProp = $this->properties[$propertyId] ?? null;
+		if($flagSetProp === null){
+			$flagSet = 0;
+		}elseif($flagSetProp instanceof LongMetadataProperty){
+			$flagSet = $flagSetProp->getValue();
+		}else{
+			throw new \InvalidArgumentException("Wrong type found for flags, want long, but have " . get_class($flagSetProp));
+		}
+
+		if((($flagSet >> $realFlagId) & 1) !== ($value ? 1 : 0)){
+			$flagSet ^= (1 << $realFlagId);
+			$this->setLong($propertyId, $flagSet);
+		}
+	}
+
+	public function setPlayerFlag(int $flagId, bool $value) : void{
+		$flagSetProp = $this->properties[EntityMetadataProperties::PLAYER_FLAGS] ?? null;
+		if($flagSetProp === null){
+			$flagSet = 0;
+		}elseif($flagSetProp instanceof ByteMetadataProperty){
+			$flagSet = $flagSetProp->getValue();
+		}else{
+			throw new \InvalidArgumentException("Wrong type found for flags, want byte, but have " . get_class($flagSetProp));
+		}
+		if((($flagSet >> $flagId) & 1) !== ($value ? 1 : 0)){
+			$flagSet ^= (1 << $flagId);
+			$this->setByte(EntityMetadataProperties::PLAYER_FLAGS, $flagSet);
+		}
 	}
 
 	/**
 	 * Returns all properties.
 	 *
-	 * @return array
+	 * @return MetadataProperty[]
 	 */
 	public function getAll() : array{
 		return $this->properties;
@@ -295,7 +179,7 @@ class EntityMetadataCollection{
 	/**
 	 * Returns properties that have changed and need to be broadcasted.
 	 *
-	 * @return array
+	 * @return MetadataProperty[]
 	 */
 	public function getDirty() : array{
 		return $this->dirtyProperties;

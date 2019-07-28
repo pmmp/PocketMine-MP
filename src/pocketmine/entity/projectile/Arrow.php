@@ -67,6 +67,9 @@ class Arrow extends Projectile{
 	/** @var int */
 	protected $collideTicks = 0;
 
+	/** @var bool */
+	protected $critical = false;
+
 	public function __construct(World $world, CompoundTag $nbt, ?Entity $shootingEntity = null, bool $critical = false){
 		parent::__construct($world, $nbt, $shootingEntity);
 		$this->setCritical($critical);
@@ -87,11 +90,11 @@ class Arrow extends Projectile{
 	}
 
 	public function isCritical() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::CRITICAL);
+		return $this->critical;
 	}
 
 	public function setCritical(bool $value = true) : void{
-		$this->setGenericFlag(EntityMetadataFlags::CRITICAL, $value);
+		$this->critical = $value;
 	}
 
 	public function getResultDamage() : int{
@@ -198,5 +201,11 @@ class Arrow extends Projectile{
 
 		$playerInventory->addItem(clone $item);
 		$this->flagForDespawn();
+	}
+
+	protected function syncNetworkData() : void{
+		parent::syncNetworkData();
+
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::CRITICAL, $this->critical);
 	}
 }

@@ -32,7 +32,8 @@ use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataTypes;
+use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\utils\UUID;
 use function str_repeat;
@@ -104,8 +105,8 @@ class FloatingTextParticle implements Particle{
 				1 << EntityMetadataFlags::IMMOBILE
 			);
 			$pk->metadata = [
-				EntityMetadataProperties::FLAGS => [EntityMetadataTypes::LONG, $flags],
-				EntityMetadataProperties::SCALE => [EntityMetadataTypes::FLOAT, 0.01] //zero causes problems on debug builds
+				EntityMetadataProperties::FLAGS => new LongMetadataProperty($flags),
+				EntityMetadataProperties::SCALE => new FloatMetadataProperty(0.01) //zero causes problems on debug builds
 			];
 
 			$p[] = $pk;

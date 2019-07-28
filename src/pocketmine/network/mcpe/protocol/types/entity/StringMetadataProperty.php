@@ -21,21 +21,34 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\network\mcpe\protocol\types\entity;
 
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
+final class StringMetadataProperty implements MetadataProperty{
+	/** @var string */
+	private $value;
 
-abstract class Animal extends Living implements Ageable{
-	/** @var bool */
-	protected $baby = false;
-
-	public function isBaby() : bool{
-		return $this->baby;
+	/**
+	 * @param string $value
+	 */
+	public function __construct(string $value){
+		$this->value = $value;
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
+	public static function id() : int{
+		return EntityMetadataTypes::STRING;
+	}
+
+	public static function read(NetworkBinaryStream $in) : self{
+		return new self($in->getString());
+	}
+
+	public function write(NetworkBinaryStream $out) : void{
+		$out->putString($this->value);
+	}
+
+	public function equals(MetadataProperty $other) : bool{
+		return $other instanceof $this and $other->value === $this->value;
 	}
 }

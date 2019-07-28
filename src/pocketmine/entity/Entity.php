@@ -54,7 +54,7 @@ use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataTypes;
+use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -195,6 +195,35 @@ abstract class Entity extends Location{
 	/** @var TimingsHandler */
 	protected $timings;
 
+	/** @var string */
+	protected $nameTag = "";
+	/** @var bool */
+	protected $nameTagVisible = true;
+	/** @var bool */
+	protected $alwaysShowNameTag = false;
+	/** @var string */
+	protected $scoreTag = "";
+	/** @var float */
+	protected $scale = 1.0;
+
+	/** @var bool */
+	protected $canClimb = false;
+	/** @var bool */
+	protected $canClimbWalls = false;
+	/** @var bool */
+	protected $immobile = false;
+	/** @var bool */
+	protected $invisible = false;
+	/** @var bool */
+	protected $sneaking = false;
+	/** @var bool */
+	protected $sprinting = false;
+
+	/** @var int|null */
+	protected $ownerId = null;
+	/** @var int|null */
+	protected $targetId = null;
+
 	public function __construct(World $world, CompoundTag $nbt){
 		$this->timings = Timings::getEntityTimings($this);
 
@@ -234,22 +263,10 @@ abstract class Entity extends Location{
 
 		$this->propertyManager = new EntityMetadataCollection();
 
-		$this->propertyManager->setLong(EntityMetadataProperties::FLAGS, 0);
-		$this->propertyManager->setShort(EntityMetadataProperties::MAX_AIR, 400);
-		$this->propertyManager->setString(EntityMetadataProperties::NAMETAG, "");
-		$this->propertyManager->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
-		$this->propertyManager->setFloat(EntityMetadataProperties::SCALE, 1);
-		$this->propertyManager->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->width);
-		$this->propertyManager->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->height);
-
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
 
-		$this->setGenericFlag(EntityMetadataFlags::AFFECTED_BY_GRAVITY, true);
-		$this->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, true);
-
 		$this->initEntity($nbt);
-		$this->propertyManager->clearDirtyProperties(); //Prevents resending properties that were set during construction
 
 		$this->chunk->addEntity($this);
 		$this->world->addEntity($this);
@@ -265,64 +282,63 @@ abstract class Entity extends Location{
 	 * @return string
 	 */
 	public function getNameTag() : string{
-		return $this->propertyManager->getString(EntityMetadataProperties::NAMETAG);
+		return $this->nameTag;
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isNameTagVisible() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::CAN_SHOW_NAMETAG);
+		return $this->nameTagVisible;
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isNameTagAlwaysVisible() : bool{
-		return $this->propertyManager->getByte(EntityMetadataProperties::ALWAYS_SHOW_NAMETAG) === 1;
+		return $this->alwaysShowNameTag;
 	}
-
 
 	/**
 	 * @param string $name
 	 */
 	public function setNameTag(string $name) : void{
-		$this->propertyManager->setString(EntityMetadataProperties::NAMETAG, $name);
+		$this->nameTag = $name;
 	}
 
 	/**
 	 * @param bool $value
 	 */
 	public function setNameTagVisible(bool $value = true) : void{
-		$this->setGenericFlag(EntityMetadataFlags::CAN_SHOW_NAMETAG, $value);
+		$this->nameTagVisible = $value;
 	}
 
 	/**
 	 * @param bool $value
 	 */
 	public function setNameTagAlwaysVisible(bool $value = true) : void{
-		$this->propertyManager->setByte(EntityMetadataProperties::ALWAYS_SHOW_NAMETAG, $value ? 1 : 0);
+		$this->alwaysShowNameTag = $value;
 	}
 
 	/**
 	 * @return string|null
 	 */
 	public function getScoreTag() : ?string{
-		return $this->propertyManager->getString(EntityMetadataProperties::SCORE_TAG);
+		return $this->scoreTag; //TODO: maybe this shouldn't be nullable?
 	}
 
 	/**
 	 * @param string $score
 	 */
 	public function setScoreTag(string $score) : void{
-		$this->propertyManager->setString(EntityMetadataProperties::SCORE_TAG, $score);
+		$this->scoreTag = $score;
 	}
 
 	/**
 	 * @return float
 	 */
 	public function getScale() : float{
-		return $this->propertyManager->getFloat(EntityMetadataProperties::SCALE);
+		return $this->scale;
 	}
 
 	/**
@@ -338,9 +354,9 @@ abstract class Entity extends Location{
 		$this->height *= $multiplier;
 		$this->eyeHeight *= $multiplier;
 
-		$this->recalculateBoundingBox();
+		$this->scale = $value;
 
-		$this->propertyManager->setFloat(EntityMetadataProperties::SCALE, $value);
+		$this->recalculateBoundingBox();
 	}
 
 	public function getBoundingBox() : AxisAlignedBB{
@@ -361,39 +377,39 @@ abstract class Entity extends Location{
 	}
 
 	public function isSneaking() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::SNEAKING);
+		return $this->sneaking;
 	}
 
 	public function setSneaking(bool $value = true) : void{
-		$this->setGenericFlag(EntityMetadataFlags::SNEAKING, $value);
+		$this->sneaking = $value;
 	}
 
 	public function isSprinting() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::SPRINTING);
+		return $this->sprinting;
 	}
 
 	public function setSprinting(bool $value = true) : void{
 		if($value !== $this->isSprinting()){
-			$this->setGenericFlag(EntityMetadataFlags::SPRINTING, $value);
+			$this->sprinting = $value;
 			$attr = $this->attributeMap->getAttribute(Attribute::MOVEMENT_SPEED);
 			$attr->setValue($value ? ($attr->getValue() * 1.3) : ($attr->getValue() / 1.3), false, true);
 		}
 	}
 
 	public function isImmobile() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::IMMOBILE);
+		return $this->immobile;
 	}
 
 	public function setImmobile(bool $value = true) : void{
-		$this->setGenericFlag(EntityMetadataFlags::IMMOBILE, $value);
+		$this->immobile = $value;
 	}
 
 	public function isInvisible() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::INVISIBLE);
+		return $this->invisible;
 	}
 
 	public function setInvisible(bool $value = true) : void{
-		$this->setGenericFlag(EntityMetadataFlags::INVISIBLE, $value);
+		$this->invisible = $value;
 	}
 
 	/**
@@ -401,7 +417,7 @@ abstract class Entity extends Location{
 	 * @return bool
 	 */
 	public function canClimb() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::CAN_CLIMB);
+		return $this->canClimb;
 	}
 
 	/**
@@ -410,7 +426,7 @@ abstract class Entity extends Location{
 	 * @param bool $value
 	 */
 	public function setCanClimb(bool $value = true) : void{
-		$this->setGenericFlag(EntityMetadataFlags::CAN_CLIMB, $value);
+		$this->canClimb = $value;
 	}
 
 	/**
@@ -419,7 +435,7 @@ abstract class Entity extends Location{
 	 * @return bool
 	 */
 	public function canClimbWalls() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::WALLCLIMBING);
+		return $this->canClimbWalls;
 	}
 
 	/**
@@ -428,7 +444,7 @@ abstract class Entity extends Location{
 	 * @param bool $value
 	 */
 	public function setCanClimbWalls(bool $value = true) : void{
-		$this->setGenericFlag(EntityMetadataFlags::WALLCLIMBING, $value);
+		$this->canClimbWalls = $value;
 	}
 
 	/**
@@ -436,7 +452,7 @@ abstract class Entity extends Location{
 	 * @return int|null
 	 */
 	public function getOwningEntityId() : ?int{
-		return $this->propertyManager->getLong(EntityMetadataProperties::OWNER_EID);
+		return $this->ownerId;
 	}
 
 	/**
@@ -444,12 +460,7 @@ abstract class Entity extends Location{
 	 * @return Entity|null
 	 */
 	public function getOwningEntity() : ?Entity{
-		$eid = $this->getOwningEntityId();
-		if($eid !== null){
-			return $this->server->getWorldManager()->findEntity($eid);
-		}
-
-		return null;
+		return $this->ownerId !== null ? $this->server->getWorldManager()->findEntity($this->ownerId) : null;
 	}
 
 	/**
@@ -461,11 +472,11 @@ abstract class Entity extends Location{
 	 */
 	public function setOwningEntity(?Entity $owner) : void{
 		if($owner === null){
-			$this->propertyManager->removeProperty(EntityMetadataProperties::OWNER_EID);
+			$this->ownerId = null;
 		}elseif($owner->closed){
 			throw new \InvalidArgumentException("Supplied owning entity is garbage and cannot be used");
 		}else{
-			$this->propertyManager->setLong(EntityMetadataProperties::OWNER_EID, $owner->getId());
+			$this->ownerId = $owner->getId();
 		}
 	}
 
@@ -474,7 +485,7 @@ abstract class Entity extends Location{
 	 * @return int|null
 	 */
 	public function getTargetEntityId() : ?int{
-		return $this->propertyManager->getLong(EntityMetadataProperties::TARGET_EID);
+		return $this->targetId;
 	}
 
 	/**
@@ -484,12 +495,7 @@ abstract class Entity extends Location{
 	 * @return Entity|null
 	 */
 	public function getTargetEntity() : ?Entity{
-		$eid = $this->getTargetEntityId();
-		if($eid !== null){
-			return $this->server->getWorldManager()->findEntity($eid);
-		}
-
-		return null;
+		return $this->targetId !== null ? $this->server->getWorldManager()->findEntity($eid) : null;
 	}
 
 	/**
@@ -501,11 +507,11 @@ abstract class Entity extends Location{
 	 */
 	public function setTargetEntity(?Entity $target) : void{
 		if($target === null){
-			$this->propertyManager->removeProperty(EntityMetadataProperties::TARGET_EID);
+			$this->targetId = null;
 		}elseif($target->closed){
 			throw new \InvalidArgumentException("Supplied target entity is garbage and cannot be used");
 		}else{
-			$this->propertyManager->setLong(EntityMetadataProperties::TARGET_EID, $target->getId());
+			$this->targetId = $target->getId();
 		}
 	}
 
@@ -557,7 +563,6 @@ abstract class Entity extends Location{
 
 		$nbt->setFloat("FallDistance", $this->fallDistance);
 		$nbt->setShort("Fire", $this->fireTicks);
-		$nbt->setShort("Air", $this->propertyManager->getShort(EntityMetadataProperties::AIR));
 		$nbt->setByte("OnGround", $this->onGround ? 1 : 0);
 		$nbt->setByte("Invulnerable", $this->invulnerable ? 1 : 0);
 
@@ -566,11 +571,7 @@ abstract class Entity extends Location{
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		$this->fireTicks = $nbt->getShort("Fire", 0);
-		if($this->isOnFire()){
-			$this->setGenericFlag(EntityMetadataFlags::ONFIRE);
-		}
 
-		$this->propertyManager->setShort(EntityMetadataProperties::AIR, $nbt->getShort("Air", 300));
 		$this->onGround = $nbt->getByte("OnGround", 0) !== 0;
 		$this->invulnerable = $nbt->getByte("Invulnerable", 0) !== 0;
 
@@ -717,7 +718,7 @@ abstract class Entity extends Location{
 
 		$this->justCreated = false;
 
-		$changedProperties = $this->propertyManager->getDirty();
+		$changedProperties = $this->getSyncedNetworkData(true);
 		if(!empty($changedProperties)){
 			$this->sendData($this->hasSpawned, $changedProperties);
 			$this->propertyManager->clearDirtyProperties();
@@ -758,8 +759,6 @@ abstract class Entity extends Location{
 		if($ticks > $this->getFireTicks()){
 			$this->setFireTicks($ticks);
 		}
-
-		$this->setGenericFlag(EntityMetadataFlags::ONFIRE, $this->isOnFire());
 	}
 
 	/**
@@ -782,7 +781,6 @@ abstract class Entity extends Location{
 
 	public function extinguish() : void{
 		$this->fireTicks = 0;
-		$this->setGenericFlag(EntityMetadataFlags::ONFIRE, false);
 	}
 
 	public function isFireProof() : bool{
@@ -1601,7 +1599,7 @@ abstract class Entity extends Location{
 		$pk->headYaw = $this->yaw; //TODO
 		$pk->pitch = $this->pitch;
 		$pk->attributes = $this->attributeMap->getAll();
-		$pk->metadata = $this->propertyManager->getAll();
+		$pk->metadata = $this->getSyncedNetworkData(false);
 
 		$player->sendDataPacket($pk);
 	}
@@ -1716,60 +1714,15 @@ abstract class Entity extends Location{
 	}
 
 	/**
-	 * @param int  $propertyId
-	 * @param int  $flagId
-	 * @param bool $value
-	 * @param int  $propertyType
-	 */
-	public function setDataFlag(int $propertyId, int $flagId, bool $value = true, int $propertyType = EntityMetadataTypes::LONG) : void{
-		if($this->getDataFlag($propertyId, $flagId) !== $value){
-			$flags = (int) $this->propertyManager->getPropertyValue($propertyId, $propertyType);
-			$flags ^= 1 << $flagId;
-			$this->propertyManager->setPropertyValue($propertyId, $propertyType, $flags);
-		}
-	}
-
-	/**
-	 * @param int $propertyId
-	 * @param int $flagId
-	 *
-	 * @return bool
-	 */
-	public function getDataFlag(int $propertyId, int $flagId) : bool{
-		return (((int) $this->propertyManager->getPropertyValue($propertyId, -1)) & (1 << $flagId)) > 0;
-	}
-
-	/**
-	 * Wrapper around {@link Entity#getDataFlag} for generic data flag reading.
-	 *
-	 * @param int $flagId
-	 *
-	 * @return bool
-	 */
-	public function getGenericFlag(int $flagId) : bool{
-		return $this->getDataFlag($flagId >= 64 ? EntityMetadataProperties::FLAGS2 : EntityMetadataProperties::FLAGS, $flagId % 64);
-	}
-
-	/**
-	 * Wrapper around {@link Entity#setDataFlag} for generic data flag setting.
-	 *
-	 * @param int  $flagId
-	 * @param bool $value
-	 */
-	public function setGenericFlag(int $flagId, bool $value = true) : void{
-		$this->setDataFlag($flagId >= 64 ? EntityMetadataProperties::FLAGS2 : EntityMetadataProperties::FLAGS, $flagId % 64, $value, EntityMetadataTypes::LONG);
-	}
-
-	/**
-	 * @param Player[]|Player $player
-	 * @param array           $data Properly formatted entity data, defaults to everything
+	 * @param Player[]|Player    $player
+	 * @param MetadataProperty[] $data Properly formatted entity data, defaults to everything
 	 */
 	public function sendData($player, ?array $data = null) : void{
 		if(!is_array($player)){
 			$player = [$player];
 		}
 
-		$pk = SetActorDataPacket::create($this->getId(), $data ?? $this->propertyManager->getAll());
+		$pk = SetActorDataPacket::create($this->getId(), $data ?? $this->getSyncedNetworkData(false));
 
 		foreach($player as $p){
 			if($p === $this){
@@ -1781,6 +1734,39 @@ abstract class Entity extends Location{
 		if($this instanceof Player){
 			$this->sendDataPacket($pk);
 		}
+	}
+
+	/**
+	 * @param bool $dirtyOnly
+	 *
+	 * @return MetadataProperty[]
+	 */
+	final protected function getSyncedNetworkData(bool $dirtyOnly) : array{
+		$this->syncNetworkData();
+
+		return $dirtyOnly ? $this->propertyManager->getDirty() : $this->propertyManager->getAll();
+	}
+
+	protected function syncNetworkData() : void{
+		$this->propertyManager->setByte(EntityMetadataProperties::ALWAYS_SHOW_NAMETAG, $this->alwaysShowNameTag ? 1 : 0);
+		$this->propertyManager->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->height);
+		$this->propertyManager->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->width);
+		$this->propertyManager->setFloat(EntityMetadataProperties::SCALE, $this->scale);
+		$this->propertyManager->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
+		$this->propertyManager->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);
+		$this->propertyManager->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? -1);
+		$this->propertyManager->setString(EntityMetadataProperties::NAMETAG, $this->nameTag);
+		$this->propertyManager->setString(EntityMetadataProperties::SCORE_TAG, $this->scoreTag);
+
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::AFFECTED_BY_GRAVITY, true);
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::CAN_CLIMB, $this->canClimb);
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::CAN_SHOW_NAMETAG, $this->nameTagVisible);
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, true);
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::IMMOBILE, $this->immobile);
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::INVISIBLE, $this->invisible);
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::ONFIRE, $this->isOnFire());
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::WALLCLIMBING, $this->canClimbWalls);
 	}
 
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{

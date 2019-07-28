@@ -238,7 +238,7 @@ class ItemEntity extends Entity{
 		$pk->position = $this->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->item = $this->getItem();
-		$pk->metadata = $this->propertyManager->getAll();
+		$pk->metadata = $this->getSyncedNetworkData(false);
 
 		$player->sendDataPacket($pk);
 	}

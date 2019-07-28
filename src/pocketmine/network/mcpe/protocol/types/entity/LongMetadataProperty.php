@@ -21,21 +21,32 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\network\mcpe\protocol\types\entity;
 
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
+final class LongMetadataProperty implements MetadataProperty{
+	use IntegerishMetadataProperty;
 
-abstract class Animal extends Living implements Ageable{
-	/** @var bool */
-	protected $baby = false;
-
-	public function isBaby() : bool{
-		return $this->baby;
+	protected function min() : int{
+		return PHP_INT_MIN;
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
+	protected function max() : int{
+		return PHP_INT_MAX;
+	}
+
+	public static function id() : int{
+		return EntityMetadataTypes::LONG;
+	}
+
+	public static function read(NetworkBinaryStream $in) : self{
+		return new self($in->getVarLong());
+	}
+
+	public function write(NetworkBinaryStream $out) : void{
+		$out->putVarLong($this->value);
 	}
 }

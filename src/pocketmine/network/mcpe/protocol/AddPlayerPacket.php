@@ -29,6 +29,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
+use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\utils\UUID;
 use function count;
 
@@ -57,7 +58,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	public $headYaw = null; //TODO
 	/** @var Item */
 	public $item;
-	/** @var array */
+	/** @var MetadataProperty[] */
 	public $metadata = [];
 
 	//TODO: adventure settings stuff

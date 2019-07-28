@@ -752,12 +752,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function isUsingItem() : bool{
-		return $this->getGenericFlag(EntityMetadataFlags::ACTION) and $this->startAction > -1;
+		return $this->startAction > -1;
 	}
 
 	public function setUsingItem(bool $value){
 		$this->startAction = $value ? $this->server->getTick() : -1;
-		$this->setGenericFlag(EntityMetadataFlags::ACTION, $value);
 	}
 
 	/**
@@ -1078,10 +1077,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$b->setOccupied();
 		}
 
-		$this->sleeping = clone $pos;
-
-		$this->propertyManager->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $pos);
-		$this->setPlayerFlag(PlayerMetadataFlags::SLEEP, true);
+		$this->sleeping = $pos;
 
 		$this->setSpawn($pos);
 
@@ -1099,8 +1095,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			(new PlayerBedLeaveEvent($this, $b))->call();
 
 			$this->sleeping = null;
-			$this->propertyManager->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, null);
-			$this->setPlayerFlag(PlayerMetadataFlags::SLEEP, false);
 
 			$this->world->setSleepTicks(0);
 
@@ -2365,6 +2359,15 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		parent::attack($source);
+	}
+
+	protected function syncNetworkData() : void{
+		parent::syncNetworkData();
+
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::ACTION, $this->startAction > -1);
+
+		$this->propertyManager->setPlayerFlag(PlayerMetadataFlags::SLEEP, $this->sleeping !== null);
+		$this->propertyManager->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping ?? new Vector3(0, 0, 0));
 	}
 
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{

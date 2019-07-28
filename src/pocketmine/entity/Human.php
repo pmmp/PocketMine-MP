@@ -46,8 +46,7 @@ use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataTypes;
-use pocketmine\network\mcpe\protocol\types\entity\PlayerMetadataFlags;
+use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\player\Player;
 use pocketmine\utils\UUID;
@@ -227,9 +226,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$this->hungerManager = new HungerManager($this);
 		$this->xpManager = new ExperienceManager($this);
-
-		$this->setPlayerFlag(PlayerMetadataFlags::SLEEP, false);
-		$this->propertyManager->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, null);
 
 		$this->inventory = new PlayerInventory($this);
 		$this->enderChestInventory = new EnderChestInventory();
@@ -422,11 +418,11 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->item = $this->getInventory()->getItemInHand();
-		$pk->metadata = $this->propertyManager->getAll();
+		$pk->metadata = $this->getSyncedNetworkData(false);
 		$player->sendDataPacket($pk);
 
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
-		$this->sendData($player, [EntityMetadataProperties::NAMETAG => [EntityMetadataTypes::STRING, $this->getNameTag()]]);
+		$this->sendData($player, [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($this->getNameTag())]);
 
 		$player->getNetworkSession()->onMobArmorChange($this);
 
@@ -447,26 +443,5 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->hungerManager = null;
 		$this->xpManager = null;
 		parent::destroyCycles();
-	}
-
-	/**
-	 * Wrapper around {@link Entity#getDataFlag} for player-specific data flag reading.
-	 *
-	 * @param int $flagId
-	 *
-	 * @return bool
-	 */
-	public function getPlayerFlag(int $flagId) : bool{
-		return $this->getDataFlag(EntityMetadataProperties::PLAYER_FLAGS, $flagId);
-	}
-
-	/**
-	 * Wrapper around {@link Entity#setDataFlag} for player-specific data flag setting.
-	 *
-	 * @param int  $flagId
-	 * @param bool $value
-	 */
-	public function setPlayerFlag(int $flagId, bool $value = true) : void{
-		$this->setDataFlag(EntityMetadataProperties::PLAYER_FLAGS, $flagId, $value, EntityMetadataTypes::BYTE);
 	}
 }

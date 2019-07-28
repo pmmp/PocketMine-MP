@@ -71,8 +71,6 @@ class FallingBlock extends Entity{
 		$damage = $nbt->getByte("Data", 0);
 
 		$this->block = BlockFactory::get($blockId, $damage);
-
-		$this->propertyManager->setInt(EntityMetadataProperties::VARIANT, $this->block->getRuntimeId());
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
@@ -137,5 +135,11 @@ class FallingBlock extends Entity{
 		$nbt->setByte("Data", $this->block->getMeta());
 
 		return $nbt;
+	}
+
+	protected function syncNetworkData() : void{
+		parent::syncNetworkData();
+
+		$this->propertyManager->setInt(EntityMetadataProperties::VARIANT, $this->block->getRuntimeId());
 	}
 }

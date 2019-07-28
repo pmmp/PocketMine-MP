@@ -31,6 +31,7 @@ use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
+use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use function array_search;
 use function count;
 
@@ -164,7 +165,7 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 
 	/** @var Attribute[] */
 	public $attributes = [];
-	/** @var array */
+	/** @var MetadataProperty[] */
 	public $metadata = [];
 	/** @var EntityLink[] */
 	public $links = [];

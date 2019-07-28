@@ -27,16 +27,18 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 
 class SetActorDataPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{ //TODO: check why this is serverbound
 	public const NETWORK_ID = ProtocolInfo::SET_ACTOR_DATA_PACKET;
 
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var array */
+	/** @var MetadataProperty[] */
 	public $metadata;
 
 	public static function create(int $entityRuntimeId, array $metadata) : self{
+
 		$result = new self;
 		$result->entityRuntimeId = $entityRuntimeId;
 		$result->metadata = $metadata;

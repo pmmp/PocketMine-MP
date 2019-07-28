@@ -28,7 +28,6 @@ use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -61,14 +60,7 @@ class PrimedTNT extends Entity implements Explosive{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		if($nbt->hasTag("Fuse", ShortTag::class)){
-			$this->fuse = $nbt->getShort("Fuse");
-		}else{
-			$this->fuse = 80;
-		}
-
-		$this->setGenericFlag(EntityMetadataFlags::IGNITED, true);
-		$this->propertyManager->setInt(EntityMetadataProperties::FUSE_LENGTH, $this->fuse);
+		$this->fuse = $nbt->getShort("Fuse", 80, true);
 
 		$this->world->addSound($this, new IgniteSound());
 	}
@@ -92,10 +84,6 @@ class PrimedTNT extends Entity implements Explosive{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->fuse % 5 === 0){ //don't spam it every tick, it's not necessary
-			$this->propertyManager->setInt(EntityMetadataProperties::FUSE_LENGTH, $this->fuse);
-		}
-
 		if(!$this->isFlaggedForDespawn()){
 			$this->fuse -= $tickDiff;
 
@@ -118,5 +106,12 @@ class PrimedTNT extends Entity implements Explosive{
 			}
 			$explosion->explodeB();
 		}
+	}
+
+	protected function syncNetworkData() : void{
+		parent::syncNetworkData();
+
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::IGNITED, true);
+		$this->propertyManager->setInt(EntityMetadataProperties::FUSE_LENGTH, $this->fuse);
 	}
 }

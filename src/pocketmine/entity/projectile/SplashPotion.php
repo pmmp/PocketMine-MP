@@ -49,10 +49,15 @@ class SplashPotion extends Throwable{
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
 
+	/** @var bool */
+	protected $linger = false;
+	/** @var int */
+	protected $potionId = Potion::WATER;
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->setPotionId($nbt->getShort("PotionId", 0));
+		$this->setPotionId($nbt->getShort("PotionId", Potion::WATER));
 	}
 
 	public function saveNBT() : CompoundTag{
@@ -139,14 +144,14 @@ class SplashPotion extends Throwable{
 	 * @return int
 	 */
 	public function getPotionId() : int{
-		return $this->propertyManager->getShort(EntityMetadataProperties::POTION_AUX_VALUE) ?? 0;
+		return $this->potionId;
 	}
 
 	/**
 	 * @param int $id
 	 */
 	public function setPotionId(int $id) : void{
-		$this->propertyManager->setShort(EntityMetadataProperties::POTION_AUX_VALUE, $id);
+		$this->potionId = $id; //TODO: validation
 	}
 
 	/**
@@ -154,7 +159,7 @@ class SplashPotion extends Throwable{
 	 * @return bool
 	 */
 	public function willLinger() : bool{
-		return $this->getDataFlag(EntityMetadataProperties::FLAGS, EntityMetadataFlags::LINGER);
+		return $this->linger;
 	}
 
 	/**
@@ -163,7 +168,7 @@ class SplashPotion extends Throwable{
 	 * @param bool $value
 	 */
 	public function setLinger(bool $value = true) : void{
-		$this->setDataFlag(EntityMetadataProperties::FLAGS, EntityMetadataFlags::LINGER, $value);
+		$this->linger = $value;
 	}
 
 	/**
@@ -171,5 +176,12 @@ class SplashPotion extends Throwable{
 	 */
 	public function getPotionEffects() : array{
 		return Potion::getPotionEffectsById($this->getPotionId());
+	}
+
+	protected function syncNetworkData() : void{
+		parent::syncNetworkData();
+
+		$this->propertyManager->setShort(EntityMetadataProperties::POTION_AUX_VALUE, $this->potionId);
+		$this->propertyManager->setGenericFlag(EntityMetadataFlags::LINGER, $this->linger);
 	}
 }
