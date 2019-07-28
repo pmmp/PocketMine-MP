@@ -2204,10 +2204,10 @@ class Level implements ChunkManager, Metadatable{
      * @param string $entityType Class of entity to use for instanceof
      * @param bool $includeDead Whether to include entitites which are dead
      *
-     * @param callable|null $filter
+     * @param \Closure[] $filters
      * @return Entity|null an entity of type $entityType, or null if not found
      */
-	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false, callable $filter = null) : ?Entity{
+	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false, array $filters = []) : ?Entity{
 		assert(is_a($entityType, Entity::class, true));
 
 		$minX = ((int) floor($pos->x - $maxDistance)) >> 4;
@@ -2225,11 +2225,15 @@ class Level implements ChunkManager, Metadatable{
 					if(!($entity instanceof $entityType) or $entity->isClosed() or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
 						continue;
 					}
-					if($filter !== null){
-						if(!$filter($entity)){
-							continue;
+
+					foreach($filters as $filter){
+						if($filter !== null){
+							if(!$filter($entity)){
+								continue;
+							}
 						}
 					}
+
 					$distSq = $entity->distanceSquared($pos);
 					if($distSq < $currentTargetDistSq){
 						$currentTargetDistSq = $distSq;

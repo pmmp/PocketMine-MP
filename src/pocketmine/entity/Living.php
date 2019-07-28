@@ -91,6 +91,7 @@ abstract class Living extends Entity implements Damageable{
 
 	/** @var int|null */
 	protected $lastAttackerId = null;
+	protected $revengeTimer = 0;
 
 	/** @var bool */
 	protected $leashed = false;
@@ -153,6 +154,20 @@ abstract class Living extends Entity implements Damageable{
 			$this->setGenericFlag(self::DATA_FLAG_LEASHED, true);
 			$this->propertyManager->setLong(self::DATA_LEAD_HOLDER_EID, $leashedToEntity->getId());
 		}
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getRevengeTimer() : int{
+		return $this->revengeTimer;
+	}
+
+	/**
+	 * @param int $revengeTimer
+	 */
+	public function setRevengeTimer(int $revengeTimer) : void{
+		$this->revengeTimer = $revengeTimer;
 	}
 
 	/**
@@ -721,6 +736,8 @@ abstract class Living extends Entity implements Damageable{
 				$this->knockBack($e, $source->getBaseDamage(), $deltaX, $deltaZ, $source->getKnockBack());
 
 				$e->broadcastEntityEvent(ActorEventPacket::ARM_SWING);
+
+				$this->setRevengeTimer($this->ticksLived);
 
 				if($e instanceof Living){
 					$e->setTargetEntity($this);

@@ -27,11 +27,11 @@ namespace pocketmine\entity\hostile;
 use pocketmine\entity\Ageable;
 use pocketmine\entity\behavior\FindAttackableTargetBehavior;
 use pocketmine\entity\behavior\FloatBehavior;
-use pocketmine\entity\behavior\JumpAttackBehavior;
+use pocketmine\entity\behavior\LeapAtTargetBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
 use pocketmine\entity\behavior\MeleeAttackBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
-use pocketmine\entity\behavior\WanderBehavior;
+use pocketmine\entity\behavior\RandomStrollBehavior;
 use pocketmine\entity\Monster;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -63,9 +63,9 @@ class Spider extends Monster implements Ageable{
 	protected function addBehaviors() : void{
 		// TODO: Spider Attack
 		$this->behaviorPool->setBehavior(0, new FloatBehavior($this));
-		$this->behaviorPool->setBehavior(1, new JumpAttackBehavior($this, 0.4));
+		$this->behaviorPool->setBehavior(1, new LeapAtTargetBehavior($this, 0.4));
 		$this->behaviorPool->setBehavior(2, new MeleeAttackBehavior($this, 1.0));
-		$this->behaviorPool->setBehavior(3, new WanderBehavior($this, 1.0));
+		$this->behaviorPool->setBehavior(3, new RandomStrollBehavior($this, 1.0));
 		$this->behaviorPool->setBehavior(4, new LookAtPlayerBehavior($this, 8.0));
 		$this->behaviorPool->setBehavior(5, new RandomLookAroundBehavior($this));
 

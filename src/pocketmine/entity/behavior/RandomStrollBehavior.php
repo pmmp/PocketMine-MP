@@ -27,7 +27,7 @@ namespace pocketmine\entity\behavior;
 use pocketmine\entity\Mob;
 use pocketmine\entity\utils\RandomPositionGenerator;
 
-class WanderBehavior extends Behavior{
+class RandomStrollBehavior extends Behavior{
 
 	/** @var float */
 	protected $speedMultiplier = 1.0, $followRange = 16.0;

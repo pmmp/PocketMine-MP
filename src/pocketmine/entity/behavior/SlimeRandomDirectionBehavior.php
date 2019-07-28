@@ -24,29 +24,30 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
-use pocketmine\entity\Mob;
-use pocketmine\entity\utils\RandomPositionGenerator;
+use pocketmine\entity\hostile\Slime;
 
-class PanicBehavior extends RandomStrollBehavior{
+class SlimeRandomDirectionBehavior extends Behavior{
+	/** @var Slime */
+	protected $mob;
+	protected $randomYaw;
+	protected $directionTimer;
 
-	public function __construct(Mob $mob, float $speedMultiplier = 1.0){
-		parent::__construct($mob, $speedMultiplier, 0);
+	public function __construct(Slime $slime){
+		parent::__construct($slime);
+
+		$this->setMutexBits(2);
 	}
 
 	public function canStart() : bool{
-		if($this->mob->getLastAttacker() !== null or $this->mob->isOnFire()){
-			$this->targetPos = RandomPositionGenerator::findRandomTargetBlock($this->mob, 5, 4);
-
-			if($this->targetPos !== null){
-				$this->followRange = $this->mob->distanceSquared($this->targetPos) + 2;
-				return true;
-			}
-		}
-		return false;
+		return $this->mob->getTargetEntity() == null and ($this->mob->onGround or $this->mob->isInsideOfWater() or $this->mob->isInsideOfLava());
 	}
 
-	public function onEnd() : void{
-		$this->mob->setLastAttacker(null);
-		parent::onEnd();
+	public function onTick() : void{
+		if(--$this->directionTimer <= 0){
+			$this->directionTimer = 40 + $this->random->nextBoundedInt(60);
+			$this->randomYaw = $this->random->nextBoundedInt(360);
+		}
+
+		$this->mob->getMoveHelper()->jumpWithYaw($this->randomYaw, false);
 	}
 }

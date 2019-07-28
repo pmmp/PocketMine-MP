@@ -99,14 +99,14 @@ abstract class AbstractHorse extends Tamable{
 	 * Returns randomized jump strength
 	 */
 	protected function getModifiedJumpStrength() : float{
-		return 0.4000000059604645 + $this->random->nextFloat() * 0.2 + $this->random->nextFloat() * 0.2 + $this->random->nextFloat() * 0.2;
+		return 0.4 + $this->random->nextFloat() * 0.2 + $this->random->nextFloat() * 0.2 + $this->random->nextFloat() * 0.2;
 	}
 
 	/**
 	 * Returns randomized movement speed
 	 */
 	protected function getModifiedMovementSpeed() : float{
-		return (0.44999998807907104 + $this->random->nextFloat() * 0.3 + $this->random->nextFloat() * 0.3 + $this->random->nextFloat() * 0.3) * 0.25;
+		return (0.45 + $this->random->nextFloat() * 0.3 + $this->random->nextFloat() * 0.3 + $this->random->nextFloat() * 0.3) * 0.25;
 	}
 
 	public function onBehaviorUpdate() : void{

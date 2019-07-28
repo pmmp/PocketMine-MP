@@ -33,7 +33,7 @@ use pocketmine\entity\behavior\HurtByTargetBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
 use pocketmine\entity\behavior\MeleeAttackBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
-use pocketmine\entity\behavior\WanderBehavior;
+use pocketmine\entity\behavior\RandomStrollBehavior;
 use pocketmine\entity\Monster;
 use pocketmine\item\FlintSteel;
 use pocketmine\item\Item;
@@ -94,7 +94,7 @@ class Creeper extends Monster implements Ageable{
 		$this->behaviorPool->setBehavior(1, new CreeperSwellBehavior($this));
 		// TODO: Avoid entity behavior
 		$this->behaviorPool->setBehavior(2, new MeleeAttackBehavior($this, 1.0));
-		$this->behaviorPool->setBehavior(3, new WanderBehavior($this, 0.8));
+		$this->behaviorPool->setBehavior(3, new RandomStrollBehavior($this, 0.8));
 		$this->behaviorPool->setBehavior(4, new LookAtPlayerBehavior($this, 8.0));
 		$this->behaviorPool->setBehavior(5, new RandomLookAroundBehavior($this));
 

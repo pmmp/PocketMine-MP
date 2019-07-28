@@ -26,45 +26,47 @@ namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Mob;
 
-class JumpAttackBehavior extends Behavior{
+class LeapAtTargetBehavior extends Behavior{
 
 	/** @var float */
 	protected $leapHeight;
+	protected $mustBeOnGround;
+	protected $leapTarget;
 
-	public function __construct(Mob $mob, float $leapHeight){
+	public function __construct(Mob $mob, float $leapHeight, bool $mustBeOnGround = true){
 		parent::__construct($mob);
 
 		$this->leapHeight = $leapHeight;
+		$this->mustBeOnGround = $mustBeOnGround;
+
 		$this->mutexBits = 5;
 	}
 
 	public function canStart() : bool{
-		$target = $this->mob->getTargetEntity();
-		if($target == null) return false;
-		if(!$target->isAlive()) return false;
+		$this->leapTarget = $this->mob->getTargetEntity();
 
-		$distance = $this->mob->distance($target);
+		if($this->leapTarget == null) return false;
 
-		return $distance >= 4 && $distance <= 16 && $this->mob->isOnGround() && $this->random->nextBoundedInt(5) == 0;
+		$distance = $this->mob->distance($this->leapTarget);
+
+		return $distance >= 4 and $distance <= 16 and ($this->mustBeOnGround ? $this->mob->isOnGround() : true) and $this->random->nextBoundedInt(5) == 0;
 	}
 
 	public function canContinue() : bool{
-		return !$this->mob->isOnGround() and $this->mob->getTargetEntityId() !== null;
+		return $this->mob->getMotion()->y === 0;
 	}
 
 	public function onTick() : void{
-		$target = $this->mob->getTargetEntity();
-		if($target == null) return;
+		$d1 = $this->leapTarget->x - $this->mob->x;
+		$d2 = $this->leapTarget->z - $this->mob->z;
+		$f = sqrt($d1 ** 2 + $d2 ** 2);
 
-		$direction = $target->subtract($this->mob);
-		$distance = $this->mob->distance($target);
+		$motion = $this->mob->getMotion();
 
-		$velocity = $this->mob->getMotion();
-		$x = ($direction->x > 0 ? $direction->x / $distance : 0) * 0.5 * 0.8 + $velocity->x * 0.2;
-		$z = ($direction->z > 0 ? $direction->z / $distance : 0) * 0.5 * 0.8 + $velocity->z * 0.2;
-		$y = $this->leapHeight;
-		$velocity->add($x, $y, $z);
+		$motion->x += $d1 / $f * 0.5 * 0.8 + $motion->x * 0.2;
+		$motion->y = $this->leapHeight;
+		$motion->z += $d2 / $f * 0.5 * 0.8 + $motion->z * 0.2;
 
-		$this->mob->setMotion($velocity);
+		$this->mob->setMotion($motion);
 	}
 }

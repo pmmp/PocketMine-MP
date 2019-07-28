@@ -49,6 +49,10 @@ class Path{
 		return new Vector3($point->x, $point->height, $point->y);
 	}
 
+	public function getFinalPathPoint() : ?PathPoint{
+		return end($this->points);
+	}
+
 	public function getPointByIndex(int $index) : ?PathPoint{
 		return $this->points[$index] ?? null;
 	}

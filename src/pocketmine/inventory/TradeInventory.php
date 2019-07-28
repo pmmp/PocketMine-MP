@@ -67,7 +67,7 @@ class TradeInventory extends ContainerInventory implements FakeInventory{
 		if($this->holder->getOffers() instanceof CompoundTag){
 			BaseInventory::onOpen($who);
 
-			$this->holder->getDataPropertyManager()->setLong(Villager::DATA_TRADING_PLAYER_EID, $who->getId());
+			$this->holder->setTradingPlayer($who);
 
 			$pk = new UpdateTradePacket();
 			$pk->windowId = $who->getWindowId($this);
@@ -87,7 +87,7 @@ class TradeInventory extends ContainerInventory implements FakeInventory{
 	 * @param Player $who
 	 */
 	public function onClose(Player $who) : void{
-		$this->holder->getDataPropertyManager()->setLong(Villager::DATA_TRADING_PLAYER_EID, -1);
+		$this->holder->setTradingPlayer(null);
 
 		if($this->traded){
 			$this->holder->updateTradeTier();

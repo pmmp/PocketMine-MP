@@ -32,8 +32,8 @@ use pocketmine\entity\behavior\LookAtPlayerBehavior;
 use pocketmine\entity\behavior\MateBehavior;
 use pocketmine\entity\behavior\PanicBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
-use pocketmine\entity\behavior\TemptedBehavior;
-use pocketmine\entity\behavior\WanderBehavior;
+use pocketmine\entity\behavior\TemptBehavior;
+use pocketmine\entity\behavior\RandomStrollBehavior;
 use pocketmine\item\Dye;
 use pocketmine\item\Shears;
 use pocketmine\item\Item;
@@ -59,10 +59,10 @@ class Sheep extends Animal{
 		$this->behaviorPool->setBehavior(0, new FloatBehavior($this));
 		$this->behaviorPool->setBehavior(1, new PanicBehavior($this, 1.25));
 		$this->behaviorPool->setBehavior(2, new MateBehavior($this, 1.0));
-		$this->behaviorPool->setBehavior(3, new TemptedBehavior($this, [Item::WHEAT], 1.1));
+		$this->behaviorPool->setBehavior(3, new TemptBehavior($this, [Item::WHEAT], 1.1));
 		$this->behaviorPool->setBehavior(4, new FollowParentBehavior($this, 1.1));
 		$this->behaviorPool->setBehavior(5, new EatBlockBehavior($this));
-		$this->behaviorPool->setBehavior(6, new WanderBehavior($this, 1.0));
+		$this->behaviorPool->setBehavior(6, new RandomStrollBehavior($this, 1.0));
 		$this->behaviorPool->setBehavior(7, new LookAtPlayerBehavior($this, 6.0));
 		$this->behaviorPool->setBehavior(8, new RandomLookAroundBehavior($this));
 	}

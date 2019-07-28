@@ -24,12 +24,24 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
-use pocketmine\entity\Mob;
-use pocketmine\Player;
+use pocketmine\entity\passive\Villager;
 
-class LookAtPlayerBehavior extends LookAtEntityBehavior{
+class LookAtTradingPlayerBehavior extends LookAtPlayerBehavior{
+	/** @var Villager */
+	protected $mob;
 
-	public function __construct(Mob $mob, float $lookDistance = 8.0){
-		parent::__construct($mob, Player::class, $lookDistance);
+	public function __construct(Villager $villager){
+		parent::__construct($villager, 8);
 	}
+
+	public function canStart() : bool{
+		if($this->mob->getTradingPlayer() !== null){
+			$this->nearestEntity = $this->mob->getTradingPlayer();
+
+			return true;
+		}
+
+		return false;
+	}
+
 }

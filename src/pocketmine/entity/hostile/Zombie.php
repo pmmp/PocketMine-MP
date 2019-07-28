@@ -30,7 +30,7 @@ use pocketmine\entity\behavior\FloatBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
 use pocketmine\entity\behavior\MeleeAttackBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
-use pocketmine\entity\behavior\WanderBehavior;
+use pocketmine\entity\behavior\RandomStrollBehavior;
 use pocketmine\entity\Monster;
 use pocketmine\entity\passive\Villager;
 use pocketmine\item\Item;
@@ -86,7 +86,7 @@ class Zombie extends Monster implements Ageable{
 	protected function addBehaviors() : void{
 		$this->behaviorPool->setBehavior(0, new FloatBehavior($this));
 		$this->behaviorPool->setBehavior(1, new MeleeAttackBehavior($this, 1.0));
-		$this->behaviorPool->setBehavior(2, new WanderBehavior($this, 1.0));
+		$this->behaviorPool->setBehavior(2, new RandomStrollBehavior($this, 1.0));
 		$this->behaviorPool->setBehavior(3, new LookAtPlayerBehavior($this, 8.0));
 		$this->behaviorPool->setBehavior(4, new RandomLookAroundBehavior($this));
 

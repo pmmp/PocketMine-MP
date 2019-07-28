@@ -27,6 +27,7 @@ namespace pocketmine\entity\passive;
 use pocketmine\entity\Ageable;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
+use pocketmine\entity\Entity;
 use pocketmine\entity\Mob;
 use pocketmine\entity\NPC;
 use pocketmine\inventory\TradeInventory;
@@ -200,5 +201,30 @@ class Villager extends Mob implements NPC, Ageable{
 
 	public function setWilling(bool $isWilling) : void{
 		$this->isWilling = $isWilling;
+	}
+
+	public function getTradingPlayer() : ?Player{
+		$eid = $this->getTradingPlayerId();
+		if($eid !== null){
+			$player = $this->server->findEntity($eid);
+
+			return $player instanceof Player ? $player : null;
+		}
+
+		return null;
+	}
+
+	public function setTradingPlayer(?Player $player) : void{
+		if($player === null){
+			$this->propertyManager->setLong(self::DATA_TRADING_PLAYER_EID, -1);
+		}elseif($player->closed){
+			throw new \InvalidArgumentException("Supplied trading player is garbage and cannot be used");
+		}else{
+			$this->propertyManager->setLong(self::DATA_TRADING_PLAYER_EID, $player->getId());
+		}
+	}
+
+	public function getTradingPlayerId() : ?int{
+		return $this->propertyManager->getLong(self::DATA_TRADING_PLAYER_EID);
 	}
 }

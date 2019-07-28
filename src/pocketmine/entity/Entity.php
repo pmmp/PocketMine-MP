@@ -37,6 +37,7 @@ use pocketmine\entity\hostile\CaveSpider;
 use pocketmine\entity\hostile\Creeper;
 use pocketmine\entity\hostile\Husk;
 use pocketmine\entity\hostile\Skeleton;
+use pocketmine\entity\hostile\Slime;
 use pocketmine\entity\hostile\Spider;
 use pocketmine\entity\hostile\Stray;
 use pocketmine\entity\hostile\Zombie;
@@ -403,6 +404,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(Boat::class, false, ['Boat', 'minecraft:boat']);
 		Entity::registerEntity(Minecart::class, false, ['Minecart', 'minecraft:minecart']);
 		Entity::registerEntity(FireworksRocket::class, false, ['FireworksRocket', 'minecraft:fireworks_rocket']);
+		Entity::registerEntity(Slime::class, false, ['Slime', 'minecraft:slime']);
 
 		Entity::registerEntity(Human::class, true);
 
@@ -906,6 +908,21 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$halfWidth = $this->width / 2;
 
 		$this->boundingBox->setBounds($this->x - $halfWidth, $this->y, $this->z - $halfWidth, $this->x + $halfWidth, $this->y + $this->height, $this->z + $halfWidth);
+	}
+
+	/**
+	 * Update entity's height and width
+	 *
+	 * @param float $height
+	 * @param float $width
+	 */
+	public function updateBoundingBox(float $height, float $width) : void{
+		$this->height = $height;
+		$this->width = $width;
+
+		$this->recalculateBoundingBox();
+		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_WIDTH, $width);
+		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $height);
 	}
 
 	public function isAffectedByGravity() : bool{

@@ -28,7 +28,7 @@ use pocketmine\entity\Mob;
 use pocketmine\Player;
 use function in_array;
 
-class TemptedBehavior extends Behavior{
+class TemptBehavior extends Behavior{
 
 	/** @var float */
 	protected $speedMultiplier;

@@ -25,9 +25,10 @@ declare(strict_types=1);
 namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\passive\AbstractHorse;
+use pocketmine\entity\utils\RandomPositionGenerator;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 
-class HorseRiddenBehavior extends Behavior{
+class MountPathingBehavior extends Behavior{
 
 	protected $rideTime = 0;
 	/** @var AbstractHorse */
@@ -36,7 +37,7 @@ class HorseRiddenBehavior extends Behavior{
 	public function __construct(AbstractHorse $mob){
 		parent::__construct($mob);
 
-		$this->mutexBits = 2;
+		$this->mutexBits = 7;
 	}
 
 	public function canStart() : bool{
@@ -44,13 +45,20 @@ class HorseRiddenBehavior extends Behavior{
 	}
 
 	public function onTick() : void{
-		if($this->canStart()){ // a minor check
+		if($this->mob->getRiddenByEntity() !== null){
 			if(!$this->mob->isTamed()){
 				if($this->rideTime > 100 and !$this->mob->isRearing()){
+					if($this->rideTime === 100){
+						$pos = RandomPositionGenerator::findRandomTargetBlock($this->mob, 10, 7);
+
+						if($pos !== null){
+							$this->mob->getNavigator()->tryMoveTo($pos, 1, $this->mob->distanceSquared($pos) + 2);
+						}
+					}
+
 					if($this->mob->random->nextBoundedInt(1) === 0){
 						$this->mob->setInLove(true);
 						$this->mob->setTamed(true);
-						$this->rideTime = 0;
 					}else{
 						$this->mob->setRearing(true);
 					}
@@ -62,18 +70,13 @@ class HorseRiddenBehavior extends Behavior{
 
 				$this->rideTime++;
 				$this->mutexBits = 2;
-			}else{
-				if($this->mob->isSaddled()){
-					$this->mutexBits = 7; // This a nasty hack
-				}else{
-					$this->mutexBits = 2;
-				}
 			}
 		}
 	}
 
 	public function onEnd() : void{
 		$this->rideTime = 0;
+
 		$this->mob->setRearing(false);
 		$this->mob->throwRider();
 	}

@@ -47,12 +47,12 @@ class FindAttackableTargetBehavior extends Behavior{
 
 	public function canStart() : bool{
 		if($this->random->nextBoundedInt(10) === 0){
-			$target = $this->mob->level->getNearestEntity($this->mob, sqrt($this->targetDistance), $this->targetClass, false, function(Entity $entity){
+			$target = $this->mob->level->getNearestEntity($this->mob, sqrt($this->targetDistance), $this->targetClass, false, [function(Entity $entity){
 				if($entity instanceof Player){
 					return $entity->isSurvival() and !$entity->isInvisible();
 				}
 				return !$entity->isInvisible();
-			});
+			}]);
 
 			if($target === null) return false;
 

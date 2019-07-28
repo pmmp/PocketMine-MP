@@ -72,9 +72,8 @@ class FollowOwnerBehavior extends Behavior{
 
 		if($this->followDelay < 0){
 			$this->followDelay = 10;
-			$m = 2 - $distanceToPlayer;
-			$m = ($m <= 0) ? 1 : $m / 2.0;
-			$this->mob->getNavigator()->tryMoveTo($owner, $this->speedMultiplier * $m);
+
+			$this->mob->getNavigator()->tryMoveTo($owner, $this->speedMultiplier);
 			if($distanceToPlayer > 144){
 				$this->mob->teleport($owner);
 				$this->mob->getNavigator()->clearPath();

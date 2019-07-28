@@ -24,18 +24,21 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\passive;
 
+use pocketmine\entity\behavior\FindAttackableTargetBehavior;
 use pocketmine\entity\behavior\FloatBehavior;
 use pocketmine\entity\behavior\FollowOwnerBehavior;
 use pocketmine\entity\behavior\HurtByTargetBehavior;
-use pocketmine\entity\behavior\JumpAttackBehavior;
+use pocketmine\entity\behavior\LeapAtTargetBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
 use pocketmine\entity\behavior\MeleeAttackBehavior;
+use pocketmine\entity\behavior\NearestAttackableTargetBehavior;
 use pocketmine\entity\behavior\OwnerHurtByTargetBehavior;
 use pocketmine\entity\behavior\OwnerHurtTargetBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\SittingBehavior;
-use pocketmine\entity\behavior\WanderBehavior;
+use pocketmine\entity\behavior\RandomStrollBehavior;
 use pocketmine\entity\Entity;
+use pocketmine\entity\hostile\Skeleton;
 use pocketmine\entity\Tamable;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -52,16 +55,17 @@ class Wolf extends Tamable{
 	protected function addBehaviors() : void{
 		$this->behaviorPool->setBehavior(0, new FloatBehavior($this));
 		$this->behaviorPool->setBehavior(1, new SittingBehavior($this));
-		$this->behaviorPool->setBehavior(2, new JumpAttackBehavior($this, 1.0));
-		$this->behaviorPool->setBehavior(3, new MeleeAttackBehavior($this, 2.0));
+		$this->behaviorPool->setBehavior(2, new LeapAtTargetBehavior($this, 1.0));
+		$this->behaviorPool->setBehavior(3, new MeleeAttackBehavior($this, 1.0));
 		$this->behaviorPool->setBehavior(4, new FollowOwnerBehavior($this, 2.0));
-		$this->behaviorPool->setBehavior(5, new WanderBehavior($this, 1.0));
+		$this->behaviorPool->setBehavior(5, new RandomStrollBehavior($this, 1.0));
 		$this->behaviorPool->setBehavior(6, new LookAtPlayerBehavior($this, 8.0));
 		$this->behaviorPool->setBehavior(7, new RandomLookAroundBehavior($this));
 
-		$this->targetBehaviorPool->setBehavior(0, new HurtByTargetBehavior($this));
+		$this->targetBehaviorPool->setBehavior(0, new HurtByTargetBehavior($this, true));
 		$this->targetBehaviorPool->setBehavior(1, new OwnerHurtByTargetBehavior($this));
 		$this->targetBehaviorPool->setBehavior(2, new OwnerHurtTargetBehavior($this));
+		$this->targetBehaviorPool->setBehavior(3, new NearestAttackableTargetBehavior($this, Skeleton::class, false));
 	}
 
 	protected function initEntity() : void{

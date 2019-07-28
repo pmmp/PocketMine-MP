@@ -24,15 +24,19 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\hostile;
 
+use pocketmine\entity\behavior\AvoidMobTypeBehavior;
 use pocketmine\entity\behavior\FindAttackableTargetBehavior;
+use pocketmine\entity\behavior\FleeSunBehavior;
 use pocketmine\entity\behavior\FloatBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
+use pocketmine\entity\behavior\NearestAttackableTargetBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\RangedAttackBehavior;
 use pocketmine\entity\behavior\RestrictSunBehavior;
-use pocketmine\entity\behavior\WanderBehavior;
+use pocketmine\entity\behavior\RandomStrollBehavior;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Monster;
+use pocketmine\entity\passive\Wolf;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\RangedAttackerMob;
 use pocketmine\inventory\AltayEntityEquipment;
@@ -83,13 +87,15 @@ class Skeleton extends Monster implements RangedAttackerMob{
 	protected function addBehaviors() : void{
 		$this->behaviorPool->setBehavior(0, new FloatBehavior($this));
 		$this->behaviorPool->setBehavior(1, new RestrictSunBehavior($this));
-		$this->behaviorPool->setBehavior(2, new WanderBehavior($this, 1.0));
-		$this->behaviorPool->setBehavior(2, new RangedAttackBehavior($this, 1.0, 20, 60, 15.0));
-		$this->behaviorPool->setBehavior(3, new LookAtPlayerBehavior($this, 8.0));
-		$this->behaviorPool->setBehavior(4, new RandomLookAroundBehavior($this));
+		$this->behaviorPool->setBehavior(2, new FleeSunBehavior($this, 1.0));
+		$this->behaviorPool->setBehavior(3, new AvoidMobTypeBehavior($this, Wolf::class, null, 6.0, 1.0, 1.2));
+		$this->behaviorPool->setBehavior(4, new RandomStrollBehavior($this, 1.0));
+		$this->behaviorPool->setBehavior(5, new RangedAttackBehavior($this, 1.0, 20, 60, 15.0));
+		$this->behaviorPool->setBehavior(6, new LookAtPlayerBehavior($this, 8.0));
+		$this->behaviorPool->setBehavior(7, new RandomLookAroundBehavior($this));
 
-		$this->targetBehaviorPool->setBehavior(0, new FindAttackableTargetBehavior($this, Player::class));
-		//$this->targetBehaviorPool->setBehavior(2, new FindAttackableTargetBehavior($this, IronGolem::class));
+		$this->targetBehaviorPool->setBehavior(0, new NearestAttackableTargetBehavior($this, Player::class, true));
+		//$this->targetBehaviorPool->setBehavior(2, new NearestAttackableTargetBehavior($this, IronGolem::class, false));
 	}
 
 	public function onRangedAttackToTarget(Entity $target, float $power) : void{

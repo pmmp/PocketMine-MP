@@ -1413,20 +1413,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * Update player's height and width
-	 *
-	 * @param float $height
-	 * @param float $width
-	 */
-	public function updateBoundingBox(float $height, float $width) : void{
-		$this->height = $height;
-		$this->width = $width;
-		$this->recalculateBoundingBox();
-		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_WIDTH, $width);
-		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $height);
-	}
-
-	/**
 	 * @param string $achievementId
 	 *
 	 * @return bool

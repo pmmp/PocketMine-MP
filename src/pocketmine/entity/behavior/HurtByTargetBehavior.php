@@ -24,29 +24,43 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
-use pocketmine\Player;
+use pocketmine\entity\Living;
+use pocketmine\entity\Mob;
 
-class HurtByTargetBehavior extends FindAttackableTargetBehavior{
-	protected $mutexBits = 1;
+class HurtByTargetBehavior extends TargetBehavior{
+
+	protected $alertSameType;
+	protected $hurtOwner;
+	protected $revengeTimerOld = 0;
+
+	public function __construct(Mob $mob, bool $alertSameType = false, bool $hurtOwner = false){
+		parent::__construct($mob, false);
+
+		$this->alertSameType = $alertSameType;
+		$this->hurtOwner = $hurtOwner;
+	}
 
 	public function canStart() : bool{
-		$player = $this->mob->getLastAttacker();
-		return $player !== null and ($player instanceof Player ? $player->isSurvival() : true) and $this->mob->getOwningEntity() !== $player and $player->isAlive();
+		$attacker = $this->mob->getLastAttacker();
+		$i = $this->mob->getRevengeTimer();
+
+		return $i !== $this->revengeTimerOld and $attacker instanceof Living and !($this->hurtOwner and $this->mob->getOwningEntity() === $attacker) and $this->isSuitableTargetLocal($attacker, false);
 	}
 
 	public function onStart() : void{
 		$this->mob->setTargetEntity($this->mob->getLastAttacker());
+		$this->revengeTimerOld = $this->mob->getRevengeTimer();
+
+		if($this->alertSameType){
+			$d = $this->getTargetDistance();
+
+			foreach($this->mob->level->getNearbyEntities($this->mob->getBoundingBox()->expandedCopy($d, 10, $d), $this->mob) as $entity){
+				if($entity->getTargetEntity() === null){
+					$entity->setTargetEntity($this->mob->getLastAttacker());
+				}
+			}
+		}
 
 		parent::onStart();
-	}
-
-	public function canContinue() : bool{
-		$this->mob->setTargetEntity($this->mob->getLastAttacker());
-		return $this->canStart() and parent::canContinue();
-	}
-
-	public function onEnd() : void{
-		parent::onEnd();
-		$this->mob->setLastAttacker(null);
 	}
 }

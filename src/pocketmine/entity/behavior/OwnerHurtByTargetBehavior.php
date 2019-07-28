@@ -25,28 +25,44 @@ declare(strict_types=1);
 namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Living;
-use pocketmine\entity\Mob;
+use pocketmine\entity\Tamable;
 
-class OwnerHurtByTargetBehavior extends Behavior{
+class OwnerHurtByTargetBehavior extends TargetBehavior{
+	/** @var Tamable */
+	protected $mob;
+	protected $revengeTimerOld = 0;
+	/** @var Living */
+	protected $ownerAttacker;
 
-	protected $mutexBits = 1;
+	public function __construct(Tamable $mob){
+		parent::__construct($mob, false);
+
+		$this->mutexBits = 1;
+	}
 
 	public function canStart() : bool{
-		$owner = $this->mob->getOwningEntity();
+		if($this->mob->isTamed()){
+			$owner = $this->mob->getOwningEntity();
 
-		/** @var Living $owner */
-		if($owner !== null){
-			$attacker = $owner->getLastAttacker();
-			if($attacker instanceof Mob){
-				$this->mob->setTargetEntity($attacker);
-				return true;
+			if($owner instanceof Living){
+				$this->ownerAttacker = $owner->getLastAttacker();
+				$i = $owner->getRevengeTimer();
+
+				return $i !== $this->revengeTimerOld and $this->ownerAttacker instanceof Living and $this->isSuitableTargetLocal($this->ownerAttacker, false);
 			}
 		}
 
 		return false;
 	}
 
-	public function canContinue() : bool{
-		return false;
+	public function onStart() : void{
+		$this->mob->setTargetEntity($this->ownerAttacker);
+		$owner = $this->mob->getOwningEntity();
+
+		if($owner instanceof Living){
+			$this->revengeTimerOld = $owner->getRevengeTimer();
+		}
+
+		parent::onStart();
 	}
 }

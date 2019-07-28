@@ -614,7 +614,7 @@ class EntityNavigator{
 	 * @return Path
 	 */
 	public function findPath(Vector3 $pos, ?float $followRange = null) : Path{
-		return new Path($this->navigate(new PathPoint(floor($this->mob->x), floor($this->mob->z)), new PathPoint(floor($pos->x), floor($pos->z)), $followRange));
+		return new Path($this->navigate(new PathPoint(floor($this->mob->x), floor($this->mob->z)), new PathPoint(floor($pos->x), floor($pos->z)), $followRange * 2));
 	}
 
 	/**

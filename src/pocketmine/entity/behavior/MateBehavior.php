@@ -57,8 +57,7 @@ class MateBehavior extends Behavior{
 	}
 
 	public function onTick() : void{
-		if($this->spawnBabyDelay >= 60) return;
-
+		$this->mob->getLookHelper()->setLookPositionWithEntity($this->targetMate, 10, $this->mob->getVerticalFaceSpeed());
 		$this->mob->getNavigator()->tryMoveTo($this->targetMate, $this->speedMultiplier);
 
 		$this->spawnBabyDelay++;
@@ -69,13 +68,8 @@ class MateBehavior extends Behavior{
 	}
 
 	public function onEnd() : void{
-		if($this->targetMate instanceof Animal){
-			$this->targetMate->setInLove(false);
-		}
-		$this->mob->setInLove(false);
 		$this->targetMate = null;
 		$this->spawnBabyDelay = 0;
-		$this->mob->getNavigator()->clearPath(true);
 	}
 
 	public function getNearbyMate() : ?Animal{
@@ -94,10 +88,15 @@ class MateBehavior extends Behavior{
 	}
 
 	private function spawnBaby() : void{
-		/** @var Mob $baby */
-		$baby = Entity::createEntity($this->mob::NETWORK_ID, $this->mob->level, Entity::createBaseNBT($this->mob));
-		$baby->setBaby(true);
-		$baby->setImmobile(false);
-		$baby->spawnToAll();
+		if($this->mob->isInLove()){
+			/** @var Mob $baby */
+			$baby = Entity::createEntity($this->mob::NETWORK_ID, $this->mob->level, Entity::createBaseNBT($this->mob));
+			$baby->setBaby(true);
+			$baby->setImmobile(false);
+			$baby->spawnToAll();
+
+			$this->targetMate->setInLove(false);
+			$this->mob->setInLove(false);
+		}
 	}
 }

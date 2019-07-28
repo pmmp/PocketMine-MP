@@ -31,13 +31,26 @@ use pocketmine\math\Vector3;
 class RandomPositionGenerator{
 
 	/**
-	 * @param Mob $entity
-	 * @param int $dxz
-	 * @param int $dy
+	 * @param Mob     $entity
+	 * @param int     $xz
+	 * @param int     $y
+	 * @param Vector3 $targetPos
 	 *
-	 * @return null|Block
+	 * @return Block|null
 	 */
-	public static function findRandomTargetBlock(Mob $entity, int $dxz, int $dy) : ?Block{
+	public static function findRandomTargetBlockAwayFrom(Mob $entity, int $xz, int $y, Vector3 $targetPos) : ?Block{
+		return self::findRandomTargetBlock($entity, $xz, $y, $entity->subtract($targetPos));
+	}
+
+	/**
+	 * @param Mob          $entity
+	 * @param int          $dxz
+	 * @param int          $dy
+	 * @param Vector3|null $targetPos
+	 *
+	 * @return Block|null
+	 */
+	public static function findRandomTargetBlock(Mob $entity, int $dxz, int $dy, ?Vector3 $targetPos = null) : ?Block{
 		$currentWeight = PHP_INT_MIN;
 		$currentBlock = null;
 		for($i = 0; $i < 10; $i++){
@@ -45,18 +58,17 @@ class RandomPositionGenerator{
 			$y = $entity->random->nextBoundedInt(2 * $dy + 1) - $dy;
 			$z = $entity->random->nextBoundedInt(2 * $dxz + 1) - $dxz;
 
-			$blockCoords = new Vector3($x, $y, $z);
-			$block = $entity->level->getBlock($entity->asVector3()->add($blockCoords));
-			$weight = $entity->getBlockPathWeight($block->asVector3());
-			if($weight > $currentWeight){
-				$currentWeight = $weight;
-				$currentBlock = $block;
+			if($targetPos === null or ($x * $targetPos->x + $z * $targetPos->z) > 0){
+				$blockCoords = new Vector3($x, $y, $z);
+				$block = $entity->level->getBlock($entity->asVector3()->add($blockCoords));
+				$weight = $entity->getBlockPathWeight($block->asVector3());
+				if($weight > $currentWeight){
+					$currentWeight = $weight;
+					$currentBlock = $block;
+				}
 			}
 		}
 
 		return $currentBlock;
 	}
-
-	// TODO: add more methods
-
 }
