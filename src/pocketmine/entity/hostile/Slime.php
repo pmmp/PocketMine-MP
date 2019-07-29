@@ -50,8 +50,6 @@ class Slime extends Monster{
 
 	public const NETWORK_ID = self::SLIME;
 
-	public const DATA_SLIME_SIZE = 16;
-
 	public $height = 0;
 	public $width = 0;
 
@@ -181,7 +179,9 @@ class Slime extends Monster{
 		return $this->random->nextBoundedInt(20) + 10;
 	}
 
-	public function kill() : void{
+	public function onDeath() : void{
+		parent::onDeath();
+
 		$i = $this->getSlimeSize();
 
 		if($i > 1){
@@ -206,8 +206,6 @@ class Slime extends Monster{
 				}
 			}
 		}
-
-		parent::kill();
 	}
 
 	// TODO: Collision with IronGolem

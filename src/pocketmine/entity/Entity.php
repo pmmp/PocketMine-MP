@@ -36,6 +36,7 @@ use pocketmine\entity\hostile\Blaze;
 use pocketmine\entity\hostile\CaveSpider;
 use pocketmine\entity\hostile\Creeper;
 use pocketmine\entity\hostile\Husk;
+use pocketmine\entity\hostile\MagmaCube;
 use pocketmine\entity\hostile\Skeleton;
 use pocketmine\entity\hostile\Slime;
 use pocketmine\entity\hostile\Spider;
@@ -405,6 +406,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Entity::registerEntity(Minecart::class, false, ['Minecart', 'minecraft:minecart']);
 		Entity::registerEntity(FireworksRocket::class, false, ['FireworksRocket', 'minecraft:fireworks_rocket']);
 		Entity::registerEntity(Slime::class, false, ['Slime', 'minecraft:slime']);
+		Entity::registerEntity(MagmaCube::class, false, ['MagmaCube', 'minecraft:magma_cube']);
 
 		Entity::registerEntity(Human::class, true);
 
