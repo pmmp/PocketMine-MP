@@ -28,7 +28,6 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
@@ -42,6 +41,19 @@ use function ceil;
 
 class Painting extends Entity{
 	public const NETWORK_ID = EntityLegacyIds::PAINTING;
+
+	private const DATA_TO_FACING = [
+		0 => Facing::SOUTH,
+		1 => Facing::WEST,
+		2 => Facing::NORTH,
+		3 => Facing::EAST
+	];
+	private const FACING_TO_DATA = [
+		Facing::SOUTH => 0,
+		Facing::WEST => 1,
+		Facing::NORTH => 2,
+		Facing::EAST => 3
+	];
 
 	/** @var float */
 	protected $gravity = 0.0;
@@ -57,7 +69,7 @@ class Painting extends Entity{
 	/** @var Vector3 */
 	protected $blockIn;
 	/** @var int */
-	protected $direction = 0;
+	protected $facing = Facing::NORTH;
 	/** @var string */
 	protected $motive;
 
@@ -65,9 +77,9 @@ class Painting extends Entity{
 		$this->motive = $nbt->getString("Motive");
 		$this->blockIn = new Vector3($nbt->getInt("TileX"), $nbt->getInt("TileY"), $nbt->getInt("TileZ"));
 		if($nbt->hasTag("Direction", ByteTag::class)){
-			$this->direction = $nbt->getByte("Direction");
+			$this->facing = self::DATA_TO_FACING[$nbt->getByte("Direction")] ?? Facing::NORTH;
 		}elseif($nbt->hasTag("Facing", ByteTag::class)){
-			$this->direction = $nbt->getByte("Facing");
+			$this->facing = self::DATA_TO_FACING[$nbt->getByte("Facing")] ?? Facing::NORTH;
 		}
 		parent::__construct($world, $nbt);
 	}
@@ -84,8 +96,8 @@ class Painting extends Entity{
 		$nbt->setInt("TileY", (int) $this->blockIn->y);
 		$nbt->setInt("TileZ", (int) $this->blockIn->z);
 
-		$nbt->setByte("Facing", (int) $this->direction);
-		$nbt->setByte("Direction", (int) $this->direction); //Save both for full compatibility
+		$nbt->setByte("Facing", self::FACING_TO_DATA[$this->facing]);
+		$nbt->setByte("Direction", self::FACING_TO_DATA[$this->facing]); //Save both for full compatibility
 
 		$nbt->setString("Motive", $this->motive);
 
@@ -112,16 +124,14 @@ class Painting extends Entity{
 	}
 
 	protected function recalculateBoundingBox() : void{
-		$facing = Bearing::toFacing($this->direction);
-		$side = $this->blockIn->getSide($facing);
-		$this->boundingBox->setBB(self::getPaintingBB($facing, $this->getMotive())->offset($side->x, $side->y, $side->z));
+		$side = $this->blockIn->getSide($this->facing);
+		$this->boundingBox->setBB(self::getPaintingBB($this->facing, $this->getMotive())->offset($side->x, $side->y, $side->z));
 	}
 
 	public function onNearbyBlockChange() : void{
 		parent::onNearbyBlockChange();
 
-		$face = Bearing::toFacing($this->direction);
-		if(!self::canFit($this->world, $this->blockIn->getSide($face), $face, false, $this->getMotive())){
+		if(!self::canFit($this->world, $this->blockIn->getSide($this->facing), $this->facing, false, $this->getMotive())){
 			$this->kill();
 		}
 	}
@@ -146,7 +156,7 @@ class Painting extends Entity{
 			($this->boundingBox->minY + $this->boundingBox->maxY) / 2,
 			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
 		);
-		$pk->direction = $this->direction;
+		$pk->direction = self::FACING_TO_DATA[$this->facing];
 		$pk->title = $this->motive;
 
 		$player->sendDataPacket($pk);
@@ -160,8 +170,8 @@ class Painting extends Entity{
 		return PaintingMotive::getMotiveByName($this->motive);
 	}
 
-	public function getDirection() : int{
-		return $this->direction;
+	public function getFacing() : int{
+		return $this->facing;
 	}
 
 	/**

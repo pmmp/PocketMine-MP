@@ -1006,12 +1006,23 @@ abstract class Entity extends Location{
 		return false;
 	}
 
-	public function getDirection() : int{
-		return Bearing::fromAngle($this->yaw);
-	}
-
 	public function getHorizontalFacing() : int{
-		return Bearing::toFacing($this->getDirection());
+		$angle = $this->yaw % 360;
+		if($angle < 0){
+			$angle += 360.0;
+		}
+
+		if((0 <= $angle and $angle < 45) or (315 <= $angle and $angle < 360)){
+			return Facing::SOUTH;
+		}
+		if(45 <= $angle and $angle < 135){
+			return Facing::WEST;
+		}
+		if(135 <= $angle and $angle < 225){
+			return Facing::NORTH;
+		}
+
+		return Facing::EAST;
 	}
 
 	/**
