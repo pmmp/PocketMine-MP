@@ -39,7 +39,7 @@ class SlimeRandomDirectionBehavior extends Behavior{
 	}
 
 	public function canStart() : bool{
-		return $this->mob->getTargetEntity() == null and ($this->mob->onGround or $this->mob->isInsideOfWater() or $this->mob->isInsideOfLava());
+		return $this->mob->getTargetEntity() === null and ($this->mob->onGround or $this->mob->isInsideOfWater() or $this->mob->isInsideOfLava());
 	}
 
 	public function onTick() : void{

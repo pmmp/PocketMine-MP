@@ -1067,9 +1067,8 @@ abstract class Living extends Entity implements Damageable{
 	 * their heads to turn.
 	 *
 	 * @param Vector3 $target
-	 * @param bool    $onlyHead
 	 */
-	public function lookAt(Vector3 $target, bool $onlyHead = false) : void{
+	public function lookAt(Vector3 $target) : void{
 		$oldYaw = $this->yaw;
 		$horizontal = sqrt(($target->x - $this->x) ** 2 + ($target->z - $this->z) ** 2);
 		$vertical = $target->y - $this->y;
@@ -1080,13 +1079,6 @@ abstract class Living extends Entity implements Damageable{
 		$this->yaw = atan2($zDist, $xDist) / M_PI * 180 - 90;
 		if($this->yaw < 0){
 			$this->yaw += 360.0;
-		}
-
-		if($onlyHead){
-			$this->headYaw = $this->yaw;
-			$this->yaw = $oldYaw;
-		}else{
-			$this->headYaw = $this->yaw;
 		}
 	}
 

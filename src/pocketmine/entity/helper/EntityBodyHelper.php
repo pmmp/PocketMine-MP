@@ -65,7 +65,7 @@ class EntityBodyHelper{
 	}
 
 	private function computeAngleWithBound(float $angle1, float $angle2, float $angleMax) : float{
-		$f = $this->entity->wrapAngleTo180($angle1 - $angle2);
+		$f = EntityLookHelper::wrapAngleTo180($angle1 - $angle2);
 
 		if($f < -$angleMax){
 			$f = -$angleMax;

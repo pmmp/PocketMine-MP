@@ -50,7 +50,7 @@ class EntitySlimeMoveHelper extends EntityMoveHelper{
 	}
 
 	public function onUpdate() : void{
-		$this->entity->yaw = $this->limitAngle($this->entity->yaw, $this->targetYaw, 30.0);
+		$this->entity->yaw = EntityLookHelper::limitAngle($this->entity->yaw, $this->targetYaw, 30.0);
 		$this->entity->headYaw = $this->entity->yaw;
 		$this->entity->yawOffset = $this->entity->yaw;
 

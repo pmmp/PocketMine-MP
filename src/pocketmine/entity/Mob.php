@@ -426,17 +426,7 @@ abstract class Mob extends Living{
 	}
 
 	// TODO: move this to MathHelper class
-	public function wrapAngleTo180(float $angle) : float{
-		$angle %= 360;
-		if($angle > 180){
-			$angle -= 360;
-		}
-		if($angle < -180){
-			$angle += 360;
-		}
 
-		return $angle;
-	}
 
 	/**
 	 * @return Vector3
@@ -448,5 +438,23 @@ abstract class Mob extends Living{
 		$z = $xz * cos(deg2rad($this->headYaw));
 
 		return $this->temporalVector->setComponents($x, $y, $z)->normalize();
+	}
+
+	/**
+	 * @param Entity $entity
+	 * @param float  $dxz
+	 * @param float  $dy
+	 */
+	public function faceEntity(Entity $entity, float $dxz, float $dy) : void{
+		if($entity instanceof Living){
+			$d2 = $entity->y + $entity->getEyeHeight() - ($this->y + $this->getEyeHeight());
+		}else{
+			$d2 = ($entity->y + $entity->getBoundingBox()->maxY) / 2 - ($this->y + $this->getEyeHeight());
+		}
+
+		$this->lookAt(new Vector3($entity->x, $d2, $entity->z));
+
+		$this->yaw = EntityLookHelper::updateRotation($this->lastYaw, $this->yaw, $dxz);
+		$this->pitch = EntityLookHelper::updateRotation($this->lastPitch, $this->pitch, $dy);
 	}
 }

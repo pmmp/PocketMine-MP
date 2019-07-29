@@ -42,7 +42,7 @@ class SlimeAttackBehavior extends Behavior{
 	public function canStart() : bool{
 		$target = $this->mob->getTargetEntity();
 
-		return $target == null ? false : (!$target->isAlive() ? false : !($target instanceof Player) or !$target->isCreative());
+		return $target === null ? false : (!$target->isAlive() ? false : !($target instanceof Player) or !$target->isCreative());
 	}
 
 	public function onStart() : void{
@@ -56,7 +56,7 @@ class SlimeAttackBehavior extends Behavior{
 	public function onTick() : void{
 		$target = $this->mob->getTargetEntity();
 		if($target !== null){
-			$this->mob->getLookHelper()->setLookPositionWithEntity($target, 10, 10);
+			$this->mob->faceEntity($target, 10, 10);
 			$this->mob->getMoveHelper()->jumpWithYaw($this->mob->yaw, $this->mob->canDamagePlayer());
 		}
 	}

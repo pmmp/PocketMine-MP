@@ -62,7 +62,7 @@ class EntityMoveHelper{
 
 			if($d3 >= 0){
 				$f = atan2($d1, $d0) * 180 / pi() - 90;
-				$this->entity->yaw = $this->limitAngle($this->entity->yaw, $f, 30);
+				$this->entity->yaw = EntityLookHelper::limitAngle($this->entity->yaw, $f, 30);
 				$this->entity->setAIMoveSpeed($sf = $this->speedMultiplier * $this->entity->getMovementSpeed());
 				$this->entity->setMoveForward($sf);
 
@@ -73,27 +73,7 @@ class EntityMoveHelper{
 		}
 	}
 
-	protected function limitAngle(float $a, float $b, float $c){
-		$f = $this->entity->wrapAngleTo180($b - $a);
 
-		if($f > $c){
-			$f = $c;
-		}
-
-		if($f < -$c){
-			$f = -$c;
-		}
-
-		$f1 = $a + $f;
-
-		if($f1 < 0.0){
-			$f1 += 360.0;
-		}elseif($f1 > 360.0){
-			$f1 -= 360.0;
-		}
-
-		return $f1;
-	}
 
 	/**
 	 * @return float

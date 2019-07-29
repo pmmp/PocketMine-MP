@@ -68,12 +68,12 @@ class EntityLookHelper{
 			$f = (atan2($d2, $d0) * 180 / M_PI) - 90;
 			$f1 = -(atan2($d1, $d3) * 180 / M_PI);
 
-			$this->entity->pitch = $this->updateRotation($this->entity->pitch, $f1, $this->deltaLookPitch);
-			$this->entity->headYaw = $this->updateRotation($this->entity->headYaw, $f, $this->deltaLookYaw);
+			$this->entity->pitch = self::updateRotation($this->entity->pitch, $f1, $this->deltaLookPitch);
+			$this->entity->headYaw = self::updateRotation($this->entity->headYaw, $f, $this->deltaLookYaw);
 		}else{
 			$this->entity->headYaw = $this->updateRotation($this->entity->headYaw, $this->entity->yawOffset, 10);
 		}
-		$f2 = $this->entity->wrapAngleTo180($this->entity->headYaw - $this->entity->yawOffset);
+		$f2 = self::wrapAngleTo180($this->entity->headYaw - $this->entity->yawOffset);
 		if($this->entity->getNavigator()->isBusy()){
 			if($f2 < -75){
 				$this->entity->headYaw = $this->entity->yawOffset - 75;
@@ -84,8 +84,8 @@ class EntityLookHelper{
 		}
 	}
 
-	private function updateRotation($rot, $rot2, $rot3) : float{
-		$f = $this->entity->wrapAngleTo180($rot2 - $rot);
+	public static function updateRotation($rot, $rot2, $rot3) : float{
+		$f = self::wrapAngleTo180($rot2 - $rot);
 		if($f > $rot3){
 			$f = $rot3;
 		}
@@ -93,6 +93,40 @@ class EntityLookHelper{
 			$f = -$rot3;
 		}
 		return $rot + $f;
+	}
+
+	public static function wrapAngleTo180(float $angle) : float{
+		$angle %= 360;
+		if($angle > 180){
+			$angle -= 360;
+		}
+		if($angle < -180){
+			$angle += 360;
+		}
+
+		return $angle;
+	}
+
+	public static function limitAngle(float $a, float $b, float $c){
+		$f = self::wrapAngleTo180($b - $a);
+
+		if($f > $c){
+			$f = $c;
+		}
+
+		if($f < -$c){
+			$f = -$c;
+		}
+
+		$f1 = $a + $f;
+
+		if($f1 < 0){
+			$f1 += 360;
+		}elseif($f1 > 360){
+			$f1 -= 360;
+		}
+
+		return $f1;
 	}
 
 	public function isLooking() : bool{
