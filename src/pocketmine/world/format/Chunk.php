@@ -46,6 +46,10 @@ use function str_repeat;
 use function strlen;
 
 class Chunk{
+	public const DIRTY_FLAG_TERRAIN = 1 << 0;
+	public const DIRTY_FLAG_ENTITIES = 1 << 1;
+	public const DIRTY_FLAG_TILES = 1 << 2;
+	public const DIRTY_FLAG_BIOMES = 1 << 3;
 
 	public const MAX_SUBCHUNKS = 16;
 
@@ -54,8 +58,8 @@ class Chunk{
 	/** @var int */
 	protected $z;
 
-	/** @var bool */
-	protected $hasChanged = false;
+	/** @var int */
+	private $dirtyFlags = 0;
 
 	/** @var bool */
 	protected $lightPopulated = false;
@@ -189,7 +193,7 @@ class Chunk{
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
 		$this->getSubChunk($y >> 4, true)->setFullBlock($x, $y & 0xf, $z, $block);
-		$this->hasChanged = true;
+		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
 	/**
@@ -396,8 +400,8 @@ class Chunk{
 	 * @param int $biomeId 0-255
 	 */
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{
-		$this->hasChanged = true;
 		$this->biomeIds[($z << 4) | $x] = chr($biomeId & 0xff);
+		$this->dirtyFlags |= self::DIRTY_FLAG_BIOMES;
 	}
 
 	/**
@@ -451,7 +455,7 @@ class Chunk{
 		}
 		$this->entities[$entity->getId()] = $entity;
 		if(!($entity instanceof Player)){
-			$this->hasChanged = true;
+			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
 		}
 	}
 
@@ -461,7 +465,7 @@ class Chunk{
 	public function removeEntity(Entity $entity) : void{
 		unset($this->entities[$entity->getId()]);
 		if(!($entity instanceof Player)){
-			$this->hasChanged = true;
+			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
 		}
 	}
 
@@ -477,7 +481,7 @@ class Chunk{
 			$this->tiles[$index]->close();
 		}
 		$this->tiles[$index] = $tile;
-		$this->hasChanged = true;
+		$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
 	}
 
 	/**
@@ -485,7 +489,7 @@ class Chunk{
 	 */
 	public function removeTile(Tile $tile) : void{
 		unset($this->tiles[Chunk::blockHash($tile->x, $tile->y, $tile->z)]);
-		$this->hasChanged = true;
+		$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
 	}
 
 	/**
@@ -561,7 +565,7 @@ class Chunk{
 	 */
 	public function initChunk(World $world) : void{
 		if($this->NBTentities !== null){
-			$this->hasChanged = true;
+			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
 			$world->timings->syncChunkLoadEntitiesTimer->startTiming();
 			foreach($this->NBTentities as $nbt){
 				if($nbt instanceof CompoundTag){
@@ -582,7 +586,7 @@ class Chunk{
 			$world->timings->syncChunkLoadEntitiesTimer->stopTiming();
 		}
 		if($this->NBTtiles !== null){
-			$this->hasChanged = true;
+			$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
 			$world->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 			foreach($this->NBTtiles as $nbt){
 				if($nbt instanceof CompoundTag){
@@ -617,15 +621,35 @@ class Chunk{
 	/**
 	 * @return bool
 	 */
-	public function hasChanged() : bool{
-		return $this->hasChanged or !empty($this->tiles) or !empty($this->getSavableEntities());
+	public function isDirty() : bool{
+		return $this->dirtyFlags !== 0 or !empty($this->tiles) or !empty($this->getSavableEntities());
+	}
+
+	public function getDirtyFlag(int $flag) : bool{
+		return ($this->dirtyFlags & $flag) !== 0;
 	}
 
 	/**
-	 * @param bool $value
+	 * @return int
 	 */
-	public function setChanged(bool $value = true) : void{
-		$this->hasChanged = $value;
+	public function getDirtyFlags() : int{
+		return $this->dirtyFlags;
+	}
+
+	public function setDirtyFlag(int $flag, bool $value) : void{
+		if($value){
+			$this->dirtyFlags |= $flag;
+		}else{
+			$this->dirtyFlags &= ~$flag;
+		}
+	}
+
+	public function setDirty() : void{
+		$this->dirtyFlags = ~0;
+	}
+
+	public function clearDirtyFlags() : void{
+		$this->dirtyFlags = 0;
 	}
 
 	/**
@@ -664,7 +688,7 @@ class Chunk{
 		}else{
 			$this->subChunks[$y] = $subChunk;
 		}
-		$this->hasChanged = true;
+		$this->setDirtyFlag(self::DIRTY_FLAG_TERRAIN, true);
 		return true;
 	}
 

@@ -416,7 +416,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$chunk->setGenerated();
 		$chunk->setPopulated();
-		$chunk->setChanged($hasBeenUpgraded); //trigger rewriting chunk to disk if it was converted from an older format
+		if($hasBeenUpgraded){
+			$chunk->setDirty(); //trigger rewriting chunk to disk if it was converted from an older format
+		}
 
 		return $chunk;
 	}
@@ -431,45 +433,53 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$write = new \LevelDBWriteBatch();
 		$write->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
-		$subChunks = $chunk->getSubChunks();
-		foreach($subChunks as $y => $subChunk){
-			$key = $index . self::TAG_SUBCHUNK_PREFIX . chr($y);
-			if($subChunk->isEmpty(false)){ //MCPE doesn't save light anymore as of 1.1
-				$write->delete($key);
-			}else{
-				$subStream = new BinaryStream();
-				$subStream->putByte(self::CURRENT_LEVEL_SUBCHUNK_VERSION);
+		if($chunk->getDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN)){
+			$subChunks = $chunk->getSubChunks();
+			foreach($subChunks as $y => $subChunk){
+				$key = $index . self::TAG_SUBCHUNK_PREFIX . chr($y);
+				if($subChunk->isEmpty(false)){ //MCPE doesn't save light anymore as of 1.1
+					$write->delete($key);
+				}else{
+					$subStream = new BinaryStream();
+					$subStream->putByte(self::CURRENT_LEVEL_SUBCHUNK_VERSION);
 
-				$layers = $subChunk->getBlockLayers();
-				$subStream->putByte(count($layers));
-				foreach($layers as $blocks){
-					$subStream->putByte($blocks->getBitsPerBlock() << 1);
-					$subStream->put($blocks->getWordArray());
+					$layers = $subChunk->getBlockLayers();
+					$subStream->putByte(count($layers));
+					foreach($layers as $blocks){
+						$subStream->putByte($blocks->getBitsPerBlock() << 1);
+						$subStream->put($blocks->getWordArray());
 
-					$palette = $blocks->getPalette();
-					$subStream->putLInt(count($palette));
-					$tags = [];
-					foreach($palette as $p){
-						$tags[] = new TreeRoot(CompoundTag::create()
-							->setString("name", $idMap[$p >> 4] ?? "minecraft:info_update")
-							->setInt("oldid", $p >> 4) //PM only (debugging), vanilla doesn't have this
-							->setShort("val", $p & 0xf));
+						$palette = $blocks->getPalette();
+						$subStream->putLInt(count($palette));
+						$tags = [];
+						foreach($palette as $p){
+							$tags[] = new TreeRoot(CompoundTag::create()
+								->setString("name", $idMap[$p >> 4] ?? "minecraft:info_update")
+								->setInt("oldid", $p >> 4) //PM only (debugging), vanilla doesn't have this
+								->setShort("val", $p & 0xf));
+						}
+
+						$subStream->put((new LittleEndianNbtSerializer())->writeMultiple($tags));
 					}
 
-					$subStream->put((new LittleEndianNbtSerializer())->writeMultiple($tags));
+					$write->put($key, $subStream->getBuffer());
 				}
-
-				$write->put($key, $subStream->getBuffer());
 			}
 		}
 
-		$write->put($index . self::TAG_DATA_2D, str_repeat("\x00", 512) . $chunk->getBiomeIdArray());
+		if($chunk->getDirtyFlag(Chunk::DIRTY_FLAG_BIOMES)){
+			$write->put($index . self::TAG_DATA_2D, str_repeat("\x00", 512) . $chunk->getBiomeIdArray());
+		}
 
 		//TODO: use this properly
 		$write->put($index . self::TAG_STATE_FINALISATION, chr(self::FINALISATION_DONE));
 
-		$this->writeTags($chunk->getNBTtiles(), $index . self::TAG_BLOCK_ENTITY, $write);
-		$this->writeTags($chunk->getNBTentities(), $index . self::TAG_ENTITY, $write);
+		if($chunk->getDirtyFlag(Chunk::DIRTY_FLAG_TILES)){
+			$this->writeTags($chunk->getNBTtiles(), $index . self::TAG_BLOCK_ENTITY, $write);
+		}
+		if($chunk->getDirtyFlag(Chunk::DIRTY_FLAG_ENTITIES)){
+			$this->writeTags($chunk->getNBTentities(), $index . self::TAG_ENTITY, $write);
+		}
 
 		$write->delete($index . self::TAG_DATA_2D_LEGACY);
 		$write->delete($index . self::TAG_LEGACY_TERRAIN);

@@ -1042,9 +1042,9 @@ class World implements ChunkManager{
 		$this->timings->syncChunkSaveTimer->startTiming();
 		try{
 			foreach($this->chunks as $chunk){
-				if($chunk->hasChanged() and $chunk->isGenerated()){
+				if($chunk->isDirty() and $chunk->isGenerated()){
 					$this->provider->saveChunk($chunk);
-					$chunk->setChanged(false);
+					$chunk->clearDirtyFlags();
 				}
 			}
 		}finally{
@@ -2215,7 +2215,7 @@ class World implements ChunkManager{
 
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
-		$chunk->setChanged();
+		$chunk->setDirty();
 
 		if(!$this->isChunkInUse($chunkX, $chunkZ)){
 			$this->unloadChunkRequest($chunkX, $chunkZ);
@@ -2505,7 +2505,7 @@ class World implements ChunkManager{
 				return false;
 			}
 
-			if($trySave and $this->getAutoSave() and $chunk->isGenerated() and $chunk->hasChanged()){
+			if($trySave and $this->getAutoSave() and $chunk->isGenerated() and $chunk->isDirty()){
 				$this->timings->syncChunkSaveTimer->startTiming();
 				try{
 					$this->provider->saveChunk($chunk);
