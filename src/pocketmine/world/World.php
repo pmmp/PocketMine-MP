@@ -1826,6 +1826,9 @@ class World implements ChunkManager{
 
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($z = $minZ; $z <= $maxZ; ++$z){
+					if(!$this->isChunkLoaded($x, $z)){
+						continue;
+					}
 					foreach($this->getChunkEntities($x, $z) as $ent){
 						/** @var Entity|null $entity */
 						if($ent->canBeCollidedWith() and ($entity === null or ($ent !== $entity and $entity->canCollideWith($ent))) and $ent->boundingBox->intersectsWith($bb)){
@@ -1857,6 +1860,9 @@ class World implements ChunkManager{
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
+				if(!$this->isChunkLoaded($x, $z)){
+					continue;
+				}
 				foreach($this->getChunkEntities($x, $z) as $ent){
 					if($ent !== $entity and $ent->boundingBox->intersectsWith($bb)){
 						$nearby[] = $ent;
@@ -1893,6 +1899,9 @@ class World implements ChunkManager{
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
+				if(!$this->isChunkLoaded($x, $z)){
+					continue;
+				}
 				foreach($this->getChunkEntities($x, $z) as $entity){
 					if(!($entity instanceof $entityType) or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
 						continue;
