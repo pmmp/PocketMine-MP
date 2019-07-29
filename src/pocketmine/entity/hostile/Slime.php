@@ -134,8 +134,6 @@ class Slime extends Monster{
 
 		$hasUpdate = parent::onUpdate($currentTick);
 
-		$this->setNameTag("" . intval($this->onGround) . "-" . intval($this->wasOnGround));
-
 		// TODO: Find data property or entity event for squish factor
 
 		if(!$this->isImmobile()){
