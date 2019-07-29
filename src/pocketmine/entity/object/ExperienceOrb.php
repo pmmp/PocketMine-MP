@@ -232,6 +232,6 @@ class ExperienceOrb extends Entity{
 	protected function syncNetworkData() : void{
 		parent::syncNetworkData();
 
-		$this->propertyManager->setInt(EntityMetadataProperties::EXPERIENCE_VALUE, $this->xpValue);
+		$this->networkProperties->setInt(EntityMetadataProperties::EXPERIENCE_VALUE, $this->xpValue);
 	}
 }

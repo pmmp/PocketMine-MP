@@ -2364,10 +2364,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected function syncNetworkData() : void{
 		parent::syncNetworkData();
 
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::ACTION, $this->startAction > -1);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::ACTION, $this->startAction > -1);
 
-		$this->propertyManager->setPlayerFlag(PlayerMetadataFlags::SLEEP, $this->sleeping !== null);
-		$this->propertyManager->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping ?? new Vector3(0, 0, 0));
+		$this->networkProperties->setPlayerFlag(PlayerMetadataFlags::SLEEP, $this->sleeping !== null);
+		$this->networkProperties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping ?? new Vector3(0, 0, 0));
 	}
 
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{

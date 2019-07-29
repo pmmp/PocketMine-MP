@@ -181,7 +181,7 @@ class SplashPotion extends Throwable{
 	protected function syncNetworkData() : void{
 		parent::syncNetworkData();
 
-		$this->propertyManager->setShort(EntityMetadataProperties::POTION_AUX_VALUE, $this->potionId);
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::LINGER, $this->linger);
+		$this->networkProperties->setShort(EntityMetadataProperties::POTION_AUX_VALUE, $this->potionId);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::LINGER, $this->linger);
 	}
 }

@@ -206,6 +206,6 @@ class Arrow extends Projectile{
 	protected function syncNetworkData() : void{
 		parent::syncNetworkData();
 
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::CRITICAL, $this->critical);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::CRITICAL, $this->critical);
 	}
 }

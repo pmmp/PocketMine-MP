@@ -140,6 +140,6 @@ class FallingBlock extends Entity{
 	protected function syncNetworkData() : void{
 		parent::syncNetworkData();
 
-		$this->propertyManager->setInt(EntityMetadataProperties::VARIANT, $this->block->getRuntimeId());
+		$this->networkProperties->setInt(EntityMetadataProperties::VARIANT, $this->block->getRuntimeId());
 	}
 }

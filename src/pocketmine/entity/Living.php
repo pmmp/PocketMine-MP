@@ -770,12 +770,12 @@ abstract class Living extends Entity{
 	protected function syncNetworkData() : void{
 		parent::syncNetworkData();
 
-		$this->propertyManager->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
-		$this->propertyManager->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectManager->getBubbleColor()->toARGB()));
-		$this->propertyManager->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
-		$this->propertyManager->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
+		$this->networkProperties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
+		$this->networkProperties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectManager->getBubbleColor()->toARGB()));
+		$this->networkProperties->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
+		$this->networkProperties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
 
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
 	}
 
 	protected function onDispose() : void{

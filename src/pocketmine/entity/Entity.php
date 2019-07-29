@@ -93,7 +93,7 @@ abstract class Entity extends Location{
 	protected $id;
 
 	/** @var EntityMetadataCollection */
-	protected $propertyManager;
+	protected $networkProperties;
 
 	/** @var Chunk|null */
 	public $chunk;
@@ -261,7 +261,7 @@ abstract class Entity extends Location{
 
 		$this->resetLastMovements();
 
-		$this->propertyManager = new EntityMetadataCollection();
+		$this->networkProperties = new EntityMetadataCollection();
 
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
@@ -709,8 +709,8 @@ abstract class Entity extends Location{
 		return $this->attributeMap;
 	}
 
-	public function getDataPropertyManager() : EntityMetadataCollection{
-		return $this->propertyManager;
+	public function getNetworkProperties() : EntityMetadataCollection{
+		return $this->networkProperties;
 	}
 
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
@@ -721,7 +721,7 @@ abstract class Entity extends Location{
 		$changedProperties = $this->getSyncedNetworkData(true);
 		if(!empty($changedProperties)){
 			$this->sendData($this->hasSpawned, $changedProperties);
-			$this->propertyManager->clearDirtyProperties();
+			$this->networkProperties->clearDirtyProperties();
 		}
 
 		$hasUpdate = false;
@@ -1755,29 +1755,29 @@ abstract class Entity extends Location{
 	final protected function getSyncedNetworkData(bool $dirtyOnly) : array{
 		$this->syncNetworkData();
 
-		return $dirtyOnly ? $this->propertyManager->getDirty() : $this->propertyManager->getAll();
+		return $dirtyOnly ? $this->networkProperties->getDirty() : $this->networkProperties->getAll();
 	}
 
 	protected function syncNetworkData() : void{
-		$this->propertyManager->setByte(EntityMetadataProperties::ALWAYS_SHOW_NAMETAG, $this->alwaysShowNameTag ? 1 : 0);
-		$this->propertyManager->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->height);
-		$this->propertyManager->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->width);
-		$this->propertyManager->setFloat(EntityMetadataProperties::SCALE, $this->scale);
-		$this->propertyManager->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
-		$this->propertyManager->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);
-		$this->propertyManager->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? -1);
-		$this->propertyManager->setString(EntityMetadataProperties::NAMETAG, $this->nameTag);
-		$this->propertyManager->setString(EntityMetadataProperties::SCORE_TAG, $this->scoreTag);
+		$this->networkProperties->setByte(EntityMetadataProperties::ALWAYS_SHOW_NAMETAG, $this->alwaysShowNameTag ? 1 : 0);
+		$this->networkProperties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->height);
+		$this->networkProperties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->width);
+		$this->networkProperties->setFloat(EntityMetadataProperties::SCALE, $this->scale);
+		$this->networkProperties->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
+		$this->networkProperties->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);
+		$this->networkProperties->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? -1);
+		$this->networkProperties->setString(EntityMetadataProperties::NAMETAG, $this->nameTag);
+		$this->networkProperties->setString(EntityMetadataProperties::SCORE_TAG, $this->scoreTag);
 
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::AFFECTED_BY_GRAVITY, true);
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::CAN_CLIMB, $this->canClimb);
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::CAN_SHOW_NAMETAG, $this->nameTagVisible);
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, true);
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::IMMOBILE, $this->immobile);
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::INVISIBLE, $this->invisible);
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::ONFIRE, $this->isOnFire());
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::WALLCLIMBING, $this->canClimbWalls);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::AFFECTED_BY_GRAVITY, true);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::CAN_CLIMB, $this->canClimb);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::CAN_SHOW_NAMETAG, $this->nameTagVisible);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, true);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::IMMOBILE, $this->immobile);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::INVISIBLE, $this->invisible);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::ONFIRE, $this->isOnFire());
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::WALLCLIMBING, $this->canClimbWalls);
 	}
 
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{

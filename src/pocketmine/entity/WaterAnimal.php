@@ -45,6 +45,6 @@ abstract class WaterAnimal extends Living implements Ageable{
 
 	protected function syncNetworkData() : void{
 		parent::syncNetworkData();
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
 	}
 }

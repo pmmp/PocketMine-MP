@@ -111,7 +111,7 @@ class PrimedTNT extends Entity implements Explosive{
 	protected function syncNetworkData() : void{
 		parent::syncNetworkData();
 
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::IGNITED, true);
-		$this->propertyManager->setInt(EntityMetadataProperties::FUSE_LENGTH, $this->fuse);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::IGNITED, true);
+		$this->networkProperties->setInt(EntityMetadataProperties::FUSE_LENGTH, $this->fuse);
 	}
 }

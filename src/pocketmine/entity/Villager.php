@@ -88,8 +88,8 @@ class Villager extends Living implements Ageable{
 
 	protected function syncNetworkData() : void{
 		parent::syncNetworkData();
-		$this->propertyManager->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
 
-		$this->propertyManager->setInt(EntityMetadataProperties::VARIANT, $this->profession);
+		$this->networkProperties->setInt(EntityMetadataProperties::VARIANT, $this->profession);
 	}
 }
