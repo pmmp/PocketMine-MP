@@ -1629,9 +1629,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->motion->y *= $friction;
 		}
 
-		if(!$this->onGround or $this->forceMovementUpdate){
-			$this->applyGravity();
-		}
+		$this->applyGravity();
 
 		if(!$this->applyDragBeforeGravity()){
 			$this->motion->y *= $friction;

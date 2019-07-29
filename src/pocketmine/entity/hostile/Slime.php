@@ -85,7 +85,7 @@ class Slime extends Monster{
 		}else{
 			$i = $this->random->nextBoundedInt(3);
 
-			if($i < 2 and $this->random->nextFloat() < 0.5 * $this->level->getDifficulty()){
+			if($i < 2 and $this->random->nextFloat() < 0.5){
 				$i++;
 			}
 
@@ -130,13 +130,15 @@ class Slime extends Monster{
 		return Particle::TYPE_SLIME;
 	}
 
-	public function onBehaviorUpdate() : void{
+	public function onUpdate(int $currentTick) : bool{
 		$this->squishFactor += ($this->squishAmount - $this->squishFactor) * 0.5;
 		$this->prevSquishFactor = $this->squishFactor;
 
-		parent::onBehaviorUpdate();
+		$hasUpdate = parent::onUpdate($currentTick);
 
 		$this->setNameTag("" . intval($this->onGround) . "-" . intval($this->wasOnGround));
+
+		// TODO: Find data property or entity event for squish factor
 
 		if(!$this->isImmobile()){
 			if($this->onGround and !$this->wasOnGround){
@@ -164,6 +166,8 @@ class Slime extends Monster{
 		$this->wasOnGround = $this->onGround;
 
 		$this->alterSquishAmount();
+
+		return $hasUpdate;
 	}
 
 	protected function alterSquishAmount() : void{
