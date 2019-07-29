@@ -24,8 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use Ds\Deque;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 
 abstract class WritableBookBase extends Item{
 	public const TAG_PAGES = "pages"; //TAG_List<TAG_Compound>
@@ -171,9 +173,16 @@ abstract class WritableBookBase extends Item{
 
 		$pages = $tag->getListTag(self::TAG_PAGES);
 		if($pages !== null){
-			/** @var CompoundTag $page */
-			foreach($pages as $page){
-				$this->pages->push(new WritableBookPage($page->getString(self::TAG_PAGE_TEXT), $page->getString(self::TAG_PAGE_PHOTONAME, "")));
+			if($pages->getTagType() === NBT::TAG_Compound){ //PE format
+				/** @var CompoundTag $page */
+				foreach($pages as $page){
+					$this->pages->push(new WritableBookPage($page->getString(self::TAG_PAGE_TEXT), $page->getString(self::TAG_PAGE_PHOTONAME, "")));
+				}
+			}elseif($pages->getTagType() === NBT::TAG_String){ //PC format
+				/** @var StringTag $page */
+				foreach($pages as $page){
+					$this->pages->push(new WritableBookPage($page->getValue()));
+				}
 			}
 		}
 	}
