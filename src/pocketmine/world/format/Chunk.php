@@ -618,7 +618,7 @@ class Chunk{
 	 * @return bool
 	 */
 	public function hasChanged() : bool{
-		return $this->hasChanged;
+		return $this->hasChanged or !empty($this->tiles) or !empty($this->getSavableEntities());
 	}
 
 	/**
