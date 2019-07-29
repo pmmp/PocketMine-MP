@@ -24,10 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Comparator;
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -56,13 +55,13 @@ class RedstoneComparator extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
 		$this->isSubtractMode = ($stateMeta & BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_SUBTRACT) !== 0;
 		$this->powered = ($id === $this->idInfo->getSecondId() or ($stateMeta & BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_POWERED) !== 0);
 	}
 
 	public function writeStateToMeta() : int{
-		return Bearing::fromFacing($this->facing) |
+		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
 			($this->isSubtractMode ? BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_SUBTRACT : 0) |
 			($this->powered ? BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_POWERED : 0);
 	}

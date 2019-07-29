@@ -23,10 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -55,7 +54,7 @@ class Door extends Transparent{
 				($this->powered ? BlockLegacyMetadata::DOOR_TOP_FLAG_POWERED : 0);
 		}
 
-		return Bearing::fromFacing(Facing::rotateY($this->facing, true)) | ($this->open ? BlockLegacyMetadata::DOOR_BOTTOM_FLAG_OPEN : 0);
+		return BlockDataSerializer::writeLegacyHorizontalFacing(Facing::rotateY($this->facing, true)) | ($this->open ? BlockLegacyMetadata::DOOR_BOTTOM_FLAG_OPEN : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
@@ -64,7 +63,7 @@ class Door extends Transparent{
 			$this->hingeRight = ($stateMeta & BlockLegacyMetadata::DOOR_TOP_FLAG_RIGHT) !== 0;
 			$this->powered = ($stateMeta & BlockLegacyMetadata::DOOR_TOP_FLAG_POWERED) !== 0;
 		}else{
-			$this->facing = Facing::rotateY(BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03), false);
+			$this->facing = Facing::rotateY(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03), false);
 			$this->open = ($stateMeta & BlockLegacyMetadata::DOOR_BOTTOM_FLAG_OPEN) !== 0;
 		}
 	}

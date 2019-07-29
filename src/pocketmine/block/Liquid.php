@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
@@ -74,7 +74,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->decay = BlockDataValidator::readBoundedInt("decay", $stateMeta & 0x07, 0, 7);
+		$this->decay = BlockDataSerializer::readBoundedInt("decay", $stateMeta & 0x07, 0, 7);
 		$this->falling = ($stateMeta & BlockLegacyMetadata::LIQUID_FLAG_FALLING) !== 0;
 		$this->still = $id === $this->idInfo->getSecondId();
 	}

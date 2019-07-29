@@ -23,10 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -46,13 +45,13 @@ class FenceGate extends Transparent{
 	}
 
 	protected function writeStateToMeta() : int{
-		return Bearing::fromFacing($this->facing) |
+		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
 			($this->open ? BlockLegacyMetadata::FENCE_GATE_FLAG_OPEN : 0) |
 			($this->inWall ? BlockLegacyMetadata::FENCE_GATE_FLAG_IN_WALL : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
 		$this->open = ($stateMeta & BlockLegacyMetadata::FENCE_GATE_FLAG_OPEN) !== 0;
 		$this->inWall = ($stateMeta & BlockLegacyMetadata::FENCE_GATE_FLAG_IN_WALL) !== 0;
 	}

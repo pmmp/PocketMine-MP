@@ -23,14 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -47,11 +46,11 @@ class Anvil extends Transparent implements Fallable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return Bearing::fromFacing($this->facing);
+		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta);
+		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta);
 	}
 
 	public function getStateBitmask() : int{

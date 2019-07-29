@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 
 class RedstoneWire extends Flowable{
 
@@ -35,7 +35,7 @@ class RedstoneWire extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->power = BlockDataValidator::readBoundedInt("power", $stateMeta, 0, 15);
+		$this->power = BlockDataSerializer::readBoundedInt("power", $stateMeta, 0, 15);
 	}
 
 	protected function writeStateToMeta() : int{

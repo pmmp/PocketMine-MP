@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -57,7 +57,7 @@ class DaylightSensor extends Transparent{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->power = BlockDataValidator::readBoundedInt("power", $stateMeta, 0, 15);
+		$this->power = BlockDataSerializer::readBoundedInt("power", $stateMeta, 0, 15);
 		$this->inverted = $id === $this->idInfo->getSecondId();
 	}
 

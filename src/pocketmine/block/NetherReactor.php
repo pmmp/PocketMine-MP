@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
@@ -42,7 +42,7 @@ class NetherReactor extends Opaque{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->state = BlockDataValidator::readBoundedInt("state", $stateMeta, 0, 2);
+		$this->state = BlockDataSerializer::readBoundedInt("state", $stateMeta, 0, 2);
 	}
 
 	public function getStateBitmask() : int{

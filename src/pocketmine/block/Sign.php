@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Sign as TileSign;
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SignText;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Item;
@@ -71,12 +71,12 @@ class Sign extends Transparent{
 		if($this->facing === Facing::UP){
 			return $this->rotation;
 		}
-		return $this->facing;
+		return BlockDataSerializer::writeHorizontalFacing($this->facing);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		if($id === $this->idInfo->getSecondId()){
-			$this->facing = BlockDataValidator::readHorizontalFacing($stateMeta);
+			$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
 		}else{
 			$this->facing = Facing::UP;
 			$this->rotation = $stateMeta;

@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Skull as TileSkull;
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SkullType;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -54,11 +54,11 @@ class Skull extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->facing;
+		return $this->facing === Facing::UP ? 1 : BlockDataSerializer::writeHorizontalFacing($this->facing);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = $stateMeta === 1 ? Facing::UP : BlockDataValidator::readHorizontalFacing($stateMeta);
+		$this->facing = $stateMeta === 1 ? Facing::UP : BlockDataSerializer::readHorizontalFacing($stateMeta);
 	}
 
 	public function getStateBitmask() : int{

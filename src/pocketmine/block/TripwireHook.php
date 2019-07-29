@@ -23,9 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
-use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -45,13 +44,13 @@ class TripwireHook extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return Bearing::fromFacing($this->facing) |
+		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
 			($this->connected ? BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_CONNECTED : 0) |
 			($this->powered ? BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_POWERED : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
 		$this->connected = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_CONNECTED) !== 0;
 		$this->powered = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_POWERED) !== 0;
 	}

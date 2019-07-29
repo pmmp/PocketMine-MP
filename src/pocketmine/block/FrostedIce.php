@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use function max;
 use function mt_rand;
 
@@ -37,7 +37,7 @@ class FrostedIce extends Ice{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataValidator::readBoundedInt("age", $stateMeta, 0, 3);
+		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 3);
 	}
 
 	protected function writeStateToMeta() : int{

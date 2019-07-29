@@ -23,10 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -44,11 +43,11 @@ class EndPortalFrame extends Opaque{
 	}
 
 	protected function writeStateToMeta() : int{
-		return Bearing::fromFacing($this->facing) | ($this->eye ? BlockLegacyMetadata::END_PORTAL_FRAME_FLAG_EYE : 0);
+		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->eye ? BlockLegacyMetadata::END_PORTAL_FRAME_FLAG_EYE : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
 		$this->eye = ($stateMeta & BlockLegacyMetadata::END_PORTAL_FRAME_FLAG_EYE) !== 0;
 	}
 

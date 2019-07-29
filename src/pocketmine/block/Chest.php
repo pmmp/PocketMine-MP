@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -42,11 +42,11 @@ class Chest extends Transparent{
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->facing;
+		return BlockDataSerializer::writeHorizontalFacing($this->facing);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::readHorizontalFacing($stateMeta);
+		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
 	}
 
 	public function getStateBitmask() : int{

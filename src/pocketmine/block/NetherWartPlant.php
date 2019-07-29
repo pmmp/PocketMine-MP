@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -47,7 +47,7 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataValidator::readBoundedInt("age", $stateMeta, 0, 3);
+		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 3);
 	}
 
 	public function getStateBitmask() : int{

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -41,10 +41,12 @@ class EndRod extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		if(Facing::axis($this->facing) === Facing::AXIS_Y){
-			return $this->facing;
+		$result = BlockDataSerializer::writeFacing($this->facing);
+		if(Facing::axis($this->facing) !== Facing::AXIS_Y){
+			$result ^= 1; //TODO: in PC this is always the same as facing, just PE is stupid
 		}
-		return $this->facing ^ 1; //TODO: in PC this is always the same as facing, just PE is stupid
+
+		return $result;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
@@ -52,7 +54,7 @@ class EndRod extends Flowable{
 			$stateMeta ^= 1;
 		}
 
-		$this->facing = BlockDataValidator::readFacing($stateMeta);
+		$this->facing = BlockDataSerializer::readFacing($stateMeta);
 	}
 
 	public function getStateBitmask() : int{

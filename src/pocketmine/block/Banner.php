@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use Ds\Deque;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPattern;
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
@@ -77,12 +77,12 @@ class Banner extends Transparent{
 		if($this->facing === Facing::UP){
 			return $this->rotation;
 		}
-		return $this->facing;
+		return BlockDataSerializer::writeHorizontalFacing($this->facing);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		if($id === $this->idInfo->getSecondId()){
-			$this->facing = BlockDataValidator::readHorizontalFacing($stateMeta);
+			$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
 		}else{
 			$this->facing = Facing::UP;
 			$this->rotation = $stateMeta;

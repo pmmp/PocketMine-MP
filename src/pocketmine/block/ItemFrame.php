@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -51,11 +51,11 @@ class ItemFrame extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return (5 - $this->facing) | ($this->hasMap ? BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP : 0);
+		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->hasMap ? BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::read5MinusHorizontalFacing($stateMeta);
+		$this->facing = BlockDataSerializer::read5MinusHorizontalFacing($stateMeta);
 		$this->hasMap = ($stateMeta & BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP) !== 0;
 	}
 

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -40,12 +40,12 @@ abstract class Button extends Flowable{
 	protected $powered = false;
 
 	protected function writeStateToMeta() : int{
-		return $this->facing | ($this->powered ? BlockLegacyMetadata::BUTTON_FLAG_POWERED : 0);
+		return BlockDataSerializer::writeFacing($this->facing) | ($this->powered ? BlockLegacyMetadata::BUTTON_FLAG_POWERED : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		//TODO: in PC it's (6 - facing) for every meta except 0 (down)
-		$this->facing = BlockDataValidator::readFacing($stateMeta & 0x07);
+		$this->facing = BlockDataSerializer::readFacing($stateMeta & 0x07);
 		$this->powered = ($stateMeta & BlockLegacyMetadata::BUTTON_FLAG_POWERED) !== 0;
 	}
 

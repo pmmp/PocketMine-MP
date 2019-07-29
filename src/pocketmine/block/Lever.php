@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -54,7 +54,7 @@ class Lever extends Flowable{
 		}elseif($this->position === self::TOP){
 			$rotationMeta = Facing::axis($this->facing) === Facing::AXIS_Z ? 5 : 6;
 		}else{
-			$rotationMeta = 6 - $this->facing;
+			$rotationMeta = 6 - BlockDataSerializer::writeHorizontalFacing($this->facing);
 		}
 		return $rotationMeta | ($this->powered ? BlockLegacyMetadata::LEVER_FLAG_POWERED : 0);
 	}
@@ -69,7 +69,7 @@ class Lever extends Flowable{
 			$this->facing = $rotationMeta === 7 ? Facing::SOUTH : Facing::EAST;
 		}else{
 			$this->position = self::SIDE;
-			$this->facing = BlockDataValidator::readHorizontalFacing(6 - $rotationMeta);
+			$this->facing = BlockDataSerializer::readHorizontalFacing(6 - $rotationMeta);
 		}
 
 		$this->powered = ($stateMeta & BlockLegacyMetadata::LEVER_FLAG_POWERED) !== 0;

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\item\Item;
@@ -52,7 +52,7 @@ class SnowLayer extends Flowable implements Fallable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->layers = BlockDataValidator::readBoundedInt("layers", $stateMeta + 1, 1, 8);
+		$this->layers = BlockDataSerializer::readBoundedInt("layers", $stateMeta + 1, 1, 8);
 	}
 
 	public function getStateBitmask() : int{

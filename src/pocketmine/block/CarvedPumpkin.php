@@ -23,9 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
-use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -37,11 +36,11 @@ class CarvedPumpkin extends Opaque{
 	protected $facing = Facing::NORTH;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
 	}
 
 	protected function writeStateToMeta() : int{
-		return Bearing::fromFacing($this->facing);
+		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing);
 	}
 
 	public function getStateBitmask() : int{

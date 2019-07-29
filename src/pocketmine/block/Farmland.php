@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -42,7 +42,7 @@ class Farmland extends Transparent{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->wetness = BlockDataValidator::readBoundedInt("wetness", $stateMeta, 0, 7);
+		$this->wetness = BlockDataSerializer::readBoundedInt("wetness", $stateMeta, 0, 7);
 	}
 
 	public function getStateBitmask() : int{

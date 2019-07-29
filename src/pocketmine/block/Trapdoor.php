@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -42,13 +42,13 @@ class Trapdoor extends Transparent{
 	protected $top = false;
 
 	protected function writeStateToMeta() : int{
-		return (5 - $this->facing) | ($this->top ? BlockLegacyMetadata::TRAPDOOR_FLAG_UPPER : 0) | ($this->open ? BlockLegacyMetadata::TRAPDOOR_FLAG_OPEN : 0);
+		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->top ? BlockLegacyMetadata::TRAPDOOR_FLAG_UPPER : 0) | ($this->open ? BlockLegacyMetadata::TRAPDOOR_FLAG_OPEN : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		//TODO: in PC the values are reversed (facing - 2)
 
-		$this->facing = BlockDataValidator::read5MinusHorizontalFacing($stateMeta);
+		$this->facing = BlockDataSerializer::read5MinusHorizontalFacing($stateMeta);
 		$this->top = ($stateMeta & BlockLegacyMetadata::TRAPDOOR_FLAG_UPPER) !== 0;
 		$this->open = ($stateMeta & BlockLegacyMetadata::TRAPDOOR_FLAG_OPEN) !== 0;
 	}

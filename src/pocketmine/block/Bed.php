@@ -24,14 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Bed as TileBed;
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\item\Bed as ItemBed;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -56,13 +55,13 @@ class Bed extends Transparent{
 	}
 
 	protected function writeStateToMeta() : int{
-		return Bearing::fromFacing($this->facing) |
+		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
 			($this->occupied ? BlockLegacyMetadata::BED_FLAG_OCCUPIED : 0) |
 			($this->head ? BlockLegacyMetadata::BED_FLAG_HEAD : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
 		$this->occupied = ($stateMeta & BlockLegacyMetadata::BED_FLAG_OCCUPIED) !== 0;
 		$this->head = ($stateMeta & BlockLegacyMetadata::BED_FLAG_HEAD) !== 0;
 	}

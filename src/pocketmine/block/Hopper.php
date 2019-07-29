@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Hopper as TileHopper;
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -41,7 +41,7 @@ class Hopper extends Transparent{
 	private $powered = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$facing = BlockDataValidator::readFacing($stateMeta & 0x07);
+		$facing = BlockDataSerializer::readFacing($stateMeta & 0x07);
 		if($facing === Facing::UP){
 			throw new InvalidBlockStateException("Hopper may not face upward");
 		}
@@ -50,7 +50,7 @@ class Hopper extends Transparent{
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->facing | ($this->powered ? BlockLegacyMetadata::HOPPER_FLAG_POWERED : 0);
+		return BlockDataSerializer::writeFacing($this->facing) | ($this->powered ? BlockLegacyMetadata::HOPPER_FLAG_POWERED : 0);
 	}
 
 	public function getStateBitmask() : int{

@@ -23,13 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\TreeType;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Bearing;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -48,12 +47,12 @@ class CocoaBlock extends Transparent{
 	}
 
 	protected function writeStateToMeta() : int{
-		return Bearing::fromFacing(Facing::opposite($this->facing)) | ($this->age << 2);
+		return BlockDataSerializer::writeLegacyHorizontalFacing(Facing::opposite($this->facing)) | ($this->age << 2);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = Facing::opposite(BlockDataValidator::readLegacyHorizontalFacing($stateMeta & 0x03));
-		$this->age = BlockDataValidator::readBoundedInt("age", $stateMeta >> 2, 0, 2);
+		$this->facing = Facing::opposite(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03));
+		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta >> 2, 0, 2);
 	}
 
 	public function getStateBitmask() : int{

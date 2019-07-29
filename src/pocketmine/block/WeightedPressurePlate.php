@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataValidator;
+use pocketmine\block\utils\BlockDataSerializer;
 
 abstract class WeightedPressurePlate extends PressurePlate{
 
@@ -35,7 +35,7 @@ abstract class WeightedPressurePlate extends PressurePlate{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->power = BlockDataValidator::readBoundedInt("power", $stateMeta, 0, 15);
+		$this->power = BlockDataSerializer::readBoundedInt("power", $stateMeta, 0, 15);
 	}
 
 	public function getStateBitmask() : int{
