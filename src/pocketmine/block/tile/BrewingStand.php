@@ -38,7 +38,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 	private const TAG_BREW_TIME = "BrewTime"; //TAG_Short
 	private const TAG_BREW_TIME_PE = "CookTime"; //TAG_Short
 	private const TAG_MAX_FUEL_TIME = "FuelTotal"; //TAG_Short
-	private const TAG_REMAINING_FUEL_TIME = "Fuel"; //TAG_Short
+	private const TAG_REMAINING_FUEL_TIME = "Fuel"; //TAG_Byte
 	private const TAG_REMAINING_FUEL_TIME_PE = "FuelAmount"; //TAG_Short
 
 	/** @var BrewingStandInventory */
@@ -66,7 +66,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 
 		$this->brewTime = $nbt->getShort(self::TAG_BREW_TIME, $nbt->getShort(self::TAG_BREW_TIME_PE, 0));
 		$this->maxFuelTime = $nbt->getShort(self::TAG_MAX_FUEL_TIME, 0);
-		$this->remainingFuelTime = $nbt->getShort(self::TAG_REMAINING_FUEL_TIME, $nbt->getShort(self::TAG_REMAINING_FUEL_TIME_PE, 0));
+		$this->remainingFuelTime = $nbt->getByte(self::TAG_REMAINING_FUEL_TIME, $nbt->getShort(self::TAG_REMAINING_FUEL_TIME_PE, 0));
 		if($this->maxFuelTime === 0){
 			$this->maxFuelTime = $this->remainingFuelTime;
 		}
