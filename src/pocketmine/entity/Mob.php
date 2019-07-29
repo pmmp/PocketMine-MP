@@ -425,9 +425,6 @@ abstract class Mob extends Living{
 		}
 	}
 
-	// TODO: move this to MathHelper class
-
-
 	/**
 	 * @return Vector3
 	 */
