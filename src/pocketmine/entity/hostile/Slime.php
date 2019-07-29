@@ -189,7 +189,7 @@ class Slime extends Monster{
 				$f = (($k % 2) - 0.5) * $i / 4;
 				$f1 = (($k / 2) - 0.5) * $i / 4;
 
-				$slime = Entity::createEntity(self::NETWORK_ID, $this->level, Entity::createBaseNBT($this));
+				$slime = Entity::createEntity(static::NETWORK_ID, $this->level, Entity::createBaseNBT($this));
 
 				if($slime instanceof Slime){
 					if($this->getNameTag() !== ""){
