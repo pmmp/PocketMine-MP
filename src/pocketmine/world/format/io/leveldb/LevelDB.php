@@ -114,7 +114,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 */
 	private static function createDB(string $path) : \LevelDB{
 		return new \LevelDB($path . "/db", [
-			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION
+			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION,
+			"block_size" => 64 * 1024 //64KB, big enough for most chunks
 		]);
 	}
 
