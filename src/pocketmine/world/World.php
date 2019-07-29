@@ -1965,18 +1965,6 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Gives a list of the Tile entities on a given chunk
-	 *
-	 * @param int $X
-	 * @param int $Z
-	 *
-	 * @return Tile[]
-	 */
-	public function getChunkTiles(int $X, int $Z) : array{
-		return ($chunk = $this->getChunk($X, $Z)) !== null ? $chunk->getTiles() : [];
-	}
-
-	/**
 	 * Gets the raw block skylight level
 	 *
 	 * @param int $x
