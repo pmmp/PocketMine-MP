@@ -146,7 +146,7 @@ namespace pocketmine {
 		if(\Phar::running(true) !== ""){
 			define('pocketmine\PATH', \Phar::running(true) . "/");
 		}else{
-			define('pocketmine\PATH', dirname(__FILE__, 3) . DIRECTORY_SEPARATOR);
+			define('pocketmine\PATH', dirname(__FILE__, 2) . DIRECTORY_SEPARATOR);
 		}
 
 		$opts = getopt("", ["bootstrap:"]);
