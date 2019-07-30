@@ -423,6 +423,10 @@ class EntityNavigator{
 	 */
 	public function removeSunnyPath() : void{
 		if($this->avoidsSun and $this->mob->level->isDayTime()){
+			if($this->mob->level->canSeeSky($this->mob)){
+				return;
+			}
+
 			$temp = new Vector3();
 			foreach($this->currentPath->getPoints() as $i => $point){
 				if($this->mob->level->canSeeSky($temp->setComponents($point->x, $point->height, $point->y))){
