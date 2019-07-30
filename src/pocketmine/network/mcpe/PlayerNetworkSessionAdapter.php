@@ -54,6 +54,7 @@ use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
+use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
@@ -65,6 +66,7 @@ use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
 use pocketmine\network\mcpe\protocol\RiderJumpPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
+use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
@@ -339,11 +341,11 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleLevelSoundEvent($packet);
 	}
 
-	public function handleMoveEntityAbsolute(MoveEntityAbsolutePacket $packet) : bool{
+	public function handleMoveActorAbsolute(MoveActorAbsolutePacket $packet) : bool{
 		$target = $this->player->getServer()->findEntity($packet->entityRuntimeId);
 		if($target !== null){
-			$target->setClientPositionAndRotation($packet->position, $packet->yRot, $packet->xRot, 3, ($packet->flags & MoveEntityAbsolutePacket::FLAG_TELEPORT) !== 0);
-			$target->onGround = ($packet->flags & MoveEntityAbsolutePacket::FLAG_GROUND) !== 0;
+			$target->setClientPositionAndRotation($packet->position, $packet->yRot, $packet->xRot, 3, ($packet->flags & MoveActorAbsolutePacket::FLAG_TELEPORT) !== 0);
+			$target->onGround = ($packet->flags & MoveActorAbsolutePacket::FLAG_GROUND) !== 0;
 
 			return true;
 		}
@@ -351,7 +353,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return false;
 	}
 
-	public function handleSetEntityMotion(SetEntityMotionPacket $packet) : bool{
+	public function handleSetActorMotion(SetActorMotionPacket $packet) : bool{
 		$target = $this->player->getServer()->findEntity($packet->entityRuntimeId);
 		if($target !== null){
 			$target->setClientMotion($packet->motion);

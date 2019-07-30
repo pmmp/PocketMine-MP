@@ -53,9 +53,9 @@ class Slime extends Monster{
 	public $height = 0;
 	public $width = 0;
 
-	public $squishAmount;
-	public $squishFactor;
-	public $prevSquishFactor;
+	public $squishAmount = 0;
+	public $squishFactor = 0;
+	public $prevSquishFactor = 0;
 
 	/** @var EntitySlimeMoveHelper */
 	protected $moveHelper;

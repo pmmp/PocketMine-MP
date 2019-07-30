@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\passive;
 
-use pocketmine\entity\behavior\FindAttackableTargetBehavior;
 use pocketmine\entity\behavior\FloatBehavior;
 use pocketmine\entity\behavior\FollowOwnerBehavior;
 use pocketmine\entity\behavior\HurtByTargetBehavior;

@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\entity\Mob;
 use pocketmine\Player;
 
@@ -71,7 +72,7 @@ class NearestAttackableTargetBehavior extends TargetBehavior{
 					}
 				}
 
-				return $this->isSuitableTargetLocal($entity, false);
+				return $entity instanceof Living and $this->isSuitableTargetLocal($entity, false);
 			}
 		};
 	}
