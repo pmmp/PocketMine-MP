@@ -53,10 +53,10 @@ class LeapAtTargetBehavior extends Behavior{
 	}
 
 	public function canContinue() : bool{
-		return $this->mob->getMotion()->y === 0;
+		return !$this->mob->onGround;
 	}
 
-	public function onTick() : void{
+	public function onStart() : void{
 		$d1 = $this->leapTarget->x - $this->mob->x;
 		$d2 = $this->leapTarget->z - $this->mob->z;
 		$f = sqrt($d1 ** 2 + $d2 ** 2);
