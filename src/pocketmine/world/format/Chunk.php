@@ -47,7 +47,9 @@ use function strlen;
 
 class Chunk{
 	public const DIRTY_FLAG_TERRAIN = 1 << 0;
-	public const DIRTY_FLAG_BIOMES = 1 << 1;
+	public const DIRTY_FLAG_ENTITIES = 1 << 1;
+	public const DIRTY_FLAG_TILES = 1 << 2;
+	public const DIRTY_FLAG_BIOMES = 1 << 3;
 
 	public const MAX_SUBCHUNKS = 16;
 
@@ -452,6 +454,9 @@ class Chunk{
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to a chunk");
 		}
 		$this->entities[$entity->getId()] = $entity;
+		if(!($entity instanceof Player)){
+			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
+		}
 	}
 
 	/**
@@ -459,6 +464,9 @@ class Chunk{
 	 */
 	public function removeEntity(Entity $entity) : void{
 		unset($this->entities[$entity->getId()]);
+		if(!($entity instanceof Player)){
+			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
+		}
 	}
 
 	/**
@@ -473,6 +481,7 @@ class Chunk{
 			$this->tiles[$index]->close();
 		}
 		$this->tiles[$index] = $tile;
+		$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
 	}
 
 	/**
@@ -480,6 +489,7 @@ class Chunk{
 	 */
 	public function removeTile(Tile $tile) : void{
 		unset($this->tiles[Chunk::blockHash($tile->x, $tile->y, $tile->z)]);
+		$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
 	}
 
 	/**
@@ -555,6 +565,7 @@ class Chunk{
 	 */
 	public function initChunk(World $world) : void{
 		if($this->NBTentities !== null){
+			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
 			$world->timings->syncChunkLoadEntitiesTimer->startTiming();
 			foreach($this->NBTentities as $nbt){
 				if($nbt instanceof CompoundTag){
@@ -575,6 +586,7 @@ class Chunk{
 			$world->timings->syncChunkLoadEntitiesTimer->stopTiming();
 		}
 		if($this->NBTtiles !== null){
+			$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
 			$world->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 			foreach($this->NBTtiles as $nbt){
 				if($nbt instanceof CompoundTag){
