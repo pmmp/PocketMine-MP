@@ -757,11 +757,11 @@ class World implements ChunkManager{
 		while($this->scheduledBlockUpdateQueue->count() > 0 and $this->scheduledBlockUpdateQueue->current()["priority"] <= $currentTick){
 			/** @var Vector3 $vec */
 			$vec = $this->scheduledBlockUpdateQueue->extract()["data"];
+			unset($this->scheduledBlockUpdateQueueIndex[World::blockHash($vec->x, $vec->y, $vec->z)]);
 			if(!$this->isInLoadedTerrain($vec)){
 				continue;
 			}
 			$block = $this->getBlock($vec);
-			unset($this->scheduledBlockUpdateQueueIndex[World::blockHash($block->x, $block->y, $block->z)]);
 			$block->onScheduledUpdate();
 		}
 
