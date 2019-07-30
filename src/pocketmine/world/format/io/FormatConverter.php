@@ -135,6 +135,7 @@ class FormatConverter{
 		$thisRound = $start;
 		static $reportInterval = 256;
 		foreach($this->oldProvider->getAllChunks(true, $this->logger) as $chunk){
+			$chunk->setDirty();
 			$new->saveChunk($chunk);
 			$counter++;
 			if(($counter % $reportInterval) === 0){
