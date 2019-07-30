@@ -474,12 +474,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		//TODO: use this properly
 		$write->put($index . self::TAG_STATE_FINALISATION, chr(self::FINALISATION_DONE));
 
-		if($chunk->getDirtyFlag(Chunk::DIRTY_FLAG_TILES)){
-			$this->writeTags($chunk->getNBTtiles(), $index . self::TAG_BLOCK_ENTITY, $write);
-		}
-		if($chunk->getDirtyFlag(Chunk::DIRTY_FLAG_ENTITIES)){
-			$this->writeTags($chunk->getNBTentities(), $index . self::TAG_ENTITY, $write);
-		}
+		$this->writeTags($chunk->getNBTtiles(), $index . self::TAG_BLOCK_ENTITY, $write);
+		$this->writeTags($chunk->getNBTentities(), $index . self::TAG_ENTITY, $write);
 
 		$write->delete($index . self::TAG_DATA_2D_LEGACY);
 		$write->delete($index . self::TAG_LEGACY_TERRAIN);
