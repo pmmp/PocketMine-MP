@@ -1207,6 +1207,8 @@ class Server{
 			register_shutdown_function([$this, "crashDump"]);
 
 			$this->pluginManager->loadPlugins($this->pluginPath);
+			$this->pluginManager->enablePlugins(PluginLoadOrder::SCAN());
+			$this->pluginManager->loadPlugins($this->pluginPath);
 			$this->pluginManager->enablePlugins(PluginLoadOrder::STARTUP());
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){

@@ -30,6 +30,7 @@ use pocketmine\utils\EnumTrait;
  * This must be regenerated whenever enum members are added, removed or changed.
  * @see EnumTrait::_generateMethodAnnotations()
  *
+ * @method static self SCAN()
  * @method static self STARTUP()
  * @method static self POSTWORLD()
  */
@@ -38,6 +39,7 @@ final class PluginLoadOrder{
 
 	protected static function setup() : iterable{
 		return [
+			new self("scan"),
 			new self("startup"),
 			new self("postworld")
 		];
