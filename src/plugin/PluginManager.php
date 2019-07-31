@@ -78,6 +78,9 @@ class PluginManager{
 	 */
 	protected $enabledPlugins = [];
 
+	protected $scanLoaded = false;
+	protected $scanEnabled = false;
+
 	/**
 	 * @var PluginLoader[]
 	 */
@@ -148,6 +151,10 @@ class PluginManager{
 	 * @return Plugin|null
 	 */
 	public function loadPlugin(string $path, ?array $loaders = null) : ?Plugin{
+		if($this->scanEnabled){
+			throw new \InvalidStateException("Cannot load plugins after SCAN-order plugins are enabled");
+		}
+
 		foreach($loaders ?? $this->fileAssociations as $loader){
 			if($loader->canLoadPlugin($path)){
 				$description = $loader->getPluginDescription($path);
@@ -203,6 +210,10 @@ class PluginManager{
 	 * @return Plugin[]
 	 */
 	public function loadPlugins(string $directory) : array{
+		if($this->scanEnabled){
+			throw new \InvalidStateException("Cannot load plugins after SCAN-order plugins are enabled");
+		}
+
 		if(!is_dir($directory)){
 			return [];
 		}
@@ -417,6 +428,10 @@ class PluginManager{
 	 * @param PluginLoadOrder $type
 	 */
 	public function enablePlugins(PluginLoadOrder $type) : void{
+		if($this->scanLoaded){
+			$this->scanEnabled = true;
+		}
+
 		foreach($this->plugins as $plugin){
 			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder()->equals($type)){
 				$this->enablePlugin($plugin);
@@ -429,10 +444,7 @@ class PluginManager{
 		}
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 */
-	public function enablePlugin(Plugin $plugin) : void{
+	private function enablePlugin(Plugin $plugin) : void{
 		if(!$plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
 
