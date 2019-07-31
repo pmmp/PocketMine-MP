@@ -68,6 +68,7 @@ final class VanillaEffects{
 
 	protected static function setup() : void{
 		self::register("absorption", new AbsorptionEffect(22, "%potion.absorption", new Color(0x25, 0x52, 0xa5)));
+		//TODO: bad_omen
 		self::register("blindness", new Effect(15, "%potion.blindness", new Color(0x1f, 0x1f, 0x23), true));
 		self::register("conduit_power", new Effect(26, "%potion.conduitPower", new Color(0x1d, 0xc2, 0xd1)));
 		self::register("fatal_poison", new PoisonEffect(25, "%potion.poison", new Color(0x4e, 0x93, 0x31), true, true, true));
@@ -87,9 +88,11 @@ final class VanillaEffects{
 		self::register("regeneration", new RegenerationEffect(10, "%potion.regeneration", new Color(0xcd, 0x5c, 0xab)));
 		self::register("resistance", new Effect(11, "%potion.resistance", new Color(0x99, 0x45, 0x3a)));
 		self::register("saturation", new SaturationEffect(23, "%potion.saturation", new Color(0xf8, 0x24, 0x23), false));
+		//TODO: slow_falling
 		self::register("slowness", new SlownessEffect(2, "%potion.moveSlowdown", new Color(0x5a, 0x6c, 0x81), true));
 		self::register("speed", new SpeedEffect(1, "%potion.moveSpeed", new Color(0x7c, 0xaf, 0xc6)));
 		self::register("strength", new Effect(5, "%potion.damageBoost", new Color(0x93, 0x24, 0x23)));
+		//TODO: village_hero
 		self::register("water_breathing", new Effect(13, "%potion.waterBreathing", new Color(0x2e, 0x52, 0x99)));
 		self::register("weakness", new Effect(18, "%potion.weakness", new Color(0x48, 0x4d, 0x48), true));
 		self::register("wither", new WitherEffect(20, "%potion.wither", new Color(0x35, 0x2a, 0x27), true));
