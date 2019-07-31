@@ -199,11 +199,10 @@ class PluginManager{
 
 	/**
 	 * @param string $directory
-	 * @param array  $newLoaders
 	 *
 	 * @return Plugin[]
 	 */
-	public function loadPlugins(string $directory, ?array $newLoaders = null) : array{
+	public function loadPlugins(string $directory) : array{
 		if(!is_dir($directory)){
 			return [];
 		}
@@ -212,16 +211,9 @@ class PluginManager{
 		$loadedPlugins = [];
 		$dependencies = [];
 		$softDependencies = [];
-		if(is_array($newLoaders)){
-			$loaders = [];
-			foreach($newLoaders as $key){
-				if(isset($this->fileAssociations[$key])){
-					$loaders[$key] = $this->fileAssociations[$key];
-				}
-			}
-		}else{
-			$loaders = $this->fileAssociations;
-		}
+
+		$loaders = $this->fileAssociations;
+		$this->fileAssociations = [];
 
 		$files = iterator_to_array(new \FilesystemIterator($directory, \FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS));
 		shuffle($files); //this prevents plugins implicitly relying on the filesystem name order when they should be using dependency properties
