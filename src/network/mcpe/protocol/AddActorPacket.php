@@ -189,7 +189,7 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 			$min = $this->getLFloat();
 			$current = $this->getLFloat();
 			$max = $this->getLFloat();
-			$attr = Attribute::getAttribute($id);
+			$attr = Attribute::get($id);
 
 			if($attr !== null){
 				try{

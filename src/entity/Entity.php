@@ -390,7 +390,7 @@ abstract class Entity extends Location{
 	public function setSprinting(bool $value = true) : void{
 		if($value !== $this->isSprinting()){
 			$this->sprinting = $value;
-			$attr = $this->attributeMap->getAttribute(Attribute::MOVEMENT_SPEED);
+			$attr = $this->attributeMap->get(Attribute::MOVEMENT_SPEED);
 			$attr->setValue($value ? ($attr->getValue() * 1.3) : ($attr->getValue() / 1.3), false, true);
 		}
 	}

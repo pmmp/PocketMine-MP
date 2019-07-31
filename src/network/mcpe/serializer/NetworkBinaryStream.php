@@ -299,7 +299,7 @@ class NetworkBinaryStream extends BinaryStream{
 			$default = $this->getLFloat();
 			$id = $this->getString();
 
-			$attr = Attribute::getAttribute($id);
+			$attr = Attribute::get($id);
 			if($attr !== null){
 				$attr->setMinValue($min);
 				$attr->setMaxValue($max);

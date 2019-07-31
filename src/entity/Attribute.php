@@ -60,22 +60,22 @@ class Attribute{
 	protected static $attributes = [];
 
 	public static function init() : void{
-		self::addAttribute(self::ABSORPTION, 0.00, 340282346638528859811704183484516925440.00, 0.00);
-		self::addAttribute(self::SATURATION, 0.00, 20.00, 20.00);
-		self::addAttribute(self::EXHAUSTION, 0.00, 5.00, 0.0, false);
-		self::addAttribute(self::KNOCKBACK_RESISTANCE, 0.00, 1.00, 0.00);
-		self::addAttribute(self::HEALTH, 0.00, 20.00, 20.00);
-		self::addAttribute(self::MOVEMENT_SPEED, 0.00, 340282346638528859811704183484516925440.00, 0.10);
-		self::addAttribute(self::FOLLOW_RANGE, 0.00, 2048.00, 16.00, false);
-		self::addAttribute(self::HUNGER, 0.00, 20.00, 20.00);
-		self::addAttribute(self::ATTACK_DAMAGE, 0.00, 340282346638528859811704183484516925440.00, 1.00, false);
-		self::addAttribute(self::EXPERIENCE_LEVEL, 0.00, 24791.00, 0.00);
-		self::addAttribute(self::EXPERIENCE, 0.00, 1.00, 0.00);
-		self::addAttribute(self::UNDERWATER_MOVEMENT, 0.0, 340282346638528859811704183484516925440.0, 0.02);
-		self::addAttribute(self::LUCK, -1024.0, 1024.0, 0.0);
-		self::addAttribute(self::FALL_DAMAGE, 0.0, 340282346638528859811704183484516925440.0, 1.0);
-		self::addAttribute(self::HORSE_JUMP_STRENGTH, 0.0, 2.0, 0.7);
-		self::addAttribute(self::ZOMBIE_SPAWN_REINFORCEMENTS, 0.0, 1.0, 0.0);
+		self::register(self::ABSORPTION, 0.00, 340282346638528859811704183484516925440.00, 0.00);
+		self::register(self::SATURATION, 0.00, 20.00, 20.00);
+		self::register(self::EXHAUSTION, 0.00, 5.00, 0.0, false);
+		self::register(self::KNOCKBACK_RESISTANCE, 0.00, 1.00, 0.00);
+		self::register(self::HEALTH, 0.00, 20.00, 20.00);
+		self::register(self::MOVEMENT_SPEED, 0.00, 340282346638528859811704183484516925440.00, 0.10);
+		self::register(self::FOLLOW_RANGE, 0.00, 2048.00, 16.00, false);
+		self::register(self::HUNGER, 0.00, 20.00, 20.00);
+		self::register(self::ATTACK_DAMAGE, 0.00, 340282346638528859811704183484516925440.00, 1.00, false);
+		self::register(self::EXPERIENCE_LEVEL, 0.00, 24791.00, 0.00);
+		self::register(self::EXPERIENCE, 0.00, 1.00, 0.00);
+		self::register(self::UNDERWATER_MOVEMENT, 0.0, 340282346638528859811704183484516925440.0, 0.02);
+		self::register(self::LUCK, -1024.0, 1024.0, 0.0);
+		self::register(self::FALL_DAMAGE, 0.0, 340282346638528859811704183484516925440.0, 1.0);
+		self::register(self::HORSE_JUMP_STRENGTH, 0.0, 2.0, 0.7);
+		self::register(self::ZOMBIE_SPAWN_REINFORCEMENTS, 0.0, 1.0, 0.0);
 	}
 
 	/**
@@ -89,7 +89,7 @@ class Attribute{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function addAttribute(string $id, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true) : Attribute{
+	public static function register(string $id, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true) : Attribute{
 		if($minValue > $maxValue or $defaultValue > $maxValue or $defaultValue < $minValue){
 			throw new \InvalidArgumentException("Invalid ranges: min value: $minValue, max value: $maxValue, $defaultValue: $defaultValue");
 		}
@@ -102,7 +102,7 @@ class Attribute{
 	 *
 	 * @return Attribute|null
 	 */
-	public static function getAttribute(string $id) : ?Attribute{
+	public static function get(string $id) : ?Attribute{
 		return isset(self::$attributes[$id]) ? clone self::$attributes[$id] : null;
 	}
 

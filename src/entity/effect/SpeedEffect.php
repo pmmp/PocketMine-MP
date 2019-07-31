@@ -29,12 +29,12 @@ use pocketmine\entity\Living;
 class SpeedEffect extends Effect{
 
 	public function add(Living $entity, EffectInstance $instance) : void{
-		$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
+		$attr = $entity->getAttributeMap()->get(Attribute::MOVEMENT_SPEED);
 		$attr->setValue($attr->getValue() * (1 + 0.2 * $instance->getEffectLevel()));
 	}
 
 	public function remove(Living $entity, EffectInstance $instance) : void{
-		$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
+		$attr = $entity->getAttributeMap()->get(Attribute::MOVEMENT_SPEED);
 		$attr->setValue($attr->getValue() / (1 + 0.2 * $instance->getEffectLevel()));
 	}
 }
