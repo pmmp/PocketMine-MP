@@ -1207,7 +1207,7 @@ class Server{
 			register_shutdown_function([$this, "crashDump"]);
 
 			$this->pluginManager->loadPlugins($this->pluginPath);
-			$this->enablePlugins(PluginLoadOrder::STARTUP());
+			$this->pluginManager->enablePlugins(PluginLoadOrder::STARTUP());
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $options){
 				if($options === null){
@@ -1256,7 +1256,7 @@ class Server{
 				$this->worldManager->setDefaultWorld($world);
 			}
 
-			$this->enablePlugins(PluginLoadOrder::POSTWORLD());
+			$this->pluginManager->enablePlugins(PluginLoadOrder::POSTWORLD());
 
 			$this->network->registerInterface(new RakLibInterface($this));
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
@@ -1495,22 +1495,6 @@ class Server{
 			return $promise;
 		}finally{
 			Timings::$playerNetworkSendCompressTimer->stopTiming();
-		}
-	}
-
-	/**
-	 * @param PluginLoadOrder $type
-	 */
-	public function enablePlugins(PluginLoadOrder $type) : void{
-		foreach($this->pluginManager->getPlugins() as $plugin){
-			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder()->equals($type)){
-				$this->pluginManager->enablePlugin($plugin);
-			}
-		}
-
-		if($type->equals(PluginLoadOrder::POSTWORLD())){
-			$this->commandMap->registerServerAliases();
-			DefaultPermissions::registerCorePermissions();
 		}
 	}
 

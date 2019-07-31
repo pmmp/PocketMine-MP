@@ -31,6 +31,7 @@ use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\event\RegisteredListener;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
@@ -418,6 +419,22 @@ class PluginManager{
 	 */
 	public function isPluginEnabled(Plugin $plugin) : bool{
 		return isset($this->plugins[$plugin->getDescription()->getName()]) and $plugin->isEnabled();
+	}
+
+	/**
+	 * @param PluginLoadOrder $type
+	 */
+	public function enablePlugins(PluginLoadOrder $type) : void{
+		foreach($this->plugins as $plugin){
+			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder()->equals($type)){
+				$this->enablePlugin($plugin);
+			}
+		}
+
+		if($type->equals(PluginLoadOrder::POSTWORLD())){
+			$this->server->getCommandMap()->registerServerAliases();
+			DefaultPermissions::registerCorePermissions();
+		}
 	}
 
 	/**
