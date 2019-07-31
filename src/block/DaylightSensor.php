@@ -107,7 +107,7 @@ class DaylightSensor extends Transparent{
 		}
 
 		$sunAngle = $this->world->getSunAnglePercentage();
-		return max(0, (int) round(15 * cos(($sunAngle + ((($sunAngle < 0.5 ? 0 : 1) - $sunAngle) / 5)) * 2 * M_PI)));
+		return max(0, (int) round($lightLevel * cos(($sunAngle + ((($sunAngle < 0.5 ? 0 : 1) - $sunAngle) / 5)) * 2 * M_PI)));
 	}
 
 	//TODO
