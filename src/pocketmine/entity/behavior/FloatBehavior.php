@@ -47,10 +47,8 @@ class FloatBehavior extends Behavior{
 	}
 
 	public function onTick() : void{
-		if($this->mob->isInsideOfWater()){
-			if($this->random->nextFloat() < 0.8){
-				$this->mob->getJumpHelper()->setJumping(true);
-			}
+		if($this->random->nextFloat() < 0.8){
+			$this->mob->getJumpHelper()->setJumping(true);
 		}
 	}
 }

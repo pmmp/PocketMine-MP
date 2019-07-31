@@ -56,9 +56,7 @@ class FollowOwnerBehavior extends Behavior{
 	}
 
 	public function onTick() : void{
-		/** @var Player $owner */
 		$owner = $this->mob->getOwningEntity();
-		if($owner == null) return;
 
 		$distanceToPlayer = $this->mob->distanceSquared($owner);
 
@@ -84,8 +82,6 @@ class FollowOwnerBehavior extends Behavior{
 	}
 
 	public function onEnd() : void{
-		$this->mob->resetMotion();
 		$this->mob->pitch = 0;
-		$this->mob->getNavigator()->clearPath();
 	}
 }

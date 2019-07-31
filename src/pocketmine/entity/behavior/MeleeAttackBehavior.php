@@ -68,12 +68,11 @@ class MeleeAttackBehavior extends Behavior{
 	}
 
 	public function canContinue() : bool{
-		return $this->mob->getTargetEntityId() !== null;
+		return $this->mob->getTargetEntity() !== null;
 	}
 
 	public function onTick() : void{
 		$target = $this->mob->getTargetEntity();
-		if($target == null) return;
 
 		$distanceToPlayer = $this->mob->distanceSquared($target);
 
@@ -112,7 +111,6 @@ class MeleeAttackBehavior extends Behavior{
 	}
 
 	public function onEnd() : void{
-		$this->mob->resetMotion();
 		$this->mob->pitch = 0;
 		$this->attackCooldown = $this->delay = 0;
 		$this->path = null;

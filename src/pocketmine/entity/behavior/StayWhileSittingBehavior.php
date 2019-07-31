@@ -26,10 +26,11 @@ namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Tamable;
 
-class SittingBehavior extends Behavior{
+class StayWhileSittingBehavior extends Behavior{
 
 	/** @var Tamable */
 	protected $mob;
+	protected $isSitting = false;
 
 	public function __construct(Tamable $mob){
 		parent::__construct($mob);
@@ -37,23 +38,25 @@ class SittingBehavior extends Behavior{
 	}
 
 	public function canStart() : bool{
-		if(!$this->mob->isTamed() or !$this->mob->isBreathing()) return false;
+		if($this->mob->isTamed() and !$this->mob->isInsideOfWater() and $this->mob->onGround){
+			$owner = $this->mob->getOwningEntity();
 
-		$owner = $this->mob->getOwningEntity();
-
-		$shouldStart = $owner == null || ((!($this->mob->distance($owner) < 144.0) || $this->mob->getLastAttacker() == null) && $this->mob->isSitting());
-		if(!$shouldStart) return false;
-
-		$this->mob->resetMotion();
+			return $owner === null ? true : ($this->mob->distanceSquared($owner) < 144 and $this->mob->getTargetEntity() !== null ? false : $this->isSitting);
+		}
 
 		return true;
 	}
 
-	public function canContinue() : bool{
-		return $this->mob->isSitting();
+	public function onStart() : void{
+		$this->mob->getNavigator()->clearPath(true);
+		$this->mob->setSitting(true);
 	}
 
 	public function onEnd() : void{
 		$this->mob->setSitting(false);
+	}
+
+	public function setSitting(bool $value) : void{
+		$this->isSitting = $value;
 	}
 }

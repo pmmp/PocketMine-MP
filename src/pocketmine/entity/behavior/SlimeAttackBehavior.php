@@ -30,12 +30,12 @@ use pocketmine\Player;
 class SlimeAttackBehavior extends Behavior{
 	/** @var Slime */
 	protected $mob;
-	
+
 	private $attackTime;
 
 	public function __construct(Slime $slime){
 		parent::__construct($slime);
-		
+
 		$this->setMutexBits(2);
 	}
 
@@ -54,10 +54,7 @@ class SlimeAttackBehavior extends Behavior{
 	}
 
 	public function onTick() : void{
-		$target = $this->mob->getTargetEntity();
-		if($target !== null){
-			$this->mob->faceEntity($target, 10, 10);
-			$this->mob->getMoveHelper()->jumpWithYaw($this->mob->yaw, $this->mob->canDamagePlayer());
-		}
+		$this->mob->faceEntity($this->mob->getTargetEntity(), 10, 10);
+		$this->mob->getMoveHelper()->jumpWithYaw($this->mob->yaw, $this->mob->canDamagePlayer());
 	}
 }

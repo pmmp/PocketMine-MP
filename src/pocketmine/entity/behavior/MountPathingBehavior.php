@@ -45,32 +45,30 @@ class MountPathingBehavior extends Behavior{
 	}
 
 	public function onTick() : void{
-		if($this->mob->getRiddenByEntity() !== null){
-			if(!$this->mob->isTamed()){
-				if($this->rideTime > 100 and !$this->mob->isRearing()){
-					if($this->rideTime === 100){
-						$pos = RandomPositionGenerator::findRandomTargetBlock($this->mob, 10, 7);
+		if(!$this->mob->isTamed()){
+			if($this->rideTime > 100 and !$this->mob->isRearing()){
+				if($this->rideTime === 100){
+					$pos = RandomPositionGenerator::findRandomTargetBlock($this->mob, 10, 7);
 
-						if($pos !== null){
-							$this->mob->getNavigator()->tryMoveTo($pos, 1, $this->mob->distanceSquared($pos) + 2);
-						}
+					if($pos !== null){
+						$this->mob->getNavigator()->tryMoveTo($pos, 1, $this->mob->distanceSquared($pos) + 2);
 					}
-
-					if($this->mob->random->nextBoundedInt(1) === 0){
-						$this->mob->setInLove(true);
-						$this->mob->setTamed(true);
-					}else{
-						$this->mob->setRearing(true);
-					}
-				}elseif($this->rideTime > 120){
-					$this->mob->broadcastEntityEvent(ActorEventPacket::TAME_FAIL);
-					$this->mob->throwRider();
-					$this->mob->setRearing(false);
 				}
 
-				$this->rideTime++;
-				$this->mutexBits = 2;
+				if($this->mob->random->nextBoundedInt(1) === 0){
+					$this->mob->setInLove(true);
+					$this->mob->setTamed(true);
+				}else{
+					$this->mob->setRearing(true);
+				}
+			}elseif($this->rideTime > 120){
+				$this->mob->broadcastEntityEvent(ActorEventPacket::TAME_FAIL);
+				$this->mob->throwRider();
+				$this->mob->setRearing(false);
 			}
+
+			$this->rideTime++;
+			$this->mutexBits = 2;
 		}
 	}
 

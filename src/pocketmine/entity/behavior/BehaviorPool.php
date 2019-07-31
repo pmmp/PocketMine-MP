@@ -57,7 +57,7 @@ class BehaviorPool{
 		if(Server::getInstance()->getTick() % $this->tickRate === 0){
 			foreach($this->workingBehaviors as $hash => $bh){
 				if(isset($this->behaviors[$hash])){
-					if(!$this->canUse($this->behaviors[$hash])){
+					if(!$this->canUse($this->behaviors[$hash]) or !$bh->canContinue()){
 						$bh->onEnd();
 						unset($this->workingBehaviors[$hash]);
 					}

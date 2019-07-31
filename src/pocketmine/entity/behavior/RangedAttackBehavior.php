@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
+use pocketmine\entity\Entity;
 use pocketmine\entity\Mob;
 use pocketmine\entity\RangedAttackerMob;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -43,6 +44,8 @@ class RangedAttackBehavior extends Behavior{
 	protected $rangedAttackTime = 0;
 	/** @var int */
 	protected $targetSeenTicks = 0;
+	/** @var Entity */
+	protected $attackTarget;
 
 	public function __construct(Mob $mob, float $speedMultiplier, int $minAttackTime, int $maxAttackTime, float $maxAttackDistanceIn){
 		parent::__construct($mob);
@@ -57,7 +60,13 @@ class RangedAttackBehavior extends Behavior{
 	}
 
 	public function canStart() : bool{
-		return $this->mob->getTargetEntityId() !== null;
+		if(($target = $this->mob->getTargetEntity()) !== null){
+			$this->attackTarget = $target;
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public function canContinue() : bool{
@@ -65,17 +74,15 @@ class RangedAttackBehavior extends Behavior{
 	}
 
 	public function onEnd() : void{
+		$this->attackTarget = null;
 		$this->targetSeenTicks = 0;
 		$this->rangedAttackTime = -1;
 	}
 
 	public function onTick() : void{
-		if(!$this->canStart()) return;
-		$targetEntity = $this->mob->getTargetEntity();
-		if($targetEntity === null) return;
-		$dist = $this->mob->distanceSquared($targetEntity);
+		$dist = $this->mob->distanceSquared($this->attackTarget);
 
-		if($flag = $this->mob->canSeeEntity($targetEntity)){
+		if($flag = $this->mob->canSeeEntity($this->attackTarget)){
 			++$this->targetSeenTicks;
 		}else{
 			$this->targetSeenTicks = 0;
@@ -84,10 +91,10 @@ class RangedAttackBehavior extends Behavior{
 		if($dist <= $this->maxAttackDistance and $this->targetSeenTicks >= 20){
 			$this->mob->getNavigator()->clearPath();
 		}else{
-			$this->mob->getNavigator()->tryMoveTo($targetEntity, $this->speedMultiplier);
+			$this->mob->getNavigator()->tryMoveTo($this->attackTarget, $this->speedMultiplier);
 		}
 
-		$this->mob->getLookHelper()->setLookPositionWithEntity($targetEntity, 30, 30);
+		$this->mob->getLookHelper()->setLookPositionWithEntity($this->attackTarget, 30, 30);
 
 		if(--$this->rangedAttackTime <= 0){
 			if($dist > $this->maxAttackDistance or !$flag){
@@ -103,7 +110,7 @@ class RangedAttackBehavior extends Behavior{
 			}
 
 			if($dist < 1){
-				$targetEntity->attack(new EntityDamageByEntityEvent($this->mob, $targetEntity, EntityDamageEvent::CAUSE_CUSTOM, $this->mob->getAttackDamage()));
+				$this->attackTarget->attack(new EntityDamageByEntityEvent($this->mob, $this->attackTarget, EntityDamageEvent::CAUSE_CUSTOM, $this->mob->getAttackDamage()));
 			}
 
 			$this->rangedAttackTime = floor($f * ($this->maxAttackTime - $this->minAttackTime) + $this->minAttackTime);
