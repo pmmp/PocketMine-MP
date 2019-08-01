@@ -45,6 +45,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\player\Player;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Utils;
 use function base64_decode;
 use function base64_encode;
 use function get_class;
@@ -163,7 +164,7 @@ class Item implements \JsonSerializable{
 	 * @return $this
 	 */
 	public function setCustomName(string $name) : Item{
-		//TODO: encoding might need to be checked here
+		Utils::checkUTF8($name);
 		$this->customName = $name;
 		return $this;
 	}
@@ -193,6 +194,7 @@ class Item implements \JsonSerializable{
 			if(!is_string($line)){
 				throw new \TypeError("Expected string[], but found " . gettype($line) . " in given array");
 			}
+			Utils::checkUTF8($line);
 		}
 		$this->lore = $lines;
 		return $this;

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\utils\Utils;
 use function array_fill;
 use function array_pad;
 use function array_slice;
@@ -118,9 +119,7 @@ class SignText{
 	 */
 	public function setLine(int $index, string $line) : void{
 		$this->checkLineIndex($index);
-		if(!mb_check_encoding($line, 'UTF-8')){
-			throw new \InvalidArgumentException("Line must be valid UTF-8 text");
-		}
+		Utils::checkUTF8($line);
 		if(strpos($line, "\n") !== false){
 			throw new \InvalidArgumentException("Line must not contain newlines");
 		}

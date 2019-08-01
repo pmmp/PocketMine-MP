@@ -57,6 +57,7 @@ use function is_readable;
 use function is_string;
 use function json_decode;
 use function json_last_error_msg;
+use function mb_check_encoding;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
@@ -557,6 +558,12 @@ class Utils{
 			rmdir($dir);
 		}elseif(is_file($dir)){
 			unlink($dir);
+		}
+	}
+
+	public static function checkUTF8(string $string) : void{
+		if(!mb_check_encoding($string, 'UTF-8')){
+			throw new \InvalidArgumentException("Text must be valid UTF-8");
 		}
 	}
 }

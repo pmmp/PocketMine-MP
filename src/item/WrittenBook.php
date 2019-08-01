@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\utils\Utils;
 
 class WrittenBook extends WritableBookBase{
 
@@ -92,6 +93,7 @@ class WrittenBook extends WritableBookBase{
 	 * @return $this
 	 */
 	public function setAuthor(string $authorName) : self{
+		Utils::checkUTF8($authorName);
 		$this->author = $authorName;
 		return $this;
 	}
@@ -113,6 +115,7 @@ class WrittenBook extends WritableBookBase{
 	 * @return $this
 	 */
 	public function setTitle(string $title) : self{
+		Utils::checkUTF8($title);
 		$this->title = $title;
 		return $this;
 	}

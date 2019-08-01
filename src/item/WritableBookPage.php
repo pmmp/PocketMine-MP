@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\utils\Utils;
+
 class WritableBookPage{
 
 	/** @var string */
@@ -31,7 +33,8 @@ class WritableBookPage{
 	private $photoName;
 
 	public function __construct(string $text, string $photoName = ""){
-		//TODO: data validation, encoding checks
+		//TODO: data validation
+		Utils::checkUTF8($text);
 		$this->text = $text;
 		$this->photoName = $photoName;
 	}
