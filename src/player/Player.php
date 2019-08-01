@@ -350,12 +350,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
 
 		if($this->server->getForceGamemode() or !$nbt->hasTag("playerGameType", IntTag::class)){
-			$this->gamemode = $this->server->getGamemode();
+			$this->internalSetGameMode($this->server->getGamemode());
 		}else{
-			$this->gamemode = GameMode::fromMagicNumber($nbt->getInt("playerGameType") & 0x03); //TODO: bad hack here to avoid crashes on corrupted data
+			$this->internalSetGameMode(GameMode::fromMagicNumber($nbt->getInt("playerGameType") & 0x03)); //TODO: bad hack here to avoid crashes on corrupted data
 		}
 
-		$this->allowFlight = $this->isCreative();
 		$this->keepMovement = true;
 		if($this->isOp()){
 			$this->setRemoveFormat(false);
@@ -1109,6 +1108,19 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->gamemode;
 	}
 
+	protected function internalSetGameMode(GameMode $gameMode) : void{
+		$this->gamemode = $gameMode;
+
+		$this->allowFlight = $this->isCreative();
+		$this->hungerManager->setEnabled($this->isSurvival());
+
+		if($this->isSpectator()){
+			$this->setFlying(true);
+		}elseif($this->isSurvival()){
+			$this->setFlying(false);
+		}
+	}
+
 	/**
 	 * Sets the gamemode, and if needed, kicks the Player.
 	 *
@@ -1127,18 +1139,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			return false;
 		}
 
-		$this->gamemode = $gm;
-
-		$this->allowFlight = $this->isCreative();
-		$this->hungerManager->setEnabled($this->isSurvival());
+		$this->internalSetGameMode($gm);
 
 		if($this->isSpectator()){
-			$this->setFlying(true);
 			$this->despawnFromAll();
 		}else{
-			if($this->isSurvival()){
-				$this->setFlying(false);
-			}
 			$this->spawnToAll();
 		}
 
