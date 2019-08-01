@@ -297,9 +297,9 @@ class Item implements \JsonSerializable{
 		if($enchantments !== null and $enchantments->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $enchantment */
 			foreach($enchantments as $enchantment){
-				$magicNumber = $enchantment->getShort("id", 0, true);
+				$magicNumber = $enchantment->getShort("id", -1, true);
 				$level = $enchantment->getShort("lvl", 0, true);
-				if($magicNumber <= 0 or $level <= 0){
+				if($level <= 0){
 					continue;
 				}
 				$type = Enchantment::get($magicNumber);
