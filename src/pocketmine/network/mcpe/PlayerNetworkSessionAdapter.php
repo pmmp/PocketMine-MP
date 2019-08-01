@@ -345,7 +345,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		$target = $this->player->getServer()->findEntity($packet->entityRuntimeId);
 		if($target !== null){
 			$target->setClientPositionAndRotation($packet->position, $packet->yRot, $packet->xRot, 3, ($packet->flags & MoveActorAbsolutePacket::FLAG_TELEPORT) !== 0);
-			$target->onGround = ($packet->flags & MoveActorAbsolutePacket::FLAG_GROUND) !== 0;
+			//$target->onGround = ($packet->flags & MoveActorAbsolutePacket::FLAG_GROUND) !== 0;
 
 			return true;
 		}

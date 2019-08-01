@@ -59,7 +59,7 @@ class Blaze extends Monster implements RangedAttackerMob{
 		return "Blaze";
 	}
 
-	public function addBehaviors() : void{
+	protected function addBehaviors() : void{
 		$this->targetBehaviorPool->setBehavior(0, new HurtByTargetBehavior($this));
 		$this->targetBehaviorPool->setBehavior(1, new FindAttackableTargetBehavior($this, Player::class));
 

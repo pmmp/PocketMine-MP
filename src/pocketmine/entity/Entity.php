@@ -655,6 +655,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var bool */
 	private $closeInFlight = false;
 
+	protected $clientMoveTicks = 0;
+	/** @var Vector3 */
+	protected $clientPos;
+	protected $clientYaw = 0;
+	protected $clientPitch = 0;
+
 	public function __construct(Level $level, CompoundTag $nbt){
 		$this->random = new Random($level->random->nextInt());
 		$this->constructed = true;
@@ -1823,11 +1829,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function onMovementUpdate() : void{
-		$f = 1 - $this->drag;
+		if($this->clientMoveTicks === 0){
+			$f = 1 - $this->drag;
 
-		$this->motion->x *= $f;
-		$this->motion->y *= $f;
-		$this->motion->z *= $f;
+			$this->motion->x *= $f;
+			$this->motion->y *= $f;
+			$this->motion->z *= $f;
+		}
 
 		$this->checkMotion();
 
@@ -2866,14 +2874,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param bool    $immediate
 	 */
 	public function setClientPositionAndRotation(Vector3 $pos, float $yaw, float $pitch, int $clientMoveTicks, bool $immediate) : void{
-		// NOOP
+		$this->clientPos = $pos;
+		$this->clientYaw = $yaw;
+		$this->clientPitch = $pitch;
+		$this->clientMoveTicks = $clientMoveTicks;
 	}
 
-	/**
-	 * @param Vector3 $motion
-	 */
 	public function setClientMotion(Vector3 $motion) : void{
-		// NOOP
+		$this->motion = $motion;
 	}
 
 	public function __destruct(){

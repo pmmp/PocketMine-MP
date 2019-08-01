@@ -36,6 +36,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\passive\AbstractHorse;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\FishingHook;
 use pocketmine\entity\Skin;
@@ -2888,7 +2889,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		switch($packet->action){
 			case InteractPacket::ACTION_OPEN_INVENTORY:
 				if($target instanceof InventoryHolder){
-					$this->addWindow($target->getInventory());
+					if(!($target instanceof AbstractHorse and !$target->isTamed())){
+						$this->addWindow($target->getInventory());
+					}
 				}
 				break;
 			case InteractPacket::ACTION_LEAVE_VEHICLE:
@@ -4026,6 +4029,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->headYaw = $yaw;
 		$pk->yaw = $yaw;
 		$pk->mode = $mode;
+		$pk->ridingEid = intval($this->ridingEid);
 
 		if($targets !== null){
 			$this->server->broadcastPacket($targets, $pk);

@@ -27,8 +27,10 @@ namespace pocketmine\entity\passive;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EntityIds;
+use pocketmine\entity\helper\EntityLookHelper;
 use pocketmine\entity\Living;
 use pocketmine\entity\Tamable;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
@@ -42,6 +44,7 @@ use function mt_rand;
 abstract class AbstractHorse extends Tamable{
 
 	protected $jumpPower = 0.0;
+	protected $isJumpRearing = false;
 	protected $rearingCounter = 0;
 
 	protected $horseJumping = false;
@@ -55,8 +58,8 @@ abstract class AbstractHorse extends Tamable{
 			if($jumpPowerIn < 0){
 				$jumpPowerIn = 0;
 			}else{
-				$this->setRearing(true);
-				$this->rearingCounter = 40; // HACK!
+				$this->isJumpRearing = true;
+				$this->rearUp(false);
 			}
 
 			if($jumpPowerIn >= 90){
@@ -109,18 +112,40 @@ abstract class AbstractHorse extends Tamable{
 		return (0.45 + $this->random->nextFloat() * 0.3 + $this->random->nextFloat() * 0.3 + $this->random->nextFloat() * 0.3) * 0.25;
 	}
 
+	public function fall(float $fallDistance) : void{
+		$damage = ceil($fallDistance / 2 - 3);
+		if($damage > 0){
+			$this->attack(new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage));
+
+			if(($rider = $this->getRiddenByEntity())!== null){
+				$rider->attack(new EntityDamageEvent($rider, EntityDamageEvent::CAUSE_FALL, $damage));
+			}
+		}
+	}
+
+	public function onUpdate(int $currentTick) : bool{
+		if ($this->clientMoveTicks > 0){
+			$this->setPositionAndRotation($this->clientPos, $this->clientYaw, $this->clientPitch);
+
+			$this->clientMoveTicks--;
+		}
+
+		if($this->rearingCounter > 0 and ++$this->rearingCounter > 20){
+			$this->rearingCounter = 0;
+			$this->setRearing(false);
+		}
+
+		if(!$this->isRearing()){
+			$this->isJumpRearing = false;
+		}
+
+		return parent::onUpdate($currentTick);
+	}
+
 	public function onBehaviorUpdate() : void{
 		parent::onBehaviorUpdate();
 
 		$this->sendAttributes();
-
-		if($this->rearingCounter > 0 and $this->onGround){
-			$this->rearingCounter--;
-
-			if($this->rearingCounter === 0){
-				$this->setRearing(false);
-			}
-		}
 
 		$rider = $this->getRiddenByEntity();
 		if($rider !== null){
@@ -187,11 +212,13 @@ abstract class AbstractHorse extends Tamable{
 		$this->setGenericFlag(self::DATA_FLAG_REARING, $value);
 	}
 
-	public function rearUp() : void{
+	public function rearUp(bool $playSound = true) : void{
 		$this->setRearing(true);
-		$this->rearingCounter = 10;
+		$this->rearingCounter = 1;
 
-		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_MAD, -1, EntityIds::HORSE);
+		if($playSound){
+			$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_MAD, -1, EntityIds::HORSE);
+		}
 	}
 
 	public function sendAttributes(bool $sendAll = false){
@@ -223,7 +250,7 @@ abstract class AbstractHorse extends Tamable{
 				$forward *= 0.25;
 			}
 
-			if($this->onGround and $this->jumpPower == 0 and $this->isRearing()){
+			if($this->onGround and $this->jumpPower === 0 and $this->isRearing() and !$this->isJumpRearing){
 				$strafe = 0;
 				$forward = 0;
 			}
@@ -236,6 +263,7 @@ abstract class AbstractHorse extends Tamable{
 				}
 
 				$this->setHorseJumping(true);
+				$this->onGround = false;
 
 				if($forward > 0){
 					$f = sin($this->yaw * M_PI / 180);
@@ -252,7 +280,8 @@ abstract class AbstractHorse extends Tamable{
 			$this->stepHeight = 1.0;
 			$this->jumpMovementFactor = $this->getAIMoveSpeed() * 0.1;
 
-			$this->setAIMoveSpeed($this->getMovementSpeed());
+			$this->setAIMoveSpeed($j = $this->getMovementSpeed());
+			$this->setMoveForward($j);
 
 			parent::moveWithHeading($strafe, $forward);
 

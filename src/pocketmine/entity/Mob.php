@@ -172,25 +172,16 @@ abstract class Mob extends Living{
 		$this->namedtag->setByte("Immobile", intval($this->isImmobile()));
 	}
 
-	/**
-	 * @param int $diff
-	 *
-	 * @return bool
-	 */
-	public function entityBaseTick(int $diff = 1) : bool{
-		$hasUpdate = parent::entityBaseTick($diff);
-
+	public function onUpdate(int $currentTick) : bool{
 		if(!$this->isImmobile()){
 			if($this->jumpTicks > 0){
 				$this->jumpTicks--;
 			}
 
 			$this->onBehaviorUpdate();
-
-			$hasUpdate = true;
 		}
 
-		return $hasUpdate;
+		return parent::onUpdate($currentTick);
 	}
 
 	protected function onBehaviorUpdate() : void{
