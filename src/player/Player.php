@@ -1117,7 +1117,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function setGamemode(GameMode $gm) : bool{
-		if($this->gamemode === $gm){
+		if($this->gamemode->equals($gm)){
 			return false;
 		}
 
