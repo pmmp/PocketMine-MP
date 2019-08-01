@@ -95,11 +95,9 @@ class Enchantment{
 	public const SLOT_TRIDENT = 0x8000;
 
 	/** @var Enchantment[] */
-	protected static $enchantments;
+	protected static $enchantments = [];
 
 	public static function init() : void{
-		self::$enchantments = new \SplFixedArray(256);
-
 		self::register(new ProtectionEnchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, self::SLOT_NONE, 4, 0.75, null));
 		self::register(new ProtectionEnchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::SLOT_ARMOR, self::SLOT_NONE, 4, 1.25, [
 			EntityDamageEvent::CAUSE_FIRE,
