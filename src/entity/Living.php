@@ -213,24 +213,6 @@ abstract class Living extends Entity{
 	}
 
 	/**
-	 * @internal
-	 *
-	 * @param EffectInstance $effect
-	 * @param bool           $replacesOldEffect
-	 */
-	public function onEffectAdded(EffectInstance $effect, bool $replacesOldEffect) : void{
-
-	}
-
-	/**
-	 * @internal
-	 * @param EffectInstance $effect
-	 */
-	public function onEffectRemoved(EffectInstance $effect) : void{
-
-	}
-
-	/**
 	 * Causes the mob to consume the given Consumable object, applying applicable effects, health bonuses, food bonuses,
 	 * etc.
 	 *

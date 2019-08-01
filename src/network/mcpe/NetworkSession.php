@@ -184,6 +184,12 @@ class NetworkSession{
 		$this->player = new $class($this->server, $this, $this->info, $this->authenticated);
 
 		$this->invManager = new InventoryManager($this->player, $this);
+		$this->player->getEffects()->onEffectAdd(function(EffectInstance $effect, bool $replacesOldEffect) : void{
+			$this->onEntityEffectAdded($this->player, $effect, $replacesOldEffect);
+		});
+		$this->player->getEffects()->onEffectRemove(function(EffectInstance $effect) : void{
+			$this->onEntityEffectRemoved($this->player, $effect);
+		});
 	}
 
 	public function getPlayer() : ?Player{

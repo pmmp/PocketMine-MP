@@ -1453,14 +1453,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->isCreative() or parent::canBreathe();
 	}
 
-	public function onEffectAdded(EffectInstance $effect, bool $replacesOldEffect) : void{
-	    $this->networkSession->onEntityEffectAdded($this, $effect, $replacesOldEffect);
-	}
-
-	public function onEffectRemoved(EffectInstance $effect) : void{
-	    $this->networkSession->onEntityEffectRemoved($this, $effect);
-	}
-
 	/**
 	 * Returns whether the player can interact with the specified position. This checks distance and direction.
 	 *

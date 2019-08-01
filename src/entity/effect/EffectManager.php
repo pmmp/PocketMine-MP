@@ -27,7 +27,9 @@ use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\utils\Color;
+use pocketmine\utils\Utils;
 use function abs;
+use function spl_object_id;
 
 class EffectManager{
 
@@ -41,6 +43,11 @@ class EffectManager{
 	protected $bubbleColor;
 	/** @var bool */
 	protected $onlyAmbientEffects = false;
+
+	/** @var \Closure[] */
+	protected $effectAddHooks = [];
+	/** @var \Closure[] */
+	protected $effectRemoveHooks = [];
 
 	public function __construct(Living $entity){
 		$this->entity = $entity;
@@ -78,14 +85,18 @@ class EffectManager{
 			$ev->call();
 			if($ev->isCancelled()){
 				if($hasExpired and !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
-					$this->entity->onEffectAdded($ev->getEffect(), true);
+					foreach($this->effectAddHooks as $hook){
+						$hook($ev->getEffect(), true);
+					}
 				}
 				return;
 			}
 
 			unset($this->effects[$index]);
 			$effect->getType()->remove($this->entity, $effect);
-			$this->entity->onEffectRemoved($effect);
+			foreach($this->effectRemoveHooks as $hook){
+				$hook($effect);
+			}
 
 			$this->recalculateEffectColor();
 		}
@@ -151,7 +162,9 @@ class EffectManager{
 		}
 
 		$effect->getType()->add($this->entity, $effect);
-		$this->entity->onEffectAdded($effect, $oldEffect !== null);
+		foreach($this->effectAddHooks as $hook){
+			$hook($effect, $oldEffect !== null);
+		}
 
 		$this->effects[$index] = $effect;
 
@@ -217,5 +230,15 @@ class EffectManager{
 		}
 
 		return !empty($this->effects);
+	}
+
+	public function onEffectAdd(\Closure $closure) : void{
+		Utils::validateCallableSignature(function(EffectInstance $effect, bool $replacesOldEffect) : void{}, $closure);
+		$this->effectAddHooks[spl_object_id($closure)] = $closure;
+	}
+
+	public function onEffectRemove(\Closure $closure) : void{
+		Utils::validateCallableSignature(function(EffectInstance $effect) : void{}, $closure);
+		$this->effectRemoveHooks[spl_object_id($closure)] = $closure;
 	}
 }
