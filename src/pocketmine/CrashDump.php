@@ -291,7 +291,7 @@ class CrashDump{
 
 	private function determinePluginFromFile(string $filePath, bool $crashFrame) : bool{
 		$frameCleanPath = Utils::cleanPath($filePath); //this will be empty in phar stub
-		if($frameCleanPath !== "" and strpos($frameCleanPath, "src/pocketmine/") === false and strpos($frameCleanPath, "vendor/pocketmine/") === false and file_exists($filePath)){
+		if(strpos($frameCleanPath, "plugins") === 0 and file_exists($filePath)){
 			$this->addLine();
 			if($crashFrame){
 				$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
