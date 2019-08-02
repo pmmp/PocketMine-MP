@@ -792,16 +792,6 @@ class PluginManager{
 			throw new PluginException($event . " is not an Event");
 		}
 
-		$tags = Utils::parseDocComment((string) (new \ReflectionClass($event))->getDocComment());
-		if(isset($tags["deprecated"]) and $this->server->getProperty("settings.deprecated-verbose", true)){
-			$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.deprecatedEvent", [
-				$plugin->getName(),
-				$event,
-				get_class($listener) . "->" . ($executor instanceof MethodEventExecutor ? $executor->getMethod() : "<unknown>")
-			]));
-		}
-
-
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin attempted to register " . $event . " while not enabled");
 		}
