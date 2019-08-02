@@ -1918,18 +1918,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * @deprecated This is a proxy for sendDataPacket() and will be removed in the next major release.
-	 * @see Player::sendDataPacket()
-	 *
-	 * @param ClientboundPacket $packet
-	 *
-	 * @return bool
-	 */
-	public function dataPacket(ClientboundPacket $packet) : bool{
-		return $this->sendDataPacket($packet, false);
-	}
-
-	/**
 	 * Adds a title text to the user's screen, with an optional subtitle.
 	 *
 	 * @param string $title
