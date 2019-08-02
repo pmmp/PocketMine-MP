@@ -25,7 +25,7 @@ namespace pocketmine\entity;
 
 use function array_filter;
 
-class AttributeMap implements \ArrayAccess{
+class AttributeMap{
 	/** @var Attribute[] */
 	private $attributes = [];
 
@@ -56,30 +56,5 @@ class AttributeMap implements \ArrayAccess{
 		return array_filter($this->attributes, function(Attribute $attribute){
 			return $attribute->isSyncable() and $attribute->isDesynchronized();
 		});
-	}
-
-	public function offsetExists($offset) : bool{
-		return isset($this->attributes[$offset]);
-	}
-
-	/**
-	 * @param string $offset
-	 *
-	 * @return float
-	 */
-	public function offsetGet($offset) : float{
-		return $this->attributes[$offset]->getValue();
-	}
-
-	/**
-	 * @param string $offset
-	 * @param float  $value
-	 */
-	public function offsetSet($offset, $value) : void{
-		$this->attributes[$offset]->setValue($value);
-	}
-
-	public function offsetUnset($offset) : void{
-		throw new \RuntimeException("Could not unset an attribute from an attribute map");
 	}
 }
