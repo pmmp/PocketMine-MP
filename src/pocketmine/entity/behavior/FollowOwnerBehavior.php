@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\behavior;
 
+use pocketmine\entity\Entity;
 use pocketmine\entity\Tamable;
 use pocketmine\Player;
 
@@ -36,52 +37,64 @@ class FollowOwnerBehavior extends Behavior{
 	protected $followDelay = 0;
 	/** @var Tamable */
 	protected $mob;
+	protected $minDistance;
+	protected $maxDistance;
+	/** @var Entity */
+	protected $owner;
 
-	public function __construct(Tamable $mob, float $speedMultiplier){
+	public function __construct(Tamable $mob, float $speedMultiplier, float $minDistance, float $maxDistance){
 		parent::__construct($mob);
 
+		$this->minDistance = $minDistance;
+		$this->maxDistance = $maxDistance;
 		$this->speedMultiplier = $speedMultiplier;
+
 		$this->mutexBits = 3;
 	}
 
 	public function canStart() : bool{
-		if(!$this->mob->isTamed()) return false;
-		if($this->mob->getOwningEntity() === null or $this->mob->isLeashed() or $this->mob->isSitting()) return false;
+		$owner = $this->mob->getOwningEntity();
 
-		return true;
+		if($owner !== null and !($owner instanceof Player and $owner->isSpectator()) and !$this->mob->isSitting() and $this->mob->distanceSquared($owner) > ($this->minDistance ** 2)){
+			$this->owner = $owner;
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public function onStart() : void{
-		$this->mob->getNavigator()->tryMoveTo($this->mob->getOwningEntity(), $this->speedMultiplier);
+		$this->followDelay = 0;
+		$this->mob->getNavigator()->setAvoidsWater(false);
+	}
+
+	public function canContinue() : bool{
+		return $this->mob->getNavigator()->isBusy() and $this->mob->distanceSquared($this->owner) > ($this->maxDistance ** 2) and !$this->mob->isSitting();
 	}
 
 	public function onTick() : void{
-		$owner = $this->mob->getOwningEntity();
+		$this->mob->getLookHelper()->setLookPositionWithEntity($this->owner, 10, $this->mob->getVerticalFaceSpeed());
 
-		$distanceToPlayer = $this->mob->distanceSquared($owner);
+		if(!$this->mob->isSitting()){
+			if(--$this->followDelay <= 0){
+				$this->followDelay = 10;
 
-		if($distanceToPlayer < 1.75){
-			$this->mob->getNavigator()->clearPath();
-			$this->mob->getLookHelper()->setLookPositionWithEntity($owner, 10, $this->mob->getVerticalFaceSpeed());
-			return;
-		}
+				$this->mob->getNavigator()->tryMoveTo($this->owner, $this->speedMultiplier);
 
-		$this->followDelay--;
-
-		if($this->followDelay < 0){
-			$this->followDelay = 10;
-
-			$this->mob->getNavigator()->tryMoveTo($owner, $this->speedMultiplier);
-			if($distanceToPlayer > 144){
-				$this->mob->teleport($owner);
-				$this->mob->getNavigator()->clearPath();
+				if(!$this->mob->isLeashed()){
+					if($this->mob->distanceSquared($this->owner) > 144){
+						$this->mob->teleport($this->owner);
+						$this->mob->getNavigator()->clearPath(true);
+					}
+				}
 			}
 		}
-
-		$this->mob->getLookHelper()->setLookPositionWithEntity($owner, 10, $this->mob->getVerticalFaceSpeed());
 	}
 
 	public function onEnd() : void{
-		$this->mob->pitch = 0;
+		$this->mob->getNavigator()->clearPath(true);
+		$this->owner = null;
+		$this->mob->getNavigator()->setAvoidsWater(true);
 	}
 }

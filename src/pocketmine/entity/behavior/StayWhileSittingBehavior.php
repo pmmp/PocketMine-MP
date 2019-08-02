@@ -44,7 +44,7 @@ class StayWhileSittingBehavior extends Behavior{
 			return $owner === null ? true : ($this->mob->distanceSquared($owner) < 144 and $this->mob->getTargetEntity() !== null ? false : $this->isSitting);
 		}
 
-		return true;
+		return false;
 	}
 
 	public function onStart() : void{

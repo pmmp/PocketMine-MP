@@ -58,7 +58,7 @@ class Cat extends Tamable{
 			Item::RAW_SALMON,
 			Item::RAW_FISH
 		], 1.0));
-		$this->behaviorPool->setBehavior(5, new FollowOwnerBehavior($this, 1.0));
+		$this->behaviorPool->setBehavior(5, new FollowOwnerBehavior($this, 1, 10, 2));
 		$this->behaviorPool->setBehavior(6, new LookAtPlayerBehavior($this, 14.0));
 		$this->behaviorPool->setBehavior(7, new RandomLookAroundBehavior($this));
 
