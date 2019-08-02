@@ -780,7 +780,6 @@ class Server{
 	 * @return OfflinePlayer|Player
 	 */
 	public function getOfflinePlayer(string $name){
-		$name = strtolower($name);
 		$result = $this->getPlayerExact($name);
 
 		if($result === null){
