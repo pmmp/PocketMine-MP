@@ -52,7 +52,7 @@ class Cat extends Tamable{
 	protected function addBehaviors() : void{
 		$this->behaviorPool->setBehavior(0, new FloatBehavior($this));
 		$this->behaviorPool->setBehavior(1, new PanicBehavior($this, 2.0));
-		$this->behaviorPool->setBehavior(2, $this-$this->behaviorSitting = new StayWhileSittingBehavior($this));
+		$this->behaviorPool->setBehavior(2, $this->behaviorSitting = new StayWhileSittingBehavior($this));
 		$this->behaviorPool->setBehavior(3, new MateBehavior($this, 2.0));
 		$this->behaviorPool->setBehavior(4, new TemptBehavior($this, [
 			Item::RAW_SALMON,
