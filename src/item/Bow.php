@@ -51,7 +51,7 @@ class Bow extends Tool{
 		}
 
 		$nbt = EntityFactory::createBaseNBT(
-			$player->add(0, $player->getEyeHeight(), 0),
+			$player->getEyePos(),
 			$player->getDirectionVector(),
 			($player->yaw > 180 ? 360 : 0) - $player->yaw,
 			-$player->pitch

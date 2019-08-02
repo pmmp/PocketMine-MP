@@ -1463,7 +1463,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function canInteract(Vector3 $pos, float $maxDistance, float $maxDiff = M_SQRT3 / 2) : bool{
-		$eyePos = $this->getPosition()->add(0, $this->getEyeHeight(), 0);
+		$eyePos = $this->getEyePos();
 		if($eyePos->distanceSquared($pos) > $maxDistance ** 2){
 			return false;
 		}

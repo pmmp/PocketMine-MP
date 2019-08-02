@@ -96,7 +96,7 @@ class SplashPotion extends Throwable{
 			if(!$this->willLinger()){
 				foreach($this->world->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
 					if($entity instanceof Living and $entity->isAlive()){
-						$distanceSquared = $entity->add(0, $entity->getEyeHeight(), 0)->distanceSquared($this);
+						$distanceSquared = $entity->getEyePos()->distanceSquared($this);
 						if($distanceSquared > 16){ //4 blocks
 							continue;
 						}

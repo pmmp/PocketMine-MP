@@ -53,7 +53,7 @@ abstract class ProjectileItem extends Item{
 	}
 
 	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
-		$nbt = EntityFactory::createBaseNBT($player->add(0, $player->getEyeHeight(), 0), $directionVector, $player->yaw, $player->pitch);
+		$nbt = EntityFactory::createBaseNBT($player->getEyePos(), $directionVector, $player->yaw, $player->pitch);
 		$this->addExtraTags($nbt);
 
 		$class = $this->getProjectileEntityClass();

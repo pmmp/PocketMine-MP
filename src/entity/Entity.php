@@ -1171,6 +1171,10 @@ abstract class Entity extends Location{
 		return $this->eyeHeight;
 	}
 
+	public function getEyePos() : Vector3{
+		return new Vector3($this->x, $this->y + $this->getEyeHeight(), $this->z);
+	}
+
 	public function onCollideWithPlayer(Player $player) : void{
 
 	}
