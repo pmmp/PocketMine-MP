@@ -1627,7 +1627,7 @@ abstract class Entity extends Location{
 	}
 
 	public function spawnToAll() : void{
-		if($this->chunk === null or $this->closed){
+		if($this->closed){
 			return;
 		}
 		foreach($this->world->getViewersForPosition($this) as $player){
