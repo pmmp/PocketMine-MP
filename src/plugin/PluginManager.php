@@ -570,16 +570,6 @@ class PluginManager{
 
 		$handlerName = Utils::getNiceClosureName($handler);
 
-		$tags = Utils::parseDocComment((string) (new \ReflectionClass($event))->getDocComment());
-		if(isset($tags["deprecated"]) and $this->server->getProperty("settings.deprecated-verbose", true)){
-			$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.deprecatedEvent", [
-				$plugin->getName(),
-				$event,
-				$handlerName
-			]));
-		}
-
-
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin attempted to register event handler " . $handlerName . "() to event " . $event . " while not enabled");
 		}
