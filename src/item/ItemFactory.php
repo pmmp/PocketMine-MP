@@ -31,6 +31,7 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Living;
+use pocketmine\inventory\ArmorInventory;
 use pocketmine\nbt\tag\CompoundTag;
 use function constant;
 use function defined;
@@ -351,26 +352,26 @@ class ItemFactory{
 	}
 
 	private static function registerArmorItems() : void{
-		self::register(new Boots(ItemIds::CHAIN_BOOTS, 0, "Chainmail Boots", new ArmorTypeInfo(1, 196)));
-		self::register(new Boots(ItemIds::DIAMOND_BOOTS, 0, "Diamond Boots", new ArmorTypeInfo(3, 430)));
-		self::register(new Boots(ItemIds::GOLDEN_BOOTS, 0, "Golden Boots", new ArmorTypeInfo(1, 92)));
-		self::register(new Boots(ItemIds::IRON_BOOTS, 0, "Iron Boots", new ArmorTypeInfo(2, 196)));
-		self::register(new Boots(ItemIds::LEATHER_BOOTS, 0, "Leather Boots", new ArmorTypeInfo(1, 66)));
-		self::register(new Chestplate(ItemIds::CHAIN_CHESTPLATE, 0, "Chainmail Chestplate", new ArmorTypeInfo(5, 241)));
-		self::register(new Chestplate(ItemIds::DIAMOND_CHESTPLATE, 0, "Diamond Chestplate", new ArmorTypeInfo(8, 529)));
-		self::register(new Chestplate(ItemIds::GOLDEN_CHESTPLATE, 0, "Golden Chestplate", new ArmorTypeInfo(5, 113)));
-		self::register(new Chestplate(ItemIds::IRON_CHESTPLATE, 0, "Iron Chestplate", new ArmorTypeInfo(6, 241)));
-		self::register(new Chestplate(ItemIds::LEATHER_CHESTPLATE, 0, "Leather Tunic", new ArmorTypeInfo(3, 81)));
-		self::register(new Helmet(ItemIds::CHAIN_HELMET, 0, "Chainmail Helmet", new ArmorTypeInfo(2, 166)));
-		self::register(new Helmet(ItemIds::DIAMOND_HELMET, 0, "Diamond Helmet", new ArmorTypeInfo(3, 364)));
-		self::register(new Helmet(ItemIds::GOLDEN_HELMET, 0, "Golden Helmet", new ArmorTypeInfo(2, 78)));
-		self::register(new Helmet(ItemIds::IRON_HELMET, 0, "Iron Helmet", new ArmorTypeInfo(2, 166)));
-		self::register(new Helmet(ItemIds::LEATHER_HELMET, 0, "Leather Cap", new ArmorTypeInfo(1, 56)));
-		self::register(new Leggings(ItemIds::CHAIN_LEGGINGS, 0, "Chainmail Leggings", new ArmorTypeInfo(4, 226)));
-		self::register(new Leggings(ItemIds::DIAMOND_LEGGINGS, 0, "Diamond Leggings", new ArmorTypeInfo(6, 496)));
-		self::register(new Leggings(ItemIds::GOLDEN_LEGGINGS, 0, "Golden Leggings", new ArmorTypeInfo(3, 106)));
-		self::register(new Leggings(ItemIds::IRON_LEGGINGS, 0, "Iron Leggings", new ArmorTypeInfo(5, 226)));
-		self::register(new Leggings(ItemIds::LEATHER_LEGGINGS, 0, "Leather Pants", new ArmorTypeInfo(2, 76)));
+		self::register(new Armor(ItemIds::CHAIN_BOOTS, 0, "Chainmail Boots", new ArmorTypeInfo(1, 196, ArmorInventory::SLOT_FEET)));
+		self::register(new Armor(ItemIds::DIAMOND_BOOTS, 0, "Diamond Boots", new ArmorTypeInfo(3, 430, ArmorInventory::SLOT_FEET)));
+		self::register(new Armor(ItemIds::GOLDEN_BOOTS, 0, "Golden Boots", new ArmorTypeInfo(1, 92, ArmorInventory::SLOT_FEET)));
+		self::register(new Armor(ItemIds::IRON_BOOTS, 0, "Iron Boots", new ArmorTypeInfo(2, 196, ArmorInventory::SLOT_FEET)));
+		self::register(new Armor(ItemIds::LEATHER_BOOTS, 0, "Leather Boots", new ArmorTypeInfo(1, 66, ArmorInventory::SLOT_FEET)));
+		self::register(new Armor(ItemIds::CHAIN_CHESTPLATE, 0, "Chainmail Chestplate", new ArmorTypeInfo(5, 241, ArmorInventory::SLOT_CHEST)));
+		self::register(new Armor(ItemIds::DIAMOND_CHESTPLATE, 0, "Diamond Chestplate", new ArmorTypeInfo(8, 529, ArmorInventory::SLOT_CHEST)));
+		self::register(new Armor(ItemIds::GOLDEN_CHESTPLATE, 0, "Golden Chestplate", new ArmorTypeInfo(5, 113, ArmorInventory::SLOT_CHEST)));
+		self::register(new Armor(ItemIds::IRON_CHESTPLATE, 0, "Iron Chestplate", new ArmorTypeInfo(6, 241, ArmorInventory::SLOT_CHEST)));
+		self::register(new Armor(ItemIds::LEATHER_CHESTPLATE, 0, "Leather Tunic", new ArmorTypeInfo(3, 81, ArmorInventory::SLOT_CHEST)));
+		self::register(new Armor(ItemIds::CHAIN_HELMET, 0, "Chainmail Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
+		self::register(new Armor(ItemIds::DIAMOND_HELMET, 0, "Diamond Helmet", new ArmorTypeInfo(3, 364, ArmorInventory::SLOT_HEAD)));
+		self::register(new Armor(ItemIds::GOLDEN_HELMET, 0, "Golden Helmet", new ArmorTypeInfo(2, 78, ArmorInventory::SLOT_HEAD)));
+		self::register(new Armor(ItemIds::IRON_HELMET, 0, "Iron Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
+		self::register(new Armor(ItemIds::LEATHER_HELMET, 0, "Leather Cap", new ArmorTypeInfo(1, 56, ArmorInventory::SLOT_HEAD)));
+		self::register(new Armor(ItemIds::CHAIN_LEGGINGS, 0, "Chainmail Leggings", new ArmorTypeInfo(4, 226, ArmorInventory::SLOT_LEGS)));
+		self::register(new Armor(ItemIds::DIAMOND_LEGGINGS, 0, "Diamond Leggings", new ArmorTypeInfo(6, 496, ArmorInventory::SLOT_LEGS)));
+		self::register(new Armor(ItemIds::GOLDEN_LEGGINGS, 0, "Golden Leggings", new ArmorTypeInfo(3, 106, ArmorInventory::SLOT_LEGS)));
+		self::register(new Armor(ItemIds::IRON_LEGGINGS, 0, "Iron Leggings", new ArmorTypeInfo(5, 226, ArmorInventory::SLOT_LEGS)));
+		self::register(new Armor(ItemIds::LEATHER_LEGGINGS, 0, "Leather Pants", new ArmorTypeInfo(2, 76, ArmorInventory::SLOT_LEGS)));
 	}
 
 	/**

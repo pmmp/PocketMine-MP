@@ -29,10 +29,13 @@ class ArmorTypeInfo{
 	private $defensePoints;
 	/** @var int */
 	private $maxDurability;
+	/** @var int */
+	private $armorSlot;
 
-	public function __construct(int $defensePoints, int $maxDurability){
+	public function __construct(int $defensePoints, int $maxDurability, int $armorSlot){
 		$this->defensePoints = $defensePoints;
 		$this->maxDurability = $maxDurability;
+		$this->armorSlot = $armorSlot;
 	}
 
 	/**
@@ -47,5 +50,12 @@ class ArmorTypeInfo{
 	 */
 	public function getMaxDurability() : int{
 		return $this->maxDurability;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getArmorSlot() : int{
+		return $this->armorSlot;
 	}
 }

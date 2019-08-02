@@ -38,7 +38,7 @@ use pocketmine\utils\Color;
 use function lcg_value;
 use function mt_rand;
 
-abstract class Armor extends Durable{
+class Armor extends Durable{
 
 	public const TAG_CUSTOM_COLOR = "customColor"; //TAG_Int
 
@@ -65,7 +65,9 @@ abstract class Armor extends Durable{
 	 * @see ArmorInventory
 	 * @return int
 	 */
-	abstract public function getArmorSlot() : int;
+	public function getArmorSlot() : int{
+		return $this->armorInfo->getArmorSlot();
+	}
 
 	public function getMaxStackSize() : int{
 		return 1;
