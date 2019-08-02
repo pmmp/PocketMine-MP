@@ -405,7 +405,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	protected function sendSpawnPacket(Player $player) : void{
 		if(!($this instanceof Player)){
-			/* we don't use Server->updatePlayerListData() because that uses batches, which could cause race conditions in async compression mode */
 			$player->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), $this->skin)]));
 		}
 
