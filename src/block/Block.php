@@ -734,16 +734,4 @@ class Block extends Position{
 
 		return $currentHit;
 	}
-
-	/**
-	 * @param self $self
-	 *
-	 * @return static
-	 */
-	public static function cast(self $self){
-		if(!($self instanceof static)){
-			throw new \TypeError("Cannot cast from " . self::class . " to " . static::class);
-		}
-		return $self;
-	}
 }
