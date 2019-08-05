@@ -35,7 +35,6 @@ class PlayerCursorInventory extends BaseInventory{
 	}
 
 	/**
-	 * This override is here for documentation and code completion purposes only.
 	 * @return Player
 	 */
 	public function getHolder(){

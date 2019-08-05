@@ -132,7 +132,6 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	/**
-	 * This override is here for documentation and code completion purposes only.
 	 * @return Human|Player
 	 */
 	public function getHolder(){
