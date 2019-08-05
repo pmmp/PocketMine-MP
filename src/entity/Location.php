@@ -21,9 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world;
+namespace pocketmine\entity;
 
 use pocketmine\math\Vector3;
+use pocketmine\world\Position;
+use pocketmine\world\World;
 
 class Location extends Position{
 

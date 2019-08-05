@@ -59,7 +59,7 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\Location;
+use pocketmine\entity\Location;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function abs;
