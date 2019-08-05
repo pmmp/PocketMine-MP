@@ -101,7 +101,6 @@ class Chest extends Spawnable implements Container, Nameable{
 			if($this->doubleInventory !== null){
 				if($this->isPaired() and $this->world->isChunkLoaded($this->pairX >> 4, $this->pairZ >> 4)){
 					$this->doubleInventory->removeAllViewers();
-					$this->doubleInventory->invalidate();
 					if(($pair = $this->getPair()) !== null){
 						$pair->doubleInventory = null;
 					}
