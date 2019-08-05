@@ -50,8 +50,8 @@ abstract class Tile extends Position{
 	protected $timings;
 
 	public function __construct(World $world, Vector3 $pos){
-		$this->timings = Timings::getTileEntityTimings($this);
 		parent::__construct($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $world);
+		$this->timings = Timings::getTileEntityTimings($this);
 	}
 
 	/**

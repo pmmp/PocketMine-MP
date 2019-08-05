@@ -42,8 +42,8 @@ class Hopper extends Spawnable implements Container, Nameable{
 	private $transferCooldown = 0;
 
 	public function __construct(World $world, Vector3 $pos){
-		$this->inventory = new HopperInventory($this);
 		parent::__construct($world, $pos);
+		$this->inventory = new HopperInventory($this);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{

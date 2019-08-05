@@ -54,8 +54,8 @@ class Chest extends Spawnable implements Container, Nameable{
 	private $pairZ;
 
 	public function __construct(World $world, Vector3 $pos){
-		$this->inventory = new ChestInventory($this);
 		parent::__construct($world, $pos);
+		$this->inventory = new ChestInventory($this);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
@@ -152,9 +152,9 @@ class Chest extends Spawnable implements Container, Nameable{
 					$this->doubleInventory = $pair->doubleInventory;
 				}else{
 					if(($pair->x + ($pair->z << 15)) > ($this->x + ($this->z << 15))){ //Order them correctly
-						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($pair, $this);
+						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($pair->inventory, $this->inventory);
 					}else{
-						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($this, $pair);
+						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($this->inventory, $pair->inventory);
 					}
 				}
 			}

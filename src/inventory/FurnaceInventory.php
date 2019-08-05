@@ -23,23 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\block\tile\Furnace;
 use pocketmine\item\Item;
+use pocketmine\world\Position;
 
 class FurnaceInventory extends BlockInventory{
-	/** @var Furnace */
-	protected $holder;
 
-	public function __construct(Furnace $tile){
-		parent::__construct($tile, 3);
-	}
-
-	/**
-	 * This override is here for documentation and code completion purposes only.
-	 * @return Furnace
-	 */
-	public function getHolder(){
-		return $this->holder;
+	public function __construct(Position $holder){
+		parent::__construct($holder, 3);
 	}
 
 	/**

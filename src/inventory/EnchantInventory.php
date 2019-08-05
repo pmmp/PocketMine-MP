@@ -28,19 +28,8 @@ use pocketmine\world\Position;
 
 class EnchantInventory extends BlockInventory{
 
-	/** @var Position */
-	protected $holder;
-
-	public function __construct(Position $pos){
-		parent::__construct($pos->asPosition(), 2);
-	}
-
-	/**
-	 * This override is here for documentation and code completion purposes only.
-	 * @return Position
-	 */
-	public function getHolder(){
-		return $this->holder;
+	public function __construct(Position $holder){
+		parent::__construct($holder, 2);
 	}
 
 	public function onClose(Player $who) : void{

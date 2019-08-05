@@ -23,19 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\math\Vector3;
+use pocketmine\world\Position;
 
 class BlockInventory extends BaseInventory{
-	/** @var Vector3 */
+	/** @var Position */
 	protected $holder;
 
-	public function __construct(Vector3 $holder, int $size){
-		$this->holder = $holder;
+	public function __construct(Position $holder, int $size){
+		$this->holder = $holder->asPosition();
 		parent::__construct($size);
 	}
 
 	/**
-	 * @return Vector3
+	 * @return Position
 	 */
 	public function getHolder(){
 		return $this->holder;

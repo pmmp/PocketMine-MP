@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\block\tile\Chest;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 use function count;
 
 class DoubleChestInventory extends ChestInventory implements InventoryHolder{
@@ -34,9 +34,9 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	/** @var ChestInventory */
 	private $right;
 
-	public function __construct(Chest $left, Chest $right){
-		$this->left = $left->getRealInventory();
-		$this->right = $right->getRealInventory();
+	public function __construct(ChestInventory $left, ChestInventory $right){
+		$this->left = $left;
+		$this->right = $right;
 		BaseInventory::__construct($this->left->getSize() + $this->right->getSize());
 	}
 
@@ -45,7 +45,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	}
 
 	/**
-	 * @return Chest
+	 * @return Position
 	 */
 	public function getHolder(){
 		return $this->left->getHolder();

@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\block\tile\EnderChest;
 use pocketmine\world\Position;
 use pocketmine\world\sound\EnderChestCloseSound;
 use pocketmine\world\sound\EnderChestOpenSound;
@@ -31,21 +30,15 @@ use pocketmine\world\sound\Sound;
 
 class EnderChestInventory extends ChestInventory{
 
-	/** @var Position */
-	protected $holder;
-
 	public function __construct(){
-		BlockInventory::__construct(new Position(), 27);
+		parent::__construct(new Position(0, 0, 0, null));
 	}
 
 	/**
-	 * Set the holder's position to that of a tile
-	 *
-	 * @param EnderChest $enderChest
+	 * @param Position $pos
 	 */
-	public function setHolderPosition(EnderChest $enderChest) : void{
-		$this->holder->setComponents($enderChest->getFloorX(), $enderChest->getFloorY(), $enderChest->getFloorZ());
-		$this->holder->setWorld($enderChest->getWorld());
+	public function setHolderPosition(Position $pos) : void{
+		$this->holder = $pos->asPosition();
 	}
 
 	protected function getOpenSound() : Sound{
@@ -54,13 +47,5 @@ class EnderChestInventory extends ChestInventory{
 
 	protected function getCloseSound() : Sound{
 		return new EnderChestCloseSound();
-	}
-
-	/**
-	 * This override is here for documentation and code completion purposes only.
-	 * @return Position
-	 */
-	public function getHolder(){
-		return $this->holder;
 	}
 }

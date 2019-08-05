@@ -56,14 +56,13 @@ class Furnace extends Spawnable implements Container, Nameable{
 	private $maxFuelTime = 0;
 
 	public function __construct(World $world, Vector3 $pos){
+		parent::__construct($world, $pos);
 		$this->inventory = new FurnaceInventory($this);
 		$this->inventory->addChangeListeners(CallbackInventoryChangeListener::onAnyChange(
 			function(Inventory $unused) : void{
 				$this->world->scheduleDelayedBlockUpdate($this->asVector3(), 1);
 			})
 		);
-
-		parent::__construct($world, $pos);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{

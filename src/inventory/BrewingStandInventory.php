@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\math\Vector3;
+use pocketmine\world\Position;
 
 class BrewingStandInventory extends BlockInventory{
 
-	public function __construct(Vector3 $holder, int $size = 5){
+	public function __construct(Position $holder, int $size = 5){
 		parent::__construct($holder, $size);
 	}
 }

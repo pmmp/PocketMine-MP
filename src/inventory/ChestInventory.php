@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\block\tile\Chest;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 use pocketmine\world\sound\ChestCloseSound;
 use pocketmine\world\sound\ChestOpenSound;
 use pocketmine\world\sound\Sound;
@@ -33,22 +33,11 @@ use function count;
 
 class ChestInventory extends BlockInventory{
 
-	/** @var Chest */
-	protected $holder;
-
 	/**
-	 * @param Chest $tile
+	 * @param Position $holder
 	 */
-	public function __construct(Chest $tile){
-		parent::__construct($tile, 27);
-	}
-
-	/**
-	 * This override is here for documentation and code completion purposes only.
-	 * @return Chest
-	 */
-	public function getHolder(){
-		return $this->holder;
+	public function __construct(Position $holder){
+		parent::__construct($holder, 27);
 	}
 
 	protected function getOpenSound() : Sound{
