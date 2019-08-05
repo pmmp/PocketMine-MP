@@ -64,17 +64,17 @@ class Lantern extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canAttachTo($this->world->getBlock($blockReplace->up())) and !$this->canAttachTo($this->world->getBlock($blockReplace->down()))){
+		if(!$this->canAttachTo($this->pos->getWorld()->getBlock($blockReplace->getPos()->up())) and !$this->canAttachTo($this->pos->getWorld()->getBlock($blockReplace->getPos()->down()))){
 			return false;
 		}
 
-		$this->hanging = ($face === Facing::DOWN or !$this->canAttachTo($this->world->getBlock($blockReplace->down())));
+		$this->hanging = ($face === Facing::DOWN or !$this->canAttachTo($this->pos->getWorld()->getBlock($blockReplace->getPos()->down())));
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canAttachTo($this->world->getBlock($this->hanging ? $this->up() : $this->down()))){
-			$this->world->useBreakOn($this);
+		if(!$this->canAttachTo($this->pos->getWorld()->getBlock($this->hanging ? $this->pos->up() : $this->pos->down()))){
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 }

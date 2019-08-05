@@ -52,7 +52,7 @@ class TallGrass extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){ //Replace with common break method
-			$this->world->useBreakOn($this);
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 

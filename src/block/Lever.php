@@ -38,7 +38,7 @@ class Lever extends Flowable{
 	protected const TOP = 2;
 
 	/** @var int */
-	protected $position = self::BOTTOM;
+	protected $leverPos = self::BOTTOM;
 	/** @var int */
 	protected $facing = Facing::NORTH;
 	/** @var bool */
@@ -49,9 +49,9 @@ class Lever extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		if($this->position === self::BOTTOM){
+		if($this->leverPos === self::BOTTOM){
 			$rotationMeta = Facing::axis($this->facing) === Facing::AXIS_Z ? 7 : 0;
-		}elseif($this->position === self::TOP){
+		}elseif($this->leverPos === self::TOP){
 			$rotationMeta = Facing::axis($this->facing) === Facing::AXIS_Z ? 5 : 6;
 		}else{
 			$rotationMeta = 6 - BlockDataSerializer::writeHorizontalFacing($this->facing);
@@ -62,13 +62,13 @@ class Lever extends Flowable{
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$rotationMeta = $stateMeta & 0x07;
 		if($rotationMeta === 5 or $rotationMeta === 6){
-			$this->position = self::TOP;
+			$this->leverPos = self::TOP;
 			$this->facing = $rotationMeta === 5 ? Facing::SOUTH : Facing::EAST;
 		}elseif($rotationMeta === 7 or $rotationMeta === 0){
-			$this->position = self::BOTTOM;
+			$this->leverPos = self::BOTTOM;
 			$this->facing = $rotationMeta === 7 ? Facing::SOUTH : Facing::EAST;
 		}else{
-			$this->position = self::SIDE;
+			$this->leverPos = self::SIDE;
 			$this->facing = BlockDataSerializer::readHorizontalFacing(6 - $rotationMeta);
 		}
 
@@ -88,34 +88,34 @@ class Lever extends Flowable{
 			if($player !== null){
 				$this->facing = Facing::opposite($player->getHorizontalFacing());
 			}
-			$this->position = $face === Facing::DOWN ? self::BOTTOM : self::TOP;
+			$this->leverPos = $face === Facing::DOWN ? self::BOTTOM : self::TOP;
 		}else{
 			$this->facing = $face;
-			$this->position = self::SIDE;
+			$this->leverPos = self::SIDE;
 		}
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->position === self::BOTTOM){
+		if($this->leverPos === self::BOTTOM){
 			$face = Facing::UP;
-		}elseif($this->position === self::TOP){
+		}elseif($this->leverPos === self::TOP){
 			$face = Facing::DOWN;
 		}else{
 			$face = Facing::opposite($this->facing);
 		}
 
 		if(!$this->getSide($face)->isSolid()){
-			$this->world->useBreakOn($this);
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->powered = !$this->powered;
-		$this->world->setBlock($this, $this);
-		$this->world->addSound(
-			$this->add(0.5, 0.5, 0.5),
+		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->pos->getWorld()->addSound(
+			$this->pos->add(0.5, 0.5, 0.5),
 			$this->powered ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
 		);
 		return true;

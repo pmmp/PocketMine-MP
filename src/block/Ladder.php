@@ -66,7 +66,7 @@ class Ladder extends Transparent{
 	}
 
 	public function onEntityInside(Entity $entity) : void{
-		if($entity->asVector3()->floor()->distanceSquared($this) < 1){ //entity coordinates must be inside block
+		if($entity->asVector3()->floor()->distanceSquared($this->pos) < 1){ //entity coordinates must be inside block
 			$entity->resetFallDistance();
 			$entity->onGround = true;
 		}
@@ -88,7 +88,7 @@ class Ladder extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){ //Replace with common break method
-			$this->world->useBreakOn($this);
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 }

@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world;
 
-use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 use pocketmine\world\format\Chunk;
 
@@ -74,7 +73,7 @@ interface ChunkListener{
 	/**
 	 * This method will be called when a block changes in a registered chunk
 	 *
-	 * @param Block|Vector3 $block
+	 * @param Vector3 $block
 	 */
 	public function onBlockChanged(Vector3 $block) : void;
 }

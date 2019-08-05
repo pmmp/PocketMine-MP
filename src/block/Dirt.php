@@ -38,7 +38,7 @@ class Dirt extends Opaque{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP and $item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->getWorld()->setBlock($this, VanillaBlocks::FARMLAND());
+			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::FARMLAND());
 
 			return true;
 		}

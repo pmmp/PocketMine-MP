@@ -52,27 +52,27 @@ class Grass extends Opaque{
 	}
 
 	public function onRandomTick() : void{
-		$lightAbove = $this->world->getFullLightAt($this->x, $this->y + 1, $this->z);
-		if($lightAbove < 4 and $this->world->getBlockAt($this->x, $this->y + 1, $this->z)->getLightFilter() >= 2){
+		$lightAbove = $this->pos->getWorld()->getFullLightAt($this->pos->x, $this->pos->y + 1, $this->pos->z);
+		if($lightAbove < 4 and $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z)->getLightFilter() >= 2){
 			//grass dies
 			$ev = new BlockSpreadEvent($this, $this, VanillaBlocks::DIRT());
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->world->setBlock($this, $ev->getNewState(), false);
+				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState(), false);
 			}
 		}elseif($lightAbove >= 9){
 			//try grass spread
 			for($i = 0; $i < 4; ++$i){
-				$x = mt_rand($this->x - 1, $this->x + 1);
-				$y = mt_rand($this->y - 3, $this->y + 1);
-				$z = mt_rand($this->z - 1, $this->z + 1);
+				$x = mt_rand($this->pos->x - 1, $this->pos->x + 1);
+				$y = mt_rand($this->pos->y - 3, $this->pos->y + 1);
+				$z = mt_rand($this->pos->z - 1, $this->pos->z + 1);
 
-				$b = $this->world->getBlockAt($x, $y, $z);
+				$b = $this->pos->getWorld()->getBlockAt($x, $y, $z);
 				if(
 					!($b instanceof Dirt) or
 					$b instanceof CoarseDirt or
-					$this->world->getFullLightAt($x, $y + 1, $z) < 4 or
-					$this->world->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
+					$this->pos->getWorld()->getFullLightAt($x, $y + 1, $z) < 4 or
+					$this->pos->getWorld()->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
 				){
 					continue;
 				}
@@ -80,7 +80,7 @@ class Grass extends Opaque{
 				$ev = new BlockSpreadEvent($b, $this, VanillaBlocks::GRASS());
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$this->world->setBlock($b, $ev->getNewState(), false);
+					$this->pos->getWorld()->setBlock($b->pos, $ev->getNewState(), false);
 				}
 			}
 		}
@@ -92,17 +92,17 @@ class Grass extends Opaque{
 		}
 		if($item instanceof Fertilizer){
 			$item->pop();
-			TallGrassObject::growGrass($this->getWorld(), $this, new Random(mt_rand()), 8, 2);
+			TallGrassObject::growGrass($this->pos->getWorld(), $this->pos, new Random(mt_rand()), 8, 2);
 
 			return true;
 		}elseif($item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->getWorld()->setBlock($this, VanillaBlocks::FARMLAND());
+			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::FARMLAND());
 
 			return true;
 		}elseif($item instanceof Shovel and $this->getSide(Facing::UP)->getId() === BlockLegacyIds::AIR){
 			$item->applyDamage(1);
-			$this->getWorld()->setBlock($this, VanillaBlocks::GRASS_PATH());
+			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::GRASS_PATH());
 
 			return true;
 		}

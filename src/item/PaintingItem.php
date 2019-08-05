@@ -49,7 +49,7 @@ class PaintingItem extends Item{
 				continue;
 			}
 
-			if(Painting::canFit($player->getWorld(), $blockReplace, $face, true, $motive)){
+			if(Painting::canFit($player->getWorld(), $blockReplace->getPos(), $face, true, $motive)){
 				if($currentTotalDimension > $totalDimension){
 					$totalDimension = $currentTotalDimension;
 					/*
@@ -83,19 +83,21 @@ class PaintingItem extends Item{
 			return ItemUseResult::NONE();
 		}
 
-		$nbt = EntityFactory::createBaseNBT($blockReplace, null, $direction * 90, 0);
+		$replacePos = $blockReplace->getPos();
+		$clickedPos = $blockClicked->getPos();
+		$nbt = EntityFactory::createBaseNBT($replacePos, null, $direction * 90, 0);
 		$nbt->setByte("Direction", $direction);
 		$nbt->setString("Motive", $motive->getName());
-		$nbt->setInt("TileX", $blockClicked->getFloorX());
-		$nbt->setInt("TileY", $blockClicked->getFloorY());
-		$nbt->setInt("TileZ", $blockClicked->getFloorZ());
+		$nbt->setInt("TileX", $clickedPos->getFloorX());
+		$nbt->setInt("TileY", $clickedPos->getFloorY());
+		$nbt->setInt("TileZ", $clickedPos->getFloorZ());
 
 		/** @var Painting $entity */
-		$entity = EntityFactory::create(Painting::class, $blockReplace->getWorld(), $nbt);
+		$entity = EntityFactory::create(Painting::class, $replacePos->getWorld(), $nbt);
 		$this->pop();
 		$entity->spawnToAll();
 
-		$player->getWorld()->addSound($blockReplace->add(0.5, 0.5, 0.5), new PaintingPlaceSound());
+		$player->getWorld()->addSound($replacePos->add(0.5, 0.5, 0.5), new PaintingPlaceSound());
 		return ItemUseResult::SUCCESS();
 	}
 }

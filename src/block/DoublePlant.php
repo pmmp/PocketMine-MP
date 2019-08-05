@@ -55,7 +55,7 @@ class DoublePlant extends Flowable{
 		if(($id === BlockLegacyIds::GRASS or $id === BlockLegacyIds::DIRT) and $blockReplace->getSide(Facing::UP)->canBeReplaced()){
 			$top = clone $this;
 			$top->top = true;
-			$tx->addBlock($blockReplace, $this)->addBlock($blockReplace->getSide(Facing::UP), $top);
+			$tx->addBlock($blockReplace->pos, $this)->addBlock($blockReplace->pos->getSide(Facing::UP), $top);
 			return true;
 		}
 
@@ -78,7 +78,7 @@ class DoublePlant extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->isValidHalfPlant() or (!$this->top and $this->getSide(Facing::DOWN)->isTransparent())){
-			$this->getWorld()->useBreakOn($this);
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 

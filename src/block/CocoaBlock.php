@@ -84,7 +84,7 @@ class CocoaBlock extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->age < 2 and $item instanceof Fertilizer){
 			$this->age++;
-			$this->world->setBlock($this, $this);
+			$this->pos->getWorld()->setBlock($this->pos, $this);
 
 			$item->pop();
 
@@ -97,7 +97,7 @@ class CocoaBlock extends Transparent{
 	public function onNearbyBlockChange() : void{
 		$side = $this->getSide(Facing::opposite($this->facing));
 		if(!($side instanceof Wood) or !$side->getTreeType()->equals(TreeType::JUNGLE())){
-			$this->world->useBreakOn($this);
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 
@@ -108,7 +108,7 @@ class CocoaBlock extends Transparent{
 	public function onRandomTick() : void{
 		if($this->age < 2 and mt_rand(1, 5) === 1){
 			$this->age++;
-			$this->world->setBlock($this, $this);
+			$this->pos->getWorld()->setBlock($this->pos, $this);
 		}
 	}
 

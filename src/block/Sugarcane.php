@@ -57,20 +57,20 @@ class Sugarcane extends Flowable{
 		if($item instanceof Fertilizer){
 			if(!$this->getSide(Facing::DOWN)->isSameType($this)){
 				for($y = 1; $y < 3; ++$y){
-					$b = $this->getWorld()->getBlockAt($this->x, $this->y + $y, $this->z);
+					$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
 					if($b->getId() === BlockLegacyIds::AIR){
 						$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
 						$ev->call();
 						if($ev->isCancelled()){
 							break;
 						}
-						$this->getWorld()->setBlock($b, $ev->getNewState());
+						$this->pos->getWorld()->setBlock($b->pos, $ev->getNewState());
 					}else{
 						break;
 					}
 				}
 				$this->age = 0;
-				$this->getWorld()->setBlock($this, $this);
+				$this->pos->getWorld()->setBlock($this->pos, $this);
 			}
 
 			$item->pop();
@@ -84,7 +84,7 @@ class Sugarcane extends Flowable{
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isTransparent() and !$down->isSameType($this)){
-			$this->getWorld()->useBreakOn($this);
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 
@@ -96,17 +96,17 @@ class Sugarcane extends Flowable{
 		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
 			if($this->age === 15){
 				for($y = 1; $y < 3; ++$y){
-					$b = $this->getWorld()->getBlockAt($this->x, $this->y + $y, $this->z);
+					$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
 					if($b->getId() === BlockLegacyIds::AIR){
-						$this->getWorld()->setBlock($b, VanillaBlocks::SUGARCANE());
+						$this->pos->getWorld()->setBlock($b->pos, VanillaBlocks::SUGARCANE());
 						break;
 					}
 				}
 				$this->age = 0;
-				$this->getWorld()->setBlock($this, $this);
+				$this->pos->getWorld()->setBlock($this->pos, $this);
 			}else{
 				++$this->age;
-				$this->getWorld()->setBlock($this, $this);
+				$this->pos->getWorld()->setBlock($this->pos, $this);
 			}
 		}
 	}

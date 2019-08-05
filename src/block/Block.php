@@ -49,7 +49,7 @@ use function assert;
 use function dechex;
 use const PHP_INT_MAX;
 
-class Block extends Position{
+class Block{
 
 	/** @var BlockIdentifier */
 	protected $idInfo;
@@ -60,6 +60,8 @@ class Block extends Position{
 	/** @var BlockBreakInfo */
 	protected $breakInfo;
 
+	/** @var Position */
+	protected $pos;
 
 	/** @var AxisAlignedBB */
 	protected $boundingBox = null;
@@ -78,6 +80,11 @@ class Block extends Position{
 		$this->idInfo = $idInfo;
 		$this->fallbackName = $name;
 		$this->breakInfo = $breakInfo;
+		$this->pos = new Position(0, 0, 0, null);
+	}
+
+	public function __clone(){
+		$this->pos = Position::fromObject($this->pos, $this->pos->getWorld());
 	}
 
 	public function getIdInfo() : BlockIdentifier{
@@ -164,10 +171,10 @@ class Block extends Position{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->world->getChunkAtPosition($this)->setFullBlock($this->x & 0xf, $this->y, $this->z & 0xf, $this->getFullId());
+		$this->pos->getWorld()->getChunkAtPosition($this->pos)->setFullBlock($this->pos->x & 0xf, $this->pos->y, $this->pos->z & 0xf, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
-		$oldTile = $this->world->getTile($this);
+		$oldTile = $this->pos->getWorld()->getTile($this->pos);
 		if($oldTile !== null){
 			if($tileType === null or !($oldTile instanceof $tileType)){
 				$oldTile->close();
@@ -177,7 +184,7 @@ class Block extends Position{
 			}
 		}
 		if($oldTile === null and $tileType !== null){
-			$this->world->addTile(TileFactory::create($tileType, $this->world, $this->asVector3()));
+			$this->pos->getWorld()->addTile(TileFactory::create($tileType, $this->pos->getWorld(), $this->pos->asVector3()));
 		}
 	}
 
@@ -239,7 +246,7 @@ class Block extends Position{
 	 * @return bool
 	 */
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$tx->addBlock($blockReplace, $this);
+		$tx->addBlock($blockReplace->pos, $this);
 		return true;
 	}
 
@@ -265,10 +272,10 @@ class Block extends Position{
 	 * @return bool
 	 */
 	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($t = $this->world->getTile($this)) !== null){
+		if(($t = $this->pos->getWorld()->getTile($this->pos)) !== null){
 			$t->onBlockDestroyed();
 		}
-		$this->getWorld()->setBlock($this, VanillaBlocks::AIR());
+		$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::AIR());
 		return true;
 	}
 
@@ -404,6 +411,10 @@ class Block extends Position{
 
 	}
 
+	final public function getPos() : Position{
+		return $this->pos;
+	}
+
 	/**
 	 * @internal
 	 *
@@ -413,10 +424,10 @@ class Block extends Position{
 	 * @param int   $z
 	 */
 	final public function position(World $world, int $x, int $y, int $z) : void{
-		$this->x = $x;
-		$this->y = $y;
-		$this->z = $z;
-		$this->world = $world;
+		$this->pos->x = $x;
+		$this->pos->y = $y;
+		$this->pos->z = $z;
+		$this->pos->world = $world;
 	}
 
 	/**
@@ -504,7 +515,7 @@ class Block extends Position{
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$item = $this->asItem();
 		if($addUserData){
-			$tile = $this->world->getTile($this);
+			$tile = $this->pos->getWorld()->getTile($this->pos);
 			if($tile instanceof Tile){
 				$nbt = $tile->getCleanedNBT();
 				if($nbt instanceof CompoundTag){
@@ -577,8 +588,8 @@ class Block extends Position{
 	 * @return Block
 	 */
 	public function getSide(int $side, int $step = 1){
-		if($this->isValid()){
-			return $this->getWorld()->getBlock(Vector3::getSide($side, $step));
+		if($this->pos->isValid()){
+			return $this->pos->getWorld()->getBlock($this->pos->getSide($side, $step));
 		}
 
 		throw new \InvalidStateException("Block does not have a valid world");
@@ -664,7 +675,7 @@ class Block extends Position{
 		if($this->collisionBoxes === null){
 			$this->collisionBoxes = $this->recalculateCollisionBoxes();
 			foreach($this->collisionBoxes as $bb){
-				$bb->offset($this->x, $this->y, $this->z);
+				$bb->offset($this->pos->x, $this->pos->y, $this->pos->z);
 			}
 		}
 
@@ -689,7 +700,7 @@ class Block extends Position{
 		if($this->boundingBox === null){
 			$this->boundingBox = $this->recalculateBoundingBox();
 			if($this->boundingBox !== null){
-				$this->boundingBox->offset($this->x, $this->y, $this->z);
+				$this->boundingBox->offset($this->pos->x, $this->pos->y, $this->pos->z);
 			}
 		}
 		return $this->boundingBox;

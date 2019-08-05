@@ -133,7 +133,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 		$block = $this->getBlock();
 		if($block instanceof BlockFurnace and !$block->isLit()){
 			$block->setLit(true);
-			$this->getWorld()->setBlock($block, $block);
+			$this->getWorld()->setBlock($block->getPos(), $block);
 		}
 
 		if($this->remainingFuelTime > 0 and $ev->isBurning()){
@@ -196,7 +196,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 			$block = $this->getBlock();
 			if($block instanceof BlockFurnace and $block->isLit()){
 				$block->setLit(false);
-				$this->getWorld()->setBlock($block, $block);
+				$this->getWorld()->setBlock($block->getPos(), $block);
 			}
 			$this->remainingFuelTime = $this->cookTime = $this->maxFuelTime = 0;
 		}

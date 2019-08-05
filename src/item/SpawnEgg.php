@@ -52,7 +52,7 @@ class SpawnEgg extends Item{
 	}
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		$nbt = EntityFactory::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, lcg_value() * 360, 0);
+		$nbt = EntityFactory::createBaseNBT($blockReplace->getPos()->add(0.5, 0, 0.5), null, lcg_value() * 360, 0);
 
 		if($this->hasCustomName()){
 			$nbt->setString("CustomName", $this->getCustomName());

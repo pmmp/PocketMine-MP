@@ -90,23 +90,23 @@ class DaylightSensor extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->inverted = !$this->inverted;
 		$this->power = $this->recalculatePower();
-		$this->world->setBlock($this, $this);
+		$this->pos->getWorld()->setBlock($this->pos, $this);
 		return true;
 	}
 
 	public function onScheduledUpdate() : void{
 		$this->power = $this->recalculatePower();
-		$this->world->setBlock($this, $this);
-		$this->world->scheduleDelayedBlockUpdate($this, 20);
+		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, 20);
 	}
 
 	private function recalculatePower() : int{
-		$lightLevel = $this->world->getRealBlockSkyLightAt($this->x, $this->y, $this->z);
+		$lightLevel = $this->pos->getWorld()->getRealBlockSkyLightAt($this->pos->x, $this->pos->y, $this->pos->z);
 		if($this->inverted){
 			return 15 - $lightLevel;
 		}
 
-		$sunAngle = $this->world->getSunAnglePercentage();
+		$sunAngle = $this->pos->getWorld()->getSunAnglePercentage();
 		return max(0, (int) round($lightLevel * cos(($sunAngle + ((($sunAngle < 0.5 ? 0 : 1) - $sunAngle) / 5)) * 2 * M_PI)));
 	}
 

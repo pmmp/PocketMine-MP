@@ -72,7 +72,7 @@ class EnderChest extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			$enderChest = $this->getWorld()->getTile($this);
+			$enderChest = $this->pos->getWorld()->getTile($this->pos);
 			if($enderChest instanceof TileEnderChest and $this->getSide(Facing::UP)->isTransparent()){
 				$player->getEnderChestInventory()->setHolderPosition($enderChest);
 				$player->setCurrentWindow($player->getEnderChestInventory());

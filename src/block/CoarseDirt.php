@@ -34,7 +34,7 @@ class CoarseDirt extends Dirt{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP and $item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->getWorld()->setBlock($this, VanillaBlocks::DIRT());
+			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::DIRT());
 			return true;
 		}
 

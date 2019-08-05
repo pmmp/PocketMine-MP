@@ -85,7 +85,7 @@ class Sign extends Transparent{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->world->getTile($this);
+		$tile = $this->pos->getWorld()->getTile($this->pos);
 		if($tile instanceof TileSign){
 			$this->text = $tile->getText();
 		}
@@ -93,7 +93,7 @@ class Sign extends Transparent{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = $this->world->getTile($this);
+		$tile = $this->pos->getWorld()->getTile($this->pos);
 		assert($tile instanceof TileSign);
 		$tile->setText($this->text);
 	}
@@ -125,7 +125,7 @@ class Sign extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::opposite($this->facing))->getId() === BlockLegacyIds::AIR){
-			$this->getWorld()->useBreakOn($this);
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 
@@ -162,7 +162,7 @@ class Sign extends Transparent{
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->text = clone $ev->getNewText();
-			$this->world->setBlock($this, $this);
+			$this->pos->getWorld()->setBlock($this->pos, $this);
 			return true;
 		}
 

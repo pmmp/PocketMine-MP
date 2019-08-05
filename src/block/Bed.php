@@ -73,7 +73,7 @@ class Bed extends Transparent{
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		//read extra state information from the tile - this is an ugly hack
-		$tile = $this->world->getTile($this);
+		$tile = $this->pos->getWorld()->getTile($this->pos);
 		if($tile instanceof TileBed){
 			$this->color = $tile->getColor();
 		}
@@ -82,7 +82,7 @@ class Bed extends Transparent{
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 		//extra block properties storage hack
-		$tile = $this->world->getTile($this);
+		$tile = $this->pos->getWorld()->getTile($this->pos);
 		if($tile instanceof TileBed){
 			$tile->setColor($this->color);
 		}
@@ -105,11 +105,11 @@ class Bed extends Transparent{
 
 	public function setOccupied(bool $occupied = true) : void{
 		$this->occupied = $occupied;
-		$this->world->setBlock($this, $this, false);
+		$this->pos->getWorld()->setBlock($this->pos, $this, false);
 
 		if(($other = $this->getOtherHalf()) !== null){
 			$other->occupied = $occupied;
-			$this->world->setBlock($other, $other, false);
+			$this->pos->getWorld()->setBlock($other->pos, $other, false);
 		}
 	}
 
@@ -139,12 +139,12 @@ class Bed extends Transparent{
 				$player->sendMessage(TextFormat::GRAY . "This bed is incomplete");
 
 				return true;
-			}elseif($player->distanceSquared($this) > 4 and $player->distanceSquared($other) > 4){
+			}elseif($player->distanceSquared($this->pos) > 4 and $player->distanceSquared($other->pos) > 4){
 				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.tooFar"));
 				return true;
 			}
 
-			$time = $this->getWorld()->getTimeOfDay();
+			$time = $this->pos->getWorld()->getTimeOfDay();
 
 			$isNight = ($time >= World::TIME_NIGHT and $time < World::TIME_SUNRISE);
 
@@ -162,7 +162,7 @@ class Bed extends Transparent{
 				return true;
 			}
 
-			$player->sleepOn($b);
+			$player->sleepOn($b->pos);
 		}
 
 		return true;
@@ -181,7 +181,7 @@ class Bed extends Transparent{
 			if($next->canBeReplaced() and !$next->getSide(Facing::DOWN)->isTransparent()){
 				$nextState = clone $this;
 				$nextState->head = true;
-				$tx->addBlock($blockReplace, $this)->addBlock($next, $nextState);
+				$tx->addBlock($blockReplace->pos, $this)->addBlock($next->pos, $nextState);
 				return true;
 			}
 		}

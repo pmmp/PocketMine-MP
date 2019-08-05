@@ -1180,10 +1180,10 @@ abstract class Entity extends Location{
 	}
 
 	public function isUnderwater() : bool{
-		$block = $this->world->getBlockAt((int) floor($this->x), (int) floor($y = ($this->y + $this->getEyeHeight())), (int) floor($this->z));
+		$block = $this->world->getBlockAt((int) floor($this->x), $blockY = (int) floor($y = ($this->y + $this->getEyeHeight())), (int) floor($this->z));
 
 		if($block instanceof Water){
-			$f = ($block->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
+			$f = ($blockY + 1) - ($block->getFluidHeightPercent() - 0.1111111);
 			return $y < $f;
 		}
 

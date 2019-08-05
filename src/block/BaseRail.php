@@ -36,6 +36,7 @@ use function array_shift;
 use function count;
 use function implode;
 use function in_array;
+use pocketmine\world\Position;
 
 abstract class BaseRail extends Flowable{
 
@@ -244,7 +245,7 @@ abstract class BaseRail extends Flowable{
 				if(isset($otherPossible[$otherSide])){
 					$otherConnections[] = $otherSide;
 					$other->setConnections($otherConnections);
-					$other->world->setBlock($other, $other);
+					$this->pos->getWorld()->setBlock($other->pos, $other);
 
 					$changed = true;
 					$thisConnections[] = $thisSide;
@@ -257,7 +258,7 @@ abstract class BaseRail extends Flowable{
 
 		if($changed){
 			$this->setConnections($thisConnections);
-			$this->world->setBlock($this, $this);
+			$this->pos->getWorld()->setBlock($this->pos, $this);
 		}
 	}
 
@@ -273,11 +274,11 @@ abstract class BaseRail extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->world->useBreakOn($this);
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}else{
 			foreach($this->connections as $connection){
 				if(($connection & self::FLAG_ASCEND) !== 0 and $this->getSide($connection & ~self::FLAG_ASCEND)->isTransparent()){
-					$this->world->useBreakOn($this);
+					$this->pos->getWorld()->useBreakOn($this->pos);
 					break;
 				}
 			}

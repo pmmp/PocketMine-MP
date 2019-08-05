@@ -68,18 +68,19 @@ class Leaves extends Transparent{
 	}
 
 
-	protected function findLog(Block $pos, array &$visited = [], int $distance = 0) : bool{
+	protected function findLog(Vector3 $pos, array &$visited = [], int $distance = 0) : bool{
 		$index = World::blockHash($pos->x, $pos->y, $pos->z);
 		if(isset($visited[$index])){
 			return false;
 		}
 		$visited[$index] = true;
 
+		$block = $this->pos->getWorld()->getBlock($pos);
 		if($pos instanceof Wood){ //type doesn't matter
 			return true;
 		}
 
-		if($pos->getId() === $this->getId() and $distance <= 4){
+		if($block->getId() === $this->getId() and $distance <= 4){
 			foreach(Facing::ALL as $side){
 				if($this->findLog($pos->getSide($side), $visited, $distance + 1)){
 					return true;
@@ -93,7 +94,7 @@ class Leaves extends Transparent{
 	public function onNearbyBlockChange() : void{
 		if(!$this->noDecay and !$this->checkDecay){
 			$this->checkDecay = true;
-			$this->getWorld()->setBlock($this, $this, false);
+			$this->pos->getWorld()->setBlock($this->pos, $this, false);
 		}
 	}
 
@@ -105,11 +106,11 @@ class Leaves extends Transparent{
 		if(!$this->noDecay and $this->checkDecay){
 			$ev = new LeavesDecayEvent($this);
 			$ev->call();
-			if($ev->isCancelled() or $this->findLog($this)){
+			if($ev->isCancelled() or $this->findLog($this->pos)){
 				$this->checkDecay = false;
-				$this->getWorld()->setBlock($this, $this, false);
+				$this->pos->getWorld()->setBlock($this->pos, $this, false);
 			}else{
-				$this->getWorld()->useBreakOn($this);
+				$this->pos->getWorld()->useBreakOn($this->pos);
 			}
 		}
 	}

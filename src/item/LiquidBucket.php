@@ -63,8 +63,8 @@ class LiquidBucket extends Item{
 		$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, VanillaItems::BUCKET());
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$player->getWorld()->setBlock($blockReplace, $resultBlock->getFlowingForm());
-			$player->getWorld()->addSound($blockReplace->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
+			$player->getWorld()->setBlock($blockReplace->getPos(), $resultBlock->getFlowingForm());
+			$player->getWorld()->addSound($blockReplace->getPos()->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
 
 			if($player->hasFiniteResources()){
 				$player->getInventory()->setItemInHand($ev->getItem());

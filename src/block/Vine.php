@@ -128,9 +128,9 @@ class Vine extends Flowable{
 
 		if($changed){
 			if(empty($this->faces)){
-				$this->world->useBreakOn($this);
+				$this->pos->getWorld()->useBreakOn($this->pos);
 			}else{
-				$this->world->setBlock($this, $this);
+				$this->pos->getWorld()->setBlock($this->pos, $this);
 			}
 		}
 	}

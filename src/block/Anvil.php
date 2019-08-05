@@ -63,7 +63,7 @@ class Anvil extends Transparent implements Fallable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			$player->setCurrentWindow(new AnvilInventory($this));
+			$player->setCurrentWindow(new AnvilInventory($this->pos));
 		}
 
 		return true;

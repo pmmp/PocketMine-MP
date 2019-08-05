@@ -776,7 +776,7 @@ class World implements ChunkManager{
 			$ev = new BlockUpdateEvent($block);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				foreach($this->getNearbyEntities(AxisAlignedBB::one()->offset($block->x, $block->y, $block->z)) as $entity){
+				foreach($this->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z)) as $entity){
 					$entity->onNearbyBlockChange();
 				}
 				$block->onNearbyBlockChange();
@@ -896,12 +896,8 @@ class World implements ChunkManager{
 				throw new \TypeError("Expected Vector3 in blocks array, got " . (is_object($b) ? get_class($b) : gettype($b)));
 			}
 
-			if($b instanceof Block){
-				$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, $b->getRuntimeId());
-			}else{
-				$fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-				$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, RuntimeBlockMapping::toStaticRuntimeId($fullBlock >> 4, $fullBlock & 0xf));
-			}
+			$fullBlock = $this->getBlockAt($b->x, $b->y, $b->z);
+			$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, $fullBlock->getRuntimeId());
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){
@@ -1125,19 +1121,15 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @param Vector3 $pos
+	 * @param Block $pos
 	 *
 	 * @return bool
 	 */
-	public function isFullBlock(Vector3 $pos) : bool{
-		if($pos instanceof Block){
-			if($pos->isSolid()){
-				return true;
-			}
-			$bb = $pos->getBoundingBox();
-		}else{
-			$bb = $this->getBlock($pos)->getBoundingBox();
+	public function isFullBlock(Block $pos) : bool{
+		if($pos->isSolid()){
+			return true;
 		}
+		$bb = $pos->getBoundingBox();
 
 		return $bb !== null and $bb->getAverageEdgeLength() >= 1;
 	}
@@ -1489,6 +1481,7 @@ class World implements ChunkManager{
 
 		$block->position($this, $x, $y, $z);
 		$block->writeStateToWorld();
+		$pos = $block->getPos();
 
 		$chunkHash = World::chunkHash($x >> 4, $z >> 4);
 		$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
@@ -1498,18 +1491,18 @@ class World implements ChunkManager{
 		if(!isset($this->changedBlocks[$chunkHash])){
 			$this->changedBlocks[$chunkHash] = [];
 		}
-		$this->changedBlocks[$chunkHash][$relativeBlockHash] = $block;
+		$this->changedBlocks[$chunkHash][$relativeBlockHash] = $pos;
 
 		foreach($this->getChunkListeners($x >> 4, $z >> 4) as $listener){
-			$listener->onBlockChanged($block);
+			$listener->onBlockChanged($pos);
 		}
 
 		if($update){
 			if($oldBlock->getLightFilter() !== $block->getLightFilter() or $oldBlock->getLightLevel() !== $block->getLightLevel()){
-				$this->updateAllLight($block);
+				$this->updateAllLight($pos);
 			}
-			$this->tryAddToNeighbourUpdateQueue($block);
-			foreach($block->sides() as $side){
+			$this->tryAddToNeighbourUpdateQueue($pos);
+			foreach($pos->sides() as $side){
 				$this->tryAddToNeighbourUpdateQueue($side);
 			}
 		}
@@ -1585,6 +1578,7 @@ class World implements ChunkManager{
 	 * @return bool
 	 */
 	public function useBreakOn(Vector3 $vector, Item &$item = null, ?Player $player = null, bool $createParticles = false) : bool{
+		$vector = $vector->floor();
 		$target = $this->getBlock($vector);
 		$affectedBlocks = $target->getAffectedBlocks();
 
@@ -1641,7 +1635,7 @@ class World implements ChunkManager{
 		$item->onDestroyBlock($target);
 
 		if(!empty($drops)){
-			$dropPos = $target->add(0.5, 0.5, 0.5);
+			$dropPos = $vector->add(0.5, 0.5, 0.5);
 			foreach($drops as $drop){
 				if(!$drop->isNull()){
 					$this->dropItem($dropPos, $drop);
@@ -1650,7 +1644,7 @@ class World implements ChunkManager{
 		}
 
 		if($xpDrop > 0){
-			$this->dropExperience($target->add(0.5, 0.5, 0.5), $xpDrop);
+			$this->dropExperience($vector->add(0.5, 0.5, 0.5), $xpDrop);
 		}
 
 		return true;
@@ -1658,12 +1652,12 @@ class World implements ChunkManager{
 
 	private function destroyBlockInternal(Block $target, Item $item, ?Player $player = null, bool $createParticles = false) : void{
 		if($createParticles){
-			$this->addParticle($target->add(0.5, 0.5, 0.5), new DestroyBlockParticle($target));
+			$this->addParticle($target->getPos()->add(0.5, 0.5, 0.5), new DestroyBlockParticle($target));
 		}
 
 		$target->onBreak($item, $player);
 
-		$tile = $this->getTile($target);
+		$tile = $this->getTile($target->getPos());
 		if($tile !== null){
 			$tile->onBlockDestroyed();
 		}
@@ -1689,7 +1683,7 @@ class World implements ChunkManager{
 			$clickVector = new Vector3(0.0, 0.0, 0.0);
 		}
 
-		if(!$this->isInWorld($blockReplace->x, $blockReplace->y, $blockReplace->z)){
+		if(!$this->isInWorld($blockReplace->getPos()->x, $blockReplace->getPos()->y, $blockReplace->getPos()->z)){
 			//TODO: build height limit messages for custom world heights and mcregion cap
 			return false;
 		}
@@ -1721,14 +1715,14 @@ class World implements ChunkManager{
 
 		if($item->canBePlaced()){
 			$hand = $item->getBlock();
-			$hand->position($this, $blockReplace->x, $blockReplace->y, $blockReplace->z);
+			$hand->position($this, $blockReplace->getPos()->x, $blockReplace->getPos()->y, $blockReplace->getPos()->z);
 		}else{
 			return false;
 		}
 
 		if($hand->canBePlacedAt($blockClicked, $clickVector, $face, true)){
 			$blockReplace = $blockClicked;
-			$hand->position($this, $blockReplace->x, $blockReplace->y, $blockReplace->z);
+			$hand->position($this, $blockReplace->getPos()->x, $blockReplace->getPos()->y, $blockReplace->getPos()->z);
 		}elseif(!$hand->canBePlacedAt($blockReplace, $clickVector, $face, false)){
 			return false;
 		}
@@ -1785,7 +1779,7 @@ class World implements ChunkManager{
 		}
 
 		if($playSound){
-			$this->addSound($hand, new BlockPlaceSound($hand));
+			$this->addSound($hand->getPos(), new BlockPlaceSound($hand));
 		}
 
 		$item->pop();

@@ -1696,7 +1696,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$block = $target->getSide($face);
 		if($block->getId() === BlockLegacyIds::FIRE){
-			$this->world->setBlock($block, VanillaBlocks::AIR());
+			$this->world->setBlock($block->getPos(), VanillaBlocks::AIR());
 			return true;
 		}
 

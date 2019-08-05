@@ -532,7 +532,7 @@ class InGamePacketHandler extends PacketHandler{
 
 				try{
 					if(!$block->updateText($this->player, $text)){
-						$this->player->getWorld()->sendBlocks([$this->player], [$block]);
+						$this->player->getWorld()->sendBlocks([$this->player], [$pos]);
 					}
 				}catch(\UnexpectedValueException $e){
 					throw new BadPacketException($e->getMessage(), 0, $e);
