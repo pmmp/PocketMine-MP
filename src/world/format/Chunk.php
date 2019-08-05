@@ -473,7 +473,8 @@ class Chunk{
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to a chunk");
 		}
 
-		if(isset($this->tiles[$index = Chunk::blockHash($tile->x, $tile->y, $tile->z)]) and $this->tiles[$index] !== $tile){
+		$pos = $tile->getPos();
+		if(isset($this->tiles[$index = Chunk::blockHash($pos->x, $pos->y, $pos->z)]) and $this->tiles[$index] !== $tile){
 			$this->tiles[$index]->close();
 		}
 		$this->tiles[$index] = $tile;
@@ -484,7 +485,8 @@ class Chunk{
 	 * @param Tile $tile
 	 */
 	public function removeTile(Tile $tile) : void{
-		unset($this->tiles[Chunk::blockHash($tile->x, $tile->y, $tile->z)]);
+		$pos = $tile->getPos();
+		unset($this->tiles[Chunk::blockHash($pos->x, $pos->y, $pos->z)]);
 		$this->hasChanged = true;
 	}
 

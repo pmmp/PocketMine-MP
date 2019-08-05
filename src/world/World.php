@@ -901,7 +901,7 @@ class World implements ChunkManager{
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){
-				$packets[] = BlockActorDataPacket::create($tile->x, $tile->y, $tile->z, $tile->getSerializedSpawnCompound());
+				$packets[] = BlockActorDataPacket::create($b->x, $b->y, $b->z, $tile->getSerializedSpawnCompound());
 			}
 		}
 
@@ -2348,12 +2348,13 @@ class World implements ChunkManager{
 		if($tile->isClosed()){
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to world");
 		}
-		if($tile->getWorld() !== $this){
+		$pos = $tile->getPos();
+		if($pos->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
 
-		$chunkX = $tile->getFloorX() >> 4;
-		$chunkZ = $tile->getFloorZ() >> 4;
+		$chunkX = $pos->getFloorX() >> 4;
+		$chunkZ = $pos->getFloorZ() >> 4;
 
 		if(isset($this->chunks[$hash = World::chunkHash($chunkX, $chunkZ)])){
 			$this->chunks[$hash]->addTile($tile);
@@ -2362,7 +2363,7 @@ class World implements ChunkManager{
 		}
 
 		//delegate tile ticking to the corresponding block
-		$this->scheduleDelayedBlockUpdate($tile->asVector3(), 1);
+		$this->scheduleDelayedBlockUpdate($pos->asVector3(), 1);
 	}
 
 	/**
@@ -2371,18 +2372,19 @@ class World implements ChunkManager{
 	 * @throws \InvalidArgumentException
 	 */
 	public function removeTile(Tile $tile){
-		if($tile->getWorld() !== $this){
+		$pos = $tile->getPos();
+		if($pos->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
 
-		$chunkX = $tile->getFloorX() >> 4;
-		$chunkZ = $tile->getFloorZ() >> 4;
+		$chunkX = $pos->getFloorX() >> 4;
+		$chunkZ = $pos->getFloorZ() >> 4;
 
 		if(isset($this->chunks[$hash = World::chunkHash($chunkX, $chunkZ)])){
 			$this->chunks[$hash]->removeTile($tile);
 		}
 		foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
-			$listener->onBlockChanged($tile);
+			$listener->onBlockChanged($pos->asVector3());
 		}
 	}
 

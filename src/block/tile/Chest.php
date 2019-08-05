@@ -55,7 +55,7 @@ class Chest extends Spawnable implements Container, Nameable{
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
-		$this->inventory = new ChestInventory($this);
+		$this->inventory = new ChestInventory($this->pos);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
@@ -63,8 +63,8 @@ class Chest extends Spawnable implements Container, Nameable{
 			$pairX = $nbt->getInt(self::TAG_PAIRX);
 			$pairZ = $nbt->getInt(self::TAG_PAIRZ);
 			if(
-				($this->x === $pairX and abs($this->z - $pairZ) === 1) or
-				($this->z === $pairZ and abs($this->x - $pairX) === 1)
+				($this->pos->x === $pairX and abs($this->pos->z - $pairZ) === 1) or
+				($this->pos->z === $pairZ and abs($this->pos->x - $pairX) === 1)
 			){
 				$this->pairX = $pairX;
 				$this->pairZ = $pairZ;
@@ -99,7 +99,7 @@ class Chest extends Spawnable implements Container, Nameable{
 			$this->inventory->removeAllViewers();
 
 			if($this->doubleInventory !== null){
-				if($this->isPaired() and $this->world->isChunkLoaded($this->pairX >> 4, $this->pairZ >> 4)){
+				if($this->isPaired() and $this->pos->getWorld()->isChunkLoaded($this->pairX >> 4, $this->pairZ >> 4)){
 					$this->doubleInventory->removeAllViewers();
 					if(($pair = $this->getPair()) !== null){
 						$pair->doubleInventory = null;
@@ -137,7 +137,7 @@ class Chest extends Spawnable implements Container, Nameable{
 	}
 
 	protected function checkPairing(){
-		if($this->isPaired() and !$this->getWorld()->isInLoadedTerrain(new Vector3($this->pairX, $this->y, $this->pairZ))){
+		if($this->isPaired() and !$this->pos->getWorld()->isInLoadedTerrain(new Vector3($this->pairX, $this->pos->y, $this->pairZ))){
 			//paired to a tile in an unloaded chunk
 			$this->doubleInventory = null;
 
@@ -150,7 +150,7 @@ class Chest extends Spawnable implements Container, Nameable{
 				if($pair->doubleInventory !== null){
 					$this->doubleInventory = $pair->doubleInventory;
 				}else{
-					if(($pair->x + ($pair->z << 15)) > ($this->x + ($this->z << 15))){ //Order them correctly
+					if(($pair->getPos()->x + ($pair->getPos()->z << 15)) > ($this->pos->x + ($this->pos->z << 15))){ //Order them correctly
 						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($pair->inventory, $this->inventory);
 					}else{
 						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($this->inventory, $pair->inventory);
@@ -179,7 +179,7 @@ class Chest extends Spawnable implements Container, Nameable{
 	 */
 	public function getPair() : ?Chest{
 		if($this->isPaired()){
-			$tile = $this->getWorld()->getTileAt($this->pairX, $this->y, $this->pairZ);
+			$tile = $this->pos->getWorld()->getTileAt($this->pairX, $this->pos->y, $this->pairZ);
 			if($tile instanceof Chest){
 				return $tile;
 			}
@@ -203,11 +203,11 @@ class Chest extends Spawnable implements Container, Nameable{
 	}
 
 	private function createPair(Chest $tile){
-		$this->pairX = $tile->x;
-		$this->pairZ = $tile->z;
+		$this->pairX = $tile->getPos()->x;
+		$this->pairZ = $tile->getPos()->z;
 
-		$tile->pairX = $this->x;
-		$tile->pairZ = $this->z;
+		$tile->pairX = $this->getPos()->x;
+		$tile->pairZ = $this->getPos()->z;
 	}
 
 	public function unpair(){
