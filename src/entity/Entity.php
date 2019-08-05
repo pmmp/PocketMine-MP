@@ -494,7 +494,7 @@ abstract class Entity extends Location{
 	 * @return Entity|null
 	 */
 	public function getTargetEntity() : ?Entity{
-		return $this->targetId !== null ? $this->server->getWorldManager()->findEntity($eid) : null;
+		return $this->targetId !== null ? $this->server->getWorldManager()->findEntity($this->targetId) : null;
 	}
 
 	/**
