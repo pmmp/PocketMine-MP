@@ -101,7 +101,7 @@ class TeleportCommand extends VanillaCommand{
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success", [$origin->getName(), $target->getName()]));
 
 			return true;
-		}elseif($target->isValid()){
+		}else{
 			if(count($args) === 4 or count($args) === 6){
 				$pos = 1;
 			}else{
@@ -124,7 +124,5 @@ class TeleportCommand extends VanillaCommand{
 
 			return true;
 		}
-
-		throw new InvalidCommandSyntaxException();
 	}
 }

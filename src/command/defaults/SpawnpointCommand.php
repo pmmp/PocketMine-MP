@@ -70,18 +70,16 @@ class SpawnpointCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 4){
-			if($target->isValid()){
-				$world = $target->getWorld();
-				$pos = $sender instanceof Player ? $sender->getPosition() : $world->getSpawnLocation();
-				$x = $this->getRelativeDouble($pos->x, $sender, $args[1]);
-				$y = $this->getRelativeDouble($pos->y, $sender, $args[2], 0, World::Y_MAX);
-				$z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
-				$target->setSpawn(new Position($x, $y, $z, $world));
+			$world = $target->getWorld();
+			$pos = $sender instanceof Player ? $sender->getPosition() : $world->getSpawnLocation();
+			$x = $this->getRelativeDouble($pos->x, $sender, $args[1]);
+			$y = $this->getRelativeDouble($pos->y, $sender, $args[2], 0, World::Y_MAX);
+			$z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
+			$target->setSpawn(new Position($x, $y, $z, $world));
 
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
+			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
 
-				return true;
-			}
+			return true;
 		}elseif(count($args) <= 1){
 			if($sender instanceof Player){
 				$pos = new Position($sender->getFloorX(), $sender->getFloorY(), $sender->getFloorZ(), $sender->getWorld());
