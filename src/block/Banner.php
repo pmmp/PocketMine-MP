@@ -66,6 +66,7 @@ class Banner extends Transparent{
 	}
 
 	public function __clone(){
+		parent::__clone();
 		$this->patterns = $this->patterns->map(Utils::cloneCallback());
 	}
 

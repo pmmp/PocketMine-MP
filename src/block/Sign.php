@@ -60,6 +60,7 @@ class Sign extends Transparent{
 	}
 
 	public function __clone(){
+		parent::__clone();
 		$this->text = clone $this->text;
 	}
 
