@@ -148,7 +148,7 @@ class AddActorPacket extends DataPacket{
 	public $entityUniqueId = null; //TODO
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var int */
+	/** @var int|string */
 	public $type;
 	/** @var Vector3 */
 	public $position;
@@ -209,10 +209,10 @@ class AddActorPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		if(!isset(self::LEGACY_ID_MAP_BC[$this->type])){
+		if(is_int($this->type) and !isset(self::LEGACY_ID_MAP_BC[$this->type])){
 			throw new \InvalidArgumentException("Unknown entity numeric ID $this->type");
 		}
-		$this->putString(self::LEGACY_ID_MAP_BC[$this->type]);
+		$this->putString(self::LEGACY_ID_MAP_BC[$this->type] ?? $this->type);
 		$this->putVector3($this->position);
 		$this->putVector3Nullable($this->motion);
 		$this->putLFloat($this->pitch);
