@@ -438,7 +438,6 @@ class MapData{
 			}
 
 			if($f >= $j){
-
 				$b0 = (int) ($j * 2 + 1);
 			}
 			if($f1 >= $j){
