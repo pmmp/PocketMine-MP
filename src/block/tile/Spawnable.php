@@ -1,0 +1,97 @@
+<?php
+
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+*/
+
+declare(strict_types=1);
+
+namespace pocketmine\block\tile;
+
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\TreeRoot;
+use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
+use function get_class;
+
+abstract class Spawnable extends Tile{
+	/** @var string|null */
+	private $spawnCompoundCache = null;
+	/** @var bool */
+	private $dirty = true; //default dirty, until it's been spawned appropriately on the world
+
+	/** @var NetworkNbtSerializer|null */
+	private static $nbtWriter = null;
+
+	/**
+	 * Returns whether the tile needs to be respawned to viewers.
+	 *
+	 * @return bool
+	 */
+	public function isDirty() : bool{
+		return $this->dirty;
+	}
+
+	/**
+	 * @param bool $dirty
+	 */
+	public function setDirty(bool $dirty = true) : void{
+		if($dirty){
+			$this->spawnCompoundCache = null;
+		}
+		$this->dirty = $dirty;
+	}
+
+	/**
+	 * Returns encoded NBT (varint, little-endian) used to spawn this tile to clients. Uses cache where possible,
+	 * populates cache if it is null.
+	 *
+	 * @return string encoded NBT
+	 */
+	final public function getSerializedSpawnCompound() : string{
+		if($this->spawnCompoundCache === null){
+			if(self::$nbtWriter === null){
+				self::$nbtWriter = new NetworkNbtSerializer();
+			}
+
+			$this->spawnCompoundCache = self::$nbtWriter->write(new TreeRoot($this->getSpawnCompound()));
+		}
+
+		return $this->spawnCompoundCache;
+	}
+
+	/**
+	 * @return CompoundTag
+	 */
+	final public function getSpawnCompound() : CompoundTag{
+		$nbt = CompoundTag::create()
+			->setString(self::TAG_ID, TileFactory::getSaveId(get_class($this))) //TODO: disassociate network ID from save ID
+			->setInt(self::TAG_X, $this->pos->x)
+			->setInt(self::TAG_Y, $this->pos->y)
+			->setInt(self::TAG_Z, $this->pos->z);
+		$this->addAdditionalSpawnData($nbt);
+		return $nbt;
+	}
+
+	/**
+	 * An extension to getSpawnCompound() for
+	 * further modifying the generic tile NBT.
+	 *
+	 * @param CompoundTag $nbt
+	 */
+	abstract protected function addAdditionalSpawnData(CompoundTag $nbt) : void;
+}
