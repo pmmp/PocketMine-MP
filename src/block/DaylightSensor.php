@@ -84,7 +84,7 @@ class DaylightSensor extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return AxisAlignedBB::one()->trim(Facing::UP, 0.5);
+		return AxisAlignedBB::one()->trim(Facing::UP, 10 / 16);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
