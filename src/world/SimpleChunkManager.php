@@ -61,7 +61,7 @@ class SimpleChunkManager implements ChunkManager{
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : void{
 		if($this->terrainPointer->moveTo($x, $y, $z, true)){
 			$this->terrainPointer->currentSubChunk->setFullBlock($x & 0xf, $y & 0xf, $z & 0xf, $block->getFullId());
-			$this->terrainPointer->currentChunk->setChanged(true);
+			$this->terrainPointer->currentChunk->setDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
 		}else{
 			throw new \InvalidArgumentException("Cannot set block at coordinates x=$x,y=$y,z=$z, terrain is not loaded or out of bounds");
 		}
