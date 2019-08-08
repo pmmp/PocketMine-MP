@@ -11,9 +11,10 @@
 - [Docker image](https://hub.docker.com/r/pmmp/pocketmine-mp)
 - [Plugin repository](https://poggit.pmmp.io/plugins)
 
-### Discussion
+### Discussion/Help
 - [Forums](https://forums.pmmp.io/)
 - [Community Discord](https://discord.gg/bmSAZBG)
+- [StackOverflow](https://stackoverflow.com/tags/pocketmine)
 
 ### For developers
  * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
