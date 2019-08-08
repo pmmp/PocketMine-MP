@@ -30,8 +30,11 @@ use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
 use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
+use pocketmine\network\mcpe\protocol\types\ResourcePackInfoEntry;
+use pocketmine\network\mcpe\protocol\types\ResourcePackStackEntry;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
+use function array_map;
 use function ceil;
 use function count;
 use function implode;
@@ -60,7 +63,11 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	}
 
 	public function setUp() : void{
-		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($this->resourcePackManager->getResourceStack(), [], $this->resourcePackManager->resourcePacksRequired(), false));
+		$resourcePackEntries = array_map(static function(ResourcePack $pack){
+			//TODO: more stuff
+			return new ResourcePackInfoEntry($pack->getPackId(), $pack->getPackVersion(), $pack->getPackSize(), "", "", "", false);
+		}, $this->resourcePackManager->getResourceStack());
+		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 
@@ -102,7 +109,10 @@ class ResourcePacksPacketHandler extends PacketHandler{
 
 				break;
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
-				$this->session->sendDataPacket(ResourcePackStackPacket::create($this->resourcePackManager->getResourceStack(), [], $this->resourcePackManager->resourcePacksRequired(), false));
+				$stack = array_map(static function(ResourcePack $pack){
+					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
+				}, $this->resourcePackManager->getResourceStack());
+				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], $this->resourcePackManager->resourcePacksRequired(), false));
 				$this->session->getLogger()->debug("Applying resource pack stack");
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:

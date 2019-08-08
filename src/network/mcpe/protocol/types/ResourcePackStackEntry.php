@@ -21,28 +21,57 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\resourcepacks;
+namespace pocketmine\network\mcpe\protocol\types;
 
-class ResourcePackInfoEntry{
-	protected $packId; //UUID
-	protected $version;
-	protected $packSize;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-	public function __construct(string $packId, string $version, int $packSize = 0){
+class ResourcePackStackEntry{
+
+	/** @var string */
+	private $packId;
+	/** @var string */
+	private $version;
+	/** @var string */
+	private $subPackName;
+
+	public function __construct(string $packId, string $version, string $subPackName){
 		$this->packId = $packId;
 		$this->version = $version;
-		$this->packSize = $packSize;
+		$this->subPackName = $subPackName;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getPackId() : string{
 		return $this->packId;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getVersion() : string{
 		return $this->version;
 	}
 
-	public function getPackSize() : int{
-		return $this->packSize;
+	/**
+	 * @return string
+	 */
+	public function getSubPackName() : string{
+		return $this->subPackName;
+	}
+
+	public function write(NetworkBinaryStream $out) : void{
+		$out->putString($this->packId);
+		$out->putString($this->version);
+		$out->putString($this->subPackName);
+	}
+
+	public static function read(NetworkBinaryStream $in) : self{
+		return new self(
+			$packId = $in->getString(),
+			$version = $in->getString(),
+			$subPackName = $in->getString()
+		);
 	}
 }

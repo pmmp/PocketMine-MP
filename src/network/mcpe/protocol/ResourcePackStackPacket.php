@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\resourcepacks\ResourcePack;
+use pocketmine\network\mcpe\protocol\types\ResourcePackStackEntry;
 use function count;
 
 class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
@@ -37,19 +37,19 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $mustAccept = false;
 
-	/** @var ResourcePack[] */
+	/** @var ResourcePackStackEntry[] */
 	public $behaviorPackStack = [];
-	/** @var ResourcePack[] */
+	/** @var ResourcePackStackEntry[] */
 	public $resourcePackStack = [];
 
 	/** @var bool */
 	public $isExperimental = false;
 
 	/**
-	 * @param ResourcePack[] $resourcePacks
-	 * @param ResourcePack[] $behaviorPacks
-	 * @param bool           $mustAccept
-	 * @param bool           $isExperimental
+	 * @param ResourcePackStackEntry[] $resourcePacks
+	 * @param ResourcePackStackEntry[] $behaviorPacks
+	 * @param bool                     $mustAccept
+	 * @param bool                     $isExperimental
 	 *
 	 * @return ResourcePackStackPacket
 	 */
@@ -66,16 +66,12 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 		$this->mustAccept = $this->getBool();
 		$behaviorPackCount = $this->getUnsignedVarInt();
 		while($behaviorPackCount-- > 0){
-			$this->getString();
-			$this->getString();
-			$this->getString();
+			$this->behaviorPackStack[] = ResourcePackStackEntry::read($this);
 		}
 
 		$resourcePackCount = $this->getUnsignedVarInt();
 		while($resourcePackCount-- > 0){
-			$this->getString();
-			$this->getString();
-			$this->getString();
+			$this->resourcePackStack[] = ResourcePackStackEntry::read($this);
 		}
 
 		$this->isExperimental = $this->getBool();
@@ -86,16 +82,12 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 
 		$this->putUnsignedVarInt(count($this->behaviorPackStack));
 		foreach($this->behaviorPackStack as $entry){
-			$this->putString($entry->getPackId());
-			$this->putString($entry->getPackVersion());
-			$this->putString(""); //TODO: subpack name
+			$entry->write($this);
 		}
 
 		$this->putUnsignedVarInt(count($this->resourcePackStack));
 		foreach($this->resourcePackStack as $entry){
-			$this->putString($entry->getPackId());
-			$this->putString($entry->getPackVersion());
-			$this->putString(""); //TODO: subpack name
+			$entry->write($this);
 		}
 
 		$this->putBool($this->isExperimental);

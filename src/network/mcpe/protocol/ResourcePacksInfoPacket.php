@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\resourcepacks\ResourcePack;
+use pocketmine\network\mcpe\protocol\types\ResourcePackInfoEntry;
 use function count;
 
 class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
@@ -37,16 +37,16 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	public $mustAccept = false; //if true, forces client to use selected resource packs
 	/** @var bool */
 	public $hasScripts = false; //if true, causes disconnect for any platform that doesn't support scripts yet
-	/** @var ResourcePack[] */
+	/** @var ResourcePackInfoEntry[] */
 	public $behaviorPackEntries = [];
-	/** @var ResourcePack[] */
+	/** @var ResourcePackInfoEntry[] */
 	public $resourcePackEntries = [];
 
 	/**
-	 * @param ResourcePack[] $resourcePacks
-	 * @param ResourcePack[] $behaviorPacks
-	 * @param bool           $mustAccept
-	 * @param bool           $hasScripts
+	 * @param ResourcePackInfoEntry[] $resourcePacks
+	 * @param ResourcePackInfoEntry[] $behaviorPacks
+	 * @param bool                    $mustAccept
+	 * @param bool                    $hasScripts
 	 *
 	 * @return ResourcePacksInfoPacket
 	 */
@@ -64,24 +64,12 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		$this->hasScripts = $this->getBool();
 		$behaviorPackCount = $this->getLShort();
 		while($behaviorPackCount-- > 0){
-			$this->getString();
-			$this->getString();
-			$this->getLLong();
-			$this->getString();
-			$this->getString();
-			$this->getString();
-			$this->getBool();
+			$this->behaviorPackEntries[] = ResourcePackInfoEntry::read($this);
 		}
 
 		$resourcePackCount = $this->getLShort();
 		while($resourcePackCount-- > 0){
-			$this->getString();
-			$this->getString();
-			$this->getLLong();
-			$this->getString();
-			$this->getString();
-			$this->getString();
-			$this->getBool();
+			$this->resourcePackEntries[] = ResourcePackInfoEntry::read($this);
 		}
 	}
 
@@ -90,23 +78,11 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		$this->putBool($this->hasScripts);
 		$this->putLShort(count($this->behaviorPackEntries));
 		foreach($this->behaviorPackEntries as $entry){
-			$this->putString($entry->getPackId());
-			$this->putString($entry->getPackVersion());
-			$this->putLLong($entry->getPackSize());
-			$this->putString(""); //TODO: encryption key
-			$this->putString(""); //TODO: subpack name
-			$this->putString(""); //TODO: content identity
-			$this->putBool(false); //TODO: has scripts (?)
+			$entry->write($this);
 		}
 		$this->putLShort(count($this->resourcePackEntries));
 		foreach($this->resourcePackEntries as $entry){
-			$this->putString($entry->getPackId());
-			$this->putString($entry->getPackVersion());
-			$this->putLLong($entry->getPackSize());
-			$this->putString(""); //TODO: encryption key
-			$this->putString(""); //TODO: subpack name
-			$this->putString(""); //TODO: content identity
-			$this->putBool(false); //TODO: seems useless for resource packs
+			$entry->write($this);
 		}
 	}
 
