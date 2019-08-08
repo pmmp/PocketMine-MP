@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\network\mcpe\protocol\types\ResourcePackInfoEntry;
+use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
 use function count;
 
 class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{

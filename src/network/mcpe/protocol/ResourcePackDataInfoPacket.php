@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\network\mcpe\protocol\types\ResourcePackType;
+use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
 
 class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
