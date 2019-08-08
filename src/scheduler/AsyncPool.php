@@ -225,8 +225,10 @@ class AsyncPool{
 	 * Collects finished and/or crashed tasks from the workers, firing their on-completion hooks where appropriate.
 	 *
 	 * @throws \ReflectionException
+	 * @return bool whether there are tasks left to be collected
 	 */
-	public function collectTasks() : void{
+	public function collectTasks() : bool{
+		$more = false;
 		foreach($this->taskQueues as $worker => $queue){
 			$doGC = false;
 			while(!$queue->isEmpty()){
@@ -254,6 +256,7 @@ class AsyncPool{
 						$task->onCompletion();
 					}
 				}else{
+					$more = true;
 					break; //current task is still running, skip to next worker
 				}
 			}
@@ -261,6 +264,7 @@ class AsyncPool{
 				$this->workers[$worker]->collect();
 			}
 		}
+		return $more;
 	}
 
 	public function shutdownUnusedWorkers() : int{
