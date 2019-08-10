@@ -95,8 +95,11 @@ class DaylightSensor extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		$this->power = $this->recalculatePower();
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$newPower = $this->recalculatePower();
+		if($this->power !== $newPower){
+			$this->power = $newPower;
+			$this->pos->getWorld()->setBlock($this->pos, $this);
+		}
 		$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, 20);
 	}
 
