@@ -32,9 +32,9 @@ class SubChunk implements SubChunkInterface{
 	private $blockLayers;
 
 	/** @var LightArray */
-	protected $blockLight;
+	private $blockLight;
 	/** @var LightArray */
-	protected $skyLight;
+	private $skyLight;
 
 	/**
 	 * SubChunk constructor.
