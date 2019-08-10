@@ -106,7 +106,7 @@ class RangedAttackBehavior extends Behavior{
 			if($f < 0.1) $f = 0.1;
 
 			if($this->mob instanceof RangedAttackerMob){
-				$this->mob->onRangedAttackToTarget($this->mob->getTargetEntity(), $f);
+				$this->mob->onRangedAttackToTarget($this->attackTarget, $f);
 			}
 
 			if($dist < 1){
