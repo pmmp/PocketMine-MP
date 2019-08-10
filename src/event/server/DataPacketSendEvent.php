@@ -56,23 +56,9 @@ class DataPacketSendEvent extends ServerEvent implements Cancellable{
 	}
 
 	/**
-	 * @param NetworkSession[] $targets
-	 */
-	public function setTargets(array $targets) : void{
-		$this->targets = $targets;
-	}
-
-	/**
 	 * @return ClientboundPacket[]
 	 */
 	public function getPackets() : array{
 		return $this->packets;
-	}
-
-	/**
-	 * @param ClientboundPacket[] $packets
-	 */
-	public function setPackets(array $packets) : void{
-		$this->packets = $packets;
 	}
 }
