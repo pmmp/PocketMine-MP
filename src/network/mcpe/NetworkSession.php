@@ -28,8 +28,8 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerCreationEvent;
-use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\form\Form;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
@@ -363,7 +363,7 @@ class NetworkSession{
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
-			$ev = new DataPacketSendEvent($this, $packet);
+			$ev = new DataPacketSendEvent([$this], [$packet]);
 			$ev->call();
 			if($ev->isCancelled()){
 				return false;

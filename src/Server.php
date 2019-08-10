@@ -38,7 +38,7 @@ use pocketmine\entity\EntityFactory;
 use pocketmine\event\HandlerListManager;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
-use pocketmine\event\server\DataPacketBroadcastEvent;
+use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\enchantment\Enchantment;
@@ -1453,7 +1453,7 @@ class Server{
 			return false;
 		}
 
-		$ev = new DataPacketBroadcastEvent($recipients, $packets);
+		$ev = new DataPacketSendEvent($recipients, $packets);
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;

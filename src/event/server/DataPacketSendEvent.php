@@ -28,34 +28,51 @@ use pocketmine\event\CancellableTrait;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 
+/**
+ * Called when packets are sent to network sessions.
+ */
 class DataPacketSendEvent extends ServerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var ClientboundPacket */
-	private $packet;
-	/** @var NetworkSession */
-	private $target;
+	/** @var NetworkSession[] */
+	private $targets;
+	/** @var ClientboundPacket[] */
+	private $packets;
 
 	/**
-	 * @param NetworkSession    $target
-	 * @param ClientboundPacket $packet
+	 * @param NetworkSession[]    $targets
+	 * @param ClientboundPacket[] $packets
 	 */
-	public function __construct(NetworkSession $target, ClientboundPacket $packet){
-		$this->packet = $packet;
-		$this->target = $target;
+	public function __construct(array $targets, array $packets){
+		$this->targets = $targets;
+		$this->packets = $packets;
 	}
 
 	/**
-	 * @return ClientboundPacket
+	 * @return NetworkSession[]
 	 */
-	public function getPacket() : ClientboundPacket{
-		return $this->packet;
+	public function getTargets() : array{
+		return $this->targets;
 	}
 
 	/**
-	 * @return NetworkSession
+	 * @param NetworkSession[] $targets
 	 */
-	public function getTarget() : NetworkSession{
-		return $this->target;
+	public function setTargets(array $targets) : void{
+		$this->targets = $targets;
+	}
+
+	/**
+	 * @return ClientboundPacket[]
+	 */
+	public function getPackets() : array{
+		return $this->packets;
+	}
+
+	/**
+	 * @param ClientboundPacket[] $packets
+	 */
+	public function setPackets(array $packets) : void{
+		$this->packets = $packets;
 	}
 }
