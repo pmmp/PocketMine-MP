@@ -35,6 +35,7 @@ use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
 use function array_map;
+use function array_unshift;
 use function ceil;
 use function count;
 use function implode;
@@ -112,6 +113,10 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				$stack = array_map(static function(ResourcePack $pack){
 					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
 				}, $this->resourcePackManager->getResourceStack());
+
+				//we support chemistry blocks by default, the client should already have this installed
+				array_unshift($stack, new ResourcePackStackEntry("0fba4063-dba1-4281-9b89-ff9390653530", "1.0.0", ""));
+
 				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], $this->resourcePackManager->resourcePacksRequired(), false));
 				$this->session->getLogger()->debug("Applying resource pack stack");
 				break;
