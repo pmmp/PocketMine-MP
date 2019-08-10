@@ -55,7 +55,11 @@ class VanillaMapRenderer extends MapRenderer{
 	 * @param Player  $player
 	 */
 	public function render(MapData $mapData, Player $player) : void{
-		if($player->level->getDimension() === $mapData->getDimension() and !$mapData->isFullyExplored()){
+		if($mapData->getLevelName() === ""){
+			$mapData->setLevelName($player->level->getFolderName());
+		}
+
+		if($mapData->getLevelName() === $player->level->getFolderName() and $player->level->getDimension() === $mapData->getDimension() and !$mapData->isLocked()){
 			$i = 1 << $mapData->getScale();
 
 			$j = $mapData->getCenterX();

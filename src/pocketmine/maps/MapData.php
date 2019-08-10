@@ -57,7 +57,7 @@ class MapData{
 	protected $trackedObjects = [];
 
 	/** @var bool */
-	protected $fullyExplored = false;
+	protected $isLocked = false;
 	/** @var bool */
 	protected $unlimitedTracking = true;
 	/** @var bool */
@@ -69,6 +69,8 @@ class MapData{
 	protected $renderers = [];
 	/** @var bool */
 	protected $dirty = false;
+	/** @var string */
+	protected $levelName = "";
 
 	/** @var Color[] */
 	protected static $emptyColors = [];
@@ -204,11 +206,12 @@ class MapData{
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
+		$this->setLevelName($nbt->getString("worldName", ""));
 		$this->dimension = $nbt->getByte("dimension", 0);
 		$this->xCenter = $nbt->getInt("xCenter", 0);
 		$this->zCenter = $nbt->getInt("zCenter", 0);
 		$this->scale = $nbt->getByte("scale", 0);
-		$this->fullyExplored = boolval($nbt->getByte("fullyExplored", 1));
+		$this->isLocked = boolval($nbt->getByte("isLocked", 0));
 		if($this->scale > 4) $this->scale = 0;
 		if($nbt->hasTag("colors", IntArrayTag::class)){
 			$colors = $nbt->getIntArray("colors");
@@ -223,11 +226,12 @@ class MapData{
 	}
 
 	public function writeSaveData(CompoundTag $nbt) : void{
+		$nbt->setString("worldName", $this->levelName);
 		$nbt->setByte("dimension", $this->dimension);
 		$nbt->setInt("xCenter", $this->xCenter);
 		$nbt->setInt("zCenter", $this->zCenter);
 		$nbt->setByte("scale", $this->scale);
-		$nbt->setByte("fullyExplored", intval($this->fullyExplored));
+		$nbt->setByte("isLocked", intval($this->isLocked));
 		if(count($this->colors) > 0){
 			$colors = [];
 			for($y = 0; $y < 128; $y++){
@@ -300,20 +304,16 @@ class MapData{
 		foreach($this->renderers as $renderer){
 			$renderer->onMapCreated($player, $this);
 		}
+
+		$this->setLevelName($player->level->getFolderName());
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isFullyExplored() : bool{
-		return $this->fullyExplored;
+	public function isLocked() : bool{
+		return $this->isLocked;
 	}
 
-	/**
-	 * @param bool $fullyExplored
-	 */
-	public function setFullyExplored(bool $fullyExplored) : void{
-		$this->fullyExplored = $fullyExplored;
+	public function setLocked(bool $locked) : void{
+		$this->isLocked = $locked;
 	}
 
 	public function getMapInfo(Player $player) : MapInfo{
@@ -526,5 +526,19 @@ class MapData{
 
 	public function isEmpty() : bool{
 		return count($this->colors) === 0;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLevelName() : string{
+		return $this->levelName;
+	}
+
+	/**
+	 * @param string $levelName
+	 */
+	public function setLevelName(string $levelName) : void{
+		$this->levelName = $levelName;
 	}
 }
