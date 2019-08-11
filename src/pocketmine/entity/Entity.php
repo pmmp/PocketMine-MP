@@ -102,7 +102,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_TYPE_INT = 2;
 	public const DATA_TYPE_FLOAT = 3;
 	public const DATA_TYPE_STRING = 4;
-	public const DATA_TYPE_SLOT = 5;
+	public const DATA_TYPE_COMPOUND_TAG = 5;
 	public const DATA_TYPE_POS = 6;
 	public const DATA_TYPE_LONG = 7;
 	public const DATA_TYPE_VECTOR3F = 8;

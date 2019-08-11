@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use function assert;
 use function is_float;
 use function is_int;
@@ -140,25 +140,14 @@ class DataPropertyManager{
 		$this->setPropertyValue($key, Entity::DATA_TYPE_STRING, $value, $force);
 	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return null|Item
-	 */
-	public function getItem(int $key) : ?Item{
-		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_SLOT);
-		assert($value instanceof Item or $value === null);
-
+	public function getCompoundTag(int $key) : ?CompoundTag{
+		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_COMPOUND_TAG);
+		assert($value instanceof CompoundTag or $value === null);
 		return $value;
 	}
 
-	/**
-	 * @param int  $key
-	 * @param Item $value
-	 * @param bool $force
-	 */
-	public function setItem(int $key, Item $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_SLOT, $value, $force);
+	public function setCompoundTag(int $key, CompoundTag $value, bool $force = false) : void{
+		$this->setPropertyValue($key, Entity::DATA_TYPE_COMPOUND_TAG, $value, $force);
 	}
 
 	/**
