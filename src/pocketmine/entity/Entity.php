@@ -1782,6 +1782,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
+	 * @deprecated WARNING: Despite what its name implies, this function DOES NOT return all the blocks around the entity.
+	 * Instead, it returns blocks which have reactions for an entity intersecting with them.
+	 *
 	 * @return Block[]
 	 */
 	public function getBlocksAround() : array{
