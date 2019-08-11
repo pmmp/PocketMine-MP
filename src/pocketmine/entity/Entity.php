@@ -2074,6 +2074,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
+	 * @deprecated WARNING: This function DOES NOT permanently hide the entity from the player. As soon as the entity or
+	 * player moves, the player will once again be able to see the entity.
+	 *
 	 * @param Player $player
 	 * @param bool   $send
 	 */
@@ -2088,6 +2091,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 	}
 
+	/**
+	 * @deprecated WARNING: This function DOES NOT permanently hide the entity from viewers. As soon as the entity or
+	 * player moves, viewers will once again be able to see the entity.
+	 */
 	public function despawnFromAll() : void{
 		foreach($this->hasSpawned as $player){
 			$this->despawnFrom($player);
