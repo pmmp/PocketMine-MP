@@ -203,22 +203,21 @@ class Explosion{
 		$airBlock = VanillaBlocks::AIR();
 
 		foreach($this->affectedBlocks as $block){
+			$pos = $block->getPos();
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
 			}else{
 				if(mt_rand(0, 100) < $yield){
 					foreach($block->getDrops($air) as $drop){
-						$this->world->dropItem($block->add(0.5, 0.5, 0.5), $drop);
+						$this->world->dropItem($pos->add(0.5, 0.5, 0.5), $drop);
 					}
 				}
-				if(($t = $this->world->getTileAt($block->x, $block->y, $block->z)) !== null){
+				if(($t = $this->world->getTileAt($pos->x, $pos->y, $pos->z)) !== null){
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
-				$this->world->setBlockAt($block->x, $block->y, $block->z, $airBlock, false); //TODO: should updating really be disabled here?
-				$this->world->updateAllLight($block);
+				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock, false); //TODO: should updating really be disabled here?
+				$this->world->updateAllLight($pos);
 			}
-
-			$pos = new Vector3($block->x, $block->y, $block->z);
 
 			foreach(Facing::ALL as $side){
 				$sideBlock = $pos->getSide($side);
@@ -237,7 +236,7 @@ class Explosion{
 					$updateBlocks[$index] = true;
 				}
 			}
-			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
+			$send[] = $pos->subtract($source);
 		}
 
 		$this->world->broadcastPacketToViewers($source, ExplodePacket::create($this->source->asVector3(), $this->size, $send));
