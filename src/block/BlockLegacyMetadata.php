@@ -32,6 +32,12 @@ interface BlockLegacyMetadata{
 	public const ANVIL_SLIGHTLY_DAMAGED = 4;
 	public const ANVIL_VERY_DAMAGED = 8;
 
+	public const BAMBOO_FLAG_THICK = 0x01;
+	public const BAMBOO_FLAG_READY = 0x08;
+
+	public const BAMBOO_LEAF_SIZE_SHIFT = 1;
+	public const BAMBOO_LEAF_SIZE_MASK = 0x03;
+
 	public const BED_FLAG_HEAD = 0x08;
 	public const BED_FLAG_OCCUPIED = 0x04;
 
