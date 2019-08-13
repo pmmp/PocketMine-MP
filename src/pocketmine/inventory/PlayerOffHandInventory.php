@@ -66,31 +66,7 @@ class PlayerOffHandInventory extends BaseInventory{
 	}
 
 	public function sendSlot(int $index, $target) : void{
-		if($target instanceof Player){
-			$target = [$target];
-		}
-
-		$pk = new MobEquipmentPacket();
-		$pk->entityRuntimeId = $this->getHolder()->getId();
-		$pk->item = $this->getItem(0);
-		$pk->inventorySlot = $pk->hotbarSlot = 0;
-		$pk->windowId = ContainerIds::OFFHAND;
-		$pk->encode();
-
-		foreach($target as $player){
-			if($player === $this->getHolder()){
-				$player->sendDataPacket($pk);
-
-				$pk2 = new InventorySlotPacket();
-				$pk2->windowId = ContainerIds::OFFHAND;
-				$pk2->inventorySlot = 0;
-				$pk2->item = $this->getItem(0);
-
-				$player->sendDataPacket($pk2);
-			}else{
-				$player->sendDataPacket($pk);
-			}
-		}
+		$this->sendContents($target);
 	}
 
 	public function sendContents($target) : void{
