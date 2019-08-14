@@ -365,7 +365,7 @@ abstract class Entity extends Location{
 	protected function recalculateBoundingBox() : void{
 		$halfWidth = $this->width / 2;
 
-		$this->boundingBox->setBounds(
+		$this->boundingBox = new AxisAlignedBB(
 			$this->x - $halfWidth,
 			$this->y,
 			$this->z - $halfWidth,
@@ -1222,7 +1222,7 @@ abstract class Entity extends Location{
 			}
 			*/
 
-			$axisalignedbb = clone $this->boundingBox;
+			$moveBB = clone $this->boundingBox;
 
 			/*$sneakFlag = $this->onGround and $this instanceof Player;
 
@@ -1252,27 +1252,27 @@ abstract class Entity extends Location{
 
 			assert(abs($dx) <= 20 and abs($dy) <= 20 and abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
 
-			$list = $this->world->getCollisionBoxes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
+			$list = $this->world->getCollisionBoxes($this, $moveBB->addCoord($dx, $dy, $dz), false);
 
 			foreach($list as $bb){
-				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
+				$dy = $bb->calculateYOffset($moveBB, $dy);
 			}
 
-			$this->boundingBox->offset(0, $dy, 0);
+			$moveBB->offset(0, $dy, 0);
 
 			$fallingFlag = ($this->onGround or ($dy != $movY and $movY < 0));
 
 			foreach($list as $bb){
-				$dx = $bb->calculateXOffset($this->boundingBox, $dx);
+				$dx = $bb->calculateXOffset($moveBB, $dx);
 			}
 
-			$this->boundingBox->offset($dx, 0, 0);
+			$moveBB->offset($dx, 0, 0);
 
 			foreach($list as $bb){
-				$dz = $bb->calculateZOffset($this->boundingBox, $dz);
+				$dz = $bb->calculateZOffset($moveBB, $dz);
 			}
 
-			$this->boundingBox->offset(0, 0, $dz);
+			$moveBB->offset(0, 0, $dz);
 
 
 			if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX != $dx or $movZ != $dz)){
@@ -1283,39 +1283,39 @@ abstract class Entity extends Location{
 				$dy = $this->stepHeight;
 				$dz = $movZ;
 
-				$axisalignedbb1 = clone $this->boundingBox;
+				$stepBB = clone $this->boundingBox;
 
-				$this->boundingBox->setBB($axisalignedbb);
-
-				$list = $this->world->getCollisionBoxes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
+				$list = $this->world->getCollisionBoxes($this, $stepBB->addCoord($dx, $dy, $dz), false);
 
 				foreach($list as $bb){
-					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
+					$dy = $bb->calculateYOffset($stepBB, $dy);
 				}
 
-				$this->boundingBox->offset(0, $dy, 0);
+				$stepBB->offset(0, $dy, 0);
 
 				foreach($list as $bb){
-					$dx = $bb->calculateXOffset($this->boundingBox, $dx);
+					$dx = $bb->calculateXOffset($stepBB, $dx);
 				}
 
-				$this->boundingBox->offset($dx, 0, 0);
+				$stepBB->offset($dx, 0, 0);
 
 				foreach($list as $bb){
-					$dz = $bb->calculateZOffset($this->boundingBox, $dz);
+					$dz = $bb->calculateZOffset($stepBB, $dz);
 				}
 
-				$this->boundingBox->offset(0, 0, $dz);
+				$stepBB->offset(0, 0, $dz);
 
 				if(($cx ** 2 + $cz ** 2) >= ($dx ** 2 + $dz ** 2)){
 					$dx = $cx;
 					$dy = $cy;
 					$dz = $cz;
-					$this->boundingBox->setBB($axisalignedbb1);
 				}else{
+					$moveBB = $stepBB;
 					$this->ySize += 0.5; //FIXME: this should be the height of the block it walked up, not fixed 0.5
 				}
 			}
+
+			$this->boundingBox = $moveBB;
 		}
 
 		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;

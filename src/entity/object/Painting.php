@@ -125,7 +125,7 @@ class Painting extends Entity{
 
 	protected function recalculateBoundingBox() : void{
 		$side = $this->blockIn->getSide($this->facing);
-		$this->boundingBox->setBB(self::getPaintingBB($this->facing, $this->getMotive())->offset($side->x, $side->y, $side->z));
+		$this->boundingBox = self::getPaintingBB($this->facing, $this->getMotive())->offset($side->x, $side->y, $side->z);
 	}
 
 	public function onNearbyBlockChange() : void{
