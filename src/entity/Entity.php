@@ -1352,6 +1352,9 @@ abstract class Entity extends Location{
 	}
 
 	/**
+	 * @deprecated WARNING: Despite what its name implies, this function DOES NOT return all the blocks around the entity.
+	 * Instead, it returns blocks which have reactions for an entity intersecting with them.
+	 *
 	 * @return Block[]
 	 */
 	public function getBlocksAround() : array{
@@ -1646,6 +1649,9 @@ abstract class Entity extends Location{
 	}
 
 	/**
+	 * @deprecated WARNING: This function DOES NOT permanently hide the entity from the player. As soon as the entity or
+	 * player moves, the player will once again be able to see the entity.
+	 *
 	 * @param Player $player
 	 * @param bool   $send
 	 */
@@ -1659,6 +1665,10 @@ abstract class Entity extends Location{
 		}
 	}
 
+	/**
+	 * @deprecated WARNING: This function DOES NOT permanently hide the entity from viewers. As soon as the entity or
+	 * player moves, viewers will once again be able to see the entity.
+	 */
 	public function despawnFromAll() : void{
 		foreach($this->hasSpawned as $player){
 			$this->despawnFrom($player);

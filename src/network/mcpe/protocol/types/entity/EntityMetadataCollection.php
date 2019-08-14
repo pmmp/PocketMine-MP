@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\entity;
 
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use function get_class;
 
 class EntityMetadataCollection{
@@ -85,12 +85,12 @@ class EntityMetadataCollection{
 	}
 
 	/**
-	 * @param int  $key
-	 * @param Item $value
-	 * @param bool $force
+	 * @param int         $key
+	 * @param CompoundTag $value
+	 * @param bool        $force
 	 */
-	public function setItem(int $key, Item $value, bool $force = false) : void{
-		$this->set($key, new ItemStackMetadataProperty($value), $force);
+	public function setCompoundTag(int $key, CompoundTag $value, bool $force = false) : void{
+		$this->set($key, new CompoundTagMetadataProperty($value), $force);
 	}
 
 	/**

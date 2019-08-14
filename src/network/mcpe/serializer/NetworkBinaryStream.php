@@ -42,7 +42,7 @@ use pocketmine\network\mcpe\protocol\types\entity\ByteMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
 use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\IntMetadataProperty;
-use pocketmine\network\mcpe\protocol\types\entity\ItemStackMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\CompoundTagMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\ShortMetadataProperty;
@@ -258,7 +258,7 @@ class NetworkBinaryStream extends BinaryStream{
 			case IntMetadataProperty::id(): return IntMetadataProperty::read($this);
 			case FloatMetadataProperty::id(): return FloatMetadataProperty::read($this);
 			case StringMetadataProperty::id(): return StringMetadataProperty::read($this);
-			case ItemStackMetadataProperty::id(): return ItemStackMetadataProperty::read($this);
+			case CompoundTagMetadataProperty::id(): return CompoundTagMetadataProperty::read($this);
 			case BlockPosMetadataProperty::id(): return BlockPosMetadataProperty::read($this);
 			case LongMetadataProperty::id(): return LongMetadataProperty::read($this);
 			case Vec3MetadataProperty::id(): return Vec3MetadataProperty::read($this);

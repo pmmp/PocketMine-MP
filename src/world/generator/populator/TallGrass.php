@@ -31,8 +31,8 @@ use pocketmine\world\ChunkManager;
 class TallGrass extends Populator{
 	/** @var ChunkManager */
 	private $world;
-	private $randomAmount;
-	private $baseAmount;
+	private $randomAmount = 1;
+	private $baseAmount = 0;
 
 	public function setRandomAmount(int $amount) : void{
 		$this->randomAmount = $amount;
@@ -44,7 +44,7 @@ class TallGrass extends Populator{
 
 	public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
 		$this->world = $world;
-		$amount = $random->nextRange(0, $this->randomAmount + 1) + $this->baseAmount;
+		$amount = $random->nextRange(0, $this->randomAmount) + $this->baseAmount;
 
 		$block = VanillaBlocks::TALL_GRASS();
 		for($i = 0; $i < $amount; ++$i){

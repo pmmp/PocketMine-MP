@@ -23,40 +23,45 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\entity;
 
-use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 
-final class ItemStackMetadataProperty implements MetadataProperty{
-	/** @var Item */
+final class CompoundTagMetadataProperty implements MetadataProperty{
+	/** @var CompoundTag */
 	private $value;
 
 	/**
-	 * @param Item $value
+	 * @param CompoundTag $value
 	 */
-	public function __construct(Item $value){
+	public function __construct(CompoundTag $value){
 		$this->value = clone $value;
 	}
 
 	/**
-	 * @return Item
+	 * @return CompoundTag
 	 */
-	public function getValue() : Item{
+	public function getValue() : CompoundTag{
 		return clone $this->value;
 	}
 
 	public static function id() : int{
-		return EntityMetadataTypes::SLOT;
+		return EntityMetadataTypes::COMPOUND_TAG;
 	}
 
 	public function equals(MetadataProperty $other) : bool{
-		return $other instanceof $this and $other->value->equalsExact($this->value);
+		return $other instanceof $this and $other->value->equals($this->value);
 	}
 
 	public static function read(NetworkBinaryStream $in) : self{
-		return new self($in->getSlot());
+		$offset = $in->getOffset();
+		$result = new self((new NetworkNbtSerializer())->read($in->getBuffer(), $offset, 512)->getTag());
+		$in->setOffset($offset);
+		return $result;
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putSlot($this->value);
+		$out->put((new NetworkNbtSerializer())->write(new TreeRoot($this->value)));
 	}
 }

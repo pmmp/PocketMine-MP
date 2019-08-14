@@ -34,7 +34,7 @@ final class EntityMetadataTypes{
 	public const INT = 2;
 	public const FLOAT = 3;
 	public const STRING = 4;
-	public const SLOT = 5;
+	public const COMPOUND_TAG = 5;
 	public const POS = 6;
 	public const LONG = 7;
 	public const VECTOR3F = 8;
