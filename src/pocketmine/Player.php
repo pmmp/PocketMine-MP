@@ -156,6 +156,7 @@ use pocketmine\permission\PermissionAttachmentInfo;
 use pocketmine\permission\PermissionManager;
 use pocketmine\plugin\Plugin;
 use pocketmine\resourcepacks\ResourcePack;
+use pocketmine\scoreboard\Scoreboard;
 use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
@@ -3267,6 +3268,26 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		return false;
+	}
+
+	/**
+	 * Adds a scoreboard to the user's screen
+	 *
+	 * @param string $title
+	 * @param string[] $lines
+	 */
+	public function addScoreboard(string $title, array $lines = []){
+		$scoreboard = $this->server->getScoreboardManager()->create($this, $title);
+		if(!empty($lines)) {
+			$scoreboard->setLines($lines);
+		}
+	}
+
+	/**
+	 * Remove a scoreboard from the user
+	 */
+	public function removeScoreboard(){
+		$this->server->getScoreboardManager()->destroy($this);
 	}
 
 	/**

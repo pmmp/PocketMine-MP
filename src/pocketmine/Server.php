@@ -92,6 +92,7 @@ use pocketmine\plugin\ScriptPluginLoader;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\scheduler\SendUsageTask;
+use pocketmine\scoreboard\ScoreboardManager;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\tile\Tile;
@@ -261,6 +262,9 @@ class Server{
 
 	/** @var CraftingManager */
 	private $craftingManager;
+
+	/** @var ScoreboardManager */
+	private $scoreboardManager;
 
 	/** @var ResourcePackManager */
 	private $resourceManager;
@@ -693,6 +697,13 @@ class Server{
 	 */
 	public function getCraftingManager(){
 		return $this->craftingManager;
+	}
+
+	/**
+	 * @return ScoreboardManager
+	 */
+	public function getScoreboardManager() : ScoreboardManager{
+		return $this->scoreboardManager;
 	}
 
 	/**
@@ -1709,6 +1720,7 @@ class Server{
 			GeneratorManager::registerDefaultGenerators();
 
 			$this->craftingManager = new CraftingManager();
+			$this->scoreboardManager = new ScoreboardManager();
 
 			$this->resourceManager = new ResourcePackManager($this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR, $this->logger);
 
