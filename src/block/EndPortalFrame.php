@@ -59,8 +59,11 @@ class EndPortalFrame extends Opaque{
 		return 1;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return AxisAlignedBB::one()->trim(Facing::UP, 3 / 16);
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return [AxisAlignedBB::one()->trim(Facing::UP, 3 / 16)];
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

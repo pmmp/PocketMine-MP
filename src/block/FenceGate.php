@@ -60,12 +60,11 @@ class FenceGate extends Transparent{
 		return 0b1111;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		if($this->open){
-			return null;
-		}
-
-		return AxisAlignedBB::one()->extend(Facing::UP, 0.5)->squash(Facing::axis($this->facing), 6 / 16);
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return $this->open ? [] : [AxisAlignedBB::one()->extend(Facing::UP, 0.5)->squash(Facing::axis($this->facing), 6 / 16)];
 	}
 
 	private function checkInWall() : bool{

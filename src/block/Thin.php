@@ -43,16 +43,6 @@ class Thin extends Transparent{
 		}
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$bb = AxisAlignedBB::one();
-		foreach(Facing::HORIZONTAL as $facing){
-			if(!isset($this->connections[$facing])){
-				$bb->trim($facing, 7 / 16);
-			}
-		}
-		return $bb;
-	}
-
 	protected function recalculateCollisionBoxes() : array{
 		$inset = 7 / 16;
 

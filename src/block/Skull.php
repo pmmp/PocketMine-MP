@@ -90,9 +90,12 @@ class Skull extends Flowable{
 		return $this->skullType;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
 		//TODO: different bounds depending on attached face
-		return AxisAlignedBB::one()->contract(0.25, 0, 0.25)->trim(Facing::UP, 0.5);
+		return [AxisAlignedBB::one()->contract(0.25, 0, 0.25)->trim(Facing::UP, 0.5)];
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

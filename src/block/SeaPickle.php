@@ -60,8 +60,11 @@ class SeaPickle extends Transparent{
 		return $this->underwater ? ($this->count + 1) * 3 : 0;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return null;
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return [];
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{

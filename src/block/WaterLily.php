@@ -36,8 +36,11 @@ class WaterLily extends Flowable{
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6));
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return AxisAlignedBB::one()->contract(1 / 16, 0, 1 / 16)->trim(Facing::UP, 63 / 64);
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return [AxisAlignedBB::one()->contract(1 / 16, 0, 1 / 16)->trim(Facing::UP, 63 / 64)];
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

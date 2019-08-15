@@ -88,8 +88,11 @@ class Bed extends Transparent{
 		}
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return AxisAlignedBB::one()->trim(Facing::UP, 7 / 16);
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 16)];
 	}
 
 	public function isHeadPart() : bool{

@@ -64,8 +64,6 @@ class Block{
 	/** @var Position */
 	protected $pos;
 
-	/** @var AxisAlignedBB */
-	protected $boundingBox = null;
 	/** @var AxisAlignedBB[]|null */
 	protected $collisionBoxes = null;
 
@@ -167,7 +165,6 @@ class Block{
 	 * AABBs and force recalculation.
 	 */
 	public function readStateFromWorld() : void{
-		$this->boundingBox = null;
 		$this->collisionBoxes = null;
 	}
 
@@ -687,31 +684,7 @@ class Block{
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
-		if($bb = $this->recalculateBoundingBox()){
-			return [$bb];
-		}
-
-		return [];
-	}
-
-	/**
-	 * @return AxisAlignedBB|null
-	 */
-	final public function getBoundingBox() : ?AxisAlignedBB{
-		if($this->boundingBox === null){
-			$this->boundingBox = $this->recalculateBoundingBox();
-			if($this->boundingBox !== null){
-				$this->boundingBox->offset($this->pos->x, $this->pos->y, $this->pos->z);
-			}
-		}
-		return $this->boundingBox;
-	}
-
-	/**
-	 * @return AxisAlignedBB|null
-	 */
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return AxisAlignedBB::one();
+		return [AxisAlignedBB::one()];
 	}
 
 	/**

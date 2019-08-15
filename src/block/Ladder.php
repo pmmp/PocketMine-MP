@@ -72,10 +72,12 @@ class Ladder extends Transparent{
 		}
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return AxisAlignedBB::one()->trim($this->facing, 13 / 16);
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return [AxisAlignedBB::one()->trim($this->facing, 13 / 16)];
 	}
-
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$blockClicked->isTransparent() and Facing::axis($face) !== Facing::AXIS_Y){

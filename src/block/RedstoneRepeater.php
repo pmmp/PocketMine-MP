@@ -64,8 +64,11 @@ class RedstoneRepeater extends Flowable{
 		return 0b1111;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return AxisAlignedBB::one()->trim(Facing::UP, 7 / 8);
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 8)];
 	}
 
 	public function isPowered() : bool{

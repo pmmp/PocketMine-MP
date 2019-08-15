@@ -60,9 +60,12 @@ class Cactus extends Transparent{
 		return true;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
 		static $shrinkSize = 1 / 16;
-		return AxisAlignedBB::one()->contract($shrinkSize, 0, $shrinkSize)->trim(Facing::UP, $shrinkSize);
+		return [AxisAlignedBB::one()->contract($shrinkSize, 0, $shrinkSize)->trim(Facing::UP, $shrinkSize)];
 	}
 
 	public function onEntityInside(Entity $entity) : void{

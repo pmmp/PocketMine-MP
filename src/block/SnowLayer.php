@@ -63,9 +63,12 @@ class SnowLayer extends Flowable implements Fallable{
 		return $this->layers < 8;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
 		//TODO: this zero-height BB is intended to stay in lockstep with a MCPE bug
-		return AxisAlignedBB::one()->trim(Facing::UP, $this->layers >= 4 ? 0.5 : 1);
+		return [AxisAlignedBB::one()->trim(Facing::UP, $this->layers >= 4 ? 0.5 : 1)];
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

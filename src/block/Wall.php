@@ -53,7 +53,7 @@ class Wall extends Transparent{
 		$this->up = $this->getSide(Facing::UP)->getId() !== BlockLegacyIds::AIR;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+	protected function recalculateCollisionBoxes() : array{
 		//walls don't have any special collision boxes like fences do
 
 		$north = isset($this->connections[Facing::NORTH]);
@@ -73,11 +73,13 @@ class Wall extends Transparent{
 			$inset = 0.3125;
 		}
 
-		return AxisAlignedBB::one()
-			->extend(Facing::UP, 0.5)
-			->trim(Facing::NORTH, $north ? 0 : $inset)
-			->trim(Facing::SOUTH, $south ? 0 : $inset)
-			->trim(Facing::WEST, $west ? 0 : $inset)
-			->trim(Facing::EAST, $east ? 0 : $inset);
+		return [
+			AxisAlignedBB::one()
+				->extend(Facing::UP, 0.5)
+				->trim(Facing::NORTH, $north ? 0 : $inset)
+				->trim(Facing::SOUTH, $south ? 0 : $inset)
+				->trim(Facing::WEST, $west ? 0 : $inset)
+				->trim(Facing::EAST, $east ? 0 : $inset)
+		];
 	}
 }

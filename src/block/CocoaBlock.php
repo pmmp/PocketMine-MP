@@ -63,13 +63,18 @@ class CocoaBlock extends Transparent{
 		return false;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return AxisAlignedBB::one()
-			->squash(Facing::axis(Facing::rotateY($this->facing, true)), (6 - $this->age) / 16) //sides
-			->trim(Facing::DOWN, (7 - $this->age * 2) / 16)
-			->trim(Facing::UP, 0.25)
-			->trim(Facing::opposite($this->facing), 1 / 16) //gap between log and pod
-			->trim($this->facing, (11 - $this->age * 2) / 16); //outward face
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return [
+			AxisAlignedBB::one()
+				->squash(Facing::axis(Facing::rotateY($this->facing, true)), (6 - $this->age) / 16) //sides
+				->trim(Facing::DOWN, (7 - $this->age * 2) / 16)
+				->trim(Facing::UP, 0.25)
+				->trim(Facing::opposite($this->facing), 1 / 16) //gap between log and pod
+				->trim($this->facing, (11 - $this->age * 2) / 16) //outward face
+		];
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

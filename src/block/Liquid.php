@@ -99,8 +99,11 @@ abstract class Liquid extends Transparent{
 		return false;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return null;
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return [];
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

@@ -119,11 +119,14 @@ class Slab extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
 		if($this->slabType->equals(SlabType::DOUBLE())){
-			return parent::recalculateBoundingBox();
+			return [AxisAlignedBB::one()];
 		}
-		return AxisAlignedBB::one()->trim($this->slabType->equals(SlabType::TOP()) ? Facing::DOWN : Facing::UP, 0.5);
+		return [AxisAlignedBB::one()->trim($this->slabType->equals(SlabType::TOP()) ? Facing::DOWN : Facing::UP, 0.5)];
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

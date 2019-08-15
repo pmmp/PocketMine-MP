@@ -50,10 +50,9 @@ class Air extends Transparent{
 		return false;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return null;
-	}
-
+	/**
+	 * @return AxisAlignedBB[]
+	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}

@@ -86,17 +86,6 @@ class Vine extends Flowable{
 		$entity->resetFallDistance();
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		switch(count($this->faces)){
-			case 0:
-				return AxisAlignedBB::one()->trim(Facing::DOWN, 15 / 16);
-			case 1:
-				return AxisAlignedBB::one()->trim(Facing::opposite(array_keys($this->faces)[0]), 15 / 16);
-			default:
-				return AxisAlignedBB::one();
-		}
-	}
-
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}

@@ -78,7 +78,10 @@ class EndRod extends Flowable{
 		return 14;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
 		$myAxis = Facing::axis($this->facing);
 
 		$bb = AxisAlignedBB::one();
@@ -88,6 +91,6 @@ class EndRod extends Flowable{
 			}
 			$bb->squash($axis, 6 / 16);
 		}
-		return $bb;
+		return [$bb];
 	}
 }

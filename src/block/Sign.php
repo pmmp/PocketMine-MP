@@ -107,8 +107,11 @@ class Sign extends Transparent{
 		return false;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return null;
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return [];
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

@@ -51,12 +51,17 @@ class Lantern extends Transparent{
 		return 15;
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return AxisAlignedBB::one()
-			->trim(Facing::UP,   $this->hanging ? 6 / 16 : 8 / 16)
-			->trim(Facing::DOWN, $this->hanging ? 2 / 16 : 0)
-			->squash(Facing::AXIS_X, 5 / 16)
-			->squash(Facing::AXIS_Z, 5 / 16);
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return [
+			AxisAlignedBB::one()
+				->trim(Facing::UP,   $this->hanging ? 6 / 16 : 8 / 16)
+				->trim(Facing::DOWN, $this->hanging ? 2 / 16 : 0)
+				->squash(Facing::AXIS_X, 5 / 16)
+				->squash(Facing::AXIS_Z, 5 / 16)
+		];
 	}
 
 	protected function canAttachTo(Block $b) : bool{

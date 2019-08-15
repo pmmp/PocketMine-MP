@@ -47,19 +47,9 @@ class Fence extends Transparent{
 		}
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		$width = 0.5 - $this->getThickness() / 2;
-
-		$bb = AxisAlignedBB::one()
-			->extend(Facing::UP, 0.5);
-		foreach(Facing::HORIZONTAL as $facing){
-			if(!isset($this->connections[$facing])){
-				$bb->trim($facing, $width);
-			}
-		}
-		return $bb;
-	}
-
+	/**
+	 * @return AxisAlignedBB[]
+	 */
 	protected function recalculateCollisionBoxes() : array{
 		$inset = 0.5 - $this->getThickness() / 2;
 
