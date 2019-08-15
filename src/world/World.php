@@ -1121,20 +1121,6 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @param Block $pos
-	 *
-	 * @return bool
-	 */
-	public function isFullBlock(Block $pos) : bool{
-		if($pos->isSolid()){
-			return true;
-		}
-		$bb = $pos->getBoundingBox();
-
-		return $bb !== null and $bb->getAverageEdgeLength() >= 1;
-	}
-
-	/**
 	 * @param Entity        $entity
 	 * @param AxisAlignedBB $bb
 	 * @param bool          $entities
@@ -2565,7 +2551,7 @@ class World implements ChunkManager{
 			$y = (int) min($max - 2, $v->y);
 			$wasAir = $this->getBlockAt($x, $y - 1, $z)->getId() === BlockLegacyIds::AIR; //TODO: bad hack, clean up
 			for(; $y > 0; --$y){
-				if($this->isFullBlock($this->getBlockAt($x, $y, $z))){
+				if($this->getBlockAt($x, $y, $z)->isFullCube()){
 					if($wasAir){
 						$y++;
 						break;
@@ -2576,8 +2562,8 @@ class World implements ChunkManager{
 			}
 
 			for(; $y >= 0 and $y < $max; ++$y){
-				if(!$this->isFullBlock($this->getBlockAt($x, $y + 1, $z))){
-					if(!$this->isFullBlock($this->getBlockAt($x, $y, $z))){
+				if(!$this->getBlockAt($x, $y + 1, $z)->isFullCube()){
+					if(!$this->getBlockAt($x, $y, $z)->isFullCube()){
 						return new Position($spawn->x, $y === (int) $spawn->y ? $spawn->y : $y, $spawn->z, $this);
 					}
 				}else{

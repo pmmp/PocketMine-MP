@@ -35,8 +35,7 @@ class Thin extends Transparent{
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$side = $this->getSide($facing);
-			//FIXME: currently there's no proper way to tell if a block is a full-block, so we check the bounding box size
-			if($side instanceof Thin or ($bb = $side->getBoundingBox()) !== null and $bb->getAverageEdgeLength() >= 1){
+			if($side instanceof Thin or $side->isFullCube()){
 				$this->connections[$facing] = true;
 			}else{
 				unset($this->connections[$facing]);

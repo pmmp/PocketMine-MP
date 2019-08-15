@@ -46,6 +46,7 @@ use pocketmine\world\Position;
 use pocketmine\world\World;
 use function array_merge;
 use function assert;
+use function count;
 use function dechex;
 use const PHP_INT_MAX;
 
@@ -711,6 +712,15 @@ class Block{
 	 */
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return AxisAlignedBB::one();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isFullCube() : bool{
+		$bb = $this->getCollisionBoxes();
+
+		return count($bb) === 1 and $bb[0]->getAverageEdgeLength() >= 1; //TODO: average length 1 != cube
 	}
 
 	/**
