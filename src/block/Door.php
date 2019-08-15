@@ -93,9 +93,7 @@ class Door extends Transparent{
 	}
 
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
-		return AxisAlignedBB::one()
-			->extend(Facing::UP, 1)
-			->trim($this->open ? Facing::rotateY($this->facing, !$this->hingeRight) : $this->facing, 13 / 16);
+		return AxisAlignedBB::one()->trim($this->open ? Facing::rotateY($this->facing, !$this->hingeRight) : $this->facing, 13 / 16);
 	}
 
 	public function onNearbyBlockChange() : void{
