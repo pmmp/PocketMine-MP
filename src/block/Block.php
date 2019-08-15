@@ -671,7 +671,7 @@ class Block{
 	/**
 	 * @return AxisAlignedBB[]
 	 */
-	public function getCollisionBoxes() : array{
+	final public function getCollisionBoxes() : array{
 		if($this->collisionBoxes === null){
 			$this->collisionBoxes = $this->recalculateCollisionBoxes();
 			foreach($this->collisionBoxes as $bb){
@@ -696,7 +696,7 @@ class Block{
 	/**
 	 * @return AxisAlignedBB|null
 	 */
-	public function getBoundingBox() : ?AxisAlignedBB{
+	final public function getBoundingBox() : ?AxisAlignedBB{
 		if($this->boundingBox === null){
 			$this->boundingBox = $this->recalculateBoundingBox();
 			if($this->boundingBox !== null){

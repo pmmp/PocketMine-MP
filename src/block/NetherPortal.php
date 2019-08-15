@@ -74,7 +74,7 @@ class NetherPortal extends Transparent{
 		return false;
 	}
 
-	public function getBoundingBox() : ?AxisAlignedBB{
+	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return null;
 	}
 
