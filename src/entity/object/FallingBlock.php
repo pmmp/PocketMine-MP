@@ -34,6 +34,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use function abs;
 use function get_class;
 
 class FallingBlock extends Entity{
@@ -108,7 +109,7 @@ class FallingBlock extends Entity{
 				$this->flagForDespawn();
 
 				$block = $this->world->getBlock($pos);
-				if(($block->isTransparent() and !$block->canBeReplaced()) or !$this->world->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ())){
+				if(($block->isTransparent() and !$block->canBeReplaced()) or !$this->world->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ()) or ($this->onGround and abs($this->y - $this->getFloorY()) > 0.001)){
 					//FIXME: anvils are supposed to destroy torches
 					$this->getWorld()->dropItem($this, $this->block->asItem());
 				}else{
