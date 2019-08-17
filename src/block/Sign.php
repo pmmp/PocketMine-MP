@@ -143,6 +143,14 @@ class Sign extends Transparent{
 	}
 
 	/**
+	 * @param SignText $text
+	 */
+	public function setText(SignText $text) : void{
+		$this->text = $text;
+		$this->pos->getWorld()->setBlock($this->pos, $this);
+	}
+
+	/**
 	 * Called by the player controller (network session) to update the sign text, firing events as appropriate.
 	 *
 	 * @param Player   $author
@@ -165,8 +173,7 @@ class Sign extends Transparent{
 		}, $text->getLines())));
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$this->text = clone $ev->getNewText();
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->setText($ev->getNewText());
 			return true;
 		}
 
