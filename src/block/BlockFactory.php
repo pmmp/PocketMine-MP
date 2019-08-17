@@ -402,68 +402,66 @@ class BlockFactory{
 
 
 		//region ugly treetype -> blockID mapping tables
-		/** @var int[]|\SplObjectStorage $woodenStairIds */
-		$woodenStairIds = new \SplObjectStorage();
-		$woodenStairIds[TreeType::OAK()] = Ids::OAK_STAIRS;
-		$woodenStairIds[TreeType::SPRUCE()] = Ids::SPRUCE_STAIRS;
-		$woodenStairIds[TreeType::BIRCH()] = Ids::BIRCH_STAIRS;
-		$woodenStairIds[TreeType::JUNGLE()] = Ids::JUNGLE_STAIRS;
-		$woodenStairIds[TreeType::ACACIA()] = Ids::ACACIA_STAIRS;
-		$woodenStairIds[TreeType::DARK_OAK()] = Ids::DARK_OAK_STAIRS;
+		$woodenStairIds = [
+			TreeType::OAK()->id() => Ids::OAK_STAIRS,
+			TreeType::SPRUCE()->id() => Ids::SPRUCE_STAIRS,
+			TreeType::BIRCH()->id() => Ids::BIRCH_STAIRS,
+			TreeType::JUNGLE()->id() => Ids::JUNGLE_STAIRS,
+			TreeType::ACACIA()->id() => Ids::ACACIA_STAIRS,
+			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_STAIRS
+		];
+		$fenceGateIds = [
+			TreeType::OAK()->id() => Ids::OAK_FENCE_GATE,
+			TreeType::SPRUCE()->id() => Ids::SPRUCE_FENCE_GATE,
+			TreeType::BIRCH()->id() => Ids::BIRCH_FENCE_GATE,
+			TreeType::JUNGLE()->id() => Ids::JUNGLE_FENCE_GATE,
+			TreeType::ACACIA()->id() => Ids::ACACIA_FENCE_GATE,
+			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_FENCE_GATE
+		];
 
-		/** @var int[]|\SplObjectStorage $fenceGateIds */
-		$fenceGateIds = new \SplObjectStorage();
-		$fenceGateIds[TreeType::OAK()] = Ids::OAK_FENCE_GATE;
-		$fenceGateIds[TreeType::SPRUCE()] = Ids::SPRUCE_FENCE_GATE;
-		$fenceGateIds[TreeType::BIRCH()] = Ids::BIRCH_FENCE_GATE;
-		$fenceGateIds[TreeType::JUNGLE()] = Ids::JUNGLE_FENCE_GATE;
-		$fenceGateIds[TreeType::ACACIA()] = Ids::ACACIA_FENCE_GATE;
-		$fenceGateIds[TreeType::DARK_OAK()] = Ids::DARK_OAK_FENCE_GATE;
+		/** @var BID[] $woodenDoorIds */
+		$woodenDoorIds = [
+			TreeType::OAK()->id() => new BID(Ids::OAK_DOOR_BLOCK, 0, ItemIds::OAK_DOOR),
+			TreeType::SPRUCE()->id() => new BID(Ids::SPRUCE_DOOR_BLOCK, 0, ItemIds::SPRUCE_DOOR),
+			TreeType::BIRCH()->id() => new BID(Ids::BIRCH_DOOR_BLOCK, 0, ItemIds::BIRCH_DOOR),
+			TreeType::JUNGLE()->id() => new BID(Ids::JUNGLE_DOOR_BLOCK, 0, ItemIds::JUNGLE_DOOR),
+			TreeType::ACACIA()->id() => new BID(Ids::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR),
+			TreeType::DARK_OAK()->id() => new BID(Ids::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR)
+		];
+		$woodenPressurePlateIds = [
+			TreeType::OAK()->id() => Ids::WOODEN_PRESSURE_PLATE,
+			TreeType::SPRUCE()->id() => Ids::SPRUCE_PRESSURE_PLATE,
+			TreeType::BIRCH()->id() => Ids::BIRCH_PRESSURE_PLATE,
+			TreeType::JUNGLE()->id() => Ids::JUNGLE_PRESSURE_PLATE,
+			TreeType::ACACIA()->id() => Ids::ACACIA_PRESSURE_PLATE,
+			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_PRESSURE_PLATE
+		];
+		$woodenButtonIds = [
+			TreeType::OAK()->id() => Ids::WOODEN_BUTTON,
+			TreeType::SPRUCE()->id() => Ids::SPRUCE_BUTTON,
+			TreeType::BIRCH()->id() => Ids::BIRCH_BUTTON,
+			TreeType::JUNGLE()->id() => Ids::JUNGLE_BUTTON,
+			TreeType::ACACIA()->id() => Ids::ACACIA_BUTTON,
+			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_BUTTON
+		];
+		$woodenTrapdoorIds = [
+			TreeType::OAK()->id() => Ids::WOODEN_TRAPDOOR,
+			TreeType::SPRUCE()->id() => Ids::SPRUCE_TRAPDOOR,
+			TreeType::BIRCH()->id() => Ids::BIRCH_TRAPDOOR,
+			TreeType::JUNGLE()->id() => Ids::JUNGLE_TRAPDOOR,
+			TreeType::ACACIA()->id() => Ids::ACACIA_TRAPDOOR,
+			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_TRAPDOOR
+		];
 
-		/** @var BID[]|\SplObjectStorage $woodenDoorIds */
-		$woodenDoorIds = new \SplObjectStorage();
-		$woodenDoorIds[TreeType::OAK()] = new BID(Ids::OAK_DOOR_BLOCK, 0, ItemIds::OAK_DOOR);
-		$woodenDoorIds[TreeType::SPRUCE()] = new BID(Ids::SPRUCE_DOOR_BLOCK, 0, ItemIds::SPRUCE_DOOR);
-		$woodenDoorIds[TreeType::BIRCH()] = new BID(Ids::BIRCH_DOOR_BLOCK, 0, ItemIds::BIRCH_DOOR);
-		$woodenDoorIds[TreeType::JUNGLE()] = new BID(Ids::JUNGLE_DOOR_BLOCK, 0, ItemIds::JUNGLE_DOOR);
-		$woodenDoorIds[TreeType::ACACIA()] = new BID(Ids::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR);
-		$woodenDoorIds[TreeType::DARK_OAK()] = new BID(Ids::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR);
-
-		/** @var int[]|\SplObjectStorage $woodenPressurePlateIds */
-		$woodenPressurePlateIds = new \SplObjectStorage();
-		$woodenPressurePlateIds[TreeType::OAK()] = Ids::WOODEN_PRESSURE_PLATE;
-		$woodenPressurePlateIds[TreeType::SPRUCE()] = Ids::SPRUCE_PRESSURE_PLATE;
-		$woodenPressurePlateIds[TreeType::BIRCH()] = Ids::BIRCH_PRESSURE_PLATE;
-		$woodenPressurePlateIds[TreeType::JUNGLE()] = Ids::JUNGLE_PRESSURE_PLATE;
-		$woodenPressurePlateIds[TreeType::ACACIA()] = Ids::ACACIA_PRESSURE_PLATE;
-		$woodenPressurePlateIds[TreeType::DARK_OAK()] = Ids::DARK_OAK_PRESSURE_PLATE;
-
-		/** @var int[]|\SplObjectStorage $woodenButtonIds */
-		$woodenButtonIds = new \SplObjectStorage();
-		$woodenButtonIds[TreeType::OAK()] = Ids::WOODEN_BUTTON;
-		$woodenButtonIds[TreeType::SPRUCE()] = Ids::SPRUCE_BUTTON;
-		$woodenButtonIds[TreeType::BIRCH()] = Ids::BIRCH_BUTTON;
-		$woodenButtonIds[TreeType::JUNGLE()] = Ids::JUNGLE_BUTTON;
-		$woodenButtonIds[TreeType::ACACIA()] = Ids::ACACIA_BUTTON;
-		$woodenButtonIds[TreeType::DARK_OAK()] = Ids::DARK_OAK_BUTTON;
-
-		/** @var int[]|\SplObjectStorage $woodenTrapdoorIds */
-		$woodenTrapdoorIds = new \SplObjectStorage();
-		$woodenTrapdoorIds[TreeType::OAK()] = Ids::WOODEN_TRAPDOOR;
-		$woodenTrapdoorIds[TreeType::SPRUCE()] = Ids::SPRUCE_TRAPDOOR;
-		$woodenTrapdoorIds[TreeType::BIRCH()] = Ids::BIRCH_TRAPDOOR;
-		$woodenTrapdoorIds[TreeType::JUNGLE()] = Ids::JUNGLE_TRAPDOOR;
-		$woodenTrapdoorIds[TreeType::ACACIA()] = Ids::ACACIA_TRAPDOOR;
-		$woodenTrapdoorIds[TreeType::DARK_OAK()] = Ids::DARK_OAK_TRAPDOOR;
-
-		/** @var BIDFlattened[]|\SplObjectStorage $woodenSignIds */
-		$woodenSignIds = new \SplObjectStorage();
-		$woodenSignIds[TreeType::OAK()] = new BIDFlattened(Ids::SIGN_POST, Ids::WALL_SIGN, 0, ItemIds::SIGN, TileSign::class);
-		$woodenSignIds[TreeType::SPRUCE()] = new BIDFlattened(Ids::SPRUCE_STANDING_SIGN, Ids::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class);
-		$woodenSignIds[TreeType::BIRCH()] = new BIDFlattened(Ids::BIRCH_STANDING_SIGN, Ids::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class);
-		$woodenSignIds[TreeType::JUNGLE()] = new BIDFlattened(Ids::JUNGLE_STANDING_SIGN, Ids::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class);
-		$woodenSignIds[TreeType::ACACIA()] = new BIDFlattened(Ids::ACACIA_STANDING_SIGN, Ids::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, TileSign::class);
-		$woodenSignIds[TreeType::DARK_OAK()] = new BIDFlattened(Ids::DARKOAK_STANDING_SIGN, Ids::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class);
+		/** @var BIDFlattened[] $woodenSignIds */
+		$woodenSignIds = [
+			TreeType::OAK()->id() => new BIDFlattened(Ids::SIGN_POST, Ids::WALL_SIGN, 0, ItemIds::SIGN, TileSign::class),
+			TreeType::SPRUCE()->id() => new BIDFlattened(Ids::SPRUCE_STANDING_SIGN, Ids::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class),
+			TreeType::BIRCH()->id() => new BIDFlattened(Ids::BIRCH_STANDING_SIGN, Ids::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class),
+			TreeType::JUNGLE()->id() => new BIDFlattened(Ids::JUNGLE_STANDING_SIGN, Ids::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class),
+			TreeType::ACACIA()->id() => new BIDFlattened(Ids::ACACIA_STANDING_SIGN, Ids::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, TileSign::class),
+			TreeType::DARK_OAK()->id() => new BIDFlattened(Ids::DARKOAK_STANDING_SIGN, Ids::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class)
+		];
 		//endregion
 
 		foreach(TreeType::getAll() as $treeType){
@@ -482,15 +480,15 @@ class BlockFactory{
 			self::register($wood);
 			self::remap($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, ($magicNumber & 0x03) | 0b1100, $wood);
 
-			self::register(new FenceGate(new BID($fenceGateIds[$treeType]), $treeType->getDisplayName() . " Fence Gate"));
-			self::register(new WoodenStairs(new BID($woodenStairIds[$treeType]), $treeType->getDisplayName() . " Stairs"));
-			self::register(new WoodenDoor($woodenDoorIds[$treeType], $treeType->getDisplayName() . " Door"));
+			self::register(new FenceGate(new BID($fenceGateIds[$treeType->id()]), $treeType->getDisplayName() . " Fence Gate"));
+			self::register(new WoodenStairs(new BID($woodenStairIds[$treeType->id()]), $treeType->getDisplayName() . " Stairs"));
+			self::register(new WoodenDoor($woodenDoorIds[$treeType->id()], $treeType->getDisplayName() . " Door"));
 
-			self::register(new WoodenButton(new BID($woodenButtonIds[$treeType]), $treeType->getDisplayName() . " Button"));
-			self::register(new WoodenPressurePlate(new BID($woodenPressurePlateIds[$treeType]), $treeType->getDisplayName() . " Pressure Plate"));
-			self::register(new WoodenTrapdoor(new BID($woodenTrapdoorIds[$treeType]), $treeType->getDisplayName() . " Trapdoor"));
+			self::register(new WoodenButton(new BID($woodenButtonIds[$treeType->id()]), $treeType->getDisplayName() . " Button"));
+			self::register(new WoodenPressurePlate(new BID($woodenPressurePlateIds[$treeType->id()]), $treeType->getDisplayName() . " Pressure Plate"));
+			self::register(new WoodenTrapdoor(new BID($woodenTrapdoorIds[$treeType->id()]), $treeType->getDisplayName() . " Trapdoor"));
 
-			self::register(new Sign($woodenSignIds[$treeType], $treeType->getDisplayName() . " Sign"));
+			self::register(new Sign($woodenSignIds[$treeType->id()], $treeType->getDisplayName() . " Sign"));
 		}
 
 		static $sandstoneTypes = [
@@ -510,24 +508,25 @@ class BlockFactory{
 		}
 
 		//region ugly glazed-terracotta colour -> ID mapping table
-		/** @var int[]|\SplObjectStorage $glazedTerracottaIds */
-		$glazedTerracottaIds = new \SplObjectStorage();
-		$glazedTerracottaIds[DyeColor::WHITE()] = Ids::WHITE_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::ORANGE()] = Ids::ORANGE_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::MAGENTA()] = Ids::MAGENTA_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::LIGHT_BLUE()] = Ids::LIGHT_BLUE_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::YELLOW()] = Ids::YELLOW_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::LIME()] = Ids::LIME_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::PINK()] = Ids::PINK_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::GRAY()] = Ids::GRAY_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::LIGHT_GRAY()] = Ids::SILVER_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::CYAN()] = Ids::CYAN_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::PURPLE()] = Ids::PURPLE_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::BLUE()] = Ids::BLUE_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::BROWN()] = Ids::BROWN_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::GREEN()] = Ids::GREEN_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::RED()] = Ids::RED_GLAZED_TERRACOTTA;
-		$glazedTerracottaIds[DyeColor::BLACK()] = Ids::BLACK_GLAZED_TERRACOTTA;
+		/** @var int[] */
+		$glazedTerracottaIds = [
+			DyeColor::WHITE()->id() => Ids::WHITE_GLAZED_TERRACOTTA,
+			DyeColor::ORANGE()->id() => Ids::ORANGE_GLAZED_TERRACOTTA,
+			DyeColor::MAGENTA()->id() => Ids::MAGENTA_GLAZED_TERRACOTTA,
+			DyeColor::LIGHT_BLUE()->id() => Ids::LIGHT_BLUE_GLAZED_TERRACOTTA,
+			DyeColor::YELLOW()->id() => Ids::YELLOW_GLAZED_TERRACOTTA,
+			DyeColor::LIME()->id() => Ids::LIME_GLAZED_TERRACOTTA,
+			DyeColor::PINK()->id() => Ids::PINK_GLAZED_TERRACOTTA,
+			DyeColor::GRAY()->id() => Ids::GRAY_GLAZED_TERRACOTTA,
+			DyeColor::LIGHT_GRAY()->id() => Ids::SILVER_GLAZED_TERRACOTTA,
+			DyeColor::CYAN()->id() => Ids::CYAN_GLAZED_TERRACOTTA,
+			DyeColor::PURPLE()->id() => Ids::PURPLE_GLAZED_TERRACOTTA,
+			DyeColor::BLUE()->id() => Ids::BLUE_GLAZED_TERRACOTTA,
+			DyeColor::BROWN()->id() => Ids::BROWN_GLAZED_TERRACOTTA,
+			DyeColor::GREEN()->id() => Ids::GREEN_GLAZED_TERRACOTTA,
+			DyeColor::RED()->id() => Ids::RED_GLAZED_TERRACOTTA,
+			DyeColor::BLACK()->id() => Ids::BLACK_GLAZED_TERRACOTTA
+		];
 		//endregion
 
 		foreach(DyeColor::getAll() as $color){
@@ -536,7 +535,7 @@ class BlockFactory{
 			self::register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER, $color->getMagicNumber()), $color->getDisplayName() . " Concrete Powder"));
 			self::register(new Glass(new BID(Ids::STAINED_GLASS, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass"));
 			self::register(new GlassPane(new BID(Ids::STAINED_GLASS_PANE, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass Pane"));
-			self::register(new GlazedTerracotta(new BID($glazedTerracottaIds[$color]), $color->getDisplayName() . " Glazed Terracotta"));
+			self::register(new GlazedTerracotta(new BID($glazedTerracottaIds[$color->id()]), $color->getDisplayName() . " Glazed Terracotta"));
 			self::register(new HardenedClay(new BID(Ids::STAINED_CLAY, $color->getMagicNumber()), $color->getDisplayName() . " Stained Clay"));
 			self::register(new HardenedGlass(new BID(Ids::HARD_STAINED_GLASS, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass"));
 			self::register(new HardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass Pane"));

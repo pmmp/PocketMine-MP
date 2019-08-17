@@ -238,16 +238,16 @@ class ItemFactory{
 			self::register(new Skull(ItemIds::SKULL, $skullType->getMagicNumber(), $skullType->getDisplayName(), $skullType));
 		}
 
-		/** @var int[]|\SplObjectStorage $dyeMap */
-		$dyeMap = new \SplObjectStorage();
-		$dyeMap[DyeColor::BLACK()] = 16;
-		$dyeMap[DyeColor::BROWN()] = 17;
-		$dyeMap[DyeColor::BLUE()] = 18;
-		$dyeMap[DyeColor::WHITE()] = 19;
+		$dyeMap = [
+			DyeColor::BLACK()->id() => 16,
+			DyeColor::BROWN()->id() => 17,
+			DyeColor::BLUE()->id() => 18,
+			DyeColor::WHITE()->id() => 19
+		];
 		foreach(DyeColor::getAll() as $color){
 			//TODO: use colour object directly
 			//TODO: add interface to dye-colour objects
-			self::register(new Dye(ItemIds::DYE, $dyeMap[$color] ?? $color->getInvertedMagicNumber(), $color->getDisplayName() . " Dye", $color));
+			self::register(new Dye(ItemIds::DYE, $dyeMap[$color->id()] ?? $color->getInvertedMagicNumber(), $color->getDisplayName() . " Dye", $color));
 			self::register(new Bed(ItemIds::BED, $color->getMagicNumber(), $color->getDisplayName() . " Bed", $color));
 			self::register(new Banner(ItemIds::BANNER, $color->getInvertedMagicNumber(), $color->getDisplayName() . " Banner", $color));
 		}
