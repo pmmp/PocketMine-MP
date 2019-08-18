@@ -44,7 +44,7 @@ class FireworksRocket extends Entity{
 		parent::__construct($level, $nbt);
 
 		if($fireworks !== null && $fireworks->getNamedTagEntry("Fireworks") instanceof CompoundTag){
-			$this->propertyManager->setItem(self::DATA_MINECART_DISPLAY_BLOCK, $fireworks);
+			$this->propertyManager->setCompoundTag(self::DATA_MINECART_DISPLAY_BLOCK, $fireworks->getNamedTag());
 			$this->setLifeTime($fireworks->getRandomizedFlightDuration());
 		}
 
@@ -85,12 +85,12 @@ class FireworksRocket extends Entity{
 	}
 
 	protected function doExplosionAnimation() : void{
-		$fireworks = $this->propertyManager->getItem(self::DATA_MINECART_DISPLAY_BLOCK);
-		if($fireworks === null){
+		$fireworks_nbt = $this->propertyManager->getCompoundTag(self::DATA_MINECART_DISPLAY_BLOCK);
+		if($fireworks_nbt === null){
 			return;
 		}
 
-		$fireworks_nbt = $fireworks->getNamedTag()->getCompoundTag("Fireworks");
+		$fireworks_nbt = $fireworks_nbt->getCompoundTag("Fireworks");
 		if($fireworks_nbt === null){
 			return;
 		}
