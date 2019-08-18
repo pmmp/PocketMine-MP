@@ -32,8 +32,8 @@ use pocketmine\utils\Random;
 class Tree extends Populator{
 	/** @var ChunkManager */
 	private $level;
-	private $randomAmount;
-	private $baseAmount;
+	private $randomAmount = 1;
+	private $baseAmount = 0;
 
 	private $type;
 
@@ -51,7 +51,7 @@ class Tree extends Populator{
 
 	public function populate(ChunkManager $level, int $chunkX, int $chunkZ, Random $random){
 		$this->level = $level;
-		$amount = $random->nextRange(0, $this->randomAmount + 1) + $this->baseAmount;
+		$amount = $random->nextRange(0, $this->randomAmount) + $this->baseAmount;
 		for($i = 0; $i < $amount; ++$i){
 			$x = $random->nextRange($chunkX << 4, ($chunkX << 4) + 15);
 			$z = $random->nextRange($chunkZ << 4, ($chunkZ << 4) + 15);
