@@ -1804,11 +1804,11 @@ abstract class Entity{
 	}
 
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
-		$this->server->broadcastPacket($players ?? $this->getViewers(), ActorEventPacket::create($this->id, $eventId, $eventData ?? 0));
+		$this->server->broadcastPackets($players ?? $this->getViewers(), [ActorEventPacket::create($this->id, $eventId, $eventData ?? 0)]);
 	}
 
 	public function broadcastAnimation(?array $players, int $animationId) : void{
-		$this->server->broadcastPacket($players ?? $this->getViewers(), AnimatePacket::create($this->id, $animationId));
+		$this->server->broadcastPackets($players ?? $this->getViewers(), [AnimatePacket::create($this->id, $animationId)]);
 	}
 
 	public function __destruct(){

@@ -1420,18 +1420,6 @@ class Server{
 	}
 
 	/**
-	 * Broadcasts a Minecraft packet to a list of players
-	 *
-	 * @param Player[]          $players
-	 * @param ClientboundPacket $packet
-	 *
-	 * @return bool
-	 */
-	public function broadcastPacket(array $players, ClientboundPacket $packet) : bool{
-		return $this->broadcastPackets($players, [$packet]);
-	}
-
-	/**
 	 * @param Player[]            $players
 	 * @param ClientboundPacket[] $packets
 	 *

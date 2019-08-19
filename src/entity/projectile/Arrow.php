@@ -197,7 +197,7 @@ class Arrow extends Projectile{
 			return;
 		}
 
-		$this->server->broadcastPacket($this->getViewers(), TakeItemActorPacket::create($player->getId(), $this->getId()));
+		$this->server->broadcastPackets($this->getViewers(), [TakeItemActorPacket::create($player->getId(), $this->getId())]);
 
 		$playerInventory->addItem(clone $item);
 		$this->flagForDespawn();

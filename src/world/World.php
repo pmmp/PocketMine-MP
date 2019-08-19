@@ -697,7 +697,7 @@ class World implements ChunkManager{
 		if(empty($targets)){
 			$this->broadcastGlobalPacket($pk);
 		}else{
-			$this->server->broadcastPacket($targets, $pk);
+			$this->server->broadcastPackets($targets, [$pk]);
 		}
 	}
 
@@ -2680,7 +2680,7 @@ class World implements ChunkManager{
 		if(empty($targets)){
 			$this->broadcastGlobalPacket($pk);
 		}else{
-			$this->server->broadcastPacket($targets, $pk);
+			$this->server->broadcastPackets($targets, [$pk]);
 		}
 	}
 
