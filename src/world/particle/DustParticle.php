@@ -23,11 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 use pocketmine\utils\Color;
 
-class DustParticle extends GenericParticle{
+class DustParticle implements Particle{
+	/** @var Color */
+	private $color;
+
 	public function __construct(Color $color){
-		parent::__construct(ParticleIds::DUST, $color->toARGB());
+		$this->color = $color;
+	}
+
+	public function encode(Vector3 $pos){
+		return LevelEventPacket::standardParticle(ParticleIds::DUST, $this->color->toARGB(), $pos);
 	}
 }

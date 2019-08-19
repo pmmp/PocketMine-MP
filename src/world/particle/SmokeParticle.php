@@ -23,10 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class SmokeParticle extends GenericParticle{
+class SmokeParticle implements Particle{
+	/** @var int */
+	private $scale;
+
 	public function __construct(int $scale = 0){
-		parent::__construct(ParticleIds::SMOKE, $scale);
+		$this->scale = $scale;
+	}
+
+	public function encode(Vector3 $pos){
+		return LevelEventPacket::standardParticle(ParticleIds::SMOKE, $this->scale, $pos);
 	}
 }

@@ -23,10 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class SplashParticle extends GenericParticle{
-	public function __construct(){
-		parent::__construct(ParticleIds::WATER_SPLASH);
+class SplashParticle implements Particle{
+
+	public function encode(Vector3 $pos){
+		return LevelEventPacket::standardParticle(ParticleIds::WATER_SPLASH, 0, $pos);
 	}
 }

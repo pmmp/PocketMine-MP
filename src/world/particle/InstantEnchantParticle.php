@@ -23,10 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class InstantEnchantParticle extends GenericParticle{
-	public function __construct(){
-		parent::__construct(ParticleIds::MOB_SPELL_INSTANTANEOUS);
+class InstantEnchantParticle implements Particle{
+
+	public function encode(Vector3 $pos){
+		return LevelEventPacket::standardParticle(ParticleIds::MOB_SPELL_INSTANTANEOUS, 0, $pos);
 	}
 }

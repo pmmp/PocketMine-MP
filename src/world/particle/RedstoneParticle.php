@@ -23,10 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class RedstoneParticle extends GenericParticle{
+class RedstoneParticle implements Particle{
+	/** @var int */
+	private $lifetime;
+
 	public function __construct(int $lifetime = 1){
-		parent::__construct(ParticleIds::REDSTONE, $lifetime);
+		$this->lifetime = $lifetime;
+	}
+
+	public function encode(Vector3 $pos){
+		return LevelEventPacket::standardParticle(ParticleIds::REDSTONE, $this->lifetime, $pos);
 	}
 }

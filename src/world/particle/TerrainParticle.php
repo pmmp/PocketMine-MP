@@ -24,10 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\world\particle;
 
 use pocketmine\block\Block;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class TerrainParticle extends GenericParticle{
+class TerrainParticle implements Particle{
+	/** @var Block */
+	private $block;
+
 	public function __construct(Block $b){
-		parent::__construct(ParticleIds::TERRAIN, $b->getRuntimeId());
+		$this->block = $b;
+	}
+
+	public function encode(Vector3 $pos){
+		return LevelEventPacket::standardParticle(ParticleIds::TERRAIN, $this->block->getRuntimeId(), $pos);
 	}
 }
