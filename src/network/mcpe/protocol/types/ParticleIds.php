@@ -23,7 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-interface ParticleIds{
+final class ParticleIds{
+
+	private function __construct(){
+		//NOOP
+	}
+
 	public const BUBBLE = 1;
 	//2 same as 1
 	public const CRITICAL = 3;
