@@ -129,6 +129,10 @@ class LevelEventPacket extends DataPacket implements ClientboundPacket{
 		return $pk;
 	}
 
+	public static function standardParticle(int $particleId, int $data, Vector3 $pos) : self{
+		return self::create(self::EVENT_ADD_PARTICLE_MASK | $particleId, $data, $pos);
+	}
+
 	protected function decodePayload() : void{
 		$this->evid = $this->getVarInt();
 		$this->position = $this->getVector3();
