@@ -24,9 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\world\particle;
 
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
+use pocketmine\utils\Color;
 
 class DustParticle extends GenericParticle{
-	public function __construct(int $r, int $g, int $b, int $a = 255){
-		parent::__construct(ParticleIds::DUST, (($a & 0xff) << 24) | (($r & 0xff) << 16) | (($g & 0xff) << 8) | ($b & 0xff));
+	public function __construct(Color $color){
+		parent::__construct(ParticleIds::DUST, $color->toARGB());
 	}
 }

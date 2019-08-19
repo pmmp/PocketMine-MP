@@ -31,6 +31,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\Color;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\particle\AngryVillagerParticle;
@@ -224,7 +225,7 @@ class ParticleCommand extends VanillaCommand{
 		}elseif(strpos($name, "blockdust_") === 0){
 			$d = explode("_", $name);
 			if(count($d) >= 4){
-				return new DustParticle(((int) $d[1]) & 0xff, ((int) $d[2]) & 0xff, ((int) $d[3]) & 0xff, isset($d[4]) ? ((int) $d[4]) & 0xff : 255);
+				return new DustParticle(new Color(((int) $d[1]) & 0xff, ((int) $d[2]) & 0xff, ((int) $d[3]) & 0xff, isset($d[4]) ? ((int) $d[4]) & 0xff : 255));
 			}
 		}
 
