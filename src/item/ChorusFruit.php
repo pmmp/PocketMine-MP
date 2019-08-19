@@ -49,9 +49,10 @@ class ChorusFruit extends Food{
 		$world = $consumer->getWorld();
 		assert($world !== null);
 
-		$minX = $consumer->getFloorX() - 8;
-		$minY = min($consumer->getFloorY(), $consumer->getWorld()->getWorldHeight()) - 8;
-		$minZ = $consumer->getFloorZ() - 8;
+		$origin = $consumer->getPosition();
+		$minX = $origin->getFloorX() - 8;
+		$minY = min($origin->getFloorY(), $consumer->getWorld()->getWorldHeight()) - 8;
+		$minZ = $origin->getFloorZ() - 8;
 
 		$maxX = $minX + 16;
 		$maxY = $minY + 16;
@@ -76,7 +77,7 @@ class ChorusFruit extends Food{
 			}
 
 			//Sounds are broadcasted at both source and destination
-			$world->addSound($consumer->asVector3(), new EndermanTeleportSound());
+			$world->addSound($origin, new EndermanTeleportSound());
 			$consumer->teleport($target = new Vector3($x + 0.5, $y + 1, $z + 0.5));
 			$world->addSound($target, new EndermanTeleportSound());
 

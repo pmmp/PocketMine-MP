@@ -84,7 +84,7 @@ abstract class Projectile extends Entity{
 			$blockData = null;
 
 			if($nbt->hasTag("tileX", IntTag::class) and $nbt->hasTag("tileY", IntTag::class) and $nbt->hasTag("tileZ", IntTag::class)){
-				$blockPos = new Position($nbt->getInt("tileX"), $nbt->getInt("tileY"), $nbt->getInt("tileZ"), $this->world);
+				$blockPos = new Position($nbt->getInt("tileX"), $nbt->getInt("tileY"), $nbt->getInt("tileZ"), $this->getWorld());
 			}else{
 				break;
 			}
@@ -164,7 +164,7 @@ abstract class Projectile extends Entity{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->blockHit !== null and $this->world->isInLoadedTerrain($this->blockHit->getPos()) and !$this->blockHit->isSameState($this->world->getBlock($this->blockHit->getPos()))){
+		if($this->blockHit !== null and $this->getWorld()->isInLoadedTerrain($this->blockHit->getPos()) and !$this->blockHit->isSameState($this->getWorld()->getBlock($this->blockHit->getPos()))){
 			$this->blockHit = null;
 		}
 
@@ -180,7 +180,7 @@ abstract class Projectile extends Entity{
 
 		Timings::$entityMoveTimer->startTiming();
 
-		$start = $this->asVector3();
+		$start = $this->location->asVector3();
 		$end = $start->add($this->motion);
 
 		$blockHit = null;
@@ -188,7 +188,7 @@ abstract class Projectile extends Entity{
 		$hitResult = null;
 
 		foreach(VoxelRayTrace::betweenPoints($start, $end) as $vector3){
-			$block = $this->world->getBlockAt($vector3->x, $vector3->y, $vector3->z);
+			$block = $this->getWorld()->getBlockAt($vector3->x, $vector3->y, $vector3->z);
 
 			$blockHitResult = $this->calculateInterceptWithBlock($block, $start, $end);
 			if($blockHitResult !== null){
@@ -202,7 +202,7 @@ abstract class Projectile extends Entity{
 		$entityDistance = PHP_INT_MAX;
 
 		$newDiff = $end->subtract($start);
-		foreach($this->world->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expand(1, 1, 1), $this) as $entity){
+		foreach($this->getWorld()->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expand(1, 1, 1), $this) as $entity){
 			if($entity->getId() === $this->getOwningEntityId() and $this->ticksLived < 5){
 				continue;
 			}
@@ -214,7 +214,7 @@ abstract class Projectile extends Entity{
 				continue;
 			}
 
-			$distance = $this->distanceSquared($entityHitResult->hitVector);
+			$distance = $this->location->distanceSquared($entityHitResult->hitVector);
 
 			if($distance < $entityDistance){
 				$entityDistance = $distance;
@@ -224,9 +224,9 @@ abstract class Projectile extends Entity{
 			}
 		}
 
-		$this->x = $end->x;
-		$this->y = $end->y;
-		$this->z = $end->z;
+		$this->location->x = $end->x;
+		$this->location->y = $end->y;
+		$this->location->z = $end->z;
 		$this->recalculateBoundingBox();
 
 		if($hitResult !== null){
@@ -259,8 +259,8 @@ abstract class Projectile extends Entity{
 
 			//recompute angles...
 			$f = sqrt(($this->motion->x ** 2) + ($this->motion->z ** 2));
-			$this->yaw = (atan2($this->motion->x, $this->motion->z) * 180 / M_PI);
-			$this->pitch = (atan2($this->motion->y, $f) * 180 / M_PI);
+			$this->location->yaw = (atan2($this->motion->x, $this->motion->z) * 180 / M_PI);
+			$this->location->pitch = (atan2($this->motion->y, $f) * 180 / M_PI);
 		}
 
 		$this->checkChunks();

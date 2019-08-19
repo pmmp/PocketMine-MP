@@ -53,14 +53,15 @@ abstract class ProjectileItem extends Item{
 	}
 
 	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
-		$nbt = EntityFactory::createBaseNBT($player->getEyePos(), $directionVector, $player->yaw, $player->pitch);
+		$location = $player->getLocation();
+		$nbt = EntityFactory::createBaseNBT($player->getEyePos(), $directionVector, $location->yaw, $location->pitch);
 		$this->addExtraTags($nbt);
 
 		$class = $this->getProjectileEntityClass();
 		Utils::testValidInstance($class, Throwable::class);
 
 		/** @var Throwable $projectile */
-		$projectile = EntityFactory::create($class, $player->getWorld(), $nbt, $player);
+		$projectile = EntityFactory::create($class, $location->getWorld(), $nbt, $player);
 		$projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
 
 		$projectileEv = new ProjectileLaunchEvent($projectile);
@@ -72,7 +73,7 @@ abstract class ProjectileItem extends Item{
 
 		$projectile->spawnToAll();
 
-		$player->getWorld()->addSound($player, new ThrowSound());
+		$location->getWorld()->addSound($location, new ThrowSound());
 
 		$this->pop();
 

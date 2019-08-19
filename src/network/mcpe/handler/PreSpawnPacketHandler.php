@@ -53,23 +53,24 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 	public function setUp() : void{
 		$spawnPosition = $this->player->getSpawn();
+		$location = $this->player->getLocation();
 
 		$pk = new StartGamePacket();
 		$pk->entityUniqueId = $this->player->getId();
 		$pk->entityRuntimeId = $this->player->getId();
 		$pk->playerGamemode = NetworkSession::getClientFriendlyGamemode($this->player->getGamemode());
-		$pk->playerPosition = $this->player->getOffsetPosition($this->player);
-		$pk->pitch = $this->player->pitch;
-		$pk->yaw = $this->player->yaw;
+		$pk->playerPosition = $this->player->getOffsetPosition($location);
+		$pk->pitch = $location->pitch;
+		$pk->yaw = $location->yaw;
 		$pk->seed = -1;
 		$pk->dimension = DimensionIds::OVERWORLD; //TODO: implement this properly
 		$pk->worldGamemode = NetworkSession::getClientFriendlyGamemode($this->server->getGamemode());
-		$pk->difficulty = $this->player->getWorld()->getDifficulty();
+		$pk->difficulty = $location->getWorld()->getDifficulty();
 		$pk->spawnX = $spawnPosition->getFloorX();
 		$pk->spawnY = $spawnPosition->getFloorY();
 		$pk->spawnZ = $spawnPosition->getFloorZ();
 		$pk->hasAchievementsDisabled = true;
-		$pk->time = $this->player->getWorld()->getTime();
+		$pk->time = $location->getWorld()->getTime();
 		$pk->eduMode = false;
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;

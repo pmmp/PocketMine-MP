@@ -66,7 +66,7 @@ class Squid extends WaterAnimal{
 			$this->swimSpeed = mt_rand(150, 350) / 2000;
 			$e = $source->getDamager();
 			if($e !== null){
-				$this->swimDirection = (new Vector3($this->x - $e->x, $this->y - $e->y, $this->z - $e->z))->normalize();
+				$this->swimDirection = $this->location->subtract($e->location)->normalize();
 			}
 
 			$this->broadcastEntityEvent(ActorEventPacket::SQUID_INK_CLOUD);
@@ -94,7 +94,7 @@ class Squid extends WaterAnimal{
 
 		if($this->isAlive()){
 
-			if($this->y > 62 and $this->swimDirection !== null){
+			if($this->location->y > 62 and $this->swimDirection !== null){
 				$this->swimDirection->y = -0.5;
 			}
 
@@ -112,8 +112,8 @@ class Squid extends WaterAnimal{
 			}
 
 			$f = sqrt(($this->motion->x ** 2) + ($this->motion->z ** 2));
-			$this->yaw = (-atan2($this->motion->x, $this->motion->z) * 180 / M_PI);
-			$this->pitch = (-atan2($f, $this->motion->y) * 180 / M_PI);
+			$this->location->yaw = (-atan2($this->motion->x, $this->motion->z) * 180 / M_PI);
+			$this->location->pitch = (-atan2($f, $this->motion->y) * 180 / M_PI);
 		}
 
 		return $hasUpdate;

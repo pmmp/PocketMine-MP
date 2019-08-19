@@ -39,9 +39,9 @@ class ExperienceBottle extends Throwable{
 	}
 
 	public function onHit(ProjectileHitEvent $event) : void{
-		$this->world->addParticle($this, new PotionSplashParticle(PotionSplashParticle::DEFAULT_COLOR()));
-		$this->world->addSound($this, new PotionSplashSound());
+		$this->getWorld()->addParticle($this->location, new PotionSplashParticle(PotionSplashParticle::DEFAULT_COLOR()));
+		$this->getWorld()->addSound($this->location, new PotionSplashSound());
 
-		$this->world->dropExperience($this, mt_rand(3, 11));
+		$this->getWorld()->dropExperience($this->location, mt_rand(3, 11));
 	}
 }

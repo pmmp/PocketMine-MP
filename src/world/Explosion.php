@@ -174,12 +174,14 @@ class Explosion{
 
 		$explosionBB = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 
+		/** @var Entity[] $list */
 		$list = $this->world->getNearbyEntities($explosionBB, $this->what instanceof Entity ? $this->what : null);
 		foreach($list as $entity){
-			$distance = $entity->distance($this->source) / $explosionSize;
+			$entityPos = $entity->getPosition();
+			$distance = $entityPos->distance($this->source) / $explosionSize;
 
 			if($distance <= 1){
-				$motion = $entity->subtract($this->source)->normalize();
+				$motion = $entityPos->subtract($this->source)->normalize();
 
 				$impact = (1 - $distance) * ($exposure = 1);
 

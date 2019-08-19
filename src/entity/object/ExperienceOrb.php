@@ -156,7 +156,7 @@ class ExperienceOrb extends Entity{
 			return null;
 		}
 
-		$entity = $this->world->getEntity($this->targetPlayerRuntimeId);
+		$entity = $this->getWorld()->getEntity($this->targetPlayerRuntimeId);
 		if($entity instanceof Human){
 			return $entity;
 		}
@@ -178,13 +178,13 @@ class ExperienceOrb extends Entity{
 		}
 
 		$currentTarget = $this->getTargetPlayer();
-		if($currentTarget !== null and (!$currentTarget->isAlive() or $currentTarget->distanceSquared($this) > self::MAX_TARGET_DISTANCE ** 2)){
+		if($currentTarget !== null and (!$currentTarget->isAlive() or $currentTarget->location->distanceSquared($this->location) > self::MAX_TARGET_DISTANCE ** 2)){
 			$currentTarget = null;
 		}
 
 		if($this->lookForTargetTime >= 20){
 			if($currentTarget === null){
-				$newTarget = $this->world->getNearestEntity($this, self::MAX_TARGET_DISTANCE, Human::class);
+				$newTarget = $this->getWorld()->getNearestEntity($this->location, self::MAX_TARGET_DISTANCE, Human::class);
 
 				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator())){
 					$currentTarget = $newTarget;
@@ -199,7 +199,7 @@ class ExperienceOrb extends Entity{
 		$this->setTargetPlayer($currentTarget);
 
 		if($currentTarget !== null){
-			$vector = $currentTarget->add(0, $currentTarget->getEyeHeight() / 2, 0)->subtract($this)->divide(self::MAX_TARGET_DISTANCE);
+			$vector = $currentTarget->getPosition()->add(0, $currentTarget->getEyeHeight() / 2, 0)->subtract($this)->divide(self::MAX_TARGET_DISTANCE);
 
 			$distance = $vector->lengthSquared();
 			if($distance < 1){
@@ -221,7 +221,7 @@ class ExperienceOrb extends Entity{
 	}
 
 	protected function tryChangeMovement() : void{
-		$this->checkObstruction($this->x, $this->y, $this->z);
+		$this->checkObstruction($this->location->x, $this->location->y, $this->location->z);
 		parent::tryChangeMovement();
 	}
 

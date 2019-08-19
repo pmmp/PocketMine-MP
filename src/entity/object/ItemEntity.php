@@ -125,7 +125,7 @@ class ItemEntity extends Entity{
 	}
 
 	protected function tryChangeMovement() : void{
-		$this->checkObstruction($this->x, $this->y, $this->z);
+		$this->checkObstruction($this->location->x, $this->location->y, $this->location->z);
 		parent::tryChangeMovement();
 	}
 
@@ -235,7 +235,7 @@ class ItemEntity extends Entity{
 	protected function sendSpawnPacket(Player $player) : void{
 		$pk = new AddItemActorPacket();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
+		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->item = $this->getItem();
 		$pk->metadata = $this->getSyncedNetworkData(false);

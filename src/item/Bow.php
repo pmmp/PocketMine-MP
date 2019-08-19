@@ -50,11 +50,12 @@ class Bow extends Tool{
 			return ItemUseResult::FAIL();
 		}
 
+		$location = $player->getLocation();
 		$nbt = EntityFactory::createBaseNBT(
 			$player->getEyePos(),
 			$player->getDirectionVector(),
-			($player->yaw > 180 ? 360 : 0) - $player->yaw,
-			-$player->pitch
+			($location->yaw > 180 ? 360 : 0) - $location->yaw,
+			-$location->pitch
 		);
 		$nbt->setShort("Fire", $player->isOnFire() ? 45 * 60 : 0);
 
@@ -63,7 +64,7 @@ class Bow extends Tool{
 		$baseForce = min((($p ** 2) + $p * 2) / 3, 1);
 
 		/** @var ArrowEntity $entity */
-		$entity = EntityFactory::create(ArrowEntity::class, $player->getWorld(), $nbt, $player, $baseForce >= 1);
+		$entity = EntityFactory::create(ArrowEntity::class, $location->getWorld(), $nbt, $player, $baseForce >= 1);
 
 		$infinity = $this->hasEnchantment(Enchantment::INFINITY());
 		if($infinity){
@@ -104,7 +105,7 @@ class Bow extends Tool{
 			}
 
 			$ev->getProjectile()->spawnToAll();
-			$player->getWorld()->addSound($player, new BowShootSound());
+			$location->getWorld()->addSound($location, new BowShootSound());
 		}else{
 			$entity->spawnToAll();
 		}

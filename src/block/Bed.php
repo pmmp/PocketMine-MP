@@ -138,11 +138,12 @@ class Bed extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
 			$other = $this->getOtherHalf();
+			$playerPos = $player->getPosition();
 			if($other === null){
 				$player->sendMessage(TextFormat::GRAY . "This bed is incomplete");
 
 				return true;
-			}elseif($player->distanceSquared($this->pos) > 4 and $player->distanceSquared($other->pos) > 4){
+			}elseif($playerPos->distanceSquared($this->pos) > 4 and $playerPos->distanceSquared($other->pos) > 4){
 				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.tooFar"));
 				return true;
 			}

@@ -96,8 +96,10 @@ class TeleportCommand extends VanillaCommand{
 			}
 		}
 
+		$targetLocation = $target->getLocation();
+
 		if(count($args) < 3){
-			$origin->teleport($target);
+			$origin->teleport($targetLocation);
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success", [$origin->getName(), $target->getName()]));
 
 			return true;
@@ -108,11 +110,11 @@ class TeleportCommand extends VanillaCommand{
 				$pos = 0;
 			}
 
-			$x = $this->getRelativeDouble($target->x, $sender, $args[$pos++]);
-			$y = $this->getRelativeDouble($target->y, $sender, $args[$pos++], 0, 256);
-			$z = $this->getRelativeDouble($target->z, $sender, $args[$pos++]);
-			$yaw = $target->getYaw();
-			$pitch = $target->getPitch();
+			$x = $this->getRelativeDouble($targetLocation->x, $sender, $args[$pos++]);
+			$y = $this->getRelativeDouble($targetLocation->y, $sender, $args[$pos++], 0, 256);
+			$z = $this->getRelativeDouble($targetLocation->z, $sender, $args[$pos++]);
+			$yaw = $targetLocation->getYaw();
+			$pitch = $targetLocation->getPitch();
 
 			if(count($args) === 6 or (count($args) === 5 and $pos === 3)){
 				$yaw = (float) $args[$pos++];

@@ -380,7 +380,7 @@ abstract class Living extends Entity{
 	private function damageItem(Durable $item, int $durabilityRemoved) : void{
 		$item->applyDamage($durabilityRemoved);
 		if($item->isBroken()){
-			$this->world->addSound($this, new ItemBreakSound());
+			$this->getWorld()->addSound($this->location, new ItemBreakSound());
 		}
 	}
 
@@ -434,11 +434,11 @@ abstract class Living extends Entity{
 					$source->getCause() === EntityDamageEvent::CAUSE_PROJECTILE or
 					$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_ATTACK
 				) and $e->isOnFire()){
-					$this->setOnFire(2 * $this->world->getDifficulty());
+					$this->setOnFire(2 * $this->getWorld()->getDifficulty());
 				}
 
-				$deltaX = $this->x - $e->x;
-				$deltaZ = $this->z - $e->z;
+				$deltaX = $this->location->x - $e->location->x;
+				$deltaZ = $this->location->z - $e->location->z;
 				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack());
 			}
 		}
@@ -482,11 +482,11 @@ abstract class Living extends Entity{
 		$ev = new EntityDeathEvent($this, $this->getDrops(), $this->getXpDropAmount());
 		$ev->call();
 		foreach($ev->getDrops() as $item){
-			$this->getWorld()->dropItem($this, $item);
+			$this->getWorld()->dropItem($this->location, $item);
 		}
 
 		//TODO: check death conditions (must have been damaged by player < 5 seconds from death)
-		$this->world->dropExperience($this, $ev->getXpDropAmount());
+		$this->getWorld()->dropExperience($this->location, $ev->getXpDropAmount());
 
 		$this->startDeathAnimation();
 	}
@@ -684,8 +684,8 @@ abstract class Living extends Entity{
 		$blocks = [];
 		$nextIndex = 0;
 
-		foreach(VoxelRayTrace::inDirection($this->add(0, $this->eyeHeight, 0), $this->getDirectionVector(), $maxDistance) as $vector3){
-			$block = $this->world->getBlockAt($vector3->x, $vector3->y, $vector3->z);
+		foreach(VoxelRayTrace::inDirection($this->location->add(0, $this->eyeHeight, 0), $this->getDirectionVector(), $maxDistance) as $vector3){
+			$block = $this->getWorld()->getBlockAt($vector3->x, $vector3->y, $vector3->z);
 			$blocks[$nextIndex++] = $block;
 
 			if($maxLength !== 0 and count($blocks) > $maxLength){
@@ -731,15 +731,15 @@ abstract class Living extends Entity{
 	 * @param Vector3 $target
 	 */
 	public function lookAt(Vector3 $target) : void{
-		$horizontal = sqrt(($target->x - $this->x) ** 2 + ($target->z - $this->z) ** 2);
-		$vertical = $target->y - $this->y;
-		$this->pitch = -atan2($vertical, $horizontal) / M_PI * 180; //negative is up, positive is down
+		$horizontal = sqrt(($target->x - $this->location->x) ** 2 + ($target->z - $this->location->z) ** 2);
+		$vertical = $target->y - $this->location->y;
+		$this->location->pitch = -atan2($vertical, $horizontal) / M_PI * 180; //negative is up, positive is down
 
-		$xDist = $target->x - $this->x;
-		$zDist = $target->z - $this->z;
-		$this->yaw = atan2($zDist, $xDist) / M_PI * 180 - 90;
-		if($this->yaw < 0){
-			$this->yaw += 360.0;
+		$xDist = $target->x - $this->location->x;
+		$zDist = $target->z - $this->location->z;
+		$this->location->yaw = atan2($zDist, $xDist) / M_PI * 180 - 90;
+		if($this->location->yaw < 0){
+			$this->location->yaw += 360.0;
 		}
 	}
 

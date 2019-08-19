@@ -35,7 +35,7 @@ class Egg extends Throwable{
 
 	protected function onHit(ProjectileHitEvent $event) : void{
 		for($i = 0; $i < 6; ++$i){
-			$this->world->addParticle($this, new ItemBreakParticle(VanillaItems::EGG()));
+			$this->getWorld()->addParticle($this->location, new ItemBreakParticle(VanillaItems::EGG()));
 		}
 	}
 }

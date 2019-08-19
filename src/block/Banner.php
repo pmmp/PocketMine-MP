@@ -156,7 +156,7 @@ class Banner extends Transparent{
 		if($face !== Facing::DOWN){
 			$this->facing = $face;
 			if($face === Facing::UP){
-				$this->rotation = $player !== null ? ((int) floor((($player->yaw + 180) * 16 / 360) + 0.5)) & 0x0f : 0;
+				$this->rotation = $player !== null ? ((int) floor((($player->getLocation()->getYaw() + 180) * 16 / 360) + 0.5)) & 0x0f : 0;
 			}
 
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);

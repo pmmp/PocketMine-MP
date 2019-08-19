@@ -623,8 +623,9 @@ class NetworkSession{
 	}
 
 	public function syncMovement(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
-		$yaw = $yaw ?? $this->player->getYaw();
-		$pitch = $pitch ?? $this->player->getPitch();
+		$location = $this->player->getLocation();
+		$yaw = $yaw ?? $location->getYaw();
+		$pitch = $pitch ?? $location->getPitch();
 
 		$pk = new MovePlayerPacket();
 		$pk->entityRuntimeId = $this->player->getId();
@@ -767,7 +768,7 @@ class NetworkSession{
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
 		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ){}, $onCompletion);
 
-		$world = $this->player->getWorld();
+		$world = $this->player->getLocation()->getWorld();
 		assert($world !== null);
 		ChunkCache::getInstance($world)->request($chunkX, $chunkZ)->onResolve(
 
@@ -776,16 +777,17 @@ class NetworkSession{
 				if(!$this->isConnected()){
 					return;
 				}
-				if($world !== $this->player->getWorld() or !$this->player->isUsingChunk($chunkX, $chunkZ)){
+				$currentWorld = $this->player->getLocation()->getWorld();
+				if($world !== $currentWorld or !$this->player->isUsingChunk($chunkX, $chunkZ)){
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
 				}
-				$this->player->world->timings->syncChunkSendTimer->startTiming();
+				$currentWorld->timings->syncChunkSendTimer->startTiming();
 				try{
 					$this->queueCompressed($promise);
 					$onCompletion($chunkX, $chunkZ);
 				}finally{
-					$this->player->world->timings->syncChunkSendTimer->stopTiming();
+					$currentWorld->timings->syncChunkSendTimer->stopTiming();
 				}
 			}
 		);

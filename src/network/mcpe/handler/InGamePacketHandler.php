@@ -301,7 +301,7 @@ class InGamePacketHandler extends PacketHandler{
 	 */
 	private function onFailedBlockAction(Vector3 $blockPos, ?int $face) : void{
 		$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
-		if($blockPos->distanceSquared($this->player) < 10000){
+		if($blockPos->distanceSquared($this->player->getLocation()) < 10000){
 			$blocks = $blockPos->sidesArray();
 			if($face !== null){
 				$sidePos = $blockPos->getSide($face);
@@ -311,7 +311,7 @@ class InGamePacketHandler extends PacketHandler{
 			}else{
 				$blocks[] = $blockPos;
 			}
-			$this->player->getWorld()->sendBlocks([$this->player], $blocks);
+			$this->player->getLocation()->getWorld()->sendBlocks([$this->player], $blocks);
 		}
 	}
 
@@ -510,11 +510,11 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
 		$pos = new Vector3($packet->x, $packet->y, $packet->z);
-		if($pos->distanceSquared($this->player) > 10000){
+		if($pos->distanceSquared($this->player->getLocation()) > 10000){
 			return false;
 		}
 
-		$block = $this->player->getWorld()->getBlock($pos);
+		$block = $this->player->getLocation()->getWorld()->getBlock($pos);
 		try{
 			$offset = 0;
 			$nbt = (new NetworkNbtSerializer())->read($packet->namedtag, $offset, 512)->getTag();
@@ -703,7 +703,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
-		$this->player->getWorld()->broadcastPacketToViewers($this->player->asVector3(), $packet);
+		$this->player->getWorld()->broadcastPacketToViewers($this->player->getPosition(), $packet);
 		return true;
 	}
 

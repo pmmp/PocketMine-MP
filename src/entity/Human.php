@@ -316,7 +316,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->effectManager->add(new EffectInstance(VanillaEffects::ABSORPTION(), 5 * 20, 1));
 
 			$this->broadcastEntityEvent(ActorEventPacket::CONSUME_TOTEM);
-			$this->world->addSound($this->add(0, $this->eyeHeight, 0), new TotemUseSound());
+			$this->getWorld()->addSound($this->location->add(0, $this->eyeHeight, 0), new TotemUseSound());
 
 			$hand = $this->inventory->getItemInHand();
 			if($hand instanceof Totem){
@@ -412,10 +412,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$pk->uuid = $this->getUniqueId();
 		$pk->username = $this->getName();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
+		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
+		$pk->yaw = $this->location->yaw;
+		$pk->pitch = $this->location->pitch;
 		$pk->item = $this->getInventory()->getItemInHand();
 		$pk->metadata = $this->getSyncedNetworkData(false);
 		$player->sendDataPacket($pk);

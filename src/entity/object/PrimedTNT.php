@@ -62,7 +62,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 		$this->fuse = $nbt->getShort("Fuse", 80, true);
 
-		$this->world->addSound($this, new IgniteSound());
+		$this->getWorld()->addSound($this->location, new IgniteSound());
 	}
 
 
@@ -100,7 +100,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$ev = new ExplosionPrimeEvent($this, 4);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$explosion = new Explosion(Position::fromObject($this->add(0, $this->height / 2, 0), $this->world), $ev->getForce(), $this);
+			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->height / 2, 0), $this->getWorld()), $ev->getForce(), $this);
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
 			}

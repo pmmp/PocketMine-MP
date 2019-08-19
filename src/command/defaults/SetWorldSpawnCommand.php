@@ -51,8 +51,9 @@ class SetWorldSpawnCommand extends VanillaCommand{
 
 		if(count($args) === 0){
 			if($sender instanceof Player){
-				$world = $sender->getWorld();
-				$pos = (new Vector3($sender->x, $sender->y, $sender->z))->round();
+				$location = $sender->getPosition();
+				$world = $location->getWorld();
+				$pos = $location->asVector3()->round();
 			}else{
 				$sender->sendMessage(TextFormat::RED . "You can only perform this command as a player");
 

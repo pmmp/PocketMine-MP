@@ -59,7 +59,6 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\world\format\Chunk;
-use pocketmine\entity\Location;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function abs;
@@ -77,7 +76,7 @@ use function sin;
 use function spl_object_id;
 use const M_PI_2;
 
-abstract class Entity extends Location{
+abstract class Entity{
 
 	public const MOTION_THRESHOLD = 0.00001;
 
@@ -103,6 +102,8 @@ abstract class Entity extends Location{
 	/** @var Block[] */
 	protected $blocksAround = [];
 
+	/** @var Location */
+	protected $location;
 	/** @var Location */
 	protected $lastLocation;
 	/** @var Vector3 */
@@ -240,13 +241,17 @@ abstract class Entity extends Location{
 		/** @var float[] $rotation */
 		$rotation = $nbt->getListTag("Rotation")->getAllValues();
 
-		parent::__construct($pos[0], $pos[1], $pos[2], $rotation[0], $rotation[1], $world);
-		assert(!is_nan($this->x) and !is_infinite($this->x) and !is_nan($this->y) and !is_infinite($this->y) and !is_nan($this->z) and !is_infinite($this->z));
+		$this->location = new Location($pos[0], $pos[1], $pos[2], $rotation[0], $rotation[1], $world);
+		assert(
+			!is_nan($this->location->x) and !is_infinite($this->location->x) and
+			!is_nan($this->location->y) and !is_infinite($this->location->y) and
+			!is_nan($this->location->z) and !is_infinite($this->location->z)
+		);
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->recalculateBoundingBox();
 
-		$this->chunk = $this->world->getChunkAtPosition($this, false);
+		$this->chunk = $this->getWorld()->getChunkAtPosition($this->location, false);
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
@@ -268,7 +273,7 @@ abstract class Entity extends Location{
 		$this->initEntity($nbt);
 
 		$this->chunk->addEntity($this);
-		$this->world->addEntity($this);
+		$this->getWorld()->addEntity($this);
 
 		$this->lastUpdate = $this->server->getTick();
 		(new EntitySpawnEvent($this))->call();
@@ -366,12 +371,12 @@ abstract class Entity extends Location{
 		$halfWidth = $this->width / 2;
 
 		$this->boundingBox = new AxisAlignedBB(
-			$this->x - $halfWidth,
-			$this->y,
-			$this->z - $halfWidth,
-			$this->x + $halfWidth,
-			$this->y + $this->height,
-			$this->z + $halfWidth
+			$this->location->x - $halfWidth,
+			$this->location->y,
+			$this->location->z - $halfWidth,
+			$this->location->x + $halfWidth,
+			$this->location->y + $this->height,
+			$this->location->z + $halfWidth
 		);
 	}
 
@@ -544,9 +549,9 @@ abstract class Entity extends Location{
 		}
 
 		$nbt->setTag("Pos", new ListTag([
-			new DoubleTag($this->x),
-			new DoubleTag($this->y),
-			new DoubleTag($this->z)
+			new DoubleTag($this->location->x),
+			new DoubleTag($this->location->y),
+			new DoubleTag($this->location->z)
 		]));
 
 		$nbt->setTag("Motion", new ListTag([
@@ -556,8 +561,8 @@ abstract class Entity extends Location{
 		]));
 
 		$nbt->setTag("Rotation", new ListTag([
-			new FloatTag($this->yaw),
-			new FloatTag($this->pitch)
+			new FloatTag($this->location->yaw),
+			new FloatTag($this->location->pitch)
 		]));
 
 		$nbt->setFloat("FallDistance", $this->fallDistance);
@@ -727,7 +732,7 @@ abstract class Entity extends Location{
 
 		$this->checkBlockCollision();
 
-		if($this->y <= -16 and $this->isAlive()){
+		if($this->location->y <= -16 and $this->isAlive()){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10);
 			$this->attack($ev);
 			$hasUpdate = true;
@@ -826,13 +831,13 @@ abstract class Entity extends Location{
 		//TODO: hack for client-side AI interference: prevent client sided movement when motion is 0
 		$this->setImmobile($this->motion->x == 0 and $this->motion->y == 0 and $this->motion->z == 0);
 
-		$diffPosition = $this->distanceSquared($this->lastLocation);
-		$diffRotation = ($this->yaw - $this->lastLocation->yaw) ** 2 + ($this->pitch - $this->lastLocation->pitch) ** 2;
+		$diffPosition = $this->location->distanceSquared($this->lastLocation);
+		$diffRotation = ($this->location->yaw - $this->lastLocation->yaw) ** 2 + ($this->location->pitch - $this->lastLocation->pitch) ** 2;
 
 		$diffMotion = $this->motion->subtract($this->lastMotion)->lengthSquared();
 
 		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0){
-			$this->lastLocation = $this->asLocation();
+			$this->lastLocation = $this->location->asLocation();
 
 			$this->broadcastMovement($teleport);
 		}
@@ -851,24 +856,24 @@ abstract class Entity extends Location{
 	protected function broadcastMovement(bool $teleport = false) : void{
 		$pk = new MoveActorAbsolutePacket();
 		$pk->entityRuntimeId = $this->id;
-		$pk->position = $this->getOffsetPosition($this);
+		$pk->position = $this->getOffsetPosition($this->location);
 
 		//this looks very odd but is correct as of 1.5.0.7
 		//for arrows this is actually x/y/z rotation
 		//for mobs x and z are used for pitch and yaw, and y is used for headyaw
-		$pk->xRot = $this->pitch;
-		$pk->yRot = $this->yaw; //TODO: head yaw
-		$pk->zRot = $this->yaw;
+		$pk->xRot = $this->location->pitch;
+		$pk->yRot = $this->location->yaw; //TODO: head yaw
+		$pk->zRot = $this->location->yaw;
 
 		if($teleport){
 			$pk->flags |= MoveActorAbsolutePacket::FLAG_TELEPORT;
 		}
 
-		$this->world->broadcastPacketToViewers($this, $pk);
+		$this->getWorld()->broadcastPacketToViewers($this->location, $pk);
 	}
 
 	protected function broadcastMotion() : void{
-		$this->world->broadcastPacketToViewers($this, SetActorMotionPacket::create($this->id, $this->getMotion()));
+		$this->getWorld()->broadcastPacketToViewers($this->location, SetActorMotionPacket::create($this->id, $this->getMotion()));
 	}
 
 	public function hasGravity() : bool{
@@ -903,7 +908,7 @@ abstract class Entity extends Location{
 		}
 
 		if($this->onGround){
-			$friction *= $this->world->getBlockAt((int) floor($this->x), (int) floor($this->y - 1), (int) floor($this->z))->getFrictionFactor();
+			$friction *= $this->getWorld()->getBlockAt((int) floor($this->location->x), (int) floor($this->location->y - 1), (int) floor($this->location->z))->getFrictionFactor();
 		}
 
 		$this->motion->x *= $friction;
@@ -911,7 +916,8 @@ abstract class Entity extends Location{
 	}
 
 	protected function checkObstruction(float $x, float $y, float $z) : bool{
-		if(count($this->world->getCollisionBoxes($this, $this->getBoundingBox(), false)) === 0){
+		$world = $this->getWorld();
+		if(count($world->getCollisionBoxes($this, $this->getBoundingBox(), false)) === 0){
 			return false;
 		}
 
@@ -923,13 +929,13 @@ abstract class Entity extends Location{
 		$diffY = $y - $floorY;
 		$diffZ = $z - $floorZ;
 
-		if($this->world->getBlockAt($floorX, $floorY, $floorZ)->isSolid()){
-			$westNonSolid  = !$this->world->getBlockAt($floorX - 1, $floorY, $floorZ)->isSolid();
-			$eastNonSolid  = !$this->world->getBlockAt($floorX + 1, $floorY, $floorZ)->isSolid();
-			$downNonSolid  = !$this->world->getBlockAt($floorX, $floorY - 1, $floorZ)->isSolid();
-			$upNonSolid    = !$this->world->getBlockAt($floorX, $floorY + 1, $floorZ)->isSolid();
-			$northNonSolid = !$this->world->getBlockAt($floorX, $floorY, $floorZ - 1)->isSolid();
-			$southNonSolid = !$this->world->getBlockAt($floorX, $floorY, $floorZ + 1)->isSolid();
+		if($world->getBlockAt($floorX, $floorY, $floorZ)->isSolid()){
+			$westNonSolid  = !$world->getBlockAt($floorX - 1, $floorY, $floorZ)->isSolid();
+			$eastNonSolid  = !$world->getBlockAt($floorX + 1, $floorY, $floorZ)->isSolid();
+			$downNonSolid  = !$world->getBlockAt($floorX, $floorY - 1, $floorZ)->isSolid();
+			$upNonSolid    = !$world->getBlockAt($floorX, $floorY + 1, $floorZ)->isSolid();
+			$northNonSolid = !$world->getBlockAt($floorX, $floorY, $floorZ - 1)->isSolid();
+			$southNonSolid = !$world->getBlockAt($floorX, $floorY, $floorZ + 1)->isSolid();
 
 			$direction = -1;
 			$limit = 9999;
@@ -1006,7 +1012,7 @@ abstract class Entity extends Location{
 	}
 
 	public function getHorizontalFacing() : int{
-		$angle = $this->yaw % 360;
+		$angle = $this->location->yaw % 360;
 		if($angle < 0){
 			$angle += 360.0;
 		}
@@ -1028,16 +1034,16 @@ abstract class Entity extends Location{
 	 * @return Vector3
 	 */
 	public function getDirectionVector() : Vector3{
-		$y = -sin(deg2rad($this->pitch));
-		$xz = cos(deg2rad($this->pitch));
-		$x = -$xz * sin(deg2rad($this->yaw));
-		$z = $xz * cos(deg2rad($this->yaw));
+		$y = -sin(deg2rad($this->location->pitch));
+		$xz = cos(deg2rad($this->location->pitch));
+		$x = -$xz * sin(deg2rad($this->location->yaw));
+		$z = $xz * cos(deg2rad($this->location->yaw));
 
 		return $this->temporalVector->setComponents($x, $y, $z)->normalize();
 	}
 
 	public function getDirectionPlane() : Vector2{
-		return (new Vector2(-cos(deg2rad($this->yaw) - M_PI_2), -sin(deg2rad($this->yaw) - M_PI_2)))->normalize();
+		return (new Vector2(-cos(deg2rad($this->location->yaw) - M_PI_2), -sin(deg2rad($this->location->yaw) - M_PI_2)))->normalize();
 	}
 
 	public function onUpdate(int $currentTick) : bool{
@@ -1105,7 +1111,7 @@ abstract class Entity extends Location{
 		if($this->closed){
 			throw new \InvalidStateException("Cannot schedule update on garbage entity " . get_class($this));
 		}
-		$this->world->updateEntities[$this->id] = $this;
+		$this->getWorld()->updateEntities[$this->id] = $this;
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -1172,7 +1178,7 @@ abstract class Entity extends Location{
 	}
 
 	public function getEyePos() : Vector3{
-		return new Vector3($this->x, $this->y + $this->getEyeHeight(), $this->z);
+		return new Vector3($this->location->x, $this->location->y + $this->getEyeHeight(), $this->location->z);
 	}
 
 	public function onCollideWithPlayer(Player $player) : void{
@@ -1180,7 +1186,7 @@ abstract class Entity extends Location{
 	}
 
 	public function isUnderwater() : bool{
-		$block = $this->world->getBlockAt((int) floor($this->x), $blockY = (int) floor($y = ($this->y + $this->getEyeHeight())), (int) floor($this->z));
+		$block = $this->getWorld()->getBlockAt((int) floor($this->location->x), $blockY = (int) floor($y = ($this->location->y + $this->getEyeHeight())), (int) floor($this->location->z));
 
 		if($block instanceof Water){
 			$f = ($blockY + 1) - ($block->getFluidHeightPercent() - 0.1111111);
@@ -1191,7 +1197,7 @@ abstract class Entity extends Location{
 	}
 
 	public function isInsideOfSolid() : bool{
-		$block = $this->world->getBlockAt((int) floor($this->x), (int) floor($y = ($this->y + $this->getEyeHeight())), (int) floor($this->z));
+		$block = $this->getWorld()->getBlockAt((int) floor($this->location->x), (int) floor($y = ($this->location->y + $this->getEyeHeight())), (int) floor($this->location->z));
 
 		return $block->isSolid() and !$block->isTransparent() and $block->collidesWithBB($this->getBoundingBox());
 	}
@@ -1252,7 +1258,7 @@ abstract class Entity extends Location{
 
 			assert(abs($dx) <= 20 and abs($dy) <= 20 and abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
 
-			$list = $this->world->getCollisionBoxes($this, $moveBB->addCoord($dx, $dy, $dz), false);
+			$list = $this->getWorld()->getCollisionBoxes($this, $moveBB->addCoord($dx, $dy, $dz), false);
 
 			foreach($list as $bb){
 				$dy = $bb->calculateYOffset($moveBB, $dy);
@@ -1285,8 +1291,7 @@ abstract class Entity extends Location{
 
 				$stepBB = clone $this->boundingBox;
 
-				$list = $this->world->getCollisionBoxes($this, $stepBB->addCoord($dx, $dy, $dz), false);
-
+				$list = $this->getWorld()->getCollisionBoxes($this, $stepBB->addCoord($dx, $dy, $dz), false);
 				foreach($list as $bb){
 					$dy = $bb->calculateYOffset($stepBB, $dy);
 				}
@@ -1318,9 +1323,9 @@ abstract class Entity extends Location{
 			$this->boundingBox = $moveBB;
 		}
 
-		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-		$this->y = $this->boundingBox->minY - $this->ySize;
-		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+		$this->location->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+		$this->location->y = $this->boundingBox->minY - $this->ySize;
+		$this->location->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
 
 		$this->checkChunks();
 		$this->checkBlockCollision();
@@ -1370,10 +1375,12 @@ abstract class Entity extends Location{
 
 			$this->blocksAround = [];
 
+			$world = $this->getWorld();
+
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
-						$block = $this->world->getBlockAt($x, $y, $z);
+						$block = $world->getBlockAt($x, $y, $z);
 						if($block->hasEntityCollision()){
 							$this->blocksAround[] = $block;
 						}
@@ -1412,11 +1419,15 @@ abstract class Entity extends Location{
 	}
 
 	public function getPosition() : Position{
-		return $this->asPosition();
+		return $this->location->asPosition();
 	}
 
 	public function getLocation() : Location{
-		return $this->asLocation();
+		return $this->location->asLocation();
+	}
+
+	public function getWorld() : World{
+		return $this->location->getWorld();
 	}
 
 	protected function setPosition(Vector3 $pos) : bool{
@@ -1424,15 +1435,15 @@ abstract class Entity extends Location{
 			return false;
 		}
 
-		if($pos instanceof Position and $pos->world !== null and $pos->world !== $this->world){
+		if($pos instanceof Position and $pos->world !== null and $pos->world !== $this->getWorld()){
 			if(!$this->switchWorld($pos->getWorld())){
 				return false;
 			}
 		}
 
-		$this->x = $pos->x;
-		$this->y = $pos->y;
-		$this->z = $pos->z;
+		$this->location->x = $pos->x;
+		$this->location->y = $pos->y;
+		$this->location->z = $pos->z;
 
 		$this->recalculateBoundingBox();
 
@@ -1444,8 +1455,8 @@ abstract class Entity extends Location{
 	}
 
 	public function setRotation(float $yaw, float $pitch) : void{
-		$this->yaw = $yaw;
-		$this->pitch = $pitch;
+		$this->location->yaw = $yaw;
+		$this->location->pitch = $pitch;
 		$this->scheduleUpdate();
 	}
 
@@ -1460,16 +1471,16 @@ abstract class Entity extends Location{
 	}
 
 	protected function checkChunks() : void{
-		$chunkX = $this->getFloorX() >> 4;
-		$chunkZ = $this->getFloorZ() >> 4;
+		$chunkX = $this->location->getFloorX() >> 4;
+		$chunkZ = $this->location->getFloorZ() >> 4;
 		if($this->chunk === null or ($this->chunk->getX() !== $chunkX or $this->chunk->getZ() !== $chunkZ)){
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->chunk = $this->world->getChunk($chunkX, $chunkZ, true);
+			$this->chunk = $this->getWorld()->getChunk($chunkX, $chunkZ, true);
 
 			if(!$this->justCreated){
-				$newChunk = $this->world->getViewersForPosition($this);
+				$newChunk = $this->getWorld()->getViewersForPosition($this->location);
 				foreach($this->hasSpawned as $player){
 					if(!isset($newChunk[spl_object_id($player)])){
 						$this->despawnFrom($player);
@@ -1491,7 +1502,7 @@ abstract class Entity extends Location{
 	}
 
 	protected function resetLastMovements() : void{
-		$this->lastLocation = $this->asLocation();
+		$this->lastLocation = $this->location->asLocation();
 		$this->lastMotion = clone $this->motion;
 	}
 
@@ -1546,8 +1557,8 @@ abstract class Entity extends Location{
 			$yaw = $yaw ?? $pos->yaw;
 			$pitch = $pitch ?? $pos->pitch;
 		}
-		$from = Position::fromObject($this, $this->world);
-		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getWorld() : $this->world);
+		$from = $this->location->asPosition();
+		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getWorld() : $this->getWorld());
 		$ev = new EntityTeleportEvent($this, $from, $to);
 		$ev->call();
 		if($ev->isCancelled()){
@@ -1557,7 +1568,7 @@ abstract class Entity extends Location{
 		$pos = $ev->getTo();
 
 		$this->setMotion($this->temporalVector->setComponents(0, 0, 0));
-		if($this->setPositionAndRotation($pos, $yaw ?? $this->yaw, $pitch ?? $this->pitch)){
+		if($this->setPositionAndRotation($pos, $yaw ?? $this->location->yaw, $pitch ?? $this->location->pitch)){
 			$this->resetFallDistance();
 			$this->onGround = true;
 
@@ -1574,16 +1585,16 @@ abstract class Entity extends Location{
 			return false;
 		}
 
-		if($this->isValid()){
-			$this->world->removeEntity($this);
+		if($this->location->isValid()){
+			$this->getWorld()->removeEntity($this);
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
 			$this->despawnFromAll();
 		}
 
-		$this->setWorld($targetWorld);
-		$this->world->addEntity($this);
+		$this->location->setWorld($targetWorld);
+		$this->getWorld()->addEntity($this);
 		$this->chunk = null;
 
 		return true;
@@ -1609,11 +1620,11 @@ abstract class Entity extends Location{
 		$pk = new AddActorPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->type = static::NETWORK_ID;
-		$pk->position = $this->asVector3();
+		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->headYaw = $this->yaw; //TODO
-		$pk->pitch = $this->pitch;
+		$pk->yaw = $this->location->yaw;
+		$pk->headYaw = $this->location->yaw; //TODO
+		$pk->pitch = $this->location->pitch;
 		$pk->attributes = $this->attributeMap->getAll();
 		$pk->metadata = $this->getSyncedNetworkData(false);
 
@@ -1636,7 +1647,7 @@ abstract class Entity extends Location{
 		if($this->closed){
 			return;
 		}
-		foreach($this->world->getViewersForPosition($this) as $player){
+		foreach($this->getWorld()->getViewersForPosition($this->location) as $player){
 			$this->spawnTo($player);
 		}
 	}
@@ -1719,8 +1730,8 @@ abstract class Entity extends Location{
 		if($this->chunk !== null){
 			$this->chunk->removeEntity($this);
 		}
-		if($this->isValid()){
-			$this->world->removeEntity($this);
+		if($this->location->isValid()){
+			$this->getWorld()->removeEntity($this);
 		}
 	}
 
@@ -1732,7 +1743,7 @@ abstract class Entity extends Location{
 	 */
 	protected function destroyCycles() : void{
 		$this->chunk = null;
-		$this->setWorld(null);
+		$this->location->setWorld(null);
 		$this->lastDamageCause = null;
 	}
 

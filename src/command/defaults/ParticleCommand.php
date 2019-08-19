@@ -91,11 +91,12 @@ class ParticleCommand extends VanillaCommand{
 		}
 
 		if($sender instanceof Player){
-			$world = $sender->getWorld();
+			$senderPos = $sender->getPosition();
+			$world = $senderPos->getWorld();
 			$pos = new Vector3(
-				$this->getRelativeDouble($sender->getX(), $sender, $args[1]),
-				$this->getRelativeDouble($sender->getY(), $sender, $args[2], 0, World::Y_MAX),
-				$this->getRelativeDouble($sender->getZ(), $sender, $args[3])
+				$this->getRelativeDouble($senderPos->getX(), $sender, $args[1]),
+				$this->getRelativeDouble($senderPos->getY(), $sender, $args[2], 0, World::Y_MAX),
+				$this->getRelativeDouble($senderPos->getZ(), $sender, $args[3])
 			);
 		}else{
 			$world = $sender->getServer()->getWorldManager()->getDefaultWorld();

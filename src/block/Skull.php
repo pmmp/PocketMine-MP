@@ -108,7 +108,7 @@ class Skull extends Flowable{
 			$this->skullType = $item->getSkullType(); //TODO: the item should handle this, but this hack is currently needed because of tile mess
 		}
 		if($player !== null and $face === Facing::UP){
-			$this->rotation = ((int) floor(($player->yaw * 16 / 360) + 0.5)) & 0xf;
+			$this->rotation = ((int) floor(($player->getLocation()->getYaw() * 16 / 360) + 0.5)) & 0xf;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}

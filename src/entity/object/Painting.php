@@ -118,9 +118,9 @@ class Painting extends Entity{
 
 		if($drops){
 			//non-living entities don't have a way to create drops generically yet
-			$this->world->dropItem($this, VanillaItems::PAINTING());
+			$this->getWorld()->dropItem($this->location, VanillaItems::PAINTING());
 		}
-		$this->world->addParticle($this->add(0.5, 0.5, 0.5), new DestroyBlockParticle(VanillaBlocks::OAK_PLANKS()));
+		$this->getWorld()->addParticle($this->location->add(0.5, 0.5, 0.5), new DestroyBlockParticle(VanillaBlocks::OAK_PLANKS()));
 	}
 
 	protected function recalculateBoundingBox() : void{
@@ -131,7 +131,7 @@ class Painting extends Entity{
 	public function onNearbyBlockChange() : void{
 		parent::onNearbyBlockChange();
 
-		if(!self::canFit($this->world, $this->blockIn->getSide($this->facing), $this->facing, false, $this->getMotive())){
+		if(!self::canFit($this->getWorld(), $this->blockIn->getSide($this->facing), $this->facing, false, $this->getMotive())){
 			$this->kill();
 		}
 	}

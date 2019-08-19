@@ -89,14 +89,14 @@ class SplashPotion extends Throwable{
 			$particle = new PotionSplashParticle(Color::mix(...$colors));
 		}
 
-		$this->world->addParticle($this, $particle);
-		$this->world->addSound($this, new PotionSplashSound());
+		$this->getWorld()->addParticle($this->location, $particle);
+		$this->getWorld()->addSound($this->location, new PotionSplashSound());
 
 		if($hasEffects){
 			if(!$this->willLinger()){
-				foreach($this->world->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
+				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
 					if($entity instanceof Living and $entity->isAlive()){
-						$distanceSquared = $entity->getEyePos()->distanceSquared($this);
+						$distanceSquared = $entity->getEyePos()->distanceSquared($this->location);
 						if($distanceSquared > 16){ //4 blocks
 							continue;
 						}
@@ -129,11 +129,11 @@ class SplashPotion extends Throwable{
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
 			if($blockIn->getId() === BlockLegacyIds::FIRE){
-				$this->world->setBlock($blockIn->getPos(), VanillaBlocks::AIR());
+				$this->getWorld()->setBlock($blockIn->getPos(), VanillaBlocks::AIR());
 			}
 			foreach($blockIn->getHorizontalSides() as $horizontalSide){
 				if($horizontalSide->getId() === BlockLegacyIds::FIRE){
-					$this->world->setBlock($horizontalSide->getPos(), VanillaBlocks::AIR());
+					$this->getWorld()->setBlock($horizontalSide->getPos(), VanillaBlocks::AIR());
 				}
 			}
 		}

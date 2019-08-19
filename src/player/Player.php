@@ -329,10 +329,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->networkSession->getIp(),
 			$this->networkSession->getPort(),
 			$this->id,
-			$this->world->getDisplayName(),
-			round($this->x, 4),
-			round($this->y, 4),
-			round($this->z, 4)
+			$this->getWorld()->getDisplayName(),
+			round($this->location->x, 4),
+			round($this->location->y, 4),
+			round($this->location->z, 4)
 		]));
 
 		$this->server->addOnlinePlayer($this);
@@ -368,7 +368,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			if(($world = $this->server->getWorldManager()->getWorldByName($nbt->getString("SpawnLevel", ""))) instanceof World){
 				$this->spawnPosition = new Position($nbt->getInt("SpawnX"), $nbt->getInt("SpawnY"), $nbt->getInt("SpawnZ"), $world);
 			}else{
-				$this->spawnPosition = $this->world->getSafeSpawn();
+				$this->spawnPosition = $this->getWorld()->getSafeSpawn();
 			}
 		}
 	}
@@ -514,7 +514,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player) : void{
-		if($this->isAlive() and $player->isAlive() and $player->getWorld() === $this->world and $player->canSee($this) and !$this->isSpectator()){
+		if($this->isAlive() and $player->isAlive() and $player->getWorld() === $this->getWorld() and $player->canSee($this) and !$this->isSpectator()){
 			parent::spawnTo($player);
 		}
 	}
@@ -802,7 +802,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	protected function switchWorld(World $targetWorld) : bool{
-		$oldWorld = $this->world;
+		$oldWorld = $this->getWorld();
 		if(parent::switchWorld($targetWorld)){
 			if($oldWorld !== null){
 				foreach($this->usedChunks as $index => $d){
@@ -813,8 +813,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 			$this->usedChunks = [];
 			$this->loadQueue = [];
-			$this->world->sendTime($this);
-			$this->world->sendDifficulty($this);
+			$this->getWorld()->sendTime($this);
+			$this->getWorld()->sendDifficulty($this);
 
 			return true;
 		}
@@ -823,7 +823,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	protected function unloadChunk(int $x, int $z, ?World $world = null){
-		$world = $world ?? $this->world;
+		$world = $world ?? $this->getWorld();
 		$index = World::chunkHash($x, $z);
 		if(isset($this->usedChunks[$index])){
 			foreach($world->getChunk($x, $z)->getEntities() as $entity){
@@ -840,7 +840,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	protected function spawnEntitiesOnChunk(int $chunkX, int $chunkZ) : void{
-		foreach($this->world->getChunk($chunkX, $chunkZ)->getEntities() as $entity){
+		foreach($this->getWorld()->getChunk($chunkX, $chunkZ)->getEntities() as $entity){
 			if($entity !== $this and !$entity->isFlaggedForDespawn()){
 				$entity->spawnTo($this);
 			}
@@ -868,10 +868,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			++$count;
 
 			$this->usedChunks[$index] = false;
-			$this->world->registerChunkLoader($this, $X, $Z, true);
-			$this->world->registerChunkListener($this, $X, $Z);
+			$this->getWorld()->registerChunkLoader($this, $X, $Z, true);
+			$this->getWorld()->registerChunkListener($this, $X, $Z);
 
-			if(!$this->world->populateChunk($X, $Z)){
+			if(!$this->getWorld()->populateChunk($X, $Z)){
 				continue;
 			}
 
@@ -935,8 +935,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$radius = $this->server->getAllowedViewDistance($this->viewDistance);
 		$radiusSquared = $radius ** 2;
 
-		$centerX = $this->getFloorX() >> 4;
-		$centerZ = $this->getFloorZ() >> 4;
+		$centerX = $this->location->getFloorX() >> 4;
+		$centerZ = $this->location->getFloorZ() >> 4;
 
 		for($x = 0; $x < $radius; ++$x){
 			for($z = 0; $z <= $x; ++$z){
@@ -993,7 +993,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->loadQueue = $newOrder;
 		if(!empty($this->loadQueue) or !empty($unloadChunks)){
-			$this->networkSession->syncViewAreaCenterPoint($this, $this->viewDistance);
+			$this->networkSession->syncViewAreaCenterPoint($this->location, $this->viewDistance);
 		}
 
 		Timings::$playerChunkOrderTimer->stopTiming();
@@ -1042,7 +1042,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function setSpawn(Vector3 $pos){
 		if(!($pos instanceof Position)){
-			$world = $this->world;
+			$world = $this->getWorld();
 		}else{
 			$world = $pos->getWorld();
 		}
@@ -1064,7 +1064,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function sleepOn(Vector3 $pos) : bool{
 		$pos = $pos->floor();
-		$b = $this->world->getBlock($pos);
+		$b = $this->getWorld()->getBlock($pos);
 
 		$ev = new PlayerBedEnterEvent($this, $b);
 		$ev->call();
@@ -1080,14 +1080,14 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->setSpawn($pos);
 
-		$this->world->setSleepTicks(60);
+		$this->getWorld()->setSleepTicks(60);
 
 		return true;
 	}
 
 	public function stopSleep(){
 		if($this->sleeping instanceof Vector3){
-			$b = $this->world->getBlock($this->sleeping);
+			$b = $this->getWorld()->getBlock($this->sleeping);
 			if($b instanceof Bed){
 				$b->setOccupied(false);
 			}
@@ -1095,7 +1095,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 			$this->sleeping = null;
 
-			$this->world->setSleepTicks(0);
+			$this->getWorld()->setSleepTicks(0);
 
 			$this->broadcastAnimation([$this], AnimatePacket::ACTION_STOP_SLEEP);
 		}
@@ -1225,10 +1225,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz) : void{
 		$bb = clone $this->boundingBox;
-		$bb->minY = $this->y - 0.2;
-		$bb->maxY = $this->y + 0.2;
+		$bb->minY = $this->location->y - 0.2;
+		$bb->maxY = $this->location->y + 0.2;
 
-		$this->onGround = $this->isCollided = count($this->world->getCollisionBlocks($bb, true)) > 0;
+		$this->onGround = $this->isCollided = count($this->getWorld()->getCollisionBlocks($bb, true)) > 0;
 	}
 
 	public function canBeMovedByCurrents() : bool{
@@ -1236,7 +1236,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	protected function checkNearEntities(){
-		foreach($this->world->getNearbyEntities($this->boundingBox->expandedCopy(1, 0.5, 1), $this) as $entity){
+		foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(1, 0.5, 1), $this) as $entity){
 			$entity->scheduleUpdate();
 
 			if(!$entity->isAlive() or $entity->isFlaggedForDespawn()){
@@ -1254,7 +1254,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return Vector3
 	 */
 	public function getNextPosition() : Vector3{
-		return $this->newPosition !== null ? clone $this->newPosition : $this->asVector3();
+		return $this->newPosition !== null ? clone $this->newPosition : $this->location->asVector3();
 	}
 
 	/**
@@ -1271,9 +1271,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		//TODO: teleport acks are a network specific thing and shouldn't be here
 
 		$newPos = $newPos->asVector3();
-		if($this->isTeleporting and $newPos->distanceSquared($this) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-			$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
-			$this->logger->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $this->asVector3());
+		if($this->isTeleporting and $newPos->distanceSquared($this->location) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+			$this->sendPosition($this->location, null, null, MovePlayerPacket::MODE_RESET);
+			$this->logger->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $this->location->asVector3());
 			//Still getting movements from before teleport, ignore them
 			return false;
 		}
@@ -1296,11 +1296,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			return;
 		}
 
-		assert($this->x !== null and $this->y !== null and $this->z !== null);
 		assert($this->newPosition->x !== null and $this->newPosition->y !== null and $this->newPosition->z !== null);
 
 		$newPos = $this->newPosition;
-		$distanceSquared = $newPos->distanceSquared($this);
+		$distanceSquared = $newPos->distanceSquared($this->location);
 
 		$revert = false;
 
@@ -1316,23 +1315,23 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			 * asking for help if you suffer the consequences of messing with this.
 			 */
 			$this->logger->debug("Moved too fast, reverting movement");
-			$this->logger->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
+			$this->logger->debug("Old position: " . $this->location->asVector3() . ", new position: " . $this->newPosition);
 			$revert = true;
-		}elseif(!$this->world->isInLoadedTerrain($newPos) or !$this->world->isChunkGenerated($newPos->getFloorX() >> 4, $newPos->getFloorZ() >> 4)){
+		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos) or !$this->getWorld()->isChunkGenerated($newPos->getFloorX() >> 4, $newPos->getFloorZ() >> 4)){
 			$revert = true;
 			$this->nextChunkOrderRun = 0;
 		}
 
 		if(!$revert and $distanceSquared != 0){
-			$dx = $newPos->x - $this->x;
-			$dy = $newPos->y - $this->y;
-			$dz = $newPos->z - $this->z;
+			$dx = $newPos->x - $this->location->x;
+			$dy = $newPos->y - $this->location->y;
+			$dz = $newPos->z - $this->location->z;
 
 			$this->move($dx, $dy, $dz);
 		}
 
 		$from = clone $this->lastLocation;
-		$to = $this->asLocation();
+		$to = clone $this->location;
 
 		$delta = $to->distanceSquared($from);
 		$deltaAngle = abs($this->lastLocation->yaw - $to->yaw) + abs($this->lastLocation->pitch - $to->pitch);
@@ -1631,7 +1630,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	public function pickBlock(Vector3 $pos, bool $addTileNBT) : bool{
-		$block = $this->world->getBlock($pos);
+		$block = $this->getWorld()->getBlock($pos);
 		if($block instanceof UnknownBlock){
 			return true;
 		}
@@ -1678,11 +1677,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool if an action took place successfully
 	 */
 	public function attackBlock(Vector3 $pos, int $face) : bool{
-		if($pos->distanceSquared($this) > 10000){
+		if($pos->distanceSquared($this->location) > 10000){
 			return false; //TODO: maybe this should throw an exception instead?
 		}
 
-		$target = $this->world->getBlock($pos);
+		$target = $this->getWorld()->getBlock($pos);
 
 		$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, null, $face, PlayerInteractEvent::LEFT_CLICK_BLOCK);
 		$ev->call();
@@ -1696,7 +1695,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$block = $target->getSide($face);
 		if($block->getId() === BlockLegacyIds::FIRE){
-			$this->world->setBlock($block->getPos(), VanillaBlocks::AIR());
+			$this->getWorld()->setBlock($block->getPos(), VanillaBlocks::AIR());
 			return true;
 		}
 
@@ -1704,7 +1703,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			//TODO: improve this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
 			$breakTime = ceil($target->getBreakInfo()->getBreakTime($this->inventory->getItemInHand()) * 20);
 			if($breakTime > 0){
-				$this->world->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 / $breakTime));
+				$this->getWorld()->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 / $breakTime));
 			}
 		}
 
@@ -1712,15 +1711,15 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	public function continueBreakBlock(Vector3 $pos, int $face) : void{
-		$block = $this->world->getBlock($pos);
-		$this->world->addParticle($pos, new PunchBlockParticle($block, $face));
+		$block = $this->getWorld()->getBlock($pos);
+		$this->getWorld()->addParticle($pos, new PunchBlockParticle($block, $face));
 		$this->broadcastEntityEvent(ActorEventPacket::ARM_SWING, null, $this->getViewers());
 
 		//TODO: destroy-progress level event
 	}
 
 	public function stopBreakBlock(Vector3 $pos) : void{
-		$this->world->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
+		$this->getWorld()->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
 	}
 
 	/**
@@ -1737,7 +1736,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->broadcastEntityEvent(ActorEventPacket::ARM_SWING, null, $this->getViewers());
 			$item = $this->inventory->getItemInHand();
 			$oldItem = clone $item;
-			if($this->world->useBreakOn($pos, $item, $this, true)){
+			if($this->getWorld()->useBreakOn($pos, $item, $this, true)){
 				if($this->hasFiniteResources() and !$item->equalsExact($oldItem)){
 					$this->inventory->setItemInHand($item);
 				}
@@ -1765,7 +1764,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->broadcastEntityEvent(ActorEventPacket::ARM_SWING, null, $this->getViewers());
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
-			if($this->world->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
+			if($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
 				if($this->hasFiniteResources() and !$item->equalsExact($oldItem)){
 					$this->inventory->setItemInHand($item);
 				}
@@ -1797,7 +1796,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$heldItem = $this->inventory->getItemInHand();
 
 		$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
-		if(!$this->canInteract($entity, 8) or ($entity instanceof Player and !$this->server->getConfigBool("pvp"))){
+		if(!$this->canInteract($entity->getLocation(), 8) or ($entity instanceof Player and !$this->server->getConfigBool("pvp"))){
 			$ev->setCancelled();
 		}
 
@@ -1900,7 +1899,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function dropItem(Item $item) : void{
 		$this->broadcastEntityEvent(ActorEventPacket::ARM_SWING, null, $this->getViewers());
-		$this->world->dropItem($this->add(0, 1.3, 0), $item, $this->getDirectionVector()->multiply(0.4), 40);
+		$this->getWorld()->dropItem($this->location->add(0, 1.3, 0), $item, $this->getDirectionVector()->multiply(0.4), 40);
 	}
 
 	/**
@@ -2159,7 +2158,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 		$this->hiddenPlayers = [];
 
-		if($this->isValid()){
+		if($this->location->isValid()){
 			foreach($this->usedChunks as $index => $d){
 				World::getXZ($index, $chunkX, $chunkZ);
 				$this->unloadChunk($chunkX, $chunkZ);
@@ -2221,8 +2220,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$nbt = $this->saveNBT();
 
-		if($this->isValid()){
-			$nbt->setString("Level", $this->world->getFolderName());
+		if($this->location->isValid()){
+			$nbt->setString("Level", $this->getWorld()->getFolderName());
 		}
 
 		if($this->hasValidSpawnPosition()){
@@ -2261,7 +2260,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		if(!$ev->getKeepInventory()){
 			foreach($ev->getDrops() as $item){
-				$this->world->dropItem($this, $item);
+				$this->getWorld()->dropItem($this->location, $item);
 			}
 
 			if($this->inventory !== null){
@@ -2273,7 +2272,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			}
 		}
 
-		$this->world->dropExperience($this, $ev->getXpDropAmount());
+		$this->getWorld()->dropExperience($this->location, $ev->getXpDropAmount());
 		$this->xpManager->setXpAndProgress(0, 0.0);
 
 		if($ev->getDeathMessage() != ""){
@@ -2400,7 +2399,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 			$this->removeCurrentWindow();
 
-			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_TELEPORT);
+			$this->sendPosition($this->location, $this->location->yaw, $this->location->pitch, MovePlayerPacket::MODE_TELEPORT);
 			$this->broadcastMovement(true);
 
 			$this->spawnToAll();
@@ -2543,4 +2542,22 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->nextChunkOrderRun = 0;
 		}
 	}
+
+	/**
+	 * @see ChunkLoader::getX()
+	 * @return float
+	 */
+	public function getX(){
+		return $this->location->getX();
+	}
+
+	/**
+	 * @see ChunkLoader::getZ()
+	 * @return float
+	 */
+	public function getZ(){
+		return $this->location->getZ();
+	}
+
+
 }
