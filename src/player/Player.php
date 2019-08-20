@@ -811,8 +811,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 			$this->usedChunks = [];
 			$this->loadQueue = [];
-			$this->getWorld()->sendTime($this);
-			$this->getWorld()->sendDifficulty($this);
+			$this->networkSession->onEnterWorld();
 
 			return true;
 		}

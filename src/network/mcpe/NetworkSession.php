@@ -797,6 +797,12 @@ class NetworkSession{
 
 	}
 
+	public function onEnterWorld() : void{
+		$world = $this->player->getWorld();
+		$world->sendTime($this->player);
+		$world->sendDifficulty($this->player);
+	}
+
 	/**
 	 * @return InventoryManager
 	 */
