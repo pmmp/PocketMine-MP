@@ -227,8 +227,8 @@ class NetworkBinaryStream extends BinaryStream{
 				case Entity::DATA_TYPE_STRING:
 					$value = $this->getString();
 					break;
-				case Entity::DATA_TYPE_SLOT:
-					$value = $this->getSlot();
+				case Entity::DATA_TYPE_COMPOUND_TAG:
+					$value = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
 					break;
 				case Entity::DATA_TYPE_POS:
 					$value = new Vector3();
@@ -279,8 +279,8 @@ class NetworkBinaryStream extends BinaryStream{
 				case Entity::DATA_TYPE_STRING:
 					$this->putString($d[1]);
 					break;
-				case Entity::DATA_TYPE_SLOT:
-					$this->putSlot($d[1]);
+				case Entity::DATA_TYPE_COMPOUND_TAG:
+					$this->put((new NetworkLittleEndianNBTStream())->write($d[1]));
 					break;
 				case Entity::DATA_TYPE_POS:
 					$v = $d[1];

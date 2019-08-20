@@ -13,7 +13,7 @@
 
 ### Discussion
 - [Forums](https://forums.pmmp.io/)
-- [Community Discord](https://discord.gg/bge7dYQ)
+- [Community Discord](https://discord.gg/bmSAZBG)
 
 ### For developers
  * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development

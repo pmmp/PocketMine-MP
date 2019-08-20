@@ -11,4 +11,4 @@ We don't accept support requests on the issue tracker. Please try the following 
 
 Documentation: http://pmmp.rtfd.io
 Forums: https://forums.pmmp.io
-Discord: https://discord.gg/bge7dYQ
+Discord: https://discord.gg/bmSAZBG

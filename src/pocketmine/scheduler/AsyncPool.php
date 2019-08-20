@@ -248,6 +248,7 @@ class AsyncPool{
 			$this->workerUsage[$this->taskWorkers[$task->getTaskId()]]--;
 		}
 
+		$task->removeDanglingStoredObjects();
 		unset($this->tasks[$task->getTaskId()]);
 		unset($this->taskWorkers[$task->getTaskId()]);
 	}
