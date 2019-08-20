@@ -27,7 +27,6 @@ use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use function mt_rand;
-use pocketmine\world\Position;
 
 class Mycelium extends Opaque{
 

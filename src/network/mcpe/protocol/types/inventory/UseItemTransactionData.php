@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\protocol\types\inventory;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\types\inventory\TransactionData;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class UseItemTransactionData extends TransactionData{

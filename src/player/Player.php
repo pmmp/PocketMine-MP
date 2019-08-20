@@ -29,7 +29,6 @@ use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
 use pocketmine\crafting\CraftingGrid;
-use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;

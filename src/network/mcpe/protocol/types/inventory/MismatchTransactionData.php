@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol\types\inventory;
 
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\types\inventory\TransactionData;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 

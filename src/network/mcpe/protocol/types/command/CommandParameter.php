@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\command;
 
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
-use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 
 class CommandParameter{
 	/** @var string */

@@ -33,7 +33,6 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\world\particle\EndermanTeleportParticle;
 use pocketmine\world\sound\EndermanTeleportSound;
-use function get_class;
 
 class EnderPearl extends Throwable{
 	public const NETWORK_ID = EntityLegacyIds::ENDER_PEARL;

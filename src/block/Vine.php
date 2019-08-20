@@ -25,14 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function array_intersect_key;
-use function array_keys;
-use function count;
 
 class Vine extends Flowable{
 
