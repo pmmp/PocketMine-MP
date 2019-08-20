@@ -1628,7 +1628,7 @@ abstract class Entity{
 		$pk->attributes = $this->attributeMap->getAll();
 		$pk->metadata = $this->getSyncedNetworkData(false);
 
-		$player->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket($pk);
 	}
 
 	/**
@@ -1670,7 +1670,7 @@ abstract class Entity{
 		$id = spl_object_id($player);
 		if(isset($this->hasSpawned[$id])){
 			if($send){
-				$player->sendDataPacket(RemoveActorPacket::create($this->id));
+				$player->getNetworkSession()->sendDataPacket(RemoveActorPacket::create($this->id));
 			}
 			unset($this->hasSpawned[$id]);
 		}
@@ -1762,11 +1762,11 @@ abstract class Entity{
 			if($p === $this){
 				continue;
 			}
-			$p->sendDataPacket(clone $pk);
+			$p->getNetworkSession()->sendDataPacket(clone $pk);
 		}
 
 		if($this instanceof Player){
-			$this->sendDataPacket($pk);
+			$this->getNetworkSession()->sendDataPacket($pk);
 		}
 	}
 

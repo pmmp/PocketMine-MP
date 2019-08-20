@@ -240,7 +240,7 @@ class ItemEntity extends Entity{
 		$pk->item = $this->getItem();
 		$pk->metadata = $this->getSyncedNetworkData(false);
 
-		$player->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket($pk);
 	}
 
 	public function onCollideWithPlayer(Player $player) : void{

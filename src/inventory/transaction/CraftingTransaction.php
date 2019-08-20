@@ -167,6 +167,6 @@ class CraftingTransaction extends InventoryTransaction{
 		 * So people don't whine about messy desync issues when someone cancels CraftItemEvent, or when a crafting
 		 * transaction goes wrong.
 		 */
-		$this->source->sendDataPacket(ContainerClosePacket::create(ContainerIds::NONE));
+		$this->source->getNetworkSession()->sendDataPacket(ContainerClosePacket::create(ContainerIds::NONE));
 	}
 }

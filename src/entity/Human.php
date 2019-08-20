@@ -405,7 +405,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	protected function sendSpawnPacket(Player $player) : void{
 		if(!($this instanceof Player)){
-			$player->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), $this->skin)]));
+			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), $this->skin)]));
 		}
 
 		$pk = new AddPlayerPacket();
@@ -418,7 +418,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$pk->pitch = $this->location->pitch;
 		$pk->item = $this->getInventory()->getItemInHand();
 		$pk->metadata = $this->getSyncedNetworkData(false);
-		$player->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket($pk);
 
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
 		$this->sendData($player, [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($this->getNameTag())]);
@@ -426,7 +426,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$player->getNetworkSession()->onMobArmorChange($this);
 
 		if(!($this instanceof Player)){
-			$player->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($this->uuid)]));
+			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($this->uuid)]));
 		}
 	}
 

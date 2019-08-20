@@ -159,7 +159,7 @@ class Painting extends Entity{
 		$pk->direction = self::FACING_TO_DATA[$this->facing];
 		$pk->title = $this->motive;
 
-		$player->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket($pk);
 	}
 
 	/**

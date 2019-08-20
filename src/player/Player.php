@@ -84,7 +84,6 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
-use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
@@ -1903,20 +1902,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * @param ClientboundPacket $packet
-	 * @param bool              $immediate
-	 *
-	 * @return bool
-	 */
-	public function sendDataPacket(ClientboundPacket $packet, bool $immediate = false) : bool{
-		if(!$this->isConnected()){
-			return false;
-		}
-
-		return $this->networkSession->sendDataPacket($packet, $immediate);
-	}
-
-	/**
 	 * Adds a title text to the user's screen, with an optional subtitle.
 	 *
 	 * @param string $title
@@ -1930,7 +1915,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($subtitle !== ""){
 			$this->sendSubTitle($subtitle);
 		}
-		$this->sendDataPacket(SetTitlePacket::title($title));
+		$this->networkSession->sendDataPacket(SetTitlePacket::title($title));
 	}
 
 	/**
@@ -1939,7 +1924,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param string $subtitle
 	 */
 	public function sendSubTitle(string $subtitle) : void{
-		$this->sendDataPacket(SetTitlePacket::subtitle($subtitle));
+		$this->networkSession->sendDataPacket(SetTitlePacket::subtitle($subtitle));
 	}
 
 	/**
@@ -1948,21 +1933,21 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param string $message
 	 */
 	public function sendActionBarMessage(string $message) : void{
-		$this->sendDataPacket(SetTitlePacket::actionBarMessage($message));
+		$this->networkSession->sendDataPacket(SetTitlePacket::actionBarMessage($message));
 	}
 
 	/**
 	 * Removes the title from the client's screen.
 	 */
 	public function removeTitles(){
-		$this->sendDataPacket(SetTitlePacket::clearTitle());
+		$this->networkSession->sendDataPacket(SetTitlePacket::clearTitle());
 	}
 
 	/**
 	 * Resets the title duration settings to defaults and removes any existing titles.
 	 */
 	public function resetTitles(){
-		$this->sendDataPacket(SetTitlePacket::resetTitleOptions());
+		$this->networkSession->sendDataPacket(SetTitlePacket::resetTitleOptions());
 	}
 
 	/**
@@ -1974,7 +1959,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function setTitleDuration(int $fadeIn, int $stay, int $fadeOut){
 		if($fadeIn >= 0 and $stay >= 0 and $fadeOut >= 0){
-			$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
+			$this->networkSession->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
 		}
 	}
 
