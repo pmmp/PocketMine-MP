@@ -35,7 +35,7 @@ class SetTimePacket extends DataPacket implements ClientboundPacket{
 
 	public static function create(int $time) : self{
 		$result = new self;
-		$result->time = $time;
+		$result->time = $time & 0xffffffff; //avoid overflowing the field, since the packet uses an int32
 		return $result;
 	}
 

@@ -691,7 +691,7 @@ class World implements ChunkManager{
 	 * @param Player ...$targets If empty, will send to all players in the world.
 	 */
 	public function sendTime(Player ...$targets){
-		$pk = SetTimePacket::create($this->time & 0xffffffff); //avoid overflowing the field, since the packet uses an int32
+		$pk = SetTimePacket::create($this->time);
 
 		if(empty($targets)){
 			$this->broadcastGlobalPacket($pk);
