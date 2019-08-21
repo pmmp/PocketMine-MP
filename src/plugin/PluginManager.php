@@ -430,6 +430,8 @@ class PluginManager{
 	public function enablePlugins(PluginLoadOrder $type) : void{
 		if($this->scanLoaded){
 			$this->scanEnabled = true;
+		}elseif($type->equals(PluginLoadOrder::SCAN())){
+			$this->scanLoaded = true;
 		}
 
 		foreach($this->plugins as $plugin){
