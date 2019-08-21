@@ -137,8 +137,6 @@ abstract class Entity{
 	private $maxHealth = 20;
 
 	/** @var float */
-	protected $ySize = 0.0;
-	/** @var float */
 	protected $stepHeight = 0.0;
 	/** @var bool */
 	public $keepMovement = false;
@@ -1214,7 +1212,6 @@ abstract class Entity{
 		if($this->keepMovement){
 			$this->boundingBox->offset($dx, $dy, $dz);
 		}else{
-			$this->ySize *= 0.4;
 
 			/*
 			if($this->isColliding){ //With cobweb?
@@ -1281,7 +1278,7 @@ abstract class Entity{
 			$moveBB->offset(0, 0, $dz);
 
 
-			if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX != $dx or $movZ != $dz)){
+			if($this->stepHeight > 0 and $fallingFlag and ($movX != $dx or $movZ != $dz)){
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
@@ -1310,13 +1307,14 @@ abstract class Entity{
 
 				$stepBB->offset(0, 0, $dz);
 
+				//TODO: here we need to shift back down on the Y-axis to the top of the target block (we don't want to jump into the air when walking onto carpet)
+
 				if(($cx ** 2 + $cz ** 2) >= ($dx ** 2 + $dz ** 2)){
 					$dx = $cx;
 					$dy = $cy;
 					$dz = $cz;
 				}else{
 					$moveBB = $stepBB;
-					$this->ySize += 0.5; //FIXME: this should be the height of the block it walked up, not fixed 0.5
 				}
 			}
 
@@ -1324,7 +1322,7 @@ abstract class Entity{
 		}
 
 		$this->location->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-		$this->location->y = $this->boundingBox->minY - $this->ySize;
+		$this->location->y = $this->boundingBox->minY;
 		$this->location->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
 
 		$this->checkChunks();
@@ -1564,7 +1562,6 @@ abstract class Entity{
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->ySize = 0;
 		$pos = $ev->getTo();
 
 		$this->setMotion($this->temporalVector->setComponents(0, 0, 0));
