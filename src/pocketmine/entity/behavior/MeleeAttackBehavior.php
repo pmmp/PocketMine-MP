@@ -73,6 +73,10 @@ class MeleeAttackBehavior extends Behavior{
 
 	public function onTick() : void{
 		$target = $this->mob->getTargetEntity();
+		
+		if($target === null){
+			return;
+		}
 
 		$distanceToPlayer = $this->mob->distanceSquared($target);
 
