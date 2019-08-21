@@ -23,14 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class EndermanTeleportSound extends LevelEventSound{
-	public function __construct(){ //don't allow specifying a pitch - TODO: remove pitch from sounds that don't have it
-		parent::__construct();
-	}
+class EndermanTeleportSound implements Sound{
 
-	protected function getLevelEventId() : int{
-		return LevelEventPacket::EVENT_SOUND_ENDERMAN_TELEPORT;
+	public function encode(?Vector3 $pos){
+		return LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_ENDERMAN_TELEPORT, 0, $pos);
 	}
 }

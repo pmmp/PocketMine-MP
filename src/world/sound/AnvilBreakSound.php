@@ -23,11 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class AnvilBreakSound extends LevelEventSound{
+class AnvilBreakSound implements Sound{
 
-	protected function getLevelEventId() : int{
-		return LevelEventPacket::EVENT_SOUND_ANVIL_BREAK;
+	public function encode(?Vector3 $pos){
+		return LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_ANVIL_BREAK, 0, $pos);
 	}
 }

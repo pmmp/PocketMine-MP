@@ -23,11 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class DoorBumpSound extends LevelEventSound{
+class DoorBumpSound implements Sound{
 
-	protected function getLevelEventId() : int{
-		return LevelEventPacket::EVENT_SOUND_DOOR_BUMP;
+	public function encode(?Vector3 $pos){
+		return LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_DOOR_BUMP, 0, $pos);
 	}
 }

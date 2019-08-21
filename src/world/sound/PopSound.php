@@ -23,11 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class PopSound extends LevelEventSound{
+class PopSound implements Sound{
 
-	protected function getLevelEventId() : int{
-		return LevelEventPacket::EVENT_SOUND_POP;
+	/** @var float */
+	private $pitch;
+
+	public function __construct(float $pitch = 0){
+		$this->pitch = $pitch;
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getPitch() : float{
+		return $this->pitch;
+	}
+
+	public function encode(?Vector3 $pos){
+		return LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_POP, (int) ($this->pitch * 1000), $pos);
 	}
 }
