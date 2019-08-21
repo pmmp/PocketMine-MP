@@ -1889,7 +1889,7 @@ class World implements ChunkManager{
 					if(!($entity instanceof $entityType) or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
 						continue;
 					}
-					$distSq = $entity->distanceSquared($pos);
+					$distSq = $entity->getPosition()->distanceSquared($pos);
 					if($distSq < $currentTargetDistSq){
 						$currentTargetDistSq = $distSq;
 						$currentTarget = $entity;
