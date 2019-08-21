@@ -42,8 +42,6 @@ class PlayerInfo{
 	private $locale;
 	/** @var string */
 	private $xuid;
-	/** @var int */
-	private $clientId;
 	/** @var array */
 	private $extraData;
 
@@ -53,16 +51,14 @@ class PlayerInfo{
 	 * @param Skin   $skin
 	 * @param string $locale
 	 * @param string $xuid
-	 * @param int    $clientId
 	 * @param array  $extraData
 	 */
-	public function __construct(string $username, UUID $uuid, Skin $skin, string $locale, string $xuid, int $clientId, array $extraData = []){
+	public function __construct(string $username, UUID $uuid, Skin $skin, string $locale, string $xuid, array $extraData = []){
 		$this->username = TextFormat::clean($username);
 		$this->uuid = $uuid;
 		$this->skin = $skin;
 		$this->locale = $locale;
 		$this->xuid = $xuid;
-		$this->clientId = $clientId;
 		$this->extraData = $extraData;
 	}
 
@@ -99,13 +95,6 @@ class PlayerInfo{
 	 */
 	public function getXuid() : string{
 		return $this->xuid;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getClientId() : int{
-		return $this->clientId;
 	}
 
 	/**

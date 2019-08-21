@@ -162,8 +162,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $username;
 	/** @var string */
 	protected $displayName;
-	/** @var int */
-	protected $randomClientId;
 	/** @var string */
 	protected $xuid = "";
 	/** @var bool */
@@ -270,7 +268,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->username = $username;
 		$this->displayName = $this->username;
 		$this->locale = $this->playerInfo->getLocale();
-		$this->randomClientId = $this->playerInfo->getClientId();
 
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo->getXuid();
@@ -382,16 +379,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		return "";
-	}
-
-	/**
-	 * This might disappear in the future. Please use getUniqueId() instead.
-	 * @deprecated
-	 *
-	 * @return int
-	 */
-	public function getClientId(){
-		return $this->randomClientId;
 	}
 
 	public function isBanned() : bool{

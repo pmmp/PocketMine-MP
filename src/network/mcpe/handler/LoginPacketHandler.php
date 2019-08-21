@@ -92,7 +92,6 @@ class LoginPacketHandler extends PacketHandler{
 			$skin,
 			$packet->clientData[LoginPacket::I_LANGUAGE_CODE],
 			$packet->extraData[LoginPacket::I_XUID],
-			$packet->clientData[LoginPacket::I_CLIENT_RANDOM_ID],
 			$packet->clientData
 		));
 
