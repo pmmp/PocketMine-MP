@@ -25,6 +25,7 @@ namespace pocketmine\event;
 
 use pocketmine\plugin\Plugin;
 use pocketmine\timings\TimingsHandler;
+use function in_array;
 
 class RegisteredListener{
 
@@ -52,6 +53,9 @@ class RegisteredListener{
 	 * @param TimingsHandler $timings
 	 */
 	public function __construct(\Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled, TimingsHandler $timings){
+		if(!in_array($priority, EventPriority::ALL, true)){
+			throw new \InvalidArgumentException("Invalid priority number $priority");
+		}
 		$this->handler = $handler;
 		$this->priority = $priority;
 		$this->plugin = $plugin;
