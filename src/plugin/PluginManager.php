@@ -568,19 +568,6 @@ class PluginManager{
 
 		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . $handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")");
 
-		$this->getEventListeners($event)->register(new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings));
-	}
-
-	/**
-	 * @param string $event
-	 *
-	 * @return HandlerList
-	 */
-	private function getEventListeners(string $event) : HandlerList{
-		$list = HandlerListManager::global()->getListFor($event);
-		if($list === null){
-			throw new PluginException("Abstract events not declaring @allowHandle cannot be handled (tried to register listener for $event)");
-		}
-		return $list;
+		HandlerListManager::global()->getListFor($event)->register(new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings));
 	}
 }

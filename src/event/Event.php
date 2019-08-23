@@ -56,7 +56,6 @@ abstract class Event{
 		}
 
 		$handlerList = HandlerListManager::global()->getListFor(get_class($this));
-		assert($handlerList !== null, "Called event should have a valid HandlerList");
 
 		++self::$eventCallDepth;
 		try{

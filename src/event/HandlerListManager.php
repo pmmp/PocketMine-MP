@@ -58,6 +58,18 @@ class HandlerListManager{
 		}
 	}
 
+	private static function isValidClass(\ReflectionClass $class) : bool{
+		$tags = Utils::parseDocComment((string) $class->getDocComment());
+		return !$class->isAbstract() || isset($tags["allowHandle"]);
+	}
+
+	private static function resolveNearestHandleableParent(\ReflectionClass $class) : ?\ReflectionClass{
+		for($parent = $class->getParentClass(); $parent !== false && !self::isValidClass($parent); $parent = $parent->getParentClass()){
+			//NOOP
+		}
+		return $parent ?: null;
+	}
+
 	/**
 	 * Returns the HandlerList for listeners that explicitly handle this event.
 	 *
@@ -65,30 +77,22 @@ class HandlerListManager{
 	 *
 	 * @param string $event
 	 *
-	 * @return null|HandlerList
+	 * @return HandlerList
 	 * @throws \ReflectionException
+	 * @throws \InvalidArgumentException
 	 */
-	public function getListFor(string $event) : ?HandlerList{
+	public function getListFor(string $event) : HandlerList{
 		if(isset($this->allLists[$event])){
 			return $this->allLists[$event];
 		}
 
 		$class = new \ReflectionClass($event);
-		$tags = Utils::parseDocComment((string) $class->getDocComment());
-
-		if($class->isAbstract() && !isset($tags["allowHandle"])){
-			return null;
+		if(!self::isValidClass($class)){
+			throw new \InvalidArgumentException("Event must be non-abstract or have the @allowHandle annotation");
 		}
 
-		$super = $class;
-		$parentList = null;
-		while($parentList === null && ($super = $super->getParentClass()) !== false){
-			// skip $noHandle events in the inheritance tree to go to the nearest ancestor
-			// while loop to allow skipping $noHandle events in the inheritance tree
-			$parentList = $this->getListFor($super->getName());
-		}
-
-		return $this->allLists[$event] = new HandlerList($event, $parentList);
+		$parent = self::resolveNearestHandleableParent($class);
+		return $this->allLists[$event] = new HandlerList($event, $parent !== null ? $this->getListFor($parent->getName()) : null);
 	}
 
 	/**
