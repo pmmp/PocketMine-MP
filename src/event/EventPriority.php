@@ -35,7 +35,12 @@ use function strtoupper;
  *
  * MONITOR events should not change the event outcome or contents
  */
-abstract class EventPriority{
+final class EventPriority{
+
+	private function __construct(){
+		//NOOP
+	}
+
 	public const ALL = [
 		self::LOWEST,
 		self::LOW,
