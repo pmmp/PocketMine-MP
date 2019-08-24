@@ -996,11 +996,8 @@ class World implements ChunkManager{
 
 						if(isset($this->randomTickBlocks[$state])){
 							/** @var Block $block */
-							$block = BlockFactory::fromFullBlock($state, $this->temporalPosition->setComponents(
-								$chunkX * 16 + $x,
-								($Y << 4) + $y,
-								$chunkZ * 16 + $z
-							));
+							$block = BlockFactory::fromFullBlock($state);
+							$block->position($this, $chunkX * 16 + $x, ($Y << 4) + $y, $chunkZ * 16 + $z);
 							$block->onRandomTick();
 						}
 					}

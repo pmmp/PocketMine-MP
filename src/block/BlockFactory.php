@@ -51,7 +51,6 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\item\ToolTier;
-use pocketmine\world\Position;
 use function array_fill;
 use function array_filter;
 use function get_class;
@@ -830,13 +829,12 @@ class BlockFactory{
 	/**
 	 * Returns a new Block instance with the specified ID, meta and position.
 	 *
-	 * @param int      $id
-	 * @param int      $meta
-	 * @param Position $pos
+	 * @param int $id
+	 * @param int $meta
 	 *
 	 * @return Block
 	 */
-	public static function get(int $id, int $meta = 0, ?Position $pos = null) : Block{
+	public static function get(int $id, int $meta = 0) : Block{
 		if($meta < 0 or $meta > 0xf){
 			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
 		}
@@ -856,15 +854,11 @@ class BlockFactory{
 			$block = new UnknownBlock(new BID($id, $meta));
 		}
 
-		if($pos !== null){
-			$block->position($pos->getWorld(), $pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
-		}
-
 		return $block;
 	}
 
-	public static function fromFullBlock(int $fullState, ?Position $pos = null) : Block{
-		return self::get($fullState >> 4, $fullState & 0xf, $pos);
+	public static function fromFullBlock(int $fullState) : Block{
+		return self::get($fullState >> 4, $fullState & 0xf);
 	}
 
 	/**

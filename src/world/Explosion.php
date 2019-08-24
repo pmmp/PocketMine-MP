@@ -95,7 +95,6 @@ class Explosion{
 		}
 
 		$vector = new Vector3(0, 0, 0);
-		$vBlock = new Position(0, 0, 0, $this->world);
 
 		$currentChunk = null;
 		$currentSubChunk = null;
@@ -115,21 +114,23 @@ class Explosion{
 							$x = (int) $pointerX;
 							$y = (int) $pointerY;
 							$z = (int) $pointerZ;
-							$vBlock->x = $pointerX >= $x ? $x : $x - 1;
-							$vBlock->y = $pointerY >= $y ? $y : $y - 1;
-							$vBlock->z = $pointerZ >= $z ? $z : $z - 1;
+							$vBlockX = $pointerX >= $x ? $x : $x - 1;
+							$vBlockY = $pointerY >= $y ? $y : $y - 1;
+							$vBlockZ = $pointerZ >= $z ? $z : $z - 1;
 
-							if(!$this->subChunkHandler->moveTo($vBlock->x, $vBlock->y, $vBlock->z, false)){
+							if(!$this->subChunkHandler->moveTo($vBlockX, $vBlockY, $vBlockZ, false)){
 								continue;
 							}
 
-							$state = $this->subChunkHandler->currentSubChunk->getFullBlock($vBlock->x & 0x0f, $vBlock->y & 0x0f, $vBlock->z & 0x0f);
+							$state = $this->subChunkHandler->currentSubChunk->getFullBlock($vBlockX & 0x0f, $vBlockY & 0x0f, $vBlockZ & 0x0f);
 
 							if($state !== 0){
 								$blastForce -= (BlockFactory::$blastResistance[$state] / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
-									if(!isset($this->affectedBlocks[$index = World::blockHash($vBlock->x, $vBlock->y, $vBlock->z)])){
-										$this->affectedBlocks[$index] = BlockFactory::fromFullBlock($state, $vBlock);
+									if(!isset($this->affectedBlocks[$index = World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
+										$_block = BlockFactory::fromFullBlock($state);
+										$_block->position($this->world, $vBlockX, $vBlockY, $vBlockZ);
+										$this->affectedBlocks[$index] = $_block;
 									}
 								}
 							}

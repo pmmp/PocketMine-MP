@@ -41,7 +41,6 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\timings\Timings;
-use pocketmine\world\Position;
 use pocketmine\world\World;
 use function assert;
 use function atan2;
@@ -84,7 +83,7 @@ abstract class Projectile extends Entity{
 			$blockData = null;
 
 			if($nbt->hasTag("tileX", IntTag::class) and $nbt->hasTag("tileY", IntTag::class) and $nbt->hasTag("tileZ", IntTag::class)){
-				$blockPos = new Position($nbt->getInt("tileX"), $nbt->getInt("tileY"), $nbt->getInt("tileZ"), $this->getWorld());
+				$blockPos = new Vector3($nbt->getInt("tileX"), $nbt->getInt("tileY"), $nbt->getInt("tileZ"));
 			}else{
 				break;
 			}
@@ -101,7 +100,8 @@ abstract class Projectile extends Entity{
 				break;
 			}
 
-			$this->blockHit = BlockFactory::get($blockId, $blockData, $blockPos);
+			$this->blockHit = BlockFactory::get($blockId, $blockData);
+			$this->blockHit->position($this->getWorld(), $blockPos->getFloorX(), $blockPos->getFloorY(), $blockPos->getFloorZ());
 		}while(false);
 	}
 
