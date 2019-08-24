@@ -23,7 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-interface BlockLegacyIds{
+final class BlockLegacyIds{
+
+	private function __construct(){
+		//NOOP
+	}
 
 	public const AIR = 0;
 	public const STONE = 1;

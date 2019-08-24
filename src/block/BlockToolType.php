@@ -27,7 +27,11 @@ namespace pocketmine\block;
  * Types of tools that can be used to break blocks
  * Blocks may allow multiple tool types by combining these bitflags
  */
-interface BlockToolType{
+final class BlockToolType{
+
+	private function __construct(){
+		//NOOP
+	}
 
 	public const NONE = 0;
 	public const SWORD = 1 << 0;

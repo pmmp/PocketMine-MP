@@ -26,7 +26,11 @@ namespace pocketmine\network\mcpe\protocol;
 /**
  * Version numbers and packet IDs for the current Minecraft PE protocol
  */
-interface ProtocolInfo{
+final class ProtocolInfo{
+
+	private function __construct(){
+		//NOOP
+	}
 
 	/**
 	 * NOTE TO DEVELOPERS

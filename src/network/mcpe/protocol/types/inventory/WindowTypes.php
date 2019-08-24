@@ -25,7 +25,11 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
 
-interface WindowTypes{
+final class WindowTypes{
+
+	private function __construct(){
+		//NOOP
+	}
 
 	public const NONE = -9;
 

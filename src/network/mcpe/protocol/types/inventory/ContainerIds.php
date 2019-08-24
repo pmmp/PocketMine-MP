@@ -23,7 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
-interface ContainerIds{
+final class ContainerIds{
+
+	private function __construct(){
+		//NOOP
+	}
 
 	public const NONE = -1;
 	public const INVENTORY = 0;

@@ -23,7 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-interface ItemIds{
+final class ItemIds{
+
+	private function __construct(){
+		//NOOP
+	}
 
 	public const LIT_BLAST_FURNACE = -214;
 	public const COMPOSTER = -213;

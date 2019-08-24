@@ -26,7 +26,11 @@ namespace pocketmine\block;
 /**
  * Constants for legacy metadata for various blocks.
  */
-interface BlockLegacyMetadata{
+final class BlockLegacyMetadata{
+
+	private function __construct(){
+		//NOOP
+	}
 
 	public const ANVIL_NORMAL = 0;
 	public const ANVIL_SLIGHTLY_DAMAGED = 4;
