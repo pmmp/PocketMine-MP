@@ -103,6 +103,13 @@ abstract class WorldProviderManager{
 	}
 
 	/**
+	 * @return string[]|WorldProvider[]
+	 */
+	public static function getAvailableProviders() : array{
+		return self::$providers;
+	}
+
+	/**
 	 * Returns a WorldProvider by name, or null if not found
 	 *
 	 * @param string $name
