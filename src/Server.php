@@ -209,6 +209,8 @@ class Server{
 	private $currentTPS = 20;
 	/** @var float */
 	private $currentUse = 0;
+	/** @var float */
+	private $startTime;
 
 	/** @var bool */
 	private $doTitleTick = true;
@@ -545,6 +547,13 @@ class Server{
 	 */
 	public function getTickUsageAverage() : float{
 		return round((array_sum($this->useAverage) / count($this->useAverage)) * 100, 2);
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getStartTime() : float{
+		return $this->startTime;
 	}
 
 	/**
@@ -970,6 +979,7 @@ class Server{
 			throw new \InvalidStateException("Only one server instance can exist at once");
 		}
 		self::$instance = $this;
+		$this->startTime = microtime(true);
 
 		$this->tickSleeper = new SleeperHandler();
 		$this->autoloader = $autoloader;
@@ -1285,7 +1295,7 @@ class Server{
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [$this->getGamemode()->getTranslationKey()]));
 
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
+			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - $this->startTime, 3)]));
 
 			//TODO: move console parts to a separate component
 			$consoleSender = new ConsoleCommandSender();
@@ -1736,7 +1746,7 @@ class Server{
 		$this->isRunning = false;
 
 		//Force minimum uptime to be >= 120 seconds, to reduce the impact of spammy crash loops
-		$spacing = ((int) \pocketmine\START_TIME) - time() + 120;
+		$spacing = ((int) $this->startTime) - time() + 120;
 		if($spacing > 0){
 			echo "--- Waiting $spacing seconds to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
 			sleep($spacing);

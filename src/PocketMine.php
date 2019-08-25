@@ -263,8 +263,6 @@ namespace pocketmine {
 				}
 			}
 
-			//TODO: move this to a Server field
-			define('pocketmine\START_TIME', microtime(true));
 			ThreadManager::init();
 			new Server($autoloader, $logger, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
 

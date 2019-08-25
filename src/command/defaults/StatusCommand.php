@@ -54,7 +54,7 @@ class StatusCommand extends VanillaCommand{
 		$server = $sender->getServer();
 		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::WHITE . "Server status" . TextFormat::GREEN . " ----");
 
-		$time = microtime(true) - \pocketmine\START_TIME;
+		$time = microtime(true) - $server->getStartTime();
 
 		$seconds = floor($time % 60);
 		$minutes = null;
