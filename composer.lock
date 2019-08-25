@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f4e9e3e4dfdd48390caf564839e8b46",
+    "content-hash": "eedc6357547d912c1cc4d47477573086",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -295,16 +295,16 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.1.9",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "8b3b1160679398387cb896fd5d06018413437dfa"
+                "reference": "ea71180bb494217abdb8867f4a0f1c353551b425"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/8b3b1160679398387cb896fd5d06018413437dfa",
-                "reference": "8b3b1160679398387cb896fd5d06018413437dfa",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/ea71180bb494217abdb8867f4a0f1c353551b425",
+                "reference": "ea71180bb494217abdb8867f4a0f1c353551b425",
                 "shasum": ""
             },
             "require": {
@@ -322,10 +322,10 @@
             ],
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
-                "source": "https://github.com/pmmp/BinaryUtils/tree/0.1.9",
+                "source": "https://github.com/pmmp/BinaryUtils/tree/master",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
-            "time": "2019-07-22T13:15:53+00:00"
+            "time": "2019-08-25T14:54:25+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -372,19 +372,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "54b907d01272020c96e6f203220ffdf6ca06f1f6"
+                "reference": "56cb637f904d8cce05d45ff275ee1634bb52e9c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/54b907d01272020c96e6f203220ffdf6ca06f1f6",
-                "reference": "54b907d01272020c96e6f203220ffdf6ca06f1f6",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/56cb637f904d8cce05d45ff275ee1634bb52e9c3",
+                "reference": "56cb637f904d8cce05d45ff275ee1634bb52e9c3",
                 "shasum": ""
             },
             "require": {
                 "ext-zlib": "*",
                 "php": ">=7.2.0",
                 "php-64bit": "*",
-                "pocketmine/binaryutils": "^0.1.9"
+                "pocketmine/binaryutils": "dev-master"
             },
             "type": "library",
             "autoload": {
@@ -405,7 +405,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2019-07-30T15:46:15+00:00"
+            "time": "2019-08-25T15:00:08+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -413,12 +413,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "fc5f701501fc4bc2010b07b06d3d712ffba94060"
+                "reference": "9b6e021dcecd6ac3e0fa11655d6b42c13c541e54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/fc5f701501fc4bc2010b07b06d3d712ffba94060",
-                "reference": "fc5f701501fc4bc2010b07b06d3d712ffba94060",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/9b6e021dcecd6ac3e0fa11655d6b42c13c541e54",
+                "reference": "9b6e021dcecd6ac3e0fa11655d6b42c13c541e54",
                 "shasum": ""
             },
             "require": {
@@ -428,7 +428,7 @@
                 "php": ">=7.2.0",
                 "php-64bit": "*",
                 "php-ipv6": "*",
-                "pocketmine/binaryutils": "^0.1.9",
+                "pocketmine/binaryutils": "dev-master",
                 "pocketmine/snooze": "^0.1.0",
                 "pocketmine/spl": "dev-master"
             },
@@ -446,7 +446,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-08-20T18:32:22+00:00"
+            "time": "2019-08-25T15:01:01+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -518,6 +518,7 @@
     "stability-flags": {
         "pocketmine/raklib": 20,
         "pocketmine/spl": 20,
+        "pocketmine/binaryutils": 20,
         "pocketmine/nbt": 20,
         "pocketmine/math": 20,
         "daverandom/callback-validator": 20
