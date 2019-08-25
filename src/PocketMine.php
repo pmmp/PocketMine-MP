@@ -193,8 +193,6 @@ namespace pocketmine {
 		$autoloader = new \BaseClassLoader();
 		$autoloader->register(false);
 
-		set_time_limit(0); //Who set it to 30 seconds?!?!
-
 		set_ini_entries();
 
 		define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'resources' . DIRECTORY_SEPARATOR);
