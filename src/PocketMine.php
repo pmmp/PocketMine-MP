@@ -122,6 +122,18 @@ namespace pocketmine {
 		return $messages;
 	}
 
+	function emit_performance_warnings(\Logger $logger){
+		if(extension_loaded("xdebug")){
+			$logger->warning("Xdebug extension is enabled. This has a major impact on performance.");
+		}
+		if(((int) ini_get('zend.assertions')) !== -1){
+			$logger->warning("Debugging assertions are enabled. This may degrade performance. To disable them, set `zend.assertions = -1` in php.ini.");
+		}
+		if(\Phar::running(true) === ""){
+			$logger->warning("Non-packaged installation detected. This will degrade autoloading speed and make startup times longer.");
+		}
+	}
+
 	function server(){
 		if(!empty($messages = check_platform_dependencies())){
 			echo PHP_EOL;
@@ -219,13 +231,7 @@ namespace pocketmine {
 		$logger = new MainLogger(\pocketmine\DATA . "server.log");
 		\GlobalLogger::set($logger);
 
-		if(extension_loaded("xdebug")){
-			$logger->warning(PHP_EOL . PHP_EOL . PHP_EOL . "\tYou are running " . \pocketmine\NAME . " with xdebug enabled. This has a major impact on performance." . PHP_EOL . PHP_EOL);
-		}
-
-		if(\Phar::running(true) === ""){
-			$logger->warning("Non-packaged " . \pocketmine\NAME . " installation detected. Consider using a phar in production for better performance.");
-		}
+		emit_performance_warnings($logger);
 
 		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
 		define('pocketmine\VERSION', $version->getFullVersion(true));

@@ -1070,10 +1070,6 @@ class Server{
 				$this->logger->warning(str_repeat("-", 40));
 			}
 
-			if(((int) ini_get('zend.assertions')) !== -1){
-				$this->logger->warning("Debugging assertions are enabled, this may impact on performance. To disable them, set `zend.assertions = -1` in php.ini.");
-			}
-
 			ini_set('assert.exception', '1');
 
 			if($this->logger instanceof MainLogger){
