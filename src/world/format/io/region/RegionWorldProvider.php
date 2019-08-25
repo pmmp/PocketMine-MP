@@ -41,6 +41,7 @@ use function scandir;
 use function strrpos;
 use function substr;
 use function time;
+use const DIRECTORY_SEPARATOR;
 use const SCANDIR_SORT_NONE;
 
 abstract class RegionWorldProvider extends BaseWorldProvider{
@@ -87,7 +88,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	protected $regions = [];
 
 	protected function loadLevelData() : WorldData{
-		return new JavaWorldData($this->getPath() . "level.dat");
+		return new JavaWorldData($this->getPath() . DIRECTORY_SEPARATOR . "level.dat");
 	}
 
 	public function doGarbageCollection() : void{

@@ -63,6 +63,7 @@ use function strlen;
 use function substr;
 use function trim;
 use function unpack;
+use const DIRECTORY_SEPARATOR;
 use const LEVELDB_ZLIB_RAW_COMPRESSION;
 
 class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
@@ -132,7 +133,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	protected function loadLevelData() : WorldData{
-		return new BedrockWorldData($this->getPath() . "level.dat");
+		return new BedrockWorldData($this->getPath() . DIRECTORY_SEPARATOR . "level.dat");
 	}
 
 	public function getWorldHeight() : int{
