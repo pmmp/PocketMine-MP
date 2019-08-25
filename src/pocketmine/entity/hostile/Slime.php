@@ -42,6 +42,7 @@ use pocketmine\level\biome\Biome;
 use pocketmine\level\generator\Flat;
 use pocketmine\level\particle\GenericParticle;
 use pocketmine\level\particle\Particle;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
@@ -79,7 +80,11 @@ class Slime extends Monster{
 		$this->moveHelper = new EntitySlimeMoveHelper($this);
 
 		if($this->namedtag->hasTag("Size", IntTag::class)){
+			// Before Altay used IntTag.
 			$this->setSlimeSize($this->namedtag->getInt("Size"));
+			$this->namedtag->removeTag("Size");
+		}elseif($this->namedtag->hasTag("Size", ByteTag::class)){
+			$this->setSlimeSize($this->namedtag->getByte("Size"));
 		}else{
 			$i = $this->random->nextBoundedInt(3);
 
@@ -120,7 +125,7 @@ class Slime extends Monster{
 	public function saveNBT() : void{
 		parent::saveNBT();
 
-		$this->namedtag->setInt("Size", $this->getSlimeSize());
+		$this->namedtag->setByte("Size", $this->getSlimeSize());
 		$this->namedtag->setByte("wasOnGround", intval($this->wasOnGround));
 	}
 
