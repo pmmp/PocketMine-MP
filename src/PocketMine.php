@@ -194,21 +194,21 @@ namespace pocketmine {
 
 		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
 
-		define('pocketmine\DATA', isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR);
+		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR;
 		define('pocketmine\PLUGIN_PATH', isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
-		if(!file_exists(\pocketmine\DATA)){
-			mkdir(\pocketmine\DATA, 0777, true);
+		if(!file_exists($dataPath)){
+			mkdir($dataPath, 0777, true);
 		}
 
-		define('pocketmine\LOCK_FILE_PATH', \pocketmine\DATA . 'server.lock');
+		define('pocketmine\LOCK_FILE_PATH', $dataPath . 'server.lock');
 		define('pocketmine\LOCK_FILE', fopen(\pocketmine\LOCK_FILE_PATH, "a+b"));
 		if(!flock(\pocketmine\LOCK_FILE, LOCK_EX | LOCK_NB)){
 			//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
 			//other server wrote its PID and released exclusive lock before we get our lock
 			flock(\pocketmine\LOCK_FILE, LOCK_SH);
 			$pid = stream_get_contents(\pocketmine\LOCK_FILE);
-			critical_error("Another " . \pocketmine\NAME . " instance (PID $pid) is already using this folder (" . realpath(\pocketmine\DATA) . ").");
+			critical_error("Another " . \pocketmine\NAME . " instance (PID $pid) is already using this folder (" . realpath($dataPath) . ").");
 			critical_error("Please stop the other server first before running a new one.");
 			exit(1);
 		}
@@ -228,7 +228,7 @@ namespace pocketmine {
 			Terminal::init();
 		}
 
-		$logger = new MainLogger(\pocketmine\DATA . "server.log");
+		$logger = new MainLogger($dataPath . "server.log");
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);
@@ -261,8 +261,8 @@ namespace pocketmine {
 
 		$exitCode = 0;
 		do{
-			if(!file_exists(\pocketmine\DATA . "server.properties") and !isset($opts["no-wizard"])){
-				$installer = new SetupWizard(\pocketmine\DATA);
+			if(!file_exists($dataPath . "server.properties") and !isset($opts["no-wizard"])){
+				$installer = new SetupWizard($dataPath);
 				if(!$installer->run()){
 					$exitCode = -1;
 					break;
@@ -270,7 +270,7 @@ namespace pocketmine {
 			}
 
 			ThreadManager::init();
-			new Server($autoloader, $logger, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
+			new Server($autoloader, $logger, $dataPath, \pocketmine\PLUGIN_PATH);
 
 			$logger->info("Stopping other threads");
 
