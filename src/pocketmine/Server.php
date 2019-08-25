@@ -1565,8 +1565,6 @@ class Server{
 				return;
 			}
 
-			ini_set('assert.exception', '1');
-
 			if($this->logger instanceof MainLogger){
 				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
 			}
