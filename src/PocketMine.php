@@ -201,8 +201,7 @@ namespace pocketmine {
 			mkdir($dataPath, 0777, true);
 		}
 
-		define('pocketmine\LOCK_FILE_PATH', $dataPath . 'server.lock');
-		define('pocketmine\LOCK_FILE', fopen(\pocketmine\LOCK_FILE_PATH, "a+b"));
+		define('pocketmine\LOCK_FILE', fopen($dataPath . 'server.lock', "a+b"));
 		if(!flock(\pocketmine\LOCK_FILE, LOCK_EX | LOCK_NB)){
 			//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
 			//other server wrote its PID and released exclusive lock before we get our lock
