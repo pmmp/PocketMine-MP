@@ -136,6 +136,14 @@ namespace pocketmine {
 		}
 	}
 
+	function set_ini_entries(){
+		ini_set("allow_url_fopen", '1');
+		ini_set("display_errors", '1');
+		ini_set("display_startup_errors", '1');
+		ini_set("default_charset", "utf-8");
+		@ini_set("opcache.mmap_base", bin2hex(random_bytes(8))); //Fix OPCache address errors
+	}
+
 	function server(){
 		if(!empty($messages = check_platform_dependencies())){
 			echo PHP_EOL;
@@ -208,12 +216,8 @@ namespace pocketmine {
 
 
 		@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
-		@ini_set("opcache.mmap_base", bin2hex(random_bytes(8))); //Fix OPCache address errors
 
-		ini_set("allow_url_fopen", '1');
-		ini_set("display_errors", '1');
-		ini_set("display_startup_errors", '1');
-		ini_set("default_charset", "utf-8");
+		set_ini_entries();
 
 		define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'pocketmine' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR);
 
