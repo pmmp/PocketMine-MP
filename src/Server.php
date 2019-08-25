@@ -1034,7 +1034,10 @@ class Server{
 				"language" => "eng"
 			]);
 
-			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
+			$debugLogLevel = (int) $this->getProperty("debug.level", 1);
+			if($this->logger instanceof MainLogger){
+				$this->logger->setLogDebug($debugLogLevel > 1);
+			}
 
 			$this->forceLanguage = (bool) $this->getProperty("settings.force-language", false);
 			$selectedLang = $this->getConfigString("language", $this->getProperty("settings.language", Language::FALLBACK_LANGUAGE));
@@ -1072,10 +1075,6 @@ class Server{
 			}
 
 			ini_set('assert.exception', '1');
-
-			if($this->logger instanceof MainLogger){
-				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
-			}
 
 			$this->memoryManager = new MemoryManager($this);
 
@@ -1139,9 +1138,7 @@ class Server{
 				$this->setConfigInt("difficulty", World::DIFFICULTY_HARD);
 			}
 
-			if(\pocketmine\DEBUG >= 0){
-				@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
-			}
+			@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 
 			define("BOOTUP_RANDOM", random_bytes(16));
 			$this->serverID = Utils::getMachineUniqueId($this->getIp() . $this->getPort());
