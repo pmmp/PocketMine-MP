@@ -191,8 +191,6 @@ namespace pocketmine {
 		$autoloader = new \BaseClassLoader();
 		$autoloader->register(false);
 
-		set_time_limit(0); //Who set it to 30 seconds?!?!
-
 		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
 		define('pocketmine\VERSION', $version->getFullVersion(true));
 
