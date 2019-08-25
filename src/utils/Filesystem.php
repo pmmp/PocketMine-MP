@@ -23,18 +23,33 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function fclose;
+use function fflush;
+use function flock;
+use function fopen;
+use function ftruncate;
+use function fwrite;
+use function getmypid;
 use function is_dir;
 use function is_file;
 use function ltrim;
+use function preg_match;
+use function realpath;
 use function rmdir;
 use function rtrim;
 use function scandir;
 use function str_replace;
+use function stream_get_contents;
 use function strpos;
 use function unlink;
+use const LOCK_EX;
+use const LOCK_NB;
+use const LOCK_SH;
 use const SCANDIR_SORT_NONE;
 
 final class Filesystem{
+	/** @var resource[] */
+	private static $lockFileHandles = [];
 
 	private function __construct(){
 		//NOOP
@@ -74,5 +89,40 @@ final class Filesystem{
 			}
 		}
 		return $result;
+	}
+
+	public static function createLockFile(string $lockFilePath) : ?int{
+		$resource = fopen($lockFilePath, "a+b");
+		if($resource === false){
+			throw new \InvalidArgumentException("Invalid lock file path");
+		}
+		if(!flock($resource, LOCK_EX | LOCK_NB)){
+			//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
+			//other server wrote its PID and released exclusive lock before we get our lock
+			flock($resource, LOCK_SH);
+			$pid = stream_get_contents($resource);
+			if(preg_match('/^\d+$/', $pid) === 1){
+				return (int) $pid;
+			}
+			return -1;
+		}
+		ftruncate($resource, 0);
+		fwrite($resource, (string) getmypid());
+		fflush($resource);
+		flock($resource, LOCK_SH); //prevent acquiring an exclusive lock from another process, but allow reading
+		self::$lockFileHandles[realpath($lockFilePath)] = $resource; //keep the resource alive to preserve the lock
+		return null;
+	}
+
+	public static function releaseLockFile(string $lockFilePath) : void{
+		$lockFilePath = realpath($lockFilePath);
+		if($lockFilePath === false){
+			throw new \InvalidArgumentException("Invalid lock file path");
+		}
+		if(isset(self::$lockFileHandles[$lockFilePath])){
+			fclose(self::$lockFileHandles[$lockFilePath]);
+			unset(self::$lockFileHandles[$lockFilePath]);
+			@unlink($lockFilePath);
+		}
 	}
 }
