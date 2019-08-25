@@ -262,7 +262,7 @@ namespace pocketmine {
 		$exitCode = 0;
 		do{
 			if(!file_exists(\pocketmine\DATA . "server.properties") and !isset($opts["no-wizard"])){
-				$installer = new SetupWizard();
+				$installer = new SetupWizard(\pocketmine\DATA);
 				if(!$installer->run()){
 					$exitCode = -1;
 					break;

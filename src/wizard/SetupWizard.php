@@ -47,9 +47,11 @@ class SetupWizard{
 
 	/** @var Language */
 	private $lang;
+	/** @var string */
+	private $dataPath;
 
-	public function __construct(){
-
+	public function __construct(string $dataPath){
+		$this->dataPath = $dataPath;
 	}
 
 	public function run() : bool{
@@ -84,7 +86,7 @@ class SetupWizard{
 		}
 
 		//this has to happen here to prevent user avoiding agreeing to license
-		$config = new Config(\pocketmine\DATA . "server.properties", Config::PROPERTIES);
+		$config = new Config($this->dataPath . "/server.properties", Config::PROPERTIES);
 		$config->set("language", $lang);
 		$config->save();
 
@@ -132,7 +134,7 @@ LICENSE;
 	}
 
 	private function generateBaseConfig() : void{
-		$config = new Config(\pocketmine\DATA . "server.properties", Config::PROPERTIES);
+		$config = new Config($this->dataPath . "/server.properties", Config::PROPERTIES);
 
 		$config->set("motd", ($name = $this->getInput($this->lang->get("name_your_server"), self::DEFAULT_NAME)));
 		$config->set("server-name", $name);
@@ -169,14 +171,14 @@ LICENSE;
 		if($op === ""){
 			$this->error($this->lang->get("op_warning"));
 		}else{
-			$ops = new Config(\pocketmine\DATA . "ops.txt", Config::ENUM);
+			$ops = new Config($this->dataPath . "/ops.txt", Config::ENUM);
 			$ops->set($op, true);
 			$ops->save();
 		}
 
 		$this->message($this->lang->get("whitelist_info"));
 
-		$config = new Config(\pocketmine\DATA . "server.properties", Config::PROPERTIES);
+		$config = new Config($this->dataPath . "/server.properties", Config::PROPERTIES);
 		if(strtolower($this->getInput($this->lang->get("whitelist_enable"), "n", "y/N")) === "y"){
 			$this->error($this->lang->get("whitelist_warning"));
 			$config->set("white-list", true);
@@ -187,7 +189,7 @@ LICENSE;
 	}
 
 	private function networkFunctions() : void{
-		$config = new Config(\pocketmine\DATA . "server.properties", Config::PROPERTIES);
+		$config = new Config($this->dataPath . "/server.properties", Config::PROPERTIES);
 		$this->error($this->lang->get("query_warning1"));
 		$this->error($this->lang->get("query_warning2"));
 		if(strtolower($this->getInput($this->lang->get("query_disable"), "n", "y/N")) === "y"){
