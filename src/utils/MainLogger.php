@@ -167,7 +167,7 @@ class MainLogger extends \AttachableThreadedLogger{
 			//pass
 		}
 		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
-		$errfile = Utils::cleanPath($errfile);
+		$errfile = Filesystem::cleanPath($errfile);
 
 		$message = get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
 		$stack = Utils::printableTrace($trace);

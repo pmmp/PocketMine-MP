@@ -83,6 +83,7 @@ use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Config;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Process;
@@ -1651,7 +1652,7 @@ class Server{
 
 		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
 
-		$errfile = Utils::cleanPath($errfile);
+		$errfile = Filesystem::cleanPath($errfile);
 
 		$this->logger->logException($e, $trace);
 

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\world\generator\GeneratorManager;
 use function basename;
@@ -98,7 +99,7 @@ class FormatConverter{
 		$convertedOutput = rtrim($this->oldProvider->getPath(), "/\\") . "_converted" . DIRECTORY_SEPARATOR;
 		if(file_exists($convertedOutput)){
 			$this->logger->info("Found previous conversion attempt, deleting...");
-			Utils::recursiveUnlink($convertedOutput);
+			Filesystem::recursiveUnlink($convertedOutput);
 		}
 		$this->newProvider::generate($convertedOutput, $data->getName(), $data->getSeed(), GeneratorManager::getGenerator($data->getGenerator()), $data->getGeneratorOptions());
 

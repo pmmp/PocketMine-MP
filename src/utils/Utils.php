@@ -50,8 +50,6 @@ use function getenv;
 use function gettype;
 use function implode;
 use function is_array;
-use function is_dir;
-use function is_file;
 use function is_object;
 use function is_readable;
 use function is_string;
@@ -68,10 +66,7 @@ use function preg_grep;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
-use function rmdir;
-use function scandir;
 use function str_pad;
-use function str_replace;
 use function str_split;
 use function stripos;
 use function strlen;
@@ -79,13 +74,11 @@ use function strpos;
 use function substr;
 use function sys_get_temp_dir;
 use function trim;
-use function unlink;
 use function xdebug_get_function_stack;
 use const PHP_EOL;
 use const PHP_INT_MAX;
 use const PHP_INT_SIZE;
 use const PHP_MAXPATHLEN;
-use const SCANDIR_SORT_NONE;
 use const STR_PAD_LEFT;
 use const STR_PAD_RIGHT;
 
@@ -123,7 +116,7 @@ class Utils{
 			//non-class function
 			return $func->getName();
 		}
-		return "closure@" . self::cleanPath($func->getFileName()) . "#L" . $func->getStartLine();
+		return "closure@" . Filesystem::cleanPath($func->getFileName()) . "#L" . $func->getStartLine();
 	}
 
 	/**
@@ -137,7 +130,7 @@ class Utils{
 	public static function getNiceClassName(object $obj) : string{
 		$reflect = new \ReflectionClass($obj);
 		if($reflect->isAnonymous()){
-			return "anonymous@" . self::cleanPath($reflect->getFileName()) . "#L" . $reflect->getStartLine();
+			return "anonymous@" . Filesystem::cleanPath($reflect->getFileName()) . "#L" . $reflect->getStartLine();
 		}
 
 		return $reflect->getName();
@@ -442,7 +435,7 @@ class Utils{
 					return gettype($value) . " " . Utils::printable((string) $value);
 				}, $args));
 			}
-			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? self::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
+			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
 		}
 		return $messages;
 	}
@@ -473,24 +466,6 @@ class Utils{
 	 */
 	public static function printableCurrentTrace(int $skipFrames = 0) : array{
 		return self::printableTrace(self::currentTrace(++$skipFrames));
-	}
-
-	public static function cleanPath($path){
-		$result = str_replace(["\\", ".php", "phar://"], ["/", "", ""], $path);
-
-		//remove relative paths
-		//TODO: make these paths dynamic so they can be unit-tested against
-		static $cleanPaths = [
-			\pocketmine\PLUGIN_PATH => "plugins", //this has to come BEFORE \pocketmine\PATH because it's inside that by default on src installations
-			\pocketmine\PATH => ""
-		];
-		foreach($cleanPaths as $cleanPath => $replacement){
-			$cleanPath = rtrim(str_replace(["\\", "phar://"], ["/", ""], $cleanPath), "/");
-			if(strpos($result, $cleanPath) === 0){
-				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
-			}
-		}
-		return $result;
 	}
 
 	/**
@@ -540,24 +515,6 @@ class Utils{
 	public static function validateCallableSignature(callable $signature, callable $subject) : void{
 		if(!($sigType = CallbackType::createFromCallable($signature))->isSatisfiedBy($subject)){
 			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $sigType . "`");
-		}
-	}
-
-	public static function recursiveUnlink(string $dir) : void{
-		if(is_dir($dir)){
-			$objects = scandir($dir, SCANDIR_SORT_NONE);
-			foreach($objects as $object){
-				if($object !== "." and $object !== ".."){
-					if(is_dir($dir . "/" . $object)){
-						self::recursiveUnlink($dir . "/" . $object);
-					}else{
-						unlink($dir . "/" . $object);
-					}
-				}
-			}
-			rmdir($dir);
-		}elseif(is_file($dir)){
-			unlink($dir);
 		}
 	}
 

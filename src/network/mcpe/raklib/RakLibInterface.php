@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
@@ -156,7 +157,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 				$logger->error("Bad packet (error ID $errorId): " . $e->getMessage());
 
 				//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
-				$logger->debug("Origin: " . Utils::cleanPath($e->getFile()) . "(" . $e->getLine() . ")");
+				$logger->debug("Origin: " . Filesystem::cleanPath($e->getFile()) . "(" . $e->getLine() . ")");
 				foreach(Utils::printableTrace($e->getTrace()) as $frame){
 					$logger->debug($frame);
 				}
