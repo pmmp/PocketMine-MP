@@ -131,7 +131,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	 * @return string
 	 */
 	protected function pathToRegion(int $regionX, int $regionZ) : string{
-		return $this->path . "region/r.$regionX.$regionZ." . static::getRegionFileExtension();
+		return $this->path . "/region/r.$regionX.$regionZ." . static::getRegionFileExtension();
 	}
 
 	/**
