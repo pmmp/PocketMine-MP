@@ -26,10 +26,9 @@ namespace pocketmine\world;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\utils\Limits;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\utils\SubChunkIteratorManager;
-use const INT32_MAX;
-use const INT32_MIN;
 
 class SimpleChunkManager implements ChunkManager{
 
@@ -102,9 +101,9 @@ class SimpleChunkManager implements ChunkManager{
 
 	public function isInWorld(int $x, int $y, int $z) : bool{
 		return (
-			$x <= INT32_MAX and $x >= INT32_MIN and
+			$x <= Limits::INT32_MAX and $x >= Limits::INT32_MIN and
 			$y < $this->worldHeight and $y >= 0 and
-			$z <= INT32_MAX and $z >= INT32_MIN
+			$z <= Limits::INT32_MAX and $z >= Limits::INT32_MIN
 		);
 	}
 }

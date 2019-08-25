@@ -21,11 +21,6 @@
 
 declare(strict_types=1);
 
-namespace {
-	const INT32_MIN = -0x80000000;
-	const INT32_MAX = 0x7fffffff;
-}
-
 namespace pocketmine {
 
 	use pocketmine\thread\ThreadManager;

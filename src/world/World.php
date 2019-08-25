@@ -60,6 +60,7 @@ use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\Limits;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\format\Chunk;
@@ -100,8 +101,6 @@ use function mt_rand;
 use function spl_object_id;
 use function strtolower;
 use function trim;
-use const INT32_MAX;
-use const INT32_MIN;
 use const M_PI;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
@@ -1260,9 +1259,9 @@ class World implements ChunkManager{
 
 	public function isInWorld(int $x, int $y, int $z) : bool{
 		return (
-			$x <= INT32_MAX and $x >= INT32_MIN and
+			$x <= Limits::INT32_MAX and $x >= Limits::INT32_MIN and
 			$y < $this->worldHeight and $y >= 0 and
-			$z <= INT32_MAX and $z >= INT32_MIN
+			$z <= Limits::INT32_MAX and $z >= Limits::INT32_MIN
 		);
 	}
 

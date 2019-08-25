@@ -29,6 +29,7 @@ use pocketmine\event\world\WorldLoadEvent;
 use pocketmine\event\world\WorldUnloadEvent;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\Limits;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
@@ -50,8 +51,6 @@ use function random_int;
 use function round;
 use function sprintf;
 use function trim;
-use const INT32_MAX;
-use const INT32_MIN;
 
 class WorldManager{
 	/** @var World[] */
@@ -276,7 +275,7 @@ class WorldManager{
 			return false;
 		}
 
-		$seed = $seed ?? random_int(INT32_MIN, INT32_MAX);
+		$seed = $seed ?? random_int(Limits::INT32_MIN, Limits::INT32_MAX);
 
 		Utils::testValidInstance($generator, Generator::class);
 

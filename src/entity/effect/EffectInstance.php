@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\entity\effect;
 
 use pocketmine\utils\Color;
+use pocketmine\utils\Limits;
 use function max;
-use const INT32_MAX;
 
 class EffectInstance{
 	/** @var Effect */
@@ -89,8 +89,8 @@ class EffectInstance{
 	 * @return $this
 	 */
 	public function setDuration(int $duration) : EffectInstance{
-		if($duration < 0 or $duration > INT32_MAX){
-			throw new \InvalidArgumentException("Effect duration must be in range 0 - " . INT32_MAX . ", got $duration");
+		if($duration < 0 or $duration > Limits::INT32_MAX){
+			throw new \InvalidArgumentException("Effect duration must be in range 0 - " . Limits::INT32_MAX . ", got $duration");
 		}
 		$this->duration = $duration;
 

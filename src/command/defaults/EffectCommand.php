@@ -28,10 +28,10 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use function count;
 use function strtolower;
-use const INT32_MAX;
 
 class EffectCommand extends VanillaCommand{
 
@@ -78,7 +78,7 @@ class EffectCommand extends VanillaCommand{
 		$amplification = 0;
 
 		if(count($args) >= 3){
-			if(($d = $this->getBoundedInt($sender, $args[2], 0, (int) (INT32_MAX / 20))) === null){
+			if(($d = $this->getBoundedInt($sender, $args[2], 0, (int) (Limits::INT32_MAX / 20))) === null){
 				return false;
 			}
 			$duration = $d * 20; //ticks

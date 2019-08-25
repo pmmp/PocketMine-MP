@@ -31,6 +31,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Limits;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
@@ -112,7 +113,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
 
-		$version = $worldData->getInt("StorageVersion", INT32_MAX, true);
+		$version = $worldData->getInt("StorageVersion", Limits::INT32_MAX, true);
 		if($version > self::CURRENT_STORAGE_VERSION){
 			throw new UnsupportedWorldFormatException("LevelDB world format version $version is currently unsupported");
 		}

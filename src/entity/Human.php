@@ -49,6 +49,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\player\Player;
+use pocketmine\utils\Limits;
 use pocketmine\utils\UUID;
 use pocketmine\world\sound\TotemUseSound;
 use pocketmine\world\World;
@@ -59,8 +60,6 @@ use function in_array;
 use function min;
 use function random_int;
 use function strlen;
-use const INT32_MAX;
-use const INT32_MIN;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
 
@@ -274,7 +273,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if($nbt->hasTag("XpSeed", IntTag::class)){
 			$this->xpSeed = $nbt->getInt("XpSeed");
 		}else{
-			$this->xpSeed = random_int(INT32_MIN, INT32_MAX);
+			$this->xpSeed = random_int(Limits::INT32_MIN, Limits::INT32_MAX);
 		}
 	}
 
