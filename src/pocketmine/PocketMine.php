@@ -280,9 +280,7 @@ namespace pocketmine {
 			usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 
 			if(ThreadManager::getInstance()->stopAll() > 0){
-				if(\pocketmine\DEBUG > 1){
-					echo "Some threads could not be stopped, performing a force-kill" . PHP_EOL . PHP_EOL;
-				}
+				$logger->debug("Some threads could not be stopped, performing a force-kill");
 				Utils::kill(getmypid());
 			}
 		}while(false);
