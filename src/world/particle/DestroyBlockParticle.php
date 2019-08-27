@@ -29,14 +29,14 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class DestroyBlockParticle implements Particle{
 
-	/** @var int */
-	protected $data;
+	/** @var Block */
+	private $block;
 
 	public function __construct(Block $b){
-		$this->data = $b->getRuntimeId();
+		$this->block = $b;
 	}
 
 	public function encode(Vector3 $pos){
-		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DESTROY, $this->data, $pos);
+		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DESTROY, $this->block->getRuntimeId(), $pos);
 	}
 }
