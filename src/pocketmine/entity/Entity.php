@@ -1595,7 +1595,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 */
 	public function applyEntityCollision(Entity $entity) : void{
 		if(!$this->isRiding() and !$entity->isRiding()){
-			if(!($entity instanceof Player and $entity->isSpectator()) and !($this instanceof Player and $this->isSpectator())){
+			if(!($entity instanceof Player and $entity->isSpectator())){
 				$d0 = $entity->x - $this->x;
 				$d1 = $entity->z - $this->z;
 				$d2 = abs(max($d0, $d1));
