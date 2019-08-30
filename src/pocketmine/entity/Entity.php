@@ -83,6 +83,7 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
+use pocketmine\level\sound\PlaySound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
@@ -101,6 +102,7 @@ use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
 use pocketmine\network\mcpe\protocol\SetActorLinkPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
+use pocketmine\network\mcpe\protocol\StopSoundPacket;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\Player;
@@ -2532,6 +2534,29 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->motion->x += $x;
 		$this->motion->y += $y;
 		$this->motion->z += $z;
+	}
+
+	/**
+	 * @param string     $sound
+	 * @param float      $volume
+	 * @param float      $pitch
+	 * @param array|null $targets
+	 */
+	public function playSound(string $sound, float $volume = 1.0, float $pitch = 1.0, array $targets = null) : void{
+		$this->level->addSound(new PlaySound($this, $sound, $volume, $pitch), $targets ?? null);
+	}
+
+	/**
+	 * @param string     $sound
+	 * @param bool       $stopAll
+	 * @param array|null $targets
+	 */
+	public function stopSound(string $sound, bool $stopAll = false, array $targets = null) : void{
+		$pk = new StopSoundPacket();
+		$pk->soundName = $sound;
+		$pk->stopAll = $stopAll;
+
+		$this->server->broadcastPacket($targets ?? $this->level->getViewersForPosition($this), $pk);
 	}
 
 	public function isOnGround() : bool{

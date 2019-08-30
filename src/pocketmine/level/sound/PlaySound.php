@@ -36,8 +36,9 @@ class PlaySound extends Sound{
 	/** @var float */
 	protected $pitch = 1;
 
-	public function __construct(Vector3 $pos, string $soundName, float $volume = 100, float $pitch = 1){
+	public function __construct(Vector3 $pos, string $soundName, float $volume = 1.0, float $pitch = 1.0){
 		parent::__construct($pos->x, $pos->y, $pos->z);
+
 		$this->soundName = $soundName;
 		$this->volume = $volume;
 		$this->pitch = $pitch;
