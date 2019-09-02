@@ -28,7 +28,7 @@ class Shield extends Item{
         parent::__construct(self::SHIELD, $meta, "Shield");
     }
 
-    public function getMaxStackSize(): int{
+    public function getMaxStackSize() : int{
         return 1;
     }
 }
