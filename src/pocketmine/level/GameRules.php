@@ -40,6 +40,7 @@ class GameRules{
 	public const RULE_DO_MOB_LOOT = "doMobLoot";
 	public const RULE_DO_MOB_SPAWNING = "doMobSpawning";
 	public const RULE_DO_TILE_DROPS = "doTileDrops";
+	public const RULE_DO_IMMEDIATE_RESPAWN = "doimmediaterespawn";
 	public const RULE_DO_WEATHER_CYCLE = "doWeatherCycle";
 	public const RULE_DROWNING_DAMAGE = "drowningdamage";
 	public const RULE_FALL_DAMAGE = "falldamage";
@@ -73,6 +74,7 @@ class GameRules{
 		$this->setBool(self::RULE_DO_MOB_LOOT, true);
 		$this->setBool(self::RULE_DO_MOB_SPAWNING, false);
 		$this->setBool(self::RULE_DO_TILE_DROPS, true);
+		$this->setBool(self::RULE_DO_IMMEDIATE_RESPAWN, false);
 		$this->setBool(self::RULE_DO_WEATHER_CYCLE, true);
 		$this->setBool(self::RULE_DROWNING_DAMAGE, true);
 		$this->setBool(self::RULE_FALL_DAMAGE, true);
