@@ -45,7 +45,7 @@ class SaveCommand extends VanillaCommand{
 			return true;
 		}
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.save.start"));
+		Command::broadcastCommandMessage($sender, new TranslationContainer("command.save.start"));
 		$start = microtime(true);
 
 		foreach($sender->getServer()->getOnlinePlayers() as $player){
@@ -56,7 +56,7 @@ class SaveCommand extends VanillaCommand{
 			$level->save(true);
 		}
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.save.success", [round(microtime(true) - $start, 3)]));
+		Command::broadcastCommandMessage($sender, new TranslationContainer("command.save.success", [round(microtime(true) - $start, 3)]));
 
 		return true;
 	}
