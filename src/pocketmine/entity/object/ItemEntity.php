@@ -23,11 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
+use pocketmine\block\Water;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\Player;
@@ -118,6 +120,28 @@ class ItemEntity extends Entity{
 
 	protected function applyDragBeforeGravity() : bool{
 		return true;
+	}
+
+	protected function applyGravity() : void{
+		$bb = $this->getBoundingBox();
+		$waterCount = 0;
+
+		for($j = 0; $j < 5; ++$j){
+			$d1 = $bb->minY + ($bb->maxY - $bb->minY) * $j / 5 + 0.4;
+			$d3 = $bb->minY + ($bb->maxY - $bb->minY) * ($j + 1) / 5 + 1;
+
+			$bb2 = new AxisAlignedBB($bb->minX, $d1, $bb->minZ, $bb->maxX, $d3, $bb->maxZ);
+
+			if($this->level->isLiquidInBoundingBox($bb2, new Water())){
+				$waterCount += 0.2;
+			}
+		}
+
+		if($waterCount > 0){
+			$this->motion->y += 0.006 * ($waterCount * 2 - 1);
+		}else{
+			$this->motion->y -= $this->gravity;
+		}
 	}
 
 	public function saveNBT() : void{
