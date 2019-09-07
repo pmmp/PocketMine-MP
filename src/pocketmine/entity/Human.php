@@ -620,17 +620,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$this->setNameTag($this->namedtag->getString("NameTag"));
 		}
 
-		$skin = $this->namedtag->getCompoundTag("Skin");
-		if($skin !== null){
-			$this->setSkin(new Skin(
-				$skin->getString("Name"),
-				$skin->hasTag("Data", StringTag::class) ? $skin->getString("Data") : $skin->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
-				$skin->hasTag("CapeData", ByteArrayTag::class) ? $skin->getByteArray("CapeData", "") : $skin->getString("CapeData", ""),
-				$skin->getString("GeometryName", ""),
-				$skin->hasTag("GeometryData", ByteArrayTag::class) ? $skin->getByteArray("GeometryData", "") : $skin->getString("GeometryData", "")
-			));
-		}
-
 		$this->uuid = UUID::fromData((string) $this->getId(), $this->skin->getSkinData(), $this->getNameTag());
 	}
 
