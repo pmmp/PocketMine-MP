@@ -26,10 +26,17 @@ namespace pocketmine\world\particle;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
+use pocketmine\utils\Color;
 
 class InstantEnchantParticle implements Particle{
+	/** @var Color */
+	private $color;
+
+	public function __construct(Color $color){
+		$this->color = $color;
+	}
 
 	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::MOB_SPELL_INSTANTANEOUS, 0, $pos);
+		return LevelEventPacket::standardParticle(ParticleIds::MOB_SPELL_INSTANTANEOUS, $this->color->toARGB(), $pos);
 	}
 }
