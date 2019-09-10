@@ -189,14 +189,6 @@ class ItemEntity extends Entity{
 		}
 	}
 
-	protected function checkEntityCollision() : void{
-
-	}
-
-	public function onCollideWithEntity(Entity $entity) : void{
-
-	}
-
 	/**
 	 * @return Item
 	 */
