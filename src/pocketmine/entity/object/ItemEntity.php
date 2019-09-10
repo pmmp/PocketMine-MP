@@ -63,6 +63,7 @@ class ItemEntity extends Entity{
 		parent::initEntity();
 
 		$this->setMaxHealth(5);
+		$this->setImmobile(true);
 		$this->setHealth($this->namedtag->getShort("Health", (int) $this->getHealth()));
 		$this->age = $this->namedtag->getShort("Age", $this->age);
 		$this->pickupDelay = $this->namedtag->getShort("PickupDelay", $this->pickupDelay);
@@ -112,6 +113,10 @@ class ItemEntity extends Entity{
 		return $hasUpdate;
 	}
 
+	protected function getDefaultDrag() : float{
+		return 0.02;
+	}
+
 	protected function tryChangeMovement() : void{
 		$this->checkObstruction($this->x, $this->y, $this->z);
 		parent::tryChangeMovement();
@@ -137,7 +142,7 @@ class ItemEntity extends Entity{
 		}
 
 		if($waterCount > 0){
-			$this->motion->y += 0.006 * ($waterCount * 2 - 1);
+			$this->motion->y += 0.002 * ($waterCount * 2 - 1);
 		}else{
 			$this->motion->y -= $this->gravity;
 		}
