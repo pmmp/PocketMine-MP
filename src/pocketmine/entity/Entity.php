@@ -1919,7 +1919,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function mountEntity(Entity $entity, int $seatNumber = 0) : bool{
-		if($entity !== $this and count($entity->passengers) < $entity->getSeatCount()){
+		if($this->getRidingEntity() == null and $entity !== $this and count($entity->passengers) < $entity->getSeatCount()){
 			if(!isset($entity->passengers[$seatNumber])){
 
 				if($seatNumber === 0){
