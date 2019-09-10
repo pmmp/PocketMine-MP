@@ -30,6 +30,7 @@ use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\Player;
@@ -54,7 +55,7 @@ class ItemEntity extends Entity{
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
 
-	public $canCollide = false;
+	public $canCollide = true;
 
 	/** @var int */
 	protected $age = 0;
@@ -95,6 +96,32 @@ class ItemEntity extends Entity{
 			$this->pickupDelay -= $tickDiff;
 			if($this->pickupDelay < 0){
 				$this->pickupDelay = 0;
+			}
+
+			if($this->ticksLived % 60 === 0){
+				foreach($this->level->getCollidingEntities($this->getBoundingBox()->expandedCopy(1, 1, 1), $this) as $entity){
+					if($entity instanceof ItemEntity){
+						$item = $this->getItem();
+						if($item->getCount() < $item->getMaxStackSize()){
+							if($entity->getItem()->equals($item, true, true)){
+								$nextAmount = $item->getCount() + $entity->getItem()->getCount();
+								if($nextAmount <= $item->getMaxStackSize()){
+									if($this->ticksLived > $entity->ticksLived){
+										$entity->flagForDespawn();
+
+										$item->setCount($nextAmount);
+										$this->broadcastEntityEvent(ActorEventPacket::ITEM_ENTITY_MERGE, $nextAmount);
+									}else{
+										$this->flagForDespawn();
+
+										$entity->getItem()->setCount($nextAmount);
+										$entity->broadcastEntityEvent(ActorEventPacket::ITEM_ENTITY_MERGE, $nextAmount);
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 
 			$this->age += $tickDiff;
@@ -162,6 +189,14 @@ class ItemEntity extends Entity{
 		}
 	}
 
+	protected function checkEntityCollision() : void{
+
+	}
+
+	public function onCollideWithEntity(Entity $entity) : void{
+
+	}
+
 	/**
 	 * @return Item
 	 */
@@ -170,11 +205,7 @@ class ItemEntity extends Entity{
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
-		return false;
-	}
-
-	public function canBeCollidedWith() : bool{
-		return false;
+		return parent::canCollideWith($entity) and $entity instanceof ItemEntity;
 	}
 
 	/**
