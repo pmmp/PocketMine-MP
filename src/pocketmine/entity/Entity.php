@@ -842,11 +842,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function getRidingEntity() : ?Entity{
-		if($this->ridingEid !== null){
-			return $this->server->findEntity($this->ridingEid);
-		}else{
-			return null;
-		}
+		return $this->ridingEid !== null ? $this->server->findEntity($this->ridingEid) : null;
 	}
 
 	public function setRidingEntity(?Entity $ridingEntity = null) : void{
@@ -858,11 +854,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function getRiddenByEntity() : ?Entity{
-		if($this->riddenByEid !== null){
-			return $this->server->findEntity($this->riddenByEid);
-		}else{
-			return null;
-		}
+		return $this->riddenByEid !== null ? $this->server->findEntity($this->riddenByEid) : null;
 	}
 
 	public function setRiddenByEntity(?Entity $riddenByEntity = null) : void{
@@ -1919,9 +1911,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function mountEntity(Entity $entity, int $seatNumber = 0) : bool{
-		if($this->getRidingEntity() == null and $entity !== $this and count($entity->passengers) < $entity->getSeatCount()){
+		if($this->getRidingEntity() === null and $entity !== $this and count($entity->passengers) < $entity->getSeatCount()){
 			if(!isset($entity->passengers[$seatNumber])){
-
 				if($seatNumber === 0){
 					$entity->setRiddenByEntity($this);
 
@@ -1982,9 +1973,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		if($this->getRidingEntity() !== null){
 			$entity = $this->getRidingEntity();
 
-			unset($entity->passengers[array_search($this->getId(), $entity->passengers, true)]);
+			unset($entity->passengers[$this->propertyManager->getByte(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER)]);
 
-			if($this->isRiding()){
+			if($entity->getRiddenByEntity() === $this){
 				$entity->setRiddenByEntity(null);
 
 				$this->entityRiderYawDelta = 0;
