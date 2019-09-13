@@ -98,4 +98,16 @@ class CommandSelector{
 
 		return $targets;
 	}
+
+	/**
+	 * @param CommandSender $sender
+	 * @param string        $selector
+	 * @param string        $entityType
+	 * @param Vector3|null  $pos
+	 *
+	 * @return Entity|null
+	 */
+	public static function findTarget(CommandSender $sender, string $selector, string $entityType = Entity::class, ?Vector3 $pos = null) : ?Entity{
+		return !empty($targets = self::findTargets($sender, $selector, $entityType, $pos)) ? reset($targets) : null;
+	}
 }
