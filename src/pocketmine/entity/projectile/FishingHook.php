@@ -96,6 +96,8 @@ class FishingHook extends Projectile{
 	 * @param RayTraceResult $hitResult
 	 */
 	public function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
+		$entityHit->attack(new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_ENTITY_ATTACK, 0));
+
 		$this->mountEntity($entityHit);
 	}
 
