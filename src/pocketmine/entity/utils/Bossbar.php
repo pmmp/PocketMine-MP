@@ -77,6 +77,10 @@ class Bossbar extends Vector3{
 		return $this->getMetadata(Entity::DATA_NAMETAG);
 	}
 
+	/**
+	 * @param float $hp This should be in 0.0-1.0 range
+	 * @param bool  $update
+	 */
 	public function setHealthPercent(float $hp, bool $update = true){
 		$this->healthPercent = max(0, min(1.0, $hp));
 
