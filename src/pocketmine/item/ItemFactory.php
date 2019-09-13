@@ -219,7 +219,7 @@ class ItemFactory{
 		self::registerItem(new RawMutton());
 		self::registerItem(new CookedMutton());
 		self::registerItem(new ArmorStand());
-		//TODO: END_CRYSTAL
+		self::registerItem(new EndCrystal());
 		self::registerItem(new ItemBlock(Block::SPRUCE_DOOR_BLOCK, 0, Item::SPRUCE_DOOR));
 		self::registerItem(new ItemBlock(Block::BIRCH_DOOR_BLOCK, 0, Item::BIRCH_DOOR));
 		self::registerItem(new ItemBlock(Block::JUNGLE_DOOR_BLOCK, 0, Item::JUNGLE_DOOR));
