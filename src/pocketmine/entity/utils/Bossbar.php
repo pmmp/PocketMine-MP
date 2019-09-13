@@ -44,7 +44,7 @@ use pocketmine\Player;
 
 class Bossbar extends Vector3{
 	/** @var float */
-	protected $healthPercent = 0, $maxHealthPercent = 1;
+	protected $healthPercent = 0;
 	/** @var int */
 	protected $entityId;
 	/** @var array */
@@ -52,7 +52,7 @@ class Bossbar extends Vector3{
 	/** @var Player[] */
 	protected $viewers = [];
 
-	public function __construct(string $title = "", float $hp = 1, float $maxHp = 1){
+	public function __construct(string $title = "", float $hp = 1.0){
 		parent::__construct(0, 0, 0);
 
 		$flags = ((1 << Entity::DATA_FLAG_INVISIBLE) | (1 << Entity::DATA_FLAG_IMMOBILE));
@@ -63,7 +63,7 @@ class Bossbar extends Vector3{
 
 		$this->entityId = Entity::$entityCount++;
 
-		$this->setHealthPercent($hp, $maxHp);
+		$this->setHealthPercent($hp);
 	}
 
 	public function setTitle(string $t, bool $update = true){
@@ -77,18 +77,8 @@ class Bossbar extends Vector3{
 		return $this->getMetadata(Entity::DATA_NAMETAG);
 	}
 
-	public function setHealthPercent(?float $hp = null, ?float $maxHp = null, bool $update = true){
-		if($maxHp !== null){
-			$this->maxHealthPercent = $maxHp;
-		}
-
-		if($hp !== null){
-			if($hp > $this->maxHealthPercent){
-				$this->maxHealthPercent = $hp;
-			}
-
-			$this->healthPercent = $hp;
-		}
+	public function setHealthPercent(float $hp, bool $update = true){
+		$this->healthPercent = max(0, min(1.0, $hp));
 
 		if($update){
 			$this->updateForAll();
@@ -97,10 +87,6 @@ class Bossbar extends Vector3{
 
 	public function getHealthPercent() : float{
 		return $this->healthPercent;
-	}
-
-	public function getMaxHealthPercent() : float{
-		return $this->maxHealthPercent;
 	}
 
 	public function showTo(Player $player, bool $isViewer = true){
@@ -175,7 +161,7 @@ class Bossbar extends Vector3{
 
 	protected function getHealthPacket() : UpdateAttributesPacket{
 		$attr = Attribute::getAttribute(Attribute::HEALTH);
-		$attr->setMaxValue($this->maxHealthPercent);
+		$attr->setMaxValue(1.0);
 		$attr->setValue($this->healthPercent);
 
 		$pk = new UpdateAttributesPacket();
