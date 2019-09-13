@@ -340,4 +340,8 @@ abstract class Projectile extends Entity{
 		$this->blockHitId = $blockHit->getId();
 		$this->blockHitData = $blockHit->getDamage();
 	}
+
+	public function getDefaultDrag() : float{
+		return 0;
+	}
 }
