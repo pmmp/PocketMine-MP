@@ -98,6 +98,7 @@ use pocketmine\snooze\SleeperNotifier;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Color;
 use pocketmine\utils\Config;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Terminal;
@@ -1773,6 +1774,7 @@ class Server{
 			Item::initCreativeItems();
 			Biome::init();
 			MapManager::loadIdCounts();
+			Color::initDyeColors();
 
 			$this->commandMap = new SimpleCommandMap($this);
 

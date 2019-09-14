@@ -72,6 +72,10 @@ abstract class Armor extends Durable{
 		$this->setNamedTagEntry(new IntTag(self::TAG_CUSTOM_COLOR, Binary::signInt($color->toARGB())));
 	}
 
+	public function clearCustomColor() : void{
+		$this->removeNamedTagEntry(self::TAG_CUSTOM_COLOR);
+	}
+
 	/**
 	 * Returns the total enchantment protection factor this armour piece offers from all applicable protection
 	 * enchantments on the item.

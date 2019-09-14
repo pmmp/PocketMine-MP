@@ -55,11 +55,41 @@ class Color{
 	/** @var int */
 	protected $b;
 
+	/** @var \SplFixedArray */
+	public static $dyeColors = null;
+
 	public function __construct(int $r, int $g, int $b, int $a = 0xff){
 		$this->r = $r & 0xff;
 		$this->g = $g & 0xff;
 		$this->b = $b & 0xff;
 		$this->a = $a & 0xff;
+	}
+
+	public static function initDyeColors(){
+		if(self::$dyeColors === null){
+			self::$dyeColors = new \SplFixedArray(16);
+
+			self::$dyeColors[self::COLOR_DYE_BLACK] = new Color(30, 27, 27);
+			self::$dyeColors[self::COLOR_DYE_RED] = new Color(179, 49, 44);
+			self::$dyeColors[self::COLOR_DYE_GREEN] = new Color(61, 81, 26);
+			self::$dyeColors[self::COLOR_DYE_BROWN] = new Color(81, 48, 26);
+			self::$dyeColors[self::COLOR_DYE_BLUE] = new Color(37, 49, 146);
+			self::$dyeColors[self::COLOR_DYE_PURPLE] = new Color(123, 47, 190);
+			self::$dyeColors[self::COLOR_DYE_CYAN] = new Color(40, 118, 151);
+			self::$dyeColors[self::COLOR_DYE_LIGHT_GRAY] = new Color(153, 153, 153);
+			self::$dyeColors[self::COLOR_DYE_GRAY] = new Color(67, 67, 67);
+			self::$dyeColors[self::COLOR_DYE_PINK] = new Color(216, 129, 152);
+			self::$dyeColors[self::COLOR_DYE_LIME] = new Color(65, 205, 52);
+			self::$dyeColors[self::COLOR_DYE_YELLOW] = new Color(222, 207, 42);
+			self::$dyeColors[self::COLOR_DYE_LIGHT_BLUE] = new Color(102, 137, 211);
+			self::$dyeColors[self::COLOR_DYE_MAGENTA] = new Color(195, 84, 205);
+			self::$dyeColors[self::COLOR_DYE_ORANGE] = new Color(235, 136, 68);
+			self::$dyeColors[self::COLOR_DYE_WHITE] = new Color(240, 240, 240);
+		}
+	}
+
+	public static function getDyeColor(int $dyeColor) : Color{
+		return isset(self::$dyeColors[$dyeColor]) ? clone self::$dyeColors[$dyeColor] : new Color(0, 0, 0);
 	}
 
 	/**

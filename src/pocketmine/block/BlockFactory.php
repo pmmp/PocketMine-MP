@@ -183,7 +183,7 @@ class BlockFactory{
 		self::registerBlock(new NetherWartPlant());
 		self::registerBlock(new EnchantingTable());
 		self::registerBlock(new BrewingStand());
-		//TODO: CAULDRON_BLOCK
+		self::registerBlock(new Cauldron());
 		self::registerBlock(new EndPortal());
 		self::registerBlock(new EndPortalFrame());
 		self::registerBlock(new EndStone());

@@ -55,6 +55,7 @@ abstract class Tile extends Position{
 	public const BANNER = "Banner";
 	public const BED = "Bed";
 	public const BREWING_STAND = "BrewingStand";
+	public const CAULDRON = "Cauldron";
 	public const CHEST = "Chest";
 	public const ENCHANT_TABLE = "EnchantTable";
 	public const ENDER_CHEST = "EnderChest";
@@ -106,6 +107,7 @@ abstract class Tile extends Position{
 		self::registerTile(ShulkerBox::class, [self::SHULKER_BOX, "minecraft:shulker_box"]);
 		self::registerTile(Hopper::class, [self::HOPPER, "minecraft:hopper"]);
 		self::registerTile(Beacon::class, [self::BEACON, "minecraft:beacon"]);
+		self::registerTile(Cauldron::class, [self::CAULDRON, "minecraft:cauldron"]);
 	}
 
 	/**
