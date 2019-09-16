@@ -34,7 +34,8 @@ class StupidJsonDecodeTest extends TestCase{
 			["false", false],
 			["NULL", null],
 			['["\",,\"word","a\",,\"word2",]', ['",,"word', 'a",,"word2', '']],
-			['["\",,\"word","a\",,\"word2",""]', ['",,"word', 'a",,"word2', '']]
+			['["\",,\"word","a\",,\"word2",""]', ['",,"word', 'a",,"word2', '']],
+			['["Hello,, PocketMine"]', ['Hello,, PocketMine']]
 		];
 	}
 
