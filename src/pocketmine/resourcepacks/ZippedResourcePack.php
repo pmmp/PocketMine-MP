@@ -104,7 +104,9 @@ class ZippedResourcePack implements ResourcePack{
 		}catch(\RuntimeException $e){
 			throw new ResourcePackException("Failed to parse manifest.json: " . $e->getMessage(), $e->getCode(), $e);
 		}
-
+		if(!($manifest instanceof \stdClass)){
+			throw new ResourcePackException("manifest.json should contain a JSON object, not " . gettype($manifest));
+		}
 		if(!self::verifyManifest($manifest)){
 			throw new ResourcePackException("manifest.json is missing required fields");
 		}
