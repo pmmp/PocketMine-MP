@@ -227,7 +227,7 @@ class AvailableCommandsPacket extends DataPacket{
 				$parameter->paramName = $this->getString();
 				$parameter->paramType = $this->getLInt();
 				$parameter->isOptional = $this->getBool();
-				$parameter->byte1 = $this->getByte();
+				$parameter->flags = $this->getByte();
 
 				if($parameter->paramType & self::ARG_FLAG_ENUM){
 					$index = ($parameter->paramType & 0xffff);
@@ -285,7 +285,7 @@ class AvailableCommandsPacket extends DataPacket{
 
 				$this->putLInt($type);
 				$this->putBool($parameter->isOptional);
-				$this->putByte($parameter->byte1);
+				$this->putByte($parameter->flags);
 			}
 		}
 	}
