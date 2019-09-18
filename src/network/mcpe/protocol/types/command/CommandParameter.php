@@ -33,7 +33,7 @@ class CommandParameter{
 	/** @var bool */
 	public $isOptional;
 	/** @var int */
-	public $byte1 = 0; //unknown, always zero except for in /gamerule command
+	public $flags = 0; //shows enum name if 1, always zero except for in /gamerule command
 	/** @var CommandEnum|null */
 	public $enum;
 	/** @var string|null */
@@ -60,7 +60,7 @@ class CommandParameter{
 	public static function enum(string $name, CommandEnum $enum, int $flags, bool $optional = false) : self{
 		$result = self::baseline($name, AvailableCommandsPacket::ARG_FLAG_ENUM | AvailableCommandsPacket::ARG_FLAG_VALID, $optional);
 		$result->enum = $enum;
-		$result->byte1 = $flags;
+		$result->flags = $flags;
 		return $result;
 	}
 }
