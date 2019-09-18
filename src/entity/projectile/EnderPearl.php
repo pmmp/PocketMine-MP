@@ -23,29 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\RayTraceResult;
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\world\particle\EndermanTeleportParticle;
 use pocketmine\world\sound\EndermanTeleportSound;
 
 class EnderPearl extends Throwable{
 	public const NETWORK_ID = EntityLegacyIds::ENDER_PEARL;
-
-	protected function calculateInterceptWithBlock(Block $block, Vector3 $start, Vector3 $end) : ?RayTraceResult{
-		if($block->getId() !== BlockLegacyIds::AIR and empty($block->getCollisionBoxes())){
-			//TODO: remove this once block collision boxes are fixed properly
-			$pos = $block->getPos();
-			return AxisAlignedBB::one()->offset($pos->x, $pos->y, $pos->z)->calculateIntercept($start, $end);
-		}
-
-		return parent::calculateInterceptWithBlock($block, $start, $end);
-	}
 
 	protected function onHit(ProjectileHitEvent $event) : void{
 		$owner = $this->getOwningEntity();
