@@ -30,9 +30,21 @@ namespace pocketmine\network\query;
 use pocketmine\network\AdvancedSourceInterface;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
+use function base64_encode;
+use function chr;
+use function hash;
+use function ord;
+use function random_bytes;
+use function strlen;
+use function substr;
 
 class QueryHandler{
-	private $server, $lastToken, $token, $longData, $shortData, $timeout;
+	/** @var Server */
+	private $server;
+	/** @var string */
+	private $lastToken;
+	/** @var string */
+	private $token;
 
 	public const HANDSHAKE = 9;
 	public const STATISTICS = 0;
@@ -54,7 +66,6 @@ class QueryHandler{
 
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
-		$this->regenerateInfo();
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
 	}
 
@@ -63,11 +74,11 @@ class QueryHandler{
 		$this->server->getLogger()->debug("[Query] $message");
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function regenerateInfo(){
-		$ev = $this->server->getQueryInformation();
-		$this->longData = $ev->getLongQuery();
-		$this->shortData = $ev->getShortQuery();
-		$this->timeout = microtime(true) + $ev->getTimeout();
+
 	}
 
 	public function regenerateToken(){
@@ -81,7 +92,7 @@ class QueryHandler{
 
 	public function handle(AdvancedSourceInterface $interface, string $address, int $port, string $packet){
 		$offset = 2;
-		$packetType = ord($packet{$offset++});
+		$packetType = ord($packet[$offset++]);
 		$sessionID = Binary::readInt(substr($packet, $offset, 4));
 		$offset += 4;
 		$payload = substr($packet, $offset);
@@ -103,19 +114,15 @@ class QueryHandler{
 				$reply = chr(self::STATISTICS);
 				$reply .= Binary::writeInt($sessionID);
 
-				if($this->timeout < microtime(true)){
-					$this->regenerateInfo();
-				}
-
 				if(strlen($payload) === 8){
-					$reply .= $this->longData;
+					$reply .= $this->server->getQueryInformation()->getLongQuery();
 				}else{
-					$reply .= $this->shortData;
+					$reply .= $this->server->getQueryInformation()->getShortQuery();
 				}
 				$interface->sendRawPacket($address, $port, $reply);
 				break;
 			default:
-				$this->debug("Unhandled packet from $address $port: 0x" . bin2hex($packet));
+				$this->debug("Unhandled packet from $address $port: " . base64_encode($packet));
 				break;
 		}
 	}

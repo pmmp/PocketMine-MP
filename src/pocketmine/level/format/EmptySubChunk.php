@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format;
 
+use function str_repeat;
+
 class EmptySubChunk implements SubChunkInterface{
 	/** @var EmptySubChunk */
 	private static $instance;
@@ -125,9 +127,5 @@ class EmptySubChunk implements SubChunkInterface{
 
 	public function networkSerialize() : string{
 		return "\x00" . str_repeat("\x00", 6144);
-	}
-
-	public function fastSerialize() : string{
-		throw new \BadMethodCallException("Should not try to serialize empty subchunks");
 	}
 }

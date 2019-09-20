@@ -23,6 +23,27 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function abs;
+use function date_default_timezone_set;
+use function date_parse;
+use function exec;
+use function file_exists;
+use function file_get_contents;
+use function implode;
+use function ini_get;
+use function ini_set;
+use function is_link;
+use function json_decode;
+use function parse_ini_file;
+use function preg_match;
+use function readlink;
+use function str_replace;
+use function strpos;
+use function substr;
+use function timezone_abbreviations_list;
+use function timezone_name_from_abbr;
+use function trim;
+
 abstract class Timezone{
 
 	public static function get() : string{

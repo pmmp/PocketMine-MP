@@ -25,9 +25,15 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\CachedEncapsulatedPacket;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\Utils;
+use function bin2hex;
+use function get_class;
+use function is_object;
+use function is_string;
+use function method_exists;
 
 abstract class DataPacket extends NetworkBinaryStream{
 
@@ -35,6 +41,8 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	/** @var bool */
 	public $isEncoded = false;
+	/** @var CachedEncapsulatedPacket */
+	public $__encapsulatedPacket = null;
 
 	/** @var int */
 	public $senderSubId = 0;
@@ -65,19 +73,32 @@ abstract class DataPacket extends NetworkBinaryStream{
 		return false;
 	}
 
+	/**
+	 * @throws \OutOfBoundsException
+	 * @throws \UnexpectedValueException
+	 */
 	public function decode(){
 		$this->offset = 0;
 		$this->decodeHeader();
 		$this->decodePayload();
 	}
 
+	/**
+	 * @throws \OutOfBoundsException
+	 * @throws \UnexpectedValueException
+	 */
 	protected function decodeHeader(){
 		$pid = $this->getUnsignedVarInt();
-		assert($pid === static::NETWORK_ID);
+		if($pid !== static::NETWORK_ID){
+			throw new \UnexpectedValueException("Expected " . static::NETWORK_ID . " for packet ID, got $pid");
+		}
 	}
 
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
+	 *
+	 * @throws \OutOfBoundsException
+	 * @throws \UnexpectedValueException
 	 */
 	protected function decodePayload(){
 
@@ -133,5 +154,13 @@ abstract class DataPacket extends NetworkBinaryStream{
 		}
 
 		return $data;
+	}
+
+	public function __get($name){
+		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
+	}
+
+	public function __set($name, $value){
+		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
 	}
 }

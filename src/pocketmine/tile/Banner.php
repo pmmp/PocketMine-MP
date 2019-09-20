@@ -30,6 +30,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
+use function assert;
 
 class Banner extends Spawnable implements Nameable{
 	use NameableTrait {

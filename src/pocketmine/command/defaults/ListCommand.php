@@ -26,6 +26,10 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Player;
+use function array_filter;
+use function array_map;
+use function count;
+use function implode;
 
 class ListCommand extends VanillaCommand{
 

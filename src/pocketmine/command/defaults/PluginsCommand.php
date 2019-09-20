@@ -27,6 +27,9 @@ use pocketmine\command\CommandSender;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
+use function array_map;
+use function count;
+use function implode;
 
 class PluginsCommand extends VanillaCommand{
 

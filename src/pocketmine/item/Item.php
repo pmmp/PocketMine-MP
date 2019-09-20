@@ -43,6 +43,14 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
+use function array_map;
+use function base64_decode;
+use function base64_encode;
+use function file_get_contents;
+use function get_class;
+use function hex2bin;
+use function json_decode;
+use const DIRECTORY_SEPARATOR;
 
 class Item implements ItemIds, \JsonSerializable{
 	public const TAG_ENCH = "ench";
@@ -153,7 +161,7 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @param $index
+	 * @param int $index
 	 *
 	 * @return Item|null
 	 */
@@ -207,7 +215,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * Sets the Item's NBT
 	 *
-	 * @param CompoundTag|string $tags
+	 * @param CompoundTag|string|null $tags
 	 *
 	 * @return Item
 	 */
@@ -215,7 +223,7 @@ class Item implements ItemIds, \JsonSerializable{
 		if($tags instanceof CompoundTag){
 			$this->setNamedTag($tags);
 		}else{
-			$this->tags = (string) $tags;
+			$this->tags = $tags === null ? "" : (string) $tags;
 			$this->cachedNBT = null;
 		}
 
@@ -223,6 +231,9 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * @deprecated This method returns NBT serialized in a network-dependent format. Prefer use of getNamedTag() instead.
+	 * @see Item::getNamedTag()
+	 *
 	 * Returns the serialized NBT of the Item
 	 * @return string
 	 */
@@ -456,7 +467,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function setCustomName(string $name) : Item{
 		if($name === ""){
-			$this->clearCustomName();
+			return $this->clearCustomName();
 		}
 
 		/** @var CompoundTag $display */
@@ -862,7 +873,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return string
 	 */
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
+		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:" . base64_encode($this->getCompoundTag()) : "");
 	}
 
 	/**

@@ -25,6 +25,9 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\Player;
+use function max;
+use function min;
+use const PHP_INT_MAX;
 
 class CraftingGrid extends BaseInventory{
 	public const SIZE_SMALL = 2;

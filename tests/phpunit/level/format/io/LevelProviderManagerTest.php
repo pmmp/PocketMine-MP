@@ -44,4 +44,10 @@ class LevelProviderManagerTest extends TestCase{
 
 		LevelProviderManager::addProvider(InterfaceLevelProvider::class);
 	}
+
+	public function testAddWrongClassProvider() : void{
+		$this->expectException(\InvalidArgumentException::class);
+
+		LevelProviderManager::addProvider(LevelProviderManagerTest::class);
+	}
 }

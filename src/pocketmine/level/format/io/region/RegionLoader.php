@@ -27,13 +27,37 @@ use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\utils\Binary;
 use pocketmine\utils\MainLogger;
+use function array_fill;
+use function ceil;
+use function chr;
+use function fclose;
+use function fgetc;
+use function file_exists;
+use function filesize;
+use function fopen;
+use function fread;
+use function fseek;
+use function ftruncate;
+use function fwrite;
+use function is_resource;
+use function ord;
+use function pack;
+use function str_pad;
+use function stream_set_read_buffer;
+use function stream_set_write_buffer;
+use function strlen;
+use function substr;
+use function time;
+use function touch;
+use function unpack;
+use const STR_PAD_RIGHT;
 
 class RegionLoader{
 	public const VERSION = 1;
 	public const COMPRESSION_GZIP = 1;
 	public const COMPRESSION_ZLIB = 2;
 
-	public const MAX_SECTOR_LENGTH = 256 << 12; //256 sectors, (1 MiB)
+	public const MAX_SECTOR_LENGTH = 255 << 12; //255 sectors (~0.996 MiB)
 	public const REGION_HEADER_LENGTH = 8192; //4096 location table + 4096 timestamps
 
 	public static $COMPRESSION_LEVEL = 7;
@@ -100,9 +124,6 @@ class RegionLoader{
 	 */
 	public function readChunk(int $x, int $z) : ?string{
 		$index = self::getChunkOffset($x, $z);
-		if($index < 0 or $index >= 4096){
-			throw new \InvalidArgumentException("Invalid chunk position in region, expected x/z in range 0-31, got x=$x, z=$z");
-		}
 
 		$this->lastUsed = time();
 
@@ -111,39 +132,57 @@ class RegionLoader{
 		}
 
 		fseek($this->filePointer, $this->locationTable[$index][0] << 12);
-		$length = Binary::readInt(fread($this->filePointer, 4));
-		$compression = ord(fgetc($this->filePointer));
+		$prefix = fread($this->filePointer, 4);
+		if($prefix === false or strlen($prefix) !== 4){
+			throw new CorruptedChunkException("Corrupted chunk header detected (unexpected end of file reading length prefix)");
+		}
+		$length = Binary::readInt($prefix);
 
 		if($length <= 0 or $length > self::MAX_SECTOR_LENGTH){ //Not yet generated / corrupted
 			if($length >= self::MAX_SECTOR_LENGTH){
-				$this->locationTable[$index][0] = ++$this->lastSector;
-				$this->locationTable[$index][1] = 1;
-				throw new CorruptedChunkException("Corrupted chunk header detected (sector count larger than max)");
+				throw new CorruptedChunkException("Corrupted chunk header detected (sector count $length larger than max " . self::MAX_SECTOR_LENGTH . ")");
 			}
 			return null;
 		}
 
 		if($length > ($this->locationTable[$index][1] << 12)){ //Invalid chunk, bigger than defined number of sectors
-			MainLogger::getLogger()->error("Corrupted bigger chunk detected (bigger than number of sectors given in header)");
+			MainLogger::getLogger()->error("Chunk x=$x,z=$z length mismatch (expected " . ($this->locationTable[$index][1] << 12) . " sectors, got $length sectors)");
 			$this->locationTable[$index][1] = $length >> 12;
 			$this->writeLocationIndex($index);
-		}elseif($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
+		}
+
+		$chunkData = fread($this->filePointer, $length);
+		if($chunkData === false or strlen($chunkData) !== $length){
+			throw new CorruptedChunkException("Corrupted chunk detected (unexpected end of file reading chunk data)");
+		}
+
+		$compression = ord($chunkData[0]);
+		if($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
 			throw new CorruptedChunkException("Invalid compression type (got $compression, expected " . self::COMPRESSION_ZLIB . " or " . self::COMPRESSION_GZIP . ")");
 		}
 
-		$chunkData = fread($this->filePointer, $length - 1);
-		if($chunkData === false){
-			throw new CorruptedChunkException("Corrupted chunk detected (failed to read chunk data from disk)");
-
-		}
-
-		return $chunkData;
+		return substr($chunkData, 1);
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return bool
+	 * @throws \InvalidArgumentException
+	 */
 	public function chunkExists(int $x, int $z) : bool{
 		return $this->isChunkGenerated(self::getChunkOffset($x, $z));
 	}
 
+	/**
+	 * @param int    $x
+	 * @param int    $z
+	 * @param string $chunkData
+	 *
+	 * @throws ChunkException
+	 * @throws \InvalidArgumentException
+	 */
 	public function writeChunk(int $x, int $z, string $chunkData){
 		$this->lastUsed = time();
 
@@ -173,14 +212,40 @@ class RegionLoader{
 		}
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @throws \InvalidArgumentException
+	 */
 	public function removeChunk(int $x, int $z){
 		$index = self::getChunkOffset($x, $z);
 		$this->locationTable[$index][0] = 0;
 		$this->locationTable[$index][1] = 0;
 	}
 
+	/**
+	 * @param int $x
+	 * @param int $z
+	 *
+	 * @return int
+	 * @throws \InvalidArgumentException
+	 */
 	protected static function getChunkOffset(int $x, int $z) : int{
-		return $x + ($z << 5);
+		if($x < 0 or $x > 31 or $z < 0 or $z > 31){
+			throw new \InvalidArgumentException("Invalid chunk position in region, expected x/z in range 0-31, got x=$x, z=$z");
+		}
+		return $x | ($z << 5);
+	}
+
+	/**
+	 * @param int $offset
+	 * @param int &$x
+	 * @param int &$z
+	 */
+	protected static function getChunkCoords(int $offset, ?int &$x, ?int &$z) : void{
+		$x = $offset & 0x1f;
+		$z = ($offset >> 5) & 0x1f;
 	}
 
 	/**
@@ -198,81 +263,6 @@ class RegionLoader{
 		}
 	}
 
-	public function doSlowCleanUp() : int{
-		for($i = 0; $i < 1024; ++$i){
-			if($this->locationTable[$i][0] === 0 or $this->locationTable[$i][1] === 0){
-				continue;
-			}
-			fseek($this->filePointer, $this->locationTable[$i][0] << 12);
-			$chunk = fread($this->filePointer, $this->locationTable[$i][1] << 12);
-			$length = Binary::readInt(substr($chunk, 0, 4));
-			if($length <= 1){
-				$this->locationTable[$i] = [0, 0, 0]; //Non-generated chunk, remove it from index
-			}
-
-			try{
-				$chunk = zlib_decode(substr($chunk, 5));
-			}catch(\Throwable $e){
-				$this->locationTable[$i] = [0, 0, 0]; //Corrupted chunk, remove it
-				continue;
-			}
-
-			$chunk = chr(self::COMPRESSION_ZLIB) . zlib_encode($chunk, ZLIB_ENCODING_DEFLATE, 9);
-			$chunk = Binary::writeInt(strlen($chunk)) . $chunk;
-			$sectors = (int) ceil(strlen($chunk) / 4096);
-			if($sectors > $this->locationTable[$i][1]){
-				$this->locationTable[$i][0] = $this->lastSector + 1;
-				$this->lastSector += $sectors;
-			}
-			fseek($this->filePointer, $this->locationTable[$i][0] << 12);
-			fwrite($this->filePointer, str_pad($chunk, $sectors << 12, "\x00", STR_PAD_RIGHT));
-		}
-		$this->writeLocationTable();
-		$n = $this->cleanGarbage();
-		$this->writeLocationTable();
-
-		return $n;
-	}
-
-	private function cleanGarbage() : int{
-		$sectors = [];
-		foreach($this->locationTable as $index => $data){ //Calculate file usage
-			if($data[0] === 0 or $data[1] === 0){
-				$this->locationTable[$index] = [0, 0, 0];
-				continue;
-			}
-			for($i = 0; $i < $data[1]; ++$i){
-				$sectors[$data[0]] = $index;
-			}
-		}
-
-		if(count($sectors) === ($this->lastSector - 2)){ //No collection needed
-			return 0;
-		}
-
-		ksort($sectors);
-		$shift = 0;
-		$lastSector = 1; //First chunk - 1
-
-		fseek($this->filePointer, 8192);
-		$sector = 2;
-		foreach($sectors as $sector => $index){
-			if(($sector - $lastSector) > 1){
-				$shift += $sector - $lastSector - 1;
-			}
-			if($shift > 0){
-				fseek($this->filePointer, $sector << 12);
-				$old = fread($this->filePointer, 4096);
-				fseek($this->filePointer, ($sector - $shift) << 12);
-				fwrite($this->filePointer, $old, 4096);
-			}
-			$this->locationTable[$index][0] -= $shift;
-			$lastSector = $sector;
-		}
-		ftruncate($this->filePointer, ($sector + 1) << 12); //Truncate to the end of file written
-		return $shift;
-	}
-
 	protected function loadLocationTable(){
 		fseek($this->filePointer, 0);
 		$this->lastSector = 1;
@@ -283,18 +273,23 @@ class RegionLoader{
 		}
 
 		$data = unpack("N*", $headerRaw);
+		/** @var int[] $usedOffsets */
 		$usedOffsets = [];
 		for($i = 0; $i < 1024; ++$i){
 			$index = $data[$i + 1];
 			$offset = $index >> 8;
 			if($offset !== 0){
-				fseek($this->filePointer, $offset << 12);
+				self::getChunkCoords($i, $x, $z);
+				$fileOffset = $offset << 12;
+
+				fseek($this->filePointer, $fileOffset);
 				if(fgetc($this->filePointer) === false){ //Try and read from the location
-					throw new CorruptedRegionException("Region file location offset points to invalid location");
+					throw new CorruptedRegionException("Region file location offset x=$x,z=$z points to invalid file location $fileOffset");
 				}elseif(isset($usedOffsets[$offset])){
-					throw new CorruptedRegionException("Found two chunk offsets pointing to the same location");
+					self::getChunkCoords($usedOffsets[$offset], $existingX, $existingZ);
+					throw new CorruptedRegionException("Found two chunk offsets (chunk1: x=$existingX,z=$existingZ, chunk2: x=$x,z=$z) pointing to the file location $fileOffset");
 				}else{
-					$usedOffsets[$offset] = true;
+					$usedOffsets[$offset] = $i;
 				}
 			}
 

@@ -24,6 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pocketmine\Server;
+use pocketmine\utils\Utils;
+use function array_keys;
+use function assert;
+use function count;
+use function get_class;
+use function spl_object_hash;
+use function time;
+use const PHP_INT_MAX;
+use const PTHREADS_INHERIT_CONSTANTS;
+use const PTHREADS_INHERIT_INI;
 
 /**
  * Manages general-purpose worker threads used for processing asynchronous tasks, and the tasks submitted to those
@@ -55,6 +65,8 @@ class AsyncPool{
 	private $workers = [];
 	/** @var int[] */
 	private $workerUsage = [];
+	/** @var int[] */
+	private $workerLastUsed = [];
 
 	/** @var \Closure[] */
 	private $workerStartHooks = [];
@@ -96,6 +108,7 @@ class AsyncPool{
 	 * @param \Closure $hook
 	 */
 	public function addWorkerStartHook(\Closure $hook) : void{
+		Utils::validateCallableSignature(function(int $worker) : void{}, $hook);
 		$this->workerStartHooks[spl_object_hash($hook)] = $hook;
 		foreach($this->workers as $i => $worker){
 			$hook($i);
@@ -165,6 +178,7 @@ class AsyncPool{
 		$this->getWorker($worker)->stack($task);
 		$this->workerUsage[$worker]++;
 		$this->taskWorkers[$task->getTaskId()] = $worker;
+		$this->workerLastUsed[$worker] = time();
 	}
 
 	/**
@@ -234,6 +248,7 @@ class AsyncPool{
 			$this->workerUsage[$this->taskWorkers[$task->getTaskId()]]--;
 		}
 
+		$task->removeDanglingStoredObjects();
 		unset($this->tasks[$task->getTaskId()]);
 		unset($this->taskWorkers[$task->getTaskId()]);
 	}
@@ -292,26 +307,19 @@ class AsyncPool{
 			$task->checkProgressUpdates($this->server);
 			if($task->isGarbage() and !$task->isRunning() and !$task->isCrashed()){
 				if(!$task->hasCancelledRun()){
-					try{
-						/*
-						 * It's possible for a task to submit a progress update and then finish before the progress
-						 * update is detected by the parent thread, so here we consume any missed updates.
-						 *
-						 * When this happens, it's possible for a progress update to arrive between the previous
-						 * checkProgressUpdates() call and the next isGarbage() call, causing progress updates to be
-						 * lost. Thus, it's necessary to do one last check here to make sure all progress updates have
-						 * been consumed before completing.
-						 */
-						$task->checkProgressUpdates($this->server);
-						$task->onCompletion($this->server);
-						if($task->removeDanglingStoredObjects()){
-							$this->logger->notice("AsyncTask " . get_class($task) . " stored local complex data but did not remove them after completion");
-						}
-					}catch(\Throwable $e){
-						$this->logger->critical("Could not execute completion of asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": " . $e->getMessage());
-						$this->logger->logException($e);
-
-						$task->removeDanglingStoredObjects(); //silent
+					/*
+					 * It's possible for a task to submit a progress update and then finish before the progress
+					 * update is detected by the parent thread, so here we consume any missed updates.
+					 *
+					 * When this happens, it's possible for a progress update to arrive between the previous
+					 * checkProgressUpdates() call and the next isGarbage() call, causing progress updates to be
+					 * lost. Thus, it's necessary to do one last check here to make sure all progress updates have
+					 * been consumed before completing.
+					 */
+					$task->checkProgressUpdates($this->server);
+					$task->onCompletion($this->server);
+					if($task->removeDanglingStoredObjects()){
+						$this->logger->notice("AsyncTask " . get_class($task) . " stored local complex data but did not remove them after completion");
 					}
 				}
 
@@ -327,10 +335,11 @@ class AsyncPool{
 
 	public function shutdownUnusedWorkers() : int{
 		$ret = 0;
+		$time = time();
 		foreach($this->workerUsage as $i => $usage){
-			if($usage === 0){
+			if($usage === 0 and (!isset($this->workerLastUsed[$i]) or $this->workerLastUsed[$i] + 300 < $time)){
 				$this->workers[$i]->quit();
-				unset($this->workers[$i], $this->workerUsage[$i]);
+				unset($this->workers[$i], $this->workerUsage[$i], $this->workerLastUsed[$i]);
 				$ret++;
 			}
 		}
@@ -348,5 +357,6 @@ class AsyncPool{
 			$worker->quit();
 		}
 		$this->workers = [];
+		$this->workerLastUsed = [];
 	}
 }

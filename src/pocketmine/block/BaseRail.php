@@ -26,6 +26,13 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use function array_map;
+use function array_reverse;
+use function array_search;
+use function array_shift;
+use function count;
+use function implode;
+use function in_array;
 
 abstract class BaseRail extends Flowable{
 
@@ -98,7 +105,7 @@ abstract class BaseRail extends Flowable{
 			$meta = array_search(array_reverse($connections), $lookup, true);
 		}
 		if($meta === false){
-			throw new \InvalidArgumentException("No meta value matches connections " . implode(", ", array_map('dechex', $connections)));
+			throw new \InvalidArgumentException("No meta value matches connections " . implode(", ", array_map('\dechex', $connections)));
 		}
 
 		return $meta;

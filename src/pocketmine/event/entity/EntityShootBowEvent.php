@@ -28,6 +28,7 @@ use pocketmine\entity\Living;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
+use function count;
 
 class EntityShootBowEvent extends EntityEvent implements Cancellable{
 	/** @var Item */

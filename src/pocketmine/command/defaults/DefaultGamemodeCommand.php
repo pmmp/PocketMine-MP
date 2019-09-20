@@ -27,6 +27,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Server;
+use function count;
 
 class DefaultGamemodeCommand extends VanillaCommand{
 

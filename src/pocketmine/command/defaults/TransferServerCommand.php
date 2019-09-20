@@ -28,6 +28,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\Player;
+use function count;
 
 class TransferServerCommand extends VanillaCommand{
 

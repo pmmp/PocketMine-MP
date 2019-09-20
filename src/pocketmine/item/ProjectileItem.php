@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityIds;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\math\Vector3;
@@ -65,9 +66,7 @@ abstract class ProjectileItem extends Item{
 			}else{
 				$projectile->spawnToAll();
 
-				//319 is the Player's entity type ID in MCPE, with all its flags (which we don't know)
-				//without this, it doesn't work at all.
-				$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_THROW, 319);
+				$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_THROW, 0, EntityIds::PLAYER);
 			}
 		}elseif($projectile !== null){
 			$projectile->spawnToAll();

@@ -24,6 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\event\entity\EntityDamageEvent;
+use function constant;
+use function defined;
+use function strtoupper;
 
 /**
  * Manages enchantment type data.

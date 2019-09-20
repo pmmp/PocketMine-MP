@@ -30,6 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Banner as TileBanner;
 use pocketmine\tile\Tile;
+use function floor;
 
 class StandingBanner extends Transparent{
 

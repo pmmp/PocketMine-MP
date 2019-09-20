@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
+use function count;
 
 class InventoryContentPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::INVENTORY_CONTENT_PACKET;

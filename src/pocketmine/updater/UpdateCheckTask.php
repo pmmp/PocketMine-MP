@@ -28,6 +28,8 @@ namespace pocketmine\updater;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\utils\Internet;
+use function is_array;
+use function json_decode;
 
 class UpdateCheckTask extends AsyncTask{
 
@@ -59,7 +61,7 @@ class UpdateCheckTask extends AsyncTask{
 					isset($response["download_url"])
 				){
 					$response["details_url"] = $response["details_url"] ?? null;
-					$this->setResult($response, true);
+					$this->setResult($response);
 				}elseif(isset($response["error"])){
 					$this->error = $response["error"];
 				}else{

@@ -29,6 +29,8 @@ use pocketmine\level\Level;
 use pocketmine\level\SimpleChunkManager;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\Random;
+use function serialize;
+use function unserialize;
 
 class GeneratorRegisterTask extends AsyncTask{
 

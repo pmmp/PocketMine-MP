@@ -31,6 +31,8 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\MapTrackedObject;
 use pocketmine\utils\Color;
+use function assert;
+use function count;
 
 class ClientboundMapItemDataPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::CLIENTBOUND_MAP_ITEM_DATA_PACKET;
@@ -44,6 +46,8 @@ class ClientboundMapItemDataPacket extends DataPacket{
 	public $type;
 	/** @var int */
 	public $dimensionId = DimensionIds::OVERWORLD;
+	/** @var bool */
+	public $isLocked = false;
 
 	/** @var int[] */
 	public $eids = [];
@@ -70,6 +74,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 		$this->mapId = $this->getEntityUniqueId();
 		$this->type = $this->getUnsignedVarInt();
 		$this->dimensionId = $this->getByte();
+		$this->isLocked = $this->getBool();
 
 		if(($this->type & 0x08) !== 0){
 			$count = $this->getUnsignedVarInt();
@@ -91,7 +96,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 				}elseif($object->type === MapTrackedObject::TYPE_ENTITY){
 					$object->entityUniqueId = $this->getEntityUniqueId();
 				}else{
-					throw new \UnexpectedValueException("Unknown map object type");
+					throw new \UnexpectedValueException("Unknown map object type $object->type");
 				}
 				$this->trackedEntities[] = $object;
 			}
@@ -114,7 +119,9 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			$this->yOffset = $this->getVarInt();
 
 			$count = $this->getUnsignedVarInt();
-			assert($count === $this->width * $this->height);
+			if($count !== $this->width * $this->height){
+				throw new \UnexpectedValueException("Expected colour count of " . ($this->height * $this->width) . " (height $this->height * width $this->width), got $count");
+			}
 
 			for($y = 0; $y < $this->height; ++$y){
 				for($x = 0; $x < $this->width; ++$x){
@@ -140,6 +147,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 
 		$this->putUnsignedVarInt($type);
 		$this->putByte($this->dimensionId);
+		$this->putBool($this->isLocked);
 
 		if(($type & 0x08) !== 0){ //TODO: find out what these are for
 			$this->putUnsignedVarInt($eidsCount);
@@ -161,7 +169,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 				}elseif($object->type === MapTrackedObject::TYPE_ENTITY){
 					$this->putEntityUniqueId($object->entityUniqueId);
 				}else{
-					throw new \UnexpectedValueException("Unknown map object type");
+					throw new \InvalidArgumentException("Unknown map object type $object->type");
 				}
 			}
 

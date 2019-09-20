@@ -32,6 +32,11 @@ use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
+use function array_slice;
+use function count;
+use function max;
+use function min;
+use function spl_object_hash;
 
 abstract class BaseInventory implements Inventory{
 
@@ -248,11 +253,9 @@ abstract class BaseInventory implements Inventory{
 
 	public function canAddItem(Item $item) : bool{
 		$item = clone $item;
-		$checkDamage = !$item->hasAnyDamageValue();
-		$checkTags = $item->hasCompoundTag();
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$slot = $this->getItem($i);
-			if($item->equals($slot, $checkDamage, $checkTags)){
+			if($item->equals($slot)){
 				if(($diff = $slot->getMaxStackSize() - $slot->getCount()) > 0){
 					$item->setCount($item->getCount() - $diff);
 				}

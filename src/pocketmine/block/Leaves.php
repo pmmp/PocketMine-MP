@@ -28,6 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use function mt_rand;
 
 class Leaves extends Transparent{
 	public const OAK = 0;
@@ -187,7 +188,7 @@ class Leaves extends Transparent{
 	}
 
 	public function canDropApples() : bool{
-		return $this->meta === self::OAK;
+		return $this->getVariant() === self::OAK;
 	}
 
 	public function getFlameEncouragement() : int{

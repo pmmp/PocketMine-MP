@@ -27,6 +27,7 @@ use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
+use function mt_rand;
 
 class MelonStem extends Crops{
 

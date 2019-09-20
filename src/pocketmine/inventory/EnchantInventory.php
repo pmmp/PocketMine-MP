@@ -59,6 +59,9 @@ class EnchantInventory extends ContainerInventory{
 	public function onClose(Player $who) : void{
 		parent::onClose($who);
 
-		$this->dropContents($this->holder->getLevel(), $this->holder->add(0.5, 0.5, 0.5));
+		foreach($this->getContents() as $item){
+			$who->dropItem($item);
+		}
+		$this->clearAll();
 	}
 }

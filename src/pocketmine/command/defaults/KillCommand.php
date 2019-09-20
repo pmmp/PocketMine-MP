@@ -30,6 +30,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use function count;
 
 class KillCommand extends VanillaCommand{
 
@@ -54,7 +55,7 @@ class KillCommand extends VanillaCommand{
 
 		if(count($args) === 1){
 			if(!$sender->hasPermission("pocketmine.command.kill.other")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 				return true;
 			}
@@ -73,7 +74,7 @@ class KillCommand extends VanillaCommand{
 
 		if($sender instanceof Player){
 			if(!$sender->hasPermission("pocketmine.command.kill.self")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 				return true;
 			}

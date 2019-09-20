@@ -23,6 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function is_array;
+use function json_encode;
+use function mb_scrub;
+use function preg_quote;
+use function preg_replace;
+use function preg_split;
+use function str_repeat;
+use function str_replace;
+use const JSON_UNESCAPED_SLASHES;
+use const PREG_SPLIT_DELIM_CAPTURE;
+use const PREG_SPLIT_NO_EMPTY;
+
 /**
  * Class used to handle Minecraft chat format, and convert it to other formats like HTML
  */
@@ -62,22 +74,24 @@ abstract class TextFormat{
 	 * @return array
 	 */
 	public static function tokenize(string $string) : array{
-		return preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fk-or])/", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		return preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 	}
 
 	/**
-	 * Cleans the string from Minecraft codes and ANSI Escape Codes
+	 * Cleans the string from Minecraft codes, ANSI Escape Codes and invalid UTF-8 characters
 	 *
 	 * @param string $string
 	 * @param bool   $removeFormat
 	 *
-	 * @return string
+	 * @return string valid clean UTF-8
 	 */
 	public static function clean(string $string, bool $removeFormat = true) : string{
+		$string = mb_scrub($string, 'UTF-8');
+		$string = preg_replace("/[\x{E000}-\x{F8FF}]/u", "", $string); //remove unicode private-use-area characters (they might break the console)
 		if($removeFormat){
-			return str_replace(TextFormat::ESCAPE, "", preg_replace(["/" . TextFormat::ESCAPE . "[0-9a-fk-or]/", "/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/"], "", $string));
+			$string = str_replace(TextFormat::ESCAPE, "", preg_replace("/" . TextFormat::ESCAPE . "[0-9a-fk-or]/u", "", $string));
 		}
-		return str_replace("\x1b", "", preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/", "", $string));
+		return str_replace("\x1b", "", preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/u", "", $string));
 	}
 
 	/**

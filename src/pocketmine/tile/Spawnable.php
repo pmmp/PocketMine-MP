@@ -28,7 +28,7 @@ use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
+use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\Player;
 
 abstract class Spawnable extends Tile{
@@ -37,8 +37,8 @@ abstract class Spawnable extends Tile{
 	/** @var NetworkLittleEndianNBTStream|null */
 	private static $nbtWriter = null;
 
-	public function createSpawnPacket() : BlockEntityDataPacket{
-		$pk = new BlockEntityDataPacket();
+	public function createSpawnPacket() : BlockActorDataPacket{
+		$pk = new BlockActorDataPacket();
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;

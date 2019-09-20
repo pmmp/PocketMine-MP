@@ -29,6 +29,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use function mt_rand;
 
 class NetherWartPlant extends Flowable{
 	protected $id = Block::NETHER_WART_PLANT;

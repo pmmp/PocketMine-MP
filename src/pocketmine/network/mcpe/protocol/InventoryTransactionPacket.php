@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
+use function count;
 
 class InventoryTransactionPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::INVENTORY_TRANSACTION_PACKET;
@@ -91,6 +92,7 @@ class InventoryTransactionPacket extends DataPacket{
 				$this->trData->itemInHand = $this->getSlot();
 				$this->trData->playerPos = $this->getVector3();
 				$this->trData->clickPos = $this->getVector3();
+				$this->trData->blockRuntimeId = $this->getUnsignedVarInt();
 				break;
 			case self::TYPE_USE_ITEM_ON_ENTITY:
 				$this->trData->entityRuntimeId = $this->getEntityRuntimeId();
@@ -131,6 +133,7 @@ class InventoryTransactionPacket extends DataPacket{
 				$this->putSlot($this->trData->itemInHand);
 				$this->putVector3($this->trData->playerPos);
 				$this->putVector3($this->trData->clickPos);
+				$this->putUnsignedVarInt($this->trData->blockRuntimeId);
 				break;
 			case self::TYPE_USE_ITEM_ON_ENTITY:
 				$this->putEntityRuntimeId($this->trData->entityRuntimeId);
@@ -147,7 +150,7 @@ class InventoryTransactionPacket extends DataPacket{
 				$this->putVector3($this->trData->headPos);
 				break;
 			default:
-				throw new \UnexpectedValueException("Unknown transaction type $this->transactionType");
+				throw new \InvalidArgumentException("Unknown transaction type $this->transactionType");
 		}
 	}
 

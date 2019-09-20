@@ -25,6 +25,18 @@ declare(strict_types=1);
 namespace pocketmine\resourcepacks;
 
 
+use Ahc\Json\Comment as CommentedJsonDecoder;
+use function count;
+use function fclose;
+use function feof;
+use function file_exists;
+use function filesize;
+use function fopen;
+use function fread;
+use function fseek;
+use function hash_file;
+use function implode;
+
 class ZippedResourcePack implements ResourcePack{
 
 	/**
@@ -86,9 +98,14 @@ class ZippedResourcePack implements ResourcePack{
 
 		$archive->close();
 
-		$manifest = json_decode($manifestData);
-		if($manifest === null){
-			throw new ResourcePackException("Failed to parse manifest.json: " . json_last_error_msg());
+		//maybe comments in the json, use stripped decoder (thanks mojang)
+		try{
+			$manifest = (new CommentedJsonDecoder())->decode($manifestData);
+		}catch(\RuntimeException $e){
+			throw new ResourcePackException("Failed to parse manifest.json: " . $e->getMessage(), $e->getCode(), $e);
+		}
+		if(!($manifest instanceof \stdClass)){
+			throw new ResourcePackException("manifest.json should contain a JSON object, not " . gettype($manifest));
 		}
 		if(!self::verifyManifest($manifest)){
 			throw new ResourcePackException("manifest.json is missing required fields");

@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use function array_map;
+use function count;
 
 class ShapelessRecipe implements CraftingRecipe{
 	/** @var Item[] */

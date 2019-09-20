@@ -26,6 +26,9 @@ declare(strict_types=1);
  */
 namespace pocketmine\event;
 
+use function assert;
+use function get_class;
+
 abstract class Event{
 	private const MAX_EVENT_CALL_DEPTH = 50;
 	/** @var int */
@@ -50,7 +53,7 @@ abstract class Event{
 	 */
 	public function isCancelled() : bool{
 		if(!($this instanceof Cancellable)){
-			throw new \BadMethodCallException("Event is not Cancellable");
+			throw new \BadMethodCallException(get_class($this) . " is not Cancellable");
 		}
 
 		/** @var Event $this */
@@ -64,7 +67,7 @@ abstract class Event{
 	 */
 	public function setCancelled(bool $value = true) : void{
 		if(!($this instanceof Cancellable)){
-			throw new \BadMethodCallException("Event is not Cancellable");
+			throw new \BadMethodCallException(get_class($this) . " is not Cancellable");
 		}
 
 		/** @var Event $this */

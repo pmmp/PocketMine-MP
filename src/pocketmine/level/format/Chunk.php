@@ -35,6 +35,17 @@ use pocketmine\Player;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\utils\BinaryStream;
+use function array_fill;
+use function array_filter;
+use function array_values;
+use function assert;
+use function chr;
+use function count;
+use function ord;
+use function pack;
+use function str_repeat;
+use function strlen;
+use function unpack;
 
 class Chunk{
 
@@ -449,7 +460,7 @@ class Chunk{
 	 * @return int 0-255
 	 */
 	public function getBiomeId(int $x, int $z) : int{
-		return ord($this->biomeIds{($z << 4) | $x});
+		return ord($this->biomeIds[($z << 4) | $x]);
 	}
 
 	/**
@@ -461,7 +472,7 @@ class Chunk{
 	 */
 	public function setBiomeId(int $x, int $z, int $biomeId){
 		$this->hasChanged = true;
-		$this->biomeIds{($z << 4) | $x} = chr($biomeId & 0xff);
+		$this->biomeIds[($z << 4) | $x] = chr($biomeId & 0xff);
 	}
 
 	/**
@@ -836,18 +847,17 @@ class Chunk{
 	}
 
 	/**
-	 * Disposes of empty subchunks
+	 * Disposes of empty subchunks and frees data where possible
 	 */
-	public function pruneEmptySubChunks(){
+	public function collectGarbage() : void{
 		foreach($this->subChunks as $y => $subChunk){
-			if($subChunk instanceof EmptySubChunk){
-				continue;
-			}elseif($subChunk->isEmpty()){ //normal subchunk full of air, remove it and replace it with an empty stub
-				$this->subChunks[$y] = $this->emptySubChunk;
-			}else{
-				continue; //do not set changed
+			if($subChunk instanceof SubChunk){
+				if($subChunk->isEmpty()){
+					$this->subChunks[$y] = $this->emptySubChunk;
+				}else{
+					$subChunk->collectGarbage();
+				}
 			}
-			$this->hasChanged = true;
 		}
 	}
 
@@ -859,13 +869,10 @@ class Chunk{
 	public function networkSerialize() : string{
 		$result = "";
 		$subChunkCount = $this->getSubChunkSendCount();
-		$result .= chr($subChunkCount);
 		for($y = 0; $y < $subChunkCount; ++$y){
 			$result .= $this->subChunks[$y]->networkSerialize();
 		}
-		$result .= pack("v*", ...$this->heightMap)
-			. $this->biomeIds
-			. chr(0); //border block array count
+		$result .= $this->biomeIds . chr(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
 
 		foreach($this->tiles as $tile){
@@ -887,20 +894,31 @@ class Chunk{
 		$stream = new BinaryStream();
 		$stream->putInt($this->x);
 		$stream->putInt($this->z);
-		$count = 0;
-		$subChunks = "";
-		foreach($this->subChunks as $y => $subChunk){
-			if($subChunk instanceof EmptySubChunk){
-				continue;
+		$stream->putByte(($this->lightPopulated ? 4 : 0) | ($this->terrainPopulated ? 2 : 0) | ($this->terrainGenerated ? 1 : 0));
+		if($this->terrainGenerated){
+			//subchunks
+			$count = 0;
+			$subChunks = "";
+			foreach($this->subChunks as $y => $subChunk){
+				if($subChunk instanceof EmptySubChunk){
+					continue;
+				}
+				++$count;
+				$subChunks .= chr($y) . $subChunk->getBlockIdArray() . $subChunk->getBlockDataArray();
+				if($this->lightPopulated){
+					$subChunks .= $subChunk->getBlockSkyLightArray() . $subChunk->getBlockLightArray();
+				}
 			}
-			++$count;
-			$subChunks .= chr($y) . $subChunk->fastSerialize();
+			$stream->putByte($count);
+			$stream->put($subChunks);
+
+			//biomes
+			$stream->put($this->biomeIds);
+			if($this->lightPopulated){
+				$stream->put(pack("v*", ...$this->heightMap));
+			}
 		}
-		$stream->putByte($count);
-		$stream->put($subChunks);
-		$stream->put(pack("v*", ...$this->heightMap) .
-			$this->biomeIds .
-			chr(($this->lightPopulated ? 4 : 0) | ($this->terrainPopulated ? 2 : 0) | ($this->terrainGenerated ? 1 : 0)));
+
 		return $stream->getBuffer();
 	}
 
@@ -916,19 +934,36 @@ class Chunk{
 
 		$x = $stream->getInt();
 		$z = $stream->getInt();
+		$flags = $stream->getByte();
+		$lightPopulated = (bool) ($flags & 4);
+		$terrainPopulated = (bool) ($flags & 2);
+		$terrainGenerated = (bool) ($flags & 1);
+
 		$subChunks = [];
-		$count = $stream->getByte();
-		for($y = 0; $y < $count; ++$y){
-			$subChunks[$stream->getByte()] = SubChunk::fastDeserialize($stream->get(10240));
+		$biomeIds = "";
+		$heightMap = [];
+		if($terrainGenerated){
+			$count = $stream->getByte();
+			for($y = 0; $y < $count; ++$y){
+				$subChunks[$stream->getByte()] = new SubChunk(
+					$stream->get(4096), //blockids
+					$stream->get(2048), //blockdata
+					$lightPopulated ? $stream->get(2048) : "", //skylight
+					$lightPopulated ? $stream->get(2048) : "" //blocklight
+				);
+			}
+
+			$biomeIds = $stream->get(256);
+			if($lightPopulated){
+				$heightMap = array_values(unpack("v*", $stream->get(512)));
+			}
 		}
-		$heightMap = array_values(unpack("v*", $stream->get(512)));
-		$biomeIds = $stream->get(256);
 
 		$chunk = new Chunk($x, $z, $subChunks, [], [], $biomeIds, $heightMap);
-		$flags = $stream->getByte();
-		$chunk->lightPopulated = (bool) ($flags & 4);
-		$chunk->terrainPopulated = (bool) ($flags & 2);
-		$chunk->terrainGenerated = (bool) ($flags & 1);
+		$chunk->setGenerated($terrainGenerated);
+		$chunk->setPopulated($terrainPopulated);
+		$chunk->setLightPopulated($lightPopulated);
+
 		return $chunk;
 	}
 }

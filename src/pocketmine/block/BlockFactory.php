@@ -25,6 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Position;
+use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
+use function min;
 
 /**
  * Manages block registration and instance creation
@@ -47,15 +49,6 @@ class BlockFactory{
 	public static $diffusesSkyLight = null;
 	/** @var \SplFixedArray<float> */
 	public static $blastResistance = null;
-
-	/** @var int[] */
-	public static $staticRuntimeIdMap = [];
-
-	/** @var int[] */
-	public static $legacyIdMap = [];
-
-	/** @var int */
-	private static $lastRuntimeId = 0;
 
 	/**
 	 * Initializes the block factory. By default this is called only once on server start, however you may wish to use
@@ -167,7 +160,7 @@ class BlockFactory{
 		self::registerBlock(new Cake());
 		//TODO: REPEATER_BLOCK
 		//TODO: POWERED_REPEATER
-		//TODO: INVISIBLEBEDROCK
+		self::registerBlock(new InvisibleBedrock());
 		self::registerBlock(new Trapdoor());
 		//TODO: MONSTER_EGG
 		self::registerBlock(new StoneBricks());
@@ -315,13 +308,13 @@ class BlockFactory{
 		self::registerBlock(new Stonecutter());
 		self::registerBlock(new GlowingObsidian());
 		self::registerBlock(new NetherReactor());
-		//TODO: INFO_UPDATE
-		//TODO: INFO_UPDATE2
+		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE, 0, "update!"));
+		self::registerBlock(new InfoUpdate(Block::INFO_UPDATE2, 0, "ate!upd"));
 		//TODO: MOVINGBLOCK
 		//TODO: OBSERVER
 		//TODO: STRUCTURE_BLOCK
 
-		//TODO: RESERVED6
+		self::registerBlock(new Reserved6(Block::RESERVED6, 0, "reserved6"));
 
 		for($id = 0, $size = self::$fullList->getSize() >> 4; $id < $size; ++$id){
 			if(self::$fullList[$id << 4] === null){
@@ -423,16 +416,9 @@ class BlockFactory{
 		return $b !== null and !($b instanceof UnknownBlock);
 	}
 
-	public static function registerStaticRuntimeIdMappings() : void{
-		/** @var mixed[] $runtimeIdMap */
-		$runtimeIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
-		foreach($runtimeIdMap as $k => $obj){
-			self::registerMapping($k, $obj["id"], $obj["data"]);
-		}
-	}
-
 	/**
 	 * @internal
+	 * @deprecated
 	 *
 	 * @param int $id
 	 * @param int $meta
@@ -440,15 +426,11 @@ class BlockFactory{
 	 * @return int
 	 */
 	public static function toStaticRuntimeId(int $id, int $meta = 0) : int{
-		/*
-		 * try id+meta first
-		 * if not found, try id+0 (strip meta)
-		 * if still not found, return update! block
-		 */
-		return self::$staticRuntimeIdMap[($id << 4) | $meta] ?? self::$staticRuntimeIdMap[$id << 4] ?? self::$staticRuntimeIdMap[BlockIds::INFO_UPDATE << 4];
+		return RuntimeBlockMapping::toStaticRuntimeId($id, $meta);
 	}
 
 	/**
+	 * @deprecated
 	 * @internal
 	 *
 	 * @param int $runtimeId
@@ -456,13 +438,6 @@ class BlockFactory{
 	 * @return int[] [id, meta]
 	 */
 	public static function fromStaticRuntimeId(int $runtimeId) : array{
-		$v = self::$legacyIdMap[$runtimeId];
-		return [$v >> 4, $v & 0xf];
-	}
-
-	private static function registerMapping(int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{
-		self::$staticRuntimeIdMap[($legacyId << 4) | $legacyMeta] = $staticRuntimeId;
-		self::$legacyIdMap[$staticRuntimeId] = ($legacyId << 4) | $legacyMeta;
-		self::$lastRuntimeId = max(self::$lastRuntimeId, $staticRuntimeId);
+		return RuntimeBlockMapping::fromStaticRuntimeId($runtimeId);
 	}
 }

@@ -28,9 +28,10 @@ use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
-use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
+use pocketmine\network\mcpe\protocol\AddItemActorPacket;
+use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\Player;
+use function get_class;
 
 class ItemEntity extends Entity{
 	public const NETWORK_ID = self::ITEM;
@@ -191,7 +192,7 @@ class ItemEntity extends Entity{
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddItemEntityPacket();
+		$pk = new AddItemActorPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->position = $this->asVector3();
 		$pk->motion = $this->getMotion();
@@ -209,7 +210,7 @@ class ItemEntity extends Entity{
 		$item = $this->getItem();
 		$playerInventory = $player->getInventory();
 
-		if(!($item instanceof Item) or ($player->isSurvival() and !$playerInventory->canAddItem($item))){
+		if($player->isSurvival() and !$playerInventory->canAddItem($item)){
 			return;
 		}
 
@@ -228,7 +229,7 @@ class ItemEntity extends Entity{
 				break;
 		}
 
-		$pk = new TakeItemEntityPacket();
+		$pk = new TakeItemActorPacket();
 		$pk->eid = $player->getId();
 		$pk->target = $this->getId();
 		$this->server->broadcastPacket($this->getViewers(), $pk);

@@ -24,11 +24,17 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\event\block\BlockFormEvent;
+use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\level\sound\FizzSound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use function array_fill;
+use function intdiv;
+use function lcg_value;
+use function min;
 
 abstract class Liquid extends Transparent{
 
@@ -294,12 +300,16 @@ abstract class Liquid extends Transparent{
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay) : void{
 		if($this->canFlowInto($block) and !($block instanceof Liquid)){
-			if($block->getId() > 0){
-				$this->level->useBreakOn($block);
-			}
+			$ev = new BlockSpreadEvent($block, $this, BlockFactory::get($this->getId(), $newFlowDecay));
+			$ev->call();
+			if(!$ev->isCancelled()){
+				if($block->getId() > 0){
+					$this->level->useBreakOn($block);
+				}
 
-			$this->level->setBlock($block, BlockFactory::get($this->getId(), $newFlowDecay), true, true);
-			$this->level->scheduleDelayedBlockUpdate($block, $this->tickRate());
+				$this->level->setBlock($block, $ev->getNewState(), true, true);
+				$this->level->scheduleDelayedBlockUpdate($block, $this->tickRate());
+			}
 		}
 	}
 
@@ -363,7 +373,7 @@ abstract class Liquid extends Transparent{
 	 */
 	private function getOptimalFlowDirections() : array{
 		$flowCost = array_fill(0, 4, 1000);
-		$maxCost = 4 / $this->getFlowDecayPerBlock();
+		$maxCost = intdiv(4, $this->getFlowDecayPerBlock());
 		for($j = 0; $j < 4; ++$j){
 			$x = $this->x;
 			$y = $this->y;
@@ -425,10 +435,12 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function liquidCollide(Block $cause, Block $result) : bool{
-		//TODO: add events
-
-		$this->level->setBlock($this, $result, true, true);
-		$this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_FIZZ, (int) ((2.6 + (lcg_value() - lcg_value()) * 0.8) * 1000));
+		$ev = new BlockFormEvent($this, $result);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$this->level->setBlock($this, $ev->getNewState(), true, true);
+			$this->level->addSound(new FizzSound($this->add(0.5, 0.5, 0.5), 2.6 + (lcg_value() - lcg_value()) * 0.8));
+		}
 		return true;
 	}
 

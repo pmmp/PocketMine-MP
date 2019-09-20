@@ -23,6 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use function is_file;
+use function strlen;
+use function substr;
+
 /**
  * Handles different types of plugins
  */

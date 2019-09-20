@@ -27,15 +27,25 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
+use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NetworkLittleEndianNBTStream;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
+use function count;
+use function strlen;
 
 class NetworkBinaryStream extends BinaryStream{
+
+	private const DAMAGE_TAG = "Damage"; //TAG_Int
+	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
 
 	public function getString() : string{
 		return $this->get($this->getUnsignedVarInt());
@@ -71,16 +81,20 @@ class NetworkBinaryStream extends BinaryStream{
 
 		$auxValue = $this->getVarInt();
 		$data = $auxValue >> 8;
-		if($data === 0x7fff){
-			$data = -1;
-		}
 		$cnt = $auxValue & 0xff;
 
 		$nbtLen = $this->getLShort();
-		$nbt = "";
 
-		if($nbtLen > 0){
-			$nbt = $this->get($nbtLen);
+		/** @var CompoundTag|null $nbt */
+		$nbt = null;
+		if($nbtLen === 0xffff){
+			$c = $this->getByte();
+			if($c !== 1){
+				throw new \UnexpectedValueException("Unexpected NBT count $c");
+			}
+			$nbt = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
+		}elseif($nbtLen !== 0){
+			throw new \UnexpectedValueException("Unexpected fake NBT length $nbtLen");
 		}
 
 		//TODO
@@ -93,6 +107,25 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->getString();
 		}
 
+		if($id === ItemIds::SHIELD){
+			$this->getVarLong(); //"blocking tick" (ffs mojang)
+		}
+		if($nbt !== null){
+			if($nbt->hasTag(self::DAMAGE_TAG, IntTag::class)){
+				$data = $nbt->getInt(self::DAMAGE_TAG);
+				$nbt->removeTag(self::DAMAGE_TAG);
+				if($nbt->count() === 0){
+					$nbt = null;
+					goto end;
+				}
+			}
+			if(($conflicted = $nbt->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
+				$nbt->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
+				$conflicted->setName(self::DAMAGE_TAG);
+				$nbt->setTag($conflicted);
+			}
+		}
+		end:
 		return ItemFactory::get($id, $data, $cnt, $nbt);
 	}
 
@@ -108,12 +141,60 @@ class NetworkBinaryStream extends BinaryStream{
 		$auxValue = (($item->getDamage() & 0x7fff) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 
-		$nbt = $item->getCompoundTag();
-		$this->putLShort(strlen($nbt));
-		$this->put($nbt);
+		$nbt = null;
+		if($item->hasCompoundTag()){
+			$nbt = clone $item->getNamedTag();
+		}
+		if($item instanceof Durable and $item->getDamage() > 0){
+			if($nbt !== null){
+				if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
+					$nbt->removeTag(self::DAMAGE_TAG);
+					$existing->setName(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
+					$nbt->setTag($existing);
+				}
+			}else{
+				$nbt = new CompoundTag();
+			}
+			$nbt->setInt(self::DAMAGE_TAG, $item->getDamage());
+		}
+
+		if($nbt !== null){
+			$this->putLShort(0xffff);
+			$this->putByte(1); //TODO: some kind of count field? always 1 as of 1.9.0
+			$this->put((new NetworkLittleEndianNBTStream())->write($nbt));
+		}else{
+			$this->putLShort(0);
+		}
 
 		$this->putVarInt(0); //CanPlaceOn entry count (TODO)
 		$this->putVarInt(0); //CanDestroy entry count (TODO)
+
+		if($item->getId() === ItemIds::SHIELD){
+			$this->putVarLong(0); //"blocking tick" (ffs mojang)
+		}
+	}
+
+	public function getRecipeIngredient() : Item{
+		$id = $this->getVarInt();
+		if($id === 0){
+			return ItemFactory::get(ItemIds::AIR, 0, 0);
+		}
+		$meta = $this->getVarInt();
+		if($meta === 0x7fff){
+			$meta = -1;
+		}
+		$count = $this->getVarInt();
+		return ItemFactory::get($id, $meta, $count);
+	}
+
+	public function putRecipeIngredient(Item $item) : void{
+		if($item->isNull()){
+			$this->putVarInt(0);
+		}else{
+			$this->putVarInt($item->getId());
+			$this->putVarInt($item->getDamage() & 0x7fff);
+			$this->putVarInt($item->getCount());
+		}
 	}
 
 	/**
@@ -146,8 +227,8 @@ class NetworkBinaryStream extends BinaryStream{
 				case Entity::DATA_TYPE_STRING:
 					$value = $this->getString();
 					break;
-				case Entity::DATA_TYPE_SLOT:
-					$value = $this->getSlot();
+				case Entity::DATA_TYPE_COMPOUND_TAG:
+					$value = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
 					break;
 				case Entity::DATA_TYPE_POS:
 					$value = new Vector3();
@@ -198,8 +279,8 @@ class NetworkBinaryStream extends BinaryStream{
 				case Entity::DATA_TYPE_STRING:
 					$this->putString($d[1]);
 					break;
-				case Entity::DATA_TYPE_SLOT:
-					$this->putSlot($d[1]);
+				case Entity::DATA_TYPE_COMPOUND_TAG:
+					$this->put((new NetworkLittleEndianNBTStream())->write($d[1]));
 					break;
 				case Entity::DATA_TYPE_POS:
 					$v = $d[1];

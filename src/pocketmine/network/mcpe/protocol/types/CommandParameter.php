@@ -30,6 +30,8 @@ class CommandParameter{
 	public $paramType;
 	/** @var bool */
 	public $isOptional;
+	/** @var int */
+	public $byte1 = 0; //unknown, always zero except for in /gamerule command
 	/** @var CommandEnum|null */
 	public $enum;
 	/** @var string|null */

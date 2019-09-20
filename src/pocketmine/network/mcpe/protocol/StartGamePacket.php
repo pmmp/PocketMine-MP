@@ -30,12 +30,19 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
+use function count;
+use function file_get_contents;
+use function json_decode;
+use const pocketmine\RESOURCE_PATH;
 
 class StartGamePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
 
 	/** @var string|null */
-	private static $runtimeIdTable;
+	private static $blockTableCache = null;
+	/** @var string|null */
+	private static $itemTableCache = null;
 
 	/** @var int */
 	public $entityUniqueId;
@@ -81,35 +88,33 @@ class StartGamePacket extends DataPacket{
 	/** @var float */
 	public $lightningLevel;
 	/** @var bool */
+	public $hasConfirmedPlatformLockedContent = false;
+	/** @var bool */
 	public $isMultiplayerGame = true;
 	/** @var bool */
 	public $hasLANBroadcast = true;
-	/** @var bool */
-	public $hasXboxLiveBroadcast = false;
+	/** @var int */
+	public $xboxLiveBroadcastMode = 0; //TODO: find values
+	/** @var int */
+	public $platformBroadcastMode = 0;
 	/** @var bool */
 	public $commandsEnabled;
 	/** @var bool */
 	public $isTexturePacksRequired = true;
 	/** @var array */
-	public $gameRules = []; //TODO: implement this
+	public $gameRules = [ //TODO: implement this
+		"naturalregeneration" => [1, false] //Hack for client side regeneration
+	];
 	/** @var bool */
 	public $hasBonusChestEnabled = false;
 	/** @var bool */
 	public $hasStartWithMapEnabled = false;
-	/** @var bool */
-	public $hasTrustPlayersEnabled = false;
 	/** @var int */
 	public $defaultPlayerPermission = PlayerPermissions::MEMBER; //TODO
-	/** @var int */
-	public $xboxLiveBroadcastMode = 0; //TODO: find values
+
 	/** @var int */
 	public $serverChunkTickRadius = 4; //TODO (leave as default for now)
-	/** @var bool */
-	public $hasPlatformBroadcast = false;
-	/** @var int */
-	public $platformBroadcastMode = 0;
-	/** @var bool */
-	public $xboxLiveBroadcastIntent = false;
+
 	/** @var bool */
 	public $hasLockedBehaviorPack = false;
 	/** @var bool */
@@ -118,6 +123,12 @@ class StartGamePacket extends DataPacket{
 	public $isFromLockedWorldTemplate = false;
 	/** @var bool */
 	public $useMsaGamertagsOnly = false;
+	/** @var bool */
+	public $isFromWorldTemplate = false;
+	/** @var bool */
+	public $isWorldTemplateOptionLocked = false;
+	/** @var bool */
+	public $onlySpawnV1Villagers = false;
 
 	/** @var string */
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
@@ -133,6 +144,11 @@ class StartGamePacket extends DataPacket{
 	public $enchantmentSeed = 0;
 	/** @var string */
 	public $multiplayerCorrelationId = ""; //TODO: this should be filled with a UUID of some sort
+
+	/** @var array|null ["name" (string), "data" (int16), "legacy_id" (int16)] */
+	public $blockTable = null;
+	/** @var array|null string (name) => int16 (legacyID) */
+	public $itemTable = null;
 
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
@@ -157,25 +173,25 @@ class StartGamePacket extends DataPacket{
 		$this->hasEduFeaturesEnabled = $this->getBool();
 		$this->rainLevel = $this->getLFloat();
 		$this->lightningLevel = $this->getLFloat();
+		$this->hasConfirmedPlatformLockedContent = $this->getBool();
 		$this->isMultiplayerGame = $this->getBool();
 		$this->hasLANBroadcast = $this->getBool();
-		$this->hasXboxLiveBroadcast = $this->getBool();
+		$this->xboxLiveBroadcastMode = $this->getVarInt();
+		$this->platformBroadcastMode = $this->getVarInt();
 		$this->commandsEnabled = $this->getBool();
 		$this->isTexturePacksRequired = $this->getBool();
 		$this->gameRules = $this->getGameRules();
 		$this->hasBonusChestEnabled = $this->getBool();
 		$this->hasStartWithMapEnabled = $this->getBool();
-		$this->hasTrustPlayersEnabled = $this->getBool();
 		$this->defaultPlayerPermission = $this->getVarInt();
-		$this->xboxLiveBroadcastMode = $this->getVarInt();
 		$this->serverChunkTickRadius = $this->getLInt();
-		$this->hasPlatformBroadcast = $this->getBool();
-		$this->platformBroadcastMode = $this->getVarInt();
-		$this->xboxLiveBroadcastIntent = $this->getBool();
 		$this->hasLockedBehaviorPack = $this->getBool();
 		$this->hasLockedResourcePack = $this->getBool();
 		$this->isFromLockedWorldTemplate = $this->getBool();
 		$this->useMsaGamertagsOnly = $this->getBool();
+		$this->isFromWorldTemplate = $this->getBool();
+		$this->isWorldTemplateOptionLocked = $this->getBool();
+		$this->onlySpawnV1Villagers = $this->getBool();
 
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
@@ -185,10 +201,20 @@ class StartGamePacket extends DataPacket{
 
 		$this->enchantmentSeed = $this->getVarInt();
 
-		$count = $this->getUnsignedVarInt();
-		for($i = 0; $i < $count; ++$i){
-			$this->getString();
-			$this->getLShort();
+		$this->blockTable = [];
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$id = $this->getString();
+			$data = $this->getSignedLShort();
+			$unknown = $this->getSignedLShort();
+
+			$this->blockTable[$i] = ["name" => $id, "data" => $data, "legacy_id" => $unknown];
+		}
+		$this->itemTable = [];
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$id = $this->getString();
+			$legacyId = $this->getSignedLShort();
+
+			$this->itemTable[$id] = $legacyId;
 		}
 
 		$this->multiplayerCorrelationId = $this->getString();
@@ -217,25 +243,25 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->hasEduFeaturesEnabled);
 		$this->putLFloat($this->rainLevel);
 		$this->putLFloat($this->lightningLevel);
+		$this->putBool($this->hasConfirmedPlatformLockedContent);
 		$this->putBool($this->isMultiplayerGame);
 		$this->putBool($this->hasLANBroadcast);
-		$this->putBool($this->hasXboxLiveBroadcast);
+		$this->putVarInt($this->xboxLiveBroadcastMode);
+		$this->putVarInt($this->platformBroadcastMode);
 		$this->putBool($this->commandsEnabled);
 		$this->putBool($this->isTexturePacksRequired);
 		$this->putGameRules($this->gameRules);
 		$this->putBool($this->hasBonusChestEnabled);
 		$this->putBool($this->hasStartWithMapEnabled);
-		$this->putBool($this->hasTrustPlayersEnabled);
 		$this->putVarInt($this->defaultPlayerPermission);
-		$this->putVarInt($this->xboxLiveBroadcastMode);
 		$this->putLInt($this->serverChunkTickRadius);
-		$this->putBool($this->hasPlatformBroadcast);
-		$this->putVarInt($this->platformBroadcastMode);
-		$this->putBool($this->xboxLiveBroadcastIntent);
 		$this->putBool($this->hasLockedBehaviorPack);
 		$this->putBool($this->hasLockedResourcePack);
 		$this->putBool($this->isFromLockedWorldTemplate);
 		$this->putBool($this->useMsaGamertagsOnly);
+		$this->putBool($this->isFromWorldTemplate);
+		$this->putBool($this->isWorldTemplateOptionLocked);
+		$this->putBool($this->onlySpawnV1Villagers);
 
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
@@ -245,20 +271,46 @@ class StartGamePacket extends DataPacket{
 
 		$this->putVarInt($this->enchantmentSeed);
 
-		if(self::$runtimeIdTable === null){
-			//this is a really nasty hack, but it'll do for now
-			$stream = new NetworkBinaryStream();
-			$data = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "runtimeid_table.json"), true);
-			$stream->putUnsignedVarInt(count($data));
-			foreach($data as $v){
-				$stream->putString($v["name"]);
-				$stream->putLShort($v["data"]);
+		if($this->blockTable === null){
+			if(self::$blockTableCache === null){
+				//this is a really nasty hack, but it'll do for now
+				self::$blockTableCache = self::serializeBlockTable(RuntimeBlockMapping::getBedrockKnownStates());
 			}
-			self::$runtimeIdTable = $stream->buffer;
+			$this->put(self::$blockTableCache);
+		}else{
+			$this->put(self::serializeBlockTable($this->blockTable));
 		}
-		$this->put(self::$runtimeIdTable);
+		if($this->itemTable === null){
+			if(self::$itemTableCache === null){
+				self::$itemTableCache = self::serializeItemTable(json_decode(file_get_contents(RESOURCE_PATH . '/vanilla/item_id_map.json'), true));
+			}
+			$this->put(self::$itemTableCache);
+		}else{
+			$this->put(self::serializeItemTable($this->itemTable));
+		}
 
 		$this->putString($this->multiplayerCorrelationId);
+	}
+
+	private static function serializeBlockTable(array $table) : string{
+		$stream = new NetworkBinaryStream();
+		$stream->putUnsignedVarInt(count($table));
+		foreach($table as $v){
+			$stream->putString($v["name"]);
+			$stream->putLShort($v["data"]);
+			$stream->putLShort($v["legacy_id"]);
+		}
+		return $stream->getBuffer();
+	}
+
+	private static function serializeItemTable(array $table) : string{
+		$stream = new NetworkBinaryStream();
+		$stream->putUnsignedVarInt(count($table));
+		foreach($table as $name => $legacyId){
+			$stream->putString($name);
+			$stream->putLShort($legacyId);
+		}
+		return $stream->getBuffer();
 	}
 
 	public function handle(NetworkSession $session) : bool{

@@ -30,8 +30,8 @@ use pocketmine\utils\Random;
 class TallGrass extends Populator{
 	/** @var ChunkManager */
 	private $level;
-	private $randomAmount;
-	private $baseAmount;
+	private $randomAmount = 1;
+	private $baseAmount = 0;
 
 	public function setRandomAmount($amount){
 		$this->randomAmount = $amount;
@@ -43,7 +43,7 @@ class TallGrass extends Populator{
 
 	public function populate(ChunkManager $level, int $chunkX, int $chunkZ, Random $random){
 		$this->level = $level;
-		$amount = $random->nextRange(0, $this->randomAmount + 1) + $this->baseAmount;
+		$amount = $random->nextRange(0, $this->randomAmount) + $this->baseAmount;
 		for($i = 0; $i < $amount; ++$i){
 			$x = $random->nextRange($chunkX * 16, $chunkX * 16 + 15);
 			$z = $random->nextRange($chunkZ * 16, $chunkZ * 16 + 15);

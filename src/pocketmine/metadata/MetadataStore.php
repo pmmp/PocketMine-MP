@@ -100,7 +100,7 @@ abstract class MetadataStore{
 	 * @param Plugin $owningPlugin
 	 */
 	public function invalidateAll(Plugin $owningPlugin){
-		/** @var $values MetadataValue[] */
+		/** @var MetadataValue[] $values */
 		foreach($this->metadataMap as $values){
 			if(isset($values[$owningPlugin])){
 				$values[$owningPlugin]->invalidate();

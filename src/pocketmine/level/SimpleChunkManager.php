@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\level;
 
 use pocketmine\level\format\Chunk;
+use const INT32_MAX;
+use const INT32_MIN;
 
 class SimpleChunkManager implements ChunkManager{
 

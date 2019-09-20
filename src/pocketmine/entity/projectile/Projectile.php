@@ -41,10 +41,14 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\timings\Timings;
+use function assert;
+use function atan2;
+use function ceil;
+use function sqrt;
+use const M_PI;
+use const PHP_INT_MAX;
 
 abstract class Projectile extends Entity{
-
-	public const DATA_SHOOTER_ID = 17;
 
 	/** @var float */
 	protected $damage = 0.0;
@@ -313,7 +317,7 @@ abstract class Projectile extends Entity{
 
 			$entityHit->attack($ev);
 
-			if($this->fireTicks > 0){
+			if($this->isOnFire()){
 				$ev = new EntityCombustByEntityEvent($this, $entityHit, 5);
 				$ev->call();
 				if(!$ev->isCancelled()){
