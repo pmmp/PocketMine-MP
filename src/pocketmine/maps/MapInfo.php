@@ -31,7 +31,6 @@ class MapInfo{
 
 	/** @var Player */
 	public $player;
-	public $currentCheckX = 0;
 	public $packetSendTimer = 0;
 	public $dirty = true;
 
@@ -90,6 +89,7 @@ class MapInfo{
 			$this->maxY = max($this->maxY, $y);
 		}else{
 			$this->dirty = true;
+
 			$this->minX = $x;
 			$this->minY = $y;
 			$this->maxX = $x;

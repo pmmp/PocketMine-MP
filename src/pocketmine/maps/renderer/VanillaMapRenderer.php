@@ -36,6 +36,7 @@ use pocketmine\Player;
 use pocketmine\utils\Color;
 
 class VanillaMapRenderer extends MapRenderer{
+	protected $currentCheckX = 0;
 
 	public function initialize(MapData $mapData) : void{
 
@@ -60,114 +61,114 @@ class VanillaMapRenderer extends MapRenderer{
 		}
 
 		if($mapData->getLevelName() === $player->level->getFolderName() and $player->level->getDimension() === $mapData->getDimension() and !$mapData->isLocked()){
-			$i = 1 << $mapData->getScale();
+			$realScale = 1 << $mapData->getScale();
 
-			$j = $mapData->getCenterX();
-			$k = $mapData->getCenterZ();
+			$centerX = $mapData->getCenterX();
+			$centerZ = $mapData->getCenterZ();
 
-			$l = (int) (floor($player->x - $j) / $i + 64);
-			$i1 = (int) (floor($player->z - $k) / $i + 64);
-			$j1 = 128 / $i;
+			$playerMapX = (int) (floor($player->x - $centerX) / $realScale + 64);
+			$playerMapY = (int) (floor($player->z - $centerZ) / $realScale + 64);
+			$maxCheckDistance = 128 / $realScale;
 
-			$info = $mapData->getMapInfo($player);
 			$world = $player->level;
 			$air = new Air();
 
 			$avgY = 0;
 
-			for($y = max(0, $i1 - $j1 + 1); $y < min(128, $i1 + $j1); $y++){
-				$k1 = $info->currentCheckX;
-				$l1 = $y;
+			for($y = max(0, $playerMapY - $maxCheckDistance + 1); $y < min(128, $playerMapY + $maxCheckDistance); $y++){
+				$mapX = $this->currentCheckX;
+				$mapY = $y;
 
-				if($k1 >= 0 and $l1 >= -1 and $k1 < 128 and $l1 < 128){
-					$i2 = $k1 - $l;
-					$j2 = $l1 - $i1;
-					$flag1 = $i2 * $i2 + $j2 * $j2 > ($j1 - 2) * ($j1 - 2);
-					$k2 = ($j / $i + $k1 - 64) * $i;
-					$l2 = ($k / $i + $l1 - 64) * $i;
+				$distX = $mapX - $playerMapX;
+				$distY = $mapY - $playerMapY;
 
-					if($world->isChunkLoaded($k2 >> 4, $l2 >> 4)){
-						$k3 = 0;
-						$d1 = 0.0;
-						$chunk = $world->getChunk($k2 >> 4, $l2 >> 4);
-						$k4 = $chunk->getHeightMap($k2 & 15, $l2 & 15) + 1;
-						$block = clone $air;
+				$isTooFar = $distX ** 2 + $distY ** 2 > ($maxCheckDistance - 2) ** 2;
 
-						if($k4 > 1){
-							while(true){
-								$k4--;
-								$block = $world->getBlockAt($k2, $k4, $l2);
+				$worldX = ($centerX / $realScale + $mapX - 64) * $realScale;
+				$worldZ = ($centerZ / $realScale + $mapY - 64) * $realScale;
 
-								if($block->getId() !== Block::AIR or $k4 <= 0){
+				if($world->isChunkLoaded($worldX >> 4, $worldZ >> 4)){
+					$liquidDepth = 0;
+					$nextAvgY = 0;
+
+					$chunk = $world->getChunk($worldX >> 4, $worldZ >> 4);
+					$worldY = $chunk->getHeightMap($worldX & 15, $worldZ & 15) + 1;
+					$block = clone $air;
+
+					if($worldY > 1){
+						while(true){
+							$worldY--;
+							$block = $world->getBlockAt($worldX, $worldY, $worldZ);
+
+							if($block->getId() !== Block::AIR or $worldY <= 0){
+								break;
+							}
+						}
+						if($worldY > 0 and $block instanceof Liquid){
+							$attempt = 0;
+							$worldY2 = $worldY - 1;
+
+							while($attempt++ <= 10){
+								$b = $world->getBlockAt($worldX, $worldY2--, $worldZ);
+								$liquidDepth++;
+
+								if($worldY2 <= 0 or !($b instanceof Liquid)){
 									break;
 								}
 							}
-							if($k4 > 0 and $block instanceof Liquid){
-								$attempt = 0;
-								$l4 = $k4 - 1;
-
-								while($attempt++ <= 10){
-									$b = $world->getBlockAt($k2, $l4--, $l2);
-									$k3++;
-
-									if($l4 <= 0 or !($b instanceof Liquid)){
-										break;
-									}
-								}
-							}
-
-							$d1 += (int) $k4 / (int) ($i * $i);
-							$mapColor = self::getMapColorByBlock($block);
-						}else{
-							$mapColor = new Color(0, 0, 0);
 						}
 
-						$k3 = $k3 / ($i * $i);
-						$d2 = ($d1 - $avgY) * 4.0 / (int) ($i + 4) + ((int) ($k1 + $l1 & 1) - 0.5) * 0.4;
-						$i5 = 1;
+						$nextAvgY += (int) $worldY / (int) ($realScale * $realScale);
+						$mapColor = self::getMapColorByBlock($block);
+					}else{
+						$mapColor = new Color(0, 0, 0);
+					}
 
-						if($d2 > 0.6){
-							$i5 = 2;
+					$liquidDepth /= ($realScale * $realScale);
+					$avgYDifference = ($nextAvgY - $avgY) * 4 / (int) ($realScale + 4) + ((int) ($mapX + $mapY & 1) - 0.5) * 0.4;
+					$colorDepth = 1;
+
+					if($avgYDifference > 0.6){
+						$colorDepth = 2;
+					}
+
+					if($avgYDifference < -0.6){
+						$colorDepth = 0;
+					}
+
+					if($mapColor->getR() === 64 and $mapColor->getG() === 64 and $mapColor->getB() === 255){ // water color
+						$avgYDifference = (int) $liquidDepth * 0.1 + (int) ($mapX + $mapY & 1) * 0.2;
+						$colorDepth = 1;
+
+						if($avgYDifference < 0.5){
+							$colorDepth = 2;
 						}
 
-						if($d2 < -0.6){
-							$i5 = 0;
+						if($avgYDifference > 0.9){
+							$colorDepth = 0;
 						}
+					}
 
-						if($mapColor->getR() === 64 and $mapColor->getG() === 64 and $mapColor->getB() === 255){ // water color
-							$d2 = (int) $k3 * 0.1 + (int) ($k1 + $l1 & 1) * 0.2;
-							$i5 = 1;
+					$avgY = $nextAvgY;
 
-							if($d2 < 0.5){
-								$i5 = 2;
-							}
+					if(($distX ** 2 + $distY ** 2) < $maxCheckDistance ** 2 and (!$isTooFar or ($mapX + $mapY & 1) !== 0)){
+						$oldColor = $mapData->getColorAt($mapX, $mapY);
+						$newColor = self::colorizeMapColor($mapColor, $colorDepth);
 
-							if($d2 > 0.9){
-								$i5 = 0;
-							}
-						}
+						if(!$oldColor->equals($newColor)){
+							$mapData->setColorAt($mapX, $mapY, $newColor);
 
-						$avgY = $d1;
-
-						if($l1 >= 0 and $i2 * $i2 + $j2 * $j2 < $j1 * $j1 and (!$flag1 || ($k1 + $l1 & 1) != 0)){
-							$b0 = $mapData->getColorAt($k1, $l1)->toABGR();
-							$b1 = self::colorizeMapColor($mapColor->toABGR(), $i5);
-
-							if($b0 !== $b1){
-								$mapData->setColorAt($k1, $l1, Color::fromABGR($b1));
-
-								$mapData->updateTextureAt($k1, $l1);
-							}
+							$mapData->updateTextureAt($mapX, $mapY);
 						}
 					}
 				}
 			}
 
-			$info->currentCheckX++;
-			$info->currentCheckX %= 129;
+			$this->currentCheckX++;
+			$this->currentCheckX %= 128;
 		}
 	}
-	
+
 	public const COLOR_BLOCK_WHITE = 0;
 	public const COLOR_BLOCK_ORANGE = 1;
 	public const COLOR_BLOCK_MAGENTA = 2;
@@ -225,33 +226,33 @@ class VanillaMapRenderer extends MapRenderer{
 			return new Color(143, 119, 72);
 		}elseif($id === Block::QUARTZ_BLOCK or ($id === Block::STONE_SLAB and ($meta & 0x07) == 6) or $id === Block::QUARTZ_STAIRS or ($id === Block::STONE and $meta == Stone::DIORITE) or ($id === Block::STONE and $meta == Stone::POLISHED_DIORITE) or $id === Block::SEA_LANTERN){
 			return new Color(255, 252, 245);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_ORANGE)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_ORANGE) or $id === Block::ORANGE_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_ORANGE) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_ORANGE) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_ORANGE) or $id === Block::PUMPKIN or $id === Block::JACK_O_LANTERN or $id === Block::HARDENED_CLAY or ($id === Block::WOOD2 and ($meta & 0x03) == Wood2::ACACIA) or ($id === Block::PLANKS and $meta == Planks::ACACIA) or ($id === Block::FENCE and $meta == Planks::ACACIA) or $id === Block::ACACIA_FENCE_GATE or $id === Block::ACACIA_STAIRS or ($id === Block::WOODEN_SLAB and ($meta & 0x07) == Planks::ACACIA)){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_ORANGE) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_ORANGE) or $id === Block::ORANGE_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_ORANGE) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_ORANGE) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_ORANGE) or $id === Block::PUMPKIN or $id === Block::JACK_O_LANTERN or $id === Block::HARDENED_CLAY or ($id === Block::WOOD2 and ($meta & 0x03) == Wood2::ACACIA) or ($id === Block::PLANKS and $meta == Planks::ACACIA) or ($id === Block::FENCE and $meta == Planks::ACACIA) or $id === Block::ACACIA_FENCE_GATE or $id === Block::ACACIA_STAIRS or ($id === Block::WOODEN_SLAB and ($meta & 0x07) == Planks::ACACIA)){
 			return new Color(216, 127, 51);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_MAGENTA)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_MAGENTA) or $id === Block::MAGENTA_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_MAGENTA) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_MAGENTA) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_MAGENTA) or $id === Block::PURPUR_BLOCK or $id === Block::PURPUR_STAIRS or ($id === Block::STONE_SLAB2 and ($meta & 0x07) == Stone::PURPUR_BLOCK)){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_MAGENTA) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_MAGENTA) or $id === Block::MAGENTA_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_MAGENTA) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_MAGENTA) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_MAGENTA) or $id === Block::PURPUR_BLOCK or $id === Block::PURPUR_STAIRS or ($id === Block::STONE_SLAB2 and ($meta & 0x07) == Stone::PURPUR_BLOCK)){
 			return new Color(178, 76, 216);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_LIGHT_BLUE)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_LIGHT_BLUE) or $id === Block::LIGHT_BLUE_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_LIGHT_BLUE) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_LIGHT_BLUE) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_LIGHT_BLUE)){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_LIGHT_BLUE) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_LIGHT_BLUE) or $id === Block::LIGHT_BLUE_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_LIGHT_BLUE) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_LIGHT_BLUE) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_LIGHT_BLUE)){
 			return new Color(102, 153, 216);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_YELLOW)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_YELLOW) or $id === Block::YELLOW_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_YELLOW) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_YELLOW) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_YELLOW) or $id === Block::HAY_BALE or $id === Block::SPONGE){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_YELLOW) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_YELLOW) or $id === Block::YELLOW_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_YELLOW) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_YELLOW) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_YELLOW) or $id === Block::HAY_BALE or $id === Block::SPONGE){
 			return new Color(229, 229, 51);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_LIME)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_LIME) or $id === Block::LIME_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_LIME) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_LIME) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_LIME) or $id === Block::MELON_BLOCK){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_LIME) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_LIME) or $id === Block::LIME_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_LIME) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_LIME) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_LIME) or $id === Block::MELON_BLOCK){
 			return new Color(229, 229, 51);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_PINK)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_PINK) or $id === Block::PINK_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_PINK) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_PINK) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_PINK)){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_PINK) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_PINK) or $id === Block::PINK_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_PINK) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_PINK) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_PINK)){
 			return new Color(242, 127, 165);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_GRAY)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_GRAY) or $id === Block::GRAY_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_GRAY) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_GRAY) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_GRAY) or $id === Block::CAULDRON_BLOCK){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_GRAY) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_GRAY) or $id === Block::GRAY_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_GRAY) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_GRAY) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_GRAY) or $id === Block::CAULDRON_BLOCK){
 			return new Color(76, 76, 76);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_LIGHT_GRAY)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_LIGHT_GRAY) or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_LIGHT_GRAY) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_LIGHT_GRAY) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_LIGHT_GRAY) or $id === Block::STRUCTURE_BLOCK){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_LIGHT_GRAY) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_LIGHT_GRAY) or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_LIGHT_GRAY) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_LIGHT_GRAY) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_LIGHT_GRAY) or $id === Block::STRUCTURE_BLOCK){
 			return new Color(153, 153, 153);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_CYAN)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_CYAN) or $id === Block::CYAN_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_CYAN) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_CYAN) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_CYAN) or ($id === Block::PRISMARINE and $meta == Prismarine::NORMAL)){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_CYAN) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_CYAN) or $id === Block::CYAN_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_CYAN) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_CYAN) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_CYAN) or ($id === Block::PRISMARINE and $meta == Prismarine::NORMAL)){
 			return new Color(76, 127, 153);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_PURPLE)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_PURPLE) or $id === Block::PURPLE_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_PURPLE) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_PURPLE) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_PURPLE) or $id === Block::MYCELIUM or $id === Block::REPEATING_COMMAND_BLOCK or $id === Block::CHORUS_PLANT or $id === Block::CHORUS_FLOWER){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_PURPLE) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_PURPLE) or $id === Block::PURPLE_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_PURPLE) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_PURPLE) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_PURPLE) or $id === Block::MYCELIUM or $id === Block::REPEATING_COMMAND_BLOCK or $id === Block::CHORUS_PLANT or $id === Block::CHORUS_FLOWER){
 			return new Color(127, 63, 178);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_BLUE)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_BLUE) or $id === Block::BLUE_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_BLUE) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_BLUE) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_BLUE)){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_BLUE) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_BLUE) or $id === Block::BLUE_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_BLUE) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_BLUE) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_BLUE)){
 			return new Color(51, 76, 178);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_BROWN)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_BROWN) or $id === Block::BROWN_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_BROWN) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_BROWN) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_BROWN) or $id === Block::SOUL_SAND or ($id === Block::WOOD2 and ($meta & 0x03) == Wood2::DARK_OAK) or ($id === Block::PLANKS and $meta == Planks::DARK_OAK) or ($id === Block::FENCE and $meta == Planks::DARK_OAK) or $id === Block::DARK_OAK_FENCE_GATE or $id === Block::DARK_OAK_STAIRS or ($id === Block::WOODEN_SLAB and ($meta & 0x07) == Planks::DARK_OAK) or $id === Block::COMMAND_BLOCK){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_BROWN) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_BROWN) or $id === Block::BROWN_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_BROWN) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_BROWN) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_BROWN) or $id === Block::SOUL_SAND or ($id === Block::WOOD2 and ($meta & 0x03) == Wood2::DARK_OAK) or ($id === Block::PLANKS and $meta == Planks::DARK_OAK) or ($id === Block::FENCE and $meta == Planks::DARK_OAK) or $id === Block::DARK_OAK_FENCE_GATE or $id === Block::DARK_OAK_STAIRS or ($id === Block::WOODEN_SLAB and ($meta & 0x07) == Planks::DARK_OAK) or $id === Block::COMMAND_BLOCK){
 			return new Color(102, 76, 51);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_GREEN)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_GREEN) or $id === Block::GREEN_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_GREEN) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_GREEN) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_GREEN) or $id === Block::END_PORTAL_FRAME or $id === Block::CHAIN_COMMAND_BLOCK){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_GREEN) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_GREEN) or $id === Block::GREEN_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_GREEN) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_GREEN) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_GREEN) or $id === Block::END_PORTAL_FRAME or $id === Block::CHAIN_COMMAND_BLOCK){
 			return new Color(102, 127, 51);
-		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_RED)  or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_RED) or $id === Block::RED_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_RED) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_RED) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_RED) or $id === Block::RED_MUSHROOM_BLOCK or $id === Block::BRICK_BLOCK or ($id === Block::STONE_SLAB and ($meta & 0x07) == 4) or $id === Block::BRICK_STAIRS or $id === Block::ENCHANTING_TABLE or $id === Block::NETHER_WART_BLOCK or $id === Block::NETHER_WART_PLANT){
+		}elseif(($id === Block::CONCRETE and $meta == self::COLOR_BLOCK_RED) or ($id === Block::CONCRETE_POWDER and $meta == self::COLOR_BLOCK_RED) or $id === Block::RED_GLAZED_TERRACOTTA or ($id === Block::WOOL and $meta == self::COLOR_BLOCK_RED) or ($id === Block::CARPET and $meta == self::COLOR_BLOCK_RED) or ($id === Block::STAINED_HARDENED_CLAY and $meta == self::COLOR_BLOCK_RED) or $id === Block::RED_MUSHROOM_BLOCK or $id === Block::BRICK_BLOCK or ($id === Block::STONE_SLAB and ($meta & 0x07) == 4) or $id === Block::BRICK_STAIRS or $id === Block::ENCHANTING_TABLE or $id === Block::NETHER_WART_BLOCK or $id === Block::NETHER_WART_PLANT){
 			return new Color(153, 51, 51);
 		}elseif(($id === Block::WOOL and $meta == 0) or ($id === Block::CARPET and $meta == 0) or ($id === Block::STAINED_HARDENED_CLAY and $meta == 0) or $id === Block::DRAGON_EGG or $id === Block::COAL_BLOCK or $id === Block::OBSIDIAN or $id === Block::END_PORTAL){
 			return new Color(25, 25, 25);
@@ -273,28 +274,30 @@ class VanillaMapRenderer extends MapRenderer{
 	}
 
 	/**
-	 * @param int $v Color hash
-	 * @param int $value colorization value
+	 * @param Color $color
+	 * @param int   $colorLevel colorization level
 	 *
-	 * @return int
+	 * @return Color
 	 */
-	public static function colorizeMapColor(int $v, int $value) : int{
-		$short1 = 220;
-		if($value == 3){
-			$short1 = 135;
+	public static function colorizeMapColor(Color $color, int $colorLevel) : Color{
+		$colorDepth = 220;
+
+		if($colorLevel == 3){
+			$colorDepth = 135;
+		}elseif($colorLevel == 2){
+			$colorDepth = 255;
+		}elseif($colorLevel == 1){
+			$colorDepth = 220;
+		}elseif($colorLevel == 0){
+			$colorDepth = 180;
 		}
-		if($value == 2){
-			$short1 = 255;
-		}
-		if($value == 1){
-			$short1 = 220;
-		}
-		if($value == 0){
-			$short1 = 180;
-		}
-		$i = ($v >> 16 & 255) * $short1 / 255;
-		$j = ($v >> 8 & 255) * $short1 / 255;
-		$k = ($v & 255) * $short1 / 255;
-		return -16777216 | $i << 16 | $j << 8 | $k;
+
+		$abgr = $color->toABGR();
+
+		$r = ($abgr >> 16 & 255) * $colorDepth / 255;
+		$g = ($abgr >> 8 & 255) * $colorDepth / 255;
+		$b = ($abgr & 255) * $colorDepth / 255;
+
+		return Color::fromABGR(-16777216 | $r << 16 | $g << 8 | $b);
 	}
 }

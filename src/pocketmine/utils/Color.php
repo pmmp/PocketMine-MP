@@ -185,6 +185,10 @@ class Color{
 		return new Color((int) ($r / $count), (int) ($g / $count), (int) ($b / $count), (int) ($a / $count));
 	}
 
+	public function equals(Color $color) : bool{
+		return  $this->r === $color->r and $this->g === $color->g and $this->b === $color->b and $this->a === $color->a;
+	}
+
 	/**
 	 * Returns a Color from the supplied RGB colour code (24-bit)
 	 *
