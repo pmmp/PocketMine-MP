@@ -23,12 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Color;
 

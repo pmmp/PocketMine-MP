@@ -44,8 +44,8 @@ use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
-use pocketmine\network\mcpe\protocol\UpdateBlockPropertiesPacket;
 use pocketmine\Player;
 use pocketmine\tile\Cauldron as TileCauldron;
 use pocketmine\tile\Tile;
@@ -165,12 +165,12 @@ class Cauldron extends Solid{
 						$ev = new PlayerBucketEmptyEvent($player, $this, 0, $item, ItemFactory::get(Item::BUCKET));
 						$ev->call();
 						if(!$ev->isCancelled()){
-							if($tile->hasPotion() or $tile->getCustomColor() !== null){
+							if($tile->hasPotion() or $tile->getCustomColor() !== null or ($this->getDamage() > 0 and $this->getDamage() <= 6)){
 								$this->explodeCauldron($tile);
 							}else{
 								$this->setDamage(15);
 								$tile->setCustomColor(null);
-								$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_CAULDRON_FILL_WATER);
+								$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BUCKET_FILL_LAVA);
 							}
 
 							$this->level->setBlock($this, $this, true, true);
@@ -197,8 +197,11 @@ class Cauldron extends Solid{
 
 						$tile->setCustomColor($color);
 
-						$this->updateHacky();
-						$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_CAULDRON_ADD_DYE, $color->toARGB());
+						$this->updateLiquid();
+
+						// TODO: fix updating of color
+
+						$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_CAULDRON_ADD_DYE, Binary::signInt($color->toABGR()));
 					}
 				}elseif($item instanceof Potion or $item instanceof SplashPotion){
 					if((!$this->isEmpty()  and (($tile->getPotionId() !== $item->getDamage() and $item->getDamage() !== Potion::WATER) or
@@ -240,7 +243,9 @@ class Cauldron extends Solid{
 							$player->getInventory()->setItemInHand(ItemFactory::get(Item::GLASS_BOTTLE));
 						}
 
-						$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_CAULDRON_FILL_POTION, $item->getDamage());
+						$this->updateLiquid();
+
+						$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_CAULDRON_FILL_POTION, $tile->getPotionId());
 					}
 				}elseif($item instanceof GlassBottle){
 					if($this->getDamage() >= 2 and $this->getDamage() < 9){
@@ -363,14 +368,21 @@ class Cauldron extends Solid{
 		}
 	}
 
-	private function updateHacky() : void{
-		// idk, why block is not updating
-		$this->getLevel()->setBlock($this, Block::get($this->id, $this->getDamage() + 1), true);
-		$this->getLevel()->setBlock($this, $this, true);
+	private function updateLiquid() : void{
+		$pk = new UpdateBlockPacket();
+		$pk->x = $this->x;
+		$pk->y = $this->y;
+		$pk->z = $this->z;
+		$pk->blockRuntimeId = $this->getRuntimeId();
+		$pk->dataLayerId = UpdateBlockPacket::DATA_LAYER_LIQUID;
+		$pk->flags = UpdateBlockPacket::FLAG_ALL_PRIORITY;
+
+		$this->level->broadcastPacketToViewers($this, $pk);
 	}
 
 	public function getLightLevel() : int{
-		return $this->getDamage() > 9 ? 15 : 0;
+		// TODO: Fix light problem in api 4.0
+		return $this->getDamage() >= 9 ? 15 : 0;
 	}
 
 	public function getLightFilter() : int{
