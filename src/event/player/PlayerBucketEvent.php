@@ -26,9 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\item\Bucket;
 use pocketmine\item\Item;
-use pocketmine\item\LiquidBucket;
 use pocketmine\player\Player;
 
 /**
@@ -64,7 +62,7 @@ abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * Returns the bucket used in this event
 	 *
-	 * @return LiquidBucket|Bucket|Item
+	 * @return Item
 	 */
 	public function getBucket() : Item{
 		return $this->bucket;
