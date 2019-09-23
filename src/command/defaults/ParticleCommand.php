@@ -165,7 +165,7 @@ class ParticleCommand extends VanillaCommand{
 			case "spell":
 				return new EnchantParticle();
 			case "instantspell":
-				return new InstantEnchantParticle();
+				return new InstantEnchantParticle(new Color(0, 0, 0, 255)); //TODO: colour support
 			case "dripwater":
 				return new WaterDripParticle();
 			case "driplava":
