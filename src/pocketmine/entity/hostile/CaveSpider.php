@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\hostile;
 
+use pocketmine\entity\Arthropod;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;

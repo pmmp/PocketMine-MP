@@ -166,7 +166,7 @@ class Structure{
 									// this may just when api is 4.0 because we need block state implementation to do this
 								}
 
-								$level->setBlock($baseVector->add($tempVector->setComponents(...$pos)), $block, true, false);
+								$level->setBlock($baseVector->add($tempVector->setComponents(...$pos)), $block, true, true);
 							}
 						}
 					}

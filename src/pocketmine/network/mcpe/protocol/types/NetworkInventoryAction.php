@@ -245,7 +245,7 @@ class NetworkInventoryAction{
 						}
 					case self::SOURCE_TYPE_ANVIL_INPUT:
 						if($window instanceof AnvilInventory){
-							if($window->isResultOutput()){
+							if($window->isOutputFull()){
 								return null;
 							}
 							return new SlotChangeAction($window, 0, $this->oldItem, $this->newItem);
@@ -258,7 +258,7 @@ class NetworkInventoryAction{
 						}
 					case self::SOURCE_TYPE_ANVIL_MATERIAL:
 						if($window instanceof AnvilInventory){
-							if($window->isResultOutput()){
+							if($window->isOutputFull()){
 								return null;
 							}
 							return new SlotChangeAction($window, 1, $this->oldItem, $this->newItem);
@@ -272,7 +272,6 @@ class NetworkInventoryAction{
 					case self::SOURCE_TYPE_ANVIL_RESULT:
 						if($window instanceof AnvilInventory){
 							if($window->onResult($player, $this->oldItem)){
-								$window->setItem(2, $this->oldItem, false);
 								return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
 							}else{
 								return null;

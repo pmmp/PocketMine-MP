@@ -33,12 +33,13 @@ use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\RandomStrollBehavior;
 use pocketmine\entity\Monster;
 use pocketmine\entity\passive\Villager;
+use pocketmine\entity\Smite;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\Player;
 use function mt_rand;
 
-class Zombie extends Monster implements Ageable{
+class Zombie extends Monster implements Ageable, Smite{
 	public const NETWORK_ID = self::ZOMBIE;
 
 	public $width = 0.6;

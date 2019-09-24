@@ -39,6 +39,7 @@ use pocketmine\entity\Monster;
 use pocketmine\entity\passive\Wolf;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\RangedAttackerMob;
+use pocketmine\entity\Smite;
 use pocketmine\inventory\AltayEntityEquipment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -46,7 +47,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use function rand;
 
-class Skeleton extends Monster implements RangedAttackerMob{
+class Skeleton extends Monster implements RangedAttackerMob, Smite{
 
 	public const NETWORK_ID = self::SKELETON;
 

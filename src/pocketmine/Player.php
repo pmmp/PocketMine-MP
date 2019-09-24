@@ -2410,20 +2410,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->doCloseInventory();
 
 		switch($packet->event){
-			case ActorEventPacket::PLAYER_ADD_XP_LEVELS:
-				if($packet->data === 0){
-					return false;
-				}
-
-				$nextXpLevel = $this->getXpLevel() + $packet->data;
-				$attribute = $this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL);
-				if($nextXpLevel < $attribute->getMinValue() or $nextXpLevel > $attribute->getMaxValue()){
-					return false;
-				}else{
-					$this->addXpLevels($packet->data);
-				}
-
-				break;
 			case ActorEventPacket::EATING_ITEM:
 				if($packet->data === 0){
 					return false;
@@ -3983,6 +3969,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		parent::applyPostDamageEffects($source);
+
+		foreach(($item = $this->getInventory()->getItemInHand())->getEnchantments() as $enchantmentInstance){
+			$enchantmentInstance->getType()->onHurtEntity($this, $source->getEntity(), $item, $enchantmentInstance->getLevel());
+		}
+
+		$this->getInventory()->setItemInHand($item);
 
 		$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
 	}

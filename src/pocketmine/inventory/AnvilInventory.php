@@ -28,16 +28,25 @@ use pocketmine\block\BlockIds;
 use pocketmine\item\Compass;
 use pocketmine\item\Durable;
 use pocketmine\item\EnchantedBook;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\Map;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
+use pocketmine\item\Tool;
 use pocketmine\level\Position;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
+use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 
 class AnvilInventory extends ContainerInventory implements FakeInventory{
+
+	public const SLOT_INPUT = 0;
+	public const SLOT_SACRIFICE = 1;
+	public const SLOT_OUTPUT = 2;
 
 	/** @var Position */
 	protected $holder;
@@ -55,11 +64,11 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 	}
 
 	public function getDefaultSize() : int{
-		return 3; //1 input, 1 material, 1 result
+		return 3; //1 input, 1 sacrifice, 1 output
 	}
 
-	public function isResultOutput() : bool{
-		return !$this->getItem(2)->isNull();
+	public function isOutputFull() : bool{
+		return !$this->getItem(self::SLOT_OUTPUT)->isNull();
 	}
 
 	/**
@@ -69,100 +78,168 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 	 * @return bool
 	 */
 	public function onResult(Player $player, Item $result) : bool{
-		$input = $this->getItem(0);
-		$material = $this->getItem(1);
-		$resultE = clone $input;
-		$repairCost = $input->getRepairCost();
+		$input = $this->getItem(self::SLOT_INPUT);
+		$sacrifice = $this->getItem(self::SLOT_SACRIFICE);
+		$output = clone $input;
 
-		if(($player->isSurvival() and $repairCost >= 63) or ($player->isCreative() and $repairCost >= 2147483647)){
-			return false;
-		}
+		$totalRepairCost = $input->getRepairCost() + $sacrifice->getRepairCost();
+		$levelCostBonus = 0;
+		$materialCost = 1;
+		$renamed = false;
 
-		// TODO: check xp level cost
+		static $tierIds = [
+			TieredTool::TIER_WOODEN => BlockIds::WOODEN_PLANKS,
+			TieredTool::TIER_STONE => BlockIds::COBBLESTONE,
+			TieredTool::TIER_IRON => ItemIds::IRON_INGOT,
+			TieredTool::TIER_GOLD => ItemIds::GOLD_INGOT,
+			TieredTool::TIER_DIAMOND => ItemIds::DIAMOND
+		];
 
-		if($material instanceof EnchantedBook){ // enchanting
-			foreach($material->getEnchantments() as $enchantment){
-				if($resultE->hasEnchantment($enchantment->getId())){
-					if($enchantment->getLevel() > $resultE->getEnchantmentLevel($enchantment->getId())){
-						$resultE->addEnchantment($enchantment);
-					}
-				}else{
-					$resultE->addEnchantment($enchantment);
-				}
-			}
-		}elseif($input instanceof Durable and $material instanceof Durable and $input->equals($material, false, false)){ // item repair
-			if($input->getDamage() > 0){
-				/** @var Durable $resultE */
-				$f = $material->getDamage() + intval(($input->getMaxDurability() * 12) / 100);
-				$resultE->setDamage(max(0, $resultE->getDamage() - $f));
-			}
-			foreach($material->getEnchantments() as $enchantment){
-				if($resultE->hasEnchantment($enchantment->getId())){
-					if($enchantment->getLevel() > $resultE->getEnchantmentLevel($enchantment->getId())){
-						$resultE->addEnchantment($enchantment);
-					}
-				}else{
-					$resultE->addEnchantment($enchantment);
-				}
-			}
-			$repairCost += $material->getRepairCost();
-		}elseif($input instanceof TieredTool){ // repairing tiered tool
-			static $tierIds = [
-				TieredTool::TIER_WOODEN => BlockIds::WOODEN_PLANKS,
-				TieredTool::TIER_STONE => BlockIds::COBBLESTONE,
-				TieredTool::TIER_IRON => ItemIds::IRON_INGOT,
-				TieredTool::TIER_GOLD => ItemIds::GOLD_INGOT,
-				TieredTool::TIER_DIAMOND => ItemIds::DIAMOND
-			];
+		if(!$input->isNull()){
+			if(!$sacrifice->isNull()){
+				$enchantedBook = $sacrifice instanceof EnchantedBook and count($sacrifice->getEnchantments()) > 0;
 
-			if(isset($tierIds[$input->getTier()])){
-				$targetMaterial = ItemFactory::get($tierIds[$input->getTier()]);
-				if($material->equals($targetMaterial)){
-					/** @var TieredTool $resultE */
-					if($input->getDamage() < $input->getMaxDurability()){
-						$f = intval(($input->getMaxDurability() * 25) / 100);
-						$resultE->setDamage(max(0, $resultE->getDamage() - $f));
-					}
-				}
-			}
-		}elseif($input instanceof Map){
-			/** @var Map $resultE */
-			if($material instanceof Compass){
-				$resultE->setMapDisplayPlayers(true);
-			}elseif($material->getId() === ItemIds::PAPER){
-				if(($mapData = $resultE->getMapData()) !== null){
-					if($mapData->getScale() < 4){
-						$mapData->setScale($mapData->getScale() + 1);
+				if($output instanceof TieredTool and isset($tierIds[$output->getTier()])){
+					$targetMaterial = ItemFactory::get($tierIds[$output->getTier()]);
+					if($sacrifice->equals($targetMaterial)){
+						$d = min($input->getDamage(), $output->getMaxDurability() / 4);
+
+						for($m2 = 0; $d > 0 and $m2 < $sacrifice->getCount(); $m2++){
+							$output->setDamage($output->getDamage() - $d);
+							$levelCostBonus++;
+							$d = min($output->getDamage(), $output->getMaxDurability() / 4);
+						}
+
+						$materialCost = $m2;
 					}else{
+						goto not_tiered;
+					}
+				}else{
+					not_tiered:
+
+					if(!$enchantedBook and (!$output->equals($sacrifice, false, false) or !($output instanceof Durable))){
+						$this->clear(self::SLOT_OUTPUT);
+
 						return false;
 					}
+
+					if($output instanceof Durable and !$enchantedBook and $sacrifice instanceof Durable){
+						$f = ($output->getMaxDurability() - $output->getDamage()) + ($sacrifice->getMaxDurability() - $sacrifice->getDamage()) + intval(($output->getMaxDurability() * 12) / 100);
+						$f2 = max(0, $output->getMaxDurability() - $f);
+
+						if($f2 < $output->getDamage()){
+							$output->setDamage($f2);
+							$levelCostBonus += 2;
+						}
+					}
+
+					foreach($sacrifice->getEnchantments() as $enchantmentInstance){
+						$enchantment = $enchantmentInstance->getType();
+
+						$l1 = $enchantmentInstance->getLevel();
+						$cel = $output->getEnchantmentLevel($enchantmentInstance->getId());
+
+						if($l1 === $cel){
+							$cel++;
+						}else{
+							$cel = max($cel, $l1);
+						}
+
+						$canApply = $enchantment->canApply($output) or $player->isCreative() or $output instanceof EnchantedBook;
+
+						foreach($output->getEnchantments() as $enchantmentInstance2){
+							if($enchantment->getId() !== $enchantmentInstance2->getId() and !$enchantment->canApplyTogether($enchantmentInstance2->getType())){
+								$canApply = false;
+								$levelCostBonus++;
+							}
+						}
+
+						if($canApply){
+							$cel = min($cel, $enchantment->getMaxLevel());
+
+							$output->addEnchantment(new EnchantmentInstance($enchantment, $cel));
+							$rarityBonus = 0;
+
+							switch($enchantment->getRarity()){
+								case Enchantment::RARITY_MYTHIC:
+									$rarityBonus = 8;
+									break;
+								case Enchantment::RARITY_RARE:
+									$rarityBonus = 4;
+									break;
+								case Enchantment::RARITY_UNCOMMON:
+									$rarityBonus = 2;
+									break;
+								case Enchantment::RARITY_COMMON:
+									$rarityBonus = 1;
+									break;
+							}
+
+							if($enchantedBook){
+								$rarityBonus = max(1, intval($rarityBonus / 2));
+							}
+
+							$levelCostBonus += $rarityBonus * $cel;
+						}
+					}
 				}
 			}
-		}
 
-		if($result->hasCustomName()){
-			if($input->getCustomName() !== $result->getCustomName()){ // renaming
-				$resultE->setCustomName($result->getCustomName());
-			}
-		}
-		$repairCost = $repairCost * 2 + 1;
+			if($result->hasCustomName()){
+				if($output->getCustomName() !== $result->getCustomName()){ // renaming
+					$output->setCustomName($result->getCustomName());
 
-		$resultE->setRepairCost($repairCost);
-
-		// TODO: implement this
-		//if($result->equalsExact($resultE)){
-			$this->clear(0);
-
-			if(!$this->getItem(1)->isNull()){
-				$material = $this->getItem(1);
-				$material->pop();
-
-				$this->setItem(1, $material);
+					$renamed = true;
+					$levelCostBonus++;
+				}
 			}
 
-			return true;
-		//}
-		//return false;
+			$onlyRenamed = $renamed and $levelCostBonus === 1;
+			$levelCost = $totalRepairCost + $levelCostBonus;
+
+			if($onlyRenamed and $levelCost > 39){
+				$levelCost = 39;
+			}
+
+			if($levelCost > 39 and !$player->isCreative()){
+				$this->clear(self::SLOT_OUTPUT);
+
+				return false;
+			}
+
+			if(!$onlyRenamed and ($player->isSurvival() and $input->getRepairCost() >= 63) or $input->getRepairCost() >= 2147483647){
+				$this->clear(self::SLOT_OUTPUT);
+
+				return false;
+			}
+
+			if(!$onlyRenamed){
+				$repairCost = $output->getRepairCost();
+
+				if(!$sacrifice->isNull() and $repairCost < $sacrifice->getRepairCost()){
+					$repairCost = $sacrifice->getRepairCost();
+				}
+
+				$output->setRepairCost($repairCost * 2 + 1);
+			}
+
+			if($output->equalsExact($result)){
+				$this->clear(self::SLOT_INPUT);
+
+				if(!$sacrifice->isNull()){
+					$sacrifice->setCount(max(0, $sacrifice->getCount() - $materialCost));
+
+					$this->setItem(self::SLOT_SACRIFICE, $sacrifice);
+				}
+
+				$this->setItem(self::SLOT_OUTPUT, $output, false);
+
+				$player->addXpLevels(-$levelCost);
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

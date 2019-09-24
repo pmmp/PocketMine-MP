@@ -31,7 +31,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\Monster;
 
-class Husk extends Zombie implements Ageable{
+class Husk extends Zombie{
 
 	public const NETWORK_ID = self::HUSK;
 

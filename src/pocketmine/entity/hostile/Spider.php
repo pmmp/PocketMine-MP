@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Ageable;
+use pocketmine\entity\Arthropod;
 use pocketmine\entity\behavior\FindAttackableTargetBehavior;
 use pocketmine\entity\behavior\FloatBehavior;
 use pocketmine\entity\behavior\LeapAtTargetBehavior;
@@ -38,7 +39,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\Player;
 use function rand;
 
-class Spider extends Monster implements Ageable{
+class Spider extends Monster implements Ageable, Arthropod{
 
 	public const NETWORK_ID = self::SPIDER;
 

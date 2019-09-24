@@ -23,27 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-use pocketmine\entity\Entity;
-
-class FireAspectEnchantment extends MeleeWeaponEnchantment{
+class MendingEnchantment extends Enchantment{
 
 	public function getMinEnchantAbility(int $level) : int{
-		return 10 + ($level - 1) * 20;
+		return 25 + ($level - 1) * 9;
 	}
 
 	public function getMaxEnchantAbility(int $level) : int{
 		return $this->getMinEnchantAbility($level) + 50;
 	}
 
-	public function isApplicableTo(Entity $victim) : bool{
-		return true;
-	}
-
-	public function getDamageBonus(int $enchantmentLevel) : float{
-		return 0;
-	}
-
-	public function onPostAttack(Entity $attacker, Entity $victim, int $enchantmentLevel) : void{
-		$victim->setOnFire($enchantmentLevel * 4);
+	public function canApplyTogether(Enchantment $enchantment) : bool{
+		return parent::canApplyTogether($enchantment) and $enchantment->getId() !== Enchantment::INFINITY;
 	}
 }

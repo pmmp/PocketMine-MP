@@ -24,8 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Human;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\item\Durable;
+use pocketmine\item\Item;
+use pocketmine\item\Shears;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
-class FireAspectEnchantment extends MeleeWeaponEnchantment{
+class ThornsEnchantment extends Enchantment{
 
 	public function getMinEnchantAbility(int $level) : int{
 		return 10 + ($level - 1) * 20;
@@ -35,15 +42,18 @@ class FireAspectEnchantment extends MeleeWeaponEnchantment{
 		return $this->getMinEnchantAbility($level) + 50;
 	}
 
-	public function isApplicableTo(Entity $victim) : bool{
-		return true;
-	}
+	public function onHurtEntity(Entity $attacker, Entity $victim, Item $item, int $enchantmentLevel) : void{
+		if($attacker instanceof Human){
+			if($enchantmentLevel > 0 and $victim->random->nextFloat() < 0.15 * $enchantmentLevel){
+				$victim->attack(new EntityDamageByEntityEvent($attacker, $victim, EntityDamageEvent::CAUSE_ENTITY_ATTACK, ($enchantmentLevel > 10 ? $enchantmentLevel - 10 : 1 + $victim->random->nextBoundedInt(4))));
+				$victim->level->broadcastLevelSoundEvent($victim, LevelSoundEventPacket::SOUND_THORNS);
 
-	public function getDamageBonus(int $enchantmentLevel) : float{
-		return 0;
-	}
-
-	public function onPostAttack(Entity $attacker, Entity $victim, int $enchantmentLevel) : void{
-		$victim->setOnFire($enchantmentLevel * 4);
+				if($item instanceof Durable){
+					$item->applyDamage(3);
+				}
+			}elseif($item instanceof Durable){
+				$item->applyDamage(1);
+			}
+		}
 	}
 }
