@@ -98,6 +98,7 @@ use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\GameRules;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\level\Position;
@@ -3885,7 +3886,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->doCloseInventory();
 
 		$ev = new PlayerDeathEvent($this, $this->getDrops());
-		$ev->setKeepInventory($this->server->keepInventory);
+		$ev->setKeepInventory($this->server->keepInventory or $this->level->getGameRules()->getBool(GameRules::RULE_KEEP_INVENTORY));
 		$ev->setKeepExperience($this->server->keepExperience);
 		$ev->call();
 
