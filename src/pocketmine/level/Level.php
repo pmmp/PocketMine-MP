@@ -1229,6 +1229,7 @@ class Level implements ChunkManager, Metadatable{
 		(new LevelSaveEvent($this))->call();
 
 		$this->provider->setTime($this->time);
+		$this->provider->setGameRules($this->gameRules);
 		$this->saveChunks();
 		if($this->provider instanceof BaseLevelProvider){
 			$this->provider->saveLevelData();
