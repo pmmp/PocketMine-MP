@@ -95,7 +95,16 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 			TieredTool::TIER_DIAMOND => ItemIds::DIAMOND
 		];
 
-		if(!$input->isNull()){
+		if(!$output->isNull()){
+			if($result->hasCustomName()){
+				if($output->getCustomName() !== $result->getCustomName()){ // renaming
+					$output->setCustomName($result->getCustomName());
+
+					$renamed = true;
+					$levelCostBonus++;
+				}
+			}
+
 			if(!$sacrifice->isNull()){
 				$enchantedBook = $sacrifice instanceof EnchantedBook and count($sacrifice->getEnchantments()) > 0;
 
@@ -112,10 +121,10 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 
 						$materialCost = $m2;
 					}else{
-						goto not_tiered;
+						goto sacrifice_is_tool;
 					}
 				}else{
-					not_tiered:
+					sacrifice_is_tool:
 
 					if(!$enchantedBook and (!$output->equals($sacrifice, false, false) or !($output instanceof Durable))){
 						$this->clear(self::SLOT_OUTPUT);
@@ -185,15 +194,6 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 				}
 			}
 
-			if($result->hasCustomName()){
-				if($output->getCustomName() !== $result->getCustomName()){ // renaming
-					$output->setCustomName($result->getCustomName());
-
-					$renamed = true;
-					$levelCostBonus++;
-				}
-			}
-
 			$onlyRenamed = $renamed and $levelCostBonus === 1;
 			$levelCost = $totalRepairCost + $levelCostBonus;
 
@@ -221,6 +221,8 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 				}
 
 				$output->setRepairCost($repairCost * 2 + 1);
+			}else{
+				$output->setRepairCost($output->getRepairCost());
 			}
 
 			if($output->equalsExact($result)){
