@@ -236,7 +236,7 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 
 				$this->setItem(self::SLOT_OUTPUT, $output, false);
 
-				$player->addXpLevels(-$levelCost);
+				$player->addXpLevels(max(-$player->getXpLevel(), -$levelCost));
 				return true;
 			}
 		}
