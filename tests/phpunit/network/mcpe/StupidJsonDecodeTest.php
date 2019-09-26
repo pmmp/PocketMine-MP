@@ -26,6 +26,12 @@ namespace pocketmine\network\mcpe;
 use PHPUnit\Framework\TestCase;
 
 class StupidJsonDecodeTest extends TestCase{
+	/** @var \Closure */
+	private $stupidJsonDecodeFunc;
+
+	public function setUp() : void{
+		$this->stupidJsonDecodeFunc = (new \ReflectionMethod(PlayerNetworkSessionAdapter::class, 'stupid_json_decode'))->getClosure();
+	}
 
 	public function stupidJsonDecodeProvider() : array{
 		return [
@@ -48,10 +54,7 @@ class StupidJsonDecodeTest extends TestCase{
 	 * @throws \ReflectionException
 	 */
 	public function testStupidJsonDecode(string $brokenJson, $expect){
-		$func = new \ReflectionMethod(PlayerNetworkSessionAdapter::class, 'stupid_json_decode');
-		$func->setAccessible(true);
-
-		$decoded = $func->invoke(null, $brokenJson, true);
+		$decoded = ($this->stupidJsonDecodeFunc)($brokenJson, true);
 		self::assertEquals($expect, $decoded);
 	}
 }
