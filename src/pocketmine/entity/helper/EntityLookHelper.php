@@ -71,7 +71,7 @@ class EntityLookHelper{
 			$this->entity->pitch = self::updateRotation($this->entity->pitch, $f1, $this->deltaLookPitch);
 			$this->entity->headYaw = self::updateRotation($this->entity->headYaw, $f, $this->deltaLookYaw);
 		}else{
-			$this->entity->headYaw = $this->updateRotation($this->entity->headYaw, $this->entity->yawOffset, 10);
+			$this->entity->headYaw = self::updateRotation($this->entity->headYaw, $this->entity->yawOffset, 10);
 		}
 		$f2 = self::wrapAngleTo180($this->entity->headYaw - $this->entity->yawOffset);
 		if($this->entity->getNavigator()->isBusy()){
