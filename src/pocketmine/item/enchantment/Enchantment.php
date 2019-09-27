@@ -31,8 +31,11 @@ use pocketmine\item\Bow;
 use pocketmine\item\Durable;
 use pocketmine\item\Elytra;
 use pocketmine\item\FishingRod;
+use pocketmine\item\FlintSteel;
+use pocketmine\item\Hoe;
 use pocketmine\item\Item;
 use pocketmine\item\Pickaxe;
+use pocketmine\item\Shears;
 use pocketmine\item\Shovel;
 use pocketmine\item\Sword;
 use function constant;
@@ -311,39 +314,35 @@ class Enchantment{
 	 * @return bool
 	 */
 	public function canApply(Item $item) : bool{
-		if($this->hasSecondaryItemType(self::SLOT_ALL)){
-			return true;
-		}elseif($this->hasSecondaryItemType(self::SLOT_TOOL) and $item instanceof Durable and $item->getMaxDurability() >= 0){
-			return true;
+		if(($item instanceof Shears or $item instanceof FlintSteel or $item instanceof Hoe) and $item instanceof Durable and $item->getMaxDurability() >= 0){
+			return $this->hasPrimaryItemType(self::SLOT_TOOL) or $this->hasSecondaryItemType(self::SLOT_TOOL);
 		}elseif($item instanceof Armor){
-			if($this->hasSecondaryItemType(self::SLOT_ARMOR)){
-				return true;
-			}elseif($this->hasSecondaryItemType(self::SLOT_HEAD)){
-				return $item->getArmorSlot() === Armor::SLOT_HELMET;
-			}elseif($this->hasSecondaryItemType(self::SLOT_TORSO)){
-				return $item->getArmorSlot() === Armor::SLOT_CHESTPLATE;
-			}elseif($this->hasSecondaryItemType(self::SLOT_LEGS)){
-				return $item->getArmorSlot() === Armor::SLOT_LEGGINGS;
-			}elseif($this->hasSecondaryItemType(self::SLOT_FEET)){
-				return $item->getArmorSlot() === Armor::SLOT_BOOTS;
+			if($item->getArmorSlot() === Armor::SLOT_HELMET){
+				return $this->hasPrimaryItemType(self::SLOT_HEAD) or $this->hasSecondaryItemType(self::SLOT_HEAD);
+			}elseif($item->getArmorSlot() === Armor::SLOT_CHESTPLATE){
+				return $this->hasPrimaryItemType(self::SLOT_TORSO) or $this->hasSecondaryItemType(self::SLOT_TORSO);
+			}elseif($item->getArmorSlot() === Armor::SLOT_LEGGINGS){
+				return $this->hasPrimaryItemType(self::SLOT_LEGS) or $this->hasSecondaryItemType(self::SLOT_LEGS);
+			}elseif($item->getArmorSlot() === Armor::SLOT_BOOTS){
+				return $this->hasPrimaryItemType(self::SLOT_FEET) or $this->hasSecondaryItemType(self::SLOT_FEET);
 			}
 		}else{
-			if($this->hasSecondaryItemType(self::SLOT_SWORD)){
-				return $item instanceof Sword;
-			}elseif($this->hasSecondaryItemType(self::SLOT_DIG)){
-				return $item instanceof Pickaxe or $item instanceof Shovel or $item instanceof Axe;
-			}elseif($this->hasSecondaryItemType(self::SLOT_BOW)){
-				return $item instanceof Bow;
-			}elseif($this->hasSecondaryItemType(self::SLOT_FISHING_ROD)){
-				return $item instanceof FishingRod;
-			}elseif($this->hasSecondaryItemType(self::SLOT_ELYTRA)){
-				return $item instanceof Elytra;
-			}elseif($this->hasSecondaryItemType(self::SLOT_WEARABLE)){
-				return $item->getId() === Item::SKULL or $item->getId() === Item::PUMPKIN;
-			}elseif($this->hasSecondaryItemType(self::SLOT_SHIELD)){
-				return $item->getId() === Item::SHIELD;
-			}elseif($this->hasSecondaryItemType(self::SLOT_TRIDENT)){
-				return $item->getId() === Item::TRIDENT;
+			if($item instanceof Sword){
+				return $this->hasPrimaryItemType(self::SLOT_SWORD) or $this->hasSecondaryItemType(self::SLOT_SWORD);
+			}elseif($item instanceof Pickaxe or $item instanceof Shovel or $item instanceof Axe){
+				return $this->hasPrimaryItemType(self::SLOT_DIG) or $this->hasSecondaryItemType(self::SLOT_DIG);
+			}elseif($item instanceof Bow){
+				return $this->hasPrimaryItemType(self::SLOT_BOW) or $this->hasSecondaryItemType(self::SLOT_BOW);
+			}elseif($item instanceof FishingRod){
+				return $this->hasPrimaryItemType(self::SLOT_FISHING_ROD) or $this->hasSecondaryItemType(self::SLOT_FISHING_ROD);
+			}elseif($item instanceof Elytra){
+				return $this->hasPrimaryItemType(self::SLOT_ELYTRA) or $this->hasSecondaryItemType(self::SLOT_ELYTRA);
+			}elseif($item->getId() === Item::SKULL or $item->getId() === Item::PUMPKIN){
+				return $this->hasPrimaryItemType(self::SLOT_WEARABLE) or $this->hasSecondaryItemType(self::SLOT_WEARABLE);
+			}elseif($item->getId() === Item::SHIELD){
+				return $this->hasPrimaryItemType(self::SLOT_SHIELD) or $this->hasSecondaryItemType(self::SLOT_SHIELD);
+			}elseif($item->getId() === Item::TRIDENT){
+				return $this->hasPrimaryItemType(self::SLOT_TRIDENT) or $this->hasSecondaryItemType(self::SLOT_TRIDENT);
 			}
 		}
 
