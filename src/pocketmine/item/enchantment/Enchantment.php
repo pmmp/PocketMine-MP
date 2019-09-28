@@ -109,6 +109,7 @@ class Enchantment{
 	public const SLOT_TRIDENT = 0x8000;
 	public const SLOT_WEARABLE = 0x16000;
 	public const SLOT_SHIELD = 0x32000;
+	public const SLOT_CROSSBOW = 0x64000;
 
 	/** @var Enchantment[] */
 	protected static $enchantments;
@@ -142,7 +143,7 @@ class Enchantment{
 
 		self::registerEnchantment(new EfficiencyEnchantment(self::EFFICIENCY, "%enchantment.digging", self::RARITY_COMMON, self::SLOT_DIG, self::SLOT_SHEARS, 5));
 		self::registerEnchantment(new SilkTouchEnchantment(self::SILK_TOUCH, "%enchantment.untouching", self::RARITY_MYTHIC, self::SLOT_DIG, self::SLOT_SHEARS, 1));
-		self::registerEnchantment(new UnbreakingEnchantment(self::UNBREAKING, "%enchantment.durability", self::RARITY_UNCOMMON, self::SLOT_DIG | self::SLOT_ARMOR | self::SLOT_FISHING_ROD | self::SLOT_BOW, self::SLOT_TOOL | self::SLOT_CARROT_STICK | self::SLOT_ELYTRA, 3));
+		self::registerEnchantment(new UnbreakingEnchantment(self::UNBREAKING, "%enchantment.durability", self::RARITY_UNCOMMON, self::SLOT_DIG | self::SLOT_ARMOR | self::SLOT_FISHING_ROD | self::SLOT_BOW | self::SLOT_CROSSBOW | self::SLOT_SWORD | self::SLOT_TRIDENT, self::SLOT_TOOL | self::SLOT_CARROT_STICK | self::SLOT_ELYTRA | self::SLOT_SHIELD, 3));
 
 		self::registerEnchantment(new PowerEnchantment(self::POWER, "%enchantment.arrowDamage", self::RARITY_COMMON, self::SLOT_BOW, self::SLOT_NONE, 5));
 		self::registerEnchantment(new PunchEnchantment(self::PUNCH, "%enchantment.arrowKnockback", self::RARITY_RARE, self::SLOT_BOW, self::SLOT_NONE, 2));
