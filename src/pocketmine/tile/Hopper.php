@@ -24,13 +24,12 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-use pocketmine\block\Hopper as BlockHopper;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\inventory\HopperInventory;
 use pocketmine\inventory\InventoryHolder;
-use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\tag\CompoundTag;
 
 class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
@@ -43,11 +42,15 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 	protected $inventory;
 	/** @var int */
 	protected $transferCooldown = 8;
+	/** @var AxisAlignedBB */
+	protected $pullBox;
 
 	public const TAG_TRANSFER_COOLDOWN = "TransferCooldown";
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
+
+		$this->pullBox = new AxisAlignedBB($this->x, $this->y, $this->z, $this->x + 1, $this->y + 1.5, $this->z + 1);
 
 		$this->scheduleUpdate();
 	}
@@ -93,70 +96,99 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 	}
 
 	public function onUpdate() : bool{
-		$block = $this->getBlock();
-		if(!($block instanceof BlockHopper)){
-			return false;
-		}
-
-		$area = clone $block->getBoundingBox(); //Area above hopper to draw items from
-		$area->maxY = ceil($area->maxY) + 1; //Account for full block above, not just 1 + 5/8
-
-		$chunkEntities = array_filter($this->getLevel()->getChunkEntities($this->x >> 4, $this->z >> 4), function(Entity $entity) : bool{
-			return $entity instanceof ItemEntity and !$entity->isFlaggedForDespawn();
-		});
-
-		/** @var ItemEntity $entity */
-		foreach($chunkEntities as $entity){
-			if(!$entity->boundingBox->intersectsWith($area)){
-				continue;
-			}
-
-			$item = $entity->getItem();
-			if(!($item instanceof Item) or $item->isNull()){
-				$entity->flagForDespawn();
-				continue;
-			}
-
-			if($this->inventory->canAddItem($item)){
-				$this->inventory->addItem($item);
-				$entity->flagForDespawn();
-			}
-		}
-
-		if($this->transferCooldown !== 0){
+		if($this->isOnTransferCooldown()){
 			$this->transferCooldown--;
-			return true;
-		}
+		}else{
+			$transfer = false;
 
-		$pos = $this->asVector3()->getSide($block->getDamage());
-		$tile = $this->level->getTileAt($pos->x, $pos->y, $pos->z);
-		if($tile instanceof Tile and $tile instanceof InventoryHolder){
-			$item = $this->inventory->firstItem();
-			if($item != null){
-				$this->transferItem($item, $tile);
+			if(!$this->isEmpty()){
+				$transfer = $this->transferItemOut();
+			}
+
+			if(!$this->isFull()){
+				$transfer = $this->pullItemFromTop() or $transfer;
+			}
+
+			if($transfer){
+				$this->setTransferCooldown(8);
 			}
 		}
 
 		return true;
 	}
 
-	public function transferItem(Item $trItem, InventoryHolder $inventoryHolder) : bool{
-		$item = clone $trItem;
-		$item->setCount(1);
-		$inv = $inventoryHolder->getInventory();
-		if($inv->canAddItem($item)){
-			$inv->addItem($item);
-			$this->inventory->removeItem($item);
-			$this->resetTransferCooldown();
-			if($inventoryHolder instanceof Hopper){
-				$inventoryHolder->resetTransferCooldown();
+	public function isEmpty() : bool{
+		return count($this->inventory->getContents()) === 0;
+	}
+
+	public function isFull() : bool{
+		return count($this->inventory->getContents()) === $this->inventory->getSize();
+	}
+
+	public function transferItemOut() : bool{
+		$tile = $this->level->getTile($this->getSide($this->getBlock()->getDamage()));
+
+		if($tile instanceof InventoryHolder){
+			$targetInventory = $tile->getInventory();
+
+			foreach($this->inventory->getContents() as $slot => $item){
+				$item->setCount(1);
+
+				if($targetInventory->canAddItem($item)){
+					$targetInventory->addItem($item);
+					$this->inventory->removeItem($item);
+
+					if($tile instanceof Hopper){
+						$tile->setTransferCooldown(8);
+					}
+
+					return true;
+				}
 			}
-			return true;
 		}
+
 		return false;
 	}
 
-	public function resetTransferCooldown(){
-		$this->transferCooldown = 8;
+	public function pullItemFromTop() : bool{
+		$tile = $this->level->getTile($this->up());
+
+		if($tile instanceof InventoryHolder){
+			$inv = $tile->getInventory();
+			foreach($inv->getContents() as $slot => $item){
+				$item->setCount(1);
+
+				if($this->inventory->canAddItem($item)){
+					$this->inventory->addItem($item);
+					$inv->removeItem($item);
+
+					return true;
+				}
+			}
+		}else{
+			/** @var ItemEntity $entity */
+			foreach(array_filter($this->level->getNearbyEntities($this->pullBox), function(Entity $entity) : bool{
+				return $entity instanceof ItemEntity and !$entity->isFlaggedForDespawn();
+			}) as $entity){
+				$item = $entity->getItem();
+				if($this->inventory->canAddItem($item)){
+					$this->inventory->addItem($item);
+
+					$entity->flagForDespawn();
+
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public function isOnTransferCooldown() : bool{
+		return $this->transferCooldown > 0;
+	}
+
+	public function setTransferCooldown(int $cooldown){
+		$this->transferCooldown = $cooldown;
 	}
 }

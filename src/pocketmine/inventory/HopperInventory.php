@@ -54,14 +54,4 @@ class HopperInventory extends ContainerInventory{
 	public function getHolder(){
 		return $this->holder;
 	}
-
-	public function firstItem() : ?Item{
-		foreach($this->slots as $slot){
-			if($slot !== null and !$slot->isNull()){
-				return $slot;
-			}
-		}
-
-		return null;
-	}
 }
