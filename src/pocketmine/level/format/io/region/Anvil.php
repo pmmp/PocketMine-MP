@@ -45,7 +45,7 @@ class Anvil extends McRegion{
 
 		$nbt->setByte("V", 1);
 		$nbt->setLong("LastUpdate", 0); //TODO
-		$nbt->setLong("InhabitedTime", 0); //TODO
+		$nbt->setLong("InhabitedTime", $chunk->getInhabitedTime());
 		$nbt->setByte("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
 		$nbt->setByte("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
 
@@ -130,6 +130,7 @@ class Anvil extends McRegion{
 		$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
 		$result->setGenerated();
+		$result->setInhabitedTime($chunk->getLong("InhabitedTime", 0));
 		return $result;
 	}
 

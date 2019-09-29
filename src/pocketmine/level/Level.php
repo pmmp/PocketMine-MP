@@ -1173,10 +1173,18 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			$chunk = $this->chunks[$index];
+			$hasPlayer = false;
 			foreach($chunk->getEntities() as $entity){
+				if($entity instanceof Player){
+					$hasPlayer = true;
+				}
+
 				$entity->scheduleUpdate();
 			}
 
+			if($hasPlayer){
+				$chunk->setInhabitedTime($chunk->getInhabitedTime() + 1);
+			}
 
 			foreach($chunk->getSubChunks() as $Y => $subChunk){
 				if(!($subChunk instanceof EmptySubChunk)){
@@ -1504,6 +1512,30 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function getSkyLightReduction() : int{
 		return $this->skyLightReduction;
+	}
+
+	public function getMoonPhase() : int{
+		return intval($this->time / self::TIME_FULL % 8 + 8) % 8;
+	}
+
+	public function getMoonPhaseFactor() : float{
+		switch($this->getMoonPhase()){
+			case 0:
+				return 1;
+			case 1:
+			case 7:
+				return 0.75;
+			case 2:
+			case 6:
+				return 0.5;
+			case 3:
+			case 5:
+				return 0.25;
+			case 4:
+				return 0;
+		}
+
+		return 0;
 	}
 
 	/**
@@ -3225,6 +3257,23 @@ class Level implements ChunkManager, Metadatable{
 
 	public function getWorldHeight() : int{
 		return $this->worldHeight;
+	}
+
+	/**
+	 * @param Vector3 $pos
+	 *
+	 * @return DifficultyInstance
+	 */
+	public function getDifficultyForPosition(Vector3 $pos) : DifficultyInstance{
+		$i = 0;
+		$m = 0;
+
+		if($this->isInLoadedTerrain($pos)){
+			$i = $this->getMoonPhaseFactor();
+			$m = $this->getChunkAtPosition($pos)->getInhabitedTime();
+		}
+
+		return new DifficultyInstance($this->getDifficulty(), $this->time, $i, $m);
 	}
 
 	/**

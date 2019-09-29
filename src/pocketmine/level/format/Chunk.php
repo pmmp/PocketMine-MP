@@ -68,6 +68,8 @@ class Chunk{
 	protected $terrainGenerated = false;
 	/** @var bool */
 	protected $terrainPopulated = false;
+	/** @var int */
+	protected $inhabitedTime = 0;
 
 	/** @var int */
 	protected $height = Chunk::MAX_SUBCHUNKS;
@@ -580,6 +582,20 @@ class Chunk{
 	 */
 	public function setGenerated(bool $value = true){
 		$this->terrainGenerated = $value;
+	}
+
+	/**
+	 * @param int $value
+	 */
+	public function setInhabitedTime(int $value) : void{
+		$this->inhabitedTime = $value;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getInhabitedTime() : int{
+		return $this->inhabitedTime;
 	}
 
 	/**
