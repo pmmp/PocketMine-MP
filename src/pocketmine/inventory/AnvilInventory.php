@@ -24,23 +24,21 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\block\Air;
+use pocketmine\block\Anvil;
 use pocketmine\block\BlockIds;
-use pocketmine\item\Compass;
 use pocketmine\item\Durable;
 use pocketmine\item\EnchantedBook;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\item\Map;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
-use pocketmine\item\Tool;
 use pocketmine\level\Position;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
-use pocketmine\Server;
-use pocketmine\utils\TextFormat;
 
 class AnvilInventory extends ContainerInventory implements FakeInventory{
 
@@ -73,7 +71,7 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 
 	/**
 	 * @param Player $player
-	 * @param Item $result
+	 * @param Item   $result
 	 *
 	 * @return bool
 	 */
@@ -225,6 +223,8 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 				$output->setRepairCost($output->getRepairCost());
 			}
 
+			$this->checkEnchantments($result, $output);
+
 			if($output->equalsExact($result)){
 				$this->clear(self::SLOT_INPUT);
 
@@ -237,11 +237,65 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 				$this->setItem(self::SLOT_OUTPUT, $output, false);
 
 				$player->addXpLevels(max(-$player->getXpLevel(), -$levelCost));
+
+				$block = $player->level->getBlock($this->getHolder());
+				if(!$player->isCreative() and $block instanceof Anvil and $player->random->nextFloat() < 0.12){
+					$direction = $block->getDamage() & 3;
+					$type = ($block->getDamage() & 15) >> 2;
+
+					if($type === Anvil::TYPE_NORMAL){
+						$type = Anvil::TYPE_SLIGHTLY_DAMAGED;
+					}elseif($type === Anvil::TYPE_SLIGHTLY_DAMAGED){
+						$type = Anvil::TYPE_VERY_DAMAGED;
+					}else{
+						$type = -1;
+					}
+
+					if($type !== -1){
+						$player->level->setBlock($this->getHolder(), new Anvil($direction | ($type << 2)));
+
+						$player->level->broadcastLevelEvent($this->getHolder(), LevelEventPacket::EVENT_SOUND_ANVIL_USE);
+					}else{
+						$player->level->setBlock($this->getHolder(), new Air());
+
+						$player->level->broadcastLevelEvent($this->getHolder(), LevelEventPacket::EVENT_SOUND_ANVIL_BREAK);
+					}
+
+				}
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	private function checkEnchantments(Item $result, Item $output) : void{
+		$map1 = [];
+		$map2 = [];
+
+		foreach($result->getEnchantments() as $e){
+			$map1[$e->getId()] = $e->getLevel();
+		}
+
+		foreach($output->getEnchantments() as $e){
+			$map2[$e->getId()] = $e->getLevel();
+		}
+
+		$same = true;
+		foreach($map1 as $id => $level){
+			if(isset($map2[$id])){
+				if($map2[$id] !== $level){
+					$same = false;
+					break;
+				}
+			}else{
+				break;
+			}
+		}
+
+		if($same){
+			$output->setNamedTagEntry($result->getNamedTagEntry(Item::TAG_ENCH));
+		}
 	}
 
 	/**
