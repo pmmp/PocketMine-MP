@@ -152,7 +152,7 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 							$cel = max($cel, $l1);
 						}
 
-						$canApply = $enchantment->canApply($output) or $player->isCreative() or $output instanceof EnchantedBook;
+						$canApply = ($enchantment->canApply($output) or $player->isCreative() or $output instanceof EnchantedBook);
 
 						foreach($output->getEnchantments() as $enchantmentInstance2){
 							if($enchantment->getId() !== $enchantmentInstance2->getId() and !$enchantment->canApplyTogether($enchantmentInstance2->getType())){
@@ -265,6 +265,9 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 
 				}
 				return true;
+			}else{
+				var_dump($result);
+				var_dump($output);
 			}
 		}
 
