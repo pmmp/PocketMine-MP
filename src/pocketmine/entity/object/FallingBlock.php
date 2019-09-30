@@ -129,6 +129,12 @@ class FallingBlock extends Entity{
 		return $hasUpdate;
 	}
 
+	public function fall(float $fallDistance) : void{
+		if($this->block instanceof Fallable){
+			$this->block = $this->block->onEndFalling($this);
+		}
+	}
+
 	public function getBlock() : int{
 		return $this->block->getId();
 	}

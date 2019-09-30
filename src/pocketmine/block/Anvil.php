@@ -23,11 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
 
 class Anvil extends Fallable{
@@ -111,5 +113,30 @@ class Anvil extends Fallable{
 		$direction = ($player !== null ? $player->getDirection() : 0) & 0x03;
 		$this->meta = $this->getVariant() | $direction;
 		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
+	}
+
+	public function onEndFalling(FallingBlock $fallingBlock) : Block{
+		$fallDistance = ceil($fallingBlock->fallDistance - 1);
+
+		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ANVIL_FALL);
+
+		if($fallingBlock->random->nextFloat() < (0.05 + $fallDistance * 0.05)){
+			$direction = $this->meta & 3;
+			$type = $this->meta - $direction;
+
+			if($type === Anvil::TYPE_NORMAL){
+				$type = Anvil::TYPE_SLIGHTLY_DAMAGED;
+			}elseif($type === Anvil::TYPE_SLIGHTLY_DAMAGED){
+				$type = Anvil::TYPE_VERY_DAMAGED;
+			}else{
+				$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ANVIL_BREAK);
+
+				return new Air();
+			}
+
+			return new Anvil($direction | $type);
+		}
+
+		return $this;
 	}
 }

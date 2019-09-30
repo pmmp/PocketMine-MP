@@ -236,12 +236,14 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 
 				$this->setItem(self::SLOT_OUTPUT, $output, false);
 
-				$player->addXpLevels(max(-$player->getXpLevel(), -$levelCost));
+				if(!$player->isCreative()){
+					$player->addXpLevels(max(-$player->getXpLevel(), -$levelCost));
+				}
 
 				$block = $player->level->getBlock($this->getHolder());
 				if(!$player->isCreative() and $block instanceof Anvil and $player->random->nextFloat() < 0.12){
 					$direction = $block->getDamage() & 3;
-					$type = ($block->getDamage() & 15) >> 2;
+					$type = $block->getDamage() - $direction;
 
 					if($type === Anvil::TYPE_NORMAL){
 						$type = Anvil::TYPE_SLIGHTLY_DAMAGED;
@@ -252,7 +254,7 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 					}
 
 					if($type !== -1){
-						$player->level->setBlock($this->getHolder(), new Anvil($direction | ($type << 2)));
+						$player->level->setBlock($this->getHolder(), new Anvil($direction | $type));
 
 						$player->level->broadcastLevelEvent($this->getHolder(), LevelEventPacket::EVENT_SOUND_ANVIL_USE);
 					}else{
