@@ -265,9 +265,6 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 
 				}
 				return true;
-			}else{
-				var_dump($result);
-				var_dump($output);
 			}
 		}
 
