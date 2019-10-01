@@ -74,7 +74,6 @@ use function implode;
 use function json_decode;
 use function json_last_error_msg;
 use function preg_match;
-use function preg_split;
 use function strlen;
 use function substr;
 use function trim;
@@ -270,16 +269,31 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	 */
 	private static function stupid_json_decode(string $json, bool $assoc = false){
 		if(preg_match('/^\[(.+)\]$/s', $json, $matches) > 0){
-			$parts = preg_split('/(?:"(?:\\"|[^"])*"|)\K(,)/', $matches[1]); //Splits on commas not inside quotes, ignoring escaped quotes
-			foreach($parts as $k => $part){
-				$part = trim($part);
-				if($part === ""){
-					$part = "\"\"";
+			$raw = $matches[1];
+			$lastComma = -1;
+			$newParts = [];
+			$quoteType = null;
+			for($i = 0, $len = strlen($raw); $i <= $len; ++$i){
+				if($i === $len or ($raw[$i] === "," and $quoteType === null)){
+					$part = substr($raw, $lastComma + 1, $i - ($lastComma + 1));
+					if(trim($part) === ""){ //regular parts will have quotes or something else that makes them non-empty
+						$part = '""';
+					}
+					$newParts[] = $part;
+					$lastComma = $i;
+				}elseif($raw[$i] === '"'){
+					if($quoteType === null){
+						$quoteType = $raw[$i];
+					}elseif($raw[$i] === $quoteType){
+						for($backslashes = 0; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
+						if(($backslashes % 2) === 0){ //unescaped quote
+							$quoteType = null;
+						}
+					}
 				}
-				$parts[$k] = $part;
 			}
 
-			$fixed = "[" . implode(",", $parts) . "]";
+			$fixed = "[" . implode(",", $newParts) . "]";
 			if(($ret = json_decode($fixed, $assoc)) === null){
 				throw new \InvalidArgumentException("Failed to fix JSON: " . json_last_error_msg() . "(original: $json, modified: $fixed)");
 			}
