@@ -282,7 +282,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 					}
 					$newParts[] = $part;
 					$lastComma = $i;
-				}elseif($raw[$i] === '"' or $raw[$i] === "'"){
+				}elseif($raw[$i] === '"'){
 					if($quoteType === null){
 						$quoteType = $raw[$i];
 					}elseif($raw[$i] === $quoteType){
