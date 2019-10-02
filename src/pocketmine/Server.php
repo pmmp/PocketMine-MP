@@ -2200,6 +2200,7 @@ class Server{
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [self::getGamemodeString($this->getGamemode())]));
 
+		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.donate", [TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET]));
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
 
 		$this->tickProcessor();
