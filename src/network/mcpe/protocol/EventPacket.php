@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\event\AchievementAwardedEvent;
 use pocketmine\network\mcpe\protocol\types\event\AgentCommandEvent;
@@ -96,7 +97,7 @@ class EventPacket extends DataPacket implements ClientboundPacket{
 			case self::TYPE_COMPOSTER_BLOCK_USED: return new ComposterBlockUsedEvent();
 			case self::TYPE_BELL_BLOCK_USED: return new BellBlockUsedEvent();
 			default:
-				throw new BadPacketException("Unknown event data type " . $eventData);
+				throw new BadPacketException("Unknown event data type " . $eventDataType);
 		}
 	}
 
