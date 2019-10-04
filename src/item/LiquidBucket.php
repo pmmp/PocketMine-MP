@@ -74,4 +74,11 @@ class LiquidBucket extends Item{
 
 		return ItemUseResult::FAIL();
 	}
+
+	/**
+	 * @return Liquid
+	 */
+	public function getLiquid() : Liquid{
+		return $this->liquid;
+	}
 }
