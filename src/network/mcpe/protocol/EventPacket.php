@@ -111,7 +111,7 @@ class EventPacket extends DataPacket implements ClientboundPacket{
 
 	protected function encodePayload() : void{
 		$this->putEntityRuntimeId($this->playerRuntimeId);
-		$this->putVarInt($this->eventData::id());
+		$this->putVarInt($this->eventData->id());
 		$this->putByte($this->type);
 
 		$this->eventData->write($this);

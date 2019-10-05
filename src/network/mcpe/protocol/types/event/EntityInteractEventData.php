@@ -36,7 +36,7 @@ final class EntityInteractEventData implements EventData{
 	/** @var int */
 	public $mobColor;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_ENTITY_INTERACT;
 	}
 
@@ -52,9 +52,5 @@ final class EntityInteractEventData implements EventData{
 		$out->putVarInt($this->interactionType);
 		$out->putVarInt($this->mobVariant);
 		$out->putByte($this->mobColor);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->mobType === $this->mobType and $other->interactionType === $this->interactionType and $other->mobVariant === $this->mobVariant and $other->mobColor === $this->mobColor;
 	}
 }

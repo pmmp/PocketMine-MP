@@ -32,7 +32,7 @@ final class PortalUsedEventData implements EventData{
 	/** @var int */
 	public $dim;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_PORTAL_USED;
 	}
 
@@ -44,9 +44,5 @@ final class PortalUsedEventData implements EventData{
 	public function write(NetworkBinaryStream $out) : void{
 		$out->putVarInt($this->toDim);
 		$out->putVarInt($this->dim);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->toDim === $this->toDim and $other->dim === $this->dim;
 	}
 }

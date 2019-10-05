@@ -27,19 +27,15 @@ use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 final class AgentCreatedEventData implements EventData{
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_AGENT_CREATED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		//NOOPE
+
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		//NOOPE
-	}
 
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this;
 	}
 }

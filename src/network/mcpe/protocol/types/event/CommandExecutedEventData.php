@@ -36,7 +36,7 @@ final class CommandExecutedEventData implements EventData{
 	/** @var string */
 	public $errorList;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_COMMANED_EXECUTED;
 	}
 
@@ -52,9 +52,5 @@ final class CommandExecutedEventData implements EventData{
 		$out->putVarInt($this->errorCount);
 		$out->putString($this->commandName);
 		$out->putString($this->errorList);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->successCount === $this->successCount and $other->errorCount === $this->errorCount and $other->commandName === $this->commandName and $other->errorList === $this->errorList;
 	}
 }

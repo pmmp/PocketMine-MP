@@ -34,7 +34,7 @@ final class BossKilledEventData implements EventData{
 	/** @var int */
 	public $bossType;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_BOSS_KILLED;
 	}
 
@@ -48,9 +48,5 @@ final class BossKilledEventData implements EventData{
 		$out->putEntityUniqueId($this->bossUniqueId);
 		$out->putVarInt($this->partySize);
 		$out->putVarInt($this->bossType);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->bossUniqueId === $this->bossUniqueId and $other->partySize === $this->partySize and $other->bossType === $this->bossType;
 	}
 }

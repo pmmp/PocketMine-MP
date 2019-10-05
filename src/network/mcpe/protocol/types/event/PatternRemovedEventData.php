@@ -38,7 +38,7 @@ final class PatternRemovedEventData implements EventData{
 	/** @var int */
 	public $patternColor;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_PATTERN_REMOVED;
 	}
 
@@ -56,9 +56,5 @@ final class PatternRemovedEventData implements EventData{
 		$out->putVarInt($this->layerIndex);
 		$out->putVarInt($this->patternId);
 		$out->putVarInt($this->patternColor);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->itemId === $this->itemId and $other->itemAux === $this->itemAux and $other->layerIndex === $this->layerIndex and $other->patternId === $this->patternId and $other->patternColor === $this->patternColor;
 	}
 }

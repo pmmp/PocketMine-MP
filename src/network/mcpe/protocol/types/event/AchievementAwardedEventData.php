@@ -30,7 +30,7 @@ final class AchievementAwardedEventData implements EventData{
 	/** @var int */
 	public $achievementId;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_ACHIEVEMENT_AWARDED;
 	}
 
@@ -40,9 +40,5 @@ final class AchievementAwardedEventData implements EventData{
 
 	public function write(NetworkBinaryStream $out) : void{
 		$out->putVarInt($this->achievementId);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->achievementId === $this->achievementId;
 	}
 }

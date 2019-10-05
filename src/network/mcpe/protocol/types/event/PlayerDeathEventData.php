@@ -36,7 +36,7 @@ final class PlayerDeathEventData implements EventData{
 	/** @var bool */
 	public $inRaid;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_PLAYER_DEATH;
 	}
 
@@ -52,9 +52,5 @@ final class PlayerDeathEventData implements EventData{
 		$out->putVarInt($this->mobVariant);
 		$out->putVarInt($this->cause);
 		$out->putBool($this->inRaid);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->killerEntity === $this->killerEntity and $other->mobVariant === $this->mobVariant and $other->cause === $this->cause and $other->inRaid === $this->inRaid;
 	}
 }

@@ -36,7 +36,7 @@ final class FishBucketedEventData implements EventData{
 	/** @var bool */
 	public $released;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_FISH_BUCKETED;
 	}
 
@@ -52,9 +52,5 @@ final class FishBucketedEventData implements EventData{
 		$out->putVarInt($this->preset);
 		$out->putVarInt($this->type);
 		$out->putBool($this->released);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->pattern === $this->pattern and $other->preset === $this->preset and $other->type === $this->type and $other->released === $this->released;
 	}
 }

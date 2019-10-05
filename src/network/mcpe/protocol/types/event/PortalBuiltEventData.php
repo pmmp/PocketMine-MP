@@ -30,7 +30,7 @@ final class PortalBuiltEventData implements EventData{
 	/** @var int */
 	public $type;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_PORTAL_BUILT;
 	}
 
@@ -40,9 +40,5 @@ final class PortalBuiltEventData implements EventData{
 
 	public function write(NetworkBinaryStream $out) : void{
 		$out->putVarInt($this->type);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->type === $this->type;
 	}
 }

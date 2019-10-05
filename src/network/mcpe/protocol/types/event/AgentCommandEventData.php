@@ -38,7 +38,7 @@ final class AgentCommandEventData implements EventData{
 	/** @var string */
 	public $string3;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_AGENT_COMMAND;
 	}
 
@@ -56,9 +56,5 @@ final class AgentCommandEventData implements EventData{
 		$out->putString($this->string1);
 		$out->putString($this->string2);
 		$out->putString($this->string3);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->varint1 === $this->varint1 and $other->varint2 === $this->varint2 and $other->string1 === $this->string1 and $other->string2 === $this->string2 and $other->string3 === $this->string3;
 	}
 }

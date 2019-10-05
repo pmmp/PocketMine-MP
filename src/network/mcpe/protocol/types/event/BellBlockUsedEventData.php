@@ -30,7 +30,7 @@ final class BellBlockUsedEventData implements EventData{
 	/** @var int */
 	public $itemType;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_BELL_BLOCK_USED;
 	}
 
@@ -40,9 +40,5 @@ final class BellBlockUsedEventData implements EventData{
 
 	public function write(NetworkBinaryStream $out) : void{
 		$out->putVarInt($this->itemType);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->itemType === $this->itemType;
 	}
 }

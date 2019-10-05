@@ -34,7 +34,7 @@ final class CauldronUsedEventData implements EventData{
 	/** @var int */
 	public $cauldronLevel;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_CAULDRON_USED;
 	}
 
@@ -48,9 +48,5 @@ final class CauldronUsedEventData implements EventData{
 		$out->putUnsignedVarInt($this->dyeColor);
 		$out->putVarInt($this->contentsType);
 		$out->putVarInt($this->cauldronLevel);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->dyeColor === $this->dyeColor and $other->contentsType === $this->contentsType and $other->cauldronLevel === $this->cauldronLevel;
 	}
 }

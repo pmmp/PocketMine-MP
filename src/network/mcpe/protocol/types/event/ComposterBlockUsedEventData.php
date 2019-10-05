@@ -32,7 +32,7 @@ final class ComposterBlockUsedEventData implements EventData{
 	/** @var int */
 	public $interactionType;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_COMPOSTER_BLOCK_USED;
 	}
 
@@ -44,9 +44,5 @@ final class ComposterBlockUsedEventData implements EventData{
 	public function write(NetworkBinaryStream $out) : void{
 		$out->putVarInt($this->itemType);
 		$out->putVarInt($this->interactionType);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->itemType === $this->itemType and $other->interactionType === $this->interactionType;
 	}
 }

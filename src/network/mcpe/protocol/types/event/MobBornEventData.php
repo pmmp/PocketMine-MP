@@ -34,7 +34,7 @@ final class MobBornEventData implements EventData{
 	/** @var int */
 	public $babyColor;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_MOB_BORN;
 	}
 
@@ -48,9 +48,5 @@ final class MobBornEventData implements EventData{
 		$out->putVarInt($this->babyType);
 		$out->putVarInt($this->babyVariant);
 		$out->putByte($this->babyColor);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->babyType === $this->babyType and $other->babyVariant === $this->babyVariant and $other->babyColor === $this->babyColor;
 	}
 }

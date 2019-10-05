@@ -38,7 +38,7 @@ final class MobKilledEventData implements EventData{
 	/** @var string */
 	public $traderName;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_MOB_KILLED;
 	}
 
@@ -56,9 +56,5 @@ final class MobKilledEventData implements EventData{
 		$out->putVarInt($this->killMethodType);
 		$out->putVarInt($this->traderTier);
 		$out->putString($this->traderName);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->entityUniqueId === $this->entityUniqueId and $other->entityRuntimeId === $this->entityRuntimeId and $other->killMethodType === $this->killMethodType and $other->traderTier === $this->traderTier and $other->traderName === $this->traderName;
 	}
 }

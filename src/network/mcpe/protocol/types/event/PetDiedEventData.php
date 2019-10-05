@@ -38,7 +38,7 @@ final class PetDiedEventData implements EventData{
 	/** @var int */
 	public $deathMethodType;
 
-	public static function id() : int{
+	public function id() : int{
 		return EventPacket::TYPE_MOB_KILLED;
 	}
 
@@ -56,9 +56,5 @@ final class PetDiedEventData implements EventData{
 		$out->putEntityUniqueId($this->entityRuntimeId);
 		$out->putVarInt($this->petType);
 		$out->putVarInt($this->deathMethodType);
-	}
-
-	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->unknownBool === $this->unknownBool and $other->entityUniqueId === $this->entityUniqueId and $other->entityRuntimeId === $this->entityRuntimeId and $other->petType === $this->petType and $other->deathMethodType === $this->deathMethodType;
 	}
 }

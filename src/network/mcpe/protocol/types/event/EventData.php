@@ -27,11 +27,9 @@ use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 interface EventData{
 
-	public static function id() : int;
+	public function id() : int;
 
 	public function read(NetworkBinaryStream $in) : void;
 
 	public function write(NetworkBinaryStream $out) : void;
-
-	public function equals(EventData $other) : bool;
 }
