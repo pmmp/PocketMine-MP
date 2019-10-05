@@ -26,35 +26,23 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class PlayerDeathEvent implements EventData{
+final class PortalBuiltEventData implements EventData{
 	/** @var int */
-	public $killerEntity;
-	/** @var int */
-	public $mobVariant;
-	/** @var int */
-	public $cause;
-	/** @var bool */
-	public $inRaid;
+	public $type;
 
 	public static function id() : int{
-		return EventPacket::TYPE_PLAYER_DEATH;
+		return EventPacket::TYPE_PORTAL_BUILT;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->killerEntity = $in->getVarInt();
-		$this->mobVariant = $in->getVarInt();
-		$this->cause = $in->getVarInt();
-		$this->inRaid = $in->getBool();
+		$this->type = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->killerEntity);
-		$out->putVarInt($this->mobVariant);
-		$out->putVarInt($this->cause);
-		$out->putBool($this->inRaid);
+		$out->putVarInt($this->type);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->killerEntity === $this->killerEntity and $other->mobVariant === $this->mobVariant and $other->cause === $this->cause and $other->inRaid === $this->inRaid;
+		return $other instanceof $this and $other->type === $this->type;
 	}
 }

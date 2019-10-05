@@ -26,31 +26,35 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class MobBornEvent implements EventData{
+final class CommandExecutedEventData implements EventData{
 	/** @var int */
-	public $babyType;
+	public $successCount;
 	/** @var int */
-	public $babyVariant;
-	/** @var int */
-	public $babyColor;
+	public $errorCount;
+	/** @var string */
+	public $commandName;
+	/** @var string */
+	public $errorList;
 
 	public static function id() : int{
-		return EventPacket::TYPE_MOB_BORN;
+		return EventPacket::TYPE_COMMANED_EXECUTED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->babyType = $in->getVarInt();
-		$this->babyVariant = $in->getVarInt();
-		$this->babyColor = $in->getByte();
+		$this->successCount = $in->getVarInt();
+		$this->errorCount = $in->getVarInt();
+		$this->commandName = $in->getString();
+		$this->errorList = $in->getString();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->babyType);
-		$out->putVarInt($this->babyVariant);
-		$out->putByte($this->babyColor);
+		$out->putVarInt($this->successCount);
+		$out->putVarInt($this->errorCount);
+		$out->putString($this->commandName);
+		$out->putString($this->errorList);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->babyType === $this->babyType and $other->babyVariant === $this->babyVariant and $other->babyColor === $this->babyColor;
+		return $other instanceof $this and $other->successCount === $this->successCount and $other->errorCount === $this->errorCount and $other->commandName === $this->commandName and $other->errorList === $this->errorList;
 	}
 }

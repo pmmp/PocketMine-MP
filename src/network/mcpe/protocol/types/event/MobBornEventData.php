@@ -26,27 +26,31 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class CauldronBlockUsedEvent implements EventData{
+final class MobBornEventData implements EventData{
 	/** @var int */
-	public $itemType;
+	public $babyType;
 	/** @var int */
-	public $interactionType;
+	public $babyVariant;
+	/** @var int */
+	public $babyColor;
 
 	public static function id() : int{
-		return EventPacket::TYPE_CAULDRON_BLOCK_USED;
+		return EventPacket::TYPE_MOB_BORN;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->itemType = $in->getVarInt();
-		$this->interactionType = $in->getVarInt();
+		$this->babyType = $in->getVarInt();
+		$this->babyVariant = $in->getVarInt();
+		$this->babyColor = $in->getByte();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->itemType);
-		$out->putVarInt($this->interactionType);
+		$out->putVarInt($this->babyType);
+		$out->putVarInt($this->babyVariant);
+		$out->putByte($this->babyColor);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->itemType === $this->itemType and $other->interactionType === $this->interactionType;
+		return $other instanceof $this and $other->babyType === $this->babyType and $other->babyVariant === $this->babyVariant and $other->babyColor === $this->babyColor;
 	}
 }

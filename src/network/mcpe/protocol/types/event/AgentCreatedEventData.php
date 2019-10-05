@@ -26,23 +26,20 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class BellBlockUsedEvent implements EventData{
-	/** @var int */
-	public $itemType;
-
+final class AgentCreatedEventData implements EventData{
 	public static function id() : int{
-		return EventPacket::TYPE_BELL_BLOCK_USED;
+		return EventPacket::TYPE_AGENT_CREATED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->itemType = $in->getVarInt();
+		//NOOPE
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->itemType);
+		//NOOPE
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->itemType === $this->itemType;
+		return $other instanceof $this;
 	}
 }

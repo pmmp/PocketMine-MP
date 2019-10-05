@@ -26,35 +26,39 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class CommandExecutedEvent implements EventData{
+final class MobKilledEventData implements EventData{
 	/** @var int */
-	public $successCount;
+	public $entityUniqueId;
 	/** @var int */
-	public $errorCount;
+	public $entityRuntimeId;
+	/** @var int */
+	public $killMethodType;
+	/** @var int */
+	public $traderTier;
 	/** @var string */
-	public $commandName;
-	/** @var string */
-	public $errorList;
+	public $traderName;
 
 	public static function id() : int{
-		return EventPacket::TYPE_COMMANED_EXECUTED;
+		return EventPacket::TYPE_MOB_KILLED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->successCount = $in->getVarInt();
-		$this->errorCount = $in->getVarInt();
-		$this->commandName = $in->getString();
-		$this->errorList = $in->getString();
+		$this->entityUniqueId = $in->getEntityUniqueId();
+		$this->entityRuntimeId = $in->getEntityUniqueId(); // Nice
+		$this->killMethodType = $in->getVarInt();
+		$this->traderTier = $in->getVarInt();
+		$this->traderName = $in->getString();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->successCount);
-		$out->putVarInt($this->errorCount);
-		$out->putString($this->commandName);
-		$out->putString($this->errorList);
+		$out->putEntityUniqueId($this->entityUniqueId);
+		$out->putEntityUniqueId($this->entityRuntimeId);
+		$out->putVarInt($this->killMethodType);
+		$out->putVarInt($this->traderTier);
+		$out->putString($this->traderName);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->successCount === $this->successCount and $other->errorCount === $this->errorCount and $other->commandName === $this->commandName and $other->errorList === $this->errorList;
+		return $other instanceof $this and $other->entityUniqueId === $this->entityUniqueId and $other->entityRuntimeId === $this->entityRuntimeId and $other->killMethodType === $this->killMethodType and $other->traderTier === $this->traderTier and $other->traderName === $this->traderName;
 	}
 }

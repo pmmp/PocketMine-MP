@@ -26,20 +26,35 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class AgentCreatedEvent implements EventData{
+final class FishBucketedEventData implements EventData{
+	/** @var int */
+	public $pattern;
+	/** @var int */
+	public $preset;
+	/** @var int */
+	public $type;
+	/** @var bool */
+	public $released;
+
 	public static function id() : int{
-		return EventPacket::TYPE_AGENT_CREATED;
+		return EventPacket::TYPE_FISH_BUCKETED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		//NOOPE
+		$this->pattern = $in->getVarInt();
+		$this->preset = $in->getVarInt();
+		$this->type = $in->getVarInt();
+		$this->released = $in->getBool();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		//NOOPE
+		$out->putVarInt($this->pattern);
+		$out->putVarInt($this->preset);
+		$out->putVarInt($this->type);
+		$out->putBool($this->released);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this;
+		return $other instanceof $this and $other->pattern === $this->pattern and $other->preset === $this->preset and $other->type === $this->type and $other->released === $this->released;
 	}
 }

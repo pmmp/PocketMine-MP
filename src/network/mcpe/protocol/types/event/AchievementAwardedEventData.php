@@ -26,39 +26,23 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class MobKilledEvent implements EventData{
+final class AchievementAwardedEventData implements EventData{
 	/** @var int */
-	public $entityUniqueId;
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var int */
-	public $killMethodType;
-	/** @var int */
-	public $traderTier;
-	/** @var string */
-	public $traderName;
+	public $achievementId;
 
 	public static function id() : int{
-		return EventPacket::TYPE_MOB_KILLED;
+		return EventPacket::TYPE_ACHIEVEMENT_AWARDED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->entityUniqueId = $in->getEntityUniqueId();
-		$this->entityRuntimeId = $in->getEntityUniqueId(); // Nice
-		$this->killMethodType = $in->getVarInt();
-		$this->traderTier = $in->getVarInt();
-		$this->traderName = $in->getString();
+		$this->achievementId = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putEntityUniqueId($this->entityUniqueId);
-		$out->putEntityUniqueId($this->entityRuntimeId);
-		$out->putVarInt($this->killMethodType);
-		$out->putVarInt($this->traderTier);
-		$out->putString($this->traderName);
+		$out->putVarInt($this->achievementId);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->entityUniqueId === $this->entityUniqueId and $other->entityRuntimeId === $this->entityRuntimeId and $other->killMethodType === $this->killMethodType and $other->traderTier === $this->traderTier and $other->traderName === $this->traderName;
+		return $other instanceof $this and $other->achievementId === $this->achievementId;
 	}
 }

@@ -27,25 +27,25 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\network\mcpe\protocol\types\event\AchievementAwardedEvent;
-use pocketmine\network\mcpe\protocol\types\event\AgentCommandEvent;
-use pocketmine\network\mcpe\protocol\types\event\AgentCreatedEvent;
-use pocketmine\network\mcpe\protocol\types\event\BellBlockUsedEvent;
-use pocketmine\network\mcpe\protocol\types\event\BossKilledEvent;
-use pocketmine\network\mcpe\protocol\types\event\CauldronBlockUsedEvent;
-use pocketmine\network\mcpe\protocol\types\event\CauldronUsedEvent;
-use pocketmine\network\mcpe\protocol\types\event\CommandExecutedEvent;
-use pocketmine\network\mcpe\protocol\types\event\ComposterBlockUsedEvent;
-use pocketmine\network\mcpe\protocol\types\event\EntityInteractEvent;
+use pocketmine\network\mcpe\protocol\types\event\AchievementAwardedEventData;
+use pocketmine\network\mcpe\protocol\types\event\AgentCommandEventData;
+use pocketmine\network\mcpe\protocol\types\event\AgentCreatedEventData;
+use pocketmine\network\mcpe\protocol\types\event\BellBlockUsedEventData;
+use pocketmine\network\mcpe\protocol\types\event\BossKilledEventData;
+use pocketmine\network\mcpe\protocol\types\event\CauldronBlockUsedEventData;
+use pocketmine\network\mcpe\protocol\types\event\CauldronUsedEventData;
+use pocketmine\network\mcpe\protocol\types\event\CommandExecutedEventData;
+use pocketmine\network\mcpe\protocol\types\event\ComposterBlockUsedEventData;
+use pocketmine\network\mcpe\protocol\types\event\EntityInteractEventData;
 use pocketmine\network\mcpe\protocol\types\event\EventData;
-use pocketmine\network\mcpe\protocol\types\event\FishBucketedEvent;
-use pocketmine\network\mcpe\protocol\types\event\MobBornEvent;
-use pocketmine\network\mcpe\protocol\types\event\MobKilledEvent;
-use pocketmine\network\mcpe\protocol\types\event\PatternRemovedEvent;
-use pocketmine\network\mcpe\protocol\types\event\PetDiedEvent;
-use pocketmine\network\mcpe\protocol\types\event\PlayerDeathEvent;
-use pocketmine\network\mcpe\protocol\types\event\PortalBuiltEvent;
-use pocketmine\network\mcpe\protocol\types\event\PortalUsedEvent;
+use pocketmine\network\mcpe\protocol\types\event\FishBucketedEventData;
+use pocketmine\network\mcpe\protocol\types\event\MobBornEventData;
+use pocketmine\network\mcpe\protocol\types\event\MobKilledEventData;
+use pocketmine\network\mcpe\protocol\types\event\PatternRemovedEventData;
+use pocketmine\network\mcpe\protocol\types\event\PetDiedEventData;
+use pocketmine\network\mcpe\protocol\types\event\PlayerDeathEventData;
+use pocketmine\network\mcpe\protocol\types\event\PortalBuiltEventData;
+use pocketmine\network\mcpe\protocol\types\event\PortalUsedEventData;
 
 class EventPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::EVENT_PACKET;
@@ -78,24 +78,24 @@ class EventPacket extends DataPacket implements ClientboundPacket{
 
 	protected function readEventData(int $eventDataType) : EventData{
 		switch($eventDataType){
-			case self::TYPE_ACHIEVEMENT_AWARDED: return new AchievementAwardedEvent();
-			case self::TYPE_ENTITY_INTERACT: return new EntityInteractEvent();
-			case self::TYPE_PORTAL_BUILT: return new PortalBuiltEvent();
-			case self::TYPE_PORTAL_USED: return new PortalUsedEvent();
-			case self::TYPE_MOB_KILLED: return new MobKilledEvent();
-			case self::TYPE_CAULDRON_USED: return new CauldronUsedEvent();
-			case self::TYPE_PLAYER_DEATH: return new PlayerDeathEvent();
-			case self::TYPE_BOSS_KILLED: return new BossKilledEvent();
-			case self::TYPE_AGENT_COMMAND: return new AgentCommandEvent();
-			case self::TYPE_AGENT_CREATED: return new AgentCreatedEvent();
-			case self::TYPE_PATTERN_REMOVED: return new PatternRemovedEvent();
-			case self::TYPE_COMMANED_EXECUTED: return new CommandExecutedEvent();
-			case self::TYPE_FISH_BUCKETED: return new FishBucketedEvent();
-			case self::TYPE_MOB_BORN: return new MobBornEvent();
-			case self::TYPE_PET_DIED: return new PetDiedEvent();
-			case self::TYPE_CAULDRON_BLOCK_USED: return new CauldronBlockUsedEvent();
-			case self::TYPE_COMPOSTER_BLOCK_USED: return new ComposterBlockUsedEvent();
-			case self::TYPE_BELL_BLOCK_USED: return new BellBlockUsedEvent();
+			case self::TYPE_ACHIEVEMENT_AWARDED: return new AchievementAwardedEventData();
+			case self::TYPE_ENTITY_INTERACT: return new EntityInteractEventData();
+			case self::TYPE_PORTAL_BUILT: return new PortalBuiltEventData();
+			case self::TYPE_PORTAL_USED: return new PortalUsedEventData();
+			case self::TYPE_MOB_KILLED: return new MobKilledEventData();
+			case self::TYPE_CAULDRON_USED: return new CauldronUsedEventData();
+			case self::TYPE_PLAYER_DEATH: return new PlayerDeathEventData();
+			case self::TYPE_BOSS_KILLED: return new BossKilledEventData();
+			case self::TYPE_AGENT_COMMAND: return new AgentCommandEventData();
+			case self::TYPE_AGENT_CREATED: return new AgentCreatedEventData();
+			case self::TYPE_PATTERN_REMOVED: return new PatternRemovedEventData();
+			case self::TYPE_COMMANED_EXECUTED: return new CommandExecutedEventData();
+			case self::TYPE_FISH_BUCKETED: return new FishBucketedEventData();
+			case self::TYPE_MOB_BORN: return new MobBornEventData();
+			case self::TYPE_PET_DIED: return new PetDiedEventData();
+			case self::TYPE_CAULDRON_BLOCK_USED: return new CauldronBlockUsedEventData();
+			case self::TYPE_COMPOSTER_BLOCK_USED: return new ComposterBlockUsedEventData();
+			case self::TYPE_BELL_BLOCK_USED: return new BellBlockUsedEventData();
 			default:
 				throw new BadPacketException("Unknown event data type " . $eventDataType);
 		}

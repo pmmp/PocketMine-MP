@@ -26,39 +26,39 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class PetDiedEvent implements EventData{
-	/** @var bool */
-	public $unknownBool; // If true - PetDeathContext=2
+final class AgentCommandEventData implements EventData{
 	/** @var int */
-	public $entityUniqueId;
+	public $varint1;
 	/** @var int */
-	public $entityRuntimeId;
-	/** @var int */
-	public $petType;
-	/** @var int */
-	public $deathMethodType;
+	public $varint2;
+	/** @var string */
+	public $string1;
+	/** @var string */
+	public $string2;
+	/** @var string */
+	public $string3;
 
 	public static function id() : int{
-		return EventPacket::TYPE_MOB_KILLED;
+		return EventPacket::TYPE_AGENT_COMMAND;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->unknownBool = $in->getBool();
-		$this->entityUniqueId = $in->getEntityUniqueId();
-		$this->entityRuntimeId = $in->getEntityUniqueId(); // Nice
-		$this->petType = $in->getVarInt();
-		$this->deathMethodType = $in->getVarInt();
+		$this->varint1 = $in->getVarInt(); // Unknown, 0 - 3
+		$this->varint2 = $in->getVarInt(); // Unknown, v9 != -1
+		$this->string1 = $in->getString(); // Unknown, Json
+		$this->string2 = $in->getString(); // Unknown, Json
+		$this->string3 = $in->getString(); // Unknown, Json, maybe named "Result". Contains "commandName"
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putBool($this->unknownBool);
-		$out->putEntityUniqueId($this->entityUniqueId);
-		$out->putEntityUniqueId($this->entityRuntimeId);
-		$out->putVarInt($this->petType);
-		$out->putVarInt($this->deathMethodType);
+		$out->putVarInt($this->varint1);
+		$out->putVarInt($this->varint2);
+		$out->putString($this->string1);
+		$out->putString($this->string2);
+		$out->putString($this->string3);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->unknownBool === $this->unknownBool and $other->entityUniqueId === $this->entityUniqueId and $other->entityRuntimeId === $this->entityRuntimeId and $other->petType === $this->petType and $other->deathMethodType === $this->deathMethodType;
+		return $other instanceof $this and $other->varint1 === $this->varint1 and $other->varint2 === $this->varint2 and $other->string1 === $this->string1 and $other->string2 === $this->string2 and $other->string3 === $this->string3;
 	}
 }

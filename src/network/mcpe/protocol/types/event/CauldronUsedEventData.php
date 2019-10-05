@@ -26,35 +26,31 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class FishBucketedEvent implements EventData{
+final class CauldronUsedEventData implements EventData{
 	/** @var int */
-	public $pattern;
+	public $dyeColor;
 	/** @var int */
-	public $preset;
+	public $contentsType;
 	/** @var int */
-	public $type;
-	/** @var bool */
-	public $released;
+	public $cauldronLevel;
 
 	public static function id() : int{
-		return EventPacket::TYPE_FISH_BUCKETED;
+		return EventPacket::TYPE_CAULDRON_USED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->pattern = $in->getVarInt();
-		$this->preset = $in->getVarInt();
-		$this->type = $in->getVarInt();
-		$this->released = $in->getBool();
+		$this->dyeColor = $in->getUnsignedVarInt();
+		$this->contentsType = $in->getVarInt();
+		$this->cauldronLevel = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->pattern);
-		$out->putVarInt($this->preset);
-		$out->putVarInt($this->type);
-		$out->putBool($this->released);
+		$out->putUnsignedVarInt($this->dyeColor);
+		$out->putVarInt($this->contentsType);
+		$out->putVarInt($this->cauldronLevel);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->pattern === $this->pattern and $other->preset === $this->preset and $other->type === $this->type and $other->released === $this->released;
+		return $other instanceof $this and $other->dyeColor === $this->dyeColor and $other->contentsType === $this->contentsType and $other->cauldronLevel === $this->cauldronLevel;
 	}
 }

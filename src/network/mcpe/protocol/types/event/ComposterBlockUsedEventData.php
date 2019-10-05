@@ -26,39 +26,27 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class PatternRemovedEvent implements EventData{
+final class ComposterBlockUsedEventData implements EventData{
 	/** @var int */
-	public $itemId;
+	public $itemType;
 	/** @var int */
-	public $itemAux;
-	/** @var int */
-	public $layerIndex;
-	/** @var int */
-	public $patternId;
-	/** @var int */
-	public $patternColor;
+	public $interactionType;
 
 	public static function id() : int{
-		return EventPacket::TYPE_PATTERN_REMOVED;
+		return EventPacket::TYPE_COMPOSTER_BLOCK_USED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->itemId = $in->getVarInt();
-		$this->itemAux = $in->getVarInt();
-		$this->layerIndex = $in->getVarInt();
-		$this->patternId = $in->getVarInt();
-		$this->patternColor = $in->getVarInt();
+		$this->itemType = $in->getVarInt();
+		$this->interactionType = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->itemId);
-		$out->putVarInt($this->itemAux);
-		$out->putVarInt($this->layerIndex);
-		$out->putVarInt($this->patternId);
-		$out->putVarInt($this->patternColor);
+		$out->putVarInt($this->itemType);
+		$out->putVarInt($this->interactionType);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->itemId === $this->itemId and $other->itemAux === $this->itemAux and $other->layerIndex === $this->layerIndex and $other->patternId === $this->patternId and $other->patternColor === $this->patternColor;
+		return $other instanceof $this and $other->itemType === $this->itemType and $other->interactionType === $this->interactionType;
 	}
 }

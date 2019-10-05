@@ -26,23 +26,27 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class AchievementAwardedEvent implements EventData{
+final class PortalUsedEventData implements EventData{
 	/** @var int */
-	public $achievementId;
+	public $toDim;
+	/** @var int */
+	public $dim;
 
 	public static function id() : int{
-		return EventPacket::TYPE_ACHIEVEMENT_AWARDED;
+		return EventPacket::TYPE_PORTAL_USED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->achievementId = $in->getVarInt();
+		$this->toDim = $in->getVarInt();
+		$this->dim = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->achievementId);
+		$out->putVarInt($this->toDim);
+		$out->putVarInt($this->dim);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->achievementId === $this->achievementId;
+		return $other instanceof $this and $other->toDim === $this->toDim and $other->dim === $this->dim;
 	}
 }

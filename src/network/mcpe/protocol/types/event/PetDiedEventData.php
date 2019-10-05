@@ -26,35 +26,39 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class EntityInteractEvent implements EventData{
+final class PetDiedEventData implements EventData{
+	/** @var bool */
+	public $unknownBool; // If true - PetDeathContext=2
 	/** @var int */
-	public $mobType;
+	public $entityUniqueId;
 	/** @var int */
-	public $interactionType;
+	public $entityRuntimeId;
 	/** @var int */
-	public $mobVariant;
+	public $petType;
 	/** @var int */
-	public $mobColor;
+	public $deathMethodType;
 
 	public static function id() : int{
-		return EventPacket::TYPE_ENTITY_INTERACT;
+		return EventPacket::TYPE_MOB_KILLED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->mobType = $in->getVarInt();
-		$this->interactionType = $in->getVarInt();
-		$this->mobVariant = $in->getVarInt();
-		$this->mobColor = $in->getByte();
+		$this->unknownBool = $in->getBool();
+		$this->entityUniqueId = $in->getEntityUniqueId();
+		$this->entityRuntimeId = $in->getEntityUniqueId(); // Nice
+		$this->petType = $in->getVarInt();
+		$this->deathMethodType = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->mobType);
-		$out->putVarInt($this->interactionType);
-		$out->putVarInt($this->mobVariant);
-		$out->putByte($this->mobColor);
+		$out->putBool($this->unknownBool);
+		$out->putEntityUniqueId($this->entityUniqueId);
+		$out->putEntityUniqueId($this->entityRuntimeId);
+		$out->putVarInt($this->petType);
+		$out->putVarInt($this->deathMethodType);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->mobType === $this->mobType and $other->interactionType === $this->interactionType and $other->mobVariant === $this->mobVariant and $other->mobColor === $this->mobColor;
+		return $other instanceof $this and $other->unknownBool === $this->unknownBool and $other->entityUniqueId === $this->entityUniqueId and $other->entityRuntimeId === $this->entityRuntimeId and $other->petType === $this->petType and $other->deathMethodType === $this->deathMethodType;
 	}
 }

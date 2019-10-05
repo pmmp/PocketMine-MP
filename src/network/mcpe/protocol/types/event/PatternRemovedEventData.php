@@ -26,31 +26,39 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class CauldronUsedEvent implements EventData{
+final class PatternRemovedEventData implements EventData{
 	/** @var int */
-	public $dyeColor;
+	public $itemId;
 	/** @var int */
-	public $contentsType;
+	public $itemAux;
 	/** @var int */
-	public $cauldronLevel;
+	public $layerIndex;
+	/** @var int */
+	public $patternId;
+	/** @var int */
+	public $patternColor;
 
 	public static function id() : int{
-		return EventPacket::TYPE_CAULDRON_USED;
+		return EventPacket::TYPE_PATTERN_REMOVED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->dyeColor = $in->getUnsignedVarInt();
-		$this->contentsType = $in->getVarInt();
-		$this->cauldronLevel = $in->getVarInt();
+		$this->itemId = $in->getVarInt();
+		$this->itemAux = $in->getVarInt();
+		$this->layerIndex = $in->getVarInt();
+		$this->patternId = $in->getVarInt();
+		$this->patternColor = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putUnsignedVarInt($this->dyeColor);
-		$out->putVarInt($this->contentsType);
-		$out->putVarInt($this->cauldronLevel);
+		$out->putVarInt($this->itemId);
+		$out->putVarInt($this->itemAux);
+		$out->putVarInt($this->layerIndex);
+		$out->putVarInt($this->patternId);
+		$out->putVarInt($this->patternColor);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->dyeColor === $this->dyeColor and $other->contentsType === $this->contentsType and $other->cauldronLevel === $this->cauldronLevel;
+		return $other instanceof $this and $other->itemId === $this->itemId and $other->itemAux === $this->itemAux and $other->layerIndex === $this->layerIndex and $other->patternId === $this->patternId and $other->patternColor === $this->patternColor;
 	}
 }

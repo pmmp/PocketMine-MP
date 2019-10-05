@@ -26,27 +26,35 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class ComposterBlockUsedEvent implements EventData{
+final class EntityInteractEventData implements EventData{
 	/** @var int */
-	public $itemType;
+	public $mobType;
 	/** @var int */
 	public $interactionType;
+	/** @var int */
+	public $mobVariant;
+	/** @var int */
+	public $mobColor;
 
 	public static function id() : int{
-		return EventPacket::TYPE_COMPOSTER_BLOCK_USED;
+		return EventPacket::TYPE_ENTITY_INTERACT;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->itemType = $in->getVarInt();
+		$this->mobType = $in->getVarInt();
 		$this->interactionType = $in->getVarInt();
+		$this->mobVariant = $in->getVarInt();
+		$this->mobColor = $in->getByte();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->itemType);
+		$out->putVarInt($this->mobType);
 		$out->putVarInt($this->interactionType);
+		$out->putVarInt($this->mobVariant);
+		$out->putByte($this->mobColor);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->itemType === $this->itemType and $other->interactionType === $this->interactionType;
+		return $other instanceof $this and $other->mobType === $this->mobType and $other->interactionType === $this->interactionType and $other->mobVariant === $this->mobVariant and $other->mobColor === $this->mobColor;
 	}
 }

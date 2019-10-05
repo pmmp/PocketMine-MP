@@ -26,39 +26,31 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class AgentCommandEvent implements EventData{
+final class BossKilledEventData implements EventData{
 	/** @var int */
-	public $varint1;
+	public $bossUniqueId;
 	/** @var int */
-	public $varint2;
-	/** @var string */
-	public $string1;
-	/** @var string */
-	public $string2;
-	/** @var string */
-	public $string3;
+	public $partySize;
+	/** @var int */
+	public $bossType;
 
 	public static function id() : int{
-		return EventPacket::TYPE_AGENT_COMMAND;
+		return EventPacket::TYPE_BOSS_KILLED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->varint1 = $in->getVarInt(); // Unknown, 0 - 3
-		$this->varint2 = $in->getVarInt(); // Unknown, v9 != -1
-		$this->string1 = $in->getString(); // Unknown, Json
-		$this->string2 = $in->getString(); // Unknown, Json
-		$this->string3 = $in->getString(); // Unknown, Json, maybe named "Result". Contains "commandName"
+		$this->bossUniqueId = $in->getEntityUniqueId();
+		$this->partySize = $in->getVarInt();
+		$this->bossType = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->varint1);
-		$out->putVarInt($this->varint2);
-		$out->putString($this->string1);
-		$out->putString($this->string2);
-		$out->putString($this->string3);
+		$out->putEntityUniqueId($this->bossUniqueId);
+		$out->putVarInt($this->partySize);
+		$out->putVarInt($this->bossType);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->varint1 === $this->varint1 and $other->varint2 === $this->varint2 and $other->string1 === $this->string1 and $other->string2 === $this->string2 and $other->string3 === $this->string3;
+		return $other instanceof $this and $other->bossUniqueId === $this->bossUniqueId and $other->partySize === $this->partySize and $other->bossType === $this->bossType;
 	}
 }

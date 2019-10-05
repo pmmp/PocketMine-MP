@@ -26,31 +26,27 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class BossKilledEvent implements EventData{
+final class CauldronBlockUsedEventData implements EventData{
 	/** @var int */
-	public $bossUniqueId;
+	public $itemType;
 	/** @var int */
-	public $partySize;
-	/** @var int */
-	public $bossType;
+	public $interactionType;
 
 	public static function id() : int{
-		return EventPacket::TYPE_BOSS_KILLED;
+		return EventPacket::TYPE_CAULDRON_BLOCK_USED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->bossUniqueId = $in->getEntityUniqueId();
-		$this->partySize = $in->getVarInt();
-		$this->bossType = $in->getVarInt();
+		$this->itemType = $in->getVarInt();
+		$this->interactionType = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putEntityUniqueId($this->bossUniqueId);
-		$out->putVarInt($this->partySize);
-		$out->putVarInt($this->bossType);
+		$out->putVarInt($this->itemType);
+		$out->putVarInt($this->interactionType);
 	}
 
 	public function equals(EventData $other) : bool{
-		return $other instanceof $this and $other->bossUniqueId === $this->bossUniqueId and $other->partySize === $this->partySize and $other->bossType === $this->bossType;
+		return $other instanceof $this and $other->itemType === $this->itemType and $other->interactionType === $this->interactionType;
 	}
 }
