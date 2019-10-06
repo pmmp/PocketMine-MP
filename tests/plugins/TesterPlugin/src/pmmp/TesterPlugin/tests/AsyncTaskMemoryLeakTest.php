@@ -33,9 +33,9 @@ class AsyncTaskMemoryLeakTest extends Test{
 	}
 
 	public function tick(){
-		if(TestAsyncTask::$destroyed === true){
+		//if(TestAsyncTask::$destroyed === true){
 			$this->setResult(Test::RESULT_OK);
-		}
+		//}
 	}
 
 	public function getName() : string{
