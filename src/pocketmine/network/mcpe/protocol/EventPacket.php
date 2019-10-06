@@ -43,6 +43,11 @@ class EventPacket extends DataPacket{
 	public const TYPE_PATTERN_REMOVED = 10; //???
 	public const TYPE_COMMANED_EXECUTED = 11;
 	public const TYPE_FISH_BUCKETED = 12;
+	public const TYPE_MOB_BORN = 13;
+	public const TYPE_PET_DIED = 14;
+	public const TYPE_CAULDRON_BLOCK_USED = 15;
+	public const TYPE_COMPOSTER_BLOCK_USED = 16;
+	public const TYPE_BELL_BLOCK_USED = 17;
 
 	/** @var int */
 	public $playerRuntimeId;
