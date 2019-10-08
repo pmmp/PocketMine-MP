@@ -37,6 +37,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
 use function count;
@@ -591,5 +592,43 @@ class NetworkBinaryStream extends BinaryStream{
 		if($data->type === CommandOriginData::ORIGIN_DEV_CONSOLE or $data->type === CommandOriginData::ORIGIN_TEST){
 			$this->putVarLong($data->varlong1);
 		}
+	}
+
+	protected function getStructureSettings() : StructureSettings{
+		$result = new StructureSettings();
+
+		$result->paletteName = $this->getString();
+
+		$result->ignoreEntities = $this->getBool();
+		$result->ignoreBlocks = $this->getBool();
+
+		$this->getBlockPosition($result->structureSizeX, $result->structureSizeY, $result->structureSizeZ);
+		$this->getBlockPosition($result->structureOffsetX, $result->structureOffsetY, $result->structureOffsetZ);
+
+		$result->lastTouchedByPlayerID = $this->getEntityUniqueId();
+		$result->rotation = $this->getByte();
+		$result->mirror = $this->getByte();
+		$result->integrityValue = $this->getFloat();
+		$result->integritySeed = $this->getInt();
+		$result->pivot = $this->getVector3();
+
+		return $result;
+	}
+
+	protected function putStructureSettings(StructureSettings $structureSettings) : void{
+		$this->putString($structureSettings->paletteName);
+
+		$this->putBool($structureSettings->ignoreEntities);
+		$this->putBool($structureSettings->ignoreBlocks);
+
+		$this->putBlockPosition($structureSettings->structureSizeX, $structureSettings->structureSizeY, $structureSettings->structureSizeZ);
+		$this->putBlockPosition($structureSettings->structureOffsetX, $structureSettings->structureOffsetY, $structureSettings->structureOffsetZ);
+
+		$this->putEntityUniqueId($structureSettings->lastTouchedByPlayerID);
+		$this->putByte($structureSettings->rotation);
+		$this->putByte($structureSettings->mirror);
+		$this->putFloat($structureSettings->integrityValue);
+		$this->putInt($structureSettings->integritySeed);
+		$this->putVector3($structureSettings->pivot);
 	}
 }

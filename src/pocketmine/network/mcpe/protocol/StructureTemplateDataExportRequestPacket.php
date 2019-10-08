@@ -26,16 +26,36 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\StructureSettings;
 
 class StructureTemplateDataExportRequestPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_REQUEST_PACKET;
 
+	/** @var string */
+	public $structureTemplateName;
+	/** @var int */
+	public $structureBlockX;
+	/** @var int */
+	public $structureBlockY;
+	/** @var int */
+	public $structureBlockZ;
+	/** @var StructureSettings */
+	public $structureSettings;
+	/** @var int */
+	public $structureTemplateResponseType;
+
 	protected function decodePayload() : void{
-		//TODO
+		$this->structureTemplateName = $this->getString();
+		$this->getBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
+		$this->structureSettings = $this->getStructureSettings();
+		$this->structureTemplateResponseType = $this->getByte();
 	}
 
 	protected function encodePayload() : void{
-		//TODO
+		$this->putString($this->structureTemplateName);
+		$this->putBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
+		$this->putStructureSettings($this->structureSettings);
+		$this->putByte($this->structureTemplateResponseType);
 	}
 
 	public function handle(NetworkSession $handler) : bool{
