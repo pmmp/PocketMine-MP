@@ -162,7 +162,7 @@ LICENSE;
 
 		$this->message($this->lang->get("spawn_protection_info"));
 
-		if(strtolower($this->getInput($this->lang->get("spawn_protection"), "y", "Y/n")) === "n"){
+		if(strtolower($this->getInput($this->lang->get("spawn_protection"), "n", "y/N")) === "n"){
 			$config->set("spawn-protection", -1);
 		}else{
 			$config->set("spawn-protection", 16);
