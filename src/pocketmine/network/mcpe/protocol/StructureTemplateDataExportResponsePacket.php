@@ -34,16 +34,12 @@ class StructureTemplateDataExportResponsePacket extends DataPacket{
 	public $structureTemplateName;
 	/** @var string|null */
 	public $namedtag;
-	/** @var int */
-	public $structureTemplateResponseType = 1;
 
 	protected function decodePayload() : void{
 		$this->structureTemplateName = $this->getString();
 		if($this->getBool()){
-			//TODO: Read namedtag without this hack
-			$this->namedtag = $this->get(strlen($this->buffer) - $this->offset - 1);
+			$this->namedtag = $this->getRemaining();
 		}
-		$this->structureTemplateResponseType = $this->getByte();
 	}
 
 	protected function encodePayload() : void{
@@ -52,7 +48,6 @@ class StructureTemplateDataExportResponsePacket extends DataPacket{
 		if($this->namedtag !== null){
 			$this->put($this->namedtag);
 		}
-		$this->putByte($this->structureTemplateResponseType);
 	}
 
 	public function handle(NetworkSession $handler) : bool{
