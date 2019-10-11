@@ -54,6 +54,4 @@ class StructureSettings{
 	public $integrityValue;
 	/** @var int */
 	public $integritySeed;
-	/** @var Vector3 */
-	public $pivot;
 }

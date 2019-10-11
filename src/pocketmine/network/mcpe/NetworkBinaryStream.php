@@ -610,7 +610,6 @@ class NetworkBinaryStream extends BinaryStream{
 		$result->mirror = $this->getByte();
 		$result->integrityValue = $this->getFloat();
 		$result->integritySeed = $this->getInt();
-		$result->pivot = $this->getVector3();
 
 		return $result;
 	}
@@ -629,6 +628,5 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putByte($structureSettings->mirror);
 		$this->putFloat($structureSettings->integrityValue);
 		$this->putInt($structureSettings->integritySeed);
-		$this->putVector3($structureSettings->pivot);
 	}
 }
