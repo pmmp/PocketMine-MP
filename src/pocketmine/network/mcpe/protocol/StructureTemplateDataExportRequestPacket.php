@@ -31,6 +31,9 @@ use pocketmine\network\mcpe\protocol\types\StructureSettings;
 class StructureTemplateDataExportRequestPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_REQUEST_PACKET;
 
+	public const TYPE_ALWAYS_LOAD = 1;
+	public const TYPE_CREATE_AND_LOAD = 2;
+
 	/** @var string */
 	public $structureTemplateName;
 	/** @var int */
