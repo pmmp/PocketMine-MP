@@ -28,17 +28,17 @@ use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 final class BellBlockUsedEventData implements EventData{
 	/** @var int */
-	public $itemType;
+	public $itemLegacyId;
 
 	public function id() : int{
 		return EventPacket::TYPE_BELL_BLOCK_USED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->itemType = $in->getVarInt();
+		$this->itemLegacyId = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->itemType);
+		$out->putVarInt($this->itemLegacyId);
 	}
 }

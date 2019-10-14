@@ -30,7 +30,7 @@ final class MobKilledEventData implements EventData{
 	/** @var int */
 	public $entityUniqueId;
 	/** @var int */
-	public $entityRuntimeId;
+	public $killerUniqueId;
 	/** @var int */
 	public $killMethodType;
 	/** @var int */
@@ -44,7 +44,7 @@ final class MobKilledEventData implements EventData{
 
 	public function read(NetworkBinaryStream $in) : void{
 		$this->entityUniqueId = $in->getEntityUniqueId();
-		$this->entityRuntimeId = $in->getEntityUniqueId(); // Nice
+		$this->killerUniqueId = $in->getEntityUniqueId();
 		$this->killMethodType = $in->getVarInt();
 		$this->traderTier = $in->getVarInt();
 		$this->traderName = $in->getString();
@@ -52,7 +52,7 @@ final class MobKilledEventData implements EventData{
 
 	public function write(NetworkBinaryStream $out) : void{
 		$out->putEntityUniqueId($this->entityUniqueId);
-		$out->putEntityUniqueId($this->entityRuntimeId);
+		$out->putEntityUniqueId($this->killerUniqueId);
 		$out->putVarInt($this->killMethodType);
 		$out->putVarInt($this->traderTier);
 		$out->putString($this->traderName);

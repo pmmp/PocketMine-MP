@@ -28,21 +28,21 @@ use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 final class PortalUsedEventData implements EventData{
 	/** @var int */
-	public $toDim;
+	public $targetDimensionId;
 	/** @var int */
-	public $dim;
+	public $currectDimensionId;
 
 	public function id() : int{
 		return EventPacket::TYPE_PORTAL_USED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->toDim = $in->getVarInt();
-		$this->dim = $in->getVarInt();
+		$this->targetDimensionId = $in->getVarInt();
+		$this->currectDimensionId = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->toDim);
-		$out->putVarInt($this->dim);
+		$out->putVarInt($this->targetDimensionId);
+		$out->putVarInt($this->currectDimensionId);
 	}
 }
