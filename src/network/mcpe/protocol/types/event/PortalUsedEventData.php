@@ -30,7 +30,7 @@ final class PortalUsedEventData implements EventData{
 	/** @var int */
 	public $targetDimensionId;
 	/** @var int */
-	public $currectDimensionId;
+	public $currentDimensionId;
 
 	public function id() : int{
 		return EventPacket::TYPE_PORTAL_USED;
@@ -38,11 +38,11 @@ final class PortalUsedEventData implements EventData{
 
 	public function read(NetworkBinaryStream $in) : void{
 		$this->targetDimensionId = $in->getVarInt();
-		$this->currectDimensionId = $in->getVarInt();
+		$this->currentDimensionId = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
 		$out->putVarInt($this->targetDimensionId);
-		$out->putVarInt($this->currectDimensionId);
+		$out->putVarInt($this->currentDimensionId);
 	}
 }
