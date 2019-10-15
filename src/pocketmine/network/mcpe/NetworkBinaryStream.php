@@ -37,6 +37,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
@@ -628,5 +629,31 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putByte($structureSettings->mirror);
 		$this->putFloat($structureSettings->integrityValue);
 		$this->putInt($structureSettings->integritySeed);
+	}
+
+	protected function getStructureEditorData() : StructureEditorData{
+		$result = new StructureEditorData();
+
+		$result->structureName = $this->getString();
+		$result->structureDataField = $this->getString();
+
+		$result->includePlayers = $this->getBool();
+		$result->showBoundingBox = $this->getBool();
+
+		$result->structureBlockType = $this->getVarInt();
+		$result->structureSettings = $this->getStructureSettings();
+
+		return $result;
+	}
+
+	protected function putStructureEditorData(StructureEditorData $structureEditorData) : void{
+		$this->putString($structureEditorData->structureName);
+		$this->putString($structureEditorData->structureDataField);
+
+		$this->putBool($structureEditorData->includePlayers);
+		$this->putBool($structureEditorData->showBoundingBox);
+
+		$this->putVarInt($structureEditorData->structureBlockType);
+		$this->putStructureSettings($structureEditorData->structureSettings);
 	}
 }

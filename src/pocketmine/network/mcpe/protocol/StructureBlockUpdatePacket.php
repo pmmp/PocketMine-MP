@@ -26,16 +26,32 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 
-class StructureBlockUpdatePacket extends DataPacket{
+class StructureBlockUpdatePacket extends DataPacket/* implements ServerboundPacket*/{
 	public const NETWORK_ID = ProtocolInfo::STRUCTURE_BLOCK_UPDATE_PACKET;
 
+	/** @var int */
+	public $structureBlockX;
+	/** @var int */
+	public $structureBlockY;
+	/** @var int */
+	public $structureBlockZ;
+	/** @var StructureEditorData */
+	public $structureEditorData;
+	/** @var bool */
+	public $isStructureBlockPowered;
+
 	protected function decodePayload(){
-		//TODO
+		$this->getBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
+		$this->structureEditorData = $this->getStructureEditorData();
+		$this->isStructureBlockPowered = $this->getBool();
 	}
 
 	protected function encodePayload(){
-		//TODO
+		$this->putBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
+		$this->putStructureEditorData($this->structureEditorData);
+		$this->putBool($this->isStructureBlockPowered);
 	}
 
 	public function handle(NetworkSession $session) : bool{
