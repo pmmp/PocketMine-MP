@@ -42,7 +42,7 @@ class CommandParameter{
 	/** @var string|null */
 	public $postfix;
 
-	public function __construct(string $name = "args", int $type = AvailableCommandsPacket::ARG_TYPE_RAWTEXT, bool $optional = true, $extraData = null){
+	public function __construct(string $name = "args", int $type = AvailableCommandsPacket::ARG_TYPE_RAWTEXT, bool $optional = true, $extraData = null, int $flags = 0){
 		$this->paramName = $name;
 		$this->paramType = $type;
 		$this->isOptional = $optional;
@@ -51,5 +51,6 @@ class CommandParameter{
 		}elseif(is_string($extraData)){
 			$this->postfix = $extraData;
 		}
+		$this->byte1 = $flags;
 	}
 }
