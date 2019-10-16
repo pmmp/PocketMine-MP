@@ -49,7 +49,7 @@ final class InteractionType{
 	public const TYPE_CAULDRON_CLEAN_BANNER_OR_ARMOR = 17;
 	public const TYPE_CAULDRON_POTION_ARROW = 18;
 	public const TYPE_COMPOSTER_ADD_ITEM = 19;
-	public const TYPE_COMPOSTER_EMIT_BONE_MEAL = 20; // ???
+	public const TYPE_COMPOSTER_EMIT_BONE_MEAL = 20;
 	public const TYPE_LECTERN_ADD_BOOK = 21;
 	public const TYPE_LECTERN_USE = 22;
 
