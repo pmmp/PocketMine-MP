@@ -40,18 +40,18 @@ class StructureBlockUpdatePacket extends DataPacket/* implements ServerboundPack
 	/** @var StructureEditorData */
 	public $structureEditorData;
 	/** @var bool */
-	public $isStructureBlockPowered;
+	public $isPowered;
 
 	protected function decodePayload(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->structureEditorData = $this->getStructureEditorData();
-		$this->isStructureBlockPowered = $this->getBool();
+		$this->isPowered = $this->getBool();
 	}
 
 	protected function encodePayload(){
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->putStructureEditorData($this->structureEditorData);
-		$this->putBool($this->isStructureBlockPowered);
+		$this->putBool($this->isPowered);
 	}
 
 	public function handle(NetworkSession $session) : bool{
