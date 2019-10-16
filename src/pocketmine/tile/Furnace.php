@@ -37,6 +37,8 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
+use function ceil;
+use function max;
 
 class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	use NameableTrait {

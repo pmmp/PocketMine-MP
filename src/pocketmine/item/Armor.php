@@ -30,6 +30,8 @@ use pocketmine\item\enchantment\ProtectionEnchantment;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Color;
+use function lcg_value;
+use function mt_rand;
 
 abstract class Armor extends Durable{
 

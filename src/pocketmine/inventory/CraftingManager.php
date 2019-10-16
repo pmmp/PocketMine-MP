@@ -24,11 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use function array_map;
+use function file_get_contents;
+use function json_decode;
+use function json_encode;
+use function usort;
+use const DIRECTORY_SEPARATOR;
 
 class CraftingManager{
 	/** @var ShapedRecipe[][] */
@@ -48,26 +53,36 @@ class CraftingManager{
 	public function init() : void{
 		$recipes = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "recipes.json"), true);
 
+		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
 		foreach($recipes as $recipe){
 			switch($recipe["type"]){
-				case 0:
+				case "shapeless":
+					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
+						break;
+					}
 					$this->registerRecipe(new ShapelessRecipe(
-						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]),
-						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
+						array_map($itemDeserializerFunc, $recipe["input"]),
+						array_map($itemDeserializerFunc, $recipe["output"])
 					));
 					break;
-				case 1:
+				case "shaped":
+					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
+						break;
+					}
 					$this->registerRecipe(new ShapedRecipe(
 						$recipe["shape"],
-						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["input"]),
-						array_map(function(array $data) : Item{ return Item::jsonDeserialize($data); }, $recipe["output"])
+						array_map($itemDeserializerFunc, $recipe["input"]),
+						array_map($itemDeserializerFunc, $recipe["output"])
 					));
 					break;
-				case 2:
-				case 3:
-					$result = $recipe["output"];
-					$resultItem = Item::jsonDeserialize($result);
-					$this->registerRecipe(new FurnaceRecipe($resultItem, ItemFactory::get($recipe["inputId"], $recipe["inputDamage"] ?? -1, 1)));
+				case "smelting":
+					if($recipe["block"] !== "furnace"){ //TODO: filter others out for now to avoid breaking economics
+						break;
+					}
+					$this->registerRecipe(new FurnaceRecipe(
+						Item::jsonDeserialize($recipe["output"]),
+						Item::jsonDeserialize($recipe["input"]))
+					);
 					break;
 				default:
 					break;

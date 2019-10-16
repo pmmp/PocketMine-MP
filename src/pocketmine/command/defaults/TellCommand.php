@@ -28,6 +28,9 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use function array_shift;
+use function count;
+use function implode;
 
 class TellCommand extends VanillaCommand{
 

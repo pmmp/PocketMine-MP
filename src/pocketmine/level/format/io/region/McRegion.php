@@ -24,18 +24,41 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io\region;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
+use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\{
-	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag
-};
+use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntArrayTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\LongTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\MainLogger;
+use function array_filter;
+use function array_values;
+use function assert;
+use function file_exists;
+use function file_put_contents;
+use function is_dir;
+use function is_int;
+use function microtime;
+use function mkdir;
+use function pack;
+use function rename;
+use function scandir;
+use function str_repeat;
+use function strrpos;
+use function substr;
+use function time;
+use function unpack;
+use const SCANDIR_SORT_NONE;
 
 class McRegion extends BaseLevelProvider{
 
@@ -107,12 +130,13 @@ class McRegion extends BaseLevelProvider{
 	 * @param string $data
 	 *
 	 * @return Chunk
+	 * @throws CorruptedChunkException
 	 */
 	protected function nbtDeserialize(string $data) : Chunk{
 		$nbt = new BigEndianNBTStream();
 		$chunk = $nbt->readCompressed($data);
 		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
-			throw new ChunkException("Invalid NBT format");
+			throw new CorruptedChunkException("'Level' key is missing from chunk NBT");
 		}
 
 		$chunk = $chunk->getCompoundTag("Level");
@@ -348,6 +372,14 @@ class McRegion extends BaseLevelProvider{
 		}
 	}
 
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 *
+	 * @return Chunk|null
+	 *
+	 * @throws CorruptedChunkException
+	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);

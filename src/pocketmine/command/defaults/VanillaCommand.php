@@ -28,6 +28,8 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
+use function is_numeric;
+use function substr;
 
 abstract class VanillaCommand extends Command{
 	public const MAX_COORD = 30000000;
@@ -63,7 +65,7 @@ abstract class VanillaCommand extends Command{
 	 * @return float
 	 */
 	protected function getRelativeDouble(float $original, CommandSender $sender, string $input, float $min = self::MIN_COORD, float $max = self::MAX_COORD) : float{
-		if($input{0} === "~"){
+		if($input[0] === "~"){
 			$value = $this->getDouble($sender, substr($input, 1));
 
 			return $original + $value;

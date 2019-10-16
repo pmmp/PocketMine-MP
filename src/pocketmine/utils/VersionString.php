@@ -24,6 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 
+use function count;
+use function preg_match;
+
 /**
  * Manages PocketMine-MP version strings, and compares them
  */
@@ -67,7 +70,7 @@ class VersionString{
 	}
 
 	public function getNumber() : int{
-		return (($this->major << 9) + ($this->minor << 5) + $this->patch);
+		return (($this->major << 9) | ($this->minor << 5) | $this->patch);
 	}
 
 	public function getBaseVersion() : string{

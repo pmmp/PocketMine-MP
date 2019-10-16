@@ -26,6 +26,9 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use function array_slice;
+use function count;
+use function implode;
 
 class TitleCommand extends VanillaCommand{
 
@@ -82,7 +85,7 @@ class TitleCommand extends VanillaCommand{
 				$player->addActionBarMessage(implode(" ", array_slice($args, 2)));
 				break;
 			case "times":
-				if(count($args) < 4){
+				if(count($args) < 5){
 					throw new InvalidCommandSyntaxException();
 				}
 

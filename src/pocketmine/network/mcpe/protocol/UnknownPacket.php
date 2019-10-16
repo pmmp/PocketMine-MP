@@ -26,6 +26,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
+use function ord;
+use function strlen;
 
 class UnknownPacket extends DataPacket{
 	public const NETWORK_ID = -1; //Invalid, do not try to write this
@@ -35,7 +37,7 @@ class UnknownPacket extends DataPacket{
 
 	public function pid(){
 		if(strlen($this->payload ?? "") > 0){
-			return ord($this->payload{0});
+			return ord($this->payload[0]);
 		}
 		return self::NETWORK_ID;
 	}

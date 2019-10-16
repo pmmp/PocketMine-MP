@@ -23,10 +23,25 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function bin2hex;
+use function getmypid;
+use function getmyuid;
+use function hash;
+use function hex2bin;
+use function implode;
+use function mt_rand;
+use function str_replace;
+use function strlen;
+use function substr;
+use function time;
+use function trim;
+
 class UUID{
 
-	private $parts = [0, 0, 0, 0];
-	private $version = null;
+	/** @var int[] */
+	private $parts;
+	/** @var int */
+	private $version;
 
 	public function __construct(int $part1 = 0, int $part2 = 0, int $part3 = 0, int $part4 = 0, int $version = null){
 		$this->parts = [$part1, $part2, $part3, $part4];

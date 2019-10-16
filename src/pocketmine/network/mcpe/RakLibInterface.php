@@ -27,7 +27,6 @@ use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\network\AdvancedSourceInterface;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
 use pocketmine\Player;
@@ -40,6 +39,14 @@ use raklib\server\RakLibServer;
 use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
 use raklib\utils\InternetAddress;
+use function addcslashes;
+use function base64_encode;
+use function get_class;
+use function implode;
+use function rtrim;
+use function spl_object_hash;
+use function unserialize;
+use const PTHREADS_INHERIT_CONSTANTS;
 
 class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	/**
@@ -89,7 +96,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 
 	public function start(){
 		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-			$this->server->getNetwork()->processInterface($this);
+			$this->process();
 		});
 		$this->rakLib->start(PTHREADS_INHERIT_CONSTANTS); //HACK: MainLogger needs constants for exception logging
 	}
@@ -158,12 +165,12 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			$address = $player->getAddress();
 			try{
 				if($packet->buffer !== ""){
-					$pk = PacketPool::getPacket($packet->buffer);
+					$pk = new BatchPacket($packet->buffer);
 					$player->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
 				$logger = $this->server->getLogger();
-				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
+				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . ": " . base64_encode($packet->buffer));
 				$logger->logException($e);
 
 				$player->close($player->getLeaveMessage(), "Internal server error");

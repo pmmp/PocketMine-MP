@@ -56,7 +56,7 @@ class Flower extends Flowable{
 			self::TYPE_PINK_TULIP => "Pink Tulip",
 			self::TYPE_OXEYE_DAISY => "Oxeye Daisy"
 		];
-		return $names[$this->meta] ?? "Unknown";
+		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

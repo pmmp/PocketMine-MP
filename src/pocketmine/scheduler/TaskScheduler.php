@@ -30,8 +30,6 @@ namespace pocketmine\scheduler;
 use pocketmine\utils\ReversePriorityQueue;
 
 class TaskScheduler{
-	/** @var \Logger */
-	private $logger;
 	/** @var string|null */
 	private $owner;
 
@@ -54,9 +52,11 @@ class TaskScheduler{
 	/** @var int */
 	protected $currentTick = 0;
 
-
+	/**
+	 * @param \Logger     $logger @deprecated
+	 * @param null|string $owner
+	 */
 	public function __construct(\Logger $logger, ?string $owner = null){
-		$this->logger = $logger;
 		$this->owner = $owner;
 		$this->queue = new ReversePriorityQueue();
 	}
@@ -64,7 +64,7 @@ class TaskScheduler{
 	/**
 	 * @param Task $task
 	 *
-	 * @return null|TaskHandler
+	 * @return TaskHandler
 	 */
 	public function scheduleTask(Task $task){
 		return $this->addTask($task, -1, -1);
@@ -74,7 +74,7 @@ class TaskScheduler{
 	 * @param Task $task
 	 * @param int  $delay
 	 *
-	 * @return null|TaskHandler
+	 * @return TaskHandler
 	 */
 	public function scheduleDelayedTask(Task $task, int $delay){
 		return $this->addTask($task, $delay, -1);
@@ -84,7 +84,7 @@ class TaskScheduler{
 	 * @param Task $task
 	 * @param int  $period
 	 *
-	 * @return null|TaskHandler
+	 * @return TaskHandler
 	 */
 	public function scheduleRepeatingTask(Task $task, int $period){
 		return $this->addTask($task, -1, $period);
@@ -95,7 +95,7 @@ class TaskScheduler{
 	 * @param int  $delay
 	 * @param int  $period
 	 *
-	 * @return null|TaskHandler
+	 * @return TaskHandler
 	 */
 	public function scheduleDelayedRepeatingTask(Task $task, int $delay, int $period){
 		return $this->addTask($task, $delay, $period);
@@ -108,11 +108,9 @@ class TaskScheduler{
 		if(isset($this->tasks[$taskId])){
 			try{
 				$this->tasks[$taskId]->cancel();
-			}catch(\Throwable $e){
-				$this->logger->critical("Task " . $this->tasks[$taskId]->getTaskName() . " threw an exception when trying to cancel: " . $e->getMessage());
-				$this->logger->logException($e);
+			}finally{
+				unset($this->tasks[$taskId]);
 			}
-			unset($this->tasks[$taskId]);
 		}
 	}
 
@@ -141,7 +139,7 @@ class TaskScheduler{
 	 * @param int  $delay
 	 * @param int  $period
 	 *
-	 * @return null|TaskHandler
+	 * @return TaskHandler
 	 *
 	 * @throws \InvalidStateException
 	 */
@@ -198,26 +196,14 @@ class TaskScheduler{
 				unset($this->tasks[$task->getTaskId()]);
 				continue;
 			}
-			$crashed = false;
-			try{
-				$task->run($this->currentTick);
-			}catch(\Throwable $e){
-				$crashed = true;
-				$this->logger->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
-				$this->logger->logException($e);
-			}
+			$task->run($this->currentTick);
 			if($task->isRepeating()){
-				if($crashed){
-					$this->logger->debug("Dropping repeating task " . $task->getTaskName() . " due to exceptions thrown while running");
-				}else{
-					$task->setNextRun($this->currentTick + $task->getPeriod());
-					$this->queue->insert($task, $this->currentTick + $task->getPeriod());
-					continue;
-				}
+				$task->setNextRun($this->currentTick + $task->getPeriod());
+				$this->queue->insert($task, $this->currentTick + $task->getPeriod());
+			}else{
+				$task->remove();
+				unset($this->tasks[$task->getTaskId()]);
 			}
-
-			$task->remove();
-			unset($this->tasks[$task->getTaskId()]);
 		}
 	}
 

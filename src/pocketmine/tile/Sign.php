@@ -28,18 +28,30 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use function array_map;
+use function array_pad;
+use function array_slice;
+use function explode;
+use function implode;
+use function mb_check_encoding;
+use function mb_scrub;
+use function sprintf;
+use function strlen;
 
 class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";
 	public const TAG_TEXT_LINE = "Text%d"; //sprintf()able
+
+	private static function fixTextBlob(string $blob) : array{
+		return array_slice(array_pad(explode("\n", $blob), 4, ""), 0, 4);
+	}
 
 	/** @var string[] */
 	protected $text = ["", "", "", ""];
 
 	protected function readSaveData(CompoundTag $nbt) : void{
 		if($nbt->hasTag(self::TAG_TEXT_BLOB, StringTag::class)){ //MCPE 1.2 save format
-			$this->text = array_pad(explode("\n", $nbt->getString(self::TAG_TEXT_BLOB)), 4, "");
-			assert(count($this->text) === 4, "Too many lines!");
+			$this->text = self::fixTextBlob($nbt->getString(self::TAG_TEXT_BLOB));
 		}else{
 			for($i = 1; $i <= 4; ++$i){
 				$textKey = sprintf(self::TAG_TEXT_LINE, $i);
@@ -48,6 +60,9 @@ class Sign extends Spawnable{
 				}
 			}
 		}
+		$this->text = array_map(function(string $line) : string{
+			return mb_scrub($line, 'UTF-8');
+		}, $this->text);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
@@ -70,16 +85,16 @@ class Sign extends Spawnable{
 	 */
 	public function setText(?string $line1 = "", ?string $line2 = "", ?string $line3 = "", ?string $line4 = "") : void{
 		if($line1 !== null){
-			$this->text[0] = $line1;
+			$this->setLine(0, $line1, false);
 		}
 		if($line2 !== null){
-			$this->text[1] = $line2;
+			$this->setLine(1, $line2, false);
 		}
 		if($line3 !== null){
-			$this->text[2] = $line3;
+			$this->setLine(2, $line3, false);
 		}
 		if($line4 !== null){
-			$this->text[3] = $line4;
+			$this->setLine(3, $line4, false);
 		}
 
 		$this->onChanged();
@@ -93,6 +108,9 @@ class Sign extends Spawnable{
 	public function setLine(int $index, string $line, bool $update = true) : void{
 		if($index < 0 or $index > 3){
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
+		}
+		if(!mb_check_encoding($line, 'UTF-8')){
+			throw new \InvalidArgumentException("Text must be valid UTF-8");
 		}
 
 		$this->text[$index] = $line;
@@ -130,14 +148,17 @@ class Sign extends Spawnable{
 		}
 
 		if($nbt->hasTag(self::TAG_TEXT_BLOB, StringTag::class)){
-			$lines = array_pad(explode("\n", $nbt->getString(self::TAG_TEXT_BLOB)), 4, "");
+			$lines = self::fixTextBlob($nbt->getString(self::TAG_TEXT_BLOB));
 		}else{
-			$lines = [
-				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 1)),
-				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 2)),
-				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 3)),
-				$nbt->getString(sprintf(self::TAG_TEXT_LINE, 4))
-			];
+			return false;
+		}
+		$size = 0;
+		foreach($lines as $line){
+			$size += strlen($line);
+		}
+		if($size > 1000){
+			//trigger kick + IP ban - TODO: on 4.0 this will require a better fix
+			throw new \UnexpectedValueException($player->getName() . " tried to write $size bytes of text onto a sign (bigger than max 1000)");
 		}
 
 		$removeFormat = $player->getRemoveFormat();

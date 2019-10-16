@@ -29,6 +29,8 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use function array_shift;
+use function count;
 
 class DeopCommand extends VanillaCommand{
 
@@ -51,6 +53,9 @@ class DeopCommand extends VanillaCommand{
 		}
 
 		$name = array_shift($args);
+		if(!Player::isValidUserName($name)){
+			throw new InvalidCommandSyntaxException();
+		}
 
 		$player = $sender->getServer()->getOfflinePlayer($name);
 		$player->setOp(false);

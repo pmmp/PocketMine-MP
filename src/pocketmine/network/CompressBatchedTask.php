@@ -51,7 +51,7 @@ class CompressBatchedTask extends AsyncTask{
 		$batch->setCompressionLevel($this->level);
 		$batch->encode();
 
-		$this->setResult($batch->buffer, false);
+		$this->setResult($batch->buffer);
 	}
 
 	public function onCompletion(Server $server){

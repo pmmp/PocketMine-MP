@@ -30,6 +30,7 @@ use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use function assert;
 
 /**
  * Called when a player interacts or touches a block (including air?)

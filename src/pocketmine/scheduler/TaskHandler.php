@@ -66,7 +66,7 @@ class TaskHandler{
 		$this->taskId = $taskId;
 		$this->delay = $delay;
 		$this->period = $period;
-		$this->taskName = get_class($task);
+		$this->taskName = $task->getName();
 		$this->ownerName = $ownerName ?? "Unknown";
 		$this->timings = Timings::getScheduledTaskTimings($this, $period);
 		$this->task->setHandler($this);
@@ -135,10 +135,6 @@ class TaskHandler{
 		return $this->period;
 	}
 
-	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 */
 	public function cancel(){
 		try{
 			if(!$this->isCancelled()){

@@ -28,7 +28,7 @@ namespace pocketmine;
  */
 abstract class Worker extends \Worker{
 
-	/** @var \ClassLoader */
+	/** @var \ClassLoader|null */
 	protected $classLoader;
 	/** @var string|null */
 	protected $composerAutoloaderPath;

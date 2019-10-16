@@ -31,6 +31,9 @@ use pocketmine\permission\PermissionAttachmentInfo;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
+use function explode;
+use function trim;
+use const PHP_INT_MAX;
 
 class ConsoleCommandSender implements CommandSender{
 

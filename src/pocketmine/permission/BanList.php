@@ -25,6 +25,14 @@ namespace pocketmine\permission;
 
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
+use function fclose;
+use function fgets;
+use function fopen;
+use function fwrite;
+use function is_resource;
+use function strftime;
+use function strtolower;
+use function time;
 
 class BanList{
 
@@ -146,7 +154,7 @@ class BanList{
 		$fp = @fopen($this->file, "r");
 		if(is_resource($fp)){
 			while(($line = fgets($fp)) !== false){
-				if($line{0} !== "#"){
+				if($line[0] !== "#"){
 					try{
 						$entry = BanEntry::fromString($line);
 						if($entry instanceof BanEntry){

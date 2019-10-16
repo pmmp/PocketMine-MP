@@ -28,6 +28,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use function mt_rand;
 
 class RedstoneOre extends Solid{
 

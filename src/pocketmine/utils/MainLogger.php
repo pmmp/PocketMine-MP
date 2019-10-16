@@ -26,6 +26,33 @@ namespace pocketmine\utils;
 use LogLevel;
 use pocketmine\Thread;
 use pocketmine\Worker;
+use function fclose;
+use function fopen;
+use function fwrite;
+use function get_class;
+use function is_resource;
+use function preg_replace;
+use function sprintf;
+use function time;
+use function touch;
+use function trim;
+use const E_COMPILE_ERROR;
+use const E_COMPILE_WARNING;
+use const E_CORE_ERROR;
+use const E_CORE_WARNING;
+use const E_DEPRECATED;
+use const E_ERROR;
+use const E_NOTICE;
+use const E_PARSE;
+use const E_RECOVERABLE_ERROR;
+use const E_STRICT;
+use const E_USER_DEPRECATED;
+use const E_USER_ERROR;
+use const E_USER_NOTICE;
+use const E_USER_WARNING;
+use const E_WARNING;
+use const PHP_EOL;
+use const PTHREADS_INHERIT_NONE;
 
 class MainLogger extends \AttachableThreadedLogger{
 
@@ -210,7 +237,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		$errfile = Utils::cleanPath($errfile);
 
 		$message = get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
-		$stack = Utils::getTrace(0, $trace);
+		$stack = Utils::printableTrace($trace);
 
 		$this->synchronized(function() use ($type, $message, $stack) : void{
 			$this->log($type, $message);
@@ -273,22 +300,20 @@ class MainLogger extends \AttachableThreadedLogger{
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
 		}
 
-		$message = sprintf($this->format, $time->format("H:i:s"), $color, $threadName, $prefix, $message);
+		$message = sprintf($this->format, $time->format("H:i:s"), $color, $threadName, $prefix, TextFormat::clean($message, false));
+
+		if(!Terminal::isInit()){
+			Terminal::init($this->mainThreadHasFormattingCodes); //lazy-init colour codes because we don't know if they've been registered on this thread
+		}
 
 		$this->synchronized(function() use ($message, $level, $time) : void{
-			$cleanMessage = TextFormat::clean($message);
-
-			if($this->mainThreadHasFormattingCodes and Terminal::hasFormattingCodes()){ //hasFormattingCodes() lazy-inits colour codes because we don't know if they've been registered on this thread
-				echo Terminal::toANSI($message) . PHP_EOL;
-			}else{
-				echo $cleanMessage . PHP_EOL;
-			}
+			echo Terminal::toANSI($message) . PHP_EOL;
 
 			foreach($this->attachments as $attachment){
 				$attachment->call($level, $message);
 			}
 
-			$this->logStream[] = $time->format("Y-m-d") . " " . $cleanMessage . PHP_EOL;
+			$this->logStream[] = $time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL;
 		});
 	}
 

@@ -27,6 +27,7 @@ use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\utils\Color;
+use function mt_rand;
 
 class ExperienceBottle extends Throwable{
 	public const NETWORK_ID = self::XP_BOTTLE;

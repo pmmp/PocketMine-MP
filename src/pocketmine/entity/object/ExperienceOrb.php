@@ -28,6 +28,7 @@ use pocketmine\entity\Human;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\Player;
+use function sqrt;
 
 class ExperienceOrb extends Entity{
 	public const NETWORK_ID = self::XP_ORB;
@@ -147,7 +148,7 @@ class ExperienceOrb extends Entity{
 			return null;
 		}
 
-		$entity = $this->server->findEntity($this->targetPlayerRuntimeId);
+		$entity = $this->level->getEntity($this->targetPlayerRuntimeId);
 		if($entity instanceof Human){
 			return $entity;
 		}
@@ -156,7 +157,7 @@ class ExperienceOrb extends Entity{
 	}
 
 	public function setTargetPlayer(?Human $player) : void{
-		$this->targetPlayerRuntimeId = $player ? $player->getId() : null;
+		$this->targetPlayerRuntimeId = $player !== null ? $player->getId() : null;
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
@@ -190,15 +191,15 @@ class ExperienceOrb extends Entity{
 		$this->setTargetPlayer($currentTarget);
 
 		if($currentTarget !== null){
-			$vector = $currentTarget->subtract($this)->add(0, $currentTarget->getEyeHeight() / 2, 0)->divide(self::MAX_TARGET_DISTANCE);
+			$vector = $currentTarget->add(0, $currentTarget->getEyeHeight() / 2, 0)->subtract($this)->divide(self::MAX_TARGET_DISTANCE);
 
-			$distance = $vector->length();
-			$oneMinusDistance = (1 - $distance) ** 2;
+			$distance = $vector->lengthSquared();
+			if($distance < 1){
+				$diff = $vector->normalize()->multiply(0.2 * (1 - sqrt($distance)) ** 2);
 
-			if($oneMinusDistance > 0){
-				$this->motion->x += $vector->x / $distance * $oneMinusDistance * 0.2;
-				$this->motion->y += $vector->y / $distance * $oneMinusDistance * 0.2;
-				$this->motion->z += $vector->z / $distance * $oneMinusDistance * 0.2;
+				$this->motion->x += $diff->x;
+				$this->motion->y += $diff->y;
+				$this->motion->z += $diff->z;
 			}
 
 			if($currentTarget->canPickupXp() and $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){

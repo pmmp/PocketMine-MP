@@ -25,9 +25,12 @@ namespace pocketmine\network\mcpe;
 
 
 use pocketmine\event\server\DataPacketReceiveEvent;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\ActorFallPacket;
+use pocketmine\network\mcpe\protocol\ActorPickRequestPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
-use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
+use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
@@ -37,19 +40,18 @@ use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\EntityFallPacket;
-use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
+use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
@@ -58,6 +60,7 @@ use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
+use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
@@ -65,6 +68,15 @@ use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use function base64_encode;
+use function bin2hex;
+use function implode;
+use function json_decode;
+use function json_last_error_msg;
+use function preg_match;
+use function strlen;
+use function substr;
+use function trim;
 
 class PlayerNetworkSessionAdapter extends NetworkSession{
 
@@ -95,7 +107,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		$ev = new DataPacketReceiveEvent($this->player, $packet);
 		$ev->call();
 		if(!$ev->isCancelled() and !$packet->handle($this)){
-			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": 0x" . bin2hex($packet->buffer));
+			$this->server->getLogger()->debug("Unhandled " . $packet->getName() . " received from " . $this->player->getName() . ": " . base64_encode($packet->buffer));
 		}
 
 		$timings->stopTiming();
@@ -125,11 +137,11 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleMovePlayer($packet);
 	}
 
-	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
-		return $this->player->handleLevelSoundEvent($packet);
+	public function handleLevelSoundEventPacketV1(LevelSoundEventPacketV1 $packet) : bool{
+		return true; //useless leftover from 1.8
 	}
 
-	public function handleEntityEvent(EntityEventPacket $packet) : bool{
+	public function handleActorEvent(ActorEventPacket $packet) : bool{
 		return $this->player->handleEntityEvent($packet);
 	}
 
@@ -153,7 +165,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleBlockPickRequest($packet);
 	}
 
-	public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool{
+	public function handleActorPickRequest(ActorPickRequestPacket $packet) : bool{
 		return false; //TODO
 	}
 
@@ -161,7 +173,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handlePlayerAction($packet);
 	}
 
-	public function handleEntityFall(EntityFallPacket $packet) : bool{
+	public function handleActorFall(ActorFallPacket $packet) : bool{
 		return true; //Not used
 	}
 
@@ -185,7 +197,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleAdventureSettings($packet);
 	}
 
-	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
+	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
 		return $this->player->handleBlockEntityData($packet);
 	}
 
@@ -257,16 +269,31 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	 */
 	private static function stupid_json_decode(string $json, bool $assoc = false){
 		if(preg_match('/^\[(.+)\]$/s', $json, $matches) > 0){
-			$parts = preg_split('/(?:"(?:\\"|[^"])*"|)\K(,)/', $matches[1]); //Splits on commas not inside quotes, ignoring escaped quotes
-			foreach($parts as $k => $part){
-				$part = trim($part);
-				if($part === ""){
-					$part = "\"\"";
+			$raw = $matches[1];
+			$lastComma = -1;
+			$newParts = [];
+			$quoteType = null;
+			for($i = 0, $len = strlen($raw); $i <= $len; ++$i){
+				if($i === $len or ($raw[$i] === "," and $quoteType === null)){
+					$part = substr($raw, $lastComma + 1, $i - ($lastComma + 1));
+					if(trim($part) === ""){ //regular parts will have quotes or something else that makes them non-empty
+						$part = '""';
+					}
+					$newParts[] = $part;
+					$lastComma = $i;
+				}elseif($raw[$i] === '"'){
+					if($quoteType === null){
+						$quoteType = $raw[$i];
+					}elseif($raw[$i] === $quoteType){
+						for($backslashes = 0; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
+						if(($backslashes % 2) === 0){ //unescaped quote
+							$quoteType = null;
+						}
+					}
 				}
-				$parts[$k] = $part;
 			}
 
-			$fixed = "[" . implode(",", $parts) . "]";
+			$fixed = "[" . implode(",", $newParts) . "]";
 			if(($ret = json_decode($fixed, $assoc)) === null){
 				throw new \InvalidArgumentException("Failed to fix JSON: " . json_last_error_msg() . "(original: $json, modified: $fixed)");
 			}
@@ -279,5 +306,18 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
 		return false; //TODO: GUI stuff
+	}
+
+	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
+		$this->player->doFirstSpawn();
+		return true;
+	}
+
+	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
+		return $this->player->handleLevelSoundEvent($packet);
+	}
+
+	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{
+		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
 	}
 }

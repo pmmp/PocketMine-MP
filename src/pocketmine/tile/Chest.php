@@ -70,13 +70,27 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 		$this->saveItems($nbt);
 	}
 
+	public function getCleanedNBT() : ?CompoundTag{
+		$tag = parent::getCleanedNBT();
+		if($tag !== null){
+			//TODO: replace this with a purpose flag on writeSaveData()
+			$tag->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
+		}
+		return $tag;
+	}
+
 	public function close() : void{
 		if(!$this->closed){
 			$this->inventory->removeAllViewers(true);
 
 			if($this->doubleInventory !== null){
-				$this->doubleInventory->removeAllViewers(true);
-				$this->doubleInventory->invalidate();
+				if($this->isPaired() and $this->level->isChunkLoaded($this->pairX >> 4, $this->pairZ >> 4)){
+					$this->doubleInventory->removeAllViewers(true);
+					$this->doubleInventory->invalidate();
+					if(($pair = $this->getPair()) !== null){
+						$pair->doubleInventory = null;
+					}
+				}
 				$this->doubleInventory = null;
 			}
 
@@ -118,9 +132,9 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 					$this->doubleInventory = $pair->doubleInventory;
 				}else{
 					if(($pair->x + ($pair->z << 15)) > ($this->x + ($this->z << 15))){ //Order them correctly
-						$this->doubleInventory = new DoubleChestInventory($pair, $this);
+						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($pair, $this);
 					}else{
-						$this->doubleInventory = new DoubleChestInventory($this, $pair);
+						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($this, $pair);
 					}
 				}
 			}

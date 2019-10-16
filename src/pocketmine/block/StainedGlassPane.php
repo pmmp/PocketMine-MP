@@ -30,6 +30,6 @@ class StainedGlassPane extends GlassPane{
 	protected $id = self::STAINED_GLASS_PANE;
 
 	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Stained Glass Pane";
+		return ColorBlockMetaHelper::getColorFromMeta($this->getVariant()) . " Stained Glass Pane";
 	}
 }

@@ -25,6 +25,7 @@ namespace pocketmine\level;
 
 use pocketmine\math\Vector3;
 use pocketmine\utils\MainLogger;
+use function assert;
 
 class Position extends Vector3{
 
@@ -63,7 +64,7 @@ class Position extends Vector3{
 	 */
 	public function getLevel(){
 		if($this->level !== null and $this->level->isClosed()){
-			MainLogger::getLogger()->debug("Position was holding a reference to an unloaded Level");
+			MainLogger::getLogger()->debug("Position was holding a reference to an unloaded world");
 			$this->level = null;
 		}
 
@@ -81,7 +82,7 @@ class Position extends Vector3{
 	 */
 	public function setLevel(Level $level = null){
 		if($level !== null and $level->isClosed()){
-			throw new \InvalidArgumentException("Specified level has been unloaded and cannot be used");
+			throw new \InvalidArgumentException("Specified world has been unloaded and cannot be used");
 		}
 
 		$this->level = $level;

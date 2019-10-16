@@ -44,13 +44,26 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Color;
+use function abs;
+use function array_shift;
+use function atan2;
+use function ceil;
+use function count;
+use function floor;
+use function lcg_value;
+use function max;
+use function min;
+use function mt_getrandmax;
+use function mt_rand;
+use function sqrt;
+use const M_PI;
 
 abstract class Living extends Entity implements Damageable{
 
@@ -130,7 +143,7 @@ abstract class Living extends Entity implements Damageable{
 		parent::setHealth($amount);
 		$this->attributeMap->getAttribute(Attribute::HEALTH)->setValue(ceil($this->getHealth()), true);
 		if($this->isAlive() and !$wasAlive){
-			$this->broadcastEntityEvent(EntityEventPacket::RESPAWN);
+			$this->broadcastEntityEvent(ActorEventPacket::RESPAWN);
 		}
 	}
 
@@ -139,7 +152,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function setMaxHealth(int $amount) : void{
-		$this->attributeMap->getAttribute(Attribute::HEALTH)->setMaxValue($amount);
+		$this->attributeMap->getAttribute(Attribute::HEALTH)->setMaxValue($amount)->setDefaultValue($amount);
 	}
 
 	public function getAbsorption() : float{
@@ -528,7 +541,9 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
-		if($this->attackTime > 0 or $this->noDamageTicks > 0){
+		if($this->noDamageTicks > 0){
+			$source->setCancelled();
+		}elseif($this->attackTime > 0){
 			$lastCause = $this->getLastDamageCause();
 			if($lastCause !== null and $lastCause->getBaseDamage() >= $source->getBaseDamage()){
 				$source->setCancelled();
@@ -571,7 +586,10 @@ abstract class Living extends Entity implements Damageable{
 			}
 
 			if($e !== null){
-				if($e->isOnFire()){
+				if((
+					$source->getCause() === EntityDamageEvent::CAUSE_PROJECTILE or
+					$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_ATTACK
+				) and $e->isOnFire()){
 					$this->setOnFire(2 * $this->level->getDifficulty());
 				}
 
@@ -588,7 +606,7 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	protected function doHitAnimation() : void{
-		$this->broadcastEntityEvent(EntityEventPacket::HURT_ANIMATION);
+		$this->broadcastEntityEvent(ActorEventPacket::HURT_ANIMATION);
 	}
 
 	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4) : void{
@@ -628,6 +646,10 @@ abstract class Living extends Entity implements Damageable{
 		foreach($ev->getDrops() as $item){
 			$this->getLevel()->dropItem($this, $item);
 		}
+
+		//TODO: check death conditions (must have been damaged by player < 5 seconds from death)
+		//TODO: allow this number to be manipulated during EntityDeathEvent
+		$this->level->dropExperience($this, $this->getXpDropAmount());
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{
@@ -635,9 +657,6 @@ abstract class Living extends Entity implements Damageable{
 			$this->deadTicks += $tickDiff;
 			if($this->deadTicks >= $this->maxDeadTicks){
 				$this->endDeathAnimation();
-
-				//TODO: check death conditions (must have been damaged by player < 5 seconds from death)
-				$this->level->dropExperience($this, $this->getXpDropAmount());
 			}
 		}
 
@@ -645,11 +664,11 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	protected function startDeathAnimation() : void{
-		$this->broadcastEntityEvent(EntityEventPacket::DEATH_ANIMATION);
+		$this->broadcastEntityEvent(ActorEventPacket::DEATH_ANIMATION);
 	}
 
 	protected function endDeathAnimation() : void{
-		//TODO
+		$this->despawnFromAll();
 	}
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
@@ -657,11 +676,11 @@ abstract class Living extends Entity implements Damageable{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->doEffectsTick($tickDiff)){
-			$hasUpdate = true;
-		}
-
 		if($this->isAlive()){
+			if($this->doEffectsTick($tickDiff)){
+				$hasUpdate = true;
+			}
+
 			if($this->isInsideOfSolid()){
 				$hasUpdate = true;
 				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);

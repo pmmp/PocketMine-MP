@@ -28,6 +28,8 @@ namespace pocketmine\network\upnp;
 
 use pocketmine\utils\Internet;
 use pocketmine\utils\Utils;
+use function class_exists;
+use function is_object;
 
 abstract class UPnP{
 
@@ -42,7 +44,7 @@ abstract class UPnP{
 			throw new \RuntimeException("UPnP requires the com_dotnet extension");
 		}
 
-		$myLocalIP = gethostbyname(trim(`hostname`));
+		$myLocalIP = Internet::getInternalIP();
 
 		/** @noinspection PhpUndefinedClassInspection */
 		$com = new \COM("HNetCfg.NATUPnP");

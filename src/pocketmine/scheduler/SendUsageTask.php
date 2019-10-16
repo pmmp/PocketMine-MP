@@ -29,6 +29,14 @@ use pocketmine\utils\Internet;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
 use pocketmine\utils\VersionString;
+use function array_values;
+use function count;
+use function json_encode;
+use function md5;
+use function microtime;
+use function php_uname;
+use function strlen;
+use const PHP_VERSION;
 
 class SendUsageTask extends AsyncTask{
 
@@ -147,13 +155,9 @@ class SendUsageTask extends AsyncTask{
 	}
 
 	public function onRun(){
-		try{
-			Internet::postURL($this->endpoint, $this->data, 5, [
-				"Content-Type: application/json",
-				"Content-Length: " . strlen($this->data)
-			]);
-		}catch(\Throwable $e){
-
-		}
+		Internet::postURL($this->endpoint, $this->data, 5, [
+			"Content-Type: application/json",
+			"Content-Length: " . strlen($this->data)
+		]);
 	}
 }

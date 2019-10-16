@@ -43,6 +43,9 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Container;
 use pocketmine\tile\Tile;
+use function ceil;
+use function floor;
+use function mt_rand;
 
 class Explosion{
 	/** @var int */
@@ -71,7 +74,7 @@ class Explosion{
 	 */
 	public function __construct(Position $center, float $size, $what = null){
 		if(!$center->isValid()){
-			throw new \InvalidArgumentException("Position does not have a valid level");
+			throw new \InvalidArgumentException("Position does not have a valid world");
 		}
 		$this->source = $center;
 		$this->level = $center->getLevel();
@@ -86,6 +89,9 @@ class Explosion{
 	}
 
 	/**
+	 * Calculates which blocks will be destroyed by this explosion. If explodeB() is called without calling this, no blocks 
+	 * will be destroyed.
+	 *
 	 * @return bool
 	 */
 	public function explodeA() : bool{
@@ -145,6 +151,12 @@ class Explosion{
 		return true;
 	}
 
+	/**
+	 * Executes the explosion's effects on the world. This includes destroying blocks (if any), harming and knocking back entities,
+	 * and creating sounds and particles.
+	 *
+	 * @return bool
+	 */
 	public function explodeB() : bool{
 		$send = [];
 		$updateBlocks = [];
@@ -216,11 +228,10 @@ class Explosion{
 
 			$t = $this->level->getTileAt($block->x, $block->y, $block->z);
 			if($t instanceof Tile){
+				if($t instanceof Chest){
+					$t->unpair();
+				}
 				if($yieldDrops and $t instanceof Container){
-					if($t instanceof Chest){
-						$t->unpair();
-					}
-
 					$t->getInventory()->dropContents($this->level, $t->add(0.5, 0.5, 0.5));
 				}
 

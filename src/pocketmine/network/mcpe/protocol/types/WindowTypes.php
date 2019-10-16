@@ -27,6 +27,8 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 interface WindowTypes{
 
+	public const NONE = -9;
+
 	public const INVENTORY = -1;
 	public const CONTAINER = 0;
 	public const WORKBENCH = 1;
@@ -46,5 +48,14 @@ interface WindowTypes{
 	public const TRADING = 15;
 	public const COMMAND_BLOCK = 16;
 	public const JUKEBOX = 17;
+
+	public const COMPOUND_CREATOR = 20;
+	public const ELEMENT_CONSTRUCTOR = 21;
+	public const MATERIAL_REDUCER = 22;
+	public const LAB_TABLE = 23;
+
+	public const BLAST_FURNACE = 27;
+	public const SMOKER = 28;
+	public const STONECUTTER = 29;
 
 }

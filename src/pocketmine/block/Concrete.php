@@ -35,7 +35,7 @@ class Concrete extends Solid{
 	}
 
 	public function getName() : string{
-		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Concrete";
+		return ColorBlockMetaHelper::getColorFromMeta($this->getVariant()) . " Concrete";
 	}
 
 	public function getHardness() : float{

@@ -34,7 +34,7 @@ class ContainerSetDataPacket extends DataPacket{
 	public const PROPERTY_FURNACE_TICK_COUNT = 0;
 	public const PROPERTY_FURNACE_LIT_TIME = 1;
 	public const PROPERTY_FURNACE_LIT_DURATION = 2;
-	//TODO: check property 3
+	public const PROPERTY_FURNACE_STORED_XP = 3;
 	public const PROPERTY_FURNACE_FUEL_AUX = 4;
 
 	public const PROPERTY_BREWING_STAND_BREW_TIME = 0;

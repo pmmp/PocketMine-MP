@@ -25,6 +25,12 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use function array_map;
+use function array_values;
+use function count;
+use function implode;
+use function strlen;
+use function strpos;
 
 class ShapedRecipe implements CraftingRecipe{
 	/** @var string[] */
@@ -73,8 +79,8 @@ class ShapedRecipe implements CraftingRecipe{
 			}
 
 			for($x = 0; $x < $this->width; ++$x){
-				if($row{$x} !== ' ' and !isset($ingredients[$row{$x}])){
-					throw new \InvalidArgumentException("No item specified for symbol '" . $row{$x} . "'");
+				if($row[$x] !== ' ' and !isset($ingredients[$row[$x]])){
+					throw new \InvalidArgumentException("No item specified for symbol '" . $row[$x] . "'");
 				}
 			}
 		}

@@ -29,6 +29,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\level\Level;
 use pocketmine\level\particle\AngryVillagerParticle;
 use pocketmine\level\particle\BlockForceFieldParticle;
 use pocketmine\level\particle\BubbleParticle;
@@ -61,6 +62,13 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
+use function count;
+use function explode;
+use function max;
+use function microtime;
+use function mt_rand;
+use function strpos;
+use function strtolower;
 
 class ParticleCommand extends VanillaCommand{
 
@@ -84,13 +92,17 @@ class ParticleCommand extends VanillaCommand{
 
 		if($sender instanceof Player){
 			$level = $sender->getLevel();
+			$pos = new Vector3(
+				$this->getRelativeDouble($sender->getX(), $sender, $args[1]),
+				$this->getRelativeDouble($sender->getY(), $sender, $args[2], 0, Level::Y_MAX),
+				$this->getRelativeDouble($sender->getZ(), $sender, $args[3])
+			);
 		}else{
 			$level = $sender->getServer()->getDefaultLevel();
+			$pos = new Vector3((float) $args[1], (float) $args[2], (float) $args[3]);
 		}
 
 		$name = strtolower($args[0]);
-
-		$pos = new Vector3((float) $args[1], (float) $args[2], (float) $args[3]);
 
 		$xd = (float) $args[4];
 		$yd = (float) $args[5];
@@ -211,12 +223,12 @@ class ParticleCommand extends VanillaCommand{
 		}elseif(strpos($name, "blockcrack_") === 0){
 			$d = explode("_", $name);
 			if(count($d) === 2){
-				return new TerrainParticle($pos, BlockFactory::get($d[1] & 0xff, $d[1] >> 12));
+				return new TerrainParticle($pos, BlockFactory::get(((int) $d[1]) & 0xff, ((int) $d[1]) >> 12));
 			}
 		}elseif(strpos($name, "blockdust_") === 0){
 			$d = explode("_", $name);
 			if(count($d) >= 4){
-				return new DustParticle($pos, $d[1] & 0xff, $d[2] & 0xff, $d[3] & 0xff, isset($d[4]) ? $d[4] & 0xff : 255);
+				return new DustParticle($pos, ((int) $d[1]) & 0xff, ((int) $d[2]) & 0xff, ((int) $d[3]) & 0xff, isset($d[4]) ? ((int) $d[4]) & 0xff : 255);
 			}
 		}
 

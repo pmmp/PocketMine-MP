@@ -28,6 +28,8 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use function count;
+use function implode;
 
 class MeCommand extends VanillaCommand{
 

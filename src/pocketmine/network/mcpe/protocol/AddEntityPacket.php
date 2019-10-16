@@ -25,99 +25,36 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\entity\Attribute;
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\types\EntityLink;
 
-class AddEntityPacket extends DataPacket{
+class AddEntityPacket extends DataPacket/* implements ClientboundPacket*/{
 	public const NETWORK_ID = ProtocolInfo::ADD_ENTITY_PACKET;
 
-	/** @var int|null */
-	public $entityUniqueId = null; //TODO
 	/** @var int */
-	public $entityRuntimeId;
-	/** @var int */
-	public $type;
-	/** @var Vector3 */
-	public $position;
-	/** @var Vector3|null */
-	public $motion;
-	/** @var float */
-	public $pitch = 0.0;
-	/** @var float */
-	public $yaw = 0.0;
-	/** @var float */
-	public $headYaw = 0.0;
+	private $uvarint1;
 
-	/** @var Attribute[] */
-	public $attributes = [];
-	/** @var array */
-	public $metadata = [];
-	/** @var EntityLink[] */
-	public $links = [];
-
-	protected function decodePayload(){
-		$this->entityUniqueId = $this->getEntityUniqueId();
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->type = $this->getUnsignedVarInt();
-		$this->position = $this->getVector3();
-		$this->motion = $this->getVector3();
-		$this->pitch = $this->getLFloat();
-		$this->yaw = $this->getLFloat();
-		$this->headYaw = $this->getLFloat();
-
-		$attrCount = $this->getUnsignedVarInt();
-		for($i = 0; $i < $attrCount; ++$i){
-			$name = $this->getString();
-			$min = $this->getLFloat();
-			$current = $this->getLFloat();
-			$max = $this->getLFloat();
-			$attr = Attribute::getAttributeByName($name);
-
-			if($attr !== null){
-				$attr->setMinValue($min);
-				$attr->setMaxValue($max);
-				$attr->setValue($current);
-				$this->attributes[] = $attr;
-			}else{
-				throw new \UnexpectedValueException("Unknown attribute type \"$name\"");
-			}
-		}
-
-		$this->metadata = $this->getEntityMetadata();
-		$linkCount = $this->getUnsignedVarInt();
-		for($i = 0; $i < $linkCount; ++$i){
-			$this->links[] = $this->getEntityLink();
-		}
+	public static function create(int $uvarint1) : self{
+		$result = new self;
+		$result->uvarint1 = $uvarint1;
+		return $result;
 	}
 
-	protected function encodePayload(){
-		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putUnsignedVarInt($this->type);
-		$this->putVector3($this->position);
-		$this->putVector3Nullable($this->motion);
-		$this->putLFloat($this->pitch);
-		$this->putLFloat($this->yaw);
-		$this->putLFloat($this->headYaw);
-
-		$this->putUnsignedVarInt(count($this->attributes));
-		foreach($this->attributes as $attribute){
-			$this->putString($attribute->getName());
-			$this->putLFloat($attribute->getMinValue());
-			$this->putLFloat($attribute->getValue());
-			$this->putLFloat($attribute->getMaxValue());
-		}
-
-		$this->putEntityMetadata($this->metadata);
-		$this->putUnsignedVarInt(count($this->links));
-		foreach($this->links as $link){
-			$this->putEntityLink($link);
-		}
+	/**
+	 * @return int
+	 */
+	public function getUvarint1() : int{
+		return $this->uvarint1;
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleAddEntity($this);
+	protected function decodePayload() : void{
+		$this->uvarint1 = $this->getUnsignedVarInt();
+	}
+
+	protected function encodePayload() : void{
+		$this->putUnsignedVarInt($this->uvarint1);
+	}
+
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleAddEntity($this);
 	}
 }

@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function time;
+
 /**
  * XorShift128Engine Random Number Noise, used for fast seeded values
  * Most of the code in this class was adapted from the XorShift128Engine in the php-random library.

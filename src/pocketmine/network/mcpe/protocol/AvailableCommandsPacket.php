@@ -29,6 +29,13 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\CommandData;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
+use function array_flip;
+use function array_keys;
+use function array_map;
+use function array_search;
+use function array_values;
+use function count;
+use function dechex;
 
 class AvailableCommandsPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::AVAILABLE_COMMANDS_PACKET;
@@ -48,19 +55,22 @@ class AvailableCommandsPacket extends DataPacket{
 	public const ARG_TYPE_FLOAT           = 0x02;
 	public const ARG_TYPE_VALUE           = 0x03;
 	public const ARG_TYPE_WILDCARD_INT    = 0x04;
-	public const ARG_TYPE_TARGET          = 0x05;
-	public const ARG_TYPE_WILDCARD_TARGET = 0x06;
+	public const ARG_TYPE_OPERATOR        = 0x05;
+	public const ARG_TYPE_TARGET          = 0x06;
 
-	public const ARG_TYPE_STRING   = 0x0f;
-	public const ARG_TYPE_POSITION = 0x10;
+	public const ARG_TYPE_FILEPATH = 0x0e;
 
-	public const ARG_TYPE_MESSAGE  = 0x13;
+	public const ARG_TYPE_STRING   = 0x1b;
 
-	public const ARG_TYPE_RAWTEXT  = 0x15;
+	public const ARG_TYPE_POSITION = 0x1d;
 
-	public const ARG_TYPE_JSON     = 0x18;
+	public const ARG_TYPE_MESSAGE  = 0x20;
 
-	public const ARG_TYPE_COMMAND  = 0x1f;
+	public const ARG_TYPE_RAWTEXT  = 0x22;
+
+	public const ARG_TYPE_JSON     = 0x25;
+
+	public const ARG_TYPE_COMMAND  = 0x2c;
 
 	/**
 	 * Enums are a little different: they are composed as follows:
@@ -137,8 +147,12 @@ class AvailableCommandsPacket extends DataPacket{
 		$retval->enumName = $this->getString();
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$index = $this->getEnumValueIndex();
+			if(!isset($this->enumValues[$index])){
+				throw new \UnexpectedValueException("Invalid enum value index $index");
+			}
 			//Get the enum value from the initial pile of mess
-			$retval->enumValues[] = $this->enumValues[$this->getEnumValueIndex()];
+			$retval->enumValues[] = $this->enumValues[$index];
 		}
 
 		return $retval;
@@ -213,21 +227,22 @@ class AvailableCommandsPacket extends DataPacket{
 				$parameter->paramName = $this->getString();
 				$parameter->paramType = $this->getLInt();
 				$parameter->isOptional = $this->getBool();
+				$parameter->byte1 = $this->getByte();
 
 				if($parameter->paramType & self::ARG_FLAG_ENUM){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->enum = $this->enums[$index] ?? null;
 					if($parameter->enum === null){
-						throw new \UnexpectedValueException("expected enum at $index, but got none");
+						throw new \UnexpectedValueException("deserializing $retval->commandName parameter $parameter->paramName: expected enum at $index, but got none");
 					}
 				}elseif($parameter->paramType & self::ARG_FLAG_POSTFIX){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->postfix = $this->postfixes[$index] ?? null;
 					if($parameter->postfix === null){
-						throw new \UnexpectedValueException("expected postfix at $index, but got none");
+						throw new \UnexpectedValueException("deserializing $retval->commandName parameter $parameter->paramName: expected postfix at $index, but got none");
 					}
 				}elseif(($parameter->paramType & self::ARG_FLAG_VALID) === 0){
-					throw new \UnexpectedValueException("Invalid parameter type 0x" . dechex($parameter->paramType));
+					throw new \UnexpectedValueException("deserializing $retval->commandName parameter $parameter->paramName: Invalid parameter type 0x" . dechex($parameter->paramType));
 				}
 
 				$retval->overloads[$overloadIndex][$paramIndex] = $parameter;
@@ -270,6 +285,7 @@ class AvailableCommandsPacket extends DataPacket{
 
 				$this->putLInt($type);
 				$this->putBool($parameter->isOptional);
+				$this->putByte($parameter->byte1);
 			}
 		}
 	}
@@ -346,13 +362,13 @@ class AvailableCommandsPacket extends DataPacket{
 			}
 		}
 
-		$this->enumValues = array_map('strval', array_keys($enumValuesMap)); //stupid PHP key casting D:
+		$this->enumValues = array_map('\strval', array_keys($enumValuesMap)); //stupid PHP key casting D:
 		$this->putUnsignedVarInt($this->enumValuesCount = count($this->enumValues));
 		foreach($this->enumValues as $enumValue){
 			$this->putString($enumValue);
 		}
 
-		$this->postfixes = array_map('strval', array_keys($postfixesMap));
+		$this->postfixes = array_map('\strval', array_keys($postfixesMap));
 		$this->putUnsignedVarInt(count($this->postfixes));
 		foreach($this->postfixes as $postfix){
 			$this->putString($postfix);

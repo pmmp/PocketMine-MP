@@ -45,8 +45,8 @@ class Torch extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$below = $this->getSide(Vector3::SIDE_DOWN);
-		$side = $this->getDamage();
-		$faces = [
+		$meta = $this->getDamage();
+		static $faces = [
 			0 => Vector3::SIDE_DOWN,
 			1 => Vector3::SIDE_WEST,
 			2 => Vector3::SIDE_EAST,
@@ -54,8 +54,9 @@ class Torch extends Flowable{
 			4 => Vector3::SIDE_SOUTH,
 			5 => Vector3::SIDE_DOWN
 		];
+		$face = $faces[$meta] ?? Vector3::SIDE_DOWN;
 
-		if($this->getSide($faces[$side])->isTransparent() and !($faces[$side] === Vector3::SIDE_DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
+		if($this->getSide($face)->isTransparent() and !($face === Vector3::SIDE_DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
 			$this->getLevel()->useBreakOn($this);
 		}
 	}
