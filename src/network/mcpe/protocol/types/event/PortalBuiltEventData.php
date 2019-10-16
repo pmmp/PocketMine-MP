@@ -28,17 +28,17 @@ use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 final class PortalBuiltEventData implements EventData{
 	/** @var int */
-	public $type;
+	public $dimensionId;
 
 	public function id() : int{
 		return EventPacket::TYPE_PORTAL_BUILT;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->type = $in->getVarInt();
+		$this->dimensionId = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->type);
+		$out->putVarInt($this->dimensionId);
 	}
 }
