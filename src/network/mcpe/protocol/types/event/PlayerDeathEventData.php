@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 final class PlayerDeathEventData implements EventData{
 	/** @var int */
-	public $killerEntity;
+	public $actorType;
 	/** @var int */
 	public $mobVariant;
 	/** @var int */
@@ -41,14 +41,14 @@ final class PlayerDeathEventData implements EventData{
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->killerEntity = $in->getVarInt();
+		$this->actorType = $in->getVarInt();
 		$this->mobVariant = $in->getVarInt();
 		$this->cause = $in->getVarInt();
 		$this->inRaid = $in->getBool();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->killerEntity);
+		$out->putVarInt($this->actorType);
 		$out->putVarInt($this->mobVariant);
 		$out->putVarInt($this->cause);
 		$out->putBool($this->inRaid);
