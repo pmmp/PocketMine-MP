@@ -1101,11 +1101,17 @@ class Server{
 
 			return false;
 		}
-		/**
-		 * @var LevelProvider $provider
-		 * @see LevelProvider::__construct()
-		 */
-		$provider = new $providerClass($path);
+
+		try{
+			/**
+			 * @var LevelProvider $provider
+			 * @see LevelProvider::__construct()
+			 */
+			$provider = new $providerClass($path);
+		}catch(LevelException $e){
+			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.loadError", [$name, $e->getMessage()]));
+			return false;
+		}
 		try{
 			GeneratorManager::getGenerator($provider->getGenerator(), true);
 		}catch(\InvalidArgumentException $e){
