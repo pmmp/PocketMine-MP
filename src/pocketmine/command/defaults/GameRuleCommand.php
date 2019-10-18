@@ -37,8 +37,12 @@ class GameRuleCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct($name, "%altay.command.gamerule.description", "%altay.command.gamerule.usage", [], [
 			[
-				new CommandParameter("rule", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("BoolGameRule", $this->getKnownGameRules())),
-				new CommandParameter("value", AvailableCommandsPacket::ARG_TYPE_VALUE),
+				new CommandParameter("rule", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("BoolGameRule", $this->getKnownGameRules()), 1),
+				new CommandParameter("value", AvailableCommandsPacket::ARG_TYPE_STRING, true, new CommandEnum("Bool", ["true", "false"])),
+			],
+			[
+				new CommandParameter("rule", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("IntGameRule", $this->getKnownIntGameRules()), 1),
+				new CommandParameter("value", AvailableCommandsPacket::ARG_TYPE_INT),
 			]
 		]);
 
@@ -75,8 +79,15 @@ class GameRuleCommand extends VanillaCommand{
 		return [
 			"commandblockoutput", "dodaylightcycle", "doentitydrops", "dofiretick", "doinsomnia", "domobloot",
 			"domobspawning", "dotiledrops", "doimmediaterespawn", "doweathercycle", "drowningdamage", "falldamage", "firedamage",
-			"keepinventory", "maxcommandchainlength", "mobgriefing", "naturalregeneration", "pvp",
-			"sendcommandfeedback", "showcoordinates", "tntexplodes"
+			"keepinventory", "mobgriefing", "naturalregeneration", "pvp",
+			"sendcommandfeedback", "showcoordinates", "tntexplodes",
+			"commandblocksenabled", "showdeathmessages"
+		];
+	}
+
+	public function getKnownIntGameRules() : array{
+		return [
+			"maxcommandchainlength", "functioncommandlimit", "randomtickspeed"
 		];
 	}
 
