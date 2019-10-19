@@ -92,9 +92,15 @@ class Pig extends Animal{
 	}
 
 	public function getDrops() : array{
-		return [
+		$drops = [
 			($this->isOnFire() ? ItemFactory::get(Item::COOKED_PORKCHOP, 0, rand(1, 3)) : ItemFactory::get(Item::RAW_PORKCHOP, 0, rand(1, 3)))
 		];
+
+		if($this->isSaddled()){
+			$drops[] = ItemFactory::get(Item::SADDLE, 0, 1);
+		}
+
+		return $drops;
 	}
 
 	public function isSaddled() : bool{
