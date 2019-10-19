@@ -163,6 +163,12 @@ class Horse extends AbstractHorse implements InventoryHolder{
 		}
 	}
 
+	public function onDeath() : void{
+		parent::onDeath();
+
+		$this->inventory->dropContents($this->level, $this);
+	}
+
 	public function saveNBT() : void{
 		parent::saveNBT();
 
