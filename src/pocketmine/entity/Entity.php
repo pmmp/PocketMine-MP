@@ -1480,14 +1480,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function doOnFireTick(int $tickDiff = 1) : bool{
+		if(($this->fireTicks % 20 === 0) or $tickDiff > 20){
+			$this->dealFireDamage();
+		}
+
 		if($this->isFireProof() and $this->fireTicks > 1){
 			$this->fireTicks = 1;
 		}else{
 			$this->fireTicks -= $tickDiff;
-		}
-
-		if(($this->fireTicks % 20 === 0) or $tickDiff > 20){
-			$this->dealFireDamage();
 		}
 
 		if(!$this->isOnFire()){
