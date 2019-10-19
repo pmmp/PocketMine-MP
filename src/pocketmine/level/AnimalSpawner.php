@@ -155,6 +155,8 @@ class AnimalSpawner{
 														if($j2 >= $entity->getMaxSpawnedInChunk()){
 															continue 4;
 														}
+													}else{
+														$entity->flagForDespawn();
 													}
 												}
 											}
