@@ -38,7 +38,7 @@ class GameRuleCommand extends VanillaCommand{
 		parent::__construct($name, "%altay.command.gamerule.description", "%altay.command.gamerule.usage", [], [
 			[
 				new CommandParameter("rule", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("BoolGameRule", $this->getKnownGameRules()), 1),
-				new CommandParameter("value", AvailableCommandsPacket::ARG_TYPE_STRING, true, new CommandEnum("Bool", ["true", "false"])),
+				new CommandParameter("value", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("Bool", ["true", "false"])),
 			],
 			[
 				new CommandParameter("rule", AvailableCommandsPacket::ARG_TYPE_STRING, false, new CommandEnum("IntGameRule", $this->getKnownIntGameRules()), 1),
@@ -64,12 +64,19 @@ class GameRuleCommand extends VanillaCommand{
 			$level = $sender->getServer()->getDefaultLevel();
 		}
 
-		$rule = $this->matchRuleName($level->getGameRules()->getRules(), $args[0]);
+		$ruleName = $this->matchRuleName($level->getGameRules()->getRules(), $args[0]);
 
-		if($level->getGameRules()->setRuleWithMatching($rule, $args[1])){
-			$sender->sendMessage(new TranslationContainer("%commands.gamerule.success", [$rule, $args[1]]));
+		if($level->getGameRules()->hasRule($ruleName)){
+			if($level->getGameRules()->setRuleWithMatching($ruleName, $args[1])){
+				$sender->sendMessage(new TranslationContainer("commands.gamerule.success", [
+					$ruleName,
+					$level->getGameRules()->toStringValue(($level->getGameRules()->getRuleValue($ruleName)))
+				]));
+			}else{
+				$sender->sendMessage(new TranslationContainer("commands.generic.syntax", ["/gamerule " . $args[0] . " ", $args[1], " "]));
+			}
 		}else{
-			$sender->sendMessage(new TranslationContainer("%commands.gamerule.norule"));
+			$sender->sendMessage(new TranslationContainer("commands.generic.syntax", ["/gamerule ", $args[0] . " ",  " " . $args[1]]));
 		}
 
 		return true;

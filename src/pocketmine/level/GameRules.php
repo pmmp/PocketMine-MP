@@ -145,6 +145,15 @@ class GameRules{
 	/**
 	 * @param string $name
 	 *
+	 * @return bool|int|null
+	 */
+	public function getRuleValue(string $name){
+		return isset($this->rules[$name]) ? $this->rules[$name][1] : null;
+	}
+
+	/**
+	 * @param string $name
+	 *
 	 * @return bool
 	 */
 	public function hasRule(string $name) : bool{
