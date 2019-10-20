@@ -25,7 +25,6 @@ namespace pocketmine\event;
 
 use pocketmine\plugin\Plugin;
 use function array_fill_keys;
-use function in_array;
 use function spl_object_id;
 
 class HandlerList{

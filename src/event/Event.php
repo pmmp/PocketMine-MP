@@ -26,7 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\event;
 
-use function assert;
 use function get_class;
 
 abstract class Event{

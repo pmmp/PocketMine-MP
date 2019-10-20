@@ -25,7 +25,6 @@ namespace pocketmine\plugin;
 
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
-use pocketmine\event\HandlerList;
 use pocketmine\event\HandlerListManager;
 use pocketmine\event\Listener;
 use pocketmine\event\plugin\PluginDisableEvent;
