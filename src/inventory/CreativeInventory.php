@@ -52,6 +52,10 @@ final class CreativeInventory{
 		}
 	}
 
+	/**
+	 * Removes all previously added items from the creative menu.
+	 * Note: Players who are already online when this is called will not see this change.
+	 */
 	public static function clear(){
 		self::$creative = [];
 	}
@@ -82,10 +86,22 @@ final class CreativeInventory{
 		return -1;
 	}
 
+	/**
+	 * Adds an item to the creative menu.
+	 * Note: Players who are already online when this is called will not see this change.
+	 *
+	 * @param Item $item
+	 */
 	public static function add(Item $item){
 		self::$creative[] = clone $item;
 	}
 
+	/**
+	 * Removes an item from the creative menu.
+	 * Note: Players who are already online when this is called will not see this change.
+	 *
+	 * @param Item $item
+	 */
 	public static function remove(Item $item){
 		$index = self::getItemIndex($item);
 		if($index !== -1){

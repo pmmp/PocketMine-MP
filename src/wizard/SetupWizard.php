@@ -29,6 +29,7 @@ namespace pocketmine\wizard;
 
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
+use pocketmine\player\GameMode;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
@@ -43,7 +44,6 @@ class SetupWizard{
 	public const DEFAULT_NAME = \pocketmine\NAME . " Server";
 	public const DEFAULT_PORT = 19132;
 	public const DEFAULT_PLAYERS = 20;
-	public const DEFAULT_GAMEMODE = 0;
 
 	/** @var Language */
 	private $lang;
@@ -155,7 +155,7 @@ LICENSE;
 		$this->message($this->lang->get("gamemode_info"));
 
 		do{
-			$gamemode = (int) $this->getInput($this->lang->get("default_gamemode"), (string) self::DEFAULT_GAMEMODE);
+			$gamemode = (int) $this->getInput($this->lang->get("default_gamemode"), (string) GameMode::SURVIVAL()->getMagicNumber());
 		}while($gamemode < 0 or $gamemode > 3);
 		$config->set("gamemode", $gamemode);
 

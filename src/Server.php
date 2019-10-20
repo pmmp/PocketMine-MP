@@ -430,7 +430,7 @@ class Server{
 	 * @return int
 	 */
 	public function getDifficulty() : int{
-		return $this->getConfigInt("difficulty", 1);
+		return $this->getConfigInt("difficulty", World::DIFFICULTY_NORMAL);
 	}
 
 	/**
@@ -1022,7 +1022,7 @@ class Server{
 				"force-gamemode" => false,
 				"hardcore" => false,
 				"pvp" => true,
-				"difficulty" => 1,
+				"difficulty" => World::DIFFICULTY_NORMAL,
 				"generator-settings" => "",
 				"level-name" => "world",
 				"level-seed" => "",
