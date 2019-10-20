@@ -31,7 +31,7 @@ use function array_fill;
 use function ceil;
 use function chr;
 use function fclose;
-use function fgetc;
+use function feof;
 use function file_exists;
 use function filesize;
 use function fopen;
@@ -283,7 +283,7 @@ class RegionLoader{
 				$fileOffset = $offset << 12;
 
 				fseek($this->filePointer, $fileOffset);
-				if(fgetc($this->filePointer) === false){ //Try and read from the location
+				if(feof($this->filePointer)){
 					throw new CorruptedRegionException("Region file location offset x=$x,z=$z points to invalid file location $fileOffset");
 				}elseif(isset($usedOffsets[$offset])){
 					self::getChunkCoords($usedOffsets[$offset], $existingX, $existingZ);
