@@ -164,7 +164,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 
 	/**
 	 * @param CommandEnum $enum
-	 * @param string[]    $enumValueMap
+	 * @param int[]       $enumValueMap
 	 */
 	protected function putEnum(CommandEnum $enum, array $enumValueMap) : void{
 		$this->putString($enum->getName());

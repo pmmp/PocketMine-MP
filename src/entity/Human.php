@@ -199,6 +199,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return (int) min(100, 7 * $this->xpManager->getXpLevel());
 	}
 
+	/**
+	 * @return PlayerInventory
+	 */
 	public function getInventory(){
 		return $this->inventory;
 	}

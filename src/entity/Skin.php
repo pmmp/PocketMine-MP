@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use Ahc\Json\Comment as CommentedJsonDecoder;
 use function implode;
 use function in_array;
-use function json_decode;
 use function json_encode;
 use function json_last_error_msg;
 use function strlen;
@@ -61,7 +61,7 @@ final class Skin{
 		}
 
 		if($geometryData !== ""){
-			$decodedGeometry = json_decode($geometryData);
+			$decodedGeometry = (new CommentedJsonDecoder())->decode($geometryData);
 			if($decodedGeometry === false){
 				throw new \InvalidArgumentException("Invalid geometry data (" . json_last_error_msg() . ")");
 			}

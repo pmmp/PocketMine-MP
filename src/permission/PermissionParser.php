@@ -95,12 +95,7 @@ class PermissionParser{
 		$desc = null;
 		$children = [];
 		if(isset($data["default"])){
-			$value = PermissionParser::defaultFromString($data["default"]);
-			if($value !== null){
-				$default = $value;
-			}else{
-				throw new \InvalidStateException("'default' key contained unknown value");
-			}
+			$default = PermissionParser::defaultFromString($data["default"]);
 		}
 
 		if(isset($data["children"])){
