@@ -621,6 +621,17 @@ class Chunk{
 	}
 
 	/**
+	 * @param int[] $values
+	 * @throws \InvalidArgumentException
+	 */
+	public function setHeightMapArray(array $values) : void{
+		if(count($values) !== 256){
+			throw new \InvalidArgumentException("Expected exactly 256 values");
+		}
+		$this->heightMap = \SplFixedArray::fromArray($values);
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function isDirty() : bool{

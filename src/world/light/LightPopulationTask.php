@@ -27,15 +27,31 @@ use pocketmine\block\BlockFactory;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
+use pocketmine\world\format\LightArray;
 use pocketmine\world\World;
+use function igbinary_serialize;
+use function igbinary_unserialize;
 
 class LightPopulationTask extends AsyncTask{
 	private const TLS_KEY_WORLD = "world";
 
 	public $chunk;
 
+	/** @var int */
+	private $chunkX;
+	/** @var int */
+	private $chunkZ;
+
+	/** @var string */
+	private $resultHeightMap;
+	/** @var string */
+	private $resultSkyLightArrays;
+	/** @var string */
+	private $resultBlockLightArrays;
+
 	public function __construct(World $world, Chunk $chunk){
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
+		[$this->chunkX, $this->chunkZ] = [$chunk->getX(), $chunk->getZ()];
 		$this->chunk = FastChunkSerializer::serialize($chunk);
 	}
 
@@ -50,16 +66,41 @@ class LightPopulationTask extends AsyncTask{
 		$chunk->populateSkyLight();
 		$chunk->setLightPopulated();
 
-		$this->chunk = FastChunkSerializer::serialize($chunk);
+		$this->resultHeightMap = igbinary_serialize($chunk->getHeightMapArray());
+		$skyLightArrays = [];
+		$blockLightArrays = [];
+		foreach($chunk->getSubChunks() as $y => $subChunk){
+			$skyLightArrays[$y] = $subChunk->getBlockSkyLightArray();
+			$blockLightArrays[$y] = $subChunk->getBlockLightArray();
+		}
+		$this->resultSkyLightArrays = igbinary_serialize($skyLightArrays);
+		$this->resultBlockLightArrays = igbinary_serialize($blockLightArrays);
 	}
 
 	public function onCompletion() : void{
 		/** @var World $world */
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
-		if(!$world->isClosed()){
+		if(!$world->isClosed() and $world->isChunkLoaded($this->chunkX, $this->chunkZ)){
 			/** @var Chunk $chunk */
-			$chunk = FastChunkSerializer::deserialize($this->chunk);
-			$world->generateChunkCallback($chunk->getX(), $chunk->getZ(), $chunk);
+			$chunk = $world->getChunk($this->chunkX, $this->chunkZ);
+			//TODO: calculated light information might not be valid if the terrain changed during light calculation
+
+			/** @var int[] $heightMapArray */
+			$heightMapArray = igbinary_unserialize($this->resultHeightMap);
+			$chunk->setHeightMapArray($heightMapArray);
+
+			/** @var LightArray[] $skyLightArrays */
+			$skyLightArrays = igbinary_unserialize($this->resultSkyLightArrays);
+			/** @var LightArray[] $blockLightArrays */
+			$blockLightArrays = igbinary_unserialize($this->resultBlockLightArrays);
+
+			foreach($skyLightArrays as $y => $array){
+				$chunk->getSubChunk($y, true)->setBlockSkyLightArray($array);
+			}
+			foreach($blockLightArrays as $y => $array){
+				$chunk->getSubChunk($y, true)->setBlockLightArray($array);
+			}
+			$chunk->setLightPopulated();
 		}
 	}
 }
