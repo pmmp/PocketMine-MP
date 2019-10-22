@@ -68,9 +68,6 @@ class Chunk{
 	/** @var bool */
 	protected $terrainPopulated = false;
 
-	/** @var int */
-	protected $height = Chunk::MAX_SUBCHUNKS;
-
 	/** @var \SplFixedArray|SubChunkInterface[] */
 	protected $subChunks;
 
@@ -105,9 +102,7 @@ class Chunk{
 		$this->x = $chunkX;
 		$this->z = $chunkZ;
 
-		$this->height = Chunk::MAX_SUBCHUNKS; //TODO: add a way of changing this
-
-		$this->subChunks = new \SplFixedArray($this->height);
+		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
 		foreach($this->subChunks as $y => $null){
 			$this->subChunks[$y] = $subChunks[$y] ?? EmptySubChunk::getInstance();
@@ -117,7 +112,7 @@ class Chunk{
 			$this->heightMap = \SplFixedArray::fromArray($heightMap);
 		}else{
 			assert(count($heightMap) === 0, "Wrong HeightMap value count, expected 256, got " . count($heightMap));
-			$val = ($this->height * 16);
+			$val = ($this->subChunks->getSize() * 16);
 			$this->heightMap = \SplFixedArray::fromArray(array_fill(0, 256, $val));
 		}
 
@@ -163,7 +158,7 @@ class Chunk{
 	 * @return int
 	 */
 	public function getHeight() : int{
-		return $this->height;
+		return $this->subChunks->getSize();
 	}
 
 	/**
@@ -670,7 +665,7 @@ class Chunk{
 	 * @return SubChunkInterface
 	 */
 	public function getSubChunk(int $y, bool $generateNew = false) : SubChunkInterface{
-		if($y < 0 or $y >= $this->height){
+		if($y < 0 or $y >= $this->subChunks->getSize()){
 			return EmptySubChunk::getInstance();
 		}elseif($generateNew and $this->subChunks[$y] instanceof EmptySubChunk){
 			$this->subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, []);
@@ -687,7 +682,7 @@ class Chunk{
 	 * @param bool                   $allowEmpty Whether to check if the chunk is empty, and if so replace it with an empty stub
 	 */
 	public function setSubChunk(int $y, ?SubChunkInterface $subChunk, bool $allowEmpty = false) : void{
-		if($y < 0 or $y >= $this->height){
+		if($y < 0 or $y >= $this->subChunks->getSize()){
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 		if($subChunk === null or ($subChunk->isEmpty() and !$allowEmpty)){
