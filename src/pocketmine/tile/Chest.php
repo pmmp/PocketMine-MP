@@ -42,7 +42,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 
 	/** @var ChestInventory */
 	protected $inventory;
-	/** @var DoubleChestInventory */
+	/** @var DoubleChestInventory|null */
 	protected $doubleInventory = null;
 
 	/** @var int|null */
