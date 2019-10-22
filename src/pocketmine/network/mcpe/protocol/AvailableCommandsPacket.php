@@ -158,7 +158,7 @@ class AvailableCommandsPacket extends DataPacket{
 
 	/**
 	 * @param CommandEnum $enum
-	 * @param string[]    $enumValueMap
+	 * @param int[]       $enumValueMap string enum name -> int index
 	 */
 	protected function putEnum(CommandEnum $enum, array $enumValueMap) : void{
 		$this->putString($enum->enumName);
