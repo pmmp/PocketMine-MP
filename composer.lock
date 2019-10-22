@@ -299,12 +299,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "ea71180bb494217abdb8867f4a0f1c353551b425"
+                "reference": "7b50fa2b212c54e2a280217c84955b23e90cf5a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/ea71180bb494217abdb8867f4a0f1c353551b425",
-                "reference": "ea71180bb494217abdb8867f4a0f1c353551b425",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/7b50fa2b212c54e2a280217c84955b23e90cf5a1",
+                "reference": "7b50fa2b212c54e2a280217c84955b23e90cf5a1",
                 "shasum": ""
             },
             "require": {
@@ -325,7 +325,7 @@
                 "source": "https://github.com/pmmp/BinaryUtils/tree/master",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
-            "time": "2019-08-25T14:54:25+00:00"
+            "time": "2019-10-21T14:41:23+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -333,12 +333,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "d7fda7a3abb078f6c709f02ddbb79444efa8cbe2"
+                "reference": "68009b5202142ef5e83d271aebfd4d721efdb3b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/d7fda7a3abb078f6c709f02ddbb79444efa8cbe2",
-                "reference": "d7fda7a3abb078f6c709f02ddbb79444efa8cbe2",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/68009b5202142ef5e83d271aebfd4d721efdb3b9",
+                "reference": "68009b5202142ef5e83d271aebfd4d721efdb3b9",
                 "shasum": ""
             },
             "require": {
@@ -364,7 +364,7 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2019-08-14T16:30:00+00:00"
+            "time": "2019-10-21T14:35:51+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -372,12 +372,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "56cb637f904d8cce05d45ff275ee1634bb52e9c3"
+                "reference": "5736b9e36283116caca51640d9e9a905155f1b7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/56cb637f904d8cce05d45ff275ee1634bb52e9c3",
-                "reference": "56cb637f904d8cce05d45ff275ee1634bb52e9c3",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/5736b9e36283116caca51640d9e9a905155f1b7a",
+                "reference": "5736b9e36283116caca51640d9e9a905155f1b7a",
                 "shasum": ""
             },
             "require": {
@@ -405,7 +405,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2019-08-25T15:00:08+00:00"
+            "time": "2019-10-21T15:06:42+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -413,12 +413,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "9b6e021dcecd6ac3e0fa11655d6b42c13c541e54"
+                "reference": "3652dbc4b49225149b7d2fbd5c380fc39b6aff24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/9b6e021dcecd6ac3e0fa11655d6b42c13c541e54",
-                "reference": "9b6e021dcecd6ac3e0fa11655d6b42c13c541e54",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/3652dbc4b49225149b7d2fbd5c380fc39b6aff24",
+                "reference": "3652dbc4b49225149b7d2fbd5c380fc39b6aff24",
                 "shasum": ""
             },
             "require": {
@@ -446,7 +446,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-08-25T15:01:01+00:00"
+            "time": "2019-08-30T17:40:14+00:00"
         },
         {
             "name": "pocketmine/snooze",
