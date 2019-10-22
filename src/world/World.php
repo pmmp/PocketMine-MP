@@ -1354,14 +1354,21 @@ class World implements ChunkManager{
 	 * @return int
 	 */
 	public function getHighestAdjacentBlockSkyLight(int $x, int $y, int $z) : int{
-		return max([
-			$this->getBlockSkyLightAt($x + 1, $y, $z),
-			$this->getBlockSkyLightAt($x - 1, $y, $z),
-			$this->getBlockSkyLightAt($x, $y + 1, $z),
-			$this->getBlockSkyLightAt($x, $y - 1, $z),
-			$this->getBlockSkyLightAt($x, $y, $z + 1),
-			$this->getBlockSkyLightAt($x, $y, $z - 1)
-		]);
+		$max = 0;
+		foreach([
+			[$x + 1, $y, $z],
+			[$x - 1, $y, $z],
+			[$x, $y + 1, $z],
+			[$x, $y - 1, $z],
+			[$x, $y, $z + 1],
+			[$x, $y, $z - 1]
+		] as [$x1, $y1, $z1]){
+			if(!$this->isInWorld($x1, $y1, $z1)){
+				continue;
+			}
+			$max = max($max, $this->getBlockSkyLightAt($x1, $y1, $z1));
+		}
+		return $max;
 	}
 
 	public function updateBlockSkyLight(int $x, int $y, int $z){
@@ -1385,14 +1392,21 @@ class World implements ChunkManager{
 	 * @return int
 	 */
 	public function getHighestAdjacentBlockLight(int $x, int $y, int $z) : int{
-		return max([
-			$this->getBlockLightAt($x + 1, $y, $z),
-			$this->getBlockLightAt($x - 1, $y, $z),
-			$this->getBlockLightAt($x, $y + 1, $z),
-			$this->getBlockLightAt($x, $y - 1, $z),
-			$this->getBlockLightAt($x, $y, $z + 1),
-			$this->getBlockLightAt($x, $y, $z - 1)
-		]);
+		$max = 0;
+		foreach([
+			[$x + 1, $y, $z],
+			[$x - 1, $y, $z],
+			[$x, $y + 1, $z],
+			[$x, $y - 1, $z],
+			[$x, $y, $z + 1],
+			[$x, $y, $z - 1]
+		] as [$x1, $y1, $z1]){
+			if(!$this->isInWorld($x1, $y1, $z1)){
+				continue;
+			}
+			$max = max($max, $this->getBlockLightAt($x1, $y1, $z1));
+		}
+		return $max;
 	}
 
 	public function updateBlockLight(int $x, int $y, int $z){
