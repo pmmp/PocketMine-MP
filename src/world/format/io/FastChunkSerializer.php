@@ -26,7 +26,6 @@ namespace pocketmine\world\format\io;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\format\EmptySubChunk;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
@@ -64,9 +63,6 @@ final class FastChunkSerializer{
 			$count = 0;
 			$subStream = new BinaryStream();
 			foreach($chunk->getSubChunks() as $y => $subChunk){
-				if($subChunk instanceof EmptySubChunk){
-					continue;
-				}
 				++$count;
 
 				$subStream->putByte($y);

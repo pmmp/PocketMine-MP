@@ -26,8 +26,7 @@ namespace pocketmine\world\utils;
 use pocketmine\utils\Utils;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\format\EmptySubChunk;
-use pocketmine\world\format\SubChunkInterface;
+use pocketmine\world\format\SubChunk;
 
 class SubChunkIteratorManager{
 	/** @var ChunkManager */
@@ -35,7 +34,7 @@ class SubChunkIteratorManager{
 
 	/** @var Chunk|null */
 	public $currentChunk;
-	/** @var SubChunkInterface|null */
+	/** @var SubChunk|null */
 	public $currentSubChunk;
 
 	/** @var int */
@@ -67,11 +66,12 @@ class SubChunkIteratorManager{
 		if($this->currentSubChunk === null or $this->currentY !== ($y >> 4)){
 			$this->currentY = $y >> 4;
 
-			$this->currentSubChunk = $this->currentChunk->getSubChunk($y >> 4, $create);
-			if($this->currentSubChunk instanceof EmptySubChunk){
+			if($this->currentY < 0 or $this->currentY >= $this->currentChunk->getHeight()){
 				$this->currentSubChunk = null;
 				return false;
 			}
+
+			$this->currentSubChunk = $this->currentChunk->getSubChunk($y >> 4);
 			if($this->onSubChunkChangeFunc !== null){
 				($this->onSubChunkChangeFunc)();
 			}

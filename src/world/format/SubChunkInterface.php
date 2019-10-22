@@ -26,11 +26,21 @@ namespace pocketmine\world\format;
 interface SubChunkInterface{
 
 	/**
-	 * @param bool $checkLight
+	 * Returns whether this subchunk contains any non-air blocks.
+	 * This function will do a slow check, usually by garbage collecting first.
+	 * This is typically useful for disk saving.
 	 *
 	 * @return bool
 	 */
-	public function isEmpty(bool $checkLight = true) : bool;
+	public function isEmptyAuthoritative() : bool;
+
+	/**
+	 * Returns a non-authoritative bool to indicate whether the chunk contains any blocks.
+	 * This is a fast check, but may be inaccurate if the chunk has been modified and not garbage-collected.
+	 *
+	 * @return bool
+	 */
+	public function isEmptyFast() : bool;
 
 	/**
 	 * @param int $x

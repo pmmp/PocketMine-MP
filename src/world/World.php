@@ -64,7 +64,6 @@ use pocketmine\utils\Limits;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\format\EmptySubChunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\Generator;
@@ -983,7 +982,7 @@ class World implements ChunkManager{
 
 
 			foreach($chunk->getSubChunks() as $Y => $subChunk){
-				if(!($subChunk instanceof EmptySubChunk)){
+				if(!$subChunk->isEmptyFast()){
 					$k = mt_rand(0, 0xfffffffff); //36 bits
 					for($i = 0; $i < 3; ++$i){
 						$x = $k & 0x0f;

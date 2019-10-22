@@ -438,7 +438,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$subChunks = $chunk->getSubChunks();
 			foreach($subChunks as $y => $subChunk){
 				$key = $index . self::TAG_SUBCHUNK_PREFIX . chr($y);
-				if($subChunk->isEmpty(false)){ //MCPE doesn't save light anymore as of 1.1
+				if($subChunk->isEmptyAuthoritative()){
 					$write->delete($key);
 				}else{
 					$subStream = new BinaryStream();

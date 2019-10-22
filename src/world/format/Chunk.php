@@ -68,7 +68,7 @@ class Chunk{
 	/** @var bool */
 	protected $terrainPopulated = false;
 
-	/** @var \SplFixedArray|SubChunkInterface[] */
+	/** @var \SplFixedArray|SubChunk[] */
 	protected $subChunks;
 
 	/** @var Tile[] */
@@ -90,13 +90,13 @@ class Chunk{
 	protected $NBTentities = [];
 
 	/**
-	 * @param int                 $chunkX
-	 * @param int                 $chunkZ
-	 * @param SubChunkInterface[] $subChunks
-	 * @param CompoundTag[]       $entities
-	 * @param CompoundTag[]       $tiles
-	 * @param string              $biomeIds
-	 * @param int[]               $heightMap
+	 * @param int           $chunkX
+	 * @param int           $chunkZ
+	 * @param SubChunk[]    $subChunks
+	 * @param CompoundTag[] $entities
+	 * @param CompoundTag[] $tiles
+	 * @param string        $biomeIds
+	 * @param int[]         $heightMap
 	 */
 	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], ?array $entities = null, ?array $tiles = null, string $biomeIds = "", array $heightMap = []){
 		$this->x = $chunkX;
@@ -105,7 +105,7 @@ class Chunk{
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
 		foreach($this->subChunks as $y => $null){
-			$this->subChunks[$y] = $subChunks[$y] ?? EmptySubChunk::getInstance();
+			$this->subChunks[$y] = $subChunks[$y] ?? new SubChunk(BlockLegacyIds::AIR << 4, []);
 		}
 
 		if(count($heightMap) === 256){
@@ -183,7 +183,7 @@ class Chunk{
 	 * @param int $block
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		$this->getSubChunk($y >> 4, true)->setFullBlock($x, $y & 0xf, $z, $block);
+		$this->getSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
 		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
@@ -209,7 +209,7 @@ class Chunk{
 	 * @param int $level 0-15
 	 */
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : void{
-		$this->getSubChunk($y >> 4, true)->getBlockSkyLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
+		$this->getSubChunk($y >> 4)->getBlockSkyLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
 	}
 
 	/**
@@ -217,7 +217,7 @@ class Chunk{
 	 */
 	public function setAllBlockSkyLight(int $level) : void{
 		for($y = $this->getHighestSubChunkIndex(); $y >= 0; --$y){
-			$this->getSubChunk($y, true)->setBlockSkyLightArray(LightArray::fill($level));
+			$this->getSubChunk($y)->setBlockSkyLightArray(LightArray::fill($level));
 		}
 	}
 
@@ -243,7 +243,7 @@ class Chunk{
 	 * @param int $level 0-15
 	 */
 	public function setBlockLight(int $x, int $y, int $z, int $level) : void{
-		$this->getSubChunk($y >> 4, true)->getBlockLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
+		$this->getSubChunk($y >> 4)->getBlockLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
 	}
 
 	/**
@@ -251,7 +251,7 @@ class Chunk{
 	 */
 	public function setAllBlockLight(int $level) : void{
 		for($y = $this->getHighestSubChunkIndex(); $y >= 0; --$y){
-			$this->getSubChunk($y, true)->setBlockLightArray(LightArray::fill($level));
+			$this->getSubChunk($y)->setBlockLightArray(LightArray::fill($level));
 		}
 	}
 
@@ -659,16 +659,13 @@ class Chunk{
 	/**
 	 * Returns the subchunk at the specified subchunk Y coordinate, or an empty, unmodifiable stub if it does not exist or the coordinate is out of range.
 	 *
-	 * @param int  $y
-	 * @param bool $generateNew Whether to create a new, modifiable subchunk if there is not one in place
+	 * @param int $y
 	 *
 	 * @return SubChunkInterface
 	 */
-	public function getSubChunk(int $y, bool $generateNew = false) : SubChunkInterface{
+	public function getSubChunk(int $y) : SubChunkInterface{
 		if($y < 0 or $y >= $this->subChunks->getSize()){
-			return EmptySubChunk::getInstance();
-		}elseif($generateNew and $this->subChunks[$y] instanceof EmptySubChunk){
-			$this->subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, []);
+			return EmptySubChunk::getInstance(); //TODO: drop this and throw an exception here
 		}
 
 		return $this->subChunks[$y];
@@ -677,24 +674,20 @@ class Chunk{
 	/**
 	 * Sets a subchunk in the chunk index
 	 *
-	 * @param int                    $y
-	 * @param SubChunkInterface|null $subChunk
-	 * @param bool                   $allowEmpty Whether to check if the chunk is empty, and if so replace it with an empty stub
+	 * @param int           $y
+	 * @param SubChunk|null $subChunk
 	 */
-	public function setSubChunk(int $y, ?SubChunkInterface $subChunk, bool $allowEmpty = false) : void{
+	public function setSubChunk(int $y, ?SubChunk $subChunk) : void{
 		if($y < 0 or $y >= $this->subChunks->getSize()){
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
-		if($subChunk === null or ($subChunk->isEmpty() and !$allowEmpty)){
-			$this->subChunks[$y] = EmptySubChunk::getInstance();
-		}else{
-			$this->subChunks[$y] = $subChunk;
-		}
+
+		$this->subChunks[$y] = $subChunk ?? new SubChunk(BlockLegacyIds::AIR << 4, []);
 		$this->setDirtyFlag(self::DIRTY_FLAG_TERRAIN, true);
 	}
 
 	/**
-	 * @return \SplFixedArray|SubChunkInterface[]
+	 * @return \SplFixedArray|SubChunk[]
 	 */
 	public function getSubChunks() : \SplFixedArray{
 		return $this->subChunks;
@@ -707,8 +700,7 @@ class Chunk{
 	 */
 	public function getHighestSubChunkIndex() : int{
 		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
-			if($this->subChunks[$y] instanceof EmptySubChunk){
-				//No need to thoroughly prune empties at runtime, this will just reduce performance.
+			if($this->subChunks[$y]->isEmptyFast()){
 				continue;
 			}
 			break;
@@ -733,9 +725,6 @@ class Chunk{
 		foreach($this->subChunks as $y => $subChunk){
 			if($subChunk instanceof SubChunk){
 				$subChunk->collectGarbage();
-				if($subChunk->isEmpty()){
-					$this->subChunks[$y] = EmptySubChunk::getInstance();
-				}
 			}
 		}
 	}

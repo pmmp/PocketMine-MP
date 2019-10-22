@@ -52,21 +52,13 @@ class SubChunk implements SubChunkInterface{
 		$this->blockLight = $blockLight ?? new LightArray(LightArray::ZERO);
 	}
 
-	public function isEmpty(bool $checkLight = true) : bool{
-		foreach($this->blockLayers as $layer){
-			$palette = $layer->getPalette();
-			foreach($palette as $p){
-				if($p !== $this->defaultBlock){
-					return false;
-				}
-			}
-		}
-		return
-			(!$checkLight or (
-				$this->skyLight->getData() === LightArray::FIFTEEN and
-				$this->blockLight->getData() === LightArray::ZERO
-			)
-		);
+	public function isEmptyAuthoritative() : bool{
+		$this->collectGarbage();
+		return $this->isEmptyFast();
+	}
+
+	public function isEmptyFast() : bool{
+		return empty($this->blockLayers);
 	}
 
 	public function getFullBlock(int $x, int $y, int $z) : int{

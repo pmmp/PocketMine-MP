@@ -95,10 +95,10 @@ class LightPopulationTask extends AsyncTask{
 			$blockLightArrays = igbinary_unserialize($this->resultBlockLightArrays);
 
 			foreach($skyLightArrays as $y => $array){
-				$chunk->getSubChunk($y, true)->setBlockSkyLightArray($array);
+				$chunk->getSubChunk($y)->setBlockSkyLightArray($array);
 			}
 			foreach($blockLightArrays as $y => $array){
-				$chunk->getSubChunk($y, true)->setBlockLightArray($array);
+				$chunk->getSubChunk($y)->setBlockLightArray($array);
 			}
 			$chunk->setLightPopulated();
 		}
