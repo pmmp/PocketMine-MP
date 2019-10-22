@@ -30,12 +30,24 @@ use pocketmine\network\mcpe\NetworkSession;
 class StructureTemplateDataExportResponsePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_RESPONSE_PACKET;
 
+	/** @var string */
+	public $structureTemplateName;
+	/** @var string|null */
+	public $namedtag;
+
 	protected function decodePayload() : void{
-		//TODO
+		$this->structureTemplateName = $this->getString();
+		if($this->getBool()){
+			$this->namedtag = $this->getRemaining();
+		}
 	}
 
 	protected function encodePayload() : void{
-		//TODO
+		$this->putString($this->structureTemplateName);
+		$this->putBool($this->namedtag !== null);
+		if($this->namedtag !== null){
+			$this->put($this->namedtag);
+		}
 	}
 
 	public function handle(NetworkSession $handler) : bool{

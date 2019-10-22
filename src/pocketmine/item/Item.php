@@ -137,6 +137,10 @@ class Item implements ItemIds, \JsonSerializable{
 		}
 	}
 
+	/**
+	 * Removes all previously added items from the creative menu.
+	 * Note: Players who are already online when this is called will not see this change.
+	 */
 	public static function clearCreativeItems(){
 		Item::$creative = [];
 	}
@@ -145,10 +149,22 @@ class Item implements ItemIds, \JsonSerializable{
 		return Item::$creative;
 	}
 
+	/**
+	 * Adds an item to the creative menu.
+	 * Note: Players who are already online when this is called will not see this change.
+	 *
+	 * @param Item $item
+	 */
 	public static function addCreativeItem(Item $item){
 		Item::$creative[] = clone $item;
 	}
 
+	/**
+	 * Removes an item from the creative menu.
+	 * Note: Players who are already online when this is called will not see this change.
+	 *
+	 * @param Item $item
+	 */
 	public static function removeCreativeItem(Item $item){
 		$index = self::getCreativeItemIndex($item);
 		if($index !== -1){

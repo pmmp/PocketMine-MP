@@ -78,8 +78,6 @@ abstract class Event{
 	 * Calls event handlers registered for this event.
 	 *
 	 * @throws \RuntimeException if event call recursion reaches the max depth limit
-	 *
-	 * @throws \ReflectionException
 	 */
 	public function call() : void{
 		if(self::$eventCallDepth >= self::MAX_EVENT_CALL_DEPTH){
