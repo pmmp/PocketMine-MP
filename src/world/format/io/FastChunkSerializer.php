@@ -60,32 +60,30 @@ final class FastChunkSerializer{
 		$stream->putByte(($chunk->isLightPopulated() ? 4 : 0) | ($chunk->isPopulated() ? 2 : 0) | ($chunk->isGenerated() ? 1 : 0));
 		if($chunk->isGenerated()){
 			//subchunks
-			$count = 0;
-			$subStream = new BinaryStream();
-			foreach($chunk->getSubChunks() as $y => $subChunk){
-				++$count;
+			$subChunks = $chunk->getSubChunks();
+			$count = $subChunks->count();
+			$stream->putByte($count);
 
-				$subStream->putByte($y);
+			foreach($subChunks as $y => $subChunk){
+				$stream->putByte($y);
 				$layers = $subChunk->getBlockLayers();
-				$subStream->putByte(count($subChunk->getBlockLayers()));
+				$stream->putByte(count($layers));
 				foreach($layers as $blocks){
 					$wordArray = $blocks->getWordArray();
 					$palette = $blocks->getPalette();
 
-					$subStream->putByte($blocks->getBitsPerBlock());
-					$subStream->put($wordArray);
+					$stream->putByte($blocks->getBitsPerBlock());
+					$stream->put($wordArray);
 					$serialPalette = pack("N*", ...$palette);
-					$subStream->putInt(strlen($serialPalette));
-					$subStream->put($serialPalette);
+					$stream->putInt(strlen($serialPalette));
+					$stream->put($serialPalette);
 				}
 
 				if($chunk->isLightPopulated()){
-					$subStream->put($subChunk->getBlockSkyLightArray()->getData());
-					$subStream->put($subChunk->getBlockLightArray()->getData());
+					$stream->put($subChunk->getBlockSkyLightArray()->getData());
+					$stream->put($subChunk->getBlockLightArray()->getData());
 				}
 			}
-			$stream->putByte($count);
-			$stream->put($subStream->getBuffer());
 
 			//biomes
 			$stream->put($chunk->getBiomeIdArray());
