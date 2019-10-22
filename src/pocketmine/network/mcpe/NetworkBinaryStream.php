@@ -37,6 +37,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
 use function count;
@@ -227,8 +228,8 @@ class NetworkBinaryStream extends BinaryStream{
 				case Entity::DATA_TYPE_STRING:
 					$value = $this->getString();
 					break;
-				case Entity::DATA_TYPE_SLOT:
-					$value = $this->getSlot();
+				case Entity::DATA_TYPE_COMPOUND_TAG:
+					$value = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
 					break;
 				case Entity::DATA_TYPE_POS:
 					$value = new Vector3();
@@ -279,8 +280,8 @@ class NetworkBinaryStream extends BinaryStream{
 				case Entity::DATA_TYPE_STRING:
 					$this->putString($d[1]);
 					break;
-				case Entity::DATA_TYPE_SLOT:
-					$this->putSlot($d[1]);
+				case Entity::DATA_TYPE_COMPOUND_TAG:
+					$this->put((new NetworkLittleEndianNBTStream())->write($d[1]));
 					break;
 				case Entity::DATA_TYPE_POS:
 					$v = $d[1];
@@ -591,5 +592,41 @@ class NetworkBinaryStream extends BinaryStream{
 		if($data->type === CommandOriginData::ORIGIN_DEV_CONSOLE or $data->type === CommandOriginData::ORIGIN_TEST){
 			$this->putVarLong($data->varlong1);
 		}
+	}
+
+	protected function getStructureSettings() : StructureSettings{
+		$result = new StructureSettings();
+
+		$result->paletteName = $this->getString();
+
+		$result->ignoreEntities = $this->getBool();
+		$result->ignoreBlocks = $this->getBool();
+
+		$this->getBlockPosition($result->structureSizeX, $result->structureSizeY, $result->structureSizeZ);
+		$this->getBlockPosition($result->structureOffsetX, $result->structureOffsetY, $result->structureOffsetZ);
+
+		$result->lastTouchedByPlayerID = $this->getEntityUniqueId();
+		$result->rotation = $this->getByte();
+		$result->mirror = $this->getByte();
+		$result->integrityValue = $this->getFloat();
+		$result->integritySeed = $this->getInt();
+
+		return $result;
+	}
+
+	protected function putStructureSettings(StructureSettings $structureSettings) : void{
+		$this->putString($structureSettings->paletteName);
+
+		$this->putBool($structureSettings->ignoreEntities);
+		$this->putBool($structureSettings->ignoreBlocks);
+
+		$this->putBlockPosition($structureSettings->structureSizeX, $structureSettings->structureSizeY, $structureSettings->structureSizeZ);
+		$this->putBlockPosition($structureSettings->structureOffsetX, $structureSettings->structureOffsetY, $structureSettings->structureOffsetZ);
+
+		$this->putEntityUniqueId($structureSettings->lastTouchedByPlayerID);
+		$this->putByte($structureSettings->rotation);
+		$this->putByte($structureSettings->mirror);
+		$this->putFloat($structureSettings->integrityValue);
+		$this->putInt($structureSettings->integritySeed);
 	}
 }

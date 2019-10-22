@@ -75,6 +75,7 @@ class ZippedResourcePack implements ResourcePack{
 
 	/**
 	 * @param string $zipPath Path to the resource pack zip
+	 * @throws ResourcePackException
 	 */
 	public function __construct(string $zipPath){
 		$this->path = $zipPath;
@@ -104,7 +105,9 @@ class ZippedResourcePack implements ResourcePack{
 		}catch(\RuntimeException $e){
 			throw new ResourcePackException("Failed to parse manifest.json: " . $e->getMessage(), $e->getCode(), $e);
 		}
-
+		if(!($manifest instanceof \stdClass)){
+			throw new ResourcePackException("manifest.json should contain a JSON object, not " . gettype($manifest));
+		}
 		if(!self::verifyManifest($manifest)){
 			throw new ResourcePackException("manifest.json is missing required fields");
 		}
@@ -148,7 +151,7 @@ class ZippedResourcePack implements ResourcePack{
 	public function getPackChunk(int $start, int $length) : string{
 		fseek($this->fileResource, $start);
 		if(feof($this->fileResource)){
-			throw new \RuntimeException("Requested a resource pack chunk with invalid start offset");
+			throw new \InvalidArgumentException("Requested a resource pack chunk with invalid start offset");
 		}
 		return fread($this->fileResource, $length);
 	}

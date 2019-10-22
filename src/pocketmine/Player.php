@@ -262,6 +262,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public $loggedIn = false;
 
 	/** @var bool */
+	private $resourcePacksDone = false;
+
+	/** @var bool */
 	public $spawned = false;
 
 	/** @var string */
@@ -2056,6 +2059,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
+		if($this->resourcePacksDone){
+			return false;
+		}
 		switch($packet->status){
 			case ResourcePackClientResponsePacket::STATUS_REFUSED:
 				//TODO: add lang strings for this
@@ -2097,6 +2103,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->dataPacket($pk);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
+				$this->resourcePacksDone = true;
 				$this->completeLoginSequence();
 				break;
 			default:
@@ -3049,6 +3056,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
+		if($this->resourcePacksDone){
+			return false;
+		}
 		$manager = $this->server->getResourcePackManager();
 		$pack = $manager->getPackById($packet->packId);
 		if(!($pack instanceof ResourcePack)){

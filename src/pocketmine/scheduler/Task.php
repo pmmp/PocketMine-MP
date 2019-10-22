@@ -27,7 +27,7 @@ use pocketmine\utils\Utils;
 
 abstract class Task{
 
-	/** @var TaskHandler */
+	/** @var TaskHandler|null */
 	private $taskHandler = null;
 
 	/**

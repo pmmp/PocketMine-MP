@@ -23,17 +23,33 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-class CommandParameter{
+class StructureSettings{
 	/** @var string */
-	public $paramName;
-	/** @var int */
-	public $paramType;
+	public $paletteName;
 	/** @var bool */
-	public $isOptional;
+	public $ignoreEntities;
+	/** @var bool */
+	public $ignoreBlocks;
 	/** @var int */
-	public $flags = 0; //shows enum name if 1, always zero except for in /gamerule command
-	/** @var CommandEnum|null */
-	public $enum;
-	/** @var string|null */
-	public $postfix;
+	public $structureSizeX;
+	/** @var int */
+	public $structureSizeY;
+	/** @var int */
+	public $structureSizeZ;
+	/** @var int */
+	public $structureOffsetX;
+	/** @var int */
+	public $structureOffsetY;
+	/** @var int */
+	public $structureOffsetZ;
+	/** @var int */
+	public $lastTouchedByPlayerID;
+	/** @var int */
+	public $rotation;
+	/** @var int */
+	public $mirror;
+	/** @var float */
+	public $integrityValue;
+	/** @var int */
+	public $integritySeed;
 }

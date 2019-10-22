@@ -65,6 +65,7 @@ class CraftingTransaction extends InventoryTransaction{
 	 * @param int    $iterations
 	 *
 	 * @return int
+	 * @throws TransactionValidationException
 	 */
 	protected function matchRecipeItems(array $txItems, array $recipeItems, bool $wildcards, int $iterations = 0) : int{
 		if(empty($recipeItems)){

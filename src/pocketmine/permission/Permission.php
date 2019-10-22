@@ -112,12 +112,7 @@ class Permission{
 		$desc = null;
 		$children = [];
 		if(isset($data["default"])){
-			$value = Permission::getByName($data["default"]);
-			if($value !== null){
-				$default = $value;
-			}else{
-				throw new \InvalidStateException("'default' key contained unknown value");
-			}
+			$default = Permission::getByName($data["default"]);
 		}
 
 		if(isset($data["children"])){

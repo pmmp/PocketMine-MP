@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace pocketmine\wizard;
 
 use pocketmine\lang\BaseLang;
+use pocketmine\Player;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
@@ -45,7 +46,7 @@ class SetupWizard{
 	public const DEFAULT_NAME = \pocketmine\NAME . " Server";
 	public const DEFAULT_PORT = 19132;
 	public const DEFAULT_PLAYERS = 20;
-	public const DEFAULT_GAMEMODE = 0;
+	public const DEFAULT_GAMEMODE = Player::SURVIVAL;
 
 	/** @var BaseLang */
 	private $lang;
@@ -162,7 +163,7 @@ LICENSE;
 
 		$this->message($this->lang->get("spawn_protection_info"));
 
-		if(strtolower($this->getInput($this->lang->get("spawn_protection"), "y", "Y/n")) === "n"){
+		if(strtolower($this->getInput($this->lang->get("spawn_protection"), "n", "y/N")) === "n"){
 			$config->set("spawn-protection", -1);
 		}else{
 			$config->set("spawn-protection", 16);
