@@ -685,12 +685,10 @@ class Chunk{
 	 * @param int                    $y
 	 * @param SubChunkInterface|null $subChunk
 	 * @param bool                   $allowEmpty Whether to check if the chunk is empty, and if so replace it with an empty stub
-	 *
-	 * @return bool
 	 */
-	public function setSubChunk(int $y, ?SubChunkInterface $subChunk, bool $allowEmpty = false) : bool{
+	public function setSubChunk(int $y, ?SubChunkInterface $subChunk, bool $allowEmpty = false) : void{
 		if($y < 0 or $y >= $this->height){
-			return false;
+			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 		if($subChunk === null or ($subChunk->isEmpty() and !$allowEmpty)){
 			$this->subChunks[$y] = EmptySubChunk::getInstance();
@@ -698,7 +696,6 @@ class Chunk{
 			$this->subChunks[$y] = $subChunk;
 		}
 		$this->setDirtyFlag(self::DIRTY_FLAG_TERRAIN, true);
-		return true;
 	}
 
 	/**
