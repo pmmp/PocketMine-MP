@@ -74,9 +74,6 @@ class Chunk{
 	/** @var \SplFixedArray|SubChunkInterface[] */
 	protected $subChunks;
 
-	/** @var EmptySubChunk */
-	protected $emptySubChunk;
-
 	/** @var Tile[] */
 	protected $tiles = [];
 
@@ -111,10 +108,9 @@ class Chunk{
 		$this->height = Chunk::MAX_SUBCHUNKS; //TODO: add a way of changing this
 
 		$this->subChunks = new \SplFixedArray($this->height);
-		$this->emptySubChunk = EmptySubChunk::getInstance();
 
 		foreach($this->subChunks as $y => $null){
-			$this->subChunks[$y] = $subChunks[$y] ?? $this->emptySubChunk;
+			$this->subChunks[$y] = $subChunks[$y] ?? EmptySubChunk::getInstance();
 		}
 
 		if(count($heightMap) === 256){
@@ -675,7 +671,7 @@ class Chunk{
 	 */
 	public function getSubChunk(int $y, bool $generateNew = false) : SubChunkInterface{
 		if($y < 0 or $y >= $this->height){
-			return $this->emptySubChunk;
+			return EmptySubChunk::getInstance();
 		}elseif($generateNew and $this->subChunks[$y] instanceof EmptySubChunk){
 			$this->subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, []);
 		}
@@ -697,7 +693,7 @@ class Chunk{
 			return false;
 		}
 		if($subChunk === null or ($subChunk->isEmpty() and !$allowEmpty)){
-			$this->subChunks[$y] = $this->emptySubChunk;
+			$this->subChunks[$y] = EmptySubChunk::getInstance();
 		}else{
 			$this->subChunks[$y] = $subChunk;
 		}
@@ -746,7 +742,7 @@ class Chunk{
 			if($subChunk instanceof SubChunk){
 				$subChunk->collectGarbage();
 				if($subChunk->isEmpty()){
-					$this->subChunks[$y] = $this->emptySubChunk;
+					$this->subChunks[$y] = EmptySubChunk::getInstance();
 				}
 			}
 		}
