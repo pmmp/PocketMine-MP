@@ -61,7 +61,7 @@ class ChunkRequestTask extends AsyncTask{
 
 	public function onRun() : void{
 		$chunk = FastChunkSerializer::deserialize($this->chunk);
-		$subCount = $chunk->getSubChunkSendCount();
+		$subCount = ChunkSerializer::getSubChunkCount($chunk);
 		$payload = ChunkSerializer::serialize($chunk, $this->tiles);
 		$this->setResult(Zlib::compress(PacketBatch::fromPackets(LevelChunkPacket::withoutCache($this->chunkX, $this->chunkZ, $subCount, $payload))->getBuffer(), $this->compressionLevel));
 	}

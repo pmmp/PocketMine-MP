@@ -683,22 +683,6 @@ class Chunk{
 	}
 
 	/**
-	 * Returns the count of subchunks that need sending to players
-	 *
-	 * @return int
-	 */
-	public function getSubChunkSendCount() : int{
-		for($count = $this->subChunks->count(); $count > 0; --$count){
-			if($this->subChunks[$count - 1]->isEmptyFast()){
-				continue;
-			}
-			break;
-		}
-
-		return $count;
-	}
-
-	/**
 	 * Disposes of empty subchunks and frees data where possible
 	 */
 	public function collectGarbage() : void{
