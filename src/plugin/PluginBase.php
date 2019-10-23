@@ -163,9 +163,9 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @return PluginLogger
+	 * @return \AttachableLogger
 	 */
-	public function getLogger() : PluginLogger{
+	public function getLogger() : \AttachableLogger{
 		return $this->logger;
 	}
 

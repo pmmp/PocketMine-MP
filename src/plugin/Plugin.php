@@ -81,9 +81,9 @@ interface Plugin{
 	public function getName() : string;
 
 	/**
-	 * @return PluginLogger
+	 * @return \AttachableLogger
 	 */
-	public function getLogger() : PluginLogger;
+	public function getLogger() : \AttachableLogger;
 
 	/**
 	 * @return PluginLoader
