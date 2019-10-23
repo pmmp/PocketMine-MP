@@ -1967,18 +1967,6 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Sets the raw block skylight level.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $level 0-15
-	 */
-	public function setBlockSkyLightAt(int $x, int $y, int $z, int $level) : void{
-		$this->getChunk($x >> 4, $z >> 4, true)->setBlockSkyLight($x & 0x0f, $y, $z & 0x0f, $level & 0x0f);
-	}
-
-	/**
 	 * Gets the raw block light level
 	 *
 	 * @param int $x
@@ -1989,18 +1977,6 @@ class World implements ChunkManager{
 	 */
 	public function getBlockLightAt(int $x, int $y, int $z) : int{
 		return $this->getChunk($x >> 4, $z >> 4, true)->getBlockLight($x & 0x0f, $y, $z & 0x0f);
-	}
-
-	/**
-	 * Sets the raw block light level.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $level 0-15
-	 */
-	public function setBlockLightAt(int $x, int $y, int $z, int $level) : void{
-		$this->getChunk($x >> 4, $z >> 4, true)->setBlockLight($x & 0x0f, $y, $z & 0x0f, $level & 0x0f);
 	}
 
 	/**
