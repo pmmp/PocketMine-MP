@@ -1245,9 +1245,20 @@ class World implements ChunkManager{
 		return $light < 0 ? 0 : $light;
 	}
 
-	public function updateAllLight(Vector3 $pos){
-		$this->updateBlockSkyLight($pos->x, $pos->y, $pos->z);
-		$this->updateBlockLight($pos->x, $pos->y, $pos->z);
+	public function updateAllLight(int $x, int $y, int $z) : void{
+		$this->timings->doBlockSkyLightUpdates->startTiming();
+		if($this->skyLightUpdate === null){
+			$this->skyLightUpdate = new SkyLightUpdate($this);
+		}
+		$this->skyLightUpdate->recalculateNode($x, $y, $z);
+		$this->timings->doBlockSkyLightUpdates->stopTiming();
+
+		$this->timings->doBlockLightUpdates->startTiming();
+		if($this->blockLightUpdate === null){
+			$this->blockLightUpdate = new BlockLightUpdate($this);
+		}
+		$this->blockLightUpdate->recalculateNode($x, $y, $z);
+		$this->timings->doBlockLightUpdates->stopTiming();
 	}
 
 	/**
@@ -1277,17 +1288,6 @@ class World implements ChunkManager{
 		return $max;
 	}
 
-	public function updateBlockSkyLight(int $x, int $y, int $z){
-		$this->timings->doBlockSkyLightUpdates->startTiming();
-
-		if($this->skyLightUpdate === null){
-			$this->skyLightUpdate = new SkyLightUpdate($this);
-		}
-		$this->skyLightUpdate->recalculateNode($x, $y, $z);
-
-		$this->timings->doBlockSkyLightUpdates->stopTiming();
-	}
-
 	/**
 	 * Returns the highest block light level available in the positions adjacent to the specified block coordinates.
 	 *
@@ -1315,18 +1315,7 @@ class World implements ChunkManager{
 		return $max;
 	}
 
-	public function updateBlockLight(int $x, int $y, int $z){
-		$this->timings->doBlockLightUpdates->startTiming();
-
-		if($this->blockLightUpdate === null){
-			$this->blockLightUpdate = new BlockLightUpdate($this);
-		}
-		$this->blockLightUpdate->recalculateNode($x, $y, $z);
-
-		$this->timings->doBlockLightUpdates->stopTiming();
-	}
-
-	public function executeQueuedLightUpdates() : void{
+	private function executeQueuedLightUpdates() : void{
 		if($this->blockLightUpdate !== null){
 			$this->timings->doBlockLightUpdates->startTiming();
 			$this->blockLightUpdate->execute();
@@ -1493,7 +1482,7 @@ class World implements ChunkManager{
 
 		if($update){
 			if($oldBlock->getLightFilter() !== $block->getLightFilter() or $oldBlock->getLightLevel() !== $block->getLightLevel()){
-				$this->updateAllLight($pos);
+				$this->updateAllLight($x, $y, $z);
 			}
 			$this->tryAddToNeighbourUpdateQueue($pos);
 			foreach($pos->sides() as $side){

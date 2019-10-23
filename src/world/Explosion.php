@@ -228,7 +228,7 @@ class Explosion{
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
 				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock, false); //TODO: should updating really be disabled here?
-				$this->world->updateAllLight($pos);
+				$this->world->updateAllLight($pos->x, $pos->y, $pos->z);
 			}
 
 			foreach(Facing::ALL as $side){
