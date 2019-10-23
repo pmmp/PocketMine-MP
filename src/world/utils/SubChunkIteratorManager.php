@@ -85,6 +85,15 @@ class SubChunkIteratorManager{
 		$this->onSubChunkChangeFunc = $callback;
 	}
 
+	/**
+	 * Returns whether we currently have a valid terrain pointer.
+	 *
+	 * @return bool
+	 */
+	public function isValid() : bool{
+		return $this->currentSubChunk !== null;
+	}
+
 	public function invalidate() : void{
 		$this->currentChunk = null;
 		$this->currentSubChunk = null;
