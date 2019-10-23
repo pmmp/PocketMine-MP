@@ -216,7 +216,7 @@ class Chunk{
 	 * @param int $level
 	 */
 	public function setAllBlockSkyLight(int $level) : void{
-		for($y = $this->getHighestSubChunkIndex(); $y >= 0; --$y){
+		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
 			$this->getSubChunk($y)->setBlockSkyLightArray(LightArray::fill($level));
 		}
 	}
@@ -250,7 +250,7 @@ class Chunk{
 	 * @param int $level
 	 */
 	public function setAllBlockLight(int $level) : void{
-		for($y = $this->getHighestSubChunkIndex(); $y >= 0; --$y){
+		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
 			$this->getSubChunk($y)->setBlockLightArray(LightArray::fill($level));
 		}
 	}
@@ -264,12 +264,7 @@ class Chunk{
 	 * @return int 0-255, or -1 if there are no blocks in the column
 	 */
 	public function getHighestBlockAt(int $x, int $z) : int{
-		$index = $this->getHighestSubChunkIndex();
-		if($index === -1){
-			return -1;
-		}
-
-		for($y = $index; $y >= 0; --$y){
+		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
 			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z) | ($y << 4);
 			if($height !== -1){
 				return $height;
@@ -277,10 +272,6 @@ class Chunk{
 		}
 
 		return -1;
-	}
-
-	public function getMaxY() : int{
-		return ($this->getHighestSubChunkIndex() << 4) | 0x0f;
 	}
 
 	/**
@@ -345,15 +336,13 @@ class Chunk{
 	 * TODO: fast adjacent light spread
 	 */
 	public function populateSkyLight() : void{
-		$maxY = $this->getMaxY();
-
 		$this->setAllBlockSkyLight(0);
 
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				$heightMap = $this->getHeightMap($x, $z);
 
-				for($y = $maxY; $y >= $heightMap; --$y){
+				for($y = ($this->subChunks->count() * 16) - 1; $y >= $heightMap; --$y){
 					$this->setBlockSkyLight($x, $y, $z, 15);
 				}
 
@@ -694,28 +683,19 @@ class Chunk{
 	}
 
 	/**
-	 * Returns the Y coordinate of the highest non-empty subchunk in this chunk.
-	 *
-	 * @return int
-	 */
-	public function getHighestSubChunkIndex() : int{
-		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
-			if($this->subChunks[$y]->isEmptyFast()){
-				continue;
-			}
-			break;
-		}
-
-		return $y;
-	}
-
-	/**
 	 * Returns the count of subchunks that need sending to players
 	 *
 	 * @return int
 	 */
 	public function getSubChunkSendCount() : int{
-		return $this->getHighestSubChunkIndex() + 1;
+		for($count = $this->subChunks->count(); $count > 0; --$count){
+			if($this->subChunks[$count - 1]->isEmptyFast()){
+				continue;
+			}
+			break;
+		}
+
+		return $count;
 	}
 
 	/**
