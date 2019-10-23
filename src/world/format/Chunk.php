@@ -703,9 +703,7 @@ class Chunk{
 	 */
 	public function collectGarbage() : void{
 		foreach($this->subChunks as $y => $subChunk){
-			if($subChunk instanceof SubChunk){
-				$subChunk->collectGarbage();
-			}
+			$subChunk->collectGarbage();
 		}
 	}
 
