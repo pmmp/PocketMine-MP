@@ -2033,25 +2033,6 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return int
-	 */
-	public function getHeightMap(int $x, int $z) : int{
-		return $this->getChunk($x >> 4, $z >> 4, true)->getHeightMap($x & 0x0f, $z & 0x0f);
-	}
-
-	/**
-	 * @param int $x
-	 * @param int $z
-	 * @param int $value
-	 */
-	public function setHeightMap(int $x, int $z, int $value){
-		$this->getChunk($x >> 4, $z >> 4, true)->setHeightMap($x & 0x0f, $z & 0x0f, $value);
-	}
-
-	/**
 	 * @return Chunk[]
 	 */
 	public function getChunks() : array{
