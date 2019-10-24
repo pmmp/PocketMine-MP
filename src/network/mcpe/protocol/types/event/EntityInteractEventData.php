@@ -27,6 +27,23 @@ use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 final class EntityInteractEventData implements EventData{
+	public const TYPE_BREED_ENTITY = 1;
+	public const TYPE_MOUNT_TAMING = 2;
+	public const TYPE_TAME_WOLF_OR_OCELOT = 3;
+	public const TYPE_CREATE_GOLEM = 4; // Place pumpkin block
+	public const TYPE_TRIM_THE_SHEEP = 5;
+	public const TYPE_MILK_A_COW = 6;
+	public const TYPE_SUCCESS_TRADE = 7;
+	public const TYPE_FEED_ENTITY = 8;
+	public const TYPE_SET_FIRE_TO = 9; //TODO: Maybe use FlintAndSteel on Creeper
+
+	public const TYPE_NAME_ENTITY = 11; // Use TAG item on actor
+	public const TYPE_LEASH = 12;
+	public const TYPE_UNLEASH = 13;
+
+	public const TYPE_TRUST = 15;
+	public const TYPE_INTERACT_DOG_OR_CAT = 16; // Sit or stand
+
 	/** @var int */
 	public $mobType;
 	/** @var int */
