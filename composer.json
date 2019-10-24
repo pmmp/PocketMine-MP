@@ -34,6 +34,7 @@
       "pocketmine/raklib": "dev-master",
       "pocketmine/spl": "dev-master",
       "pocketmine/binaryutils": "dev-master",
+      "pocketmine/log": "dev-master",
       "pocketmine/nbt": "dev-master",
       "pocketmine/math": "dev-master",
       "pocketmine/snooze": "^0.1.0",
@@ -75,6 +76,10 @@
       {
          "type": "vcs",
          "url": "https://github.com/pmmp/Snooze"
+      },
+      {
+         "type": "vcs",
+         "url": "https://github.com/pmmp/Log"
       }
    ]
 }

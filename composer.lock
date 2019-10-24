@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "64291f2e02aeadac88f4f205e8ec76e5",
+    "content-hash": "0837e139f1183b1aee7c4294fe63a179",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -328,6 +328,36 @@
             "time": "2019-10-21T14:41:23+00:00"
         },
         {
+            "name": "pocketmine/log",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/Log.git",
+                "reference": "c3fd1932cc721d66b8d5a1a340d679e22fab1f87"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/Log/zipball/c3fd1932cc721d66b8d5a1a340d679e22fab1f87",
+                "reference": "c3fd1932cc721d66b8d5a1a340d679e22fab1f87",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./"
+                ]
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Logging components used by PocketMine-MP and related projects",
+            "support": {
+                "source": "https://github.com/pmmp/Log/tree/master",
+                "issues": "https://github.com/pmmp/Log/issues"
+            },
+            "time": "2019-10-24T18:24:06+00:00"
+        },
+        {
             "name": "pocketmine/math",
             "version": "dev-master",
             "source": {
@@ -413,12 +443,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "3652dbc4b49225149b7d2fbd5c380fc39b6aff24"
+                "reference": "cf55a18aebd149c6ca23b0643ad2f5a6e48a05cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/3652dbc4b49225149b7d2fbd5c380fc39b6aff24",
-                "reference": "3652dbc4b49225149b7d2fbd5c380fc39b6aff24",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/cf55a18aebd149c6ca23b0643ad2f5a6e48a05cf",
+                "reference": "cf55a18aebd149c6ca23b0643ad2f5a6e48a05cf",
                 "shasum": ""
             },
             "require": {
@@ -429,6 +459,7 @@
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "dev-master",
+                "pocketmine/log": "dev-master",
                 "pocketmine/snooze": "^0.1.0",
                 "pocketmine/spl": "dev-master"
             },
@@ -446,7 +477,7 @@
                 "source": "https://github.com/pmmp/RakLib/tree/master",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-08-30T17:40:14+00:00"
+            "time": "2019-10-24T18:35:05+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -488,12 +519,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "6fee4ae7d2b4b0463702cb427626bc9def32fb61"
+                "reference": "e2f72340aefa1a5802a7096a720d3ecede9f8f4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/6fee4ae7d2b4b0463702cb427626bc9def32fb61",
-                "reference": "6fee4ae7d2b4b0463702cb427626bc9def32fb61",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/e2f72340aefa1a5802a7096a720d3ecede9f8f4a",
+                "reference": "e2f72340aefa1a5802a7096a720d3ecede9f8f4a",
                 "shasum": ""
             },
             "type": "library",
@@ -507,9 +538,10 @@
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
             "support": {
-                "source": "https://github.com/pmmp/SPL/tree/master"
+                "source": "https://github.com/pmmp/SPL/tree/master",
+                "issues": "https://github.com/pmmp/SPL/issues"
             },
-            "time": "2019-08-25T18:29:14+00:00"
+            "time": "2019-10-24T18:37:23+00:00"
         }
     ],
     "packages-dev": [],
@@ -519,6 +551,7 @@
         "pocketmine/raklib": 20,
         "pocketmine/spl": 20,
         "pocketmine/binaryutils": 20,
+        "pocketmine/log": 20,
         "pocketmine/nbt": 20,
         "pocketmine/math": 20,
         "daverandom/callback-validator": 20
