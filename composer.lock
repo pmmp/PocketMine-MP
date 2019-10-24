@@ -333,18 +333,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Log.git",
-                "reference": "c3fd1932cc721d66b8d5a1a340d679e22fab1f87"
+                "reference": "27a5f5cf5bfeddec4231470a7b803c7bf8df6fbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Log/zipball/c3fd1932cc721d66b8d5a1a340d679e22fab1f87",
-                "reference": "c3fd1932cc721d66b8d5a1a340d679e22fab1f87",
+                "url": "https://api.github.com/repos/pmmp/Log/zipball/27a5f5cf5bfeddec4231470a7b803c7bf8df6fbe",
+                "reference": "27a5f5cf5bfeddec4231470a7b803c7bf8df6fbe",
                 "shasum": ""
             },
             "type": "library",
             "autoload": {
                 "classmap": [
-                    "./"
+                    "./src"
                 ]
             },
             "license": [
@@ -355,7 +355,7 @@
                 "source": "https://github.com/pmmp/Log/tree/master",
                 "issues": "https://github.com/pmmp/Log/issues"
             },
-            "time": "2019-10-24T18:24:06+00:00"
+            "time": "2019-10-24T18:48:08+00:00"
         },
         {
             "name": "pocketmine/math",
