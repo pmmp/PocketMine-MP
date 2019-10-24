@@ -161,6 +161,7 @@ namespace pocketmine {
 
 		error_reporting(-1);
 		set_ini_entries();
+		@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
 
 		if(\Phar::running(true) !== ""){
 			define('pocketmine\PATH', \Phar::running(true) . "/");
@@ -213,9 +214,6 @@ namespace pocketmine {
 		}
 
 		define('pocketmine\GIT_COMMIT', $gitHash);
-
-
-		@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
 
 		define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'pocketmine' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR);
 
