@@ -16,6 +16,7 @@
       "ext-ds": "^1.2.7",
       "ext-gmp": "*",
       "ext-hash": "*",
+      "ext-igbinary": "^3.0.1",
       "ext-json": "*",
       "ext-leveldb": "^0.2.1",
       "ext-mbstring": "*",

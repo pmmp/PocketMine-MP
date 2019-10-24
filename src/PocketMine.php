@@ -78,6 +78,7 @@ namespace pocketmine {
 			"ds" => "Data Structures",
 			"gmp" => "GMP",
 			"hash" => "Hash",
+			"igbinary" => "igbinary",
 			"json" => "JSON",
 			"leveldb" => "LevelDB",
 			"mbstring" => "Multibyte String",
