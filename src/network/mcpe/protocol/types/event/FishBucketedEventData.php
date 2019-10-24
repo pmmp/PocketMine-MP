@@ -32,9 +32,9 @@ final class FishBucketedEventData implements EventData{
 	/** @var int */
 	public $preset;
 	/** @var int */
-	public $type;
+	public $type; // Color2 | (Variant << 22) & 0xFC00000 | ((MarkVariant & 0x3F) << 16) | (Color << 8) | (Color === Color2 ? 0 : 0x10000000)
 	/** @var bool */
-	public $released;
+	public $released = false; // Always false
 
 	public function id() : int{
 		return EventPacket::TYPE_FISH_BUCKETED;
