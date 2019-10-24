@@ -121,9 +121,9 @@ class EntityMetadataCollection{
 	}
 
 	/**
-	 * @param int   $key
-	 * @param mixed $value
-	 * @param bool  $force
+	 * @param int              $key
+	 * @param MetadataProperty $value
+	 * @param bool             $force
 	 */
 	public function set(int $key, MetadataProperty $value, bool $force = false) : void{
 		if(!$force and isset($this->properties[$key]) and !($this->properties[$key] instanceof $value)){
