@@ -159,6 +159,8 @@ namespace pocketmine {
 		unset($messages);
 
 		error_reporting(-1);
+		set_ini_entries();
+		@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
 
 		if(\Phar::running(true) !== ""){
 			define('pocketmine\PATH', \Phar::running(true) . "/");
@@ -193,7 +195,27 @@ namespace pocketmine {
 		$autoloader = new \BaseClassLoader();
 		$autoloader->register(false);
 
-		set_ini_entries();
+		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
+		define('pocketmine\VERSION', $version->getFullVersion(true));
+
+		$gitHash = str_repeat("00", 20);
+
+		if(\Phar::running(true) === ""){
+			if(Utils::execute("git rev-parse HEAD", $out) === 0 and $out !== false and strlen($out = trim($out)) === 40){
+				$gitHash = trim($out);
+				if(Utils::execute("git diff --quiet") === 1 or Utils::execute("git diff --cached --quiet") === 1){ //Locally-modified
+					$gitHash .= "-dirty";
+				}
+			}
+		}else{
+			$phar = new \Phar(\Phar::running(false));
+			$meta = $phar->getMetadata();
+			if(isset($meta["git"])){
+				$gitHash = $meta["git"];
+			}
+		}
+
+		define('pocketmine\GIT_COMMIT', $gitHash);
 
 		define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'resources' . DIRECTORY_SEPARATOR);
 
@@ -228,31 +250,6 @@ namespace pocketmine {
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);
-
-		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
-		define('pocketmine\VERSION', $version->getFullVersion(true));
-
-		$gitHash = str_repeat("00", 20);
-
-		if(\Phar::running(true) === ""){
-			if(Process::execute("git rev-parse HEAD", $out) === 0 and $out !== false and strlen($out = trim($out)) === 40){
-				$gitHash = trim($out);
-				if(Process::execute("git diff --quiet") === 1 or Process::execute("git diff --cached --quiet") === 1){ //Locally-modified
-					$gitHash .= "-dirty";
-				}
-			}
-		}else{
-			$phar = new \Phar(\Phar::running(false));
-			$meta = $phar->getMetadata();
-			if(isset($meta["git"])){
-				$gitHash = $meta["git"];
-			}
-		}
-
-		define('pocketmine\GIT_COMMIT', $gitHash);
-
-
-		@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
 
 		$exitCode = 0;
 		do{
