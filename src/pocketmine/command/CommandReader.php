@@ -141,6 +141,7 @@ class CommandReader extends Thread{
 				case self::TYPE_STREAM:
 					//stream_select doesn't work on piped streams for some reason
 					$r = [self::$stdin];
+					$w = $e = null;
 					if(($count = stream_select($r, $w, $e, 0, 200000)) === 0){ //nothing changed in 200000 microseconds
 						return true;
 					}elseif($count === false){ //stream error
