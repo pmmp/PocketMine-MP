@@ -187,12 +187,6 @@ namespace pocketmine {
 
 		set_error_handler([Utils::class, 'errorExceptionHandler']);
 
-		/*
-		 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
-		 */
-		$autoloader = new \BaseClassLoader();
-		$autoloader->register(false);
-
 		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
 		define('pocketmine\VERSION', $version->getFullVersion(true));
 
@@ -275,6 +269,13 @@ namespace pocketmine {
 			//TODO: move this to a Server field
 			define('pocketmine\START_TIME', microtime(true));
 			ThreadManager::init();
+
+			/*
+			 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
+			 */
+			$autoloader = new \BaseClassLoader();
+			$autoloader->register(false);
+
 			new Server($autoloader, $logger, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
 
 			$logger->info("Stopping other threads");
