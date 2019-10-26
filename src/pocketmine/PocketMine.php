@@ -57,18 +57,18 @@ namespace pocketmine {
 		if(version_compare(MIN_PHP_VERSION, PHP_VERSION) > 0){
 			//If PHP version isn't high enough, anything below might break, so don't bother checking it.
 			return [
-				\pocketmine\NAME . " requires PHP >= " . MIN_PHP_VERSION . ", but you have PHP " . PHP_VERSION . "."
+				"PHP >= " . MIN_PHP_VERSION . " is required, but you have PHP " . PHP_VERSION . "."
 			];
 		}
 
 		$messages = [];
 
 		if(PHP_INT_SIZE < 8){
-			$messages[] = "Running " . \pocketmine\NAME . " with 32-bit systems/PHP is no longer supported. Please upgrade to a 64-bit system, or use a 64-bit PHP binary if this is a 64-bit system.";
+			$messages[] = "32-bit systems/PHP are no longer supported. Please upgrade to a 64-bit system, or use a 64-bit PHP binary if this is a 64-bit system.";
 		}
 
 		if(php_sapi_name() !== "cli"){
-			$messages[] = "You must run " . \pocketmine\NAME . " using the CLI.";
+			$messages[] = "Only PHP CLI is supported.";
 		}
 
 		$extensions = [
