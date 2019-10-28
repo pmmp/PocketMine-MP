@@ -38,6 +38,7 @@
       "pocketmine/nbt": "dev-master",
       "pocketmine/math": "dev-master",
       "pocketmine/snooze": "^0.1.0",
+      "pocketmine/classloader": "dev-master",
       "daverandom/callback-validator": "dev-master",
       "adhocore/json-comment": "^0.0.7",
       "particle/validator": "^2.3"
@@ -80,6 +81,10 @@
       {
          "type": "vcs",
          "url": "https://github.com/pmmp/Log"
+      },
+      {
+         "type": "vcs",
+         "url": "https://github.com/pmmp/ClassLoader"
       }
    ]
 }

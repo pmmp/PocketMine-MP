@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0837e139f1183b1aee7c4294fe63a179",
+    "content-hash": "730b9ef97624239c1bd013478b5f64e8",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -328,6 +328,41 @@
             "time": "2019-10-21T14:41:23+00:00"
         },
         {
+            "name": "pocketmine/classloader",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/ClassLoader.git",
+                "reference": "e7d1e7701374760752a23c093ba925f3a518d88d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/e7d1e7701374760752a23c093ba925f3a518d88d",
+                "reference": "e7d1e7701374760752a23c093ba925f3a518d88d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": "~3.2.0",
+                "ext-reflection": "*",
+                "php": ">=7.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./"
+                ]
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Ad-hoc autoloading components used by PocketMine-MP",
+            "support": {
+                "source": "https://github.com/pmmp/ClassLoader/tree/master",
+                "issues": "https://github.com/pmmp/ClassLoader/issues"
+            },
+            "time": "2019-10-28T12:24:55+00:00"
+        },
+        {
             "name": "pocketmine/log",
             "version": "dev-master",
             "source": {
@@ -519,12 +554,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "e2f72340aefa1a5802a7096a720d3ecede9f8f4a"
+                "reference": "4a94ec60efd514ef98e84a064fe1a4b8ee73bbad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/e2f72340aefa1a5802a7096a720d3ecede9f8f4a",
-                "reference": "e2f72340aefa1a5802a7096a720d3ecede9f8f4a",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/4a94ec60efd514ef98e84a064fe1a4b8ee73bbad",
+                "reference": "4a94ec60efd514ef98e84a064fe1a4b8ee73bbad",
                 "shasum": ""
             },
             "type": "library",
@@ -541,7 +576,7 @@
                 "source": "https://github.com/pmmp/SPL/tree/master",
                 "issues": "https://github.com/pmmp/SPL/issues"
             },
-            "time": "2019-10-24T18:37:23+00:00"
+            "time": "2019-10-28T12:26:23+00:00"
         }
     ],
     "packages-dev": [],
@@ -554,6 +589,7 @@
         "pocketmine/log": 20,
         "pocketmine/nbt": 20,
         "pocketmine/math": 20,
+        "pocketmine/classloader": 20,
         "daverandom/callback-validator": 20
     },
     "prefer-stable": false,
