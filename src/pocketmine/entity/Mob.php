@@ -173,6 +173,8 @@ abstract class Mob extends Living{
 	}
 
 	public function onUpdate(int $currentTick) : bool{
+		if($this->closed) return false;
+
 		if(!$this->isImmobile()){
 			if($this->jumpTicks > 0){
 				$this->jumpTicks--;
