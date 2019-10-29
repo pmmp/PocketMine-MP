@@ -25,6 +25,7 @@ namespace pocketmine\command;
 
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Thread;
+use pocketmine\thread\ThreadException;
 use pocketmine\utils\Utils;
 use function extension_loaded;
 use function fclose;
@@ -91,7 +92,7 @@ class CommandReader extends Thread{
 			$message = "STDIN is being piped from another location and the pipe is blocked, cannot stop safely";
 		}
 
-		throw new \ThreadException($message);
+		throw new ThreadException($message);
 	}
 
 	private function initStdin() : void{

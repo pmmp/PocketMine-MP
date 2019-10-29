@@ -81,7 +81,7 @@ class ThreadManager extends \Volatile{
 			try{
 				$thread->quit();
 				$logger->debug($thread->getThreadName() . " thread stopped successfully.");
-			}catch(\ThreadException $e){
+			}catch(ThreadException $e){
 				++$erroredThreads;
 				$logger->debug("Could not stop " . $thread->getThreadName() . " thread: " . $e->getMessage());
 			}
