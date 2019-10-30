@@ -54,7 +54,6 @@ class PacketPool{
 		static::registerPacket(new RiderJumpPacket());
 		static::registerPacket(new UpdateBlockPacket());
 		static::registerPacket(new AddPaintingPacket());
-		static::registerPacket(new ExplodePacket());
 		static::registerPacket(new LevelSoundEventPacketV1());
 		static::registerPacket(new LevelEventPacket());
 		static::registerPacket(new BlockEventPacket());

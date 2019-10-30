@@ -46,7 +46,7 @@ class ResourcePackDataInfoPacket extends DataPacket{
 	/** @var bool */
 	public $isPremium = false;
 	/** @var int */
-	public $packType = ResourcePackType::RESOURCES; //TODO: check the values for this
+	public $packType = ResourcePackType::ADDON; //TODO: check the values for this
 
 	protected function decodePayload(){
 		$this->packId = $this->getString();

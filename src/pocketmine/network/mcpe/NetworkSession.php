@@ -62,7 +62,6 @@ use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EventPacket;
-use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use pocketmine\network\mcpe\protocol\GuiDataPickItemPacket;
 use pocketmine\network\mcpe\protocol\HurtArmorPacket;
@@ -244,10 +243,6 @@ abstract class NetworkSession{
 	}
 
 	public function handleAddPainting(AddPaintingPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleExplode(ExplodePacket $packet) : bool{
 		return false;
 	}
 

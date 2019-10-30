@@ -21,22 +21,38 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
 
-final class ResourcePackType{
+namespace pocketmine\utils;
 
-	private function __construct(){
-		//NOOP
-	}
 
-	public const INVALID = 0;
-    public const ADDON = 1;
-    public const CACHED = 2;
-    public const COPY_PROTECTED = 3;
-    public const BEHAVIOR = 4;
-    public const PERSONA_PIECE = 5;
-    public const RESOURCE = 6;
-    public const SKINS = 7;
-    public const WORLD_TEMPLATE = 8;
-    public const COUNT = 9;
+class SkinAnimation
+{
+    /** @var SerializedImage */
+    private $image;
+    /** @var int */
+    private $type;
+    /** @var float */
+    private $frames;
+
+    public function __construct(SerializedImage $image, int $type, float $frames)
+    {
+        $this->image = $image;
+        $this->type = $type;
+        $this->frames = $frames;
+    }
+
+    public function getImage(): SerializedImage
+    {
+        return $this->image;
+    }
+
+    public function getType(): int
+    {
+        return $this->type;
+    }
+
+    public function getFrames(): float
+    {
+        return $this->frames;
+    }
 }

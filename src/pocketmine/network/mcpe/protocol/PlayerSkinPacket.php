@@ -34,43 +34,17 @@ class PlayerSkinPacket extends DataPacket{
 
 	/** @var UUID */
 	public $uuid;
-	/** @var string */
-	public $oldSkinName = "";
-	/** @var string */
-	public $newSkinName = "";
 	/** @var Skin */
 	public $skin;
-	/** @var bool */
-	public $premiumSkin = false;
 
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
-
-		$skinId = $this->getString();
-		$this->newSkinName = $this->getString();
-		$this->oldSkinName = $this->getString();
-		$skinData = $this->getString();
-		$capeData = $this->getString();
-		$geometryModel = $this->getString();
-		$geometryData = $this->getString();
-
-		$this->skin = new Skin($skinId, $skinData, $capeData, $geometryModel, $geometryData);
-
-		$this->premiumSkin = $this->getBool();
+		$this->skin = $this->getSkin();
 	}
 
 	protected function encodePayload(){
 		$this->putUUID($this->uuid);
-
-		$this->putString($this->skin->getSkinId());
-		$this->putString($this->newSkinName);
-		$this->putString($this->oldSkinName);
-		$this->putString($this->skin->getSkinData());
-		$this->putString($this->skin->getCapeData());
-		$this->putString($this->skin->getGeometryName());
-		$this->putString($this->skin->getGeometryData());
-
-		$this->putBool($this->premiumSkin);
+		$this->putSkin($this->skin);
 	}
 
 	public function handle(NetworkSession $session) : bool{

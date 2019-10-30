@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
+use pocketmine\utils\SerializedImage;
+use pocketmine\utils\SkinAnimation;
 use function implode;
 use function in_array;
 use function json_encode;
@@ -39,15 +41,27 @@ class Skin{
 	/** @var string */
 	private $skinId;
 	/** @var string */
+	private $skinResourcePatch;
+	/** @var SerializedImage */
 	private $skinData;
-	/** @var string */
+	/** @var SkinAnimation[] */
+	private $animations = [];
+	/** @var SerializedImage */
 	private $capeData;
 	/** @var string */
-	private $geometryName;
-	/** @var string */
 	private $geometryData;
+	/** @var string */
+	private $animationData;
+	/** @var bool */
+	private $premium;
+	/** @var bool */
+	private $persona;
+	/** @var bool */
+	private $capeOnClassic;
+	/** @var string */
+	private $capeId;
 
-	public function __construct(string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = ""){
+	public function __construct(string $skinId, string $skinResourcePatch, SerializedImage $skinData, string $capeData = "", string $geometryName = "", string $geometryData = ""){
 		$this->skinId = $skinId;
 		$this->skinData = $skinData;
 		$this->capeData = $capeData;
@@ -93,9 +107,9 @@ class Skin{
 	}
 
 	/**
-	 * @return string
+	 * @return SerializedImage
 	 */
-	public function getSkinData() : string{
+	public function getSkinData() : SerializedImage{
 		return $this->skinData;
 	}
 

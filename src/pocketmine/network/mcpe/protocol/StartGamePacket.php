@@ -129,6 +129,8 @@ class StartGamePacket extends DataPacket{
 	public $isWorldTemplateOptionLocked = false;
 	/** @var bool */
 	public $onlySpawnV1Villagers = false;
+	/** @var string */
+    public $vanillaVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK;
 
 	/** @var string */
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
@@ -138,6 +140,8 @@ class StartGamePacket extends DataPacket{
 	public $premiumWorldTemplateId = "";
 	/** @var bool */
 	public $isTrial = false;
+	/** @var bool */
+    public $isMovementServerAuthoritative;
 	/** @var int */
 	public $currentTick = 0; //only used if isTrial is true
 	/** @var int */
@@ -262,6 +266,7 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->isFromWorldTemplate);
 		$this->putBool($this->isWorldTemplateOptionLocked);
 		$this->putBool($this->onlySpawnV1Villagers);
+		$this->putString($this->vanillaVersion);
 
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
