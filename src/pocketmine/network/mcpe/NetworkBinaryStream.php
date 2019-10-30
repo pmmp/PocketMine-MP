@@ -80,7 +80,7 @@ class NetworkBinaryStream extends BinaryStream{
 	public function putSkin(Skin $skin): void{
         $this->putString($skin->getSkinId());
         $this->putString($skin->getSkinResourcePatch());
-        $this->putImage($skin->getSkinData());
+        $this->putString($skin->getSkinData());
 
         $animations = $skin->getAnimations();
         $this->putLInt(count($animations));
@@ -90,21 +90,21 @@ class NetworkBinaryStream extends BinaryStream{
             $this->putLFloat($animation->getFrames());
         }
 
-        $this->putImage($skin->getCapeData());
+        $this->putString($skin->getCapeData());
         $this->putString($skin->getGeometryData());
         $this->putString($skin->getAnimationData());
         $this->putBool($skin->isPremium());
         $this->putBool($skin->isPersona());
         $this->putBool($skin->isCapeOnClassic());
-        $this->putString($this->getCapeId());
-        $this->putString($this->getFullSkinId());
+        $this->putString($skin->getCapeId());
+        $this->putString('');
     }
 
     public function getSkin(): Skin
     {
         $skinId = $this->getString();
         $skinResourcePatch = $this->getString();
-        $skinData = $this->getImage();
+        $skinData = $this->getString();
 
         $animations = [];
         for($i = 0; $i < $this->getUnsignedVarInt(); ++$i){
@@ -115,7 +115,7 @@ class NetworkBinaryStream extends BinaryStream{
             $animations[] = new SkinAnimation($image, $type, $frames);
         }
 
-        $capeData = $this->getImage();
+        $capeData = $this->getString();
         $geometryData = $this->getString();
         $animationData = $this->getString();
         $premium = $this->getBool();
@@ -124,7 +124,7 @@ class NetworkBinaryStream extends BinaryStream{
         $capeId = $this->getString();
         $fullSkinId = $this->getString();
 
-        return new Skin($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId)
+        return new Skin($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId);
     }
 
 

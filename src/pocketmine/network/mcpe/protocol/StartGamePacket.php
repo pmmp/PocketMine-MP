@@ -141,7 +141,7 @@ class StartGamePacket extends DataPacket{
 	/** @var bool */
 	public $isTrial = false;
 	/** @var bool */
-    public $isMovementServerAuthoritative;
+    public $isMovementServerAuthoritative = false;
 	/** @var int */
 	public $currentTick = 0; //only used if isTrial is true
 	/** @var int */
@@ -196,11 +196,13 @@ class StartGamePacket extends DataPacket{
 		$this->isFromWorldTemplate = $this->getBool();
 		$this->isWorldTemplateOptionLocked = $this->getBool();
 		$this->onlySpawnV1Villagers = $this->getBool();
+		$this->vanillaVersion = $this->getString();
 
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
 		$this->premiumWorldTemplateId = $this->getString();
 		$this->isTrial = $this->getBool();
+		$this->isMovementServerAuthoritative = $this->getBool();
 		$this->currentTick = $this->getLLong();
 
 		$this->enchantmentSeed = $this->getVarInt();
@@ -272,6 +274,7 @@ class StartGamePacket extends DataPacket{
 		$this->putString($this->worldName);
 		$this->putString($this->premiumWorldTemplateId);
 		$this->putBool($this->isTrial);
+		$this->putBool($this->isMovementServerAuthoritative);
 		$this->putLLong($this->currentTick);
 
 		$this->putVarInt($this->enchantmentSeed);
