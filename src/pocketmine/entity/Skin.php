@@ -43,7 +43,7 @@ class Skin
     /** @var SerializedImage */
     private $skinData;
     /** @var SkinAnimation[] */
-    private $animations = [];
+    private $animations;
     /** @var SerializedImage */
     private $capeData;
     /** @var string */
@@ -59,7 +59,7 @@ class Skin
     /** @var ?string */
     private $capeId;
 
-    public function __construct(string $skinId, string $skinResourcePatch, string $skinData, array $animations = [], string $capeData = '', string $geometryData = '', string $animationData = '', bool $premium = false, bool $persona = false, $capeOnClassic = false, string $capeId = null)
+    public function __construct(string $skinId, string $skinResourcePatch, SerializedImage $skinData, array $animations = [], SerializedImage $capeData = null, string $geometryData = '', string $animationData = '', bool $premium = false, bool $persona = false, $capeOnClassic = false, string $capeId = null)
     {
         $this->skinId = $skinId;
         $this->skinResourcePatch = $skinResourcePatch;
@@ -166,18 +166,21 @@ class Skin
     }
 
     /**
-     * @return string
+     * @return SerializedImage
      */
-    public function getSkinData(): string
+    public function getSkinData(): SerializedImage
     {
         return $this->skinData;
     }
 
     /**
-     * @return string
+     * @return SerializedImage
      */
-    public function getCapeData(): string
+    public function getCapeData(): SerializedImage
     {
+        if ($this->capeData === null) {
+            return new SerializedImage(0, 0, '');
+        }
         return $this->capeData;
     }
 
