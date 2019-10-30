@@ -59,6 +59,7 @@ use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
+use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
@@ -193,7 +194,12 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return true; //this is a broken useless packet, so we don't use it
 	}
 
-	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
+	public function handleRespawn(RespawnPacket $packet): bool
+    {
+        return $this->player->handleRespawn($packet);
+    }
+
+    public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
 		return $this->player->handleAdventureSettings($packet);
 	}
 

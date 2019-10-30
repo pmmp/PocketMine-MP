@@ -32,27 +32,27 @@ use pocketmine\network\mcpe\NetworkSession;
 class RespawnPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::RESPAWN_PACKET;
 
-    public const STATE_SPAWN = 1;
-    public const STATE_SELECT_SPAWN = 2;
-    public const STATE_SELECTED_SPAWN = 3;
+    public const STATE_SEARCHING_FOR_SPAWN = 0;
+    public const STATE_READY_TO_SPAWN = 1;
+    public const STATE_CLIENT_READY_TO_SPAWN = 2;
 
 	/** @var Vector3 */
 	public $position;
 	/** @var  int */
-    public $respawnState = self::STATE_SPAWN;
+    public $respawnState = self::STATE_SEARCHING_FOR_SPAWN;
     /** @var  int */
-    public $unknownEntityId; //???
+    public $runtimeEntityId; //???
 
 	protected function decodePayload(){
 		$this->position = $this->getVector3();
 		$this->respawnState = $this->getByte();
-		$this->unknownEntityId = $this->getEntityUniqueId();
+		$this->runtimeEntityId = $this->getEntityRuntimeId();
 	}
 
 	protected function encodePayload(){
 		$this->putVector3($this->position);
 		$this->putByte($this->respawnState);
-		$this->putEntityUniqueId($this->unknownEntityId);
+		$this->putEntityRuntimeId($this->runtimeEntityId);
 	}
 
 	public function handle(NetworkSession $session) : bool{
