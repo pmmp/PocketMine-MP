@@ -80,7 +80,7 @@ class NetworkBinaryStream extends BinaryStream{
 	public function putSkin(Skin $skin): void{
         $this->putString($skin->getSkinId());
         $this->putString($skin->getSkinResourcePatch());
-        $this->putString($skin->getSkinData());
+        $this->putImage($skin->getSkinData());
 
         $animations = $skin->getAnimations();
         $this->putLInt(count($animations));
@@ -90,7 +90,7 @@ class NetworkBinaryStream extends BinaryStream{
             $this->putLFloat($animation->getFrames());
         }
 
-        $this->putString($skin->getCapeData());
+        $this->putImage($skin->getCapeData());
         $this->putString($skin->getGeometryData());
         $this->putString($skin->getAnimationData());
         $this->putBool($skin->isPremium());
@@ -104,7 +104,7 @@ class NetworkBinaryStream extends BinaryStream{
     {
         $skinId = $this->getString();
         $skinResourcePatch = $this->getString();
-        $skinData = $this->getString();
+        $skinData = $this->getImage();
 
         $animations = [];
         for($i = 0; $i < $this->getUnsignedVarInt(); ++$i){
@@ -115,7 +115,7 @@ class NetworkBinaryStream extends BinaryStream{
             $animations[] = new SkinAnimation($image, $type, $frames);
         }
 
-        $capeData = $this->getString();
+        $capeData = $this->getImage();
         $geometryData = $this->getString();
         $animationData = $this->getString();
         $premium = $this->getBool();

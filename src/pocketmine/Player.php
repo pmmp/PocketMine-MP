@@ -160,6 +160,8 @@ use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
+use pocketmine\utils\SerializedImage;
+use pocketmine\utils\SkinAnimation;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 use function abs;
@@ -1941,12 +1943,31 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
 
-		$skin = new Skin(
+		if(isset($packet->clientData['SkinImageWidth'], $packet->clientData['SkinImageHeight'])){
+            $skinData = new SerializedImage($packet->clientData['SkinImageWidth'], $packet->clientData['SkinImageHeight'], base64_decode($packet->clientData['SkinData'] ?? ''));
+		} else {
+		    $skinData = SerializedImage::fromLegacy(base64_decode($packet->clientData['SkinData'] ?? ''));
+        }
+
+        if(isset($packet->clientData['CapeImageWidth'], $packet->clientData['CapeImageHeight'])){
+            $capeData = new SerializedImage($packet->clientData['CapeImageWidth'], $packet->clientData['CapeImageHeight'], base64_decode($packet->clientData['CapeData'] ?? ''));
+        } else {
+            $capeData = SerializedImage::fromLegacy(base64_decode($packet->clientData['CapeData'] ?? ''));
+        }
+
+        $animations = [];
+        if(isset($packet->clientData['AnimatedImageData'])){
+            foreach ($packet->clientData['AnimatedImageData'] as $data){
+                $animations[] = new SkinAnimation(new SerializedImage($data['ImageWidth'], $data['ImageHeight'], base64_decode($data['Image'])), $data['Type'], $data['Frames']);
+            }
+        }
+
+        $skin = new Skin(
 			$packet->clientData["SkinId"],
 			base64_decode($packet->clientData['SkinResourcePatch'] ?? ''),
-			base64_decode($packet->clientData["SkinData"] ?? ""),
-			[],
-            base64_decode($packet->clientData["CapeData"] ?? ""),
+			$skinData,
+			$animations,
+            $capeData,
             base64_decode($packet->clientData["SkinGeometryData"] ?? ""),
 			base64_decode($packet->clientData["AnimationData"] ?? ""),
             (bool)($packet->clientData['PremiumSkin'] ?? false),
