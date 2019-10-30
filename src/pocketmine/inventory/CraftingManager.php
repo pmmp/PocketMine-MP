@@ -51,7 +51,7 @@ class CraftingManager{
 	}
 
 	public function init() : void{
-		$recipes = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "recipes.json"), true);
+		$recipes = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "recipes.json"), true)["recipes"];
 
 		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
 		foreach($recipes as $recipe){
