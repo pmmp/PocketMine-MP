@@ -848,12 +848,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Plugin developers should not use this, use setSkin() and sendSkin() instead.
 	 *
 	 * @param Skin   $skin
-	 * @param string $newSkinName
-	 * @param string $oldSkinName
 	 *
 	 * @return bool
 	 */
-	public function changeSkin(Skin $skin, string $newSkinName, string $oldSkinName) : bool{
+	public function changeSkin(Skin $skin) : bool{
 		if(!$skin->isValid()){
 			return false;
 		}
