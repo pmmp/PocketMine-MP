@@ -1943,36 +1943,46 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
 
-		if(isset($packet->clientData['SkinImageWidth'], $packet->clientData['SkinImageHeight'])){
-            $skinData = new SerializedImage($packet->clientData['SkinImageWidth'], $packet->clientData['SkinImageHeight'], base64_decode($packet->clientData['SkinData'] ?? ''));
+		if(isset($packet->clientData["SkinData"])){
+			$data = base64_decode($packet->clientData["SkinData"]);
+			if(isset($packet->clientData["SkinImageWidth"], $packet->clientData["SkinImageHeight"])){
+				$skinData = new SerializedImage((int) $packet->clientData['SkinImageWidth'], (int) $packet->clientData['SkinImageHeight'], $data);
+			}else{
+				$skinData = SerializedImage::fromLegacy(base64_decode($data));
+			}
 		} else {
-		    $skinData = SerializedImage::fromLegacy(base64_decode($packet->clientData['SkinData'] ?? ''));
-        }
+			$skinData = SerializedImage::null();
+		}
 
-        if(isset($packet->clientData['CapeImageWidth'], $packet->clientData['CapeImageHeight'])){
-            $capeData = new SerializedImage($packet->clientData['CapeImageWidth'], $packet->clientData['CapeImageHeight'], base64_decode($packet->clientData['CapeData'] ?? ''));
-        } else {
-            $capeData = SerializedImage::fromLegacy(base64_decode($packet->clientData['CapeData'] ?? ''));
-        }
+		if(isset($packet->clientData["CapeData"])){
+			$data = base64_decode($packet->clientData["CapeData"]);
+			if(isset($packet->clientData["CapeImageWidth"], $packet->clientData["CapeImageHeight"])){
+				$capeData = new SerializedImage((int) $packet->clientData["CapeImageWidth"], (int) $packet->clientData["CapeImageHeight"], $data);
+			}else{
+				$capeData = SerializedImage::fromLegacy(base64_decode($data));
+			}
+		} else {
+			$capeData = SerializedImage::null();
+		}
 
-        $animations = [];
-        if(isset($packet->clientData['AnimatedImageData'])){
-            foreach ($packet->clientData['AnimatedImageData'] as $data){
-                $animations[] = new SkinAnimation(new SerializedImage($data['ImageWidth'], $data['ImageHeight'], base64_decode($data['Image'])), $data['Type'], $data['Frames']);
-            }
-        }
+		$animations = [];
+		if(isset($packet->clientData["AnimatedImageData"])){
+			foreach($packet->clientData["AnimatedImageData"] as $data){
+				$animations[] = new SkinAnimation(new SerializedImage($data["ImageWidth"], $data["ImageHeight"], base64_decode($data["Image"])), $data["Type"], $data["Frames"]);
+			}
+		}
 
-        $skin = new Skin(
+		$skin = new Skin(
 			$packet->clientData["SkinId"],
-			base64_decode($packet->clientData['SkinResourcePatch'] ?? ''),
+			base64_decode($packet->clientData["SkinResourcePatch"] ?? ""),
 			$skinData,
 			$animations,
-            $capeData,
-            base64_decode($packet->clientData["SkinGeometryData"] ?? ""),
+			$capeData,
+			base64_decode($packet->clientData["SkinGeometryData"] ?? ""),
 			base64_decode($packet->clientData["AnimationData"] ?? ""),
-            (bool)($packet->clientData['PremiumSkin'] ?? false),
-            (bool)($packet->clientData['PersonaSkin'] ?? false),
-            (bool)($packet->clientData['CapeOnClassicSkin'] ?? false),
+			(bool) ($packet->clientData["PremiumSkin"] ?? false),
+			(bool) ($packet->clientData["PersonaSkin"] ?? false),
+			(bool) ($packet->clientData["CapeOnClassicSkin"] ?? false),
 			$packet->clientData["CapeId"] ?? ""
 		);
 

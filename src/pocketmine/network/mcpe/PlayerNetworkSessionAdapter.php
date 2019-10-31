@@ -254,7 +254,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
-		return $this->player->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
+		return $this->player->changeSkin($packet->skin);
 	}
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
