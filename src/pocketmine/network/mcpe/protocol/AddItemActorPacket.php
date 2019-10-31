@@ -25,48 +25,49 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
-class MoveEntityAbsolutePacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_ABSOLUTE_PACKET;
+class AddItemActorPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::ADD_ITEM_ACTOR_PACKET;
 
-	public const FLAG_GROUND = 0x01;
-	public const FLAG_TELEPORT = 0x02;
-
+	/** @var int|null */
+	public $entityUniqueId = null; //TODO
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var int */
-	public $flags = 0;
+	/** @var Item */
+	public $item;
 	/** @var Vector3 */
 	public $position;
-	/** @var float */
-	public $xRot;
-	/** @var float */
-	public $yRot;
-	/** @var float */
-	public $zRot;
+	/** @var Vector3|null */
+	public $motion;
+	/** @var array */
+	public $metadata = [];
+	/** @var bool */
+	public $isFromFishing = false;
 
 	protected function decodePayload(){
+		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->flags = $this->getByte();
+		$this->item = $this->getSlot();
 		$this->position = $this->getVector3();
-		$this->xRot = $this->getByteRotation();
-		$this->yRot = $this->getByteRotation();
-		$this->zRot = $this->getByteRotation();
+		$this->motion = $this->getVector3();
+		$this->metadata = $this->getEntityMetadata();
+		$this->isFromFishing = $this->getBool();
 	}
 
 	protected function encodePayload(){
+		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putByte($this->flags);
+		$this->putSlot($this->item);
 		$this->putVector3($this->position);
-		$this->putByteRotation($this->xRot);
-		$this->putByteRotation($this->yRot);
-		$this->putByteRotation($this->zRot);
+		$this->putVector3Nullable($this->motion);
+		$this->putEntityMetadata($this->metadata);
+		$this->putBool($this->isFromFishing);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleMoveEntityAbsolute($this);
+		return $session->handleAddItemActor($this);
 	}
 }

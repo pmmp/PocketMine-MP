@@ -25,9 +25,12 @@ namespace pocketmine\network\mcpe;
 
 
 use pocketmine\event\server\DataPacketReceiveEvent;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\ActorFallPacket;
+use pocketmine\network\mcpe\protocol\ActorPickRequestPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
-use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
+use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
@@ -37,9 +40,6 @@ use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\EntityFallPacket;
-use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
@@ -59,6 +59,7 @@ use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
+use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
@@ -74,7 +75,6 @@ use function implode;
 use function json_decode;
 use function json_last_error_msg;
 use function preg_match;
-use function preg_split;
 use function strlen;
 use function substr;
 use function trim;
@@ -142,7 +142,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return true; //useless leftover from 1.8
 	}
 
-	public function handleEntityEvent(EntityEventPacket $packet) : bool{
+	public function handleActorEvent(ActorEventPacket $packet) : bool{
 		return $this->player->handleEntityEvent($packet);
 	}
 
@@ -166,7 +166,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleBlockPickRequest($packet);
 	}
 
-	public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool{
+	public function handleActorPickRequest(ActorPickRequestPacket $packet) : bool{
 		return false; //TODO
 	}
 
@@ -174,7 +174,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handlePlayerAction($packet);
 	}
 
-	public function handleEntityFall(EntityFallPacket $packet) : bool{
+	public function handleActorFall(ActorFallPacket $packet) : bool{
 		return true; //Not used
 	}
 
@@ -194,11 +194,16 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return true; //this is a broken useless packet, so we don't use it
 	}
 
-	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
+	public function handleRespawn(RespawnPacket $packet): bool
+    {
+        return $this->player->handleRespawn($packet);
+    }
+
+    public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
 		return $this->player->handleAdventureSettings($packet);
 	}
 
-	public function handleBlockEntityData(BlockEntityDataPacket $packet) : bool{
+	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
 		return $this->player->handleBlockEntityData($packet);
 	}
 
@@ -249,7 +254,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
-		return $this->player->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
+		return $this->player->changeSkin($packet->skin);
 	}
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
@@ -270,16 +275,31 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	 */
 	private static function stupid_json_decode(string $json, bool $assoc = false){
 		if(preg_match('/^\[(.+)\]$/s', $json, $matches) > 0){
-			$parts = preg_split('/(?:"(?:\\"|[^"])*"|)\K(,)/', $matches[1]); //Splits on commas not inside quotes, ignoring escaped quotes
-			foreach($parts as $k => $part){
-				$part = trim($part);
-				if($part === ""){
-					$part = "\"\"";
+			$raw = $matches[1];
+			$lastComma = -1;
+			$newParts = [];
+			$quoteType = null;
+			for($i = 0, $len = strlen($raw); $i <= $len; ++$i){
+				if($i === $len or ($raw[$i] === "," and $quoteType === null)){
+					$part = substr($raw, $lastComma + 1, $i - ($lastComma + 1));
+					if(trim($part) === ""){ //regular parts will have quotes or something else that makes them non-empty
+						$part = '""';
+					}
+					$newParts[] = $part;
+					$lastComma = $i;
+				}elseif($raw[$i] === '"'){
+					if($quoteType === null){
+						$quoteType = $raw[$i];
+					}elseif($raw[$i] === $quoteType){
+						for($backslashes = 0; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
+						if(($backslashes % 2) === 0){ //unescaped quote
+							$quoteType = null;
+						}
+					}
 				}
-				$parts[$k] = $part;
 			}
 
-			$fixed = "[" . implode(",", $parts) . "]";
+			$fixed = "[" . implode(",", $newParts) . "]";
 			if(($ret = json_decode($fixed, $assoc)) === null){
 				throw new \InvalidArgumentException("Failed to fix JSON: " . json_last_error_msg() . "(original: $json, modified: $fixed)");
 			}

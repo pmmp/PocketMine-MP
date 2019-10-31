@@ -593,7 +593,7 @@ class Server{
 	 * @return int
 	 */
 	public function getDifficulty() : int{
-		return $this->getConfigInt("difficulty", 1);
+		return $this->getConfigInt("difficulty", Level::DIFFICULTY_NORMAL);
 	}
 
 	/**
@@ -1101,11 +1101,17 @@ class Server{
 
 			return false;
 		}
-		/**
-		 * @var LevelProvider $provider
-		 * @see LevelProvider::__construct()
-		 */
-		$provider = new $providerClass($path);
+
+		try{
+			/**
+			 * @var LevelProvider $provider
+			 * @see LevelProvider::__construct()
+			 */
+			$provider = new $providerClass($path);
+		}catch(LevelException $e){
+			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.loadError", [$name, $e->getMessage()]));
+			return false;
+		}
 		try{
 			GeneratorManager::getGenerator($provider->getGenerator(), true);
 		}catch(\InvalidArgumentException $e){
@@ -1529,7 +1535,7 @@ class Server{
 				"force-gamemode" => false,
 				"hardcore" => false,
 				"pvp" => true,
-				"difficulty" => 1,
+				"difficulty" => Level::DIFFICULTY_NORMAL,
 				"generator-settings" => "",
 				"level-name" => "world",
 				"level-seed" => "",
@@ -2200,6 +2206,7 @@ class Server{
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [self::getGamemodeString($this->getGamemode())]));
 
+		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.donate", [TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET]));
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
 
 		$this->tickProcessor();
@@ -2542,7 +2549,7 @@ class Server{
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 
-			$this->getNetwork()->blockAddress($address, 600);
+			//$this->getNetwork()->blockAddress($address, 600);
 		}
 		//TODO: add raw packet events
 	}

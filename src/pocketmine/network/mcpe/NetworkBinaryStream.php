@@ -27,20 +27,29 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Skin;
+use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
+use pocketmine\utils\SerializedImage;
+use pocketmine\utils\SkinAnimation;
 use pocketmine\utils\UUID;
 use function count;
 use function strlen;
 
 class NetworkBinaryStream extends BinaryStream{
+
+	private const DAMAGE_TAG = "Damage"; //TAG_Int
+	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
 
 	public function getString() : string{
 		return $this->get($this->getUnsignedVarInt());
@@ -68,6 +77,65 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putLInt($uuid->getPart(2));
 	}
 
+	public function putSkin(Skin $skin) : void{
+		$this->putString($skin->getSkinId());
+		$this->putString($skin->getSkinResourcePatch());
+		$this->putImage($skin->getSkinData());
+
+		$this->putLInt(count($animations = $skin->getAnimations()));
+		foreach($animations as $animation){
+			$this->putImage($animation->getImage());
+			$this->putLInt($animation->getType());
+			$this->putLFloat($animation->getFrames());
+		}
+
+		$this->putImage($skin->getCapeData());
+		$this->putString($skin->getGeometryData());
+		$this->putString($skin->getAnimationData());
+		$this->putBool($skin->isPremium());
+		$this->putBool($skin->isPersona());
+		$this->putBool($skin->isCapeOnClassic());
+		$this->putString($skin->getCapeId());
+		$this->putString($skin->getFullSkinId());
+	}
+
+	public function getSkin() : Skin{
+		$skinId = $this->getString();
+		$skinResourcePatch = $this->getString();
+		$skinData = $this->getImage();
+
+		$animations = [];
+		for($i = 0, $count = $this->getLInt(); $i < $count; ++$i){
+			$animations[] = new SkinAnimation($this->getImage(), $this->getLInt(), $this->getLFloat());
+		}
+
+		$capeData = $this->getImage();
+		$geometryData = $this->getString();
+		$animationData = $this->getString();
+		$premium = $this->getBool();
+		$persona = $this->getBool();
+		$capeOnClassic = $this->getBool();
+		$capeId = $this->getString();
+		$fullSkinId = $this->getString();
+
+		return new Skin($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId);
+	}
+
+
+	public function putImage(SerializedImage $image) : void{
+		$this->putLInt($image->getWidth());
+		$this->putLInt($image->getHeight());
+		$this->putString($image->getData());
+	}
+
+	public function getImage() : SerializedImage{
+		$width = $this->getLInt();
+		$height = $this->getLInt();
+		$data = $this->getString();
+
+		return new SerializedImage($width, $height, $data);
+	}
+
 	public function getSlot() : Item{
 		$id = $this->getVarInt();
 		if($id === 0){
@@ -76,15 +144,12 @@ class NetworkBinaryStream extends BinaryStream{
 
 		$auxValue = $this->getVarInt();
 		$data = $auxValue >> 8;
-		if($data === 0x7fff){
-			$data = -1;
-		}
 		$cnt = $auxValue & 0xff;
 
 		$nbtLen = $this->getLShort();
 
-		/** @var CompoundTag|string $nbt */
-		$nbt = "";
+		/** @var CompoundTag|null $nbt */
+		$nbt = null;
 		if($nbtLen === 0xffff){
 			$c = $this->getByte();
 			if($c !== 1){
@@ -108,6 +173,22 @@ class NetworkBinaryStream extends BinaryStream{
 		if($id === ItemIds::SHIELD){
 			$this->getVarLong(); //"blocking tick" (ffs mojang)
 		}
+		if($nbt !== null){
+			if($nbt->hasTag(self::DAMAGE_TAG, IntTag::class)){
+				$data = $nbt->getInt(self::DAMAGE_TAG);
+				$nbt->removeTag(self::DAMAGE_TAG);
+				if($nbt->count() === 0){
+					$nbt = null;
+					goto end;
+				}
+			}
+			if(($conflicted = $nbt->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
+				$nbt->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
+				$conflicted->setName(self::DAMAGE_TAG);
+				$nbt->setTag($conflicted);
+			}
+		}
+		end:
 
 		return ItemFactory::get($id, $data, $cnt, $nbt);
 	}
@@ -124,10 +205,27 @@ class NetworkBinaryStream extends BinaryStream{
 		$auxValue = (($item->getDamage() & 0x7fff) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 
+		$nbt = null;
 		if($item->hasCompoundTag()){
+			$nbt = clone $item->getNamedTag();
+		}
+		if($item instanceof Durable and $item->getDamage() > 0){
+			if($nbt !== null){
+				if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
+					$nbt->removeTag(self::DAMAGE_TAG);
+					$existing->setName(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
+					$nbt->setTag($existing);
+				}
+			}else{
+				$nbt = new CompoundTag();
+			}
+			$nbt->setInt(self::DAMAGE_TAG, $item->getDamage());
+		}
+
+		if($nbt !== null){
 			$this->putLShort(0xffff);
 			$this->putByte(1); //TODO: some kind of count field? always 1 as of 1.9.0
-			$this->put((new NetworkLittleEndianNBTStream())->write($item->getNamedTag()));
+			$this->put((new NetworkLittleEndianNBTStream())->write($nbt));
 		}else{
 			$this->putLShort(0);
 		}
@@ -137,6 +235,30 @@ class NetworkBinaryStream extends BinaryStream{
 
 		if($item->getId() === ItemIds::SHIELD){
 			$this->putVarLong(0); //"blocking tick" (ffs mojang)
+		}
+	}
+
+	public function getRecipeIngredient() : Item{
+		$id = $this->getVarInt();
+		if($id === 0){
+			return ItemFactory::get(ItemIds::AIR, 0, 0);
+		}
+		$meta = $this->getVarInt();
+		if($meta === 0x7fff){
+			$meta = -1;
+		}
+		$count = $this->getVarInt();
+
+		return ItemFactory::get($id, $meta, $count);
+	}
+
+	public function putRecipeIngredient(Item $item) : void{
+		if($item->isNull()){
+			$this->putVarInt(0);
+		}else{
+			$this->putVarInt($item->getId());
+			$this->putVarInt($item->getDamage() & 0x7fff);
+			$this->putVarInt($item->getCount());
 		}
 	}
 
@@ -170,8 +292,8 @@ class NetworkBinaryStream extends BinaryStream{
 				case Entity::DATA_TYPE_STRING:
 					$value = $this->getString();
 					break;
-				case Entity::DATA_TYPE_SLOT:
-					$value = $this->getSlot();
+				case Entity::DATA_TYPE_COMPOUND_TAG:
+					$value = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
 					break;
 				case Entity::DATA_TYPE_POS:
 					$value = new Vector3();
@@ -222,8 +344,8 @@ class NetworkBinaryStream extends BinaryStream{
 				case Entity::DATA_TYPE_STRING:
 					$this->putString($d[1]);
 					break;
-				case Entity::DATA_TYPE_SLOT:
-					$this->putSlot($d[1]);
+				case Entity::DATA_TYPE_COMPOUND_TAG:
+					$this->put((new NetworkLittleEndianNBTStream())->write($d[1]));
 					break;
 				case Entity::DATA_TYPE_POS:
 					$v = $d[1];
@@ -399,9 +521,10 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Note: ONLY use this where it is reasonable to allow not specifying the vector.
 	 * For all other purposes, use the non-nullable version.
 	 *
+	 * @param Vector3|null $vector
+	 *
 	 * @see NetworkBinaryStream::putVector3()
 	 *
-	 * @param Vector3|null $vector
 	 */
 	public function putVector3Nullable(?Vector3 $vector) : void{
 		if($vector){
@@ -534,5 +657,41 @@ class NetworkBinaryStream extends BinaryStream{
 		if($data->type === CommandOriginData::ORIGIN_DEV_CONSOLE or $data->type === CommandOriginData::ORIGIN_TEST){
 			$this->putVarLong($data->varlong1);
 		}
+	}
+
+	protected function getStructureSettings() : StructureSettings{
+		$result = new StructureSettings();
+
+		$result->paletteName = $this->getString();
+
+		$result->ignoreEntities = $this->getBool();
+		$result->ignoreBlocks = $this->getBool();
+
+		$this->getBlockPosition($result->structureSizeX, $result->structureSizeY, $result->structureSizeZ);
+		$this->getBlockPosition($result->structureOffsetX, $result->structureOffsetY, $result->structureOffsetZ);
+
+		$result->lastTouchedByPlayerID = $this->getEntityUniqueId();
+		$result->rotation = $this->getByte();
+		$result->mirror = $this->getByte();
+		$result->integrityValue = $this->getFloat();
+		$result->integritySeed = $this->getInt();
+
+		return $result;
+	}
+
+	protected function putStructureSettings(StructureSettings $structureSettings) : void{
+		$this->putString($structureSettings->paletteName);
+
+		$this->putBool($structureSettings->ignoreEntities);
+		$this->putBool($structureSettings->ignoreBlocks);
+
+		$this->putBlockPosition($structureSettings->structureSizeX, $structureSettings->structureSizeY, $structureSettings->structureSizeZ);
+		$this->putBlockPosition($structureSettings->structureOffsetX, $structureSettings->structureOffsetY, $structureSettings->structureOffsetZ);
+
+		$this->putEntityUniqueId($structureSettings->lastTouchedByPlayerID);
+		$this->putByte($structureSettings->rotation);
+		$this->putByte($structureSettings->mirror);
+		$this->putFloat($structureSettings->integrityValue);
+		$this->putInt($structureSettings->integritySeed);
 	}
 }

@@ -21,29 +21,35 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
-
-
-use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\types\EntityLink;
-
-class SetEntityLinkPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::SET_ENTITY_LINK_PACKET;
-
-	/** @var EntityLink */
-	public $link;
-
-	protected function decodePayload(){
-		$this->link = $this->getEntityLink();
-	}
-
-	protected function encodePayload(){
-		$this->putEntityLink($this->link);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetEntityLink($this);
-	}
+class StructureSettings{
+	/** @var string */
+	public $paletteName;
+	/** @var bool */
+	public $ignoreEntities;
+	/** @var bool */
+	public $ignoreBlocks;
+	/** @var int */
+	public $structureSizeX;
+	/** @var int */
+	public $structureSizeY;
+	/** @var int */
+	public $structureSizeZ;
+	/** @var int */
+	public $structureOffsetX;
+	/** @var int */
+	public $structureOffsetY;
+	/** @var int */
+	public $structureOffsetZ;
+	/** @var int */
+	public $lastTouchedByPlayerID;
+	/** @var int */
+	public $rotation;
+	/** @var int */
+	public $mirror;
+	/** @var float */
+	public $integrityValue;
+	/** @var int */
+	public $integritySeed;
 }

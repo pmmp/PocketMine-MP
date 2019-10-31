@@ -39,9 +39,9 @@ class BossEventPacket extends DataPacket{
 	public const TYPE_HIDE = 2;
 	/* C2S: Unregisters a player from a boss fight. */
 	public const TYPE_UNREGISTER_PLAYER = 3;
-	/* S2C: Appears not to be implemented. Currently bar percentage only appears to change in response to the target entity's health. */
+	/* S2C: Sets the bar percentage. */
 	public const TYPE_HEALTH_PERCENT = 4;
-	/* S2C: Also appears to not be implemented. Title client-side sticks as the target entity's nametag, or their entity type name if not set. */
+	/* S2C: Sets title of the bar. */
 	public const TYPE_TITLE = 5;
 	/* S2C: Not sure on this. Includes color and overlay fields, plus an unknown short. TODO: check this */
 	public const TYPE_UNKNOWN_6 = 6;

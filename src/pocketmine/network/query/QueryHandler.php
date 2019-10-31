@@ -92,7 +92,7 @@ class QueryHandler{
 
 	public function handle(AdvancedSourceInterface $interface, string $address, int $port, string $packet){
 		$offset = 2;
-		$packetType = ord($packet{$offset++});
+		$packetType = ord($packet[$offset++]);
 		$sessionID = Binary::readInt(substr($packet, $offset, 4));
 		$offset += 4;
 		$payload = substr($packet, $offset);

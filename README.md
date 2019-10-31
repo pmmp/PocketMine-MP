@@ -5,23 +5,24 @@
 
 [![Build Status](https://travis-ci.org/pmmp/PocketMine-MP.svg?branch=master)](https://travis-ci.org/pmmp/PocketMine-MP)
 
-### Getting started
+## Getting started
 - [Documentation](http://pmmp.readthedocs.org/)
 - [Installation instructions](https://pmmp.readthedocs.io/en/rtfd/installation.html)
 - [Docker image](https://hub.docker.com/r/pmmp/pocketmine-mp)
 - [Plugin repository](https://poggit.pmmp.io/plugins)
 
-### Discussion
+## Discussion/Help
 - [Forums](https://forums.pmmp.io/)
-- [Community Discord](https://discord.gg/bge7dYQ)
+- [Community Discord](https://discord.gg/bmSAZBG)
+- [StackOverflow](https://stackoverflow.com/tags/pocketmine)
 
-### For developers
+## For developers
  * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
  * [DevTools](https://github.com/pmmp/PocketMine-DevTools/) - Development tools plugin for creating plugins
  * [ExamplePlugin](https://github.com/pmmp/ExamplePlugin/) - Example plugin demonstrating some basic API features
  * [Contributing Guidelines](CONTRIBUTING.md)
 
-### Donate
+## Donate
 - Bitcoin Cash (BCH): `qq3r46hn6ljnhnqnfwxt5pg3g447eq9jhvw5ddfear`
 - Bitcoin (BTC): `171u8K9e4FtU6j3e5sqNoxKUgEw9qWQdRV`
 - [Patreon](https://www.patreon.com/pocketminemp)

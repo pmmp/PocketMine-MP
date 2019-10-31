@@ -25,32 +25,36 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 
-class BlockEntityDataPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::BLOCK_ENTITY_DATA_PACKET;
+class ClientCacheStatusPacket extends DataPacket/* implements ServerboundPacket*/{
+	public const NETWORK_ID = ProtocolInfo::CLIENT_CACHE_STATUS_PACKET;
 
-	/** @var int */
-	public $x;
-	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
-	/** @var string */
-	public $namedtag;
+	/** @var bool */
+	private $enabled;
 
-	protected function decodePayload(){
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->namedtag = $this->getRemaining();
+	public static function create(bool $enabled) : self{
+		$result = new self;
+		$result->enabled = $enabled;
+		return $result;
 	}
 
-	protected function encodePayload(){
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->put($this->namedtag);
+	/**
+	 * @return bool
+	 */
+	public function isEnabled() : bool{
+		return $this->enabled;
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleBlockEntityData($this);
+	protected function decodePayload() : void{
+		$this->enabled = $this->getBool();
+	}
+
+	protected function encodePayload() : void{
+		$this->putBool($this->enabled);
+	}
+
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleClientCacheStatus($this);
 	}
 }

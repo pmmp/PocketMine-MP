@@ -292,8 +292,8 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_STUN = 261;
 	public const SOUND_BLOCK_SWEET_BERRY_BUSH_HURT = 262;
 	public const SOUND_BLOCK_SWEET_BERRY_BUSH_PICK = 263;
-	public const SOUND_UI_CARTOGRAPHY_TABLE_TAKE_RESULT = 264;
-	public const SOUND_UI_STONECUTTER_TAKE_RESULT = 265;
+	public const SOUND_BLOCK_CARTOGRAPHY_TABLE_USE = 264;
+	public const SOUND_BLOCK_STONECUTTER_USE = 265;
 	public const SOUND_BLOCK_COMPOSTER_EMPTY = 266;
 	public const SOUND_BLOCK_COMPOSTER_FILL = 267;
 	public const SOUND_BLOCK_COMPOSTER_FILL_SUCCESS = 268;
@@ -302,7 +302,14 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_BLOCK_BARREL_CLOSE = 271;
 	public const SOUND_RAID_HORN = 272;
 	public const SOUND_BLOCK_LOOM_USE = 273;
-	public const SOUND_UNDEFINED = 274;
+	public const SOUND_AMBIENT_IN_RAID = 274;
+	public const SOUND_UI_CARTOGRAPHY_TABLE_TAKE_RESULT = 275;
+	public const SOUND_UI_STONECUTTER_TAKE_RESULT = 276;
+	public const SOUND_UI_LOOM_TAKE_RESULT = 277;
+	public const SOUND_BLOCK_SMOKER_SMOKE = 278;
+	public const SOUND_BLOCK_BLASTFURNACE_FIRE_CRACKLE = 279;
+	public const SOUND_BLOCK_SMITHING_TABLE_USE = 280;
+	public const SOUND_UNDEFINED = 281;
 
 	/** @var int */
 	public $sound;

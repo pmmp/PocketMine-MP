@@ -56,6 +56,7 @@ class PlayerActionPacket extends DataPacket{
 	public const ACTION_STOP_SWIMMING = 22;
 	public const ACTION_START_SPIN_ATTACK = 23;
 	public const ACTION_STOP_SPIN_ATTACK = 24;
+	public const ACTION_INTERACT_BLOCK = 25;
 
 	/** @var int */
 	public $entityRuntimeId;

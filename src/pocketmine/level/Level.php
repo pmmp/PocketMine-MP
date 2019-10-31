@@ -72,7 +72,7 @@ use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -564,7 +564,7 @@ class Level implements ChunkManager, Metadatable{
 		$pk = new LevelSoundEventPacket();
 		$pk->sound = $soundId;
 		$pk->extraData = $extraData;
-		$pk->entityType = AddEntityPacket::LEGACY_ID_MAP_BC[$entityTypeId] ?? ":";
+		$pk->entityType = AddActorPacket::LEGACY_ID_MAP_BC[$entityTypeId] ?? ":";
 		$pk->isBabyMob = $isBabyMob;
 		$pk->disableRelativeVolume = $disableRelativeVolume;
 		$pk->position = $pos->asVector3();
@@ -820,8 +820,13 @@ class Level implements ChunkManager, Metadatable{
 
 		//Delayed updates
 		while($this->scheduledBlockUpdateQueue->count() > 0 and $this->scheduledBlockUpdateQueue->current()["priority"] <= $currentTick){
-			$block = $this->getBlock($this->scheduledBlockUpdateQueue->extract()["data"]);
-			unset($this->scheduledBlockUpdateQueueIndex[Level::blockHash($block->x, $block->y, $block->z)]);
+			/** @var Vector3 $vec */
+			$vec = $this->scheduledBlockUpdateQueue->extract()["data"];
+			unset($this->scheduledBlockUpdateQueueIndex[Level::blockHash($vec->x, $vec->y, $vec->z)]);
+			if(!$this->isInLoadedTerrain($vec)){
+				continue;
+			}
+			$block = $this->getBlock($vec);
 			$block->onScheduledUpdate();
 		}
 

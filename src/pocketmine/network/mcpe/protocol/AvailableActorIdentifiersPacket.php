@@ -25,29 +25,35 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
+use function base64_decode;
+use function file_get_contents;
 
-class SetEntityMotionPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::SET_ENTITY_MOTION_PACKET;
+class AvailableActorIdentifiersPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::AVAILABLE_ACTOR_IDENTIFIERS_PACKET;
 
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var Vector3 */
-	public $motion;
+	/**
+	 * NBT blob extracted from MCPE vanilla server.
+	 * TODO: this needs to be generated dynamically, but this is here for stable backwards compatibility, so we don't care for now.
+	 */
+	private static $NBT_BLOB;
+	/** @var string */
+	public $namedtag;
+
+	public static function init() : void {
+		self::$NBT_BLOB = file_get_contents(\pocketmine\RESOURCE_PATH . "entity_identifiers.dat");
+	}
 
 	protected function decodePayload(){
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->motion = $this->getVector3();
+		$this->namedtag = $this->getRemaining();
 	}
 
 	protected function encodePayload(){
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVector3($this->motion);
+		$this->put($this->namedtag ?? self::$NBT_BLOB);
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetEntityMotion($this);
+		return $session->handleAvailableActorIdentifiers($this);
 	}
 }
+AvailableActorIdentifiersPacket::init();

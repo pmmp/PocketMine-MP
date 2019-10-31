@@ -460,7 +460,7 @@ class Chunk{
 	 * @return int 0-255
 	 */
 	public function getBiomeId(int $x, int $z) : int{
-		return ord($this->biomeIds{($z << 4) | $x});
+		return ord($this->biomeIds[($z << 4) | $x]);
 	}
 
 	/**
@@ -472,7 +472,7 @@ class Chunk{
 	 */
 	public function setBiomeId(int $x, int $z, int $biomeId){
 		$this->hasChanged = true;
-		$this->biomeIds{($z << 4) | $x} = chr($biomeId & 0xff);
+		$this->biomeIds[($z << 4) | $x] = chr($biomeId & 0xff);
 	}
 
 	/**
@@ -869,13 +869,10 @@ class Chunk{
 	public function networkSerialize() : string{
 		$result = "";
 		$subChunkCount = $this->getSubChunkSendCount();
-		$result .= chr($subChunkCount);
 		for($y = 0; $y < $subChunkCount; ++$y){
 			$result .= $this->subChunks[$y]->networkSerialize();
 		}
-		$result .= pack("v*", ...$this->heightMap)
-			. $this->biomeIds
-			. chr(0); //border block array count
+		$result .= $this->biomeIds . chr(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
 
 		foreach($this->tiles as $tile){

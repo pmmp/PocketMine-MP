@@ -38,7 +38,6 @@ use pocketmine\level\particle\HugeExplodeSeedParticle;
 use pocketmine\level\utils\SubChunkIteratorManager;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Container;
@@ -89,6 +88,9 @@ class Explosion{
 	}
 
 	/**
+	 * Calculates which blocks will be destroyed by this explosion. If explodeB() is called without calling this, no blocks 
+	 * will be destroyed.
+	 *
 	 * @return bool
 	 */
 	public function explodeA() : bool{
@@ -148,6 +150,12 @@ class Explosion{
 		return true;
 	}
 
+	/**
+	 * Executes the explosion's effects on the world. This includes destroying blocks (if any), harming and knocking back entities,
+	 * and creating sounds and particles.
+	 *
+	 * @return bool
+	 */
 	public function explodeB() : bool{
 		$send = [];
 		$updateBlocks = [];
@@ -250,12 +258,6 @@ class Explosion{
 			}
 			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
 		}
-
-		$pk = new ExplodePacket();
-		$pk->position = $this->source->asVector3();
-		$pk->radius = $this->size;
-		$pk->records = $send;
-		$this->level->broadcastPacketToViewers($source, $pk);
 
 		$this->level->addParticle(new HugeExplodeSeedParticle($source));
 		$this->level->broadcastLevelSoundEvent($source, LevelSoundEventPacket::SOUND_EXPLODE);

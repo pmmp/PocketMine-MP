@@ -30,9 +30,10 @@ use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
-use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
+use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\utils\UUID;
+use function hash;
 use function str_repeat;
 
 class FloatingTextParticle extends Particle{
@@ -84,7 +85,7 @@ class FloatingTextParticle extends Particle{
 		if($this->entityId === null){
 			$this->entityId = Entity::$entityCount++;
 		}else{
-			$pk0 = new RemoveEntityPacket();
+			$pk0 = new RemoveActorPacket();
 			$pk0->entityUniqueId = $this->entityId;
 
 			$p[] = $pk0;
@@ -96,7 +97,8 @@ class FloatingTextParticle extends Particle{
 
 			$add = new PlayerListPacket();
 			$add->type = PlayerListPacket::TYPE_ADD;
-			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, new Skin("Standard_Custom", str_repeat("\x00", 8192)))];
+			$skinData = str_repeat("\x00", 8192);
+			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, new Skin(hash('md5', $skinData), Skin::convertLegacyGeometryName('geometry.humanoid.custom'), $skinData))];
 			$p[] = $add;
 
 			$pk = new AddPlayerPacket();

@@ -39,7 +39,11 @@ use const STDIN;
 require_once dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-$currentVer = new VersionString(BASE_VERSION);
+if(isset($argv[1])){
+	$currentVer = new VersionString($argv[1]);
+}else{
+	$currentVer = new VersionString(BASE_VERSION);
+}
 $nextVer = new VersionString(sprintf(
 	"%u.%u.%u",
 	$currentVer->getMajor(),
@@ -47,27 +51,31 @@ $nextVer = new VersionString(sprintf(
 	$currentVer->getPatch() + 1
 ));
 
-
+function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev) : void{
+	$versionInfo = file_get_contents($versionInfoPath);
+	$versionInfo = preg_replace(
+		$pattern = '/^const BASE_VERSION = "(\d+)\.(\d+)\.(\d+)(?:-(.*))?";$/m',
+		'const BASE_VERSION = "' . $newVersion . '";',
+		$versionInfo
+	);
+	$versionInfo = preg_replace(
+		'/^const IS_DEVELOPMENT_BUILD = (?:true|false);$/m',
+		'const IS_DEVELOPMENT_BUILD = ' . ($isDev ? 'true' : 'false'). ';',
+		$versionInfo
+	);
+	file_put_contents($versionInfoPath, $versionInfo);
+}
 $versionInfoPath = dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
-$versionInfo = file_get_contents($versionInfoPath);
+replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false);
 
-file_put_contents($versionInfoPath, preg_replace(
-	'/^const IS_DEVELOPMENT_BUILD = true;$/m',
-	'const IS_DEVELOPMENT_BUILD = false;',
-	$versionInfo
-));
 echo "please add appropriate notes to the changelog and press enter...";
 fgets(STDIN);
 system('git add "' . dirname(__DIR__) . '/changelogs"');
-system('git commit -m "Release ' . BASE_VERSION . '" --include "' . $versionInfoPath . '"');
-system('git tag ' . BASE_VERSION);
-file_put_contents($versionInfoPath, $mod =  preg_replace(
-	$pattern = '/^const BASE_VERSION = "' . preg_quote(BASE_VERSION, '/') . '";$/m',
-	'const BASE_VERSION = "' . $nextVer->getBaseVersion() . '";',
-	$versionInfo
-));
+system('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"');
+system('git tag ' . $currentVer->getBaseVersion());
+replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true);
 system('git add "' . $versionInfoPath . '"');
 system('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"');
 echo "pushing changes in 10 seconds\n";
 sleep(10);
-system('git push origin HEAD ' . BASE_VERSION);
+system('git push origin HEAD ' . $currentVer->getBaseVersion());

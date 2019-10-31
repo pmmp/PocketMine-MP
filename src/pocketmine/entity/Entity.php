@@ -62,12 +62,12 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\MoveEntityAbsolutePacket;
-use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
-use pocketmine\network\mcpe\protocol\SetEntityDataPacket;
-use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\AddActorPacket;
+use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
+use pocketmine\network\mcpe\protocol\RemoveActorPacket;
+use pocketmine\network\mcpe\protocol\SetActorDataPacket;
+use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
@@ -102,7 +102,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_TYPE_INT = 2;
 	public const DATA_TYPE_FLOAT = 3;
 	public const DATA_TYPE_STRING = 4;
-	public const DATA_TYPE_SLOT = 5;
+	public const DATA_TYPE_COMPOUND_TAG = 5;
 	public const DATA_TYPE_POS = 6;
 	public const DATA_TYPE_LONG = 7;
 	public const DATA_TYPE_VECTOR3F = 8;
@@ -154,70 +154,76 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_LEAD_HOLDER_EID = 37; //long
 	public const DATA_SCALE = 38; //float
 	public const DATA_HAS_NPC_COMPONENT = 39; //byte (???)
-	public const DATA_SKIN_ID = 40; //string
-	public const DATA_NPC_SKIN_ID = 41; //string
-	public const DATA_URL_TAG = 42; //string
-	public const DATA_MAX_AIR = 43; //short
-	public const DATA_MARK_VARIANT = 44; //int
-	public const DATA_CONTAINER_TYPE = 45; //byte (ContainerComponent)
-	public const DATA_CONTAINER_BASE_SIZE = 46; //int (ContainerComponent)
-	public const DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH = 47; //int (used for llamas, inventory size is baseSize + thisProp * strength)
-	public const DATA_BLOCK_TARGET = 48; //block coords (ender crystal)
-	public const DATA_WITHER_INVULNERABLE_TICKS = 49; //int
-	public const DATA_WITHER_TARGET_1 = 50; //long
-	public const DATA_WITHER_TARGET_2 = 51; //long
-	public const DATA_WITHER_TARGET_3 = 52; //long
-	/* 53 (short) */
-	public const DATA_BOUNDING_BOX_WIDTH = 54; //float
-	public const DATA_BOUNDING_BOX_HEIGHT = 55; //float
-	public const DATA_FUSE_LENGTH = 56; //int
-	public const DATA_RIDER_SEAT_POSITION = 57; //vector3f
-	public const DATA_RIDER_ROTATION_LOCKED = 58; //byte
-	public const DATA_RIDER_MAX_ROTATION = 59; //float
-	public const DATA_RIDER_MIN_ROTATION = 60; //float
-	public const DATA_AREA_EFFECT_CLOUD_RADIUS = 61; //float
-	public const DATA_AREA_EFFECT_CLOUD_WAITING = 62; //int
-	public const DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = 63; //int
-	/* 64 (int) shulker-related */
-	public const DATA_SHULKER_ATTACH_FACE = 65; //byte
-	/* 66 (short) shulker-related */
-	public const DATA_SHULKER_ATTACH_POS = 67; //block coords
-	public const DATA_TRADING_PLAYER_EID = 68; //long
+	public const DATA_NPC_SKIN_INDEX = 40; //string
+	public const DATA_NPC_ACTIONS = 41; //string (maybe JSON blob?)
+	public const DATA_MAX_AIR = 42; //short
+	public const DATA_MARK_VARIANT = 43; //int
+	public const DATA_CONTAINER_TYPE = 44; //byte (ContainerComponent)
+	public const DATA_CONTAINER_BASE_SIZE = 45; //int (ContainerComponent)
+	public const DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH = 46; //int (used for llamas, inventory size is baseSize + thisProp * strength)
+	public const DATA_BLOCK_TARGET = 47; //block coords (ender crystal)
+	public const DATA_WITHER_INVULNERABLE_TICKS = 48; //int
+	public const DATA_WITHER_TARGET_1 = 49; //long
+	public const DATA_WITHER_TARGET_2 = 50; //long
+	public const DATA_WITHER_TARGET_3 = 51; //long
+	/* 52 (short) */
+	public const DATA_BOUNDING_BOX_WIDTH = 53; //float
+	public const DATA_BOUNDING_BOX_HEIGHT = 54; //float
+	public const DATA_FUSE_LENGTH = 55; //int
+	public const DATA_RIDER_SEAT_POSITION = 56; //vector3f
+	public const DATA_RIDER_ROTATION_LOCKED = 57; //byte
+	public const DATA_RIDER_MAX_ROTATION = 58; //float
+	public const DATA_RIDER_MIN_ROTATION = 59; //float
+	public const DATA_AREA_EFFECT_CLOUD_RADIUS = 60; //float
+	public const DATA_AREA_EFFECT_CLOUD_WAITING = 61; //int
+	public const DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = 62; //int
+	/* 63 (int) shulker-related */
+	public const DATA_SHULKER_ATTACH_FACE = 64; //byte
+	/* 65 (short) shulker-related */
+	public const DATA_SHULKER_ATTACH_POS = 66; //block coords
+	public const DATA_TRADING_PLAYER_EID = 67; //long
 
-	/* 70 (byte) command-block */
-	public const DATA_COMMAND_BLOCK_COMMAND = 71; //string
-	public const DATA_COMMAND_BLOCK_LAST_OUTPUT = 72; //string
-	public const DATA_COMMAND_BLOCK_TRACK_OUTPUT = 73; //byte
-	public const DATA_CONTROLLING_RIDER_SEAT_NUMBER = 74; //byte
-	public const DATA_STRENGTH = 75; //int
-	public const DATA_MAX_STRENGTH = 76; //int
-	/* 77 (int) */
-	public const DATA_LIMITED_LIFE = 78;
-	public const DATA_ARMOR_STAND_POSE_INDEX = 79; //int
-	public const DATA_ENDER_CRYSTAL_TIME_OFFSET = 80; //int
-	public const DATA_ALWAYS_SHOW_NAMETAG = 81; //byte: -1 = default, 0 = only when looked at, 1 = always
-	public const DATA_COLOR_2 = 82; //byte
-	/* 83 (unknown) */
-	public const DATA_SCORE_TAG = 84; //string
-	public const DATA_BALLOON_ATTACHED_ENTITY = 85; //int64, entity unique ID of owner
-	public const DATA_PUFFERFISH_SIZE = 86; //byte
-	public const DATA_BOAT_BUBBLE_TIME = 87; //int (time in bubble column)
-	public const DATA_PLAYER_AGENT_EID = 88; //long
-	/* 89 (float) related to panda sitting
-	 * 90 (float) related to panda sitting */
-	public const DATA_EAT_COUNTER = 91; //int (used by pandas)
-	public const DATA_FLAGS2 = 92; //long (extended data flags)
-	/* 93 (float) related to panda lying down
-	 * 94 (float) related to panda lying down */
-	public const DATA_AREA_EFFECT_CLOUD_DURATION = 95; //int
-	public const DATA_AREA_EFFECT_CLOUD_SPAWN_TIME = 96; //int
-	public const DATA_AREA_EFFECT_CLOUD_RADIUS_PER_TICK = 97; //float, usually negative
-	public const DATA_AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP = 98; //float
-	public const DATA_AREA_EFFECT_CLOUD_PICKUP_COUNT = 99; //int
-	public const DATA_INTERACTIVE_TAG = 100; //string (button text)
-	public const DATA_TRADE_TIER = 101; //int
-	public const DATA_MAX_TRADE_TIER = 102; //int
-	public const DATA_TRADE_XP = 103; //int
+	/* 69 (byte) command-block */
+	public const DATA_COMMAND_BLOCK_COMMAND = 70; //string
+	public const DATA_COMMAND_BLOCK_LAST_OUTPUT = 71; //string
+	public const DATA_COMMAND_BLOCK_TRACK_OUTPUT = 72; //byte
+	public const DATA_CONTROLLING_RIDER_SEAT_NUMBER = 73; //byte
+	public const DATA_STRENGTH = 74; //int
+	public const DATA_MAX_STRENGTH = 75; //int
+	/* 76 (int) */
+	public const DATA_LIMITED_LIFE = 77;
+	public const DATA_ARMOR_STAND_POSE_INDEX = 78; //int
+	public const DATA_ENDER_CRYSTAL_TIME_OFFSET = 79; //int
+	public const DATA_ALWAYS_SHOW_NAMETAG = 80; //byte: -1 = default, 0 = only when looked at, 1 = always
+	public const DATA_COLOR_2 = 81; //byte
+	/* 82 (unknown) */
+	public const DATA_SCORE_TAG = 83; //string
+	public const DATA_BALLOON_ATTACHED_ENTITY = 84; //int64, entity unique ID of owner
+	public const DATA_PUFFERFISH_SIZE = 85; //byte
+	public const DATA_BOAT_BUBBLE_TIME = 86; //int (time in bubble column)
+	public const DATA_PLAYER_AGENT_EID = 87; //long
+	/* 88 (float) related to panda sitting
+	 * 89 (float) related to panda sitting */
+	public const DATA_EAT_COUNTER = 90; //int (used by pandas)
+	public const DATA_FLAGS2 = 91; //long (extended data flags)
+	/* 92 (float) related to panda lying down
+	 * 93 (float) related to panda lying down */
+	public const DATA_AREA_EFFECT_CLOUD_DURATION = 94; //int
+	public const DATA_AREA_EFFECT_CLOUD_SPAWN_TIME = 95; //int
+	public const DATA_AREA_EFFECT_CLOUD_RADIUS_PER_TICK = 96; //float, usually negative
+	public const DATA_AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP = 97; //float
+	public const DATA_AREA_EFFECT_CLOUD_PICKUP_COUNT = 98; //int
+	public const DATA_INTERACTIVE_TAG = 99; //string (button text)
+	public const DATA_TRADE_TIER = 100; //int
+	public const DATA_MAX_TRADE_TIER = 101; //int
+	public const DATA_TRADE_XP = 102; //int
+	public const DATA_SKIN_ID = 103; //int ???
+	/* 104 (int) related to wither */
+	public const DATA_COMMAND_BLOCK_TICK_DELAY = 105; //int
+	public const DATA_COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = 106; //byte
+	public const DATA_AMBIENT_SOUND_INTERVAL_MIN = 107; //float
+	public const DATA_AMBIENT_SOUND_INTERVAL_RANGE = 108; //float
+	public const DATA_AMBIENT_SOUND_EVENT = 109; //string
 
 	public const DATA_FLAG_ONFIRE = 0;
 	public const DATA_FLAG_SNEAKING = 1;
@@ -1137,7 +1143,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->setFireTicks($ticks);
 		}
 
-		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, true);
+		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, $this->isOnFire());
 	}
 
 	/**
@@ -1235,7 +1241,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
-		$pk = new MoveEntityAbsolutePacket();
+		$pk = new MoveActorAbsolutePacket();
 		$pk->entityRuntimeId = $this->id;
 		$pk->position = $this->getOffsetPosition($this);
 
@@ -1247,14 +1253,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$pk->zRot = $this->yaw;
 
 		if($teleport){
-			$pk->flags |= MoveEntityAbsolutePacket::FLAG_TELEPORT;
+			$pk->flags |= MoveActorAbsolutePacket::FLAG_TELEPORT;
 		}
 
 		$this->level->broadcastPacketToViewers($this, $pk);
 	}
 
 	protected function broadcastMotion() : void{
-		$pk = new SetEntityMotionPacket();
+		$pk = new SetActorMotionPacket();
 		$pk->entityRuntimeId = $this->id;
 		$pk->motion = $this->getMotion();
 
@@ -1776,6 +1782,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
+	 * @deprecated WARNING: Despite what its name implies, this function DOES NOT return all the blocks around the entity.
+	 * Instead, it returns blocks which have reactions for an entity intersecting with them.
+	 *
 	 * @return Block[]
 	 */
 	public function getBlocksAround() : array{
@@ -2021,7 +2030,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param Player $player
 	 */
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddEntityPacket();
+		$pk = new AddActorPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->type = static::NETWORK_ID;
 		$pk->position = $this->asVector3();
@@ -2065,13 +2074,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
+	 * @deprecated WARNING: This function DOES NOT permanently hide the entity from the player. As soon as the entity or
+	 * player moves, the player will once again be able to see the entity.
+	 *
 	 * @param Player $player
 	 * @param bool   $send
 	 */
 	public function despawnFrom(Player $player, bool $send = true) : void{
 		if(isset($this->hasSpawned[$player->getLoaderId()])){
 			if($send){
-				$pk = new RemoveEntityPacket();
+				$pk = new RemoveActorPacket();
 				$pk->entityUniqueId = $this->id;
 				$player->dataPacket($pk);
 			}
@@ -2079,6 +2091,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 	}
 
+	/**
+	 * @deprecated WARNING: This function DOES NOT permanently hide the entity from viewers. As soon as the entity or
+	 * player moves, viewers will once again be able to see the entity.
+	 */
 	public function despawnFromAll() : void{
 		foreach($this->hasSpawned as $player){
 			$this->despawnFrom($player);
@@ -2193,7 +2209,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$player = [$player];
 		}
 
-		$pk = new SetEntityDataPacket();
+		$pk = new SetActorDataPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->metadata = $data ?? $this->propertyManager->getAll();
 
@@ -2210,7 +2226,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
-		$pk = new EntityEventPacket();
+		$pk = new ActorEventPacket();
 		$pk->entityRuntimeId = $this->id;
 		$pk->event = $eventId;
 		$pk->data = $eventData ?? 0;

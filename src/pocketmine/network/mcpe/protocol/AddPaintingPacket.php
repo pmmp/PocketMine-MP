@@ -26,30 +26,27 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 
 class AddPaintingPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_PAINTING_PACKET;
 
-	/** @var string */
-	public $title;
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var int */
-	public $x;
 	/** @var int|null */
 	public $entityUniqueId = null;
 	/** @var int */
-	public $y;
-	/** @var int */
-	public $z;
+	public $entityRuntimeId;
+	/** @var Vector3 */
+	public $position;
 	/** @var int */
 	public $direction;
+	/** @var string */
+	public $title;
 
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->position = $this->getVector3();
 		$this->direction = $this->getVarInt();
 		$this->title = $this->getString();
 	}
@@ -57,7 +54,7 @@ class AddPaintingPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putBlockPosition($this->x, $this->y, $this->z);
+		$this->putVector3($this->position);
 		$this->putVarInt($this->direction);
 		$this->putString($this->title);
 	}

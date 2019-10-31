@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use function implode;
-use function in_array;
-use function json_decode;
+use Ahc\Json\Comment as CommentedJsonDecoder;
+use InvalidArgumentException;
+use pocketmine\utils\SerializedImage;
+use pocketmine\utils\SkinAnimation;
 use function json_encode;
-use function strlen;
 
 class Skin{
 	public const ACCEPTED_SKIN_SIZES = [
@@ -39,48 +39,112 @@ class Skin{
 	/** @var string */
 	private $skinId;
 	/** @var string */
+	private $skinResourcePatch;
+	/** @var SerializedImage */
 	private $skinData;
-	/** @var string */
+	/** @var SkinAnimation[] */
+	private $animations;
+	/** @var SerializedImage */
 	private $capeData;
 	/** @var string */
-	private $geometryName;
-	/** @var string */
 	private $geometryData;
+	/** @var string */
+	private $animationData;
+	/** @var bool */
+	private $premium;
+	/** @var bool */
+	private $persona;
+	/** @var bool */
+	private $capeOnClassic;
+	/** @var ?string */
+	private $capeId;
 
-	public function __construct(string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = ""){
+	public function __construct(string $skinId, string $skinResourcePatch, SerializedImage $skinData, array $animations = [], SerializedImage $capeData = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, $capeOnClassic = false, string $capeId = null){
 		$this->skinId = $skinId;
+		$this->skinResourcePatch = $skinResourcePatch;
 		$this->skinData = $skinData;
+		$this->animations = $animations;
 		$this->capeData = $capeData;
-		$this->geometryName = $geometryName;
 		$this->geometryData = $geometryData;
+		$this->animationData = $animationData;
+		$this->premium = $premium;
+		$this->persona = $persona;
+		$this->capeOnClassic = $capeOnClassic;
+		$this->capeId = $capeId;
+
+		$this->debloatGeometryData();
+	}
+
+	public static function convertLegacyGeometryName(string $geometryName) : string{
+		return '{"geometry" : {"default" : "' . $geometryName . '"}}';
 	}
 
 	/**
-	 * @deprecated
+	 * @return string
+	 */
+	public function getSkinResourcePatch() : string{
+		return $this->skinResourcePatch;
+	}
+
+	/**
+	 * @return SkinAnimation[]
+	 */
+	public function getAnimations() : array{
+		return $this->animations;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAnimationData() : string{
+		return $this->animationData;
+	}
+
+	/**
 	 * @return bool
+	 */
+	public function isPremium() : bool{
+		return $this->premium;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isPersona() : bool{
+		return $this->persona;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isCapeOnClassic() : bool{
+		return $this->capeOnClassic;
+	}
+
+	public function getCapeId() : string{
+		return $this->capeId ?? "";
+	}
+
+	/**
+	 * @return bool
+	 * @deprecated
 	 */
 	public function isValid() : bool{
 		try{
 			$this->validate();
+
 			return true;
-		}catch(\InvalidArgumentException $e){
+		}catch(InvalidArgumentException $e){
 			return false;
 		}
 	}
 
 	/**
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	public function validate() : void{
 		if($this->skinId === ""){
-			throw new \InvalidArgumentException("Skin ID must not be empty");
-		}
-		$len = strlen($this->skinData);
-		if(!in_array($len, self::ACCEPTED_SKIN_SIZES, true)){
-			throw new \InvalidArgumentException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
-		}
-		if($this->capeData !== "" and strlen($this->capeData) !== 8192){
-			throw new \InvalidArgumentException("Invalid cape data size " . strlen($this->capeData) . " bytes (must be exactly 8192 bytes)");
+			throw new InvalidArgumentException("Skin ID must not be empty");
 		}
 		//TODO: validate geometry
 	}
@@ -93,24 +157,21 @@ class Skin{
 	}
 
 	/**
-	 * @return string
+	 * @return SerializedImage
 	 */
-	public function getSkinData() : string{
+	public function getSkinData() : SerializedImage{
 		return $this->skinData;
 	}
 
 	/**
-	 * @return string
+	 * @return SerializedImage
 	 */
-	public function getCapeData() : string{
-		return $this->capeData;
-	}
+	public function getCapeData() : SerializedImage{
+		if($this->capeData === null){
+			return new SerializedImage(0, 0, '');
+		}
 
-	/**
-	 * @return string
-	 */
-	public function getGeometryName() : string{
-		return $this->geometryName;
+		return $this->capeData;
 	}
 
 	/**
@@ -129,7 +190,12 @@ class Skin{
 	 */
 	public function debloatGeometryData() : void{
 		if($this->geometryData !== ""){
-			$this->geometryData = (string) json_encode(json_decode($this->geometryData));
+			$this->geometryData = (string) json_encode((new CommentedJsonDecoder())->decode($this->geometryData));
 		}
 	}
+
+	public function getFullSkinId() : string{
+		return $this->skinId . "_" . $this->getCapeId();
+	}
+
 }

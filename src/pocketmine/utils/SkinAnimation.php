@@ -21,31 +21,38 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
 
-#include <rules/DataPacket.h>
+namespace pocketmine\utils;
 
-use pocketmine\network\mcpe\NetworkSession;
 
-class EntityPickRequestPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::ENTITY_PICK_REQUEST_PACKET;
+class SkinAnimation
+{
+    /** @var SerializedImage */
+    private $image;
+    /** @var int */
+    private $type;
+    /** @var float */
+    private $frames;
 
-	/** @var int */
-	public $entityUniqueId;
-	/** @var int */
-	public $hotbarSlot;
+    public function __construct(SerializedImage $image, int $type, float $frames)
+    {
+        $this->image = $image;
+        $this->type = $type;
+        $this->frames = $frames;
+    }
 
-	protected function decodePayload(){
-		$this->entityUniqueId = $this->getLLong();
-		$this->hotbarSlot = $this->getByte();
-	}
+    public function getImage(): SerializedImage
+    {
+        return $this->image;
+    }
 
-	protected function encodePayload(){
-		$this->putLLong($this->entityUniqueId);
-		$this->putByte($this->hotbarSlot);
-	}
+    public function getType(): int
+    {
+        return $this->type;
+    }
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleEntityPickRequest($this);
-	}
+    public function getFrames(): float
+    {
+        return $this->frames;
+    }
 }

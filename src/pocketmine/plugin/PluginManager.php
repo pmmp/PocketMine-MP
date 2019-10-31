@@ -286,7 +286,7 @@ class PluginManager{
 
 					$plugins[$name] = $file;
 
-					$softDependencies[$name] = $description->getSoftDepend();
+					$softDependencies[$name] = array_merge($softDependencies[$name] ?? [], $description->getSoftDepend());
 					$dependencies[$name] = $description->getDepend();
 
 					foreach($description->getLoadBefore() as $before){
@@ -305,7 +305,7 @@ class PluginManager{
 
 
 		while(count($plugins) > 0){
-			$missingDependency = true;
+			$loadedThisLoop = 0;
 			foreach($plugins as $name => $file){
 				if(isset($dependencies[$name])){
 					foreach($dependencies[$name] as $key => $dependency){
@@ -329,7 +329,14 @@ class PluginManager{
 				if(isset($softDependencies[$name])){
 					foreach($softDependencies[$name] as $key => $dependency){
 						if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
+							$this->server->getLogger()->debug("Successfully resolved soft dependency \"$dependency\" for plugin \"$name\"");
 							unset($softDependencies[$name][$key]);
+						}elseif(!isset($plugins[$dependency])){
+							//this dependency is never going to be resolved, so don't bother trying
+							$this->server->getLogger()->debug("Skipping resolution of missing soft dependency \"$dependency\" for plugin \"$name\"");
+							unset($softDependencies[$name][$key]);
+						}else{
+							$this->server->getLogger()->debug("Deferring resolution of soft dependency \"$dependency\" for plugin \"$name\" (found but not loaded yet)");
 						}
 					}
 
@@ -340,7 +347,7 @@ class PluginManager{
 
 				if(!isset($dependencies[$name]) and !isset($softDependencies[$name])){
 					unset($plugins[$name]);
-					$missingDependency = false;
+					$loadedThisLoop++;
 					if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
 						$loadedPlugins[$name] = $plugin;
 					}else{
@@ -349,27 +356,12 @@ class PluginManager{
 				}
 			}
 
-			if($missingDependency){
-				foreach($plugins as $name => $file){
-					if(!isset($dependencies[$name])){
-						unset($softDependencies[$name]);
-						unset($plugins[$name]);
-						$missingDependency = false;
-						if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
-							$loadedPlugins[$name] = $plugin;
-						}else{
-							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.genericLoadError", [$name]));
-						}
-					}
-				}
-
+			if($loadedThisLoop === 0){
 				//No plugins loaded :(
-				if($missingDependency){
-					foreach($plugins as $name => $file){
-						$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.circularDependency"]));
-					}
-					$plugins = [];
+				foreach($plugins as $name => $file){
+					$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.circularDependency"]));
 				}
+				$plugins = [];
 			}
 		}
 
