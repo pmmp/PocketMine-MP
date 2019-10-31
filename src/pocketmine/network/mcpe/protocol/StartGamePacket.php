@@ -27,6 +27,10 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NetworkLittleEndianNBTStream;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
@@ -131,6 +135,8 @@ class StartGamePacket extends DataPacket{
 	public $onlySpawnV1Villagers = false;
 
 	/** @var string */
+	public $vanillaVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK;
+	/** @var string */
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
 	/** @var string */
 	public $worldName;
@@ -138,6 +144,8 @@ class StartGamePacket extends DataPacket{
 	public $premiumWorldTemplateId = "";
 	/** @var bool */
 	public $isTrial = false;
+	/** @var bool */
+	public $isMovementServerAuthoritative = false;
 	/** @var int */
 	public $currentTick = 0; //only used if isTrial is true
 	/** @var int */
@@ -193,10 +201,12 @@ class StartGamePacket extends DataPacket{
 		$this->isWorldTemplateOptionLocked = $this->getBool();
 		$this->onlySpawnV1Villagers = $this->getBool();
 
+		$this->vanillaVersion = $this->getString();
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
 		$this->premiumWorldTemplateId = $this->getString();
 		$this->isTrial = $this->getBool();
+		$this->isMovementServerAuthoritative = $this->getBool();
 		$this->currentTick = $this->getLLong();
 
 		$this->enchantmentSeed = $this->getVarInt();
@@ -263,10 +273,12 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->isWorldTemplateOptionLocked);
 		$this->putBool($this->onlySpawnV1Villagers);
 
+		$this->putString($this->vanillaVersion);
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
 		$this->putString($this->premiumWorldTemplateId);
 		$this->putBool($this->isTrial);
+		$this->putBool($this->isMovementServerAuthoritative);
 		$this->putLLong($this->currentTick);
 
 		$this->putVarInt($this->enchantmentSeed);
@@ -293,14 +305,27 @@ class StartGamePacket extends DataPacket{
 	}
 
 	private static function serializeBlockTable(array $table) : string{
-		$stream = new NetworkBinaryStream();
+		$states = new ListTag();
+		foreach($table as $v){
+			$state = new CompoundTag();
+			$state->setTag(new CompoundTag("block", [
+				new StringTag("name", $v["name"]),
+				$v["states"]
+			]));
+			$state->setShort("id", $v["legacy_id"]);
+			$states->push($state);
+		}
+		($stream = new NetworkLittleEndianNBTStream())->writeTag($states);
+		return $stream->buffer;
+
+		/*$stream = new NetworkBinaryStream();
 		$stream->putUnsignedVarInt(count($table));
 		foreach($table as $v){
 			$stream->putString($v["name"]);
 			$stream->putLShort($v["data"]);
 			$stream->putLShort($v["legacy_id"]);
 		}
-		return $stream->getBuffer();
+		return $stream->getBuffer();*/
 	}
 
 	private static function serializeItemTable(array $table) : string{

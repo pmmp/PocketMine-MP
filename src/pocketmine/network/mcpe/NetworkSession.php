@@ -247,10 +247,6 @@ abstract class NetworkSession{
 		return false;
 	}
 
-	public function handleExplode(ExplodePacket $packet) : bool{
-		return false;
-	}
-
 	public function handleLevelSoundEventPacketV1(LevelSoundEventPacketV1 $packet) : bool{
 		return false;
 	}

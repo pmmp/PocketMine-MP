@@ -34,12 +34,18 @@ class PlayerListEntry{
 	public $entityUniqueId;
 	/** @var string */
 	public $username;
-	/** @var Skin */
-	public $skin;
 	/** @var string */
 	public $xboxUserId;
 	/** @var string */
 	public $platformChatId = "";
+	/** @var int */
+	public $buildPlatform = 0; //Unknown
+	/** @var Skin */
+	public $skin;
+	/** @var bool */
+	public $isTeacher = false;
+	/** @var bool */
+	public $isHost = false;
 
 	public static function createRemovalEntry(UUID $uuid) : PlayerListEntry{
 		$entry = new PlayerListEntry();
@@ -48,7 +54,7 @@ class PlayerListEntry{
 		return $entry;
 	}
 
-	public static function createAdditionEntry(UUID $uuid, int $entityUniqueId, string $username, Skin $skin, string $xboxUserId = "", string $platformChatId = "") : PlayerListEntry{
+	public static function createAdditionEntry(UUID $uuid, int $entityUniqueId, string $username, Skin $skin, string $xboxUserId = "", string $platformChatId = "", int $buildPlatform = 0, bool $isTeacher = false, bool $isHost = false) : PlayerListEntry{
 		$entry = new PlayerListEntry();
 		$entry->uuid = $uuid;
 		$entry->entityUniqueId = $entityUniqueId;
@@ -56,6 +62,9 @@ class PlayerListEntry{
 		$entry->skin = $skin;
 		$entry->xboxUserId = $xboxUserId;
 		$entry->platformChatId = $platformChatId;
+		$entry->buildPlatform = $buildPlatform;
+		$entry->isTeacher = $isTeacher;
+		$entry->isHost = $isHost;
 
 		return $entry;
 	}

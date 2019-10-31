@@ -34,13 +34,21 @@ class RespawnPacket extends DataPacket{
 
 	/** @var Vector3 */
 	public $position;
+	/** @var int */
+	public $respawnState = 1; //TODO: Add
+	/** @var int */
+	public $entityRuntimeId;
 
 	protected function decodePayload(){
 		$this->position = $this->getVector3();
+		$this->respawnState = $this->getInt();
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
 	}
 
 	protected function encodePayload(){
 		$this->putVector3($this->position);
+		$this->putInt($this->respawnState);
+		$this->putEntityRuntimeId($this->entityRuntimeId);
 	}
 
 	public function handle(NetworkSession $session) : bool{

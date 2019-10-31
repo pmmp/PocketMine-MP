@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
+use pocketmine\utils\SerializedImage;
+use pocketmine\utils\SkinAnimation;
 use function implode;
 use function in_array;
 use function json_encode;
@@ -39,20 +41,38 @@ class Skin{
 	/** @var string */
 	private $skinId;
 	/** @var string */
+	private $skinResourcePatch;
+	/** @var SerializedImage */
 	private $skinData;
-	/** @var string */
+	/** @var SkinAnimation[] */
+	private $animations = [];
+	/** @var SerializedImage */
 	private $capeData;
 	/** @var string */
-	private $geometryName;
-	/** @var string */
 	private $geometryData;
+	/** @var string */
+	private $animationData;
+	/** @var bool */
+	private $premium;
+	/** @var bool */
+	private $persona;
+	/** @var bool */
+	private $capeOnClassic;
+	/** @var string */
+	private $capeId;
 
-	public function __construct(string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = ""){
+	public function __construct(string $skinId, string $skinResourcePatch, SerializedImage $skinData, array $animations = [], SerializedImage $capeData = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $capeOnClassic = false, string $capeId = ""){
 		$this->skinId = $skinId;
+		$this->skinResourcePatch = $skinResourcePatch;
 		$this->skinData = $skinData;
+		$this->animations = $animations;
 		$this->capeData = $capeData;
-		$this->geometryName = $geometryName;
 		$this->geometryData = $geometryData;
+		$this->animationData = $animationData;
+		$this->premium = $premium;
+		$this->persona = $persona;
+		$this->capeOnClassic = $capeOnClassic;
+		$this->capeId = $capeId;
 	}
 
 	/**
@@ -75,13 +95,14 @@ class Skin{
 		if($this->skinId === ""){
 			throw new \InvalidArgumentException("Skin ID must not be empty");
 		}
-		$len = strlen($this->skinData);
+		//Broken with Persona skins
+		/*$len = strlen($this->skinData->getData());
 		if(!in_array($len, self::ACCEPTED_SKIN_SIZES, true)){
 			throw new \InvalidArgumentException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
 		}
-		if($this->capeData !== "" and strlen($this->capeData) !== 8192){
-			throw new \InvalidArgumentException("Invalid cape data size " . strlen($this->capeData) . " bytes (must be exactly 8192 bytes)");
-		}
+		if($this->capeData->getData() !== "" and strlen($this->capeData->getData()) !== 8192){
+			throw new \InvalidArgumentException("Invalid cape data size " . strlen($this->capeData->getData()) . " bytes (must be exactly 8192 bytes)");
+		}*/
 		//TODO: validate geometry
 	}
 
@@ -95,22 +116,29 @@ class Skin{
 	/**
 	 * @return string
 	 */
-	public function getSkinData() : string{
+	public function getSkinResourcePatch() : string{
+		return $this->skinResourcePatch;
+	}
+
+	/**
+	 * @return SerializedImage
+	 */
+	public function getSkinData() : SerializedImage{
 		return $this->skinData;
 	}
 
 	/**
-	 * @return string
+	 * @return SkinAnimation[]
 	 */
-	public function getCapeData() : string{
-		return $this->capeData;
+	public function getAnimations() : array{
+		return $this->animations;
 	}
 
 	/**
-	 * @return string
+	 * @return SerializedImage
 	 */
-	public function getGeometryName() : string{
-		return $this->geometryName;
+	public function getCapeData() : SerializedImage{
+		return $this->capeData;
 	}
 
 	/**
@@ -118,6 +146,48 @@ class Skin{
 	 */
 	public function getGeometryData() : string{
 		return $this->geometryData;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAnimationData() : string{
+		return $this->animationData;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getPremium() : bool{
+		return $this->premium;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getPersona() : bool{
+		return $this->persona;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getCapeOnClassic() : bool{
+		return $this->capeOnClassic;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCapeId() : string{
+		return $this->capeId;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getFullSkinId() : string{
+		return $this->skinId . "_" . $this->capeId;
 	}
 
 	/**

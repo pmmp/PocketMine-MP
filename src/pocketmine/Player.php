@@ -160,6 +160,8 @@ use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
+use pocketmine\utils\SerializedImage;
+use pocketmine\utils\SkinAnimation;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 use function abs;
@@ -834,12 +836,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Plugin developers should not use this, use setSkin() and sendSkin() instead.
 	 *
 	 * @param Skin   $skin
-	 * @param string $newSkinName
-	 * @param string $oldSkinName
 	 *
 	 * @return bool
 	 */
-	public function changeSkin(Skin $skin, string $newSkinName, string $oldSkinName) : bool{
+	public function changeSkin(Skin $skin) : bool{
 		if(!$skin->isValid()){
 			return false;
 		}
@@ -1112,9 +1112,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
-	protected function sendRespawnPacket(Vector3 $pos){
+	protected function sendRespawnPacket(Vector3 $pos, int $respawnState = 1){
 		$pk = new RespawnPacket();
 		$pk->position = $pos->add(0, $this->baseOffset, 0);
+		$pk->respawnState = $respawnState;
+		$pk->entityRuntimeId = $this->getId();
 
 		$this->dataPacket($pk);
 	}
@@ -1913,12 +1915,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
 
+		$animations = [];
+		foreach($packet->clientData["AnimatedImageData"] as $animatedData){
+			$animations[] = new SkinAnimation(new SerializedImage($animatedData["ImageWidth"], $animatedData["ImageHeight"], base64_decode($animatedData["Image"])), $animatedData["Type"], $animatedData["Frames"]);
+		}
 		$skin = new Skin(
 			$packet->clientData["SkinId"],
-			base64_decode($packet->clientData["SkinData"] ?? ""),
-			base64_decode($packet->clientData["CapeData"] ?? ""),
-			$packet->clientData["SkinGeometryName"] ?? "",
-			base64_decode($packet->clientData["SkinGeometry"] ?? "")
+			base64_decode($packet->clientData["SkinResourcePatch"] ?? ""),
+			new SerializedImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData" ?? ""])), //SerializedImage
+			$animations,
+			new SerializedImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"] ?? "")),
+			base64_decode($packet->clientData["SkinGeometryData"] ?? ""),
+			base64_decode($packet->clientData["SkinAnimationData"] ?? ""),
+			(bool) $packet->clientData["PremiumSkin"] ?? false,
+			(bool) $packet->clientData["PersonaSkin"] ?? false,
+			(bool) $packet->clientData["CapeOnClassicSkin"] ?? false,
+			$packet->clientData["CapeId"] ?? ""
 		);
 
 		if(!$skin->isValid()){

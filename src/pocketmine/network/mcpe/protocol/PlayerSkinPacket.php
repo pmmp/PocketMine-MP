@@ -27,6 +27,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\entity\Skin;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\utils\SerializedImage;
+use pocketmine\utils\SkinAnimation;
 use pocketmine\utils\UUID;
 
 class PlayerSkinPacket extends DataPacket{
@@ -34,43 +36,53 @@ class PlayerSkinPacket extends DataPacket{
 
 	/** @var UUID */
 	public $uuid;
-	/** @var string */
-	public $oldSkinName = "";
-	/** @var string */
-	public $newSkinName = "";
 	/** @var Skin */
 	public $skin;
-	/** @var bool */
-	public $premiumSkin = false;
 
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
 
 		$skinId = $this->getString();
-		$this->newSkinName = $this->getString();
-		$this->oldSkinName = $this->getString();
-		$skinData = $this->getString();
-		$capeData = $this->getString();
-		$geometryModel = $this->getString();
+		$skinResourcePatch = $this->getString();
+		$skinData = $this->getImage();
+		$animations = [];
+		for($i = 0; $i < $this->getLInt(); ++$i){
+			$animations[] = new SkinAnimation($this->getImage(), $this->getLInt(), $this->getLFloat());
+		}
+		$capeData = $this->getImage();
 		$geometryData = $this->getString();
+		$animationData = $this->getString();
+		$premium = $this->getBool();
+		$persona = $this->getBool();
+		$capeOnClassic = $this->getBool();
+		$capeId = $this->getString();
+		$fullSkinId = $this->getString();
 
-		$this->skin = new Skin($skinId, $skinData, $capeData, $geometryModel, $geometryData);
-
-		$this->premiumSkin = $this->getBool();
+		$this->skin = new Skin(
+			$skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId
+		);
 	}
 
 	protected function encodePayload(){
 		$this->putUUID($this->uuid);
 
 		$this->putString($this->skin->getSkinId());
-		$this->putString($this->newSkinName);
-		$this->putString($this->oldSkinName);
-		$this->putString($this->skin->getSkinData());
-		$this->putString($this->skin->getCapeData());
-		$this->putString($this->skin->getGeometryName());
+		$this->putString($this->skin->getSkinResourcePatch());
+		$this->putImage($this->skin->getSkinData());
+		$this->putLInt(count($this->skin->getAnimations()));
+		foreach($this->skin->getAnimations() as $animation){
+			$this->putImage($animation->getImage());
+			$this->putLInt($animation->getType());
+			$this->putLFloat($animation->getFrames());
+		}
+		$this->putImage($this->skin->getCapeData());
 		$this->putString($this->skin->getGeometryData());
-
-		$this->putBool($this->premiumSkin);
+		$this->putString($this->skin->getAnimationData());
+		$this->putBool($this->skin->getPremium());
+		$this->putBool($this->skin->getPersona());
+		$this->putBool($this->skin->getCapeOnClassic());
+		$this->putString($this->skin->getCapeId());
+		$this->putString($this->skin->getFullSkinId());
 	}
 
 	public function handle(NetworkSession $session) : bool{

@@ -29,6 +29,8 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\entity\Skin;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\utils\SerializedImage;
+use pocketmine\utils\SkinAnimation;
 use function count;
 
 class PlayerListPacket extends DataPacket{
@@ -57,22 +59,32 @@ class PlayerListPacket extends DataPacket{
 				$entry->uuid = $this->getUUID();
 				$entry->entityUniqueId = $this->getEntityUniqueId();
 				$entry->username = $this->getString();
-
-				$skinId = $this->getString();
-				$skinData = $this->getString();
-				$capeData = $this->getString();
-				$geometryName = $this->getString();
-				$geometryData = $this->getString();
-
-				$entry->skin = new Skin(
-					$skinId,
-					$skinData,
-					$capeData,
-					$geometryName,
-					$geometryData
-				);
 				$entry->xboxUserId = $this->getString();
 				$entry->platformChatId = $this->getString();
+				$entry->buildPlatform = $this->getLInt();
+
+				$skinId = $this->getString();
+				$skinResourcePatch = $this->getString();
+				$skinData = $this->getImage();
+				$animations = [];
+				for($i = 0; $i < $this->getLInt(); ++$i){
+					$animations[] = new SkinAnimation($this->getImage(), $this->getLInt(), $this->getLFloat());
+				}
+				$capeData = $this->getImage();
+				$geometryData = $this->getString();
+				$animationData = $this->getString();
+				$premium = $this->getBool();
+				$persona = $this->getBool();
+				$capeOnClassic = $this->getBool();
+				$capeId = $this->getString();
+				$fullSkinId = $this->getString();
+
+				$entry->skin = new Skin(
+					$skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId
+				);
+
+				$entry->isTeacher = $this->getBool();
+				$entry->isHost = $this->getBool();
 			}else{
 				$entry->uuid = $this->getUUID();
 			}
@@ -89,13 +101,30 @@ class PlayerListPacket extends DataPacket{
 				$this->putUUID($entry->uuid);
 				$this->putEntityUniqueId($entry->entityUniqueId);
 				$this->putString($entry->username);
-				$this->putString($entry->skin->getSkinId());
-				$this->putString($entry->skin->getSkinData());
-				$this->putString($entry->skin->getCapeData());
-				$this->putString($entry->skin->getGeometryName());
-				$this->putString($entry->skin->getGeometryData());
 				$this->putString($entry->xboxUserId);
 				$this->putString($entry->platformChatId);
+				$this->putLInt($entry->buildPlatform);
+
+				$this->putString($entry->skin->getSkinId());
+				$this->putString($entry->skin->getSkinResourcePatch());
+				$this->putImage($entry->skin->getSkinData());
+				$this->putLInt(count($entry->skin->getAnimations()));
+				foreach($entry->skin->getAnimations() as $animation){
+					$this->putImage($animation->getImage());
+					$this->putLInt($animation->getType());
+					$this->putLFloat($animation->getFrames());
+				}
+				$this->putImage($entry->skin->getCapeData());
+				$this->putString($entry->skin->getGeometryData());
+				$this->putString($entry->skin->getAnimationData());
+				$this->putBool($entry->skin->getPremium());
+				$this->putBool($entry->skin->getPersona());
+				$this->putBool($entry->skin->getCapeOnClassic());
+				$this->putString($entry->skin->getCapeId());
+				$this->putString($entry->skin->getFullSkinId());
+
+				$this->putBool($entry->isTeacher);
+				$this->putBool($entry->isHost);
 			}else{
 				$this->putUUID($entry->uuid);
 			}

@@ -39,6 +39,7 @@ use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
+use pocketmine\utils\SerializedImage;
 use pocketmine\utils\UUID;
 use function count;
 use function strlen;
@@ -72,6 +73,19 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putLInt($uuid->getPart(0));
 		$this->putLInt($uuid->getPart(3));
 		$this->putLInt($uuid->getPart(2));
+	}
+
+	public function putImage(SerializedImage $image) : void{
+		$this->putLInt($image->getWidth());
+		$this->putLInt($image->getHeight());
+		$this->putString($image->getData());
+	}
+
+	public function getImage() : SerializedImage{
+		$width = $this->getLInt();
+		$height = $this->getLInt();
+		$data = $this->getString();
+		return new SerializedImage($height, $width, $data);
 	}
 
 	public function getSlot() : Item{
