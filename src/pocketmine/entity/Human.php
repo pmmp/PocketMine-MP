@@ -42,7 +42,9 @@ use pocketmine\item\Totem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
@@ -54,8 +56,11 @@ use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\Player;
+use pocketmine\utils\SerializedImage;
+use pocketmine\utils\SkinAnimation;
 use pocketmine\utils\UUID;
 use function array_filter;
+use function array_map;
 use function array_merge;
 use function array_rand;
 use function array_values;
@@ -115,13 +120,35 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function deserializeSkinNBT(CompoundTag $skinTag) : Skin{
-		$skin = new Skin(
-			$skinTag->getString("Name"),
-			$skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
-			$skinTag->getByteArray("CapeData", ""),
-			$skinTag->getString("GeometryName", ""),
-			$skinTag->getByteArray("GeometryData", "")
-		);
+		if($skinTag->hasTag("SkinData")) { //new format (1.13+)
+			$skin = new Skin(
+				$skinTag->getString("SkinId"),
+				$skinTag->getByteArray("SkinResourcePatch"),
+				new SerializedImage($skinTag->getInt("SkinImageWidth"), $skinTag->getInt("SkinImageHeight"), $skinTag->getByteArray("SkinData")),
+				array_map(static function(CompoundTag $animation) : SkinAnimation {
+					return new SkinAnimation(new SerializedImage($animation->getInt("ImageWidth"), $animation->getInt("ImageHeight"), $animation->getByteArray("Image")), $animation->getInt("Type"), $animation->getFloat("Frames"));
+				}, $skinTag->getListTag("AnimationImageData")->getAllValues()),
+				new SerializedImage($skinTag->getInt("CapeImageWidth"), $skinTag->getInt("CapeImageHeight"), $skinTag->getByteArray("CapeData")),
+				$skinTag->getByteArray("GeometryData"),
+				$skinTag->getByteArray("AnimationData"),
+				$skinTag->getByte("PremiumSkin") === 1,
+				$skinTag->getByte("PersonaSkin") === 1,
+				$skinTag->getByte("CapeOnClassicSkin") === 1,
+				$skinTag->getString("CapeId")
+			);
+		} else { //old format
+			$skin = new Skin(
+				$skinTag->getString("Name"),
+				"",
+				SerializedImage::fromLegacy($skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data")), //old data (this used to be saved as a StringTag in older versions of PM)
+				[],
+				SerializedImage::fromLegacy($skinTag->getByteArray("CapeData", "")),
+				$skinTag->getByteArray("GeometryData", ""),
+				"",
+				Skin::convertLegacyGeometryName($skinTag->getString("GeometryName", "")),
+			);
+		}
+
 		$skin->validate();
 		return $skin;
 	}
@@ -606,7 +633,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$this->setNameTag($this->namedtag->getString("NameTag"));
 		}
 
-		$this->uuid = UUID::fromData((string) $this->getId(), $this->skin->getSkinData(), $this->getNameTag());
+		$this->uuid = UUID::fromData((string) $this->getId(), $this->skin->getSkinData()->getData(), $this->getNameTag());
 	}
 
 	protected function initEntity() : void{
@@ -828,11 +855,32 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		if($this->skin !== null){
 			$this->namedtag->setTag(new CompoundTag("Skin", [
-				new StringTag("Name", $this->skin->getSkinId()),
-				new ByteArrayTag("Data", $this->skin->getSkinData()),
-				new ByteArrayTag("CapeData", $this->skin->getCapeData()),
-				new StringTag("GeometryName", $this->skin->getGeometryName()),
-				new ByteArrayTag("GeometryData", $this->skin->getGeometryData())
+				new StringTag("SkinId", $this->skin->getSkinId()),
+				new ByteArrayTag("SkinData", $this->skin->getSkinData()->getData()),
+				new IntTag("SkinImageWidth", $this->skin->getSkinData()->getWidth()),
+				new IntTag("SkinImageHeight", $this->skin->getSkinData()->getHeight()),
+
+				new StringTag("CapeId", $this->skin->getSkinId()),
+				new ByteArrayTag("CapeData", $this->skin->getCapeData()->getData()),
+				new IntTag("CapeImageWidth", $this->skin->getCapeData()->getWidth()),
+				new IntTag("CapeImageHeight", $this->skin->getCapeData()->getHeight()),
+
+				new ByteArrayTag("SkinResourcePatch", $this->skin->getSkinResourcePatch()),
+				new ByteArrayTag("GeometryData", $this->skin->getGeometryData()),
+				new ByteArrayTag("AnimationData", $this->skin->getAnimationData()),
+				new ByteTag("PremiumSkin", $this->skin->isPremium() ? 1 : 0),
+				new ByteTag("PersonaSkin", $this->skin->isPersona() ? 1 : 0),
+				new ByteTag("CapeOnClassicSkin", $this->skin->isCapeOnClassic() ? 1 : 0),
+
+				new ListTag("AnimationImageData", array_map(static function(SkinAnimation $animation) : CompoundTag {
+					return new CompoundTag("", [
+						new FloatTag("Frames", $animation->getFrames()),
+						new IntTag("Type", $animation->getType()),
+						new IntTag("ImageWidth", $animation->getImage()->getWidth()),
+						new IntTag("ImageHeight", $animation->getImage()->getHeight()),
+						new ByteArrayTag("Image", $animation->getImage()->getData()),
+					]);
+				}, $this->skin->getAnimations()))
 			]));
 		}
 	}

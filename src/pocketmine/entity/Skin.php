@@ -27,7 +27,6 @@ use Ahc\Json\Comment as CommentedJsonDecoder;
 use InvalidArgumentException;
 use pocketmine\utils\SerializedImage;
 use pocketmine\utils\SkinAnimation;
-use function json_decode;
 use function json_encode;
 
 class Skin{
@@ -76,7 +75,7 @@ class Skin{
 		$this->debloatGeometryData();
 	}
 
-	private static function convertLegacyGeometryName(string $geometryName) : string{
+	public static function convertLegacyGeometryName(string $geometryName) : string{
 		return '{"geometry" : {"default" : "' . $geometryName . '"}}';
 	}
 
