@@ -54,6 +54,7 @@ use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandOutputPacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
+use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
@@ -693,4 +694,8 @@ abstract class NetworkSession{
 	public function handleClientCacheMissResponse(ClientCacheMissResponsePacket $packet) : bool{
 		return false;
 	}
+
+	public function handleCompletedUsingItem(CompletedUsingItemPacket $packet) : bool{
+	    return false;
+    }
 }

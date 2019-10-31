@@ -41,6 +41,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 use function array_map;
@@ -838,6 +839,15 @@ class Item implements ItemIds, \JsonSerializable{
 	public function onAttackEntity(Entity $victim) : bool{
 		return false;
 	}
+
+    /**
+     * @param Player $player
+     * @param int $ticksUsed
+     * @return int
+     */
+	public function completeAction(Player $player, int $ticksUsed) : int{
+        return CompletedUsingItemPacket::ACTION_UNKNOWN;
+    }
 
 	/**
 	 * Returns the number of ticks a player must wait before activating this item again.

@@ -166,6 +166,7 @@ class PacketPool{
 		static::registerPacket(new UpdateBlockPropertiesPacket());
 		static::registerPacket(new ClientCacheBlobStatusPacket());
 		static::registerPacket(new ClientCacheMissResponsePacket());
+		static::registerPacket(new CompletedUsingItemPacket());
 	}
 
 	/**
