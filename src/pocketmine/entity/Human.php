@@ -120,7 +120,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function deserializeSkinNBT(CompoundTag $skinTag) : Skin{
-		if($skinTag->hasTag("SkinData")) { //new format (1.13+)
+		if($skinTag->hasTag("SkinData")){ //new format (1.13+)
 			$skin = new Skin(
 				$skinTag->getString("SkinId"),
 				$skinTag->getByteArray("SkinResourcePatch"),

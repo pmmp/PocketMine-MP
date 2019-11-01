@@ -38,9 +38,9 @@ class RespawnPacket extends DataPacket{
 
 	/** @var Vector3 */
 	public $position;
-	/** @var  int */
+	/** @var int */
     public $respawnState = self::STATE_SEARCHING_FOR_SPAWN;
-    /** @var  int */
+    /** @var int */
     public $runtimeEntityId; //???
 
 	protected function decodePayload(){

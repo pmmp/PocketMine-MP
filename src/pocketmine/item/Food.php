@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerItemConsumeEvent;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\Player;
 
@@ -44,8 +45,8 @@ abstract class Food extends Item implements FoodSource{
 		return [];
 	}
 
-	public function completeAction(Player $player, int $ticksUsed) : int{
-        if ($this->consume($player)) {
+    public function completeAction(Player $player, int $ticksUsed) : int{
+        if($this->consume($player)){
             return CompletedUsingItemPacket::ACTION_CONSUME;
         }
         return CompletedUsingItemPacket::ACTION_UNKNOWN;
@@ -71,5 +72,9 @@ abstract class Food extends Item implements FoodSource{
 
     public function onConsume(Living $consumer){
 
-	}
+    }
+
+    public function onClickAir(Player $player, Vector3 $directionVector) : bool{
+        return true;
+    }
 }

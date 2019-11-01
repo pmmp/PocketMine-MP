@@ -1128,6 +1128,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new RespawnPacket();
 		$pk->position = $pos->add(0, $this->baseOffset, 0);
         $pk->respawnState = RespawnPacket::STATE_SEARCHING_FOR_SPAWN;
+        $pk->runtimeEntityId = $this->id;
 
 		$this->dataPacket($pk);
 	}
@@ -2022,10 +2023,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function handleRespawn(RespawnPacket $packet): bool
     {
-        if (!$this->isAlive() && $packet->respawnState === RespawnPacket::STATE_CLIENT_READY_TO_SPAWN) {
+        if(!$this->isAlive() && $packet->respawnState === RespawnPacket::STATE_CLIENT_READY_TO_SPAWN){
             $packet = new RespawnPacket();
             $packet->position = $this->asVector3();
             $packet->respawnState = RespawnPacket::STATE_READY_TO_SPAWN;
+            $packet->runtimeEntityId = $this->id;
             $this->dataPacket($packet);
         }
 
@@ -2598,7 +2600,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								$this->inventory->setItemInHand($item);
 							}
 
-                            if ($this->startAction === -1) {
+                            if($this->startAction === -1){
                                 $this->setUsingItem(true);
                                 return true;
                             }

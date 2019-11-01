@@ -25,8 +25,6 @@ namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
 
 class GoldenApple extends Food{
 
@@ -52,8 +50,4 @@ class GoldenApple extends Food{
 			new EffectInstance(Effect::getEffect(Effect::ABSORPTION), 2400)
 		];
 	}
-
-    public function onClickAir(Player $player, Vector3 $directionVector) : bool{
-        return true;
-    }
 }
