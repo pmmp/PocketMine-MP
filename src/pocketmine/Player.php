@@ -2731,6 +2731,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
                                 $ticksUsed = $this->server->getTick() - $this->startAction;
                                 if($item->onRelease($this, $ticksUsed)){
+                                    $this->resetItemCooldown($item);
+                                    $this->inventory->setItemInHand($item);
                                     $pk = new CompletedUsingItemPacket();
                                     $pk->itemId = $item->getId();
                                     $pk->action = $item->getCompletionAction();

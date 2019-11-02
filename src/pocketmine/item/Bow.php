@@ -112,7 +112,6 @@ class Bow extends Tool{
 						$player->getInventory()->removeItem(ItemFactory::get(Item::ARROW, 0, 1));
 					}
 					$this->applyDamage(1);
-					$player->getInventory()->setItemInHand($this);
 				}
 
 				if($entity instanceof Projectile){
