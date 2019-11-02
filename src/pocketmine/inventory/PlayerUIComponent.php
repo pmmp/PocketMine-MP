@@ -24,9 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\Player;
-use function array_map;
 
 class PlayerUIComponent extends BaseInventory{
 

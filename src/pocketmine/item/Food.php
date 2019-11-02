@@ -26,7 +26,6 @@ namespace pocketmine\item;
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\Player;
 
 abstract class Food extends Item implements FoodSource{

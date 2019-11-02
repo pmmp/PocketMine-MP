@@ -189,7 +189,6 @@ use function lcg_value;
 use function max;
 use function microtime;
 use function min;
-use function mt_rand;
 use function preg_match;
 use function round;
 use function spl_object_hash;
