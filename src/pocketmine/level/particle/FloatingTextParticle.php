@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\utils\SerializedImage;
 use pocketmine\utils\UUID;
 use function hash;
 use function str_repeat;
@@ -98,7 +99,7 @@ class FloatingTextParticle extends Particle{
 			$add = new PlayerListPacket();
 			$add->type = PlayerListPacket::TYPE_ADD;
 			$skinData = str_repeat("\x00", 8192);
-			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, new Skin(hash('md5', $skinData), Skin::convertLegacyGeometryName('geometry.humanoid.custom'), $skinData))];
+			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, new Skin(hash('md5', $skinData), Skin::convertLegacyGeometryName('geometry.humanoid.custom'), SerializedImage::fromLegacy($skinData)))];
 			$p[] = $add;
 
 			$pk = new AddPlayerPacket();
