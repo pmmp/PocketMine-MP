@@ -2232,7 +2232,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->spawnZ = $spawnPosition->getFloorZ();
 		$pk->hasAchievementsDisabled = true;
 		$pk->time = $this->level->getTime();
-		$pk->eduMode = false;
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = true;
@@ -3911,10 +3910,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				foreach($drops as $drop){
 					$this->dropItem($drop);
 				}
-
-				$inventory->clearAll();
 			}
 		}
+
+		$this->playerUIInventory->clearAll();
 
 		if($this->craftingGrid->getSize() > CraftingGrid::SIZE_SMALL){
 			$this->craftingGrid = $this->playerUIInventory->getCraftingGrid();

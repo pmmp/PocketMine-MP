@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\Player;
 
 class PlayerUIComponent extends BaseInventory{
@@ -76,23 +77,28 @@ class PlayerUIComponent extends BaseInventory{
 
     public function getContents(bool $includeEmpty = false) : array{
         $contents = [];
+        $air = null;
 
         foreach($this->slots as $i => $slot){
-            if($slot === null || $i < $this->offset || $i > $this->offset + $this->size){
+            if($i < $this->offset || $i > $this->offset + $this->size){
                 continue;
             }
-            $contents[$i] = clone $slot;
+            if($slot !== null){
+                $contents[$i] = clone $slot;
+            }elseif($includeEmpty){
+                $contents[$i] = $air ?? ($air = ItemFactory::get(Item::AIR, 0, 0));
+            }
         }
 
         return $contents;
     }
 
     public function sendContents($target) : void{
-
+        $this->playerUI->sendContents($target);
     }
 
     public function sendSlot(int $index, $target) : void{
-
+        $this->playerUI->sendSlot($index + $this->offset, $target);
     }
 
     public function getViewers() : array{
@@ -120,7 +126,7 @@ class PlayerUIComponent extends BaseInventory{
     }
 
     public function onSlotChange(int $index, Item $before, bool $send) : void{
-
+        $this->playerUI->onSlotChange($index + $this->offset, $before, $send);
     }
 
 }

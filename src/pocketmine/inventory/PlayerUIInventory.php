@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
@@ -81,6 +83,29 @@ class PlayerUIInventory extends BaseInventory{
         $pk = new InventorySlotPacket();
         $pk->inventorySlot = $index;
         $pk->item = $this->getItem($index);
+
+        foreach($target as $player){
+            if($player === $this->getHolder()){
+                $pk->windowId = ContainerIds::UI;
+                $player->dataPacket($pk);
+            }else{
+                if (($id = $player->getWindowId($this)) === ContainerIds::NONE) {
+                    $this->close($player);
+                    continue;
+                }
+                $pk->windowId = $id;
+                $player->dataPacket($pk);
+            }
+        }
+    }
+
+    public function sendContents($target) : void{
+        if($target instanceof Player){
+            $target = [$target];
+        }
+
+        $pk = new InventoryContentPacket();
+        $pk->items = $this->getContents(true);
 
         foreach($target as $player){
             if($player === $this->getHolder()){
