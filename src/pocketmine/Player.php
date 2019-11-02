@@ -2600,17 +2600,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								$this->inventory->setItemInHand($item);
 							}
 
-                            if($this->startAction === -1){
+                            if(!$this->isUsingItem()){
                                 $this->setUsingItem(true);
                                 return true;
                             }
 
                             $ticksUsed = $this->server->getTick() - $this->startAction;
                             $this->setUsingItem(false);
-                            $pk = new CompletedUsingItemPacket();
-                            $pk->itemId = $item->getId();
-                            $pk->action = $item->completeAction($this, $ticksUsed);
-                            $this->dataPacket($pk);
+                            if($item->onUse($this, $ticksUsed)){
+                                $pk = new CompletedUsingItemPacket();
+                                $pk->itemId = $item->getId();
+                                $pk->action = $item->getCompletionAction();
+                                $this->dataPacket($pk);
+                            }
 						}
 
 						return true;
@@ -2726,10 +2728,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 									$this->inventory->sendContents($this);
 									return false;
 								}
-								if($item->onReleaseUsing($this)){
-									$this->resetItemCooldown($item);
-									$this->inventory->setItemInHand($item);
-								}
+
+                                $ticksUsed = $this->server->getTick() - $this->startAction;
+                                if($item->onRelease($this, $ticksUsed)){
+                                    $pk = new CompletedUsingItemPacket();
+                                    $pk->itemId = $item->getId();
+                                    $pk->action = $item->getCompletionAction();
+                                    $this->dataPacket($pk);
+                                }
 							}else{
 								break;
 							}

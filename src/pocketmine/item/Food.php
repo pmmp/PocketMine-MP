@@ -45,14 +45,7 @@ abstract class Food extends Item implements FoodSource{
 		return [];
 	}
 
-    public function completeAction(Player $player, int $ticksUsed) : int{
-        if($this->consume($player)){
-            return CompletedUsingItemPacket::ACTION_CONSUME;
-        }
-        return CompletedUsingItemPacket::ACTION_UNKNOWN;
-    }
-
-    public function consume(Player $player) : bool{
+    public function onUse(Player $player, int $ticksUsed) : bool{
         $ev = new PlayerItemConsumeEvent($player, $this);
         $ev->call();
 
