@@ -49,7 +49,7 @@ class CraftingTable extends Solid{
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
-			$player->setCraftingGrid(new CraftingGrid($player, CraftingGrid::SIZE_BIG));
+			$player->setCraftingGrid($player->getPlayerUIInventory()->getCraftingGrid(CraftingGrid::SIZE_BIG));
 		}
 
 		return true;
