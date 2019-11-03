@@ -139,13 +139,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}else{ //old format
 			$skin = new Skin(
 				$skinTag->getString("Name"),
-				"",
+				Skin::convertLegacyGeometryName($skinTag->getString("GeometryName", "")),
 				SerializedImage::fromLegacy($skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data")), //old data (this used to be saved as a StringTag in older versions of PM)
 				[],
 				SerializedImage::fromLegacy($skinTag->getByteArray("CapeData", "")),
-				$skinTag->getByteArray("GeometryData", ""),
-				"",
-				Skin::convertLegacyGeometryName($skinTag->getString("GeometryName", "")),
+				$skinTag->getByteArray("GeometryData", "")
 			);
 		}
 

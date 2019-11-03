@@ -45,6 +45,8 @@ class SerializedImage{
 
 	public static function fromLegacy(string $skinData) : SerializedImage{
 		switch(strlen($skinData)){
+			case 0:
+				return self::null();
 			case 64 * 32 * 4:
 				return new SerializedImage(64, 32, $skinData);
 			case 64 * 64 * 4:
