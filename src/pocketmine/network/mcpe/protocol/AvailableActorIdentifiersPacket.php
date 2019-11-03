@@ -39,7 +39,7 @@ class AvailableActorIdentifiersPacket extends DataPacket{
 	/** @var string */
 	public $namedtag;
 
-	public static function init() : void {
+	public static function init() : void{
 		self::$NBT_BLOB = file_get_contents(\pocketmine\RESOURCE_PATH . "entity_identifiers.dat");
 	}
 
@@ -55,4 +55,5 @@ class AvailableActorIdentifiersPacket extends DataPacket{
 		return $session->handleAvailableActorIdentifiers($this);
 	}
 }
+
 AvailableActorIdentifiersPacket::init();

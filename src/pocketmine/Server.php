@@ -2549,7 +2549,7 @@ class Server{
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 
-			//$this->getNetwork()->blockAddress($address, 600);
+			$this->getNetwork()->blockAddress($address, 600);
 		}
 		//TODO: add raw packet events
 	}

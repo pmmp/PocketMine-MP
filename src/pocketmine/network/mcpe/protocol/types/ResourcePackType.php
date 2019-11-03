@@ -30,13 +30,13 @@ final class ResourcePackType{
 	}
 
 	public const INVALID = 0;
-    public const ADDON = 1;
-    public const CACHED = 2;
-    public const COPY_PROTECTED = 3;
-    public const BEHAVIOR = 4;
-    public const PERSONA_PIECE = 5;
-    public const RESOURCE = 6;
-    public const SKINS = 7;
-    public const WORLD_TEMPLATE = 8;
-    public const COUNT = 9;
+	public const ADDON = 1;
+	public const CACHED = 2;
+	public const COPY_PROTECTED = 3;
+	public const BEHAVIOR = 4;
+	public const PERSONA_PIECE = 5;
+	public const RESOURCE = 6;
+	public const SKINS = 7;
+	public const WORLD_TEMPLATE = 8;
+	public const COUNT = 9;
 }

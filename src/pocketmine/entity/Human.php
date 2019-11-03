@@ -125,7 +125,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				$skinTag->getString("SkinId"),
 				$skinTag->getByteArray("SkinResourcePatch"),
 				new SerializedImage($skinTag->getInt("SkinImageWidth"), $skinTag->getInt("SkinImageHeight"), $skinTag->getByteArray("SkinData")),
-				array_map(static function(CompoundTag $animation) : SkinAnimation {
+				array_map(static function(CompoundTag $animation) : SkinAnimation{
 					return new SkinAnimation(new SerializedImage($animation->getInt("ImageWidth"), $animation->getInt("ImageHeight"), $animation->getByteArray("Image")), $animation->getInt("Type"), $animation->getFloat("Frames"));
 				}, $skinTag->getListTag("AnimationImageData")->getAllValues()),
 				new SerializedImage($skinTag->getInt("CapeImageWidth"), $skinTag->getInt("CapeImageHeight"), $skinTag->getByteArray("CapeData")),
@@ -136,7 +136,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				$skinTag->getByte("CapeOnClassicSkin") === 1,
 				$skinTag->getString("CapeId")
 			);
-		} else { //old format
+		}else{ //old format
 			$skin = new Skin(
 				$skinTag->getString("Name"),
 				"",
@@ -872,7 +872,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				new ByteTag("PersonaSkin", $this->skin->isPersona() ? 1 : 0),
 				new ByteTag("CapeOnClassicSkin", $this->skin->isCapeOnClassic() ? 1 : 0),
 
-				new ListTag("AnimationImageData", array_map(static function(SkinAnimation $animation) : CompoundTag {
+				new ListTag("AnimationImageData", array_map(static function(SkinAnimation $animation) : CompoundTag{
 					return new CompoundTag("", [
 						new FloatTag("Frames", $animation->getFrames()),
 						new IntTag("Type", $animation->getType()),

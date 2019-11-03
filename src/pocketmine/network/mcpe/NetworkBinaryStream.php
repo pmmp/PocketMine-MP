@@ -521,9 +521,9 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Note: ONLY use this where it is reasonable to allow not specifying the vector.
 	 * For all other purposes, use the non-nullable version.
 	 *
-	 * @param Vector3|null $vector
-	 *
 	 * @see NetworkBinaryStream::putVector3()
+	 *
+	 * @param Vector3|null $vector
 	 *
 	 */
 	public function putVector3Nullable(?Vector3 $vector) : void{

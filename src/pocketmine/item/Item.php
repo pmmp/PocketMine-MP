@@ -24,6 +24,7 @@ declare(strict_types=1);
 /**
  * All the Item classes
  */
+
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
@@ -827,30 +828,30 @@ class Item implements ItemIds, \JsonSerializable{
 		return false;
 	}
 
-    /**
-     * @return int
-     */
+	/**
+	 * @return int
+	 */
 	public function getCompletionAction() : int{
-        return CompletedUsingItemPacket::ACTION_UNKNOWN;
-    }
+		return CompletedUsingItemPacket::ACTION_UNKNOWN;
+	}
 
-    /**
-     * @param Player $player
-     * @param int $ticksUsed
-     * @return bool
-     */
-    public function onUse(Player $player, int $ticksUsed) : bool{
-	    return false;
-    }
+	/**
+	 * @param Player $player
+	 * @param int    $ticksUsed
+	 * @return bool
+	 */
+	public function onUse(Player $player, int $ticksUsed) : bool{
+		return false;
+	}
 
-    /**
-     * @param Player $player
-     * @param int $ticksUsed
-     * @return bool
-     */
-    public function onRelease(Player $player, int $ticksUsed) : bool{
-	    return false;
-    }
+	/**
+	 * @param Player $player
+	 * @param int    $ticksUsed
+	 * @return bool
+	 */
+	public function onRelease(Player $player, int $ticksUsed) : bool{
+		return false;
+	}
 
 	/**
 	 * Returns the number of ticks a player must wait before activating this item again.

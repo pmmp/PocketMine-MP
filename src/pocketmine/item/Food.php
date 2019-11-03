@@ -44,29 +44,29 @@ abstract class Food extends Item implements FoodSource{
 		return [];
 	}
 
-    public function onUse(Player $player, int $ticksUsed) : bool{
-        $ev = new PlayerItemConsumeEvent($player, $this);
-        $ev->call();
+	public function onUse(Player $player, int $ticksUsed) : bool{
+		$ev = new PlayerItemConsumeEvent($player, $this);
+		$ev->call();
 
-        if($ev->isCancelled() or !$player->consumeObject($this)){
-            $player->getInventory()->sendContents($player);
-            return false;
-        }
+		if($ev->isCancelled() or !$player->consumeObject($this)){
+			$player->getInventory()->sendContents($player);
+			return false;
+		}
 
-        if($player->isSurvival()){
-            $this->pop();
-            $player->getInventory()->setItemInHand($this);
-            $player->getInventory()->addItem($this->getResidue());
-        }
+		if($player->isSurvival()){
+			$this->pop();
+			$player->getInventory()->setItemInHand($this);
+			$player->getInventory()->addItem($this->getResidue());
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    public function onConsume(Living $consumer){
+	public function onConsume(Living $consumer){
 
-    }
+	}
 
-    public function onClickAir(Player $player, Vector3 $directionVector) : bool{
-        return true;
-    }
+	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
+		return true;
+	}
 }

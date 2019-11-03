@@ -50,12 +50,12 @@ class Bow extends Tool{
 	}
 
 	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
-	    return $player->getInventory()->contains(Item::get(Item::ARROW)) || $player->isCreative();
-    }
+		return $player->getInventory()->contains(Item::get(Item::ARROW)) || $player->isCreative();
+	}
 
-    public function getCompletionAction() : int{
-	    return CompletedUsingItemPacket::ACTION_SHOOT;
-    }
+	public function getCompletionAction() : int{
+		return CompletedUsingItemPacket::ACTION_SHOOT;
+	}
 
 	public function onRelease(Player $player, int $ticksUsed) : bool{
 		if($player->isSurvival() and !$player->getInventory()->contains(ItemFactory::get(Item::ARROW, 0, 1))){

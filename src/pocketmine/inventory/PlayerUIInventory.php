@@ -31,102 +31,102 @@ use pocketmine\Player;
 
 class PlayerUIInventory extends BaseInventory{
 
-    /** @var Player */
-    protected $holder;
-    /** @var PlayerCursorInventory */
-    protected $cursorInventory;
-    /** @var CraftingGrid */
-    protected $craftingGrid;
-    /** @var CraftingGrid */
-    protected $bigCraftingGrid;
+	/** @var Player */
+	protected $holder;
+	/** @var PlayerCursorInventory */
+	protected $cursorInventory;
+	/** @var CraftingGrid */
+	protected $craftingGrid;
+	/** @var CraftingGrid */
+	protected $bigCraftingGrid;
 
-    public function __construct(Player $holder){
-        $this->holder = $holder;
-        $this->cursorInventory = new PlayerCursorInventory($this);
-        $this->craftingGrid = new CraftingGrid($this, CraftingGrid::OFFSET_SMALL, CraftingGrid::SIZE_SMALL);
-        $this->bigCraftingGrid = new CraftingGrid($this, CraftingGrid::OFFSET_BIG, CraftingGrid::SIZE_BIG);
-        parent::__construct();
-    }
+	public function __construct(Player $holder){
+		$this->holder = $holder;
+		$this->cursorInventory = new PlayerCursorInventory($this);
+		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::OFFSET_SMALL, CraftingGrid::SIZE_SMALL);
+		$this->bigCraftingGrid = new CraftingGrid($this, CraftingGrid::OFFSET_BIG, CraftingGrid::SIZE_BIG);
+		parent::__construct();
+	}
 
-    public function getName() : string{
-        return "UI";
-    }
+	public function getName() : string{
+		return "UI";
+	}
 
-    public function getSize() : int{
-        return 51;
-    }
+	public function getSize() : int{
+		return 51;
+	}
 
-    public function getDefaultSize() : int{
-        return 51;
-    }
+	public function getDefaultSize() : int{
+		return 51;
+	}
 
-    public function getCursorInventory() : PlayerCursorInventory{
-        return $this->cursorInventory;
-    }
+	public function getCursorInventory() : PlayerCursorInventory{
+		return $this->cursorInventory;
+	}
 
-    public function getCraftingGrid(int $size = CraftingGrid::SIZE_SMALL) : CraftingGrid{
-        if($size > CraftingGrid::SIZE_SMALL){
-            return $this->bigCraftingGrid;
-        }
-        return $this->craftingGrid;
-    }
+	public function getCraftingGrid(int $size = CraftingGrid::SIZE_SMALL) : CraftingGrid{
+		if($size > CraftingGrid::SIZE_SMALL){
+			return $this->bigCraftingGrid;
+		}
+		return $this->craftingGrid;
+	}
 
-    public function setSize(int $size) : void{
+	public function setSize(int $size) : void{
 
-    }
+	}
 
-    public function sendSlot(int $index, $target) : void{
-        if($target instanceof Player){
-            $target = [$target];
-        }
+	public function sendSlot(int $index, $target) : void{
+		if($target instanceof Player){
+			$target = [$target];
+		}
 
-        $pk = new InventorySlotPacket();
-        $pk->inventorySlot = $index;
-        $pk->item = $this->getItem($index);
+		$pk = new InventorySlotPacket();
+		$pk->inventorySlot = $index;
+		$pk->item = $this->getItem($index);
 
-        foreach($target as $player){
-            if($player === $this->getHolder()){
-                $pk->windowId = ContainerIds::UI;
-                $player->dataPacket($pk);
-            }else{
-                if (($id = $player->getWindowId($this)) === ContainerIds::NONE) {
-                    $this->close($player);
-                    continue;
-                }
-                $pk->windowId = $id;
-                $player->dataPacket($pk);
-            }
-        }
-    }
+		foreach($target as $player){
+			if($player === $this->getHolder()){
+				$pk->windowId = ContainerIds::UI;
+				$player->dataPacket($pk);
+			}else{
+				if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
+					$this->close($player);
+					continue;
+				}
+				$pk->windowId = $id;
+				$player->dataPacket($pk);
+			}
+		}
+	}
 
-    public function sendContents($target) : void{
-        if($target instanceof Player){
-            $target = [$target];
-        }
+	public function sendContents($target) : void{
+		if($target instanceof Player){
+			$target = [$target];
+		}
 
-        $pk = new InventoryContentPacket();
-        $pk->items = $this->getContents(true);
+		$pk = new InventoryContentPacket();
+		$pk->items = $this->getContents(true);
 
-        foreach($target as $player){
-            if($player === $this->getHolder()){
-                $pk->windowId = ContainerIds::UI;
-                $player->dataPacket($pk);
-            }else{
-                if (($id = $player->getWindowId($this)) === ContainerIds::NONE) {
-                    $this->close($player);
-                    continue;
-                }
-                $pk->windowId = $id;
-                $player->dataPacket($pk);
-            }
-        }
-    }
+		foreach($target as $player){
+			if($player === $this->getHolder()){
+				$pk->windowId = ContainerIds::UI;
+				$player->dataPacket($pk);
+			}else{
+				if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
+					$this->close($player);
+					continue;
+				}
+				$pk->windowId = $id;
+				$player->dataPacket($pk);
+			}
+		}
+	}
 
-    /**
-     * This override is here for documentation and code completion purposes only.
-     * @return Player
-     */
-    public function getHolder(){
-        return $this->holder;
-    }
+	/**
+	 * This override is here for documentation and code completion purposes only.
+	 * @return Player
+	 */
+	public function getHolder(){
+		return $this->holder;
+	}
 }

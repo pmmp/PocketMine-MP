@@ -25,14 +25,14 @@ namespace pocketmine\inventory;
 
 class CraftingGrid extends PlayerUIComponent{
 
-    public const OFFSET_SMALL = 28;
-    public const OFFSET_BIG = 32;
+	public const OFFSET_SMALL = 28;
+	public const OFFSET_BIG = 32;
 
-    public const SIZE_SMALL = 4;
-    public const SIZE_BIG = 9;
+	public const SIZE_SMALL = 4;
+	public const SIZE_BIG = 9;
 
-    public function __construct(PlayerUIInventory $playerUI, int $offset, int $size){
-        parent::__construct($playerUI, $offset, $size);
-    }
+	public function __construct(PlayerUIInventory $playerUI, int $offset, int $size){
+		parent::__construct($playerUI, $offset, $size);
+	}
 
 }

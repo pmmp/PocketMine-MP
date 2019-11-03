@@ -696,6 +696,6 @@ abstract class NetworkSession{
 	}
 
 	public function handleCompletedUsingItem(CompletedUsingItemPacket $packet) : bool{
-	    return false;
-    }
+		return false;
+	}
 }

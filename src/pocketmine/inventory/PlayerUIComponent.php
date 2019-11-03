@@ -29,104 +29,104 @@ use pocketmine\Player;
 
 class PlayerUIComponent extends BaseInventory{
 
-    /** @var PlayerUIInventory */
-    protected $playerUI;
-    /** @var int */
-    private $offset;
-    /** @var int */
-    private $size;
+	/** @var PlayerUIInventory */
+	protected $playerUI;
+	/** @var int */
+	private $offset;
+	/** @var int */
+	private $size;
 
-    public function __construct(PlayerUIInventory $playerUI, int $offset, int $size){
-        $this->playerUI = $playerUI;
-        $this->offset = $offset;
-        $this->size = $size;
-        parent::__construct([], $size);
-    }
+	public function __construct(PlayerUIInventory $playerUI, int $offset, int $size){
+		$this->playerUI = $playerUI;
+		$this->offset = $offset;
+		$this->size = $size;
+		parent::__construct([], $size);
+	}
 
-    public function getName() : string{
-        return "UI";
-    }
+	public function getName() : string{
+		return "UI";
+	}
 
-    public function getSize() : int{
-        return $this->size;
-    }
+	public function getSize() : int{
+		return $this->size;
+	}
 
-    public function getDefaultSize() : int{
-        return 1;
-    }
+	public function getDefaultSize() : int{
+		return 1;
+	}
 
-    public function getMaxStackSize() : int{
-        return 64;
-    }
+	public function getMaxStackSize() : int{
+		return 64;
+	}
 
-    public function setMaxStackSize(int $size) : void{
+	public function setMaxStackSize(int $size) : void{
 
-    }
+	}
 
-    public function getTitle() : string{
-        return '';
-    }
+	public function getTitle() : string{
+		return '';
+	}
 
-    public function getItem(int $index) : Item{
-        return $this->playerUI->getItem($index + $this->offset);
-    }
+	public function getItem(int $index) : Item{
+		return $this->playerUI->getItem($index + $this->offset);
+	}
 
-    public function setItem(int $index, Item $item, bool $send = true) : bool{
-        return $this->playerUI->setItem($index + $this->offset, $item, $send);
-    }
+	public function setItem(int $index, Item $item, bool $send = true) : bool{
+		return $this->playerUI->setItem($index + $this->offset, $item, $send);
+	}
 
-    public function getContents(bool $includeEmpty = false) : array{
-        $contents = [];
-        $air = null;
+	public function getContents(bool $includeEmpty = false) : array{
+		$contents = [];
+		$air = null;
 
-        foreach($this->slots as $i => $slot){
-            if($i < $this->offset || $i > $this->offset + $this->size){
-                continue;
-            }
-            if($slot !== null){
-                $contents[$i] = clone $slot;
-            }elseif($includeEmpty){
-                $contents[$i] = $air ?? ($air = ItemFactory::get(Item::AIR, 0, 0));
-            }
-        }
+		foreach($this->slots as $i => $slot){
+			if($i < $this->offset || $i > $this->offset + $this->size){
+				continue;
+			}
+			if($slot !== null){
+				$contents[$i] = clone $slot;
+			}elseif($includeEmpty){
+				$contents[$i] = $air ?? ($air = ItemFactory::get(Item::AIR, 0, 0));
+			}
+		}
 
-        return $contents;
-    }
+		return $contents;
+	}
 
-    public function sendContents($target) : void{
-        $this->playerUI->sendContents($target);
-    }
+	public function sendContents($target) : void{
+		$this->playerUI->sendContents($target);
+	}
 
-    public function sendSlot(int $index, $target) : void{
-        $this->playerUI->sendSlot($index + $this->offset, $target);
-    }
+	public function sendSlot(int $index, $target) : void{
+		$this->playerUI->sendSlot($index + $this->offset, $target);
+	}
 
-    public function getViewers() : array{
-        return $this->playerUI->viewers;
-    }
+	public function getViewers() : array{
+		return $this->playerUI->viewers;
+	}
 
-    public function getHolder() : Player{
-        return $this->playerUI->getHolder();
-    }
+	public function getHolder() : Player{
+		return $this->playerUI->getHolder();
+	}
 
-    public function onOpen(Player $who) : void{
+	public function onOpen(Player $who) : void{
 
-    }
+	}
 
-    public function open(Player $who) : bool{
-        return false;
-    }
+	public function open(Player $who) : bool{
+		return false;
+	}
 
-    public function close(Player $who) : void{
+	public function close(Player $who) : void{
 
-    }
+	}
 
-    public function onClose(Player $who) : void{
+	public function onClose(Player $who) : void{
 
-    }
+	}
 
-    public function onSlotChange(int $index, Item $before, bool $send) : void{
-        $this->playerUI->onSlotChange($index + $this->offset, $before, $send);
-    }
+	public function onSlotChange(int $index, Item $before, bool $send) : void{
+		$this->playerUI->onSlotChange($index + $this->offset, $before, $send);
+	}
 
 }

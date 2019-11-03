@@ -56,12 +56,12 @@ class PlayerListPacket extends DataPacket{
 				$entry->uuid = $this->getUUID();
 				$entry->entityUniqueId = $this->getEntityUniqueId();
 				$entry->username = $this->getString();
-                $entry->xboxUserId = $this->getString();
-                $entry->platformChatId = $this->getString();
-                $entry->buildPlatform = $this->getLInt();
-                $entry->skin = $this->getSkin();
-                $entry->isTeacher = $this->getBool();
-                $entry->isHost = $this->getBool();
+				$entry->xboxUserId = $this->getString();
+				$entry->platformChatId = $this->getString();
+				$entry->buildPlatform = $this->getLInt();
+				$entry->skin = $this->getSkin();
+				$entry->isTeacher = $this->getBool();
+				$entry->isHost = $this->getBool();
 			}else{
 				$entry->uuid = $this->getUUID();
 			}
@@ -78,12 +78,12 @@ class PlayerListPacket extends DataPacket{
 				$this->putUUID($entry->uuid);
 				$this->putEntityUniqueId($entry->entityUniqueId);
 				$this->putString($entry->username);
-                $this->putString($entry->xboxUserId);
-                $this->putString($entry->platformChatId);
-                $this->putLInt($entry->buildPlatform);
-                $this->putSkin($entry->skin);
-                $this->putBool($entry->isTeacher);
-                $this->putBool($entry->isHost);
+				$this->putString($entry->xboxUserId);
+				$this->putString($entry->platformChatId);
+				$this->putLInt($entry->buildPlatform);
+				$this->putSkin($entry->skin);
+				$this->putBool($entry->isTeacher);
+				$this->putBool($entry->isHost);
 
 			}else{
 				$this->putUUID($entry->uuid);

@@ -37,7 +37,7 @@ class BiomeDefinitionListPacket extends DataPacket{
 	/** @var string */
 	public $namedtag;
 
-	public static function init() : void {
+	public static function init() : void{
 		self::$NBT_BLOB = file_get_contents(\pocketmine\RESOURCE_PATH . "biome_definitions.dat");
 	}
 
@@ -53,4 +53,5 @@ class BiomeDefinitionListPacket extends DataPacket{
 		return $session->handleBiomeDefinitionList($this);
 	}
 }
+
 BiomeDefinitionListPacket::init();

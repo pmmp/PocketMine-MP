@@ -126,8 +126,8 @@ class Skin{
 	}
 
 	/**
-	 * @return bool
 	 * @deprecated
+	 * @return bool
 	 */
 	public function isValid() : bool{
 		try{

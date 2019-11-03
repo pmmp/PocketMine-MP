@@ -25,34 +25,29 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 
-class SkinAnimation
-{
-    /** @var SerializedImage */
-    private $image;
-    /** @var int */
-    private $type;
-    /** @var float */
-    private $frames;
+class SkinAnimation{
+	/** @var SerializedImage */
+	private $image;
+	/** @var int */
+	private $type;
+	/** @var float */
+	private $frames;
 
-    public function __construct(SerializedImage $image, int $type, float $frames)
-    {
-        $this->image = $image;
-        $this->type = $type;
-        $this->frames = $frames;
-    }
+	public function __construct(SerializedImage $image, int $type, float $frames){
+		$this->image = $image;
+		$this->type = $type;
+		$this->frames = $frames;
+	}
 
-    public function getImage(): SerializedImage
-    {
-        return $this->image;
-    }
+	public function getImage() : SerializedImage{
+		return $this->image;
+	}
 
-    public function getType(): int
-    {
-        return $this->type;
-    }
+	public function getType() : int{
+		return $this->type;
+	}
 
-    public function getFrames(): float
-    {
-        return $this->frames;
-    }
+	public function getFrames() : float{
+		return $this->frames;
+	}
 }
