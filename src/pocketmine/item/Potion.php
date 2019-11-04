@@ -26,6 +26,9 @@ namespace pocketmine\item;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
+use pocketmine\event\player\PlayerItemConsumeEvent;
+use pocketmine\math\Vector3;
+use pocketmine\Player;
 
 class Potion extends Item implements Consumable{
 
@@ -234,5 +237,27 @@ class Potion extends Item implements Consumable{
 
 	public function getResidue(){
 		return ItemFactory::get(Item::GLASS_BOTTLE);
+	}
+
+	public function onUse(Player $player, int $ticksUsed) : bool{
+		$ev = new PlayerItemConsumeEvent($player, $this);
+		$ev->call();
+
+		if($ev->isCancelled() or !$player->consumeObject($this)){
+			$player->getInventory()->sendContents($player);
+			return false;
+		}
+
+		if($player->isSurvival()){
+			$this->pop();
+			$player->getInventory()->setItemInHand($this);
+			$player->getInventory()->addItem($this->getResidue());
+		}
+
+		return true;
+	}
+
+	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
+		return true;
 	}
 }
