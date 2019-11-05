@@ -1610,7 +1610,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->motion->y *= $friction;
 		}
 
-		$this->applyGravity();
+		if(!$this->onGround or $this->forceMovementUpdate){
+			$this->applyGravity();
+		}
 
 		if(!$this->applyDragBeforeGravity()){
 			$this->motion->y *= $friction;
@@ -1808,13 +1810,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->motion->z *= $f;
 		}
 
+		$this->checkMotion();
+
 		if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
 			$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 		}
 
 		$this->tryChangeMovement();
-
-		$this->checkMotion();
 	}
 
 	protected function checkMotion() : void{

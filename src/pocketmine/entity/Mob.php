@@ -42,6 +42,8 @@ use function intval;
 
 abstract class Mob extends Living{
 
+	public const MOTION_THRESHOLD = 0.0005;
+
 	/** @var BehaviorPool */
 	protected $behaviorPool;
 	/** @var BehaviorPool */
@@ -52,11 +54,8 @@ abstract class Mob extends Living{
 	protected $seenEntities = [];
 	/** @var Entity[] */
 	protected $unseenEntities = [];
-	protected $jumpCooldown = 0;
 	/** @var Vector3 */
 	protected $homePosition;
-	/** @var int */
-	protected $livingSoundTime = 0;
 
 	protected $landMovementFactor = 0.0;
 	protected $jumpMovementFactor = 0.02;
