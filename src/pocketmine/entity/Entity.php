@@ -588,9 +588,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public $canCollide = true;
 
 	/** @var bool */
-	protected $isStatic = false;
-
-	/** @var bool */
 	private $savedWithChunk = true;
 
 	/** @var bool */
@@ -874,20 +871,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public function setBaby(bool $value = true) : void{
 		$this->setGenericFlag(self::DATA_FLAG_BABY, $value);
 		$this->setScale($value ? 0.5 : 1.0);
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isStatic() : bool{
-		return $this->isStatic;
-	}
-
-	/**
-	 * @param bool $static
-	 */
-	public function setStatic(bool $static) : void{
-		$this->isStatic = $static;
 	}
 
 	/**
@@ -1813,9 +1796,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->timings->stopTiming();
 
-		//if($this->isStatic())
 		return ($hasUpdate or $this->hasMovementUpdate());
-		//return !($this instanceof Player);
 	}
 
 	protected function onMovementUpdate() : void{
@@ -1827,13 +1808,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$this->motion->z *= $f;
 		}
 
-		$this->checkMotion();
-
 		if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
 			$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 		}
 
 		$this->tryChangeMovement();
+
+		$this->checkMotion();
 	}
 
 	protected function checkMotion() : void{
