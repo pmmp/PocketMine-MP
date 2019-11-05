@@ -19,17 +19,12 @@
  *
 */
 
-namespace pocketmine;
-
 // composer autoload doesn't use require_once and also pthreads can inherit things
-// TODO: drop this file and use a final class with constants
-if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
+if(defined('pocketmine\_GLOBAL_CONSTANTS_INCLUDED')){
 	return;
 }
-const _VERSION_INFO_INCLUDED = true;
+define('pocketmine\_GLOBAL_CONSTANTS_INCLUDED', true);
 
-
-const NAME = "Altay";
-const BASE_VERSION = "3.9.8";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;
+const INT32_MIN = -0x80000000;
+const INT32_MAX = 0x7fffffff;
+define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);

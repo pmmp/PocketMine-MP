@@ -36,7 +36,11 @@
    "autoload": {
       "psr-4": {
          "": ["src"]
-      }
+      },
+      "files": [
+         "src/pocketmine/GlobalConstants.php",
+         "src/pocketmine/VersionInfo.php"
+      ]
    },
    "autoload-dev": {
       "psr-4": {

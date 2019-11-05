@@ -34,7 +34,7 @@ abstract class LightUpdate{
 	/** @var ChunkManager */
 	protected $level;
 
-	/** @var int[] blockhash => new light level */
+	/** @var int[][] blockhash => [x, y, z, new light level] */
 	protected $updateNodes = [];
 
 	/** @var \SplQueue */

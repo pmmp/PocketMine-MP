@@ -89,6 +89,9 @@ class Explosion{
 	}
 
 	/**
+	 * Calculates which blocks will be destroyed by this explosion. If explodeB() is called without calling this, no blocks 
+	 * will be destroyed.
+	 *
 	 * @return bool
 	 */
 	public function explodeA() : bool{
@@ -148,6 +151,12 @@ class Explosion{
 		return true;
 	}
 
+	/**
+	 * Executes the explosion's effects on the world. This includes destroying blocks (if any), harming and knocking back entities,
+	 * and creating sounds and particles.
+	 *
+	 * @return bool
+	 */
 	public function explodeB() : bool{
 		$send = [];
 		$updateBlocks = [];

@@ -35,8 +35,7 @@ class CommandParameter{
 	/** @var bool */
 	public $isOptional;
 	/** @var int */
-	public $byte1 = 0; //unknown, always zero except for in /gamerule command
-
+	public $flags = 0; //shows enum name if 1, always zero except for in /gamerule command
 	/** @var CommandEnum|null */
 	public $enum;
 	/** @var string|null */
@@ -51,6 +50,6 @@ class CommandParameter{
 		}elseif(is_string($extraData)){
 			$this->postfix = $extraData;
 		}
-		$this->byte1 = $flags;
+		$this->flags = $flags;
 	}
 }

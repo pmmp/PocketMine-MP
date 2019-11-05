@@ -19,17 +19,37 @@
  *
 */
 
-namespace pocketmine;
+declare(strict_types=1);
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-// TODO: drop this file and use a final class with constants
-if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
-	return;
+namespace pocketmine\network\mcpe\protocol\types;
+
+class StructureSettings{
+	/** @var string */
+	public $paletteName;
+	/** @var bool */
+	public $ignoreEntities;
+	/** @var bool */
+	public $ignoreBlocks;
+	/** @var int */
+	public $structureSizeX;
+	/** @var int */
+	public $structureSizeY;
+	/** @var int */
+	public $structureSizeZ;
+	/** @var int */
+	public $structureOffsetX;
+	/** @var int */
+	public $structureOffsetY;
+	/** @var int */
+	public $structureOffsetZ;
+	/** @var int */
+	public $lastTouchedByPlayerID;
+	/** @var int */
+	public $rotation;
+	/** @var int */
+	public $mirror;
+	/** @var float */
+	public $integrityValue;
+	/** @var int */
+	public $integritySeed;
 }
-const _VERSION_INFO_INCLUDED = true;
-
-
-const NAME = "Altay";
-const BASE_VERSION = "3.9.8";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;

@@ -69,7 +69,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	/** @var int|null */
 	protected $itemId;
 
-	/** @var AxisAlignedBB */
+	/** @var AxisAlignedBB|null */
 	protected $boundingBox = null;
 
 

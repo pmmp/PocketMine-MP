@@ -83,6 +83,7 @@ class ZippedResourcePack implements ResourcePack{
 
 	/**
 	 * @param string $zipPath Path to the resource pack zip
+	 * @throws ResourcePackException
 	 */
 	public function __construct(string $zipPath){
 		$this->path = $zipPath;
@@ -167,7 +168,7 @@ class ZippedResourcePack implements ResourcePack{
 	public function getPackChunk(int $start, int $length) : string{
 		fseek($this->fileResource, $start);
 		if(feof($this->fileResource)){
-			throw new \RuntimeException("Requested a resource pack chunk with invalid start offset");
+			throw new \InvalidArgumentException("Requested a resource pack chunk with invalid start offset");
 		}
 		return fread($this->fileResource, $length);
 	}

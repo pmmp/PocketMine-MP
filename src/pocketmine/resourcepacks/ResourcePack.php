@@ -76,6 +76,7 @@ interface ResourcePack{
 	 * @param int $length Maximum length of data to return.
 	 *
 	 * @return string byte-array
+	 * @throws \InvalidArgumentException if the chunk does not exist
 	 */
 	public function getPackChunk(int $start, int $length) : string;
 
