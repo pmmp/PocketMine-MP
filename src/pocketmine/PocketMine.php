@@ -21,11 +21,6 @@
 
 declare(strict_types=1);
 
-namespace {
-	const INT32_MIN = -0x80000000;
-	const INT32_MAX = 0x7fffffff;
-}
-
 namespace pocketmine {
 
 	use pocketmine\utils\MainLogger;
@@ -160,7 +155,6 @@ namespace pocketmine {
 
 		error_reporting(-1);
 		set_ini_entries();
-		@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
 
 		if(\Phar::running(true) !== ""){
 			define('pocketmine\PATH', \Phar::running(true) . "/");
