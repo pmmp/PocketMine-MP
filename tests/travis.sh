@@ -21,7 +21,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-curl https://phar.phpunit.de/phpunit-7.phar --silent --location -o phpunit.phar
+[ ! -f phpunit.phar ] && echo "Downloading PHPUnit..." && curl https://phar.phpunit.de/phpunit-7.phar --silent --location -o phpunit.phar
 "$PHP_BINARY" phpunit.phar --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit || exit 1
 
 #Run-the-server tests
