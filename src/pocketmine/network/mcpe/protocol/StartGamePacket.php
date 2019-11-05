@@ -316,16 +316,8 @@ class StartGamePacket extends DataPacket{
 			$states->push($state);
 		}
 		($stream = new NetworkLittleEndianNBTStream())->writeTag($states);
-		return $stream->buffer;
 
-		/*$stream = new NetworkBinaryStream();
-		$stream->putUnsignedVarInt(count($table));
-		foreach($table as $v){
-			$stream->putString($v["name"]);
-			$stream->putLShort($v["data"]);
-			$stream->putLShort($v["legacy_id"]);
-		}
-		return $stream->getBuffer();*/
+		return $stream->buffer;
 	}
 
 	private static function serializeItemTable(array $table) : string{

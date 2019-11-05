@@ -53,11 +53,9 @@ final class RuntimeBlockMapping{
 	public static function init() : void{
 		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/block_id_map.json"), true);
 
-		$compressedTable = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/required_block_states.json"), true);
-
 		try{
 			/** @var CompoundTag $tag */
-			$tag = (new BigEndianNBTStream())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "runtime_block_states.dat"));
+			$tag = (new BigEndianNBTStream())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/runtime_block_states.dat"));
 		}catch(BinaryDataException $e){
 			throw new \RuntimeException("", 0, $e);
 		}
@@ -65,29 +63,18 @@ final class RuntimeBlockMapping{
 		$decompressed = [];
 
 		$states = $tag->getListTag("Palette");
+		/** @var CompoundTag $state */
 		foreach($states as $state){
-			/** @var CompoundTag $state */
 			$block = $state->getCompoundTag("block");
+			$name = $block->getString("name");
 			$decompressed[] = [
-				"name" => $block->getString("name"),
+				"name" => $name,
 				"states" => $block->getCompoundTag("states"),
 				"data" => $state->getShort("meta"),
-				"legacy_id" => $state->getShort("id"),
+				"legacy_id" => $legacyIdMap[$name]
 			];
-		}
 
-			/*
-		foreach($compressedTable as $prefix => $entries){
-			foreach($entries as $shortStringId => $states){
-				foreach($states as $state){
-					$name = "$prefix:$shortStringId";
-					$decompressed[] = [
-						"name" => $name,
-						"data" => $state,
-						"legacy_id" => $legacyIdMap[$name]
-					];
-				}
-			}*/
+		}
 		self::$bedrockKnownStates = self::randomizeTable($decompressed);
 
 		foreach(self::$bedrockKnownStates as $k => $obj){
