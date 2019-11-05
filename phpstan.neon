@@ -4,7 +4,7 @@ parameters:
 	level: 1
 	paths:
 		- src
-	#reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
+	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	ignoreErrors:
 		-
 			message: "#^pocketmine\\\\Player\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\entity\\\\Human\\.$#"
@@ -156,3 +156,21 @@ parameters:
 		-
 			message: "#^Constant pocketmine\\\\VERSION not found\\.$#"
 			path: src/pocketmine
+		-
+			message: "#^Used constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
+			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
+			comment: "explicitly checked"
+		-
+			message: "#^Constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
+			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
+			comment: "explicitly checked"
+		-
+			message: "#^Instantiated class LevelDB not found\\.$#"
+			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
+			comment: "leveldb extension currently optional"
+		-
+			message: "#^Return typehint of method pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:createDB\\(\\) has invalid type LevelDB\\.$#"
+			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
+		-
+			message: "#^Return typehint of method pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:getDatabase\\(\\) has invalid type LevelDB\\.$#"
+			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
