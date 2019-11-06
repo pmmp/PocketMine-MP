@@ -1917,19 +1917,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$animations = [];
 		foreach($packet->clientData["AnimatedImageData"] as $animatedData){
-			$animations[] = new SkinAnimation(new SerializedImage($animatedData["ImageWidth"], $animatedData["ImageHeight"], base64_decode($animatedData["Image"])), $animatedData["Type"], $animatedData["Frames"]);
+			$animations[] = new SkinAnimation(new SerializedImage($animatedData["ImageHeight"], $animatedData["ImageWidth"], base64_decode($animatedData["Image"])), $animatedData["Type"], $animatedData["Frames"]);
 		}
 		$skin = new Skin(
 			$packet->clientData["SkinId"],
 			base64_decode($packet->clientData["SkinResourcePatch"] ?? ""),
-			new SerializedImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData" ?? ""])), //SerializedImage
+			new SerializedImage((int)$packet->clientData["SkinImageHeight"], (int)$packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"] ?? "")),
 			$animations,
 			new SerializedImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"] ?? "")),
 			base64_decode($packet->clientData["SkinGeometryData"] ?? ""),
-			base64_decode($packet->clientData["SkinAnimationData"] ?? ""),
-			(bool) $packet->clientData["PremiumSkin"] ?? false,
-			(bool) $packet->clientData["PersonaSkin"] ?? false,
-			(bool) $packet->clientData["CapeOnClassicSkin"] ?? false,
+			base64_decode($packet->clientData["AnimationData"] ?? ""),
+			(bool)$packet->clientData["PremiumSkin"] ?? false,
+			(bool)$packet->clientData["PersonaSkin"] ?? false,
+			(bool)$packet->clientData["CapeOnClassicSkin"] ?? false,
 			$packet->clientData["CapeId"] ?? ""
 		);
 
