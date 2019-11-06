@@ -1114,7 +1114,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
-	protected function sendRespawnPacket(Vector3 $pos, int $respawnState = 1){
+	protected function sendRespawnPacket(Vector3 $pos, int $respawnState = RespawnPacket::SEARCHING_FOR_SPAWN){
 		$pk = new RespawnPacket();
 		$pk->position = $pos->add(0, $this->baseOffset, 0);
 		$pk->respawnState = $respawnState;
@@ -2914,6 +2914,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->entityRuntimeId = $this->getId();
 		$pk->action = $ev->getAnimationType();
 		$this->server->broadcastPacket($this->getViewers(), $pk);
+
+		return true;
+	}
+
+	public function handleRespawn(RespawnPacket $packet) : bool{
+		if(!$this->isAlive() && $packet->respawnState === RespawnPacket::CLIENT_READY_TO_SPAWN){
+			$this->sendRespawnPacket($this, RespawnPacket::READY_TO_SPAWN);
+		}
 
 		return true;
 	}
