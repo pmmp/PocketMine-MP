@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
+use pocketmine\network\CompletedUsingItemPacket;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 
@@ -166,6 +167,7 @@ class PacketPool{
 		static::registerPacket(new UpdateBlockPropertiesPacket());
 		static::registerPacket(new ClientCacheBlobStatusPacket());
 		static::registerPacket(new ClientCacheMissResponsePacket());
+		static::registerPacket(new CompletedUsingItemPacket());
 	}
 
 	/**

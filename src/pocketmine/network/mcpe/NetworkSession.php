@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pocketmine\network\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\ActorFallPacket;
 use pocketmine\network\mcpe\protocol\ActorPickRequestPacket;
@@ -692,6 +693,10 @@ abstract class NetworkSession{
 	}
 
 	public function handleClientCacheMissResponse(ClientCacheMissResponsePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleCompletedUsingItem(CompletedUsingItemPacket $packet) : bool{
 		return false;
 	}
 }
