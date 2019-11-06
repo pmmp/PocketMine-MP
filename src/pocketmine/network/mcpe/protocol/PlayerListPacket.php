@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\entity\Skin;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use function count;
@@ -81,7 +82,7 @@ class PlayerListPacket extends DataPacket{
 				$this->putString($entry->xboxUserId);
 				$this->putString($entry->platformChatId);
 				$this->putLInt($entry->buildPlatform);
-				$this->putSkin($entry->skin);
+				$this->putSkin(Skin::null());
 				$this->putBool($entry->isTeacher);
 				$this->putBool($entry->isHost);
 
