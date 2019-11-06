@@ -25,6 +25,10 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 
+use function ceil;
+use function sqrt;
+use function strlen;
+
 class SerializedImage{
 	/** @var int */
 	private $width;
@@ -34,6 +38,10 @@ class SerializedImage{
 	private $data;
 
 	public function __construct(int $width, int $height, string $data){
+		if(strlen($data) !== ($width * $height) * 4) {
+			$width = $height = (int) ceil(sqrt(strlen($data) / 4));
+		}
+
 		$this->width = $width;
 		$this->height = $height;
 		$this->data = $data;
