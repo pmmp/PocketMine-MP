@@ -41,6 +41,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 use function array_map;
@@ -846,6 +847,14 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function getCooldownTicks() : int{
 		return 0;
+	}
+
+	public function getCompletedAction(){
+		return CompletedUsingItemPacket::ACTION_UNKNOWN;
+	}
+
+	public function onUse(Player $player) : bool{
+		return false;
 	}
 
 	/**

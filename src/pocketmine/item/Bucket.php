@@ -30,7 +30,9 @@ use pocketmine\block\Liquid;
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
+use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\Player;
 
 class Bucket extends Item implements Consumable{
@@ -113,5 +115,37 @@ class Bucket extends Item implements Consumable{
 
 	public function onConsume(Living $consumer){
 		$consumer->removeAllEffects();
+	}
+
+	public function getCompletedAction(){
+		if($this->canBeConsumed()){
+			return CompletedUsingItemPacket::ACTION_CONSUME;
+		}else{
+			return CompletedUsingItemPacket::ACTION_POUR_BUCKET;
+		}
+	}
+
+	public function onUse(Player $player) : bool{
+		if($this->canBeConsumed()){
+			$slot = $player->getInventory()->getItemInHand();
+
+			$ev = new PlayerItemConsumeEvent($player, $slot);
+			$ev->call();
+
+			/** @var $slot Consumable */
+			if($ev->isCancelled() or !$player->consumeObject($slot)){
+				$player->getInventory()->sendContents($player);
+				return true;
+			}
+
+			if($player->isSurvival()){
+				$slot->pop();
+				$player->getInventory()->setItemInHand($slot);
+				$player->getInventory()->addItem($slot->getResidue());
+			}
+
+			return true;
+		}
+		return false;
 	}
 }

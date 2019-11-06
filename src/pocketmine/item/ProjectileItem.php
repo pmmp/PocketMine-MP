@@ -29,6 +29,7 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
@@ -45,6 +46,10 @@ abstract class ProjectileItem extends Item{
 	 */
 	protected function addExtraTags(CompoundTag $tag) : void{
 
+	}
+
+	public function getCompletedAction(){
+		return CompletedUsingItemPacket::ACTION_THROW;
 	}
 
 	public function onClickAir(Player $player, Vector3 $directionVector) : bool{

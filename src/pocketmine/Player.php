@@ -80,6 +80,7 @@ use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
+use pocketmine\item\Food;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
@@ -98,6 +99,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
@@ -2532,7 +2534,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							}
 						}
 
-						$this->setUsingItem(true);
+						if($this->startAction === -1){
+							$this->setUsingItem(true);
+							return true;
+						}
+
+						$this->setUsingItem(false);
+						if($item->onUse($this)){
+							$pk = new CompletedUsingItemPacket();
+							$pk->itemId = $item->getId();
+							$pk->action = $item->getCompletedAction();
+							$this->sendDataPacket($pk);
+						}
 
 						return true;
 					default:
@@ -2650,6 +2663,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								if($item->onReleaseUsing($this)){
 									$this->resetItemCooldown($item);
 									$this->inventory->setItemInHand($item);
+
+									$pk = new CompletedUsingItemPacket();
+									$pk->itemId = $item->getId();
+									$pk->action = $item->getCompletedAction();
+									$this->sendDataPacket($pk);
 								}
 							}else{
 								break;
@@ -2657,31 +2675,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 							return true;
 						case InventoryTransactionPacket::RELEASE_ITEM_ACTION_CONSUME:
-							$slot = $this->inventory->getItemInHand();
-
-							if($slot instanceof Consumable){
-								$ev = new PlayerItemConsumeEvent($this, $slot);
-								if($this->hasItemCooldown($slot)){
-									$ev->setCancelled();
-								}
-								$ev->call();
-
-								if($ev->isCancelled() or !$this->consumeObject($slot)){
-									$this->inventory->sendContents($this);
-									return true;
-								}
-
-								$this->resetItemCooldown($slot);
-
-								if($this->isSurvival()){
-									$slot->pop();
-									$this->inventory->setItemInHand($slot);
-									$this->inventory->addItem($slot->getResidue());
-								}
-
-								return true;
-							}
-
 							break;
 						default:
 							break;

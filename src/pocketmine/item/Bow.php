@@ -29,6 +29,7 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use function intdiv;
@@ -45,6 +46,10 @@ class Bow extends Tool{
 
 	public function getMaxDurability() : int{
 		return 385;
+	}
+
+	public function getCompletedAction(){
+		return CompletedUsingItemPacket::ACTION_SHOOT;
 	}
 
 	public function onReleaseUsing(Player $player) : bool{
