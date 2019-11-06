@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Skin;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -40,6 +41,7 @@ use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\SerializedImage;
+use pocketmine\utils\SkinAnimation;
 use pocketmine\utils\UUID;
 use function count;
 use function strlen;
@@ -75,10 +77,47 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putLInt($uuid->getPart(2));
 	}
 
-	public function putImage(SerializedImage $image) : void{
-		$this->putLInt($image->getWidth());
-		$this->putLInt($image->getHeight());
-		$this->putString($image->getData());
+	public function getSkin() : Skin{
+		$skinId = $this->getString();
+		$skinResourcePatch = $this->getString();
+		$skinData = $this->getImage();
+		$animationCount = $this->getLInt();
+		$animations = [];
+		for($i = 0; $i < $animationCount; ++$i){
+			$animations[] = new SkinAnimation($this->getImage(), $this->getLInt(), $this->getLFloat());
+		}
+		$capeData = $this->getImage();
+		$geometryData = $this->getString();
+		$animationData = $this->getString();
+		$premium = $this->getBool();
+		$persona = $this->getBool();
+		$capeOnClassic = $this->getBool();
+		$capeId = $this->getString();
+		$fullSkinId = $this->getString();
+
+		return new Skin(
+			$skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId
+		);
+	}
+
+	public function putSkin(Skin $skin){
+		$this->putString($skin->getSkinId());
+		$this->putString($skin->getSkinResourcePatch());
+		$this->putImage($skin->getSkinData());
+		$this->putLInt(count($skin->getAnimations()));
+		foreach($skin->getAnimations() as $animation){
+			$this->putImage($animation->getImage());
+			$this->putLInt($animation->getType());
+			$this->putLFloat($animation->getFrames());
+		}
+		$this->putImage($skin->getCapeData());
+		$this->putString($skin->getGeometryData());
+		$this->putString($skin->getAnimationData());
+		$this->putBool($skin->getPremium());
+		$this->putBool($skin->getPersona());
+		$this->putBool($skin->getCapeOnClassic());
+		$this->putString($skin->getCapeId());
+		$this->putString($skin->getFullSkinId());
 	}
 
 	public function getImage() : SerializedImage{
@@ -86,6 +125,12 @@ class NetworkBinaryStream extends BinaryStream{
 		$height = $this->getLInt();
 		$data = $this->getString();
 		return new SerializedImage($height, $width, $data);
+	}
+
+	public function putImage(SerializedImage $image) : void{
+		$this->putLInt($image->getWidth());
+		$this->putLInt($image->getHeight());
+		$this->putString($image->getData());
 	}
 
 	public function getSlot() : Item{

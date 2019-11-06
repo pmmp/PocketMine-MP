@@ -41,49 +41,12 @@ class PlayerSkinPacket extends DataPacket{
 
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
-
-		$skinId = $this->getString();
-		$skinResourcePatch = $this->getString();
-		$skinData = $this->getImage();
-		$animationCount = $this->getLInt();
-		$animations = [];
-		for($i = 0; $i < $animationCount; ++$i){
-			$animations[] = new SkinAnimation($this->getImage(), $this->getLInt(), $this->getLFloat());
-		}
-		$capeData = $this->getImage();
-		$geometryData = $this->getString();
-		$animationData = $this->getString();
-		$premium = $this->getBool();
-		$persona = $this->getBool();
-		$capeOnClassic = $this->getBool();
-		$capeId = $this->getString();
-		$fullSkinId = $this->getString();
-
-		$this->skin = new Skin(
-			$skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId
-		);
+		$this->skin = $this->getSkin();
 	}
 
 	protected function encodePayload(){
 		$this->putUUID($this->uuid);
-
-		$this->putString($this->skin->getSkinId());
-		$this->putString($this->skin->getSkinResourcePatch());
-		$this->putImage($this->skin->getSkinData());
-		$this->putLInt(count($this->skin->getAnimations()));
-		foreach($this->skin->getAnimations() as $animation){
-			$this->putImage($animation->getImage());
-			$this->putLInt($animation->getType());
-			$this->putLFloat($animation->getFrames());
-		}
-		$this->putImage($this->skin->getCapeData());
-		$this->putString($this->skin->getGeometryData());
-		$this->putString($this->skin->getAnimationData());
-		$this->putBool($this->skin->getPremium());
-		$this->putBool($this->skin->getPersona());
-		$this->putBool($this->skin->getCapeOnClassic());
-		$this->putString($this->skin->getCapeId());
-		$this->putString($this->skin->getFullSkinId());
+		$this->putSkin($this->skin);
 	}
 
 	public function handle(NetworkSession $session) : bool{
