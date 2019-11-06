@@ -66,8 +66,9 @@ class PlayerListPacket extends DataPacket{
 				$skinId = $this->getString();
 				$skinResourcePatch = $this->getString();
 				$skinData = $this->getImage();
+				$animationCount = $this->getLInt();
 				$animations = [];
-				for($i = 0; $i < $this->getLInt(); ++$i){
+				for($i = 0; $i < $animationCount; ++$i){
 					$animations[] = new SkinAnimation($this->getImage(), $this->getLInt(), $this->getLFloat());
 				}
 				$capeData = $this->getImage();
