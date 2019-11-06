@@ -42,6 +42,7 @@ use pocketmine\item\Totem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
@@ -54,6 +55,8 @@ use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\Player;
+use pocketmine\utils\SerializedImage;
+use pocketmine\utils\SkinAnimation;
 use pocketmine\utils\UUID;
 use function array_filter;
 use function array_merge;
@@ -117,10 +120,16 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected static function deserializeSkinNBT(CompoundTag $skinTag) : Skin{
 		$skin = new Skin(
 			$skinTag->getString("Name"),
-			$skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
-			$skinTag->getByteArray("CapeData", ""),
-			$skinTag->getString("GeometryName", ""),
-			$skinTag->getByteArray("GeometryData", "")
+			$skinTag->getString("SkinResourcePatch", ""),
+			new SerializedImage($skinTag->getInt("SkinImageHeight"), $skinTag->getInt("SkinImageWidth"), $skinTag->getByteArray("Data")),
+			"", //TODO: animations
+			new SerializedImage($skinTag->getInt("CapeImageHeight"), $skinTag->getInt("CapeImageWidth"), $skinTag->getByteArray("CapeData")),
+			$skinTag->getByteArray("GeometryData", ""),
+			$skinTag->getByteArray("AnimationData", ""),
+			$skinTag->getByte("PremiumSkin") === 1,
+			$skinTag->getByte("PersonaSkin") === 1,
+			$skinTag->getByte("CapeOnClassic") === 1,
+			$skinTag->getString("CapeId", "")
 		);
 		$skin->validate();
 		return $skin;
@@ -826,13 +835,23 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$this->namedtag->setTag(new ListTag("EnderChestInventory", $items, NBT::TAG_Compound));
 		}
 
+		//TODO: Save animations
 		if($this->skin !== null){
 			$this->namedtag->setTag(new CompoundTag("Skin", [
 				new StringTag("Name", $this->skin->getSkinId()),
-				new ByteArrayTag("Data", $this->skin->getSkinData()),
-				new ByteArrayTag("CapeData", $this->skin->getCapeData()),
-				new StringTag("GeometryName", $this->skin->getGeometryName()),
-				new ByteArrayTag("GeometryData", $this->skin->getGeometryData())
+				new StringTag("SkinResourcePatch", $this->skin->getSkinResourcePatch()),
+				new ByteArrayTag("Data", $this->skin->getSkinData()->getData()),
+				new IntTag("SkinImageHeight", $this->skin->getSkinData()->getHeight()),
+				new IntTag("SkinImageWidth", $this->skin->getSkinData()->getWidth()),
+				new ByteArrayTag("CapeData", $this->skin->getCapeData()->getData()),
+				new IntTag("CapeImageHeight", $this->skin->getCapeData()->getHeight()),
+				new IntTag("CapeImageWidth", $this->skin->getCapeData()->getWidth()),
+				new ByteArrayTag("GeometryData", $this->skin->getGeometryData()),
+				new ByteArrayTag("AnimationData", $this->skin->getAnimationData()),
+				new ByteTag("PremiumSkin", $this->skin->getPremium() ? 1 : 0),
+				new ByteTag("PersonaSkin", $this->skin->getPersona() ? 1 : 0),
+				new ByteTag("CapeOnClassic", $this->skin->getCapeOnClassic() ? 1 : 0),
+				new StringTag("CapeId", $this->skin->getCapeId())
 			]));
 		}
 	}
