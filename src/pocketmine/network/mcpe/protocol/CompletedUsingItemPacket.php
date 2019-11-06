@@ -21,11 +21,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network;
+namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
 class CompletedUsingItemPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::COMPLETED_USING_ITEM_PACKET;
@@ -46,7 +44,7 @@ class CompletedUsingItemPacket extends DataPacket{
 	public const ACTION_RETRIEVED = 12;
 	public const ACTION_DYED = 13;
 	public const ACTION_TRADED = 14;
-	
+
 	/** @var int */
 	public $itemId;
 	/** @var int */

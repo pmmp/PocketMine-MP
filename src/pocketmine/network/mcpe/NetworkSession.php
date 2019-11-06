@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\network\CompletedUsingItemPacket;
+use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\ActorFallPacket;
 use pocketmine\network\mcpe\protocol\ActorPickRequestPacket;
