@@ -1,0 +1,176 @@
+
+
+parameters:
+	level: 1
+	paths:
+		- src
+	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
+	ignoreErrors:
+		-
+			message: "#^pocketmine\\\\Player\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\entity\\\\Human\\.$#"
+			path: src/pocketmine/Player.php
+
+		-
+			message: "#^Function pocketmine\\\\critical_error not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
+			count: 1
+			path: src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Function pocketmine\\\\check_platform_dependencies not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
+			count: 1
+			path: src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Function pocketmine\\\\emit_performance_warnings not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
+			count: 1
+			path: src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Function pocketmine\\\\set_ini_entries not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
+			count: 1
+			path: src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Function pocketmine\\\\server not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
+			count: 1
+			path: src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Function check_platform_dependencies not found\\.$#"
+			count: 1
+			path: src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Function critical_error not found\\.$#"
+			count: 6
+			path: src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Function set_ini_entries not found\\.$#"
+			count: 1
+			path: src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Function emit_performance_warnings not found\\.$#"
+			count: 1
+			path: src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Function pocketmine\\\\server not found\\.$#"
+			count: 1
+			path: src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Constant MIN_PHP_VERSION not found\\.$#"
+			count: 2
+			path: src/pocketmine/PocketMine.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\[A-Za-z\\d]+\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			path: src/pocketmine/block
+
+		-
+			message: "#^pocketmine\\\\block\\\\Block\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\level\\\\Position\\.$#"
+			count: 1
+			path: src/pocketmine/block/Block.php
+
+		-
+			message: "#^pocketmine\\\\inventory\\\\DoubleChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\inventory\\\\ChestInventory\\.$#"
+			count: 1
+			path: src/pocketmine/inventory/DoubleChestInventory.php
+
+		-
+			message: "#^pocketmine\\\\inventory\\\\EnderChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\inventory\\\\ChestInventory\\.$#"
+			count: 1
+			path: src/pocketmine/inventory/EnderChestInventory.php
+
+		-
+			message: "#^pocketmine\\\\item\\\\GoldenAppleEnchanted\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\item\\\\GoldenApple\\.$#"
+			count: 1
+			path: src/pocketmine/item/GoldenAppleEnchanted.php
+
+		-
+			message: "#^pocketmine\\\\item\\\\WrittenBook\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\item\\\\WritableBook\\.$#"
+			count: 1
+			path: src/pocketmine/item/WrittenBook.php
+
+		-
+			message: "#^Constructor of class pocketmine\\\\level\\\\generator\\\\hell\\\\Nether has an unused parameter \\$options\\.$#"
+			count: 1
+			path: src/pocketmine/level/generator/hell/Nether.php
+
+		-
+			message: "#^Constructor of class pocketmine\\\\level\\\\generator\\\\normal\\\\Normal has an unused parameter \\$options\\.$#"
+			count: 1
+			path: src/pocketmine/level/generator/normal/Normal.php
+
+		-
+			message: "#^Used constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
+			count: 1
+			path: src/pocketmine/network/mcpe/protocol/StartGamePacket.php
+
+		-
+			message: "#^Instantiated class COM not found\\.$#"
+			count: 2
+			path: src/pocketmine/network/upnp/UPnP.php
+			comment: "only available on Windows"
+
+		-
+			message: "#^Constructor of class pocketmine\\\\scheduler\\\\TaskScheduler has an unused parameter \\$logger\\.$#"
+			count: 1
+			path: src/pocketmine/scheduler/TaskScheduler.php
+
+		-
+			message: "#^Variable \\$GLOBALS in isset\\(\\) always exists and is not nullable\\.$#"
+			path: src/pocketmine/MemoryManager.php
+			comment: "this isn't defined on threads (thanks pthreads)"
+
+		-
+			message: "#^Constant pocketmine\\\\COMPOSER_AUTOLOADER_PATH not found\\.$#"
+			path: src/pocketmine
+
+		-
+			message: "#^Constant pocketmine\\\\DATA not found\\.$#"
+			path: src/pocketmine
+
+		-
+			message: "#^Constant pocketmine\\\\GIT_COMMIT not found\\.$#"
+			path: src/pocketmine
+
+		-
+			message: "#^Constant pocketmine\\\\PATH not found\\.$#"
+			path: src/pocketmine
+
+		-
+			message: "#^Constant pocketmine\\\\PLUGIN_PATH not found\\.$#"
+			path: src/pocketmine
+
+		-
+			message: "#^Constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
+			path: src/pocketmine
+
+		-
+			message: "#^Constant pocketmine\\\\START_TIME not found\\.$#"
+			path: src/pocketmine
+
+		-
+			message: "#^Constant pocketmine\\\\VERSION not found\\.$#"
+			path: src/pocketmine
+		-
+			message: "#^Used constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
+			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
+			comment: "explicitly checked"
+		-
+			message: "#^Constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
+			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
+			comment: "explicitly checked"
+		-
+			message: "#^Instantiated class LevelDB not found\\.$#"
+			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
+			comment: "leveldb extension currently optional"
+		-
+			message: "#^Return typehint of method pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:createDB\\(\\) has invalid type LevelDB\\.$#"
+			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
+		-
+			message: "#^Return typehint of method pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:getDatabase\\(\\) has invalid type LevelDB\\.$#"
+			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
