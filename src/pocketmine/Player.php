@@ -1115,6 +1115,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
+	protected function sendCompletedUsingItemPacket(int $itemId, int $action){
+		$pk = new CompletedUsingItemPacket();
+		$pk->itemId = $itemId;
+		$pk->action = $action;
+		$this->sendDataPacket($pk);
+	}
+
 	protected function sendRespawnPacket(Vector3 $pos, int $respawnState = RespawnPacket::SEARCHING_FOR_SPAWN){
 		$pk = new RespawnPacket();
 		$pk->position = $pos->add(0, $this->baseOffset, 0);
@@ -2542,10 +2549,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						$this->setUsingItem(false);
 						if($item->onUse($this)){
-							$pk = new CompletedUsingItemPacket();
-							$pk->itemId = $item->getId();
-							$pk->action = $item->getCompletedAction();
-							$this->sendDataPacket($pk);
+							$this->sendCompletedUsingItemPacket($item->getId(), $item->getCompletedAction());
 						}
 
 						return true;
@@ -2664,11 +2668,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								if($item->onReleaseUsing($this)){
 									$this->resetItemCooldown($item);
 									$this->inventory->setItemInHand($item);
-
-									$pk = new CompletedUsingItemPacket();
-									$pk->itemId = $item->getId();
-									$pk->action = $item->getCompletedAction();
-									$this->sendDataPacket($pk);
+									$this->sendCompletedUsingItemPacket($item->getId(), $item->getCompletedAction());
 								}
 							}else{
 								break;
