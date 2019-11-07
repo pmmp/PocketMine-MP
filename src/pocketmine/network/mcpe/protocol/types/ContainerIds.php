@@ -34,6 +34,6 @@ interface ContainerIds{
 	public const CREATIVE = 121;
 	public const HOTBAR = 122;
 	public const FIXED_INVENTORY = 123;
-	public const CURSOR = 124;
+	public const UI = 124;
 
 }
