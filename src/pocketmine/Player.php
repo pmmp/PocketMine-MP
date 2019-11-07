@@ -71,11 +71,11 @@ use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
+use pocketmine\inventory\PlayerUIInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
-use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
@@ -189,7 +189,6 @@ use function lcg_value;
 use function max;
 use function microtime;
 use function min;
-use function mt_rand;
 use function preg_match;
 use function round;
 use function spl_object_hash;
@@ -291,8 +290,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $windowIndex = [];
 	/** @var bool[] */
 	protected $permanentWindows = [];
-	/** @var PlayerCursorInventory */
-	protected $cursorInventory;
+	/** @var PlayerUIInventory */
+	protected $uiInventory;
 	/** @var CraftingGrid */
 	protected $craftingGrid = null;
 	/** @var CraftingTransaction|null */
@@ -528,6 +527,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function spawnTo(Player $player) : void{
 		if($this->spawned and $player->spawned and $this->isAlive() and $player->isAlive() and $player->getLevel() === $this->level and $player->canSee($this) and !$this->isSpectator()){
 			parent::spawnTo($player);
+
+			$this->sendSkin([$player]);
 		}
 	}
 
@@ -847,7 +848,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Called when a player changes their skin.
 	 * Plugin developers should not use this, use setSkin() and sendSkin() instead.
 	 *
-	 * @param Skin   $skin
+	 * @param Skin $skin
 	 *
 	 * @return bool
 	 */
@@ -919,7 +920,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return Position
 	 */
 	public function getNextPosition() : Position{
-		return !empty($this->pendingMoves) ?  Position::fromObject(end($this->pendingMoves), $this->level) : $this->getPosition();
+		return !empty($this->pendingMoves) ? Position::fromObject(end($this->pendingMoves), $this->level) : $this->getPosition();
 	}
 
 	public function getInAirTicks() : int{
@@ -1127,7 +1128,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected function sendRespawnPacket(Vector3 $pos){
 		$pk = new RespawnPacket();
 		$pk->position = $pos->add(0, $this->baseOffset, 0);
-        $pk->respawnState = RespawnPacket::STATE_SEARCHING_FOR_SPAWN;
+		$pk->respawnState = RespawnPacket::STATE_SEARCHING_FOR_SPAWN;
+		$pk->runtimeEntityId = $this->id;
 
 		$this->dataPacket($pk);
 	}
@@ -1948,7 +1950,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}else{
 				$skinData = SerializedImage::fromLegacy(base64_decode($data));
 			}
-		} else {
+		}else{
 			$skinData = SerializedImage::null();
 		}
 
@@ -1959,7 +1961,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}else{
 				$capeData = SerializedImage::fromLegacy(base64_decode($data));
 			}
-		} else {
+		}else{
 			$capeData = SerializedImage::null();
 		}
 
@@ -2020,17 +2022,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
-	public function handleRespawn(RespawnPacket $packet): bool
-    {
-        if (!$this->isAlive() && $packet->respawnState === RespawnPacket::STATE_CLIENT_READY_TO_SPAWN) {
-            $packet = new RespawnPacket();
-            $packet->position = $this->asVector3();
-            $packet->respawnState = RespawnPacket::STATE_READY_TO_SPAWN;
-            $this->dataPacket($packet);
-        }
+	public function handleRespawn(RespawnPacket $packet) : bool{
+		if(!$this->isAlive() && $packet->respawnState === RespawnPacket::STATE_CLIENT_READY_TO_SPAWN){
+			$packet = new RespawnPacket();
+			$packet->position = $this->asVector3();
+			$packet->respawnState = RespawnPacket::STATE_READY_TO_SPAWN;
+			$packet->runtimeEntityId = $this->id;
+			$this->dataPacket($packet);
+		}
 
-        return true;
-    }
+		return true;
+	}
 
 	public function sendPlayStatus(int $status, bool $immediate = false){
 		$pk = new PlayStatusPacket();
@@ -2231,7 +2233,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->spawnZ = $spawnPosition->getFloorZ();
 		$pk->hasAchievementsDisabled = true;
 		$pk->time = $this->level->getTime();
-		$pk->eduMode = false;
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = true;
@@ -2598,17 +2599,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								$this->inventory->setItemInHand($item);
 							}
 
-                            if ($this->startAction === -1) {
-                                $this->setUsingItem(true);
-                                return true;
-                            }
+							if(!$this->isUsingItem()){
+								$this->setUsingItem(true);
+								return true;
+							}
 
-                            $ticksUsed = $this->server->getTick() - $this->startAction;
-                            $this->setUsingItem(false);
-                            $pk = new CompletedUsingItemPacket();
-                            $pk->itemId = $item->getId();
-                            $pk->action = $item->completeAction($this, $ticksUsed);
-                            $this->dataPacket($pk);
+							$ticksUsed = $this->server->getTick() - $this->startAction;
+							$this->setUsingItem(false);
+							if($item->onUse($this, $ticksUsed)){
+								$pk = new CompletedUsingItemPacket();
+								$pk->itemId = $item->getId();
+								$pk->action = $item->getCompletionAction();
+								$this->dataPacket($pk);
+							}
 						}
 
 						return true;
@@ -2724,9 +2727,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 									$this->inventory->sendContents($this);
 									return false;
 								}
-								if($item->onReleaseUsing($this)){
+
+								$ticksUsed = $this->server->getTick() - $this->startAction;
+								if($item->onRelease($this, $ticksUsed)){
 									$this->resetItemCooldown($item);
 									$this->inventory->setItemInHand($item);
+									$pk = new CompletedUsingItemPacket();
+									$pk->itemId = $item->getId();
+									$pk->action = $item->getCompletionAction();
+									$this->dataPacket($pk);
 								}
 							}else{
 								break;
@@ -3601,7 +3610,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->removeAllWindows(true);
 			$this->windows = [];
 			$this->windowIndex = [];
-			$this->cursorInventory = null;
+			$this->uiInventory = null;
 			$this->craftingGrid = null;
 
 			if($this->constructed){
@@ -3865,16 +3874,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->addWindow($this->getArmorInventory(), ContainerIds::ARMOR, true);
 
-		$this->cursorInventory = new PlayerCursorInventory($this);
-		$this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
+		$this->uiInventory = new PlayerUIInventory($this);
+		$this->addWindow($this->uiInventory, ContainerIds::UI, true);
 
-		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
+		$this->craftingGrid = $this->uiInventory->getCraftingGrid();
 
 		//TODO: more windows
 	}
 
+	public function getPlayerUIInventory() : PlayerUIInventory{
+		return $this->uiInventory;
+	}
+
 	public function getCursorInventory() : PlayerCursorInventory{
-		return $this->cursorInventory;
+		return $this->uiInventory->getCursorInventory();
 	}
 
 	public function getCraftingGrid() : CraftingGrid{
@@ -3890,7 +3903,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function doCloseInventory() : void{
 		/** @var Inventory[] $inventories */
-		$inventories = [$this->craftingGrid, $this->cursorInventory];
+		$inventories = [$this->craftingGrid, $this->getCursorInventory()];
 		foreach($inventories as $inventory){
 			$contents = $inventory->getContents();
 			if(count($contents) > 0){
@@ -3898,13 +3911,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				foreach($drops as $drop){
 					$this->dropItem($drop);
 				}
-
-				$inventory->clearAll();
 			}
 		}
 
-		if($this->craftingGrid->getGridWidth() > CraftingGrid::SIZE_SMALL){
-			$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
+		$this->uiInventory->clearAll();
+
+		if($this->craftingGrid->getSize() > CraftingGrid::SIZE_SMALL){
+			$this->craftingGrid = $this->uiInventory->getCraftingGrid();
 		}
 	}
 

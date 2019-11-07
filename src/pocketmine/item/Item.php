@@ -24,6 +24,7 @@ declare(strict_types=1);
 /**
  * All the Item classes
  */
+
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
@@ -51,7 +52,6 @@ use function file_get_contents;
 use function get_class;
 use function hex2bin;
 use function json_decode;
-use const DIRECTORY_SEPARATOR;
 
 class Item implements ItemIds, \JsonSerializable{
 	public const TAG_ENCH = "ench";
@@ -807,18 +807,6 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * Called when a player is using this item and releases it. Used to handle bow shoot actions.
-	 * Returns whether the item was changed, for example count decrease or durability change.
-	 *
-	 * @param Player $player
-	 *
-	 * @return bool
-	 */
-	public function onReleaseUsing(Player $player) : bool{
-		return false;
-	}
-
-	/**
 	 * Called when this item is used to destroy a block. Usually used to update durability.
 	 *
 	 * @param Block $block
@@ -840,14 +828,30 @@ class Item implements ItemIds, \JsonSerializable{
 		return false;
 	}
 
-    /**
-     * @param Player $player
-     * @param int $ticksUsed
-     * @return int
-     */
-	public function completeAction(Player $player, int $ticksUsed) : int{
-        return CompletedUsingItemPacket::ACTION_UNKNOWN;
-    }
+	/**
+	 * @return int
+	 */
+	public function getCompletionAction() : int{
+		return CompletedUsingItemPacket::ACTION_UNKNOWN;
+	}
+
+	/**
+	 * @param Player $player
+	 * @param int    $ticksUsed
+	 * @return bool
+	 */
+	public function onUse(Player $player, int $ticksUsed) : bool{
+		return false;
+	}
+
+	/**
+	 * @param Player $player
+	 * @param int    $ticksUsed
+	 * @return bool
+	 */
+	public function onRelease(Player $player, int $ticksUsed) : bool{
+		return false;
+	}
 
 	/**
 	 * Returns the number of ticks a player must wait before activating this item again.

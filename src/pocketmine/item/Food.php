@@ -25,7 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerItemConsumeEvent;
-use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 abstract class Food extends Item implements FoodSource{
@@ -44,32 +44,29 @@ abstract class Food extends Item implements FoodSource{
 		return [];
 	}
 
-	public function completeAction(Player $player, int $ticksUsed) : int{
-        if ($this->consume($player)) {
-            return CompletedUsingItemPacket::ACTION_CONSUME;
-        }
-        return CompletedUsingItemPacket::ACTION_UNKNOWN;
-    }
+	public function onUse(Player $player, int $ticksUsed) : bool{
+		$ev = new PlayerItemConsumeEvent($player, $this);
+		$ev->call();
 
-    public function consume(Player $player) : bool{
-        $ev = new PlayerItemConsumeEvent($player, $this);
-        $ev->call();
+		if($ev->isCancelled() or !$player->consumeObject($this)){
+			$player->getInventory()->sendContents($player);
+			return false;
+		}
 
-        if($ev->isCancelled() or !$player->consumeObject($this)){
-            $player->getInventory()->sendContents($player);
-            return false;
-        }
+		if($player->isSurvival()){
+			$this->pop();
+			$player->getInventory()->setItemInHand($this);
+			$player->getInventory()->addItem($this->getResidue());
+		}
 
-        if($player->isSurvival()){
-            $this->pop();
-            $player->getInventory()->setItemInHand($this);
-            $player->getInventory()->addItem($this->getResidue());
-        }
+		return true;
+	}
 
-        return true;
-    }
+	public function onConsume(Living $consumer){
 
-    public function onConsume(Living $consumer){
+	}
 
+	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
+		return true;
 	}
 }

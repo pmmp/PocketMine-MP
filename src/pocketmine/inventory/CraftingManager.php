@@ -33,7 +33,6 @@ use function file_get_contents;
 use function json_decode;
 use function json_encode;
 use function usort;
-use const DIRECTORY_SEPARATOR;
 
 class CraftingManager{
 	/** @var ShapedRecipe[][] */
@@ -80,8 +79,8 @@ class CraftingManager{
 						break;
 					}
 					$this->registerRecipe(new FurnaceRecipe(
-						Item::jsonDeserialize($recipe["output"]),
-						Item::jsonDeserialize($recipe["input"]))
+							Item::jsonDeserialize($recipe["output"]),
+							Item::jsonDeserialize($recipe["input"]))
 					);
 					break;
 				default:
@@ -239,7 +238,7 @@ class CraftingManager{
 
 	/**
 	 * @param CraftingGrid $grid
-	 * @param Item[]       $outputs
+	 * @param Item[] $outputs
 	 *
 	 * @return CraftingRecipe|null
 	 */

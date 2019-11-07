@@ -38,14 +38,14 @@ class PlayerListEntry{
 	public $xboxUserId;
 	/** @var string */
 	public $platformChatId = "";
-    /** @var int */
-    public $buildPlatform = -1;
-    /** @var Skin */
-    public $skin;
-    /** @var bool */
-    public $isTeacher = false;
-    /** @var bool */
-    public $isHost = false;
+	/** @var int */
+	public $buildPlatform = -1;
+	/** @var Skin */
+	public $skin;
+	/** @var bool */
+	public $isTeacher = false;
+	/** @var bool */
+	public $isHost = false;
 
 	public static function createRemovalEntry(UUID $uuid) : PlayerListEntry{
 		$entry = new PlayerListEntry();

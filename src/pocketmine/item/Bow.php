@@ -29,6 +29,8 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use function intdiv;
@@ -47,7 +49,15 @@ class Bow extends Tool{
 		return 385;
 	}
 
-	public function onReleaseUsing(Player $player) : bool{
+	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
+		return $player->getInventory()->contains(Item::get(Item::ARROW)) || $player->isCreative();
+	}
+
+	public function getCompletionAction() : int{
+		return CompletedUsingItemPacket::ACTION_SHOOT;
+	}
+
+	public function onRelease(Player $player, int $ticksUsed) : bool{
 		if($player->isSurvival() and !$player->getInventory()->contains(ItemFactory::get(Item::ARROW, 0, 1))){
 			$player->getInventory()->sendContents($player);
 			return false;
@@ -61,8 +71,7 @@ class Bow extends Tool{
 		);
 		$nbt->setShort("Fire", $player->isOnFire() ? 45 * 60 : 0);
 
-		$diff = $player->getItemUseDuration();
-		$p = $diff / 20;
+		$p = $ticksUsed / 20;
 		$baseForce = min((($p ** 2) + $p * 2) / 3, 1);
 
 
@@ -85,7 +94,7 @@ class Bow extends Tool{
 			}
 			$ev = new EntityShootBowEvent($player, $this, $entity, $baseForce * 3);
 
-			if($baseForce < 0.1 or $diff < 5){
+			if($baseForce < 0.1 or $ticksUsed < 5){
 				$ev->setCancelled();
 			}
 

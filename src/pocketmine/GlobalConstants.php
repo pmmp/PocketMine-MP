@@ -19,21 +19,12 @@
  *
 */
 
-declare(strict_types=1);
-
-namespace pocketmine\network\mcpe\protocol\types;
-
-interface ContainerIds{
-
-	public const NONE = -1;
-	public const INVENTORY = 0;
-	public const FIRST = 1;
-	public const LAST = 100;
-	public const OFFHAND = 119;
-	public const ARMOR = 120;
-	public const CREATIVE = 121;
-	public const HOTBAR = 122;
-	public const FIXED_INVENTORY = 123;
-	public const UI = 124;
-
+// composer autoload doesn't use require_once and also pthreads can inherit things
+if(defined('pocketmine\_GLOBAL_CONSTANTS_INCLUDED')){
+	return;
 }
+define('pocketmine\_GLOBAL_CONSTANTS_INCLUDED', true);
+
+const INT32_MIN = -0x80000000;
+const INT32_MAX = 0x7fffffff;
+define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);

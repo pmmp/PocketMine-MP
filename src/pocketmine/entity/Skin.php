@@ -75,6 +75,10 @@ class Skin{
 		$this->debloatGeometryData();
 	}
 
+	public static function null() : Skin {
+		return new Skin("null", "", SerializedImage::null(), [], SerializedImage::null());
+	}
+
 	public static function convertLegacyGeometryName(string $geometryName) : string{
 		return '{"geometry" : {"default" : "' . $geometryName . '"}}';
 	}
@@ -126,8 +130,8 @@ class Skin{
 	}
 
 	/**
-	 * @return bool
 	 * @deprecated
+	 * @return bool
 	 */
 	public function isValid() : bool{
 		try{

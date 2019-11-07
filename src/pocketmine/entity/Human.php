@@ -120,12 +120,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function deserializeSkinNBT(CompoundTag $skinTag) : Skin{
-		if($skinTag->hasTag("SkinData")) { //new format (1.13+)
+		if($skinTag->hasTag("SkinData")){ //new format (1.13+)
 			$skin = new Skin(
 				$skinTag->getString("SkinId"),
 				$skinTag->getByteArray("SkinResourcePatch"),
 				new SerializedImage($skinTag->getInt("SkinImageWidth"), $skinTag->getInt("SkinImageHeight"), $skinTag->getByteArray("SkinData")),
-				array_map(static function(CompoundTag $animation) : SkinAnimation {
+				array_map(static function(CompoundTag $animation) : SkinAnimation{
 					return new SkinAnimation(new SerializedImage($animation->getInt("ImageWidth"), $animation->getInt("ImageHeight"), $animation->getByteArray("Image")), $animation->getInt("Type"), $animation->getFloat("Frames"));
 				}, $skinTag->getListTag("AnimationImageData")->getAllValues()),
 				new SerializedImage($skinTag->getInt("CapeImageWidth"), $skinTag->getInt("CapeImageHeight"), $skinTag->getByteArray("CapeData")),
@@ -136,16 +136,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				$skinTag->getByte("CapeOnClassicSkin") === 1,
 				$skinTag->getString("CapeId")
 			);
-		} else { //old format
+		}else{ //old format
 			$skin = new Skin(
 				$skinTag->getString("Name"),
-				"",
+				Skin::convertLegacyGeometryName($skinTag->getString("GeometryName", "")),
 				SerializedImage::fromLegacy($skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data")), //old data (this used to be saved as a StringTag in older versions of PM)
 				[],
 				SerializedImage::fromLegacy($skinTag->getByteArray("CapeData", "")),
-				$skinTag->getByteArray("GeometryData", ""),
-				"",
-				Skin::convertLegacyGeometryName($skinTag->getString("GeometryName", "")),
+				$skinTag->getByteArray("GeometryData", "")
 			);
 		}
 
@@ -872,7 +870,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				new ByteTag("PersonaSkin", $this->skin->isPersona() ? 1 : 0),
 				new ByteTag("CapeOnClassicSkin", $this->skin->isCapeOnClassic() ? 1 : 0),
 
-				new ListTag("AnimationImageData", array_map(static function(SkinAnimation $animation) : CompoundTag {
+				new ListTag("AnimationImageData", array_map(static function(SkinAnimation $animation) : CompoundTag{
 					return new CompoundTag("", [
 						new FloatTag("Frames", $animation->getFrames()),
 						new IntTag("Type", $animation->getType()),

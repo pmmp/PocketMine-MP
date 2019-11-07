@@ -194,12 +194,11 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return true; //this is a broken useless packet, so we don't use it
 	}
 
-	public function handleRespawn(RespawnPacket $packet): bool
-    {
-        return $this->player->handleRespawn($packet);
-    }
+	public function handleRespawn(RespawnPacket $packet) : bool{
+		return $this->player->handleRespawn($packet);
+	}
 
-    public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
+	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
 		return $this->player->handleAdventureSettings($packet);
 	}
 
