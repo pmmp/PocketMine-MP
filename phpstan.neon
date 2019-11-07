@@ -2,6 +2,9 @@
 
 parameters:
 	level: 1
+	autoload_files:
+		- tests/phpstan/bootstrap.php
+		- src/pocketmine/PocketMine.php
 	paths:
 		- src
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
@@ -9,61 +12,6 @@ parameters:
 		-
 			message: "#^pocketmine\\\\Player\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\entity\\\\Human\\.$#"
 			path: src/pocketmine/Player.php
-
-		-
-			message: "#^Function pocketmine\\\\critical_error not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function pocketmine\\\\check_platform_dependencies not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function pocketmine\\\\emit_performance_warnings not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function pocketmine\\\\set_ini_entries not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function pocketmine\\\\server not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function check_platform_dependencies not found\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function critical_error not found\\.$#"
-			count: 6
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function set_ini_entries not found\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function emit_performance_warnings not found\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function pocketmine\\\\server not found\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Constant MIN_PHP_VERSION not found\\.$#"
-			count: 2
-			path: src/pocketmine/PocketMine.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\[A-Za-z\\d]+\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
