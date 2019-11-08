@@ -50,12 +50,12 @@ class CompletedUsingItemPacket extends DataPacket{
 	/** @var int */
 	public $action;
 
-	public function decodePayload(){
+	public function decodePayload() : void{
 		$this->itemId = $this->getShort();
 		$this->action = $this->getLInt();
 	}
 
-	public function encodePayload(){
+	public function encodePayload() : void{
 		$this->putShort($this->itemId);
 		$this->putLInt($this->action);
 	}
