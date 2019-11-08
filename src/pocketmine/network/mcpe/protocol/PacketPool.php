@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
-use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 

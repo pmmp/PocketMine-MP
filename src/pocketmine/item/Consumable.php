@@ -26,7 +26,6 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
-use pocketmine\Player;
 
 /**
  * Interface implemented by objects that can be consumed by mobs.

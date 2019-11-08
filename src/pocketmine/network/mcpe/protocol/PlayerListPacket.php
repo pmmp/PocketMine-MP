@@ -26,11 +26,8 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\entity\Skin;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
-use pocketmine\utils\SerializedImage;
-use pocketmine\utils\SkinAnimation;
 use function count;
 
 class PlayerListPacket extends DataPacket{
