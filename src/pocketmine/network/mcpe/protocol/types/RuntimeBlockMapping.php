@@ -52,13 +52,7 @@ final class RuntimeBlockMapping{
 
 	public static function init() : void{
 		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/block_id_map.json"), true);
-
-		try{
-			/** @var CompoundTag $tag */
-			$tag = (new BigEndianNBTStream())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/runtime_block_states.dat"));
-		}catch(BinaryDataException $e){
-			throw new \RuntimeException("", 0, $e);
-		}
+		$tag = (new BigEndianNBTStream())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/runtime_block_states.dat"));
 
 		$decompressed = [];
 
