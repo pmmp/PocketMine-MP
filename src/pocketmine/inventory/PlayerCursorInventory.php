@@ -23,9 +23,37 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-class PlayerCursorInventory extends BaseUIInventory{
+use pocketmine\Player;
 
-	public function __construct(PlayerUIInventory $inventory){
-		parent::__construct($inventory, 1, 0);
+class PlayerCursorInventory extends BaseInventory{
+
+	/** @var Player */
+	protected $holder;
+	/** @var int */
+	protected $offset = 0;
+
+	public function __construct(Player $holder){
+		$this->holder = $holder;
+		parent::__construct();
+	}
+
+	public function getName() : string{
+		return "Cursor";
+	}
+
+	public function getDefaultSize() : int{
+		return 1;
+	}
+
+	public function setSize(int $size){
+		throw new \BadMethodCallException("Cursor can only carry one item at a time");
+	}
+
+	/**
+	 * This override is here for documentation and code completion purposes only.
+	 * @return Player
+	 */
+	public function getHolder(){
+		return $this->holder;
 	}
 }

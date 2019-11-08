@@ -29,23 +29,124 @@ use function max;
 use function min;
 use const PHP_INT_MAX;
 
-class CraftingGrid extends BaseUIInventory{
-	public const SIZE_SMALL = 4;
-	public const SIZE_BIG = 9;
+class CraftingGrid extends BaseInventory{
+	public const SIZE_SMALL = 2;
+	public const SIZE_BIG = 3;
+
+	public const SMALL_OFFSET = 28;
+	public const BIG_OFFSET = 32;
+
+	/** @var int */
+	public $offset;
+	/** @var Player */
+	private $holder;
 
 	/** @var int */
 	private $gridWidth;
+	/** @var int|null */
+	private $startX;
+	/** @var int|null */
+	private $xLen;
+	/** @var int|null */
+	private $startY;
+	/** @var int|null */
+	private $yLen;
 
-	public function __construct(PlayerUIInventory $inventory, int $gridWidth){
+	public function __construct(Player $holder, int $gridWidth){
+		$this->holder = $holder;
 		$this->gridWidth = $gridWidth;
-		if($gridWidth === self::SIZE_SMALL){
-			parent::__construct($inventory, $gridWidth, 28);
-		}elseif($gridWidth === self::SIZE_BIG){
-			parent::__construct($inventory, $gridWidth, 32);
+		if($this->gridWidth === self::SIZE_SMALL){
+			$this->offset = self::SMALL_OFFSET;
+		}elseif($this->gridWidth === self::SIZE_BIG){
+			$this->offset = self::BIG_OFFSET;
 		}
+		parent::__construct();
 	}
 
 	public function getGridWidth() : int{
 		return $this->gridWidth;
+	}
+
+	public function getDefaultSize() : int{
+		return $this->getGridWidth() ** 2;
+	}
+
+	public function setSize(int $size){
+		throw new \BadMethodCallException("Cannot change the size of a crafting grid");
+	}
+
+	public function getName() : string{
+		return "Crafting";
+	}
+
+	public function getItem(int $index) : Item{
+		return parent::getItem($index + $this->offset);
+	}
+
+	public function setItem(int $index, Item $item, bool $send = true) : bool{
+		if(parent::setItem($index + $this->offset, $item, $send)){
+			$this->seekRecipeBounds();
+			return true;
+		}
+		return false;
+	}
+
+	public function sendSlot(int $index, $target) : void{
+		//we can't send a slot of a client-sided inventory window
+	}
+
+	public function sendContents($target) : void{
+		//no way to do this
+	}
+
+	/**
+	 * @return Player
+	 */
+	public function getHolder(){
+		return $this->holder;
+	}
+
+	private function seekRecipeBounds() : void{
+		$minX = PHP_INT_MAX;
+		$maxX = 0;
+		$minY = PHP_INT_MAX;
+		$maxY = 0;
+		$empty = true;
+		for($y = 0; $y < $this->gridWidth; ++$y){
+			for($x = 0; $x < $this->gridWidth; ++$x){
+				if(!$this->isSlotEmpty($y * $this->gridWidth + $x)){
+					$minX = min($minX, $x);
+					$maxX = max($maxX, $x);
+					$minY = min($minY, $y);
+					$maxY = max($maxY, $y);
+					$empty = false;
+				}
+			}
+		}
+		if(!$empty){
+			$this->startX = $minX;
+			$this->xLen = $maxX - $minX + 1;
+			$this->startY = $minY;
+			$this->yLen = $maxY - $minY + 1;
+		}else{
+			$this->startX = $this->xLen = $this->startY = $this->yLen = null;
+		}
+	}
+
+	/**
+	 * Returns the width of the recipe we're trying to craft, based on items currently in the grid.
+	 *
+	 * @return int
+	 */
+	public function getRecipeWidth() : int{
+		return $this->xLen ?? 0;
+	}
+
+	/**
+	 * Returns the height of the recipe we're trying to craft, based on items currently in the grid.
+	 * @return int
+	 */
+	public function getRecipeHeight() : int{
+		return $this->yLen ?? 0;
 	}
 }

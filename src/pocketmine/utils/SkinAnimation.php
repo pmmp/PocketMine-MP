@@ -25,6 +25,8 @@ namespace pocketmine\utils;
 
 class SkinAnimation{
 
+	public const TYPE_HEAD = 1; //Might want a double check on this
+
 	/** @var SerializedImage */
 	private $image;
 	/** @var int */

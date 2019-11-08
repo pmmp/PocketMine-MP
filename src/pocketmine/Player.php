@@ -72,7 +72,6 @@ use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
-use pocketmine\inventory\PlayerUIInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -290,8 +289,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $windowIndex = [];
 	/** @var bool[] */
 	protected $permanentWindows = [];
-	/** @var PlayerUIInventory */
-	protected $playerUIInventory;
+	/** @var PlayerCursorInventory */
+	protected $cursorInventory;
 	/** @var CraftingGrid */
 	protected $craftingGrid = null;
 	/** @var CraftingTransaction|null */
@@ -3554,7 +3553,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->removeAllWindows(true);
 			$this->windows = [];
 			$this->windowIndex = [];
-			$this->playerUIInventory = null;
+			$this->cursorInventory = null;
 			$this->craftingGrid = null;
 
 			if($this->constructed){
@@ -3819,19 +3818,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->addWindow($this->getArmorInventory(), ContainerIds::ARMOR, true);
 
-		$this->playerUIInventory = new PlayerUIInventory($this);
-		$this->addWindow($this->playerUIInventory, ContainerIds::UI, true);
+		$this->cursorInventory = new PlayerCursorInventory($this);
+		$this->addWindow($this->cursorInventory, ContainerIds::UI, true);
 
-		$this->craftingGrid = new CraftingGrid($this->playerUIInventory, CraftingGrid::SIZE_SMALL);
+		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
 		//TODO: more windows
 	}
 
-	public function getPlayerUIInventory() : PlayerUIInventory{
-		return $this->playerUIInventory;
-	}
-
 	public function getCursorInventory() : PlayerCursorInventory{
-		return $this->playerUIInventory->getCursorInventory();
+		return $this->cursorInventory;
 	}
 
 	public function getCraftingGrid() : CraftingGrid{
@@ -3847,7 +3842,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function doCloseInventory() : void{
 		/** @var Inventory[] $inventories */
-		$inventories = [$this->craftingGrid, $this->getCursorInventory()];
+		$inventories = [$this->craftingGrid, $this->cursorInventory];
 		foreach($inventories as $inventory){
 			$contents = $inventory->getContents();
 			if(count($contents) > 0){
@@ -3861,7 +3856,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($this->craftingGrid->getGridWidth() > CraftingGrid::SIZE_SMALL){
-			$this->craftingGrid = new CraftingGrid($this->playerUIInventory, CraftingGrid::SIZE_SMALL);
+			$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
 		}
 	}
 
