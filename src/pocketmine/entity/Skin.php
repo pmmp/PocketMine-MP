@@ -75,8 +75,8 @@ class Skin{
 		$this->capeId = $capeId;
 	}
 
-	public static function convertToLegacyName(string $name){
-		return '{"geometry" : {"default" : "geometry.humanoid.custom"}}';
+	public static function convertToLegacyName(string $name) : string{
+		return '{"geometry" : {"default" : "' . $name . '"}}';
 	}
 
 	/**
