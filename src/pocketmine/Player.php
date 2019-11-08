@@ -2721,7 +2721,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$this->spawned or !$this->isAlive()){
 			return true;
 		}
-
 		if($packet->action === InteractPacket::ACTION_MOUSEOVER and $packet->target === 0){
 			//TODO HACK: silence useless spam (MCPE 1.8)
 			//this packet is EXPECTED to only be sent when interacting with an entity, but due to some messy Mojang
@@ -3825,6 +3824,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->addWindow($this->cursorInventory, ContainerIds::UI, true);
 
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
+
 		//TODO: more windows
 	}
 

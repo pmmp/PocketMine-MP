@@ -40,7 +40,6 @@ class CraftingGrid extends BaseInventory{
 	public $offset;
 	/** @var Player */
 	protected $holder;
-
 	/** @var int */
 	private $gridWidth;
 
