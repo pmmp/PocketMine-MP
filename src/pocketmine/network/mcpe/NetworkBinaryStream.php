@@ -103,7 +103,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$skinId = $this->getString();
 		$skinResourcePatch = $this->getString();
 		$skinData = $this->getImage();
-        $animationCount = $this->getLInt();
+		$animationCount = $this->getLInt();
 
 		$animations = [];
 		for($i = 0, $count = $animationCount; $i < $count; ++$i){

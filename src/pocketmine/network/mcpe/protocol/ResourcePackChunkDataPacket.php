@@ -46,7 +46,7 @@ class ResourcePackChunkDataPacket extends DataPacket{
 		$this->packId = $this->getString();
 		$this->chunkIndex = $this->getLInt();
 		$this->progress = $this->getLLong();
-		$this->data = $this->get($this->getString());
+		$this->data = $this->getString();
 	}
 
 	protected function encodePayload(){
