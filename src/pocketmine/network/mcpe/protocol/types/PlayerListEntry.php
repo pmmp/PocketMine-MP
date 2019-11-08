@@ -34,14 +34,14 @@ class PlayerListEntry{
 	public $entityUniqueId;
 	/** @var string */
 	public $username;
+	/** @var Skin */
+	public $skin;
 	/** @var string */
 	public $xboxUserId;
 	/** @var string */
 	public $platformChatId = "";
 	/** @var int */
 	public $buildPlatform = 0; //Unknown
-	/** @var Skin */
-	public $skin;
 	/** @var bool */
 	public $isTeacher = false;
 	/** @var bool */
