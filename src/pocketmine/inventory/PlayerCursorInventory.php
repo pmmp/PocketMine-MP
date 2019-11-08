@@ -26,11 +26,8 @@ namespace pocketmine\inventory;
 use pocketmine\Player;
 
 class PlayerCursorInventory extends BaseInventory{
-
 	/** @var Player */
 	protected $holder;
-	/** @var int */
-	protected $offset = 0;
 
 	public function __construct(Player $holder){
 		$this->holder = $holder;

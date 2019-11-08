@@ -39,10 +39,11 @@ class CraftingGrid extends BaseInventory{
 	/** @var int */
 	public $offset;
 	/** @var Player */
-	private $holder;
+	protected $holder;
 
 	/** @var int */
 	private $gridWidth;
+
 	/** @var int|null */
 	private $startX;
 	/** @var int|null */
@@ -86,8 +87,10 @@ class CraftingGrid extends BaseInventory{
 	public function setItem(int $index, Item $item, bool $send = true) : bool{
 		if(parent::setItem($index + $this->offset, $item, $send)){
 			$this->seekRecipeBounds();
+
 			return true;
 		}
+
 		return false;
 	}
 
@@ -109,20 +112,26 @@ class CraftingGrid extends BaseInventory{
 	private function seekRecipeBounds() : void{
 		$minX = PHP_INT_MAX;
 		$maxX = 0;
+
 		$minY = PHP_INT_MAX;
 		$maxY = 0;
+
 		$empty = true;
+
 		for($y = 0; $y < $this->gridWidth; ++$y){
 			for($x = 0; $x < $this->gridWidth; ++$x){
 				if(!$this->isSlotEmpty($y * $this->gridWidth + $x)){
 					$minX = min($minX, $x);
 					$maxX = max($maxX, $x);
+
 					$minY = min($minY, $y);
 					$maxY = max($maxY, $y);
+
 					$empty = false;
 				}
 			}
 		}
+
 		if(!$empty){
 			$this->startX = $minX;
 			$this->xLen = $maxX - $minX + 1;
@@ -131,6 +140,22 @@ class CraftingGrid extends BaseInventory{
 		}else{
 			$this->startX = $this->xLen = $this->startY = $this->yLen = null;
 		}
+	}
+
+	/**
+	 * Returns the item at offset x,y, offset by where the starts of the recipe rectangle are.
+	 *
+	 * @param int $x
+	 * @param int $y
+	 *
+	 * @return Item
+	 */
+	public function getIngredient(int $x, int $y) : Item{
+		if($this->startX !== null and $this->startY !== null){
+			return $this->getItem(($y + $this->startY) * $this->gridWidth + ($x + $this->startX));
+		}
+
+		throw new \InvalidStateException("No ingredients found in grid");
 	}
 
 	/**
