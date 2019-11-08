@@ -142,11 +142,7 @@ class Skin{
 	 * @return SerializedImage
 	 */
 	public function getCapeData() : SerializedImage{
-		if($this->capeData === null){
-			return new SerializedImage(0, 0, "");
-		}
-
-		return $this->capeData;
+		return $this->capeData ?? new SerializedImage(0, 0, "");
 	}
 
 	/**
