@@ -115,28 +115,4 @@ class Bucket extends Item implements Consumable{
 	public function onConsume(Living $consumer){
 		$consumer->removeAllEffects();
 	}
-
-	public function onUse(Player $player) : bool{
-		if($this->canBeConsumed()){
-			$slot = $player->getInventory()->getItemInHand();
-
-			$ev = new PlayerItemConsumeEvent($player, $slot);
-			$ev->call();
-
-			/** @var $slot Consumable */
-			if($ev->isCancelled() or !$player->consumeObject($slot)){
-				$player->getInventory()->sendContents($player);
-				return true;
-			}
-
-			if($player->isSurvival()){
-				$slot->pop();
-				$player->getInventory()->setItemInHand($slot);
-				$player->getInventory()->addItem($slot->getResidue());
-			}
-
-			return true;
-		}
-		return false;
-	}
 }

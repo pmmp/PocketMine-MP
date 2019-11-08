@@ -848,10 +848,6 @@ class Item implements ItemIds, \JsonSerializable{
 		return 0;
 	}
 
-	public function onUse(Player $player) : bool{
-		return false;
-	}
-
 	/**
 	 * Compares an Item to this Item and check if they match.
 	 *
