@@ -80,7 +80,6 @@ use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
-use pocketmine\item\Food;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
@@ -99,7 +98,6 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
@@ -838,10 +836,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Plugin developers should not use this, use setSkin() and sendSkin() instead.
 	 *
 	 * @param Skin   $skin
+	 * @param string $newSkinName
+	 * @param string $oldSkinName
 	 *
 	 * @return bool
 	 */
-	public function changeSkin(Skin $skin) : bool{
+	public function changeSkin(Skin $skin, string $newSkinName, string $oldSkinName) : bool{
 		if(!$skin->isValid()){
 			return false;
 		}
@@ -1112,13 +1112,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->getHealth() <= 0){
 			$this->respawn();
 		}
-	}
-
-	protected function sendCompletedUsingItemPacket(int $itemId, int $action){
-		$pk = new CompletedUsingItemPacket();
-		$pk->itemId = $itemId;
-		$pk->action = $action;
-		$this->sendDataPacket($pk);
 	}
 
 	protected function sendRespawnPacket(Vector3 $pos, int $respawnState = RespawnPacket::SEARCHING_FOR_SPAWN){
@@ -2512,6 +2505,27 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						return true;
 					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_AIR:
+						if($this->isUsingItem()){
+							$slot = $this->inventory->getItemInHand();
+							if($slot instanceof Consumable){
+								$ev = new PlayerItemConsumeEvent($this, $slot);
+								if($this->hasItemCooldown($slot)){
+									$ev->setCancelled();
+								}
+								$ev->call();
+								if($ev->isCancelled() or !$this->consumeObject($slot)){
+									$this->inventory->sendContents($this);
+									return true;
+								}
+								$this->resetItemCooldown($slot);
+								if($this->isSurvival()){
+									$slot->pop();
+									$this->inventory->setItemInHand($slot);
+									$this->inventory->addItem($slot->getResidue());
+								}
+								$this->setUsingItem(false);
+							}
+						}
 						$directionVector = $this->getDirectionVector();
 
 						if($this->isCreative()){
@@ -2541,15 +2555,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							}
 						}
 
-						if(!$this->isUsingItem()){
-							$this->setUsingItem(true);
-							return true;
-						}
-
-						$this->setUsingItem(false);
-						if($item->onUse($this)){
-							$this->sendCompletedUsingItemPacket($item->getId(), $item->getCompletedAction());
-						}
+						$this->setUsingItem(true);
 
 						return true;
 					default:
@@ -2667,15 +2673,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								if($item->onReleaseUsing($this)){
 									$this->resetItemCooldown($item);
 									$this->inventory->setItemInHand($item);
-									$this->sendCompletedUsingItemPacket($item->getId(), $item->getCompletedAction());
 								}
 							}else{
 								break;
 							}
 
 							return true;
-						case InventoryTransactionPacket::RELEASE_ITEM_ACTION_CONSUME:
-							break;
 						default:
 							break;
 					}
@@ -2718,7 +2721,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!$this->spawned or !$this->isAlive()){
 			return true;
 		}
-
 		if($packet->action === InteractPacket::ACTION_MOUSEOVER and $packet->target === 0){
 			//TODO HACK: silence useless spam (MCPE 1.8)
 			//this packet is EXPECTED to only be sent when interacting with an entity, but due to some messy Mojang
@@ -3822,6 +3824,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->addWindow($this->cursorInventory, ContainerIds::UI, true);
 
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
+
 		//TODO: more windows
 	}
 
