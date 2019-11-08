@@ -27,7 +27,6 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerItemConsumeEvent;
-use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\Player;
 
 class Potion extends Item implements Consumable{
@@ -237,10 +236,6 @@ class Potion extends Item implements Consumable{
 
 	public function getResidue(){
 		return ItemFactory::get(Item::GLASS_BOTTLE);
-	}
-
-	public function getCompletedAction(){
-		return CompletedUsingItemPacket::ACTION_CONSUME;
 	}
 
 	public function onUse(Player $player) : bool{

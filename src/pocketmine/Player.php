@@ -99,7 +99,6 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
@@ -1112,13 +1111,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->getHealth() <= 0){
 			$this->respawn();
 		}
-	}
-
-	protected function sendCompletedUsingItemPacket(int $itemId, int $action){
-		$pk = new CompletedUsingItemPacket();
-		$pk->itemId = $itemId;
-		$pk->action = $action;
-		$this->sendDataPacket($pk);
 	}
 
 	protected function sendRespawnPacket(Vector3 $pos, int $respawnState = RespawnPacket::SEARCHING_FOR_SPAWN){
@@ -2547,9 +2539,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 
 						$this->setUsingItem(false);
-						if($item->onUse($this)){
-							$this->sendCompletedUsingItemPacket($item->getId(), $item->getCompletedAction());
-						}
+						$item->onUse($this);
 
 						return true;
 					default:
@@ -2667,7 +2657,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								if($item->onReleaseUsing($this)){
 									$this->resetItemCooldown($item);
 									$this->inventory->setItemInHand($item);
-									$this->sendCompletedUsingItemPacket($item->getId(), $item->getCompletedAction());
 								}
 							}else{
 								break;

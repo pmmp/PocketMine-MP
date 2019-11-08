@@ -32,7 +32,6 @@ use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\Player;
 
 class Bucket extends Item implements Consumable{
@@ -115,14 +114,6 @@ class Bucket extends Item implements Consumable{
 
 	public function onConsume(Living $consumer){
 		$consumer->removeAllEffects();
-	}
-
-	public function getCompletedAction(){
-		if($this->canBeConsumed()){
-			return CompletedUsingItemPacket::ACTION_CONSUME;
-		}else{
-			return CompletedUsingItemPacket::ACTION_POUR_BUCKET;
-		}
 	}
 
 	public function onUse(Player $player) : bool{
