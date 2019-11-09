@@ -54,18 +54,18 @@ namespace pocketmine {
 		if(version_compare(MIN_PHP_VERSION, PHP_VERSION) > 0){
 			//If PHP version isn't high enough, anything below might break, so don't bother checking it.
 			return [
-				\pocketmine\NAME . " requires PHP >= " . MIN_PHP_VERSION . ", but you have PHP " . PHP_VERSION . "."
+				"PHP >= " . MIN_PHP_VERSION . " is required, but you have PHP " . PHP_VERSION . "."
 			];
 		}
 
 		$messages = [];
 
 		if(PHP_INT_SIZE < 8){
-			$messages[] = "Running " . \pocketmine\NAME . " with 32-bit systems/PHP is no longer supported. Please upgrade to a 64-bit system, or use a 64-bit PHP binary if this is a 64-bit system.";
+			$messages[] = "32-bit systems/PHP are no longer supported. Please upgrade to a 64-bit system, or use a 64-bit PHP binary if this is a 64-bit system.";
 		}
 
 		if(php_sapi_name() !== "cli"){
-			$messages[] = "You must run " . \pocketmine\NAME . " using the CLI.";
+			$messages[] = "Only PHP CLI is supported.";
 		}
 
 		$extensions = [
@@ -141,7 +141,6 @@ namespace pocketmine {
 		ini_set("display_errors", '1');
 		ini_set("display_startup_errors", '1');
 		ini_set("default_charset", "utf-8");
-		@ini_set("opcache.mmap_base", bin2hex(random_bytes(8))); //Fix OPCache address errors
 		ini_set('assert.exception', '1');
 	}
 
@@ -161,7 +160,6 @@ namespace pocketmine {
 
 		error_reporting(-1);
 		set_ini_entries();
-		@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
 
 		if(\Phar::running(true) !== ""){
 			define('pocketmine\PATH', \Phar::running(true) . "/");
@@ -189,12 +187,6 @@ namespace pocketmine {
 		}
 
 		\ErrorUtils::setErrorExceptionHandler();
-
-		/*
-		 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
-		 */
-		$autoloader = new \BaseClassLoader();
-		$autoloader->register(false);
 
 		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
 		define('pocketmine\VERSION', $version->getFullVersion(true));
@@ -263,6 +255,12 @@ namespace pocketmine {
 			}
 
 			ThreadManager::init();
+			/*
+			 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
+			 */
+			$autoloader = new \BaseClassLoader();
+			$autoloader->register(false);
+
 			new Server($autoloader, $logger, $dataPath, \pocketmine\PLUGIN_PATH);
 
 			$logger->info("Stopping other threads");
@@ -285,5 +283,7 @@ namespace pocketmine {
 		exit($exitCode);
 	}
 
-	\pocketmine\server();
+	if(!defined('pocketmine\_PHPSTAN_ANALYSIS')){
+		\pocketmine\server();
+	}
 }
