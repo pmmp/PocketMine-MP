@@ -64,6 +64,7 @@ use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
+use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
@@ -841,6 +842,30 @@ class NetworkSession{
 		if($p !== $this->player){
 			$this->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($p->getUniqueId())]));
 		}
+	}
+
+	public function onTitle(string $title) : void{
+		$this->sendDataPacket(SetTitlePacket::title($title));
+	}
+
+	public function onSubTitle(string $subtitle) : void{
+		$this->sendDataPacket(SetTitlePacket::subtitle($subtitle));
+	}
+
+	public function onActionBar(string $actionBar) : void{
+		$this->sendDataPacket(SetTitlePacket::actionBarMessage($actionBar));
+	}
+
+	public function onClearTitle() : void{
+		$this->sendDataPacket(SetTitlePacket::clearTitle());
+	}
+
+	public function onResetTitleOptions() : void{
+		$this->sendDataPacket(SetTitlePacket::resetTitleOptions());
+	}
+
+	public function onTitleDuration(int $fadeIn, int $stay, int $fadeOut) : void{
+		$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
 	}
 
 	public function tick() : bool{

@@ -1900,7 +1900,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($subtitle !== ""){
 			$this->sendSubTitle($subtitle);
 		}
-		$this->networkSession->sendDataPacket(SetTitlePacket::title($title));
+		$this->networkSession->onTitle($title);
 	}
 
 	/**
@@ -1909,7 +1909,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param string $subtitle
 	 */
 	public function sendSubTitle(string $subtitle) : void{
-		$this->networkSession->sendDataPacket(SetTitlePacket::subtitle($subtitle));
+		$this->networkSession->onSubTitle($subtitle);
 	}
 
 	/**
@@ -1918,21 +1918,21 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param string $message
 	 */
 	public function sendActionBarMessage(string $message) : void{
-		$this->networkSession->sendDataPacket(SetTitlePacket::actionBarMessage($message));
+		$this->networkSession->onActionBar($message);
 	}
 
 	/**
 	 * Removes the title from the client's screen.
 	 */
 	public function removeTitles(){
-		$this->networkSession->sendDataPacket(SetTitlePacket::clearTitle());
+		$this->networkSession->onClearTitle();
 	}
 
 	/**
 	 * Resets the title duration settings to defaults and removes any existing titles.
 	 */
 	public function resetTitles(){
-		$this->networkSession->sendDataPacket(SetTitlePacket::resetTitleOptions());
+		$this->networkSession->onResetTitleOptions();
 	}
 
 	/**
@@ -1944,7 +1944,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function setTitleDuration(int $fadeIn, int $stay, int $fadeOut){
 		if($fadeIn >= 0 and $stay >= 0 and $fadeOut >= 0){
-			$this->networkSession->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
+			$this->networkSession->onTitleDuration($fadeIn, $stay, $fadeOut);
 		}
 	}
 
