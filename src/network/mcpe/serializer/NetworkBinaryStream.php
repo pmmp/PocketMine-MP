@@ -362,7 +362,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * Writes an EntityUniqueID
+	 * Writes an EntityRuntimeID
 	 *
 	 * @param int $eid
 	 */
