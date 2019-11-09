@@ -29,7 +29,6 @@ use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\player\Player;
@@ -233,14 +232,7 @@ class ItemEntity extends Entity{
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddItemActorPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->location->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->item = $this->getItem();
-		$pk->metadata = $this->getSyncedNetworkData(false);
-
-		$player->getNetworkSession()->sendDataPacket($pk);
+		$player->getNetworkSession()->onItemEntitySpawned($this);
 	}
 
 	public function onCollideWithPlayer(Player $player) : void{

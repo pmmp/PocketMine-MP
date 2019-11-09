@@ -32,7 +32,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\player\Player;
 use pocketmine\world\particle\DestroyBlockParticle;
@@ -42,13 +41,19 @@ use function ceil;
 class Painting extends Entity{
 	public const NETWORK_ID = EntityLegacyIds::PAINTING;
 
-	private const DATA_TO_FACING = [
+	/**
+	 * @internal
+	 */
+	public const DATA_TO_FACING = [
 		0 => Facing::SOUTH,
 		1 => Facing::WEST,
 		2 => Facing::NORTH,
 		3 => Facing::EAST
 	];
-	private const FACING_TO_DATA = [
+	/**
+	 * @internal
+	 */
+	public const FACING_TO_DATA = [
 		Facing::SOUTH => 0,
 		Facing::WEST => 1,
 		Facing::NORTH => 2,
@@ -149,17 +154,7 @@ class Painting extends Entity{
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddPaintingPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = new Vector3(
-			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
-			($this->boundingBox->minY + $this->boundingBox->maxY) / 2,
-			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
-		);
-		$pk->direction = self::FACING_TO_DATA[$this->facing];
-		$pk->title = $this->motive;
-
-		$player->getNetworkSession()->sendDataPacket($pk);
+		$player->getNetworkSession()->onPaintingSpawned($this);
 	}
 
 	/**

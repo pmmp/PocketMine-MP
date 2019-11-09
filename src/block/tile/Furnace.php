@@ -202,17 +202,17 @@ class Furnace extends Spawnable implements Container, Nameable{
 
 		if($prevCookTime !== $this->cookTime){
 			foreach($this->inventory->getViewers() as $v){
-				$v->getNetworkSession()->getInvManager()->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_SMELT_PROGRESS, $this->cookTime);
+				$v->getNetworkSession()->getInvManager()->syncFurnaceCookTime($this->inventory, $this->cookTime);
 			}
 		}
 		if($prevRemainingFuelTime !== $this->remainingFuelTime){
 			foreach($this->inventory->getViewers() as $v){
-				$v->getNetworkSession()->getInvManager()->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_REMAINING_FUEL_TIME, $this->remainingFuelTime);
+				$v->getNetworkSession()->getInvManager()->syncFurnaceRemainingFuelTime($this->inventory, $this->remainingFuelTime);
 			}
 		}
 		if($prevMaxFuelTime !== $this->maxFuelTime){
 			foreach($this->inventory->getViewers() as $v){
-				$v->getNetworkSession()->getInvManager()->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_MAX_FUEL_TIME, $this->maxFuelTime);
+				$v->getNetworkSession()->getInvManager()->syncFurnaceMaxFuelTime($this->inventory, $this->maxFuelTime);
 			}
 		}
 

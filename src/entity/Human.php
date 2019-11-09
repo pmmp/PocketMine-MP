@@ -42,12 +42,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
-use pocketmine\network\mcpe\protocol\AddPlayerPacket;
-use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
-use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
-use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\player\Player;
 use pocketmine\utils\Limits;
 use pocketmine\utils\UUID;
@@ -406,30 +401,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
-		if(!($this instanceof Player)){
-			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), $this->skin)]));
-		}
-
-		$pk = new AddPlayerPacket();
-		$pk->uuid = $this->getUniqueId();
-		$pk->username = $this->getName();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->location->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->location->yaw;
-		$pk->pitch = $this->location->pitch;
-		$pk->item = $this->getInventory()->getItemInHand();
-		$pk->metadata = $this->getSyncedNetworkData(false);
-		$player->getNetworkSession()->sendDataPacket($pk);
-
-		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
-		$this->sendData($player, [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($this->getNameTag())]);
-
-		$player->getNetworkSession()->onMobArmorChange($this);
-
-		if(!($this instanceof Player)){
-			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($this->uuid)]));
-		}
+		$player->getNetworkSession()->onHumanSpawned($this);
 	}
 
 	protected function onDispose() : void{

@@ -164,4 +164,25 @@ class InventoryManager{
 
 		$this->session->sendDataPacket(InventoryContentPacket::create(ContainerIds::CREATIVE, $items));
 	}
+
+	public function syncFurnaceCookTime(FurnaceInventory $inventory, int $value) : void{
+		$windowId = $this->getWindowId($inventory);
+		if($windowId !== null){
+			$this->session->sendDataPacket(ContainerSetDataPacket::create($windowId, ContainerSetDataPacket::PROPERTY_FURNACE_SMELT_PROGRESS, $value));
+		}
+	}
+
+	public function syncFurnaceRemainingFuelTime(FurnaceInventory $inventory, int $value) : void{
+		$windowId = $this->getWindowId($inventory);
+		if($windowId !== null){
+			$this->session->sendDataPacket(ContainerSetDataPacket::create($windowId, ContainerSetDataPacket::PROPERTY_FURNACE_REMAINING_FUEL_TIME, $value));
+		}
+	}
+
+	public function syncFurnaceMaxFuelTime(FurnaceInventory $inventory, int $value) : void{
+		$windowId = $this->getWindowId($inventory);
+		if($windowId !== null){
+			$this->session->sendDataPacket(ContainerSetDataPacket::create($windowId, ContainerSetDataPacket::PROPERTY_FURNACE_MAX_FUEL_TIME, $value));
+		}
+	}
 }

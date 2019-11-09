@@ -1610,22 +1610,12 @@ abstract class Entity{
 
 	/**
 	 * Called by spawnTo() to send whatever packets needed to spawn the entity to the client.
+	 * This may be overwritten by other entities.
 	 *
 	 * @param Player $player
 	 */
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddActorPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->type = static::NETWORK_ID;
-		$pk->position = $this->location->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->location->yaw;
-		$pk->headYaw = $this->location->yaw; //TODO
-		$pk->pitch = $this->location->pitch;
-		$pk->attributes = $this->attributeMap->getAll();
-		$pk->metadata = $this->getSyncedNetworkData(false);
-
-		$player->getNetworkSession()->sendDataPacket($pk);
+		$player->getNetworkSession()->onEntitySpawned($this);
 	}
 
 	/**
@@ -1667,7 +1657,7 @@ abstract class Entity{
 		$id = spl_object_id($player);
 		if(isset($this->hasSpawned[$id])){
 			if($send){
-				$player->getNetworkSession()->sendDataPacket(RemoveActorPacket::create($this->id));
+				$player->getNetworkSession()->onEntityRemoved($this);
 			}
 			unset($this->hasSpawned[$id]);
 		}
@@ -1745,6 +1735,8 @@ abstract class Entity{
 	}
 
 	/**
+	 * TODO: move this out of Entity class
+	 *
 	 * @param Player[]|Player    $player
 	 * @param MetadataProperty[] $data Properly formatted entity data, defaults to everything
 	 */
@@ -1768,11 +1760,13 @@ abstract class Entity{
 	}
 
 	/**
+	 * @internal
+	 *
 	 * @param bool $dirtyOnly
 	 *
 	 * @return MetadataProperty[]
 	 */
-	final protected function getSyncedNetworkData(bool $dirtyOnly) : array{
+	public final function getSyncedNetworkData(bool $dirtyOnly) : array{
 		$this->syncNetworkData();
 
 		return $dirtyOnly ? $this->networkProperties->getDirty() : $this->networkProperties->getAll();

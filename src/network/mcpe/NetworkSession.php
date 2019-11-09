@@ -25,8 +25,11 @@ namespace pocketmine\network\mcpe;
 
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
+use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\object\Painting;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
@@ -45,6 +48,10 @@ use pocketmine\network\mcpe\handler\NullPacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
+use pocketmine\network\mcpe\protocol\AddActorPacket;
+use pocketmine\network\mcpe\protocol\AddItemActorPacket;
+use pocketmine\network\mcpe\protocol\AddPaintingPacket;
+use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
@@ -60,15 +67,19 @@ use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
+use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
+use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
@@ -841,6 +852,106 @@ class NetworkSession{
 		if($p !== $this->player){
 			$this->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($p->getUniqueId())]));
 		}
+	}
+
+	public function onEntitySpawned(Entity $e) : void{
+		$location = $e->getLocation();
+
+		$pk = new AddActorPacket();
+		$pk->entityRuntimeId = $e->getId();
+		$pk->type = $e::NETWORK_ID; // TODO: proper entity ID mapping
+		$pk->position = $location->asVector3();
+		$pk->motion = $e->getMotion();
+		$pk->yaw = $location->yaw;
+		$pk->headYaw = $location->yaw; //TODO
+		$pk->pitch = $location->pitch;
+		$pk->attributes = $e->getAttributeMap()->getAll();
+		$pk->metadata = $e->getSyncedNetworkData(false); // TODO: move metadata creation out of pocketmine\entity
+
+		$this->sendDataPacket($pk);
+	}
+
+	public function onEntityRemoved(Entity $e) : void{
+		$this->sendDataPacket(RemoveActorPacket::create($e->getId()));
+	}
+
+	public function onHumanSpawned(Human $human) : void{
+		$location = $human->getLocation();
+
+		if(!($human instanceof Player)){
+			$this->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($human->getUniqueId(), $human->getId(), $human->getName(), $human->getSkin())]));
+		}
+
+		$pk = new AddPlayerPacket();
+		$pk->uuid = $human->getUniqueId();
+		$pk->username = $human->getName();
+		$pk->entityRuntimeId = $human->getId();
+		$pk->position = $location->asVector3();
+		$pk->motion = $human->getMotion();
+		$pk->yaw = $location->yaw;
+		$pk->pitch = $location->pitch;
+		$pk->item = $human->getInventory()->getItemInHand();
+		$pk->metadata = $human->getSyncedNetworkData(false);
+		$this->sendDataPacket($pk);
+
+		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
+		$human->sendData($this->player, [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($human->getNameTag())]);
+
+		$this->onMobArmorChange($human);
+
+		if(!($human instanceof Player)){
+			$this->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($human->getUniqueId())]));
+		}
+	}
+
+	public function onItemEntitySpawned(ItemEntity $e) : void{
+		$pk = new AddItemActorPacket();
+		$pk->entityRuntimeId = $e->getId();
+		$pk->position = $e->getLocation()->asVector3();
+		$pk->motion = $e->getMotion();
+		$pk->item = $e->getItem();
+		$pk->metadata = $e->getSyncedNetworkData(false);
+
+		$this->sendDataPacket($pk);
+	}
+
+	public function onPaintingSpawned(Painting $e) : void{
+		$pk = new AddPaintingPacket();
+		$pk->entityRuntimeId = $e->getId();
+		$bb = $e->getBoundingBox();
+		$pk->position = new Vector3(
+			($bb->minX + $bb->maxX) / 2,
+			($bb->minY + $bb->maxY) / 2,
+			($bb->minZ + $bb->maxZ) / 2
+		);
+		$pk->direction = Painting::FACING_TO_DATA[$e->getFacing()];
+		$pk->title = $e->getMotive()->getName();
+
+		$this->sendDataPacket($pk);
+	}
+
+	public function onTitle(string $title) : void{
+		$this->sendDataPacket(SetTitlePacket::title($title));
+	}
+
+	public function onSubTitle(string $subTitle) : void{
+		$this->sendDataPacket(SetTitlePacket::subtitle($subTitle));
+	}
+
+	public function onActionBar(string $actionBar) : void{
+		$this->sendDataPacket(SetTitlePacket::actionBarMessage($actionBar));
+	}
+
+	public function onRemoveTitles() : void{
+		$this->sendDataPacket(SetTitlePacket::clearTitle());
+	}
+
+	public function onResetTitles() : void{
+		$this->sendDataPacket(SetTitlePacket::resetTitleOptions());
+	}
+
+	public function onTitleDuration(int $fadeIn, int $stay, int $fadeOut) : void{
+		$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
 	}
 
 	public function tick() : bool{
