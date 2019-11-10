@@ -41,7 +41,7 @@ class PlayerListEntry{
 	/** @var string */
 	public $platformChatId = "";
 	/** @var int */
-	public $buildPlatform = 0; //Unknown
+	public $buildPlatform = -1;
 	/** @var bool */
 	public $isTeacher = false;
 	/** @var bool */
