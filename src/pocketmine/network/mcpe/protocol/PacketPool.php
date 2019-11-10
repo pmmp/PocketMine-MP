@@ -54,6 +54,7 @@ class PacketPool{
 		static::registerPacket(new RiderJumpPacket());
 		static::registerPacket(new UpdateBlockPacket());
 		static::registerPacket(new AddPaintingPacket());
+		static::registerPacket(new TickSyncPacket());
 		static::registerPacket(new LevelSoundEventPacketV1());
 		static::registerPacket(new LevelEventPacket());
 		static::registerPacket(new BlockEventPacket());
@@ -161,12 +162,19 @@ class PacketPool{
 		static::registerPacket(new ClientCacheStatusPacket());
 		static::registerPacket(new OnScreenTextureAnimationPacket());
 		static::registerPacket(new MapCreateLockedCopyPacket());
-		static::registerPacket(new StructureTemplateDataExportRequestPacket());
-		static::registerPacket(new StructureTemplateDataExportResponsePacket());
+		static::registerPacket(new StructureTemplateDataRequestPacket());
+		static::registerPacket(new StructureTemplateDataResponsePacket());
 		static::registerPacket(new UpdateBlockPropertiesPacket());
 		static::registerPacket(new ClientCacheBlobStatusPacket());
 		static::registerPacket(new ClientCacheMissResponsePacket());
+		static::registerPacket(new EducationSettingsPacket());
+		static::registerPacket(new EmotePacket());
+		static::registerPacket(new MultiplayerSettingsPacket());
+		static::registerPacket(new SettingsCommandPacket());
+		static::registerPacket(new AnvilDamagePacket());
 		static::registerPacket(new CompletedUsingItemPacket());
+		static::registerPacket(new NetworkSettingsPacket());
+		static::registerPacket(new PlayerAuthInputPacket());
 	}
 
 	/**

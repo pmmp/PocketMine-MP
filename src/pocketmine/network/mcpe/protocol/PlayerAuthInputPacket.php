@@ -27,30 +27,18 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class StructureTemplateDataExportResponsePacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_RESPONSE_PACKET;
-
-	/** @var string */
-	public $structureTemplateName;
-	/** @var string|null */
-	public $namedtag;
+class PlayerAuthInputPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::PLAYER_AUTH_INPUT_PACKET;
 
 	protected function decodePayload() : void{
-		$this->structureTemplateName = $this->getString();
-		if($this->getBool()){
-			$this->namedtag = $this->getRemaining();
-		}
+		//TODO
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->structureTemplateName);
-		$this->putBool($this->namedtag !== null);
-		if($this->namedtag !== null){
-			$this->put($this->namedtag);
-		}
+		//TODO
 	}
 
 	public function handle(NetworkSession $handler) : bool{
-		return $handler->handleStructureTemplateDataExportResponse($this);
+		return $handler->handlePlayerAuthInput($this);
 	}
 }
