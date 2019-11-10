@@ -33,15 +33,15 @@ class CraftingGrid extends BaseInventory{
 	public const SIZE_SMALL = 2;
 	public const SIZE_BIG = 3;
 
-	public const SMALL_OFFSET = 28;
-	public const BIG_OFFSET = 32;
+	private const SMALL_OFFSET = 28;
+	private const BIG_OFFSET = 32;
 
-	/** @var int */
-	public $offset;
 	/** @var Player */
 	protected $holder;
 	/** @var int */
 	private $gridWidth;
+	/** @var int */
+	private $offset;
 
 	/** @var int|null */
 	private $startX;
