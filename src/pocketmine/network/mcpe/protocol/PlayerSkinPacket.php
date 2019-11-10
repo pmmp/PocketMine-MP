@@ -38,15 +38,23 @@ class PlayerSkinPacket extends DataPacket{
 	public $uuid;
 	/** @var Skin */
 	public $skin;
+	/** @var string */
+	public $newSkinName = "";
+	/** @var string */
+	public $unknownString = ""; //Sent as empty, assuming it is the old skin name
 
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
 		$this->skin = $this->getSkin();
+		$this->newSkinName = $this->getString();
+		$this->unknownString = $this->getString();
 	}
 
 	protected function encodePayload(){
 		$this->putUUID($this->uuid);
 		$this->putSkin($this->skin);
+		$this->putString($this->newSkinName);
+		$this->putString($this->unknownString);
 	}
 
 	public function handle(NetworkSession $session) : bool{
