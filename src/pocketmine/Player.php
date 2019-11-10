@@ -527,8 +527,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function spawnTo(Player $player) : void{
 		if($this->spawned and $player->spawned and $this->isAlive() and $player->isAlive() and $player->getLevel() === $this->level and $player->canSee($this) and !$this->isSpectator()){
 			parent::spawnTo($player);
-
-			$this->sendSkin([$player]);
 		}
 	}
 

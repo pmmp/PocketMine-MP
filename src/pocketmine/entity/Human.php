@@ -915,6 +915,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
 		$this->sendData($player, [self::DATA_NAMETAG => [self::DATA_TYPE_STRING, $this->getNameTag()]]);
 
+		$pk = new PlayerSkinPacket();
+		$pk->uuid = $this->uuid;
+		$pk->skin = $this->skin;
+		$player->dataPacket($pk);
+
 		$this->armorInventory->sendContents($player);
 
 		if(!($this instanceof Player)){

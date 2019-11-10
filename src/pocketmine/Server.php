@@ -74,6 +74,7 @@ use pocketmine\network\CompressBatchedTask;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
+use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\RakLibInterface;
@@ -2398,10 +2399,15 @@ class Server{
 	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, string $xboxUserId = "", array $players = null){
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
-
 		$pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skin, $xboxUserId);
+		$pk->encode();
 
-		$this->broadcastPacket($players ?? $this->playerList, $pk);
+		$pk2 = new PlayerSkinPacket();
+		$pk2->uuid = $uuid;
+		$pk2->skin = $skin;
+		$pk2->encode();
+
+		$this->batchPackets($players ?? $this->playerList, [$pk, $pk2]);
 	}
 
 	/**
@@ -2543,7 +2549,7 @@ class Server{
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 
-			$this->getNetwork()->blockAddress($address, 600);
+			//$this->getNetwork()->blockAddress($address, 600);
 		}
 		//TODO: add raw packet events
 	}

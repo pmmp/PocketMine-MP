@@ -30,6 +30,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
+use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\utils\SerializedImage;
@@ -95,11 +96,12 @@ class FloatingTextParticle extends Particle{
 		if(!$this->invisible){
 			$uuid = UUID::fromRandom();
 			$name = $this->title . ($this->text !== "" ? "\n" . $this->text : "");
+			$skinData = str_repeat("\x00", 8192);
+			$skin = new Skin(hash('md5', $skinData), Skin::convertLegacyGeometryName('geometry.humanoid.custom'), SerializedImage::fromLegacy($skinData));
 
 			$add = new PlayerListPacket();
 			$add->type = PlayerListPacket::TYPE_ADD;
-			$skinData = str_repeat("\x00", 8192);
-			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, new Skin(hash('md5', $skinData), Skin::convertLegacyGeometryName('geometry.humanoid.custom'), SerializedImage::fromLegacy($skinData)))];
+			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, $skin)];
 			$p[] = $add;
 
 			$pk = new AddPlayerPacket();
@@ -118,6 +120,11 @@ class FloatingTextParticle extends Particle{
 			];
 
 			$p[] = $pk;
+
+			$pk2 = new PlayerSkinPacket();
+			$pk2->uuid = $uuid;
+			$pk2->skin = $skin;
+			$p[] = $pk2;
 
 			$remove = new PlayerListPacket();
 			$remove->type = PlayerListPacket::TYPE_REMOVE;
