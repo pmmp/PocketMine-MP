@@ -119,7 +119,7 @@
             ],
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
-                "source": "https://github.com/pmmp/BinaryUtils/tree/0.1.10",
+                "source": "https://github.com/pmmp/BinaryUtils/tree/0.1",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
             "time": "2019-10-21T14:40:32+00:00"
@@ -153,7 +153,7 @@
             ],
             "description": "PHP library containing math related code used in PocketMine-MP",
             "support": {
-                "source": "https://github.com/pmmp/Math/tree/0.2.3",
+                "source": "https://github.com/pmmp/Math/tree/0.2",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
             "time": "2019-10-21T14:35:10+00:00"
@@ -194,7 +194,7 @@
             ],
             "description": "PHP library for working with Named Binary Tags",
             "support": {
-                "source": "https://github.com/pmmp/NBT/tree/0.2.11",
+                "source": "https://github.com/pmmp/NBT/tree/0.2",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
             "time": "2019-10-21T14:50:43+00:00"
@@ -235,7 +235,7 @@
             ],
             "description": "A RakNet server implementation written in PHP",
             "support": {
-                "source": "https://github.com/pmmp/RakLib/tree/0.12",
+                "source": "https://github.com/pmmp/RakLib/tree/0.12.5",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
             "time": "2019-07-22T14:38:20+00:00"
@@ -276,23 +276,20 @@
         },
         {
             "name": "pocketmine/spl",
-            "version": "0.3.2",
+            "version": "0.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "7fd53857cd000491ba69e8db865792a024dd2c49"
+                "reference": "94d4df142fe837ba836e9348dd00209e4bdcc307"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/7fd53857cd000491ba69e8db865792a024dd2c49",
-                "reference": "7fd53857cd000491ba69e8db865792a024dd2c49",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/94d4df142fe837ba836e9348dd00209e4bdcc307",
+                "reference": "94d4df142fe837ba836e9348dd00209e4bdcc307",
                 "shasum": ""
             },
             "type": "library",
             "autoload": {
-                "exclude-from-classmap": [
-                    "stubs"
-                ],
                 "classmap": [
                     "./"
                 ]
@@ -302,9 +299,10 @@
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
             "support": {
-                "source": "https://github.com/pmmp/SPL/tree/master"
+                "source": "https://github.com/pmmp/SPL/tree/0.3.3",
+                "issues": "https://github.com/pmmp/SPL/issues"
             },
-            "time": "2018-08-12T15:17:39+00:00"
+            "time": "2019-10-28T11:41:20+00:00"
         }
     ],
     "packages-dev": [],
