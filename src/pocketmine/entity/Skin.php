@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
-use pocketmine\utils\SerializedImage;
-use pocketmine\utils\SkinAnimation;
 use function implode;
 use function in_array;
 use function json_encode;
