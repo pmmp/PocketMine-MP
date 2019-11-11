@@ -25,7 +25,9 @@ namespace pocketmine\utils;
 
 class SkinAnimation{
 
-	public const TYPE_HEAD = 1; //Might want a double check on this
+	public const TYPE_HEAD = 1;
+	public const TYPE_BODY_32 = 2;
+	public const TYPE_BODY_64 = 3;
 
 	/** @var SerializedImage */
 	private $image;
@@ -40,14 +42,29 @@ class SkinAnimation{
 		$this->frames = $frames;
 	}
 
+	/**
+	 * Images of the animation.
+	 *
+	 * @return SerializedImage
+	 */
 	public function getImage() : SerializedImage{
 		return $this->image;
 	}
 
+	/**
+	 * The type of animation you are applying.
+	 *
+	 * @return int
+	 */
 	public function getType() : int{
 		return $this->type;
 	}
 
+	/**
+	 * The total amount of frames in an animation.
+	 *
+	 * @return float
+	 */
 	public function getFrames() : float{
 		return $this->frames;
 	}
