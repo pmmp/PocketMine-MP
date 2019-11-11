@@ -84,7 +84,11 @@ class NetworkBinaryStream extends BinaryStream{
 		$animationCount = $this->getLInt();
 		$animations = [];
 		for($i = 0; $i < $animationCount; ++$i){
-			$animations[] = new SkinAnimation($this->getSkinImage(), $this->getLInt(), $this->getLFloat());
+			$animations[] = new SkinAnimation(
+				$skinImage = $this->getSkinImage(),
+				$animationType = $this->getLInt(),
+				$animationFrames = $this->getLFloat()
+			);
 		}
 		$capeData = $this->getSkinImage();
 		$geometryData = $this->getString();
