@@ -24,9 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Living;
-use pocketmine\event\player\PlayerItemConsumeEvent;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
 
 abstract class Food extends Item implements FoodSource{
 	public function requiresHunger() : bool{
@@ -44,29 +41,7 @@ abstract class Food extends Item implements FoodSource{
 		return [];
 	}
 
-	public function onUse(Player $player, int $ticksUsed) : bool{
-		$ev = new PlayerItemConsumeEvent($player, $this);
-		$ev->call();
-
-		if($ev->isCancelled() or !$player->consumeObject($this)){
-			$player->getInventory()->sendContents($player);
-			return false;
-		}
-
-		if($player->isSurvival()){
-			$this->pop();
-			$player->getInventory()->setItemInHand($this);
-			$player->getInventory()->addItem($this->getResidue());
-		}
-
-		return true;
-	}
-
 	public function onConsume(Living $consumer){
 
-	}
-
-	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
-		return true;
 	}
 }

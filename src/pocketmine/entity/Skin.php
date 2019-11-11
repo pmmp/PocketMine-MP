@@ -80,11 +80,11 @@ class Skin{
 
 	public static function null() : Skin {
 		$skinData = str_repeat("\x00", 8192);
-		return new Skin(hash('md5', $skinData), self::convertLegacyGeometryName("geometry.humanoid.custom"), SerializedImage::fromLegacy($skinData));
+		return new Skin(hash("md5", $skinData), self::convertLegacyGeometryName("geometry.humanoid.custom"), SerializedImage::fromLegacy($skinData));
 	}
 
 	public static function convertLegacyGeometryName(string $geometryName) : string{
-		return '{"geometry" : {"default" : "' . $geometryName . '"}}';
+		return json_encode(["geometry" => ["default" => $geometryName]]);
 	}
 
 	/**

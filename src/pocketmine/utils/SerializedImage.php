@@ -38,7 +38,7 @@ class SerializedImage{
 	private $data;
 
 	public function __construct(int $width, int $height, string $data){
-		if(strlen($data) !== ($width * $height) * 4) {
+		if(strlen($data) !== ($width * $height) * 4){
 			$width = $height = (int) ceil(sqrt(strlen($data) / 4));
 		}
 

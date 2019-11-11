@@ -806,6 +806,18 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Called when a player is using this item and releases it. Used to handle bow shoot actions.
+	 * Returns whether the item was changed, for example count decrease or durability change.
+	 *
+	 * @param Player $player
+	 *
+	 * @return bool
+	 */
+	public function onReleaseUsing(Player $player) : bool{
+		return false;
+	}
+
+	/**
 	 * Called when this item is used to destroy a block. Usually used to update durability.
 	 *
 	 * @param Block $block
@@ -824,24 +836,6 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return bool
 	 */
 	public function onAttackEntity(Entity $victim) : bool{
-		return false;
-	}
-
-	/**
-	 * @param Player $player
-	 * @param int    $ticksUsed
-	 * @return bool
-	 */
-	public function onUse(Player $player, int $ticksUsed) : bool{
-		return false;
-	}
-
-	/**
-	 * @param Player $player
-	 * @param int    $ticksUsed
-	 * @return bool
-	 */
-	public function onRelease(Player $player, int $ticksUsed) : bool{
 		return false;
 	}
 

@@ -48,11 +48,7 @@ class Bow extends Tool{
 		return 385;
 	}
 
-	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
-		return $player->getInventory()->contains(Item::get(Item::ARROW)) || $player->isCreative();
-	}
-
-	public function onRelease(Player $player, int $ticksUsed) : bool{
+	public function onReleaseUsing(Player $player) : bool{
 		if($player->isSurvival() and !$player->getInventory()->contains(ItemFactory::get(Item::ARROW, 0, 1))){
 			$player->getInventory()->sendContents($player);
 			return false;
@@ -66,7 +62,8 @@ class Bow extends Tool{
 		);
 		$nbt->setShort("Fire", $player->isOnFire() ? 45 * 60 : 0);
 
-		$p = $ticksUsed / 20;
+		$diff = $player->getItemUseDuration();
+		$p = $diff / 20;
 		$baseForce = min((($p ** 2) + $p * 2) / 3, 1);
 
 
@@ -89,7 +86,7 @@ class Bow extends Tool{
 			}
 			$ev = new EntityShootBowEvent($player, $this, $entity, $baseForce * 3);
 
-			if($baseForce < 0.1 or $ticksUsed < 5){
+			if($baseForce < 0.1 or $diff < 5){
 				$ev->setCancelled();
 			}
 

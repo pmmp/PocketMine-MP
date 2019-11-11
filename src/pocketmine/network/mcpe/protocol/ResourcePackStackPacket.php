@@ -44,6 +44,8 @@ class ResourcePackStackPacket extends DataPacket{
 
 	/** @var bool */
 	public $isExperimental = false;
+	/** @var string */
+	public $baseGameVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK;
 
 	protected function decodePayload(){
 		$this->mustAccept = $this->getBool();
@@ -62,6 +64,7 @@ class ResourcePackStackPacket extends DataPacket{
 		}
 
 		$this->isExperimental = $this->getBool();
+		$this->baseGameVersion = $this->getString();
 	}
 
 	protected function encodePayload(){
@@ -82,6 +85,7 @@ class ResourcePackStackPacket extends DataPacket{
 		}
 
 		$this->putBool($this->isExperimental);
+		$this->putString($this->baseGameVersion);
 	}
 
 	public function handle(NetworkSession $session) : bool{
