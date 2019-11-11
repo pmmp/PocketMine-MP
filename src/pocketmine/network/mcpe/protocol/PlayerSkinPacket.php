@@ -27,8 +27,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\entity\Skin;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\utils\SerializedImage;
-use pocketmine\utils\SkinAnimation;
 use pocketmine\utils\UUID;
 
 class PlayerSkinPacket extends DataPacket{

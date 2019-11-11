@@ -38,10 +38,10 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\network\mcpe\protocol\types\SkinImage;
+use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
-use pocketmine\utils\SerializedImage;
-use pocketmine\utils\SkinAnimation;
 use pocketmine\utils\UUID;
 use function count;
 use function strlen;
@@ -80,13 +80,13 @@ class NetworkBinaryStream extends BinaryStream{
 	public function getSkin() : Skin{
 		$skinId = $this->getString();
 		$skinResourcePatch = $this->getString();
-		$skinData = $this->getImage();
+		$skinData = $this->getSkinImage();
 		$animationCount = $this->getLInt();
 		$animations = [];
 		for($i = 0; $i < $animationCount; ++$i){
-			$animations[] = new SkinAnimation($this->getImage(), $this->getLInt(), $this->getLFloat());
+			$animations[] = new SkinAnimation($this->getSkinImage(), $this->getLInt(), $this->getLFloat());
 		}
-		$capeData = $this->getImage();
+		$capeData = $this->getSkinImage();
 		$geometryData = $this->getString();
 		$animationData = $this->getString();
 		$premium = $this->getBool();
@@ -101,16 +101,16 @@ class NetworkBinaryStream extends BinaryStream{
 	public function putSkin(Skin $skin){
 		$this->putString($skin->getSkinId());
 		$this->putString($skin->getGeometryName()); //resource patch
-		$this->putImage(SerializedImage::fromLegacy($skin->getSkinData()));
+		$this->putSkinImage(SkinImage::fromLegacy($skin->getSkinData()));
 		/** @var SkinAnimation[] $animations */
 		$animations = [];
 		$this->putLInt(count($animations));
 		foreach($animations as $animation){
-			$this->putImage($animation->getImage());
+			$this->putSkinImage($animation->getImage());
 			$this->putLInt($animation->getType());
 			$this->putLFloat($animation->getFrames());
 		}
-		$this->putImage(new SerializedImage(0, 0, $skin->getCapeData()));
+		$this->putSkinImage(new SkinImage(0, 0, $skin->getCapeData()));
 		$this->putString($skin->getGeometryData());
 		$this->putString(""); //animation data
 		$this->putBool(false); //isPremium
@@ -120,14 +120,14 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putString(""); //fullskinId
 	}
 
-	public function getImage() : SerializedImage{
+	public function getSkinImage() : SkinImage{
 		$width = $this->getLInt();
 		$height = $this->getLInt();
 		$data = $this->getString();
-		return new SerializedImage($height, $width, $data);
+		return new SkinImage($height, $width, $data);
 	}
 
-	public function putImage(SerializedImage $image) : void{
+	public function putSkinImage(SkinImage $image) : void{
 		$this->putLInt($image->getWidth());
 		$this->putLInt($image->getHeight());
 		$this->putString($image->getData());

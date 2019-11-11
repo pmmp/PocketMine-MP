@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\utils;
+namespace pocketmine\network\mcpe\protocol\types;
 
 class SkinAnimation{
 
@@ -29,14 +29,14 @@ class SkinAnimation{
 	public const TYPE_BODY_32 = 2;
 	public const TYPE_BODY_64 = 3;
 
-	/** @var SerializedImage */
+	/** @var SkinImage */
 	private $image;
 	/** @var int */
 	private $type;
 	/** @var float */
 	private $frames;
 
-	public function __construct(SerializedImage $image, int $type, float $frames){
+	public function __construct(SkinImage $image, int $type, float $frames){
 		$this->image = $image;
 		$this->type = $type;
 		$this->frames = $frames;
@@ -45,9 +45,9 @@ class SkinAnimation{
 	/**
 	 * Image of the animation.
 	 *
-	 * @return SerializedImage
+	 * @return SkinImage
 	 */
-	public function getImage() : SerializedImage{
+	public function getImage() : SkinImage{
 		return $this->image;
 	}
 
