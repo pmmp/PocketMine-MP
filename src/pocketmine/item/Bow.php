@@ -30,7 +30,6 @@ use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use function intdiv;
@@ -51,10 +50,6 @@ class Bow extends Tool{
 
 	public function onClickAir(Player $player, Vector3 $directionVector) : bool{
 		return $player->getInventory()->contains(Item::get(Item::ARROW)) || $player->isCreative();
-	}
-
-	public function getCompletionAction() : int{
-		return CompletedUsingItemPacket::ACTION_SHOOT;
 	}
 
 	public function onRelease(Player $player, int $ticksUsed) : bool{

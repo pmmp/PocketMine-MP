@@ -42,7 +42,6 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\Player;
 use pocketmine\utils\Binary;
 use function array_map;
@@ -826,13 +825,6 @@ class Item implements ItemIds, \JsonSerializable{
 	 */
 	public function onAttackEntity(Entity $victim) : bool{
 		return false;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getCompletionAction() : int{
-		return CompletedUsingItemPacket::ACTION_UNKNOWN;
 	}
 
 	/**

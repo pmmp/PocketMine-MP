@@ -27,12 +27,15 @@ use Ahc\Json\Comment as CommentedJsonDecoder;
 use InvalidArgumentException;
 use pocketmine\utils\SerializedImage;
 use pocketmine\utils\SkinAnimation;
+use function hash;
 use function json_encode;
+use function str_repeat;
 
 class Skin{
 	public const ACCEPTED_SKIN_SIZES = [
 		64 * 32 * 4,
 		64 * 64 * 4,
+		128 * 64 * 4,
 		128 * 128 * 4
 	];
 
@@ -76,7 +79,8 @@ class Skin{
 	}
 
 	public static function null() : Skin {
-		return new Skin("null", "", SerializedImage::null(), [], SerializedImage::null());
+		$skinData = str_repeat("\x00", 8192);
+		return new Skin(hash('md5', $skinData), self::convertLegacyGeometryName("geometry.humanoid.custom"), SerializedImage::fromLegacy($skinData));
 	}
 
 	public static function convertLegacyGeometryName(string $geometryName) : string{

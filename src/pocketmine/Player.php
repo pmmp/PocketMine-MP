@@ -109,7 +109,6 @@ use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
-use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
@@ -2604,12 +2603,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 							$ticksUsed = $this->server->getTick() - $this->startAction;
 							$this->setUsingItem(false);
-							if($item->onUse($this, $ticksUsed)){
-								$pk = new CompletedUsingItemPacket();
-								$pk->itemId = $item->getId();
-								$pk->action = $item->getCompletionAction();
-								$this->dataPacket($pk);
-							}
+							$item->onUse($this, $ticksUsed);
 						}
 
 						return true;
@@ -2727,14 +2721,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								}
 
 								$ticksUsed = $this->server->getTick() - $this->startAction;
-								if($item->onRelease($this, $ticksUsed)){
-									$this->resetItemCooldown($item);
-									$this->inventory->setItemInHand($item);
-									$pk = new CompletedUsingItemPacket();
-									$pk->itemId = $item->getId();
-									$pk->action = $item->getCompletionAction();
-									$this->dataPacket($pk);
-								}
+								$item->onRelease($this, $ticksUsed);
 							}else{
 								break;
 							}

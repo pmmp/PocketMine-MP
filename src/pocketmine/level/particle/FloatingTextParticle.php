@@ -96,12 +96,10 @@ class FloatingTextParticle extends Particle{
 		if(!$this->invisible){
 			$uuid = UUID::fromRandom();
 			$name = $this->title . ($this->text !== "" ? "\n" . $this->text : "");
-			$skinData = str_repeat("\x00", 8192);
-			$skin = new Skin(hash('md5', $skinData), Skin::convertLegacyGeometryName('geometry.humanoid.custom'), SerializedImage::fromLegacy($skinData));
 
 			$add = new PlayerListPacket();
 			$add->type = PlayerListPacket::TYPE_ADD;
-			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, $skin)];
+			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, Skin::null())];
 			$p[] = $add;
 
 			$pk = new AddPlayerPacket();
@@ -123,7 +121,7 @@ class FloatingTextParticle extends Particle{
 
 			$pk2 = new PlayerSkinPacket();
 			$pk2->uuid = $uuid;
-			$pk2->skin = $skin;
+			$pk2->skin = Skin::null();
 			$p[] = $pk2;
 
 			$remove = new PlayerListPacket();
