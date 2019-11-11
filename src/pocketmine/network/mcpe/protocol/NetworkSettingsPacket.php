@@ -27,15 +27,31 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class NetworkSettingsPacket extends DataPacket{
+class NetworkSettingsPacket extends DataPacket/* implements ClientboundPacket*/{
 	public const NETWORK_ID = ProtocolInfo::NETWORK_SETTINGS_PACKET;
 
+	public const COMPRESS_NOTHING = 0;
+	public const COMPRESS_EVERYTHING = 1;
+
+	/** @var int */
+	private $compressionThreshold;
+
+	public static function create(int $compressionThreshold) : self{
+		$result = new self;
+		$result->compressionThreshold = $compressionThreshold;
+		return $result;
+	}
+
+	public function getCompressionThreshold() : int{
+		return $this->compressionThreshold;
+	}
+
 	protected function decodePayload() : void{
-		//TODO
+		$this->compressionThreshold = $this->getLShort();
 	}
 
 	protected function encodePayload() : void{
-		//TODO
+		$this->putLShort($this->compressionThreshold);
 	}
 
 	public function handle(NetworkSession $handler) : bool{

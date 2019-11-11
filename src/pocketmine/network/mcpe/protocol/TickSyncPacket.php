@@ -27,15 +27,44 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class TickSyncPacket extends DataPacket{
+class TickSyncPacket extends DataPacket/* implements ClientboundPacket, ServerboundPacket*/{
 	public const NETWORK_ID = ProtocolInfo::TICK_SYNC_PACKET;
 
+	/** @var int */
+	private $clientSendTime;
+	/** @var int */
+	private $serverReceiveTime;
+
+	public static function request(int $clientTime) : self{
+		$result = new self;
+		$result->clientSendTime = $clientTime;
+		$result->serverReceiveTime = 0; //useless
+		return $result;
+	}
+
+	public static function response(int $clientSendTime, int $serverReceiveTime) : self{
+		$result = new self;
+		$result->clientSendTime = $clientSendTime;
+		$result->serverReceiveTime = $serverReceiveTime;
+		return $result;
+	}
+
+	public function getClientSendTime() : int{
+		return $this->clientSendTime;
+	}
+
+	public function getServerReceiveTime() : int{
+		return $this->serverReceiveTime;
+	}
+
 	protected function decodePayload() : void{
-		//TODO
+		$this->clientSendTime = $this->getLLong();
+		$this->serverReceiveTime = $this->getLLong();
 	}
 
 	protected function encodePayload() : void{
-		//TODO
+		$this->putLLong($this->clientSendTime);
+		$this->putLLong($this->serverReceiveTime);
 	}
 
 	public function handle(NetworkSession $handler) : bool{

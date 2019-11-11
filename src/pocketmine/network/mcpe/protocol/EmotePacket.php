@@ -27,15 +27,52 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class EmotePacket extends DataPacket{
+class EmotePacket extends DataPacket/* implements ClientboundPacket, ServerboundPacket*/{
 	public const NETWORK_ID = ProtocolInfo::EMOTE_PACKET;
 
+	private const FLAG_SERVER = 1 << 0;
+
+	/** @var int */
+	private $entityRuntimeId;
+	/** @var string */
+	private $emoteId;
+	/** @var int */
+	private $flags;
+
+	public static function create(int $entityRuntimeId, string $emoteId, int $flags) : self{
+		$result = new self;
+		$result->entityRuntimeId = $entityRuntimeId;
+		$result->emoteId = $emoteId;
+		$result->flags = $flags;
+		return $result;
+	}
+
+	/**
+	 * TODO: we can't call this getEntityRuntimeId() because of base class collision (crap architecture, thanks Shoghi)
+	 * @return int
+	 */
+	public function getEntityRuntimeIdField() : int{
+		return $this->entityRuntimeId;
+	}
+
+	public function getEmoteId() : string{
+		return $this->emoteId;
+	}
+
+	public function getFlags() : int{
+		return $this->flags;
+	}
+
 	protected function decodePayload() : void{
-		//TODO
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->emoteId = $this->getString();
+		$this->flags = $this->getByte();
 	}
 
 	protected function encodePayload() : void{
-		//TODO
+		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putString($this->emoteId);
+		$this->putByte($this->flags);
 	}
 
 	public function handle(NetworkSession $handler) : bool{
