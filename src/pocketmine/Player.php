@@ -2914,7 +2914,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->sendRespawnPacket($this, RespawnPacket::READY_TO_SPAWN);
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
