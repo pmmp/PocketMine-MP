@@ -36,12 +36,12 @@ class PlayerSkinPacket extends DataPacket{
 
 	/** @var UUID */
 	public $uuid;
-	/** @var Skin */
-	public $skin;
-	/** @var string */
-	public $newSkinName = "";
 	/** @var string */
 	public $oldSkinName = "";
+	/** @var string */
+	public $newSkinName = "";
+	/** @var Skin */
+	public $skin;
 
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
