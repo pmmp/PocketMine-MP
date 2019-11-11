@@ -120,14 +120,14 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putString(""); //fullskinId
 	}
 
-	public function getSkinImage() : SkinImage{
+	private function getSkinImage() : SkinImage{
 		$width = $this->getLInt();
 		$height = $this->getLInt();
 		$data = $this->getString();
 		return new SkinImage($height, $width, $data);
 	}
 
-	public function putSkinImage(SkinImage $image) : void{
+	private function putSkinImage(SkinImage $image) : void{
 		$this->putLInt($image->getWidth());
 		$this->putLInt($image->getHeight());
 		$this->putString($image->getData());
