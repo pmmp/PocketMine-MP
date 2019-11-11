@@ -42,7 +42,6 @@ use pocketmine\item\Totem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
@@ -55,8 +54,6 @@ use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\Player;
-use pocketmine\utils\SerializedImage;
-use pocketmine\utils\SkinAnimation;
 use pocketmine\utils\UUID;
 use function array_filter;
 use function array_merge;
@@ -829,7 +826,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$this->namedtag->setTag(new ListTag("EnderChestInventory", $items, NBT::TAG_Compound));
 		}
 
-		//TODO: Save animations
 		if($this->skin !== null){
 			$this->namedtag->setTag(new CompoundTag("Skin", [
 				new StringTag("Name", $this->skin->getSkinId()),
