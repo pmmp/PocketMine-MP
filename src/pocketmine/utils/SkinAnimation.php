@@ -43,7 +43,7 @@ class SkinAnimation{
 	}
 
 	/**
-	 * Images of the animation.
+	 * Image of the animation.
 	 *
 	 * @return SerializedImage
 	 */
