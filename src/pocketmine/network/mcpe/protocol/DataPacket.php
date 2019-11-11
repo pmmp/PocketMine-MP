@@ -143,7 +143,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	public function __debugInfo(){
 		$data = [];
-		foreach($this as $k => $v){
+		foreach((array) $this as $k => $v){
 			if($k === "buffer" and is_string($v)){
 				$data[$k] = bin2hex($v);
 			}elseif(is_string($v) or (is_object($v) and method_exists($v, "__toString"))){
