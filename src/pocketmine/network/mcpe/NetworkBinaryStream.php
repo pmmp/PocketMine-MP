@@ -95,29 +95,29 @@ class NetworkBinaryStream extends BinaryStream{
 		$capeId = $this->getString();
 		$fullSkinId = $this->getString();
 
-		return new Skin(
-			$skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId
-		);
+		return new Skin($skinId, $skinData->getData(), $capeData->getData(), $skinResourcePatch, $geometryData);
 	}
 
 	public function putSkin(Skin $skin){
 		$this->putString($skin->getSkinId());
-		$this->putString($skin->getSkinResourcePatch());
-		$this->putImage($skin->getSkinData());
-		$this->putLInt(count($skin->getAnimations()));
-		foreach($skin->getAnimations() as $animation){
+		$this->putString($skin->getGeometryName()); //resource patch
+		$this->putImage(SerializedImage::fromLegacy($skin->getSkinData()));
+		/** @var SkinAnimation[] $animations */
+		$animations = [];
+		$this->putLInt(count($animations));
+		foreach($animations as $animation){
 			$this->putImage($animation->getImage());
 			$this->putLInt($animation->getType());
 			$this->putLFloat($animation->getFrames());
 		}
-		$this->putImage($skin->getCapeData());
+		$this->putImage(new SerializedImage(0, 0, $skin->getCapeData()));
 		$this->putString($skin->getGeometryData());
-		$this->putString($skin->getAnimationData());
-		$this->putBool($skin->getPremium());
-		$this->putBool($skin->getPersona());
-		$this->putBool($skin->getCapeOnClassic());
-		$this->putString($skin->getCapeId());
-		$this->putString($skin->getFullSkinId());
+		$this->putString(""); //animation data
+		$this->putBool(false); //isPremium
+		$this->putBool(false); //isPersona
+		$this->putBool(false); //isCapeOnClassic
+		$this->putString(""); //capeId
+		$this->putString(""); //fullskinId
 	}
 
 	public function getImage() : SerializedImage{

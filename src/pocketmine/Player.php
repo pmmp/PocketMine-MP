@@ -1917,22 +1917,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
 
-		$animations = [];
-		foreach($packet->clientData["AnimatedImageData"] as $animatedData){
-			$animations[] = new SkinAnimation(new SerializedImage($animatedData["ImageHeight"], $animatedData["ImageWidth"], base64_decode($animatedData["Image"])), $animatedData["Type"], $animatedData["Frames"]);
-		}
 		$skin = new Skin(
 			$packet->clientData["SkinId"],
+			base64_decode($packet->clientData["SkinData"] ?? ""),
+			base64_decode($packet->clientData["CapeData"] ?? ""),
 			base64_decode($packet->clientData["SkinResourcePatch"] ?? ""),
-			new SerializedImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"] ?? "")),
-			$animations,
-			new SerializedImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"] ?? "")),
-			base64_decode($packet->clientData["SkinGeometryData"] ?? ""),
-			base64_decode($packet->clientData["AnimationData"] ?? ""),
-			$packet->clientData["PremiumSkin"] ?? false,
-			$packet->clientData["PersonaSkin"] ?? false,
-			$packet->clientData["CapeOnClassicSkin"] ?? false,
-			$packet->clientData["CapeId"] ?? ""
+			base64_decode($packet->clientData["SkinGeometryData"] ?? "")
 		);
 
 		if(!$skin->isValid()){
