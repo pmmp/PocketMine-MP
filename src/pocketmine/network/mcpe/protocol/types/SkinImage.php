@@ -21,9 +21,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\utils;
+namespace pocketmine\network\mcpe\protocol\types;
 
-class SerializedImage{
+class SkinImage{
 
 	/** @var int */
 	private $height;
@@ -38,7 +38,7 @@ class SerializedImage{
 		$this->data = $data;
 	}
 
-	public static function fromLegacy(string $data) : SerializedImage{
+	public static function fromLegacy(string $data) : SkinImage{
 		switch(strlen($data)){
 			case 64 * 32 * 4:
 				return new self(64, 32, $data);

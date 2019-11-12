@@ -160,8 +160,6 @@ use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
-use pocketmine\utils\SerializedImage;
-use pocketmine\utils\SkinAnimation;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 use function abs;
@@ -2914,9 +2912,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function handleRespawn(RespawnPacket $packet) : bool{
 		if(!$this->isAlive() && $packet->respawnState === RespawnPacket::CLIENT_READY_TO_SPAWN){
 			$this->sendRespawnPacket($this, RespawnPacket::READY_TO_SPAWN);
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/**

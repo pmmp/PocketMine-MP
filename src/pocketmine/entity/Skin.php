@@ -55,10 +55,6 @@ class Skin{
 		$this->geometryData = $geometryData;
 	}
 
-	public static function convertToLegacyName(string $name) : string{
-		return '{"geometry" : {"default" : "' . $name . '"}}';
-	}
-
 	/**
 	 * @deprecated
 	 * @return bool
