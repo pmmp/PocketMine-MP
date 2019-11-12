@@ -27,15 +27,32 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class MultiplayerSettingsPacket extends DataPacket{
+class MultiplayerSettingsPacket extends DataPacket/* implements ServerboundPacket*/{ //TODO: this might be clientbound too, but unsure
 	public const NETWORK_ID = ProtocolInfo::MULTIPLAYER_SETTINGS_PACKET;
 
+	public const ACTION_ENABLE_MULTIPLAYER = 0;
+	public const ACTION_DISABLE_MULTIPLAYER = 1;
+	public const ACTION_REFRESH_JOIN_CODE = 2;
+
+	/** @var int */
+	private $action;
+
+	public static function create(int $action) : self{
+		$result = new self;
+		$result->action = $action;
+		return $result;
+	}
+
+	public function getAction() : int{
+		return $this->action;
+	}
+
 	protected function decodePayload() : void{
-		//TODO
+		$this->action = $this->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		//TODO
+		$this->putVarInt($this->action);
 	}
 
 	public function handle(NetworkSession $handler) : bool{
