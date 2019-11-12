@@ -114,7 +114,11 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->putLInt($animation->getType());
 			$this->putLFloat($animation->getFrames());
 		}
-		$this->putSkinImage(new SkinImage(0, 0, $skin->getCapeData()));
+		if($skin->getCapeData() !== ""){
+			$this->putSkinImage(new SkinImage(32, 64, $skin->getCapeData()));
+		}else{
+			$this->putSkinImage(new SkinImage(0, 0, ""));
+		}
 		$this->putString($skin->getGeometryData());
 		$this->putString(""); //animation data
 		$this->putBool(false); //isPremium
