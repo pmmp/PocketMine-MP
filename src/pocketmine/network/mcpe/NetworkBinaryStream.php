@@ -114,14 +114,20 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->putLInt($animation->getType());
 			$this->putLFloat($animation->getFrames());
 		}
-		$this->putSkinImage(new SkinImage(0, 0, $skin->getCapeData()));
+		if($skin->getCapeData() !== ""){
+			$this->putSkinImage(new SkinImage(32, 64, $skin->getCapeData()));
+		}else{
+			$this->putSkinImage(new SkinImage(0, 0, ""));
+		}
 		$this->putString($skin->getGeometryData());
 		$this->putString(""); //animation data
 		$this->putBool(false); //isPremium
 		$this->putBool(false); //isPersona
 		$this->putBool(false); //isCapeOnClassic
 		$this->putString(""); //capeId
-		$this->putString(""); //fullskinId
+
+		//this has to be unique or the client will do stupid things
+		$this->putString(UUID::fromRandom()->toString()); //full skin ID
 	}
 
 	private function getSkinImage() : SkinImage{
