@@ -121,7 +121,9 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putBool(false); //isPersona
 		$this->putBool(false); //isCapeOnClassic
 		$this->putString(""); //capeId
-		$this->putString(""); //fullskinId
+
+		//this has to be unique or the client will do stupid things
+		$this->putString(UUID::fromRandom()->toString()); //full skin ID
 	}
 
 	private function getSkinImage() : SkinImage{
