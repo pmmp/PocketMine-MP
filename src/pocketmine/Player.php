@@ -2024,9 +2024,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function handleRespawn(RespawnPacket $packet) : bool{
 		if(!$this->isAlive() && $packet->respawnState === RespawnPacket::STATE_CLIENT_READY_TO_SPAWN){
 			$this->sendRespawnPacket($this, RespawnPacket::STATE_READY_TO_SPAWN);
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	public function sendPlayStatus(int $status, bool $immediate = false){

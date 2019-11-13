@@ -96,7 +96,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putBool($skin->isPersona());
 		$this->putBool($skin->isCapeOnClassic());
 		$this->putString($skin->getCapeId());
-		$this->putString($skin->getFullSkinId());
+		$this->putString(UUID::fromRandom()->toString());
 	}
 
 	public function getSkin() : Skin{
