@@ -96,23 +96,14 @@ class Bossbar extends Vector3{
 	public function showTo(Player $player, bool $isViewer = true){
 		$pk = new AddActorPacket();
 		$pk->entityRuntimeId = $this->entityId;
-		$pk->type = EntityIds::SHULKER;
+		$pk->type = EntityIds::SLIME;
 		$pk->metadata = $this->metadata;
 		$pk->position = $this;
 
 		$player->sendDataPacket($pk);
 		$player->sendDataPacket($this->getHealthPacket());
 
-		$pk2 = new BossEventPacket();
-		$pk2->bossEid = $this->entityId;
-		$pk2->eventType = BossEventPacket::TYPE_SHOW;
-		$pk2->title = $this->getTitle();
-		$pk2->healthPercent = $this->healthPercent;
-		$pk2->color = 0;
-		$pk2->overlay = 0;
-		$pk2->unknownShort = 0;
-
-		$player->sendDataPacket($pk2);
+		$this->sendBossEventPacket($player, BossEventPacket::TYPE_SHOW);
 
 		if($isViewer){
 			$this->viewers[spl_object_id($player)] = $player;
@@ -120,11 +111,7 @@ class Bossbar extends Vector3{
 	}
 
 	public function hideFrom(Player $player){
-		$pk = new BossEventPacket();
-		$pk->bossEid = $this->entityId;
-		$pk->eventType = BossEventPacket::TYPE_HIDE;
-
-		$player->sendDataPacket($pk);
+		$this->sendBossEventPacket($player, BossEventPacket::TYPE_HIDE);
 
 		$pk2 = new RemoveActorPacket();
 		$pk2->entityUniqueId = $this->entityId;
@@ -137,24 +124,8 @@ class Bossbar extends Vector3{
 	}
 
 	public function updateFor(Player $player){
-		$pk = new BossEventPacket();
-		$pk->bossEid = $this->entityId;
-		$pk->eventType = BossEventPacket::TYPE_TITLE;
-		$pk->healthPercent = $this->getHealthPercent();
-		$pk->title = $this->getTitle();
-
-		$pk2 = clone $pk;
-		$pk2->eventType = BossEventPacket::TYPE_HEALTH_PERCENT;
-
-		$player->sendDataPacket($pk);
-		$player->sendDataPacket($pk2);
-		$player->sendDataPacket($this->getHealthPacket());
-
-		$mpk = new SetActorDataPacket();
-		$mpk->entityRuntimeId = $this->entityId;
-		$mpk->metadata = $this->metadata;
-
-		$player->sendDataPacket($mpk);
+		$this->hideFrom($player);
+		$this->showTo($player);
 	}
 
 	public function updateForAll() : void{
@@ -173,6 +144,34 @@ class Bossbar extends Vector3{
 		$pk->entries = [$attr];
 
 		return $pk;
+	}
+
+	protected function sendBossEventPacket(Player $player, int $eventType) : void{
+		$pk = new BossEventPacket();
+		$pk->bossEid = $this->entityId;
+		$pk->eventType = $eventType;
+
+		switch($eventType){
+			case BossEventPacket::TYPE_SHOW:
+				$pk->title = $this->getTitle();
+				$pk->healthPercent = $this->healthPercent;
+				$pk->color = 0;
+				$pk->overlay = 0;
+				$pk->unknownShort = 0;
+				break;
+			case BossEventPacket::TYPE_REGISTER_PLAYER:
+			case BossEventPacket::TYPE_UNREGISTER_PLAYER:
+				$pk->playerEid = $player->getId();
+				break;
+			case BossEventPacket::TYPE_TITLE:
+				$pk->title = $this->getTitle();
+				break;
+			case BossEventPacket::TYPE_HEALTH_PERCENT:
+				$pk->healthPercent = $this->getHealthPercent();
+				break;
+		}
+
+		$player->sendDataPacket($pk);
 	}
 
 	public function setMetadata(int $key, int $dtype, $value){
