@@ -311,6 +311,17 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_BLOCK_SMITHING_TABLE_USE = 280;
 	public const SOUND_UNDEFINED = 281;
 
+	public static function create(int $sound, ?Vector3 $pos, int $extraData = -1, string $entityType = ":", bool $isBabyMob = false) : self{
+		$result = new self;
+		$result->sound = $sound;
+		$result->extraData = $extraData;
+		$result->position = $pos;
+		$result->disableRelativeVolume = $pos === null;
+		$result->entityType = $entityType;
+		$result->isBabyMob = $isBabyMob;
+		return $result;
+	}
+
 	/** @var int */
 	public $sound;
 	/** @var Vector3 */
