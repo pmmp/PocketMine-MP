@@ -25,9 +25,24 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\entity\Skin;
 
+/**
+ * Used to convert new skin data to the skin entity or old skin entity to skin data.
+ */
 interface SkinAdapter{
 
+	/**
+	 * Allows you to convert a skin entity to skin data.
+	 *
+	 * @param Skin $skin
+	 * @return SkinData
+	 */
 	public function toSkinData(Skin $skin) : SkinData;
 
+	/**
+	 * Allows you to convert skin data to a skin entity.
+	 *
+	 * @param SkinData $data
+	 * @return Skin
+	 */
 	public function fromSkinData(SkinData $data) : Skin;
 }
