@@ -158,6 +158,7 @@ class PluginManager{
 				if($description instanceof PluginDescription){
 					$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.load", [$description->getFullName()]));
 					try{
+						$description->checkCompatibleOperatingSystem();
 						$description->checkRequiredExtensions();
 					}catch(PluginException $ex){
 						$this->server->getLogger()->error($ex->getMessage());
