@@ -38,6 +38,13 @@ class SkinImage{
 		$this->data = $data;
 	}
 
+	public function isValid() : bool{
+		return ($this->height % 32) === 0 and
+			($this->width % 32) === 0 and
+			($this->height * $this->width) <= 65536 and
+			strlen($this->data) === ($this->height * $this->width * 4);
+	}
+
 	public static function fromLegacy(string $data) : SkinImage{
 		switch(strlen($data)){
 			case 64 * 32 * 4:
