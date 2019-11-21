@@ -28,19 +28,26 @@ use pocketmine\entity\Skin;
 class LegacySkinAdapter implements SkinAdapter{
 
 	public function toSkinData(Skin $skin) : SkinData{
+		$capeData = new SkinImage(32, 64, $skin->getCapeData());
+		if($capeData === ""){
+			$capeData = new SkinImage(0, 0, $skin->getCapeData());
+		}
 		return new SkinData(
 			$skin->getSkinId(),
 			json_encode(["geometry" => ["default" => $skin->getGeometryName()]]),
 			SkinImage::fromLegacy($skin->getSkinData()), [],
-			new SkinImage(32, 64, $skin->getCapeData()),
-			$skin->getGeometryData());
+			$capeData,
+			$skin->getGeometryData()
+		);
 	}
 
 	public function fromSkinData(SkinData $data) : Skin{
-		$skinData = $data->getSkinImage()->getData();
+		$capeData = $data->getCapeImage()->getData();
 		if($data->isPersona()){
 			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 2048), "", "geometry.humanoid.custom");
+		}elseif($data->isPersonaCapeOnClassic()){
+			$capeData = "";
 		}
-		return new Skin($data->getSkinId(), $skinData, $data->getCapeImage()->getData(), json_decode($data->getResourcePatch(), true)["geometry"]["default"], $data->getGeometryData());
+		return new Skin($data->getSkinId(), $data->getSkinImage()->getData(), $capeData, json_decode($data->getResourcePatch(), true)["geometry"]["default"], $data->getGeometryData());
 	}
 }
