@@ -29,7 +29,7 @@ class LegacySkinAdapter implements SkinAdapter{
 
 	public function toSkinData(Skin $skin) : SkinData{
 		$capeData = new SkinImage(32, 64, $skin->getCapeData());
-		if($capeData === ""){
+		if($skin->getCapeData() === ""){
 			$capeData = new SkinImage(0, 0, $skin->getCapeData());
 		}
 		return new SkinData(
