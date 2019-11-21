@@ -28,7 +28,12 @@ use pocketmine\entity\Skin;
 class LegacySkinAdapter implements SkinAdapter{
 
 	public function toSkinData(Skin $skin) : SkinData{
-		return new SkinData($skin->getSkinId(), json_encode(["geometry" => ["default" => $skin->getGeometryName()]]), SkinImage::fromLegacy($skin->getSkinData()), [], new SkinImage(32, 64, $skin->getCapeData()), $skin->getGeometryData());
+		return new SkinData(
+			$skin->getSkinId(),
+			json_encode(["geometry" => ["default" => $skin->getGeometryName()]]),
+			SkinImage::fromLegacy($skin->getSkinData()), [],
+			new SkinImage(32, 64, $skin->getCapeData()),
+			$skin->getGeometryData());
 	}
 
 	public function fromSkinData(SkinData $data) : Skin{
