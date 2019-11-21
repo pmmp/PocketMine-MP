@@ -83,8 +83,8 @@ class StartGamePacket extends DataPacket{
 	public $hasAchievementsDisabled = true;
 	/** @var int */
 	public $time = -1;
-	/** @var bool */
-	public $eduMode = false;
+	/** @var int */
+	public $eduEditionOffer = 0;
 	/** @var bool */
 	public $hasEduFeaturesEnabled = false;
 	/** @var float */
@@ -177,7 +177,7 @@ class StartGamePacket extends DataPacket{
 		$this->getBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
 		$this->hasAchievementsDisabled = $this->getBool();
 		$this->time = $this->getVarInt();
-		$this->eduMode = $this->getBool();
+		$this->eduEditionOffer = $this->getVarInt();
 		$this->hasEduFeaturesEnabled = $this->getBool();
 		$this->rainLevel = $this->getLFloat();
 		$this->lightningLevel = $this->getLFloat();
@@ -249,7 +249,7 @@ class StartGamePacket extends DataPacket{
 		$this->putBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
 		$this->putBool($this->hasAchievementsDisabled);
 		$this->putVarInt($this->time);
-		$this->putBool($this->eduMode);
+		$this->putVarInt($this->eduEditionOffer);
 		$this->putBool($this->hasEduFeaturesEnabled);
 		$this->putLFloat($this->rainLevel);
 		$this->putLFloat($this->lightningLevel);

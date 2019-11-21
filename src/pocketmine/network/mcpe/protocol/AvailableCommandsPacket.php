@@ -405,6 +405,8 @@ class AvailableCommandsPacket extends DataPacket{
 		foreach($this->softEnums as $enum){
 			$this->putSoftEnum($enum);
 		}
+
+		$this->putUnsignedVarInt(0); //TODO
 	}
 
 	public function handle(NetworkSession $session) : bool{
