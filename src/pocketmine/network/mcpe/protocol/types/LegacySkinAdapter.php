@@ -32,6 +32,10 @@ class LegacySkinAdapter implements SkinAdapter{
 	}
 
 	public function fromSkinData(SkinData $data) : Skin{
-		return new Skin($data->skinId, $data->skinImage->getData(), $data->capeImage->getData(), $data->resourcePatch, $data->geometryData);
+		$skinData = $data->skinImage->getData();
+		if($data->persona){
+			$skinData = str_repeat(random_bytes(3) . "\xff", 2048);
+		}
+		return new Skin($data->skinId, $skinData, $data->capeImage->getData(), $data->resourcePatch, $data->geometryData);
 	}
 }
