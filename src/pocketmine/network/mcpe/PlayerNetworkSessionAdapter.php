@@ -115,17 +115,6 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-		/*foreach($packet->clientData["AnimatedImageData"] as $i => $datum){
-			$a = imagecreatefromstring(base64_decode($datum["Image"]));
-			imagepng($a, __DIR__ . "/anim_data.png");
-			imagedestroy($a);
-		}
-		$i1 = @imagecreatefromstring(base64_decode(base64_encode(base64_decode($packet->clientData["SkinData"]))));
-		imagepng($i1, __DIR__ . "/skin_data.png");
-		imagedestroy($i1);*/
-
-		file_put_contents(__DIR__ . "/skin_geo_data.json", json_encode(json_decode(base64_decode($packet->clientData["SkinGeometryData"])), JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING));
-		file_put_contents(__DIR__ . "/login_data.txt", json_encode($packet->clientData, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING));
 		return $this->player->handleLogin($packet);
 	}
 
