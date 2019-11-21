@@ -47,6 +47,8 @@ class PluginDescription{
 	private $api;
 	/** @var int[] */
 	private $compatibleMcpeProtocols = [];
+	/** @var string[] */
+	private $compatibleOperatingSystems = [];
 	private $extensions = [];
 	private $depend = [];
 	private $softDepend = [];
@@ -97,6 +99,7 @@ class PluginDescription{
 
 		$this->api = array_map("\strval", (array) ($plugin["api"] ?? []));
 		$this->compatibleMcpeProtocols = array_map("\intval", (array) ($plugin["mcpe-protocol"] ?? []));
+		$this->compatibleOperatingSystems = array_map("\stringval", (array) ($plugin["operating-systems"] ?? []));
 
 		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
 			$this->commands = $plugin["commands"];
@@ -169,6 +172,13 @@ class PluginDescription{
 	 */
 	public function getCompatibleMcpeProtocols() : array{
 		return $this->compatibleMcpeProtocols;
+	}
+	
+	/**
+	 * @return string[]
+	 */
+	public function getCompatibleOperatingSystems() : array{
+		return $this->compatibleMcpeOperatingSystems;
 	}
 
 	/**
