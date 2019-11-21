@@ -48,7 +48,20 @@ class SkinData{
 	/** @var string */
 	private $capeId;
 
-	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "",  bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = ""){
+	/**
+	 * @param string          $skinId
+	 * @param string          $resourcePatch
+	 * @param SkinImage       $skinImage
+	 * @param SkinAnimation[] $animations
+	 * @param SkinImage|null  $capeImage
+	 * @param string          $geometryData
+	 * @param string          $animationData
+	 * @param bool            $premium
+	 * @param bool            $persona
+	 * @param bool            $personaCapeOnClassic
+	 * @param string          $capeId
+	 */
+	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = ""){
 		$this->skinId = $skinId;
 		$this->resourcePatch = $resourcePatch;
 		$this->skinImage = $skinImage;
@@ -138,5 +151,5 @@ class SkinData{
 	public function getCapeId() : string{
 		return $this->capeId;
 	}
-	
+
 }
