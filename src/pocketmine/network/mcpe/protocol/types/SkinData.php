@@ -26,29 +26,29 @@ namespace pocketmine\network\mcpe\protocol\types;
 class SkinData{
 
 	/** @var string */
-	public $skinId;
+	private $skinId;
 	/** @var string */
-	public $resourcePatch;
+	private $resourcePatch;
 	/** @var SkinImage */
-	public $skinImage;
+	private $skinImage;
 	/** @var SkinAnimation[] */
-	public $animations;
+	private $animations;
 	/** @var SkinImage */
-	public $capeImage;
+	private $capeImage;
 	/** @var string */
-	public $geometryData;
+	private $geometryData;
 	/** @var string */
-	public $animationData;
+	private $animationData;
 	/** @var bool */
-	public $persona;
+	private $persona;
 	/** @var bool */
-	public $premium;
+	private $premium;
 	/** @var bool */
-	public $capeOnClassic;
+	private $personaCapeOnClassic;
 	/** @var string */
-	public $capeId;
+	private $capeId;
 
-	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "",  bool $premium = false, bool $persona = false, bool $capeOnClassic = false, string $capeId = ""){
+	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "",  bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = ""){
 		$this->skinId = $skinId;
 		$this->resourcePatch = $resourcePatch;
 		$this->skinImage = $skinImage;
@@ -58,7 +58,85 @@ class SkinData{
 		$this->animationData = $animationData;
 		$this->premium = $premium;
 		$this->persona = $persona;
-		$this->capeOnClassic = $capeOnClassic;
+		$this->personaCapeOnClassic = $personaCapeOnClassic;
 		$this->capeId = $capeId;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function getSkinId() : string{
+		return $this->skinId;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getResourcePatch() : string{
+		return $this->resourcePatch;
+	}
+
+	/**
+	 * @return SkinImage
+	 */
+	public function getSkinImage() : SkinImage{
+		return $this->skinImage;
+	}
+
+	/**
+	 * @return SkinAnimation[]
+	 */
+	public function getAnimations() : array{
+		return $this->animations;
+	}
+
+	/**
+	 * @return SkinImage
+	 */
+	public function getCapeImage() : SkinImage{
+		return $this->capeImage;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getGeometryData() : string{
+		return $this->geometryData;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAnimationData() : string{
+		return $this->animationData;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isPersona() : bool{
+		return $this->persona;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isPremium() : bool{
+		return $this->premium;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isPersonaCapeOnClassic() : bool{
+		return $this->personaCapeOnClassic;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getCapeId() : string{
+		return $this->capeId;
+	}
+	
 }

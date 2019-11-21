@@ -104,22 +104,22 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	public function putSkin(SkinData $skin){
-		$this->putString($skin->skinId);
-		$this->putString($skin->resourcePatch); //resource patch
-		$this->putSkinImage($skin->skinImage);
-		$this->putLInt(count($skin->animations));
-		foreach($skin->animations as $animation){
+		$this->putString($skin->getSkinId());
+		$this->putString($skin->getResourcePatch());
+		$this->putSkinImage($skin->getSkinImage());
+		$this->putLInt(count($skin->getAnimations()));
+		foreach($skin->getAnimations() as $animation){
 			$this->putSkinImage($animation->getImage());
 			$this->putLInt($animation->getType());
 			$this->putLFloat($animation->getFrames());
 		}
-		$this->putSkinImage($skin->capeImage);
-		$this->putString($skin->geometryData);
-		$this->putString($skin->animationData);
-		$this->putBool($skin->premium);
-		$this->putBool($skin->persona);
-		$this->putBool($skin->capeOnClassic);
-		$this->putString($skin->capeId);
+		$this->putSkinImage($skin->getCapeImage());
+		$this->putString($skin->getGeometryData());
+		$this->putString($skin->getAnimationData());
+		$this->putBool($skin->isPremium());
+		$this->putBool($skin->isPersona());
+		$this->putBool($skin->isPersonaCapeOnClassic());
+		$this->putString($skin->getCapeId());
 
 		//this has to be unique or the client will do stupid things
 		$this->putString(UUID::fromRandom()->toString()); //full skin ID

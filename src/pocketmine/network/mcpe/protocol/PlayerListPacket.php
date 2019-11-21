@@ -60,7 +60,7 @@ class PlayerListPacket extends DataPacket{
 				$entry->xboxUserId = $this->getString();
 				$entry->platformChatId = $this->getString();
 				$entry->buildPlatform = $this->getLInt();
-				$entry->skin = $this->getSkin();
+				$entry->skinData = $this->getSkin();
 				$entry->isTeacher = $this->getBool();
 				$entry->isHost = $this->getBool();
 			}else{

@@ -32,10 +32,10 @@ class LegacySkinAdapter implements SkinAdapter{
 	}
 
 	public function fromSkinData(SkinData $data) : Skin{
-		$skinData = $data->skinImage->getData();
-		if($data->persona){
-			$skinData = str_repeat(random_bytes(3) . "\xff", 2048);
+		$skinData = $data->getSkinImage()->getData();
+		if($data->isPersona()){
+			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 2048), "", "geometry.humanoid.custom");
 		}
-		return new Skin($data->skinId, $skinData, $data->capeImage->getData(), json_decode($data->resourcePatch, true)["geometry"]["default"], $data->geometryData);
+		return new Skin($data->getSkinId(), $skinData, $data->getCapeImage()->getData(), json_decode($data->getResourcePatch(), true)["geometry"]["default"], $data->getGeometryData());
 	}
 }
