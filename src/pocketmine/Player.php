@@ -2175,7 +2175,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->spawnZ = $spawnPosition->getFloorZ();
 		$pk->hasAchievementsDisabled = true;
 		$pk->time = $this->level->getTime();
-		$pk->eduMode = false;
+		$pk->eduEditionOffer = 0;
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = true;
