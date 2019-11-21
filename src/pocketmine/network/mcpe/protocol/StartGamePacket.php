@@ -315,7 +315,8 @@ class StartGamePacket extends DataPacket{
 			$state->setShort("id", $v["legacy_id"]);
 			$states->push($state);
 		}
-		($stream = new NetworkLittleEndianNBTStream())->writeTag($states);
+		$stream = new NetworkLittleEndianNBTStream();
+		$stream->writeTag($states);
 
 		return $stream->buffer;
 	}
