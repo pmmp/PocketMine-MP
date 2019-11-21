@@ -38,6 +38,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
@@ -77,7 +78,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putLInt($uuid->getPart(2));
 	}
 
-	public function getSkin() : Skin{
+	public function getSkin() : SkinData{
 		$skinId = $this->getString();
 		$skinResourcePatch = $this->getString();
 		$skinData = $this->getSkinImage();
@@ -99,32 +100,26 @@ class NetworkBinaryStream extends BinaryStream{
 		$capeId = $this->getString();
 		$fullSkinId = $this->getString();
 
-		return new Skin($skinId, $skinData->getData(), $capeData->getData(), $skinResourcePatch, $geometryData);
+		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId);
 	}
 
-	public function putSkin(Skin $skin){
-		$this->putString($skin->getSkinId());
-		$this->putString($skin->getGeometryName()); //resource patch
-		$this->putSkinImage(SkinImage::fromLegacy($skin->getSkinData()));
-		/** @var SkinAnimation[] $animations */
-		$animations = [];
-		$this->putLInt(count($animations));
-		foreach($animations as $animation){
+	public function putSkin(SkinData $skin){
+		$this->putString($skin->skinId);
+		$this->putString($skin->resourcePatch); //resource patch
+		$this->putSkinImage($skin->skinImage);
+		$this->putLInt(count($skin->animations));
+		foreach($skin->animations as $animation){
 			$this->putSkinImage($animation->getImage());
 			$this->putLInt($animation->getType());
 			$this->putLFloat($animation->getFrames());
 		}
-		if($skin->getCapeData() !== ""){
-			$this->putSkinImage(new SkinImage(32, 64, $skin->getCapeData()));
-		}else{
-			$this->putSkinImage(new SkinImage(0, 0, ""));
-		}
-		$this->putString($skin->getGeometryData());
-		$this->putString(""); //animation data
-		$this->putBool(false); //isPremium
-		$this->putBool(false); //isPersona
-		$this->putBool(false); //isCapeOnClassic
-		$this->putString(""); //capeId
+		$this->putSkinImage($skin->capeImage);
+		$this->putString($skin->geometryData);
+		$this->putString($skin->animationData);
+		$this->putBool($skin->premium);
+		$this->putBool($skin->persona);
+		$this->putBool($skin->capeOnClassic);
+		$this->putString($skin->capeId);
 
 		//this has to be unique or the client will do stupid things
 		$this->putString(UUID::fromRandom()->toString()); //full skin ID

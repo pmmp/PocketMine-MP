@@ -146,6 +146,9 @@ use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\network\mcpe\protocol\types\SkinAnimation;
+use pocketmine\network\mcpe\protocol\types\SkinData;
+use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\VerifyLoginTask;
@@ -1915,9 +1918,32 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
 
+		$animations = [];
+		foreach($packet->clientData["AnimatedImageData"] as $animation){
+			$animations[] = new SkinAnimation(new SkinImage($animation["ImageHeight"], $animation["ImageWidth"], $animation["Image"]), $animation["Type"], $animation["Frames"]);
+		}
+		new SkinData(
+			$packet->clientData["SkinId"],
+			base64_decode($packet->clientData["SkinResourcePatch"] ?? ""),
+			new SkinImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"])),
+			$animations,
+			new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"] ?? "")),
+			base64_decode($packet->clientData["SkinGeometryData"] ?? ""),
+			base64_decode($packet->clientData["AnimationData"] ?? ""),
+			$packet->clientData["PremiumSkin"] ?? false,
+			$packet->clientData["PersonaSkin"] ?? false,
+			$packet->clientData["CapeOnClassicSkin"] ?? false,
+			$packet->clientData["CapeId"] ?? ""
+		);
+
+		$skinData = base64_decode($packet->clientData["SkinData"]);
+		if((bool) $packet->clientData["PersonaSkin"]){
+			$skinData = str_repeat(random_bytes(3) . "\xff", 2048);
+		}
+
 		$skin = new Skin(
 			$packet->clientData["SkinId"],
-			base64_decode($packet->clientData["SkinData"] ?? ""),
+			$skinData,
 			base64_decode($packet->clientData["CapeData"] ?? ""),
 			base64_decode($packet->clientData["SkinResourcePatch"] ?? ""),
 			base64_decode($packet->clientData["SkinGeometryData"] ?? "")

@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\entity\Skin;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\utils\UUID;
 
 class PlayerSkinPacket extends DataPacket{
@@ -38,7 +38,7 @@ class PlayerSkinPacket extends DataPacket{
 	public $oldSkinName = "";
 	/** @var string */
 	public $newSkinName = "";
-	/** @var Skin */
+	/** @var SkinData */
 	public $skin;
 
 	protected function decodePayload(){
