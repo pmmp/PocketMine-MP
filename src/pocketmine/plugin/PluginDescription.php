@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\permission\Permission;
+use pocketmine\utils\Utils;
 use function array_map;
 use function array_values;
 use function constant;
