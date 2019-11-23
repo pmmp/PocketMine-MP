@@ -23,49 +23,49 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\level\Position;
-use pocketmine\network\mcpe\protocol\types\WindowTypes;
+use pocketmine\item\Item;
 use pocketmine\Player;
 
-class AnvilInventory extends ContainerInventory implements PlayerUIComponent{
+class PlayerUIInventory extends BaseInventory{
 
-	/** @var Position */
+	/** @var Player */
 	protected $holder;
 
-	public function __construct(Position $pos){
-		parent::__construct($pos->asPosition());
-	}
-
-	public function getNetworkType() : int{
-		return WindowTypes::ANVIL;
+	public function __construct(Player $holder){
+		$this->holder = $holder;
+		parent::__construct();
 	}
 
 	public function getName() : string{
-		return "Anvil";
+		return "UI";
 	}
 
-	public function getUIOffset() : int{
-		return 1;
+	public function setItem(int $index, Item $item, bool $send = true) : bool{
+		if(parent::setItem($index, $item, $send)){
+			if($index > 0 and $index !== 50){
+				$window = $this->holder->findWindow(PlayerUIComponent::class) ?? $this->holder->getCraftingGrid();
+				if($window instanceof PlayerUIComponent){
+					if($window->slotExists($slot = $index - $window->getUIOffset())){
+						$window->setItem($slot, $item, $send);
+					}
+				}
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public function getDefaultSize() : int{
-		return 2; //1 input, 1 material
+		return 100;
 	}
 
 	/**
 	 * This override is here for documentation and code completion purposes only.
-	 * @return Position
+	 * @return Player
 	 */
 	public function getHolder(){
 		return $this->holder;
-	}
-
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
-		foreach($this->getContents() as $item){
-			$who->dropItem($item);
-		}
-		$this->clearAll();
 	}
 }

@@ -29,19 +29,14 @@ use function max;
 use function min;
 use const PHP_INT_MAX;
 
-class CraftingGrid extends BaseInventory{
+class CraftingGrid extends BaseInventory implements PlayerUIComponent{
 	public const SIZE_SMALL = 2;
 	public const SIZE_BIG = 3;
-
-	private const SMALL_OFFSET = 28;
-	private const BIG_OFFSET = 32;
 
 	/** @var Player */
 	protected $holder;
 	/** @var int */
 	private $gridWidth;
-	/** @var int */
-	private $offset;
 
 	/** @var int|null */
 	private $startX;
@@ -55,11 +50,7 @@ class CraftingGrid extends BaseInventory{
 	public function __construct(Player $holder, int $gridWidth){
 		$this->holder = $holder;
 		$this->gridWidth = $gridWidth;
-		if($this->gridWidth === self::SIZE_SMALL){
-			$this->offset = self::SMALL_OFFSET;
-		}elseif($this->gridWidth === self::SIZE_BIG){
-			$this->offset = self::BIG_OFFSET;
-		}
+
 		parent::__construct();
 	}
 
@@ -71,6 +62,10 @@ class CraftingGrid extends BaseInventory{
 		return $this->getGridWidth() ** 2;
 	}
 
+	public function getUIOffset() : int{
+		return $this->gridWidth === self::SIZE_SMALL ? 28 : 32;
+	}
+
 	public function setSize(int $size){
 		throw new \BadMethodCallException("Cannot change the size of a crafting grid");
 	}
@@ -80,11 +75,11 @@ class CraftingGrid extends BaseInventory{
 	}
 
 	public function getItem(int $index) : Item{
-		return parent::getItem($index + $this->offset);
+		return parent::getItem($index);
 	}
 
 	public function setItem(int $index, Item $item, bool $send = true) : bool{
-		if(parent::setItem($index + $this->offset, $item, $send)){
+		if(parent::setItem($index, $item, $send)){
 			$this->seekRecipeBounds();
 
 			return true;

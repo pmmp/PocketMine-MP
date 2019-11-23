@@ -71,7 +71,7 @@ use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
-use pocketmine\inventory\PlayerCursorInventory;
+use pocketmine\inventory\PlayerUIInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -288,7 +288,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $windowIndex = [];
 	/** @var bool[] */
 	protected $permanentWindows = [];
-	/** @var PlayerCursorInventory */
+	/** @var PlayerUIInventory */
 	protected $cursorInventory;
 	/** @var CraftingGrid */
 	protected $craftingGrid = null;
@@ -3821,7 +3821,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->addWindow($this->getArmorInventory(), ContainerIds::ARMOR, true);
 
-		$this->cursorInventory = new PlayerCursorInventory($this);
+		$this->cursorInventory = new PlayerUIInventory($this);
 		$this->addWindow($this->cursorInventory, ContainerIds::UI, true);
 
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
@@ -3829,7 +3829,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		//TODO: more windows
 	}
 
-	public function getCursorInventory() : PlayerCursorInventory{
+	public function getCursorInventory() : PlayerUIInventory{
 		return $this->cursorInventory;
 	}
 
@@ -3885,6 +3885,21 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function getWindow(int $windowId){
 		return $this->windowIndex[$windowId] ?? null;
+	}
+
+	/**
+	 * @param string $expectedClass
+	 *
+	 * @return null|Inventory
+	 */
+	public function findWindow(string $expectedClass) : ?Inventory{
+		foreach($this->windowIndex as $window){
+			if($window instanceof $expectedClass){
+				return $window;
+			}
+		}
+
+		return null;
 	}
 
 	/**

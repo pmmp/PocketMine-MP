@@ -27,7 +27,7 @@ use pocketmine\level\Position;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 
-class EnchantInventory extends ContainerInventory{
+class EnchantInventory extends ContainerInventory implements PlayerUIComponent{
 
 	/** @var Position */
 	protected $holder;
@@ -46,6 +46,10 @@ class EnchantInventory extends ContainerInventory{
 
 	public function getDefaultSize() : int{
 		return 2; //1 input, 1 lapis
+	}
+
+	public function getUIOffset() : int{
+		return 14;
 	}
 
 	/**
