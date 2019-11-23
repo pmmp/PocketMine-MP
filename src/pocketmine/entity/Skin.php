@@ -27,6 +27,7 @@ use Ahc\Json\Comment as CommentedJsonDecoder;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinCape;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
+use pocketmine\utils\UUID;
 use function implode;
 use function in_array;
 use function json_encode;
@@ -194,5 +195,47 @@ class Skin{
 	 */
 	public function getResourcePatch() : string{
 		return $this->resourcePatch;
+	}
+
+	/**
+	 * @deprecated
+	 * @return string
+	 */
+	public function getSkinData() : string{
+		return $this->getSkinImage()->getData();
+	}
+
+	/**
+	 * @deprecated
+	 * @return string
+	 */
+	public function getCapeData() : string{
+		return $this->getCape()->getImage()->getData();
+	}
+
+	/**
+	 * @deprecated
+	 * @return string
+	 */
+	public function getGeometryName() : string{
+		return json_decode($this->resourcePatch, true)["geometry"]["default"] ?? "";
+	}
+
+	/**
+	 * @param string $skinId
+	 * @param string $skinData
+	 * @param string $capeData
+	 * @param string $geometryName
+	 * @param string $geometryData
+	 * @return Skin
+	 */
+	public static function fromLegacy(string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = "") : Skin{
+		return new Skin(
+			$skinId,
+			SkinImage::fromLegacy($skinData),
+			json_encode(["geometry" => ["default" => $geometryName]]),
+			$capeData === "" ? null : new SkinCape((UUID::fromRandom())->toString(), new SkinImage(32, 64, $capeData), true),
+			[],
+			$geometryData);
 	}
 }

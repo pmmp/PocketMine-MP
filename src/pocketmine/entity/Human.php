@@ -121,19 +121,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 */
 	protected static function deserializeSkinNBT(CompoundTag $skinTag) : Skin{
 		if($skinTag->hasTag("Name")){ // legacy format
-			if(strlen($skinTag->getByteArray("CapeData")) > 0){
-				$cape = new SkinCape((UUID::fromRandom())->toString(), SkinImage::fromLegacy($skinTag->getByteArray("CapeData")), true);
-			}else{
-				$cape = null;
-			}
-
-			$skin = new Skin(
+			$skin = Skin::fromLegacy(
 				$skinTag->getString("Name"),
-				$skinTag->hasTag("Data", StringTag::class) ? SkinImage::fromLegacy($skinTag->getString("Data")) : SkinImage::fromLegacy($skinTag->getByteArray("Data")), //old data (this used to be saved as a StringTag in older versions of PM)
-				json_encode(["geometry" => ["default" => $skinTag->getString("GeometryName")]]),
-				$cape,
-				[],
-				$skinTag->getByteArray("GeometryData", "")
+				$skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"),
+				$skinTag->getByteArray("CapeData"),
+				$skinTag->getString("GeometryName"),
+				$skinTag->getByteArray("GeometryData")
 			);
 		}else{
 			$animations = [];
