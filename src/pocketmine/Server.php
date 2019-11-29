@@ -14,7 +14,7 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @link https://pmmp.io/
  *
  *
 */
@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 /**
  * PocketMine-MP is the Minecraft: PE multiplayer server software
- * Homepage: http://www.pocketmine.net/
+ * Homepage: https://pmmp.io/
  */
 namespace pocketmine;
 
