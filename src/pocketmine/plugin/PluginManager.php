@@ -284,6 +284,16 @@ class PluginManager{
 						}
 					}
 
+					if($description->getMinPHPVersion() !== ""){
+						if(version_compare($description->getMinPHPVersion(), PHP_VERSION) > 0){
+							$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+								$name,
+								"Incompatible PHP version (" . PHP_VERSION . ") requires a minimum version of " . $description->getMinPHPVersion()
+							]));
+							continue;
+						}
+					}
+
 					$plugins[$name] = $file;
 
 					$softDependencies[$name] = array_merge($softDependencies[$name] ?? [], $description->getSoftDepend());
