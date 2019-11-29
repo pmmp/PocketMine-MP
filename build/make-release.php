@@ -76,6 +76,6 @@ system('git tag ' . $currentVer->getBaseVersion());
 replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true);
 system('git add "' . $versionInfoPath . '"');
 system('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"');
-echo "pushing changes in 10 seconds\n";
-sleep(10);
+echo "pushing changes in 5 seconds\n";
+sleep(5);
 system('git push origin HEAD ' . $currentVer->getBaseVersion());
