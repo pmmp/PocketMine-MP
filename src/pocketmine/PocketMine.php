@@ -190,7 +190,7 @@ namespace pocketmine {
 		if(\Phar::running(true) === ""){
 			if(Process::execute("git rev-parse HEAD", $out) === 0 and $out !== false and strlen($out = trim($out)) === 40){
 				$gitHash = trim($out);
-				if(Process::execute("git diff --quiet") === 1 or Utils::execute("git diff --cached --quiet") === 1){ //Locally-modified
+				if(Process::execute("git diff --quiet") === 1 or Process::execute("git diff --cached --quiet") === 1){ //Locally-modified
 					$gitHash .= "-dirty";
 				}
 			}
