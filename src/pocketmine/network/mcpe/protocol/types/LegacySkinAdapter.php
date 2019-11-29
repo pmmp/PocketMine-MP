@@ -25,6 +25,9 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\entity\Skin;
 
+use function is_array;
+use function is_string;
+
 class LegacySkinAdapter implements SkinAdapter{
 
 	public function toSkinData(Skin $skin) : SkinData{
@@ -45,8 +48,10 @@ class LegacySkinAdapter implements SkinAdapter{
 		$capeData = $data->getCapeImage()->getData();
 		$geometryName = "";
 		$resourcePatch = json_decode($data->getResourcePatch(), true);
-		if(isset($resourcePatch["geometry"]) && isset($resourcePatch["geometry"]["default"])){
+		if(is_array($resourcePatch["geometry"]) && is_string($resourcePatch["geometry"]["default"])){
 			$geometryName = $resourcePatch["geometry"]["default"];
+		}else{
+			//TODO: Kick for invalid skin
 		}
 		if($data->isPersona()){
 			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 2048), "", "geometry.humanoid.custom");
