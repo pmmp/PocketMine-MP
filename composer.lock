@@ -333,12 +333,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ClassLoader.git",
-                "reference": "e7d1e7701374760752a23c093ba925f3a518d88d"
+                "reference": "f0d947debe366890206fc1d8f3fc7bef6bee6335"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/e7d1e7701374760752a23c093ba925f3a518d88d",
-                "reference": "e7d1e7701374760752a23c093ba925f3a518d88d",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/f0d947debe366890206fc1d8f3fc7bef6bee6335",
+                "reference": "f0d947debe366890206fc1d8f3fc7bef6bee6335",
                 "shasum": ""
             },
             "require": {
@@ -349,7 +349,7 @@
             "type": "library",
             "autoload": {
                 "classmap": [
-                    "./"
+                    "./src"
                 ]
             },
             "license": [
@@ -360,7 +360,7 @@
                 "source": "https://github.com/pmmp/ClassLoader/tree/master",
                 "issues": "https://github.com/pmmp/ClassLoader/issues"
             },
-            "time": "2019-10-28T12:24:55+00:00"
+            "time": "2019-11-04T11:25:46+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -398,12 +398,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "68009b5202142ef5e83d271aebfd4d721efdb3b9"
+                "reference": "45f5156bf41083523568ec08f22bd52f31dcd109"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/68009b5202142ef5e83d271aebfd4d721efdb3b9",
-                "reference": "68009b5202142ef5e83d271aebfd4d721efdb3b9",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/45f5156bf41083523568ec08f22bd52f31dcd109",
+                "reference": "45f5156bf41083523568ec08f22bd52f31dcd109",
                 "shasum": ""
             },
             "require": {
@@ -429,7 +429,7 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2019-10-21T14:35:51+00:00"
+            "time": "2019-11-27T06:54:09+00:00"
         },
         {
             "name": "pocketmine/nbt",
