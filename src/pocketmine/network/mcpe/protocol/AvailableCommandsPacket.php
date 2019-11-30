@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\CommandData;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\CommandEnumConstraint;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\utils\BinaryDataException;
 use function count;
@@ -92,6 +93,12 @@ class AvailableCommandsPacket extends DataPacket{
 	 */
 	public $softEnums = [];
 
+	/**
+	 * @var CommandEnumConstraint[]
+	 * List of constraints for enum members. Used to constrain gamerules that can bechanged in nocheats mode and more.
+	 */
+	public $enumConstraints = [];
+
 	protected function decodePayload(){
 		/** @var string[] $enumValues */
 		$enumValues = [];
@@ -117,6 +124,10 @@ class AvailableCommandsPacket extends DataPacket{
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			$this->softEnums[] = $this->getSoftEnum();
+		}
+
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->enumConstraints[] = $this->getEnumConstraint($enums, $enumValues);
 		}
 	}
 
@@ -207,6 +218,50 @@ class AvailableCommandsPacket extends DataPacket{
 			$this->putLShort($index);
 		}else{
 			$this->putLInt($index);
+		}
+	}
+
+	/**
+	 * @param CommandEnum[] $enums
+	 * @param string[]      $enumValues
+	 *
+	 * @return CommandEnumConstraint
+	 */
+	protected function getEnumConstraint(array $enums, array $enumValues) : CommandEnumConstraint{
+		//wtf, what was wrong with an offset inside the enum? :(
+		$valueIndex = $this->getLInt();
+		if(!isset($enumValues[$valueIndex])){
+			throw new \UnexpectedValueException("Enum constraint refers to unknown enum value index $valueIndex");
+		}
+		$enumIndex = $this->getLInt();
+		if(!isset($enums[$enumIndex])){
+			throw new \UnexpectedValueException("Enum constraint refers to unknown enum index $enumIndex");
+		}
+		$enum = $enums[$enumIndex];
+		$valueOffset = array_search($enumValues[$valueIndex], $enum->enumValues, true);
+		if($valueOffset === false){
+			throw new \UnexpectedValueException("Value \"" . $enumValues[$valueIndex] . "\" does not belong to enum \"$enum->enumName\"");
+		}
+
+		$constraintIds = [];
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$constraintIds[] = $this->getByte();
+		}
+
+		return new CommandEnumConstraint($enum, $valueOffset, $constraintIds);
+	}
+
+	/**
+	 * @param CommandEnumConstraint $value
+	 * @param int[]                 $enumIndexes string enum name -> int index
+	 * @param int[]                 $enumValueIndexes string value -> int index
+	 */
+	protected function putEnumConstraint(CommandEnumConstraint $constraint, array $enumIndexes, array $enumValueIndexes) : void{
+		$this->putLInt($enumValueIndexes[$constraint->getAffectedValue()]);
+		$this->putLInt($enumIndexes[$constraint->getEnum()->enumName]);
+		$this->putUnsignedVarInt(count($constraint->getConstraints()));
+		foreach($constraint->getConstraints() as $v){
+			$this->putByte($v);
 		}
 	}
 
@@ -407,7 +462,10 @@ class AvailableCommandsPacket extends DataPacket{
 			$this->putSoftEnum($enum);
 		}
 
-		$this->putUnsignedVarInt(0); //TODO
+		$this->putUnsignedVarInt(count($this->enumConstraints));
+		foreach($this->enumConstraints as $constraint){
+			$this->putEnumConstraint($constraint, $enumIndexes, $enumValueIndexes);
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{
