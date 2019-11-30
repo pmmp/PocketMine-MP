@@ -75,6 +75,10 @@ class AvailableCommandsPacket extends DataPacket{
 	 */
 	public const ARG_FLAG_ENUM = 0x200000;
 
+	public const HARDCODED_ENUM_NAMES = [
+		"CommandName" => true
+	];
+
 	/**
 	 * This is used for /xp <level: int>L. It can only be applied to integer parameters.
 	 */
@@ -85,6 +89,13 @@ class AvailableCommandsPacket extends DataPacket{
 	 * List of command data, including name, description, alias indexes and parameters.
 	 */
 	public $commandData = [];
+
+	/**
+	 * @var CommandEnum[]
+	 * List of enums which aren't directly referenced by any vanilla command.
+	 * This is used for the `CommandName` enum, which is a magic enum used by the `command` argument type.
+	 */
+	public $hardcodedEnums = [];
 
 	/**
 	 * @var CommandEnum[]
@@ -115,7 +126,10 @@ class AvailableCommandsPacket extends DataPacket{
 		/** @var CommandEnum[] $enums */
 		$enums = [];
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$enums[] = $this->getEnum($enumValues);
+			$enums[] = $enum = $this->getEnum($enumValues);
+			if(isset(self::HARDCODED_ENUM_NAMES[$enum->enumName])){
+				$this->hardcodedEnums[] = $enum;
+			}
 		}
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
@@ -404,15 +418,21 @@ class AvailableCommandsPacket extends DataPacket{
 		$enumIndexes = [];
 		/** @var CommandEnum[] $enums */
 		$enums = [];
+
+		$addEnumFn = static function(CommandEnum $enum) use (&$enums, &$enumIndexes, &$enumValueIndexes){
+			if(!isset($enumIndexes[$enum->enumName])){
+				$enums[$enumIndexes[$enum->enumName] = count($enumIndexes)] = $enum;
+			}
+			foreach($enum->enumValues as $str){
+				$enumValueIndexes[$str] = $enumValueIndexes[$str] ?? count($enumValueIndexes);
+			}
+		};
+		foreach($this->hardcodedEnums as $enum){
+			$addEnumFn($enum);
+		}
 		foreach($this->commandData as $commandData){
 			if($commandData->aliases !== null){
-				if(!isset($enumIndexes[$commandData->aliases->enumName])){
-					$enums[$enumIndexes[$commandData->aliases->enumName] = count($enumIndexes)] = $commandData->aliases;
-				}
-
-				foreach($commandData->aliases->enumValues as $str){
-					$enumValueIndexes[$str] = $enumValueIndexes[$str] ?? count($enumValueIndexes); //latest index
-				}
+				$addEnumFn($commandData->aliases);
 			}
 
 			foreach($commandData->overloads as $overload){
@@ -422,12 +442,7 @@ class AvailableCommandsPacket extends DataPacket{
 				 */
 				foreach($overload as $parameter){
 					if($parameter->enum !== null){
-						if(!isset($enumIndexes[$parameter->enum->enumName])){
-							$enums[$enumIndexes[$parameter->enum->enumName] = count($enumIndexes)] = $parameter->enum;
-						}
-						foreach($parameter->enum->enumValues as $str){
-							$enumValueIndexes[$str] = $enumValueIndexes[$str] ?? count($enumValueIndexes);
-						}
+						$addEnumFn($parameter->enum);
 					}
 
 					if($parameter->postfix !== null){
