@@ -227,7 +227,7 @@ class Server{
 	 * @var int
 	 */
 	private $tickCounter = 0;
-	/** @var int */
+	/** @var float */
 	private $nextTick = 0;
 	/** @var float[] */
 	private $tickAverage = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
