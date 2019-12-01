@@ -461,7 +461,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $lastDamageCause = null;
 
 	/** @var Block[]|null */
-	protected $blocksAround = [];
+	protected $blocksAround = null;
 
 	/** @var float|null */
 	public $lastX = null;
