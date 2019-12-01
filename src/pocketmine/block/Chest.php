@@ -109,6 +109,9 @@ class Chest extends Transparent{
 				$chest = $t;
 			}else{
 				$chest = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this));
+				if(!($chest instanceof TileChest)){
+					return true;
+				}
 			}
 
 			if(
