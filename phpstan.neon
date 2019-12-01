@@ -1,7 +1,7 @@
 
 
 parameters:
-	level: 1
+	level: 2
 	autoload_files:
 		- tests/phpstan/bootstrap.php
 		- src/pocketmine/PocketMine.php
@@ -64,6 +64,12 @@ parameters:
 			comment: "only available on Windows"
 
 		-
+			message: "#^Access to property \\$StaticPortMappingCollection on an unknown class COM\\.$#"
+			count: 4
+			path: src/pocketmine/network/upnp/UPnP.php
+			comment: "only available on Windows"
+
+		-
 			message: "#^Constructor of class pocketmine\\\\scheduler\\\\TaskScheduler has an unused parameter \\$logger\\.$#"
 			count: 1
 			path: src/pocketmine/scheduler/TaskScheduler.php
@@ -122,3 +128,19 @@ parameters:
 		-
 			message: "#^Return typehint of method pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:getDatabase\\(\\) has invalid type LevelDB\\.$#"
 			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^PHPDoc tag @param has invalid value \\(.+\\)\\: Unexpected token \"&\", expected TOKEN_VARIABLE at offset \\d+$#"
+			path: src/pocketmine
+			comment: "phpstan stupidity"
+
+		-
+			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
+			path: src/pocketmine
+			comment: "phpstan bug"
+
+		-
+			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
+			count: 1
+			path: src/pocketmine/command/defaults/TeleportCommand.php
+			comment: "not actually possible, but high cost to fix warning"
