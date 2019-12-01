@@ -1789,7 +1789,7 @@ class Server{
 
 	/**
 	 * @param TextContainer|string $message
-	 * @param Player[]             $recipients
+	 * @param CommandSender[]      $recipients
 	 *
 	 * @return int
 	 */
@@ -1798,7 +1798,7 @@ class Server{
 			return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
 		}
 
-		/** @var Player[] $recipients */
+		/** @var CommandSender[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendMessage($message);
 		}

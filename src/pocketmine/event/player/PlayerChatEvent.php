@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
+use pocketmine\command\CommandSender;
 use pocketmine\event\Cancellable;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Player;
@@ -39,15 +40,15 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	protected $format;
 
 	/**
-	 * @var Player[]
+	 * @var CommandSender[]
 	 */
 	protected $recipients = [];
 
 	/**
-	 * @param Player   $player
-	 * @param string   $message
-	 * @param string   $format
-	 * @param Player[] $recipients
+	 * @param Player          $player
+	 * @param string          $message
+	 * @param string          $format
+	 * @param CommandSender[] $recipients
 	 */
 	public function __construct(Player $player, string $message, string $format = "chat.type.text", array $recipients = null){
 		$this->player = $player;
@@ -100,14 +101,14 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	}
 
 	/**
-	 * @return Player[]
+	 * @return CommandSender[]
 	 */
 	public function getRecipients() : array{
 		return $this->recipients;
 	}
 
 	/**
-	 * @param Player[] $recipients
+	 * @param CommandSender[] $recipients
 	 */
 	public function setRecipients(array $recipients) : void{
 		$this->recipients = $recipients;
