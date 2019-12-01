@@ -39,9 +39,9 @@ class PlayerCreationEvent extends Event{
 	/** @var int */
 	private $port;
 
-	/** @var Player::class */
+	/** @var string */
 	private $baseClass;
-	/** @var Player::class */
+	/** @var string */
 	private $playerClass;
 
 	/**
