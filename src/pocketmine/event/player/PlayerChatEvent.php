@@ -28,6 +28,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Player;
 use pocketmine\Server;
+use function spl_object_id;
 
 /**
  * Called when a player chats something
@@ -57,7 +58,11 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 		$this->format = $format;
 
 		if($recipients === null){
-			$this->recipients = PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_USERS);
+			foreach(PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_USERS) as $permissible){
+				if($permissible instanceof CommandSender){
+					$this->recipients[spl_object_id($permissible)] = $permissible;
+				}
+			}
 		}else{
 			$this->recipients = $recipients;
 		}
