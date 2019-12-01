@@ -1444,7 +1444,7 @@ class Server{
 	}
 
 	/**
-	 * @return string[]
+	 * @return string[][]
 	 */
 	public function getCommandAliases() : array{
 		$section = $this->getProperty("aliases");
