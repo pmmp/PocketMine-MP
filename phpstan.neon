@@ -1,4 +1,8 @@
-
+includes:
+	- tests/phpstan/configs/optional-com-dotnet.neon
+	- tests/phpstan/configs/optional-leveldb.neon
+	- tests/phpstan/configs/phpstan-bugs.neon
+	- tests/phpstan/configs/pthreads-bugs.neon
 
 parameters:
 	level: 2
@@ -58,26 +62,9 @@ parameters:
 			path: src/pocketmine/network/mcpe/protocol/StartGamePacket.php
 
 		-
-			message: "#^Instantiated class COM not found\\.$#"
-			count: 2
-			path: src/pocketmine/network/upnp/UPnP.php
-			comment: "only available on Windows"
-
-		-
-			message: "#^Access to property \\$StaticPortMappingCollection on an unknown class COM\\.$#"
-			count: 4
-			path: src/pocketmine/network/upnp/UPnP.php
-			comment: "only available on Windows"
-
-		-
 			message: "#^Constructor of class pocketmine\\\\scheduler\\\\TaskScheduler has an unused parameter \\$logger\\.$#"
 			count: 1
 			path: src/pocketmine/scheduler/TaskScheduler.php
-
-		-
-			message: "#^Variable \\$GLOBALS in isset\\(\\) always exists and is not nullable\\.$#"
-			path: src/pocketmine/MemoryManager.php
-			comment: "this isn't defined on threads (thanks pthreads)"
 
 		-
 			message: "#^Constant pocketmine\\\\COMPOSER_AUTOLOADER_PATH not found\\.$#"
@@ -110,40 +97,6 @@ parameters:
 		-
 			message: "#^Constant pocketmine\\\\VERSION not found\\.$#"
 			path: src/pocketmine
-		-
-			message: "#^Used constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
-			comment: "explicitly checked"
-		-
-			message: "#^Constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
-			comment: "explicitly checked"
-		-
-			message: "#^Instantiated class LevelDB not found\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
-			comment: "leveldb extension currently optional"
-		-
-			message: "#^Return typehint of method pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:createDB\\(\\) has invalid type LevelDB\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
-		-
-			message: "#^Return typehint of method pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:getDatabase\\(\\) has invalid type LevelDB\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
-		-
-			message: "#^Property pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:\\$db has unknown class LevelDB as its type\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
-		-
-			message: "#^Call to method (get|put|delete|close)\\(\\) on an unknown class LevelDB\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(.+\\)\\: Unexpected token \"&\", expected TOKEN_VARIABLE at offset \\d+$#"
-			path: src/pocketmine
-			comment: "phpstan stupidity"
-
-		-
-			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
-			path: src/pocketmine
-			comment: "phpstan bug"
 
 		-
 			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
