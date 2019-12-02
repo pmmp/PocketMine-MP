@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\CommandData;
 use pocketmine\network\mcpe\protocol\types\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\CommandEnumConstraint;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\utils\BinaryDataException;
 use function count;
@@ -74,6 +75,10 @@ class AvailableCommandsPacket extends DataPacket{
 	 */
 	public const ARG_FLAG_ENUM = 0x200000;
 
+	public const HARDCODED_ENUM_NAMES = [
+		"CommandName" => true
+	];
+
 	/**
 	 * This is used for /xp <level: int>L. It can only be applied to integer parameters.
 	 */
@@ -87,10 +92,23 @@ class AvailableCommandsPacket extends DataPacket{
 
 	/**
 	 * @var CommandEnum[]
+	 * List of enums which aren't directly referenced by any vanilla command.
+	 * This is used for the `CommandName` enum, which is a magic enum used by the `command` argument type.
+	 */
+	public $hardcodedEnums = [];
+
+	/**
+	 * @var CommandEnum[]
 	 * List of dynamic command enums, also referred to as "soft" enums. These can by dynamically updated mid-game
 	 * without resending this packet.
 	 */
 	public $softEnums = [];
+
+	/**
+	 * @var CommandEnumConstraint[]
+	 * List of constraints for enum members. Used to constrain gamerules that can bechanged in nocheats mode and more.
+	 */
+	public $enumConstraints = [];
 
 	protected function decodePayload(){
 		/** @var string[] $enumValues */
@@ -108,7 +126,10 @@ class AvailableCommandsPacket extends DataPacket{
 		/** @var CommandEnum[] $enums */
 		$enums = [];
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$enums[] = $this->getEnum($enumValues);
+			$enums[] = $enum = $this->getEnum($enumValues);
+			if(isset(self::HARDCODED_ENUM_NAMES[$enum->enumName])){
+				$this->hardcodedEnums[] = $enum;
+			}
 		}
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
@@ -117,6 +138,10 @@ class AvailableCommandsPacket extends DataPacket{
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			$this->softEnums[] = $this->getSoftEnum();
+		}
+
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->enumConstraints[] = $this->getEnumConstraint($enums, $enumValues);
 		}
 	}
 
@@ -207,6 +232,50 @@ class AvailableCommandsPacket extends DataPacket{
 			$this->putLShort($index);
 		}else{
 			$this->putLInt($index);
+		}
+	}
+
+	/**
+	 * @param CommandEnum[] $enums
+	 * @param string[]      $enumValues
+	 *
+	 * @return CommandEnumConstraint
+	 */
+	protected function getEnumConstraint(array $enums, array $enumValues) : CommandEnumConstraint{
+		//wtf, what was wrong with an offset inside the enum? :(
+		$valueIndex = $this->getLInt();
+		if(!isset($enumValues[$valueIndex])){
+			throw new \UnexpectedValueException("Enum constraint refers to unknown enum value index $valueIndex");
+		}
+		$enumIndex = $this->getLInt();
+		if(!isset($enums[$enumIndex])){
+			throw new \UnexpectedValueException("Enum constraint refers to unknown enum index $enumIndex");
+		}
+		$enum = $enums[$enumIndex];
+		$valueOffset = array_search($enumValues[$valueIndex], $enum->enumValues, true);
+		if($valueOffset === false){
+			throw new \UnexpectedValueException("Value \"" . $enumValues[$valueIndex] . "\" does not belong to enum \"$enum->enumName\"");
+		}
+
+		$constraintIds = [];
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$constraintIds[] = $this->getByte();
+		}
+
+		return new CommandEnumConstraint($enum, $valueOffset, $constraintIds);
+	}
+
+	/**
+	 * @param CommandEnumConstraint $value
+	 * @param int[]                 $enumIndexes string enum name -> int index
+	 * @param int[]                 $enumValueIndexes string value -> int index
+	 */
+	protected function putEnumConstraint(CommandEnumConstraint $constraint, array $enumIndexes, array $enumValueIndexes) : void{
+		$this->putLInt($enumValueIndexes[$constraint->getAffectedValue()]);
+		$this->putLInt($enumIndexes[$constraint->getEnum()->enumName]);
+		$this->putUnsignedVarInt(count($constraint->getConstraints()));
+		foreach($constraint->getConstraints() as $v){
+			$this->putByte($v);
 		}
 	}
 
@@ -349,15 +418,21 @@ class AvailableCommandsPacket extends DataPacket{
 		$enumIndexes = [];
 		/** @var CommandEnum[] $enums */
 		$enums = [];
+
+		$addEnumFn = static function(CommandEnum $enum) use (&$enums, &$enumIndexes, &$enumValueIndexes){
+			if(!isset($enumIndexes[$enum->enumName])){
+				$enums[$enumIndexes[$enum->enumName] = count($enumIndexes)] = $enum;
+			}
+			foreach($enum->enumValues as $str){
+				$enumValueIndexes[$str] = $enumValueIndexes[$str] ?? count($enumValueIndexes);
+			}
+		};
+		foreach($this->hardcodedEnums as $enum){
+			$addEnumFn($enum);
+		}
 		foreach($this->commandData as $commandData){
 			if($commandData->aliases !== null){
-				if(!isset($enumIndexes[$commandData->aliases->enumName])){
-					$enums[$enumIndexes[$commandData->aliases->enumName] = count($enumIndexes)] = $commandData->aliases;
-				}
-
-				foreach($commandData->aliases->enumValues as $str){
-					$enumValueIndexes[$str] = $enumValueIndexes[$str] ?? count($enumValueIndexes); //latest index
-				}
+				$addEnumFn($commandData->aliases);
 			}
 
 			foreach($commandData->overloads as $overload){
@@ -367,12 +442,7 @@ class AvailableCommandsPacket extends DataPacket{
 				 */
 				foreach($overload as $parameter){
 					if($parameter->enum !== null){
-						if(!isset($enumIndexes[$parameter->enum->enumName])){
-							$enums[$enumIndexes[$parameter->enum->enumName] = count($enumIndexes)] = $parameter->enum;
-						}
-						foreach($parameter->enum->enumValues as $str){
-							$enumValueIndexes[$str] = $enumValueIndexes[$str] ?? count($enumValueIndexes);
-						}
+						$addEnumFn($parameter->enum);
 					}
 
 					if($parameter->postfix !== null){
@@ -407,7 +477,10 @@ class AvailableCommandsPacket extends DataPacket{
 			$this->putSoftEnum($enum);
 		}
 
-		$this->putUnsignedVarInt(0); //TODO
+		$this->putUnsignedVarInt(count($this->enumConstraints));
+		foreach($this->enumConstraints as $constraint){
+			$this->putEnumConstraint($constraint, $enumIndexes, $enumValueIndexes);
+		}
 	}
 
 	public function handle(NetworkSession $session) : bool{
