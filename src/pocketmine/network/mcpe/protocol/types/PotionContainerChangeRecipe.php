@@ -23,20 +23,29 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-class CommandParameter{
-	public const FLAG_FORCE_COLLAPSE_ENUM = 0x1;
-	public const FLAG_HAS_ENUM_CONSTRAINT = 0x2;
+class PotionContainerChangeRecipe{
+	/** @var int */
+	private $inputItemId;
+	/** @var int */
+	private $ingredientItemId;
+	/** @var int */
+	private $outputItemId;
 
-	/** @var string */
-	public $paramName;
-	/** @var int */
-	public $paramType;
-	/** @var bool */
-	public $isOptional;
-	/** @var int */
-	public $flags = 0; //shows enum name if 1, always zero except for in /gamerule command
-	/** @var CommandEnum|null */
-	public $enum;
-	/** @var string|null */
-	public $postfix;
+	public function __construct(int $inputItemId, int $ingredientItemId, int $outputItemId){
+		$this->inputItemId = $inputItemId;
+		$this->ingredientItemId = $ingredientItemId;
+		$this->outputItemId = $outputItemId;
+	}
+
+	public function getInputItemId() : int{
+		return $this->inputItemId;
+	}
+
+	public function getIngredientItemId() : int{
+		return $this->ingredientItemId;
+	}
+
+	public function getOutputItemId() : int{
+		return $this->outputItemId;
+	}
 }
