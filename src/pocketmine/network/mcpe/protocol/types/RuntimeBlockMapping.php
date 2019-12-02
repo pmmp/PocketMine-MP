@@ -53,6 +53,9 @@ final class RuntimeBlockMapping{
 	public static function init() : void{
 		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/block_id_map.json"), true);
 		$tag = (new BigEndianNBTStream())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/runtime_block_states.dat"));
+		if(!($tag instanceof CompoundTag)){ //this is a little redundant currently, but good for auto complete and makes phpstan happy
+			throw new \RuntimeException("Invalid blockstates table, expected CompoundTag root");
+		}
 
 		$decompressed = [];
 
