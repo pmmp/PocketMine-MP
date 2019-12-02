@@ -167,6 +167,10 @@ class NetworkInventoryAction{
 	 * @throws \UnexpectedValueException
 	 */
 	public function createInventoryAction(Player $player){
+		if($this->oldItem->equalsExact($this->newItem)){
+			//filter out useless noise in 1.13
+			return null;
+		}
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
 				$window = $player->getWindow($this->windowId);
