@@ -266,7 +266,7 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	/**
-	 * @param CommandEnumConstraint $value
+	 * @param CommandEnumConstraint $constraint
 	 * @param int[]                 $enumIndexes string enum name -> int index
 	 * @param int[]                 $enumValueIndexes string value -> int index
 	 */
