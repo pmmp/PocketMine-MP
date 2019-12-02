@@ -43,7 +43,7 @@ class CraftingManager{
 	/** @var FurnaceRecipe[] */
 	protected $furnaceRecipes = [];
 
-	/** @var BatchPacket */
+	/** @var BatchPacket|null */
 	private $craftingDataCache;
 
 	public function __construct(){

@@ -1,7 +1,11 @@
-
+includes:
+	- tests/phpstan/configs/optional-com-dotnet.neon
+	- tests/phpstan/configs/optional-leveldb.neon
+	- tests/phpstan/configs/phpstan-bugs.neon
+	- tests/phpstan/configs/pthreads-bugs.neon
 
 parameters:
-	level: 1
+	level: 2
 	autoload_files:
 		- tests/phpstan/bootstrap.php
 		- src/pocketmine/PocketMine.php
@@ -58,20 +62,9 @@ parameters:
 			path: src/pocketmine/network/mcpe/protocol/StartGamePacket.php
 
 		-
-			message: "#^Instantiated class COM not found\\.$#"
-			count: 2
-			path: src/pocketmine/network/upnp/UPnP.php
-			comment: "only available on Windows"
-
-		-
 			message: "#^Constructor of class pocketmine\\\\scheduler\\\\TaskScheduler has an unused parameter \\$logger\\.$#"
 			count: 1
 			path: src/pocketmine/scheduler/TaskScheduler.php
-
-		-
-			message: "#^Variable \\$GLOBALS in isset\\(\\) always exists and is not nullable\\.$#"
-			path: src/pocketmine/MemoryManager.php
-			comment: "this isn't defined on threads (thanks pthreads)"
 
 		-
 			message: "#^Constant pocketmine\\\\COMPOSER_AUTOLOADER_PATH not found\\.$#"
@@ -104,21 +97,9 @@ parameters:
 		-
 			message: "#^Constant pocketmine\\\\VERSION not found\\.$#"
 			path: src/pocketmine
+
 		-
-			message: "#^Used constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
-			comment: "explicitly checked"
-		-
-			message: "#^Constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
-			comment: "explicitly checked"
-		-
-			message: "#^Instantiated class LevelDB not found\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
-			comment: "leveldb extension currently optional"
-		-
-			message: "#^Return typehint of method pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:createDB\\(\\) has invalid type LevelDB\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
-		-
-			message: "#^Return typehint of method pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:getDatabase\\(\\) has invalid type LevelDB\\.$#"
-			path: src/pocketmine/level/format/io/leveldb/LevelDB.php
+			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
+			count: 1
+			path: src/pocketmine/command/defaults/TeleportCommand.php
+			comment: "not actually possible, but high cost to fix warning"

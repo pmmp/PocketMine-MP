@@ -265,7 +265,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var LevelTimings */
 	public $timings;
 
-	/** @var int */
+	/** @var float */
 	public $tickRateTime = 0;
 	/**
 	 * @deprecated

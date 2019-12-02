@@ -1,0 +1,10 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^PHPDoc tag @param has invalid value \\(.+\\)\\: Unexpected token \"&\", expected TOKEN_VARIABLE at offset \\d+$#"
+			path: src/pocketmine
+
+		-
+			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
+			path: src/pocketmine
+
