@@ -30,12 +30,34 @@ use pocketmine\network\mcpe\NetworkSession;
 class EducationSettingsPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::EDUCATION_SETTINGS_PACKET;
 
+	/** @var string */
+	private $codeBuilderDefaultUri;
+	/** @var bool */
+	private $hasQuiz;
+
+	public static function create(string $codeBuilderDefaultUri, bool $hasQuiz) : self{
+		$result = new self;
+		$result->codeBuilderDefaultUri = $codeBuilderDefaultUri;
+		$result->hasQuiz = $hasQuiz;
+		return $result;
+	}
+
+	public function getCodeBuilderDefaultUri() : string{
+		return $this->codeBuilderDefaultUri;
+	}
+
+	public function getHasQuiz() : bool{
+		return $this->hasQuiz;
+	}
+
 	protected function decodePayload() : void{
-		//TODO
+		$this->codeBuilderDefaultUri = $this->getString();
+		$this->hasQuiz = $this->getBool();
 	}
 
 	protected function encodePayload() : void{
-		//TODO
+		$this->putString($this->codeBuilderDefaultUri);
+		$this->putBool($this->hasQuiz);
 	}
 
 	public function handle(NetworkSession $handler) : bool{
