@@ -61,7 +61,7 @@ abstract class Command{
 	 */
 	private $activeAliases = [];
 
-	/** @var CommandMap */
+	/** @var CommandMap|null */
 	private $commandMap = null;
 
 	/** @var string */

@@ -1,69 +1,21 @@
-
+includes:
+	- tests/phpstan/configs/optional-com-dotnet.neon
+	- tests/phpstan/configs/optional-leveldb.neon
+	- tests/phpstan/configs/phpstan-bugs.neon
+	- tests/phpstan/configs/pthreads-bugs.neon
 
 parameters:
-	level: 1
+	level: 2
+	autoload_files:
+		- tests/phpstan/bootstrap.php
+		- src/pocketmine/PocketMine.php
 	paths:
 		- src
-	#reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
+	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	ignoreErrors:
 		-
 			message: "#^pocketmine\\\\Player\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\entity\\\\Human\\.$#"
 			path: src/pocketmine/Player.php
-
-		-
-			message: "#^Function pocketmine\\\\critical_error not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function pocketmine\\\\check_platform_dependencies not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function pocketmine\\\\emit_performance_warnings not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function pocketmine\\\\set_ini_entries not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function pocketmine\\\\server not found while trying to analyse it \\- autoloading is probably not configured properly\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function check_platform_dependencies not found\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function critical_error not found\\.$#"
-			count: 6
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function set_ini_entries not found\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function emit_performance_warnings not found\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Function pocketmine\\\\server not found\\.$#"
-			count: 1
-			path: src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Constant MIN_PHP_VERSION not found\\.$#"
-			count: 2
-			path: src/pocketmine/PocketMine.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\[A-Za-z\\d]+\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -110,20 +62,9 @@ parameters:
 			path: src/pocketmine/network/mcpe/protocol/StartGamePacket.php
 
 		-
-			message: "#^Instantiated class COM not found\\.$#"
-			count: 2
-			path: src/pocketmine/network/upnp/UPnP.php
-			comment: "only available on Windows"
-
-		-
 			message: "#^Constructor of class pocketmine\\\\scheduler\\\\TaskScheduler has an unused parameter \\$logger\\.$#"
 			count: 1
 			path: src/pocketmine/scheduler/TaskScheduler.php
-
-		-
-			message: "#^Variable \\$GLOBALS in isset\\(\\) always exists and is not nullable\\.$#"
-			path: src/pocketmine/MemoryManager.php
-			comment: "this isn't defined on threads (thanks pthreads)"
 
 		-
 			message: "#^Constant pocketmine\\\\COMPOSER_AUTOLOADER_PATH not found\\.$#"
@@ -156,3 +97,9 @@ parameters:
 		-
 			message: "#^Constant pocketmine\\\\VERSION not found\\.$#"
 			path: src/pocketmine
+
+		-
+			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
+			count: 1
+			path: src/pocketmine/command/defaults/TeleportCommand.php
+			comment: "not actually possible, but high cost to fix warning"

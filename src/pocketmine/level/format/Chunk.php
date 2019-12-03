@@ -710,50 +710,48 @@ class Chunk{
 	public function initChunk(Level $level){
 		if(!$this->isInit){
 			$changed = false;
-			if($this->NBTentities !== null){
-				$level->timings->syncChunkLoadEntitiesTimer->startTiming();
-				foreach($this->NBTentities as $nbt){
-					if($nbt instanceof CompoundTag){
-						if(!$nbt->hasTag("id")){ //allow mixed types (because of leveldb)
-							$changed = true;
-							continue;
-						}
 
-						try{
-							$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
-							if(!($entity instanceof Entity)){
-								$changed = true;
-								continue;
-							}
-						}catch(\Throwable $t){
-							$level->getServer()->getLogger()->logException($t);
+			$level->timings->syncChunkLoadEntitiesTimer->startTiming();
+			foreach($this->NBTentities as $nbt){
+				if($nbt instanceof CompoundTag){
+					if(!$nbt->hasTag("id")){ //allow mixed types (because of leveldb)
+						$changed = true;
+						continue;
+					}
+
+					try{
+						$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
+						if(!($entity instanceof Entity)){
 							$changed = true;
 							continue;
 						}
+					}catch(\Throwable $t){
+						$level->getServer()->getLogger()->logException($t);
+						$changed = true;
+						continue;
 					}
 				}
-				$level->timings->syncChunkLoadEntitiesTimer->stopTiming();
-
-				$level->timings->syncChunkLoadTileEntitiesTimer->startTiming();
-				foreach($this->NBTtiles as $nbt){
-					if($nbt instanceof CompoundTag){
-						if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
-							$changed = true;
-							continue;
-						}
-
-						if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){
-							$changed = true;
-							continue;
-						}
-					}
-				}
-
-				$level->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
-
-				$this->NBTentities = null;
-				$this->NBTtiles = null;
 			}
+			$this->NBTentities = [];
+			$level->timings->syncChunkLoadEntitiesTimer->stopTiming();
+
+			$level->timings->syncChunkLoadTileEntitiesTimer->startTiming();
+			foreach($this->NBTtiles as $nbt){
+				if($nbt instanceof CompoundTag){
+					if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
+						$changed = true;
+						continue;
+					}
+
+					if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){
+						$changed = true;
+						continue;
+					}
+				}
+			}
+
+			$this->NBTtiles = [];
+			$level->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 
 			$this->hasChanged = $changed;
 

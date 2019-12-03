@@ -41,7 +41,7 @@ class Squid extends WaterAnimal{
 	public $width = 0.95;
 	public $height = 0.95;
 
-	/** @var Vector3 */
+	/** @var Vector3|null */
 	public $swimDirection = null;
 	public $swimSpeed = 0.1;
 

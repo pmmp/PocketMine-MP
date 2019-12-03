@@ -93,7 +93,11 @@ class NetworkBinaryStream extends BinaryStream{
 			if($c !== 1){
 				throw new \UnexpectedValueException("Unexpected NBT count $c");
 			}
-			$nbt = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
+			$decodedNBT = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
+			if(!($decodedNBT instanceof CompoundTag)){
+				throw new \UnexpectedValueException("Unexpected root tag type for itemstack");
+			}
+			$nbt = $decodedNBT;
 		}elseif($nbtLen !== 0){
 			throw new \UnexpectedValueException("Unexpected fake NBT length $nbtLen");
 		}
@@ -378,7 +382,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * Writes an EntityUniqueID
+	 * Writes an EntityRuntimeID
 	 *
 	 * @param int $eid
 	 */
