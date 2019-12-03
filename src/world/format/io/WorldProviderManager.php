@@ -47,7 +47,7 @@ abstract class WorldProviderManager{
 	/**
 	 * Returns the default format used to generate new worlds.
 	 *
-	 * @return string|WritableWorldProvider
+	 * @return string
 	 */
 	public static function getDefault() : string{
 		return self::$default;
