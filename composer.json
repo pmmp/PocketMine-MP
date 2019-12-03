@@ -24,7 +24,7 @@
       "ext-yaml": ">=2.0.0",
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
-      "turanicteam/raklib": "0.12.5-BETA",
+      "pocketmine/raklib": "0.12.5",
       "pocketmine/spl": "^0.3.0",
       "pocketmine/binaryutils": "^0.1.9",
       "pocketmine/nbt": "^0.2.10",
