@@ -51,7 +51,7 @@ final class CompoundTagMetadataProperty implements MetadataProperty{
 	}
 
 	public function equals(MetadataProperty $other) : bool{
-		return $other instanceof $this and $other->value->equals($this->value);
+		return $other instanceof self and $other->value->equals($this->value);
 	}
 
 	public static function read(NetworkBinaryStream $in) : self{
