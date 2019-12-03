@@ -181,17 +181,6 @@ class PluginDescription{
 	public function getCompatibleOperatingSystems() : array{
 		return $this->compatibleOperatingSystems;
 	}
-	
-	/**
-	 * Checks if the current operating system is in the compatible systems list.
-	 *
-	 * @throws PluginException if the current operating system is not compatible
-	 */
-	public function checkCompatibleOperatingSystem() {
-		if(!empty($this->compatibleOperatingSystems) and !in_array(Utils::getOS(), $this->compatibleOperatingSystems)) {
-			throw new PluginException("The Operating System the server is running on is not supported by this plugin.");
-		}
-	}
 
 	/**
 	 * @return string[]

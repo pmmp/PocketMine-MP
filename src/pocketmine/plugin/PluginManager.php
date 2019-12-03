@@ -158,7 +158,6 @@ class PluginManager{
 				if($description instanceof PluginDescription){
 					$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.load", [$description->getFullName()]));
 					try{
-						$description->checkCompatibleOperatingSystem();
 						$description->checkRequiredExtensions();
 					}catch(PluginException $ex){
 						$this->server->getLogger()->error($ex->getMessage());
@@ -270,6 +269,14 @@ class PluginManager{
 						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 							$name,
 							$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleAPI", [implode(", ", $description->getCompatibleApis())])
+						]));
+						continue;
+					}
+
+					if(!empty($this->compatibleOperatingSystems) and !in_array(Utils::getOS(), $this->compatibleOperatingSystems)) {
+						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+							$name,
+							$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleOS", [implode(", ", $this->compatibleOperatingSystems)])
 						]));
 						continue;
 					}
