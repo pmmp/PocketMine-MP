@@ -21,42 +21,41 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
-use function strlen;
 
-class ResourcePackChunkDataPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CHUNK_DATA_PACKET;
+class MultiplayerSettingsPacket extends DataPacket/* implements ServerboundPacket*/{ //TODO: this might be clientbound too, but unsure
+	public const NETWORK_ID = ProtocolInfo::MULTIPLAYER_SETTINGS_PACKET;
 
-	/** @var string */
-	public $packId;
+	public const ACTION_ENABLE_MULTIPLAYER = 0;
+	public const ACTION_DISABLE_MULTIPLAYER = 1;
+	public const ACTION_REFRESH_JOIN_CODE = 2;
+
 	/** @var int */
-	public $chunkIndex;
-	/** @var int */
-	public $progress;
-	/** @var string */
-	public $data;
+	private $action;
 
-	protected function decodePayload(){
-		$this->packId = $this->getString();
-		$this->chunkIndex = $this->getLInt();
-		$this->progress = $this->getLLong();
-		$this->data = $this->getString();
+	public static function create(int $action) : self{
+		$result = new self;
+		$result->action = $action;
+		return $result;
 	}
 
-	protected function encodePayload(){
-		$this->putString($this->packId);
-		$this->putLInt($this->chunkIndex);
-		$this->putLLong($this->progress);
-		$this->putString($this->data);
+	public function getAction() : int{
+		return $this->action;
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleResourcePackChunkData($this);
+	protected function decodePayload() : void{
+		$this->action = $this->getVarInt();
+	}
+
+	protected function encodePayload() : void{
+		$this->putVarInt($this->action);
+	}
+
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleMultiplayerSettings($this);
 	}
 }

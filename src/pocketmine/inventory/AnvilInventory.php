@@ -40,7 +40,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 
-class AnvilInventory extends ContainerInventory implements FakeInventory{
+class AnvilInventory extends ContainerInventory implements PlayerUIComponent{
 
 	public const SLOT_INPUT = 0;
 	public const SLOT_SACRIFICE = 1;
@@ -59,6 +59,10 @@ class AnvilInventory extends ContainerInventory implements FakeInventory{
 
 	public function getName() : string{
 		return "Anvil";
+	}
+
+	public function getUIOffset() : int{
+		return 1;
 	}
 
 	public function getDefaultSize() : int{

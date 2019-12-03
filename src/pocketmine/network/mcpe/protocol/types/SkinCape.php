@@ -23,17 +23,38 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-interface ContainerIds{
+class SkinCape{
+	/** @var string */
+	private $id;
+	/** @var bool */
+	private $onClassicSkin;
+	/** @var SkinImage */
+	private $image;
 
-	public const NONE = -1;
-	public const INVENTORY = 0;
-	public const FIRST = 1;
-	public const LAST = 100;
-	public const OFFHAND = 119;
-	public const ARMOR = 120;
-	public const CREATIVE = 121;
-	public const HOTBAR = 122;
-	public const FIXED_INVENTORY = 123;
-	public const UI = 124;
+	public function __construct(string $id, SkinImage $image, bool $onClassicSkin = false){
+		$this->id = $id;
+		$this->image = $image;
+		$this->onClassicSkin = $onClassicSkin;
+	}
 
+	/**
+	 * @return SkinImage
+	 */
+	public function getImage() : SkinImage{
+		return $this->image;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getId() : string{
+		return $this->id;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isOnClassicSkin() : bool{
+		return $this->onClassicSkin;
+	}
 }

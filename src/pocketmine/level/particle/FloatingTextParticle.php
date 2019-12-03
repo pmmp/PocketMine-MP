@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\utils\UUID;
 use function str_repeat;
 
@@ -42,6 +43,8 @@ class FloatingTextParticle extends Particle{
 	protected $title;
 	protected $entityId;
 	protected $invisible = false;
+	/** @var Skin */
+	private $skin;
 
 	/**
 	 * @param Vector3 $pos
@@ -52,6 +55,12 @@ class FloatingTextParticle extends Particle{
 		parent::__construct($pos->x, $pos->y, $pos->z);
 		$this->text = $text;
 		$this->title = $title;
+
+		$this->skin = new Skin(
+			"Standard_Custom",
+			new SkinImage(64, 32, str_repeat("\x00", 8192)),
+			json_encode(["geometry" => ["default" => "geometry.humanoid.custom"]])
+		);
 	}
 
 	public function getText() : string{
@@ -96,7 +105,7 @@ class FloatingTextParticle extends Particle{
 
 			$add = new PlayerListPacket();
 			$add->type = PlayerListPacket::TYPE_ADD;
-			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, new Skin("Standard_Custom", str_repeat("\x00", 8192)))];
+			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, $this->skin)];
 			$p[] = $add;
 
 			$pk = new AddPlayerPacket();

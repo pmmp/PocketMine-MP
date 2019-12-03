@@ -24,6 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
+use pocketmine\network\mcpe\protocol\types\SkinAnimation;
+use pocketmine\network\mcpe\protocol\types\SkinCape;
+use pocketmine\network\mcpe\protocol\types\SkinImage;
+use pocketmine\utils\UUID;
 use function implode;
 use function in_array;
 use function json_encode;
@@ -33,26 +37,53 @@ class Skin{
 	public const ACCEPTED_SKIN_SIZES = [
 		64 * 32 * 4,
 		64 * 64 * 4,
-		128 * 128 * 4
+		128 * 64 * 4,
+		128 * 128 * 4,
+		256 * 128 * 4,
+		256 * 256 * 4
 	];
 
 	/** @var string */
 	private $skinId;
 	/** @var string */
-	private $skinData;
-	/** @var string */
-	private $capeData;
-	/** @var string */
-	private $geometryName;
+	private $resourcePatch;
+	/** @var SkinImage */
+	private $skinImage;
+	/** @var SkinAnimation[] */
+	private $animations;
 	/** @var string */
 	private $geometryData;
+	/** @var string */
+	private $animationData;
+	/** @var bool */
+	private $persona;
+	/** @var bool */
+	private $premium;
+	/** @var SkinCape */
+	private $cape;
 
-	public function __construct(string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = ""){
+	/**
+	 * Skin constructor.
+	 * @param string $skinId
+	 * @param SkinImage $skinImage
+	 * @param string $resourcePatch
+	 * @param SkinCape|null $cape
+	 * @param SkinAnimation[] $animations
+	 * @param string $geometryData
+	 * @param string $animationData
+	 * @param bool $persona
+	 * @param bool $premium
+	 */
+	public function __construct(string $skinId, SkinImage $skinImage, string $resourcePatch, ?SkinCape $cape = null, array $animations = [], string $geometryData = "", string $animationData = "", bool $persona = false, bool $premium = false){
 		$this->skinId = $skinId;
-		$this->skinData = $skinData;
-		$this->capeData = $capeData;
-		$this->geometryName = $geometryName;
+		$this->skinImage = $skinImage;
+		$this->resourcePatch = $resourcePatch;
+		$this->cape = $cape ?? new SkinCape("", new SkinImage(0, 0, ""));
+		$this->animations = $animations;
 		$this->geometryData = $geometryData;
+		$this->animationData = $animationData;
+		$this->persona = $persona;
+		$this->premium = $premium;
 	}
 
 	/**
@@ -75,49 +106,15 @@ class Skin{
 		if($this->skinId === ""){
 			throw new \InvalidArgumentException("Skin ID must not be empty");
 		}
-		$len = strlen($this->skinData);
+		$len = strlen($this->skinImage->getData());
 		if(!in_array($len, self::ACCEPTED_SKIN_SIZES, true)){
 			throw new \InvalidArgumentException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
 		}
-		if($this->capeData !== "" and strlen($this->capeData) !== 8192){
-			throw new \InvalidArgumentException("Invalid cape data size " . strlen($this->capeData) . " bytes (must be exactly 8192 bytes)");
+		$capeData = $this->cape->getImage()->getData();
+		if($capeData !== "" and strlen($capeData) !== 8192){
+			throw new \InvalidArgumentException("Invalid cape data size " . strlen($capeData) . " bytes (must be exactly 8192 bytes)");
 		}
 		//TODO: validate geometry
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getSkinId() : string{
-		return $this->skinId;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getSkinData() : string{
-		return $this->skinData;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getCapeData() : string{
-		return $this->capeData;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getGeometryName() : string{
-		return $this->geometryName;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getGeometryData() : string{
-		return $this->geometryData;
 	}
 
 	/**
@@ -131,5 +128,114 @@ class Skin{
 		if($this->geometryData !== ""){
 			$this->geometryData = (string) json_encode((new CommentedJsonDecoder())->decode($this->geometryData));
 		}
+
+		if($this->resourcePatch !== ""){
+			$this->resourcePatch = (string) json_encode((new CommentedJsonDecoder())->decode($this->resourcePatch));
+		}
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isPremium() : bool{
+		return $this->premium;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isPersona() : bool{
+		return $this->persona;
+	}
+
+	/**
+	 * @return SkinAnimation[]
+	 */
+	public function getAnimations() : array{
+		return $this->animations;
+	}
+
+	/**
+	 * @return SkinCape
+	 */
+	public function getCape() : SkinCape{
+		return $this->cape;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAnimationData() : string{
+		return $this->animationData;
+	}
+
+	/**
+	 * @return SkinImage
+	 */
+	public function getSkinImage() : SkinImage{
+		return $this->skinImage;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSkinId() : string{
+		return $this->skinId;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getGeometryData() : string{
+		return $this->geometryData;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getResourcePatch() : string{
+		return $this->resourcePatch;
+	}
+
+	/**
+	 * @deprecated
+	 * @return string
+	 */
+	public function getSkinData() : string{
+		return $this->getSkinImage()->getData();
+	}
+
+	/**
+	 * @deprecated
+	 * @return string
+	 */
+	public function getCapeData() : string{
+		return $this->getCape()->getImage()->getData();
+	}
+
+	/**
+	 * @deprecated
+	 * @return string
+	 */
+	public function getGeometryName() : string{
+		return json_decode($this->resourcePatch, true)["geometry"]["default"] ?? "";
+	}
+
+	/**
+	 * @param string $skinId
+	 * @param string $skinData
+	 * @param string $capeData
+	 * @param string $geometryName
+	 * @param string $geometryData
+	 * @return Skin
+	 */
+	public static function fromLegacy(string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = "") : Skin{
+		return new Skin(
+			$skinId,
+			SkinImage::fromLegacy($skinData),
+			json_encode(["geometry" => ["default" => $geometryName]]),
+			$capeData === "" ? null : new SkinCape((UUID::fromRandom())->toString(), new SkinImage(32, 64, $capeData), true),
+			[],
+			$geometryData);
 	}
 }

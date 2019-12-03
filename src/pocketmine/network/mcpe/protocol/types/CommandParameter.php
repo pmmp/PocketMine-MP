@@ -27,6 +27,8 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 
 class CommandParameter{
+	public const FLAG_FORCE_COLLAPSE_ENUM = 0x1;
+	public const FLAG_HAS_ENUM_CONSTRAINT = 0x2;
 
 	/** @var string */
 	public $paramName;

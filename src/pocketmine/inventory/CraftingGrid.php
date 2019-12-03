@@ -29,7 +29,7 @@ use function max;
 use function min;
 use const PHP_INT_MAX;
 
-class CraftingGrid extends BaseInventory{
+class CraftingGrid extends BaseInventory implements PlayerUIComponent{
 	public const SIZE_SMALL = 2;
 	public const SIZE_BIG = 3;
 
@@ -50,6 +50,7 @@ class CraftingGrid extends BaseInventory{
 	public function __construct(Player $holder, int $gridWidth){
 		$this->holder = $holder;
 		$this->gridWidth = $gridWidth;
+
 		parent::__construct();
 	}
 
@@ -59,6 +60,10 @@ class CraftingGrid extends BaseInventory{
 
 	public function getDefaultSize() : int{
 		return $this->getGridWidth() ** 2;
+	}
+
+	public function getUIOffset() : int{
+		return $this->gridWidth === self::SIZE_SMALL ? 28 : 32;
 	}
 
 	public function setSize(int $size){
