@@ -15,6 +15,7 @@ server.properties
 memory_dumps/*
 resource_packs/
 server.lock
+/phpstan.neon
 
 # Common IDEs
 .idea/
