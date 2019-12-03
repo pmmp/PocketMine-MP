@@ -36,11 +36,12 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\level\Position;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 
-class AnvilInventory extends ContainerInventory implements PlayerUIComponent{
+class AnvilInventory extends ContainerInventory implements FakeInventory, FakeResultInventory{
 
 	public const SLOT_INPUT = 0;
 	public const SLOT_SACRIFICE = 1;
@@ -69,8 +70,8 @@ class AnvilInventory extends ContainerInventory implements PlayerUIComponent{
 		return 3; //1 input, 1 sacrifice, 1 output
 	}
 
-	public function isOutputFull() : bool{
-		return !$this->getItem(self::SLOT_OUTPUT)->isNull();
+	public function getResultSlot() : int{
+		return self::SLOT_OUTPUT;
 	}
 
 	/**
@@ -300,7 +301,7 @@ class AnvilInventory extends ContainerInventory implements PlayerUIComponent{
 		}
 
 		if($same){
-			$output->setNamedTagEntry($result->getNamedTagEntry(Item::TAG_ENCH));
+			$output->setNamedTagEntry($result->getNamedTagEntry(Item::TAG_ENCH) ?? new ListTag(Item::TAG_ENCH, []));
 		}
 	}
 

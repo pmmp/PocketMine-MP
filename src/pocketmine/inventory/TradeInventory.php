@@ -46,6 +46,10 @@ class TradeInventory extends ContainerInventory implements FakeInventory{
 		return "Trading";
 	}
 
+	public function getUIOffset() : int{
+		return 36; // wrong, idk
+	}
+
 	/**
 	 * @return int
 	 */

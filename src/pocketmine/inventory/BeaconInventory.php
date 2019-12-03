@@ -22,10 +22,12 @@
 
 namespace pocketmine\inventory;
 
+use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
+use pocketmine\Player;
 use pocketmine\tile\Beacon;
 
-class BeaconInventory extends ContainerInventory implements FakeInventory{
+class BeaconInventory extends ContainerInventory implements FakeInventory, FakeResultInventory{
 
 	public function __construct(Beacon $tile){
 		parent::__construct($tile);
@@ -37,6 +39,18 @@ class BeaconInventory extends ContainerInventory implements FakeInventory{
 
 	public function getDefaultSize() : int{
 		return 1;
+	}
+
+	public function getUIOffset() : int{
+		return 27;
+	}
+
+	public function onResult(Player $player, Item $result) : bool{
+		return true; // TODO: check beacon
+	}
+
+	public function getResultSlot() : int{
+		return 0;
 	}
 
 	public function getNetworkType() : int{

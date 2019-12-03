@@ -43,8 +43,9 @@ class PlayerUIInventory extends BaseInventory{
 	public function setItem(int $index, Item $item, bool $send = true) : bool{
 		if(parent::setItem($index, $item, $send)){
 			if($index > 0 and $index !== 50){
-				$window = $this->holder->findWindow(PlayerUIComponent::class) ?? $this->holder->getCraftingGrid();
-				if($window instanceof PlayerUIComponent){
+
+				$window = $this->holder->findWindow(FakeInventory::class) ?? $this->holder->getCraftingGrid();
+				if($window instanceof FakeInventory){
 					if($window->slotExists($slot = $index - $window->getUIOffset())){
 						$window->setItem($slot, $item, $send);
 					}

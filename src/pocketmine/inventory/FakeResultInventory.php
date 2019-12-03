@@ -24,7 +24,12 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-interface FakeInventory{
+use pocketmine\item\Item;
+use pocketmine\Player;
 
-	public function getUIOffset() : int;
+interface FakeResultInventory{
+
+	public function getResultSlot() : int;
+
+	public function onResult(Player $player, Item $result) : bool;
 }
