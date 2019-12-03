@@ -318,7 +318,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_PLAYER_FLAG_DEAD = 2; //TODO: CHECK
 
 	public static $entityCount = 1;
-	/** @var Entity[] */
+	/** @var string[] */
 	private static $knownEntities = [];
 	/** @var string[][] */
 	private static $saveNames = [];
@@ -460,8 +460,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
 
-	/** @var Block[] */
-	protected $blocksAround = [];
+	/** @var Block[]|null */
+	protected $blocksAround = null;
 
 	/** @var float|null */
 	public $lastX = null;
@@ -2048,7 +2048,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player) : void{
-		if(!isset($this->hasSpawned[$player->getLoaderId()])){
+		if(!isset($this->hasSpawned[$player->getLoaderId()]) and $this->chunk !== null and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
 			$this->hasSpawned[$player->getLoaderId()] = $player;
 
 			$this->sendSpawnPacket($player);

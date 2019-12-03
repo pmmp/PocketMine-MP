@@ -228,7 +228,7 @@ class Server{
 	 * @var int
 	 */
 	private $tickCounter = 0;
-	/** @var int */
+	/** @var float */
 	private $nextTick = 0;
 	/** @var float[] */
 	private $tickAverage = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
@@ -1445,7 +1445,7 @@ class Server{
 	}
 
 	/**
-	 * @return string[]
+	 * @return string[][]
 	 */
 	public function getCommandAliases() : array{
 		$section = $this->getProperty("aliases");
@@ -1790,7 +1790,7 @@ class Server{
 
 	/**
 	 * @param TextContainer|string $message
-	 * @param Player[]             $recipients
+	 * @param CommandSender[]      $recipients
 	 *
 	 * @return int
 	 */
@@ -1799,7 +1799,7 @@ class Server{
 			return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
 		}
 
-		/** @var Player[] $recipients */
+		/** @var CommandSender[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendMessage($message);
 		}

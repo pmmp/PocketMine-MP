@@ -140,7 +140,7 @@ class CraftingDataPacket extends DataPacket{
 			}
 			$this->decodedEntries[] = $entry;
 		}
-		$this->getBool(); //cleanRecipes
+		$this->cleanRecipes = $this->getBool();
 	}
 
 	private static function writeEntry($entry, NetworkBinaryStream $stream, int $pos){

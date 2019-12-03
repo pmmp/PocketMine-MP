@@ -47,7 +47,7 @@ abstract class BaseInventory implements Inventory{
 	/** @var string */
 	protected $title;
 	/** @var \SplFixedArray|Item[] */
-	protected $slots = [];
+	protected $slots;
 	/** @var Player[] */
 	protected $viewers = [];
 	/** @var InventoryEventProcessor */
