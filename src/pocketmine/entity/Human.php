@@ -904,8 +904,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					]);
 				}, $this->skin->getAnimations()), NBT::TAG_Compound),
 				new ByteArrayTag("SkinResourcePatch", $this->skin->getResourcePatch()),
-				new ByteArrayTag("GeometryData", $this->skin->getGeometryData()),
-				new ByteArrayTag("AnimationData", $this->skin->getAnimationData()),
+				new ByteArrayTag("SkinGeometryData", $this->skin->getGeometryData()),
+				new ByteArrayTag("SkinAnimationData", $this->skin->getAnimationData()),
 				new ByteTag("PersonaSkin", intval($this->skin->isPersona())),
 				new ByteTag("PremiumSkin", intval($this->skin->isPremium()))
 			]));
