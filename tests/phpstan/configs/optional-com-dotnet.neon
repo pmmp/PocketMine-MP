@@ -2,12 +2,12 @@ parameters:
 	ignoreErrors:
 		-
 			message: "#^Instantiated class COM not found\\.$#"
-			count: 2
+			count: 1
 			path: src/network/upnp/UPnP.php
 
 		-
 			message: "#^Access to property \\$StaticPortMappingCollection on an unknown class COM\\.$#"
-			count: 4
+			count: 2
 			path: src/network/upnp/UPnP.php
 
 		-
