@@ -27,7 +27,7 @@ use pocketmine\item\Saddle;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
-abstract class AbstractHorseInventory extends ContainerInventory implements FakeInventory{
+abstract class AbstractHorseInventory extends ContainerInventory{
 	/** @var AbstractHorse */
 	protected $holder;
 
