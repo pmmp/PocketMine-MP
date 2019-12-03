@@ -58,7 +58,7 @@ class Door extends Transparent{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->top = $stateMeta & BlockLegacyMetadata::DOOR_FLAG_TOP;
+		$this->top = ($stateMeta & BlockLegacyMetadata::DOOR_FLAG_TOP) !== 0;
 		if($this->top){
 			$this->hingeRight = ($stateMeta & BlockLegacyMetadata::DOOR_TOP_FLAG_RIGHT) !== 0;
 			$this->powered = ($stateMeta & BlockLegacyMetadata::DOOR_TOP_FLAG_POWERED) !== 0;
