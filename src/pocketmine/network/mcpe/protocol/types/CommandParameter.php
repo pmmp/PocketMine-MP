@@ -45,7 +45,7 @@ class CommandParameter{
 
 	public function __construct(string $name = "args", int $type = AvailableCommandsPacket::ARG_TYPE_RAWTEXT, bool $optional = true, $extraData = null, int $flags = 0){
 		$this->paramName = $name;
-		$this->paramType = $type;
+		$this->paramType = AvailableCommandsPacket::ARG_FLAG_VALID | $type;
 		$this->isOptional = $optional;
 		if($extraData instanceof CommandEnum){
 			$this->enum = $extraData;
