@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\inventory\BeaconInventory;
 use pocketmine\inventory\EnchantInventory;
 use pocketmine\inventory\FakeInventory;
+use pocketmine\inventory\FakeResultInventory;
 use pocketmine\inventory\TradeInventory;
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -43,6 +43,7 @@ class NetworkInventoryAction{
 
 	public const SOURCE_WORLD = 2; //drop/pickup item entity
 	public const SOURCE_CREATIVE = 3;
+	public const SOURCE_CRAFTING_GRID = 100;
 	public const SOURCE_TODO = 99999;
 
 	/**
@@ -59,10 +60,9 @@ class NetworkInventoryAction{
 	public const SOURCE_TYPE_CRAFTING_RESULT = -4;
 	public const SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
 
-	public const SOURCE_TYPE_ANVIL_INPUT = -10;
-	public const SOURCE_TYPE_ANVIL_MATERIAL = -11;
-	public const SOURCE_TYPE_ANVIL_RESULT = -12;
-	public const SOURCE_TYPE_ANVIL_OUTPUT = -13;
+	public const SOURCE_TYPE_FAKE_INVENTORY_INPUT = -10;
+	public const SOURCE_TYPE_FAKE_INVENTORY_MATERIAL = -11;
+	public const SOURCE_TYPE_FAKE_INVENTORY_RESULT = -12;
 
 	public const SOURCE_TYPE_ENCHANT_INPUT = -15;
 	public const SOURCE_TYPE_ENCHANT_MATERIAL = -16;
@@ -72,8 +72,6 @@ class NetworkInventoryAction{
 	public const SOURCE_TYPE_TRADING_INPUT_2 = -21;
 	public const SOURCE_TYPE_TRADING_USE_INPUTS = -22;
 	public const SOURCE_TYPE_TRADING_OUTPUT = -23;
-
-	public const SOURCE_TYPE_BEACON = -24;
 
 	/** Any client-side window dropping its contents when the player closes it */
 	public const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
@@ -114,8 +112,17 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
+			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				$this->windowId = $packet->getVarInt();
+				switch($this->windowId){
+					/** @noinspection PhpMissingBreakStatementInspection */
+					case self::SOURCE_TYPE_CRAFTING_RESULT:
+						$packet->isFinalCraftingPart = true;
+					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
+						$packet->isCraftingPart = true;
+						break;
+				}
 				break;
 			default:
 				throw new \UnexpectedValueException("Unknown inventory action source type $this->sourceType");
@@ -143,6 +150,7 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
+			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				$packet->putVarInt($this->windowId);
 				break;
@@ -163,37 +171,11 @@ class NetworkInventoryAction{
 	 * @throws \UnexpectedValueException
 	 */
 	public function createInventoryAction(Player $player){
-		if($this->oldItem->equalsExact($this->newItem)){
-			//filter out useless noise in 1.13
-			return null;
-		}
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
-				if($this->windowId === ContainerIds::UI and $this->inventorySlot > 0){
-					if($this->inventorySlot === 50){
-						return null; //useless noise
-					}
-					if($this->inventorySlot >= 28 and $this->inventorySlot <= 31){
-						$window = $player->getCraftingGrid();
-						if($window->getGridWidth() !== CraftingGrid::SIZE_SMALL){
-							throw new \UnexpectedValueException("Expected small crafting grid");
-						}
-						$slot = $this->inventorySlot - 28;
-					}elseif($this->inventorySlot >= 32 and $this->inventorySlot <= 40){
-						$window = $player->getCraftingGrid();
-						if($window->getGridWidth() !== CraftingGrid::SIZE_BIG){
-							throw new \UnexpectedValueException("Expected big crafting grid");
-						}
-						$slot = $this->inventorySlot - 32;
-					}else{
-						throw new \UnexpectedValueException("Unhandled magic UI slot offset $this->inventorySlot");
-					}
-				}else{
-					$window = $player->getWindow($this->windowId);
-					$slot = $this->inventorySlot;
-				}
+				$window = $player->getWindow($this->windowId);
 				if($window !== null){
-					return new SlotChangeAction($window, $slot, $this->oldItem, $this->newItem);
+					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}
 
 				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
@@ -217,6 +199,7 @@ class NetworkInventoryAction{
 				}
 
 				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
+			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				$window = $player->findWindow(FakeInventory::class);
 
@@ -258,46 +241,23 @@ class NetworkInventoryAction{
 								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . EnchantInventory::class . " , given " . get_class($window));
 							}
 						}
-					case self::SOURCE_TYPE_ANVIL_INPUT:
-						if($window instanceof AnvilInventory){
-							if($window->isOutputFull()){
+					case self::SOURCE_TYPE_FAKE_INVENTORY_INPUT:
+					case self::SOURCE_TYPE_FAKE_INVENTORY_MATERIAL:
+						if($window instanceof FakeResultInventory){
+							if($window->isSlotEmpty($window->getResultSlot())){
 								return null;
 							}
-							return new SlotChangeAction($window, 0, $this->oldItem, $this->newItem);
-						}else{
-							if($window === null){
-								throw new \InvalidStateException("Window not found");
-							}else{
-								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . AnvilInventory::class . " , given " . get_class($window));
-							}
 						}
-					case self::SOURCE_TYPE_ANVIL_MATERIAL:
-						if($window instanceof AnvilInventory){
-							if($window->isOutputFull()){
+
+						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+					case self::SOURCE_TYPE_FAKE_INVENTORY_RESULT:
+						if($window instanceof FakeResultInventory){
+							if(!$window->onResult($player, $this->oldItem)){
 								return null;
 							}
-							return new SlotChangeAction($window, 1, $this->oldItem, $this->newItem);
-						}else{
-							if($window === null){
-								throw new \InvalidStateException("Window not found");
-							}else{
-								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . AnvilInventory::class . " , given " . get_class($window));
-							}
 						}
-					case self::SOURCE_TYPE_ANVIL_RESULT:
-						if($window instanceof AnvilInventory){
-							if($window->onResult($player, $this->oldItem)){
-								return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
-							}else{
-								return null;
-							}
-						}else{
-							if($window === null){
-								throw new \InvalidStateException("Window not found");
-							}else{
-								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . AnvilInventory::class . " , given " . get_class($window));
-							}
-						}
+
+						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 					case self::SOURCE_TYPE_TRADING_INPUT_1:
 					case self::SOURCE_TYPE_TRADING_INPUT_2:
 						if($window instanceof TradeInventory){
@@ -325,16 +285,6 @@ class NetworkInventoryAction{
 								throw new \InvalidStateException("Window not found");
 							}else{
 								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . TradeInventory::class . " , given " . get_class($window));
-							}
-						}
-					case self::SOURCE_TYPE_BEACON:
-						if($window instanceof BeaconInventory){
-							return new SlotChangeAction($window, 0, $this->oldItem, $this->newItem);
-						}else{
-							if($window === null){
-								throw new \InvalidStateException("Window not found");
-							}else{
-								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . BeaconInventory::class . " , given " . get_class($window));
 							}
 						}
 				}
