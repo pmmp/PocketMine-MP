@@ -29,7 +29,7 @@ use function max;
 use function min;
 use const PHP_INT_MAX;
 
-class CraftingGrid extends BaseInventory implements PlayerUIComponent{
+class CraftingGrid extends BaseInventory implements FakeInventory{
 	public const SIZE_SMALL = 2;
 	public const SIZE_BIG = 3;
 
