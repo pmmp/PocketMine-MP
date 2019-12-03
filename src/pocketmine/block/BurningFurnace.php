@@ -80,6 +80,9 @@ class BurningFurnace extends Solid{
 			$furnace = $this->getLevel()->getTile($this);
 			if(!($furnace instanceof TileFurnace)){
 				$furnace = Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this));
+				if(!($furnace instanceof TileFurnace)){
+					return true;
+				}
 			}
 
 			if(!$furnace->canOpenWith($item->getCustomName())){

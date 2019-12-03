@@ -23,20 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-class CommandParameter{
-	public const FLAG_FORCE_COLLAPSE_ENUM = 0x1;
-	public const FLAG_HAS_ENUM_CONSTRAINT = 0x2;
+/**
+ * Enum used by PlayerAuthInputPacket. Most of these names don't make any sense, but that isn't surprising.
+ */
+final class PlayMode{
 
-	/** @var string */
-	public $paramName;
-	/** @var int */
-	public $paramType;
-	/** @var bool */
-	public $isOptional;
-	/** @var int */
-	public $flags = 0; //shows enum name if 1, always zero except for in /gamerule command
-	/** @var CommandEnum|null */
-	public $enum;
-	/** @var string|null */
-	public $postfix;
+	private function __construct(){
+		//NOOP
+	}
+
+	public const NORMAL = 0;
+	public const TEASER = 1;
+	public const SCREEN = 2;
+	public const VIEWER = 3;
+	public const VR = 4;
+	public const PLACEMENT = 5;
+	public const LIVING_ROOM = 6;
+	public const EXIT_LEVEL = 7;
+	public const EXIT_LEVEL_LIVING_ROOM = 8;
+
 }

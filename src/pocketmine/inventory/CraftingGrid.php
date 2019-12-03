@@ -74,10 +74,6 @@ class CraftingGrid extends BaseInventory implements PlayerUIComponent{
 		return "Crafting";
 	}
 
-	public function getItem(int $index) : Item{
-		return parent::getItem($index);
-	}
-
 	public function setItem(int $index, Item $item, bool $send = true) : bool{
 		if(parent::setItem($index, $item, $send)){
 			$this->seekRecipeBounds();

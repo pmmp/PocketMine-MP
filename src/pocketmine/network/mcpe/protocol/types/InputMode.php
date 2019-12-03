@@ -23,20 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-class CommandParameter{
-	public const FLAG_FORCE_COLLAPSE_ENUM = 0x1;
-	public const FLAG_HAS_ENUM_CONSTRAINT = 0x2;
+final class InputMode{
 
-	/** @var string */
-	public $paramName;
-	/** @var int */
-	public $paramType;
-	/** @var bool */
-	public $isOptional;
-	/** @var int */
-	public $flags = 0; //shows enum name if 1, always zero except for in /gamerule command
-	/** @var CommandEnum|null */
-	public $enum;
-	/** @var string|null */
-	public $postfix;
+	private function __construct(){
+		//NOOP
+	}
+
+	public const MOUSE_KEYBOARD = 1;
+	public const TOUCHSCREEN = 2;
+	public const GAME_PAD = 3;
+	public const MOTION_CONTROLLER = 4;
 }

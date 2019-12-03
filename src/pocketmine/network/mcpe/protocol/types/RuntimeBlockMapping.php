@@ -26,6 +26,8 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pocketmine\block\BlockIds;
 use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\BinaryDataException;
 use function file_get_contents;
 use function getmypid;
@@ -53,6 +55,9 @@ final class RuntimeBlockMapping{
 	public static function init() : void{
 		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/block_id_map.json"), true);
 		$tag = (new BigEndianNBTStream())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/runtime_block_states.dat"));
+		if(!($tag instanceof CompoundTag)){ //this is a little redundant currently, but good for auto complete and makes phpstan happy
+			throw new \RuntimeException("Invalid blockstates table, expected CompoundTag root");
+		}
 
 		$decompressed = [];
 
@@ -136,11 +141,19 @@ final class RuntimeBlockMapping{
 		self::$runtimeToLegacyMap[$staticRuntimeId] = ($legacyId << 4) | $legacyMeta;
 	}
 
-	/**
-	 * @return array
-	 */
-	public static function getBedrockKnownStates() : array{
+	public static function generateBlockTable() : ListTag{
 		self::lazyInit();
-		return self::$bedrockKnownStates;
+		$states = new ListTag();
+		//TODO: this assoc array mess really doesn't make sense anymore, we can store NBT directly
+		foreach(self::$bedrockKnownStates as $v){
+			$state = new CompoundTag();
+			$state->setTag(new CompoundTag("block", [
+				new StringTag("name", $v["name"]),
+				$v["states"]
+			]));
+			$state->setShort("id", $v["legacy_id"]);
+			$states->push($state);
+		}
+		return $states;
 	}
 }

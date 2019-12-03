@@ -153,7 +153,7 @@ class StartGamePacket extends DataPacket{
 	/** @var string */
 	public $multiplayerCorrelationId = ""; //TODO: this should be filled with a UUID of some sort
 
-	/** @var array|null ["name" (string), "data" (int16), "legacy_id" (int16)] */
+	/** @var ListTag|null */
 	public $blockTable = null;
 	/** @var array|null string (name) => int16 (legacyID) */
 	public $itemTable = null;
@@ -211,14 +211,8 @@ class StartGamePacket extends DataPacket{
 
 		$this->enchantmentSeed = $this->getVarInt();
 
-		$this->blockTable = [];
-		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$id = $this->getString();
-			$data = $this->getSignedLShort();
-			$unknown = $this->getSignedLShort();
+		$this->blockTable = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
 
-			$this->blockTable[$i] = ["name" => $id, "data" => $data, "legacy_id" => $unknown];
-		}
 		$this->itemTable = [];
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			$id = $this->getString();
@@ -286,11 +280,11 @@ class StartGamePacket extends DataPacket{
 		if($this->blockTable === null){
 			if(self::$blockTableCache === null){
 				//this is a really nasty hack, but it'll do for now
-				self::$blockTableCache = self::serializeBlockTable(RuntimeBlockMapping::getBedrockKnownStates());
+				self::$blockTableCache = (new NetworkLittleEndianNBTStream())->write(RuntimeBlockMapping::generateBlockTable());
 			}
 			$this->put(self::$blockTableCache);
 		}else{
-			$this->put(self::serializeBlockTable($this->blockTable));
+			$this->put((new NetworkLittleEndianNBTStream())->write($this->blockTable));
 		}
 		if($this->itemTable === null){
 			if(self::$itemTableCache === null){
@@ -302,23 +296,6 @@ class StartGamePacket extends DataPacket{
 		}
 
 		$this->putString($this->multiplayerCorrelationId);
-	}
-
-	private static function serializeBlockTable(array $table) : string{
-		$states = new ListTag();
-		foreach($table as $v){
-			$state = new CompoundTag();
-			$state->setTag(new CompoundTag("block", [
-				new StringTag("name", $v["name"]),
-				$v["states"]
-			]));
-			$state->setShort("id", $v["legacy_id"]);
-			$states->push($state);
-		}
-		$stream = new NetworkLittleEndianNBTStream();
-		$stream->writeTag($states);
-
-		return $stream->buffer;
 	}
 
 	private static function serializeItemTable(array $table) : string{

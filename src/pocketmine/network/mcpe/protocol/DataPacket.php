@@ -135,7 +135,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 	abstract public function handle(NetworkSession $session) : bool;
 
 	public function clean(){
-		$this->buffer = null;
+		$this->buffer = "";
 		$this->isEncoded = false;
 		$this->offset = 0;
 		return $this;

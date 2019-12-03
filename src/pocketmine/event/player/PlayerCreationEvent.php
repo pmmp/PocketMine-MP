@@ -39,15 +39,15 @@ class PlayerCreationEvent extends Event{
 	/** @var int */
 	private $port;
 
-	/** @var Player::class */
+	/** @var string */
 	private $baseClass;
-	/** @var Player::class */
+	/** @var string */
 	private $playerClass;
 
 	/**
 	 * @param SourceInterface $interface
-	 * @param Player::class   $baseClass
-	 * @param Player::class   $playerClass
+	 * @param string          $baseClass
+	 * @param string          $playerClass
 	 * @param string          $address
 	 * @param int             $port
 	 */
@@ -91,14 +91,14 @@ class PlayerCreationEvent extends Event{
 	}
 
 	/**
-	 * @return Player::class
+	 * @return string
 	 */
 	public function getBaseClass(){
 		return $this->baseClass;
 	}
 
 	/**
-	 * @param Player::class $class
+	 * @param string $class
 	 */
 	public function setBaseClass($class){
 		if(!is_a($class, $this->baseClass, true)){
@@ -109,14 +109,14 @@ class PlayerCreationEvent extends Event{
 	}
 
 	/**
-	 * @return Player::class
+	 * @return string
 	 */
 	public function getPlayerClass(){
 		return $this->playerClass;
 	}
 
 	/**
-	 * @param Player::class $class
+	 * @param string $class
 	 */
 	public function setPlayerClass($class){
 		if(!is_a($class, $this->baseClass, true)){

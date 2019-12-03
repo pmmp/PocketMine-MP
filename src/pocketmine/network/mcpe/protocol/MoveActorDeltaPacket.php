@@ -70,7 +70,7 @@ class MoveActorDeltaPacket extends DataPacket{
 
 	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->flags = $this->getByte();
+		$this->flags = $this->getLShort();
 		$this->xDiff = $this->maybeReadCoord(self::FLAG_HAS_X);
 		$this->yDiff = $this->maybeReadCoord(self::FLAG_HAS_Y);
 		$this->zDiff = $this->maybeReadCoord(self::FLAG_HAS_Z);
@@ -93,7 +93,7 @@ class MoveActorDeltaPacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putByte($this->flags);
+		$this->putLShort($this->flags);
 		$this->maybeWriteCoord(self::FLAG_HAS_X, $this->xDiff);
 		$this->maybeWriteCoord(self::FLAG_HAS_Y, $this->yDiff);
 		$this->maybeWriteCoord(self::FLAG_HAS_Z, $this->zDiff);
