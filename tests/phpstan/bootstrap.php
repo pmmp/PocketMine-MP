@@ -21,4 +21,4 @@
 
 declare(strict_types=1);
 
-define('pocketmine\_PHPSTAN_ANALYSIS', true);
+define('pocketmine\_PHPSTAN_ANALYSIS', false);
