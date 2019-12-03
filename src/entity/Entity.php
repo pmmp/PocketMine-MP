@@ -1633,7 +1633,7 @@ abstract class Entity{
 	 */
 	public function spawnTo(Player $player) : void{
 		$id = spl_object_id($player);
-		if(!isset($this->hasSpawned[$id])){
+		if(!isset($this->hasSpawned[$id]) and $player->isUsingChunk($this->location->getFloorX() >> 4, $this->location->getFloorZ() >> 4)){
 			$this->hasSpawned[$id] = $player;
 
 			$this->sendSpawnPacket($player);
