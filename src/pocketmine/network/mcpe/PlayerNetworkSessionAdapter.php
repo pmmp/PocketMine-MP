@@ -38,6 +38,7 @@ use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
+use pocketmine\network\mcpe\protocol\ClientCacheStatusPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
@@ -64,15 +65,17 @@ use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
-use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\RiderJumpPacket;
+use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
+use pocketmine\network\mcpe\protocol\SettingsCommandPacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;;
+use pocketmine\network\mcpe\protocol\TickSyncPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -356,6 +359,12 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return true;
 	}
 
+	public function handleTickSync(TickSyncPacket $packet) : bool{
+		$this->player->sendDataPacket(TickSyncPacket::response($packet->getClientSendTime(), time()));
+
+		return true;
+	}
+
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
 		return $this->player->handleLevelSoundEvent($packet);
 	}
@@ -385,5 +394,16 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
+	}
+
+	public function handleClientCacheStatus(ClientCacheStatusPacket $packet) : bool{
+		$this->player->sendDataPacket(ClientCacheStatusPacket::create(false));
+		return true;
+	}
+
+	public function handleSettingsCommand(SettingsCommandPacket $packet) : bool{
+		// TODO: add support to suppress command message
+		$this->player->chat($packet->getCommand());
+		return true;
 	}
 }
