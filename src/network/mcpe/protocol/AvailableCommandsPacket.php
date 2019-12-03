@@ -234,6 +234,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 		$overloads = [];
 
 		for($overloadIndex = 0, $overloadCount = $this->getUnsignedVarInt(); $overloadIndex < $overloadCount; ++$overloadIndex){
+			$overloads[$overloadIndex] = [];
 			for($paramIndex = 0, $paramCount = $this->getUnsignedVarInt(); $paramIndex < $paramCount; ++$paramIndex){
 				$parameter = new CommandParameter();
 				$parameter->paramName = $this->getString();

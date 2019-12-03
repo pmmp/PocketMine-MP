@@ -99,8 +99,8 @@ abstract class Entity{
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
 
-	/** @var Block[] */
-	protected $blocksAround = [];
+	/** @var Block[]|null */
+	protected $blocksAround;
 
 	/** @var Location */
 	protected $location;

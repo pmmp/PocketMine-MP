@@ -59,7 +59,6 @@ class GamemodeCommand extends VanillaCommand{
 			return true;
 		}
 
-		$target = $sender;
 		if(isset($args[1])){
 			$target = $sender->getServer()->getPlayer($args[1]);
 			if($target === null){
@@ -67,7 +66,9 @@ class GamemodeCommand extends VanillaCommand{
 
 				return true;
 			}
-		}elseif(!($sender instanceof Player)){
+		}elseif($sender instanceof Player){
+			$target = $sender;
+		}else{
 			throw new InvalidCommandSyntaxException();
 		}
 

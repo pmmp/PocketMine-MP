@@ -236,7 +236,7 @@ class World implements ChunkManager{
 	/** @var WorldTimings */
 	public $timings;
 
-	/** @var int */
+	/** @var float */
 	public $tickRateTime = 0;
 
 	/** @var bool */

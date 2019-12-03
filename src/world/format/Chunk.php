@@ -546,7 +546,7 @@ class Chunk{
 	 * @param World $world
 	 */
 	public function initChunk(World $world) : void{
-		if($this->NBTentities !== null){
+		if(!empty($this->NBTentities)){
 			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
 			$world->timings->syncChunkLoadEntitiesTimer->startTiming();
 			foreach($this->NBTentities as $nbt){
@@ -564,10 +564,10 @@ class Chunk{
 				}
 			}
 
-			$this->NBTentities = null;
+			$this->NBTentities = [];
 			$world->timings->syncChunkLoadEntitiesTimer->stopTiming();
 		}
-		if($this->NBTtiles !== null){
+		if(!empty($this->NBTtiles)){
 			$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
 			$world->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 			foreach($this->NBTtiles as $nbt){
@@ -581,7 +581,7 @@ class Chunk{
 				}
 			}
 
-			$this->NBTtiles = null;
+			$this->NBTtiles = [];
 			$world->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 		}
 	}

@@ -1,7 +1,10 @@
-
+includes:
+	- tests/phpstan/configs/optional-com-dotnet.neon
+	- tests/phpstan/configs/phpstan-bugs.neon
+	- tests/phpstan/configs/pthreads-bugs.neon
 
 parameters:
-	level: 1
+	level: 2
 	autoload_files:
 		- tests/phpstan/bootstrap.php
 		- src/PocketMine.php
@@ -23,23 +26,6 @@ parameters:
 			message: "#^Used constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
 			count: 1
 			path: src/network/mcpe/protocol/StartGamePacket.php
-
-		-
-			message: "#^Instantiated class COM not found\\.$#"
-			count: 1
-			path: src/network/upnp/UPnP.php
-			comment: "only available on Windows"
-
-		-
-			message: "#^Caught class com_exception not found\\.$#"
-			count: 2
-			path: src/network/upnp/UPnP.php
-			comment: "only available on Windows"
-
-		-
-			message: "#^Variable \\$GLOBALS in isset\\(\\) always exists and is not nullable\\.$#"
-			path: src/MemoryManager.php
-			comment: "this isn't defined on threads (thanks pthreads)"
 
 		-
 			message: "#^Constant pocketmine\\\\COMPOSER_AUTOLOADER_PATH not found\\.$#"
@@ -64,3 +50,9 @@ parameters:
 		-
 			message: "#^Constant pocketmine\\\\VERSION not found\\.$#"
 			path: src
+
+		-
+			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
+			count: 1
+			path: src/command/defaults/TeleportCommand.php
+			comment: "not actually possible, but high cost to fix warning"

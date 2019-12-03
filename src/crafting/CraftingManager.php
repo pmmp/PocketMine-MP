@@ -44,7 +44,7 @@ class CraftingManager{
 	/** @var FurnaceRecipe[] */
 	protected $furnaceRecipes = [];
 
-	/** @var CompressBatchPromise */
+	/** @var CompressBatchPromise|null */
 	private $craftingDataCache;
 
 	public function __construct(){
