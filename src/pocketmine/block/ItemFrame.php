@@ -63,8 +63,8 @@ class ItemFrame extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$sides = [
-			0 => Vector3::SIDE_WEST,
 			1 => Vector3::SIDE_EAST,
+			4 => Vector3::SIDE_WEST,
 			2 => Vector3::SIDE_NORTH,
 			3 => Vector3::SIDE_SOUTH
 		];
@@ -82,7 +82,7 @@ class ItemFrame extends Flowable{
 			Vector3::SIDE_NORTH => 3,
 			Vector3::SIDE_SOUTH => 2,
 			Vector3::SIDE_WEST => 1,
-			Vector3::SIDE_EAST => 0
+			Vector3::SIDE_EAST => 4
 		];
 
 		$this->meta = $faces[$face];
