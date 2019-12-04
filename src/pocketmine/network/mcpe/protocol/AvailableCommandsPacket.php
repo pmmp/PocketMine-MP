@@ -359,12 +359,9 @@ class AvailableCommandsPacket extends DataPacket{
 					$enumValueIndexes[$str] = $enumValueIndexes[$str] ?? count($enumValueIndexes); //latest index
 				}
 			}
-
+			/** @var CommandParameter[] $overload */
 			foreach($commandData->overloads as $overload){
-				/**
-				 * @var CommandParameter[] $overload
-				 * @var CommandParameter   $parameter
-				 */
+				/** @var CommandParameter $parameter */
 				foreach($overload as $parameter){
 					if($parameter->enum !== null){
 						if(!isset($enumIndexes[$parameter->enum->enumName])){
