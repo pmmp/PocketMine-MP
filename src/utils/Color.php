@@ -79,15 +79,14 @@ final class Color{
 	/**
 	 * Mixes the supplied list of colours together to produce a result colour.
 	 *
+	 * @param Color $color1
 	 * @param Color ...$colors
 	 *
 	 * @return Color
 	 */
-	public static function mix(Color ...$colors) : Color{
+	public static function mix(Color $color1, Color ...$colors) : Color{
+		$colors[] = $color1;
 		$count = count($colors);
-		if($count < 1){
-			throw new \ArgumentCountError("No colors given");
-		}
 
 		$a = $r = $g = $b = 0;
 
