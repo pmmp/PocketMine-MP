@@ -28,7 +28,7 @@ use function assert;
 
 class Position extends Vector3{
 
-	/** @var World */
+	/** @var World|null */
 	public $world = null;
 
 	/**
