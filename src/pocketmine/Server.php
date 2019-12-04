@@ -1798,7 +1798,6 @@ class Server{
 			return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
 		}
 
-		/** @var CommandSender[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendMessage($message);
 		}
@@ -1823,7 +1822,6 @@ class Server{
 			}
 		}
 
-		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendTip($tip);
 		}
@@ -1849,7 +1847,6 @@ class Server{
 			}
 		}
 
-		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendPopup($popup);
 		}
@@ -1879,7 +1876,6 @@ class Server{
 			}
 		}
 
-		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->addTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
 		}
