@@ -1,11 +1,12 @@
 includes:
+	- tests/phpstan/configs/gc-hacks.neon
 	- tests/phpstan/configs/optional-com-dotnet.neon
 	- tests/phpstan/configs/optional-leveldb.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
 	- tests/phpstan/configs/pthreads-bugs.neon
 
 parameters:
-	level: 2
+	level: 3
 	autoload_files:
 		- tests/phpstan/bootstrap.php
 		- src/pocketmine/PocketMine.php
@@ -23,6 +24,51 @@ parameters:
 			count: 1
 			path: src/pocketmine/command/defaults/TeleportCommand.php
 #			comment: "not actually possible, but high cost to fix warning"
+
+		-
+			message: "#^Array \\(array\\<string\\>\\) does not accept pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 2
+			path: src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Invalid array key type pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\EntityDeathEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\Living but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: src/pocketmine/event/entity/EntityDeathEvent.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\EntityShootBowEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\Living but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: src/pocketmine/event/entity/EntityShootBowEvent.php
+
+		-
+			message: "#^Property pocketmine\\\\event\\\\entity\\\\EntityShootBowEvent\\:\\:\\$projectile \\(pocketmine\\\\entity\\\\projectile\\\\Projectile\\) does not accept pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: src/pocketmine/event/entity/EntityShootBowEvent.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\ItemDespawnEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\object\\\\ItemEntity but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: src/pocketmine/event/entity/ItemDespawnEvent.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\ItemSpawnEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\object\\\\ItemEntity but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: src/pocketmine/event/entity/ItemSpawnEvent.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\ProjectileHitEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\projectile\\\\Projectile but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: src/pocketmine/event/entity/ProjectileHitEvent.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\ProjectileLaunchEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\projectile\\\\Projectile but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: src/pocketmine/event/entity/ProjectileLaunchEvent.php
 
 		-
 			message: "#^Constructor of class pocketmine\\\\level\\\\generator\\\\hell\\\\Nether has an unused parameter \\$options\\.$#"
