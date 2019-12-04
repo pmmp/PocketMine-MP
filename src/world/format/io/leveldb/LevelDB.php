@@ -196,6 +196,12 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}
 	}
 
+	/**
+	 * @param string $index
+	 * @param int    $chunkVersion
+	 *
+	 * @return PalettedBlockArray[]
+	 */
 	protected function deserializeLegacyExtraData(string $index, int $chunkVersion) : array{
 		if(($extraRawData = $this->db->get($index . self::TAG_BLOCK_EXTRA_DATA)) === false or $extraRawData === ""){
 			return [];
@@ -263,7 +269,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case 4: //MCPE 1.1
 				//TODO: check beds
 			case 3: //MCPE 1.0
-				/** @var PalettedBlockArray[] $convertedLegacyExtraData */
 				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
 
 				for($y = 0; $y < Chunk::MAX_SUBCHUNKS; ++$y){
@@ -346,7 +351,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case 2: // < MCPE 1.0
 			case 1:
 			case 0: //MCPE 0.9.0.1 beta (first version)
-				/** @var PalettedBlockArray[] $extraDataLayers */
 				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
 
 				$legacyTerrain = $this->db->get($index . self::TAG_LEGACY_TERRAIN);
