@@ -258,35 +258,6 @@ class NetworkInventoryAction{
 						}
 
 						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
-					case self::SOURCE_TYPE_TRADING_INPUT_1:
-					case self::SOURCE_TYPE_TRADING_INPUT_2:
-						if($window instanceof TradeInventory){
-							return new SlotChangeAction($window, $this->windowId === self::SOURCE_TYPE_TRADING_INPUT_1 ? 0 : 1, $this->oldItem, $this->newItem);
-						}else{
-							if($window === null){
-								throw new \InvalidStateException("Window not found");
-							}else{
-								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . TradeInventory::class . " , given " . get_class($window));
-							}
-						}
-					case self::SOURCE_TYPE_TRADING_USE_INPUTS:
-						return new SlotChangeAction($window, $window->first($this->newItem, true), $this->oldItem, $this->newItem);
-					case self::SOURCE_TYPE_TRADING_OUTPUT:
-						if($window instanceof TradeInventory){
-							if($window->onResult($this->oldItem)){
-								$window->setItem(2, $this->oldItem, true);
-
-								return new SlotChangeAction($window, 2, $this->oldItem, $this->newItem);
-							}else{
-								return null;
-							}
-						}else{
-							if($window === null){
-								throw new \InvalidStateException("Window not found");
-							}else{
-								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . TradeInventory::class . " , given " . get_class($window));
-							}
-						}
 				}
 
 				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
