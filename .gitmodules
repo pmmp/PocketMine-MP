@@ -9,7 +9,7 @@
 	url = https://github.com/pmmp/PocketMine-DevTools.git
 [submodule "src/pocketmine/resources/vanilla"]
 	path = src/pocketmine/resources/vanilla
-	url = https://github.com/pmmp/BedrockData.git
+	url = https://github.com/drew-mcbe/BedrockData.git
 [submodule "build/php"]
 	path = build/php
 	url = https://github.com/pmmp/php-build-scripts.git
