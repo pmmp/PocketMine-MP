@@ -181,7 +181,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 				continue;
 			}
 			if(is_array($data)){ //TODO: error out if it isn't
-				$newCmd = new PluginCommand($key, $this);
+				$newCmd = new PluginCommand($key, $this, $this);
 				if(isset($data["description"])){
 					$newCmd->setDescription($data["description"]);
 				}
