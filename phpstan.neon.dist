@@ -18,9 +18,9 @@ parameters:
 			path: src/PocketMine.php
 
 		-
-			message: "#^pocketmine\\\\inventory\\\\DoubleChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\inventory\\\\ChestInventory\\.$#"
+			message: "#^Cannot instantiate interface pocketmine\\\\level\\\\format\\\\io\\\\LevelProvider\\.$#"
 			count: 1
-			path: src/inventory/DoubleChestInventory.php
+			path: src/pocketmine/Server.php
 
 		-
 			message: "#^Used constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
@@ -55,4 +55,4 @@ parameters:
 			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
 			count: 1
 			path: src/command/defaults/TeleportCommand.php
-			comment: "not actually possible, but high cost to fix warning"
+#			comment: "not actually possible, but high cost to fix warning"

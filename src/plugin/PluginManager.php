@@ -510,7 +510,7 @@ class PluginManager{
 					$eventClass = $parameters[0]->getClass();
 				}catch(\ReflectionException $e){ //class doesn't exist
 					if(isset($tags["softDepend"]) && !isset($this->plugins[$tags["softDepend"]])){
-						$this->server->getLogger()->debug("Not registering @softDepend listener " . Utils::getNiceClosureName($handlerClosure) . "(" . $parameters[0]->getType()->getName() . ") because plugin \"" . $tags["softDepend"] . "\" not found");
+						$this->server->getLogger()->debug("Not registering @softDepend listener " . Utils::getNiceClosureName($handlerClosure) . "() because plugin \"" . $tags["softDepend"] . "\" not found");
 						continue;
 					}
 

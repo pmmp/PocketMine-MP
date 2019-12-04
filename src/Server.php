@@ -1323,7 +1323,6 @@ class Server{
 			return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
 		}
 
-		/** @var CommandSender[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendMessage($message);
 		}
@@ -1351,7 +1350,6 @@ class Server{
 	public function broadcastTip(string $tip, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
 
-		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendTip($tip);
 		}
@@ -1368,7 +1366,6 @@ class Server{
 	public function broadcastPopup(string $popup, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
 
-		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendPopup($popup);
 		}
@@ -1389,7 +1386,6 @@ class Server{
 	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
 
-		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
 		}

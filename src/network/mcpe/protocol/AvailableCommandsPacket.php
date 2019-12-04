@@ -369,12 +369,9 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 			if($commandData->aliases !== null){
 				$addEnumFn($commandData->aliases);
 			}
-
+			/** @var CommandParameter[] $overload */
 			foreach($commandData->overloads as $overload){
-				/**
-				 * @var CommandParameter[] $overload
-				 * @var CommandParameter   $parameter
-				 */
+				/** @var CommandParameter $parameter */
 				foreach($overload as $parameter){
 					if($parameter->enum !== null){
 						$addEnumFn($parameter->enum);
