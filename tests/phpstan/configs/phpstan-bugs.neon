@@ -2,9 +2,17 @@ parameters:
 	ignoreErrors:
 		-
 			message: "#^PHPDoc tag @param has invalid value \\(.+\\)\\: Unexpected token \"&\", expected variable at offset \\d+$#"
-			path: ../../../src/pocketmine
+			path: ../../../src
 
 		-
 			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
-			path: ../../../src/pocketmine
+			path: ../../../src
+
+		-
+			message: "#^Cannot access an offset on Threaded\\.$#"
+			path: ../../../src
+
+		-
+			message: "#^Cannot assign new offset to Threaded\\.$#"
+			path: ../../../src
 
