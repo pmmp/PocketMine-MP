@@ -38,6 +38,7 @@ use pocketmine\level\particle\HugeExplodeSeedParticle;
 use pocketmine\level\utils\SubChunkIteratorManager;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Container;
@@ -259,7 +260,7 @@ class Explosion{
 			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
 		}
 
-		$this->level->addParticle(new HugeExplodeSeedParticle($source));
+		$this->level->broadcastLevelEvent($source, LevelEventPacket::EVENT_PARTICLE_EXPLOSION, intval($this->size));
 		$this->level->broadcastLevelSoundEvent($source, LevelSoundEventPacket::SOUND_EXPLODE);
 
 		return true;
