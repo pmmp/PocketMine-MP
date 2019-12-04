@@ -47,7 +47,7 @@ use function unserialize;
  */
 abstract class AsyncTask extends \Threaded{
 	/**
-	 * @var \ArrayObject|mixed[] object hash => mixed data
+	 * @var \ArrayObject|mixed[]|null object hash => mixed data
 	 *
 	 * Used to store objects which are only needed on one thread and should not be serialized.
 	 */
