@@ -64,7 +64,7 @@ final class EntityFactory{
 	private static $entityCount = 1;
 	/** @var string[] base class => currently used class for construction */
 	private static $classMapping = [];
-	/** @var Entity[] */
+	/** @var string[] */
 	private static $knownEntities = [];
 	/** @var string[][] */
 	private static $saveNames = [];
