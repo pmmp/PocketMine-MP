@@ -18,6 +18,12 @@ parameters:
 			path: src/PocketMine.php
 
 		-
+			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
+			count: 1
+			path: src/command/defaults/TeleportCommand.php
+#			comment: "not actually possible, but high cost to fix warning"
+
+		-
 			message: "#^Used constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
 			count: 1
 			path: src/network/mcpe/protocol/StartGamePacket.php
@@ -61,8 +67,3 @@ parameters:
 			message: "#^Constant pocketmine\\\\VERSION not found\\.$#"
 			path: src
 
-		-
-			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
-			count: 1
-			path: src/command/defaults/TeleportCommand.php
-#			comment: "not actually possible, but high cost to fix warning"

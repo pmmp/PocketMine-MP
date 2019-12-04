@@ -8,3 +8,11 @@ parameters:
 			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
 			path: ../../../src
 
+		-
+			message: "#^Cannot access an offset on Threaded\\.$#"
+			path: ../../../src
+
+		-
+			message: "#^Cannot assign new offset to Threaded\\.$#"
+			path: ../../../src
+
