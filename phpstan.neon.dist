@@ -19,6 +19,12 @@ parameters:
 			path: src/pocketmine/Server.php
 
 		-
+			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
+			count: 1
+			path: src/pocketmine/command/defaults/TeleportCommand.php
+#			comment: "not actually possible, but high cost to fix warning"
+
+		-
 			message: "#^Constructor of class pocketmine\\\\level\\\\generator\\\\hell\\\\Nether has an unused parameter \\$options\\.$#"
 			count: 1
 			path: src/pocketmine/level/generator/hell/Nether.php
@@ -70,8 +76,3 @@ parameters:
 			message: "#^Constant pocketmine\\\\VERSION not found\\.$#"
 			path: src/pocketmine
 
-		-
-			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
-			count: 1
-			path: src/pocketmine/command/defaults/TeleportCommand.php
-#			comment: "not actually possible, but high cost to fix warning"
