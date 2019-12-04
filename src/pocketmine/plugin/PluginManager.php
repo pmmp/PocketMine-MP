@@ -273,10 +273,10 @@ class PluginManager{
 						continue;
 					}
 
-					if(!empty($this->compatibleOperatingSystems) and !in_array(Utils::getOS(), $this->compatibleOperatingSystems)) {
+					if(!in_array(Utils::getOS(), $description->getCompatibleOperatingSystems())) {
 						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 							$name,
-							$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleOS", [implode(", ", $this->compatibleOperatingSystems)])
+							$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleOS", [implode(", ", $description->getCompatibleOperatingSystems())])
 						]));
 						continue;
 					}
