@@ -47,7 +47,7 @@ class Banner extends Spawnable{
 	private $baseColor;
 
 	/** @var BannerPattern[]|Deque */
-	private $patterns = [];
+	private $patterns;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->baseColor = DyeColor::BLACK();
