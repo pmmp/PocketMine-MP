@@ -316,7 +316,7 @@ class Item implements \JsonSerializable{
 		$this->canPlaceOn = new Set();
 		$canPlaceOn = $tag->getListTag("CanPlaceOn");
 		if($canPlaceOn !== null){
-			/** @var StringTag $tag */
+			/** @var StringTag $entry */
 			foreach($canPlaceOn as $entry){
 				$this->canPlaceOn->add($entry->getValue());
 			}
