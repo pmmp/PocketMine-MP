@@ -71,7 +71,9 @@ class SubChunkIteratorManager{
 				return false;
 			}
 
-			$this->currentSubChunk = $this->currentChunk->getSubChunk($y >> 4);
+			$newSubChunk = $this->currentChunk->getSubChunk($y >> 4);
+			assert($newSubChunk instanceof SubChunk, "chunk inside valid bounds should always be a SubChunk instance");
+			$this->currentSubChunk = $newSubChunk;
 			if($this->onSubChunkChangeFunc !== null){
 				($this->onSubChunkChangeFunc)();
 			}
