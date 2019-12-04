@@ -76,7 +76,7 @@ class Leaves extends Transparent{
 		$visited[$index] = true;
 
 		$block = $this->pos->getWorld()->getBlock($pos);
-		if($pos instanceof Wood){ //type doesn't matter
+		if($block instanceof Wood){ //type doesn't matter
 			return true;
 		}
 
