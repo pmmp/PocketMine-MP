@@ -18,14 +18,24 @@ parameters:
 			path: src/PocketMine.php
 
 		-
-			message: "#^Cannot instantiate interface pocketmine\\\\level\\\\format\\\\io\\\\LevelProvider\\.$#"
-			count: 1
-			path: src/pocketmine/Server.php
-
-		-
 			message: "#^Used constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
 			count: 1
 			path: src/network/mcpe/protocol/StartGamePacket.php
+
+		-
+			message: "#^Cannot instantiate interface pocketmine\\\\world\\\\format\\\\io\\\\WorldProvider\\.$#"
+			count: 1
+			path: src/world/WorldManager.php
+
+		-
+			message: "#^Cannot instantiate interface pocketmine\\\\world\\\\format\\\\io\\\\WritableWorldProvider\\.$#"
+			count: 1
+			path: src/world/WorldManager.php
+
+		-
+			message: "#^Cannot instantiate interface pocketmine\\\\world\\\\format\\\\io\\\\WritableWorldProvider\\.$#"
+			count: 2
+			path: src/world/format/io/FormatConverter.php
 
 		-
 			message: "#^Constant pocketmine\\\\COMPOSER_AUTOLOADER_PATH not found\\.$#"
