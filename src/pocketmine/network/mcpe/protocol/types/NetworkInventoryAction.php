@@ -244,7 +244,7 @@ class NetworkInventoryAction{
 					case self::SOURCE_TYPE_FAKE_INVENTORY_INPUT:
 					case self::SOURCE_TYPE_FAKE_INVENTORY_MATERIAL:
 						if($window instanceof FakeResultInventory){
-							if($window->isSlotEmpty($window->getResultSlot())){
+							if(!$window->isSlotEmpty($window->getResultSlot())){
 								return null;
 							}
 						}
