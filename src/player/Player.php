@@ -151,7 +151,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
 	}
 
-	/** @var NetworkSession */
+	/** @var NetworkSession|null */
 	protected $networkSession;
 
 	/** @var bool */
