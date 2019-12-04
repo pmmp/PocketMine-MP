@@ -8,7 +8,3 @@ parameters:
 			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
 			path: ../../../src
 
-		-
-			message: "#^Call to method count\\(\\) on an unknown class _HumbugBoxbfaeed0746fa\\\\Ds\\\\Deque\\.$#"
-			count: 1
-			path: src/block/Banner.php
