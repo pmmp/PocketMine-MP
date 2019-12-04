@@ -46,33 +46,33 @@ parameters:
 
 		-
 			message: "#^Constant pocketmine\\\\COMPOSER_AUTOLOADER_PATH not found\\.$#"
-			path: src/pocketmine
+			path: src
 
 		-
 			message: "#^Constant pocketmine\\\\DATA not found\\.$#"
-			path: src/pocketmine
+			path: src
 
 		-
 			message: "#^Constant pocketmine\\\\GIT_COMMIT not found\\.$#"
-			path: src/pocketmine
+			path: src
 
 		-
 			message: "#^Constant pocketmine\\\\PATH not found\\.$#"
-			path: src/pocketmine
+			path: src
 
 		-
 			message: "#^Constant pocketmine\\\\PLUGIN_PATH not found\\.$#"
-			path: src/pocketmine
+			path: src
 
 		-
 			message: "#^Constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
-			path: src/pocketmine
+			path: src
 
 		-
 			message: "#^Constant pocketmine\\\\START_TIME not found\\.$#"
-			path: src/pocketmine
+			path: src
 
 		-
 			message: "#^Constant pocketmine\\\\VERSION not found\\.$#"
-			path: src/pocketmine
+			path: src
 
