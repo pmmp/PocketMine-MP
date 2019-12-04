@@ -23,12 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\inventory\AnvilInventory;
-use pocketmine\inventory\BeaconInventory;
 use pocketmine\inventory\EnchantInventory;
 use pocketmine\inventory\FakeInventory;
 use pocketmine\inventory\FakeResultInventory;
-use pocketmine\inventory\TradeInventory;
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\EnchantAction;
