@@ -27,4 +27,4 @@ define('pocketmine\_GLOBAL_CONSTANTS_INCLUDED', true);
 
 const INT32_MIN = -0x80000000;
 const INT32_MAX = 0x7fffffff;
-define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
+const INT32_MASK = 0xffffffff;
