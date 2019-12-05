@@ -19,15 +19,29 @@ parameters:
 		-
 			message: "#^Offset string does not exist on array\\(\\)\\.$#"
 			count: 3
-			path: ../../../src/pocketmine/MemoryManager.php
+			path: ../../../src/MemoryManager.php
 
 		-
 			message: "#^Offset \\(int\\|string\\) does not exist on array\\(\\)\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/MemoryManager.php
+			path: ../../../src/MemoryManager.php
+
+		-
+			message: "#^Cannot access an offset on Ds\\\\Deque&iterable\\<pocketmine\\\\block\\\\utils\\\\BannerPattern\\>\\.$#"
+			count: 1
+			path: ../../../src/block/tile/Banner.php
+
+		-
+			message: "#^Cannot access offset int on Ds\\\\Deque&iterable\\<pocketmine\\\\item\\\\WritableBookPage\\>\\.$#"
+			count: 2
+			path: ../../../src/item/WritableBookBase.php
 
 		-
 			message: "#^Array \\(array\\) does not accept key int\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/plugin/PluginDescription.php
+			path: ../../../src/plugin/PluginDescription.php
 
+		-
+			message: "#^Array \\(array\\) does not accept key int\\.$#"
+			count: 1
+			path: ../../../src/world/format/SubChunk.php
