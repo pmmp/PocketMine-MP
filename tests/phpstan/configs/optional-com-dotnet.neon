@@ -3,10 +3,10 @@ parameters:
 		-
 			message: "#^Instantiated class COM not found\\.$#"
 			count: 2
-			path: src/pocketmine/network/upnp/UPnP.php
+			path: ../../../src/pocketmine/network/upnp/UPnP.php
 
 		-
 			message: "#^Access to property \\$StaticPortMappingCollection on an unknown class COM\\.$#"
 			count: 4
-			path: src/pocketmine/network/upnp/UPnP.php
+			path: ../../../src/pocketmine/network/upnp/UPnP.php
 
