@@ -4117,6 +4117,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->uiInventory;
 	}
 
+	public function getUIInventory() : PlayerUIInventory{
+		return $this->uiInventory;
+	}
+
 	public function getCraftingGrid() : CraftingGrid{
 		return $this->craftingGrid;
 	}
