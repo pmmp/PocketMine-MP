@@ -24,10 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\types\UIInventoryOffsets;
 use pocketmine\Player;
 
 class PlayerUIInventory extends BaseInventory{
-
 	/** @var Player */
 	protected $holder;
 
@@ -42,7 +42,7 @@ class PlayerUIInventory extends BaseInventory{
 
 	public function setItem(int $index, Item $item, bool $send = true) : bool{
 		if(parent::setItem($index, $item, $send)){
-			if($index !== 0 and $index !== 50){
+			if($index !== UIInventoryOffsets::OFFSET_CURSOR and $index !== UIInventoryOffsets::OFFSET_RESULT){
 				$window = $this->holder->findWindow(FakeInventory::class) ?? $this->holder->getCraftingGrid();
 				if($window instanceof FakeInventory){
 					if($window->slotExists($slot = $index - $window->getUIOffset())){

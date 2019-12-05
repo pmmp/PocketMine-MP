@@ -38,6 +38,7 @@ use pocketmine\item\ItemIds;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\UIInventoryOffsets;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 
@@ -63,7 +64,7 @@ class AnvilInventory extends ContainerInventory implements FakeInventory, FakeRe
 	}
 
 	public function getUIOffset() : int{
-		return 1;
+		return UIInventoryOffsets::OFFSET_ANVIL;
 	}
 
 	public function getDefaultSize() : int{
