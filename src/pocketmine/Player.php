@@ -300,7 +300,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var bool[] */
 	protected $permanentWindows = [];
 	/** @var PlayerUIInventory */
-	protected $cursorInventory;
+	protected $uiInventory;
 	/** @var PlayerOffHandInventory */
 	protected $offHandInventory;
 	/** @var CraftingGrid */
@@ -3813,7 +3813,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->removeAllWindows(true);
 			$this->windows = [];
 			$this->windowIndex = [];
-			$this->cursorInventory = null;
+			$this->uiInventory = null;
 			$this->craftingGrid = null;
 
 			if($this->constructed){
@@ -3936,8 +3936,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if($this->armorInventory !== null){
 				$this->armorInventory->clearAll();
 			}
-			if($this->cursorInventory !== null){
-				$this->cursorInventory->clearAll();
+			if($this->uiInventory !== null){
+				$this->uiInventory->clearAll();
 			}
             if($this->offHandInventory !== null){
                 $this->offHandInventory->clearAll();
@@ -4101,16 +4101,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->addWindow($this->getOffHandInventory(), ContainerIds::OFFHAND, true);
 		$this->addWindow($this->getArmorInventory(), ContainerIds::ARMOR, true);
 
-		$this->cursorInventory = new PlayerUIInventory($this);
-		$this->addWindow($this->cursorInventory, ContainerIds::UI, true);
+		$this->uiInventory = new PlayerUIInventory($this);
+		$this->addWindow($this->uiInventory, ContainerIds::UI, true);
 
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
 
 		//TODO: more windows
 	}
 
+	/**
+	 * @deprecated
+	 * @return PlayerUIInventory
+	 */
 	public function getCursorInventory() : PlayerUIInventory{
-		return $this->cursorInventory;
+		return $this->uiInventory;
 	}
 
 	public function getCraftingGrid() : CraftingGrid{
@@ -4135,15 +4139,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->craftingGrid->clearAll();
 		}
 
-		if(!$this->cursorInventory->isSlotEmpty(0)){ // cursor
-			if($this->inventory->canAddItem($item = $this->cursorInventory->getItem(0))){
-				$this->inventory->addItem($this->cursorInventory->getItem(0));
+		if(!$this->uiInventory->isSlotEmpty(0)){ // cursor
+			if($this->inventory->canAddItem($item = $this->uiInventory->getItem(0))){
+				$this->inventory->addItem($this->uiInventory->getItem(0));
 			}else{
 				$this->dropItem($item);
 			}
 		}
 
-		$this->cursorInventory->clearAll();
+		$this->uiInventory->clearAll();
 
 		if($this->craftingGrid->getGridWidth() > CraftingGrid::SIZE_SMALL){
 			$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
