@@ -4146,7 +4146,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		if(!$this->uiInventory->isSlotEmpty(UIInventoryOffsets::OFFSET_CURSOR)){ // cursor
 			if($this->inventory->canAddItem($item = $this->uiInventory->getItem(UIInventoryOffsets::OFFSET_CURSOR))){
-				$this->inventory->addItem($this->uiInventory->getItem(0));
+				$this->inventory->addItem($this->uiInventory->getItem(UIInventoryOffsets::OFFSET_CURSOR));
 			}else{
 				$this->dropItem($item);
 			}
