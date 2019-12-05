@@ -4135,8 +4135,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->craftingGrid->clearAll();
 		}
 
-		if(!$this->cursorInventory->isSlotEmpty(0)){
-			$this->inventory->addItem($this->cursorInventory->getItem(0));
+		if(!$this->cursorInventory->isSlotEmpty(0)){ // cursor
+			if($this->inventory->canAddItem($item = $this->cursorInventory->getItem(0))){
+				$this->inventory->addItem($this->cursorInventory->getItem(0));
+			}else{
+				$this->dropItem($item);
+			}
 		}
 
 		$this->cursorInventory->clearAll();
