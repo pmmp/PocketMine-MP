@@ -4125,19 +4125,21 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function doCloseInventory() : void{
-		/** @var Inventory[] $inventories */
-		$inventories = [$this->craftingGrid, $this->cursorInventory];
-		foreach($inventories as $inventory){
-			$contents = $inventory->getContents();
-			if(count($contents) > 0){
-				$drops = $this->inventory->addItem(...$contents);
-				foreach($drops as $drop){
-					$this->dropItem($drop);
-				}
-
-				$inventory->clearAll();
+		$contents = $this->craftingGrid->getContents();
+		if(count($contents) > 0){
+			$drops = $this->inventory->addItem(...$contents);
+			foreach($drops as $drop){
+				$this->dropItem($drop);
 			}
+
+			$this->craftingGrid->clearAll();
 		}
+
+		if(!$this->cursorInventory->isSlotEmpty(0)){
+			$this->inventory->addItem($this->cursorInventory->getItem(0));
+		}
+
+		$this->cursorInventory->clearAll();
 
 		if($this->craftingGrid->getGridWidth() > CraftingGrid::SIZE_SMALL){
 			$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
