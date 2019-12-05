@@ -163,6 +163,7 @@ use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinCape;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
+use pocketmine\network\mcpe\protocol\types\UIInventoryOffsets;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\VerifyLoginTask;
@@ -4143,8 +4144,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->craftingGrid->clearAll();
 		}
 
-		if(!$this->uiInventory->isSlotEmpty(0)){ // cursor
-			if($this->inventory->canAddItem($item = $this->uiInventory->getItem(0))){
+		if(!$this->uiInventory->isSlotEmpty(UIInventoryOffsets::OFFSET_CURSOR)){ // cursor
+			if($this->inventory->canAddItem($item = $this->uiInventory->getItem(UIInventoryOffsets::OFFSET_CURSOR))){
 				$this->inventory->addItem($this->uiInventory->getItem(0));
 			}else{
 				$this->dropItem($item);
