@@ -16,3 +16,18 @@ parameters:
 			message: "#^Cannot assign new offset to Threaded\\.$#"
 			path: ../../../src
 
+		-
+			message: "#^Offset string does not exist on array\\(\\)\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/MemoryManager.php
+
+		-
+			message: "#^Offset \\(int\\|string\\) does not exist on array\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/MemoryManager.php
+
+		-
+			message: "#^Array \\(array\\) does not accept key int\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
