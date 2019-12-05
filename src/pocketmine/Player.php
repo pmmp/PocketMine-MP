@@ -2828,7 +2828,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->stopSleep();
 				break;
 			case PlayerActionPacket::ACTION_RESPAWN:
-				if(!$this->spawned or $this->isAlive() or !$this->isOnline()){
+				if($this->isAlive()){
 					break;
 				}
 
