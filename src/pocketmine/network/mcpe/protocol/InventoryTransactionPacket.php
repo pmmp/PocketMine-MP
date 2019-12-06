@@ -80,7 +80,8 @@ class InventoryTransactionPacket extends DataPacket{
 			if(
 				$action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER and
 				$action->windowId === ContainerIds::UI and
-				$action->inventorySlot === 50
+				$action->inventorySlot === 50 and
+				!$action->oldItem->equalsExact($action->newItem)
 			){
 				$this->isCraftingPart = true;
 				if(!$action->oldItem->isNull() and $action->newItem->isNull()){
