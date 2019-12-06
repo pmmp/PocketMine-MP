@@ -284,7 +284,7 @@ class StartGamePacket extends DataPacket{
 		if($this->blockTable === null){
 			if(self::$blockTableCache === null){
 				//this is a really nasty hack, but it'll do for now
-				self::$blockTableCache = (new NetworkLittleEndianNBTStream())->write(RuntimeBlockMapping::generateBlockTable());
+				self::$blockTableCache = (new NetworkLittleEndianNBTStream())->write(new ListTag("", RuntimeBlockMapping::getBedrockKnownStates()));
 			}
 			$this->put(self::$blockTableCache);
 		}else{
