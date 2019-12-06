@@ -33,6 +33,8 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\PotionContainerChangeRecipe;
+use pocketmine\network\mcpe\protocol\types\PotionTypeRecipe;
 #ifndef COMPILE
 use pocketmine\utils\Binary;
 #endif
@@ -53,6 +55,10 @@ class CraftingDataPacket extends DataPacket{
 
 	/** @var object[] */
 	public $entries = [];
+	/** @var PotionTypeRecipe[] */
+	public $potionTypeRecipes = [];
+	/** @var PotionContainerChangeRecipe[] */
+	public $potionContainerRecipes = [];
 	/** @var bool */
 	public $cleanRecipes = false;
 
@@ -139,6 +145,18 @@ class CraftingDataPacket extends DataPacket{
 					throw new \UnexpectedValueException("Unhandled recipe type $recipeType!"); //do not continue attempting to decode
 			}
 			$this->decodedEntries[] = $entry;
+		}
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$input = $this->getVarInt();
+			$ingredient = $this->getVarInt();
+			$output = $this->getVarInt();
+			$this->potionTypeRecipes[] = new PotionTypeRecipe($input, $ingredient, $output);
+		}
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$input = $this->getVarInt();
+			$ingredient = $this->getVarInt();
+			$output = $this->getVarInt();
+			$this->potionContainerRecipes[] = new PotionContainerChangeRecipe($input, $ingredient, $output);
 		}
 		$this->cleanRecipes = $this->getBool();
 	}
@@ -239,6 +257,18 @@ class CraftingDataPacket extends DataPacket{
 			}
 
 			$writer->reset();
+		}
+		$this->putUnsignedVarInt(count($this->potionTypeRecipes));
+		foreach($this->potionTypeRecipes as $recipe){
+			$this->putVarInt($recipe->getInputPotionType());
+			$this->putVarInt($recipe->getIngredientItemId());
+			$this->putVarInt($recipe->getOutputPotionType());
+		}
+		$this->putUnsignedVarInt(count($this->potionContainerRecipes));
+		foreach($this->potionContainerRecipes as $recipe){
+			$this->putVarInt($recipe->getInputItemId());
+			$this->putVarInt($recipe->getIngredientItemId());
+			$this->putVarInt($recipe->getOutputItemId());
 		}
 
 		$this->putBool($this->cleanRecipes);

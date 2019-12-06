@@ -23,20 +23,45 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-class CommandParameter{
-	public const FLAG_FORCE_COLLAPSE_ENUM = 0x1;
-	public const FLAG_HAS_ENUM_CONSTRAINT = 0x2;
+class SkinImage{
 
+	/** @var int */
+	private $height;
+	/** @var int */
+	private $width;
 	/** @var string */
-	public $paramName;
-	/** @var int */
-	public $paramType;
-	/** @var bool */
-	public $isOptional;
-	/** @var int */
-	public $flags = 0; //shows enum name if 1, always zero except for in /gamerule command
-	/** @var CommandEnum|null */
-	public $enum;
-	/** @var string|null */
-	public $postfix;
+	private $data;
+
+	public function __construct(int $height, int $width, string $data){
+		$this->height = $height;
+		$this->width = $width;
+		$this->data = $data;
+	}
+
+	public static function fromLegacy(string $data) : SkinImage{
+		switch(strlen($data)){
+			case 64 * 32 * 4:
+				return new self(64, 32, $data);
+			case 64 * 64 * 4:
+				return new self(64, 64, $data);
+			case 128 * 64 * 4:
+				return new self(128, 64, $data);
+			case 128 * 128 * 4:
+				return new self(128, 128, $data);
+		}
+
+		throw new \InvalidArgumentException("Unknown size");
+	}
+
+	public function getHeight() : int{
+		return $this->height;
+	}
+
+	public function getWidth() : int{
+		return $this->width;
+	}
+
+	public function getData() : string{
+		return $this->data;
+	}
 }

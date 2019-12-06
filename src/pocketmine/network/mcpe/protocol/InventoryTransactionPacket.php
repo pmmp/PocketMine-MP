@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
 use function count;
 
@@ -74,7 +75,26 @@ class InventoryTransactionPacket extends DataPacket{
 		$this->transactionType = $this->getUnsignedVarInt();
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$this->actions[] = (new NetworkInventoryAction())->read($this);
+			$this->actions[] = $action = (new NetworkInventoryAction())->read($this);
+
+			if(
+				$action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER and
+				$action->windowId === ContainerIds::UI and
+				$action->inventorySlot === 50 and
+				!$action->oldItem->equalsExact($action->newItem)
+			){
+				$this->isCraftingPart = true;
+				if(!$action->oldItem->isNull() and $action->newItem->isNull()){
+					$this->isFinalCraftingPart = true;
+				}
+			}elseif(
+				$action->sourceType === NetworkInventoryAction::SOURCE_TODO and (
+					$action->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
+					$action->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
+				)
+			){
+				$this->isCraftingPart = true;
+			}
 		}
 
 		$this->trData = new \stdClass();
