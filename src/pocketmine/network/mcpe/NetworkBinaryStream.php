@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Skin;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -37,6 +38,9 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\network\mcpe\protocol\types\SkinData;
+use pocketmine\network\mcpe\protocol\types\SkinImage;
+use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
@@ -72,6 +76,66 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putLInt($uuid->getPart(0));
 		$this->putLInt($uuid->getPart(3));
 		$this->putLInt($uuid->getPart(2));
+	}
+
+	public function getSkin() : SkinData{
+		$skinId = $this->getString();
+		$skinResourcePatch = $this->getString();
+		$skinData = $this->getSkinImage();
+		$animationCount = $this->getLInt();
+		$animations = [];
+		for($i = 0; $i < $animationCount; ++$i){
+			$animations[] = new SkinAnimation(
+				$skinImage = $this->getSkinImage(),
+				$animationType = $this->getLInt(),
+				$animationFrames = $this->getLFloat()
+			);
+		}
+		$capeData = $this->getSkinImage();
+		$geometryData = $this->getString();
+		$animationData = $this->getString();
+		$premium = $this->getBool();
+		$persona = $this->getBool();
+		$capeOnClassic = $this->getBool();
+		$capeId = $this->getString();
+		$fullSkinId = $this->getString();
+
+		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId);
+	}
+
+	public function putSkin(SkinData $skin){
+		$this->putString($skin->getSkinId());
+		$this->putString($skin->getResourcePatch());
+		$this->putSkinImage($skin->getSkinImage());
+		$this->putLInt(count($skin->getAnimations()));
+		foreach($skin->getAnimations() as $animation){
+			$this->putSkinImage($animation->getImage());
+			$this->putLInt($animation->getType());
+			$this->putLFloat($animation->getFrames());
+		}
+		$this->putSkinImage($skin->getCapeImage());
+		$this->putString($skin->getGeometryData());
+		$this->putString($skin->getAnimationData());
+		$this->putBool($skin->isPremium());
+		$this->putBool($skin->isPersona());
+		$this->putBool($skin->isPersonaCapeOnClassic());
+		$this->putString($skin->getCapeId());
+
+		//this has to be unique or the client will do stupid things
+		$this->putString(UUID::fromRandom()->toString()); //full skin ID
+	}
+
+	private function getSkinImage() : SkinImage{
+		$width = $this->getLInt();
+		$height = $this->getLInt();
+		$data = $this->getString();
+		return new SkinImage($height, $width, $data);
+	}
+
+	private function putSkinImage(SkinImage $image) : void{
+		$this->putLInt($image->getWidth());
+		$this->putLInt($image->getHeight());
+		$this->putString($image->getData());
 	}
 
 	public function getSlot() : Item{
