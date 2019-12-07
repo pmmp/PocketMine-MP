@@ -35,9 +35,13 @@ class LegacySkinAdapter implements SkinAdapter{
 		if($skin->getCapeData() === ""){
 			$capeData = new SkinImage(0, 0, $skin->getCapeData());
 		}
+		$geometryName = $skin->getGeometryName();
+		if($geometryName === ""){
+			$geometryName = "geometry.humanoid.custom";
+		}
 		return new SkinData(
 			$skin->getSkinId(),
-			json_encode(["geometry" => ["default" => $skin->getGeometryName()]]),
+			json_encode(["geometry" => ["default" => $geometryName]]),
 			SkinImage::fromLegacy($skin->getSkinData()), [],
 			$capeData,
 			$skin->getGeometryData()
@@ -54,7 +58,7 @@ class LegacySkinAdapter implements SkinAdapter{
 			//TODO: Kick for invalid skin
 		}
 		if($data->isPersona()){
-			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 2048), "", "geometry.humanoid.custom");
+			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 2048));
 		}elseif($data->isPersonaCapeOnClassic()){
 			$capeData = "";
 		}
