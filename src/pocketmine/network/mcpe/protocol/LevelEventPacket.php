@@ -95,8 +95,6 @@ class LevelEventPacket extends DataPacket{
 
 	public const EVENT_PARTICLE_EXPLOSION = 2025;
 
-	public const EVENT_PARTICLE_EXPLOSION = 2025;
-
 	public const EVENT_START_RAIN = 3001;
 	public const EVENT_START_THUNDER = 3002;
 	public const EVENT_STOP_RAIN = 3003;
