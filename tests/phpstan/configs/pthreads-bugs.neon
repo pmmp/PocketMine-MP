@@ -2,5 +2,5 @@ parameters:
 	ignoreErrors:
 		-
 			message: "#^Variable \\$GLOBALS in isset\\(\\) always exists and is not nullable\\.$#"
-			path: src/pocketmine/MemoryManager.php
+			path: ../../../src/pocketmine/MemoryManager.php
 

@@ -29,7 +29,7 @@ namespace pocketmine\metadata;
 use pocketmine\plugin\Plugin;
 
 abstract class MetadataStore{
-	/** @var \SplObjectStorage[] */
+	/** @var \SplObjectStorage[]|MetadataValue[][] */
 	private $metadataMap;
 
 	/**
@@ -100,7 +100,7 @@ abstract class MetadataStore{
 	 * @param Plugin $owningPlugin
 	 */
 	public function invalidateAll(Plugin $owningPlugin){
-		/** @var MetadataValue[] $values */
+		/** @var \SplObjectStorage|MetadataValue[] $values */
 		foreach($this->metadataMap as $values){
 			if(isset($values[$owningPlugin])){
 				$values[$owningPlugin]->invalidate();

@@ -211,7 +211,11 @@ class StartGamePacket extends DataPacket{
 
 		$this->enchantmentSeed = $this->getVarInt();
 
-		$this->blockTable = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
+		$blockTable = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
+		if(!($blockTable instanceof ListTag)){
+			throw new \UnexpectedValueException("Wrong block table root NBT tag type");
+		}
+		$this->blockTable = $blockTable;
 
 		$this->itemTable = [];
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
@@ -280,7 +284,7 @@ class StartGamePacket extends DataPacket{
 		if($this->blockTable === null){
 			if(self::$blockTableCache === null){
 				//this is a really nasty hack, but it'll do for now
-				self::$blockTableCache = (new NetworkLittleEndianNBTStream())->write(RuntimeBlockMapping::generateBlockTable());
+				self::$blockTableCache = (new NetworkLittleEndianNBTStream())->write(new ListTag("", RuntimeBlockMapping::getBedrockKnownStates()));
 			}
 			$this->put(self::$blockTableCache);
 		}else{

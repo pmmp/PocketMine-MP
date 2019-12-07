@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "edf6c669f61423e2909b9b9740ff7b7c",
+    "content-hash": "377d9e0ab5f1a9a4ef9b664706d26f5b",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -119,7 +119,7 @@
             ],
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
-                "source": "https://github.com/pmmp/BinaryUtils/tree/0.1",
+                "source": "https://github.com/pmmp/BinaryUtils/tree/0.1.10",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
             "time": "2019-10-21T14:40:32+00:00"
@@ -153,7 +153,7 @@
             ],
             "description": "PHP library containing math related code used in PocketMine-MP",
             "support": {
-                "source": "https://github.com/pmmp/Math/tree/0.2",
+                "source": "https://github.com/pmmp/Math/tree/0.2.3",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
             "time": "2019-10-21T14:35:10+00:00"
@@ -194,23 +194,23 @@
             ],
             "description": "PHP library for working with Named Binary Tags",
             "support": {
-                "source": "https://github.com/pmmp/NBT/tree/0.2.12",
+                "source": "https://github.com/pmmp/NBT/tree/0.2",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
             "time": "2019-12-01T08:20:26+00:00"
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.12.5-BETA",
+            "version": "0.12.6",
             "source": {
                 "type": "git",
-                "url": "https://github.com/TuranicTeam/RakLib.git",
-                "reference": "75c40e5fa8398ede1a2612530c656abe8a7d64b5"
+                "url": "https://github.com/pmmp/RakLib.git",
+                "reference": "18450e01185e6064790bda563ac672e7141c6992"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TuranicTeam/RakLib/zipball/75c40e5fa8398ede1a2612530c656abe8a7d64b5",
-                "reference": "75c40e5fa8398ede1a2612530c656abe8a7d64b5",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/18450e01185e6064790bda563ac672e7141c6992",
+                "reference": "18450e01185e6064790bda563ac672e7141c6992",
                 "shasum": ""
             },
             "require": {
@@ -235,9 +235,10 @@
             ],
             "description": "A RakNet server implementation written in PHP",
             "support": {
-                "source": "https://github.com/TuranicTeam/RakLib/tree/stable"
+                "source": "https://github.com/pmmp/RakLib/tree/0.12.6",
+                "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-12-03T16:40:47+00:00"
+            "time": "2019-12-07T13:43:34+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -308,7 +309,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "pocketmine/raklib": 10,
         "daverandom/callback-validator": 20
     },
     "prefer-stable": false,
