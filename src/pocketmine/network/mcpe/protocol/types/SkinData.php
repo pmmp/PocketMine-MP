@@ -38,7 +38,7 @@ class SkinData{
 			$capeData = new SkinImage(32, 64, $skin->getCapeData());
 		}
 
-		if($geometryName === ""){
+		if($skin->getGeometryName() === ""){
 			$geometryName = "geometry.humanoid.custom";
 		}else{
 			$geometryName = $skin->getGeometryName();
