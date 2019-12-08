@@ -160,7 +160,6 @@ use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
-use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
@@ -2034,24 +2033,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$animations = [];
 		foreach($packet->clientData["AnimatedImageData"] as $animation){
-			$animations[] = new SkinAnimation(new SkinImage($animation["ImageHeight"], $animation["ImageWidth"], $animation["Image"]), $animation["Type"], $animation["Frames"]);
+			$animations[] = new SkinAnimation(new SkinImage($animation["ImageHeight"], $animation["ImageWidth"], base64_decode($animation["Image"])), $animation["Type"], $animation["Frames"]);
 		}
 
-		$skinData = new SkinData(
+		$skin = (new SkinData(
 			$packet->clientData["SkinId"],
-			base64_decode($packet->clientData["SkinResourcePatch"] ?? ""),
+			base64_decode($packet->clientData["SkinResourcePatch"]),
 			new SkinImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"])),
 			$animations,
-			new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"] ?? "")),
-			base64_decode($packet->clientData["SkinGeometryData"] ?? ""),
-			base64_decode($packet->clientData["AnimationData"] ?? ""),
-			$packet->clientData["PremiumSkin"] ?? false,
-			$packet->clientData["PersonaSkin"] ?? false,
-			$packet->clientData["CapeOnClassicSkin"] ?? false,
-			$packet->clientData["CapeId"] ?? ""
-		);
-
-		$skin = SkinAdapterSingleton::get()->fromSkinData($skinData);
+			new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"])),
+			base64_decode($packet->clientData["SkinGeometryData"]),
+			base64_decode($packet->clientData["SkinAnimationData"]),
+			$packet->clientData["PremiumSkin"],
+			$packet->clientData["PersonaSkin"],
+			$packet->clientData["CapeOnClassicSkin"],
+			$packet->clientData["CapeId"]
+		))->asSkin();
 
 		if(!$skin->isValid()){
 			$this->close("", "disconnectionScreen.invalidSkin");

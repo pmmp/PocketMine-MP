@@ -78,7 +78,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putLInt($uuid->getPart(2));
 	}
 
-	public function getSkin() : SkinData{
+	public function getSkin() : Skin{
 		$skinId = $this->getString();
 		$skinResourcePatch = $this->getString();
 		$skinData = $this->getSkinImage();
@@ -86,9 +86,9 @@ class NetworkBinaryStream extends BinaryStream{
 		$animations = [];
 		for($i = 0; $i < $animationCount; ++$i){
 			$animations[] = new SkinAnimation(
-				$skinImage = $this->getSkinImage(),
-				$animationType = $this->getLInt(),
-				$animationFrames = $this->getLFloat()
+				$this->getSkinImage(),
+				$this->getLInt(),
+				$this->getLFloat()
 			);
 		}
 		$capeData = $this->getSkinImage();
@@ -100,10 +100,12 @@ class NetworkBinaryStream extends BinaryStream{
 		$capeId = $this->getString();
 		$fullSkinId = $this->getString();
 
-		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId);
+		return (new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId))->asSkin();
 	}
 
-	public function putSkin(SkinData $skin){
+	public function putSkin(Skin $skin){
+		$skin = $skin->asSkinData();
+
 		$this->putString($skin->getSkinId());
 		$this->putString($skin->getResourcePatch());
 		$this->putSkinImage($skin->getSkinImage());
