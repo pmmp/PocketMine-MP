@@ -63,8 +63,7 @@ class UPnP implements NetworkInterface{
 		/** @noinspection PhpUndefinedClassInspection */
 		$com = new \COM("HNetCfg.NATUPnP");
 		/** @noinspection PhpUndefinedFieldInspection */
-
-		if($com === false or !is_object($com->StaticPortMappingCollection)){
+		if(!is_object($com->StaticPortMappingCollection)){
 			throw new \RuntimeException("UPnP unsupported or network discovery is not enabled");
 		}
 		/** @noinspection PhpUndefinedFieldInspection */
