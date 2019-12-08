@@ -83,10 +83,10 @@ class Chunk{
 	/** @var string */
 	protected $biomeIds;
 
-	/** @var CompoundTag[] */
+	/** @var CompoundTag[]|null */
 	protected $NBTtiles = [];
 
-	/** @var CompoundTag[] */
+	/** @var CompoundTag[]|null */
 	protected $NBTentities = [];
 
 	/**
