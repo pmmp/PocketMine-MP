@@ -31,6 +31,7 @@ use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\Player;
 
 class Bucket extends Item implements Consumable{
@@ -94,6 +95,9 @@ class Bucket extends Item implements Consumable{
 			}else{
 				$player->getInventory()->sendContents($player);
 			}
+		}else{
+			$player->getLevel()->sendBlocks([$player], [Block::get(Block::AIR, 0, $blockReplace)], UpdateBlockPacket::FLAG_ALL_PRIORITY, false, UpdateBlockPacket::DATA_LAYER_LIQUID);
+			$player->getInventory()->sendContents($player);
 		}
 
 		return false;

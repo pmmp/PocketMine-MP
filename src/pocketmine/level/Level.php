@@ -958,12 +958,13 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @param Player[]  $target
+	 * @param Player[] $target
 	 * @param Vector3[] $blocks
-	 * @param int       $flags
-	 * @param bool      $optimizeRebuilds
+	 * @param int $flags
+	 * @param bool $optimizeRebuilds
+	 * @param int $dataLayerId
 	 */
-	public function sendBlocks(array $target, array $blocks, int $flags = UpdateBlockPacket::FLAG_NONE, bool $optimizeRebuilds = false){
+	public function sendBlocks(array $target, array $blocks, int $flags = UpdateBlockPacket::FLAG_NONE, bool $optimizeRebuilds = false, int $dataLayerId = UpdateBlockPacket::DATA_LAYER_NORMAL){
 		$packets = [];
 		if($optimizeRebuilds){
 			$chunks = [];
@@ -982,6 +983,7 @@ class Level implements ChunkManager, Metadatable{
 				$pk->x = $b->x;
 				$pk->y = $b->y;
 				$pk->z = $b->z;
+				$pk->dataLayerId = $dataLayerId;
 
 				if($b instanceof Block){
 					$pk->blockRuntimeId = $b->getRuntimeId();
@@ -1004,6 +1006,7 @@ class Level implements ChunkManager, Metadatable{
 				$pk->x = $b->x;
 				$pk->y = $b->y;
 				$pk->z = $b->z;
+				$pk->dataLayerId = $dataLayerId;
 
 				if($b instanceof Block){
 					$pk->blockRuntimeId = $b->getRuntimeId();
@@ -1647,6 +1650,7 @@ class Level implements ChunkManager, Metadatable{
 
 			if($direct){
 				$this->sendBlocks($this->getChunkPlayers($pos->x >> 4, $pos->z >> 4), [$block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
+				$this->sendBlocks($this->getChunkPlayers($pos->x >> 4, $pos->z >> 4), [Block::get(Block::AIR, 0, $block)], UpdateBlockPacket::FLAG_ALL_PRIORITY, false, UpdateBlockPacket::DATA_LAYER_LIQUID);
 				unset($this->chunkCache[$chunkHash], $this->changedBlocks[$chunkHash][$relativeBlockHash]);
 			}else{
 				if(!isset($this->changedBlocks[$chunkHash])){
@@ -1926,6 +1930,8 @@ class Level implements ChunkManager, Metadatable{
 				if(!$player->isSneaking() and $item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector)){
 					return true;
 				}
+
+				$this->sendBlocks([$player], [Block::get(Block::AIR, 0, $blockClicked)], UpdateBlockPacket::FLAG_ALL_PRIORITY, false, UpdateBlockPacket::DATA_LAYER_LIQUID);
 			}else{
 				return false;
 			}
