@@ -59,12 +59,15 @@ use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
+use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
+use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -181,6 +184,10 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleAnimate($packet);
 	}
 
+	public function handleRespawn(RespawnPacket $packet) : bool{
+		return $this->player->handleRespawn($packet);
+	}
+
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
 		return $this->player->handleContainerClose($packet);
 	}
@@ -248,7 +255,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
-		return $this->player->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
+		return $this->player->changeSkin(SkinAdapterSingleton::get()->fromSkinData($packet->skin), $packet->newSkinName, $packet->oldSkinName);
 	}
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{

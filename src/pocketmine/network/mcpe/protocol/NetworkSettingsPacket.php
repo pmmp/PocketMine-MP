@@ -21,42 +21,40 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
-use function strlen;
 
-class ResourcePackChunkDataPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CHUNK_DATA_PACKET;
+class NetworkSettingsPacket extends DataPacket/* implements ClientboundPacket*/{
+	public const NETWORK_ID = ProtocolInfo::NETWORK_SETTINGS_PACKET;
 
-	/** @var string */
-	public $packId;
+	public const COMPRESS_NOTHING = 0;
+	public const COMPRESS_EVERYTHING = 1;
+
 	/** @var int */
-	public $chunkIndex;
-	/** @var int */
-	public $progress;
-	/** @var string */
-	public $data;
+	private $compressionThreshold;
 
-	protected function decodePayload(){
-		$this->packId = $this->getString();
-		$this->chunkIndex = $this->getLInt();
-		$this->progress = $this->getLLong();
-		$this->data = $this->getString();
+	public static function create(int $compressionThreshold) : self{
+		$result = new self;
+		$result->compressionThreshold = $compressionThreshold;
+		return $result;
 	}
 
-	protected function encodePayload(){
-		$this->putString($this->packId);
-		$this->putLInt($this->chunkIndex);
-		$this->putLLong($this->progress);
-		$this->putString($this->data);
+	public function getCompressionThreshold() : int{
+		return $this->compressionThreshold;
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleResourcePackChunkData($this);
+	protected function decodePayload() : void{
+		$this->compressionThreshold = $this->getLShort();
+	}
+
+	protected function encodePayload() : void{
+		$this->putLShort($this->compressionThreshold);
+	}
+
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleNetworkSettings($this);
 	}
 }

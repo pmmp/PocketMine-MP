@@ -23,20 +23,49 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-class CommandParameter{
-	public const FLAG_FORCE_COLLAPSE_ENUM = 0x1;
-	public const FLAG_HAS_ENUM_CONSTRAINT = 0x2;
+class SkinAnimation{
 
-	/** @var string */
-	public $paramName;
+	public const TYPE_HEAD = 1;
+	public const TYPE_BODY_32 = 2;
+	public const TYPE_BODY_64 = 3;
+
+	/** @var SkinImage */
+	private $image;
 	/** @var int */
-	public $paramType;
-	/** @var bool */
-	public $isOptional;
-	/** @var int */
-	public $flags = 0; //shows enum name if 1, always zero except for in /gamerule command
-	/** @var CommandEnum|null */
-	public $enum;
-	/** @var string|null */
-	public $postfix;
+	private $type;
+	/** @var float */
+	private $frames;
+
+	public function __construct(SkinImage $image, int $type, float $frames){
+		$this->image = $image;
+		$this->type = $type;
+		$this->frames = $frames;
+	}
+
+	/**
+	 * Image of the animation.
+	 *
+	 * @return SkinImage
+	 */
+	public function getImage() : SkinImage{
+		return $this->image;
+	}
+
+	/**
+	 * The type of animation you are applying.
+	 *
+	 * @return int
+	 */
+	public function getType() : int{
+		return $this->type;
+	}
+
+	/**
+	 * The total amount of frames in an animation.
+	 *
+	 * @return float
+	 */
+	public function getFrames() : float{
+		return $this->frames;
+	}
 }
