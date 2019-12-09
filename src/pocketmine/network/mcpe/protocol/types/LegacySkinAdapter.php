@@ -47,7 +47,12 @@ class LegacySkinAdapter implements SkinAdapter{
 	}
 
 	public function fromSkinData(SkinData $data) : Skin{
-		$capeData = $data->getCapeImage()->getData();
+		if($data->isPersona()){
+			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 2048));
+		}
+
+		$capeData = $data->isPersonaCapeOnClassic() ? "" : $data->getCapeImage()->getData();
+
 		$geometryName = "";
 		$resourcePatch = json_decode($data->getResourcePatch(), true);
 		if(is_array($resourcePatch["geometry"]) && is_string($resourcePatch["geometry"]["default"])){
@@ -55,11 +60,7 @@ class LegacySkinAdapter implements SkinAdapter{
 		}else{
 			//TODO: Kick for invalid skin
 		}
-		if($data->isPersona()){
-			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 2048));
-		}elseif($data->isPersonaCapeOnClassic()){
-			$capeData = "";
-		}
+
 		return new Skin($data->getSkinId(), $data->getSkinImage()->getData(), $capeData, $geometryName, $data->getGeometryData());
 	}
 }
