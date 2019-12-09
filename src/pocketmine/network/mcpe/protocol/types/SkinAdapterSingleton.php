@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 /**
  * Accessor for SkinAdapter
-*/
+ */
 class SkinAdapterSingleton{
 	/** @var SkinAdapter|null */
 	private static $skinAdapter = null;
