@@ -72,7 +72,7 @@ class JavaWorldData extends BaseNbtWorldData{
 	protected function load() : CompoundTag{
 		$nbt = new BigEndianNbtSerializer();
 		try{
-			$worldData = $nbt->readCompressed(file_get_contents($this->dataPath))->getTag();
+			$worldData = $nbt->readCompressed(file_get_contents($this->dataPath))->mustGetCompoundTag();
 		}catch(NbtDataException $e){
 			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}

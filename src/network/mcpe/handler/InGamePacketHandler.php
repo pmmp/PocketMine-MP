@@ -518,7 +518,7 @@ class InGamePacketHandler extends PacketHandler{
 		$block = $this->player->getLocation()->getWorld()->getBlock($pos);
 		try{
 			$offset = 0;
-			$nbt = (new NetworkNbtSerializer())->read($packet->namedtag, $offset, 512)->getTag();
+			$nbt = (new NetworkNbtSerializer())->read($packet->namedtag, $offset, 512)->mustGetCompoundTag();
 		}catch(NbtDataException $e){
 			throw new BadPacketException($e->getMessage(), 0, $e);
 		}

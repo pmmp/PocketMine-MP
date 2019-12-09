@@ -108,7 +108,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 	protected function load() : CompoundTag{
 		$nbt = new LittleEndianNbtSerializer();
 		try{
-			$worldData = $nbt->read(substr(file_get_contents($this->dataPath), 8))->getTag();
+			$worldData = $nbt->read(substr(file_get_contents($this->dataPath), 8))->mustGetCompoundTag();
 		}catch(NbtDataException $e){
 			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}

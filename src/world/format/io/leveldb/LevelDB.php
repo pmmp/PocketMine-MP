@@ -172,7 +172,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$palette = [];
 		for($i = 0, $paletteSize = $stream->getLInt(); $i < $paletteSize; ++$i){
 			$offset = $stream->getOffset();
-			$tag = $nbt->read($stream->getBuffer(), $offset)->getTag();
+			$tag = $nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
 			$stream->setOffset($offset);
 
 			$id = $stringToLegacyId[$tag->getString("name")] ?? BlockLegacyIds::INFO_UPDATE;
@@ -392,7 +392,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$entities = [];
 		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and $entityData !== ""){
 			try{
-				$entities = array_map(function(TreeRoot $root) : CompoundTag{ return $root->getTag(); }, $nbt->readMultiple($entityData));
+				$entities = array_map(function(TreeRoot $root) : CompoundTag{ return $root->mustGetCompoundTag(); }, $nbt->readMultiple($entityData));
 			}catch(NbtDataException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
@@ -402,7 +402,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$tiles = [];
 		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and $tileData !== ""){
 			try{
-				$tiles = array_map(function(TreeRoot $root) : CompoundTag{ return $root->getTag(); }, $nbt->readMultiple($tileData));
+				$tiles = array_map(function(TreeRoot $root) : CompoundTag{ return $root->mustGetCompoundTag(); }, $nbt->readMultiple($tileData));
 			}catch(NbtDataException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}

@@ -57,7 +57,7 @@ class McRegion extends RegionWorldProvider{
 	protected function deserializeChunk(string $data) : Chunk{
 		$nbt = new BigEndianNbtSerializer();
 		try{
-			$chunk = $nbt->readCompressed($data)->getTag();
+			$chunk = $nbt->readCompressed($data)->mustGetCompoundTag();
 		}catch(NbtDataException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
 		}

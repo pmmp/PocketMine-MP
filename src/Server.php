@@ -614,7 +614,7 @@ class Server{
 
 		if(file_exists($path . "$name.dat")){
 			try{
-				return (new BigEndianNbtSerializer())->readCompressed(file_get_contents($path . "$name.dat"))->getTag();
+				return (new BigEndianNbtSerializer())->readCompressed(file_get_contents($path . "$name.dat"))->mustGetCompoundTag();
 			}catch(NbtDataException $e){ //zlib decode error / corrupt data
 				rename($path . "$name.dat", $path . "$name.dat.bak");
 				$this->logger->error($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
