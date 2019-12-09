@@ -114,6 +114,7 @@ use function asort;
 use function assert;
 use function base64_encode;
 use function class_exists;
+use function cli_set_process_title;
 use function count;
 use function define;
 use function explode;
