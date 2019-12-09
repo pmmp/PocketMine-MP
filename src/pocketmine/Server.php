@@ -128,7 +128,6 @@ use function getmypid;
 use function getopt;
 use function gettype;
 use function implode;
-use function ini_get;
 use function ini_set;
 use function is_array;
 use function is_bool;

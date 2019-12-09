@@ -67,7 +67,6 @@ use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
-use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
