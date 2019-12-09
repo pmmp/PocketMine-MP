@@ -29,6 +29,7 @@ namespace pocketmine\level;
 use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\Liquid;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
@@ -42,6 +43,7 @@ use pocketmine\event\level\LevelSaveEvent;
 use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\event\level\SpawnChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\item\Bucket;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\biome\Biome;
@@ -1650,7 +1652,7 @@ class Level implements ChunkManager, Metadatable{
 
 			if($direct){
 				$this->sendBlocks($this->getChunkPlayers($pos->x >> 4, $pos->z >> 4), [$block], UpdateBlockPacket::FLAG_ALL_PRIORITY);
-				$this->sendBlocks($this->getChunkPlayers($pos->x >> 4, $pos->z >> 4), [Block::get(Block::AIR, 0, $block)], UpdateBlockPacket::FLAG_ALL_PRIORITY, false, UpdateBlockPacket::DATA_LAYER_LIQUID);
+				$this->sendBlocks($this->getChunkPlayers($pos->x >> 4, $pos->z >> 4), [BlockFactory::get(Block::AIR, 0, $block)], UpdateBlockPacket::FLAG_ALL_PRIORITY, false, UpdateBlockPacket::DATA_LAYER_LIQUID);
 				unset($this->chunkCache[$chunkHash], $this->changedBlocks[$chunkHash][$relativeBlockHash]);
 			}else{
 				if(!isset($this->changedBlocks[$chunkHash])){
@@ -1931,8 +1933,13 @@ class Level implements ChunkManager, Metadatable{
 					return true;
 				}
 
-				$this->sendBlocks([$player], [Block::get(Block::AIR, 0, $blockClicked)], UpdateBlockPacket::FLAG_ALL_PRIORITY, false, UpdateBlockPacket::DATA_LAYER_LIQUID);
+				if($item instanceof Bucket && BlockFactory::get($item->getDamage()) instanceof Liquid) {
+					$this->sendBlocks([$player], [BlockFactory::get(Block::AIR, 0, $blockReplace)], UpdateBlockPacket::FLAG_ALL_PRIORITY, false, UpdateBlockPacket::DATA_LAYER_LIQUID);
+				}
 			}else{
+				if($item instanceof Bucket && BlockFactory::get($item->getDamage()) instanceof Liquid) {
+					$this->sendBlocks([$player], [BlockFactory::get(Block::AIR, 0, $blockClicked)], UpdateBlockPacket::FLAG_ALL_PRIORITY, false, UpdateBlockPacket::DATA_LAYER_LIQUID);
+				}
 				return false;
 			}
 		}elseif($blockClicked->onActivate($item, $player)){

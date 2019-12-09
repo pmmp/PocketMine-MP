@@ -96,7 +96,7 @@ class Bucket extends Item implements Consumable{
 				$player->getInventory()->sendContents($player);
 			}
 		}else{
-			$player->getLevel()->sendBlocks([$player], [Block::get(Block::AIR, 0, $blockReplace)], UpdateBlockPacket::FLAG_ALL_PRIORITY, false, UpdateBlockPacket::DATA_LAYER_LIQUID);
+			$player->getLevel()->sendBlocks([$player], [BlockFactory::get(Block::AIR, 0, $blockReplace)], UpdateBlockPacket::FLAG_ALL_PRIORITY, false, UpdateBlockPacket::DATA_LAYER_LIQUID);
 			$player->getInventory()->sendContents($player);
 		}
 
