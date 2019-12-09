@@ -31,10 +31,8 @@ use function is_string;
 class LegacySkinAdapter implements SkinAdapter{
 
 	public function toSkinData(Skin $skin) : SkinData{
-		$capeData = new SkinImage(32, 64, $skin->getCapeData());
-		if($skin->getCapeData() === ""){
-			$capeData = new SkinImage(0, 0, $skin->getCapeData());
-		}
+		$capeData = $skin->getCapeData();
+		$capeImage = $capeData === "" ? new SkinImage(0, 0, "") : new SkinImage(32, 64, $capeData);
 		$geometryName = $skin->getGeometryName();
 		if($geometryName === ""){
 			$geometryName = "geometry.humanoid.custom";
@@ -43,7 +41,7 @@ class LegacySkinAdapter implements SkinAdapter{
 			$skin->getSkinId(),
 			json_encode(["geometry" => ["default" => $geometryName]]),
 			SkinImage::fromLegacy($skin->getSkinData()), [],
-			$capeData,
+			$capeImage,
 			$skin->getGeometryData()
 		);
 	}
