@@ -31,6 +31,7 @@ use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandEnumConstraint;
 use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\utils\BinaryDataException;
+use function array_search;
 use function count;
 use function dechex;
 

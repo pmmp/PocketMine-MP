@@ -27,6 +27,10 @@ use pocketmine\entity\Skin;
 
 use function is_array;
 use function is_string;
+use function json_decode;
+use function json_encode;
+use function random_bytes;
+use function str_repeat;
 
 class LegacySkinAdapter implements SkinAdapter{
 
