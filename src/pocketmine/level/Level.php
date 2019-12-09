@@ -960,11 +960,11 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @param Player[] $target
+	 * @param Player[] 	$target
 	 * @param Vector3[] $blocks
-	 * @param int $flags
-	 * @param bool $optimizeRebuilds
-	 * @param int $dataLayerId
+	 * @param int 		$flags
+	 * @param bool 		$optimizeRebuilds
+	 * @param int 		$dataLayerId
 	 */
 	public function sendBlocks(array $target, array $blocks, int $flags = UpdateBlockPacket::FLAG_NONE, bool $optimizeRebuilds = false, int $dataLayerId = UpdateBlockPacket::DATA_LAYER_NORMAL){
 		$packets = [];
