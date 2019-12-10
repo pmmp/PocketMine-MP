@@ -40,6 +40,7 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
 use function array_intersect;
 use function array_map;
+use function array_merge;
 use function array_pad;
 use function class_exists;
 use function count;
@@ -733,7 +734,7 @@ class PluginManager{
 					$eventClass = $parameters[0]->getClass();
 				}catch(\ReflectionException $e){ //class doesn't exist
 					if(isset($tags["softDepend"]) && !isset($this->plugins[$tags["softDepend"]])){
-						$this->server->getLogger()->debug("Not registering @softDepend listener " . Utils::getNiceClosureName($handlerClosure) . "(" . $parameters[0]->getType()->getName() . ") because plugin \"" . $tags["softDepend"] . "\" not found");
+						$this->server->getLogger()->debug("Not registering @softDepend listener " . Utils::getNiceClosureName($handlerClosure) . "() because plugin \"" . $tags["softDepend"] . "\" not found");
 						continue;
 					}
 

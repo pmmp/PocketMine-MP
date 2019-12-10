@@ -61,10 +61,10 @@ class MainLogger extends \AttachableThreadedLogger{
 	/** @var \Threaded */
 	protected $logStream;
 	/** @var bool */
-	protected $shutdown;
+	protected $shutdown = false;
 	/** @var bool */
 	protected $logDebug;
-	/** @var MainLogger */
+	/** @var MainLogger|null */
 	public static $logger = null;
 	/** @var bool */
 	private $syncFlush = false;
@@ -344,7 +344,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	public function run(){
-		$this->shutdown = false;
 		$logResource = fopen($this->logFile, "ab");
 		if(!is_resource($logResource)){
 			throw new \RuntimeException("Couldn't open log file");

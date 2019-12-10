@@ -56,7 +56,6 @@ abstract class Event{
 			throw new \BadMethodCallException(get_class($this) . " is not Cancellable");
 		}
 
-		/** @var Event $this */
 		return $this->isCancelled;
 	}
 
@@ -70,7 +69,6 @@ abstract class Event{
 			throw new \BadMethodCallException(get_class($this) . " is not Cancellable");
 		}
 
-		/** @var Event $this */
 		$this->isCancelled = $value;
 	}
 
@@ -78,8 +76,6 @@ abstract class Event{
 	 * Calls event handlers registered for this event.
 	 *
 	 * @throws \RuntimeException if event call recursion reaches the max depth limit
-	 *
-	 * @throws \ReflectionException
 	 */
 	public function call() : void{
 		if(self::$eventCallDepth >= self::MAX_EVENT_CALL_DEPTH){

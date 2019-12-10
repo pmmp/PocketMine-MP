@@ -33,7 +33,12 @@ use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\nbt\LittleEndianNBTStream;
-use pocketmine\nbt\tag\{ByteTag, CompoundTag, FloatTag, IntTag, LongTag, StringTag};
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\LongTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
@@ -129,7 +134,7 @@ class LevelDB extends BaseLevelProvider{
 
 		$version = $this->levelData->getInt("StorageVersion", INT32_MAX, true);
 		if($version > self::CURRENT_STORAGE_VERSION){
-			throw new LevelException("Specified LevelDB world format version ($version) is not supported by " . \pocketmine\NAME);
+			throw new LevelException("Specified LevelDB world format version ($version) is not supported");
 		}
 	}
 

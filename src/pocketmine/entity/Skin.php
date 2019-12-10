@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use Ahc\Json\Comment as CommentedJsonDecoder;
 use function implode;
 use function in_array;
-use function json_decode;
 use function json_encode;
 use function strlen;
 
@@ -129,7 +129,7 @@ class Skin{
 	 */
 	public function debloatGeometryData() : void{
 		if($this->geometryData !== ""){
-			$this->geometryData = (string) json_encode(json_decode($this->geometryData));
+			$this->geometryData = (string) json_encode((new CommentedJsonDecoder())->decode($this->geometryData));
 		}
 	}
 }

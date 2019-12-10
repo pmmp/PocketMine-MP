@@ -48,7 +48,7 @@ class Shears extends Tool{
 	}
 
 	public function onDestroyBlock(Block $block) : bool{
-		if($block->getHardness() === 0 or $block->isCompatibleWithTool($this)){
+		if($block->getHardness() === 0.0 or $block->isCompatibleWithTool($this)){
 			return $this->applyDamage(1);
 		}
 		return false;

@@ -29,7 +29,7 @@ use function assert;
 
 class Position extends Vector3{
 
-	/** @var Level */
+	/** @var Level|null */
 	public $level = null;
 
 	/**
