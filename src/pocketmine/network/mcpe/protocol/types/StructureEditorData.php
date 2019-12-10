@@ -43,4 +43,6 @@ class StructureEditorData{
 	public $structureBlockType;
 	/** @var StructureSettings */
 	public $structureSettings;
+	/** @var int */
+	public $structureRedstoneSaveMove;
 }
