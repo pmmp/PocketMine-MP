@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
+use pocketmine\network\mcpe\protocol\types\SkinData;
 use function implode;
 use function in_array;
 use function json_encode;
@@ -33,7 +34,9 @@ class Skin{
 	public const ACCEPTED_SKIN_SIZES = [
 		64 * 32 * 4,
 		64 * 64 * 4,
-		128 * 128 * 4
+		128 * 128 * 4,
+		256 * 128 * 4,
+		256 * 256 * 4
 	];
 
 	/** @var string */
@@ -46,6 +49,8 @@ class Skin{
 	private $geometryName;
 	/** @var string */
 	private $geometryData;
+	/** @var SkinData|null */
+	private $temporarySkinData = null;
 
 	public function __construct(string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = ""){
 		$this->skinId = $skinId;
@@ -131,5 +136,19 @@ class Skin{
 		if($this->geometryData !== ""){
 			$this->geometryData = (string) json_encode((new CommentedJsonDecoder())->decode($this->geometryData));
 		}
+	}
+
+	/**
+	 * @return SkinData
+	 */
+	public function asSkinData() : SkinData{
+		return $this->temporarySkinData ?? ($this->temporarySkinData = SkinData::fromSkin($this));
+	}
+
+	/**
+	 * @param SkinData $skinData
+	 */
+	public function setSkinData(SkinData $skinData) : void{
+		$this->temporarySkinData = $skinData;
 	}
 }

@@ -60,7 +60,7 @@ class PlayerListPacket extends DataPacket{
 				$entry->xboxUserId = $this->getString();
 				$entry->platformChatId = $this->getString();
 				$entry->buildPlatform = $this->getLInt();
-				$entry->skinData = $this->getSkin();
+				$entry->skin = $this->getSkin();
 				$entry->isTeacher = $this->getBool();
 				$entry->isHost = $this->getBool();
 			}else{
@@ -82,7 +82,7 @@ class PlayerListPacket extends DataPacket{
 				$this->putString($entry->xboxUserId);
 				$this->putString($entry->platformChatId);
 				$this->putLInt($entry->buildPlatform);
-				$this->putSkin($entry->skinData);
+				$this->putSkin($entry->skin);
 				$this->putBool($entry->isTeacher);
 				$this->putBool($entry->isHost);
 			}else{

@@ -23,7 +23,36 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use Ahc\Json\Comment as CommentedJsonDecoder;
+use pocketmine\entity\Skin;
+use function is_array;
+use function is_string;
+use function json_encode;
+use function json_decode;
+
 class SkinData{
+	public static function fromSkin(Skin $skin) : SkinData{
+		if($skin->getCapeData() === ""){
+			$capeData = new SkinImage(0, 0, $skin->getCapeData());
+		}else{
+			$capeData = new SkinImage(32, 64, $skin->getCapeData());
+		}
+
+		if($skin->getGeometryName() === ""){
+			$geometryName = "geometry.humanoid.custom";
+		}else{
+			$geometryName = $skin->getGeometryName();
+		}
+
+		return new SkinData(
+			$skin->getSkinId(),
+			json_encode(["geometry" => ["default" => $geometryName]]),
+			SkinImage::fromLegacy($skin->getSkinData()),
+			[],
+			$capeData,
+			$skin->getGeometryData()
+		);
+	}
 
 	/** @var string */
 	private $skinId;
@@ -63,11 +92,11 @@ class SkinData{
 	 */
 	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = ""){
 		$this->skinId = $skinId;
-		$this->resourcePatch = $resourcePatch;
+		$this->resourcePatch = json_encode(json_decode($resourcePatch));
 		$this->skinImage = $skinImage;
 		$this->animations = $animations;
 		$this->capeImage = $capeImage;
-		$this->geometryData = $geometryData;
+		$this->geometryData = json_encode((new CommentedJsonDecoder())->decode($geometryData));
 		$this->animationData = $animationData;
 		$this->premium = $premium;
 		$this->persona = $persona;
@@ -152,4 +181,21 @@ class SkinData{
 		return $this->capeId;
 	}
 
+	/**
+	 * @return Skin
+	 */
+	public function asSkin() : Skin{
+		$capeData = $this->capeImage->getData();
+		$resourcePatch = json_decode($this->resourcePatch, true);
+		if(is_array($resourcePatch["geometry"]) && is_string($resourcePatch["geometry"]["default"])){
+			$geometryName = $resourcePatch["geometry"]["default"];
+		}else{
+			throw new \InvalidArgumentException("Skin have a invalid resource patch: $resourcePatch");
+		}
+
+		$skin = new Skin($this->skinId, $this->skinImage->getData(), $capeData, $geometryName, $this->geometryData);
+		$skin->setSkinData($this);
+
+		return $skin;
+	}
 }
