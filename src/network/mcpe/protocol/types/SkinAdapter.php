@@ -21,23 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\inventory;
+namespace pocketmine\network\mcpe\protocol\types;
 
-final class ContainerIds{
+use pocketmine\entity\Skin;
 
-	private function __construct(){
-		//NOOP
-	}
+/**
+ * Used to convert new skin data to the skin entity or old skin entity to skin data.
+ */
+interface SkinAdapter{
 
-	public const NONE = -1;
-	public const INVENTORY = 0;
-	public const FIRST = 1;
-	public const LAST = 100;
-	public const OFFHAND = 119;
-	public const ARMOR = 120;
-	public const CREATIVE = 121;
-	public const HOTBAR = 122;
-	public const FIXED_INVENTORY = 123;
-	public const UI = 124;
+	/**
+	 * Allows you to convert a skin entity to skin data.
+	 *
+	 * @param Skin $skin
+	 * @return SkinData
+	 */
+	public function toSkinData(Skin $skin) : SkinData;
 
+	/**
+	 * Allows you to convert skin data to a skin entity.
+	 *
+	 * @param SkinData $data
+	 * @return Skin
+	 */
+	public function fromSkinData(SkinData $data) : Skin;
 }

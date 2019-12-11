@@ -61,7 +61,7 @@ class InventoryManager{
 
 		$this->windowMap[ContainerIds::INVENTORY] = $this->player->getInventory();
 		$this->windowMap[ContainerIds::ARMOR] = $this->player->getArmorInventory();
-		$this->windowMap[ContainerIds::CURSOR] = $this->player->getCursorInventory();
+		$this->windowMap[ContainerIds::UI] = $this->player->getCursorInventory();
 	}
 
 	public function getWindowId(Inventory $inventory) : ?int{

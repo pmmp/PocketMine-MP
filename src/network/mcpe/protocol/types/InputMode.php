@@ -21,23 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\inventory;
+namespace pocketmine\network\mcpe\protocol\types;
 
-final class ContainerIds{
+final class InputMode{
 
 	private function __construct(){
 		//NOOP
 	}
 
-	public const NONE = -1;
-	public const INVENTORY = 0;
-	public const FIRST = 1;
-	public const LAST = 100;
-	public const OFFHAND = 119;
-	public const ARMOR = 120;
-	public const CREATIVE = 121;
-	public const HOTBAR = 122;
-	public const FIXED_INVENTORY = 123;
-	public const UI = 124;
-
+	public const MOUSE_KEYBOARD = 1;
+	public const TOUCHSCREEN = 2;
+	public const GAME_PAD = 3;
+	public const MOTION_CONTROLLER = 4;
 }

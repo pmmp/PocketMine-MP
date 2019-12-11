@@ -26,30 +26,53 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use function file_get_contents;
 
-class BiomeDefinitionListPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::BIOME_DEFINITION_LIST_PACKET;
+class AnvilDamagePacket extends DataPacket implements ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::ANVIL_DAMAGE_PACKET;
 
-	/** @var string|null */
-	private static $DEFAULT_NBT_CACHE = null;
+	/** @var int */
+	private $x;
+	/** @var int */
+	private $y;
+	/** @var int */
+	private $z;
+	/** @var int */
+	private $damageAmount;
 
-	/** @var string */
-	public $namedtag;
+	public static function create(int $x, int $y, int $z, int $damageAmount) : self{
+		$result = new self;
+		[$result->x, $result->y, $result->z] = [$x, $y, $z];
+		$result->damageAmount = $damageAmount;
+		return $result;
+	}
+
+	public function getDamageAmount() : int{
+		return $this->damageAmount;
+	}
+
+	public function getX() : int{
+		return $this->x;
+	}
+
+	public function getY() : int{
+		return $this->y;
+	}
+
+	public function getZ() : int{
+		return $this->z;
+	}
 
 	protected function decodePayload() : void{
-		$this->namedtag = $this->getRemaining();
+		$this->damageAmount = $this->getByte();
+		$this->getBlockPosition($this->x, $this->y, $this->z);
 	}
 
 	protected function encodePayload() : void{
-		$this->put(
-			$this->namedtag ??
-			self::$DEFAULT_NBT_CACHE ??
-			(self::$DEFAULT_NBT_CACHE = file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/biome_definitions.nbt'))
-		);
+		$this->putByte($this->damageAmount);
+		$this->putBlockPosition($this->x, $this->y, $this->z);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleBiomeDefinitionList($this);
+		return $handler->handleAnvilDamage($this);
 	}
 }

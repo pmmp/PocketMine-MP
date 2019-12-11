@@ -26,30 +26,35 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use function file_get_contents;
 
-class BiomeDefinitionListPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::BIOME_DEFINITION_LIST_PACKET;
+class NetworkSettingsPacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::NETWORK_SETTINGS_PACKET;
 
-	/** @var string|null */
-	private static $DEFAULT_NBT_CACHE = null;
+	public const COMPRESS_NOTHING = 0;
+	public const COMPRESS_EVERYTHING = 1;
 
-	/** @var string */
-	public $namedtag;
+	/** @var int */
+	private $compressionThreshold;
+
+	public static function create(int $compressionThreshold) : self{
+		$result = new self;
+		$result->compressionThreshold = $compressionThreshold;
+		return $result;
+	}
+
+	public function getCompressionThreshold() : int{
+		return $this->compressionThreshold;
+	}
 
 	protected function decodePayload() : void{
-		$this->namedtag = $this->getRemaining();
+		$this->compressionThreshold = $this->getLShort();
 	}
 
 	protected function encodePayload() : void{
-		$this->put(
-			$this->namedtag ??
-			self::$DEFAULT_NBT_CACHE ??
-			(self::$DEFAULT_NBT_CACHE = file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/biome_definitions.nbt'))
-		);
+		$this->putLShort($this->compressionThreshold);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleBiomeDefinitionList($this);
+		return $handler->handleNetworkSettings($this);
 	}
 }

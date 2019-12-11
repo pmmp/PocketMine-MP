@@ -44,6 +44,8 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 
 	/** @var bool */
 	public $isExperimental = false;
+	/** @var string */
+	public $baseGameVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK;
 
 	/**
 	 * @param ResourcePackStackEntry[] $resourcePacks
@@ -75,6 +77,7 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 		}
 
 		$this->isExperimental = $this->getBool();
+		$this->baseGameVersion = $this->getString();
 	}
 
 	protected function encodePayload() : void{
@@ -91,6 +94,7 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 		}
 
 		$this->putBool($this->isExperimental);
+		$this->putString($this->baseGameVersion);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

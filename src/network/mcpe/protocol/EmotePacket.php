@@ -25,45 +25,57 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
 
-class RespawnPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::RESPAWN_PACKET;
+class EmotePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::EMOTE_PACKET;
 
-	public const SEARCHING_FOR_SPAWN = 0;
-	public const READY_TO_SPAWN = 1;
-	public const CLIENT_READY_TO_SPAWN = 2;
+	private const FLAG_SERVER = 1 << 0;
 
-	/** @var Vector3 */
-	public $position;
 	/** @var int */
-	public $respawnState = self::SEARCHING_FOR_SPAWN;
+	private $entityRuntimeId;
+	/** @var string */
+	private $emoteId;
 	/** @var int */
-	public $entityRuntimeId;
+	private $flags;
 
-	public static function create(Vector3 $position, int $respawnStatus, int $entityRuntimeId) : self{
+	public static function create(int $entityRuntimeId, string $emoteId, int $flags) : self{
 		$result = new self;
-		$result->position = $position->asVector3();
-		$result->respawnState = $respawnStatus;
 		$result->entityRuntimeId = $entityRuntimeId;
+		$result->emoteId = $emoteId;
+		$result->flags = $flags;
 		return $result;
 	}
 
+	/**
+	 * TODO: we can't call this getEntityRuntimeId() because of base class collision (crap architecture, thanks Shoghi)
+	 * @return int
+	 */
+	public function getEntityRuntimeIdField() : int{
+		return $this->entityRuntimeId;
+	}
+
+	public function getEmoteId() : string{
+		return $this->emoteId;
+	}
+
+	public function getFlags() : int{
+		return $this->flags;
+	}
+
 	protected function decodePayload() : void{
-		$this->position = $this->getVector3();
-		$this->respawnState = $this->getByte();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->emoteId = $this->getString();
+		$this->flags = $this->getByte();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVector3($this->position);
-		$this->putByte($this->respawnState);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putString($this->emoteId);
+		$this->putByte($this->flags);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleRespawn($this);
+		return $handler->handleEmote($this);
 	}
 }

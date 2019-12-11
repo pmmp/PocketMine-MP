@@ -35,6 +35,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\utils\UUID;
 use function str_repeat;
 
@@ -92,7 +93,7 @@ class FloatingTextParticle implements Particle{
 			$uuid = UUID::fromRandom();
 			$name = $this->title . ($this->text !== "" ? "\n" . $this->text : "");
 
-			$p[] = PlayerListPacket::add([PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, new Skin("Standard_Custom", str_repeat("\x00", 8192)))]);
+			$p[] = PlayerListPacket::add([PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, SkinAdapterSingleton::get()->toSkinData(new Skin("Standard_Custom", str_repeat("\x00", 8192))))]);
 
 			$pk = new AddPlayerPacket();
 			$pk->uuid = $uuid;

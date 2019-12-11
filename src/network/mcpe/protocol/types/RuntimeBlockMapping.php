@@ -24,6 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
+use pocketmine\utils\BinaryDataException;
 use function file_get_contents;
 use function getmypid;
 use function json_decode;
@@ -40,7 +46,7 @@ final class RuntimeBlockMapping{
 	private static $legacyToRuntimeMap = [];
 	/** @var int[] */
 	private static $runtimeToLegacyMap = [];
-	/** @var mixed[]|null */
+	/** @var CompoundTag[]|null */
 	private static $bedrockKnownStates = null;
 
 	private function __construct(){
@@ -48,32 +54,54 @@ final class RuntimeBlockMapping{
 	}
 
 	public static function init() : void{
-		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/block_id_map.json"), true);
-
-		$compressedTable = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/required_block_states.json"), true);
-		$decompressed = [];
-
-		foreach($compressedTable as $prefix => $entries){
-			foreach($entries as $shortStringId => $states){
-				foreach($states as $state){
-					$name = "$prefix:$shortStringId";
-					$decompressed[] = [
-						"name" => $name,
-						"data" => $state,
-						"legacy_id" => $legacyIdMap[$name]
-					];
-				}
-			}
+		$tag = (new NetworkNbtSerializer())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/required_block_states.nbt"))->getTag();
+		if(!($tag instanceof ListTag) or $tag->getTagType() !== NBT::TAG_Compound){ //this is a little redundant currently, but good for auto complete and makes phpstan happy
+			throw new \RuntimeException("Invalid blockstates table, expected TAG_List<TAG_Compound> root");
 		}
-		self::$bedrockKnownStates = self::randomizeTable($decompressed);
 
-		foreach(self::$bedrockKnownStates as $k => $obj){
-			if($obj["data"] > 15){
-				//TODO: in 1.12 they started using data values bigger than 4 bits which we can't handle right now
+		/** @var CompoundTag[] $list */
+		$list = $tag->getValue();
+		self::$bedrockKnownStates = self::randomizeTable($list);
+
+		self::setupLegacyMappings();
+	}
+
+	private static function setupLegacyMappings() : void{
+		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/block_id_map.json"), true);
+		$legacyStateMap = (new NetworkNbtSerializer())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/r12_to_current_block_map.nbt"))->getTag();
+		if(!($legacyStateMap instanceof ListTag) or $legacyStateMap->getTagType() !== NBT::TAG_Compound){
+			throw new \RuntimeException("Invalid legacy states mapping table, expected TAG_List<TAG_Compound> root");
+		}
+
+		/**
+		 * @var int[][] $idToStatesMap string id -> int[] list of candidate state indices
+		 */
+		$idToStatesMap = [];
+		foreach(self::$bedrockKnownStates as $k => $state){
+			$idToStatesMap[$state->getCompoundTag("block")->getString("name")][] = $k;
+		}
+		/** @var CompoundTag $pair */
+		foreach($legacyStateMap as $pair){
+			$oldState = $pair->getCompoundTag("old");
+			$id = $legacyIdMap[$oldState->getString("name")];
+			$data = $oldState->getShort("val");
+			if($data > 15){
+				//we can't handle metadata with more than 4 bits
 				continue;
 			}
-			//this has to use the json offset to make sure the mapping is consistent with what we send over network, even though we aren't using all the entries
-			self::registerMapping($k, $obj["legacy_id"], $obj["data"]);
+			$mappedState = $pair->getCompoundTag("new");
+			$mappedName = $mappedState->getString("name");
+			if(!isset($idToStatesMap[$mappedName])){
+				throw new \RuntimeException("Mapped new state does not appear in network table");
+			}
+			foreach($idToStatesMap[$mappedName] as $k){
+				$networkState = self::$bedrockKnownStates[$k];
+				if($mappedState->equals($networkState->getCompoundTag("block"))){
+					self::registerMapping($k, $id, $data);
+					continue 2;
+				}
+			}
+			throw new \RuntimeException("Mapped new state does not appear in network table");
 		}
 	}
 
@@ -88,9 +116,9 @@ final class RuntimeBlockMapping{
 	 * Plugins shouldn't use this stuff anyway, but plugin devs have an irritating habit of ignoring what they
 	 * aren't supposed to do, so we have to deliberately break it to make them stop.
 	 *
-	 * @param array $table
+	 * @param CompoundTag[] $table
 	 *
-	 * @return array
+	 * @return CompoundTag[]
 	 */
 	private static function randomizeTable(array $table) : array{
 		$postSeed = mt_rand(); //save a seed to set afterwards, to avoid poor quality randoms
@@ -133,7 +161,7 @@ final class RuntimeBlockMapping{
 	}
 
 	/**
-	 * @return array
+	 * @return CompoundTag[]
 	 */
 	public static function getBedrockKnownStates() : array{
 		self::lazyInit();

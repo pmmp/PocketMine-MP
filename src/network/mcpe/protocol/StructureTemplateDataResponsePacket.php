@@ -26,42 +26,31 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use pocketmine\network\mcpe\protocol\types\StructureSettings;
 
-class StructureTemplateDataExportRequestPacket extends DataPacket implements ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_REQUEST_PACKET;
-
-	public const TYPE_ALWAYS_LOAD = 1;
-	public const TYPE_CREATE_AND_LOAD = 2;
+class StructureTemplateDataResponsePacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_RESPONSE_PACKET;
 
 	/** @var string */
 	public $structureTemplateName;
-	/** @var int */
-	public $structureBlockX;
-	/** @var int */
-	public $structureBlockY;
-	/** @var int */
-	public $structureBlockZ;
-	/** @var StructureSettings */
-	public $structureSettings;
-	/** @var int */
-	public $structureTemplateResponseType;
+	/** @var string|null */
+	public $namedtag;
 
 	protected function decodePayload() : void{
 		$this->structureTemplateName = $this->getString();
-		$this->getBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
-		$this->structureSettings = $this->getStructureSettings();
-		$this->structureTemplateResponseType = $this->getByte();
+		if($this->getBool()){
+			$this->namedtag = $this->getRemaining();
+		}
 	}
 
 	protected function encodePayload() : void{
 		$this->putString($this->structureTemplateName);
-		$this->putBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
-		$this->putStructureSettings($this->structureSettings);
-		$this->putByte($this->structureTemplateResponseType);
+		$this->putBool($this->namedtag !== null);
+		if($this->namedtag !== null){
+			$this->put($this->namedtag);
+		}
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleStructureTemplateDataExportRequest($this);
+		return $handler->handleStructureTemplateDataResponse($this);
 	}
 }

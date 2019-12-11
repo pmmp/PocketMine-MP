@@ -48,6 +48,7 @@ use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\player\Player;
 use pocketmine\utils\Limits;
 use pocketmine\utils\UUID;
@@ -153,7 +154,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function sendSkin(?array $targets = null) : void{
 		$pk = new PlayerSkinPacket();
 		$pk->uuid = $this->getUniqueId();
-		$pk->skin = $this->skin;
+		$pk->skin = SkinAdapterSingleton::get()->toSkinData($this->skin);
 		$this->server->broadcastPackets($targets ?? $this->hasSpawned, [$pk]);
 	}
 
@@ -407,7 +408,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	protected function sendSpawnPacket(Player $player) : void{
 		if(!($this instanceof Player)){
-			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), $this->skin)]));
+			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), SkinAdapterSingleton::get()->toSkinData($this->skin))]));
 		}
 
 		$pk = new AddPlayerPacket();

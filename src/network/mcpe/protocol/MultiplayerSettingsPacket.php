@@ -26,30 +26,36 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use function file_get_contents;
 
-class BiomeDefinitionListPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::BIOME_DEFINITION_LIST_PACKET;
+class MultiplayerSettingsPacket extends DataPacket implements ServerboundPacket{ //TODO: this might be clientbound too, but unsure
+	public const NETWORK_ID = ProtocolInfo::MULTIPLAYER_SETTINGS_PACKET;
 
-	/** @var string|null */
-	private static $DEFAULT_NBT_CACHE = null;
+	public const ACTION_ENABLE_MULTIPLAYER = 0;
+	public const ACTION_DISABLE_MULTIPLAYER = 1;
+	public const ACTION_REFRESH_JOIN_CODE = 2;
 
-	/** @var string */
-	public $namedtag;
+	/** @var int */
+	private $action;
+
+	public static function create(int $action) : self{
+		$result = new self;
+		$result->action = $action;
+		return $result;
+	}
+
+	public function getAction() : int{
+		return $this->action;
+	}
 
 	protected function decodePayload() : void{
-		$this->namedtag = $this->getRemaining();
+		$this->action = $this->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->put(
-			$this->namedtag ??
-			self::$DEFAULT_NBT_CACHE ??
-			(self::$DEFAULT_NBT_CACHE = file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/biome_definitions.nbt'))
-		);
+		$this->putVarInt($this->action);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleBiomeDefinitionList($this);
+		return $handler->handleMultiplayerSettings($this);
 	}
 }

@@ -41,7 +41,11 @@ class DeathPacketHandler extends PacketHandler{
 	}
 
 	public function setUp() : void{
-		$this->session->sendDataPacket(RespawnPacket::create($this->player->getOffsetPosition($this->player->getSpawn())));
+		$this->session->sendDataPacket(RespawnPacket::create(
+			$this->player->getOffsetPosition($this->player->getSpawn()),
+			RespawnPacket::SEARCHING_FOR_SPAWN,
+			$this->player->getId()
+		));
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
@@ -54,6 +58,18 @@ class DeathPacketHandler extends PacketHandler{
 				break;
 		}
 
+		return false;
+	}
+
+	public function handleRespawn(RespawnPacket $packet) : bool{
+		if($packet->respawnState === RespawnPacket::CLIENT_READY_TO_SPAWN){
+			$this->session->sendDataPacket(RespawnPacket::create(
+				$this->player->getOffsetPosition($this->player->getSpawn()),
+				RespawnPacket::READY_TO_SPAWN,
+				$this->player->getId()
+			));
+			return true;
+		}
 		return false;
 	}
 }

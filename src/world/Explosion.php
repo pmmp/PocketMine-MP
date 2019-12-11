@@ -37,7 +37,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
 use pocketmine\world\utils\SubChunkIteratorManager;
@@ -250,8 +249,6 @@ class Explosion{
 			}
 			$send[] = $pos->subtract($source);
 		}
-
-		$this->world->broadcastPacketToViewers($source, ExplodePacket::create($this->source->asVector3(), $this->size, $send));
 
 		$this->world->addParticle($source, new HugeExplodeSeedParticle());
 		$this->world->addSound($source, new ExplodeSound());

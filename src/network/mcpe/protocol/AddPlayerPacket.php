@@ -75,6 +75,8 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 
 	/** @var string */
 	public $deviceId = ""; //TODO: fill player's device ID (???)
+	/** @var int */
+	public $buildPlatform = -1;
 
 	protected function decodePayload() : void{
 		$this->uuid = $this->getUUID();
@@ -104,6 +106,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		}
 
 		$this->deviceId = $this->getString();
+		$this->buildPlatform = $this->getLInt();
 	}
 
 	protected function encodePayload() : void{
@@ -134,6 +137,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		}
 
 		$this->putString($this->deviceId);
+		$this->putLInt($this->buildPlatform);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

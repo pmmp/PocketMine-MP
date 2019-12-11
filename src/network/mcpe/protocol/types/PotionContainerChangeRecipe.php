@@ -21,23 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\inventory;
+namespace pocketmine\network\mcpe\protocol\types;
 
-final class ContainerIds{
+class PotionContainerChangeRecipe{
+	/** @var int */
+	private $inputItemId;
+	/** @var int */
+	private $ingredientItemId;
+	/** @var int */
+	private $outputItemId;
 
-	private function __construct(){
-		//NOOP
+	public function __construct(int $inputItemId, int $ingredientItemId, int $outputItemId){
+		$this->inputItemId = $inputItemId;
+		$this->ingredientItemId = $ingredientItemId;
+		$this->outputItemId = $outputItemId;
 	}
 
-	public const NONE = -1;
-	public const INVENTORY = 0;
-	public const FIRST = 1;
-	public const LAST = 100;
-	public const OFFHAND = 119;
-	public const ARMOR = 120;
-	public const CREATIVE = 121;
-	public const HOTBAR = 122;
-	public const FIXED_INVENTORY = 123;
-	public const UI = 124;
+	public function getInputItemId() : int{
+		return $this->inputItemId;
+	}
 
+	public function getIngredientItemId() : int{
+		return $this->ingredientItemId;
+	}
+
+	public function getOutputItemId() : int{
+		return $this->outputItemId;
+	}
 }

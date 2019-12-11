@@ -75,7 +75,10 @@ use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
+use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
@@ -197,8 +200,24 @@ class InGamePacketHandler extends PacketHandler{
 		$isCrafting = false;
 		$isFinalCraftingPart = false;
 		foreach($data->getActions() as $networkInventoryAction){
-			$isCrafting = $isCrafting || $networkInventoryAction->isCraftingPart();
-			$isFinalCraftingPart = $isFinalCraftingPart || $networkInventoryAction->isFinalCraftingPart();
+			if(
+				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER and
+				$networkInventoryAction->windowId === ContainerIds::UI and
+				$networkInventoryAction->inventorySlot === 50 and
+				!$networkInventoryAction->oldItem->equalsExact($networkInventoryAction->newItem)
+			){
+				$isCrafting = true;
+				if(!$networkInventoryAction->oldItem->isNull() and $networkInventoryAction->newItem->isNull()){
+					$isFinalCraftingPart = true;
+				}
+			}elseif(
+				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO and (
+					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
+					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
+				)
+			){
+				$isCrafting = true;
+			}
 
 			try{
 				$action = $networkInventoryAction->createInventoryAction($this->player);
@@ -285,6 +304,10 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
+				if($this->player->isUsingItem() and !$this->player->consumeHeldItem()){
+					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
+					return true;
+				}
 				if(!$this->player->useHeldItem()){
 					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
@@ -345,11 +368,6 @@ class InGamePacketHandler extends PacketHandler{
 			case ReleaseItemTransactionData::ACTION_RELEASE:
 				if(!$this->player->releaseHeldItem()){
 					$this->session->getInvManager()->syncContents($this->player->getInventory());
-				}
-				return true;
-			case ReleaseItemTransactionData::ACTION_CONSUME:
-				if(!$this->player->consumeHeldItem()){
-					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
 				return true;
 		}
@@ -603,7 +621,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
-		return $this->player->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
+		return $this->player->changeSkin(SkinAdapterSingleton::get()->fromSkinData($packet->skin), $packet->newSkinName, $packet->oldSkinName);
 	}
 
 	public function handleSubClientLogin(SubClientLoginPacket $packet) : bool{

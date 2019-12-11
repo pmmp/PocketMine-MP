@@ -27,10 +27,13 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\math\Vector3;
+use pocketmine\nbt\TreeRoot;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 use function count;
 use function file_get_contents;
 use function json_decode;
@@ -79,8 +82,8 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public $hasAchievementsDisabled = true;
 	/** @var int */
 	public $time = -1;
-	/** @var bool */
-	public $eduMode = false;
+	/** @var int */
+	public $eduEditionOffer = 0;
 	/** @var bool */
 	public $hasEduFeaturesEnabled = false;
 	/** @var float */
@@ -131,6 +134,8 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public $onlySpawnV1Villagers = false;
 
 	/** @var string */
+	public $vanillaVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK;
+	/** @var string */
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
 	/** @var string */
 	public $worldName;
@@ -138,6 +143,8 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public $premiumWorldTemplateId = "";
 	/** @var bool */
 	public $isTrial = false;
+	/** @var bool */
+	public $isMovementServerAuthoritative = false;
 	/** @var int */
 	public $currentTick = 0; //only used if isTrial is true
 	/** @var int */
@@ -145,7 +152,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $multiplayerCorrelationId = ""; //TODO: this should be filled with a UUID of some sort
 
-	/** @var array|null ["name" (string), "data" (int16), "legacy_id" (int16)] */
+	/** @var ListTag|null */
 	public $blockTable = null;
 	/** @var array|null string (name) => int16 (legacyID) */
 	public $itemTable = null;
@@ -169,7 +176,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$this->getBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
 		$this->hasAchievementsDisabled = $this->getBool();
 		$this->time = $this->getVarInt();
-		$this->eduMode = $this->getBool();
+		$this->eduEditionOffer = $this->getVarInt();
 		$this->hasEduFeaturesEnabled = $this->getBool();
 		$this->rainLevel = $this->getLFloat();
 		$this->lightningLevel = $this->getLFloat();
@@ -193,22 +200,22 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$this->isWorldTemplateOptionLocked = $this->getBool();
 		$this->onlySpawnV1Villagers = $this->getBool();
 
+		$this->vanillaVersion = $this->getString();
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
 		$this->premiumWorldTemplateId = $this->getString();
 		$this->isTrial = $this->getBool();
+		$this->isMovementServerAuthoritative = $this->getBool();
 		$this->currentTick = $this->getLLong();
 
 		$this->enchantmentSeed = $this->getVarInt();
 
-		$this->blockTable = [];
-		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$id = $this->getString();
-			$data = $this->getSignedLShort();
-			$unknown = $this->getSignedLShort();
-
-			$this->blockTable[$i] = ["name" => $id, "data" => $data, "legacy_id" => $unknown];
+		$blockTable = (new NetworkNbtSerializer())->read($this->buffer, $this->offset, 512)->getTag();
+		if(!($blockTable instanceof ListTag)){
+			throw new \UnexpectedValueException("Wrong block table root NBT tag type");
 		}
+		$this->blockTable = $blockTable;
+
 		$this->itemTable = [];
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			$id = $this->getString();
@@ -239,7 +246,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$this->putBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
 		$this->putBool($this->hasAchievementsDisabled);
 		$this->putVarInt($this->time);
-		$this->putBool($this->eduMode);
+		$this->putVarInt($this->eduEditionOffer);
 		$this->putBool($this->hasEduFeaturesEnabled);
 		$this->putLFloat($this->rainLevel);
 		$this->putLFloat($this->lightningLevel);
@@ -263,10 +270,12 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$this->putBool($this->isWorldTemplateOptionLocked);
 		$this->putBool($this->onlySpawnV1Villagers);
 
+		$this->putString($this->vanillaVersion);
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
 		$this->putString($this->premiumWorldTemplateId);
 		$this->putBool($this->isTrial);
+		$this->putBool($this->isMovementServerAuthoritative);
 		$this->putLLong($this->currentTick);
 
 		$this->putVarInt($this->enchantmentSeed);
@@ -274,11 +283,11 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		if($this->blockTable === null){
 			if(self::$blockTableCache === null){
 				//this is a really nasty hack, but it'll do for now
-				self::$blockTableCache = self::serializeBlockTable(RuntimeBlockMapping::getBedrockKnownStates());
+				self::$blockTableCache = (new NetworkNbtSerializer())->write(new TreeRoot(new ListTag(RuntimeBlockMapping::getBedrockKnownStates())));
 			}
 			$this->put(self::$blockTableCache);
 		}else{
-			$this->put(self::serializeBlockTable($this->blockTable));
+			$this->put((new NetworkNbtSerializer())->write(new TreeRoot($this->blockTable)));
 		}
 		if($this->itemTable === null){
 			if(self::$itemTableCache === null){
@@ -290,17 +299,6 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		}
 
 		$this->putString($this->multiplayerCorrelationId);
-	}
-
-	private static function serializeBlockTable(array $table) : string{
-		$stream = new NetworkBinaryStream();
-		$stream->putUnsignedVarInt(count($table));
-		foreach($table as $v){
-			$stream->putString($v["name"]);
-			$stream->putLShort($v["data"]);
-			$stream->putLShort($v["legacy_id"]);
-		}
-		return $stream->getBuffer();
 	}
 
 	private static function serializeItemTable(array $table) : string{

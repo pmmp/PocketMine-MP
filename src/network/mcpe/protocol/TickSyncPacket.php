@@ -21,51 +21,53 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
-use function strlen;
 
-class ResourcePackChunkDataPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CHUNK_DATA_PACKET;
+class TickSyncPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::TICK_SYNC_PACKET;
 
-	/** @var string */
-	public $packId;
 	/** @var int */
-	public $chunkIndex;
+	private $clientSendTime;
 	/** @var int */
-	public $progress;
-	/** @var string */
-	public $data;
+	private $serverReceiveTime;
 
-	public static function create(string $packId, int $chunkIndex, int $chunkOffset, string $data) : self{
+	public static function request(int $clientTime) : self{
 		$result = new self;
-		$result->packId = $packId;
-		$result->chunkIndex = $chunkIndex;
-		$result->progress = $chunkOffset;
-		$result->data = $data;
+		$result->clientSendTime = $clientTime;
+		$result->serverReceiveTime = 0; //useless
 		return $result;
 	}
 
+	public static function response(int $clientSendTime, int $serverReceiveTime) : self{
+		$result = new self;
+		$result->clientSendTime = $clientSendTime;
+		$result->serverReceiveTime = $serverReceiveTime;
+		return $result;
+	}
+
+	public function getClientSendTime() : int{
+		return $this->clientSendTime;
+	}
+
+	public function getServerReceiveTime() : int{
+		return $this->serverReceiveTime;
+	}
+
 	protected function decodePayload() : void{
-		$this->packId = $this->getString();
-		$this->chunkIndex = $this->getLInt();
-		$this->progress = $this->getLLong();
-		$this->data = $this->getString();
+		$this->clientSendTime = $this->getLLong();
+		$this->serverReceiveTime = $this->getLLong();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->packId);
-		$this->putLInt($this->chunkIndex);
-		$this->putLLong($this->progress);
-		$this->putString($this->data);
+		$this->putLLong($this->clientSendTime);
+		$this->putLLong($this->serverReceiveTime);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleResourcePackChunkData($this);
+		return $handler->handleTickSync($this);
 	}
 }

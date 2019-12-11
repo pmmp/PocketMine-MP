@@ -25,9 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\entity\Skin;
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\utils\UUID;
 
 class PlayerSkinPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -39,43 +38,21 @@ class PlayerSkinPacket extends DataPacket implements ClientboundPacket, Serverbo
 	public $oldSkinName = "";
 	/** @var string */
 	public $newSkinName = "";
-	/** @var Skin */
+	/** @var SkinData */
 	public $skin;
-	/** @var bool */
-	public $premiumSkin = false;
 
 	protected function decodePayload() : void{
 		$this->uuid = $this->getUUID();
-
-		$skinId = $this->getString();
+		$this->skin = $this->getSkin();
 		$this->newSkinName = $this->getString();
 		$this->oldSkinName = $this->getString();
-		$skinData = $this->getString();
-		$capeData = $this->getString();
-		$geometryModel = $this->getString();
-		$geometryData = $this->getString();
-
-		try{
-			$this->skin = new Skin($skinId, $skinData, $capeData, $geometryModel, $geometryData);
-		}catch(\InvalidArgumentException $e){
-			throw new BadPacketException($e->getMessage(), 0, $e);
-		}
-
-		$this->premiumSkin = $this->getBool();
 	}
 
 	protected function encodePayload() : void{
 		$this->putUUID($this->uuid);
-
-		$this->putString($this->skin->getSkinId());
+		$this->putSkin($this->skin);
 		$this->putString($this->newSkinName);
 		$this->putString($this->oldSkinName);
-		$this->putString($this->skin->getSkinData());
-		$this->putString($this->skin->getCapeData());
-		$this->putString($this->skin->getGeometryName());
-		$this->putString($this->skin->getGeometryData());
-
-		$this->putBool($this->premiumSkin);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

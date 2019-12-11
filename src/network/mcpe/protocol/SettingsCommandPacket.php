@@ -26,30 +26,41 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
-use function file_get_contents;
 
-class BiomeDefinitionListPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::BIOME_DEFINITION_LIST_PACKET;
-
-	/** @var string|null */
-	private static $DEFAULT_NBT_CACHE = null;
+class SettingsCommandPacket extends DataPacket implements ServerboundPacket{
+	public const NETWORK_ID = ProtocolInfo::SETTINGS_COMMAND_PACKET;
 
 	/** @var string */
-	public $namedtag;
+	private $command;
+	/** @var bool */
+	private $suppressOutput;
+
+	public static function create(string $command, bool $suppressOutput) : self{
+		$result = new self;
+		$result->command = $command;
+		$result->suppressOutput = $suppressOutput;
+		return $result;
+	}
+
+	public function getCommand() : string{
+		return $this->command;
+	}
+
+	public function getSuppressOutput() : bool{
+		return $this->suppressOutput;
+	}
 
 	protected function decodePayload() : void{
-		$this->namedtag = $this->getRemaining();
+		$this->command = $this->getString();
+		$this->suppressOutput = $this->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->put(
-			$this->namedtag ??
-			self::$DEFAULT_NBT_CACHE ??
-			(self::$DEFAULT_NBT_CACHE = file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/biome_definitions.nbt'))
-		);
+		$this->putString($this->command);
+		$this->putBool($this->suppressOutput);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleBiomeDefinitionList($this);
+		return $handler->handleSettingsCommand($this);
 	}
 }

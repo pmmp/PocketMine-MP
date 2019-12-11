@@ -27,30 +27,40 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 
-class StructureTemplateDataExportResponsePacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_RESPONSE_PACKET;
+class EducationSettingsPacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::EDUCATION_SETTINGS_PACKET;
 
 	/** @var string */
-	public $structureTemplateName;
-	/** @var string|null */
-	public $namedtag;
+	private $codeBuilderDefaultUri;
+	/** @var bool */
+	private $hasQuiz;
+
+	public static function create(string $codeBuilderDefaultUri, bool $hasQuiz) : self{
+		$result = new self;
+		$result->codeBuilderDefaultUri = $codeBuilderDefaultUri;
+		$result->hasQuiz = $hasQuiz;
+		return $result;
+	}
+
+	public function getCodeBuilderDefaultUri() : string{
+		return $this->codeBuilderDefaultUri;
+	}
+
+	public function getHasQuiz() : bool{
+		return $this->hasQuiz;
+	}
 
 	protected function decodePayload() : void{
-		$this->structureTemplateName = $this->getString();
-		if($this->getBool()){
-			$this->namedtag = $this->getRemaining();
-		}
+		$this->codeBuilderDefaultUri = $this->getString();
+		$this->hasQuiz = $this->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->structureTemplateName);
-		$this->putBool($this->namedtag !== null);
-		if($this->namedtag !== null){
-			$this->put($this->namedtag);
-		}
+		$this->putString($this->codeBuilderDefaultUri);
+		$this->putBool($this->hasQuiz);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleStructureTemplateDataExportResponse($this);
+		return $handler->handleEducationSettings($this);
 	}
 }
