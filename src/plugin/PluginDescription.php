@@ -36,6 +36,7 @@ use function stripos;
 use function strlen;
 use function substr;
 use function version_compare;
+use function yaml_parse;
 
 class PluginDescription{
 	private $map;

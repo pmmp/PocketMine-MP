@@ -38,8 +38,10 @@ use function hex2bin;
 use function json_encode;
 use function openssl_digest;
 use function openssl_sign;
+use function random_bytes;
 use function rtrim;
 use function str_pad;
+use function strtr;
 use const OPENSSL_ALGO_SHA384;
 use const STR_PAD_LEFT;
 

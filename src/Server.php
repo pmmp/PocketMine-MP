@@ -103,6 +103,7 @@ use function array_key_exists;
 use function array_shift;
 use function array_sum;
 use function base64_encode;
+use function cli_set_process_title;
 use function copy;
 use function count;
 use function define;

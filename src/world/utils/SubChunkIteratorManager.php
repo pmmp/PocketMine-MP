@@ -27,6 +27,7 @@ use pocketmine\utils\Utils;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\SubChunk;
+use function assert;
 
 class SubChunkIteratorManager{
 	/** @var ChunkManager */

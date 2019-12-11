@@ -41,6 +41,7 @@ use function openssl_verify;
 use function str_repeat;
 use function str_split;
 use function strlen;
+use function strtr;
 use function time;
 use const OPENSSL_ALGO_SHA384;
 

@@ -71,6 +71,7 @@ use function str_split;
 use function stripos;
 use function strlen;
 use function strpos;
+use function strtr;
 use function substr;
 use function sys_get_temp_dir;
 use function trim;
