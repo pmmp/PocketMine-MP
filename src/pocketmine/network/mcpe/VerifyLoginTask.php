@@ -37,6 +37,7 @@ use function openssl_verify;
 use function ord;
 use function str_split;
 use function strlen;
+use function strtr;
 use function time;
 use function wordwrap;
 use const OPENSSL_ALGO_SHA384;

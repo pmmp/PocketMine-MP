@@ -28,9 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;

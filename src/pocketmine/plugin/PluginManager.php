@@ -40,6 +40,7 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
 use function array_intersect;
 use function array_map;
+use function array_merge;
 use function array_pad;
 use function class_exists;
 use function count;

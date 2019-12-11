@@ -27,7 +27,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use function count;
 

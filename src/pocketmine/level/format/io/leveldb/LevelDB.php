@@ -33,7 +33,12 @@ use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\nbt\LittleEndianNBTStream;
-use pocketmine\nbt\tag\{ByteTag, CompoundTag, FloatTag, LongTag, StringTag, IntTag};
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\LongTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
@@ -56,8 +61,8 @@ use function substr;
 use function time;
 use function trim;
 use function unpack;
-use const LEVELDB_ZLIB_RAW_COMPRESSION;
 use const INT32_MAX;
+use const LEVELDB_ZLIB_RAW_COMPRESSION;
 
 class LevelDB extends BaseLevelProvider{
 

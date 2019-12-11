@@ -34,6 +34,7 @@ use function filesize;
 use function fopen;
 use function fread;
 use function fseek;
+use function gettype;
 use function hash_file;
 use function implode;
 
