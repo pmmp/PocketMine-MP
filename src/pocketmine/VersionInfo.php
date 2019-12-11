@@ -30,6 +30,6 @@ const _VERSION_INFO_INCLUDED = true;
 
 
 const NAME = "Altay";
-const BASE_VERSION = "3.11.1";
+const BASE_VERSION = "3.11.2";
 const IS_DEVELOPMENT_BUILD = true;
 const BUILD_NUMBER = 0;
