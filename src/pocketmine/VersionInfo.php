@@ -30,6 +30,6 @@ const _VERSION_INFO_INCLUDED = true;
 
 
 const NAME = "PocketMine-MP";
-const BASE_VERSION = "3.10.2";
-const IS_DEVELOPMENT_BUILD = true;
+const BASE_VERSION = "3.11.0";
+const IS_DEVELOPMENT_BUILD = false;
 const BUILD_NUMBER = 0;
