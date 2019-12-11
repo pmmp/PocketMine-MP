@@ -65,7 +65,7 @@ class SkinData{
 	/** @var SkinImage */
 	private $capeImage;
 	/** @var string */
-	private $geometryData;
+	private $geometryData = "";
 	/** @var string */
 	private $animationData;
 	/** @var bool */
@@ -96,7 +96,9 @@ class SkinData{
 		$this->skinImage = $skinImage;
 		$this->animations = $animations;
 		$this->capeImage = $capeImage;
-		$this->geometryData = json_encode((new CommentedJsonDecoder())->decode($geometryData));
+		if($geometryData !== ""){
+			$this->geometryData = json_encode((new CommentedJsonDecoder())->decode($geometryData));
+		}
 		$this->animationData = $animationData;
 		$this->premium = $premium;
 		$this->persona = $persona;
