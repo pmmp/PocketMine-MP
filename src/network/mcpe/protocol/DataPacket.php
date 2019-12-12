@@ -107,7 +107,7 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	public function __debugInfo(){
 		$data = [];
 		foreach((array) $this as $k => $v){
-			if($k === "buffer" and is_string($v)){
+			if($v === $this->getBuffer()){
 				$data[$k] = bin2hex($v);
 			}elseif(is_string($v) or (is_object($v) and method_exists($v, "__toString"))){
 				$data[$k] = Utils::printable((string) $v);
