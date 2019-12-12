@@ -107,14 +107,11 @@ final class VanillaEffects{
 	/**
 	 * @param int $id
 	 *
-	 * @return Effect
+	 * @return Effect|null
 	 */
-	public static function byMcpeId(int $id) : Effect{
+	public static function byMcpeId(int $id) : ?Effect{
 		self::checkInit();
-		if(!isset(self::$mcpeIdMap[$id])){
-			throw new \InvalidArgumentException("No such effect with MCPE ID $id");
-		}
-		return self::$mcpeIdMap[$id];
+		return self::$mcpeIdMap[$id] ?? null;
 	}
 
 	/**
