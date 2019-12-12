@@ -51,7 +51,7 @@ class Anvil extends McRegion{
 
 		$subChunks = [];
 		foreach($chunk->getSubChunks() as $y => $subChunk){
-			if($subChunk->isEmpty()){
+			if(!($subChunk instanceof SubChunk) or $subChunk->isEmpty()){
 				continue;
 			}
 
