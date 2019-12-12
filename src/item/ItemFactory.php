@@ -410,7 +410,7 @@ class ItemFactory{
 	 * @throws \InvalidArgumentException
 	 */
 	public static function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
-		/** @var Item $item */
+		/** @var Item|null $item */
 		$item = null;
 		if($meta !== -1){
 			if(isset(self::$list[$offset = self::getListOffset($id, $meta)])){
