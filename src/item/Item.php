@@ -695,7 +695,7 @@ class Item implements \JsonSerializable{
 			$nbt = base64_decode($data["nbt_b64"], true);
 		}
 		return ItemFactory::get(
-			(int) $data["id"], (int) ($data["damage"] ?? 0), (int) ($data["count"] ?? 1), $nbt !== "" ? (new LittleEndianNbtSerializer())->read($nbt)->getTag() : null
+			(int) $data["id"], (int) ($data["damage"] ?? 0), (int) ($data["count"] ?? 1), $nbt !== "" ? (new LittleEndianNbtSerializer())->read($nbt)->mustGetCompoundTag() : null
 		);
 	}
 
