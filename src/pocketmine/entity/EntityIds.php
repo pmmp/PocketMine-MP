@@ -127,4 +127,5 @@ interface EntityIds{
 	public const TROPICALFISH = 111, TROPICAL_FISH = 111;
 	public const COD = 112, FISH = 112;
 	public const PANDA = 113;
+	public const BEE = 114;
 }
