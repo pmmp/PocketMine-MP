@@ -260,7 +260,7 @@ class Server{
 	/** @var UUID */
 	private $serverID;
 
-	/** @var \ClassLoader */
+	/** @var \DynamicClassLoader */
 	private $autoloader;
 	/** @var string */
 	private $dataPath;
@@ -456,7 +456,7 @@ class Server{
 	}
 
 	/**
-	 * @return \ClassLoader
+	 * @return \DynamicClassLoader
 	 */
 	public function getLoader(){
 		return $this->autoloader;
@@ -971,12 +971,12 @@ class Server{
 	}
 
 	/**
-	 * @param \ClassLoader              $autoloader
+	 * @param \DynamicClassLoader       $autoloader
 	 * @param \AttachableThreadedLogger $logger
 	 * @param string                    $dataPath
 	 * @param string                    $pluginPath
 	 */
-	public function __construct(\ClassLoader $autoloader, \AttachableThreadedLogger $logger, string $dataPath, string $pluginPath){
+	public function __construct(\DynamicClassLoader $autoloader, \AttachableThreadedLogger $logger, string $dataPath, string $pluginPath){
 		if(self::$instance !== null){
 			throw new \InvalidStateException("Only one server instance can exist at once");
 		}
