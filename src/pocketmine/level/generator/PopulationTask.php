@@ -56,11 +56,9 @@ class PopulationTask extends AsyncTask{
 	}
 
 	public function onRun(){
-		/** @var SimpleChunkManager $manager */
 		$manager = $this->getFromThreadStore("generation.level{$this->levelId}.manager");
-		/** @var Generator $generator */
 		$generator = $this->getFromThreadStore("generation.level{$this->levelId}.generator");
-		if($manager === null or $generator === null){
+		if(!($manager instanceof SimpleChunkManager) or !($generator instanceof Generator)){
 			$this->state = false;
 			return;
 		}

@@ -22,6 +22,7 @@
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
+use function strlen;
 
 class SkinImage{
 
@@ -33,6 +34,9 @@ class SkinImage{
 	private $data;
 
 	public function __construct(int $height, int $width, string $data){
+		if(($expected = $height * $width * 4) !== ($actual = strlen($data))){
+			throw new \InvalidArgumentException("Data should be exactly $expected bytes, got $actual bytes");
+		}
 		$this->height = $height;
 		$this->width = $width;
 		$this->data = $data;

@@ -464,11 +464,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function getFirstPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("firstPlayed", 0, true) : null;
+		return $this->namedtag->getLong("firstPlayed", 0, true);
 	}
 
 	public function getLastPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("lastPlayed", 0, true) : null;
+		return $this->namedtag->getLong("lastPlayed", 0, true);
 	}
 
 	public function hasPlayedBefore() : bool{
@@ -1921,7 +1921,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$animations = [];
 		foreach($packet->clientData["AnimatedImageData"] as $animation){
-			$animations[] = new SkinAnimation(new SkinImage($animation["ImageHeight"], $animation["ImageWidth"], $animation["Image"]), $animation["Type"], $animation["Frames"]);
+			$animations[] = new SkinAnimation(new SkinImage($animation["ImageHeight"], $animation["ImageWidth"], base64_decode($animation["Image"], true)), $animation["Type"], $animation["Frames"]);
 		}
 
 		$skinData = new SkinData(
@@ -1931,7 +1931,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$animations,
 			new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"] ?? "")),
 			base64_decode($packet->clientData["SkinGeometryData"] ?? ""),
-			base64_decode($packet->clientData["AnimationData"] ?? ""),
+			base64_decode($packet->clientData["SkinAnimationData"] ?? ""),
 			$packet->clientData["PremiumSkin"] ?? false,
 			$packet->clientData["PersonaSkin"] ?? false,
 			$packet->clientData["CapeOnClassicSkin"] ?? false,
