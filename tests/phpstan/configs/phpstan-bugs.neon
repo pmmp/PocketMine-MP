@@ -27,9 +27,25 @@ parameters:
 			path: ../../../src/MemoryManager.php
 
 		-
+			message: "#^Comparison operation \"\\>\\=\" between 0 and 2 is always false\\.$#"
+			count: 1
+			path: ../../../src/block/Liquid.php
+
+		-
+			#adjacentSources comparison FP
+			message: "#^If condition is always false\\.$#"
+			count: 1
+			path: ../../../src/block/Liquid.php
+
+		-
 			message: "#^Cannot access an offset on Ds\\\\Deque&iterable\\<pocketmine\\\\block\\\\utils\\\\BannerPattern\\>\\.$#"
 			count: 1
 			path: ../../../src/block/tile/Banner.php
+
+		-
+			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/entity/projectile/Projectile.php
 
 		-
 			message: "#^Cannot access offset int on Ds\\\\Deque&iterable\\<pocketmine\\\\item\\\\WritableBookPage\\>\\.$#"
@@ -37,11 +53,23 @@ parameters:
 			path: ../../../src/item/WritableBookBase.php
 
 		-
-			message: "#^Array \\(array\\) does not accept key int\\.$#"
+			message: "#^Instanceof between int and PharFileInfo will always evaluate to false\\.$#"
 			count: 1
-			path: ../../../src/plugin/PluginDescription.php
+			path: ../../../src/plugin/PharPluginLoader.php
 
 		-
-			message: "#^Array \\(array\\) does not accept key int\\.$#"
+			#ReflectionFunction::getClosureThis() should be nullable
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
-			path: ../../../src/world/format/SubChunk.php
+			path: ../../../src/utils/Utils.php
+
+		-
+			#ReflectionFunction::getClosureScopeClass() should be nullable
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between int\\<min, 3\\> and 4 will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/world/World.php

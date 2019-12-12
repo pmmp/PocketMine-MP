@@ -1,0 +1,13 @@
+parameters:
+	ignoreErrors:
+		-
+			#::add() / ::remove() thread parameter
+			message: "#^If condition is always true\\.$#"
+			count: 2
+			path: ../../../src/thread/ThreadManager.php
+
+		-
+			#->sendBlocks() blocks parameter
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
+			count: 1
+			path: ../../../src/world/World.php

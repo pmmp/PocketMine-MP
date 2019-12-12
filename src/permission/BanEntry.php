@@ -148,10 +148,10 @@ class BanEntry{
 	/**
 	 * @param string $date
 	 *
-	 * @return \DateTime|null
+	 * @return \DateTime
 	 * @throws \RuntimeException
 	 */
-	private static function parseDate(string $date) : ?\DateTime{
+	private static function parseDate(string $date) : \DateTime{
 		$datetime = \DateTime::createFromFormat(self::$format, $date);
 		if(!($datetime instanceof \DateTime)){
 			throw new \RuntimeException("Corrupted date/time: " . implode(", ", \DateTime::getLastErrors()["errors"]));

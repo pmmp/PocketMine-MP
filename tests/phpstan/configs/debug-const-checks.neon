@@ -1,0 +1,21 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 2
+			path: ../../../src/Server.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 1
+			path: ../../../src/Server.php
+
+		-
+			message: "#^If condition is always false\\.$#"
+			count: 1
+			path: ../../../src/updater/AutoUpdater.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: ../../../src/updater/AutoUpdater.php

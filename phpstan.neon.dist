@@ -1,11 +1,13 @@
 includes:
+	- tests/phpstan/configs/debug-const-checks.neon
 	- tests/phpstan/configs/gc-hacks.neon
 	- tests/phpstan/configs/optional-com-dotnet.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
 	- tests/phpstan/configs/pthreads-bugs.neon
+	- tests/phpstan/configs/runtime-type-checks.neon
 
 parameters:
-	level: 3
+	level: 4
 	autoload_files:
 		- tests/phpstan/bootstrap.php
 		- src/PocketMine.php

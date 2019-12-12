@@ -21,7 +21,7 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-[ ! -f phpstan.phar ] && echo "Downloading PHPStan..." && curl -sSLO https://github.com/phpstan/phpstan/releases/download/0.12.0/phpstan.phar
+[ ! -f phpstan.phar ] && echo "Downloading PHPStan..." && curl -sSLO https://github.com/phpstan/phpstan/releases/download/0.12.2/phpstan.phar
 "$PHP_BINARY" phpstan.phar analyze --no-progress --memory-limit=2G || exit 1
 echo "PHPStan scan succeeded"
 
