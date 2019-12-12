@@ -1785,7 +1785,7 @@ abstract class Entity{
 		$this->networkProperties->setFloat(EntityMetadataProperties::SCALE, $this->scale);
 		$this->networkProperties->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
 		$this->networkProperties->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);
-		$this->networkProperties->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? -1);
+		$this->networkProperties->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? 0);
 		$this->networkProperties->setString(EntityMetadataProperties::NAMETAG, $this->nameTag);
 		$this->networkProperties->setString(EntityMetadataProperties::SCORE_TAG, $this->scoreTag);
 
