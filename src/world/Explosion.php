@@ -120,6 +120,10 @@ class Explosion{
 							$vBlockY = $pointerY >= $y ? $y : $y - 1;
 							$vBlockZ = $pointerZ >= $z ? $z : $z - 1;
 
+							$pointerX += $vector->x;
+							$pointerY += $vector->y;
+							$pointerZ += $vector->z;
+
 							if(!$this->subChunkHandler->moveTo($vBlockX, $vBlockY, $vBlockZ, false)){
 								continue;
 							}
@@ -136,10 +140,6 @@ class Explosion{
 									}
 								}
 							}
-
-							$pointerX += $vector->x;
-							$pointerY += $vector->y;
-							$pointerZ += $vector->z;
 						}
 					}
 				}
