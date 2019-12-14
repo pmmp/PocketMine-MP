@@ -101,7 +101,18 @@ class NetworkBinaryStream extends BinaryStream{
 		$capeId = $this->getString();
 		$fullSkinId = $this->getString();
 
-		return new Skin($skinId, $skinData, $skinResourcePatch, new SkinCape($capeId, $capeData, $capeOnClassic), $animations, $geometryData, $animationData, $persona, $premium);
+		return (new Skin(
+			$skinId,
+			"",
+			"",
+			$skinResourcePatch,
+			$geometryData
+		))->setSkinImage($skinData)
+			->setAnimations($animations)
+			->setAnimationData($animationData)
+			->setCape(new SkinCape($capeId, $capeData, $capeOnClassic))
+			->setPersona($persona)
+			->setPremium($premium);
 	}
 
 	public function putSkin(Skin $skin){

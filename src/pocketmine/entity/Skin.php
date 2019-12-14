@@ -63,13 +63,14 @@ class Skin{
 	private $cape;
 
 	/** @var string */
-	private $geometryName;
+	private $geometryName = "";
 
 	public function __construct(string $skinId, string $skinData, string $capeData = "", string $resourcePatch = "", string $geometryData = ""){
 		$this->skinId = $skinId;
 		$this->skinImage = SkinImage::fromLegacy($skinData);
 		$this->resourcePatch = self::generateResourcePatch($resourcePatch, $this->geometryName);
-		$this->cape = new SkinCape(UUID::fromRandom()->toString(), new SkinImage(32, 64, $capeData));
+		$noCape = $capeData === "";
+		$this->cape = new SkinCape(UUID::fromRandom()->toString(), new SkinImage($noCape ? 0 : 32, $noCape ? 0 : 64, $capeData));
 		$this->geometryData = $geometryData;
 	}
 
