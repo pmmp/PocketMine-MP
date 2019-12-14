@@ -27,6 +27,9 @@ use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\types\UIInventoryOffsets;
 use pocketmine\Player;
 
+/**
+ * This is not really a inventory, just a thing for prevent api breaks
+ */
 class PlayerCursorInventory extends BaseInventory{
 	/** @var Player */
 	protected $holder;
@@ -46,6 +49,10 @@ class PlayerCursorInventory extends BaseInventory{
 
 	public function getItem(int $index) : Item{
 		return $this->holder->getUIInventory()->getItem(UIInventoryOffsets::OFFSET_CURSOR);
+	}
+
+	public function getContents(bool $includeEmpty = false) : array{
+		return [$this->getItem(0)];
 	}
 
 	public function getDefaultSize() : int{
