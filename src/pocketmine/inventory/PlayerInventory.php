@@ -66,19 +66,23 @@ class PlayerInventory extends BaseInventory{
 	 * @return bool if the equipment change was successful, false if not.
 	 */
 	public function equipItem(int $hotbarSlot) : bool{
+		$holder = $this->getHolder();
 		if(!$this->isHotbarSlot($hotbarSlot)){
-			$this->sendContents($this->getHolder());
+			if($holder instanceof Player){
+				$this->sendContents($holder);
+			}
 			return false;
 		}
 
-		$ev = new PlayerItemHeldEvent($this->getHolder(), $this->getItem($hotbarSlot), $hotbarSlot);
-		$ev->call();
+		if($holder instanceof Player){
+			$ev = new PlayerItemHeldEvent($holder, $this->getItem($hotbarSlot), $hotbarSlot);
+			$ev->call();
 
-		if($ev->isCancelled()){
-			$this->sendHeldItem($this->getHolder());
-			return false;
+			if($ev->isCancelled()){
+				$this->sendHeldItem($holder);
+				return false;
+			}
 		}
-
 		$this->setHeldItemIndex($hotbarSlot, false);
 
 		return true;

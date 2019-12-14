@@ -33,12 +33,12 @@ class Location extends Position{
 	public $pitch;
 
 	/**
-	 * @param int   $x
-	 * @param int   $y
-	 * @param int   $z
-	 * @param float $yaw
-	 * @param float $pitch
-	 * @param Level $level
+	 * @param float|int $x
+	 * @param float|int $y
+	 * @param float|int $z
+	 * @param float     $yaw
+	 * @param float     $pitch
+	 * @param Level     $level
 	 */
 	public function __construct($x = 0, $y = 0, $z = 0, $yaw = 0.0, $pitch = 0.0, Level $level = null){
 		$this->yaw = $yaw;

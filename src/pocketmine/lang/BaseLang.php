@@ -115,9 +115,9 @@ class BaseLang{
 	}
 
 	/**
-	 * @param string      $str
-	 * @param string[]    $params
-	 * @param string|null $onlyPrefix
+	 * @param string               $str
+	 * @param (float|int|string)[] $params
+	 * @param string|null          $onlyPrefix
 	 *
 	 * @return string
 	 */
