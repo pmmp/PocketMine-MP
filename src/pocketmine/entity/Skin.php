@@ -50,40 +50,47 @@ class Skin{
 	/** @var SkinImage */
 	private $skinImage;
 	/** @var SkinAnimation[] */
-	private $animations;
+	private $animations = [];
 	/** @var string */
 	private $geometryData;
 	/** @var string */
-	private $animationData;
+	private $animationData = "";
 	/** @var bool */
-	private $persona;
+	private $persona = false;
 	/** @var bool */
-	private $premium;
+	private $premium = false;
 	/** @var SkinCape */
 	private $cape;
 
-	/**
-	 * Skin constructor.
-	 * @param string $skinId
-	 * @param SkinImage $skinImage
-	 * @param string $resourcePatch
-	 * @param SkinCape|null $cape
-	 * @param SkinAnimation[] $animations
-	 * @param string $geometryData
-	 * @param string $animationData
-	 * @param bool $persona
-	 * @param bool $premium
-	 */
-	public function __construct(string $skinId, SkinImage $skinImage, string $resourcePatch, ?SkinCape $cape = null, array $animations = [], string $geometryData = "", string $animationData = "", bool $persona = false, bool $premium = false){
+	/** @var string */
+	private $geometryName;
+
+	public function __construct(string $skinId, string $skinData, string $capeData = "", string $resourcePatch = "", string $geometryData = ""){
 		$this->skinId = $skinId;
-		$this->skinImage = $skinImage;
-		$this->resourcePatch = $resourcePatch;
-		$this->cape = $cape ?? new SkinCape("", new SkinImage(0, 0, ""));
-		$this->animations = $animations;
+		$this->skinImage = SkinImage::fromLegacy($skinData);
+		$this->resourcePatch = self::generateResourcePatch($resourcePatch, $this->geometryName);
+		$this->cape = new SkinCape(UUID::fromRandom()->toString(), new SkinImage(32, 64, $capeData));
 		$this->geometryData = $geometryData;
-		$this->animationData = $animationData;
-		$this->persona = $persona;
-		$this->premium = $premium;
+	}
+
+	private function generateResourcePatch(string $input, string &$geometryName) : string{
+		$json = @json_decode($input, true) ?? [];
+
+		if(isset($json["minecraft:geomerty"]["description"]["identifier"]) or isset($json["geometry"]["default"])){
+			$geometryName = $json["minecraft:geomerty"]["description"]["identifier"] ?? $json["geometry"]["default"];
+
+			return $input;
+		}
+
+		$geometryName = $input;
+
+		return json_encode([
+			"minecraft:geometry" => [
+				"description" => [
+					"identifier" => $input
+				]
+			]
+		]);
 	}
 
 	/**
@@ -218,24 +225,60 @@ class Skin{
 	 * @return string
 	 */
 	public function getGeometryName() : string{
-		return json_decode($this->resourcePatch, true)["geometry"]["default"] ?? "";
+		return $this->geometryName;
 	}
 
 	/**
-	 * @param string $skinId
-	 * @param string $skinData
-	 * @param string $capeData
-	 * @param string $geometryName
-	 * @param string $geometryData
+	 * @param SkinImage $skinImage
 	 * @return Skin
 	 */
-	public static function fromLegacy(string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = "") : Skin{
-		return new Skin(
-			$skinId,
-			SkinImage::fromLegacy($skinData),
-			json_encode(["geometry" => ["default" => $geometryName]]),
-			$capeData === "" ? null : new SkinCape((UUID::fromRandom())->toString(), new SkinImage(32, 64, $capeData), true),
-			[],
-			$geometryData);
+	public function setSkinImage(SkinImage $skinImage) : Skin{
+		$this->skinImage = $skinImage;
+		return $this;
+	}
+
+	/**
+	 * @param SkinAnimation[] $animations
+	 * @return Skin
+	 */
+	public function setAnimations(array $animations) : Skin{
+		$this->animations = $animations;
+		return $this;
+	}
+
+	/**
+	 * @param string $animationData
+	 * @return Skin
+	 */
+	public function setAnimationData(string $animationData) : Skin{
+		$this->animationData = $animationData;
+		return $this;
+	}
+
+	/**
+	 * @param bool $persona
+	 * @return Skin
+	 */
+	public function setPersona(bool $persona) : Skin{
+		$this->persona = $persona;
+		return $this;
+	}
+
+	/**
+	 * @param bool $premium
+	 * @return Skin
+	 */
+	public function setPremium(bool $premium) : Skin{
+		$this->premium = $premium;
+		return $this;
+	}
+
+	/**
+	 * @param SkinCape $cape
+	 * @return Skin
+	 */
+	public function setCape(SkinCape $cape) : Skin{
+		$this->cape = $cape;
+		return $this;
 	}
 }

@@ -58,8 +58,8 @@ class FloatingTextParticle extends Particle{
 
 		$this->skin = new Skin(
 			"Standard_Custom",
-			new SkinImage(64, 32, str_repeat("\x00", 8192)),
-			json_encode(["geometry" => ["default" => "geometry.humanoid.custom"]])
+			str_repeat("\x00", 8192),
+			"geometry.humanoid.custom"
 		);
 	}
 

@@ -2037,17 +2037,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$animations[] = new SkinAnimation(new SkinImage($animation["ImageHeight"], $animation["ImageWidth"], base64_decode($animation["Image"])), $animation["Type"], $animation["Frames"]);
 		}
 
-		$skin = new Skin(
+		$skin = (new Skin(
 			$packet->clientData["SkinId"],
-			new SkinImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"])),
+			"",
+			"",
 			base64_decode($packet->clientData["SkinResourcePatch"]),
-			new SkinCape($packet->clientData["CapeId"], new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageHeight"], base64_decode($packet->clientData["CapeData"]))),
-			$animations,
-			base64_decode($packet->clientData["SkinGeometryData"] ?? ""),
-			base64_decode($packet->clientData["SkinAnimationData"] ?? ""),
-			$packet->clientData["PersonaSkin"] ?? false,
-			$packet->clientData["PremiumSkin"] ?? false
-		);
+			base64_decode($packet->clientData["SkinGeometryData"] ?? "")
+		))->setSkinImage(new SkinImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"])))
+			->setAnimations($animations)
+			->setAnimationData(base64_decode($packet->clientData["SkinAnimationData"] ?? ""))
+			->setCape(new SkinCape($packet->clientData["CapeId"], new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageHeight"], base64_decode($packet->clientData["CapeData"]))))
+			->setPersona($packet->clientData["PersonaSkin"] ?? false)
+			->setPremium($packet->clientData["PremiumSkin"] ?? false);
 
 		if(!$skin->isValid()){
 			$this->close("", "disconnectionScreen.invalidSkin");

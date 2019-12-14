@@ -55,9 +55,9 @@ class SkinImage{
 				return new self(128, 64, $data);
 			case 128 * 128 * 4:
 				return new self(128, 128, $data);
+			default:
+				return new self(0, 0, "");
 		}
-
-		throw new \InvalidArgumentException("Unknown size");
 	}
 
 	public function getHeight() : int{

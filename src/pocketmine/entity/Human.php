@@ -125,7 +125,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 */
 	protected static function deserializeSkinNBT(CompoundTag $skinTag) : Skin{
 		if($skinTag->hasTag("Name")){ // legacy format
-			$skin = Skin::fromLegacy(
+			$skin = new Skin(
 				$skinTag->getString("Name"),
 				$skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"),
 				$skinTag->getByteArray("CapeData"),
@@ -143,18 +143,18 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$cape = new SkinCape($skinTag->getString("CapeId"),
 				new SkinImage($skinTag->getInt("CapeImageHeight"), $skinTag->getInt("CapeImageWidth"), $skinTag->getByteArray("CapeData")),
 				boolval($skinTag->getByte("CapeOnClassicSkin", 0)));
-
-			$skin = new Skin(
+			$skin = (new Skin(
 				$skinTag->getString("SkinId"),
-				new SkinImage($skinTag->getInt("SkinImageHeight"), $skinTag->getInt("SkinImageWidth"), $skinTag->getByteArray("SkinData")),
+				"",
+				"",
 				$skinTag->getByteArray("SkinResourcePatch", ""),
-				$cape,
-				$animations,
 				$skinTag->getByteArray("SkinGeometryData", ""),
-				$skinTag->getByteArray("SkinAnimationData", ""),
-				boolval($skinTag->getByte("PersonaSkin", 0)),
-				boolval($skinTag->getByte("PremiumSkin", 0))
-			);
+			))->setSkinImage(new SkinImage($skinTag->getInt("SkinImageHeight"), $skinTag->getInt("SkinImageWidth"), $skinTag->getByteArray("SkinData")))
+				->setAnimations($animations)
+				->setAnimationData($skinTag->getByteArray("SkinAnimationData", ""))
+				->setCape($cape)
+				->setPersona(boolval($skinTag->getByte("PersonaSkin", 0)))
+				->setPremium(boolval($skinTag->getByte("PremiumSkin", 0)));
 		}
 
 		$skin->validate();
