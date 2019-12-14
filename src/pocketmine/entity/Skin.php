@@ -77,8 +77,8 @@ class Skin{
 	private function generateResourcePatch(string $input, string &$geometryName) : string{
 		$json = @json_decode($input, true) ?? [];
 
-		if(isset($json["minecraft:geomerty"]["description"]["identifier"]) or isset($json["geometry"]["default"])){
-			$geometryName = $json["minecraft:geomerty"]["description"]["identifier"] ?? $json["geometry"]["default"];
+		if(isset($json["geometry"]["default"])){
+			$geometryName = $json["geometry"]["default"];
 
 			return $input;
 		}
@@ -86,10 +86,8 @@ class Skin{
 		$geometryName = $input;
 
 		return json_encode([
-			"minecraft:geometry" => [
-				"description" => [
-					"identifier" => $input
-				]
+			"geometry" => [
+				"default" => $input
 			]
 		]);
 	}

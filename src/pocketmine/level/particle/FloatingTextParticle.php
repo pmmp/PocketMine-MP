@@ -59,6 +59,7 @@ class FloatingTextParticle extends Particle{
 		$this->skin = new Skin(
 			"Standard_Custom",
 			str_repeat("\x00", 8192),
+			"",
 			"geometry.humanoid.custom"
 		);
 	}
