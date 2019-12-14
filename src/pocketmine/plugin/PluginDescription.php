@@ -38,6 +38,7 @@ use function strlen;
 use function strtoupper;
 use function substr;
 use function version_compare;
+use function yaml_parse;
 
 class PluginDescription{
 	private $map;

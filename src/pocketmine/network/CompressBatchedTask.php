@@ -35,7 +35,7 @@ class CompressBatchedTask extends AsyncTask{
 
 	/**
 	 * @param BatchPacket $batch
-	 * @param string[]    $targets
+	 * @param Player[]    $targets
 	 */
 	public function __construct(BatchPacket $batch, array $targets){
 		$this->data = $batch->payload;

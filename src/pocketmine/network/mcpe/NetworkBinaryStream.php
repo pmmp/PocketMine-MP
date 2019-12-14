@@ -39,9 +39,9 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\network\mcpe\protocol\types\SkinCape;
+use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
-use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
@@ -87,9 +87,9 @@ class NetworkBinaryStream extends BinaryStream{
 		$animations = [];
 		for($i = 0; $i < $animationCount; ++$i){
 			$animations[] = new SkinAnimation(
-				$skinImage = $this->getSkinImage(),
-				$animationType = $this->getLInt(),
-				$animationFrames = $this->getLFloat()
+				$this->getSkinImage(),
+				$this->getLInt(),
+				$this->getLFloat()
 			);
 		}
 		$capeData = $this->getSkinImage();

@@ -168,7 +168,7 @@ class TimingsHandler{
 
 	public function stopTiming(){
 		if(self::$enabled){
-			if(--$this->timingDepth !== 0 or $this->start === 0){
+			if(--$this->timingDepth !== 0 or $this->start == 0){
 				return;
 			}
 

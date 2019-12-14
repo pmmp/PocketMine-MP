@@ -524,12 +524,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var Block[]|null */
 	protected $blocksAround = null;
 
-	/** @var float|null */
-	public $lastX = null;
-	/** @var float|null */
-	public $lastY = null;
-	/** @var float|null */
-	public $lastZ = null;
+	/** @var float */
+	public $lastX;
+	/** @var float */
+	public $lastY;
+	/** @var float */
+	public $lastZ;
 
 	/** @var Vector3 */
 	protected $motion;

@@ -114,6 +114,7 @@ use function asort;
 use function assert;
 use function base64_encode;
 use function class_exists;
+use function cli_set_process_title;
 use function count;
 use function define;
 use function explode;
@@ -128,7 +129,6 @@ use function getmypid;
 use function getopt;
 use function gettype;
 use function implode;
-use function ini_get;
 use function ini_set;
 use function is_array;
 use function is_bool;
@@ -2358,6 +2358,9 @@ class Server{
 		$this->crashDump();
 	}
 
+	/**
+	 * @return void
+	 */
 	public function crashDump(){
 		while(@ob_end_flush()){}
 		if(!$this->isRunning){

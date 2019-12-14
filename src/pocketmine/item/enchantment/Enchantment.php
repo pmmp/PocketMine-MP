@@ -188,6 +188,9 @@ class Enchantment{
 	 * @return Enchantment|null
 	 */
 	public static function getEnchantment(int $id) : ?Enchantment{
+		if($id < 0 or $id >= self::$enchantments->getSize()){
+			return null;
+		}
 		return self::$enchantments[$id] ?? null;
 	}
 

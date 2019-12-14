@@ -194,14 +194,39 @@ class McRegion extends BaseLevelProvider{
 			$chunk->getInt("xPos"),
 			$chunk->getInt("zPos"),
 			$subChunks,
-			$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
-			$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
+			$chunk->hasTag("Entities", ListTag::class) ? self::getCompoundList("Entities", $chunk->getListTag("Entities")) : [],
+			$chunk->hasTag("TileEntities", ListTag::class) ? self::getCompoundList("TileEntities", $chunk->getListTag("TileEntities")) : [],
 			$biomeIds,
 			$heightMap
 		);
 		$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
 		$result->setGenerated(true);
+		return $result;
+	}
+
+	/**
+	 * @param string $context
+	 * @param ListTag $list
+	 *
+	 * @return CompoundTag[]
+	 * @throws CorruptedChunkException
+	 */
+	protected static function getCompoundList(string $context, ListTag $list) : array{
+		if($list->count() === 0){ //empty lists might have wrong types, we don't care
+			return [];
+		}
+		if($list->getTagType() !== NBT::TAG_Compound){
+			throw new CorruptedChunkException("Expected TAG_List<TAG_Compound> for '$context'");
+		}
+		$result = [];
+		foreach($list as $tag){
+			if(!($tag instanceof CompoundTag)){
+				//this should never happen, but it's still possible due to lack of native type safety
+				throw new CorruptedChunkException("Expected TAG_List<TAG_Compound> for '$context'");
+			}
+			$result[] = $tag;
+		}
 		return $result;
 	}
 

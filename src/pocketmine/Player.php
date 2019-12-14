@@ -490,11 +490,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function getFirstPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("firstPlayed", 0, true) : null;
+		return $this->namedtag->getLong("firstPlayed", 0, true);
 	}
 
 	public function getLastPlayed(){
-		return $this->namedtag instanceof CompoundTag ? $this->namedtag->getLong("lastPlayed", 0, true) : null;
+		return $this->namedtag->getLong("lastPlayed", 0, true);
 	}
 
 	public function hasPlayedBefore() : bool{

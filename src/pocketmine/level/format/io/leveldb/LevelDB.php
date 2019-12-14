@@ -26,6 +26,7 @@ namespace pocketmine\level\format\io\leveldb;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
+use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\Flat;
@@ -33,7 +34,12 @@ use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
 use pocketmine\nbt\LittleEndianNBTStream;
-use pocketmine\nbt\tag\{ByteTag, CompoundTag, FloatTag, LongTag, StringTag, IntTag};
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\LongTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
@@ -56,8 +62,8 @@ use function substr;
 use function time;
 use function trim;
 use function unpack;
-use const LEVELDB_ZLIB_RAW_COMPRESSION;
 use const INT32_MAX;
+use const LEVELDB_ZLIB_RAW_COMPRESSION;
 
 class LevelDB extends BaseLevelProvider{
 
@@ -409,24 +415,27 @@ class LevelDB extends BaseLevelProvider{
 		/** @var CompoundTag[] $entities */
 		$entities = [];
 		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and $entityData !== ""){
-			$entities = $nbt->read($entityData, true);
-			if(!is_array($entities)){
-				$entities = [$entities];
+			$entityTags = $nbt->read($entityData, true);
+			foreach((is_array($entityTags) ? $entityTags : [$entityTags]) as $entityTag){
+				if(!($entityTag instanceof CompoundTag)){
+					throw new CorruptedChunkException("Entity root tag should be TAG_Compound");
+				}
+				if($entityTag->hasTag("id", IntTag::class)){
+					$entityTag->setInt("id", $entityTag->getInt("id") & 0xff); //remove type flags - TODO: use these instead of removing them)
+				}
+				$entities[] = $entityTag;
 			}
 		}
 
-		/** @var CompoundTag $entityNBT */
-		foreach($entities as $entityNBT){
-			if($entityNBT->hasTag("id", IntTag::class)){
-				$entityNBT->setInt("id", $entityNBT->getInt("id") & 0xff); //remove type flags - TODO: use these instead of removing them)
-			}
-		}
-
+		/** @var CompoundTag[] $tiles */
 		$tiles = [];
 		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and $tileData !== ""){
-			$tiles = $nbt->read($tileData, true);
-			if(!is_array($tiles)){
-				$tiles = [$tiles];
+			$tileTags = $nbt->read($tileData, true);
+			foreach((is_array($tileTags) ? $tileTags : [$tileTags]) as $tileTag){
+				if(!($tileTag instanceof CompoundTag)){
+					throw new CorruptedChunkException("Tile root tag should be TAG_Compound");
+				}
+				$tiles[] = $tileTag;
 			}
 		}
 
