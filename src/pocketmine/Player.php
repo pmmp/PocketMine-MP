@@ -79,6 +79,7 @@ use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\form\ServerSettingsForm;
 use pocketmine\inventory\CraftingGrid;
+use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
 use pocketmine\inventory\PlayerUIInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
@@ -302,6 +303,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $permanentWindows = [];
 	/** @var PlayerUIInventory */
 	protected $uiInventory;
+	/** @var PlayerCursorInventory */
+	protected $cursorInventory;
 	/** @var PlayerOffHandInventory */
 	protected $offHandInventory;
 	/** @var CraftingGrid */
@@ -4103,6 +4106,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->addWindow($this->getOffHandInventory(), ContainerIds::OFFHAND, true);
 		$this->addWindow($this->getArmorInventory(), ContainerIds::ARMOR, true);
 
+		$this->cursorInventory = new PlayerCursorInventory($this);
 		$this->uiInventory = new PlayerUIInventory($this);
 		$this->addWindow($this->uiInventory, ContainerIds::UI, true);
 
@@ -4113,10 +4117,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * @deprecated
-	 * @return PlayerUIInventory
+	 * @return PlayerCursorInventory
 	 */
-	public function getCursorInventory() : PlayerUIInventory{
-		return $this->uiInventory;
+	public function getCursorInventory() : PlayerCursorInventory{
+		return $this->cursorInventory;
 	}
 
 	public function getUIInventory() : PlayerUIInventory{
