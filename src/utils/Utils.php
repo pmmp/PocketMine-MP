@@ -409,10 +409,11 @@ class Utils{
 	/**
 	 * @param array $trace
 	 * @param int   $maxStringLength
+	 * @param int   $depth           each depth level indents all resultant messages by 2 spaces
 	 *
 	 * @return array
 	 */
-	public static function printableTrace(array $trace, int $maxStringLength = 80) : array{
+	public static function printableTrace(array $trace, int $maxStringLength = 80, int $depth = 0) : array{
 		$messages = [];
 		for($i = 0; isset($trace[$i]); ++$i){
 			$params = "";
@@ -436,7 +437,7 @@ class Utils{
 					return gettype($value) . " " . Utils::printable((string) $value);
 				}, $args));
 			}
-			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
+			$messages[] = str_repeat("  ", $depth) . "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
 		}
 		return $messages;
 	}

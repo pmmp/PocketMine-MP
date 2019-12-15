@@ -153,6 +153,37 @@ class MainLogger extends \AttachableThreadedLogger{
 	 * @param array|null $trace
 	 */
 	public function logException(\Throwable $e, $trace = null){
+		$messages = [];
+		self::logExceptionToArray($e, $trace, 0, $messages);
+
+		$this->synchronized(function() use ($messages) : void{
+			foreach($messages as $depth => [$message, $stack]) {
+				if($depth === 0){
+					$this->critical($message);
+				}else{
+					$this->debug(str_repeat("  ", $depth - 1) . "Caused by:", true);
+					$this->debug(str_repeat("  ", $depth) . $message, true);
+				}
+				foreach($stack as $line){
+					$this->debug($line, true);
+				}
+			}
+		});
+
+		$this->syncFlushBuffer();
+	}
+
+	/**
+	 * Appends exceptions messages recursively to the referenced array.
+	 *
+	 * Each element of the array is a [string, string[]], containing the message and the trace lines.
+	 *
+	 * @param \Throwable                $e
+	 * @param array|null                $trace
+	 * @param int                       $depth
+	 * @param array<string|string[]> &$ret
+	 */
+	private static function logExceptionToArray(\Throwable $e, $trace, int $depth, array &$ret) : void{
 		if($trace === null){
 			$trace = $e->getTrace();
 		}
@@ -170,16 +201,14 @@ class MainLogger extends \AttachableThreadedLogger{
 		$errfile = Filesystem::cleanPath($errfile);
 
 		$message = get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
-		$stack = Utils::printableTrace($trace);
+		$stack = Utils::printableTrace($trace, 80, $depth);
 
-		$this->synchronized(function() use ($message, $stack) : void{
-			$this->log(LogLevel::CRITICAL, $message);
-			foreach($stack as $line){
-				$this->debug($line, true);
-			}
-		});
+		$ret[] = [$message, $stack];
 
-		$this->syncFlushBuffer();
+		$inner = $e->getPrevious();
+		if($inner !== null){
+			self::logExceptionToArray($inner, null, $depth + 1, $ret);
+		}
 	}
 
 	public function log($level, $message){
