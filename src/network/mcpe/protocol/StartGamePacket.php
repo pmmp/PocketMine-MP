@@ -30,6 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\GameRules;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
@@ -106,7 +107,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public $isTexturePacksRequired = true;
 	/** @var array */
 	public $gameRules = [ //TODO: implement this
-		"naturalregeneration" => [1, false] //Hack for client side regeneration
+		GameRules::NATURAL_REGENERATION => [1, false] //Hack for client side regeneration
 	];
 	/** @var bool */
 	public $hasBonusChestEnabled = false;
