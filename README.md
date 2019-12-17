@@ -2,18 +2,6 @@
 	<b>A Fork of PocketMine-MP</b>
 </p>
 
-[![Build Status](https://travis-ci.org/pmmp/PocketMine-MP.svg?branch=master)](https://travis-ci.org/pmmp/PocketMine-MP)
-
-## Getting started
-- [Documentation](http://pmmp.readthedocs.org/)
-- [Installation instructions](https://pmmp.readthedocs.io/en/rtfd/installation.html)
-- [Docker image](https://hub.docker.com/r/pmmp/pocketmine-mp)
-- [Plugin repository](https://poggit.pmmp.io/plugins)
-
-## Discussion/Help
-- [Forums](https://forums.pmmp.io/)
-- [Community Discord](https://discord.gg/bmSAZBG)
-- [StackOverflow](https://stackoverflow.com/tags/pocketmine)
 
 ## For developers
  * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
@@ -21,13 +9,4 @@
  * [ExamplePlugin](https://github.com/pmmp/ExamplePlugin/) - Example plugin demonstrating some basic API features
  * [Contributing Guidelines](CONTRIBUTING.md)
 
-## Donate
-- Bitcoin Cash (BCH): `qq3r46hn6ljnhnqnfwxt5pg3g447eq9jhvw5ddfear`
-- Bitcoin (BTC): `171u8K9e4FtU6j3e5sqNoxKUgEw9qWQdRV`
-- Stellar Lumens (XLM): `GAAC5WZ33HCTE3BFJFZJXONMEIBNHFLBXM2HJVAZHXXPYA3HP5XPPS7T`
-- [Patreon](https://www.patreon.com/pocketminemp)
-
-## Licensing information
-This project is licensed under LGPL-3.0. Please see the [LICENSE](/LICENSE) file for details.
-
-pmmp/PocketMine are not affiliated with Mojang. All brands and trademarks belong to their respective owners. PocketMine-MP is not a Mojang-approved software, nor is it associated with Mojang.
+pmmp/PocketMineBetter-MP are not affiliated with Mojang. All brands and trademarks belong to their respective owners. PocketMine-MP is not a Mojang-approved software, nor is it associated with Mojang.
