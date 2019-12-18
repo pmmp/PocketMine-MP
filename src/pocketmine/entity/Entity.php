@@ -1102,7 +1102,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->justCreated = false;
 
 		$changedProperties = $this->propertyManager->getDirty();
-		if(!empty($changedProperties)){
+		if(count($changedProperties) > 0){
 			$this->sendData($this->hasSpawned, $changedProperties);
 			$this->propertyManager->clearDirtyProperties();
 		}

@@ -40,6 +40,7 @@ use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use function array_merge;
+use function count;
 use function get_class;
 use const PHP_INT_MAX;
 
@@ -727,7 +728,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?RayTraceResult{
 		$bbs = $this->getCollisionBoxes();
-		if(empty($bbs)){
+		if(count($bbs) === 0){
 			return null;
 		}
 

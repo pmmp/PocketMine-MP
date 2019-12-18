@@ -168,7 +168,7 @@ class PermissionManager{
 	public function unsubscribeFromAllPermissions(Permissible $permissible) : void{
 		foreach($this->permSubs as $permission => &$subs){
 			unset($subs[spl_object_hash($permissible)]);
-			if(empty($subs)){
+			if(count($subs) === 0){
 				unset($this->permSubs[$permission]);
 			}
 		}
