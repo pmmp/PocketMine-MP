@@ -140,6 +140,6 @@ class ShapelessRecipe implements CraftingRecipe{
 			return false; //failed to match the needed item to a given item
 		}
 
-		return empty($input); //crafting grid should be empty apart from the given ingredient stacks
+		return count($input) === 0; //crafting grid should be empty apart from the given ingredient stacks
 	}
 }

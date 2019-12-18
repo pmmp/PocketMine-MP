@@ -1213,9 +1213,9 @@ class Server{
 		}
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
 		if(!($this->getLevelByName($name) instanceof Level)){
-			return is_dir($path) and !empty(array_filter(scandir($path, SCANDIR_SORT_NONE), function($v){
+			return is_dir($path) and count(array_filter(scandir($path, SCANDIR_SORT_NONE), function($v){
 				return $v !== ".." and $v !== ".";
-			}));
+			})) > 0;
 		}
 
 		return true;
@@ -1929,14 +1929,14 @@ class Server{
 	 * @param bool         $immediate
 	 */
 	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
-		if(empty($packets)){
+		if(count($packets) === 0){
 			throw new \InvalidArgumentException("Cannot send empty batch");
 		}
 		Timings::$playerNetworkTimer->startTiming();
 
 		$targets = array_filter($players, function(Player $player) : bool{ return $player->isConnected(); });
 
-		if(!empty($targets)){
+		if(count($targets) > 0){
 			$pk = new BatchPacket();
 
 			foreach($packets as $p){

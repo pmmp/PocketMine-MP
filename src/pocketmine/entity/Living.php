@@ -263,7 +263,7 @@ abstract class Living extends Entity implements Damageable{
 	 * @return bool
 	 */
 	public function hasEffects() : bool{
-		return !empty($this->effects);
+		return count($this->effects) > 0;
 	}
 
 	/**
@@ -332,7 +332,7 @@ abstract class Living extends Entity implements Damageable{
 			}
 		}
 
-		if(!empty($colors)){
+		if(count($colors) > 0){
 			$this->propertyManager->setInt(Entity::DATA_POTION_COLOR, Color::mix(...$colors)->toARGB());
 			$this->propertyManager->setByte(Entity::DATA_POTION_AMBIENT, $ambient ? 1 : 0);
 		}else{
@@ -712,7 +712,7 @@ abstract class Living extends Entity implements Damageable{
 			}
 		}
 
-		return !empty($this->effects);
+		return count($this->effects) > 0;
 	}
 
 	/**
@@ -892,7 +892,7 @@ abstract class Living extends Entity implements Damageable{
 	 */
 	public function getTargetBlock(int $maxDistance, array $transparent = []) : ?Block{
 		$line = $this->getLineOfSight($maxDistance, 1, $transparent);
-		if(!empty($line)){
+		if(count($line) > 0){
 			return array_shift($line);
 		}
 

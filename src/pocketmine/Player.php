@@ -741,7 +741,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$data->overloads[0][0] = $parameter;
 
 			$aliases = $command->getAliases();
-			if(!empty($aliases)){
+			if(count($aliases) > 0){
 				if(!in_array($data->commandName, $aliases, true)){
 					//work around a client bug which makes the original name not show when aliases are used
 					$aliases[] = $data->commandName;
@@ -1208,7 +1208,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->loadQueue = $newOrder;
-		if(!empty($this->loadQueue) or !empty($unloadChunks)){
+		if(count($this->loadQueue) > 0 or count($unloadChunks) > 0){
 			$pk = new NetworkChunkPublisherUpdatePacket();
 			$pk->x = $this->getFloorX();
 			$pk->y = $this->getFloorY();
