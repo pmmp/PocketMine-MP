@@ -328,12 +328,12 @@ class SimpleCommandMap implements CommandMap{
 				}
 			}
 
-			if(!empty($recursive)){
+			if(count($recursive) > 0){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.recursive", [$alias, implode(", ", $recursive)]));
 				continue;
 			}
 
-			if(!empty($bad)){
+			if(count($bad) > 0){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.notFound", [$alias, implode(", ", $bad)]));
 				continue;
 			}

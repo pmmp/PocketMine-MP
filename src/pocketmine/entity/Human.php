@@ -61,6 +61,7 @@ use function array_merge;
 use function array_rand;
 use function array_values;
 use function ceil;
+use function count;
 use function in_array;
 use function max;
 use function min;
@@ -554,7 +555,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 		}
 
-		if(!empty($equipment)){
+		if(count($equipment) > 0){
 			$repairItem = $equipment[$k = array_rand($equipment)];
 			if($repairItem->getDamage() > 0){
 				$repairAmount = min($repairItem->getDamage(), $xpValue * 2);

@@ -38,6 +38,7 @@ use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use function ceil;
+use function count;
 use function max;
 
 class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
@@ -232,7 +233,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 			$packets[] = $pk;
 		}
 
-		if(!empty($packets)){
+		if(count($packets) > 0){
 			foreach($this->getInventory()->getViewers() as $player){
 				$windowId = $player->getWindowId($this->getInventory());
 				if($windowId > 0){
