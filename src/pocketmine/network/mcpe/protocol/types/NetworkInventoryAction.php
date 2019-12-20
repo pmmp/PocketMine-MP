@@ -100,6 +100,8 @@ class NetworkInventoryAction{
 			case self::SOURCE_CONTAINER:
 				$this->windowId = $packet->getVarInt();
 				break;
+			case self::SOURCE_GLOBAL_INVENTORY: // TODO: find out what this is used for
+				break;
 			case self::SOURCE_WORLD:
 				$this->sourceFlags = $packet->getUnsignedVarInt();
 				break;
@@ -135,9 +137,10 @@ class NetworkInventoryAction{
 		$packet->putUnsignedVarInt($this->sourceType);
 
 		switch($this->sourceType){
-			case self::SOURCE_GLOBAL_INVENTORY: // TODO: find out what this is used for
 			case self::SOURCE_CONTAINER:
 				$packet->putVarInt($this->windowId);
+				break;
+			case self::SOURCE_GLOBAL_INVENTORY:
 				break;
 			case self::SOURCE_WORLD:
 				$packet->putUnsignedVarInt($this->sourceFlags);
