@@ -124,38 +124,35 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function deserializeSkinNBT(CompoundTag $skinTag) : Skin{
-		if($skinTag->hasTag("Name")){ // legacy format
-			$skin = new Skin(
-				$skinTag->getString("Name"),
-				$skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"),
-				$skinTag->getByteArray("CapeData"),
-				$skinTag->getString("GeometryName"),
-				$skinTag->getByteArray("GeometryData")
-			);
+		if($skinTag->hasTag("SkinImageHeight", IntTag::class)){
+			$skinImage = new SkinImage($skinTag->getInt("SkinImageHeight"), $skinTag->getInt("SkinImageWidth"), $skinTag->getByteArray("Data"));
 		}else{
-			$animations = [];
-			foreach($skinTag->getListTag("AnimatedImageData")->getValue() as $tag){
-				if($tag instanceof CompoundTag){
-					$animations[] = new SkinAnimation(new SkinImage($tag->getInt("ImageHeight"), $tag->getInt("ImageWidth"), $tag->getByteArray("Image")), $tag->getByte("Type"), $tag->getFloat("Frames"));
-				}
-			}
-
-			$cape = new Cape($skinTag->getString("CapeId"),
-				new SkinImage($skinTag->getInt("CapeImageHeight"), $skinTag->getInt("CapeImageWidth"), $skinTag->getByteArray("CapeData")),
-				boolval($skinTag->getByte("CapeOnClassicSkin", 0)));
-			$skin = (new Skin(
-				$skinTag->getString("SkinId"),
-				"",
-				"",
-				$skinTag->getByteArray("SkinResourcePatch", ""),
-				$skinTag->getByteArray("SkinGeometryData", ""),
-			))->setSkinImage(new SkinImage($skinTag->getInt("SkinImageHeight"), $skinTag->getInt("SkinImageWidth"), $skinTag->getByteArray("SkinData")))
-				->setAnimations($animations)
-				->setAnimationData($skinTag->getByteArray("SkinAnimationData", ""))
-				->setCape($cape)
-				->setPersona(boolval($skinTag->getByte("PersonaSkin", 0)))
-				->setPremium(boolval($skinTag->getByte("PremiumSkin", 0)));
+			$skinImage = SkinImage::fromLegacy($skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"));
 		}
+
+		$animations = [];
+		foreach($skinTag->getListTag("AnimatedImageData")->getValue() as $tag){
+			if($tag instanceof CompoundTag){
+				$animations[] = new SkinAnimation(new SkinImage($tag->getInt("ImageHeight"), $tag->getInt("ImageWidth"), $tag->getByteArray("Image")), $tag->getByte("Type"), $tag->getFloat("Frames"));
+			}
+		}
+
+		$cape = new Cape(
+			$skinTag->hasTag("CapeId", StringTag::class) ? $skinTag->getString("CapeId") : UUID::fromRandom()->toString(),
+			new SkinImage($skinTag->getInt("CapeImageHeight", 32), $skinTag->getInt("CapeImageWidth", 64), $skinTag->getByteArray("CapeData")),
+			boolval($skinTag->getByte("CapeOnClassicSkin", 0)));
+		$skin = (new Skin(
+			$skinTag->getString("Name"),
+			"",
+			"",
+			$skinTag->hasTag("SkinResourcePatch", ByteArrayTag::class) ? $skinTag->getByteArray("SkinResourcePatch") : $skinTag->getString("GeometryName"),
+			$skinTag->getByteArray("GeometryData")
+			))->setSkinImage($skinImage)
+			->setAnimations($animations)
+			->setAnimationData($skinTag->getByteArray("SkinAnimationData", ""))
+			->setCape($cape)
+			->setPersona(boolval($skinTag->getByte("PersonaSkin", 0)))
+			->setPremium(boolval($skinTag->getByte("PremiumSkin", 0)));
 
 		$skin->validate();
 		return $skin;
@@ -886,8 +883,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		if($this->skin !== null){
 			$this->namedtag->setTag(new CompoundTag("Skin", [
-				new StringTag("SkinId", $this->skin->getSkinId()),
-				new ByteArrayTag("SkinData", $this->skin->getSkinImage()->getData()),
+				new StringTag("Name", $this->skin->getSkinId()),
+				new ByteArrayTag("Data", $this->skin->getSkinImage()->getData()),
 				new IntTag("SkinImageHeight", $this->skin->getSkinImage()->getHeight()),
 				new IntTag("SkinImageWidth", $this->skin->getSkinImage()->getWidth()),
 				new ByteArrayTag("CapeData", $this->skin->getCape()->getImage()->getData()),
@@ -904,7 +901,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					]);
 				}, $this->skin->getAnimations()), NBT::TAG_Compound),
 				new ByteArrayTag("SkinResourcePatch", $this->skin->getResourcePatch()),
-				new ByteArrayTag("SkinGeometryData", $this->skin->getGeometryData()),
+				new StringTag("GeometryName", $this->skin->getGeometryName()),
+				new ByteArrayTag("GeometryData", $this->skin->getGeometryData()),
 				new ByteArrayTag("SkinAnimationData", $this->skin->getAnimationData()),
 				new ByteTag("PersonaSkin", intval($this->skin->isPersona())),
 				new ByteTag("PremiumSkin", intval($this->skin->isPremium()))
