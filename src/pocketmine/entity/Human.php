@@ -57,7 +57,7 @@ use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
-use pocketmine\network\mcpe\protocol\types\SkinCape;
+use pocketmine\network\mcpe\protocol\types\Cape;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
@@ -140,7 +140,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 
-			$cape = new SkinCape($skinTag->getString("CapeId"),
+			$cape = new Cape($skinTag->getString("CapeId"),
 				new SkinImage($skinTag->getInt("CapeImageHeight"), $skinTag->getInt("CapeImageWidth"), $skinTag->getByteArray("CapeData")),
 				boolval($skinTag->getByte("CapeOnClassicSkin", 0)));
 			$skin = (new Skin(

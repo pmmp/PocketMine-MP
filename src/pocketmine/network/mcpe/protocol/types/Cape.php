@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-class SkinCape{
+class Cape{
 	/** @var string */
 	private $id;
 	/** @var bool */

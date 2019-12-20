@@ -38,7 +38,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
-use pocketmine\network\mcpe\protocol\types\SkinCape;
+use pocketmine\network\mcpe\protocol\types\Cape;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
@@ -110,7 +110,7 @@ class NetworkBinaryStream extends BinaryStream{
 		))->setSkinImage($skinData)
 			->setAnimations($animations)
 			->setAnimationData($animationData)
-			->setCape(new SkinCape($capeId, $capeData, $capeOnClassic))
+			->setCape(new Cape($capeId, $capeData, $capeOnClassic))
 			->setPersona($persona)
 			->setPremium($premium);
 	}

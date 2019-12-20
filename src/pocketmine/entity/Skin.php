@@ -25,7 +25,7 @@ namespace pocketmine\entity;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
-use pocketmine\network\mcpe\protocol\types\SkinCape;
+use pocketmine\network\mcpe\protocol\types\Cape;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\utils\UUID;
 use function implode;
@@ -59,7 +59,7 @@ class Skin{
 	private $persona = false;
 	/** @var bool */
 	private $premium = false;
-	/** @var SkinCape */
+	/** @var Cape */
 	private $cape;
 
 	/** @var string */
@@ -70,7 +70,7 @@ class Skin{
 		$this->skinImage = SkinImage::fromLegacy($skinData);
 		$this->resourcePatch = self::generateResourcePatch($resourcePatch, $this->geometryName);
 		$noCape = $capeData === "";
-		$this->cape = new SkinCape(UUID::fromRandom()->toString(), new SkinImage($noCape ? 0 : 32, $noCape ? 0 : 64, $capeData));
+		$this->cape = new Cape(UUID::fromRandom()->toString(), new SkinImage($noCape ? 0 : 32, $noCape ? 0 : 64, $capeData));
 		$this->geometryData = $geometryData;
 	}
 
@@ -162,9 +162,9 @@ class Skin{
 	}
 
 	/**
-	 * @return SkinCape
+	 * @return Cape
 	 */
-	public function getCape() : SkinCape{
+	public function getCape() : Cape{
 		return $this->cape;
 	}
 
@@ -273,10 +273,10 @@ class Skin{
 	}
 
 	/**
-	 * @param SkinCape $cape
+	 * @param Cape $cape
 	 * @return Skin
 	 */
-	public function setCape(SkinCape $cape) : Skin{
+	public function setCape(Cape $cape) : Skin{
 		$this->cape = $cape;
 		return $this;
 	}

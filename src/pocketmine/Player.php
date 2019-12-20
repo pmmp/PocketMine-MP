@@ -162,7 +162,7 @@ use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
-use pocketmine\network\mcpe\protocol\types\SkinCape;
+use pocketmine\network\mcpe\protocol\types\Cape;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\network\mcpe\protocol\types\UIInventoryOffsets;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
@@ -2049,7 +2049,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		))->setSkinImage(new SkinImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"])))
 			->setAnimations($animations)
 			->setAnimationData(base64_decode($packet->clientData["SkinAnimationData"] ?? ""))
-			->setCape(new SkinCape($packet->clientData["CapeId"], new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageHeight"], base64_decode($packet->clientData["CapeData"]))))
+			->setCape(new Cape($packet->clientData["CapeId"], new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageHeight"], base64_decode($packet->clientData["CapeData"]))))
 			->setPersona($packet->clientData["PersonaSkin"] ?? false)
 			->setPremium($packet->clientData["PremiumSkin"] ?? false);
 
