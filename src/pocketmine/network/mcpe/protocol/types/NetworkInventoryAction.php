@@ -37,10 +37,10 @@ use pocketmine\Player;
 
 class NetworkInventoryAction{
 	public const SOURCE_CONTAINER = 0;
-
+	public const SOURCE_GLOBAL_INVENTORY = 1;
 	public const SOURCE_WORLD = 2; //drop/pickup item entity
 	public const SOURCE_CREATIVE = 3;
-	public const SOURCE_CRAFTING_GRID = 100;
+	public const SOURCE_UNTRACKED_INTERACTION_UI = 100;
 	public const SOURCE_TODO = 99999;
 
 	/**
@@ -52,8 +52,6 @@ class NetworkInventoryAction{
 	 *
 	 * Expect these to change in the future.
 	 */
-	public const SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = -2;
-	public const SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = -3;
 	public const SOURCE_TYPE_CRAFTING_RESULT = -4;
 	public const SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
 
@@ -61,8 +59,6 @@ class NetworkInventoryAction{
 	public const SOURCE_TYPE_FAKE_INVENTORY_MATERIAL = -11;
 	public const SOURCE_TYPE_FAKE_INVENTORY_RESULT = -12;
 
-	public const SOURCE_TYPE_ENCHANT_INPUT = -15;
-	public const SOURCE_TYPE_ENCHANT_MATERIAL = -16;
 	public const SOURCE_TYPE_ENCHANT_OUTPUT = -17;
 
 	public const SOURCE_TYPE_TRADING_INPUT_1 = -20;
@@ -109,7 +105,7 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
-			case self::SOURCE_CRAFTING_GRID:
+			case self::SOURCE_UNTRACKED_INTERACTION_UI:
 			case self::SOURCE_TODO:
 				$this->windowId = $packet->getVarInt();
 				switch($this->windowId){
@@ -139,6 +135,7 @@ class NetworkInventoryAction{
 		$packet->putUnsignedVarInt($this->sourceType);
 
 		switch($this->sourceType){
+			case self::SOURCE_GLOBAL_INVENTORY: // TODO: find out what this is used for
 			case self::SOURCE_CONTAINER:
 				$packet->putVarInt($this->windowId);
 				break;
@@ -147,7 +144,7 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
-			case self::SOURCE_CRAFTING_GRID:
+			case self::SOURCE_UNTRACKED_INTERACTION_UI:
 			case self::SOURCE_TODO:
 				$packet->putVarInt($this->windowId);
 				break;
@@ -196,38 +193,16 @@ class NetworkInventoryAction{
 				}
 
 				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
-			case self::SOURCE_CRAFTING_GRID:
+			case self::SOURCE_UNTRACKED_INTERACTION_UI:
 			case self::SOURCE_TODO:
 				$window = $player->findWindow(FakeInventory::class);
 
 				switch($this->windowId){
-					case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
-					case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
 					case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS: //TODO: this type applies to all fake windows, not just crafting
 						return new SlotChangeAction($window ?? $player->getCraftingGrid(), $this->inventorySlot, $this->oldItem, $this->newItem);
 					case self::SOURCE_TYPE_CRAFTING_RESULT:
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						return null;
-					case self::SOURCE_TYPE_ENCHANT_INPUT:
-						if($window instanceof EnchantInventory){
-							return new EnchantAction($window, 0, $this->oldItem, $this->newItem);
-						}else{
-							if($window === null){
-								throw new \InvalidStateException("Window not found");
-							}else{
-								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . EnchantInventory::class . " , given " . get_class($window));
-							}
-						}
-					case self::SOURCE_TYPE_ENCHANT_MATERIAL:
-						if($window instanceof EnchantInventory){
-							return new EnchantAction($window, 1, $this->oldItem, $this->newItem);
-						}else{
-							if($window === null){
-								throw new \InvalidStateException("Window not found");
-							}else{
-								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . EnchantInventory::class . " , given " . get_class($window));
-							}
-						}
 					case self::SOURCE_TYPE_ENCHANT_OUTPUT:
 						if($window instanceof EnchantInventory){
 							return new EnchantAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
