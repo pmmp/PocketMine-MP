@@ -131,9 +131,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 
 		$animations = [];
-		foreach($skinTag->getListTag("AnimatedImageData")->getValue() as $tag){
-			if($tag instanceof CompoundTag){
-				$animations[] = new SkinAnimation(new SkinImage($tag->getInt("ImageHeight"), $tag->getInt("ImageWidth"), $tag->getByteArray("Image")), $tag->getByte("Type"), $tag->getFloat("Frames"));
+		if($skinTag->hasTag("AnimatedImageData", ListTag::class)){
+			foreach($skinTag->getListTag("AnimatedImageData")->getValue() as $tag){
+				if($tag instanceof CompoundTag){
+					$animations[] = new SkinAnimation(new SkinImage($tag->getInt("ImageHeight"), $tag->getInt("ImageWidth"), $tag->getByteArray("Image")), $tag->getByte("Type"), $tag->getFloat("Frames"));
+				}
 			}
 		}
 
