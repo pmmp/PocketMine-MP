@@ -168,6 +168,9 @@ class TimingsHandler{
 
 	public function stopTiming(){
 		if(self::$enabled){
+			if($this->timingDepth === 0){
+				throw new \InvalidStateException("Cannot stop a timer that is not running");
+			}
 			if(--$this->timingDepth !== 0 or $this->start == 0){
 				return;
 			}
