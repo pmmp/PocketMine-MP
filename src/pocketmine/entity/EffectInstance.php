@@ -82,6 +82,8 @@ class EffectInstance{
 	}
 
 	/**
+     * Sets the duration to the given number of ticks
+     * 
 	 * @param int $duration
 	 *
 	 * @throws \InvalidArgumentException
