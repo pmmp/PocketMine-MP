@@ -82,7 +82,7 @@ class EffectInstance{
 	}
 
 	/**
-     * Sets the duration to the given number of ticks
+	 * Sets the duration to the given number of ticks
      * 
 	 * @param int $duration
 	 *
