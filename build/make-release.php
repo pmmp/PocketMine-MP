@@ -36,7 +36,6 @@ use function system;
 use const pocketmine\BASE_VERSION;
 use const STDIN;
 
-require_once dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 if(isset($argv[1])){
