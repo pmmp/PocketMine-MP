@@ -32,6 +32,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\PaintingPlaceSound;
 use function array_rand;
+use function count;
 
 class PaintingItem extends Item{
 
@@ -64,7 +65,7 @@ class PaintingItem extends Item{
 			}
 		}
 
-		if(empty($motives)){ //No space available
+		if(count($motives) === 0){ //No space available
 			return ItemUseResult::NONE();
 		}
 

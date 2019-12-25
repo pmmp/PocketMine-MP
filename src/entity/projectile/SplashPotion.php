@@ -39,6 +39,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\utils\Color;
 use pocketmine\world\particle\PotionSplashParticle;
 use pocketmine\world\sound\PotionSplashSound;
+use function count;
 use function round;
 use function sqrt;
 
@@ -75,7 +76,7 @@ class SplashPotion extends Throwable{
 		$effects = $this->getPotionEffects();
 		$hasEffects = true;
 
-		if(empty($effects)){
+		if(count($effects) === 0){
 			$particle = new PotionSplashParticle(PotionSplashParticle::DEFAULT_COLOR());
 			$hasEffects = false;
 		}else{

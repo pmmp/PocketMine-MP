@@ -717,7 +717,7 @@ abstract class Living extends Entity{
 	 */
 	public function getTargetBlock(int $maxDistance, array $transparent = []) : ?Block{
 		$line = $this->getLineOfSight($maxDistance, 1, $transparent);
-		if(!empty($line)){
+		if(count($line) > 0){
 			return array_shift($line);
 		}
 

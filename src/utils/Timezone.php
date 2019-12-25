@@ -33,6 +33,7 @@ use function implode;
 use function ini_get;
 use function ini_set;
 use function is_link;
+use function is_string;
 use function json_decode;
 use function parse_ini_file;
 use function preg_match;
@@ -144,7 +145,7 @@ abstract class Timezone{
 				// RHEL / CentOS
 				if(file_exists('/etc/sysconfig/clock')){
 					$data = parse_ini_file('/etc/sysconfig/clock');
-					if(!empty($data['ZONE'])){
+					if(isset($data['ZONE']) and is_string($data['ZONE'])){
 						return trim($data['ZONE']);
 					}
 				}

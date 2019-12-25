@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\permission;
 
 use function array_shift;
+use function count;
 use function explode;
 use function implode;
 use function strlen;
@@ -173,19 +174,19 @@ class BanEntry{
 
 		$parts = explode("|", trim($str));
 		$entry = new BanEntry(trim(array_shift($parts)));
-		if(!empty($parts)){
+		if(count($parts) > 0){
 			$entry->setCreated(self::parseDate(array_shift($parts)));
 		}
-		if(!empty($parts)){
+		if(count($parts) > 0){
 			$entry->setSource(trim(array_shift($parts)));
 		}
-		if(!empty($parts)){
+		if(count($parts) > 0){
 			$expire = trim(array_shift($parts));
 			if($expire !== "" and strtolower($expire) !== "forever"){
 				$entry->setExpires(self::parseDate($expire));
 			}
 		}
-		if(!empty($parts)){
+		if(count($parts) > 0){
 			$entry->setReason(trim(array_shift($parts)));
 		}
 

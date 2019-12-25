@@ -1425,7 +1425,7 @@ class Server{
 	 * @return bool
 	 */
 	public function broadcastPackets(array $players, array $packets) : bool{
-		if(empty($packets)){
+		if(count($packets) === 0){
 			throw new \InvalidArgumentException("Cannot broadcast empty list of packets");
 		}
 
@@ -1436,7 +1436,7 @@ class Server{
 				$recipients[] = $player->getNetworkSession();
 			}
 		}
-		if(empty($recipients)){
+		if(count($recipients) === 0){
 			return false;
 		}
 

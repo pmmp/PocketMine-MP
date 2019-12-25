@@ -145,7 +145,7 @@ namespace pocketmine {
 	}
 
 	function server(){
-		if(!empty($messages = check_platform_dependencies())){
+		if(count($messages = check_platform_dependencies()) > 0){
 			echo PHP_EOL;
 			$binary = version_compare(PHP_VERSION, "5.4") >= 0 ? PHP_BINARY : "unknown";
 			critical_error("Selected PHP binary ($binary) does not satisfy some requirements.");

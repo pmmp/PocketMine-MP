@@ -704,7 +704,7 @@ class Block{
 	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?RayTraceResult{
 		$bbs = $this->getCollisionBoxes();
-		if(empty($bbs)){
+		if(count($bbs) === 0){
 			return null;
 		}
 

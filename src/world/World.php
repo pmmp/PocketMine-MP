@@ -447,7 +447,7 @@ class World implements ChunkManager{
 		if(!is_array($pk)){
 			$pk = [$pk];
 		}
-		if(!empty($pk)){
+		if(count($pk) > 0){
 			if($players === null){
 				foreach($pk as $e){
 					$this->broadcastPacketToViewers($pos, $e);
@@ -463,7 +463,7 @@ class World implements ChunkManager{
 		if(!is_array($pk)){
 			$pk = [$pk];
 		}
-		if(!empty($pk)){
+		if(count($pk) > 0){
 			if($players === null){
 				foreach($pk as $e){
 					$this->broadcastPacketToViewers($pos, $e);
@@ -806,7 +806,7 @@ class World implements ChunkManager{
 		if(count($this->changedBlocks) > 0){
 			if(count($this->players) > 0){
 				foreach($this->changedBlocks as $index => $blocks){
-					if(empty($blocks)){ //blocks can be set normally and then later re-set with direct send
+					if(count($blocks) === 0){ //blocks can be set normally and then later re-set with direct send
 						continue;
 					}
 					World::getXZ($index, $chunkX, $chunkZ);
@@ -833,8 +833,8 @@ class World implements ChunkManager{
 			$this->checkSleep();
 		}
 
-		if(!empty($this->globalPackets)){
-			if(!empty($this->players)){
+		if(count($this->globalPackets) > 0){
+			if(count($this->players) > 0){
 				$this->server->broadcastPackets($this->players, $this->globalPackets);
 			}
 			$this->globalPackets = [];
@@ -1617,7 +1617,7 @@ class World implements ChunkManager{
 
 		$item->onDestroyBlock($target);
 
-		if(!empty($drops)){
+		if(count($drops) > 0){
 			$dropPos = $vector->add(0.5, 0.5, 0.5);
 			foreach($drops as $drop){
 				if(!$drop->isNull()){
@@ -1711,7 +1711,7 @@ class World implements ChunkManager{
 		}
 
 		foreach($hand->getCollisionBoxes() as $collisionBox){
-			if(!empty($this->getCollidingEntities($collisionBox))){
+			if(count($this->getCollidingEntities($collisionBox)) > 0){
 				return false;  //Entity in block
 			}
 

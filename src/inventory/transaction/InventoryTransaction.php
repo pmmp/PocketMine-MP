@@ -238,13 +238,13 @@ class InventoryTransaction{
 	 * @return null|Item
 	 */
 	protected function findResultItem(Item $needOrigin, array $possibleActions) : ?Item{
-		assert(!empty($possibleActions));
+		assert(count($possibleActions) > 0);
 
 		foreach($possibleActions as $i => $action){
 			if($action->getSourceItem()->equalsExact($needOrigin)){
 				$newList = $possibleActions;
 				unset($newList[$i]);
-				if(empty($newList)){
+				if(count($newList) === 0){
 					return $action->getTargetItem();
 				}
 				$result = $this->findResultItem($action->getTargetItem(), $newList);
