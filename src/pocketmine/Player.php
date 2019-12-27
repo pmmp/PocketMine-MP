@@ -1863,7 +1863,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		if($this->spawned){
 			if($this->getInventory() !== null){
-				$this->inventory->getItemInHand()->onUpdate($this); // update map items
+				$this->inventory->getItemInHand()->onUpdate($this);
 			}
 			if($this->getOffHandInventory() !== null){
 				$this->offHandInventory->getItemInOffHand()->onUpdate($this);
