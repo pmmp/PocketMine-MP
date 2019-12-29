@@ -85,7 +85,7 @@ class PlayerAuthInputPacket extends DataPacket/* implements ServerboundPacket*/{
 		$result->inputMode = $inputMode;
 		$result->playMode = $playMode;
 		if($vrGazeDirection !== null){
-			$this->vrGazeDirection = $vrGazeDirection->asVector3();
+			$result->vrGazeDirection = $vrGazeDirection->asVector3();
 		}
 		return $result;
 	}

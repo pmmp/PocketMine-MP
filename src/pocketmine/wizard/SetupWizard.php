@@ -33,6 +33,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
 use function base64_encode;
+use function count;
 use function fgets;
 use function random_bytes;
 use function sleep;
@@ -59,7 +60,7 @@ class SetupWizard{
 		$this->message(\pocketmine\NAME . " set-up wizard");
 
 		$langs = BaseLang::getLanguageList();
-		if(empty($langs)){
+		if(count($langs) === 0){
 			$this->error("No language files found, please use provided builds or clone the repository recursively.");
 			return false;
 		}

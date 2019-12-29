@@ -420,7 +420,7 @@ class Config{
 		while(count($vars) > 0){
 			$nodeName = array_shift($vars);
 			if(isset($currentNode[$nodeName])){
-				if(empty($vars)){ //final node
+				if(count($vars) === 0){ //final node
 					unset($currentNode[$nodeName]);
 				}elseif(is_array($currentNode[$nodeName])){
 					$currentNode =& $currentNode[$nodeName];

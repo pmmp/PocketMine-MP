@@ -1273,7 +1273,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->loadQueue = $newOrder;
-		if(!empty($this->loadQueue) or !empty($unloadChunks)){
+		if(count($this->loadQueue) > 0 or count($unloadChunks) > 0){
 			$pk = new NetworkChunkPublisherUpdatePacket();
 			$pk->x = $this->getFloorX();
 			$pk->y = $this->getFloorY();

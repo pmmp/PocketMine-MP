@@ -54,18 +54,12 @@ class NetworkInventoryAction{
 	 *
 	 * Expect these to change in the future.
 	 */
-	public const SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = -2;
-	public const SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = -3;
 	public const SOURCE_TYPE_CRAFTING_RESULT = -4;
 	public const SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
 
-	public const SOURCE_TYPE_ANVIL_INPUT = -10;
-	public const SOURCE_TYPE_ANVIL_MATERIAL = -11;
 	public const SOURCE_TYPE_ANVIL_RESULT = -12;
 	public const SOURCE_TYPE_ANVIL_OUTPUT = -13;
 
-	public const SOURCE_TYPE_ENCHANT_INPUT = -15;
-	public const SOURCE_TYPE_ENCHANT_MATERIAL = -16;
 	public const SOURCE_TYPE_ENCHANT_OUTPUT = -17;
 
 	public const SOURCE_TYPE_TRADING_INPUT_1 = -20;
@@ -74,9 +68,6 @@ class NetworkInventoryAction{
 	public const SOURCE_TYPE_TRADING_OUTPUT = -23;
 
 	public const SOURCE_TYPE_BEACON = -24;
-
-	/** Any client-side window dropping its contents when the player closes it */
-	public const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
 
 	public const ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
 	public const ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
@@ -221,14 +212,10 @@ class NetworkInventoryAction{
 				$window = $player->findWindow(FakeInventory::class);
 
 				switch($this->windowId){
-					case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
-					case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
-					case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS: //TODO: this type applies to all fake windows, not just crafting
-						return new SlotChangeAction($window ?? $player->getCraftingGrid(), $this->inventorySlot, $this->oldItem, $this->newItem);
 					case self::SOURCE_TYPE_CRAFTING_RESULT:
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						return null;
-					case self::SOURCE_TYPE_ENCHANT_INPUT:
+					/*case self::SOURCE_TYPE_ENCHANT_INPUT:
 						if($window instanceof EnchantInventory){
 							return new EnchantAction($window, 0, $this->oldItem, $this->newItem);
 						}else{
@@ -247,7 +234,7 @@ class NetworkInventoryAction{
 							}else{
 								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . EnchantInventory::class . " , given " . get_class($window));
 							}
-						}
+						}*/
 					case self::SOURCE_TYPE_ENCHANT_OUTPUT:
 						if($window instanceof EnchantInventory){
 							return new EnchantAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
@@ -258,7 +245,7 @@ class NetworkInventoryAction{
 								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . EnchantInventory::class . " , given " . get_class($window));
 							}
 						}
-					case self::SOURCE_TYPE_ANVIL_INPUT:
+					/*case self::SOURCE_TYPE_ANVIL_INPUT:
 						if($window instanceof AnvilInventory){
 							if($window->isOutputFull()){
 								return null;
@@ -283,7 +270,7 @@ class NetworkInventoryAction{
 							}else{
 								throw new \InvalidStateException("Unexpected fake inventory given. Expected " . AnvilInventory::class . " , given " . get_class($window));
 							}
-						}
+						}*/
 					case self::SOURCE_TYPE_ANVIL_RESULT:
 						if($window instanceof AnvilInventory){
 							if($window->onResult($player, $this->oldItem)){
