@@ -75,6 +75,8 @@ class EffectInstance{
 	}
 
 	/**
+	 * Returns the number of ticks remaining until the effect expires.
+	 *
 	 * @return int
 	 */
 	public function getDuration() : int{
@@ -82,6 +84,8 @@ class EffectInstance{
 	}
 
 	/**
+	 * Sets the number of ticks remaining until the effect expires.
+	 *
 	 * @param int $duration
 	 *
 	 * @throws \InvalidArgumentException

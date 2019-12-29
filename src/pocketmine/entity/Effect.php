@@ -195,7 +195,8 @@ class Effect{
 	}
 
 	/**
-	 * Returns the default duration this effect will apply for if a duration is not specified.
+	 * Returns the default duration (in ticks) this effect will apply for if a duration is not specified.
+	 *
 	 * @return int
 	 */
 	public function getDefaultDuration() : int{
