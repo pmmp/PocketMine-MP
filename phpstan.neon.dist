@@ -1,5 +1,4 @@
 includes:
-	- tests/phpstan/configs/debug-const-checks.neon
 	- tests/phpstan/configs/gc-hacks.neon
 	- tests/phpstan/configs/optional-com-dotnet.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
@@ -13,6 +12,9 @@ parameters:
 		- src/PocketMine.php
 	paths:
 		- src
+	dynamicConstantNames:
+		- pocketmine\IS_DEVELOPMENT_BUILD
+		- pocketmine\DEBUG
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	ignoreErrors:
 		-
