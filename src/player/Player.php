@@ -2468,8 +2468,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->removeCurrentWindow();
 
 		$this->logger->debug("Opening inventory " . get_class($inventory) . "#" . spl_object_id($inventory));
-		$this->networkSession->getInvManager()->onCurrentWindowChange($inventory);
 		$inventory->onOpen($this);
+		$this->networkSession->getInvManager()->onCurrentWindowChange($inventory);
 		$this->currentWindow = $inventory;
 		return true;
 	}
