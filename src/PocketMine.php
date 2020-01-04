@@ -194,9 +194,10 @@ namespace pocketmine {
 		$gitHash = str_repeat("00", 20);
 
 		if(\Phar::running(true) === ""){
-			if(Process::execute("git rev-parse HEAD", $out) === 0 and $out !== false and strlen($out = trim($out)) === 40){
+			$gitPath = \pocketmine\PATH;
+			if(Process::execute("git -C \"$gitPath\" rev-parse HEAD", $out) === 0 and $out !== false and strlen($out = trim($out)) === 40){
 				$gitHash = trim($out);
-				if(Process::execute("git diff --quiet") === 1 or Process::execute("git diff --cached --quiet") === 1){ //Locally-modified
+				if(Process::execute("git -C \"$gitPath\" diff --quiet") === 1 or Process::execute("git -C \"$gitPath\" diff --cached --quiet") === 1){ //Locally-modified
 					$gitHash .= "-dirty";
 				}
 			}
