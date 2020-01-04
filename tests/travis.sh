@@ -14,13 +14,6 @@ while getopts "p:t:" OPTION 2> /dev/null; do
 	esac
 done
 
-./tests/lint.sh -p "$PHP_BINARY" -d ./src/pocketmine
-
-if [ $? -ne 0 ]; then
-	echo Lint scan failed!
-	exit 1
-fi
-
 [ ! -f phpstan.phar ] && echo "Downloading PHPStan..." && curl -sSLO https://github.com/phpstan/phpstan/releases/download/0.12.3/phpstan.phar
 "$PHP_BINARY" phpstan.phar analyze --no-progress --memory-limit=2G || exit 1
 echo "PHPStan scan succeeded"
