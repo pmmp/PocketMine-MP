@@ -25,6 +25,7 @@ namespace pocketmine {
 
 	use pocketmine\thread\ThreadManager;
 	use pocketmine\utils\Filesystem;
+	use pocketmine\utils\Git;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Process;
 	use pocketmine\utils\ServerKiller;
@@ -194,13 +195,7 @@ namespace pocketmine {
 		$gitHash = str_repeat("00", 20);
 
 		if(\Phar::running(true) === ""){
-			$gitPath = \pocketmine\PATH;
-			if(Process::execute("git -C \"$gitPath\" rev-parse HEAD", $out) === 0 and $out !== false and strlen($out = trim($out)) === 40){
-				$gitHash = trim($out);
-				if(Process::execute("git -C \"$gitPath\" diff --quiet") === 1 or Process::execute("git -C \"$gitPath\" diff --cached --quiet") === 1){ //Locally-modified
-					$gitHash .= "-dirty";
-				}
-			}
+			$gitHash = Git::getRepositoryStatePretty(\pocketmine\PATH);
 		}else{
 			$phar = new \Phar(\Phar::running(false));
 			$meta = $phar->getMetadata();
