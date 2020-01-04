@@ -2118,7 +2118,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$pk = new ResourcePackStackPacket();
 				$manager = $this->server->getResourcePackManager();
 				$pk->resourcePackStack = $manager->getResourceStack();
-				$pk->removeClientResourcePacks = $manager->removeClientResourcePacks();
+				$pk->mustAccept = $manager->resourcePacksRequired();
 				$this->dataPacket($pk);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:

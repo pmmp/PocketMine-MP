@@ -35,7 +35,7 @@ class ResourcePackStackPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_STACK_PACKET;
 
 	/** @var bool */
-	public $removeClientResourcePacks = false;
+	public $mustAccept = false;
 
 	/** @var ResourcePack[] */
 	public $behaviorPackStack = [];
@@ -48,7 +48,7 @@ class ResourcePackStackPacket extends DataPacket{
 	public $baseGameVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK;
 
 	protected function decodePayload(){
-		$this->removeClientResourcePacks = $this->getBool();
+		$this->mustAccept = $this->getBool();
 		$behaviorPackCount = $this->getUnsignedVarInt();
 		while($behaviorPackCount-- > 0){
 			$this->getString();
@@ -68,7 +68,7 @@ class ResourcePackStackPacket extends DataPacket{
 	}
 
 	protected function encodePayload(){
-		$this->putBool($this->removeClientResourcePacks);
+		$this->putBool($this->mustAccept);
 
 		$this->putUnsignedVarInt(count($this->behaviorPackStack));
 		foreach($this->behaviorPackStack as $entry){

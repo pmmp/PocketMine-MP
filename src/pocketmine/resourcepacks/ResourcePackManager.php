@@ -43,8 +43,6 @@ class ResourcePackManager{
 
 	/** @var bool */
 	private $serverForceResources = false;
-	/** @var bool */
-	private $removeClientResourcePacks = false;
 
 	/** @var ResourcePack[] */
 	private $resourcePacks = [];
@@ -73,7 +71,6 @@ class ResourcePackManager{
 		$resourcePacksConfig = new Config($this->path . "resource_packs.yml", Config::YAML, []);
 
 		$this->serverForceResources = (bool) $resourcePacksConfig->get("force_resources", false);
-		$this->removeClientResourcePacks = (bool) $resourcePacksConfig->get("remove_client_resources", false);
 
 		$logger->info("Loading resource packs...");
 
@@ -137,16 +134,6 @@ class ResourcePackManager{
 	 */
 	public function resourcePacksRequired() : bool{
 		return $this->serverForceResources;
-	}
-
-	/**
-	 * Returns whether client-sided global resources will be removed.
-	 * Useful if you want to force vanilla resources.
-	 *
-	 * @return bool
-	 */
-	public function removeClientResourcePacks() : bool{
-		return $this->removeClientResourcePacks;
 	}
 
 	/**
