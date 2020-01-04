@@ -179,7 +179,10 @@ class TimingsHandler{
 
 	private function internalStopTiming(float $now) : void{
 		if($this->timingDepth === 0){
-			throw new \InvalidStateException("Cannot stop a timer that is not running");
+			//TODO: it would be nice to bail here, but since we'd have to track timing depth across resets
+			//and enable/disable, it would have a performance impact. Therefore, considering the limited
+			//usefulness of bailing here anyway, we don't currently bother.
+			return;
 		}
 		if(--$this->timingDepth !== 0 or $this->start == 0){
 			return;
