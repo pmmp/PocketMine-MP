@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine;
 
 // composer autoload doesn't use require_once and also pthreads can inherit things
