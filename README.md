@@ -1,7 +1,9 @@
-<h1>Altay<img src="http://fs1.directupload.net/images/180401/urn5z9ic.png" height="64" width="64" align="left"></img></h1>
+<h1>Altay<img src="http://fs1.directupload.net/images/180401/urn5z9ic.png" height="100" width="100" align="left"></img></h1>
 <br />
 
 A feature-rich server software for Minecraft: BE. This is a SPOON of [PocketMine-MP](https://github.com/pmmp/PocketMine-MP)
+
+----------------------
 
 | Jenkins | TravisCI | Discord |
 | :---: | :---: | :---: |
