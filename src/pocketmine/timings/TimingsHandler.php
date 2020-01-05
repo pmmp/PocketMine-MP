@@ -158,32 +158,45 @@ class TimingsHandler{
 	}
 
 	public function startTiming(){
-		if(self::$enabled and ++$this->timingDepth === 1){
-			$this->start = microtime(true);
-			if($this->parent !== null and ++$this->parent->timingDepth === 1){
-				$this->parent->start = $this->start;
+		if(self::$enabled){
+			$this->internalStartTiming(microtime(true));
+		}
+	}
+
+	private function internalStartTiming(float $now) : void{
+		if(++$this->timingDepth === 1){
+			$this->start = $now;
+			if($this->parent !== null){
+				$this->parent->internalStartTiming($now);
 			}
 		}
 	}
 
 	public function stopTiming(){
 		if(self::$enabled){
-			if($this->timingDepth === 0){
-				throw new \InvalidStateException("Cannot stop a timer that is not running");
-			}
-			if(--$this->timingDepth !== 0 or $this->start == 0){
-				return;
-			}
+			$this->internalStopTiming(microtime(true));
+		}
+	}
 
-			$diff = microtime(true) - $this->start;
-			$this->totalTime += $diff;
-			$this->curTickTotal += $diff;
-			++$this->curCount;
-			++$this->count;
-			$this->start = 0;
-			if($this->parent !== null){
-				$this->parent->stopTiming();
-			}
+	private function internalStopTiming(float $now) : void{
+		if($this->timingDepth === 0){
+			//TODO: it would be nice to bail here, but since we'd have to track timing depth across resets
+			//and enable/disable, it would have a performance impact. Therefore, considering the limited
+			//usefulness of bailing here anyway, we don't currently bother.
+			return;
+		}
+		if(--$this->timingDepth !== 0 or $this->start == 0){
+			return;
+		}
+
+		$diff = $now - $this->start;
+		$this->totalTime += $diff;
+		$this->curTickTotal += $diff;
+		++$this->curCount;
+		++$this->count;
+		$this->start = 0;
+		if($this->parent !== null){
+			$this->parent->internalStopTiming($now);
 		}
 	}
 

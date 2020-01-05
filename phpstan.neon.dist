@@ -11,8 +11,10 @@ parameters:
 	autoload_files:
 		- tests/phpstan/bootstrap.php
 		- src/pocketmine/PocketMine.php
+		- build/server-phar.php
 	paths:
 		- src
+		- build/server-phar.php
 	dynamicConstantNames:
 		- pocketmine\IS_DEVELOPMENT_BUILD
 		- pocketmine\DEBUG

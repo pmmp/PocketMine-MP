@@ -2236,14 +2236,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
 				$pk = new ResourcePackStackPacket();
 				$manager = $this->server->getResourcePackManager();
-				foreach($manager->getResourceStack() as $pack){
-					if($pack->getPackType() === ResourcePack::PACK_TYPE_RESOURCE){
-						$pk->resourcePackStack[] = $pack;
-					}else{
-						$pk->behaviorPackStack[] = $pack;
-					}
-				}
-				$pk->mustAccept = $manager->resourcePacksRequired();
+				$pk->resourcePackStack = $manager->getResourceStack();
+				//we don't force here, because it doesn't have user-facing effects
+				//but it does have an annoying side-effect when true: it makes
+				//the client remove its own non-server-supplied resource packs.
+				$pk->mustAccept = false;
 				$this->dataPacket($pk);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:

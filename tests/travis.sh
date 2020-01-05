@@ -14,14 +14,7 @@ while getopts "p:t:" OPTION 2> /dev/null; do
 	esac
 done
 
-./tests/lint.sh -p "$PHP_BINARY" -d ./src/pocketmine
-
-if [ $? -ne 0 ]; then
-	echo Lint scan failed!
-	exit 1
-fi
-
-#[ ! -f phpstan.phar ] && echo "Downloading PHPStan..." && curl -sSLO https://github.com/phpstan/phpstan/releases/download/0.11.19/phpstan.phar
+#[ ! -f phpstan.phar ] && echo "Downloading PHPStan..." && curl -sSLO https://github.com/phpstan/phpstan/releases/download/0.12.3/phpstan.phar
 #"$PHP_BINARY" phpstan.phar analyze --no-progress --memory-limit=2G || exit 1
 #echo "PHPStan scan succeeded"
 
@@ -39,7 +32,7 @@ cd tests/plugins/PocketMine-DevTools
 "$PHP_BINARY" -dphar.readonly=0 ./src/DevTools/ConsoleScript.php --make ./ --relative ./ --out ../../../DevTools.phar
 cd ../../..
 
-"$PHP_BINARY" -dphar.readonly=0 DevTools.phar --make src,vendor --relative ./ --entry src/pocketmine/PocketMine.php --out PocketMine-MP.phar
+"$PHP_BINARY" -dphar.readonly=0 ./build/server-phar.php ./PocketMine-MP.phar
 if [ -f PocketMine-MP.phar ]; then
 	echo Server phar created successfully.
 else
