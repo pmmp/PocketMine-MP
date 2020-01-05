@@ -27,9 +27,6 @@ namespace pocketmine\resourcepacks;
 
 interface ResourcePack{
 
-	public const PACK_TYPE_RESOURCE = "resources";
-	public const PACK_TYPE_BEHAVIOR = "data";
-
 	/**
 	 * Returns the path to the resource pack. This might be a file or a directory, depending on the type of pack.
 	 * @return string
@@ -79,11 +76,4 @@ interface ResourcePack{
 	 * @throws \InvalidArgumentException if the chunk does not exist
 	 */
 	public function getPackChunk(int $start, int $length) : string;
-
-	/**
-	 * Returns pack type of resource pack (BehaviorPack or ResourcePack)
-	 *
-	 * @return string
-	 */
-	public function getPackType() : string;
 }
