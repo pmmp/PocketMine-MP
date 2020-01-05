@@ -34,6 +34,7 @@ use pocketmine\item\Potion;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\utils\Color;
+use function count;
 use function round;
 use function sqrt;
 
@@ -63,7 +64,7 @@ class SplashPotion extends Throwable{
 		$effects = $this->getPotionEffects();
 		$hasEffects = true;
 
-		if(empty($effects)){
+		if(count($effects) === 0){
 			$colors = [
 				new Color(0x38, 0x5d, 0xc6) //Default colour for splash water bottle and similar with no effects.
 			];

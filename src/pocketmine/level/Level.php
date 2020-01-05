@@ -540,7 +540,7 @@ class Level implements ChunkManager, Metadatable{
 		if(!is_array($pk)){
 			$pk = [$pk];
 		}
-		if(!empty($pk)){
+		if(count($pk) > 0){
 			if($players === null){
 				foreach($pk as $e){
 					$this->broadcastPacketToViewers($sound, $e);
@@ -556,7 +556,7 @@ class Level implements ChunkManager, Metadatable{
 		if(!is_array($pk)){
 			$pk = [$pk];
 		}
-		if(!empty($pk)){
+		if(count($pk) > 0){
 			if($players === null){
 				foreach($pk as $e){
 					$this->broadcastPacketToViewers($particle, $e);
@@ -957,7 +957,7 @@ class Level implements ChunkManager, Metadatable{
 		if(count($this->changedBlocks) > 0){
 			if(count($this->players) > 0){
 				foreach($this->changedBlocks as $index => $blocks){
-					if(empty($blocks)){ //blocks can be set normally and then later re-set with direct send
+					if(count($blocks) === 0){ //blocks can be set normally and then later re-set with direct send
 						continue;
 					}
 					unset($this->chunkCache[$index]);
@@ -985,8 +985,8 @@ class Level implements ChunkManager, Metadatable{
 			$this->checkSleep();
 		}
 
-		if(!empty($this->globalPackets)){
-			if(!empty($this->players)){
+		if(count($this->globalPackets) > 0){
+			if(count($this->players) > 0){
 				$this->server->batchPackets($this->players, $this->globalPackets);
 			}
 			$this->globalPackets = [];
@@ -1992,7 +1992,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$item->onDestroyBlock($target);
 
-		if(!empty($drops)){
+		if(count($drops) > 0){
 			$dropPos = $target->add(0.5, 0.5, 0.5);
 			foreach($drops as $drop){
 				if(!$drop->isNull()){
@@ -2096,7 +2096,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($hand->isSolid()){
 			foreach($hand->getCollisionBoxes() as $collisionBox){
-				if(!empty($this->getCollidingEntities($collisionBox))){
+				if(count($this->getCollidingEntities($collisionBox)) > 0){
 					return false;  //Entity in block
 				}
 

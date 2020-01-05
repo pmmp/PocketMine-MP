@@ -45,6 +45,7 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use function array_values;
 use function chr;
+use function count;
 use function defined;
 use function explode;
 use function extension_loaded;
@@ -519,7 +520,7 @@ class LevelDB extends BaseLevelProvider{
 	 * @param string        $index
 	 */
 	private function writeTags(array $targets, string $index){
-		if(!empty($targets)){
+		if(count($targets) > 0){
 			$nbt = new LittleEndianNBTStream();
 			$this->db->put($index, $nbt->write($targets));
 		}else{

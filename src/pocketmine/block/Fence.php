@@ -31,6 +31,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
+use function count;
 
 abstract class Fence extends Transparent{
 
@@ -95,7 +96,7 @@ abstract class Fence extends Transparent{
 			);
 		}
 
-		if(empty($bbs)){
+		if(count($bbs) === 0){
 			//centre post AABB (only needed if not connected on any axis - other BBs overlapping will do this if any connections are made)
 			return [
 				new AxisAlignedBB(
