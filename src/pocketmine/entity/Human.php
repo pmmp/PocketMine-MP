@@ -139,11 +139,16 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 		}
-
-		$cape = new Cape(
-			$skinTag->hasTag("CapeId", StringTag::class) ? $skinTag->getString("CapeId") : UUID::fromRandom()->toString(),
-			new SkinImage($skinTag->getInt("CapeImageHeight", 32), $skinTag->getInt("CapeImageWidth", 64), $skinTag->getByteArray("CapeData")),
-			boolval($skinTag->getByte("CapeOnClassicSkin", 0)));
+		
+		if(($capeData = $skinTag->getByteArray("CapeData", "")) !== ""){
+			$cape = new Cape(
+				$skinTag->hasTag("CapeId", StringTag::class) ? $skinTag->getString("CapeId") : UUID::fromRandom()->toString(),
+				new SkinImage($skinTag->getInt("CapeImageHeight", 32), $skinTag->getInt("CapeImageWidth", 64), $capeData),
+				boolval($skinTag->getByte("CapeOnClassicSkin", 0)));
+		}else{
+			$cape = new Cape("", new SkinImage(0, 0, ""));
+		}
+		
 		$skin = (new Skin(
 			$skinTag->getString("Name"),
 			"",
