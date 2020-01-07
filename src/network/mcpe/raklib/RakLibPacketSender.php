@@ -49,7 +49,7 @@ class RakLibPacketSender implements PacketSender{
 	public function close(string $reason = "unknown reason") : void{
 		if(!$this->closed){
 			$this->closed = true;
-			$this->handler->closeSession($this->sessionId, $reason);
+			$this->handler->close($this->sessionId, $reason);
 		}
 	}
 }
