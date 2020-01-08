@@ -13,6 +13,7 @@ parameters:
 		- build/server-phar.php
 	paths:
 		- src
+		- tests/phpstan/rules
 		- build/server-phar.php
 	dynamicConstantNames:
 		- pocketmine\IS_DEVELOPMENT_BUILD

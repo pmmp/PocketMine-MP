@@ -54,7 +54,8 @@
    },
    "autoload-dev": {
       "psr-4": {
-         "pocketmine\\": "tests/phpunit/"
+         "pocketmine\\": "tests/phpunit/",
+         "pocketmine\\phpstan\\rules\\": "tests/phpstan/rules"
       }
    },
    "repositories": [
