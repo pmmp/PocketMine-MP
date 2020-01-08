@@ -126,8 +126,12 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	protected function loadLevelData() : void{
+		$rawLevelData = file_get_contents($this->getPath() . "level.dat");
+		if($rawLevelData === false or strlen($rawLevelData) <= 8){
+			throw new LevelException("Truncated level.dat");
+		}
 		$nbt = new LittleEndianNBTStream();
-		$levelData = $nbt->read(substr(file_get_contents($this->getPath() . "level.dat"), 8));
+		$levelData = $nbt->read(substr($rawLevelData, 8));
 		if($levelData instanceof CompoundTag){
 			$this->levelData = $levelData;
 		}else{
