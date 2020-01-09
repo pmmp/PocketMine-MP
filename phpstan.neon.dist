@@ -5,6 +5,9 @@ includes:
 	- tests/phpstan/configs/pthreads-bugs.neon
 	- tests/phpstan/configs/runtime-type-checks.neon
 
+rules:
+	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
+
 parameters:
 	level: 5
 	autoload_files:
