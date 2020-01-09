@@ -106,9 +106,13 @@ class BedrockWorldData extends BaseNbtWorldData{
 	}
 
 	protected function load() : CompoundTag{
+		$rawLevelData = file_get_contents($this->dataPath);
+		if($rawLevelData === false or strlen($rawLevelData) <= 8){
+			throw new CorruptedWorldException("Truncated level.dat");
+		}
 		$nbt = new LittleEndianNbtSerializer();
 		try{
-			$worldData = $nbt->read(substr(file_get_contents($this->dataPath), 8))->mustGetCompoundTag();
+			$worldData = $nbt->read(substr($rawLevelData, 8))->mustGetCompoundTag();
 		}catch(NbtDataException $e){
 			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
