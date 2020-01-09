@@ -48,7 +48,6 @@ class CompressBatchedTask extends AsyncTask{
 	public function onRun(){
 		$batch = new BatchPacket();
 		$batch->payload = $this->data;
-		$this->data = null;
 
 		$batch->setCompressionLevel($this->level);
 		$batch->encode();
