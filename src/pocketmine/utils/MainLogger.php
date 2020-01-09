@@ -204,12 +204,22 @@ class MainLogger extends \AttachableThreadedLogger{
 		if($trace === null){
 			$trace = $e->getTrace();
 		}
-		$errstr = $e->getMessage();
-		$errfile = $e->getFile();
-		$errno = $e->getCode();
-		$errline = $e->getLine();
 
-		$errorConversion = [
+		$message = self::printExceptionMessage($e);
+		$stack = Utils::printableTrace($trace);
+
+		$this->synchronized(function() use ($message, $stack) : void{
+			$this->critical($message);
+			foreach($stack as $line){
+				$this->debug($line, true);
+			}
+		});
+
+		$this->syncFlushBuffer();
+	}
+
+	private static function printExceptionMessage(\Throwable $e) : string{
+		static $errorConversion = [
 			0 => "EXCEPTION",
 			E_ERROR => "E_ERROR",
 			E_WARNING => "E_WARNING",
@@ -228,21 +238,15 @@ class MainLogger extends \AttachableThreadedLogger{
 			E_USER_DEPRECATED => "E_USER_DEPRECATED"
 		];
 
+		$errstr = preg_replace('/\s+/', ' ', trim($e->getMessage()));
+
+		$errno = $e->getCode();
 		$errno = $errorConversion[$errno] ?? $errno;
-		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
-		$errfile = Utils::cleanPath($errfile);
 
-		$message = get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
-		$stack = Utils::printableTrace($trace);
+		$errfile = Utils::cleanPath($e->getFile());
+		$errline = $e->getLine();
 
-		$this->synchronized(function() use ($message, $stack) : void{
-			$this->critical($message);
-			foreach($stack as $line){
-				$this->debug($line, true);
-			}
-		});
-
-		$this->syncFlushBuffer();
+		return get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
 	}
 
 	public function log($level, $message){
