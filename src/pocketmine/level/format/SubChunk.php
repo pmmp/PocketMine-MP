@@ -38,9 +38,13 @@ if(!defined(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY')){
 }
 
 class SubChunk implements SubChunkInterface{
+	/** @var string */
 	protected $ids;
+	/** @var string */
 	protected $data;
+	/** @var string */
 	protected $blockLight;
+	/** @var string */
 	protected $skyLight;
 
 	private static function assignData(&$target, string $data, int $length, string $value = "\x00"){

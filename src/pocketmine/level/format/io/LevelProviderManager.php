@@ -31,6 +31,7 @@ use function strtolower;
 use function trim;
 
 abstract class LevelProviderManager{
+	/** @var string[] */
 	protected static $providers = [];
 
 	public static function init() : void{

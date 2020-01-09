@@ -81,6 +81,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/** @var UUID */
 	protected $uuid;
+	/** @var string */
 	protected $rawUUID;
 
 	public $width = 0.6;
@@ -90,10 +91,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/** @var Skin */
 	protected $skin;
 
+	/** @var int */
 	protected $foodTickTimer = 0;
 
+	/** @var int */
 	protected $totalXp = 0;
+	/** @var int */
 	protected $xpSeed;
+	/** @var int */
 	protected $xpCooldown = 0;
 
 	protected $baseOffset = 1.62;

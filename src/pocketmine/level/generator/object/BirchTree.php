@@ -30,6 +30,7 @@ use pocketmine\utils\Random;
 
 class BirchTree extends Tree{
 
+	/** @var bool */
 	protected $superBirch = false;
 
 	public function __construct(bool $superBirch = false){

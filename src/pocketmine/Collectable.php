@@ -25,6 +25,7 @@ namespace pocketmine;
 
 abstract class Collectable extends \Threaded{
 
+	/** @var bool */
 	private $isGarbage = false;
 
 	public function isGarbage() : bool{

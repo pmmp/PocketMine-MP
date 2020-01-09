@@ -37,6 +37,7 @@ class CreativeInventoryAction extends InventoryAction{
 	 */
 	public const TYPE_CREATE_ITEM = 1;
 
+	/** @var int */
 	protected $actionType;
 
 	public function __construct(Item $sourceItem, Item $targetItem, int $actionType){

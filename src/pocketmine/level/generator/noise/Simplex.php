@@ -34,18 +34,31 @@ use function sqrt;
  * http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
  */
 class Simplex extends Perlin{
+	/** @var float */
 	protected static $SQRT_3;
+	/** @var float */
 	protected static $SQRT_5;
+	/** @var float */
 	protected static $F2;
+	/** @var float */
 	protected static $G2;
+	/** @var float */
 	protected static $G22;
+	/** @var float */
 	protected static $F3;
+	/** @var float */
 	protected static $G3;
+	/** @var float */
 	protected static $F4;
+	/** @var float */
 	protected static $G4;
+	/** @var float */
 	protected static $G42;
+	/** @var float */
 	protected static $G43;
+	/** @var float */
 	protected static $G44;
+	/** @var int[][] */
 	protected static $grad4 = [[0, 1, 1, 1], [0, 1, 1, -1], [0, 1, -1, 1], [0, 1, -1, -1],
 		[0, -1, 1, 1], [0, -1, 1, -1], [0, -1, -1, 1], [0, -1, -1, -1],
 		[1, 0, 1, 1], [1, 0, 1, -1], [1, 0, -1, 1], [1, 0, -1, -1],
@@ -54,6 +67,8 @@ class Simplex extends Perlin{
 		[-1, 1, 0, 1], [-1, 1, 0, -1], [-1, -1, 0, 1], [-1, -1, 0, -1],
 		[1, 1, 1, 0], [1, 1, -1, 0], [1, -1, 1, 0], [1, -1, -1, 0],
 		[-1, 1, 1, 0], [-1, 1, -1, 0], [-1, -1, 1, 0], [-1, -1, -1, 0]];
+
+	/** @var int[][] */
 	protected static $simplex = [
 		[0, 1, 2, 3], [0, 1, 3, 2], [0, 0, 0, 0], [0, 2, 3, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 2, 3, 0],
 		[0, 2, 1, 3], [0, 0, 0, 0], [0, 3, 1, 2], [0, 3, 2, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 3, 2, 0],
@@ -63,6 +78,8 @@ class Simplex extends Perlin{
 		[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
 		[2, 0, 1, 3], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [3, 0, 1, 2], [3, 0, 2, 1], [0, 0, 0, 0], [3, 1, 2, 0],
 		[2, 1, 0, 3], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [3, 1, 0, 2], [0, 0, 0, 0], [3, 2, 0, 1], [3, 2, 1, 0]];
+
+	/** @var float */
 	protected $offsetW;
 
 

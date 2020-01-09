@@ -29,6 +29,7 @@ use function time;
 
 class ServerKiller extends Thread{
 
+	/** @var int */
 	public $time;
 
 	/** @var bool */

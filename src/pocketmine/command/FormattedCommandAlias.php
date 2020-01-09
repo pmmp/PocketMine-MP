@@ -32,6 +32,7 @@ use function strpos;
 use function substr;
 
 class FormattedCommandAlias extends Command{
+	/** @var string[] */
 	private $formatStrings = [];
 
 	/**

@@ -30,7 +30,9 @@ use pocketmine\utils\Random;
 class TallGrass extends Populator{
 	/** @var ChunkManager */
 	private $level;
+	/** @var int */
 	private $randomAmount = 1;
+	/** @var int */
 	private $baseAmount = 0;
 
 	public function setRandomAmount($amount){

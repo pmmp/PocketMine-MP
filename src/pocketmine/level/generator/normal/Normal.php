@@ -55,7 +55,9 @@ class Normal extends Generator{
 	/** @var BiomeSelector */
 	private $selector;
 
+	/** @var float[][]|null */
 	private static $GAUSSIAN_KERNEL = null;
+	/** @var int */
 	private static $SMOOTH_SIZE = 2;
 
 	/**

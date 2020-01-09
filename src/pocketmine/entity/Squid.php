@@ -42,8 +42,10 @@ class Squid extends WaterAnimal{
 
 	/** @var Vector3|null */
 	public $swimDirection = null;
+	/** @var float */
 	public $swimSpeed = 0.1;
 
+	/** @var int */
 	private $switchDirectionTicker = 0;
 
 	public function initEntity() : void{

@@ -31,6 +31,7 @@ use pocketmine\utils\Random;
 use function abs;
 
 abstract class Tree{
+	/** @var bool[] */
 	public $overridable = [
 		Block::AIR => true,
 		Block::SAPLING => true,
@@ -39,9 +40,13 @@ abstract class Tree{
 		Block::LEAVES2 => true
 	];
 
+	/** @var int */
 	public $type = 0;
+	/** @var int */
 	public $trunkBlock = Block::LOG;
+	/** @var int */
 	public $leafBlock = Block::LEAVES;
+	/** @var int */
 	public $treeHeight = 7;
 
 	public static function growTree(ChunkManager $level, int $x, int $y, int $z, Random $random, int $type = 0){

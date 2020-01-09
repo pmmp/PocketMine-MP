@@ -34,6 +34,7 @@ use function spl_object_hash;
 
 class Network{
 
+	/** @var int */
 	public static $BATCH_THRESHOLD = 512;
 
 	/** @var Server */
@@ -45,7 +46,9 @@ class Network{
 	/** @var AdvancedSourceInterface[] */
 	private $advancedInterfaces = [];
 
+	/** @var float */
 	private $upload = 0;
+	/** @var float */
 	private $download = 0;
 
 	/** @var string */

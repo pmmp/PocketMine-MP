@@ -41,20 +41,28 @@ use function version_compare;
 use function yaml_parse;
 
 class PluginDescription{
+	/** @var mixed[] */
 	private $map;
 
+	/** @var string */
 	private $name;
+	/** @var string */
 	private $main;
+	/** @var string[] */
 	private $api;
 	/** @var int[] */
 	private $compatibleMcpeProtocols = [];
 	/** @var string[][] */
 	private $extensions = [];
+	/** @var string[] */
 	private $depend = [];
+	/** @var string[] */
 	private $softDepend = [];
+	/** @var string[] */
 	private $loadBefore = [];
 	/** @var string */
 	private $version;
+	/** @var mixed[][] */
 	private $commands = [];
 	/** @var string */
 	private $description = "";
@@ -64,6 +72,7 @@ class PluginDescription{
 	private $website = "";
 	/** @var string */
 	private $prefix = "";
+	/** @var int */
 	private $order = PluginLoadOrder::POSTWORLD;
 
 	/**

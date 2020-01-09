@@ -96,8 +96,11 @@ class CrashDump{
 
 	/** @var Server */
 	private $server;
+	/** @var resource */
 	private $fp;
+	/** @var int */
 	private $time;
+	/** @var mixed[] */
 	private $data = [];
 	/** @var string */
 	private $encodedData = "";

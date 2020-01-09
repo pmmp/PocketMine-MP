@@ -31,12 +31,19 @@ use function array_fill;
 use function assert;
 
 abstract class Noise{
+	/** @var int[] */
 	protected $perm = [];
+	/** @var float */
 	protected $offsetX = 0;
+	/** @var float */
 	protected $offsetY = 0;
+	/** @var float */
 	protected $offsetZ = 0;
+	/** @var int */
 	protected $octaves = 8;
+	/** @var float */
 	protected $persistence;
+	/** @var float */
 	protected $expansion;
 
 	public static function floor($x) : int{

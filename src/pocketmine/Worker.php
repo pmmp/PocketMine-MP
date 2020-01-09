@@ -33,6 +33,7 @@ abstract class Worker extends \Worker{
 	/** @var string|null */
 	protected $composerAutoloaderPath;
 
+	/** @var bool */
 	protected $isKilled = false;
 
 	public function getClassLoader(){

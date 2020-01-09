@@ -54,7 +54,9 @@ class CommandReader extends Thread{
 
 	/** @var \Threaded */
 	protected $buffer;
+	/** @var bool */
 	private $shutdown = false;
+	/** @var int */
 	private $type = self::TYPE_STREAM;
 
 	/** @var SleeperNotifier|null */

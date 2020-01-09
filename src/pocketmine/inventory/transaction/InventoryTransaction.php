@@ -53,6 +53,7 @@ use function spl_object_hash;
  * @see InventoryAction
  */
 class InventoryTransaction{
+	/** @var bool */
 	protected $hasExecuted = false;
 	/** @var Player */
 	protected $source;

@@ -34,6 +34,7 @@ use function unserialize;
  * The result of this AsyncTask is an array of arrays (returned from {@link Internet::simpleCurl}) or InternetException objects.
  */
 class BulkCurlTask extends AsyncTask{
+	/** @var string */
 	private $operations;
 
 	/**

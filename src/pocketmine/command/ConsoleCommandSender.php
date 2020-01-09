@@ -37,6 +37,7 @@ use const PHP_INT_MAX;
 
 class ConsoleCommandSender implements CommandSender{
 
+	/** @var PermissibleBase */
 	private $perm;
 
 	/** @var int|null */

@@ -30,7 +30,9 @@ use pocketmine\Server;
 
 class CompressBatchedTask extends AsyncTask{
 
+	/** @var int */
 	public $level = 7;
+	/** @var string */
 	public $data;
 
 	/**

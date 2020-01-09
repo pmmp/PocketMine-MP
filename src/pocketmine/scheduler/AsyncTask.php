@@ -59,12 +59,16 @@ abstract class AsyncTask extends Collectable{
 	/** @var \Threaded */
 	public $progressUpdates;
 
+	/** @var scalar|null */
 	private $result = null;
+	/** @var bool */
 	private $serialized = false;
+	/** @var bool */
 	private $cancelRun = false;
 	/** @var int|null */
 	private $taskId = null;
 
+	/** @var bool */
 	private $crashed = false;
 
 	public function run(){

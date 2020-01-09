@@ -120,7 +120,9 @@ use const PHP_INT_MIN;
 
 class Level implements ChunkManager, Metadatable{
 
+	/** @var int */
 	private static $levelIdCounter = 1;
+	/** @var int */
 	private static $chunkLoaderCounter = 1;
 
 	public const Y_MASK = 0xFF;

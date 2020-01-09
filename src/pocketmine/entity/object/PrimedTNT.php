@@ -43,6 +43,7 @@ class PrimedTNT extends Entity implements Explosive{
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
 
+	/** @var int */
 	protected $fuse;
 
 	public $canCollide = false;

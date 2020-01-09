@@ -317,6 +317,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_PLAYER_FLAG_SLEEP = 1;
 	public const DATA_PLAYER_FLAG_DEAD = 2; //TODO: CHECK
 
+	/** @var int */
 	public static $entityCount = 1;
 	/** @var string[] */
 	private static $knownEntities = [];
@@ -504,6 +505,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/** @var float */
 	private $health = 20.0;
+	/** @var int */
 	private $maxHealth = 20;
 
 	/** @var float */

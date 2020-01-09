@@ -39,9 +39,13 @@ use function str_repeat;
 class FloatingTextParticle extends Particle{
 	//TODO: HACK!
 
+	/** @var string */
 	protected $text;
+	/** @var string */
 	protected $title;
-	protected $entityId;
+	/** @var int|null */
+	protected $entityId = null;
+	/** @var bool */
 	protected $invisible = false;
 
 	/**

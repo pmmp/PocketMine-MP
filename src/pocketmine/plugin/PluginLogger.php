@@ -29,6 +29,7 @@ use function spl_object_hash;
 
 class PluginLogger implements \AttachableLogger{
 
+	/** @var string */
 	private $pluginName;
 
 	/** @var \LoggerAttachment[] */

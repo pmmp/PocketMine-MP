@@ -28,6 +28,7 @@ use pocketmine\event\Listener;
 
 class MethodEventExecutor implements EventExecutor{
 
+	/** @var string */
 	private $method;
 
 	public function __construct($method){

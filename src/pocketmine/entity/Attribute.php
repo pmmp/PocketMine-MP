@@ -46,14 +46,22 @@ class Attribute{
 	public const HORSE_JUMP_STRENGTH = 14;
 	public const ZOMBIE_SPAWN_REINFORCEMENTS = 15;
 
+	/** @var int */
 	private $id;
+	/** @var float */
 	protected $minValue;
+	/** @var float */
 	protected $maxValue;
+	/** @var float */
 	protected $defaultValue;
+	/** @var float */
 	protected $currentValue;
+	/** @var string */
 	protected $name;
+	/** @var bool */
 	protected $shouldSend;
 
+	/** @var bool */
 	protected $desynchronized = true;
 
 	/** @var Attribute[] */

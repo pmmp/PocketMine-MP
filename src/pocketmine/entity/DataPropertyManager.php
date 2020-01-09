@@ -32,8 +32,10 @@ use function is_string;
 
 class DataPropertyManager{
 
+	/** @var mixed[][] */
 	private $properties = [];
 
+	/** @var mixed[][] */
 	private $dirtyProperties = [];
 
 	public function __construct(){

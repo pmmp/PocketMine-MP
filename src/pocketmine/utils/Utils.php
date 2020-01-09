@@ -100,6 +100,7 @@ use const STR_PAD_RIGHT;
  * Big collection of functions
  */
 class Utils{
+	/** @var string|null */
 	public static $os;
 	/** @var UUID|null */
 	private static $serverUniqueId = null;
