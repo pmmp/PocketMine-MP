@@ -48,6 +48,7 @@ class PluginDescription{
 	private $api;
 	/** @var int[] */
 	private $compatibleMcpeProtocols = [];
+	/** @var string[][] */
 	private $extensions = [];
 	private $depend = [];
 	private $softDepend = [];
@@ -194,7 +195,7 @@ class PluginDescription{
 	}
 
 	/**
-	 * @return array
+	 * @return string[][]
 	 */
 	public function getRequiredExtensions() : array{
 		return $this->extensions;
@@ -211,9 +212,6 @@ class PluginDescription{
 				throw new PluginException("Required extension $name not loaded");
 			}
 
-			if(!is_array($versionConstrs)){
-				$versionConstrs = [$versionConstrs];
-			}
 			$gotVersion = phpversion($name);
 			foreach($versionConstrs as $constr){ // versionConstrs_loop
 				if($constr === "*"){
