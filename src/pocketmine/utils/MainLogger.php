@@ -227,11 +227,7 @@ class MainLogger extends \AttachableThreadedLogger{
 			E_DEPRECATED => "E_DEPRECATED",
 			E_USER_DEPRECATED => "E_USER_DEPRECATED"
 		];
-		if($errno === 0){
-			$type = LogLevel::CRITICAL;
-		}else{
-			$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? LogLevel::WARNING : LogLevel::NOTICE);
-		}
+
 		$errno = $errorConversion[$errno] ?? $errno;
 		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
 		$errfile = Utils::cleanPath($errfile);
@@ -239,8 +235,8 @@ class MainLogger extends \AttachableThreadedLogger{
 		$message = get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
 		$stack = Utils::printableTrace($trace);
 
-		$this->synchronized(function() use ($type, $message, $stack) : void{
-			$this->log($type, $message);
+		$this->synchronized(function() use ($message, $stack) : void{
+			$this->critical($message);
 			foreach($stack as $line){
 				$this->debug($line, true);
 			}
