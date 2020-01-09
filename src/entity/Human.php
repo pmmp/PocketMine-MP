@@ -85,6 +85,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	/** @var ExperienceManager */
 	protected $xpManager;
 
+	/** @var int */
 	protected $xpSeed;
 
 	protected $baseOffset = 1.62;

@@ -35,6 +35,7 @@ class SimpleChunkManager implements ChunkManager{
 	/** @var Chunk[] */
 	protected $chunks = [];
 
+	/** @var int */
 	protected $worldHeight;
 
 	/** @var SubChunkIteratorManager */

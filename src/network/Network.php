@@ -49,7 +49,9 @@ class Network{
 	/** @var int[] */
 	private $bannedIps = [];
 
+	/** @var float */
 	private $upload = 0;
+	/** @var float */
 	private $download = 0;
 
 	/** @var string */

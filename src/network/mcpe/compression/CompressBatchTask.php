@@ -29,7 +29,9 @@ class CompressBatchTask extends AsyncTask{
 
 	private const TLS_KEY_PROMISE = "promise";
 
+	/** @var int */
 	private $level;
+	/** @var string */
 	private $data;
 
 	/**

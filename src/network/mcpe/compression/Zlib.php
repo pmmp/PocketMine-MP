@@ -28,7 +28,9 @@ use function zlib_encode;
 use const ZLIB_ENCODING_DEFLATE;
 
 final class Zlib{
+	/** @var int */
 	public static $LEVEL = 7;
+	/** @var int */
 	public static $THRESHOLD = 256;
 
 	private function __construct(){

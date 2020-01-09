@@ -42,6 +42,7 @@ class ChunkRequestTask extends AsyncTask{
 	/** @var int */
 	protected $chunkZ;
 
+	/** @var int */
 	protected $compressionLevel;
 
 	/** @var string */

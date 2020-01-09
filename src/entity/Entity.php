@@ -134,6 +134,7 @@ abstract class Entity{
 
 	/** @var float */
 	private $health = 20.0;
+	/** @var int */
 	private $maxHealth = 20;
 
 	/** @var float */

@@ -42,6 +42,7 @@ abstract class Liquid extends Transparent{
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
 
+	/** @var int */
 	public $adjacentSources = 0;
 
 	/** @var Vector3|null */

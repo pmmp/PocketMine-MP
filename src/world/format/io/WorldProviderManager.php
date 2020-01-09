@@ -32,6 +32,7 @@ use function strtolower;
 use function trim;
 
 abstract class WorldProviderManager{
+	/** @var string[] */
 	protected static $providers = [];
 
 	/** @var string|WorldProvider */

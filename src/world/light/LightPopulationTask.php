@@ -35,6 +35,7 @@ use function igbinary_unserialize;
 class LightPopulationTask extends AsyncTask{
 	private const TLS_KEY_WORLD = "world";
 
+	/** @var string */
 	public $chunk;
 
 	/** @var int */

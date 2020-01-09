@@ -61,6 +61,7 @@ use function reset;
  */
 final class EntityFactory{
 
+	/** @var int */
 	private static $entityCount = 1;
 	/** @var string[] base class => currently used class for construction */
 	private static $classMapping = [];
