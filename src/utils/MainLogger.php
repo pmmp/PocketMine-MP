@@ -156,30 +156,37 @@ class MainLogger extends \AttachableThreadedLogger{
 		if($trace === null){
 			$trace = $e->getTrace();
 		}
-		$errstr = $e->getMessage();
-		$errfile = $e->getFile();
-		$errno = $e->getCode();
-		$errline = $e->getLine();
 
+		$this->synchronized(function() use ($e, $trace) : void{
+			$this->critical(self::printExceptionMessage($e));
+			foreach(Utils::printableTrace($trace) as $line){
+				$this->debug($line, true);
+			}
+			for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
+				$this->debug("Previous: " . self::printExceptionMessage($prev), true);
+				foreach(Utils::printableTrace($prev->getTrace()) as $line){
+					$this->debug("  " . $line, true);
+				}
+			}
+		});
+
+		$this->syncFlushBuffer();
+	}
+
+	private static function printExceptionMessage(\Throwable $e) : string{
+		$errstr = preg_replace('/\s+/', ' ', trim($e->getMessage()));
+
+		$errno = $e->getCode();
 		try{
 			$errno = \ErrorUtils::errorTypeToString($errno);
 		}catch(\InvalidArgumentException $e){
 			//pass
 		}
-		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
-		$errfile = Filesystem::cleanPath($errfile);
 
-		$message = get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
-		$stack = Utils::printableTrace($trace);
+		$errfile = Filesystem::cleanPath($e->getFile());
+		$errline = $e->getLine();
 
-		$this->synchronized(function() use ($message, $stack) : void{
-			$this->log(LogLevel::CRITICAL, $message);
-			foreach($stack as $line){
-				$this->debug($line, true);
-			}
-		});
-
-		$this->syncFlushBuffer();
+		return get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
 	}
 
 	public function log($level, $message){
