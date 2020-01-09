@@ -62,7 +62,9 @@ use const SOCK_DGRAM;
 use const SOL_UDP;
 
 class Internet{
+	/** @var string|false */
 	public static $ip = false;
+	/** @var bool */
 	public static $online = true;
 
 	/**

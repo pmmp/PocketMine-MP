@@ -36,6 +36,7 @@ class Permission{
 	public const DEFAULT_TRUE = "true";
 	public const DEFAULT_FALSE = "false";
 
+	/** @var string */
 	public static $DEFAULT_PERMISSION = self::DEFAULT_OP;
 
 	/** @var string */

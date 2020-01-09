@@ -47,13 +47,20 @@ class Attribute{
 	public const HORSE_JUMP_STRENGTH = self::MC_PREFIX . "horse.jump_strength";
 	public const ZOMBIE_SPAWN_REINFORCEMENTS = self::MC_PREFIX . "zombie.spawn_reinforcements";
 
+	/** @var string */
 	protected $id;
+	/** @var float */
 	protected $minValue;
+	/** @var float */
 	protected $maxValue;
+	/** @var float */
 	protected $defaultValue;
+	/** @var float */
 	protected $currentValue;
+	/** @var bool */
 	protected $shouldSend;
 
+	/** @var bool */
 	protected $desynchronized = true;
 
 	/** @var Attribute[] */

@@ -40,6 +40,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 	/** @var TextContainer|string */
 	private $deathMessage;
+	/** @var bool */
 	private $keepInventory = false;
 
 	/**

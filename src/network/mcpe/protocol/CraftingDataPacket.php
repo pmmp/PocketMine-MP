@@ -63,6 +63,7 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $cleanRecipes = false;
 
+	/** @var mixed[][] */
 	public $decodedEntries = [];
 
 	protected function decodePayload() : void{

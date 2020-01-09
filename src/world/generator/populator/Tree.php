@@ -32,7 +32,9 @@ use pocketmine\world\generator\object\Tree as ObjectTree;
 class Tree extends Populator{
 	/** @var ChunkManager */
 	private $world;
+	/** @var int */
 	private $randomAmount = 1;
+	/** @var int */
 	private $baseAmount = 0;
 
 	/** @var TreeType */

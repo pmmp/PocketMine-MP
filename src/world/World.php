@@ -108,6 +108,7 @@ use const PHP_INT_MIN;
 
 class World implements ChunkManager{
 
+	/** @var int */
 	private static $worldIdCounter = 1;
 
 	public const Y_MASK = 0xFF;

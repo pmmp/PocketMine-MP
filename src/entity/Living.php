@@ -71,6 +71,7 @@ abstract class Living extends Entity{
 	protected $gravity = 0.08;
 	protected $drag = 0.02;
 
+	/** @var int */
 	protected $attackTime = 0;
 
 	/** @var int */
@@ -78,6 +79,7 @@ abstract class Living extends Entity{
 	/** @var int */
 	protected $maxDeadTicks = 25;
 
+	/** @var float */
 	protected $jumpVelocity = 0.42;
 
 	/** @var EffectManager */

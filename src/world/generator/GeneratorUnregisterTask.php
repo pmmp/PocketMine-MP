@@ -28,6 +28,7 @@ use pocketmine\world\World;
 
 class GeneratorUnregisterTask extends AsyncTask{
 
+	/** @var int */
 	public $worldId;
 
 	public function __construct(World $world){

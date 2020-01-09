@@ -71,6 +71,7 @@ class Config{
 	/** @var array */
 	private $config = [];
 
+	/** @var mixed[] */
 	private $nestedCache = [];
 
 	/** @var string */
@@ -83,6 +84,7 @@ class Config{
 	/** @var bool */
 	private $changed = false;
 
+	/** @var int[] */
 	public static $formats = [
 		"properties" => Config::PROPERTIES,
 		"cnf" => Config::CNF,

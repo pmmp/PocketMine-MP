@@ -32,10 +32,15 @@ use function unserialize;
 
 class GeneratorRegisterTask extends AsyncTask{
 
+	/** @var string */
 	public $generatorClass;
+	/** @var string */
 	public $settings;
+	/** @var int */
 	public $seed;
+	/** @var int */
 	public $worldId;
+	/** @var int */
 	public $worldHeight = World::Y_MAX;
 
 	public function __construct(World $world, string $generatorClass, array $generatorSettings = []){

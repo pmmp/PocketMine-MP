@@ -32,18 +32,31 @@ use pocketmine\world\World;
 class PopulationTask extends AsyncTask{
 	private const TLS_KEY_WORLD = "world";
 
+	/** @var bool */
 	public $state;
+	/** @var int */
 	public $worldId;
+	/** @var string */
 	public $chunk;
 
+	/** @var string */
 	public $chunk0;
+	/** @var string */
 	public $chunk1;
+	/** @var string */
 	public $chunk2;
+	/** @var string */
 	public $chunk3;
+
 	//center chunk
+
+	/** @var string */
 	public $chunk5;
+	/** @var string */
 	public $chunk6;
+	/** @var string */
 	public $chunk7;
+	/** @var string */
 	public $chunk8;
 
 	public function __construct(World $world, Chunk $chunk){

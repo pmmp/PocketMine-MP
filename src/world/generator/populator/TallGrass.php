@@ -31,7 +31,9 @@ use pocketmine\world\ChunkManager;
 class TallGrass extends Populator{
 	/** @var ChunkManager */
 	private $world;
+	/** @var int */
 	private $randomAmount = 1;
+	/** @var int */
 	private $baseAmount = 0;
 
 	public function setRandomAmount(int $amount) : void{

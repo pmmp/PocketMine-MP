@@ -32,29 +32,51 @@ use function stream_isatty;
 use const PHP_EOL;
 
 abstract class Terminal{
+	/** @var string */
 	public static $FORMAT_BOLD = "";
+	/** @var string */
 	public static $FORMAT_OBFUSCATED = "";
+	/** @var string */
 	public static $FORMAT_ITALIC = "";
+	/** @var string */
 	public static $FORMAT_UNDERLINE = "";
+	/** @var string */
 	public static $FORMAT_STRIKETHROUGH = "";
 
+	/** @var string */
 	public static $FORMAT_RESET = "";
 
+	/** @var string */
 	public static $COLOR_BLACK = "";
+	/** @var string */
 	public static $COLOR_DARK_BLUE = "";
+	/** @var string */
 	public static $COLOR_DARK_GREEN = "";
+	/** @var string */
 	public static $COLOR_DARK_AQUA = "";
+	/** @var string */
 	public static $COLOR_DARK_RED = "";
+	/** @var string */
 	public static $COLOR_PURPLE = "";
+	/** @var string */
 	public static $COLOR_GOLD = "";
+	/** @var string */
 	public static $COLOR_GRAY = "";
+	/** @var string */
 	public static $COLOR_DARK_GRAY = "";
+	/** @var string */
 	public static $COLOR_BLUE = "";
+	/** @var string */
 	public static $COLOR_GREEN = "";
+	/** @var string */
 	public static $COLOR_AQUA = "";
+	/** @var string */
 	public static $COLOR_RED = "";
+	/** @var string */
 	public static $COLOR_LIGHT_PURPLE = "";
+	/** @var string */
 	public static $COLOR_YELLOW = "";
+	/** @var string */
 	public static $COLOR_WHITE = "";
 
 	/** @var bool|null */

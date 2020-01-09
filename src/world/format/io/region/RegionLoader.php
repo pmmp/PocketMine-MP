@@ -59,6 +59,7 @@ class RegionLoader{
 
 	private const FIRST_SECTOR = 2; //location table occupies 0 and 1
 
+	/** @var int */
 	public static $COMPRESSION_LEVEL = 7;
 
 	/** @var string */

@@ -31,7 +31,9 @@ class AsyncWorker extends Worker{
 	/** @var mixed[] */
 	private static $store = [];
 
+	/** @var \ThreadedLogger */
 	private $logger;
+	/** @var int */
 	private $id;
 
 	/** @var int */
