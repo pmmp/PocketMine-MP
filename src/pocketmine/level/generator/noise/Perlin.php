@@ -151,6 +151,12 @@ class Perlin extends Noise{
 		*/
 	}
 
+	/**
+	 * @param float $x
+	 * @param float $y
+	 *
+	 * @return float
+	 */
 	public function getNoise2D($x, $y){
 		return $this->getNoise3D($x, $y, 0);
 	}
