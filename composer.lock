@@ -276,16 +276,16 @@
         },
         {
             "name": "pocketmine/spl",
-            "version": "0.3.3",
+            "version": "0.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "94d4df142fe837ba836e9348dd00209e4bdcc307"
+                "reference": "00d5b0b5a99e72c28c957cb7a310c6765d76e899"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/94d4df142fe837ba836e9348dd00209e4bdcc307",
-                "reference": "94d4df142fe837ba836e9348dd00209e4bdcc307",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/00d5b0b5a99e72c28c957cb7a310c6765d76e899",
+                "reference": "00d5b0b5a99e72c28c957cb7a310c6765d76e899",
                 "shasum": ""
             },
             "type": "library",
@@ -299,10 +299,10 @@
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
             "support": {
-                "source": "https://github.com/pmmp/SPL/tree/0.3.3",
+                "source": "https://github.com/pmmp/SPL/tree/0.3.4",
                 "issues": "https://github.com/pmmp/SPL/issues"
             },
-            "time": "2019-10-28T11:41:20+00:00"
+            "time": "2020-01-11T22:00:31+00:00"
         }
     ],
     "packages-dev": [],
