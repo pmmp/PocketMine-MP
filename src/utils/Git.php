@@ -37,7 +37,7 @@ final class Git{
 	 * Returns the git hash of the currently checked out head of the given repository, or null on failure.
 	 *
 	 * @param string $dir
-	 * @param bool   &$dirty Output, set to whether the repo has local changes
+	 * @param bool   $dirty reference parameter, set to whether the repo has local changes
 	 *
 	 * @return string|null
 	 */

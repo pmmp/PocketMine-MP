@@ -234,8 +234,8 @@ class RegionLoader{
 
 	/**
 	 * @param int $offset
-	 * @param int &$x
-	 * @param int &$z
+	 * @param int $x reference parameter
+	 * @param int $z reference parameter
 	 */
 	protected static function getChunkCoords(int $offset, ?int &$x, ?int &$z) : void{
 		$x = $offset & 0x1f;

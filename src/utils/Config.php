@@ -492,7 +492,7 @@ class Config{
 
 	/**
 	 * @param array $default
-	 * @param array &$data
+	 * @param array $data reference parameter
 	 *
 	 * @return int
 	 */

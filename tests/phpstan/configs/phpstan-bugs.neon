@@ -1,10 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^PHPDoc tag @param has invalid value \\(.+\\)\\: Unexpected token \"&\", expected variable at offset \\d+$#"
-			path: ../../../src
-
-		-
 			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
 			path: ../../../src
 

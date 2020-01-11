@@ -485,9 +485,9 @@ class MemoryManager{
 
 	/**
 	 * @param mixed    $from
-	 * @param mixed    &$data
-	 * @param object[] &$objects
-	 * @param int[]    &$refCounts
+	 * @param mixed    $data reference parameter
+	 * @param object[] $objects reference parameter
+	 * @param int[]    $refCounts reference parameter
 	 * @param int      $recursion
 	 * @param int      $maxNesting
 	 * @param int      $maxStringSize

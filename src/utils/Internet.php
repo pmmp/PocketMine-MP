@@ -138,9 +138,9 @@ class Internet{
 	 * @param string  $page
 	 * @param int     $timeout default 10
 	 * @param array   $extraHeaders
-	 * @param string  &$err Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param array[] &$headers
-	 * @param int     &$httpCode
+	 * @param string  $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param array[] $headers reference parameter
+	 * @param int     $httpCode reference parameter
 	 *
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
@@ -162,9 +162,9 @@ class Internet{
 	 * @param array|string $args
 	 * @param int          $timeout
 	 * @param array        $extraHeaders
-	 * @param string       &$err Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param array[]      &$headers
-	 * @param int          &$httpCode
+	 * @param string       $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param array[]      $headers reference parameter
+	 * @param int          $httpCode reference parameter
 	 *
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
