@@ -119,6 +119,9 @@ final class Process{
 		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
 	}
 
+	/**
+	 * @param int $pid
+	 */
 	public static function kill($pid) : void{
 		$logger = \GlobalLogger::get();
 		if($logger instanceof MainLogger){

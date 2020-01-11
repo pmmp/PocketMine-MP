@@ -73,6 +73,11 @@ final class Filesystem{
 		}
 	}
 
+	/**
+	 * @param string $path
+	 *
+	 * @return string
+	 */
 	public static function cleanPath($path){
 		$result = str_replace(["\\", ".php", "phar://"], ["/", "", ""], $path);
 

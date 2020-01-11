@@ -119,10 +119,17 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 		return $data;
 	}
 
+	/**
+	 * @param string $name
+	 */
 	public function __get($name){
 		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
 	}
 
+	/**
+	 * @param string $name
+	 * @param mixed  $value
+	 */
 	public function __set($name, $value){
 		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
 	}

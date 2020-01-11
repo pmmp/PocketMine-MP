@@ -223,6 +223,12 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->notify();
 	}
 
+	/**
+	 * @param string $message
+	 * @param string $level
+	 * @param string $prefix
+	 * @param string $color
+	 */
 	protected function send($message, $level, $prefix, $color) : void{
 		$time = new \DateTime('now', new \DateTimeZone($this->timezone));
 

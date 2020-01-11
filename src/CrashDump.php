@@ -316,10 +316,16 @@ class CrashDump{
 		$this->addLine("OS : " . PHP_OS . ", " . Utils::getOS());
 	}
 
+	/**
+	 * @param string $line
+	 */
 	public function addLine($line = "") : void{
 		fwrite($this->fp, $line . PHP_EOL);
 	}
 
+	/**
+	 * @param string $str
+	 */
 	public function add($str) : void{
 		fwrite($this->fp, $str);
 	}

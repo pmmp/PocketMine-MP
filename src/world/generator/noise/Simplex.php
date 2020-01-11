@@ -209,6 +209,12 @@ class Simplex extends Noise{
 		return 32.0 * $n;
 	}
 
+	/**
+	 * @param float $x
+	 * @param float $y
+	 *
+	 * @return float
+	 */
 	public function getNoise2D($x, $y){
 		$x += $this->offsetX;
 		$y += $this->offsetY;
