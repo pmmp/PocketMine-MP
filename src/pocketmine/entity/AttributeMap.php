@@ -58,6 +58,11 @@ class AttributeMap implements \ArrayAccess{
 		});
 	}
 
+	/**
+	 * @param int $offset
+	 *
+	 * @return bool
+	 */
 	public function offsetExists($offset) : bool{
 		return isset($this->attributes[$offset]);
 	}
@@ -79,6 +84,9 @@ class AttributeMap implements \ArrayAccess{
 		$this->attributes[$offset]->setValue($value);
 	}
 
+	/**
+	 * @param int $offset
+	 */
 	public function offsetUnset($offset) : void{
 		throw new \RuntimeException("Could not unset an attribute from an attribute map");
 	}

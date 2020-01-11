@@ -83,6 +83,12 @@ class Simplex extends Perlin{
 	protected $offsetW;
 
 
+	/**
+	 * @param Random $random
+	 * @param int    $octaves
+	 * @param float  $persistence
+	 * @param float  $expansion
+	 */
 	public function __construct(Random $random, $octaves, $persistence, $expansion = 1){
 		parent::__construct($random, $octaves, $persistence, $expansion);
 		$this->offsetW = $random->nextFloat() * 256;
@@ -100,14 +106,38 @@ class Simplex extends Perlin{
 		self::$G44 = self::$G4 * 4.0 - 1.0;
 	}
 
+	/**
+	 * @param int[] $g
+	 * @param float $x
+	 * @param float $y
+	 *
+	 * @return float
+	 */
 	protected static function dot2D($g, $x, $y){
 		return $g[0] * $x + $g[1] * $y;
 	}
 
+	/**
+	 * @param int[] $g
+	 * @param float $x
+	 * @param float $y
+	 * @param float $z
+	 *
+	 * @return float
+	 */
 	protected static function dot3D($g, $x, $y, $z){
 		return $g[0] * $x + $g[1] * $y + $g[2] * $z;
 	}
 
+	/**
+	 * @param int[] $g
+	 * @param float $x
+	 * @param float $y
+	 * @param float $z
+	 * @param float $w
+	 *
+	 * @return float
+	 */
 	protected static function dot4D($g, $x, $y, $z, $w){
 		return $g[0] * $x + $g[1] * $y + $g[2] * $z + $g[3] * $w;
 	}

@@ -95,6 +95,14 @@ class RCONInstance extends Thread{
 		$this->start(PTHREADS_INHERIT_NONE);
 	}
 
+	/**
+	 * @param resource $client
+	 * @param int      $requestID
+	 * @param int      $packetType
+	 * @param string   $payload
+	 *
+	 * @return int|false
+	 */
 	private function writePacket($client, int $requestID, int $packetType, string $payload){
 		$pk = Binary::writeLInt($requestID)
 			. Binary::writeLInt($packetType)
@@ -103,6 +111,14 @@ class RCONInstance extends Thread{
 		return socket_write($client, Binary::writeLInt(strlen($pk)) . $pk);
 	}
 
+	/**
+	 * @param resource $client
+	 * @param int      $requestID reference parameter
+	 * @param int      $packetType reference parameter
+	 * @param string   $payload reference parameter
+	 *
+	 * @return bool
+	 */
 	private function readPacket($client, ?int &$requestID, ?int &$packetType, ?string &$payload){
 		$d = @socket_read($client, 4);
 
@@ -251,6 +267,9 @@ class RCONInstance extends Thread{
 		}
 	}
 
+	/**
+	 * @param resource $client
+	 */
 	private function disconnectClient($client) : void{
 		socket_getpeername($client, $ip, $port);
 		@socket_set_option($client, SOL_SOCKET, SO_LINGER, ["l_onoff" => 1, "l_linger" => 1]);

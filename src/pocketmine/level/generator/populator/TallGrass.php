@@ -35,10 +35,16 @@ class TallGrass extends Populator{
 	/** @var int */
 	private $baseAmount = 0;
 
+	/**
+	 * @param int $amount
+	 */
 	public function setRandomAmount($amount){
 		$this->randomAmount = $amount;
 	}
 
+	/**
+	 * @param int $amount
+	 */
 	public function setBaseAmount($amount){
 		$this->baseAmount = $amount;
 	}

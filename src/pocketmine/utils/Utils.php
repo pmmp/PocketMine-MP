@@ -554,6 +554,9 @@ class Utils{
 		return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
 	}
 
+	/**
+	 * @param int $pid
+	 */
 	public static function kill($pid) : void{
 		if(MainLogger::isRegisteredStatic()){
 			MainLogger::getLogger()->syncFlushBuffer();
@@ -654,6 +657,11 @@ class Utils{
 		return self::printableTrace(self::currentTrace(++$skipFrames));
 	}
 
+	/**
+	 * @param string $path
+	 *
+	 * @return string
+	 */
 	public static function cleanPath($path){
 		$result = str_replace(["\\", ".php", "phar://"], ["/", "", ""], $path);
 

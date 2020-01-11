@@ -40,14 +40,23 @@ class Tree extends Populator{
 	/** @var int */
 	private $type;
 
+	/**
+	 * @param int $type
+	 */
 	public function __construct($type = Sapling::OAK){
 		$this->type = $type;
 	}
 
+	/**
+	 * @param int $amount
+	 */
 	public function setRandomAmount($amount){
 		$this->randomAmount = $amount;
 	}
 
+	/**
+	 * @param int $amount
+	 */
 	public function setBaseAmount($amount){
 		$this->baseAmount = $amount;
 	}

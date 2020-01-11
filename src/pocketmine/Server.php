@@ -2204,6 +2204,9 @@ class Server{
 		$this->forceShutdown();
 	}
 
+	/**
+	 * @param int $signo
+	 */
 	public function handleSignal($signo){
 		if($signo === SIGTERM or $signo === SIGINT or $signo === SIGHUP){
 			$this->shutdown();
@@ -2470,6 +2473,9 @@ class Server{
 		}
 	}
 
+	/**
+	 * @param int $type
+	 */
 	public function sendUsage($type = SendUsageTask::TYPE_STATUS){
 		if((bool) $this->getProperty("anonymous-statistics.enabled", true)){
 			$this->asyncPool->submitTask(new SendUsageTask($this, $type, $this->uniquePlayers));

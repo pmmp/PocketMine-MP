@@ -61,6 +61,10 @@ class Network{
 
 	}
 
+	/**
+	 * @param float $upload
+	 * @param float $download
+	 */
 	public function addStatistics($upload, $download){
 		$this->upload += $upload;
 		$this->download += $download;

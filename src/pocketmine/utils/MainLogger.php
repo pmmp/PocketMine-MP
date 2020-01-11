@@ -286,6 +286,12 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->notify();
 	}
 
+	/**
+	 * @param string $message
+	 * @param string $level
+	 * @param string $prefix
+	 * @param string $color
+	 */
 	protected function send($message, $level, $prefix, $color){
 		/** @var \DateTime|null $time */
 		static $time = null;

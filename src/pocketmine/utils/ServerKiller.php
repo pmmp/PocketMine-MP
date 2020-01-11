@@ -35,6 +35,9 @@ class ServerKiller extends Thread{
 	/** @var bool */
 	private $stopped = false;
 
+	/**
+	 * @param int $time
+	 */
 	public function __construct($time = 15){
 		$this->time = $time;
 	}

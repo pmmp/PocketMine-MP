@@ -342,6 +342,9 @@ class RegionLoader{
 		fwrite($this->filePointer, pack("N*", ...$write), 4096 * 2);
 	}
 
+	/**
+	 * @param int $index
+	 */
 	protected function writeLocationIndex($index){
 		fseek($this->filePointer, $index << 2);
 		fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$index]->getFirstSector() << 8) | $this->locationTable[$index]->getSectorCount()), 4);
