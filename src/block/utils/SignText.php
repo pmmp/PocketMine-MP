@@ -86,6 +86,9 @@ class SignText{
 		}
 	}
 
+	/**
+	 * @param int|string $index
+	 */
 	private function checkLineIndex($index) : void{
 		if(!is_int($index)){
 			throw new \InvalidArgumentException("Index must be an integer");
