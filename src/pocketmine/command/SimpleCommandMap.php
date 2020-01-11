@@ -226,8 +226,8 @@ class SimpleCommandMap implements CommandMap{
 	 * This method is intended to provide capability for handling commands with spaces in their name.
 	 * The referenced parameters will be modified accordingly depending on the resulting matched command.
 	 *
-	 * @param string   &$commandName
-	 * @param string[] &$args
+	 * @param string   $commandName reference parameter
+	 * @param string[] $args reference parameter
 	 *
 	 * @return Command|null
 	 */

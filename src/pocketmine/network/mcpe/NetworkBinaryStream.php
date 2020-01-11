@@ -457,9 +457,9 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Reads an block position with unsigned Y coordinate.
 	 *
-	 * @param int &$x
-	 * @param int &$y
-	 * @param int &$z
+	 * @param int $x reference parameter
+	 * @param int $y reference parameter
+	 * @param int $z reference parameter
 	 */
 	public function getBlockPosition(&$x, &$y, &$z) : void{
 		$x = $this->getVarInt();
@@ -483,9 +483,9 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Reads a block position with a signed Y coordinate.
 	 *
-	 * @param int &$x
-	 * @param int &$y
-	 * @param int &$z
+	 * @param int $x reference parameter
+	 * @param int $y reference parameter
+	 * @param int $z reference parameter
 	 */
 	public function getSignedBlockPosition(&$x, &$y, &$z) : void{
 		$x = $this->getVarInt();

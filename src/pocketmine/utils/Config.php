@@ -106,10 +106,10 @@ class Config{
 	];
 
 	/**
-	 * @param string $file     Path of the file to be loaded
-	 * @param int    $type     Config type to load, -1 by default (detect)
-	 * @param array  $default  Array with the default values that will be written to the file if it did not exist
-	 * @param null   &$correct Sets correct to true if everything has been loaded correctly
+	 * @param string $file    Path of the file to be loaded
+	 * @param int    $type    Config type to load, -1 by default (detect)
+	 * @param array  $default Array with the default values that will be written to the file if it did not exist
+	 * @param null   $correct reference parameter, Sets correct to true if everything has been loaded correctly
 	 */
 	public function __construct(string $file, int $type = Config::DETECT, array $default = [], &$correct = null){
 		$this->load($file, $type, $default);
@@ -507,7 +507,7 @@ class Config{
 
 	/**
 	 * @param array $default
-	 * @param array &$data
+	 * @param array $data reference parameter
 	 *
 	 * @return int
 	 */

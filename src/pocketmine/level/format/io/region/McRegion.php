@@ -331,8 +331,8 @@ class McRegion extends BaseLevelProvider{
 	/**
 	 * @param int $chunkX
 	 * @param int $chunkZ
-	 * @param int &$regionX
-	 * @param int &$regionZ
+	 * @param int $regionX reference parameter
+	 * @param int $regionZ reference parameter
 	 */
 	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ){
 		$regionX = $chunkX >> 5;

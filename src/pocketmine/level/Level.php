@@ -1778,7 +1778,7 @@ class Level implements ChunkManager, Metadatable{
 	 * It'll try to lower the durability if Item is a tool, and set it to Air if broken.
 	 *
 	 * @param Vector3 $vector
-	 * @param Item    &$item (if null, can break anything)
+	 * @param Item    $item reference parameter (if null, can break anything)
 	 * @param Player  $player
 	 * @param bool    $createParticles
 	 *
