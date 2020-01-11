@@ -209,8 +209,6 @@ class RCONInstance extends Thread{
 						if($p === false){
 							$disconnect[$id] = $sock;
 							continue;
-						}elseif($p === null){
-							continue;
 						}
 
 						switch($packetType){
