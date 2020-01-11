@@ -47,20 +47,19 @@ class SubChunk implements SubChunkInterface{
 	/** @var string */
 	protected $skyLight;
 
-	private static function assignData(&$target, string $data, int $length, string $value = "\x00"){
+	private static function assignData(string $data, int $length, string $value = "\x00") : string{
 		if(strlen($data) !== $length){
 			assert($data === "", "Invalid non-zero length given, expected $length, got " . strlen($data));
-			$target = str_repeat($value, $length);
-		}else{
-			$target = $data;
+			return str_repeat($value, $length);
 		}
+		return $data;
 	}
 
 	public function __construct(string $ids = "", string $data = "", string $skyLight = "", string $blockLight = ""){
-		self::assignData($this->ids, $ids, 4096);
-		self::assignData($this->data, $data, 2048);
-		self::assignData($this->skyLight, $skyLight, 2048, "\xff");
-		self::assignData($this->blockLight, $blockLight, 2048);
+		$this->ids = self::assignData($ids, 4096);
+		$this->data = self::assignData($data, 2048);
+		$this->skyLight = self::assignData($skyLight, 2048, "\xff");
+		$this->blockLight = self::assignData($blockLight, 2048);
 		$this->collectGarbage();
 	}
 
