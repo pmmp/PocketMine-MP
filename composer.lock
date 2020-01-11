@@ -368,12 +368,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Log.git",
-                "reference": "27a5f5cf5bfeddec4231470a7b803c7bf8df6fbe"
+                "reference": "48af0e1c9ca7b256c21ae995e83e5755587d233d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Log/zipball/27a5f5cf5bfeddec4231470a7b803c7bf8df6fbe",
-                "reference": "27a5f5cf5bfeddec4231470a7b803c7bf8df6fbe",
+                "url": "https://api.github.com/repos/pmmp/Log/zipball/48af0e1c9ca7b256c21ae995e83e5755587d233d",
+                "reference": "48af0e1c9ca7b256c21ae995e83e5755587d233d",
                 "shasum": ""
             },
             "type": "library",
@@ -390,7 +390,7 @@
                 "source": "https://github.com/pmmp/Log/tree/master",
                 "issues": "https://github.com/pmmp/Log/issues"
             },
-            "time": "2019-10-24T18:48:08+00:00"
+            "time": "2020-01-11T22:03:44+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -437,12 +437,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "221212bd1991430a74374295261795a9a13875bb"
+                "reference": "c1d440cccb0be90f8ef519f231de7e91bb8db28f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/221212bd1991430a74374295261795a9a13875bb",
-                "reference": "221212bd1991430a74374295261795a9a13875bb",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/c1d440cccb0be90f8ef519f231de7e91bb8db28f",
+                "reference": "c1d440cccb0be90f8ef519f231de7e91bb8db28f",
                 "shasum": ""
             },
             "require": {
@@ -470,7 +470,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2019-12-09T11:21:10+00:00"
+            "time": "2020-01-01T10:09:55+00:00"
         },
         {
             "name": "pocketmine/raklib",
