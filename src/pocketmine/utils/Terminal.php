@@ -55,6 +55,7 @@ abstract class Terminal{
 	public static $COLOR_LIGHT_PURPLE = "";
 	public static $COLOR_YELLOW = "";
 	public static $COLOR_WHITE = "";
+	public static $COLOR_DARK_YELLOW = "";
 
 	/** @var bool|null */
 	private static $formattingCodes = null;
@@ -104,6 +105,7 @@ abstract class Terminal{
 		self::$COLOR_LIGHT_PURPLE = "\x1b[38;5;207m";
 		self::$COLOR_YELLOW = "\x1b[38;5;227m";
 		self::$COLOR_WHITE = "\x1b[38;5;231m";
+		self::$COLOR_DARK_YELLOW = "\x1b[38;5;226m";
 	}
 
 	protected static function getEscapeCodes(){
