@@ -73,11 +73,6 @@ parameters:
 			path: src/event/entity/ProjectileLaunchEvent.php
 
 		-
-			message: "#^Used constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
-			count: 1
-			path: src/network/mcpe/protocol/StartGamePacket.php
-
-		-
 			message: "#^Cannot instantiate interface pocketmine\\\\world\\\\format\\\\io\\\\WorldProvider\\.$#"
 			count: 1
 			path: src/world/WorldManager.php
@@ -101,15 +96,7 @@ parameters:
 			path: src
 
 		-
-			message: "#^Constant pocketmine\\\\PATH not found\\.$#"
-			path: src
-
-		-
 			message: "#^Constant pocketmine\\\\PLUGIN_PATH not found\\.$#"
-			path: src
-
-		-
-			message: "#^Constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
 			path: src
 
 		-
