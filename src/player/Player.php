@@ -242,8 +242,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	/** @var int */
 	protected $formIdCounter = 0;
-	/** @var Form[] */
-	protected $forms = [];
+	/** @var \Closure[] */
+	protected $formHandlers = [];
 
 	/** @var \Logger */
 	protected $logger;
@@ -1997,14 +1997,15 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * Sends a Form to the player, or queue to send it if a form is already open.
 	 *
-	 * @param Form $form
+	 * @param array $data
+	 * @param \Closure $callback
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function sendForm(Form $form) : void{
+	public function sendForm(array $data, \Closure $callback) : void{
 		$id = $this->formIdCounter++;
-		if($this->networkSession->onFormSent($id, $form)){
-			$this->forms[$id] = $form;
+		if($this->networkSession->onFormSent($id, $data)){
+			$this->formHandlers[$id] = $callback;
 		}
 	}
 
@@ -2015,18 +2016,19 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return bool
 	 */
 	public function onFormSubmit(int $formId, $responseData) : bool{
-		if(!isset($this->forms[$formId])){
+		if(!isset($this->formHandlers[$formId])){
 			$this->logger->debug("Got unexpected response for form $formId");
 			return false;
 		}
 
 		try{
-			$this->forms[$formId]->handleResponse($this, $responseData);
+			$closure = $this->formHandlers[$formId];
+			$closure($this, $responseData);
 		}catch(FormValidationException $e){
-			$this->logger->critical("Failed to validate form " . get_class($this->forms[$formId]) . ": " . $e->getMessage());
+			$this->logger->critical("Failed to validate form: " . $e->getMessage());
 			$this->logger->logException($e);
 		}finally{
-			unset($this->forms[$formId]);
+			unset($this->formHandlers[$formId]);
 		}
 
 		return true;
