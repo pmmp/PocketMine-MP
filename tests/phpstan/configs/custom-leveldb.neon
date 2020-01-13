@@ -1,0 +1,12 @@
+parameters:
+	ignoreErrors:
+		#TODO: use custom stubs
+		-
+			message: "#^Used constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/leveldb/LevelDB.php

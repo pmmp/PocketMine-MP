@@ -61,6 +61,18 @@ parameters:
 			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
 
 		-
+			#missing from current stubs
+			message: "#^Caught class com_exception not found\\.$#"
+			count: 2
+			path: ../../../src/network/upnp/UPnP.php
+
+		-
+			#missing from current stubs
+			message: "#^Call to method getMessage\\(\\) on an unknown class com_exception\\.$#"
+			count: 1
+			path: ../../../src/network/upnp/UPnP.php
+
+		-
 			message: "#^Strict comparison using \\=\\=\\= between int\\<1, max\\> and 0 will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/utils/Config.php
