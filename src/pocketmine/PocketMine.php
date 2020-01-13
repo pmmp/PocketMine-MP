@@ -171,17 +171,11 @@ namespace pocketmine {
 		error_reporting(-1);
 		set_ini_entries();
 
-		if(\Phar::running(true) !== ""){
-			define('pocketmine\PATH', \Phar::running(true) . "/");
-		}else{
-			define('pocketmine\PATH', dirname(__FILE__, 3) . DIRECTORY_SEPARATOR);
-		}
-
 		$opts = getopt("", ["bootstrap:"]);
 		if(isset($opts["bootstrap"])){
 			$bootstrap = realpath($opts["bootstrap"]) ?: $opts["bootstrap"];
 		}else{
-			$bootstrap = \pocketmine\PATH . 'vendor/autoload.php';
+			$bootstrap = dirname(__FILE__, 3) . '/vendor/autoload.php';
 		}
 		define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
 
@@ -211,8 +205,6 @@ namespace pocketmine {
 		}
 
 		define('pocketmine\GIT_COMMIT', $gitHash);
-
-		define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'pocketmine' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR);
 
 		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
 

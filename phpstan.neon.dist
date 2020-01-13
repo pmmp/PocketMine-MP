@@ -88,11 +88,6 @@ parameters:
 			path: src/pocketmine/level/generator/normal/Normal.php
 
 		-
-			message: "#^Used constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
-			count: 1
-			path: src/pocketmine/network/mcpe/protocol/StartGamePacket.php
-
-		-
 			message: "#^Constructor of class pocketmine\\\\scheduler\\\\TaskScheduler has an unused parameter \\$logger\\.$#"
 			count: 1
 			path: src/pocketmine/scheduler/TaskScheduler.php
@@ -110,15 +105,7 @@ parameters:
 			path: src
 
 		-
-			message: "#^Constant pocketmine\\\\PATH not found\\.$#"
-			path: src
-
-		-
 			message: "#^Constant pocketmine\\\\PLUGIN_PATH not found\\.$#"
-			path: src
-
-		-
-			message: "#^Constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
 			path: src
 
 		-

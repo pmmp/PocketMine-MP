@@ -38,6 +38,7 @@
          "": ["src"]
       },
       "files": [
+         "src/pocketmine/CoreConstants.php",
          "src/pocketmine/GlobalConstants.php",
          "src/pocketmine/VersionInfo.php"
       ]
