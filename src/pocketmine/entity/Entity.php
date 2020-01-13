@@ -662,7 +662,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $clientYaw = 0;
 	protected $clientPitch = 0;
 	/** @var bool */
-	protected $killed = false;
+	protected $isKilled = false;
 
 	public function __construct(Level $level, CompoundTag $nbt){
 		$this->random = new Random($level->random->nextInt());
@@ -1243,7 +1243,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function kill() : void{
-		$this->killed = true;
+		$this->isKilled = true;
 		$this->health = 0;
 		$this->dismountEntity(true);
 		$this->scheduleUpdate();
@@ -1776,10 +1776,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->lastUpdate = $currentTick;
 
 		if(!$this->isAlive()){
-			if(!$this->killed){
+			if(!$this->isKilled){
 				$this->kill();
-			}
-			if($this->onDeathUpdate($tickDiff)){
+			}elseif($this->onDeathUpdate($tickDiff)){
 				$this->flagForDespawn();
 			}
 
