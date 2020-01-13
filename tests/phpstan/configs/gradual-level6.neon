@@ -1,5 +1,5 @@
 parameters:
-	#checkGenericClassInNonGenericObjectType: true
+	checkGenericClassInNonGenericObjectType: true
 	#checkMissingIterableValueType: true
 	checkMissingVarTagTypehint: true
 	checkMissingTypehints: true
