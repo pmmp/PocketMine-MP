@@ -86,9 +86,15 @@ class Item implements \JsonSerializable{
 	 */
 	protected $blockEntityTag = null;
 
-	/** @var Set|string[] */
+	/**
+	 * @var Set|string[]
+	 * @phpstan-var Set<string>
+	 */
 	protected $canPlaceOn;
-	/** @var Set|string[] */
+	/**
+	 * @var Set|string[]
+	 * @phpstan-var Set<string>
+	 */
 	protected $canDestroy;
 
 	/**
@@ -202,6 +208,7 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * @return Set|string[]
+	 * @phpstan-return Set<string>
 	 */
 	public function getCanPlaceOn() : Set{
 		return $this->canPlaceOn;
@@ -209,6 +216,7 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * @param Set|string[] $canPlaceOn
+	 * @phpstan-param Set<string> $canPlaceOn
 	 */
 	public function setCanPlaceOn(Set $canPlaceOn) : void{
 		$this->canPlaceOn = $canPlaceOn;
@@ -216,6 +224,7 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * @return Set|string[]
+	 * @phpstan-return Set<string>
 	 */
 	public function getCanDestroy() : Set{
 		return $this->canDestroy;
@@ -223,6 +232,7 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * @param Set|string[] $canDestroy
+	 * @phpstan-param Set<string> $canDestroy
 	 */
 	public function setCanDestroy(Set $canDestroy) : void{
 		$this->canDestroy = $canDestroy;

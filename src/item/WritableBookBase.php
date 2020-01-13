@@ -34,7 +34,10 @@ abstract class WritableBookBase extends Item{
 	public const TAG_PAGE_TEXT = "text"; //TAG_String
 	public const TAG_PAGE_PHOTONAME = "photoname"; //TAG_String - TODO
 
-	/** @var WritableBookPage[]|Deque */
+	/**
+	 * @var WritableBookPage[]|Deque
+	 * @phpstan-var Deque<WritableBookPage>
+	 */
 	private $pages;
 
 	public function __construct(int $id, int $variant, string $name){

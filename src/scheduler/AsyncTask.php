@@ -48,6 +48,7 @@ use function unserialize;
 abstract class AsyncTask extends \Threaded{
 	/**
 	 * @var \ArrayObject|mixed[]|null object hash => mixed data
+	 * @phpstan-var \ArrayObject<int, array<string, mixed>>|null
 	 *
 	 * Used to store objects which are only needed on one thread and should not be serialized.
 	 */

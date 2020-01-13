@@ -58,11 +58,24 @@ class HandlerListManager{
 		}
 	}
 
+	/**
+	 * @param ReflectionClass $class
+	 * @phpstan-param \ReflectionClass<Event> $class
+	 *
+	 * @return bool
+	 */
 	private static function isValidClass(\ReflectionClass $class) : bool{
 		$tags = Utils::parseDocComment((string) $class->getDocComment());
 		return !$class->isAbstract() || isset($tags["allowHandle"]);
 	}
 
+	/**
+	 * @param \ReflectionClass $class
+	 * @phpstan-param \ReflectionClass<Event> $class
+	 *
+	 * @return \ReflectionClass|null
+	 * @phpstan-return \ReflectionClass<Event>|null
+	 */
 	private static function resolveNearestHandleableParent(\ReflectionClass $class) : ?\ReflectionClass{
 		for($parent = $class->getParentClass(); $parent !== false && !self::isValidClass($parent); $parent = $parent->getParentClass()){
 			//NOOP

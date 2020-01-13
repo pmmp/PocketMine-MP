@@ -35,6 +35,9 @@ use PHPStan\Type\VerbosityLevel;
 use pocketmine\utils\EnumTrait;
 use function sprintf;
 
+/**
+ * @phpstan-implements Rule<BinaryOp>
+ */
 class DisallowEnumComparisonRule implements Rule{
 
 	public function getNodeType() : string{
