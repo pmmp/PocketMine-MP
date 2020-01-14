@@ -192,6 +192,11 @@ class Color{
 		return ($this->a << 24) | ($this->b << 16) | ($this->g << 8) | $this->r;
 	}
 
+	/**
+	 * @param int $code
+	 *
+	 * @return Color
+	 */
 	public static function fromABGR(int $code){
 		return new Color($code & 0xff, ($code >> 8) & 0xff, ($code >> 16) & 0xff, ($code >> 24) & 0xff);
 	}
