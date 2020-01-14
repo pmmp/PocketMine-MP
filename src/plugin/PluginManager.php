@@ -31,6 +31,7 @@ use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\event\RegisteredListener;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
@@ -76,6 +77,9 @@ class PluginManager{
 	 * @var Plugin[]
 	 */
 	protected $enabledPlugins = [];
+
+	protected $scanLoaded = false;
+	protected $scanEnabled = false;
 
 	/**
 	 * @var PluginLoader[]
@@ -147,6 +151,10 @@ class PluginManager{
 	 * @return Plugin|null
 	 */
 	public function loadPlugin(string $path, ?array $loaders = null) : ?Plugin{
+		if($this->scanEnabled){
+			throw new \InvalidStateException("Cannot load plugins after SCAN-order plugins are enabled");
+		}
+
 		foreach($loaders ?? $this->fileAssociations as $loader){
 			if($loader->canLoadPlugin($path)){
 				$description = $loader->getPluginDescription($path);
@@ -198,11 +206,14 @@ class PluginManager{
 
 	/**
 	 * @param string $directory
-	 * @param array  $newLoaders
 	 *
 	 * @return Plugin[]
 	 */
-	public function loadPlugins(string $directory, ?array $newLoaders = null) : array{
+	public function loadPlugins(string $directory) : array{
+		if($this->scanEnabled){
+			throw new \InvalidStateException("Cannot load plugins after SCAN-order plugins are enabled");
+		}
+
 		if(!is_dir($directory)){
 			return [];
 		}
@@ -211,16 +222,9 @@ class PluginManager{
 		$loadedPlugins = [];
 		$dependencies = [];
 		$softDependencies = [];
-		if(is_array($newLoaders)){
-			$loaders = [];
-			foreach($newLoaders as $key){
-				if(isset($this->fileAssociations[$key])){
-					$loaders[$key] = $this->fileAssociations[$key];
-				}
-			}
-		}else{
-			$loaders = $this->fileAssociations;
-		}
+
+		$loaders = $this->fileAssociations;
+		$this->fileAssociations = [];
 
 		$files = iterator_to_array(new \FilesystemIterator($directory, \FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS));
 		shuffle($files); //this prevents plugins implicitly relying on the filesystem name order when they should be using dependency properties
@@ -421,9 +425,28 @@ class PluginManager{
 	}
 
 	/**
-	 * @param Plugin $plugin
+	 * @param PluginLoadOrder $type
 	 */
-	public function enablePlugin(Plugin $plugin) : void{
+	public function enablePlugins(PluginLoadOrder $type) : void{
+		if($this->scanLoaded){
+			$this->scanEnabled = true;
+		}elseif($type->equals(PluginLoadOrder::SCAN())){
+			$this->scanLoaded = true;
+		}
+
+		foreach($this->plugins as $plugin){
+			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder()->equals($type)){
+				$this->enablePlugin($plugin);
+			}
+		}
+
+		if($type->equals(PluginLoadOrder::POSTWORLD())){
+			$this->server->getCommandMap()->registerServerAliases();
+			DefaultPermissions::registerCorePermissions();
+		}
+	}
+
+	private function enablePlugin(Plugin $plugin) : void{
 		if(!$plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
 
