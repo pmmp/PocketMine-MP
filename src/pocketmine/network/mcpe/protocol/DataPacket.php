@@ -77,6 +77,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 	}
 
 	/**
+	 * @return void
 	 * @throws \OutOfBoundsException
 	 * @throws \UnexpectedValueException
 	 */
@@ -87,6 +88,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 	}
 
 	/**
+	 * @return void
 	 * @throws \OutOfBoundsException
 	 * @throws \UnexpectedValueException
 	 */
@@ -100,6 +102,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
 	 *
+	 * @return void
 	 * @throws \OutOfBoundsException
 	 * @throws \UnexpectedValueException
 	 */
@@ -107,6 +110,9 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function encode(){
 		$this->reset();
 		$this->encodeHeader();
@@ -114,12 +120,17 @@ abstract class DataPacket extends NetworkBinaryStream{
 		$this->isEncoded = true;
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function encodeHeader(){
 		$this->putUnsignedVarInt(static::NETWORK_ID);
 	}
 
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform encoding in here.
+	 *
+	 * @return void
 	 */
 	protected function encodePayload(){
 
@@ -137,6 +148,9 @@ abstract class DataPacket extends NetworkBinaryStream{
 	 */
 	abstract public function handle(NetworkSession $session) : bool;
 
+	/**
+	 * @return void
+	 */
 	public function clean(){
 		$this->buffer = "";
 		$this->isEncoded = false;
