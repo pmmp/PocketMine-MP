@@ -186,16 +186,18 @@ class WritableBook extends Item{
 	 * @return CompoundTag[]
 	 */
 	public function getPages() : array{
-		$pages = $this->getNamedTag()->getListTag(self::TAG_PAGES);
-		if($pages === null){
-			return [];
-		}
+		/** @var CompoundTag[] $pages */
+		$pages = $this->getPagesTag()->getValue();
 
-		return $pages->getValue();
+		return $pages;
 	}
 
 	protected function getPagesTag() : ListTag{
-		return $this->getNamedTag()->getListTag(self::TAG_PAGES) ?? new ListTag(self::TAG_PAGES, [], NBT::TAG_Compound);
+		$pagesTag = $this->getNamedTag()->getListTag(self::TAG_PAGES);
+		if($pagesTag !== null and $pagesTag->getTagType() === NBT::TAG_Compound){
+			return $pagesTag;
+		}
+		return new ListTag(self::TAG_PAGES, [], NBT::TAG_Compound);
 	}
 
 	/**

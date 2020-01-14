@@ -74,6 +74,8 @@ class AddPlayerPacket extends DataPacket{
 
 	/** @var string */
 	public $deviceId = ""; //TODO: fill player's device ID (???)
+	/** @var int */
+	public $buildPlatform = -1;
 
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
@@ -103,6 +105,7 @@ class AddPlayerPacket extends DataPacket{
 		}
 
 		$this->deviceId = $this->getString();
+		$this->buildPlatform = $this->getLInt();
 	}
 
 	protected function encodePayload(){
@@ -133,6 +136,7 @@ class AddPlayerPacket extends DataPacket{
 		}
 
 		$this->putString($this->deviceId);
+		$this->putLInt($this->buildPlatform);
 	}
 
 	public function handle(NetworkSession $session) : bool{

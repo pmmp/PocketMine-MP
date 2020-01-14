@@ -28,7 +28,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
-use function strlen;
 
 class ResourcePackChunkDataPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CHUNK_DATA_PACKET;
@@ -46,15 +45,14 @@ class ResourcePackChunkDataPacket extends DataPacket{
 		$this->packId = $this->getString();
 		$this->chunkIndex = $this->getLInt();
 		$this->progress = $this->getLLong();
-		$this->data = $this->get($this->getLInt());
+		$this->data = $this->getString();
 	}
 
 	protected function encodePayload(){
 		$this->putString($this->packId);
 		$this->putLInt($this->chunkIndex);
 		$this->putLLong($this->progress);
-		$this->putLInt(strlen($this->data));
-		$this->put($this->data);
+		$this->putString($this->data);
 	}
 
 	public function handle(NetworkSession $session) : bool{

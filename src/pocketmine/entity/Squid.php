@@ -40,7 +40,7 @@ class Squid extends WaterAnimal{
 	public $width = 0.95;
 	public $height = 0.95;
 
-	/** @var Vector3 */
+	/** @var Vector3|null */
 	public $swimDirection = null;
 	public $swimSpeed = 0.1;
 
@@ -82,7 +82,7 @@ class Squid extends WaterAnimal{
 			return false;
 		}
 
-		if(++$this->switchDirectionTicker === 100 or $this->isCollided){
+		if(++$this->switchDirectionTicker === 100){
 			$this->switchDirectionTicker = 0;
 			if(mt_rand(0, 100) < 50){
 				$this->swimDirection = null;

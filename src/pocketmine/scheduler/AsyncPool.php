@@ -262,6 +262,7 @@ class AsyncPool{
 			while(($task = $worker->unstack()) !== null){
 				//cancelRun() is not strictly necessary here, but it might be used to inform plugins of the task state
 				//(i.e. it never executed).
+				assert($task instanceof AsyncTask);
 				$task->cancelRun();
 				$this->removeTask($task, true);
 			}

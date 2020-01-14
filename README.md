@@ -25,6 +25,7 @@
 ## Donate
 - Bitcoin Cash (BCH): `qq3r46hn6ljnhnqnfwxt5pg3g447eq9jhvw5ddfear`
 - Bitcoin (BTC): `171u8K9e4FtU6j3e5sqNoxKUgEw9qWQdRV`
+- Stellar Lumens (XLM): `GAAC5WZ33HCTE3BFJFZJXONMEIBNHFLBXM2HJVAZHXXPYA3HP5XPPS7T`
 - [Patreon](https://www.patreon.com/pocketminemp)
 
 ## Licensing information

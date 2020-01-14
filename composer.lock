@@ -160,16 +160,16 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.2.11",
+            "version": "0.2.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "78784b93632c51f0fad0719b2d6ffe072529db6d"
+                "reference": "b5777265329753b74dd40bb105eedabeefb98724"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/78784b93632c51f0fad0719b2d6ffe072529db6d",
-                "reference": "78784b93632c51f0fad0719b2d6ffe072529db6d",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/b5777265329753b74dd40bb105eedabeefb98724",
+                "reference": "b5777265329753b74dd40bb105eedabeefb98724",
                 "shasum": ""
             },
             "require": {
@@ -194,23 +194,23 @@
             ],
             "description": "PHP library for working with Named Binary Tags",
             "support": {
-                "source": "https://github.com/pmmp/NBT/tree/0.2.11",
+                "source": "https://github.com/pmmp/NBT/tree/0.2",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2019-10-21T14:50:43+00:00"
+            "time": "2019-12-01T08:20:26+00:00"
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.12.5",
+            "version": "0.12.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "874db2d3c24117db2221c1e4550380478aeea852"
+                "reference": "18450e01185e6064790bda563ac672e7141c6992"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/874db2d3c24117db2221c1e4550380478aeea852",
-                "reference": "874db2d3c24117db2221c1e4550380478aeea852",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/18450e01185e6064790bda563ac672e7141c6992",
+                "reference": "18450e01185e6064790bda563ac672e7141c6992",
                 "shasum": ""
             },
             "require": {
@@ -235,10 +235,10 @@
             ],
             "description": "A RakNet server implementation written in PHP",
             "support": {
-                "source": "https://github.com/pmmp/RakLib/tree/0.12",
+                "source": "https://github.com/pmmp/RakLib/tree/0.12.6",
                 "issues": "https://github.com/pmmp/RakLib/issues"
             },
-            "time": "2019-07-22T14:38:20+00:00"
+            "time": "2019-12-07T13:43:34+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -276,23 +276,20 @@
         },
         {
             "name": "pocketmine/spl",
-            "version": "0.3.2",
+            "version": "0.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "7fd53857cd000491ba69e8db865792a024dd2c49"
+                "reference": "94d4df142fe837ba836e9348dd00209e4bdcc307"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/7fd53857cd000491ba69e8db865792a024dd2c49",
-                "reference": "7fd53857cd000491ba69e8db865792a024dd2c49",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/94d4df142fe837ba836e9348dd00209e4bdcc307",
+                "reference": "94d4df142fe837ba836e9348dd00209e4bdcc307",
                 "shasum": ""
             },
             "type": "library",
             "autoload": {
-                "exclude-from-classmap": [
-                    "stubs"
-                ],
                 "classmap": [
                     "./"
                 ]
@@ -302,9 +299,10 @@
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
             "support": {
-                "source": "https://github.com/pmmp/SPL/tree/master"
+                "source": "https://github.com/pmmp/SPL/tree/0.3.3",
+                "issues": "https://github.com/pmmp/SPL/issues"
             },
-            "time": "2018-08-12T15:17:39+00:00"
+            "time": "2019-10-28T11:41:20+00:00"
         }
     ],
     "packages-dev": [],

@@ -1,0 +1,30 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Used constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Constant LEVELDB_ZLIB_RAW_COMPRESSION not found\\.$#"
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Instantiated class LevelDB not found\\.$#"
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Return typehint of method pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:createDB\\(\\) has invalid type LevelDB\\.$#"
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Return typehint of method pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:getDatabase\\(\\) has invalid type LevelDB\\.$#"
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Property pocketmine\\\\level\\\\format\\\\io\\\\leveldb\\\\LevelDB\\:\\:\\$db has unknown class LevelDB as its type\\.$#"
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Call to method (get|put|delete|close)\\(\\) on an unknown class LevelDB\\.$#"
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+

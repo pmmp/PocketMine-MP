@@ -76,6 +76,7 @@ use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\network\mcpe\RakLibInterface;
 use pocketmine\network\Network;
 use pocketmine\network\query\QueryHandler;
@@ -114,6 +115,7 @@ use function asort;
 use function assert;
 use function base64_encode;
 use function class_exists;
+use function cli_set_process_title;
 use function count;
 use function define;
 use function explode;
@@ -128,7 +130,6 @@ use function getmypid;
 use function getopt;
 use function gettype;
 use function implode;
-use function ini_get;
 use function ini_set;
 use function is_array;
 use function is_bool;
@@ -228,7 +229,7 @@ class Server{
 	 * @var int
 	 */
 	private $tickCounter = 0;
-	/** @var int */
+	/** @var float */
 	private $nextTick = 0;
 	/** @var float[] */
 	private $tickAverage = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
@@ -1445,7 +1446,7 @@ class Server{
 	}
 
 	/**
-	 * @return string[]
+	 * @return string[][]
 	 */
 	public function getCommandAliases() : array{
 		$section = $this->getProperty("aliases");
@@ -1565,12 +1566,6 @@ class Server{
 				$this->forceShutdown();
 				return;
 			}
-
-			if(((int) ini_get('zend.assertions')) !== -1){
-				$this->logger->warning("Debugging assertions are enabled, this may impact on performance. To disable them, set `zend.assertions = -1` in php.ini.");
-			}
-
-			ini_set('assert.exception', '1');
 
 			if($this->logger instanceof MainLogger){
 				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
@@ -1796,7 +1791,7 @@ class Server{
 
 	/**
 	 * @param TextContainer|string $message
-	 * @param Player[]             $recipients
+	 * @param CommandSender[]      $recipients
 	 *
 	 * @return int
 	 */
@@ -1805,7 +1800,6 @@ class Server{
 			return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
 		}
 
-		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendMessage($message);
 		}
@@ -1830,7 +1824,6 @@ class Server{
 			}
 		}
 
-		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendTip($tip);
 		}
@@ -1856,7 +1849,6 @@ class Server{
 			}
 		}
 
-		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendPopup($popup);
 		}
@@ -1886,7 +1878,6 @@ class Server{
 			}
 		}
 
-		/** @var Player[] $recipients */
 		foreach($recipients as $recipient){
 			$recipient->sendTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
 		}
@@ -2256,6 +2247,9 @@ class Server{
 		$this->crashDump();
 	}
 
+	/**
+	 * @return void
+	 */
 	public function crashDump(){
 		while(@ob_end_flush()){}
 		if(!$this->isRunning){
@@ -2406,7 +2400,7 @@ class Server{
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 
-		$pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skin, $xboxUserId);
+		$pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, SkinAdapterSingleton::get()->toSkinData($skin), $xboxUserId);
 
 		$this->broadcastPacket($players ?? $this->playerList, $pk);
 	}
@@ -2429,7 +2423,7 @@ class Server{
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 		foreach($this->playerList as $player){
-			$pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXuid());
+			$pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), SkinAdapterSingleton::get()->toSkinData($player->getSkin()), $player->getXuid());
 		}
 
 		$p->dataPacket($pk);

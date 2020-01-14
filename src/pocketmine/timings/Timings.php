@@ -31,6 +31,8 @@ use pocketmine\tile\Tile;
 use function dechex;
 
 abstract class Timings{
+	/** @var bool */
+	private static $initialized = false;
 
 	/** @var TimingsHandler */
 	public static $fullTickTimer;
@@ -104,9 +106,10 @@ abstract class Timings{
 	public static $pluginTaskTimingMap = [];
 
 	public static function init(){
-		if(self::$serverTickTimer instanceof TimingsHandler){
+		if(self::$initialized){
 			return;
 		}
+		self::$initialized = true;
 
 		self::$fullTickTimer = new TimingsHandler("Full Server Tick");
 		self::$serverTickTimer = new TimingsHandler("** Full Server Tick", self::$fullTickTimer);

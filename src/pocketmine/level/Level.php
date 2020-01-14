@@ -265,7 +265,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var LevelTimings */
 	public $timings;
 
-	/** @var int */
+	/** @var float */
 	public $tickRateTime = 0;
 	/**
 	 * @deprecated
@@ -2442,7 +2442,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param int $x
 	 * @param int $z
 	 *
-	 * @return Chunk[]
+	 * @return (Chunk|null)[]
 	 */
 	public function getAdjacentChunks(int $x, int $z) : array{
 		$result = [];

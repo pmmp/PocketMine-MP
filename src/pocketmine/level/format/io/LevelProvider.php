@@ -71,7 +71,7 @@ interface LevelProvider{
 	 * @param string  $name
 	 * @param int     $seed
 	 * @param string  $generator
-	 * @param array[] $options
+	 * @param array   $options
 	 */
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []);
 

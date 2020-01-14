@@ -31,8 +31,8 @@ class TranslationContainer extends TextContainer{
 	protected $params = [];
 
 	/**
-	 * @param string   $text
-	 * @param string[] $params
+	 * @param string               $text
+	 * @param (float|int|string)[] $params
 	 */
 	public function __construct(string $text, array $params = []){
 		parent::__construct($text);
