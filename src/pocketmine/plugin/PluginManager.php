@@ -285,11 +285,11 @@ class PluginManager{
 						}
 					}
 
-					if($description->getMinPHPVersion() !== ""){
-						if(version_compare($description->getMinPHPVersion(), PHP_VERSION) > 0){
+					if(count($description->getCompatiblePhpVersions()) > 0){
+						if(!in_array(PHP_VERSION, $description->getCompatiblePhpVersions())){
 							$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 								$name,
-								"Incompatible PHP version (" . PHP_VERSION . ") requires a minimum version of " . $description->getMinPHPVersion()
+								"Incompatible PHP version (" . PHP_VERSION . ") requires PHP version(s): " . implode(", ", $description->getCompatiblePhpVersions())
 							]));
 							continue;
 						}

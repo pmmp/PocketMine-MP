@@ -46,7 +46,8 @@ class PluginDescription{
 	private $name;
 	private $main;
 	private $api;
-	private $minPHPVersion = "";
+	/** @var string[] */
+	private $compatiblePhpVersions = [];
 	/** @var int[] */
 	private $compatibleMcpeProtocols = [];
 	private $extensions = [];
@@ -99,10 +100,7 @@ class PluginDescription{
 
 		$this->api = array_map("\strval", (array) ($plugin["api"] ?? []));
 		$this->compatibleMcpeProtocols = array_map("\intval", (array) ($plugin["mcpe-protocol"] ?? []));
-
-		if(isset($plugin["php"])){
-			$this->minPHPVersion = (string) $plugin["php"];
-		}
+		$this->compatiblePhpVersions = array_map("\strval", (array) ($plugin["php"] ?? []));
 
 		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
 			$this->commands = $plugin["commands"];
@@ -178,10 +176,10 @@ class PluginDescription{
 	}
 
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	public function getMinPHPVersion() : string{
-		return $this->minPHPVersion;
+	public function getCompatiblePhpVersions() : array{
+		return $this->compatiblePhpVersions;
 	}
 
 	/**
