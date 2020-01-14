@@ -149,7 +149,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 	abstract public function handle(NetworkSession $session) : bool;
 
 	/**
-	 * @return void
+	 * @return $this
 	 */
 	public function clean(){
 		$this->buffer = "";
