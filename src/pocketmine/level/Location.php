@@ -67,10 +67,16 @@ class Location extends Position{
 		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->level);
 	}
 
+	/**
+	 * @return float
+	 */
 	public function getYaw(){
 		return $this->yaw;
 	}
 
+	/**
+	 * @return float
+	 */
 	public function getPitch(){
 		return $this->pitch;
 	}
