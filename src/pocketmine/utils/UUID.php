@@ -119,6 +119,12 @@ class UUID{
 		return $this->toString();
 	}
 
+	/**
+	 * @param int $partNumber
+	 *
+	 * @return int
+	 * @throws \InvalidArgumentException
+	 */
 	public function getPart(int $partNumber){
 		if($partNumber < 0 or $partNumber > 3){
 			throw new \InvalidArgumentException("Invalid UUID part index $partNumber");
@@ -126,6 +132,9 @@ class UUID{
 		return $this->parts[$partNumber];
 	}
 
+	/**
+	 * @return int[]
+	 */
 	public function getParts() : array{
 		return $this->parts;
 	}
