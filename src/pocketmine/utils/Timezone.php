@@ -101,6 +101,9 @@ abstract class Timezone{
 		return $messages;
 	}
 
+	/**
+	 * @return string|false
+	 */
 	public static function detectSystemTimezone(){
 		switch(Utils::getOS()){
 			case 'win':
