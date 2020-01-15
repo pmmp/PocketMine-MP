@@ -2056,28 +2056,17 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * Kicks a player from the server
 	 *
 	 * @param string               $reason
-	 * @param bool                 $isAdmin
 	 * @param TextContainer|string $quitMessage
 	 *
 	 * @return bool
 	 */
-	public function kick(string $reason = "", bool $isAdmin = true, $quitMessage = null) : bool{
+	public function kick(string $reason = "", $quitMessage = null) : bool{
 		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$reason = $ev->getReason();
-			$message = $reason;
-			if($isAdmin){
-				if(!$this->isBanned()){
-					$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
-				}
-			}else{
-				if($reason === ""){
-					$message = "disconnectionScreen.noReason";
-				}
-			}
+			$message = $reason === "" ? "disconnectionScreen.noReason" : $reason;
 			$this->disconnect($message, $ev->getQuitMessage());
-
 			return true;
 		}
 
