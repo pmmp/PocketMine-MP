@@ -7,7 +7,7 @@ includes:
 	- tests/phpstan/configs/runtime-type-checks.neon
 
 parameters:
-	level: 5
+	level: 2
 	autoload_files:
 		- tests/phpstan/bootstrap.php
 		- src/pocketmine/PocketMine.php
