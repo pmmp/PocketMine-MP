@@ -148,7 +148,11 @@ class NetworkBinaryStream extends BinaryStream{
 		$width = $this->getLInt();
 		$height = $this->getLInt();
 		$data = $this->getString();
-		return new SkinImage($height, $width, $data);
+		try{
+			return new SkinImage($height, $width, $data);
+		}catch(\InvalidArgumentException $e){
+			throw new BadPacketException($e->getMessage(), 0, $e);
+		}
 	}
 
 	private function putSkinImage(SkinImage $image) : void{
