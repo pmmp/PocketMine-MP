@@ -2100,8 +2100,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			return;
 		}
 
-		$this->networkSession->onPlayerDestroyed($reason, $notify);
-
 		//prevent the player receiving their own disconnect message
 		PermissionManager::getInstance()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 		PermissionManager::getInstance()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
@@ -2112,6 +2110,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->server->broadcastMessage($ev->getQuitMessage());
 		}
 		$this->save();
+
+		$this->networkSession->onPlayerDestroyed($reason, $notify);
 
 		$this->spawned = false;
 
