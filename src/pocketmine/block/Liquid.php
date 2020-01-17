@@ -91,6 +91,9 @@ abstract class Liquid extends Transparent{
 
 	abstract public function getBucketEmptySound() : int;
 
+	/**
+	 * @return float
+	 */
 	public function getFluidHeightPercent(){
 		$d = $this->meta;
 		if($d >= 8){
