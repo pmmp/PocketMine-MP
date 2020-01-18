@@ -272,6 +272,9 @@ class Item implements ItemIds, \JsonSerializable{
 		return $this->getNamedTagEntry(self::TAG_BLOCK_ENTITY_TAG) instanceof CompoundTag;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function clearCustomBlockData(){
 		$this->removeNamedTagEntry(self::TAG_BLOCK_ENTITY_TAG);
 		return $this;
