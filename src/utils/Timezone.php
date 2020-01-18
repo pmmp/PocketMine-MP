@@ -96,6 +96,9 @@ abstract class Timezone{
 		\GlobalLogger::get()->warning("Timezone could not be automatically determined or was set to an invalid value. An incorrect timezone will result in incorrect timestamps on console logs. It has been set to \"UTC\" by default. You can change it on the php.ini file.");
 	}
 
+	/**
+	 * @return string|false
+	 */
 	public static function detectSystemTimezone(){
 		switch(Utils::getOS()){
 			case 'win':
