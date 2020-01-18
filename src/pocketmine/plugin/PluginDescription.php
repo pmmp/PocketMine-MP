@@ -92,7 +92,7 @@ class PluginDescription{
 	 *
 	 * @throws PluginException
 	 */
-	private function loadMap(array $plugin){
+	private function loadMap(array $plugin) : void{
 		$this->map = $plugin;
 
 		$this->name = $plugin["name"];
