@@ -42,6 +42,12 @@ class Position extends Vector3{
 		$this->setWorld($world);
 	}
 
+	/**
+	 * @param Vector3    $pos
+	 * @param World|null $world
+	 *
+	 * @return Position
+	 */
 	public static function fromObject(Vector3 $pos, ?World $world = null){
 		return new Position($pos->x, $pos->y, $pos->z, $world);
 	}
