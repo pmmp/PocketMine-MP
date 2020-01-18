@@ -85,9 +85,6 @@ abstract class PluginBase implements Plugin{
 		$this->scheduler = new TaskScheduler($this->logger, $this->getFullName());
 	}
 
-	/**
-	 * Called when the plugin is loaded, before calling onEnable()
-	 */
 	public function onLoad(){
 
 	}
