@@ -684,7 +684,7 @@ class NetworkSession{
 		$this->sendDataPacket($pk);
 	}
 
-	public function syncAttributes(Living $entity, bool $sendAll = false){
+	public function syncAttributes(Living $entity, bool $sendAll = false) : void{
 		$entries = $sendAll ? $entity->getAttributeMap()->getAll() : $entity->getAttributeMap()->needSend();
 		if(count($entries) > 0){
 			$this->sendDataPacket(UpdateAttributesPacket::create($entity->getId(), $entries));
