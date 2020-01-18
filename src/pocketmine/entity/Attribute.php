@@ -145,6 +145,11 @@ class Attribute{
 		return $this->minValue;
 	}
 
+	/**
+	 * @param float $minValue
+	 *
+	 * @return $this
+	 */
 	public function setMinValue(float $minValue){
 		if($minValue > ($max = $this->getMaxValue())){
 			throw new \InvalidArgumentException("Minimum $minValue is greater than the maximum $max");
@@ -161,6 +166,11 @@ class Attribute{
 		return $this->maxValue;
 	}
 
+	/**
+	 * @param float $maxValue
+	 *
+	 * @return $this
+	 */
 	public function setMaxValue(float $maxValue){
 		if($maxValue < ($min = $this->getMinValue())){
 			throw new \InvalidArgumentException("Maximum $maxValue is less than the minimum $min");
@@ -177,6 +187,11 @@ class Attribute{
 		return $this->defaultValue;
 	}
 
+	/**
+	 * @param float $defaultValue
+	 *
+	 * @return $this
+	 */
 	public function setDefaultValue(float $defaultValue){
 		if($defaultValue > $this->getMaxValue() or $defaultValue < $this->getMinValue()){
 			throw new \InvalidArgumentException("Default $defaultValue is outside the range " . $this->getMinValue() . " - " . $this->getMaxValue());
