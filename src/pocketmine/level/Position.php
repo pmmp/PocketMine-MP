@@ -43,6 +43,12 @@ class Position extends Vector3{
 		$this->setLevel($level);
 	}
 
+	/**
+	 * @param Vector3    $pos
+	 * @param Level|null $level
+	 *
+	 * @return Position
+	 */
 	public static function fromObject(Vector3 $pos, Level $level = null){
 		return new Position($pos->x, $pos->y, $pos->z, $level);
 	}
