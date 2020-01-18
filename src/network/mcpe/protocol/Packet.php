@@ -30,6 +30,15 @@ interface Packet{
 
 	public function setOffset(int $offset) : void;
 
+	/**
+	 * TODO: this can't have a native return type yet because of incompatibility with BinaryUtils
+	 * really this should be addressed by making packets not extend BinaryStream, but that's a task for another day.
+	 *
+	 * @param string $buffer
+	 * @param int    $offset
+	 *
+	 * @return void
+	 */
 	public function setBuffer(string $buffer = "", int $offset = 0);
 
 	public function getOffset() : int;
