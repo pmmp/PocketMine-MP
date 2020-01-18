@@ -169,7 +169,7 @@ class CraftingDataPacket extends DataPacket{
 	 *
 	 * @return int
 	 */
-	private static function writeEntry($entry, NetworkBinaryStream $stream, int $pos){
+	private static function writeEntry($entry, NetworkBinaryStream $stream, int $pos) : int{
 		if($entry instanceof ShapelessRecipe){
 			return self::writeShapelessRecipe($entry, $stream, $pos);
 		}elseif($entry instanceof ShapedRecipe){
@@ -182,7 +182,7 @@ class CraftingDataPacket extends DataPacket{
 		return -1;
 	}
 
-	private static function writeShapelessRecipe(ShapelessRecipe $recipe, NetworkBinaryStream $stream, int $pos){
+	private static function writeShapelessRecipe(ShapelessRecipe $recipe, NetworkBinaryStream $stream, int $pos) : int{
 		$stream->putString(Binary::writeInt($pos)); //some kind of recipe ID, doesn't matter what it is as long as it's unique
 		$stream->putUnsignedVarInt($recipe->getIngredientCount());
 		foreach($recipe->getIngredientList() as $item){
@@ -202,7 +202,7 @@ class CraftingDataPacket extends DataPacket{
 		return CraftingDataPacket::ENTRY_SHAPELESS;
 	}
 
-	private static function writeShapedRecipe(ShapedRecipe $recipe, NetworkBinaryStream $stream, int $pos){
+	private static function writeShapedRecipe(ShapedRecipe $recipe, NetworkBinaryStream $stream, int $pos) : int{
 		$stream->putString(Binary::writeInt($pos)); //some kind of recipe ID, doesn't matter what it is as long as it's unique
 		$stream->putVarInt($recipe->getWidth());
 		$stream->putVarInt($recipe->getHeight());
@@ -226,7 +226,7 @@ class CraftingDataPacket extends DataPacket{
 		return CraftingDataPacket::ENTRY_SHAPED;
 	}
 
-	private static function writeFurnaceRecipe(FurnaceRecipe $recipe, NetworkBinaryStream $stream){
+	private static function writeFurnaceRecipe(FurnaceRecipe $recipe, NetworkBinaryStream $stream) : int{
 		$stream->putVarInt($recipe->getInput()->getId());
 		$result = CraftingDataPacket::ENTRY_FURNACE;
 		if(!$recipe->getInput()->hasAnyDamageValue()){ //Data recipe
