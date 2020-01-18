@@ -127,6 +127,9 @@ class Item implements \JsonSerializable{
 		return $this->blockEntityTag !== null;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function clearCustomBlockData(){
 		$this->blockEntityTag = null;
 		return $this;
@@ -421,7 +424,7 @@ class Item implements \JsonSerializable{
 	 *
 	 * @param int $count
 	 *
-	 * @return Item
+	 * @return $this
 	 * @throws \InvalidArgumentException if trying to pop more items than are on the stack
 	 */
 	public function pop(int $count = 1) : Item{
