@@ -70,10 +70,16 @@ class Network{
 		$this->download += $download;
 	}
 
+	/**
+	 * @return float
+	 */
 	public function getUpload(){
 		return $this->upload;
 	}
 
+	/**
+	 * @return float
+	 */
 	public function getDownload(){
 		return $this->download;
 	}
