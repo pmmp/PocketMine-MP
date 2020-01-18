@@ -233,7 +233,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @param CompoundTag|string|null $tags
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setCompoundTag($tags) : Item{
 		if($tags instanceof CompoundTag){
@@ -280,7 +280,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param CompoundTag $compound
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setCustomBlockData(CompoundTag $compound) : Item{
 		$tags = clone $compound;
@@ -479,7 +479,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param string $name
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setCustomName(string $name) : Item{
 		if($name === ""){
@@ -499,7 +499,7 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @return Item
+	 * @return $this
 	 */
 	public function clearCustomName() : Item{
 		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
@@ -531,7 +531,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param string[] $lines
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setLore(array $lines) : Item{
 		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
@@ -588,7 +588,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @param CompoundTag $tag
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setNamedTag(CompoundTag $tag) : Item{
 		if($tag->getCount() === 0){
@@ -603,7 +603,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * Removes the Item's NBT.
-	 * @return Item
+	 * @return $this
 	 */
 	public function clearNamedTag() : Item{
 		return $this->setCompoundTag("");
@@ -619,7 +619,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param int $count
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setCount(int $count) : Item{
 		$this->count = $count;
@@ -632,7 +632,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 *
 	 * @param int $count
 	 *
-	 * @return Item
+	 * @return $this
 	 * @throws \InvalidArgumentException if trying to pop more items than are on the stack
 	 */
 	public function pop(int $count = 1) : Item{
@@ -700,7 +700,7 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * @param int $meta
 	 *
-	 * @return Item
+	 * @return $this
 	 */
 	public function setDamage(int $meta) : Item{
 		$this->meta = $meta !== -1 ? $meta & 0x7FFF : -1;
