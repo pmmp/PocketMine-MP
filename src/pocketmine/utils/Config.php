@@ -535,7 +535,7 @@ class Config{
 	/**
 	 * @param string $content
 	 */
-	private function parseList(string $content){
+	private function parseList(string $content) : void{
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
 			if($v == ""){
@@ -565,7 +565,7 @@ class Config{
 	/**
 	 * @param string $content
 	 */
-	private function parseProperties(string $content){
+	private function parseProperties(string $content) : void{
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);
