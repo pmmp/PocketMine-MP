@@ -131,6 +131,9 @@ abstract class Liquid extends Transparent{
 		return !$this->falling and $this->decay === 0;
 	}
 
+	/**
+	 * @return float
+	 */
 	public function getFluidHeightPercent(){
 		return (($this->falling ? 0 : $this->decay) + 1) / 9;
 	}
