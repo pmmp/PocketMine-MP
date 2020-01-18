@@ -115,7 +115,7 @@ class PermissionManager{
 	/**
 	 * @param Permission $permission
 	 */
-	private function calculatePermissionDefault(Permission $permission){
+	private function calculatePermissionDefault(Permission $permission) : void{
 		Timings::$permissionDefaultTimer->startTiming();
 		if($permission->getDefault() === Permission::DEFAULT_OP or $permission->getDefault() === Permission::DEFAULT_TRUE){
 			$this->defaultPermsOp[$permission->getName()] = $permission;
@@ -132,7 +132,7 @@ class PermissionManager{
 	/**
 	 * @param bool $op
 	 */
-	private function dirtyPermissibles(bool $op){
+	private function dirtyPermissibles(bool $op) : void{
 		foreach($this->getDefaultPermSubscriptions($op) as $p){
 			$p->recalculatePermissions();
 		}
