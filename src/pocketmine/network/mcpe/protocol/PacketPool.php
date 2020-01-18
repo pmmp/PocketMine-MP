@@ -30,6 +30,9 @@ class PacketPool{
 	/** @var \SplFixedArray<DataPacket> */
 	protected static $pool = null;
 
+	/**
+	 * @return void
+	 */
 	public static function init(){
 		static::$pool = new \SplFixedArray(256);
 
@@ -179,6 +182,8 @@ class PacketPool{
 
 	/**
 	 * @param DataPacket $packet
+	 *
+	 * @return void
 	 */
 	public static function registerPacket(DataPacket $packet){
 		static::$pool[$packet->pid()] = clone $packet;

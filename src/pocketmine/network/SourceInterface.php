@@ -36,6 +36,8 @@ interface SourceInterface{
 
 	/**
 	 * Performs actions needed to start the interface after it is registered.
+	 *
+	 * @return void
 	 */
 	public function start();
 
@@ -56,11 +58,15 @@ interface SourceInterface{
 	 *
 	 * @param Player $player
 	 * @param string $reason
+	 *
+	 * @return void
 	 */
 	public function close(Player $player, string $reason = "unknown reason");
 
 	/**
 	 * @param string $name
+	 *
+	 * @return void
 	 */
 	public function setName(string $name);
 
@@ -71,12 +77,16 @@ interface SourceInterface{
 
 	/**
 	 * Gracefully shuts down the network interface.
+	 *
+	 * @return void
 	 */
 	public function shutdown();
 
 	/**
 	 * @deprecated
 	 * Shuts down the network interface in an emergency situation, such as due to a crash.
+	 *
+	 * @return void
 	 */
 	public function emergencyShutdown();
 

@@ -37,6 +37,8 @@ interface AdvancedSourceInterface extends SourceInterface{
 	 *
 	 * @param string $address
 	 * @param int    $timeout Seconds
+	 *
+	 * @return void
 	 */
 	public function blockAddress(string $address, int $timeout = 300);
 
@@ -44,11 +46,15 @@ interface AdvancedSourceInterface extends SourceInterface{
 	 * Unblocks a previously-blocked address.
 	 *
 	 * @param string $address
+	 *
+	 * @return void
 	 */
 	public function unblockAddress(string $address);
 
 	/**
 	 * @param Network $network
+	 *
+	 * @return void
 	 */
 	public function setNetwork(Network $network);
 
@@ -58,6 +64,8 @@ interface AdvancedSourceInterface extends SourceInterface{
 	 * @param string $address
 	 * @param int    $port
 	 * @param string $payload
+	 *
+	 * @return void
 	 */
 	public function sendRawPacket(string $address, int $port, string $payload);
 

@@ -238,14 +238,29 @@ class CraftingDataPacket extends DataPacket{
 		return $result;
 	}
 
+	/**
+	 * @param ShapelessRecipe $recipe
+	 *
+	 * @return void
+	 */
 	public function addShapelessRecipe(ShapelessRecipe $recipe){
 		$this->entries[] = $recipe;
 	}
 
+	/**
+	 * @param ShapedRecipe $recipe
+	 *
+	 * @return void
+	 */
 	public function addShapedRecipe(ShapedRecipe $recipe){
 		$this->entries[] = $recipe;
 	}
 
+	/**
+	 * @param FurnaceRecipe $recipe
+	 *
+	 * @return void
+	 */
 	public function addFurnaceRecipe(FurnaceRecipe $recipe){
 		$this->entries[] = $recipe;
 	}

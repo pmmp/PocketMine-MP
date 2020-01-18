@@ -64,6 +64,8 @@ class Network{
 	/**
 	 * @param float $upload
 	 * @param float $download
+	 *
+	 * @return void
 	 */
 	public function addStatistics($upload, $download){
 		$this->upload += $upload;
@@ -84,6 +86,9 @@ class Network{
 		return $this->download;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function resetStatistics(){
 		$this->upload = 0;
 		$this->download = 0;
@@ -96,6 +101,9 @@ class Network{
 		return $this->interfaces;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function processInterfaces(){
 		foreach($this->interfaces as $interface){
 			$interface->process();
@@ -105,6 +113,8 @@ class Network{
 	/**
 	 * @deprecated
 	 * @param SourceInterface $interface
+	 *
+	 * @return void
 	 */
 	public function processInterface(SourceInterface $interface) : void{
 		$interface->process();
@@ -112,6 +122,8 @@ class Network{
 
 	/**
 	 * @param SourceInterface $interface
+	 *
+	 * @return void
 	 */
 	public function registerInterface(SourceInterface $interface){
 		$ev = new NetworkInterfaceRegisterEvent($interface);
@@ -129,6 +141,8 @@ class Network{
 
 	/**
 	 * @param SourceInterface $interface
+	 *
+	 * @return void
 	 */
 	public function unregisterInterface(SourceInterface $interface){
 		(new NetworkInterfaceUnregisterEvent($interface))->call();
@@ -139,6 +153,8 @@ class Network{
 	 * Sets the server name shown on each interface Query
 	 *
 	 * @param string $name
+	 *
+	 * @return void
 	 */
 	public function setName(string $name){
 		$this->name = $name;
@@ -154,6 +170,9 @@ class Network{
 		return $this->name;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function updateName(){
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name);
@@ -171,6 +190,8 @@ class Network{
 	 * @param string $address
 	 * @param int    $port
 	 * @param string $payload
+	 *
+	 * @return void
 	 */
 	public function sendPacket(string $address, int $port, string $payload){
 		foreach($this->advancedInterfaces as $interface){
@@ -183,6 +204,8 @@ class Network{
 	 *
 	 * @param string $address
 	 * @param int    $timeout
+	 *
+	 * @return void
 	 */
 	public function blockAddress(string $address, int $timeout = 300){
 		foreach($this->advancedInterfaces as $interface){
@@ -190,6 +213,11 @@ class Network{
 		}
 	}
 
+	/**
+	 * @param string $address
+	 *
+	 * @return void
+	 */
 	public function unblockAddress(string $address){
 		foreach($this->advancedInterfaces as $interface){
 			$interface->unblockAddress($address);

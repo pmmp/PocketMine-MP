@@ -169,6 +169,11 @@ use pocketmine\network\mcpe\protocol\VideoStreamConnectPacket;
 
 abstract class NetworkSession{
 
+	/**
+	 * @param DataPacket $packet
+	 *
+	 * @return void
+	 */
 	abstract public function handleDataPacket(DataPacket $packet);
 
 	public function handleLogin(LoginPacket $packet) : bool{

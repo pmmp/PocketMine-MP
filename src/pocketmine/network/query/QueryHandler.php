@@ -76,11 +76,16 @@ class QueryHandler{
 
 	/**
 	 * @deprecated
+	 *
+	 * @return void
 	 */
 	public function regenerateInfo(){
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function regenerateToken(){
 		$this->lastToken = $this->token;
 		$this->token = random_bytes(16);
@@ -90,6 +95,14 @@ class QueryHandler{
 		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 
+	/**
+	 * @param AdvancedSourceInterface $interface
+	 * @param string                  $address
+	 * @param int                     $port
+	 * @param string                  $packet
+	 *
+	 * @return void
+	 */
 	public function handle(AdvancedSourceInterface $interface, string $address, int $port, string $packet){
 		$offset = 2;
 		$packetType = ord($packet[$offset++]);

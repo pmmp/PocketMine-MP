@@ -115,6 +115,7 @@ class NetworkInventoryAction{
 
 	/**
 	 * @param InventoryTransactionPacket $packet
+	 * @return void
 	 */
 	public function write(InventoryTransactionPacket $packet){
 		$packet->putUnsignedVarInt($this->sourceType);

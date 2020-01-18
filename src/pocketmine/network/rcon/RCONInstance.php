@@ -159,10 +159,16 @@ class RCONInstance extends Thread{
 		return true;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function close(){
 		$this->stop = true;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function run(){
 		$this->registerClassLoader();
 

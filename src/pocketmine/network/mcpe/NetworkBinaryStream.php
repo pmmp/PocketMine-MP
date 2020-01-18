@@ -103,6 +103,11 @@ class NetworkBinaryStream extends BinaryStream{
 		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId);
 	}
 
+	/**
+	 * @param SkinData $skin
+	 *
+	 * @return void
+	 */
 	public function putSkin(SkinData $skin){
 		$this->putString($skin->getSkinId());
 		$this->putString($skin->getResourcePatch());
