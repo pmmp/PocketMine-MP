@@ -185,6 +185,8 @@ interface SubChunkInterface{
 
 	/**
 	 * @param string $data
+	 *
+	 * @return void
 	 */
 	public function setBlockSkyLightArray(string $data);
 
@@ -195,6 +197,8 @@ interface SubChunkInterface{
 
 	/**
 	 * @param string $data
+	 *
+	 * @return void
 	 */
 	public function setBlockLightArray(string $data);
 

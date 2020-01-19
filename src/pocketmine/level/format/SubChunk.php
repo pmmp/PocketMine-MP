@@ -217,6 +217,9 @@ class SubChunk implements SubChunkInterface{
 		return "\x00" . $this->ids . $this->data;
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function __debugInfo(){
 		return [];
 	}

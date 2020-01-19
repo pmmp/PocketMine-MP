@@ -153,12 +153,19 @@ class Chunk{
 		return $this->z;
 	}
 
+	/**
+	 * @param int $x
+	 *
+	 * @return void
+	 */
 	public function setX(int $x){
 		$this->x = $x;
 	}
 
 	/**
 	 * @param int $z
+	 *
+	 * @return void
 	 */
 	public function setZ(int $z){
 		$this->z = $z;
@@ -225,6 +232,8 @@ class Chunk{
 	 * @param int $y
 	 * @param int $z 0-15
 	 * @param int $id 0-255
+	 *
+	 * @return void
 	 */
 	public function setBlockId(int $x, int $y, int $z, int $id){
 		if($this->getSubChunk($y >> 4, true)->setBlockId($x, $y & 0x0f, $z, $id)){
@@ -252,6 +261,8 @@ class Chunk{
 	 * @param int $y
 	 * @param int $z 0-15
 	 * @param int $data 0-15
+	 *
+	 * @return void
 	 */
 	public function setBlockData(int $x, int $y, int $z, int $data){
 		if($this->getSubChunk($y >> 4, true)->setBlockData($x, $y & 0x0f, $z, $data)){
@@ -279,6 +290,8 @@ class Chunk{
 	 * @param int $y
 	 * @param int $z 0-15
 	 * @param int $level 0-15
+	 *
+	 * @return void
 	 */
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level){
 		if($this->getSubChunk($y >> 4, true)->setBlockSkyLight($x, $y & 0x0f, $z, $level)){
@@ -288,6 +301,8 @@ class Chunk{
 
 	/**
 	 * @param int $level
+	 *
+	 * @return void
 	 */
 	public function setAllBlockSkyLight(int $level){
 		$char = chr(($level & 0x0f) | ($level << 4));
@@ -317,6 +332,8 @@ class Chunk{
 	 * @param int $y 0-15
 	 * @param int $z 0-15
 	 * @param int $level 0-15
+	 *
+	 * @return void
 	 */
 	public function setBlockLight(int $x, int $y, int $z, int $level){
 		if($this->getSubChunk($y >> 4, true)->setBlockLight($x, $y & 0x0f, $z, $level)){
@@ -326,6 +343,8 @@ class Chunk{
 
 	/**
 	 * @param int $level
+	 *
+	 * @return void
 	 */
 	public function setAllBlockLight(int $level){
 		$char = chr(($level & 0x0f) | ($level << 4));
@@ -381,6 +400,8 @@ class Chunk{
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 * @param int $value
+	 *
+	 * @return void
 	 */
 	public function setHeightMap(int $x, int $z, int $value){
 		$this->heightMap[($z << 4) | $x] = $value;
@@ -388,6 +409,8 @@ class Chunk{
 
 	/**
 	 * Recalculates the heightmap for the whole chunk.
+	 *
+	 * @return void
 	 */
 	public function recalculateHeightMap(){
 		for($z = 0; $z < 16; ++$z){
@@ -423,6 +446,8 @@ class Chunk{
 	 * if the chunk is light-populated after being terrain-populated.
 	 *
 	 * TODO: fast adjacent light spread
+	 *
+	 * @return void
 	 */
 	public function populateSkyLight(){
 		$maxY = $this->getMaxY();
@@ -469,6 +494,8 @@ class Chunk{
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 * @param int $biomeId 0-255
+	 *
+	 * @return void
 	 */
 	public function setBiomeId(int $x, int $z, int $biomeId){
 		$this->hasChanged = true;
@@ -549,6 +576,8 @@ class Chunk{
 
 	/**
 	 * @param bool $value
+	 *
+	 * @return void
 	 */
 	public function setLightPopulated(bool $value = true){
 		$this->lightPopulated = $value;
@@ -563,6 +592,8 @@ class Chunk{
 
 	/**
 	 * @param bool $value
+	 *
+	 * @return void
 	 */
 	public function setPopulated(bool $value = true){
 		$this->terrainPopulated = $value;
@@ -577,6 +608,8 @@ class Chunk{
 
 	/**
 	 * @param bool $value
+	 *
+	 * @return void
 	 */
 	public function setGenerated(bool $value = true){
 		$this->terrainGenerated = $value;
@@ -584,6 +617,8 @@ class Chunk{
 
 	/**
 	 * @param Entity $entity
+	 *
+	 * @return void
 	 */
 	public function addEntity(Entity $entity){
 		if($entity->isClosed()){
@@ -597,6 +632,8 @@ class Chunk{
 
 	/**
 	 * @param Entity $entity
+	 *
+	 * @return void
 	 */
 	public function removeEntity(Entity $entity){
 		unset($this->entities[$entity->getId()]);
@@ -607,6 +644,8 @@ class Chunk{
 
 	/**
 	 * @param Tile $tile
+	 *
+	 * @return void
 	 */
 	public function addTile(Tile $tile){
 		if($tile->isClosed()){
@@ -624,6 +663,8 @@ class Chunk{
 
 	/**
 	 * @param Tile $tile
+	 *
+	 * @return void
 	 */
 	public function removeTile(Tile $tile){
 		unset($this->tiles[$tile->getId()]);
@@ -690,6 +731,8 @@ class Chunk{
 	 * Deserializes tiles and entities from NBT
 	 *
 	 * @param Level $level
+	 *
+	 * @return void
 	 */
 	public function initChunk(Level $level){
 		if(!$this->isInit){
@@ -766,6 +809,8 @@ class Chunk{
 
 	/**
 	 * @param bool $value
+	 *
+	 * @return void
 	 */
 	public function setChanged(bool $value = true){
 		$this->hasChanged = $value;
