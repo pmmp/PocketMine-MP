@@ -97,7 +97,7 @@ class PlayerInventory extends BaseInventory{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	private function throwIfNotHotbarSlot(int $slot){
+	private function throwIfNotHotbarSlot(int $slot) : void{
 		if(!$this->isHotbarSlot($slot)){
 			throw new \InvalidArgumentException("$slot is not a valid hotbar slot index (expected 0 - " . ($this->getHotbarSize() - 1) . ")");
 		}
@@ -132,6 +132,7 @@ class PlayerInventory extends BaseInventory{
 	 * @param bool $send Whether to send updates back to the inventory holder. This should usually be true for plugin calls.
 	 *                    It should only be false to prevent feedback loops of equipment packets between client and server.
 	 *
+	 * @return void
 	 * @throws \InvalidArgumentException if the hotbar slot is out of range
 	 */
 	public function setHeldItemIndex(int $hotbarSlot, bool $send = true){
@@ -170,6 +171,8 @@ class PlayerInventory extends BaseInventory{
 	 * Sends the currently-held item to specified targets.
 	 *
 	 * @param Player|Player[] $target
+	 *
+	 * @return void
 	 */
 	public function sendHeldItem($target){
 		$item = $this->getItemInHand();
@@ -201,6 +204,9 @@ class PlayerInventory extends BaseInventory{
 		return 9;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function sendCreativeContents(){
 		//TODO: this mess shouldn't be in here
 		$holder = $this->getHolder();

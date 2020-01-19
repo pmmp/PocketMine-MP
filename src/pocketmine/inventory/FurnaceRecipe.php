@@ -44,6 +44,8 @@ class FurnaceRecipe implements Recipe{
 
 	/**
 	 * @param Item $item
+	 *
+	 * @return void
 	 */
 	public function setInput(Item $item){
 		$this->ingredient = clone $item;

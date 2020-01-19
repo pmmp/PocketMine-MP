@@ -84,6 +84,8 @@ abstract class BaseInventory implements Inventory{
 	 * WARNING: If the size is smaller, any items past the new size will be lost.
 	 *
 	 * @param int $size
+	 *
+	 * @return void
 	 */
 	public function setSize(int $size){
 		$this->slots->setSize($size);

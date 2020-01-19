@@ -142,6 +142,9 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		return $this->right;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function invalidate(){
 		$this->left = null;
 		$this->right = null;
