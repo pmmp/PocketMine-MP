@@ -52,6 +52,9 @@ abstract class BiomeSelector{
 	 */
 	abstract protected function lookup(float $temperature, float $rainfall) : int;
 
+	/**
+	 * @return void
+	 */
 	public function recalculate(){
 		$this->map = new \SplFixedArray(64 * 64);
 

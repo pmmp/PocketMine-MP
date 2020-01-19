@@ -405,6 +405,8 @@ abstract class Noise{
 	 * @param float $x
 	 * @param float $y
 	 * @param float $z
+	 *
+	 * @return void
 	 */
 	public function setOffset($x, $y, $z){
 		$this->offsetX = $x;

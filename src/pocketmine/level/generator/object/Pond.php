@@ -43,6 +43,12 @@ class Pond{
 		return false;
 	}
 
+	/**
+	 * @param ChunkManager $level
+	 * @param Vector3      $pos
+	 *
+	 * @return void
+	 */
 	public function placeObject(ChunkManager $level, Vector3 $pos){
 
 	}

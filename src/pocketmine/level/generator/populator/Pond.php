@@ -49,14 +49,29 @@ class Pond extends Populator{
 		}
 	}
 
+	/**
+	 * @param int $waterOdd
+	 *
+	 * @return void
+	 */
 	public function setWaterOdd(int $waterOdd){
 		$this->waterOdd = $waterOdd;
 	}
 
+	/**
+	 * @param int $lavaOdd
+	 *
+	 * @return void
+	 */
 	public function setLavaOdd(int $lavaOdd){
 		$this->lavaOdd = $lavaOdd;
 	}
 
+	/**
+	 * @param int $lavaSurfaceOdd
+	 *
+	 * @return void
+	 */
 	public function setLavaSurfaceOdd(int $lavaSurfaceOdd){
 		$this->lavaSurfaceOdd = $lavaSurfaceOdd;
 	}

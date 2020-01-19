@@ -49,6 +49,16 @@ abstract class Tree{
 	/** @var int */
 	public $treeHeight = 7;
 
+	/**
+	 * @param ChunkManager $level
+	 * @param int          $x
+	 * @param int          $y
+	 * @param int          $z
+	 * @param Random       $random
+	 * @param int          $type
+	 *
+	 * @return void
+	 */
 	public static function growTree(ChunkManager $level, int $x, int $y, int $z, Random $random, int $type = 0){
 		switch($type){
 			case Sapling::SPRUCE:
@@ -100,6 +110,15 @@ abstract class Tree{
 		return true;
 	}
 
+	/**
+	 * @param ChunkManager $level
+	 * @param int          $x
+	 * @param int          $y
+	 * @param int          $z
+	 * @param Random       $random
+	 *
+	 * @return void
+	 */
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random){
 
 		$this->placeTrunk($level, $x, $y, $z, $random, $this->treeHeight - 1);
@@ -123,6 +142,16 @@ abstract class Tree{
 		}
 	}
 
+	/**
+	 * @param ChunkManager $level
+	 * @param int          $x
+	 * @param int          $y
+	 * @param int          $z
+	 * @param Random       $random
+	 * @param int          $trunkHeight
+	 *
+	 * @return void
+	 */
 	protected function placeTrunk(ChunkManager $level, int $x, int $y, int $z, Random $random, int $trunkHeight){
 		// The base dirt block
 		$level->setBlockIdAt($x, $y - 1, $z, Block::DIRT);
