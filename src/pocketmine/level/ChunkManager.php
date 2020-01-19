@@ -44,6 +44,8 @@ interface ChunkManager{
 	 * @param int $y
 	 * @param int $z
 	 * @param int $id 0-255
+	 *
+	 * @return void
 	 */
 	public function setBlockIdAt(int $x, int $y, int $z, int $id);
 
@@ -65,6 +67,8 @@ interface ChunkManager{
 	 * @param int $y
 	 * @param int $z
 	 * @param int $data 0-15
+	 *
+	 * @return void
 	 */
 	public function setBlockDataAt(int $x, int $y, int $z, int $data);
 
@@ -86,6 +90,8 @@ interface ChunkManager{
 	 * @param int $y
 	 * @param int $z
 	 * @param int $level
+	 *
+	 * @return void
 	 */
 	public function setBlockLightAt(int $x, int $y, int $z, int $level);
 
@@ -107,6 +113,8 @@ interface ChunkManager{
 	 * @param int $y
 	 * @param int $z
 	 * @param int $level
+	 *
+	 * @return void
 	 */
 	public function setBlockSkyLightAt(int $x, int $y, int $z, int $level);
 
@@ -122,6 +130,8 @@ interface ChunkManager{
 	 * @param int        $chunkX
 	 * @param int        $chunkZ
 	 * @param Chunk|null $chunk
+	 *
+	 * @return void
 	 */
 	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk = null);
 

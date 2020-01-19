@@ -78,6 +78,8 @@ interface ChunkLoader{
 	 * This method will be called when a Chunk is replaced by a new one
 	 *
 	 * @param Chunk $chunk
+	 *
+	 * @return void
 	 */
 	public function onChunkChanged(Chunk $chunk);
 
@@ -85,6 +87,8 @@ interface ChunkLoader{
 	 * This method will be called when a registered chunk is loaded
 	 *
 	 * @param Chunk $chunk
+	 *
+	 * @return void
 	 */
 	public function onChunkLoaded(Chunk $chunk);
 
@@ -93,6 +97,8 @@ interface ChunkLoader{
 	 * This method will be called when a registered chunk is unloaded
 	 *
 	 * @param Chunk $chunk
+	 *
+	 * @return void
 	 */
 	public function onChunkUnloaded(Chunk $chunk);
 
@@ -101,6 +107,8 @@ interface ChunkLoader{
 	 * Usually it'll be sent with another call to onChunkChanged()
 	 *
 	 * @param Chunk $chunk
+	 *
+	 * @return void
 	 */
 	public function onChunkPopulated(Chunk $chunk);
 
@@ -108,6 +116,8 @@ interface ChunkLoader{
 	 * This method will be called when a block changes in a registered chunk
 	 *
 	 * @param Block|Vector3 $block
+	 *
+	 * @return void
 	 */
 	public function onBlockChanged(Vector3 $block);
 

@@ -71,6 +71,8 @@ class SimpleChunkManager implements ChunkManager{
 	 * @param int $y
 	 * @param int $z
 	 * @param int $id 0-255
+	 *
+	 * @return void
 	 */
 	public function setBlockIdAt(int $x, int $y, int $z, int $id){
 		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
@@ -101,6 +103,8 @@ class SimpleChunkManager implements ChunkManager{
 	 * @param int $y
 	 * @param int $z
 	 * @param int $data 0-15
+	 *
+	 * @return void
 	 */
 	public function setBlockDataAt(int $x, int $y, int $z, int $data){
 		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
@@ -150,6 +154,8 @@ class SimpleChunkManager implements ChunkManager{
 	 * @param int        $chunkX
 	 * @param int        $chunkZ
 	 * @param Chunk|null $chunk
+	 *
+	 * @return void
 	 */
 	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk = null){
 		if($chunk === null){
@@ -159,6 +165,9 @@ class SimpleChunkManager implements ChunkManager{
 		$this->chunks[Level::chunkHash($chunkX, $chunkZ)] = $chunk;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function cleanChunks(){
 		$this->chunks = [];
 	}
