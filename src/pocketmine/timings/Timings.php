@@ -105,6 +105,9 @@ abstract class Timings{
 	/** @var TimingsHandler[] */
 	public static $pluginTaskTimingMap = [];
 
+	/**
+	 * @return void
+	 */
 	public static function init(){
 		if(self::$initialized){
 			return;
