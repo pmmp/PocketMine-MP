@@ -105,6 +105,12 @@ class BaseLang{
 		return $this->langName;
 	}
 
+	/**
+	 * @param string   $path
+	 * @param string[] $d reference parameter
+	 *
+	 * @return bool
+	 */
 	protected static function loadLang(string $path, array &$d){
 		if(file_exists($path)){
 			$d = array_map('\stripcslashes', parse_ini_file($path, false, INI_SCANNER_RAW));
@@ -132,6 +138,11 @@ class BaseLang{
 		return $baseText;
 	}
 
+	/**
+	 * @param TextContainer $c
+	 *
+	 * @return string
+	 */
 	public function translate(TextContainer $c){
 		if($c instanceof TranslationContainer){
 			$baseText = $this->internalGet($c->getText());
