@@ -87,6 +87,7 @@ class RegionLoader{
 	}
 
 	/**
+	 * @return void
 	 * @throws CorruptedRegionException
 	 */
 	public function open(){
@@ -188,6 +189,7 @@ class RegionLoader{
 	 * @param int    $z
 	 * @param string $chunkData
 	 *
+	 * @return void
 	 * @throws ChunkException
 	 * @throws \InvalidArgumentException
 	 */
@@ -220,6 +222,7 @@ class RegionLoader{
 	 * @param int $x
 	 * @param int $z
 	 *
+	 * @return void
 	 * @throws \InvalidArgumentException
 	 */
 	public function removeChunk(int $x, int $z){
@@ -256,6 +259,8 @@ class RegionLoader{
 	 * Writes the region header and closes the file
 	 *
 	 * @param bool $writeHeader
+	 *
+	 * @return void
 	 */
 	public function close(bool $writeHeader = true){
 		if(is_resource($this->filePointer)){
@@ -268,6 +273,7 @@ class RegionLoader{
 	}
 
 	/**
+	 * @return void
 	 * @throws CorruptedRegionException
 	 */
 	protected function loadLocationTable(){
@@ -329,7 +335,7 @@ class RegionLoader{
 		}
 	}
 
-	private function writeLocationTable(){
+	private function writeLocationTable() : void{
 		$write = [];
 
 		for($i = 0; $i < 1024; ++$i){
@@ -344,6 +350,8 @@ class RegionLoader{
 
 	/**
 	 * @param int $index
+	 *
+	 * @return void
 	 */
 	protected function writeLocationIndex($index){
 		fseek($this->filePointer, $index << 2);
@@ -352,6 +360,9 @@ class RegionLoader{
 		fwrite($this->filePointer, Binary::writeInt($this->locationTable[$index]->getTimestamp()), 4);
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function createBlank(){
 		fseek($this->filePointer, 0);
 		ftruncate($this->filePointer, 8192); // this fills the file with the null byte

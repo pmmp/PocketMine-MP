@@ -150,6 +150,9 @@ abstract class BaseLevelProvider implements LevelProvider{
 		return $this->levelData;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function saveLevelData(){
 		$nbt = new BigEndianNBTStream();
 		$buffer = $nbt->writeCompressed(new CompoundTag("", [

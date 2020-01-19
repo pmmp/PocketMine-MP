@@ -72,6 +72,8 @@ interface LevelProvider{
 	 * @param int     $seed
 	 * @param string  $generator
 	 * @param array   $options
+	 *
+	 * @return void
 	 */
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []);
 
@@ -119,6 +121,8 @@ interface LevelProvider{
 
 	/**
 	 * @param int $value
+	 *
+	 * @return void
 	 */
 	public function setTime(int $value);
 
@@ -129,6 +133,8 @@ interface LevelProvider{
 
 	/**
 	 * @param int $value
+	 *
+	 * @return void
 	 */
 	public function setSeed(int $value);
 
@@ -139,6 +145,8 @@ interface LevelProvider{
 
 	/**
 	 * @param Vector3 $pos
+	 *
+	 * @return void
 	 */
 	public function setSpawn(Vector3 $pos);
 
@@ -152,16 +160,22 @@ interface LevelProvider{
 	 * Sets the world difficulty.
 	 *
 	 * @param int $difficulty
+	 *
+	 * @return void
 	 */
 	public function setDifficulty(int $difficulty);
 
 	/**
 	 * Performs garbage collection in the level provider, such as cleaning up regions in Region-based worlds.
+	 *
+	 * @return void
 	 */
 	public function doGarbageCollection();
 
 	/**
 	 * Performs cleanups necessary when the level provider is closed and no longer needed.
+	 *
+	 * @return void
 	 */
 	public function close();
 

@@ -333,6 +333,8 @@ class McRegion extends BaseLevelProvider{
 	 * @param int $chunkZ
 	 * @param int $regionX reference parameter
 	 * @param int $regionZ reference parameter
+	 *
+	 * @return void
 	 */
 	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ){
 		$regionX = $chunkX >> 5;
@@ -364,6 +366,8 @@ class McRegion extends BaseLevelProvider{
 	/**
 	 * @param int $regionX
 	 * @param int $regionZ
+	 *
+	 * @return void
 	 */
 	protected function loadRegion(int $regionX, int $regionZ){
 		if(!isset($this->regions[$index = Level::chunkHash($regionX, $regionZ)])){

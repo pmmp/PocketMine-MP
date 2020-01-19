@@ -44,6 +44,7 @@ abstract class LevelProviderManager{
 	/**
 	 * @param string $class
 	 *
+	 * @return void
 	 * @throws \InvalidArgumentException
 	 */
 	public static function addProvider(string $class){

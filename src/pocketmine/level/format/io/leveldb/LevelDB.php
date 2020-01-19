@@ -102,7 +102,7 @@ class LevelDB extends BaseLevelProvider{
 	/** @var \LevelDB */
 	protected $db;
 
-	private static function checkForLevelDBExtension(){
+	private static function checkForLevelDBExtension() : void{
 		if(!extension_loaded('leveldb')){
 			throw new LevelException("The leveldb PHP extension is required to use this world format");
 		}
@@ -523,7 +523,7 @@ class LevelDB extends BaseLevelProvider{
 	 * @param CompoundTag[] $targets
 	 * @param string        $index
 	 */
-	private function writeTags(array $targets, string $index){
+	private function writeTags(array $targets, string $index) : void{
 		if(count($targets) > 0){
 			$nbt = new LittleEndianNBTStream();
 			$this->db->put($index, $nbt->write($targets));
