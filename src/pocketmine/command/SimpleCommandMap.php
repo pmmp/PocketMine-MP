@@ -92,7 +92,7 @@ class SimpleCommandMap implements CommandMap{
 		$this->setDefaultCommands();
 	}
 
-	private function setDefaultCommands(){
+	private function setDefaultCommands() : void{
 		$this->registerAll("pocketmine", [
 			new BanCommand("ban"),
 			new BanIpCommand("ban-ip"),

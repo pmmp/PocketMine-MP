@@ -105,6 +105,8 @@ class ConsoleCommandSender implements CommandSender{
 
 	/**
 	 * @param TextContainer|string $message
+	 *
+	 * @return void
 	 */
 	public function sendMessage($message){
 		if($message instanceof TextContainer){
@@ -134,6 +136,8 @@ class ConsoleCommandSender implements CommandSender{
 
 	/**
 	 * @param bool $value
+	 *
+	 * @return void
 	 */
 	public function setOp(bool $value){
 

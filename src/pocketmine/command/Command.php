@@ -114,6 +114,8 @@ abstract class Command{
 
 	/**
 	 * @param string|null $permission
+	 *
+	 * @return void
 	 */
 	public function setPermission(string $permission = null){
 		$this->permission = $permission;
@@ -259,6 +261,8 @@ abstract class Command{
 
 	/**
 	 * @param string[] $aliases
+	 *
+	 * @return void
 	 */
 	public function setAliases(array $aliases){
 		$this->aliases = $aliases;
@@ -269,6 +273,8 @@ abstract class Command{
 
 	/**
 	 * @param string $description
+	 *
+	 * @return void
 	 */
 	public function setDescription(string $description){
 		$this->description = $description;
@@ -276,6 +282,8 @@ abstract class Command{
 
 	/**
 	 * @param string $permissionMessage
+	 *
+	 * @return void
 	 */
 	public function setPermissionMessage(string $permissionMessage){
 		$this->permissionMessage = $permissionMessage;
@@ -283,6 +291,8 @@ abstract class Command{
 
 	/**
 	 * @param string $usage
+	 *
+	 * @return void
 	 */
 	public function setUsage(string $usage){
 		$this->usageMessage = $usage;
@@ -292,6 +302,8 @@ abstract class Command{
 	 * @param CommandSender        $source
 	 * @param TextContainer|string $message
 	 * @param bool                 $sendToSource
+	 *
+	 * @return void
 	 */
 	public static function broadcastCommandMessage(CommandSender $source, $message, bool $sendToSource = true){
 		if($message instanceof TextContainer){

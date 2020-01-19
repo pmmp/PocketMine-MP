@@ -73,6 +73,9 @@ class CommandReader extends Thread{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function shutdown(){
 		$this->shutdown = true;
 	}
@@ -96,7 +99,7 @@ class CommandReader extends Thread{
 		throw new \ThreadException($message);
 	}
 
-	private function initStdin(){
+	private function initStdin() : void{
 		if(is_resource(self::$stdin)){
 			fclose(self::$stdin);
 		}
@@ -187,6 +190,9 @@ class CommandReader extends Thread{
 		return null;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function run(){
 		$this->registerClassLoader();
 

@@ -29,6 +29,8 @@ interface CommandMap{
 	/**
 	 * @param string    $fallbackPrefix
 	 * @param Command[] $commands
+	 *
+	 * @return void
 	 */
 	public function registerAll(string $fallbackPrefix, array $commands);
 
