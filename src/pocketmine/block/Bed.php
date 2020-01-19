@@ -76,6 +76,11 @@ class Bed extends Transparent{
 		return ($this->meta & self::BITFLAG_OCCUPIED) !== 0;
 	}
 
+	/**
+	 * @param bool $occupied
+	 *
+	 * @return void
+	 */
 	public function setOccupied(bool $occupied = true){
 		if($occupied){
 			$this->meta |= self::BITFLAG_OCCUPIED;
