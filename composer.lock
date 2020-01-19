@@ -333,12 +333,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ClassLoader.git",
-                "reference": "f0d947debe366890206fc1d8f3fc7bef6bee6335"
+                "reference": "8aaeddd7366d95c938f88247fc409a5bedc4473a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/f0d947debe366890206fc1d8f3fc7bef6bee6335",
-                "reference": "f0d947debe366890206fc1d8f3fc7bef6bee6335",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/8aaeddd7366d95c938f88247fc409a5bedc4473a",
+                "reference": "8aaeddd7366d95c938f88247fc409a5bedc4473a",
                 "shasum": ""
             },
             "require": {
@@ -360,7 +360,7 @@
                 "source": "https://github.com/pmmp/ClassLoader/tree/master",
                 "issues": "https://github.com/pmmp/ClassLoader/issues"
             },
-            "time": "2019-11-04T11:25:46+00:00"
+            "time": "2020-01-14T16:30:55+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -368,12 +368,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Log.git",
-                "reference": "48af0e1c9ca7b256c21ae995e83e5755587d233d"
+                "reference": "6e79bb262acd67344b8e3e394ed1afb4a72ea294"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Log/zipball/48af0e1c9ca7b256c21ae995e83e5755587d233d",
-                "reference": "48af0e1c9ca7b256c21ae995e83e5755587d233d",
+                "url": "https://api.github.com/repos/pmmp/Log/zipball/6e79bb262acd67344b8e3e394ed1afb4a72ea294",
+                "reference": "6e79bb262acd67344b8e3e394ed1afb4a72ea294",
                 "shasum": ""
             },
             "type": "library",
@@ -390,7 +390,7 @@
                 "source": "https://github.com/pmmp/Log/tree/master",
                 "issues": "https://github.com/pmmp/Log/issues"
             },
-            "time": "2020-01-11T22:03:44+00:00"
+            "time": "2020-01-15T19:59:42+00:00"
         },
         {
             "name": "pocketmine/math",
