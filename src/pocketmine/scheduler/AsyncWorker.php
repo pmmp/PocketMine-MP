@@ -49,6 +49,9 @@ class AsyncWorker extends Worker{
 		$this->memoryLimit = $memoryLimit;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function run(){
 		error_reporting(-1);
 
@@ -76,6 +79,9 @@ class AsyncWorker extends Worker{
 		return $this->logger;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function handleException(\Throwable $e){
 		$this->logger->logException($e);
 	}

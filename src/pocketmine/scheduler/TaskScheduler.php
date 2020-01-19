@@ -103,6 +103,8 @@ class TaskScheduler{
 
 	/**
 	 * @param int $taskId
+	 *
+	 * @return void
 	 */
 	public function cancelTask(int $taskId){
 		if(isset($this->tasks[$taskId])){
@@ -114,6 +116,9 @@ class TaskScheduler{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function cancelAllTasks(){
 		foreach($this->tasks as $id => $task){
 			$this->cancelTask($id);
@@ -186,6 +191,8 @@ class TaskScheduler{
 
 	/**
 	 * @param int $currentTick
+	 *
+	 * @return void
 	 */
 	public function mainThreadHeartbeat(int $currentTick){
 		$this->currentTick = $currentTick;

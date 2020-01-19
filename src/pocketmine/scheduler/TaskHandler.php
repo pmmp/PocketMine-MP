@@ -88,6 +88,8 @@ class TaskHandler{
 
 	/**
 	 * @param int $ticks
+	 *
+	 * @return void
 	 */
 	public function setNextRun(int $ticks){
 		$this->nextRun = $ticks;
@@ -135,6 +137,9 @@ class TaskHandler{
 		return $this->period;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function cancel(){
 		try{
 			if(!$this->isCancelled()){
@@ -145,6 +150,9 @@ class TaskHandler{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function remove(){
 		$this->cancelled = true;
 		$this->task->setHandler(null);
@@ -152,6 +160,8 @@ class TaskHandler{
 
 	/**
 	 * @param int $currentTick
+	 *
+	 * @return void
 	 */
 	public function run(int $currentTick){
 		$this->timings->startTiming();

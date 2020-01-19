@@ -71,6 +71,9 @@ abstract class AsyncTask extends Collectable{
 	/** @var bool */
 	private $crashed = false;
 
+	/**
+	 * @return void
+	 */
 	public function run(){
 		$this->result = null;
 
@@ -97,6 +100,9 @@ abstract class AsyncTask extends Collectable{
 		return $this->serialized ? unserialize($this->result) : $this->result;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function cancelRun(){
 		$this->cancelRun = true;
 	}
@@ -114,11 +120,18 @@ abstract class AsyncTask extends Collectable{
 
 	/**
 	 * @param mixed $result
+	 *
+	 * @return void
 	 */
 	public function setResult($result){
 		$this->result = ($this->serialized = !is_scalar($result)) ? serialize($result) : $result;
 	}
 
+	/**
+	 * @param int $taskId
+	 *
+	 * @return void
+	 */
 	public function setTaskId(int $taskId){
 		$this->taskId = $taskId;
 	}
@@ -149,6 +162,8 @@ abstract class AsyncTask extends Collectable{
 	 *
 	 * @param string $identifier
 	 * @param mixed  $value
+	 *
+	 * @return void
 	 */
 	public function saveToThreadStore(string $identifier, $value){
 		if($this->worker === null or $this->isGarbage()){
@@ -161,6 +176,8 @@ abstract class AsyncTask extends Collectable{
 	 * @see AsyncWorker::removeFromThreadStore()
 	 *
 	 * @param string $identifier
+	 *
+	 * @return void
 	 */
 	public function removeFromThreadStore(string $identifier) : void{
 		if($this->worker === null or $this->isGarbage()){
@@ -193,6 +210,8 @@ abstract class AsyncTask extends Collectable{
 	 * {@link AsyncTask::onProgressUpdate} from the main thread with the given progress parameter.
 	 *
 	 * @param mixed $progress A value that can be safely serialize()'ed.
+	 *
+	 * @return void
 	 */
 	public function publishProgress($progress){
 		$this->progressUpdates[] = serialize($progress);
@@ -202,6 +221,8 @@ abstract class AsyncTask extends Collectable{
 	 * @internal Only call from AsyncPool.php on the main thread
 	 *
 	 * @param Server $server
+	 *
+	 * @return void
 	 */
 	public function checkProgressUpdates(Server $server){
 		while($this->progressUpdates->count() !== 0){
@@ -218,6 +239,8 @@ abstract class AsyncTask extends Collectable{
 	 * @param Server $server
 	 * @param mixed  $progress The parameter passed to {@link AsyncTask::publishProgress}. It is serialize()'ed
 	 *                         and then unserialize()'ed, as if it has been cloned.
+	 *
+	 * @return void
 	 */
 	public function onProgressUpdate(Server $server, $progress){
 
@@ -237,6 +260,7 @@ abstract class AsyncTask extends Collectable{
 	 *
 	 * @param mixed $complexData the data to store
 	 *
+	 * @return void
 	 * @throws \BadMethodCallException if called from any thread except the main thread
 	 */
 	protected function storeLocal($complexData){
