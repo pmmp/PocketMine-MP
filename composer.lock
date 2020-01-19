@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "377d9e0ab5f1a9a4ef9b664706d26f5b",
+    "content-hash": "f693f278b3bb9c1d266079fa17644dcb",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -276,16 +276,16 @@
         },
         {
             "name": "pocketmine/spl",
-            "version": "0.3.4",
+            "version": "0.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "00d5b0b5a99e72c28c957cb7a310c6765d76e899"
+                "reference": "88052c67d3df2cc2dc2d99ebeae3d7ede3fc64ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/00d5b0b5a99e72c28c957cb7a310c6765d76e899",
-                "reference": "00d5b0b5a99e72c28c957cb7a310c6765d76e899",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/88052c67d3df2cc2dc2d99ebeae3d7ede3fc64ab",
+                "reference": "88052c67d3df2cc2dc2d99ebeae3d7ede3fc64ab",
                 "shasum": ""
             },
             "type": "library",
@@ -299,10 +299,10 @@
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
             "support": {
-                "source": "https://github.com/pmmp/SPL/tree/0.3.4",
+                "source": "https://github.com/pmmp/SPL/tree/0.3",
                 "issues": "https://github.com/pmmp/SPL/issues"
             },
-            "time": "2020-01-11T22:00:31+00:00"
+            "time": "2020-01-14T16:23:26+00:00"
         }
     ],
     "packages-dev": [],
