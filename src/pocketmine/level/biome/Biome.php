@@ -76,11 +76,20 @@ abstract class Biome{
 	/** @var float */
 	protected $temperature = 0.5;
 
+	/**
+	 * @param int   $id
+	 * @param Biome $biome
+	 *
+	 * @return void
+	 */
 	protected static function register(int $id, Biome $biome){
 		self::$biomes[$id] = $biome;
 		$biome->setId($id);
 	}
 
+	/**
+	 * @return void
+	 */
 	public static function init(){
 		self::$biomes = new \SplFixedArray(self::MAX_BIOMES);
 
@@ -113,10 +122,18 @@ abstract class Biome{
 		return self::$biomes[$id];
 	}
 
+	/**
+	 * @return void
+	 */
 	public function clearPopulators(){
 		$this->populators = [];
 	}
 
+	/**
+	 * @param Populator $populator
+	 *
+	 * @return void
+	 */
 	public function addPopulator(Populator $populator){
 		$this->populators[] = $populator;
 	}
@@ -126,6 +143,8 @@ abstract class Biome{
 	 * @param int          $chunkX
 	 * @param int          $chunkZ
 	 * @param Random       $random
+	 *
+	 * @return void
 	 */
 	public function populateChunk(ChunkManager $level, int $chunkX, int $chunkZ, Random $random){
 		foreach($this->populators as $populator){
@@ -140,6 +159,11 @@ abstract class Biome{
 		return $this->populators;
 	}
 
+	/**
+	 * @param int $id
+	 *
+	 * @return void
+	 */
 	public function setId(int $id){
 		if(!$this->registered){
 			$this->registered = true;
@@ -161,6 +185,12 @@ abstract class Biome{
 		return $this->maxElevation;
 	}
 
+	/**
+	 * @param int $min
+	 * @param int $max
+	 *
+	 * @return void
+	 */
 	public function setElevation(int $min, int $max){
 		$this->minElevation = $min;
 		$this->maxElevation = $max;
@@ -175,6 +205,8 @@ abstract class Biome{
 
 	/**
 	 * @param Block[] $covers
+	 *
+	 * @return void
 	 */
 	public function setGroundCover(array $covers){
 		$this->groundCover = $covers;
