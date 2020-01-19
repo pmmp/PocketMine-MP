@@ -42,6 +42,8 @@ abstract class Durable extends Item{
 	 * Sets whether the item will take damage when used.
 	 *
 	 * @param bool $value
+	 *
+	 * @return void
 	 */
 	public function setUnbreakable(bool $value = true){
 		$this->setNamedTagEntry(new ByteTag("Unbreakable", $value ? 1 : 0));

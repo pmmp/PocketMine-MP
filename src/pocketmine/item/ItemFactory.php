@@ -46,6 +46,9 @@ class ItemFactory{
 	/** @var \SplFixedArray */
 	private static $list = null;
 
+	/**
+	 * @return void
+	 */
 	public static function init(){
 		self::$list = new \SplFixedArray(65536);
 
@@ -285,6 +288,7 @@ class ItemFactory{
 	 * @param Item $item
 	 * @param bool $override
 	 *
+	 * @return void
 	 * @throws \RuntimeException if something attempted to override an already-registered item without specifying the
 	 * $override parameter.
 	 */
