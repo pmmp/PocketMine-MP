@@ -71,6 +71,8 @@ class Random{
 
 	/**
 	 * @param int $seed Integer to be used as seed.
+	 *
+	 * @return void
 	 */
 	public function setSeed(int $seed){
 		$this->seed = $seed;

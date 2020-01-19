@@ -121,6 +121,8 @@ class MainLogger extends \AttachableThreadedLogger{
 	 *
 	 * WARNING: Because static properties are thread-local, this MUST be called from the body of every Thread if you
 	 * want the logger to be accessible via {@link MainLogger#getLogger}.
+	 *
+	 * @return void
 	 */
 	public function registerStatic(){
 		if(static::$logger === null){
@@ -191,6 +193,8 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	/**
 	 * @param bool $logDebug
+	 *
+	 * @return void
 	 */
 	public function setLogDebug(bool $logDebug){
 		$this->logDebug = $logDebug;
@@ -199,6 +203,8 @@ class MainLogger extends \AttachableThreadedLogger{
 	/**
 	 * @param \Throwable $e
 	 * @param array|null $trace
+	 *
+	 * @return void
 	 */
 	public function logException(\Throwable $e, $trace = null){
 		if($trace === null){
@@ -281,6 +287,9 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function shutdown(){
 		$this->shutdown = true;
 		$this->notify();
@@ -291,6 +300,8 @@ class MainLogger extends \AttachableThreadedLogger{
 	 * @param string $level
 	 * @param string $prefix
 	 * @param string $color
+	 *
+	 * @return void
 	 */
 	protected function send($message, $level, $prefix, $color){
 		/** @var \DateTime|null $time */
@@ -326,6 +337,9 @@ class MainLogger extends \AttachableThreadedLogger{
 		});
 	}
 
+	/**
+	 * @return void
+	 */
 	public function syncFlushBuffer(){
 		$this->syncFlush = true;
 		$this->synchronized(function(){
@@ -352,6 +366,9 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function run(){
 		$logResource = fopen($this->logFile, "ab");
 		if(!is_resource($logResource)){

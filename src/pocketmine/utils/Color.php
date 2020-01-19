@@ -57,6 +57,8 @@ class Color{
 	 * Sets the alpha (opacity) value of this colour, lower = more transparent
 	 *
 	 * @param int $a
+	 *
+	 * @return void
 	 */
 	public function setA(int $a){
 		$this->a = $a & 0xff;
@@ -74,6 +76,8 @@ class Color{
 	 * Sets the red value of this colour.
 	 *
 	 * @param int $r
+	 *
+	 * @return void
 	 */
 	public function setR(int $r){
 		$this->r = $r & 0xff;
@@ -91,6 +95,8 @@ class Color{
 	 * Sets the green value of this colour.
 	 *
 	 * @param int $g
+	 *
+	 * @return void
 	 */
 	public function setG(int $g){
 		$this->g = $g & 0xff;
@@ -108,6 +114,8 @@ class Color{
 	 * Sets the blue value of this colour.
 	 *
 	 * @param int $b
+	 *
+	 * @return void
 	 */
 	public function setB(int $b){
 		$this->b = $b & 0xff;

@@ -118,6 +118,8 @@ class Config{
 
 	/**
 	 * Removes all the changes in memory and loads the file again
+	 *
+	 * @return void
 	 */
 	public function reload(){
 		$this->config = [];
@@ -333,6 +335,8 @@ class Config{
 	/**
 	 * @param string $k
 	 * @param mixed  $v
+	 *
+	 * @return void
 	 */
 	public function __set($k, $v){
 		$this->set($k, $v);
@@ -357,6 +361,8 @@ class Config{
 	/**
 	 * @param string $key
 	 * @param mixed  $value
+	 *
+	 * @return void
 	 */
 	public function setNested($key, $value){
 		$vars = explode(".", $key);
@@ -446,6 +452,8 @@ class Config{
 	/**
 	 * @param string $k key to be set
 	 * @param mixed  $v value to set key
+	 *
+	 * @return void
 	 */
 	public function set($k, $v = true){
 		$this->config[$k] = $v;
@@ -459,6 +467,8 @@ class Config{
 
 	/**
 	 * @param array $v
+	 *
+	 * @return void
 	 */
 	public function setAll(array $v){
 		$this->config = $v;
@@ -483,6 +493,8 @@ class Config{
 
 	/**
 	 * @param string $k
+	 *
+	 * @return void
 	 */
 	public function remove($k){
 		unset($this->config[$k]);
@@ -500,6 +512,8 @@ class Config{
 
 	/**
 	 * @param array $defaults
+	 *
+	 * @return void
 	 */
 	public function setDefaults(array $defaults){
 		$this->fillDefaults($defaults, $this->config);

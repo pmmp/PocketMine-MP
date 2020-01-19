@@ -42,6 +42,9 @@ class ServerKiller extends Thread{
 		$this->time = $time;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function run(){
 		$this->registerClassLoader();
 		$start = time();

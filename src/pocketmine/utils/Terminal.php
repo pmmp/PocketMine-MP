@@ -101,6 +101,9 @@ abstract class Terminal{
 		return $result;
 	}
 
+	/**
+	 * @return void
+	 */
 	protected static function getFallbackEscapeCodes(){
 		self::$FORMAT_BOLD = "\x1b[1m";
 		self::$FORMAT_OBFUSCATED = "";
@@ -128,6 +131,9 @@ abstract class Terminal{
 		self::$COLOR_WHITE = "\x1b[38;5;231m";
 	}
 
+	/**
+	 * @return void
+	 */
 	protected static function getEscapeCodes(){
 		self::$FORMAT_BOLD = `tput bold`;
 		self::$FORMAT_OBFUSCATED = `tput smacs`;
