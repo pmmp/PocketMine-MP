@@ -26,5 +26,8 @@ namespace pocketmine\entity;
 
 interface Explosive{
 
+	/**
+	 * @return void
+	 */
 	public function explode();
 }

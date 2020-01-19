@@ -2285,6 +2285,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param string $name
 	 * @param mixed $value
 	 *
+	 * @return void
 	 * @throws \ErrorException
 	 * @throws \InvalidArgumentException
 	 */
