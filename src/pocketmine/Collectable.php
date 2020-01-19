@@ -32,6 +32,9 @@ abstract class Collectable extends \Threaded{
 		return $this->isGarbage;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setGarbage(){
 		$this->isGarbage = true;
 	}

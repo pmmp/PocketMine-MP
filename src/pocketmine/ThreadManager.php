@@ -31,6 +31,9 @@ class ThreadManager extends \Volatile{
 	/** @var ThreadManager */
 	private static $instance = null;
 
+	/**
+	 * @return void
+	 */
 	public static function init(){
 		self::$instance = new ThreadManager();
 	}
@@ -44,6 +47,8 @@ class ThreadManager extends \Volatile{
 
 	/**
 	 * @param Worker|Thread $thread
+	 *
+	 * @return void
 	 */
 	public function add($thread){
 		if($thread instanceof Thread or $thread instanceof Worker){
@@ -53,6 +58,8 @@ class ThreadManager extends \Volatile{
 
 	/**
 	 * @param Worker|Thread $thread
+	 *
+	 * @return void
 	 */
 	public function remove($thread){
 		if($thread instanceof Thread or $thread instanceof Worker){

@@ -57,6 +57,9 @@ class OfflinePlayer implements IPlayer, Metadatable{
 		return $this->name;
 	}
 
+	/**
+	 * @return Server
+	 */
 	public function getServer(){
 		return $this->server;
 	}

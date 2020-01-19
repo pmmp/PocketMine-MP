@@ -137,6 +137,9 @@ class CrashDump{
 		return $this->path;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getEncodedData(){
 		return $this->encodedData;
 	}
@@ -345,6 +348,8 @@ class CrashDump{
 
 	/**
 	 * @param string $line
+	 *
+	 * @return void
 	 */
 	public function addLine($line = ""){
 		fwrite($this->fp, $line . PHP_EOL);
@@ -352,6 +357,8 @@ class CrashDump{
 
 	/**
 	 * @param string $str
+	 *
+	 * @return void
 	 */
 	public function add($str){
 		fwrite($this->fp, $str);

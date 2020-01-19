@@ -44,6 +44,8 @@ interface IPlayer extends ServerOperator{
 
 	/**
 	 * @param bool $banned
+	 *
+	 * @return void
 	 */
 	public function setBanned(bool $banned);
 
@@ -54,6 +56,8 @@ interface IPlayer extends ServerOperator{
 
 	/**
 	 * @param bool $value
+	 *
+	 * @return void
 	 */
 	public function setWhitelisted(bool $value);
 

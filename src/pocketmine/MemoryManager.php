@@ -115,7 +115,7 @@ class MemoryManager{
 		$this->init();
 	}
 
-	private function init(){
+	private function init() : void{
 		$this->memoryLimit = ((int) $this->server->getProperty("memory.main-limit", 0)) * 1024 * 1024;
 
 		$defaultMemory = 1024;
@@ -201,6 +201,8 @@ class MemoryManager{
 	 * @param int  $limit
 	 * @param bool $global
 	 * @param int  $triggerCount
+	 *
+	 * @return void
 	 */
 	public function trigger(int $memory, int $limit, bool $global = false, int $triggerCount = 0){
 		$this->server->getLogger()->debug(sprintf("[Memory Manager] %sLow memory triggered, limit %gMB, using %gMB",
@@ -230,6 +232,8 @@ class MemoryManager{
 
 	/**
 	 * Called every tick to update the memory manager state.
+	 *
+	 * @return void
 	 */
 	public function check(){
 		Timings::$memoryManagerTimer->startTiming();
@@ -297,6 +301,8 @@ class MemoryManager{
 	 * @param string $outputFolder
 	 * @param int    $maxNesting
 	 * @param int    $maxStringSize
+	 *
+	 * @return void
 	 */
 	public function dumpServerMemory(string $outputFolder, int $maxNesting, int $maxStringSize){
 		$this->server->getLogger()->notice("[Dump] After the memory dump is done, the server might crash");
@@ -319,6 +325,7 @@ class MemoryManager{
 	 * @param int     $maxStringSize
 	 * @param \Logger $logger
 	 *
+	 * @return void
 	 * @throws \ReflectionException
 	 */
 	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger){
@@ -479,7 +486,7 @@ class MemoryManager{
 	 * @param int      $maxNesting
 	 * @param int      $maxStringSize
 	 */
-	private static function continueDump($from, &$data, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize){
+	private static function continueDump($from, &$data, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize) : void{
 		if($maxNesting <= 0){
 			$data = "(error) NESTING LIMIT REACHED";
 			return;
