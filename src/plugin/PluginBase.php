@@ -100,6 +100,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
+	 *
+	 * @return void
 	 */
 	protected function onLoad()/* : void /* TODO: uncomment this for next major version */{
 
@@ -107,6 +109,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 	/**
 	 * Called when the plugin is enabled
+	 *
+	 * @return void
 	 */
 	protected function onEnable()/* : void /* TODO: uncomment this for next major version */{
 
@@ -115,6 +119,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	/**
 	 * Called when the plugin is disabled
 	 * Use this to free open things and finish actions
+	 *
+	 * @return void
 	 */
 	protected function onDisable()/* : void /* TODO: uncomment this for next major version */{
 
@@ -320,7 +326,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return $this->config;
 	}
 
-	public function saveConfig(){
+	public function saveConfig() : void{
 		$this->getConfig()->save();
 	}
 
@@ -331,7 +337,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return false;
 	}
 
-	public function reloadConfig(){
+	public function reloadConfig() : void{
 		$this->saveDefaultConfig();
 		$this->config = new Config($this->configFile);
 	}

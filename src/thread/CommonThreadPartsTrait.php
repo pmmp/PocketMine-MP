@@ -35,7 +35,7 @@ trait CommonThreadPartsTrait{
 	/** @var bool */
 	protected $isKilled = false;
 
-	public function getClassLoader(){
+	public function getClassLoader() : ?\ClassLoader{
 		return $this->classLoader;
 	}
 

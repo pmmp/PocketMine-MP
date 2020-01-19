@@ -386,7 +386,7 @@ class World implements ChunkManager{
 		$this->server->getAsyncPool()->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getWorldData()->getGeneratorOptions()), $worker);
 	}
 
-	public function unregisterGenerator(){
+	public function unregisterGenerator() : void{
 		$pool = $this->server->getAsyncPool();
 		foreach($pool->getRunningWorkers() as $i){
 			if(isset($this->generatorRegisteredWorkers[$i])){
@@ -422,7 +422,7 @@ class World implements ChunkManager{
 	/**
 	 * @internal
 	 */
-	public function close(){
+	public function close() : void{
 		if($this->closed){
 			throw new \InvalidStateException("Tried to close a world which is already closed");
 		}
@@ -443,7 +443,7 @@ class World implements ChunkManager{
 		$this->closed = true;
 	}
 
-	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null){
+	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null) : void{
 		$pk = $sound->encode($pos);
 		if(!is_array($pk)){
 			$pk = [$pk];
@@ -459,7 +459,7 @@ class World implements ChunkManager{
 		}
 	}
 
-	public function addParticle(Vector3 $pos, Particle $particle, ?array $players = null){
+	public function addParticle(Vector3 $pos, Particle $particle, ?array $players = null) : void{
 		$pk = $particle->encode($pos);
 		if(!is_array($pk)){
 			$pk = [$pk];
@@ -482,7 +482,7 @@ class World implements ChunkManager{
 	 * @param int          $evid
 	 * @param int          $data
 	 */
-	public function broadcastLevelEvent(?Vector3 $pos, int $evid, int $data = 0){
+	public function broadcastLevelEvent(?Vector3 $pos, int $evid, int $data = 0) : void{
 		$pk = LevelEventPacket::create($evid, $data, $pos);
 		if($pos !== null){
 			$this->broadcastPacketToViewers($pos, $pk);
@@ -495,7 +495,7 @@ class World implements ChunkManager{
 		return $this->autoSave;
 	}
 
-	public function setAutoSave(bool $value){
+	public function setAutoSave(bool $value) : void{
 		$this->autoSave = $value;
 	}
 
@@ -544,7 +544,7 @@ class World implements ChunkManager{
 	 * @param int               $chunkZ
 	 * @param ClientboundPacket $packet
 	 */
-	public function addChunkPacket(int $chunkX, int $chunkZ, ClientboundPacket $packet){
+	public function addChunkPacket(int $chunkX, int $chunkZ, ClientboundPacket $packet) : void{
 		if(!isset($this->chunkPackets[$index = World::chunkHash($chunkX, $chunkZ)])){
 			$this->chunkPackets[$index] = [$packet];
 		}else{
@@ -571,7 +571,7 @@ class World implements ChunkManager{
 		$this->globalPackets[] = $packet;
 	}
 
-	public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true){
+	public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true) : void{
 		$loaderId = spl_object_id($loader);
 
 		if(!isset($this->chunkLoaders[$chunkHash = World::chunkHash($chunkX, $chunkZ)])){
@@ -600,7 +600,7 @@ class World implements ChunkManager{
 		}
 	}
 
-	public function unregisterChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ){
+	public function unregisterChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$loaderId = spl_object_id($loader);
 		if(isset($this->chunkLoaders[$chunkHash][$loaderId])){
@@ -689,7 +689,7 @@ class World implements ChunkManager{
 	 *
 	 * @param Player ...$targets If empty, will send to all players in the world.
 	 */
-	public function sendTime(Player ...$targets){
+	public function sendTime(Player ...$targets) : void{
 		$pk = SetTimePacket::create($this->time);
 
 		if(empty($targets)){
@@ -709,7 +709,7 @@ class World implements ChunkManager{
 	 * @param int $currentTick
 	 *
 	 */
-	public function doTick(int $currentTick){
+	public function doTick(int $currentTick) : void{
 		if($this->closed){
 			throw new \InvalidStateException("Attempted to tick a world which has been closed");
 		}
@@ -852,7 +852,7 @@ class World implements ChunkManager{
 		$this->chunkPackets = [];
 	}
 
-	public function checkSleep(){
+	public function checkSleep() : void{
 		if(count($this->players) === 0){
 			return;
 		}
@@ -886,7 +886,7 @@ class World implements ChunkManager{
 	 * @param Player[]  $target
 	 * @param Vector3[] $blocks
 	 */
-	public function sendBlocks(array $target, array $blocks){
+	public function sendBlocks(array $target, array $blocks) : void{
 		$packets = [];
 
 		foreach($blocks as $b){
@@ -906,7 +906,7 @@ class World implements ChunkManager{
 		$this->server->broadcastPackets($target, $packets);
 	}
 
-	public function clearCache(bool $force = false){
+	public function clearCache(bool $force = false) : void{
 		if($force){
 			$this->blockCache = [];
 		}else{
@@ -928,18 +928,18 @@ class World implements ChunkManager{
 		return $this->randomTickBlocks;
 	}
 
-	public function addRandomTickedBlock(Block $block){
+	public function addRandomTickedBlock(Block $block) : void{
 		if($block instanceof UnknownBlock){
 			throw new \InvalidArgumentException("Cannot do random-tick on unknown block");
 		}
 		$this->randomTickBlocks[$block->getFullId()] = true;
 	}
 
-	public function removeRandomTickedBlock(Block $block){
+	public function removeRandomTickedBlock(Block $block) : void{
 		unset($this->randomTickBlocks[$block->getFullId()]);
 	}
 
-	private function tickChunks(){
+	private function tickChunks() : void{
 		if($this->chunksPerTick <= 0 or count($this->loaders) === 0){
 			return;
 		}
@@ -1029,7 +1029,7 @@ class World implements ChunkManager{
 		return true;
 	}
 
-	public function saveChunks(){
+	public function saveChunks() : void{
 		$this->timings->syncChunkSaveTimer->startTiming();
 		try{
 			foreach($this->chunks as $chunk){
@@ -1050,7 +1050,7 @@ class World implements ChunkManager{
 	 * @param Vector3 $pos
 	 * @param int     $delay
 	 */
-	public function scheduleDelayedBlockUpdate(Vector3 $pos, int $delay){
+	public function scheduleDelayedBlockUpdate(Vector3 $pos, int $delay) : void{
 		if(
 			!$this->isInWorld($pos->x, $pos->y, $pos->z) or
 			(isset($this->scheduledBlockUpdateQueueIndex[$index = World::blockHash($pos->x, $pos->y, $pos->z)]) and $this->scheduledBlockUpdateQueueIndex[$index] <= $delay)
@@ -1994,7 +1994,7 @@ class World implements ChunkManager{
 	 * @param int $z
 	 * @param int $biomeId
 	 */
-	public function setBiomeId(int $x, int $z, int $biomeId){
+	public function setBiomeId(int $x, int $z, int $biomeId) : void{
 		$this->getChunk($x >> 4, $z >> 4, true)->setBiomeId($x & 0x0f, $z & 0x0f, $biomeId);
 	}
 
@@ -2076,7 +2076,7 @@ class World implements ChunkManager{
 		return isset($this->chunkLock[World::chunkHash($chunkX, $chunkZ)]);
 	}
 
-	public function generateChunkCallback(int $x, int $z, ?Chunk $chunk){
+	public function generateChunkCallback(int $x, int $z, ?Chunk $chunk) : void{
 		Timings::$generationCallbackTimer->startTiming();
 		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)])){
 			for($xx = -1; $xx <= 1; ++$xx){
@@ -2234,7 +2234,7 @@ class World implements ChunkManager{
 	 *
 	 * @param Vector3 $pos
 	 */
-	public function setSpawnLocation(Vector3 $pos){
+	public function setSpawnLocation(Vector3 $pos) : void{
 		$previousSpawn = $this->getSpawnLocation();
 		$this->provider->getWorldData()->setSpawn($pos);
 		(new SpawnChangeEvent($this, $previousSpawn))->call();
@@ -2245,7 +2245,7 @@ class World implements ChunkManager{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function addEntity(Entity $entity){
+	public function addEntity(Entity $entity) : void{
 		if($entity->isClosed()){
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to world");
 		}
@@ -2266,7 +2266,7 @@ class World implements ChunkManager{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function removeEntity(Entity $entity){
+	public function removeEntity(Entity $entity) : void{
 		if($entity->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Entity world");
 		}
@@ -2285,7 +2285,7 @@ class World implements ChunkManager{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function addTile(Tile $tile){
+	public function addTile(Tile $tile) : void{
 		if($tile->isClosed()){
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to world");
 		}
@@ -2312,7 +2312,7 @@ class World implements ChunkManager{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function removeTile(Tile $tile){
+	public function removeTile(Tile $tile) : void{
 		$pos = $tile->getPos();
 		if($pos->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Tile world");
@@ -2404,11 +2404,11 @@ class World implements ChunkManager{
 		return true;
 	}
 
-	private function queueUnloadChunk(int $x, int $z){
+	private function queueUnloadChunk(int $x, int $z) : void{
 		$this->unloadQueue[World::chunkHash($x, $z)] = microtime(true);
 	}
 
-	public function unloadChunkRequest(int $x, int $z, bool $safe = true){
+	public function unloadChunkRequest(int $x, int $z, bool $safe = true) : bool{
 		if(($safe and $this->isChunkInUse($x, $z)) or $this->isSpawnChunk($x, $z)){
 			return false;
 		}
@@ -2418,7 +2418,7 @@ class World implements ChunkManager{
 		return true;
 	}
 
-	public function cancelUnloadChunkRequest(int $x, int $z){
+	public function cancelUnloadChunkRequest(int $x, int $z) : void{
 		unset($this->unloadQueue[World::chunkHash($x, $z)]);
 	}
 
@@ -2574,7 +2574,7 @@ class World implements ChunkManager{
 	 *
 	 * @param int $time
 	 */
-	public function setTime(int $time){
+	public function setTime(int $time) : void{
 		$this->time = $time;
 		$this->sendTime();
 	}
@@ -2582,7 +2582,7 @@ class World implements ChunkManager{
 	/**
 	 * Stops the time for the world, will not save the lock state to disk
 	 */
-	public function stopTime(){
+	public function stopTime() : void{
 		$this->stopTime = true;
 		$this->sendTime();
 	}
@@ -2590,7 +2590,7 @@ class World implements ChunkManager{
 	/**
 	 * Start the time again, if it was stopped
 	 */
-	public function startTime(){
+	public function startTime() : void{
 		$this->stopTime = false;
 		$this->sendTime();
 	}
@@ -2618,7 +2618,7 @@ class World implements ChunkManager{
 	/**
 	 * @param int $difficulty
 	 */
-	public function setDifficulty(int $difficulty){
+	public function setDifficulty(int $difficulty) : void{
 		if($difficulty < 0 or $difficulty > 3){
 			throw new \InvalidArgumentException("Invalid difficulty level $difficulty");
 		}
@@ -2630,7 +2630,7 @@ class World implements ChunkManager{
 	/**
 	 * @param Player ...$targets
 	 */
-	public function sendDifficulty(Player ...$targets){
+	public function sendDifficulty(Player ...$targets) : void{
 		$pk = SetDifficultyPacket::create($this->getDifficulty());
 		if(empty($targets)){
 			$this->broadcastGlobalPacket($pk);
@@ -2676,7 +2676,7 @@ class World implements ChunkManager{
 		return true;
 	}
 
-	public function doChunkGarbageCollection(){
+	public function doChunkGarbageCollection() : void{
 		$this->timings->doChunkGC->startTiming();
 
 		foreach($this->chunks as $index => $chunk){
@@ -2694,7 +2694,7 @@ class World implements ChunkManager{
 		$this->timings->doChunkGC->stopTiming();
 	}
 
-	public function unloadChunks(bool $force = false){
+	public function unloadChunks(bool $force = false) : void{
 		if(count($this->unloadQueue) > 0){
 			$maxUnload = 96;
 			$now = microtime(true);

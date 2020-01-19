@@ -319,7 +319,7 @@ class Config{
 	 * @param string $k
 	 * @param mixed  $v
 	 */
-	public function __set($k, $v){
+	public function __set($k, $v) : void{
 		$this->set($k, $v);
 	}
 

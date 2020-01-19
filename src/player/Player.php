@@ -464,7 +464,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->lastPlayed - $this->firstPlayed > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
 	}
 
-	public function setAllowFlight(bool $value){
+	public function setAllowFlight(bool $value) : void{
 		$this->allowFlight = $value;
 		$this->networkSession->syncAdventureSettings($this);
 	}
@@ -473,7 +473,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->allowFlight;
 	}
 
-	public function setFlying(bool $value){
+	public function setFlying(bool $value) : void{
 		if($this->flying !== $value){
 			$this->flying = $value;
 			$this->resetFallDistance();
@@ -485,7 +485,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->flying;
 	}
 
-	public function setAutoJump(bool $value){
+	public function setAutoJump(bool $value) : void{
 		$this->autoJump = $value;
 		$this->networkSession->syncAdventureSettings($this);
 	}
@@ -520,7 +520,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * @param bool $remove
 	 */
-	public function setRemoveFormat(bool $remove = true){
+	public function setRemoveFormat(bool $remove = true) : void{
 		$this->removeFormat = $remove;
 	}
 
@@ -547,7 +547,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * @param Player $player
 	 */
-	public function hidePlayer(Player $player){
+	public function hidePlayer(Player $player) : void{
 		if($player === $this){
 			return;
 		}
@@ -558,7 +558,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * @param Player $player
 	 */
-	public function showPlayer(Player $player){
+	public function showPlayer(Player $player) : void{
 		if($player === $this){
 			return;
 		}
@@ -585,7 +585,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->viewDistance;
 	}
 
-	public function setViewDistance(int $distance){
+	public function setViewDistance(int $distance) : void{
 		$this->viewDistance = $this->server->getAllowedViewDistance($distance);
 
 		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getProperty("chunk-sending.spawn-radius", 4)) ** 2 * M_PI);
@@ -685,7 +685,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * @param string $name
 	 */
-	public function setDisplayName(string $name){
+	public function setDisplayName(string $name) : void{
 		$this->displayName = $name;
 	}
 
@@ -738,7 +738,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->startAction > -1;
 	}
 
-	public function setUsingItem(bool $value){
+	public function setUsingItem(bool $value) : void{
 		$this->startAction = $value ? $this->server->getTick() : -1;
 	}
 
@@ -805,7 +805,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return false;
 	}
 
-	protected function unloadChunk(int $x, int $z, ?World $world = null){
+	protected function unloadChunk(int $x, int $z, ?World $world = null) : void{
 		$world = $world ?? $this->getWorld();
 		$index = World::chunkHash($x, $z);
 		if(isset($this->usedChunks[$index])){
@@ -830,7 +830,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 	}
 
-	protected function requestChunks(){
+	protected function requestChunks() : void{
 		if(!$this->isConnected()){
 			return;
 		}
@@ -883,7 +883,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		Timings::$playerChunkSendTimer->stopTiming();
 	}
 
-	public function doFirstSpawn(){
+	public function doFirstSpawn() : void{
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 		}
@@ -986,7 +986,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return isset($this->usedChunks[World::chunkHash($chunkX, $chunkZ)]);
 	}
 
-	public function doChunkRequests(){
+	public function doChunkRequests() : void{
 		if($this->nextChunkOrderRun !== PHP_INT_MAX and $this->nextChunkOrderRun-- <= 0){
 			$this->nextChunkOrderRun = PHP_INT_MAX;
 			$this->orderChunks();
@@ -1023,7 +1023,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 *
 	 * @param Vector3|Position $pos
 	 */
-	public function setSpawn(Vector3 $pos){
+	public function setSpawn(Vector3 $pos) : void{
 		if(!($pos instanceof Position)){
 			$world = $this->getWorld();
 		}else{
@@ -1068,7 +1068,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return true;
 	}
 
-	public function stopSleep(){
+	public function stopSleep() : void{
 		if($this->sleeping instanceof Vector3){
 			$b = $this->getWorld()->getBlock($this->sleeping);
 			if($b instanceof Bed){
@@ -1218,7 +1218,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return false; //currently has no server-side movement
 	}
 
-	protected function checkNearEntities(){
+	protected function checkNearEntities() : void{
 		foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(1, 0.5, 1), $this) as $entity){
 			$entity->scheduleUpdate();
 
@@ -1274,7 +1274,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->inAirTicks;
 	}
 
-	protected function processMovement(int $tickDiff){
+	protected function processMovement(int $tickDiff) : void{
 		if($this->newPosition === null or $this->isSleeping()){
 			return;
 		}
@@ -1923,14 +1923,14 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * Removes the title from the client's screen.
 	 */
-	public function removeTitles(){
+	public function removeTitles() : void{
 		$this->networkSession->onClearTitle();
 	}
 
 	/**
 	 * Resets the title duration settings to defaults and removes any existing titles.
 	 */
-	public function resetTitles(){
+	public function resetTitles() : void{
 		$this->networkSession->onResetTitleOptions();
 	}
 
@@ -1941,7 +1941,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param int $stay Title stay time in ticks.
 	 * @param int $fadeOut Title fade-out time in ticks.
 	 */
-	public function setTitleDuration(int $fadeIn, int $stay, int $fadeOut){
+	public function setTitleDuration(int $fadeIn, int $stay, int $fadeOut) : void{
 		if($fadeIn >= 0 and $stay >= 0 and $fadeOut >= 0){
 			$this->networkSession->onTitleDuration($fadeIn, $stay, $fadeOut);
 		}
@@ -1968,7 +1968,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param string   $message
 	 * @param string[] $parameters
 	 */
-	public function sendTranslation(string $message, array $parameters = []){
+	public function sendTranslation(string $message, array $parameters = []) : void{
 		if(!$this->server->isLanguageForced()){
 			foreach($parameters as $i => $p){
 				$parameters[$i] = $this->server->getLanguage()->translateString($p, [], "pocketmine.");
@@ -1986,11 +1986,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 *
 	 * @param string $message
 	 */
-	public function sendPopup(string $message){
+	public function sendPopup(string $message) : void{
 		$this->networkSession->onPopup($message);
 	}
 
-	public function sendTip(string $message){
+	public function sendTip(string $message) : void{
 		$this->networkSession->onTip($message);
 	}
 
@@ -2160,7 +2160,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		parent::destroyCycles();
 	}
 
-	public function __debugInfo(){
+	public function __debugInfo() : array{
 		return [];
 	}
 
@@ -2182,7 +2182,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 *
 	 * @throws \InvalidStateException if the player is closed
 	 */
-	public function save(){
+	public function save() : void{
 		if($this->closed){
 			throw new \InvalidStateException("Tried to save closed player");
 		}
@@ -2353,7 +2353,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @param float|null $pitch
 	 * @param int        $mode
 	 */
-	public function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL){
+	public function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
 		$this->networkSession->syncMovement($pos, $yaw, $pitch, $mode);
 
 		//TODO: get rid of this
@@ -2390,7 +2390,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return false;
 	}
 
-	protected function addDefaultWindows(){
+	protected function addDefaultWindows() : void{
 		$this->cursorInventory = new PlayerCursorInventory($this);
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
 

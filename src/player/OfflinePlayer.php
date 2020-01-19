@@ -54,7 +54,7 @@ class OfflinePlayer implements IPlayer{
 		return $this->name;
 	}
 
-	public function getServer(){
+	public function getServer() : Server{
 		return $this->server;
 	}
 

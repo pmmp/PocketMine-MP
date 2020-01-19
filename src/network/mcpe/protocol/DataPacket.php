@@ -104,7 +104,7 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	 */
 	abstract protected function encodePayload() : void;
 
-	public function __debugInfo(){
+	public function __debugInfo() : array{
 		$data = [];
 		foreach((array) $this as $k => $v){
 			if($v === $this->getBuffer()){
@@ -121,6 +121,8 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 
 	/**
 	 * @param string $name
+	 *
+	 * @return mixed
 	 */
 	public function __get($name){
 		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
@@ -130,7 +132,7 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	 * @param string $name
 	 * @param mixed  $value
 	 */
-	public function __set($name, $value){
+	public function __set($name, $value) : void{
 		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
 	}
 }

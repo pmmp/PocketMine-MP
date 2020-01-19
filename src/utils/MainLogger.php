@@ -151,6 +151,8 @@ class MainLogger extends \AttachableThreadedLogger{
 	/**
 	 * @param \Throwable $e
 	 * @param array|null $trace
+	 *
+	 * @return void
 	 */
 	public function logException(\Throwable $e, $trace = null){
 		if($trace === null){

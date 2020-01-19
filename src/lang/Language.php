@@ -140,7 +140,7 @@ class Language{
 		return $baseText;
 	}
 
-	public function translate(TextContainer $c){
+	public function translate(TextContainer $c) : string{
 		if($c instanceof TranslationContainer){
 			$baseText = $this->internalGet($c->getText());
 			$baseText = $this->parseTranslation($baseText ?? $c->getText());

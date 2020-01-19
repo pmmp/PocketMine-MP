@@ -1744,7 +1744,7 @@ class Server{
 		exit(1);
 	}
 
-	public function __debugInfo(){
+	public function __debugInfo() : array{
 		return [];
 	}
 

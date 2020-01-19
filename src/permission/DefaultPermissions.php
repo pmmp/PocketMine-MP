@@ -43,7 +43,7 @@ abstract class DefaultPermissions{
 		return PermissionManager::getInstance()->getPermission($perm->getName());
 	}
 
-	public static function registerCorePermissions(){
+	public static function registerCorePermissions() : void{
 		$parent = self::registerPermission(new Permission(self::ROOT, "Allows using all PocketMine commands and utilities"));
 
 		$broadcasts = self::registerPermission(new Permission(self::ROOT . ".broadcast", "Allows the user to receive all broadcast messages"), $parent);

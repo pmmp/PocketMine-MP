@@ -38,7 +38,7 @@ final class CreativeInventory{
 		//NOOP
 	}
 
-	public static function init(){
+	public static function init() : void{
 		self::clear();
 
 		$creativeItems = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "creativeitems.json"), true);
@@ -56,7 +56,7 @@ final class CreativeInventory{
 	 * Removes all previously added items from the creative menu.
 	 * Note: Players who are already online when this is called will not see this change.
 	 */
-	public static function clear(){
+	public static function clear() : void{
 		self::$creative = [];
 	}
 
@@ -92,7 +92,7 @@ final class CreativeInventory{
 	 *
 	 * @param Item $item
 	 */
-	public static function add(Item $item){
+	public static function add(Item $item) : void{
 		self::$creative[] = clone $item;
 	}
 
@@ -102,7 +102,7 @@ final class CreativeInventory{
 	 *
 	 * @param Item $item
 	 */
-	public static function remove(Item $item){
+	public static function remove(Item $item) : void{
 		$index = self::getItemIndex($item);
 		if($index !== -1){
 			unset(self::$creative[$index]);

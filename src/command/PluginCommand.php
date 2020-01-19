@@ -72,7 +72,7 @@ class PluginCommand extends Command implements PluginIdentifiableCommand{
 	/**
 	 * @param CommandExecutor $executor
 	 */
-	public function setExecutor(CommandExecutor $executor){
+	public function setExecutor(CommandExecutor $executor) : void{
 		$this->executor = $executor;
 	}
 
