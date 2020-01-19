@@ -84,6 +84,9 @@ abstract class Tile extends Position{
 	/** @var TimingsHandler */
 	protected $timings;
 
+	/**
+	 * @return void
+	 */
 	public static function init(){
 		self::registerTile(Banner::class, [self::BANNER, "minecraft:banner"]);
 		self::registerTile(Bed::class, [self::BED, "minecraft:bed"]);

@@ -138,6 +138,11 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		return $this->getInventory();
 	}
 
+	/**
+	 * @param Item $fuel
+	 *
+	 * @return void
+	 */
 	protected function checkFuel(Item $fuel){
 		$ev = new FurnaceBurnEvent($this, $fuel, $fuel->getFuelTime());
 		$ev->call();

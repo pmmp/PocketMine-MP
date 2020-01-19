@@ -62,6 +62,9 @@ abstract class Spawnable extends Tile{
 		$this->spawnToAll();
 	}
 
+	/**
+	 * @return void
+	 */
 	public function spawnToAll(){
 		if($this->closed){
 			return;

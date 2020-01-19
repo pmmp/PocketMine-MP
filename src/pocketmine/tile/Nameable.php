@@ -38,6 +38,8 @@ interface Nameable{
 
 	/**
 	 * @param string $str
+	 *
+	 * @return void
 	 */
 	public function setName(string $str);
 

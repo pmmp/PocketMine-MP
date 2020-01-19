@@ -70,11 +70,19 @@ class FlowerPot extends Spawnable{
 		return clone $this->item;
 	}
 
+	/**
+	 * @param Item $item
+	 *
+	 * @return void
+	 */
 	public function setItem(Item $item){
 		$this->item = clone $item;
 		$this->onChanged();
 	}
 
+	/**
+	 * @return void
+	 */
 	public function removeItem(){
 		$this->setItem(ItemFactory::get(Item::AIR, 0, 0));
 	}

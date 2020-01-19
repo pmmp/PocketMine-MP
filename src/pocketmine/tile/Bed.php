@@ -38,6 +38,9 @@ class Bed extends Spawnable{
 		return $this->color;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setColor(int $color){
 		$this->color = $color & 0xf;
 		$this->onChanged();
