@@ -158,6 +158,9 @@ abstract class DataPacket extends NetworkBinaryStream{
 		return $this;
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function __debugInfo(){
 		$data = [];
 		foreach((array) $this as $k => $v){
@@ -175,6 +178,8 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	/**
 	 * @param string $name
+	 *
+	 * @return mixed
 	 */
 	public function __get($name){
 		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
@@ -183,6 +188,8 @@ abstract class DataPacket extends NetworkBinaryStream{
 	/**
 	 * @param string $name
 	 * @param mixed  $value
+	 *
+	 * @return void
 	 */
 	public function __set($name, $value){
 		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
