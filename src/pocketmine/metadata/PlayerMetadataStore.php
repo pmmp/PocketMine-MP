@@ -33,6 +33,12 @@ class PlayerMetadataStore extends MetadataStore{
 		return strtolower($player->getName()) . ":" . $metadataKey;
 	}
 
+	/**
+	 * @param IPlayer $subject
+	 * @param string  $metadataKey
+	 *
+	 * @return MetadataValue[]
+	 */
 	public function getMetadata(IPlayer $subject, string $metadataKey){
 		return $this->getMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
@@ -41,10 +47,24 @@ class PlayerMetadataStore extends MetadataStore{
 		return $this->hasMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
 
+	/**
+	 * @param IPlayer $subject
+	 * @param string  $metadataKey
+	 * @param Plugin  $owningPlugin
+	 *
+	 * @return void
+	 */
 	public function removeMetadata(IPlayer $subject, string $metadataKey, Plugin $owningPlugin){
 		$this->removeMetadataInternal($this->disambiguate($subject, $metadataKey), $owningPlugin);
 	}
 
+	/**
+	 * @param IPlayer       $subject
+	 * @param string        $metadataKey
+	 * @param MetadataValue $newMetadataValue
+	 *
+	 * @return void
+	 */
 	public function setMetadata(IPlayer $subject, string $metadataKey, MetadataValue $newMetadataValue){
 		$this->setMetadataInternal($this->disambiguate($subject, $metadataKey), $newMetadataValue);
 	}

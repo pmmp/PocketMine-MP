@@ -32,6 +32,12 @@ class EntityMetadataStore extends MetadataStore{
 		return $entity->getId() . ":" . $metadataKey;
 	}
 
+	/**
+	 * @param Entity $subject
+	 * @param string $metadataKey
+	 *
+	 * @return MetadataValue[]
+	 */
 	public function getMetadata(Entity $subject, string $metadataKey){
 		return $this->getMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
@@ -40,10 +46,24 @@ class EntityMetadataStore extends MetadataStore{
 		return $this->hasMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
 
+	/**
+	 * @param Entity $subject
+	 * @param string $metadataKey
+	 * @param Plugin $owningPlugin
+	 *
+	 * @return void
+	 */
 	public function removeMetadata(Entity $subject, string $metadataKey, Plugin $owningPlugin){
 		$this->removeMetadataInternal($this->disambiguate($subject, $metadataKey), $owningPlugin);
 	}
 
+	/**
+	 * @param Entity        $subject
+	 * @param string        $metadataKey
+	 * @param MetadataValue $newMetadataValue
+	 *
+	 * @return void
+	 */
 	public function setMetadata(Entity $subject, string $metadataKey, MetadataValue $newMetadataValue){
 		$this->setMetadataInternal($this->disambiguate($subject, $metadataKey), $newMetadataValue);
 	}

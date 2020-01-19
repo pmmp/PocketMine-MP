@@ -50,6 +50,8 @@ abstract class MetadataValue{
 	/**
 	 * Invalidates this metadata item, forcing it to recompute when next
 	 * accessed.
+	 *
+	 * @return void
 	 */
 	abstract public function invalidate();
 }
