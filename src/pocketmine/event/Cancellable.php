@@ -35,6 +35,8 @@ interface Cancellable{
 
 	/**
 	 * @param bool $value
+	 *
+	 * @return void
 	 */
 	public function setCancelled(bool $value = true);
 }

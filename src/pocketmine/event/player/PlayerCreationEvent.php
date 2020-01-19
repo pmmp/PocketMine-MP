@@ -99,6 +99,8 @@ class PlayerCreationEvent extends Event{
 
 	/**
 	 * @param string $class
+	 *
+	 * @return void
 	 */
 	public function setBaseClass($class){
 		if(!is_a($class, $this->baseClass, true)){
@@ -117,6 +119,8 @@ class PlayerCreationEvent extends Event{
 
 	/**
 	 * @param string $class
+	 *
+	 * @return void
 	 */
 	public function setPlayerClass($class){
 		if(!is_a($class, $this->baseClass, true)){
