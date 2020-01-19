@@ -61,6 +61,11 @@ class BanEntry{
 		return $this->creationDate;
 	}
 
+	/**
+	 * @param \DateTime $date
+	 *
+	 * @return void
+	 */
 	public function setCreated(\DateTime $date){
 		self::validateDate($date);
 		$this->creationDate = $date;
@@ -70,6 +75,11 @@ class BanEntry{
 		return $this->source;
 	}
 
+	/**
+	 * @param string $source
+	 *
+	 * @return void
+	 */
 	public function setSource(string $source){
 		$this->source = $source;
 	}
@@ -83,6 +93,8 @@ class BanEntry{
 
 	/**
 	 * @param \DateTime|null $date
+	 *
+	 * @return void
 	 */
 	public function setExpires(\DateTime $date = null){
 		if($date !== null){
@@ -101,6 +113,11 @@ class BanEntry{
 		return $this->reason;
 	}
 
+	/**
+	 * @param string $reason
+	 *
+	 * @return void
+	 */
 	public function setReason(string $reason){
 		$this->reason = $reason;
 	}

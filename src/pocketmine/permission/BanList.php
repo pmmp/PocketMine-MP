@@ -61,6 +61,8 @@ class BanList{
 
 	/**
 	 * @param bool $flag
+	 *
+	 * @return void
 	 */
 	public function setEnabled(bool $flag){
 		$this->enabled = $flag;
@@ -104,6 +106,8 @@ class BanList{
 
 	/**
 	 * @param BanEntry $entry
+	 *
+	 * @return void
 	 */
 	public function add(BanEntry $entry){
 		$this->list[$entry->getName()] = $entry;
@@ -132,6 +136,8 @@ class BanList{
 
 	/**
 	 * @param string $name
+	 *
+	 * @return void
 	 */
 	public function remove(string $name){
 		$name = strtolower($name);
@@ -141,6 +147,9 @@ class BanList{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function removeExpired(){
 		foreach($this->list as $name => $entry){
 			if($entry->hasExpired()){
@@ -149,6 +158,9 @@ class BanList{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function load(){
 		$this->list = [];
 		$fp = @fopen($this->file, "r");
@@ -175,6 +187,8 @@ class BanList{
 
 	/**
 	 * @param bool $writeHeader
+	 *
+	 * @return void
 	 */
 	public function save(bool $writeHeader = true){
 		$this->removeExpired();

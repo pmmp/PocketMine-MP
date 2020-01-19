@@ -192,6 +192,8 @@ class Permission{
 
 	/**
 	 * @param string $value
+	 *
+	 * @return void
 	 */
 	public function setDefault(string $value){
 		if($value !== $this->defaultValue){
@@ -209,6 +211,8 @@ class Permission{
 
 	/**
 	 * @param string $value
+	 *
+	 * @return void
 	 */
 	public function setDescription(string $value){
 		$this->description = $value;
@@ -221,6 +225,9 @@ class Permission{
 		return PermissionManager::getInstance()->getPermissionSubscriptions($this->name);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function recalculatePermissibles(){
 		$perms = $this->getPermissibles();
 

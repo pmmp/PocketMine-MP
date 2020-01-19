@@ -65,6 +65,8 @@ class PermissionAttachment{
 
 	/**
 	 * @param PermissionRemovedExecutor $ex
+	 *
+	 * @return void
 	 */
 	public function setRemovalCallback(PermissionRemovedExecutor $ex){
 		$this->removed = $ex;
@@ -91,6 +93,9 @@ class PermissionAttachment{
 		return $this->permissions;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function clearPermissions(){
 		$this->permissions = [];
 		$this->permissible->recalculatePermissions();
@@ -98,6 +103,8 @@ class PermissionAttachment{
 
 	/**
 	 * @param bool[] $permissions
+	 *
+	 * @return void
 	 */
 	public function setPermissions(array $permissions){
 		foreach($permissions as $key => $value){
@@ -108,6 +115,8 @@ class PermissionAttachment{
 
 	/**
 	 * @param string[] $permissions
+	 *
+	 * @return void
 	 */
 	public function unsetPermissions(array $permissions){
 		foreach($permissions as $node){
@@ -119,6 +128,8 @@ class PermissionAttachment{
 	/**
 	 * @param string|Permission $name
 	 * @param bool              $value
+	 *
+	 * @return void
 	 */
 	public function setPermission($name, bool $value){
 		$name = $name instanceof Permission ? $name->getName() : $name;
@@ -134,6 +145,8 @@ class PermissionAttachment{
 
 	/**
 	 * @param string|Permission $name
+	 *
+	 * @return void
 	 */
 	public function unsetPermission($name){
 		$name = $name instanceof Permission ? $name->getName() : $name;

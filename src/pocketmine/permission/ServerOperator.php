@@ -36,6 +36,8 @@ interface ServerOperator{
 	 * Sets the operator permission for the current object
 	 *
 	 * @param bool $value
+	 *
+	 * @return void
 	 */
 	public function setOp(bool $value);
 }

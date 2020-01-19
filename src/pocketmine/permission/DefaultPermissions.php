@@ -43,6 +43,9 @@ abstract class DefaultPermissions{
 		return PermissionManager::getInstance()->getPermission($perm->getName());
 	}
 
+	/**
+	 * @return void
+	 */
 	public static function registerCorePermissions(){
 		$parent = self::registerPermission(new Permission(self::ROOT, "Allows using all PocketMine commands and utilities"));
 

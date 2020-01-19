@@ -79,6 +79,8 @@ class PermissionManager{
 
 	/**
 	 * @param string|Permission $permission
+	 *
+	 * @return void
 	 */
 	public function removePermission($permission){
 		if($permission instanceof Permission){
@@ -103,6 +105,8 @@ class PermissionManager{
 
 	/**
 	 * @param Permission $permission
+	 *
+	 * @return void
 	 */
 	public function recalculatePermissionDefaults(Permission $permission){
 		if(isset($this->permissions[$permission->getName()])){
@@ -141,6 +145,8 @@ class PermissionManager{
 	/**
 	 * @param string      $permission
 	 * @param Permissible $permissible
+	 *
+	 * @return void
 	 */
 	public function subscribeToPermission(string $permission, Permissible $permissible){
 		if(!isset($this->permSubs[$permission])){
@@ -152,6 +158,8 @@ class PermissionManager{
 	/**
 	 * @param string      $permission
 	 * @param Permissible $permissible
+	 *
+	 * @return void
 	 */
 	public function unsubscribeFromPermission(string $permission, Permissible $permissible){
 		if(isset($this->permSubs[$permission])){
@@ -186,6 +194,8 @@ class PermissionManager{
 	/**
 	 * @param bool        $op
 	 * @param Permissible $permissible
+	 *
+	 * @return void
 	 */
 	public function subscribeToDefaultPerms(bool $op, Permissible $permissible){
 		if($op){
@@ -198,6 +208,8 @@ class PermissionManager{
 	/**
 	 * @param bool        $op
 	 * @param Permissible $permissible
+	 *
+	 * @return void
 	 */
 	public function unsubscribeFromDefaultPerms(bool $op, Permissible $permissible){
 		if($op){

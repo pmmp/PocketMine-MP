@@ -55,34 +55,18 @@ class PermissibleBase implements Permissible{
 		}
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isOp() : bool{
 		return $this->opable->isOp();
 	}
 
-	/**
-	 * @param bool $value
-	 */
 	public function setOp(bool $value){
 		$this->opable->setOp($value);
 	}
 
-	/**
-	 * @param Permission|string $name
-	 *
-	 * @return bool
-	 */
 	public function isPermissionSet($name) : bool{
 		return isset($this->permissions[$name instanceof Permission ? $name->getName() : $name]);
 	}
 
-	/**
-	 * @param Permission|string $name
-	 *
-	 * @return bool
-	 */
 	public function hasPermission($name) : bool{
 		if($name instanceof Permission){
 			$name = $name->getName();
@@ -127,9 +111,6 @@ class PermissibleBase implements Permissible{
 		return $result;
 	}
 
-	/**
-	 * @param PermissionAttachment $attachment
-	 */
 	public function removeAttachment(PermissionAttachment $attachment){
 		if(isset($this->attachments[spl_object_hash($attachment)])){
 			unset($this->attachments[spl_object_hash($attachment)]);
@@ -165,6 +146,9 @@ class PermissibleBase implements Permissible{
 		Timings::$permissibleCalculationTimer->stopTiming();
 	}
 
+	/**
+	 * @return void
+	 */
 	public function clearPermissions(){
 		$permManager = PermissionManager::getInstance();
 		$permManager->unsubscribeFromAllPermissions($this->parent ?? $this);
