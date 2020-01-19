@@ -483,6 +483,8 @@ class Server{
 
 	/**
 	 * @param bool $value
+	 *
+	 * @return void
 	 */
 	public function setAutoSave(bool $value){
 		$this->autoSave = $value;
@@ -874,6 +876,8 @@ class Server{
 	/**
 	 * @param string      $name
 	 * @param CompoundTag $nbtTag
+	 *
+	 * @return void
 	 */
 	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag){
 		$ev = new PlayerDataSaveEvent($nbtTag, $name);
@@ -1277,6 +1281,8 @@ class Server{
 	/**
 	 * @param string $variable
 	 * @param string $value
+	 *
+	 * @return void
 	 */
 	public function setConfigString(string $variable, string $value){
 		$this->properties->set($variable, $value);
@@ -1300,6 +1306,8 @@ class Server{
 	/**
 	 * @param string $variable
 	 * @param int    $value
+	 *
+	 * @return void
 	 */
 	public function setConfigInt(string $variable, int $value){
 		$this->properties->set($variable, $value);
@@ -1336,6 +1344,8 @@ class Server{
 	/**
 	 * @param string $variable
 	 * @param bool   $value
+	 *
+	 * @return void
 	 */
 	public function setConfigBool(string $variable, bool $value){
 		$this->properties->set($variable, $value ? "1" : "0");
@@ -1370,6 +1380,8 @@ class Server{
 
 	/**
 	 * @param string $name
+	 *
+	 * @return void
 	 */
 	public function addOp(string $name){
 		$this->operators->set(strtolower($name), true);
@@ -1382,6 +1394,8 @@ class Server{
 
 	/**
 	 * @param string $name
+	 *
+	 * @return void
 	 */
 	public function removeOp(string $name){
 		$this->operators->remove(strtolower($name));
@@ -1394,6 +1408,8 @@ class Server{
 
 	/**
 	 * @param string $name
+	 *
+	 * @return void
 	 */
 	public function addWhitelist(string $name){
 		$this->whitelist->set(strtolower($name), true);
@@ -1402,6 +1418,8 @@ class Server{
 
 	/**
 	 * @param string $name
+	 *
+	 * @return void
 	 */
 	public function removeWhitelist(string $name){
 		$this->whitelist->remove(strtolower($name));
@@ -1440,6 +1458,9 @@ class Server{
 		return $this->operators;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function reloadWhitelist(){
 		$this->whitelist->reload();
 	}
@@ -1476,6 +1497,11 @@ class Server{
 		return self::$instance;
 	}
 
+	/**
+	 * @param int $microseconds
+	 *
+	 * @return void
+	 */
 	public static function microSleep(int $microseconds){
 		Server::$sleeper->synchronized(function(int $ms){
 			Server::$sleeper->wait($ms);
@@ -1913,6 +1939,8 @@ class Server{
 	 *
 	 * @param Player[]   $players
 	 * @param DataPacket $packet
+	 *
+	 * @return void
 	 */
 	public function broadcastPacket(array $players, DataPacket $packet){
 		$packet->encode();
@@ -1926,6 +1954,8 @@ class Server{
 	 * @param DataPacket[] $packets
 	 * @param bool         $forceSync
 	 * @param bool         $immediate
+	 *
+	 * @return void
 	 */
 	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
 		if(count($packets) === 0){
@@ -1964,6 +1994,8 @@ class Server{
 	 * @param BatchPacket $pk
 	 * @param Player[]    $players
 	 * @param bool        $immediate
+	 *
+	 * @return void
 	 */
 	public function broadcastPacketsCallback(BatchPacket $pk, array $players, bool $immediate = false){
 		if(!$pk->isEncoded){
@@ -1978,6 +2010,8 @@ class Server{
 
 	/**
 	 * @param int $type
+	 *
+	 * @return void
 	 */
 	public function enablePlugins(int $type){
 		foreach($this->pluginManager->getPlugins() as $plugin){
@@ -1994,11 +2028,16 @@ class Server{
 
 	/**
 	 * @param Plugin $plugin
+	 *
+	 * @return void
 	 */
 	public function enablePlugin(Plugin $plugin){
 		$this->pluginManager->enablePlugin($plugin);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function disablePlugins(){
 		$this->pluginManager->disablePlugins();
 	}
@@ -2033,6 +2072,9 @@ class Server{
 		return false;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function reload(){
 		$this->logger->info("Saving worlds...");
 
@@ -2072,11 +2114,16 @@ class Server{
 
 	/**
 	 * Shuts the server down correctly
+	 *
+	 * @return void
 	 */
 	public function shutdown(){
 		$this->isRunning = false;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function forceShutdown(){
 		if($this->hasStopped){
 			return;
@@ -2162,7 +2209,7 @@ class Server{
 	/**
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
-	private function start(){
+	private function start() : void{
 		if($this->getConfigBool("enable-query", true)){
 			$this->queryHandler = new QueryHandler();
 		}
@@ -2206,6 +2253,8 @@ class Server{
 
 	/**
 	 * @param int $signo
+	 *
+	 * @return void
 	 */
 	public function handleSignal($signo){
 		if($signo === SIGTERM or $signo === SIGINT or $signo === SIGHUP){
@@ -2216,6 +2265,8 @@ class Server{
 	/**
 	 * @param \Throwable $e
 	 * @param array|null $trace
+	 *
+	 * @return void
 	 */
 	public function exceptionHandler(\Throwable $e, $trace = null){
 		while(@ob_end_flush()){}
@@ -2334,6 +2385,9 @@ class Server{
 		exit(1);
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function __debugInfo(){
 		return [];
 	}
@@ -2342,7 +2396,7 @@ class Server{
 		return $this->tickSleeper;
 	}
 
-	private function tickProcessor(){
+	private function tickProcessor() : void{
 		$this->nextTick = microtime(true);
 
 		while($this->isRunning){
@@ -2353,6 +2407,11 @@ class Server{
 		}
 	}
 
+	/**
+	 * @param Player $player
+	 *
+	 * @return void
+	 */
 	public function onPlayerLogin(Player $player){
 		if($this->sendUsageTicker > 0){
 			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
@@ -2361,27 +2420,49 @@ class Server{
 		$this->loggedInPlayers[$player->getRawUniqueId()] = $player;
 	}
 
+	/**
+	 * @param Player $player
+	 *
+	 * @return void
+	 */
 	public function onPlayerLogout(Player $player){
 		unset($this->loggedInPlayers[$player->getRawUniqueId()]);
 	}
 
+	/**
+	 * @param Player $player
+	 *
+	 * @return void
+	 */
 	public function addPlayer(Player $player){
 		$this->players[spl_object_hash($player)] = $player;
 	}
 
 	/**
 	 * @param Player $player
+	 *
+	 * @return void
 	 */
 	public function removePlayer(Player $player){
 		unset($this->players[spl_object_hash($player)]);
 	}
 
+	/**
+	 * @param Player $player
+	 *
+	 * @return void
+	 */
 	public function addOnlinePlayer(Player $player){
 		$this->updatePlayerListData($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXuid());
 
 		$this->playerList[$player->getRawUniqueId()] = $player;
 	}
 
+	/**
+	 * @param Player $player
+	 *
+	 * @return void
+	 */
 	public function removeOnlinePlayer(Player $player){
 		if(isset($this->playerList[$player->getRawUniqueId()])){
 			unset($this->playerList[$player->getRawUniqueId()]);
@@ -2397,6 +2478,8 @@ class Server{
 	 * @param Skin          $skin
 	 * @param string        $xboxUserId
 	 * @param Player[]|null $players
+	 *
+	 * @return void
 	 */
 	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, string $xboxUserId = "", array $players = null){
 		$pk = new PlayerListPacket();
@@ -2410,6 +2493,8 @@ class Server{
 	/**
 	 * @param UUID          $uuid
 	 * @param Player[]|null $players
+	 *
+	 * @return void
 	 */
 	public function removePlayerListData(UUID $uuid, array $players = null){
 		$pk = new PlayerListPacket();
@@ -2420,6 +2505,8 @@ class Server{
 
 	/**
 	 * @param Player $p
+	 *
+	 * @return void
 	 */
 	public function sendFullPlayerListData(Player $p){
 		$pk = new PlayerListPacket();
@@ -2455,6 +2542,9 @@ class Server{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function doAutoSave(){
 		if($this->getAutoSave()){
 			Timings::$worldSaveTimer->startTiming();
@@ -2475,6 +2565,8 @@ class Server{
 
 	/**
 	 * @param int $type
+	 *
+	 * @return void
 	 */
 	public function sendUsage($type = SendUsageTask::TYPE_STATUS){
 		if((bool) $this->getProperty("anonymous-statistics.enabled", true)){
@@ -2512,7 +2604,7 @@ class Server{
 		return $this->memoryManager;
 	}
 
-	private function titleTick(){
+	private function titleTick() : void{
 		Timings::$titleTickTimer->startTiming();
 		$d = Utils::getRealMemoryUsage();
 
@@ -2536,6 +2628,8 @@ class Server{
 	 * @param string                  $address
 	 * @param int                     $port
 	 * @param string                  $payload
+	 *
+	 * @return void
 	 *
 	 * TODO: move this to Network
 	 */
