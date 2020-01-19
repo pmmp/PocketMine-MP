@@ -213,6 +213,7 @@ class PluginDescription{
 	/**
 	 * Checks if the current PHP runtime has the extensions required by the plugin.
 	 *
+	 * @return void
 	 * @throws PluginException if there are required extensions missing or have incompatible version, or if the version constraint cannot be parsed
 	 */
 	public function checkRequiredExtensions(){

@@ -441,6 +441,8 @@ class PluginManager{
 	 * @see PermissionManager::removePermission()
 	 *
 	 * @param string|Permission $permission
+	 *
+	 * @return void
 	 */
 	public function removePermission($permission){
 		PermissionManager::getInstance()->removePermission($permission);
@@ -463,6 +465,8 @@ class PluginManager{
 	 * @see PermissionManager::recalculatePermissionDefaults()
 	 *
 	 * @param Permission $permission
+	 *
+	 * @return void
 	 */
 	public function recalculatePermissionDefaults(Permission $permission){
 		PermissionManager::getInstance()->recalculatePermissionDefaults($permission);
@@ -474,6 +478,8 @@ class PluginManager{
 	 *
 	 * @param string      $permission
 	 * @param Permissible $permissible
+	 *
+	 * @return void
 	 */
 	public function subscribeToPermission(string $permission, Permissible $permissible){
 		PermissionManager::getInstance()->subscribeToPermission($permission, $permissible);
@@ -485,6 +491,8 @@ class PluginManager{
 	 *
 	 * @param string      $permission
 	 * @param Permissible $permissible
+	 *
+	 * @return void
 	 */
 	public function unsubscribeFromPermission(string $permission, Permissible $permissible){
 		PermissionManager::getInstance()->unsubscribeFromPermission($permission, $permissible);
@@ -495,6 +503,8 @@ class PluginManager{
 	 * @see PermissionManager::unsubscribeFromAllPermissions()
 	 *
 	 * @param Permissible $permissible
+	 *
+	 * @return void
 	 */
 	public function unsubscribeFromAllPermissions(Permissible $permissible) : void{
 		PermissionManager::getInstance()->unsubscribeFromAllPermissions($permissible);
@@ -518,6 +528,8 @@ class PluginManager{
 	 *
 	 * @param bool        $op
 	 * @param Permissible $permissible
+	 *
+	 * @return void
 	 */
 	public function subscribeToDefaultPerms(bool $op, Permissible $permissible){
 		PermissionManager::getInstance()->subscribeToDefaultPerms($op, $permissible);
@@ -529,6 +541,8 @@ class PluginManager{
 	 *
 	 * @param bool        $op
 	 * @param Permissible $permissible
+	 *
+	 * @return void
 	 */
 	public function unsubscribeFromDefaultPerms(bool $op, Permissible $permissible){
 		PermissionManager::getInstance()->unsubscribeFromDefaultPerms($op, $permissible);
@@ -567,6 +581,8 @@ class PluginManager{
 
 	/**
 	 * @param Plugin $plugin
+	 *
+	 * @return void
 	 */
 	public function enablePlugin(Plugin $plugin){
 		if(!$plugin->isEnabled()){
@@ -647,6 +663,9 @@ class PluginManager{
 		return $pluginCmds;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function disablePlugins(){
 		foreach($this->getPlugins() as $plugin){
 			$this->disablePlugin($plugin);
@@ -655,6 +674,8 @@ class PluginManager{
 
 	/**
 	 * @param Plugin $plugin
+	 *
+	 * @return void
 	 */
 	public function disablePlugin(Plugin $plugin){
 		if($plugin->isEnabled()){
@@ -683,6 +704,9 @@ class PluginManager{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function clearPlugins(){
 		$this->disablePlugins();
 		$this->plugins = [];
@@ -697,6 +721,8 @@ class PluginManager{
 	 * @see Event::call()
 	 *
 	 * @param Event $event
+	 *
+	 * @return void
 	 */
 	public function callEvent(Event $event){
 		$event->call();

@@ -41,11 +41,15 @@ interface Plugin extends CommandExecutor{
 
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
+	 *
+	 * @return void
 	 */
 	public function onLoad();
 
 	/**
 	 * Called when the plugin is enabled
+	 *
+	 * @return void
 	 */
 	public function onEnable();
 
@@ -68,6 +72,8 @@ interface Plugin extends CommandExecutor{
 	/**
 	 * Called when the plugin is disabled
 	 * Use this to free open things and finish actions
+	 *
+	 * @return void
 	 */
 	public function onDisable();
 
@@ -120,6 +126,9 @@ interface Plugin extends CommandExecutor{
 	 */
 	public function getConfig() : Config;
 
+	/**
+	 * @return void
+	 */
 	public function saveConfig();
 
 	/**
@@ -127,6 +136,9 @@ interface Plugin extends CommandExecutor{
 	 */
 	public function saveDefaultConfig() : bool;
 
+	/**
+	 * @return void
+	 */
 	public function reloadConfig();
 
 	/**
