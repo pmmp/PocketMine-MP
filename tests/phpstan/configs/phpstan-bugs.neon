@@ -72,7 +72,3 @@ parameters:
 			count: 1
 			path: ../../../src/network/upnp/UPnP.php
 
-		-
-			message: "#^Strict comparison using \\=\\=\\= between int\\<1, max\\> and 0 will always evaluate to false\\.$#"
-			count: 1
-			path: ../../../src/utils/Config.php

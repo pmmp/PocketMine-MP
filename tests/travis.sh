@@ -14,7 +14,7 @@ while getopts "p:t:" OPTION 2> /dev/null; do
 	esac
 done
 
-[ ! -f phpstan.phar ] && echo "Downloading PHPStan..." && curl -sSLO https://github.com/phpstan/phpstan/releases/download/0.12.5/phpstan.phar
+[ ! -f phpstan.phar ] && echo "Downloading PHPStan..." && curl -sSLO https://github.com/phpstan/phpstan/releases/download/0.12.6/phpstan.phar
 "$PHP_BINARY" phpstan.phar analyze --no-progress --memory-limit=2G || exit 1
 echo "PHPStan scan succeeded"
 
