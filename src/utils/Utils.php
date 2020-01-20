@@ -143,6 +143,15 @@ class Utils{
 		};
 	}
 
+	/**
+	 * @phpstan-template T of object
+	 *
+	 * @param object[] $array
+	 * @phpstan-param T[] $array
+	 *
+	 * @return object[]
+	 * @phpstan-return T[]
+	 */
 	public static function cloneObjectArray(array $array) : array{
 		return array_map(self::cloneCallback(), $array);
 	}
