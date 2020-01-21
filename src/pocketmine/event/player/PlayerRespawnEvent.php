@@ -33,25 +33,15 @@ class PlayerRespawnEvent extends PlayerEvent{
 	/** @var Position */
 	protected $position;
 
-	/**
-	 * @param Player   $player
-	 * @param Position $position
-	 */
 	public function __construct(Player $player, Position $position){
 		$this->player = $player;
 		$this->position = $position;
 	}
 
-	/**
-	 * @return Position
-	 */
 	public function getRespawnPosition() : Position{
 		return $this->position;
 	}
 
-	/**
-	 * @param Position $position
-	 */
 	public function setRespawnPosition(Position $position) : void{
 		$this->position = $position;
 	}

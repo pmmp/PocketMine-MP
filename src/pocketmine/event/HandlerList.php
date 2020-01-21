@@ -61,9 +61,6 @@ class HandlerList{
 	 *
 	 * Calling this method also lazily initializes the $classMap inheritance tree of handler lists.
 	 *
-	 * @param string $event
-	 *
-	 * @return null|HandlerList
 	 * @throws \ReflectionException
 	 */
 	public static function getHandlerListFor(string $event) : ?HandlerList{
@@ -112,8 +109,6 @@ class HandlerList{
 	}
 
 	/**
-	 * @param RegisteredListener $listener
-	 *
 	 * @throws \Exception
 	 */
 	public function register(RegisteredListener $listener) : void{
@@ -157,17 +152,12 @@ class HandlerList{
 	}
 
 	/**
-	 * @param int $priority
-	 *
 	 * @return RegisteredListener[]
 	 */
 	public function getListenersByPriority(int $priority) : array{
 		return $this->handlerSlots[$priority];
 	}
 
-	/**
-	 * @return null|HandlerList
-	 */
 	public function getParent() : ?HandlerList{
 		return $this->parentList;
 	}

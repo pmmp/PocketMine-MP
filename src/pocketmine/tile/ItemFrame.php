@@ -64,8 +64,6 @@ class ItemFrame extends Spawnable{
 	}
 
 	/**
-	 * @param Item|null $item
-	 *
 	 * @return void
 	 */
 	public function setItem(Item $item = null){
@@ -82,8 +80,6 @@ class ItemFrame extends Spawnable{
 	}
 
 	/**
-	 * @param int $rotation
-	 *
 	 * @return void
 	 */
 	public function setItemRotation(int $rotation){
@@ -96,8 +92,6 @@ class ItemFrame extends Spawnable{
 	}
 
 	/**
-	 * @param float $chance
-	 *
 	 * @return void
 	 */
 	public function setItemDropChance(float $chance){

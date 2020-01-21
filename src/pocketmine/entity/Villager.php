@@ -59,8 +59,6 @@ class Villager extends Creature implements NPC, Ageable{
 
 	/**
 	 * Sets the villager profession
-	 *
-	 * @param int $profession
 	 */
 	public function setProfession(int $profession) : void{
 		$this->propertyManager->setInt(self::DATA_VARIANT, $profession);

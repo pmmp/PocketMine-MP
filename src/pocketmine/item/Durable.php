@@ -32,7 +32,6 @@ abstract class Durable extends Item{
 
 	/**
 	 * Returns whether this item will take damage when used.
-	 * @return bool
 	 */
 	public function isUnbreakable() : bool{
 		return $this->getNamedTag()->getByte("Unbreakable", 0) !== 0;
@@ -40,8 +39,6 @@ abstract class Durable extends Item{
 
 	/**
 	 * Sets whether the item will take damage when used.
-	 *
-	 * @param bool $value
 	 *
 	 * @return void
 	 */
@@ -51,8 +48,6 @@ abstract class Durable extends Item{
 
 	/**
 	 * Applies damage to the item.
-	 *
-	 * @param int $amount
 	 *
 	 * @return bool if any damage was applied to the item
 	 */
@@ -97,14 +92,11 @@ abstract class Durable extends Item{
 
 	/**
 	 * Returns the maximum amount of damage this item can take before it breaks.
-	 *
-	 * @return int
 	 */
 	abstract public function getMaxDurability() : int;
 
 	/**
 	 * Returns whether the item is broken.
-	 * @return bool
 	 */
 	public function isBroken() : bool{
 		return $this->meta >= $this->getMaxDurability();

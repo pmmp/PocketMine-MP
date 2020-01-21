@@ -54,7 +54,6 @@ class TaskScheduler{
 
 	/**
 	 * @param \Logger     $logger @deprecated
-	 * @param null|string $owner
 	 */
 	public function __construct(\Logger $logger, ?string $owner = null){
 		$this->owner = $owner;
@@ -62,8 +61,6 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param Task $task
-	 *
 	 * @return TaskHandler
 	 */
 	public function scheduleTask(Task $task){
@@ -71,9 +68,6 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param Task $task
-	 * @param int  $delay
-	 *
 	 * @return TaskHandler
 	 */
 	public function scheduleDelayedTask(Task $task, int $delay){
@@ -81,9 +75,6 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param Task $task
-	 * @param int  $period
-	 *
 	 * @return TaskHandler
 	 */
 	public function scheduleRepeatingTask(Task $task, int $period){
@@ -91,10 +82,6 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param Task $task
-	 * @param int  $delay
-	 * @param int  $period
-	 *
 	 * @return TaskHandler
 	 */
 	public function scheduleDelayedRepeatingTask(Task $task, int $delay, int $period){
@@ -102,8 +89,6 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param int $taskId
-	 *
 	 * @return void
 	 */
 	public function cancelTask(int $taskId){
@@ -130,20 +115,11 @@ class TaskScheduler{
 		$this->ids = 1;
 	}
 
-	/**
-	 * @param int $taskId
-	 *
-	 * @return bool
-	 */
 	public function isQueued(int $taskId) : bool{
 		return isset($this->tasks[$taskId]);
 	}
 
 	/**
-	 * @param Task $task
-	 * @param int  $delay
-	 * @param int  $period
-	 *
 	 * @return TaskHandler
 	 *
 	 * @throws \InvalidStateException
@@ -190,8 +166,6 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param int $currentTick
-	 *
 	 * @return void
 	 */
 	public function mainThreadHeartbeat(int $currentTick){
@@ -218,9 +192,6 @@ class TaskScheduler{
 		return !$this->queue->isEmpty() and $this->queue->current()->getNextRun() <= $currentTick;
 	}
 
-	/**
-	 * @return int
-	 */
 	private function nextId() : int{
 		return $this->ids++;
 	}

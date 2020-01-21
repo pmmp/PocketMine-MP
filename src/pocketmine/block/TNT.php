@@ -75,8 +75,6 @@ class TNT extends Solid{
 	}
 
 	/**
-	 * @param int $fuse
-	 *
 	 * @return void
 	 */
 	public function ignite(int $fuse = 80){

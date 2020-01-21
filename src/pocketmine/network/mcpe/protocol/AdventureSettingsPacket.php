@@ -103,9 +103,6 @@ class AdventureSettingsPacket extends DataPacket{
 	}
 
 	/**
-	 * @param int  $flag
-	 * @param bool $value
-	 *
 	 * @return void
 	 */
 	public function setFlag(int $flag, bool $value){

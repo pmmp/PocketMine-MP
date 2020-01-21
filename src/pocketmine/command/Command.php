@@ -74,8 +74,6 @@ abstract class Command{
 	public $timings;
 
 	/**
-	 * @param string   $name
-	 * @param string   $description
 	 * @param string   $usageMessage
 	 * @param string[] $aliases
 	 */
@@ -88,8 +86,6 @@ abstract class Command{
 	}
 
 	/**
-	 * @param CommandSender $sender
-	 * @param string        $commandLabel
 	 * @param string[]      $args
 	 *
 	 * @return mixed
@@ -97,9 +93,6 @@ abstract class Command{
 	 */
 	abstract public function execute(CommandSender $sender, string $commandLabel, array $args);
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
@@ -113,19 +106,12 @@ abstract class Command{
 
 
 	/**
-	 * @param string|null $permission
-	 *
 	 * @return void
 	 */
 	public function setPermission(string $permission = null){
 		$this->permission = $permission;
 	}
 
-	/**
-	 * @param CommandSender $target
-	 *
-	 * @return bool
-	 */
 	public function testPermission(CommandSender $target) : bool{
 		if($this->testPermissionSilent($target)){
 			return true;
@@ -140,11 +126,6 @@ abstract class Command{
 		return false;
 	}
 
-	/**
-	 * @param CommandSender $target
-	 *
-	 * @return bool
-	 */
 	public function testPermissionSilent(CommandSender $target) : bool{
 		if($this->permission === null or $this->permission === ""){
 			return true;
@@ -159,9 +140,6 @@ abstract class Command{
 		return false;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getLabel() : string{
 		return $this->label;
 	}
@@ -183,10 +161,6 @@ abstract class Command{
 
 	/**
 	 * Registers the command into a Command map
-	 *
-	 * @param CommandMap $commandMap
-	 *
-	 * @return bool
 	 */
 	public function register(CommandMap $commandMap) : bool{
 		if($this->allowChangesFrom($commandMap)){
@@ -198,11 +172,6 @@ abstract class Command{
 		return false;
 	}
 
-	/**
-	 * @param CommandMap $commandMap
-	 *
-	 * @return bool
-	 */
 	public function unregister(CommandMap $commandMap) : bool{
 		if($this->allowChangesFrom($commandMap)){
 			$this->commandMap = null;
@@ -215,18 +184,10 @@ abstract class Command{
 		return false;
 	}
 
-	/**
-	 * @param CommandMap $commandMap
-	 *
-	 * @return bool
-	 */
 	private function allowChangesFrom(CommandMap $commandMap) : bool{
 		return $this->commandMap === null or $this->commandMap === $commandMap;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isRegistered() : bool{
 		return $this->commandMap !== null;
 	}
@@ -238,23 +199,14 @@ abstract class Command{
 		return $this->activeAliases;
 	}
 
-	/**
-	 * @return string|null
-	 */
 	public function getPermissionMessage() : ?string{
 		return $this->permissionMessage;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDescription() : string{
 		return $this->description;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getUsage() : string{
 		return $this->usageMessage;
 	}
@@ -272,8 +224,6 @@ abstract class Command{
 	}
 
 	/**
-	 * @param string $description
-	 *
 	 * @return void
 	 */
 	public function setDescription(string $description){
@@ -281,8 +231,6 @@ abstract class Command{
 	}
 
 	/**
-	 * @param string $permissionMessage
-	 *
 	 * @return void
 	 */
 	public function setPermissionMessage(string $permissionMessage){
@@ -290,8 +238,6 @@ abstract class Command{
 	}
 
 	/**
-	 * @param string $usage
-	 *
 	 * @return void
 	 */
 	public function setUsage(string $usage){
@@ -299,9 +245,7 @@ abstract class Command{
 	}
 
 	/**
-	 * @param CommandSender        $source
 	 * @param TextContainer|string $message
-	 * @param bool                 $sendToSource
 	 *
 	 * @return void
 	 */
@@ -338,9 +282,6 @@ abstract class Command{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function __toString() : string{
 		return $this->name;
 	}

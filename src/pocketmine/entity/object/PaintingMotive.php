@@ -64,18 +64,10 @@ class PaintingMotive{
 		}
 	}
 
-	/**
-	 * @param PaintingMotive $motive
-	 */
 	public static function registerMotive(PaintingMotive $motive) : void{
 		self::$motives[$motive->getName()] = $motive;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return PaintingMotive|null
-	 */
 	public static function getMotiveByName(string $name) : ?PaintingMotive{
 		return self::$motives[$name] ?? null;
 	}
@@ -101,23 +93,14 @@ class PaintingMotive{
 		$this->height = $height;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getWidth() : int{
 		return $this->width;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getHeight() : int{
 		return $this->height;
 	}

@@ -122,10 +122,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return null|string
 	 * @throws \InvalidArgumentException if invalid coordinates are given
 	 * @throws CorruptedChunkException if chunk corruption is detected
 	 */
@@ -174,10 +170,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return bool
 	 * @throws \InvalidArgumentException
 	 */
 	public function chunkExists(int $x, int $z) : bool{
@@ -185,10 +177,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int    $x
-	 * @param int    $z
-	 * @param string $chunkData
-	 *
 	 * @return void
 	 * @throws ChunkException
 	 * @throws \InvalidArgumentException
@@ -219,9 +207,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
 	 * @return void
 	 * @throws \InvalidArgumentException
 	 */
@@ -232,10 +217,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return int
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function getChunkOffset(int $x, int $z) : int{
@@ -246,7 +227,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $offset
 	 * @param int $x reference parameter
 	 * @param int $z reference parameter
 	 */
@@ -257,8 +237,6 @@ class RegionLoader{
 
 	/**
 	 * Writes the region header and closes the file
-	 *
-	 * @param bool $writeHeader
 	 *
 	 * @return void
 	 */

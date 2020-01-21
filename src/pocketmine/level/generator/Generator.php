@@ -36,10 +36,6 @@ abstract class Generator{
 
 	/**
 	 * Converts a string level seed into an integer for use by the generator.
-	 *
-	 * @param string $seed
-	 *
-	 * @return int|null
 	 */
 	public static function convertSeed(string $seed) : ?int{
 		if($seed === ""){ //empty seed should cause a random seed to be selected - can't use 0 here because 0 is a valid seed
@@ -59,8 +55,6 @@ abstract class Generator{
 	protected $random;
 
 	/**
-	 * @param array $settings
-	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	abstract public function __construct(array $settings = []);

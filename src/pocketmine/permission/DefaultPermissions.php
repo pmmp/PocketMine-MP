@@ -27,10 +27,7 @@ abstract class DefaultPermissions{
 	public const ROOT = "pocketmine";
 
 	/**
-	 * @param Permission $perm
 	 * @param Permission $parent
-	 *
-	 * @return Permission
 	 */
 	public static function registerPermission(Permission $perm, Permission $parent = null) : Permission{
 		if($parent instanceof Permission){

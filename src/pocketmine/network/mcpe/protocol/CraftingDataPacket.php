@@ -164,10 +164,6 @@ class CraftingDataPacket extends DataPacket{
 
 	/**
 	 * @param object              $entry
-	 * @param NetworkBinaryStream $stream
-	 * @param int                 $pos
-	 *
-	 * @return int
 	 */
 	private static function writeEntry($entry, NetworkBinaryStream $stream, int $pos) : int{
 		if($entry instanceof ShapelessRecipe){
@@ -239,8 +235,6 @@ class CraftingDataPacket extends DataPacket{
 	}
 
 	/**
-	 * @param ShapelessRecipe $recipe
-	 *
 	 * @return void
 	 */
 	public function addShapelessRecipe(ShapelessRecipe $recipe){
@@ -248,8 +242,6 @@ class CraftingDataPacket extends DataPacket{
 	}
 
 	/**
-	 * @param ShapedRecipe $recipe
-	 *
 	 * @return void
 	 */
 	public function addShapedRecipe(ShapedRecipe $recipe){
@@ -257,8 +249,6 @@ class CraftingDataPacket extends DataPacket{
 	}
 
 	/**
-	 * @param FurnaceRecipe $recipe
-	 *
 	 * @return void
 	 */
 	public function addFurnaceRecipe(FurnaceRecipe $recipe){

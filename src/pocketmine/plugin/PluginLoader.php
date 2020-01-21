@@ -30,33 +30,21 @@ interface PluginLoader{
 
 	/**
 	 * Returns whether this PluginLoader can load the plugin in the given path.
-	 *
-	 * @param string $path
-	 *
-	 * @return bool
 	 */
 	public function canLoadPlugin(string $path) : bool;
 
 	/**
 	 * Loads the plugin contained in $file
-	 *
-	 * @param string $file
 	 */
 	public function loadPlugin(string $file) : void;
 
 	/**
 	 * Gets the PluginDescription from the file
-	 *
-	 * @param string $file
-	 *
-	 * @return null|PluginDescription
 	 */
 	public function getPluginDescription(string $file) : ?PluginDescription;
 
 	/**
 	 * Returns the protocol prefix used to access files in this plugin, e.g. file://, phar://
-	 *
-	 * @return string
 	 */
 	public function getAccessProtocol() : string;
 }

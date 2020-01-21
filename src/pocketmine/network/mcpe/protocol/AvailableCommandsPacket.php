@@ -149,7 +149,6 @@ class AvailableCommandsPacket extends DataPacket{
 	/**
 	 * @param string[] $enumValueList
 	 *
-	 * @return CommandEnum
 	 * @throws \UnexpectedValueException
 	 * @throws BinaryDataException
 	 */
@@ -184,7 +183,6 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	/**
-	 * @param CommandEnum $enum
 	 * @param int[]       $enumValueMap string enum name -> int index
 	 */
 	protected function putEnum(CommandEnum $enum, array $enumValueMap) : void{
@@ -211,9 +209,6 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	/**
-	 * @param int $valueCount
-	 *
-	 * @return int
 	 * @throws BinaryDataException
 	 */
 	protected function getEnumValueIndex(int $valueCount) : int{
@@ -239,8 +234,6 @@ class AvailableCommandsPacket extends DataPacket{
 	/**
 	 * @param CommandEnum[] $enums
 	 * @param string[]      $enumValues
-	 *
-	 * @return CommandEnumConstraint
 	 */
 	protected function getEnumConstraint(array $enums, array $enumValues) : CommandEnumConstraint{
 		//wtf, what was wrong with an offset inside the enum? :(
@@ -267,7 +260,6 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	/**
-	 * @param CommandEnumConstraint $constraint
 	 * @param int[]                 $enumIndexes string enum name -> int index
 	 * @param int[]                 $enumValueIndexes string value -> int index
 	 */
@@ -284,7 +276,6 @@ class AvailableCommandsPacket extends DataPacket{
 	 * @param CommandEnum[] $enums
 	 * @param string[]      $postfixes
 	 *
-	 * @return CommandData
 	 * @throws \UnexpectedValueException
 	 * @throws BinaryDataException
 	 */
@@ -329,7 +320,6 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	/**
-	 * @param CommandData $data
 	 * @param int[]       $enumIndexes string enum name -> int index
 	 * @param int[]       $postfixIndexes
 	 */

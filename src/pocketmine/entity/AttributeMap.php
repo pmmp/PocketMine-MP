@@ -36,11 +36,6 @@ class AttributeMap implements \ArrayAccess{
 		$this->attributes[$attribute->getId()] = $attribute;
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return Attribute|null
-	 */
 	public function getAttribute(int $id) : ?Attribute{
 		return $this->attributes[$id] ?? null;
 	}
@@ -63,8 +58,6 @@ class AttributeMap implements \ArrayAccess{
 
 	/**
 	 * @param int $offset
-	 *
-	 * @return bool
 	 */
 	public function offsetExists($offset) : bool{
 		return isset($this->attributes[$offset]);
@@ -72,8 +65,6 @@ class AttributeMap implements \ArrayAccess{
 
 	/**
 	 * @param int $offset
-	 *
-	 * @return float
 	 */
 	public function offsetGet($offset) : float{
 		return $this->attributes[$offset]->getValue();

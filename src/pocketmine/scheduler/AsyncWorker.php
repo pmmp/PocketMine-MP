@@ -98,7 +98,6 @@ class AsyncWorker extends Worker{
 	 * Saves mixed data into the worker's thread-local object store. This can be used to store objects which you
 	 * want to use on this worker thread from multiple AsyncTasks.
 	 *
-	 * @param string $identifier
 	 * @param mixed  $value
 	 */
 	public function saveToThreadStore(string $identifier, $value) : void{
@@ -113,8 +112,6 @@ class AsyncWorker extends Worker{
 	 *
 	 * Objects stored in this storage may ONLY be retrieved while the task is running.
 	 *
-	 * @param string $identifier
-	 *
 	 * @return mixed
 	 */
 	public function getFromThreadStore(string $identifier){
@@ -123,8 +120,6 @@ class AsyncWorker extends Worker{
 
 	/**
 	 * Removes previously-stored mixed data from the worker's thread-local object store.
-	 *
-	 * @param string $identifier
 	 */
 	public function removeFromThreadStore(string $identifier) : void{
 		unset(self::$store[$identifier]);

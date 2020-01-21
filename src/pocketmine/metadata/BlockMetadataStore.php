@@ -43,9 +43,6 @@ class BlockMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param Block  $subject
-	 * @param string $metadataKey
-	 *
 	 * @return MetadataValue[]
 	 */
 	public function getMetadata(Block $subject, string $metadataKey){
@@ -57,10 +54,6 @@ class BlockMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param Block  $subject
-	 * @param string $metadataKey
-	 * @param Plugin $owningPlugin
-	 *
 	 * @return void
 	 */
 	public function removeMetadata(Block $subject, string $metadataKey, Plugin $owningPlugin){
@@ -68,10 +61,6 @@ class BlockMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param Block         $subject
-	 * @param string        $metadataKey
-	 * @param MetadataValue $newMetadataValue
-	 *
 	 * @return void
 	 */
 	public function setMetadata(Block $subject, string $metadataKey, MetadataValue $newMetadataValue){

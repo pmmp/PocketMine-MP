@@ -60,21 +60,11 @@ abstract class LightUpdate{
 	abstract protected function getLight(int $x, int $y, int $z) : int;
 
 	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $level
-	 *
 	 * @return void
 	 */
 	abstract protected function setLight(int $x, int $y, int $z, int $level);
 
 	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $newLevel
-	 *
 	 * @return void
 	 */
 	public function setAndUpdateLight(int $x, int $y, int $z, int $newLevel){
@@ -157,11 +147,6 @@ abstract class LightUpdate{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $oldAdjacentLevel
-	 *
 	 * @return void
 	 */
 	protected function computeRemoveLight(int $x, int $y, int $z, int $oldAdjacentLevel){
@@ -185,11 +170,6 @@ abstract class LightUpdate{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $newAdjacentLevel
-	 *
 	 * @return void
 	 */
 	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel){

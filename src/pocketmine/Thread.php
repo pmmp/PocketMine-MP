@@ -44,8 +44,6 @@ abstract class Thread extends \Thread{
 	}
 
 	/**
-	 * @param \ClassLoader|null $loader
-	 *
 	 * @return void
 	 */
 	public function setClassLoader(\ClassLoader $loader = null){

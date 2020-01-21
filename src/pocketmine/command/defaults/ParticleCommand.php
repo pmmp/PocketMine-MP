@@ -137,13 +137,6 @@ class ParticleCommand extends VanillaCommand{
 	}
 
 	/**
-	 * @param string   $name
-	 * @param Vector3  $pos
-	 * @param float    $xd
-	 * @param float    $yd
-	 * @param float    $zd
-	 * @param int|null $data
-	 *
 	 * @return Particle|null
 	 */
 	private function getParticle(string $name, Vector3 $pos, float $xd, float $yd, float $zd, int $data = null){

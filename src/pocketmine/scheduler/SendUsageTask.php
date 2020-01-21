@@ -49,11 +49,6 @@ class SendUsageTask extends AsyncTask{
 	/** @var string */
 	public $data;
 
-	/**
-	 * @param Server $server
-	 * @param int    $type
-	 * @param array  $playerList
-	 */
 	public function __construct(Server $server, int $type, array $playerList = []){
 		$endpoint = "http://" . $server->getProperty("anonymous-statistics.host", "stats.pocketmine.net") . "/";
 

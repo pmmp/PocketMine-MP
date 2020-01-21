@@ -46,12 +46,7 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	protected $xpDrops;
 
 	/**
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Item   $item
-	 * @param bool   $instaBreak
 	 * @param Item[] $drops
-	 * @param int    $xpDrops
 	 */
 	public function __construct(Player $player, Block $block, Item $item, bool $instaBreak = false, array $drops, int $xpDrops = 0){
 		parent::__construct($block);
@@ -65,7 +60,6 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Returns the player who is destroying the block.
-	 * @return Player
 	 */
 	public function getPlayer() : Player{
 		return $this->player;
@@ -73,7 +67,6 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Returns the item used to destroy the block.
-	 * @return Item
 	 */
 	public function getItem() : Item{
 		return $this->item;
@@ -82,16 +75,11 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	/**
 	 * Returns whether the block may be broken in less than the amount of time calculated. This is usually true for
 	 * creative players.
-	 *
-	 * @return bool
 	 */
 	public function getInstaBreak() : bool{
 		return $this->instaBreak;
 	}
 
-	/**
-	 * @param bool $instaBreak
-	 */
 	public function setInstaBreak(bool $instaBreak) : void{
 		$this->instaBreak = $instaBreak;
 	}
@@ -122,8 +110,6 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Returns how much XP will be dropped by breaking this block.
-	 *
-	 * @return int
 	 */
 	public function getXpDropAmount() : int{
 		return $this->xpDrops;
@@ -131,8 +117,6 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Sets how much XP will be dropped by breaking this block.
-	 *
-	 * @param int $amount
 	 */
 	public function setXpDropAmount(int $amount) : void{
 		if($amount < 0){

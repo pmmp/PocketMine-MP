@@ -97,9 +97,6 @@ abstract class PluginBase implements Plugin{
 
 	}
 
-	/**
-	 * @return bool
-	 */
 	final public function isEnabled() : bool{
 		return $this->isEnabled;
 	}
@@ -110,8 +107,6 @@ abstract class PluginBase implements Plugin{
 	 * @internal This is intended for core use only and should not be used by plugins
 	 * @see PluginManager::enablePlugin()
 	 * @see PluginManager::disablePlugin()
-	 *
-	 * @param bool $enabled
 	 */
 	final public function setEnabled(bool $enabled = true) : void{
 		if($this->isEnabled !== $enabled){
@@ -124,9 +119,6 @@ abstract class PluginBase implements Plugin{
 		}
 	}
 
-	/**
-	 * @return bool
-	 */
 	final public function isDisabled() : bool{
 		return !$this->isEnabled;
 	}
@@ -139,16 +131,11 @@ abstract class PluginBase implements Plugin{
 		return $this->description;
 	}
 
-	/**
-	 * @return PluginLogger
-	 */
 	public function getLogger() : PluginLogger{
 		return $this->logger;
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return Command|PluginIdentifiableCommand|null
 	 */
 	public function getCommand(string $name){
@@ -165,20 +152,12 @@ abstract class PluginBase implements Plugin{
 	}
 
 	/**
-	 * @param CommandSender $sender
-	 * @param Command       $command
-	 * @param string        $label
 	 * @param string[]      $args
-	 *
-	 * @return bool
 	 */
 	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool{
 		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
 	protected function isPhar() : bool{
 		return strpos($this->file, "phar://") === 0;
 	}
@@ -186,8 +165,6 @@ abstract class PluginBase implements Plugin{
 	/**
 	 * Gets an embedded resource on the plugin file.
 	 * WARNING: You must close the resource given using fclose()
-	 *
-	 * @param string $filename
 	 *
 	 * @return null|resource Resource data, or null
 	 */
@@ -200,12 +177,6 @@ abstract class PluginBase implements Plugin{
 		return null;
 	}
 
-	/**
-	 * @param string $filename
-	 * @param bool   $replace
-	 *
-	 * @return bool
-	 */
 	public function saveResource(string $filename, bool $replace = false) : bool{
 		if(trim($filename) === ""){
 			return false;
@@ -249,9 +220,6 @@ abstract class PluginBase implements Plugin{
 		return $resources;
 	}
 
-	/**
-	 * @return Config
-	 */
 	public function getConfig() : Config{
 		if($this->config === null){
 			$this->reloadConfig();
@@ -278,30 +246,18 @@ abstract class PluginBase implements Plugin{
 		$this->config = new Config($this->configFile);
 	}
 
-	/**
-	 * @return Server
-	 */
 	final public function getServer() : Server{
 		return $this->server;
 	}
 
-	/**
-	 * @return string
-	 */
 	final public function getName() : string{
 		return $this->description->getName();
 	}
 
-	/**
-	 * @return string
-	 */
 	final public function getFullName() : string{
 		return $this->description->getFullName();
 	}
 
-	/**
-	 * @return string
-	 */
 	protected function getFile() : string{
 		return $this->file;
 	}
@@ -313,9 +269,6 @@ abstract class PluginBase implements Plugin{
 		return $this->loader;
 	}
 
-	/**
-	 * @return TaskScheduler
-	 */
 	public function getScheduler() : TaskScheduler{
 		return $this->scheduler;
 	}

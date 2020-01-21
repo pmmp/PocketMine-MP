@@ -44,8 +44,6 @@ abstract class Worker extends \Worker{
 	}
 
 	/**
-	 * @param \ClassLoader|null $loader
-	 *
 	 * @return void
 	 */
 	public function setClassLoader(\ClassLoader $loader = null){

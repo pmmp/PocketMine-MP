@@ -44,16 +44,10 @@ class LevelEventGenericPacket extends DataPacket/* implements ClientboundPacket*
 		return $result;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getEventId() : int{
 		return $this->eventId;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getEventData() : string{
 		return $this->eventData;
 	}

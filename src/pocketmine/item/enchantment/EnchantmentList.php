@@ -33,19 +33,10 @@ class EnchantmentList{
 		$this->enchantments = new \SplFixedArray($size);
 	}
 
-	/**
-	 * @param int              $slot
-	 * @param EnchantmentEntry $entry
-	 */
 	public function setSlot(int $slot, EnchantmentEntry $entry) : void{
 		$this->enchantments[$slot] = $entry;
 	}
 
-	/**
-	 * @param int $slot
-	 *
-	 * @return EnchantmentEntry
-	 */
 	public function getSlot(int $slot) : EnchantmentEntry{
 		return $this->enchantments[$slot];
 	}

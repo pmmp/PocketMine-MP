@@ -111,9 +111,6 @@ abstract class AsyncTask extends Collectable{
 		return $this->cancelRun;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasResult() : bool{
 		return $this->result !== null;
 	}
@@ -128,8 +125,6 @@ abstract class AsyncTask extends Collectable{
 	}
 
 	/**
-	 * @param int $taskId
-	 *
 	 * @return void
 	 */
 	public function setTaskId(int $taskId){
@@ -146,8 +141,6 @@ abstract class AsyncTask extends Collectable{
 	/**
 	 * @see AsyncWorker::getFromThreadStore()
 	 *
-	 * @param string $identifier
-	 *
 	 * @return mixed
 	 */
 	public function getFromThreadStore(string $identifier){
@@ -160,7 +153,6 @@ abstract class AsyncTask extends Collectable{
 	/**
 	 * @see AsyncWorker::saveToThreadStore()
 	 *
-	 * @param string $identifier
 	 * @param mixed  $value
 	 *
 	 * @return void
@@ -174,10 +166,6 @@ abstract class AsyncTask extends Collectable{
 
 	/**
 	 * @see AsyncWorker::removeFromThreadStore()
-	 *
-	 * @param string $identifier
-	 *
-	 * @return void
 	 */
 	public function removeFromThreadStore(string $identifier) : void{
 		if($this->worker === null or $this->isGarbage()){
@@ -196,8 +184,6 @@ abstract class AsyncTask extends Collectable{
 	/**
 	 * Actions to execute when completed (on main thread)
 	 * Implement this if you want to handle the data in your AsyncTask after it has been processed
-	 *
-	 * @param Server $server
 	 *
 	 * @return void
 	 */
@@ -220,8 +206,6 @@ abstract class AsyncTask extends Collectable{
 	/**
 	 * @internal Only call from AsyncPool.php on the main thread
 	 *
-	 * @param Server $server
-	 *
 	 * @return void
 	 */
 	public function checkProgressUpdates(Server $server){
@@ -236,7 +220,6 @@ abstract class AsyncTask extends Collectable{
 	 * All {@link AsyncTask::publishProgress} calls should result in {@link AsyncTask::onProgressUpdate} calls before
 	 * {@link AsyncTask::onCompletion} is called.
 	 *
-	 * @param Server $server
 	 * @param mixed  $progress The parameter passed to {@link AsyncTask::publishProgress}. It is serialize()'ed
 	 *                         and then unserialize()'ed, as if it has been cloned.
 	 *
@@ -336,7 +319,6 @@ abstract class AsyncTask extends Collectable{
 
 	/**
 	 * @internal Called by the AsyncPool to destroy any leftover stored objects that this task failed to retrieve.
-	 * @return bool
 	 */
 	public function removeDanglingStoredObjects() : bool{
 		if(self::$localObjectStorage !== null and isset(self::$localObjectStorage[$this])){

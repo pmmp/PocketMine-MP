@@ -87,15 +87,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param int    $id
-	 * @param string $name
-	 * @param float  $minValue
-	 * @param float  $maxValue
-	 * @param float  $defaultValue
-	 * @param bool   $shouldSend
-	 *
-	 * @return Attribute
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public static function addAttribute(int $id, string $name, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true) : Attribute{
@@ -106,20 +97,10 @@ class Attribute{
 		return self::$attributes[$id] = new Attribute($id, $name, $minValue, $maxValue, $defaultValue, $shouldSend);
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return Attribute|null
-	 */
 	public static function getAttribute(int $id) : ?Attribute{
 		return isset(self::$attributes[$id]) ? clone self::$attributes[$id] : null;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return Attribute|null
-	 */
 	public static function getAttributeByName(string $name) : ?Attribute{
 		foreach(self::$attributes as $a){
 			if($a->getName() === $name){
@@ -146,8 +127,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param float $minValue
-	 *
 	 * @return $this
 	 */
 	public function setMinValue(float $minValue){
@@ -167,8 +146,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param float $maxValue
-	 *
 	 * @return $this
 	 */
 	public function setMaxValue(float $maxValue){
@@ -188,8 +165,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param float $defaultValue
-	 *
 	 * @return $this
 	 */
 	public function setDefaultValue(float $defaultValue){
@@ -213,10 +188,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param float $value
-	 * @param bool  $fit
-	 * @param bool  $forceSend
-	 *
 	 * @return $this
 	 */
 	public function setValue(float $value, bool $fit = false, bool $forceSend = false){

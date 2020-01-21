@@ -35,9 +35,6 @@ abstract class MetadataStore{
 	/**
 	 * Adds a metadata value to an object.
 	 *
-	 * @param string        $key
-	 * @param MetadataValue $newMetadataValue
-	 *
 	 * @return void
 	 */
 	protected function setMetadataInternal(string $key, MetadataValue $newMetadataValue){
@@ -56,8 +53,6 @@ abstract class MetadataStore{
 	 * Returns all metadata values attached to an object. If multiple
 	 * have attached metadata, each will value will be included.
 	 *
-	 * @param string $key
-	 *
 	 * @return MetadataValue[]
 	 */
 	protected function getMetadataInternal(string $key){
@@ -70,10 +65,6 @@ abstract class MetadataStore{
 
 	/**
 	 * Tests to see if a metadata attribute has been set on an object.
-	 *
-	 * @param string $key
-	 *
-	 * @return bool
 	 */
 	protected function hasMetadataInternal(string $key) : bool{
 		return isset($this->metadataMap[$key]);
@@ -81,9 +72,6 @@ abstract class MetadataStore{
 
 	/**
 	 * Removes a metadata item owned by a plugin from a subject.
-	 *
-	 * @param string $key
-	 * @param Plugin $owningPlugin
 	 *
 	 * @return void
 	 */
@@ -100,8 +88,6 @@ abstract class MetadataStore{
 	 * Invalidates all metadata in the metadata store that originates from the
 	 * given plugin. Doing this will force each invalidated metadata item to
 	 * be recalculated the next time it is accessed.
-	 *
-	 * @param Plugin $owningPlugin
 	 *
 	 * @return void
 	 */

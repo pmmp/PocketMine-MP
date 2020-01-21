@@ -44,11 +44,6 @@ interface SourceInterface{
 	/**
 	 * Sends a DataPacket to the interface, returns an unique identifier for the packet if $needACK is true
 	 *
-	 * @param Player     $player
-	 * @param DataPacket $packet
-	 * @param bool       $needACK
-	 * @param bool       $immediate
-	 *
 	 * @return int|null
 	 */
 	public function putPacket(Player $player, DataPacket $packet, bool $needACK = false, bool $immediate = true);
@@ -56,16 +51,11 @@ interface SourceInterface{
 	/**
 	 * Terminates the connection
 	 *
-	 * @param Player $player
-	 * @param string $reason
-	 *
 	 * @return void
 	 */
 	public function close(Player $player, string $reason = "unknown reason");
 
 	/**
-	 * @param string $name
-	 *
 	 * @return void
 	 */
 	public function setName(string $name);

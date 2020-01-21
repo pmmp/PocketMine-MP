@@ -34,9 +34,6 @@ class LevelMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param Level  $subject
-	 * @param string $metadataKey
-	 *
 	 * @return MetadataValue[]
 	 */
 	public function getMetadata(Level $subject, string $metadataKey){
@@ -48,10 +45,6 @@ class LevelMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param Level  $subject
-	 * @param string $metadataKey
-	 * @param Plugin $owningPlugin
-	 *
 	 * @return void
 	 */
 	public function removeMetadata(Level $subject, string $metadataKey, Plugin $owningPlugin){
@@ -59,10 +52,6 @@ class LevelMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param Level         $subject
-	 * @param string        $metadataKey
-	 * @param MetadataValue $newMetadataValue
-	 *
 	 * @return void
 	 */
 	public function setMetadata(Level $subject, string $metadataKey, MetadataValue $newMetadataValue){

@@ -127,8 +127,6 @@ class Banner extends Spawnable implements Nameable{
 
 	/**
 	 * Returns the color of the banner base.
-	 *
-	 * @return int
 	 */
 	public function getBaseColor() : int{
 		return $this->baseColor;
@@ -136,8 +134,6 @@ class Banner extends Spawnable implements Nameable{
 
 	/**
 	 * Sets the color of the banner base.
-	 *
-	 * @param int $color
 	 */
 	public function setBaseColor(int $color) : void{
 		$this->baseColor = $color;
@@ -146,9 +142,6 @@ class Banner extends Spawnable implements Nameable{
 
 	/**
 	 * Applies a new pattern on the banner with the given color.
-	 *
-	 * @param string $pattern
-	 * @param int    $color
 	 *
 	 * @return int ID of pattern.
 	 */
@@ -164,10 +157,6 @@ class Banner extends Spawnable implements Nameable{
 
 	/**
 	 * Returns whether a pattern with the given ID exists on the banner or not.
-	 *
-	 * @param int $patternId
-	 *
-	 * @return bool
 	 */
 	public function patternExists(int $patternId) : bool{
 		return $this->patterns->isset($patternId);
@@ -175,10 +164,6 @@ class Banner extends Spawnable implements Nameable{
 
 	/**
 	 * Returns the data of a pattern with the given ID.
-	 *
-	 * @param int $patternId
-	 *
-	 * @return array
 	 */
 	public function getPatternData(int $patternId) : array{
 		if(!$this->patternExists($patternId)){
@@ -196,10 +181,6 @@ class Banner extends Spawnable implements Nameable{
 
 	/**
 	 * Changes the pattern of a previously existing pattern.
-	 *
-	 * @param int    $patternId
-	 * @param string $pattern
-	 * @param int    $color
 	 *
 	 * @return bool indicating success.
 	 */
@@ -219,8 +200,6 @@ class Banner extends Spawnable implements Nameable{
 
 	/**
 	 * Deletes a pattern from the banner with the given ID.
-	 *
-	 * @param int $patternId
 	 *
 	 * @return bool indicating whether the pattern existed or not.
 	 */
@@ -255,16 +234,11 @@ class Banner extends Spawnable implements Nameable{
 
 	/**
 	 * Returns the total count of patterns on this banner.
-	 *
-	 * @return int
 	 */
 	public function getPatternCount() : int{
 		return $this->patterns->count();
 	}
 
-	/**
-	 * @return ListTag
-	 */
 	public function getPatterns() : ListTag{
 		return $this->patterns;
 	}

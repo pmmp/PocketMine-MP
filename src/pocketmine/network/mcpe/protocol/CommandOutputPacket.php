@@ -87,8 +87,6 @@ class CommandOutputPacket extends DataPacket{
 	}
 
 	/**
-	 * @param CommandOutputMessage $message
-	 *
 	 * @return void
 	 */
 	protected function putCommandMessage(CommandOutputMessage $message){

@@ -346,72 +346,42 @@ class Server{
 	/** @var Level */
 	private $levelDefault = null;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return \pocketmine\NAME;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isRunning() : bool{
 		return $this->isRunning;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPocketMineVersion() : string{
 		return \pocketmine\VERSION;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getVersion() : string{
 		return ProtocolInfo::MINECRAFT_VERSION;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getApiVersion() : string{
 		return \pocketmine\BASE_VERSION;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getFilePath() : string{
 		return \pocketmine\PATH;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getResourcePath() : string{
 		return \pocketmine\RESOURCE_PATH;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDataPath() : string{
 		return $this->dataPath;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPluginPath() : string{
 		return $this->pluginPath;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMaxPlayers() : int{
 		return $this->maxPlayers;
 	}
@@ -419,8 +389,6 @@ class Server{
 	/**
 	 * Returns whether the server requires that players be authenticated to Xbox Live. If true, connecting players who
 	 * are not logged into Xbox Live will be disconnected.
-	 *
-	 * @return bool
 	 */
 	public function getOnlineMode() : bool{
 		return $this->onlineMode;
@@ -428,40 +396,26 @@ class Server{
 
 	/**
 	 * Alias of {@link #getOnlineMode()}.
-	 * @return bool
 	 */
 	public function requiresAuthentication() : bool{
 		return $this->getOnlineMode();
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPort() : int{
 		return $this->getConfigInt("server-port", 19132);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getViewDistance() : int{
 		return max(2, $this->getConfigInt("view-distance", 8));
 	}
 
 	/**
 	 * Returns a view distance up to the currently-allowed limit.
-	 *
-	 * @param int $distance
-	 *
-	 * @return int
 	 */
 	public function getAllowedViewDistance(int $distance) : int{
 		return max(2, min($distance, $this->memoryManager->getViewDistance($this->getViewDistance())));
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getIp() : string{
 		$str = $this->getConfigString("server-ip");
 		return $str !== "" ? $str : "0.0.0.0";
@@ -474,16 +428,11 @@ class Server{
 		return $this->serverID;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function getAutoSave() : bool{
 		return $this->autoSave;
 	}
 
 	/**
-	 * @param bool $value
-	 *
 	 * @return void
 	 */
 	public function setAutoSave(bool $value){
@@ -493,40 +442,24 @@ class Server{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getLevelType() : string{
 		return $this->getConfigString("level-type", "DEFAULT");
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function getGenerateStructures() : bool{
 		return $this->getConfigBool("generate-structures", true);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getGamemode() : int{
 		return $this->getConfigInt("gamemode", 0) & 0b11;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function getForceGamemode() : bool{
 		return $this->getConfigBool("force-gamemode", false);
 	}
 
 	/**
 	 * Returns the gamemode text name
-	 *
-	 * @param int $mode
-	 *
-	 * @return string
 	 */
 	public static function getGamemodeString(int $mode) : string{
 		switch($mode){
@@ -560,10 +493,6 @@ class Server{
 
 	/**
 	 * Parses a string and returns a gamemode integer, -1 if not found
-	 *
-	 * @param string $str
-	 *
-	 * @return int
 	 */
 	public static function getGamemodeFromString(string $str) : int{
 		switch(strtolower(trim($str))){
@@ -593,51 +522,34 @@ class Server{
 
 	/**
 	 * Returns Server global difficulty. Note that this may be overridden in individual Levels.
-	 * @return int
 	 */
 	public function getDifficulty() : int{
 		return $this->getConfigInt("difficulty", Level::DIFFICULTY_NORMAL);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasWhitelist() : bool{
 		return $this->getConfigBool("white-list", false);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getSpawnRadius() : int{
 		return $this->getConfigInt("spawn-protection", 16);
 	}
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function getAllowFlight() : bool{
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isHardcore() : bool{
 		return $this->getConfigBool("hardcore", false);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getDefaultGamemode() : int{
 		return $this->getConfigInt("gamemode", 0) & 0b11;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getMotd() : string{
 		return $this->getConfigString("motd", \pocketmine\NAME . " Server");
 	}
@@ -698,9 +610,6 @@ class Server{
 		return $this->craftingManager;
 	}
 
-	/**
-	 * @return ResourcePackManager
-	 */
 	public function getResourcePackManager() : ResourcePackManager{
 		return $this->resourceManager;
 	}
@@ -709,17 +618,12 @@ class Server{
 		return $this->asyncPool;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getTick() : int{
 		return $this->tickCounter;
 	}
 
 	/**
 	 * Returns the last server TPS measure
-	 *
-	 * @return float
 	 */
 	public function getTicksPerSecond() : float{
 		return round($this->currentTPS, 2);
@@ -727,8 +631,6 @@ class Server{
 
 	/**
 	 * Returns the last server TPS average measure
-	 *
-	 * @return float
 	 */
 	public function getTicksPerSecondAverage() : float{
 		return round(array_sum($this->tickAverage) / count($this->tickAverage), 2);
@@ -736,8 +638,6 @@ class Server{
 
 	/**
 	 * Returns the TPS usage/load in %
-	 *
-	 * @return float
 	 */
 	public function getTickUsage() : float{
 		return round($this->currentUse * 100, 2);
@@ -745,8 +645,6 @@ class Server{
 
 	/**
 	 * Returns the TPS usage/load average in %
-	 *
-	 * @return float
 	 */
 	public function getTickUsageAverage() : float{
 		return round((array_sum($this->useAverage) / count($this->useAverage)) * 100, 2);
@@ -778,8 +676,6 @@ class Server{
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return OfflinePlayer|Player
 	 */
 	public function getOfflinePlayer(string $name){
@@ -795,21 +691,12 @@ class Server{
 
 	/**
 	 * Returns whether the server has stored any saved data for this player.
-	 *
-	 * @param string $name
-	 *
-	 * @return bool
 	 */
 	public function hasOfflinePlayerData(string $name) : bool{
 		$name = strtolower($name);
 		return file_exists($this->getDataPath() . "players/$name.dat");
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return CompoundTag
-	 */
 	public function getOfflinePlayerData(string $name) : CompoundTag{
 		$name = strtolower($name);
 		$path = $this->getDataPath() . "players/";
@@ -874,9 +761,6 @@ class Server{
 	}
 
 	/**
-	 * @param string      $name
-	 * @param CompoundTag $nbtTag
-	 *
 	 * @return void
 	 */
 	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag){
@@ -901,8 +785,6 @@ class Server{
 	 * The closest match will be returned, or null if there are no online matches.
 	 *
 	 * @see Server::getPlayerExact()
-	 *
-	 * @param string $name
 	 *
 	 * @return Player|null
 	 */
@@ -929,8 +811,6 @@ class Server{
 	/**
 	 * Returns an online player with the given name (case insensitive), or null if not found.
 	 *
-	 * @param string $name
-	 *
 	 * @return Player|null
 	 */
 	public function getPlayerExact(string $name){
@@ -947,8 +827,6 @@ class Server{
 	/**
 	 * Returns a list of online players whose names contain with the given string (case insensitive).
 	 * If an exact match is found, only that match is returned.
-	 *
-	 * @param string $partialName
 	 *
 	 * @return Player[]
 	 */
@@ -969,10 +847,6 @@ class Server{
 
 	/**
 	 * Returns the player online with the specified raw UUID, or null if not found
-	 *
-	 * @param string $rawUUID
-	 *
-	 * @return null|Player
 	 */
 	public function getPlayerByRawUUID(string $rawUUID) : ?Player{
 		return $this->playerList[$rawUUID] ?? null;
@@ -980,10 +854,6 @@ class Server{
 
 	/**
 	 * Returns the player online with a UUID equivalent to the specified UUID object, or null if not found
-	 *
-	 * @param UUID $uuid
-	 *
-	 * @return null|Player
 	 */
 	public function getPlayerByUUID(UUID $uuid) : ?Player{
 		return $this->getPlayerByRawUUID($uuid->toBinary());
@@ -996,9 +866,6 @@ class Server{
 		return $this->levels;
 	}
 
-	/**
-	 * @return Level|null
-	 */
 	public function getDefaultLevel() : ?Level{
 		return $this->levelDefault;
 	}
@@ -1007,8 +874,6 @@ class Server{
 	 * Sets the default level to a different level
 	 * This won't change the level-name property,
 	 * it only affects the server on runtime
-	 *
-	 * @param Level|null $level
 	 */
 	public function setDefaultLevel(?Level $level) : void{
 		if($level === null or ($this->isLevelLoaded($level->getFolderName()) and $level !== $this->levelDefault)){
@@ -1016,30 +881,16 @@ class Server{
 		}
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
 	public function isLevelLoaded(string $name) : bool{
 		return $this->getLevelByName($name) instanceof Level;
 	}
 
-	/**
-	 * @param int $levelId
-	 *
-	 * @return Level|null
-	 */
 	public function getLevel(int $levelId) : ?Level{
 		return $this->levels[$levelId] ?? null;
 	}
 
 	/**
 	 * NOTE: This matches levels based on the FOLDER name, NOT the display name.
-	 *
-	 * @param string $name
-	 *
-	 * @return Level|null
 	 */
 	public function getLevelByName(string $name) : ?Level{
 		foreach($this->getLevels() as $level){
@@ -1052,11 +903,6 @@ class Server{
 	}
 
 	/**
-	 * @param Level $level
-	 * @param bool  $forceUnload
-	 *
-	 * @return bool
-	 *
 	 * @throws \InvalidStateException
 	 */
 	public function unloadLevel(Level $level, bool $forceUnload = false) : bool{
@@ -1069,8 +915,6 @@ class Server{
 
 	/**
 	 * @internal
-	 *
-	 * @param Level $level
 	 */
 	public function removeLevel(Level $level) : void{
 		unset($this->levels[$level->getId()]);
@@ -1078,10 +922,6 @@ class Server{
 
 	/**
 	 * Loads a level from the data directory
-	 *
-	 * @param string $name
-	 *
-	 * @return bool
 	 *
 	 * @throws LevelException
 	 */
@@ -1136,12 +976,7 @@ class Server{
 	/**
 	 * Generates a new level if it does not exist
 	 *
-	 * @param string      $name
-	 * @param int|null    $seed
 	 * @param string|null $generator Class name that extends pocketmine\level\generator\Generator
-	 * @param array       $options
-	 *
-	 * @return bool
 	 */
 	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = []) : bool{
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
@@ -1205,11 +1040,6 @@ class Server{
 		return true;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
 	public function isLevelGenerated(string $name) : bool{
 		if(trim($name) === ""){
 			return false;
@@ -1228,7 +1058,6 @@ class Server{
 	 * Searches all levels for the entity with the specified ID.
 	 * Useful for tracking entities across multiple worlds without needing strong references.
 	 *
-	 * @param int        $entityId
 	 * @param Level|null $expectedLevel @deprecated Level to look in first for the target
 	 *
 	 * @return Entity|null
@@ -1245,7 +1074,6 @@ class Server{
 	}
 
 	/**
-	 * @param string $variable
 	 * @param mixed  $defaultValue
 	 *
 	 * @return mixed
@@ -1263,12 +1091,6 @@ class Server{
 		return $this->propertyCache[$variable] ?? $defaultValue;
 	}
 
-	/**
-	 * @param string $variable
-	 * @param string $defaultValue
-	 *
-	 * @return string
-	 */
 	public function getConfigString(string $variable, string $defaultValue = "") : string{
 		$v = getopt("", ["$variable::"]);
 		if(isset($v[$variable])){
@@ -1279,21 +1101,12 @@ class Server{
 	}
 
 	/**
-	 * @param string $variable
-	 * @param string $value
-	 *
 	 * @return void
 	 */
 	public function setConfigString(string $variable, string $value){
 		$this->properties->set($variable, $value);
 	}
 
-	/**
-	 * @param string $variable
-	 * @param int    $defaultValue
-	 *
-	 * @return int
-	 */
 	public function getConfigInt(string $variable, int $defaultValue = 0) : int{
 		$v = getopt("", ["$variable::"]);
 		if(isset($v[$variable])){
@@ -1304,21 +1117,12 @@ class Server{
 	}
 
 	/**
-	 * @param string $variable
-	 * @param int    $value
-	 *
 	 * @return void
 	 */
 	public function setConfigInt(string $variable, int $value){
 		$this->properties->set($variable, $value);
 	}
 
-	/**
-	 * @param string $variable
-	 * @param bool   $defaultValue
-	 *
-	 * @return bool
-	 */
 	public function getConfigBool(string $variable, bool $defaultValue = false) : bool{
 		$v = getopt("", ["$variable::"]);
 		if(isset($v[$variable])){
@@ -1342,9 +1146,6 @@ class Server{
 	}
 
 	/**
-	 * @param string $variable
-	 * @param bool   $value
-	 *
 	 * @return void
 	 */
 	public function setConfigBool(string $variable, bool $value){
@@ -1352,8 +1153,6 @@ class Server{
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return PluginIdentifiableCommand|null
 	 */
 	public function getPluginCommand(string $name){
@@ -1379,8 +1178,6 @@ class Server{
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return void
 	 */
 	public function addOp(string $name){
@@ -1393,8 +1190,6 @@ class Server{
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return void
 	 */
 	public function removeOp(string $name){
@@ -1407,8 +1202,6 @@ class Server{
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return void
 	 */
 	public function addWhitelist(string $name){
@@ -1417,8 +1210,6 @@ class Server{
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return void
 	 */
 	public function removeWhitelist(string $name){
@@ -1426,20 +1217,10 @@ class Server{
 		$this->whitelist->save();
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
 	public function isWhitelisted(string $name) : bool{
 		return !$this->hasWhitelist() or $this->operators->exists($name, true) or $this->whitelist->exists($name, true);
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
 	public function isOp(string $name) : bool{
 		return $this->operators->exists($name, true);
 	}
@@ -1487,9 +1268,6 @@ class Server{
 		return $result;
 	}
 
-	/**
-	 * @return Server
-	 */
 	public static function getInstance() : Server{
 		if(self::$instance === null){
 			throw new \RuntimeException("Attempt to retrieve Server instance outside server thread");
@@ -1498,8 +1276,6 @@ class Server{
 	}
 
 	/**
-	 * @param int $microseconds
-	 *
 	 * @return void
 	 */
 	public static function microSleep(int $microseconds){
@@ -1508,12 +1284,6 @@ class Server{
 		}, $microseconds);
 	}
 
-	/**
-	 * @param \ClassLoader              $autoloader
-	 * @param \AttachableThreadedLogger $logger
-	 * @param string                    $dataPath
-	 * @param string                    $pluginPath
-	 */
 	public function __construct(\ClassLoader $autoloader, \AttachableThreadedLogger $logger, string $dataPath, string $pluginPath){
 		if(self::$instance !== null){
 			throw new \InvalidStateException("Only one server instance can exist at once");
@@ -1817,8 +1587,6 @@ class Server{
 	/**
 	 * @param TextContainer|string $message
 	 * @param CommandSender[]      $recipients
-	 *
-	 * @return int
 	 */
 	public function broadcastMessage($message, array $recipients = null) : int{
 		if(!is_array($recipients)){
@@ -1833,10 +1601,7 @@ class Server{
 	}
 
 	/**
-	 * @param string   $tip
 	 * @param Player[] $recipients
-	 *
-	 * @return int
 	 */
 	public function broadcastTip(string $tip, array $recipients = null) : int{
 		if(!is_array($recipients)){
@@ -1857,10 +1622,7 @@ class Server{
 	}
 
 	/**
-	 * @param string   $popup
 	 * @param Player[] $recipients
-	 *
-	 * @return int
 	 */
 	public function broadcastPopup(string $popup, array $recipients = null) : int{
 		if(!is_array($recipients)){
@@ -1882,14 +1644,10 @@ class Server{
 	}
 
 	/**
-	 * @param string        $title
-	 * @param string        $subtitle
 	 * @param int           $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
 	 * @param int           $stay Duration in ticks to stay on screen for
 	 * @param int           $fadeOut Duration in ticks for fade-out.
 	 * @param Player[]|null $recipients
-	 *
-	 * @return int
 	 */
 	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, array $recipients = null) : int{
 		if(!is_array($recipients)){
@@ -1912,9 +1670,6 @@ class Server{
 
 	/**
 	 * @param TextContainer|string $message
-	 * @param string               $permissions
-	 *
-	 * @return int
 	 */
 	public function broadcast($message, string $permissions) : int{
 		/** @var CommandSender[] $recipients */
@@ -1938,7 +1693,6 @@ class Server{
 	 * Broadcasts a Minecraft packet to a list of players
 	 *
 	 * @param Player[]   $players
-	 * @param DataPacket $packet
 	 *
 	 * @return void
 	 */
@@ -1952,8 +1706,6 @@ class Server{
 	 *
 	 * @param Player[]     $players
 	 * @param DataPacket[] $packets
-	 * @param bool         $forceSync
-	 * @param bool         $immediate
 	 *
 	 * @return void
 	 */
@@ -1991,9 +1743,7 @@ class Server{
 	}
 
 	/**
-	 * @param BatchPacket $pk
 	 * @param Player[]    $players
-	 * @param bool        $immediate
 	 *
 	 * @return void
 	 */
@@ -2009,8 +1759,6 @@ class Server{
 
 
 	/**
-	 * @param int $type
-	 *
 	 * @return void
 	 */
 	public function enablePlugins(int $type){
@@ -2027,8 +1775,6 @@ class Server{
 	}
 
 	/**
-	 * @param Plugin $plugin
-	 *
 	 * @return void
 	 */
 	public function enablePlugin(Plugin $plugin){
@@ -2044,12 +1790,6 @@ class Server{
 
 	/**
 	 * Executes a command from a CommandSender
-	 *
-	 * @param CommandSender $sender
-	 * @param string        $commandLine
-	 * @param bool          $internal
-	 *
-	 * @return bool
 	 */
 	public function dispatchCommand(CommandSender $sender, string $commandLine, bool $internal = false) : bool{
 		if(!$internal){
@@ -2263,7 +2003,6 @@ class Server{
 	}
 
 	/**
-	 * @param \Throwable $e
 	 * @param array|null $trace
 	 *
 	 * @return void
@@ -2408,8 +2147,6 @@ class Server{
 	}
 
 	/**
-	 * @param Player $player
-	 *
 	 * @return void
 	 */
 	public function onPlayerLogin(Player $player){
@@ -2421,8 +2158,6 @@ class Server{
 	}
 
 	/**
-	 * @param Player $player
-	 *
 	 * @return void
 	 */
 	public function onPlayerLogout(Player $player){
@@ -2430,8 +2165,6 @@ class Server{
 	}
 
 	/**
-	 * @param Player $player
-	 *
 	 * @return void
 	 */
 	public function addPlayer(Player $player){
@@ -2439,8 +2172,6 @@ class Server{
 	}
 
 	/**
-	 * @param Player $player
-	 *
 	 * @return void
 	 */
 	public function removePlayer(Player $player){
@@ -2448,8 +2179,6 @@ class Server{
 	}
 
 	/**
-	 * @param Player $player
-	 *
 	 * @return void
 	 */
 	public function addOnlinePlayer(Player $player){
@@ -2459,8 +2188,6 @@ class Server{
 	}
 
 	/**
-	 * @param Player $player
-	 *
 	 * @return void
 	 */
 	public function removeOnlinePlayer(Player $player){
@@ -2472,11 +2199,6 @@ class Server{
 	}
 
 	/**
-	 * @param UUID          $uuid
-	 * @param int           $entityId
-	 * @param string        $name
-	 * @param Skin          $skin
-	 * @param string        $xboxUserId
 	 * @param Player[]|null $players
 	 *
 	 * @return void
@@ -2491,7 +2213,6 @@ class Server{
 	}
 
 	/**
-	 * @param UUID          $uuid
 	 * @param Player[]|null $players
 	 *
 	 * @return void
@@ -2504,8 +2225,6 @@ class Server{
 	}
 
 	/**
-	 * @param Player $p
-	 *
 	 * @return void
 	 */
 	public function sendFullPlayerListData(Player $p){
@@ -2583,9 +2302,6 @@ class Server{
 		return $this->baseLang;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isLanguageForced() : bool{
 		return $this->forceLanguage;
 	}
@@ -2624,11 +2340,6 @@ class Server{
 	}
 
 	/**
-	 * @param AdvancedSourceInterface $interface
-	 * @param string                  $address
-	 * @param int                     $port
-	 * @param string                  $payload
-	 *
 	 * @return void
 	 *
 	 * TODO: move this to Network

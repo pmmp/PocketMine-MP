@@ -49,17 +49,7 @@ class SkinData{
 	private $capeId;
 
 	/**
-	 * @param string          $skinId
-	 * @param string          $resourcePatch
-	 * @param SkinImage       $skinImage
 	 * @param SkinAnimation[] $animations
-	 * @param SkinImage|null  $capeImage
-	 * @param string          $geometryData
-	 * @param string          $animationData
-	 * @param bool            $premium
-	 * @param bool            $persona
-	 * @param bool            $personaCapeOnClassic
-	 * @param string          $capeId
 	 */
 	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = ""){
 		$this->skinId = $skinId;
@@ -75,23 +65,14 @@ class SkinData{
 		$this->capeId = $capeId;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getSkinId() : string{
 		return $this->skinId;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getResourcePatch() : string{
 		return $this->resourcePatch;
 	}
 
-	/**
-	 * @return SkinImage
-	 */
 	public function getSkinImage() : SkinImage{
 		return $this->skinImage;
 	}
@@ -103,51 +84,30 @@ class SkinData{
 		return $this->animations;
 	}
 
-	/**
-	 * @return SkinImage
-	 */
 	public function getCapeImage() : SkinImage{
 		return $this->capeImage;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getGeometryData() : string{
 		return $this->geometryData;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getAnimationData() : string{
 		return $this->animationData;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isPersona() : bool{
 		return $this->persona;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isPremium() : bool{
 		return $this->premium;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isPersonaCapeOnClassic() : bool{
 		return $this->personaCapeOnClassic;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getCapeId() : string{
 		return $this->capeId;
 	}

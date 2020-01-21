@@ -49,8 +49,6 @@ class ConsoleCommandSender implements CommandSender{
 
 	/**
 	 * @param Permission|string $name
-	 *
-	 * @return bool
 	 */
 	public function isPermissionSet($name) : bool{
 		return $this->perm->isPermissionSet($name);
@@ -58,27 +56,20 @@ class ConsoleCommandSender implements CommandSender{
 
 	/**
 	 * @param Permission|string $name
-	 *
-	 * @return bool
 	 */
 	public function hasPermission($name) : bool{
 		return $this->perm->hasPermission($name);
 	}
 
 	/**
-	 * @param Plugin $plugin
 	 * @param string $name
 	 * @param bool   $value
-	 *
-	 * @return PermissionAttachment
 	 */
 	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
 		return $this->perm->addAttachment($plugin, $name, $value);
 	}
 
 	/**
-	 * @param PermissionAttachment $attachment
-	 *
 	 * @return void
 	 */
 	public function removeAttachment(PermissionAttachment $attachment){
@@ -120,23 +111,15 @@ class ConsoleCommandSender implements CommandSender{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "CONSOLE";
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isOp() : bool{
 		return true;
 	}
 
 	/**
-	 * @param bool $value
-	 *
 	 * @return void
 	 */
 	public function setOp(bool $value){

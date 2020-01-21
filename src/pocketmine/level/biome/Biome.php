@@ -77,9 +77,6 @@ abstract class Biome{
 	protected $temperature = 0.5;
 
 	/**
-	 * @param int   $id
-	 * @param Biome $biome
-	 *
 	 * @return void
 	 */
 	protected static function register(int $id, Biome $biome){
@@ -110,11 +107,6 @@ abstract class Biome{
 		self::register(self::BIRCH_FOREST, new ForestBiome(ForestBiome::TYPE_BIRCH));
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return Biome
-	 */
 	public static function getBiome(int $id) : Biome{
 		if(self::$biomes[$id] === null){
 			self::register($id, new UnknownBiome());
@@ -130,8 +122,6 @@ abstract class Biome{
 	}
 
 	/**
-	 * @param Populator $populator
-	 *
 	 * @return void
 	 */
 	public function addPopulator(Populator $populator){
@@ -139,11 +129,6 @@ abstract class Biome{
 	}
 
 	/**
-	 * @param ChunkManager $level
-	 * @param int          $chunkX
-	 * @param int          $chunkZ
-	 * @param Random       $random
-	 *
 	 * @return void
 	 */
 	public function populateChunk(ChunkManager $level, int $chunkX, int $chunkZ, Random $random){
@@ -160,8 +145,6 @@ abstract class Biome{
 	}
 
 	/**
-	 * @param int $id
-	 *
 	 * @return void
 	 */
 	public function setId(int $id){
@@ -186,9 +169,6 @@ abstract class Biome{
 	}
 
 	/**
-	 * @param int $min
-	 * @param int $max
-	 *
 	 * @return void
 	 */
 	public function setElevation(int $min, int $max){

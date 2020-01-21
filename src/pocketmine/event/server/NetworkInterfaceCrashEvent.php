@@ -40,9 +40,6 @@ class NetworkInterfaceCrashEvent extends NetworkInterfaceEvent{
 		$this->exception = $throwable;
 	}
 
-	/**
-	 * @return \Throwable
-	 */
 	public function getCrashInformation() : \Throwable{
 		return $this->exception;
 	}

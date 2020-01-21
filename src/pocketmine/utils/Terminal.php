@@ -204,8 +204,6 @@ abstract class Terminal{
 	 * Note that this is platform-dependent and might produce different results depending on the terminal type and/or OS.
 	 *
 	 * @param string|array $string
-	 *
-	 * @return string
 	 */
 	public static function toANSI($string) : string{
 		if(!is_array($string)){

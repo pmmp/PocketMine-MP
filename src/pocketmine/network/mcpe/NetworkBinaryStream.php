@@ -104,8 +104,6 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * @param SkinData $skin
-	 *
 	 * @return void
 	 */
 	public function putSkin(SkinData $skin){
@@ -275,8 +273,6 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Decodes entity metadata from the stream.
 	 *
 	 * @param bool $types Whether to include metadata types along with values in the returned array
-	 *
-	 * @return array
 	 */
 	public function getEntityMetadata(bool $types = true) : array{
 		$count = $this->getUnsignedVarInt();
@@ -329,8 +325,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes entity metadata to the packet buffer.
-	 *
-	 * @param array $metadata
 	 */
 	public function putEntityMetadata(array $metadata) : void{
 		$this->putUnsignedVarInt(count($metadata));
@@ -427,7 +421,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Reads and returns an EntityUniqueID
-	 * @return int
 	 */
 	public function getEntityUniqueId() : int{
 		return $this->getVarLong();
@@ -435,8 +428,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes an EntityUniqueID
-	 *
-	 * @param int $eid
 	 */
 	public function putEntityUniqueId(int $eid) : void{
 		$this->putVarLong($eid);
@@ -444,7 +435,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Reads and returns an EntityRuntimeID
-	 * @return int
 	 */
 	public function getEntityRuntimeId() : int{
 		return $this->getUnsignedVarLong();
@@ -452,8 +442,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes an EntityRuntimeID
-	 *
-	 * @param int $eid
 	 */
 	public function putEntityRuntimeId(int $eid) : void{
 		$this->putUnsignedVarLong($eid);
@@ -474,10 +462,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes a block position with unsigned Y coordinate.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
 	 */
 	public function putBlockPosition(int $x, int $y, int $z) : void{
 		$this->putVarInt($x);
@@ -500,10 +484,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes a block position with a signed Y coordinate.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
 	 */
 	public function putSignedBlockPosition(int $x, int $y, int $z) : void{
 		$this->putVarInt($x);
@@ -513,8 +493,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Reads a floating-point Vector3 object with coordinates rounded to 4 decimal places.
-	 *
-	 * @return Vector3
 	 */
 	public function getVector3() : Vector3{
 		return new Vector3(
@@ -531,8 +509,6 @@ class NetworkBinaryStream extends BinaryStream{
 	 * For all other purposes, use the non-nullable version.
 	 *
 	 * @see NetworkBinaryStream::putVector3()
-	 *
-	 * @param Vector3|null $vector
 	 */
 	public function putVector3Nullable(?Vector3 $vector) : void{
 		if($vector){
@@ -546,8 +522,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes a floating-point Vector3 object
-	 *
-	 * @param Vector3 $vector
 	 */
 	public function putVector3(Vector3 $vector) : void{
 		$this->putLFloat($vector->x);
@@ -597,8 +571,6 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Writes a gamerule array, members should be in the structure [name => [type, value]]
 	 * TODO: implement this properly
-	 *
-	 * @param array $rules
 	 */
 	public function putGameRules(array $rules) : void{
 		$this->putUnsignedVarInt(count($rules));
@@ -619,9 +591,6 @@ class NetworkBinaryStream extends BinaryStream{
 		}
 	}
 
-	/**
-	 * @return EntityLink
-	 */
 	protected function getEntityLink() : EntityLink{
 		$link = new EntityLink();
 
@@ -633,9 +602,6 @@ class NetworkBinaryStream extends BinaryStream{
 		return $link;
 	}
 
-	/**
-	 * @param EntityLink $link
-	 */
 	protected function putEntityLink(EntityLink $link) : void{
 		$this->putEntityUniqueId($link->fromEntityUniqueId);
 		$this->putEntityUniqueId($link->toEntityUniqueId);

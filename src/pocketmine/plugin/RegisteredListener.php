@@ -48,15 +48,6 @@ class RegisteredListener{
 	/** @var TimingsHandler */
 	private $timings;
 
-
-	/**
-	 * @param Listener       $listener
-	 * @param EventExecutor  $executor
-	 * @param int            $priority
-	 * @param Plugin         $plugin
-	 * @param bool           $ignoreCancelled
-	 * @param TimingsHandler $timings
-	 */
 	public function __construct(Listener $listener, EventExecutor $executor, int $priority, Plugin $plugin, bool $ignoreCancelled, TimingsHandler $timings){
 		$this->listener = $listener;
 		$this->priority = $priority;
@@ -66,30 +57,19 @@ class RegisteredListener{
 		$this->timings = $timings;
 	}
 
-	/**
-	 * @return Listener
-	 */
 	public function getListener() : Listener{
 		return $this->listener;
 	}
 
-	/**
-	 * @return Plugin
-	 */
 	public function getPlugin() : Plugin{
 		return $this->plugin;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPriority() : int{
 		return $this->priority;
 	}
 
 	/**
-	 * @param Event $event
-	 *
 	 * @return void
 	 */
 	public function callEvent(Event $event){
@@ -105,9 +85,6 @@ class RegisteredListener{
 		$this->timings->remove();
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isIgnoringCancelled() : bool{
 		return $this->ignoreCancelled;
 	}
