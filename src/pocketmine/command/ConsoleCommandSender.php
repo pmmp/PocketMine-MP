@@ -61,10 +61,6 @@ class ConsoleCommandSender implements CommandSender{
 		return $this->perm->hasPermission($name);
 	}
 
-	/**
-	 * @param string $name
-	 * @param bool   $value
-	 */
 	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
 		return $this->perm->addAttachment($plugin, $name, $value);
 	}

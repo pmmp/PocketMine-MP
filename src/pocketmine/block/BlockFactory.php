@@ -363,8 +363,6 @@ class BlockFactory{
 
 	/**
 	 * Returns a new Block instance with the specified ID, meta and position.
-	 *
-	 * @param Position $pos
 	 */
 	public static function get(int $id, int $meta = 0, Position $pos = null) : Block{
 		if($meta < 0 or $meta > 0xf){

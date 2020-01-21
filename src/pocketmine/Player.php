@@ -216,8 +216,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * Validates the given username.
-	 *
-	 * @param string $name
 	 */
 	public static function isValidUserName(?string $name) : bool{
 		if($name === null){
@@ -661,10 +659,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->perm->hasPermission($name);
 	}
 
-	/**
-	 * @param string $name
-	 * @param bool   $value
-	 */
 	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
 		return $this->perm->addAttachment($plugin, $name, $value);
 	}

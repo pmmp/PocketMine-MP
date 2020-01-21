@@ -85,9 +85,6 @@ class PermissibleBase implements Permissible{
 
 	/**
 	 * //TODO: tick scheduled attachments
-	 *
-	 * @param string $name
-	 * @param bool   $value
 	 */
 	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
 		if(!$plugin->isEnabled()){

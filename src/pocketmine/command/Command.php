@@ -74,7 +74,6 @@ abstract class Command{
 	public $timings;
 
 	/**
-	 * @param string   $usageMessage
 	 * @param string[] $aliases
 	 */
 	public function __construct(string $name, string $description = "", string $usageMessage = null, array $aliases = []){

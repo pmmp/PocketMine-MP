@@ -143,8 +143,6 @@ class Permission{
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
 	 *
-	 * @param string $description
-	 * @param string $defaultValue
 	 * @param bool[] $children
 	 */
 	public function __construct(string $name, string $description = null, string $defaultValue = null, array $children = []){

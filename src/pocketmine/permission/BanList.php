@@ -94,11 +94,6 @@ class BanList{
 		$this->save();
 	}
 
-	/**
-	 * @param string    $reason
-	 * @param \DateTime $expires
-	 * @param string    $source
-	 */
 	public function addBan(string $target, string $reason = null, \DateTime $expires = null, string $source = null) : BanEntry{
 		$entry = new BanEntry($target);
 		$entry->setSource($source ?? $entry->getSource());
