@@ -219,7 +219,6 @@ LICENSE;
 
 		$config->save();
 
-
 		$this->message($this->lang->get("ip_get"));
 
 		$externalIP = Internet::getIP();

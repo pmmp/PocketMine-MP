@@ -421,7 +421,6 @@ abstract class BaseInventory implements Inventory{
 		}
 	}
 
-
 	/**
 	 * @param Player|Player[] $target
 	 */

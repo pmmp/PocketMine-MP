@@ -252,7 +252,6 @@ class LevelDB extends BaseLevelProvider{
 		$buffer = $nbt->write($levelData);
 		file_put_contents($path . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 
-
 		$db = self::createDB($path);
 
 		if($generatorType === self::GENERATOR_FLAT and isset($options["preset"])){

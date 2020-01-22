@@ -482,7 +482,6 @@ class Utils{
 		return $hash;
 	}
 
-
 	/**
 	 * @param string      $command Command to execute
 	 * @param string|null $stdout Reference parameter to write stdout to

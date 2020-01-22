@@ -59,7 +59,6 @@ abstract class Generator{
 	 */
 	abstract public function __construct(array $settings = []);
 
-
 	public function init(ChunkManager $level, Random $random) : void{
 		$this->level = $level;
 		$this->random = $random;

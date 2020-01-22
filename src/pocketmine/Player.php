@@ -202,7 +202,6 @@ use const M_PI;
 use const M_SQRT3;
 use const PHP_INT_MAX;
 
-
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  */
@@ -226,7 +225,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$len = strlen($name);
 		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
 	}
-
 
 	/** @var SourceInterface */
 	protected $interface;
@@ -253,7 +251,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Last measurement of player's latency in milliseconds.
 	 */
 	protected $lastPingMeasure = 1;
-
 
 	/** @var float */
 	public $creationTime = 0;
@@ -1127,7 +1124,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$newOrder[$index] = true;
 				}
 				unset($unloadChunks[$index]);
-
 
 				/* Bottom left quadrant */
 				if(!isset($this->usedChunks[$index = Level::chunkHash($centerX - $x - 1, $centerZ - $z - 1)]) or $this->usedChunks[$index] === false){

@@ -41,7 +41,6 @@ abstract class Crops extends Flowable{
 		return false;
 	}
 
-
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($this->meta < 7 and $item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
 			$block = clone $this;

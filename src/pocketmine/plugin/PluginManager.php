@@ -282,7 +282,6 @@ class PluginManager{
 			}
 		}
 
-
 		while(count($plugins) > 0){
 			$loadedThisLoop = 0;
 			foreach($plugins as $name => $file){
@@ -744,7 +743,6 @@ class PluginManager{
 				get_class($listener) . "->" . ($executor instanceof MethodEventExecutor ? $executor->getMethod() : "<unknown>")
 			]));
 		}
-
 
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin attempted to register " . $event . " while not enabled");

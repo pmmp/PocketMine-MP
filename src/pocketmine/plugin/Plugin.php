@@ -31,7 +31,6 @@ use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\Config;
 
-
 /**
  * It is recommended to use PluginBase for the actual plugin
  */

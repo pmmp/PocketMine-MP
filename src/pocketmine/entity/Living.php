@@ -187,7 +187,6 @@ abstract class Living extends Entity implements Damageable{
 		}
 	}
 
-
 	public function hasLineOfSight(Entity $entity) : bool{
 		//TODO: head height
 		return true;

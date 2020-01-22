@@ -82,7 +82,6 @@ class Simplex extends Perlin{
 	/** @var float */
 	protected $offsetW;
 
-
 	/**
 	 * @param int    $octaves
 	 * @param float  $persistence

@@ -465,7 +465,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/** @var Vector3 */
 	public $temporalVector;
 
-
 	/** @var float */
 	public $lastYaw;
 	/** @var float */
@@ -1353,7 +1352,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			return true;
 		}
 
-
 		$this->timings->startTiming();
 
 		if($this->hasMovementUpdate()){
@@ -1381,7 +1379,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		Timings::$timerEntityBaseTick->startTiming();
 		$hasUpdate = $this->entityBaseTick($tickDiff);
 		Timings::$timerEntityBaseTick->stopTiming();
-
 
 		$this->timings->stopTiming();
 
@@ -1511,7 +1508,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->isCollided = $this->onGround;
 		$this->updateFallState($dy, $this->onGround);
 
-
 		Timings::$entityMoveTimer->stopTiming();
 
 		return true;
@@ -1595,7 +1591,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			}
 
 			$this->boundingBox->offset(0, 0, $dz);
-
 
 			if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX != $dx or $movZ != $dz)){
 				$cx = $dx;

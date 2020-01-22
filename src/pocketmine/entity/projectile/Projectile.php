@@ -265,7 +265,6 @@ abstract class Projectile extends Entity{
 		$this->checkChunks();
 		$this->checkBlockCollision();
 
-
 		Timings::$entityMoveTimer->stopTiming();
 	}
 

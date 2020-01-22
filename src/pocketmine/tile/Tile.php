@@ -131,7 +131,6 @@ abstract class Tile extends Position{
 
 			self::$saveNames[$className] = $saveNames;
 
-
 			return true;
 		}
 

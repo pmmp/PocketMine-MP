@@ -68,7 +68,6 @@ class Leaves extends Transparent{
 		return true;
 	}
 
-
 	protected function findLog(Block $pos, array &$visited, int $distance, ?int $fromSide = null) : bool{
 		$index = $pos->x . "." . $pos->y . "." . $pos->z;
 		if(isset($visited[$index])){

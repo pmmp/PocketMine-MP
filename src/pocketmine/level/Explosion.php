@@ -202,7 +202,6 @@ class Explosion{
 			}
 		}
 
-
 		$air = ItemFactory::get(Item::AIR);
 
 		foreach($this->affectedBlocks as $block){

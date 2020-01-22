@@ -33,7 +33,6 @@ class Perlin extends Noise{
 		[0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
 	];
 
-
 	/**
 	 * @param int    $octaves
 	 * @param float  $persistence

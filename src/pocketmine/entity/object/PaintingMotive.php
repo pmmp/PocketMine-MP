@@ -86,7 +86,6 @@ class PaintingMotive{
 	/** @var int */
 	protected $height;
 
-
 	public function __construct(int $width, int $height, string $name){
 		$this->name = $name;
 		$this->width = $width;

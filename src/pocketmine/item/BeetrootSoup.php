@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-
 class BeetrootSoup extends Food{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::BEETROOT_SOUP, $meta, "Beetroot Soup");

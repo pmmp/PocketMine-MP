@@ -1104,7 +1104,6 @@ class Level implements ChunkManager, Metadatable{
 				$entity->scheduleUpdate();
 			}
 
-
 			foreach($chunk->getSubChunks() as $Y => $subChunk){
 				if(!($subChunk instanceof EmptySubChunk)){
 					$k = mt_rand(0, 0xfffffffff); //36 bits
@@ -1246,7 +1245,6 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 		}
-
 
 		return $collides;
 	}
@@ -1900,7 +1898,6 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
 			if($this->checkSpawnProtection($player, $blockClicked)){
@@ -2053,7 +2050,6 @@ class Level implements ChunkManager, Metadatable{
 
 		return $currentTarget;
 	}
-
 
 	/**
 	 * Returns a list of the Tile entities in this level

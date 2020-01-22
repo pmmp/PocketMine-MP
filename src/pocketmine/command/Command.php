@@ -101,7 +101,6 @@ abstract class Command{
 		return $this->permission;
 	}
 
-
 	/**
 	 * @return void
 	 */

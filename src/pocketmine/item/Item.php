@@ -60,7 +60,6 @@ class Item implements ItemIds, \JsonSerializable{
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
 
-
 	/** @var LittleEndianNBTStream */
 	private static $cachedParser = null;
 
@@ -110,7 +109,6 @@ class Item implements ItemIds, \JsonSerializable{
 	public static function fromString(string $str, bool $multiple = false){
 		return ItemFactory::fromString($str, $multiple);
 	}
-
 
 	/** @var Item[] */
 	private static $creative = [];

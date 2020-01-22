@@ -201,7 +201,6 @@ class NetworkBinaryStream extends BinaryStream{
 		return ItemFactory::get($id, $data, $cnt, $nbt);
 	}
 
-
 	public function putSlot(Item $item) : void{
 		if($item->getId() === 0){
 			$this->putVarInt(0);

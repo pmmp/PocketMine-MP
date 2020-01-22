@@ -65,7 +65,6 @@ class VerifyLoginTask extends AsyncTask{
 	 */
 	private $authenticated = false;
 
-
 	public function __construct(Player $player, LoginPacket $packet){
 		$this->storeLocal($player);
 		$this->packet = $packet;

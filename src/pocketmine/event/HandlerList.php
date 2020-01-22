@@ -91,7 +91,6 @@ class HandlerList{
 		return self::$allLists;
 	}
 
-
 	/** @var string */
 	private $class;
 	/** @var RegisteredListener[][] */

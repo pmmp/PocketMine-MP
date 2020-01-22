@@ -1398,7 +1398,6 @@ class Server{
 
 			$this->doTitleTick = ((bool) $this->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
 
-
 			$consoleSender = new ConsoleCommandSender();
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
 
@@ -1478,13 +1477,11 @@ class Server{
 			$this->network = new Network($this);
 			$this->network->setName($this->getMotd());
 
-
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.info", [
 				$this->getName(),
 				(\pocketmine\IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET
 			]));
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.license", [$this->getName()]));
-
 
 			Timings::init();
 			TimingsHandler::setEnabled((bool) $this->getProperty("settings.enable-profiling", false));
@@ -1757,7 +1754,6 @@ class Server{
 		}
 	}
 
-
 	/**
 	 * @return void
 	 */
@@ -1805,7 +1801,6 @@ class Server{
 		if($this->commandMap->dispatch($sender, $commandLine)){
 			return true;
 		}
-
 
 		$sender->sendMessage($this->getLanguage()->translateString(TextFormat::RED . "%commands.generic.notFound"));
 
@@ -1962,7 +1957,6 @@ class Server{
 			$this->sendUsageTicker = 6000;
 			$this->sendUsage(SendUsageTask::TYPE_OPEN);
 		}
-
 
 		if($this->getProperty("network.upnp-forwarding", false)){
 			$this->logger->info("[UPnP] Trying to port forward...");
@@ -2294,7 +2288,6 @@ class Server{
 		$this->uniquePlayers = [];
 	}
 
-
 	/**
 	 * @return BaseLang
 	 */
@@ -2358,7 +2351,6 @@ class Server{
 		}
 		//TODO: add raw packet events
 	}
-
 
 	/**
 	 * Tries to execute a server tick

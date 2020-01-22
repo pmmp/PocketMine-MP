@@ -38,7 +38,6 @@ use function dechex;
 class AvailableCommandsPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::AVAILABLE_COMMANDS_PACKET;
 
-
 	/**
 	 * This flag is set on all types EXCEPT the POSTFIX type. Not completely sure what this is for, but it is required
 	 * for the argtype to work correctly. VALID seems as good a name as any.

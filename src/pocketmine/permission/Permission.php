@@ -208,7 +208,6 @@ class Permission{
 		}
 	}
 
-
 	/**
 	 * @param string|Permission $name
 	 *
