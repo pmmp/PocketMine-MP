@@ -101,7 +101,6 @@ class JavaWorldData extends BaseNbtWorldData{
 		file_put_contents($this->dataPath, $buffer);
 	}
 
-
 	public function getDifficulty() : int{
 		return $this->compoundTag->getByte("Difficulty", World::DIFFICULTY_NORMAL);
 	}

@@ -57,7 +57,6 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	/** @var bool[][] uuid => [chunk index => hasSent] */
 	private $downloadedChunks = [];
 
-
 	public function __construct(NetworkSession $session, ResourcePackManager $resourcePackManager){
 		$this->session = $session;
 		$this->resourcePackManager = $resourcePackManager;

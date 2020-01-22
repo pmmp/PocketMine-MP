@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-
 interface PermissionRemovedExecutor{
 
 	public function attachmentRemoved(PermissionAttachment $attachment) : void;

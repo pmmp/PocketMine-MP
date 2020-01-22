@@ -61,7 +61,6 @@ abstract class Crops extends Flowable{
 		return false;
 	}
 
-
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->age < 7 and $item instanceof Fertilizer){
 			$block = clone $this;

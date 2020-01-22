@@ -333,7 +333,6 @@ class Block{
 		return false;
 	}
 
-
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector) : void{
 
 	}

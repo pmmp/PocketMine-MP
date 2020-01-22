@@ -67,7 +67,6 @@ class Leaves extends Transparent{
 		return true;
 	}
 
-
 	protected function findLog(Vector3 $pos, array &$visited = [], int $distance = 0) : bool{
 		$index = World::blockHash($pos->x, $pos->y, $pos->z);
 		if(isset($visited[$index])){

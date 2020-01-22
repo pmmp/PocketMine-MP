@@ -87,7 +87,6 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 		$this->instaBreak = $instaBreak;
 	}
 
-
 	/**
 	 * @return Item[]
 	 */

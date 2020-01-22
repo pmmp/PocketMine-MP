@@ -231,7 +231,6 @@ final class EntityFactory{
 		throw new \InvalidArgumentException("Entity $class is not registered");
 	}
 
-
 	/**
 	 * Helper function which creates minimal NBT needed to spawn an entity.
 	 */

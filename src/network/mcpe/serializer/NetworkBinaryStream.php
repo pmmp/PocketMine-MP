@@ -227,7 +227,6 @@ class NetworkBinaryStream extends BinaryStream{
 		}
 	}
 
-
 	public function putSlot(Item $item) : void{
 		if($item->getId() === 0){
 			$this->putVarInt(0);

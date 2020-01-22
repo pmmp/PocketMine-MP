@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-
 interface ServerOperator{
 	/**
 	 * Checks if the current object has operator permissions

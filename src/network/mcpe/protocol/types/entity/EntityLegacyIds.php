@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\entity;
 
-
 final class EntityLegacyIds{
 
 	public const CHICKEN = 10;

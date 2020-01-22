@@ -125,7 +125,6 @@ use const M_PI;
 use const M_SQRT3;
 use const PHP_INT_MAX;
 
-
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  */
@@ -2361,6 +2360,5 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function getZ(){
 		return $this->location->getZ();
 	}
-
 
 }

@@ -21,9 +21,7 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
-
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use function ord;

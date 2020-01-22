@@ -50,7 +50,6 @@ class LoginPacketHandler extends PacketHandler{
 	/** @var NetworkSession */
 	private $session;
 
-
 	public function __construct(Server $server, NetworkSession $session){
 		$this->session = $session;
 		$this->server = $server;

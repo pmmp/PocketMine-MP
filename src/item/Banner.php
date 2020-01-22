@@ -115,7 +115,6 @@ class Banner extends Item{
 				);
 			}
 
-
 			$tag->setTag(self::TAG_PATTERNS, $patterns);
 		}else{
 			$tag->removeTag(self::TAG_PATTERNS);

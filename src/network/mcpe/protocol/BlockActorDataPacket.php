@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
 
 class BlockActorDataPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{

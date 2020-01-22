@@ -1328,7 +1328,6 @@ class Server{
 			return true;
 		}
 
-
 		$sender->sendMessage($this->getLanguage()->translateString(TextFormat::RED . "%commands.generic.notFound"));
 
 		return false;
@@ -1579,7 +1578,6 @@ class Server{
 		}
 		$this->uniquePlayers = [];
 	}
-
 
 	/**
 	 * @return Language

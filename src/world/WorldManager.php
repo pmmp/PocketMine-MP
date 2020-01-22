@@ -320,7 +320,6 @@ class WorldManager{
 		return null;
 	}
 
-
 	public function tick(int $currentTick) : void{
 		foreach($this->worlds as $k => $world){
 			if(!isset($this->worlds[$k])){

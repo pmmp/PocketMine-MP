@@ -988,7 +988,6 @@ abstract class Entity{
 			return true;
 		}
 
-
 		$this->timings->startTiming();
 
 		if($this->hasMovementUpdate()){
@@ -1016,7 +1015,6 @@ abstract class Entity{
 		Timings::$timerEntityBaseTick->startTiming();
 		$hasUpdate = $this->entityBaseTick($tickDiff);
 		Timings::$timerEntityBaseTick->stopTiming();
-
 
 		$this->timings->stopTiming();
 
@@ -1187,7 +1185,6 @@ abstract class Entity{
 			}
 
 			$moveBB->offset(0, 0, $dz);
-
 
 			if($this->stepHeight > 0 and $fallingFlag and ($movX != $dx or $movZ != $dz)){
 				$cx = $dx;

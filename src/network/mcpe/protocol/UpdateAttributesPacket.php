@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\entity\Attribute;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use function array_values;

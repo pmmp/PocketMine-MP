@@ -203,7 +203,6 @@ class Explosion{
 			}
 		}
 
-
 		$air = ItemFactory::air();
 		$airBlock = VanillaBlocks::AIR();
 

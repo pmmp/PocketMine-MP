@@ -105,7 +105,6 @@ abstract class BaseNbtWorldData implements WorldData{
 		return $this->compoundTag;
 	}
 
-
 	/* The below are common between PC and PE */
 
 	public function getName() : string{

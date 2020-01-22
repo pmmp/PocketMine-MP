@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
-
 use pocketmine\utils\Color;
 use pocketmine\utils\RegistryTrait;
 use function assert;

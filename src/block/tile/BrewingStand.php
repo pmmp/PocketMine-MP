@@ -51,7 +51,6 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 	/** @var int */
 	private $remainingFuelTime = 0;
 
-
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
 		$this->inventory = new BrewingStandInventory($this->pos);

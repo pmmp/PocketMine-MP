@@ -927,7 +927,6 @@ class World implements ChunkManager{
 				$entity->scheduleUpdate();
 			}
 
-
 			foreach($chunk->getSubChunks() as $Y => $subChunk){
 				if(!$subChunk->isEmptyFast()){
 					$k = mt_rand(0, 0xfffffffff); //36 bits
@@ -1045,7 +1044,6 @@ class World implements ChunkManager{
 				}
 			}
 		}
-
 
 		return $collides;
 	}
@@ -1588,7 +1586,6 @@ class World implements ChunkManager{
 				}
 			}
 		}
-
 
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);

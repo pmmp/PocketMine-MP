@@ -44,12 +44,9 @@ abstract class Biome{
 
 	public const ICE_PLAINS = 12;
 
-
 	public const SMALL_MOUNTAINS = 20;
 
-
 	public const BIRCH_FOREST = 27;
-
 
 	public const MAX_BIOMES = 256;
 
@@ -95,7 +92,6 @@ abstract class Biome{
 		self::register(self::RIVER, new RiverBiome());
 
 		self::register(self::ICE_PLAINS, new IcePlainsBiome());
-
 
 		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
 

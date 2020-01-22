@@ -121,7 +121,6 @@ class ParticleCommand extends VanillaCommand{
 			return true;
 		}
 
-
 		$sender->sendMessage(new TranslationContainer("commands.particle.success", [$name, $count]));
 
 		$random = new Random((int) (microtime(true) * 1000) + mt_rand());

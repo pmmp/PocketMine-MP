@@ -80,7 +80,6 @@ class ItemEntity extends Entity{
 		$this->owner = $nbt->getString("Owner", $this->owner);
 		$this->thrower = $nbt->getString("Thrower", $this->thrower);
 
-
 		$itemTag = $nbt->getCompoundTag("Item");
 		if($itemTag === null){
 			throw new \UnexpectedValueException("Invalid " . get_class($this) . " entity: expected \"Item\" NBT tag not found");
@@ -90,7 +89,6 @@ class ItemEntity extends Entity{
 		if($this->item->isNull()){
 			throw new \UnexpectedValueException("Item for " . get_class($this) . " is invalid");
 		}
-
 
 		(new ItemSpawnEvent($this))->call();
 	}

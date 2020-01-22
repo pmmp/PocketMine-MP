@@ -227,7 +227,6 @@ class ExperienceManager{
 		$this->totalXp = $amount;
 	}
 
-
 	/**
 	 * Returns whether the human can pickup XP orbs (checks cooldown time)
 	 */

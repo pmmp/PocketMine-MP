@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
-
 interface CommandMap{
 
 	/**
@@ -38,6 +37,5 @@ interface CommandMap{
 	public function clearCommands() : void;
 
 	public function getCommand(string $name) : ?Command;
-
 
 }

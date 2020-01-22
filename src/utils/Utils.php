@@ -303,7 +303,6 @@ class Utils{
 		return $output;
 	}
 
-
 	/**
 	 * Returns a string that can be printed, replaces non-printable characters
 	 *
@@ -347,7 +346,6 @@ class Utils{
 		}
 		return $hash;
 	}
-
 
 	/**
 	 * @return array of claims

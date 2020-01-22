@@ -119,7 +119,6 @@ class EffectCommand extends VanillaCommand{
 			self::broadcastCommandMessage($sender, new TranslationContainer("%commands.effect.success", [$effect->getName(), $instance->getAmplifier(), $player->getDisplayName(), $instance->getDuration() / 20]));
 		}
 
-
 		return true;
 	}
 }

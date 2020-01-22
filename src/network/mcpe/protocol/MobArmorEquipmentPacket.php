@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\handler\PacketHandler;
 

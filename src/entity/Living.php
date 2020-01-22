@@ -203,7 +203,6 @@ abstract class Living extends Entity{
 		return $nbt;
 	}
 
-
 	public function hasLineOfSight(Entity $entity) : bool{
 		//TODO: head height
 		return true;

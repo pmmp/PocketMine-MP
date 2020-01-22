@@ -21,7 +21,6 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\event\world;
 
 use pocketmine\world\format\Chunk;

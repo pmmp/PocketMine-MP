@@ -51,7 +51,6 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public $canCollide = false;
 
-
 	public function attack(EntityDamageEvent $source) : void{
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
 			parent::attack($source);
@@ -65,7 +64,6 @@ class PrimedTNT extends Entity implements Explosive{
 
 		$this->getWorld()->addSound($this->location, new IgniteSound());
 	}
-
 
 	public function canCollideWith(Entity $entity) : bool{
 		return false;

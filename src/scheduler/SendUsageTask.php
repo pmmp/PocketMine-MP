@@ -115,7 +115,6 @@ class SendUsageTask extends AsyncTask{
 					"ticks" => $server->getTick()
 				];
 
-
 				//This anonymizes the user ids so they cannot be reversed to the original
 				foreach($playerList as $k => $v){
 					$playerList[$k] = md5($v);

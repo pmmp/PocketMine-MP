@@ -32,7 +32,6 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\DoorSound;
 
-
 class Door extends Transparent{
 	/** @var int */
 	protected $facing = Facing::NORTH;
@@ -45,7 +44,6 @@ class Door extends Transparent{
 	protected $open = false;
 	/** @var bool */
 	protected $powered = false;
-
 
 	protected function writeStateToMeta() : int{
 		if($this->top){

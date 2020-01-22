@@ -82,7 +82,6 @@ abstract class Tree{
 		}
 	}
 
-
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
 		$radiusToCheck = 0;
 		for($yy = 0; $yy < $this->treeHeight + 3; ++$yy){

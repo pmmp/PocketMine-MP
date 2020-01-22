@@ -307,8 +307,6 @@ class BlockFactory{
 		self::register(new SeaPickle(new BID(Ids::SEA_PICKLE), "Sea Pickle"));
 		self::register(new Skull(new BID(Ids::MOB_HEAD_BLOCK, 0, null, TileSkull::class), "Mob Head"));
 
-
-
 		self::register(new Snow(new BID(Ids::SNOW), "Snow Block"));
 		self::register(new SnowLayer(new BID(Ids::SNOW_LAYER), "Snow Layer"));
 		self::register(new SoulSand(new BID(Ids::SOUL_SAND), "Soul Sand"));
@@ -398,7 +396,6 @@ class BlockFactory{
 		self::register(new WeightedPressurePlateHeavy(new BID(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Heavy"));
 		self::register(new WeightedPressurePlateLight(new BID(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Light"));
 		self::register(new Wheat(new BID(Ids::WHEAT_BLOCK), "Wheat Block"));
-
 
 		//region ugly treetype -> blockID mapping tables
 		$woodenStairIds = [

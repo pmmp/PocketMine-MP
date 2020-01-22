@@ -21,7 +21,6 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\updater;
 
 use pocketmine\scheduler\AsyncTask;

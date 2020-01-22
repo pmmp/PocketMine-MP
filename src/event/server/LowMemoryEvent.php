@@ -25,7 +25,6 @@ namespace pocketmine\event\server;
 
 use pocketmine\utils\Process;
 
-
 /**
  * Called when the server is in a low-memory state as defined by the properties
  * Plugins should free caches or other non-essential data.
