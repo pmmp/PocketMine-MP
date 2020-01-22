@@ -120,29 +120,25 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder{
 	}
 
 	public function onUpdate() : bool{
-		if(($this->currentTick++ % 80) !== 0){
-			return true;
-		}
-		$pyramidLevels = $this->getPyramidLevels();
-
-		$duration = 180 + $pyramidLevels * 40;
-		$range = (10 + $pyramidLevels * 10);
-
-		$effectPrim = Effect::getEffect($this->primary);
-
-		if($effectPrim != null && $pyramidLevels > 0){
-			$effectPrim = new EffectInstance($effectPrim, $duration, $pyramidLevels == 4 && $this->primary == $this->secondary ? 1 : 0);
-
-			$players = array_filter($this->level->getCollidingEntities($this->rangeBox->expandedCopy($range, $range, $range)), function(Entity $player) : bool{
-				return $player instanceof Player and $player->spawned;
-			});
-			/** @var Player $player */
-			foreach($players as $player){
-				$player->addEffect($effectPrim);
-
-				if($pyramidLevels == 4 && $this->primary != $this->secondary){
-					$regen = new EffectInstance(Effect::getEffect(Effect::REGENERATION), $duration);
-					$player->addEffect($regen);
+		if($this->currentTick++ % 80 === 0){
+			if(($effectPrim = Effect::getEffect($this->primary)) !== null){
+				if(($pyramidLevels = $this->getPyramidLevels()) > 0){
+					$duration = 180 + $pyramidLevels * 40;
+					$range = (10 + $pyramidLevels * 10);
+					$effectPrim = new EffectInstance($effectPrim, $duration, $pyramidLevels == 4 && $this->primary == $this->secondary ? 1 : 0);
+					
+					$players = array_filter($this->level->getCollidingEntities($this->rangeBox->expandedCopy($range, $range, $range)), function (Entity $player) : bool{
+						return $player instanceof Player and $player->spawned;
+					});
+					/** @var Player $player */
+					foreach($players as $player){
+						$player->addEffect($effectPrim);
+						
+						if($pyramidLevels == 4 && $this->primary != $this->secondary){
+							$regen = new EffectInstance(Effect::getEffect(Effect::REGENERATION), $duration);
+							$player->addEffect($regen);
+						}
+					}
 				}
 			}
 		}
