@@ -40,9 +40,7 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	/** @var string */
 	protected $format;
 
-	/**
-	 * @var CommandSender[]
-	 */
+	/** @var CommandSender[] */
 	protected $recipients = [];
 
 	/**

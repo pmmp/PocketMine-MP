@@ -30,9 +30,7 @@ use pocketmine\utils\TextFormat;
  * Handles the achievement list and a bit more
  */
 abstract class Achievement{
-	/**
-	 * @var array[]
-	 */
+	/** @var array[] */
 	public static $list = [
 		/*"openInventory" => array(
 			"name" => "Taking Inventory",

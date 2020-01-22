@@ -75,9 +75,7 @@ class PluginDescription{
 	/** @var int */
 	private $order = PluginLoadOrder::POSTWORLD;
 
-	/**
-	 * @var Permission[]
-	 */
+	/** @var Permission[] */
 	private $permissions = [];
 
 	/**

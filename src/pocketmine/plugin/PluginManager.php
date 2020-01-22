@@ -76,19 +76,13 @@ class PluginManager{
 	/** @var SimpleCommandMap */
 	private $commandMap;
 
-	/**
-	 * @var Plugin[]
-	 */
+	/** @var Plugin[] */
 	protected $plugins = [];
 
-	/**
-	 * @var Plugin[]
-	 */
+	/** @var Plugin[] */
 	protected $enabledPlugins = [];
 
-	/**
-	 * @var PluginLoader[]
-	 */
+	/** @var PluginLoader[] */
 	protected $fileAssociations = [];
 
 	/** @var string|null */

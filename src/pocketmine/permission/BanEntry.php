@@ -32,9 +32,7 @@ use function strtolower;
 use function trim;
 
 class BanEntry{
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	public static $format = "Y-m-d H:i:s O";
 
 	/** @var string */

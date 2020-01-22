@@ -31,9 +31,7 @@ use function in_array;
 use function spl_object_hash;
 
 class HandlerList{
-	/**
-	 * @var HandlerList[] classname => HandlerList
-	 */
+	/** @var HandlerList[] classname => HandlerList */
 	private static $allLists = [];
 
 	/**

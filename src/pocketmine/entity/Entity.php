@@ -430,9 +430,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		]);
 	}
 
-	/**
-	 * @var Player[]
-	 */
+	/** @var Player[] */
 	protected $hasSpawned = [];
 
 	/** @var int */
