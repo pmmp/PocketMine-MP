@@ -35,6 +35,9 @@ class SkinImage{
 	private $data;
 
 	public function __construct(int $height, int $width, string $data){
+		if($height < 0 or $width < 0){
+			throw new \InvalidArgumentException("Height and width cannot be negative");
+		}
 		if(($expected = $height * $width * 4) !== ($actual = strlen($data))){
 			throw new \InvalidArgumentException("Data should be exactly $expected bytes, got $actual bytes");
 		}
