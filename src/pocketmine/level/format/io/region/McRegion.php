@@ -67,11 +67,6 @@ class McRegion extends BaseLevelProvider{
 	/** @var RegionLoader[] */
 	protected $regions = [];
 
-	/**
-	 * @param Chunk $chunk
-	 *
-	 * @return string
-	 */
 	protected function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
 		$nbt->setInt("xPos", $chunk->getX());
@@ -127,9 +122,6 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	/**
-	 * @param string $data
-	 *
-	 * @return Chunk
 	 * @throws CorruptedChunkException
 	 */
 	protected function nbtDeserialize(string $data) : Chunk{
@@ -206,9 +198,6 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	/**
-	 * @param string $context
-	 * @param ListTag $list
-	 *
 	 * @return CompoundTag[]
 	 * @throws CorruptedChunkException
 	 */
@@ -236,7 +225,6 @@ class McRegion extends BaseLevelProvider{
 
 	/**
 	 * Returns the storage version as per Minecraft PC world formats.
-	 * @return int
 	 */
 	public static function getPcWorldFormatVersion() : int{
 		return 19132; //mcregion
@@ -329,8 +317,6 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
 	 * @param int $regionX reference parameter
 	 * @param int $regionZ reference parameter
 	 *
@@ -342,9 +328,6 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	/**
-	 * @param int $regionX
-	 * @param int $regionZ
-	 *
 	 * @return RegionLoader|null
 	 */
 	protected function getRegion(int $regionX, int $regionZ){
@@ -353,20 +336,12 @@ class McRegion extends BaseLevelProvider{
 
 	/**
 	 * Returns the path to a specific region file based on its X/Z coordinates
-	 *
-	 * @param int $regionX
-	 * @param int $regionZ
-	 *
-	 * @return string
 	 */
 	protected function pathToRegion(int $regionX, int $regionZ) : string{
 		return $this->path . "region/r.$regionX.$regionZ." . static::REGION_FILE_EXTENSION;
 	}
 
 	/**
-	 * @param int $regionX
-	 * @param int $regionZ
-	 *
 	 * @return void
 	 */
 	protected function loadRegion(int $regionX, int $regionZ){
@@ -402,11 +377,6 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
-	 *
 	 * @throws CorruptedChunkException
 	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{

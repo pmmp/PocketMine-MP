@@ -106,7 +106,6 @@ class BaseLang{
 	}
 
 	/**
-	 * @param string   $path
 	 * @param string[] $d reference parameter
 	 *
 	 * @return bool
@@ -121,11 +120,7 @@ class BaseLang{
 	}
 
 	/**
-	 * @param string               $str
 	 * @param (float|int|string)[] $params
-	 * @param string|null          $onlyPrefix
-	 *
-	 * @return string
 	 */
 	public function translateString(string $str, array $params = [], string $onlyPrefix = null) : string{
 		$baseText = $this->get($str);
@@ -139,8 +134,6 @@ class BaseLang{
 	}
 
 	/**
-	 * @param TextContainer $c
-	 *
 	 * @return string
 	 */
 	public function translate(TextContainer $c){
@@ -159,8 +152,6 @@ class BaseLang{
 	}
 
 	/**
-	 * @param string $id
-	 *
 	 * @return string|null
 	 */
 	public function internalGet(string $id){
@@ -173,11 +164,6 @@ class BaseLang{
 		return null;
 	}
 
-	/**
-	 * @param string $id
-	 *
-	 * @return string
-	 */
 	public function get(string $id) : string{
 		if(isset($this->lang[$id])){
 			return $this->lang[$id];
@@ -188,12 +174,6 @@ class BaseLang{
 		return $id;
 	}
 
-	/**
-	 * @param string      $text
-	 * @param string|null $onlyPrefix
-	 *
-	 * @return string
-	 */
 	protected function parseTranslation(string $text, string $onlyPrefix = null) : string{
 		$newString = "";
 

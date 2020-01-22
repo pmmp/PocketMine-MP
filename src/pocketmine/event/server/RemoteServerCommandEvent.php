@@ -32,10 +32,6 @@ use pocketmine\command\CommandSender;
  */
 class RemoteServerCommandEvent extends ServerCommandEvent{
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $command
-	 */
 	public function __construct(CommandSender $sender, string $command){
 		parent::__construct($sender, $command);
 	}

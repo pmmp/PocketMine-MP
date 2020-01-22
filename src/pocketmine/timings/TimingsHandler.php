@@ -108,8 +108,6 @@ class TimingsHandler{
 	}
 
 	/**
-	 * @param bool $measure
-	 *
 	 * @return void
 	 */
 	public static function tick(bool $measure = true){
@@ -156,10 +154,6 @@ class TimingsHandler{
 	/** @var int */
 	private $violations = 0;
 
-	/**
-	 * @param string         $name
-	 * @param TimingsHandler $parent
-	 */
 	public function __construct(string $name, TimingsHandler $parent = null){
 		$this->name = $name;
 		$this->parent = $parent;

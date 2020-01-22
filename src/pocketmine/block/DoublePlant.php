@@ -68,7 +68,6 @@ class DoublePlant extends Flowable{
 
 	/**
 	 * Returns whether this double-plant has a corresponding other half.
-	 * @return bool
 	 */
 	public function isValidHalfPlant() : bool{
 		if($this->meta & self::BITFLAG_TOP){

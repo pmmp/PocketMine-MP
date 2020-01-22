@@ -35,9 +35,6 @@ class ChestInventory extends ContainerInventory{
 	/** @var Chest */
 	protected $holder;
 
-	/**
-	 * @param Chest $tile
-	 */
 	public function __construct(Chest $tile){
 		parent::__construct($tile);
 	}

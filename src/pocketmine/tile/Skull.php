@@ -58,8 +58,6 @@ class Skull extends Spawnable{
 	}
 
 	/**
-	 * @param int $type
-	 *
 	 * @return void
 	 */
 	public function setType(int $type){

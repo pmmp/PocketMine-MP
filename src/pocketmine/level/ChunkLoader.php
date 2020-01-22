@@ -42,15 +42,11 @@ interface ChunkLoader{
 	/**
 	 * Returns the ChunkLoader id.
 	 * Call Level::generateChunkLoaderId($this) to generate and save it
-	 *
-	 * @return int
 	 */
 	public function getLoaderId() : int;
 
 	/**
 	 * Returns if the chunk loader is currently active
-	 *
-	 * @return bool
 	 */
 	public function isLoaderActive() : bool;
 
@@ -77,8 +73,6 @@ interface ChunkLoader{
 	/**
 	 * This method will be called when a Chunk is replaced by a new one
 	 *
-	 * @param Chunk $chunk
-	 *
 	 * @return void
 	 */
 	public function onChunkChanged(Chunk $chunk);
@@ -86,17 +80,12 @@ interface ChunkLoader{
 	/**
 	 * This method will be called when a registered chunk is loaded
 	 *
-	 * @param Chunk $chunk
-	 *
 	 * @return void
 	 */
 	public function onChunkLoaded(Chunk $chunk);
 
-
 	/**
 	 * This method will be called when a registered chunk is unloaded
-	 *
-	 * @param Chunk $chunk
 	 *
 	 * @return void
 	 */
@@ -105,8 +94,6 @@ interface ChunkLoader{
 	/**
 	 * This method will be called when a registered chunk is populated
 	 * Usually it'll be sent with another call to onChunkChanged()
-	 *
-	 * @param Chunk $chunk
 	 *
 	 * @return void
 	 */

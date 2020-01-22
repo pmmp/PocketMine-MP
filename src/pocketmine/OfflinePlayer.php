@@ -37,10 +37,6 @@ class OfflinePlayer implements IPlayer, Metadatable{
 	/** @var CompoundTag|null */
 	private $namedtag = null;
 
-	/**
-	 * @param Server $server
-	 * @param string $name
-	 */
 	public function __construct(Server $server, string $name){
 		$this->server = $server;
 		$this->name = $name;

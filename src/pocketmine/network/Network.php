@@ -112,17 +112,12 @@ class Network{
 
 	/**
 	 * @deprecated
-	 * @param SourceInterface $interface
-	 *
-	 * @return void
 	 */
 	public function processInterface(SourceInterface $interface) : void{
 		$interface->process();
 	}
 
 	/**
-	 * @param SourceInterface $interface
-	 *
 	 * @return void
 	 */
 	public function registerInterface(SourceInterface $interface){
@@ -140,8 +135,6 @@ class Network{
 	}
 
 	/**
-	 * @param SourceInterface $interface
-	 *
 	 * @return void
 	 */
 	public function unregisterInterface(SourceInterface $interface){
@@ -152,8 +145,6 @@ class Network{
 	/**
 	 * Sets the server name shown on each interface Query
 	 *
-	 * @param string $name
-	 *
 	 * @return void
 	 */
 	public function setName(string $name){
@@ -163,9 +154,6 @@ class Network{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
@@ -179,18 +167,11 @@ class Network{
 		}
 	}
 
-	/**
-	 * @return Server
-	 */
 	public function getServer() : Server{
 		return $this->server;
 	}
 
 	/**
-	 * @param string $address
-	 * @param int    $port
-	 * @param string $payload
-	 *
 	 * @return void
 	 */
 	public function sendPacket(string $address, int $port, string $payload){
@@ -202,9 +183,6 @@ class Network{
 	/**
 	 * Blocks an IP address from the main interface. Setting timeout to -1 will block it forever
 	 *
-	 * @param string $address
-	 * @param int    $timeout
-	 *
 	 * @return void
 	 */
 	public function blockAddress(string $address, int $timeout = 300){
@@ -214,8 +192,6 @@ class Network{
 	}
 
 	/**
-	 * @param string $address
-	 *
 	 * @return void
 	 */
 	public function unblockAddress(string $address){

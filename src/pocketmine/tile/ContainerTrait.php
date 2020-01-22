@@ -73,10 +73,6 @@ trait ContainerTrait{
 
 	/**
 	 * @see Container::canOpenWith()
-	 *
-	 * @param string $key
-	 *
-	 * @return bool
 	 */
 	public function canOpenWith(string $key) : bool{
 		return $this->lock === null or $this->lock === $key;

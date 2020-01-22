@@ -143,9 +143,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	}
 
-	/**
-	 * @return CompoundTag
-	 */
 	public function getLevelData() : CompoundTag{
 		return $this->levelData;
 	}
@@ -162,10 +159,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws CorruptedChunkException
 	 * @throws UnsupportedChunkFormatException
 	 */
@@ -181,10 +174,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws UnsupportedChunkFormatException
 	 * @throws CorruptedChunkException
 	 */

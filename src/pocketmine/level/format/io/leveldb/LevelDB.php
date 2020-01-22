@@ -297,10 +297,6 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws UnsupportedChunkFormatException
 	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
@@ -521,7 +517,6 @@ class LevelDB extends BaseLevelProvider{
 
 	/**
 	 * @param CompoundTag[] $targets
-	 * @param string        $index
 	 */
 	private function writeTags(array $targets, string $index) : void{
 		if(count($targets) > 0){
@@ -532,9 +527,6 @@ class LevelDB extends BaseLevelProvider{
 		}
 	}
 
-	/**
-	 * @return \LevelDB
-	 */
 	public function getDatabase() : \LevelDB{
 		return $this->db;
 	}

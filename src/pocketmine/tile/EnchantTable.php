@@ -29,9 +29,6 @@ class EnchantTable extends Spawnable implements Nameable{
 		saveName as writeSaveData;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDefaultName() : string{
 		return "Enchanting Table";
 	}

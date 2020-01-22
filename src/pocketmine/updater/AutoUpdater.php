@@ -46,10 +46,6 @@ class AutoUpdater{
 	/** @var VersionString|null */
 	protected $newVersion;
 
-	/**
-	 * @param Server $server
-	 * @param string $endpoint
-	 */
 	public function __construct(Server $server, string $endpoint){
 		$this->server = $server;
 		$this->endpoint = "http://$endpoint/api/";
@@ -61,8 +57,6 @@ class AutoUpdater{
 
 	/**
 	 * Callback used at the end of the update checking task
-	 *
-	 * @param array $updateInfo
 	 *
 	 * @return void
 	 */
@@ -85,8 +79,6 @@ class AutoUpdater{
 
 	/**
 	 * Returns whether there is an update available.
-	 *
-	 * @return bool
 	 */
 	public function hasUpdate() : bool{
 		return $this->newVersion !== null;
@@ -111,8 +103,6 @@ class AutoUpdater{
 
 	/**
 	 * Shows a warning to a player to tell them there is an update available
-	 *
-	 * @param Player $player
 	 *
 	 * @return void
 	 */
@@ -198,8 +188,6 @@ class AutoUpdater{
 
 	/**
 	 * Returns the channel used for update checking (stable, beta, dev)
-	 *
-	 * @return string
 	 */
 	public function getChannel() : string{
 		$channel = strtolower($this->server->getProperty("auto-updater.preferred-channel", "stable"));
@@ -212,8 +200,6 @@ class AutoUpdater{
 
 	/**
 	 * Returns the host used for update checks.
-	 *
-	 * @return string
 	 */
 	public function getEndpoint() : string{
 		return $this->endpoint;

@@ -70,7 +70,6 @@ abstract class ContainerInventory extends BaseInventory{
 
 	/**
 	 * Returns the Minecraft PE inventory type used to show the inventory window to clients.
-	 * @return int
 	 */
 	abstract public function getNetworkType() : int;
 

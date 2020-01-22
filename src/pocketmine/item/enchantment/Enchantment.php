@@ -142,18 +142,11 @@ class Enchantment{
 
 	/**
 	 * Registers an enchantment type.
-	 *
-	 * @param Enchantment $enchantment
 	 */
 	public static function registerEnchantment(Enchantment $enchantment) : void{
 		self::$enchantments[$enchantment->getId()] = clone $enchantment;
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return Enchantment|null
-	 */
 	public static function getEnchantment(int $id) : ?Enchantment{
 		if($id < 0 or $id >= self::$enchantments->getSize()){
 			return null;
@@ -161,11 +154,6 @@ class Enchantment{
 		return self::$enchantments[$id] ?? null;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return Enchantment|null
-	 */
 	public static function getEnchantmentByName(string $name) : ?Enchantment{
 		$const = Enchantment::class . "::" . strtoupper($name);
 		if(defined($const)){
@@ -187,14 +175,6 @@ class Enchantment{
 	/** @var int */
 	private $maxLevel;
 
-	/**
-	 * @param int    $id
-	 * @param string $name
-	 * @param int    $rarity
-	 * @param int    $primaryItemFlags
-	 * @param int    $secondaryItemFlags
-	 * @param int    $maxLevel
-	 */
 	public function __construct(int $id, string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel){
 		$this->id = $id;
 		$this->name = $name;
@@ -206,7 +186,6 @@ class Enchantment{
 
 	/**
 	 * Returns the ID of this enchantment as per Minecraft PE
-	 * @return int
 	 */
 	public function getId() : int{
 		return $this->id;
@@ -214,7 +193,6 @@ class Enchantment{
 
 	/**
 	 * Returns a translation key for this enchantment's name.
-	 * @return string
 	 */
 	public function getName() : string{
 		return $this->name;
@@ -222,7 +200,6 @@ class Enchantment{
 
 	/**
 	 * Returns an int constant indicating how rare this enchantment type is.
-	 * @return int
 	 */
 	public function getRarity() : int{
 		return $this->rarity;
@@ -230,8 +207,6 @@ class Enchantment{
 
 	/**
 	 * Returns a bitset indicating what item types can have this item applied from an enchanting table.
-	 *
-	 * @return int
 	 */
 	public function getPrimaryItemFlags() : int{
 		return $this->primaryItemFlags;
@@ -240,8 +215,6 @@ class Enchantment{
 	/**
 	 * Returns a bitset indicating what item types cannot have this item applied from an enchanting table, but can from
 	 * an anvil.
-	 *
-	 * @return int
 	 */
 	public function getSecondaryItemFlags() : int{
 		return $this->secondaryItemFlags;
@@ -249,10 +222,6 @@ class Enchantment{
 
 	/**
 	 * Returns whether this enchantment can apply to the item type from an enchanting table.
-	 *
-	 * @param int $flag
-	 *
-	 * @return bool
 	 */
 	public function hasPrimaryItemType(int $flag) : bool{
 		return ($this->primaryItemFlags & $flag) !== 0;
@@ -260,10 +229,6 @@ class Enchantment{
 
 	/**
 	 * Returns whether this enchantment can apply to the item type from an anvil, if it is not a primary item.
-	 *
-	 * @param int $flag
-	 *
-	 * @return bool
 	 */
 	public function hasSecondaryItemType(int $flag) : bool{
 		return ($this->secondaryItemFlags & $flag) !== 0;
@@ -271,7 +236,6 @@ class Enchantment{
 
 	/**
 	 * Returns the maximum level of this enchantment that can be found on an enchantment table.
-	 * @return int
 	 */
 	public function getMaxLevel() : int{
 		return $this->maxLevel;

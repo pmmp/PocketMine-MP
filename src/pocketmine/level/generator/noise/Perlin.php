@@ -35,7 +35,6 @@ class Perlin extends Noise{
 
 
 	/**
-	 * @param Random $random
 	 * @param int    $octaves
 	 * @param float  $persistence
 	 * @param float  $expansion

@@ -144,13 +144,6 @@ class SimpleCommandMap implements CommandMap{
 		}
 	}
 
-	/**
-	 * @param string      $fallbackPrefix
-	 * @param Command     $command
-	 * @param string|null $label
-	 *
-	 * @return bool
-	 */
 	public function register(string $fallbackPrefix, Command $command, string $label = null) : bool{
 		if($label === null){
 			$label = $command->getName();
@@ -177,11 +170,6 @@ class SimpleCommandMap implements CommandMap{
 		return $registered;
 	}
 
-	/**
-	 * @param Command $command
-	 *
-	 * @return bool
-	 */
 	public function unregister(Command $command) : bool{
 		foreach($this->knownCommands as $lbl => $cmd){
 			if($cmd === $command){
@@ -194,14 +182,6 @@ class SimpleCommandMap implements CommandMap{
 		return true;
 	}
 
-	/**
-	 * @param Command $command
-	 * @param bool    $isAlias
-	 * @param string  $fallbackPrefix
-	 * @param string  $label
-	 *
-	 * @return bool
-	 */
 	private function registerAlias(Command $command, bool $isAlias, string $fallbackPrefix, string $label) : bool{
 		$this->knownCommands[$fallbackPrefix . ":" . $label] = $command;
 		if(($command instanceof VanillaCommand or $isAlias) and isset($this->knownCommands[$label])){

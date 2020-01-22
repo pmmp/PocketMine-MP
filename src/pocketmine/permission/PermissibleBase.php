@@ -45,9 +45,6 @@ class PermissibleBase implements Permissible{
 	 */
 	private $permissions = [];
 
-	/**
-	 * @param ServerOperator $opable
-	 */
 	public function __construct(ServerOperator $opable){
 		$this->opable = $opable;
 		if($opable instanceof Permissible){
@@ -88,12 +85,6 @@ class PermissibleBase implements Permissible{
 
 	/**
 	 * //TODO: tick scheduled attachments
-	 *
-	 * @param Plugin $plugin
-	 * @param string $name
-	 * @param bool   $value
-	 *
-	 * @return PermissionAttachment
 	 */
 	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
 		if(!$plugin->isEnabled()){
@@ -161,8 +152,6 @@ class PermissibleBase implements Permissible{
 
 	/**
 	 * @param bool[]                    $children
-	 * @param bool                      $invert
-	 * @param PermissionAttachment|null $attachment
 	 */
 	private function calculateChildPermissions(array $children, bool $invert, ?PermissionAttachment $attachment) : void{
 		$permManager = PermissionManager::getInstance();

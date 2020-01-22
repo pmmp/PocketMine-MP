@@ -88,8 +88,6 @@ class Random{
 
 	/**
 	 * Returns an 31-bit integer (not signed)
-	 *
-	 * @return int
 	 */
 	public function nextInt() : int{
 		return $this->nextSignedInt() & 0x7fffffff;
@@ -97,8 +95,6 @@ class Random{
 
 	/**
 	 * Returns a 32-bit integer (signed)
-	 *
-	 * @return int
 	 */
 	public function nextSignedInt() : int{
 		$t = ($this->x ^ ($this->x << 11)) & 0xffffffff;
@@ -114,8 +110,6 @@ class Random{
 
 	/**
 	 * Returns a float between 0.0 and 1.0 (inclusive)
-	 *
-	 * @return float
 	 */
 	public function nextFloat() : float{
 		return $this->nextInt() / 0x7fffffff;
@@ -123,8 +117,6 @@ class Random{
 
 	/**
 	 * Returns a float between -1.0 and 1.0 (inclusive)
-	 *
-	 * @return float
 	 */
 	public function nextSignedFloat() : float{
 		return $this->nextSignedInt() / 0x7fffffff;
@@ -132,8 +124,6 @@ class Random{
 
 	/**
 	 * Returns a random boolean
-	 *
-	 * @return bool
 	 */
 	public function nextBoolean() : bool{
 		return ($this->nextSignedInt() & 0x01) === 0;
@@ -144,8 +134,6 @@ class Random{
 	 *
 	 * @param int $start default 0
 	 * @param int $end default 0x7fffffff
-	 *
-	 * @return int
 	 */
 	public function nextRange(int $start = 0, int $end = 0x7fffffff) : int{
 		return $start + ($this->nextInt() % ($end + 1 - $start));

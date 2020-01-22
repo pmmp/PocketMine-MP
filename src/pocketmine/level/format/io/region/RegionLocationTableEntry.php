@@ -35,10 +35,6 @@ class RegionLocationTableEntry{
 	private $timestamp;
 
 	/**
-	 * @param int $firstSector
-	 * @param int $sectorCount
-	 * @param int $timestamp
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function __construct(int $firstSector, int $sectorCount, int $timestamp){
@@ -53,16 +49,10 @@ class RegionLocationTableEntry{
 		$this->timestamp = $timestamp;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getFirstSector() : int{
 		return $this->firstSector;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getLastSector() : int{
 		return $this->firstSector + $this->sectorCount - 1;
 	}
@@ -75,23 +65,14 @@ class RegionLocationTableEntry{
 		return range($this->getFirstSector(), $this->getLastSector());
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getSectorCount() : int{
 		return $this->sectorCount;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getTimestamp() : int{
 		return $this->timestamp;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isNull() : bool{
 		return $this->firstSector === 0 or $this->sectorCount === 0;
 	}

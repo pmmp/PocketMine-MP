@@ -112,8 +112,6 @@ class CobblestoneWall extends Transparent{
 	}
 
 	/**
-	 * @param Block $block
-	 *
 	 * @return bool
 	 */
 	public function canConnect(Block $block){

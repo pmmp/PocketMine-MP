@@ -52,8 +52,6 @@ class EnderChestInventory extends ChestInventory{
 	/**
 	 * Set the holder's position to that of a tile
 	 *
-	 * @param EnderChest $enderChest
-	 *
 	 * @return void
 	 */
 	public function setHolderPosition(EnderChest $enderChest){

@@ -37,12 +37,6 @@ class OakTree extends Tree{
 	}
 
 	/**
-	 * @param ChunkManager $level
-	 * @param int          $x
-	 * @param int          $y
-	 * @param int          $z
-	 * @param Random       $random
-	 *
 	 * @return void
 	 */
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random){

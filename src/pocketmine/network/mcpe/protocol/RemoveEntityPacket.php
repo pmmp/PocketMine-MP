@@ -39,9 +39,6 @@ class RemoveEntityPacket extends DataPacket/* implements ClientboundPacket*/{
 		return $result;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getUvarint1() : int{
 		return $this->uvarint1;
 	}

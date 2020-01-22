@@ -96,11 +96,6 @@ class QueryHandler{
 	}
 
 	/**
-	 * @param AdvancedSourceInterface $interface
-	 * @param string                  $address
-	 * @param int                     $port
-	 * @param string                  $packet
-	 *
 	 * @return void
 	 */
 	public function handle(AdvancedSourceInterface $interface, string $address, int $port, string $packet){

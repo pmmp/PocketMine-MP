@@ -92,10 +92,6 @@ class VerifyLoginTask extends AsyncTask{
 	}
 
 	/**
-	 * @param string      $jwt
-	 * @param null|string $currentPublicKey
-	 * @param bool        $first
-	 *
 	 * @throws VerifyLoginException if errors are encountered
 	 */
 	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : void{

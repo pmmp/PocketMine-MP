@@ -79,9 +79,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	private $timezone;
 
 	/**
-	 * @param string $logFile
-	 * @param bool   $logDebug
-	 *
 	 * @throws \RuntimeException
 	 */
 	public function __construct(string $logFile, bool $logDebug = false){
@@ -101,16 +98,12 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->start(PTHREADS_INHERIT_NONE);
 	}
 
-	/**
-	 * @return MainLogger
-	 */
 	public static function getLogger() : MainLogger{
 		return static::$logger;
 	}
 
 	/**
 	 * Returns whether a MainLogger instance is statically registered on this thread.
-	 * @return bool
 	 */
 	public static function isRegisteredStatic() : bool{
 		return static::$logger !== null;
@@ -132,8 +125,6 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	/**
 	 * Returns the current logger format used for console output.
-	 *
-	 * @return string
 	 */
 	public function getFormat() : string{
 		return $this->format;
@@ -149,8 +140,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	 * - message
 	 *
 	 * @see http://php.net/manual/en/function.sprintf.php
-	 *
-	 * @param string $format
 	 */
 	public function setFormat(string $format) : void{
 		$this->format = $format;
@@ -192,8 +181,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	/**
-	 * @param bool $logDebug
-	 *
 	 * @return void
 	 */
 	public function setLogDebug(bool $logDebug){
@@ -201,7 +188,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	/**
-	 * @param \Throwable $e
 	 * @param array|null $trace
 	 *
 	 * @return void

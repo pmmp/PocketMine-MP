@@ -136,22 +136,10 @@ class Config{
 		$this->changed = $changed;
 	}
 
-	/**
-	 * @param string $str
-	 *
-	 * @return string
-	 */
 	public static function fixYAMLIndexes(string $str) : string{
 		return preg_replace("#^( *)(y|Y|yes|Yes|YES|n|N|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF)( *)\:#m", "$1\"$2\"$3:", $str);
 	}
 
-	/**
-	 * @param string $file
-	 * @param int    $type
-	 * @param array  $default
-	 *
-	 * @return bool
-	 */
 	public function load(string $file, int $type = Config::DETECT, array $default = []) : bool{
 		$this->correct = true;
 		$this->file = $file;
@@ -209,16 +197,10 @@ class Config{
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function check() : bool{
 		return $this->correct;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function save() : bool{
 		if($this->correct){
 			$content = null;
@@ -255,8 +237,6 @@ class Config{
 	/**
 	 * Sets the options for the JSON encoding when saving
 	 *
-	 * @param int $options
-	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
@@ -273,8 +253,6 @@ class Config{
 
 	/**
 	 * Enables the given option in addition to the currently set JSON options
-	 *
-	 * @param int $option
 	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
@@ -293,8 +271,6 @@ class Config{
 	/**
 	 * Disables the given option for the JSON encoding when saving
 	 *
-	 * @param int $option
-	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
@@ -312,7 +288,6 @@ class Config{
 	/**
 	 * Returns the options for the JSON encoding when saving
 	 *
-	 * @return int
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
 	 */
@@ -466,8 +441,6 @@ class Config{
 	}
 
 	/**
-	 * @param array $v
-	 *
 	 * @return void
 	 */
 	public function setAll(array $v){
@@ -478,8 +451,6 @@ class Config{
 	/**
 	 * @param string $k
 	 * @param bool   $lowercase If set, searches Config in single-case / lowercase.
-	 *
-	 * @return bool
 	 */
 	public function exists($k, bool $lowercase = false) : bool{
 		if($lowercase){
@@ -501,18 +472,11 @@ class Config{
 		$this->changed = true;
 	}
 
-	/**
-	 * @param bool $keys
-	 *
-	 * @return array
-	 */
 	public function getAll(bool $keys = false) : array{
 		return ($keys ? array_keys($this->config) : $this->config);
 	}
 
 	/**
-	 * @param array $defaults
-	 *
 	 * @return void
 	 */
 	public function setDefaults(array $defaults){
@@ -520,10 +484,7 @@ class Config{
 	}
 
 	/**
-	 * @param array $default
 	 * @param array $data reference parameter
-	 *
-	 * @return int
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;
@@ -546,9 +507,6 @@ class Config{
 		return $changed;
 	}
 
-	/**
-	 * @param string $content
-	 */
 	private function parseList(string $content) : void{
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
@@ -559,9 +517,6 @@ class Config{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	private function writeProperties() : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
 		foreach($this->config as $k => $v){
@@ -576,9 +531,6 @@ class Config{
 		return $content;
 	}
 
-	/**
-	 * @param string $content
-	 */
 	private function parseProperties(string $content) : void{
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){

@@ -53,8 +53,6 @@ class Nether extends Generator{
 	private $noiseBase;
 
 	/**
-	 * @param array $options
-	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public function __construct(array $options = []){

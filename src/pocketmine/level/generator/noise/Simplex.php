@@ -84,7 +84,6 @@ class Simplex extends Perlin{
 
 
 	/**
-	 * @param Random $random
 	 * @param int    $octaves
 	 * @param float  $persistence
 	 * @param float  $expansion

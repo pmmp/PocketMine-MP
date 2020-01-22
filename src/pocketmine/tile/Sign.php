@@ -77,11 +77,6 @@ class Sign extends Spawnable{
 	/**
 	 * Changes contents of the specific lines to the string provided.
 	 * Leaves contents of the specific lines as is if null is provided.
-	 *
-	 * @param null|string $line1
-	 * @param null|string $line2
-	 * @param null|string $line3
-	 * @param null|string $line4
 	 */
 	public function setText(?string $line1 = "", ?string $line2 = "", ?string $line3 = "", ?string $line4 = "") : void{
 		if($line1 !== null){
@@ -102,8 +97,6 @@ class Sign extends Spawnable{
 
 	/**
 	 * @param int    $index 0-3
-	 * @param string $line
-	 * @param bool   $update
 	 */
 	public function setLine(int $index, string $line, bool $update = true) : void{
 		if($index < 0 or $index > 3){
@@ -121,8 +114,6 @@ class Sign extends Spawnable{
 
 	/**
 	 * @param int $index 0-3
-	 *
-	 * @return string
 	 */
 	public function getLine(int $index) : string{
 		if($index < 0 or $index > 3){

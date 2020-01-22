@@ -33,9 +33,6 @@ class EntityMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param Entity $subject
-	 * @param string $metadataKey
-	 *
 	 * @return MetadataValue[]
 	 */
 	public function getMetadata(Entity $subject, string $metadataKey){
@@ -47,10 +44,6 @@ class EntityMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param Entity $subject
-	 * @param string $metadataKey
-	 * @param Plugin $owningPlugin
-	 *
 	 * @return void
 	 */
 	public function removeMetadata(Entity $subject, string $metadataKey, Plugin $owningPlugin){
@@ -58,10 +51,6 @@ class EntityMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param Entity        $subject
-	 * @param string        $metadataKey
-	 * @param MetadataValue $newMetadataValue
-	 *
 	 * @return void
 	 */
 	public function setMetadata(Entity $subject, string $metadataKey, MetadataValue $newMetadataValue){

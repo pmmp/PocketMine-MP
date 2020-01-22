@@ -34,9 +34,6 @@ class PlayerMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param IPlayer $subject
-	 * @param string  $metadataKey
-	 *
 	 * @return MetadataValue[]
 	 */
 	public function getMetadata(IPlayer $subject, string $metadataKey){
@@ -48,10 +45,6 @@ class PlayerMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param IPlayer $subject
-	 * @param string  $metadataKey
-	 * @param Plugin  $owningPlugin
-	 *
 	 * @return void
 	 */
 	public function removeMetadata(IPlayer $subject, string $metadataKey, Plugin $owningPlugin){
@@ -59,10 +52,6 @@ class PlayerMetadataStore extends MetadataStore{
 	}
 
 	/**
-	 * @param IPlayer       $subject
-	 * @param string        $metadataKey
-	 * @param MetadataValue $newMetadataValue
-	 *
 	 * @return void
 	 */
 	public function setMetadata(IPlayer $subject, string $metadataKey, MetadataValue $newMetadataValue){

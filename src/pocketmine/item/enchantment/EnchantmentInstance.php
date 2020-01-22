@@ -45,7 +45,6 @@ class EnchantmentInstance{
 
 	/**
 	 * Returns the type of this enchantment.
-	 * @return Enchantment
 	 */
 	public function getType() : Enchantment{
 		return $this->enchantment;
@@ -53,7 +52,6 @@ class EnchantmentInstance{
 
 	/**
 	 * Returns the type identifier of this enchantment instance.
-	 * @return int
 	 */
 	public function getId() : int{
 		return $this->enchantment->getId();
@@ -61,7 +59,6 @@ class EnchantmentInstance{
 
 	/**
 	 * Returns the level of the enchantment.
-	 * @return int
 	 */
 	public function getLevel() : int{
 		return $this->level;
@@ -69,8 +66,6 @@ class EnchantmentInstance{
 
 	/**
 	 * Sets the level of the enchantment.
-	 *
-	 * @param int $level
 	 *
 	 * @return $this
 	 */

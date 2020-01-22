@@ -76,8 +76,6 @@ class BatchPacket extends DataPacket{
 	}
 
 	/**
-	 * @param DataPacket $packet
-	 *
 	 * @return void
 	 */
 	public function addPacket(DataPacket $packet){
@@ -110,8 +108,6 @@ class BatchPacket extends DataPacket{
 	}
 
 	/**
-	 * @param int $level
-	 *
 	 * @return void
 	 */
 	public function setCompressionLevel(int $level){

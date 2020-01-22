@@ -108,9 +108,6 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		$this->saveItems($nbt);
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDefaultName() : string{
 		return "Furnace";
 	}
@@ -139,8 +136,6 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 	}
 
 	/**
-	 * @param Item $fuel
-	 *
 	 * @return void
 	 */
 	protected function checkFuel(Item $fuel){

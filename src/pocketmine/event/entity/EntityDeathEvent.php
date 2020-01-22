@@ -31,7 +31,6 @@ class EntityDeathEvent extends EntityEvent{
 	private $drops = [];
 
 	/**
-	 * @param Living $entity
 	 * @param Item[] $drops
 	 */
 	public function __construct(Living $entity, array $drops = []){

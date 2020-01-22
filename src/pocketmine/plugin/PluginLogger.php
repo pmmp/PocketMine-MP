@@ -51,9 +51,6 @@ class PluginLogger implements \AttachableLogger{
 		return $this->attachments;
 	}
 
-	/**
-	 * @param Plugin $context
-	 */
 	public function __construct(Plugin $context){
 		$prefix = $context->getDescription()->getPrefix();
 		$this->pluginName = $prefix != null ? "[$prefix] " : "[" . $context->getDescription()->getName() . "] ";

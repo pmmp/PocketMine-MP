@@ -71,8 +71,6 @@ class FlowerPot extends Spawnable{
 	}
 
 	/**
-	 * @param Item $item
-	 *
 	 * @return void
 	 */
 	public function setItem(Item $item){
