@@ -199,7 +199,7 @@ final class EntityFactory{
 	 * Creates an entity from data stored on a chunk.
 	 *
 	 * @throws \RuntimeException
-	 *@internal
+	 * @internal
 	 */
 	public static function createFromData(World $world, CompoundTag $nbt) : ?Entity{
 		$saveId = $nbt->getTag("id") ?? $nbt->getTag("identifier");
