@@ -45,9 +45,7 @@ class Permission{
 	/** @var string */
 	private $description;
 
-	/**
-	 * @var bool[]
-	 */
+	/** @var bool[] */
 	private $children;
 
 	/** @var string */

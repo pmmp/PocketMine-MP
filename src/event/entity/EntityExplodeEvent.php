@@ -38,9 +38,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	/** @var Position */
 	protected $position;
 
-	/**
-	 * @var Block[]
-	 */
+	/** @var Block[] */
 	protected $blocks;
 
 	/** @var float */

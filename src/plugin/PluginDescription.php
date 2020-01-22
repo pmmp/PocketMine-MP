@@ -73,9 +73,7 @@ class PluginDescription{
 	/** @var PluginLoadOrder */
 	private $order;
 
-	/**
-	 * @var Permission[]
-	 */
+	/** @var Permission[] */
 	private $permissions = [];
 
 	/**

@@ -35,24 +35,16 @@ class Random{
 	public const Z = 521288629;
 	public const W = 88675123;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $x;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $y;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $z;
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $w;
 
 	/** @var int */

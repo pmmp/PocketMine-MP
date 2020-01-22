@@ -30,9 +30,7 @@ class PermissionAttachment{
 	/** @var PermissionRemovedExecutor */
 	private $removed = null;
 
-	/**
-	 * @var bool[]
-	 */
+	/** @var bool[] */
 	private $permissions = [];
 
 	/** @var Permissible */

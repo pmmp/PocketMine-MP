@@ -35,14 +35,10 @@ class PermissibleBase implements Permissible{
 	/** @var Permissible */
 	private $parent = null;
 
-	/**
-	 * @var PermissionAttachment[]
-	 */
+	/** @var PermissionAttachment[] */
 	private $attachments = [];
 
-	/**
-	 * @var PermissionAttachmentInfo[]
-	 */
+	/** @var PermissionAttachmentInfo[] */
 	private $permissions = [];
 
 	public function __construct(ServerOperator $opable){

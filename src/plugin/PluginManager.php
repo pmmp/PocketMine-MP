@@ -67,19 +67,13 @@ class PluginManager{
 	/** @var Server */
 	private $server;
 
-	/**
-	 * @var Plugin[]
-	 */
+	/** @var Plugin[] */
 	protected $plugins = [];
 
-	/**
-	 * @var Plugin[]
-	 */
+	/** @var Plugin[] */
 	protected $enabledPlugins = [];
 
-	/**
-	 * @var PluginLoader[]
-	 */
+	/** @var PluginLoader[] */
 	protected $fileAssociations = [];
 
 	/** @var string|null */

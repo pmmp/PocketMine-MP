@@ -78,9 +78,7 @@ use function trim;
 
 class SimpleCommandMap implements CommandMap{
 
-	/**
-	 * @var Command[]
-	 */
+	/** @var Command[] */
 	protected $knownCommands = [];
 
 	/** @var Server */
