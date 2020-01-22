@@ -597,7 +597,6 @@ class World implements ChunkManager{
 	 * Unregisters a chunk listener previously registered.
 	 *
 	 *@see World::registerChunkListener()
-	 *
 	 */
 	public function unregisterChunkListener(ChunkListener $listener, int $chunkX, int $chunkZ) : void{
 		$hash = World::chunkHash($chunkX, $chunkZ);

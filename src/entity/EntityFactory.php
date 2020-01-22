@@ -200,7 +200,6 @@ final class EntityFactory{
 	 *
 	 * @throws \RuntimeException
 	 *@internal
-	 *
 	 */
 	public static function createFromData(World $world, CompoundTag $nbt) : ?Entity{
 		$saveId = $nbt->getTag("id") ?? $nbt->getTag("identifier");
