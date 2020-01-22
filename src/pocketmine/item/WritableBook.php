@@ -180,7 +180,6 @@ class WritableBook extends Item{
 	}
 
 	/**
-	 *
 	 * @param CompoundTag[] $pages
 	 */
 	public function setPages(array $pages) : void{
