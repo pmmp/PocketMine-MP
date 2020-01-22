@@ -86,7 +86,7 @@ class Explosion{
 	}
 
 	/**
-	 * Calculates which blocks will be destroyed by this explosion. If explodeB() is called without calling this, no blocks 
+	 * Calculates which blocks will be destroyed by this explosion. If explodeB() is called without calling this, no blocks
 	 * will be destroyed.
 	 */
 	public function explodeA() : bool{
