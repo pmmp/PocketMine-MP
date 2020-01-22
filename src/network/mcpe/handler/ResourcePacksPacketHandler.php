@@ -115,7 +115,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				}, $this->resourcePackManager->getResourceStack());
 
 				//we support chemistry blocks by default, the client should already have this installed
-				array_unshift($stack, new ResourcePackStackEntry("0fba4063-dba1-4281-9b89-ff9390653530", "1.0.0", ""));
+				$stack[] = new ResourcePackStackEntry("0fba4063-dba1-4281-9b89-ff9390653530", "1.0.0", "");
 
 				//we don't force here, because it doesn't have user-facing effects
 				//but it does have an annoying side-effect when true: it makes
