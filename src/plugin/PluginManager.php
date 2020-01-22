@@ -181,8 +181,6 @@ class PluginManager{
 	}
 
 	/**
-	 * @param array  $newLoaders
-	 *
 	 * @return Plugin[]
 	 */
 	public function loadPlugins(string $directory, ?array $newLoaders = null) : array{

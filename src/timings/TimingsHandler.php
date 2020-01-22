@@ -146,9 +146,6 @@ class TimingsHandler{
 	/** @var int */
 	private $violations = 0;
 
-	/**
-	 * @param TimingsHandler $parent
-	 */
 	public function __construct(string $name, ?TimingsHandler $parent = null){
 		$this->name = $name;
 		$this->parent = $parent;

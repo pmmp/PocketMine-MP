@@ -136,8 +136,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	/**
 	 * Validates the given username.
-	 *
-	 * @param string $name
 	 */
 	public static function isValidUserName(?string $name) : bool{
 		if($name === null){

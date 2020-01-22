@@ -38,7 +38,6 @@ class Location extends Position{
 	 * @param float|int $x
 	 * @param float|int $y
 	 * @param float|int $z
-	 * @param World     $world
 	 */
 	public function __construct($x = 0, $y = 0, $z = 0, float $yaw = 0.0, float $pitch = 0.0, ?World $world = null){
 		$this->yaw = $yaw;
@@ -47,10 +46,6 @@ class Location extends Position{
 	}
 
 	/**
-	 * @param World|null $world default null
-	 * @param float      $yaw default 0.0
-	 * @param float      $pitch default 0.0
-	 *
 	 * @return Location
 	 */
 	public static function fromObject(Vector3 $pos, ?World $world = null, float $yaw = 0.0, float $pitch = 0.0){

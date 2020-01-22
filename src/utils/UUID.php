@@ -59,8 +59,6 @@ final class UUID{
 
 	/**
 	 * Creates an UUID from an hexadecimal representation
-	 *
-	 * @param int    $version
 	 */
 	public static function fromString(string $uuid, ?int $version = null) : UUID{
 		return self::fromBinary(hex2bin(str_replace("-", "", trim($uuid))), $version);
@@ -68,8 +66,6 @@ final class UUID{
 
 	/**
 	 * Creates an UUID from a binary representation
-	 *
-	 * @param int    $version
 	 *
 	 * @throws \InvalidArgumentException
 	 */

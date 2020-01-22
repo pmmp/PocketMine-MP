@@ -1379,9 +1379,6 @@ class World implements ChunkManager{
 		$this->timings->setBlock->stopTiming();
 	}
 
-	/**
-	 * @param Vector3 $motion
-	 */
 	public function dropItem(Vector3 $source, Item $item, ?Vector3 $motion = null, int $delay = 10) : ?ItemEntity{
 		if($item->isNull()){
 			return null;
@@ -1432,7 +1429,6 @@ class World implements ChunkManager{
 	 * It'll try to lower the durability if Item is a tool, and set it to Air if broken.
 	 *
 	 * @param Item    $item reference parameter (if null, can break anything)
-	 * @param Player  $player
 	 */
 	public function useBreakOn(Vector3 $vector, Item &$item = null, ?Player $player = null, bool $createParticles = false) : bool{
 		$vector = $vector->floor();
@@ -1685,8 +1681,6 @@ class World implements ChunkManager{
 
 	/**
 	 * Returns the entities near the current one inside the AxisAlignedBB
-	 *
-	 * @param Entity        $entity
 	 *
 	 * @return Entity[]
 	 */

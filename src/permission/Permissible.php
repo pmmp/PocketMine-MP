@@ -41,10 +41,6 @@ interface Permissible extends ServerOperator{
 	 */
 	public function hasPermission($name) : bool;
 
-	/**
-	 * @param string $name
-	 * @param bool   $value
-	 */
 	public function addAttachment(Plugin $plugin, ?string $name = null, ?bool $value = null) : PermissionAttachment;
 
 	public function removeAttachment(PermissionAttachment $attachment) : void;

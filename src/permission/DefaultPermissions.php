@@ -26,9 +26,6 @@ namespace pocketmine\permission;
 abstract class DefaultPermissions{
 	public const ROOT = "pocketmine";
 
-	/**
-	 * @param Permission $parent
-	 */
 	public static function registerPermission(Permission $perm, ?Permission $parent = null) : Permission{
 		if($parent instanceof Permission){
 			$parent->getChildren()[$perm->getName()] = true;
