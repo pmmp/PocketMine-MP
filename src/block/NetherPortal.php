@@ -48,15 +48,11 @@ class NetherPortal extends Transparent{
 		return 0b11;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getAxis() : int{
 		return $this->axis;
 	}
 
 	/**
-	 * @param int $axis
 	 * @throws \InvalidArgumentException
 	 */
 	public function setAxis(int $axis) : void{

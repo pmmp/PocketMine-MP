@@ -31,11 +31,5 @@ use pocketmine\world\ChunkManager;
 
 abstract class Populator{
 
-	/**
-	 * @param ChunkManager $world
-	 * @param int          $chunkX
-	 * @param int          $chunkZ
-	 * @param Random       $random
-	 */
 	abstract public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void;
 }

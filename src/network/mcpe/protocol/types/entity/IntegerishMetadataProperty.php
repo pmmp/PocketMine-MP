@@ -27,9 +27,6 @@ trait IntegerishMetadataProperty{
 	/** @var int */
 	private $value;
 
-	/**
-	 * @param int $value
-	 */
 	public function __construct(int $value){
 		if($value < $this->min() or $value > $this->max()){
 			throw new \InvalidArgumentException("Value is out of range " . $this->min() . " - " . $this->max());
@@ -41,9 +38,6 @@ trait IntegerishMetadataProperty{
 
 	abstract protected function max() : int;
 
-	/**
-	 * @return int
-	 */
 	public function getValue() : int{
 		return $this->value;
 	}

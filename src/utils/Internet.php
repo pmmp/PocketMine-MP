@@ -113,7 +113,6 @@ class Internet{
 	 * Returns the machine's internal network IP address. If the machine is not behind a router, this may be the same
 	 * as the external IP.
 	 *
-	 * @return string
 	 * @throws InternetException
 	 */
 	public static function getInternalIP() : string{
@@ -135,9 +134,7 @@ class Internet{
 	 * GETs an URL using cURL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param string  $page
 	 * @param int     $timeout default 10
-	 * @param array   $extraHeaders
 	 * @param string  $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
 	 * @param array[] $headers reference parameter
 	 * @param int     $httpCode reference parameter
@@ -158,10 +155,7 @@ class Internet{
 	 * POSTs data to an URL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param string       $page
 	 * @param array|string $args
-	 * @param int          $timeout
-	 * @param array        $extraHeaders
 	 * @param string       $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
 	 * @param array[]      $headers reference parameter
 	 * @param int          $httpCode reference parameter
@@ -185,7 +179,6 @@ class Internet{
 	 * General cURL shorthand function.
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param string        $page
 	 * @param float|int     $timeout The maximum connect timeout and timeout in seconds, correct to ms.
 	 * @param string[]      $extraHeaders extra headers to send as a plain string array
 	 * @param array         $extraOpts extra CURLOPT_* to set as an [opt => value] map

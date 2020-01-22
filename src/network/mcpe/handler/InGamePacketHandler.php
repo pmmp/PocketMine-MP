@@ -319,9 +319,6 @@ class InGamePacketHandler extends PacketHandler{
 
 	/**
 	 * Internal function used to execute rollbacks when an action fails on a block.
-	 *
-	 * @param Vector3  $blockPos
-	 * @param int|null $face
 	 */
 	private function onFailedBlockAction(Vector3 $blockPos, ?int $face) : void{
 		$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
@@ -684,9 +681,6 @@ class InGamePacketHandler extends PacketHandler{
 
 	/**
 	 * Hack to work around a stupid bug in Minecraft W10 which causes empty strings to be sent unquoted in form responses.
-	 *
-	 * @param string $json
-	 * @param bool   $assoc
 	 *
 	 * @return mixed
 	 * @throws BadPacketException

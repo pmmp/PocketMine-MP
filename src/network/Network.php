@@ -94,9 +94,6 @@ class Network{
 		return $this->interfaces;
 	}
 
-	/**
-	 * @return NetworkSessionManager
-	 */
 	public function getSessionManager() : NetworkSessionManager{
 		return $this->sessionManager;
 	}
@@ -113,9 +110,6 @@ class Network{
 		$this->sessionManager->tick();
 	}
 
-	/**
-	 * @param NetworkInterface $interface
-	 */
 	public function registerInterface(NetworkInterface $interface) : void{
 		$ev = new NetworkInterfaceRegisterEvent($interface);
 		$ev->call();
@@ -134,7 +128,6 @@ class Network{
 	}
 
 	/**
-	 * @param NetworkInterface $interface
 	 * @throws \InvalidArgumentException
 	 */
 	public function unregisterInterface(NetworkInterface $interface) : void{
@@ -148,8 +141,6 @@ class Network{
 
 	/**
 	 * Sets the server name shown on each interface Query
-	 *
-	 * @param string $name
 	 */
 	public function setName(string $name) : void{
 		$this->name = $name;
@@ -158,9 +149,6 @@ class Network{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
@@ -171,11 +159,6 @@ class Network{
 		}
 	}
 
-	/**
-	 * @param string $address
-	 * @param int    $port
-	 * @param string $payload
-	 */
 	public function sendPacket(string $address, int $port, string $payload) : void{
 		foreach($this->advancedInterfaces as $interface){
 			$interface->sendRawPacket($address, $port, $payload);
@@ -184,9 +167,6 @@ class Network{
 
 	/**
 	 * Blocks an IP address from the main interface. Setting timeout to -1 will block it forever
-	 *
-	 * @param string $address
-	 * @param int    $timeout
 	 */
 	public function blockAddress(string $address, int $timeout = 300) : void{
 		$this->bannedIps[$address] = $timeout > 0 ? time() + $timeout : PHP_INT_MAX;
@@ -204,8 +184,6 @@ class Network{
 
 	/**
 	 * Registers a raw packet handler on the network.
-	 *
-	 * @param RawPacketHandler $handler
 	 */
 	public function registerRawPacketHandler(RawPacketHandler $handler) : void{
 		$this->rawPacketHandlers[spl_object_id($handler)] = $handler;
@@ -218,19 +196,11 @@ class Network{
 
 	/**
 	 * Unregisters a previously-registered raw packet handler.
-	 *
-	 * @param RawPacketHandler $handler
 	 */
 	public function unregisterRawPacketHandler(RawPacketHandler $handler) : void{
 		unset($this->rawPacketHandlers[spl_object_id($handler)]);
 	}
 
-	/**
-	 * @param AdvancedNetworkInterface $interface
-	 * @param string                   $address
-	 * @param int                      $port
-	 * @param string                   $packet
-	 */
 	public function processRawPacket(AdvancedNetworkInterface $interface, string $address, int $port, string $packet) : void{
 		if(isset($this->bannedIps[$address]) and time() < $this->bannedIps[$address]){
 			$this->logger->debug("Dropped raw packet from banned address $address $port");

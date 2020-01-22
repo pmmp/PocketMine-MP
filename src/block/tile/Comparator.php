@@ -36,16 +36,10 @@ class Comparator extends Tile{
 	/** @var int */
 	protected $signalStrength = 0;
 
-	/**
-	 * @return int
-	 */
 	public function getSignalStrength() : int{
 		return $this->signalStrength;
 	}
 
-	/**
-	 * @param int $signalStrength
-	 */
 	public function setSignalStrength(int $signalStrength) : void{
 		$this->signalStrength = $signalStrength;
 	}

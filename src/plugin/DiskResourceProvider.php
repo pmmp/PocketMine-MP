@@ -49,8 +49,6 @@ class DiskResourceProvider implements ResourceProvider{
 	 * Gets an embedded resource on the plugin file.
 	 * WARNING: You must close the resource given using fclose()
 	 *
-	 * @param string $filename
-	 *
 	 * @return null|resource Resource data, or null
 	 */
 	public function getResource(string $filename){

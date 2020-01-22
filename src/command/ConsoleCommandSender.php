@@ -41,9 +41,6 @@ class ConsoleCommandSender implements CommandSender{
 		$this->perm = new PermissibleBase($this);
 	}
 
-	/**
-	 * @return Server
-	 */
 	public function getServer() : Server{
 		return Server::getInstance();
 	}
@@ -64,23 +61,14 @@ class ConsoleCommandSender implements CommandSender{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "CONSOLE";
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isOp() : bool{
 		return true;
 	}
 
-	/**
-	 * @param bool $value
-	 */
 	public function setOp(bool $value) : void{
 
 	}

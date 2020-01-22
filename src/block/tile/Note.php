@@ -43,16 +43,10 @@ class Note extends Tile{
 		$nbt->setByte("note", $this->pitch);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPitch() : int{
 		return $this->pitch;
 	}
 
-	/**
-	 * @param int $pitch
-	 */
 	public function setPitch(int $pitch) : void{
 		if($pitch < BlockNote::MIN_PITCH or $pitch > BlockNote::MAX_PITCH){
 			throw new \InvalidArgumentException("Pitch must be in range " . BlockNote::MIN_PITCH . " - " . BlockNote::MAX_PITCH);

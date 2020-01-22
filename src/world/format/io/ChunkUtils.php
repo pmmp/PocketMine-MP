@@ -32,8 +32,6 @@ class ChunkUtils{
 	 * Converts pre-MCPE-1.0 biome color array to biome ID array.
 	 *
 	 * @param int[] $array of biome color values
-	 *
-	 * @return string
 	 */
 	public static function convertBiomeColors(array $array) : string{
 		$result = str_repeat("\x00", 256);

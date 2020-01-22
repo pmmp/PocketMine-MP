@@ -86,14 +86,6 @@ class QueryHandler implements RawPacketHandler{
 		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 
-	/**
-	 * @param AdvancedNetworkInterface $interface
-	 * @param string                   $address
-	 * @param int                      $port
-	 * @param string                   $packet
-	 *
-	 * @return bool
-	 */
 	public function handle(AdvancedNetworkInterface $interface, string $address, int $port, string $packet) : bool{
 		try{
 			$stream = new BinaryStream($packet);

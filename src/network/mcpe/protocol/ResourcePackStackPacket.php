@@ -50,8 +50,6 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @param ResourcePackStackEntry[] $resourcePacks
 	 * @param ResourcePackStackEntry[] $behaviorPacks
-	 * @param bool                     $mustAccept
-	 * @param bool                     $isExperimental
 	 *
 	 * @return ResourcePackStackPacket
 	 */

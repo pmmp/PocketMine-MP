@@ -49,9 +49,6 @@ trait LegacyAnvilChunkTrait{
 	}
 
 	/**
-	 * @param string $data
-	 *
-	 * @return Chunk
 	 * @throws CorruptedChunkException
 	 */
 	protected function deserializeChunk(string $data) : Chunk{

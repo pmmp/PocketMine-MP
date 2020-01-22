@@ -46,7 +46,6 @@ abstract class BaseWorldProvider implements WorldProvider{
 	}
 
 	/**
-	 * @return WorldData
 	 * @throws CorruptedWorldException
 	 * @throws UnsupportedWorldFormatException
 	 */
@@ -56,18 +55,11 @@ abstract class BaseWorldProvider implements WorldProvider{
 		return $this->path;
 	}
 
-	/**
-	 * @return WorldData
-	 */
 	public function getWorldData() : WorldData{
 		return $this->worldData;
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws CorruptedChunkException
 	 */
 	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
@@ -82,10 +74,6 @@ abstract class BaseWorldProvider implements WorldProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws CorruptedChunkException
 	 */
 	abstract protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk;

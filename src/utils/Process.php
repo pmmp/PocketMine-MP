@@ -47,8 +47,6 @@ final class Process{
 	}
 
 	/**
-	 * @param bool $advanced
-	 *
 	 * @return int[]|int
 	 */
 	public static function getMemoryUsage(bool $advanced = false){

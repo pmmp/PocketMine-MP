@@ -61,8 +61,6 @@ class HandlerListManager{
 	/**
 	 * @param ReflectionClass $class
 	 * @phpstan-param \ReflectionClass<Event> $class
-	 *
-	 * @return bool
 	 */
 	private static function isValidClass(\ReflectionClass $class) : bool{
 		$tags = Utils::parseDocComment((string) $class->getDocComment());
@@ -70,10 +68,8 @@ class HandlerListManager{
 	}
 
 	/**
-	 * @param \ReflectionClass $class
 	 * @phpstan-param \ReflectionClass<Event> $class
 	 *
-	 * @return \ReflectionClass|null
 	 * @phpstan-return \ReflectionClass<Event>|null
 	 */
 	private static function resolveNearestHandleableParent(\ReflectionClass $class) : ?\ReflectionClass{
@@ -88,9 +84,6 @@ class HandlerListManager{
 	 *
 	 * Calling this method also lazily initializes the $classMap inheritance tree of handler lists.
 	 *
-	 * @param string $event
-	 *
-	 * @return HandlerList
 	 * @throws \ReflectionException
 	 * @throws \InvalidArgumentException
 	 */

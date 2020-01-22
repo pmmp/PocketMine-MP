@@ -64,9 +64,7 @@ final class SkullType{
 
 	/**
 	 * @internal
-	 * @param int $magicNumber
 	 *
-	 * @return SkullType
 	 * @throws \InvalidArgumentException
 	 */
 	public static function fromMagicNumber(int $magicNumber) : SkullType{
@@ -87,16 +85,10 @@ final class SkullType{
 		$this->magicNumber = $magicNumber;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDisplayName() : string{
 		return $this->displayName;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMagicNumber() : int{
 		return $this->magicNumber;
 	}

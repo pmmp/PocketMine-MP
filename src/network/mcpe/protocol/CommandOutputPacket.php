@@ -60,7 +60,6 @@ class CommandOutputPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	/**
-	 * @return CommandOutputMessage
 	 * @throws BinaryDataException
 	 */
 	protected function getCommandMessage() : CommandOutputMessage{

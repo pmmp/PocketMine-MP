@@ -83,9 +83,6 @@ class Skull extends Flowable{
 		$tile->setSkullType($this->skullType);
 	}
 
-	/**
-	 * @return SkullType
-	 */
 	public function getSkullType() : SkullType{
 		return $this->skullType;
 	}

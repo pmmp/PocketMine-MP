@@ -41,11 +41,6 @@ class FurnaceBurnEvent extends BlockEvent implements Cancellable{
 	/** @var bool */
 	private $burning = true;
 
-	/**
-	 * @param Furnace $furnace
-	 * @param Item    $fuel
-	 * @param int     $burnTime
-	 */
 	public function __construct(Furnace $furnace, Item $fuel, int $burnTime){
 		parent::__construct($furnace->getBlock());
 		$this->fuel = $fuel;
@@ -53,44 +48,26 @@ class FurnaceBurnEvent extends BlockEvent implements Cancellable{
 		$this->furnace = $furnace;
 	}
 
-	/**
-	 * @return Furnace
-	 */
 	public function getFurnace() : Furnace{
 		return $this->furnace;
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getFuel() : Item{
 		return $this->fuel;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBurnTime() : int{
 		return $this->burnTime;
 	}
 
-	/**
-	 * @param int $burnTime
-	 */
 	public function setBurnTime(int $burnTime) : void{
 		$this->burnTime = $burnTime;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isBurning() : bool{
 		return $this->burning;
 	}
 
-	/**
-	 * @param bool $burning
-	 */
 	public function setBurning(bool $burning) : void{
 		$this->burning = $burning;
 	}

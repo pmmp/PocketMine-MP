@@ -34,16 +34,10 @@ final class CompoundTagMetadataProperty implements MetadataProperty{
 	/** @var CompoundTag */
 	private $value;
 
-	/**
-	 * @param CompoundTag $value
-	 */
 	public function __construct(CompoundTag $value){
 		$this->value = clone $value;
 	}
 
-	/**
-	 * @return CompoundTag
-	 */
 	public function getValue() : CompoundTag{
 		return clone $this->value;
 	}
@@ -57,9 +51,6 @@ final class CompoundTagMetadataProperty implements MetadataProperty{
 	}
 
 	/**
-	 * @param NetworkBinaryStream $in
-	 *
-	 * @return self
 	 * @throws BadPacketException
 	 */
 	public static function read(NetworkBinaryStream $in) : self{

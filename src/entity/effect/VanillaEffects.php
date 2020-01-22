@@ -104,11 +104,6 @@ final class VanillaEffects{
 		self::$mcpeIdMap[$member->getId()] = $member;
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return Effect|null
-	 */
 	public static function byMcpeId(int $id) : ?Effect{
 		self::checkInit();
 		return self::$mcpeIdMap[$id] ?? null;
@@ -121,11 +116,6 @@ final class VanillaEffects{
 		return self::_registryGetAll();
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return Effect
-	 */
 	public static function fromString(string $name) : Effect{
 		$result = self::_registryFromString($name);
 		assert($result instanceof Effect);

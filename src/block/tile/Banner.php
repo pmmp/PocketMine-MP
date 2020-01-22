@@ -98,8 +98,6 @@ class Banner extends Spawnable{
 
 	/**
 	 * Returns the color of the banner base.
-	 *
-	 * @return DyeColor
 	 */
 	public function getBaseColor() : DyeColor{
 		return $this->baseColor;
@@ -107,8 +105,6 @@ class Banner extends Spawnable{
 
 	/**
 	 * Sets the color of the banner base.
-	 *
-	 * @param DyeColor $color
 	 */
 	public function setBaseColor(DyeColor $color) : void{
 		$this->baseColor = $color;

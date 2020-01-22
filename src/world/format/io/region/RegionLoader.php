@@ -111,10 +111,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return null|string
 	 * @throws \InvalidArgumentException if invalid coordinates are given
 	 * @throws CorruptedChunkException if chunk corruption is detected
 	 */
@@ -163,10 +159,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return bool
 	 * @throws \InvalidArgumentException
 	 */
 	public function chunkExists(int $x, int $z) : bool{
@@ -174,10 +166,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int    $x
-	 * @param int    $z
-	 * @param string $chunkData
-	 *
 	 * @throws ChunkException
 	 * @throws \InvalidArgumentException
 	 */
@@ -207,9 +195,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function removeChunk(int $x, int $z) : void{
@@ -219,10 +204,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return int
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function getChunkOffset(int $x, int $z) : int{
@@ -233,7 +214,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $offset
 	 * @param int $x reference parameter
 	 * @param int $z reference parameter
 	 */

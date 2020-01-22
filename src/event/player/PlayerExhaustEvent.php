@@ -75,7 +75,6 @@ class PlayerExhaustEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * Returns an int cause of the exhaustion - one of the constants at the top of this class.
-	 * @return int
 	 */
 	public function getCause() : int{
 		return $this->cause;

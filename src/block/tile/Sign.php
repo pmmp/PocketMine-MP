@@ -78,16 +78,10 @@ class Sign extends Spawnable{
 		}
 	}
 
-	/**
-	 * @return SignText
-	 */
 	public function getText() : SignText{
 		return $this->text;
 	}
 
-	/**
-	 * @param SignText $text
-	 */
 	public function setText(SignText $text) : void{
 		$this->text = $text;
 	}

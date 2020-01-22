@@ -109,8 +109,6 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 	}
 
 	/**
-	 * @param Validator $v
-	 * @param string    $name
 	 * @param mixed     $data
 	 *
 	 * @throws BadPacketException

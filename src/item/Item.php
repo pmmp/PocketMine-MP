@@ -103,10 +103,6 @@ class Item implements \JsonSerializable{
 	 *
 	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use {@link ItemFactory#get} for that
 	 * purpose.
-	 *
-	 * @param int    $id
-	 * @param int    $variant
-	 * @param string $name
 	 */
 	public function __construct(int $id, int $variant = 0, string $name = "Unknown"){
 		if($id < -0x8000 or $id > 0x7fff){ //signed short range
@@ -120,9 +116,6 @@ class Item implements \JsonSerializable{
 		$this->canDestroy = new Set();
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasCustomBlockData() : bool{
 		return $this->blockEntityTag !== null;
 	}
@@ -136,8 +129,6 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
-	 * @param CompoundTag $compound
-	 *
 	 * @return $this
 	 */
 	public function setCustomBlockData(CompoundTag $compound) : Item{
@@ -146,30 +137,19 @@ class Item implements \JsonSerializable{
 		return $this;
 	}
 
-	/**
-	 * @return CompoundTag|null
-	 */
 	public function getCustomBlockData() : ?CompoundTag{
 		return $this->blockEntityTag;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasCustomName() : bool{
 		return $this->customName !== "";
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getCustomName() : string{
 		return $this->customName;
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return $this
 	 */
 	public function setCustomName(string $name) : Item{
@@ -243,7 +223,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Returns whether this Item has a non-empty NBT.
-	 * @return bool
 	 */
 	public function hasNamedTag() : bool{
 		return $this->getNamedTag()->count() > 0;
@@ -252,8 +231,6 @@ class Item implements \JsonSerializable{
 	/**
 	 * Returns a tree of Tag objects representing the Item's NBT. If the item does not have any NBT, an empty CompoundTag
 	 * object is returned to allow the caller to manipulate and apply back to the item.
-	 *
-	 * @return CompoundTag
 	 */
 	public function getNamedTag() : CompoundTag{
 		if($this->nbt === null){
@@ -265,8 +242,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Sets the Item's NBT from the supplied CompoundTag object.
-	 *
-	 * @param CompoundTag $tag
 	 *
 	 * @return $this
 	 */
@@ -401,16 +376,11 @@ class Item implements \JsonSerializable{
 		}
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getCount() : int{
 		return $this->count;
 	}
 
 	/**
-	 * @param int $count
-	 *
 	 * @return $this
 	 */
 	public function setCount(int $count) : Item{
@@ -421,8 +391,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Pops an item from the stack and returns it, decreasing the stack count of this item stack by one.
-	 *
-	 * @param int $count
 	 *
 	 * @return $this
 	 * @throws \InvalidArgumentException if trying to pop more items than are on the stack
@@ -446,7 +414,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Returns the name of the item, or the custom name if it is set.
-	 * @return string
 	 */
 	final public function getName() : string{
 		return $this->hasCustomName() ? $this->getCustomName() : $this->getVanillaName();
@@ -454,37 +421,26 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Returns the vanilla name of the item, disregarding custom names.
-	 * @return string
 	 */
 	public function getVanillaName() : string{
 		return $this->name;
 	}
 
-	/**
-	 * @return bool
-	 */
 	final public function canBePlaced() : bool{
 		return $this->getBlock()->canBePlaced();
 	}
 
 	/**
 	 * Returns the block corresponding to this Item.
-	 * @return Block
 	 */
 	public function getBlock() : Block{
 		return VanillaBlocks::AIR();
 	}
 
-	/**
-	 * @return int
-	 */
 	final public function getId() : int{
 		return $this->id;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMeta() : int{
 		return $this->meta;
 	}
@@ -492,8 +448,6 @@ class Item implements \JsonSerializable{
 	/**
 	 * Returns whether this item can match any item with an equivalent ID with any meta value.
 	 * Used in crafting recipes which accept multiple variants of the same item, for example crafting tables recipes.
-	 *
-	 * @return bool
 	 */
 	public function hasAnyDamageValue() : bool{
 		return $this->meta === -1;
@@ -501,7 +455,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Returns the highest amount of this item which will fit into one inventory slot.
-	 * @return int
 	 */
 	public function getMaxStackSize() : int{
 		return 64;
@@ -509,7 +462,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Returns the time in ticks which the item will fuel a furnace for.
-	 * @return int
 	 */
 	public function getFuelTime() : int{
 		return 0;
@@ -517,7 +469,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Returns how many points of damage this item will deal to an entity when used as a weapon.
-	 * @return int
 	 */
 	public function getAttackPoints() : int{
 		return 1;
@@ -525,7 +476,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Returns how many armor points can be gained by wearing this item.
-	 * @return int
 	 */
 	public function getDefensePoints() : int{
 		return 0;
@@ -534,8 +484,6 @@ class Item implements \JsonSerializable{
 	/**
 	 * Returns what type of block-breaking tool this is. Blocks requiring the same tool type as the item will break
 	 * faster (except for blocks requiring no tool, which break at the same speed regardless of the tool used)
-	 *
-	 * @return int
 	 */
 	public function getBlockToolType() : int{
 		return BlockToolType::NONE;
@@ -547,8 +495,6 @@ class Item implements \JsonSerializable{
 	 * This should return 1 for non-tiered tools, and the tool tier for tiered tools.
 	 *
 	 * @see BlockBreakInfo::getToolHarvestLevel()
-	 *
-	 * @return int
 	 */
 	public function getBlockToolHarvestLevel() : int{
 		return 0;
@@ -560,14 +506,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Called when a player uses this item on a block.
-	 *
-	 * @param Player  $player
-	 * @param Block   $blockReplace
-	 * @param Block   $blockClicked
-	 * @param int     $face
-	 * @param Vector3 $clickVector
-	 *
-	 * @return ItemUseResult
 	 */
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		return ItemUseResult::NONE();
@@ -576,11 +514,6 @@ class Item implements \JsonSerializable{
 	/**
 	 * Called when a player uses the item on air, for example throwing a projectile.
 	 * Returns whether the item was changed, for example count decrease or durability change.
-	 *
-	 * @param Player  $player
-	 * @param Vector3 $directionVector
-	 *
-	 * @return ItemUseResult
 	 */
 	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
 		return ItemUseResult::NONE();
@@ -589,10 +522,6 @@ class Item implements \JsonSerializable{
 	/**
 	 * Called when a player is using this item and releases it. Used to handle bow shoot actions.
 	 * Returns whether the item was changed, for example count decrease or durability change.
-	 *
-	 * @param Player $player
-	 *
-	 * @return ItemUseResult
 	 */
 	public function onReleaseUsing(Player $player) : ItemUseResult{
 		return ItemUseResult::NONE();
@@ -600,10 +529,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Called when this item is used to destroy a block. Usually used to update durability.
-	 *
-	 * @param Block $block
-	 *
-	 * @return bool
 	 */
 	public function onDestroyBlock(Block $block) : bool{
 		return false;
@@ -611,10 +536,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Called when this item is used to attack an entity. Usually used to update durability.
-	 *
-	 * @param Entity $victim
-	 *
-	 * @return bool
 	 */
 	public function onAttackEntity(Entity $victim) : bool{
 		return false;
@@ -622,8 +543,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Returns the number of ticks a player must wait before activating this item again.
-	 *
-	 * @return int
 	 */
 	public function getCooldownTicks() : int{
 		return 0;
@@ -632,11 +551,8 @@ class Item implements \JsonSerializable{
 	/**
 	 * Compares an Item to this Item and check if they match.
 	 *
-	 * @param Item $item
 	 * @param bool $checkDamage Whether to verify that the damage values match.
 	 * @param bool $checkCompound Whether to verify that the items' NBT match.
-	 *
-	 * @return bool
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		return $this->id === $item->getId() and
@@ -646,26 +562,17 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
-	 *
-	 * @param Item $other
-	 *
-	 * @return bool
 	 */
 	final public function equalsExact(Item $other) : bool{
 		return $this->equals($other, true, true) and $this->count === $other->count;
 	}
 
-	/**
-	 * @return string
-	 */
 	final public function __toString() : string{
 		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
 	}
 
 	/**
 	 * Returns an array of item stack properties that can be serialized to json.
-	 *
-	 * @return array
 	 */
 	final public function jsonSerialize() : array{
 		$data = [
@@ -690,9 +597,6 @@ class Item implements \JsonSerializable{
 	/**
 	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
 	 *
-	 * @param array $data
-	 *
-	 * @return Item
 	 * @throws NbtDataException
 	 * @throws \InvalidArgumentException
 	 */
@@ -716,8 +620,6 @@ class Item implements \JsonSerializable{
 	 * Serializes the item to an NBT CompoundTag
 	 *
 	 * @param int $slot optional, the inventory slot of the item
-	 *
-	 * @return CompoundTag
 	 */
 	public function nbtSerialize(int $slot = -1) : CompoundTag{
 		$result = CompoundTag::create()
@@ -738,10 +640,6 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Deserializes an Item from an NBT CompoundTag
-	 *
-	 * @param CompoundTag $tag
-	 *
-	 * @return Item
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : Item{
 		if(!$tag->hasTag("id") or !$tag->hasTag("Count")){

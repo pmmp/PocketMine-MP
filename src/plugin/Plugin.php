@@ -36,9 +36,6 @@ interface Plugin{
 
 	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file, ResourceProvider $resourceProvider);
 
-	/**
-	 * @return bool
-	 */
 	public function isEnabled() : bool;
 
 	/**
@@ -47,52 +44,27 @@ interface Plugin{
 	 * @internal This is intended for core use only and should not be used by plugins
 	 * @see PluginManager::enablePlugin()
 	 * @see PluginManager::disablePlugin()
-	 *
-	 * @param bool $enabled
 	 */
 	public function onEnableStateChange(bool $enabled) : void;
 
-	/**
-	 * @return bool
-	 */
 	public function isDisabled() : bool;
 
 	/**
 	 * Gets the plugin's data folder to save files and configuration.
 	 * This directory name has a trailing slash.
-	 *
-	 * @return string
 	 */
 	public function getDataFolder() : string;
 
-	/**
-	 * @return PluginDescription
-	 */
 	public function getDescription() : PluginDescription;
 
-	/**
-	 * @return Server
-	 */
 	public function getServer() : Server;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string;
 
-	/**
-	 * @return \AttachableLogger
-	 */
 	public function getLogger() : \AttachableLogger;
 
-	/**
-	 * @return PluginLoader
-	 */
 	public function getPluginLoader() : PluginLoader;
 
-	/**
-	 * @return TaskScheduler
-	 */
 	public function getScheduler() : TaskScheduler;
 
 }

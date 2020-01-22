@@ -49,9 +49,6 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	protected $recipients = [];
 
 	/**
-	 * @param Player          $player
-	 * @param string          $message
-	 * @param string          $format
 	 * @param CommandSender[] $recipients
 	 */
 	public function __construct(Player $player, string $message, string $format = "chat.type.text", ?array $recipients = null){
@@ -71,39 +68,25 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getMessage() : string{
 		return $this->message;
 	}
 
-	/**
-	 * @param string $message
-	 */
 	public function setMessage(string $message) : void{
 		$this->message = $message;
 	}
 
 	/**
 	 * Changes the player that is sending the message
-	 *
-	 * @param Player $player
 	 */
 	public function setPlayer(Player $player) : void{
 		$this->player = $player;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getFormat() : string{
 		return $this->format;
 	}
 
-	/**
-	 * @param string $format
-	 */
 	public function setFormat(string $format) : void{
 		$this->format = $format;
 	}

@@ -199,8 +199,6 @@ abstract class Terminal{
 	 * Note that this is platform-dependent and might produce different results depending on the terminal type and/or OS.
 	 *
 	 * @param string|array $string
-	 *
-	 * @return string
 	 */
 	public static function toANSI($string) : string{
 		if(!is_array($string)){
@@ -289,8 +287,6 @@ abstract class Terminal{
 
 	/**
 	 * Emits a string containing Minecraft colour codes to the console formatted with native colours.
-	 *
-	 * @param string $line
 	 */
 	public static function write(string $line) : void{
 		echo self::toANSI($line);
@@ -299,8 +295,6 @@ abstract class Terminal{
 	/**
 	 * Emits a string containing Minecraft colour codes to the console formatted with native colours, followed by a
 	 * newline character.
-	 *
-	 * @param string $line
 	 */
 	public static function writeLine(string $line) : void{
 		echo self::toANSI($line) . self::$FORMAT_RESET . PHP_EOL;

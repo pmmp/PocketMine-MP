@@ -39,14 +39,9 @@ abstract class TransactionData{
 		return $this->actions;
 	}
 
-	/**
-	 * @return int
-	 */
 	abstract public function getTypeId() : int;
 
 	/**
-	 * @param NetworkBinaryStream $stream
-	 *
 	 * @throws BinaryDataException
 	 * @throws BadPacketException
 	 */
@@ -59,8 +54,6 @@ abstract class TransactionData{
 	}
 
 	/**
-	 * @param NetworkBinaryStream $stream
-	 *
 	 * @throws BinaryDataException
 	 * @throws BadPacketException
 	 */

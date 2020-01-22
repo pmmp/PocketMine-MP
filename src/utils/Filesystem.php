@@ -101,8 +101,6 @@ final class Filesystem{
 	 * inform other processes that some file or folder is already in use, to avoid data corruption.
 	 * If this function succeeds in gaining a lock on the file, it writes the current PID to the file.
 	 *
-	 * @param string $lockFilePath
-	 *
 	 * @return int|null process ID of the process currently holding the lock failure, null on success.
 	 * @throws \InvalidArgumentException if the lock file path is invalid (e.g. parent directory doesn't exist, permission denied)
 	 */
@@ -132,7 +130,6 @@ final class Filesystem{
 	/**
 	 * Releases a file lock previously acquired by createLockFile() and deletes the lock file.
 	 *
-	 * @param string $lockFilePath
 	 * @throws \InvalidArgumentException if the lock file path is invalid (e.g. parent directory doesn't exist, permission denied)
 	 */
 	public static function releaseLockFile(string $lockFilePath) : void{

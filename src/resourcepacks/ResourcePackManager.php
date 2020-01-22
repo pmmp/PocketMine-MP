@@ -52,7 +52,6 @@ class ResourcePackManager{
 
 	/**
 	 * @param string  $path Path to resource-packs directory.
-	 * @param \Logger $logger
 	 */
 	public function __construct(string $path, \Logger $logger){
 		$this->path = $path;
@@ -122,7 +121,6 @@ class ResourcePackManager{
 
 	/**
 	 * Returns the directory which resource packs are loaded from.
-	 * @return string
 	 */
 	public function getPath() : string{
 		return $this->path;
@@ -130,7 +128,6 @@ class ResourcePackManager{
 
 	/**
 	 * Returns whether players must accept resource packs in order to join.
-	 * @return bool
 	 */
 	public function resourcePacksRequired() : bool{
 		return $this->serverForceResources;
@@ -146,10 +143,6 @@ class ResourcePackManager{
 
 	/**
 	 * Returns the resource pack matching the specified UUID string, or null if the ID was not recognized.
-	 *
-	 * @param string $id
-	 *
-	 * @return ResourcePack|null
 	 */
 	public function getPackById(string $id) : ?ResourcePack{
 		return $this->uuidList[strtolower($id)] ?? null;

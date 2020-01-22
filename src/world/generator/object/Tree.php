@@ -50,11 +50,6 @@ abstract class Tree{
 	}
 
 	/**
-	 * @param ChunkManager  $world
-	 * @param int           $x
-	 * @param int           $y
-	 * @param int           $z
-	 * @param Random        $random
 	 * @param TreeType|null $type default oak
 	 *
 	 * @throws \InvalidArgumentException

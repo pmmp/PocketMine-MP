@@ -33,8 +33,6 @@ class PermissionParser{
 	/**
 	 * @param bool|string $value
 	 *
-	 * @return string
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public static function defaultFromString($value) : string{
@@ -72,9 +70,6 @@ class PermissionParser{
 	}
 
 	/**
-	 * @param array  $data
-	 * @param string $default
-	 *
 	 * @return Permission[]
 	 */
 	public static function loadPermissions(array $data, string $default = Permission::DEFAULT_OP) : array{
@@ -87,13 +82,6 @@ class PermissionParser{
 	}
 
 	/**
-	 * @param string $name
-	 * @param array  $data
-	 * @param string $default
-	 * @param array  $output
-	 *
-	 * @return Permission
-	 *
 	 * @throws \Exception
 	 */
 	public static function loadPermission(string $name, array $data, string $default = Permission::DEFAULT_OP, array &$output = []) : Permission{
@@ -127,8 +115,6 @@ class PermissionParser{
 
 	/**
 	 * @param Permission[] $permissions
-	 *
-	 * @return array
 	 */
 	public static function emitPermissions(array $permissions) : array{
 		$result = [];

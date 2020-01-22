@@ -30,16 +30,10 @@ final class FloatMetadataProperty implements MetadataProperty{
 	/** @var float */
 	private $value;
 
-	/**
-	 * @param float $value
-	 */
 	public function __construct(float $value){
 		$this->value = $value;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getValue() : float{
 		return $this->value;
 	}

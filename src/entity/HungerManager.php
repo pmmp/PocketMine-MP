@@ -69,8 +69,6 @@ class HungerManager{
 	 * WARNING: This method does not check if full and may throw an exception if out of bounds.
 	 * @see HungerManager::addFood()
 	 *
-	 * @param float $new
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function setFood(float $new) : void{
@@ -98,8 +96,6 @@ class HungerManager{
 
 	/**
 	 * Returns whether this Human may consume objects requiring hunger.
-	 *
-	 * @return bool
 	 */
 	public function isHungry() : bool{
 		return $this->getFood() < $this->getMaxFood();
@@ -112,8 +108,6 @@ class HungerManager{
 	/**
 	 * WARNING: This method does not check if saturated and may throw an exception if out of bounds.
 	 * @see HungerManager::addSaturation()
-	 *
-	 * @param float $saturation
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -132,8 +126,6 @@ class HungerManager{
 	/**
 	 * WARNING: This method does not check if exhausted and does not consume saturation/food.
 	 * @see HungerManager::exhaust()
-	 *
-	 * @param float $exhaustion
 	 */
 	public function setExhaustion(float $exhaustion) : void{
 		$this->exhaustionAttr->setValue($exhaustion);
@@ -141,9 +133,6 @@ class HungerManager{
 
 	/**
 	 * Increases exhaustion level.
-	 *
-	 * @param float $amount
-	 * @param int   $cause
 	 *
 	 * @return float the amount of exhaustion level increased
 	 */
@@ -180,16 +169,10 @@ class HungerManager{
 		return $ev->getAmount();
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getFoodTickTimer() : int{
 		return $this->foodTickTimer;
 	}
 
-	/**
-	 * @param int $foodTickTimer
-	 */
 	public function setFoodTickTimer(int $foodTickTimer) : void{
 		if($foodTickTimer < 0){
 			throw new \InvalidArgumentException("Expected a non-negative value");
@@ -238,16 +221,10 @@ class HungerManager{
 		}
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isEnabled() : bool{
 		return $this->enabled;
 	}
 
-	/**
-	 * @param bool $enabled
-	 */
 	public function setEnabled(bool $enabled) : void{
 		$this->enabled = $enabled;
 	}

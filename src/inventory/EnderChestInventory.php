@@ -34,9 +34,6 @@ class EnderChestInventory extends ChestInventory{
 		parent::__construct(new Position(0, 0, 0, null));
 	}
 
-	/**
-	 * @param Position $pos
-	 */
 	public function setHolderPosition(Position $pos) : void{
 		$this->holder = $pos->asPosition();
 	}

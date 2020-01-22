@@ -65,8 +65,6 @@ class Explosion{
 	private $subChunkHandler;
 
 	/**
-	 * @param Position     $center
-	 * @param float        $size
 	 * @param Entity|Block $what
 	 */
 	public function __construct(Position $center, float $size, $what = null){
@@ -88,8 +86,6 @@ class Explosion{
 	/**
 	 * Calculates which blocks will be destroyed by this explosion. If explodeB() is called without calling this, no blocks 
 	 * will be destroyed.
-	 *
-	 * @return bool
 	 */
 	public function explodeA() : bool{
 		if($this->size < 0.1){
@@ -152,8 +148,6 @@ class Explosion{
 	/**
 	 * Executes the explosion's effects on the world. This includes destroying blocks (if any), harming and knocking back entities,
 	 * and creating sounds and particles.
-	 *
-	 * @return bool
 	 */
 	public function explodeB() : bool{
 		$send = [];

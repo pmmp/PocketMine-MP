@@ -37,9 +37,6 @@ abstract class Task{
 		return $this->taskHandler;
 	}
 
-	/**
-	 * @return int
-	 */
 	final public function getTaskId() : int{
 		if($this->taskHandler !== null){
 			return $this->taskHandler->getTaskId();
@@ -52,9 +49,6 @@ abstract class Task{
 		return Utils::getNiceClassName($this);
 	}
 
-	/**
-	 * @param TaskHandler|null $taskHandler
-	 */
 	final public function setHandler(?TaskHandler $taskHandler) : void{
 		if($this->taskHandler === null or $taskHandler === null){
 			$this->taskHandler = $taskHandler;
@@ -63,8 +57,6 @@ abstract class Task{
 
 	/**
 	 * Actions to execute when run
-	 *
-	 * @param int $currentTick
 	 *
 	 * @return void
 	 */

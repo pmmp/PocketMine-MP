@@ -43,8 +43,6 @@ class HandlerList{
 	}
 
 	/**
-	 * @param RegisteredListener $listener
-	 *
 	 * @throws \Exception
 	 */
 	public function register(RegisteredListener $listener) : void{
@@ -89,17 +87,12 @@ class HandlerList{
 	}
 
 	/**
-	 * @param int $priority
-	 *
 	 * @return RegisteredListener[]
 	 */
 	public function getListenersByPriority(int $priority) : array{
 		return $this->handlerSlots[$priority];
 	}
 
-	/**
-	 * @return null|HandlerList
-	 */
 	public function getParent() : ?HandlerList{
 		return $this->parentList;
 	}

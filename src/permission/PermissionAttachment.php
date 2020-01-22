@@ -42,9 +42,6 @@ class PermissionAttachment{
 	private $plugin;
 
 	/**
-	 * @param Plugin      $plugin
-	 * @param Permissible $permissible
-	 *
 	 * @throws PluginException
 	 */
 	public function __construct(Plugin $plugin, Permissible $permissible){
@@ -56,30 +53,18 @@ class PermissionAttachment{
 		$this->plugin = $plugin;
 	}
 
-	/**
-	 * @return Plugin
-	 */
 	public function getPlugin() : Plugin{
 		return $this->plugin;
 	}
 
-	/**
-	 * @param PermissionRemovedExecutor $ex
-	 */
 	public function setRemovalCallback(PermissionRemovedExecutor $ex) : void{
 		$this->removed = $ex;
 	}
 
-	/**
-	 * @return PermissionRemovedExecutor|null
-	 */
 	public function getRemovalCallback() : ?PermissionRemovedExecutor{
 		return $this->removed;
 	}
 
-	/**
-	 * @return Permissible
-	 */
 	public function getPermissible() : Permissible{
 		return $this->permissible;
 	}
@@ -118,7 +103,6 @@ class PermissionAttachment{
 
 	/**
 	 * @param string|Permission $name
-	 * @param bool              $value
 	 */
 	public function setPermission($name, bool $value) : void{
 		$name = $name instanceof Permission ? $name->getName() : $name;
@@ -143,9 +127,6 @@ class PermissionAttachment{
 		}
 	}
 
-	/**
-	 * @return void
-	 */
 	public function remove() : void{
 		$this->permissible->removeAttachment($this);
 	}

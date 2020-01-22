@@ -53,9 +53,6 @@ class Banner extends Item{
 		$this->patterns = new Deque();
 	}
 
-	/**
-	 * @return DyeColor
-	 */
 	public function getColor() : DyeColor{
 		return $this->color;
 	}

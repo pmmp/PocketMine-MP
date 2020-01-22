@@ -151,9 +151,6 @@ class LoginPacketHandler extends PacketHandler{
 	 * TODO: This is separated for the purposes of allowing plugins (like Specter) to hack it and bypass authentication.
 	 * In the future this won't be necessary.
 	 *
-	 * @param LoginPacket $packet
-	 * @param bool        $authRequired
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	protected function processLogin(LoginPacket $packet, bool $authRequired) : void{

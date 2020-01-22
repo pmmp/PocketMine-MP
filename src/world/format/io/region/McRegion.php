@@ -39,9 +39,6 @@ use function str_repeat;
 class McRegion extends RegionWorldProvider{
 
 	/**
-	 * @param Chunk $chunk
-	 *
-	 * @return string
 	 * @throws \RuntimeException
 	 */
 	protected function serializeChunk(Chunk $chunk) : string{
@@ -49,9 +46,6 @@ class McRegion extends RegionWorldProvider{
 	}
 
 	/**
-	 * @param string $data
-	 *
-	 * @return Chunk
 	 * @throws CorruptedChunkException
 	 */
 	protected function deserializeChunk(string $data) : Chunk{

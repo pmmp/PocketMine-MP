@@ -67,9 +67,6 @@ class ShapelessRecipe implements CraftingRecipe{
 		return Utils::cloneObjectArray($this->ingredients);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getIngredientCount() : int{
 		$count = 0;
 		foreach($this->ingredients as $ingredient){
@@ -79,11 +76,6 @@ class ShapelessRecipe implements CraftingRecipe{
 		return $count;
 	}
 
-	/**
-	 * @param CraftingGrid $grid
-	 *
-	 * @return bool
-	 */
 	public function matchesCraftingGrid(CraftingGrid $grid) : bool{
 		//don't pack the ingredients - shapeless recipes require that each ingredient be in a separate slot
 		$input = $grid->getContents();

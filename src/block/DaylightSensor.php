@@ -70,8 +70,6 @@ class DaylightSensor extends Transparent{
 	}
 
 	/**
-	 * @param bool $inverted
-	 *
 	 * @return $this
 	 */
 	public function setInverted(bool $inverted = true) : self{

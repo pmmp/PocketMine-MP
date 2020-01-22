@@ -163,9 +163,6 @@ class Chest extends Spawnable implements Container, Nameable{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDefaultName() : string{
 		return "Chest";
 	}
@@ -174,9 +171,6 @@ class Chest extends Spawnable implements Container, Nameable{
 		return $this->pairX !== null and $this->pairZ !== null;
 	}
 
-	/**
-	 * @return Chest|null
-	 */
 	public function getPair() : ?Chest{
 		if($this->isPaired()){
 			$tile = $this->pos->getWorld()->getTileAt($this->pairX, $this->pos->y, $this->pairZ);

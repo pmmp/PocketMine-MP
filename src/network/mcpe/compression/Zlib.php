@@ -38,10 +38,8 @@ final class Zlib{
 	}
 
 	/**
-	 * @param string $payload
 	 * @param int    $maxDecodedLength default 2MB
 	 *
-	 * @return string
 	 * @throws \ErrorException
 	 */
 	public static function decompress(string $payload, int $maxDecodedLength = 1024 * 1024 * 2) : string{
@@ -49,10 +47,7 @@ final class Zlib{
 	}
 
 	/**
-	 * @param string $payload
 	 * @param int    $compressionLevel
-	 *
-	 * @return string
 	 */
 	public static function compress(string $payload, ?int $compressionLevel = null) : string{
 		return zlib_encode($payload, ZLIB_ENCODING_DEFLATE, $compressionLevel ?? self::$LEVEL);

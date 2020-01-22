@@ -65,9 +65,6 @@ final class TreeType{
 	/**
 	 * @internal
 	 *
-	 * @param int $magicNumber
-	 *
-	 * @return TreeType
 	 * @throws \InvalidArgumentException
 	 */
 	public static function fromMagicNumber(int $magicNumber) : TreeType{
@@ -83,27 +80,16 @@ final class TreeType{
 	/** @var int */
 	private $magicNumber;
 
-	/**
-	 * @param string $enumName
-	 * @param string $displayName
-	 * @param int    $magicNumber
-	 */
 	private function __construct(string $enumName, string $displayName, int $magicNumber){
 		$this->Enum___construct($enumName);
 		$this->displayName = $displayName;
 		$this->magicNumber = $magicNumber;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDisplayName() : string{
 		return $this->displayName;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMagicNumber() : int{
 		return $this->magicNumber;
 	}

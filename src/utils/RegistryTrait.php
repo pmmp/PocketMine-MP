@@ -39,9 +39,6 @@ trait RegistryTrait{
 	/**
 	 * Adds the given object to the registry.
 	 *
-	 * @param string $name
-	 * @param object $member
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	private static function _registryRegister(string $name, object $member) : void{
@@ -72,9 +69,6 @@ trait RegistryTrait{
 	}
 
 	/**
-	 * @param string $name
-	 *
-	 * @return object
 	 * @throws \InvalidArgumentException
 	 */
 	private static function _registryFromString(string $name) : object{
@@ -113,8 +107,6 @@ trait RegistryTrait{
 
 	/**
 	 * Generates code for static methods for all known registry members.
-	 *
-	 * @return string
 	 */
 	public static function _generateGetters() : string{
 		$lines = [];
@@ -132,8 +124,6 @@ public static function %1$s() : %2$s{
 
 	/**
 	 * Generates a block of @ method annotations for accessors for this registry's known members.
-	 *
-	 * @return string
 	 */
 	public static function _generateMethodAnnotations() : string{
 		$traitName = (new \ReflectionClass(__TRAIT__))->getShortName();

@@ -63,8 +63,6 @@ class BanEntry{
 	}
 
 	/**
-	 * @param \DateTime $date
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function setCreated(\DateTime $date) : void{
@@ -80,15 +78,11 @@ class BanEntry{
 		$this->source = $source;
 	}
 
-	/**
-	 * @return \DateTime|null
-	 */
 	public function getExpires() : ?\DateTime{
 		return $this->expirationDate;
 	}
 
 	/**
-	 * @param \DateTime|null $date
 	 * @throws \InvalidArgumentException
 	 */
 	public function setExpires(?\DateTime $date) : void{
@@ -134,8 +128,6 @@ class BanEntry{
 	 *
 	 * @link https://bugs.php.net/bug.php?id=75992
 	 *
-	 * @param \DateTime $dateTime
-	 *
 	 * @throws \InvalidArgumentException if the argument can't be parsed from a formatted date string
 	 */
 	private static function validateDate(\DateTime $dateTime) : void{
@@ -147,9 +139,6 @@ class BanEntry{
 	}
 
 	/**
-	 * @param string $date
-	 *
-	 * @return \DateTime
 	 * @throws \RuntimeException
 	 */
 	private static function parseDate(string $date) : \DateTime{
@@ -162,9 +151,6 @@ class BanEntry{
 	}
 
 	/**
-	 * @param string $str
-	 *
-	 * @return BanEntry|null
 	 * @throws \RuntimeException
 	 */
 	public static function fromString(string $str) : ?BanEntry{

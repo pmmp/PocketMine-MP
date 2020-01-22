@@ -44,14 +44,6 @@ class RegisteredListener{
 	/** @var TimingsHandler */
 	private $timings;
 
-
-	/**
-	 * @param \Closure       $handler
-	 * @param int            $priority
-	 * @param Plugin         $plugin
-	 * @param bool           $handleCancelled
-	 * @param TimingsHandler $timings
-	 */
 	public function __construct(\Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled, TimingsHandler $timings){
 		if(!in_array($priority, EventPriority::ALL, true)){
 			throw new \InvalidArgumentException("Invalid priority number $priority");
@@ -67,23 +59,14 @@ class RegisteredListener{
 		return $this->handler;
 	}
 
-	/**
-	 * @return Plugin
-	 */
 	public function getPlugin() : Plugin{
 		return $this->plugin;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPriority() : int{
 		return $this->priority;
 	}
 
-	/**
-	 * @param Event $event
-	 */
 	public function callEvent(Event $event) : void{
 		if($event instanceof Cancellable and $event->isCancelled() and !$this->isHandlingCancelled()){
 			return;
@@ -97,9 +80,6 @@ class RegisteredListener{
 		$this->timings->remove();
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isHandlingCancelled() : bool{
 		return $this->handleCancelled;
 	}

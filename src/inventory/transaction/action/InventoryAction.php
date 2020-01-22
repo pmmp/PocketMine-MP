@@ -43,7 +43,6 @@ abstract class InventoryAction{
 
 	/**
 	 * Returns the item that was present before the action took place.
-	 * @return Item
 	 */
 	public function getSourceItem() : Item{
 		return clone $this->sourceItem;
@@ -51,7 +50,6 @@ abstract class InventoryAction{
 
 	/**
 	 * Returns the item that the action attempted to replace the source item with.
-	 * @return Item
 	 */
 	public function getTargetItem() : Item{
 		return clone $this->targetItem;
@@ -59,17 +57,11 @@ abstract class InventoryAction{
 
 	/**
 	 * Returns whether this action is currently valid. This should perform any necessary sanity checks.
-	 *
-	 * @param Player $source
-	 *
-	 * @return bool
 	 */
 	abstract public function isValid(Player $source) : bool;
 
 	/**
 	 * Called when the action is added to the specified InventoryTransaction.
-	 *
-	 * @param InventoryTransaction $transaction
 	 */
 	public function onAddToTransaction(InventoryTransaction $transaction) : void{
 
@@ -78,10 +70,6 @@ abstract class InventoryAction{
 	/**
 	 * Called by inventory transactions before any actions are processed. If this returns false, the transaction will
 	 * be cancelled.
-	 *
-	 * @param Player $source
-	 *
-	 * @return bool
 	 */
 	public function onPreExecute(Player $source) : bool{
 		return true;
@@ -90,8 +78,6 @@ abstract class InventoryAction{
 	/**
 	 * Performs actions needed to complete the inventory-action server-side. This will only be called if the transaction
 	 * which it is part of is considered valid.
-	 *
-	 * @param Player $source
 	 */
 	abstract public function execute(Player $source) : void;
 }

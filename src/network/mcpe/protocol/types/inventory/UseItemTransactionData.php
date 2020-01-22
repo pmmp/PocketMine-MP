@@ -50,58 +50,34 @@ class UseItemTransactionData extends TransactionData{
 	/** @var int */
 	private $blockRuntimeId;
 
-	/**
-	 * @return int
-	 */
 	public function getActionType() : int{
 		return $this->actionType;
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	public function getBlockPos() : Vector3{
 		return $this->blockPos;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getFace() : int{
 		return $this->face;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getHotbarSlot() : int{
 		return $this->hotbarSlot;
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getItemInHand() : Item{
 		return $this->itemInHand;
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	public function getPlayerPos() : Vector3{
 		return $this->playerPos;
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	public function getClickPos() : Vector3{
 		return $this->clickPos;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBlockRuntimeId() : int{
 		return $this->blockRuntimeId;
 	}

@@ -30,7 +30,6 @@ class CommandEnum{
 	private $enumValues = [];
 
 	/**
-	 * @param string   $enumName
 	 * @param string[] $enumValues
 	 */
 	public function __construct(string $enumName, array $enumValues){
@@ -38,9 +37,6 @@ class CommandEnum{
 		$this->enumValues = $enumValues;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->enumName;
 	}

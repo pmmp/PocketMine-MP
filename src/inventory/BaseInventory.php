@@ -43,16 +43,12 @@ abstract class BaseInventory implements Inventory{
 	/** @var InventoryChangeListener[] */
 	protected $listeners = [];
 
-	/**
-	 * @param int $size
-	 */
 	public function __construct(int $size){
 		$this->slots = new \SplFixedArray($size);
 	}
 
 	/**
 	 * Returns the size of the inventory.
-	 * @return int
 	 */
 	public function getSize() : int{
 		return $this->slots->getSize();
@@ -67,8 +63,6 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	/**
-	 * @param bool $includeEmpty
-	 *
 	 * @return Item[]
 	 */
 	public function getContents(bool $includeEmpty = false) : array{
@@ -87,7 +81,6 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * @param Item[] $items
-	 * @param bool   $send
 	 */
 	public function setContents(array $items, bool $send = true) : void{
 		if(count($items) > $this->getSize()){

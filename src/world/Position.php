@@ -43,9 +43,6 @@ class Position extends Vector3{
 	}
 
 	/**
-	 * @param Vector3    $pos
-	 * @param World|null $world
-	 *
 	 * @return Position
 	 */
 	public static function fromObject(Vector3 $pos, ?World $world = null){
@@ -54,8 +51,6 @@ class Position extends Vector3{
 
 	/**
 	 * Return a Position instance
-	 *
-	 * @return Position
 	 */
 	public function asPosition() : Position{
 		return new Position($this->x, $this->y, $this->z, $this->world);
@@ -79,8 +74,6 @@ class Position extends Vector3{
 	/**
 	 * Sets the target world of the position.
 	 *
-	 * @param World|null $world
-	 *
 	 * @return $this
 	 *
 	 * @throws \InvalidArgumentException if the specified World has been closed
@@ -96,8 +89,6 @@ class Position extends Vector3{
 
 	/**
 	 * Checks if this object has a valid reference to a loaded world
-	 *
-	 * @return bool
 	 */
 	public function isValid() : bool{
 		if($this->world !== null and $this->world->isClosed()){
@@ -111,9 +102,6 @@ class Position extends Vector3{
 
 	/**
 	 * Returns a side Vector
-	 *
-	 * @param int $side
-	 * @param int $step
 	 *
 	 * @return Position
 	 */

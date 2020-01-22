@@ -45,8 +45,6 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @param ResourcePackInfoEntry[] $resourcePacks
 	 * @param ResourcePackInfoEntry[] $behaviorPacks
-	 * @param bool                    $mustAccept
-	 * @param bool                    $hasScripts
 	 *
 	 * @return ResourcePacksInfoPacket
 	 */

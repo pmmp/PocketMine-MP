@@ -33,11 +33,6 @@ class AttributeMap{
 		$this->attributes[$attribute->getId()] = $attribute;
 	}
 
-	/**
-	 * @param string $id
-	 *
-	 * @return Attribute|null
-	 */
 	public function get(string $id) : ?Attribute{
 		return $this->attributes[$id] ?? null;
 	}

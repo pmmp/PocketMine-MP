@@ -48,19 +48,12 @@ class PluginGraylist{
 		return array_flip($this->plugins);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isWhitelist() : bool{
 		return $this->isWhitelist;
 	}
 
 	/**
 	 * Returns whether the given name is permitted by this graylist.
-	 *
-	 * @param string $name
-	 *
-	 * @return bool
 	 */
 	public function isAllowed(string $name) : bool{
 		return $this->isWhitelist() === isset($this->plugins[$name]);

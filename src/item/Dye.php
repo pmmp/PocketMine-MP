@@ -35,9 +35,6 @@ class Dye extends Item{
 		$this->color = $color;
 	}
 
-	/**
-	 * @return DyeColor
-	 */
 	public function getColor() : DyeColor{
 		return $this->color;
 	}

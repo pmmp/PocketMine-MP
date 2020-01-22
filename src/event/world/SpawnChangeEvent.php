@@ -34,18 +34,11 @@ class SpawnChangeEvent extends WorldEvent{
 	/** @var Position */
 	private $previousSpawn;
 
-	/**
-	 * @param World    $world
-	 * @param Position $previousSpawn
-	 */
 	public function __construct(World $world, Position $previousSpawn){
 		parent::__construct($world);
 		$this->previousSpawn = $previousSpawn;
 	}
 
-	/**
-	 * @return Position
-	 */
 	public function getPreviousSpawn() : Position{
 		return $this->previousSpawn;
 	}

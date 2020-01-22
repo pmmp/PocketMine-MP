@@ -35,9 +35,6 @@ class PopSound implements Sound{
 		$this->pitch = $pitch;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getPitch() : float{
 		return $this->pitch;
 	}

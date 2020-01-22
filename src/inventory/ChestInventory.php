@@ -33,9 +33,6 @@ use function count;
 
 class ChestInventory extends BlockInventory{
 
-	/**
-	 * @param Position $holder
-	 */
 	public function __construct(Position $holder){
 		parent::__construct($holder, 27);
 	}

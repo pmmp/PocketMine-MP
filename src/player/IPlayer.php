@@ -27,54 +27,24 @@ use pocketmine\permission\ServerOperator;
 
 interface IPlayer extends ServerOperator{
 
-	/**
-	 * @return bool
-	 */
 	public function isOnline() : bool;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string;
 
-	/**
-	 * @return bool
-	 */
 	public function isBanned() : bool;
 
-	/**
-	 * @param bool $banned
-	 */
 	public function setBanned(bool $banned) : void;
 
-	/**
-	 * @return bool
-	 */
 	public function isWhitelisted() : bool;
 
-	/**
-	 * @param bool $value
-	 */
 	public function setWhitelisted(bool $value) : void;
 
-	/**
-	 * @return Player|null
-	 */
 	public function getPlayer() : ?Player;
 
-	/**
-	 * @return int|null
-	 */
 	public function getFirstPlayed() : ?int;
 
-	/**
-	 * @return int|null
-	 */
 	public function getLastPlayed() : ?int;
 
-	/**
-	 * @return bool
-	 */
 	public function hasPlayedBefore() : bool;
 
 }

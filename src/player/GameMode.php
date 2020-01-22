@@ -70,8 +70,6 @@ final class GameMode{
 	}
 
 	/**
-	 * @param int $n
-	 *
 	 * @return GameMode
 	 * @throws \InvalidArgumentException
 	 */
@@ -100,23 +98,14 @@ final class GameMode{
 		$this->aliases = $aliases;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMagicNumber() : int{
 		return $this->magicNumber;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getEnglishName() : string{
 		return $this->englishName;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getTranslationKey() : string{
 		return "%" . $this->translationKey;
 	}

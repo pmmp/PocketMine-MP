@@ -87,16 +87,10 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		parent::onClose($who);
 	}
 
-	/**
-	 * @return ChestInventory
-	 */
 	public function getLeftSide() : ChestInventory{
 		return $this->left;
 	}
 
-	/**
-	 * @return ChestInventory
-	 */
 	public function getRightSide() : ChestInventory{
 		return $this->right;
 	}

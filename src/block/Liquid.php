@@ -143,8 +143,6 @@ abstract class Liquid extends Transparent{
 	}
 
 	/**
-	 * @param bool $still
-	 *
 	 * @return $this
 	 */
 	public function setStill(bool $still = true) : self{
@@ -247,8 +245,6 @@ abstract class Liquid extends Transparent{
 
 	/**
 	 * Returns how many liquid levels are lost per block flowed horizontally. Affects how far the liquid can flow.
-	 *
-	 * @return int
 	 */
 	public function getFlowDecayPerBlock() : int{
 		return 1;

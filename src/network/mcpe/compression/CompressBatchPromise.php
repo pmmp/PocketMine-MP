@@ -82,9 +82,6 @@ class CompressBatchPromise{
 		return $this->result !== null;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isCancelled() : bool{
 		return $this->cancelled;
 	}

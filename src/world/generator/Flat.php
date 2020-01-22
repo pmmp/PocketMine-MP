@@ -51,10 +51,6 @@ class Flat extends Generator{
 	private $preset;
 
 	/**
-	 * @param ChunkManager $world
-	 * @param int          $seed
-	 * @param array        $options
-	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public function __construct(ChunkManager $world, int $seed, array $options = []){
@@ -88,8 +84,6 @@ class Flat extends Generator{
 	}
 
 	/**
-	 * @param string $layers
-	 *
 	 * @return int[]
 	 * @throws InvalidGeneratorOptionsException
 	 */

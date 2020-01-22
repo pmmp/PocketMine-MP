@@ -56,7 +56,6 @@ class Permission{
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
 	 *
-	 * @param string $name
 	 * @param string $description
 	 * @param string $defaultValue
 	 * @param bool[] $children
@@ -70,9 +69,6 @@ class Permission{
 		$this->recalculatePermissibles();
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
@@ -84,16 +80,10 @@ class Permission{
 		return $this->children;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDefault() : string{
 		return $this->defaultValue;
 	}
 
-	/**
-	 * @param string $value
-	 */
 	public function setDefault(string $value) : void{
 		if($value !== $this->defaultValue){
 			$this->defaultValue = $value;
@@ -101,16 +91,10 @@ class Permission{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDescription() : string{
 		return $this->description;
 	}
 
-	/**
-	 * @param string $value
-	 */
 	public function setDescription(string $value) : void{
 		$this->description = $value;
 	}
@@ -132,10 +116,8 @@ class Permission{
 		}
 	}
 
-
 	/**
 	 * @param string|Permission $name
-	 * @param bool              $value
 	 *
 	 * @return Permission|null Permission if $name is a string, null if it's a Permission
 	 */

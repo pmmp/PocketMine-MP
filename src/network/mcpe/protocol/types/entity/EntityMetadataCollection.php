@@ -38,93 +38,43 @@ class EntityMetadataCollection{
 
 	}
 
-	/**
-	 * @param int  $key
-	 * @param int  $value
-	 * @param bool $force
-	 */
 	public function setByte(int $key, int $value, bool $force = false) : void{
 
 		$this->set($key, new ByteMetadataProperty($value), $force);
 	}
 
-	/**
-	 * @param int  $key
-	 * @param int  $value
-	 * @param bool $force
-	 */
 	public function setShort(int $key, int $value, bool $force = false) : void{
 		$this->set($key, new ShortMetadataProperty($value), $force);
 	}
 
-	/**
-	 * @param int  $key
-	 * @param int  $value
-	 * @param bool $force
-	 */
 	public function setInt(int $key, int $value, bool $force = false) : void{
 		$this->set($key, new IntMetadataProperty($value), $force);
 	}
 
-	/**
-	 * @param int   $key
-	 * @param float $value
-	 * @param bool  $force
-	 */
 	public function setFloat(int $key, float $value, bool $force = false) : void{
 		$this->set($key, new FloatMetadataProperty($value), $force);
 	}
 
-	/**
-	 * @param int    $key
-	 * @param string $value
-	 * @param bool   $force
-	 */
 	public function setString(int $key, string $value, bool $force = false) : void{
 		$this->set($key, new StringMetadataProperty($value), $force);
 	}
 
-	/**
-	 * @param int         $key
-	 * @param CompoundTag $value
-	 * @param bool        $force
-	 */
 	public function setCompoundTag(int $key, CompoundTag $value, bool $force = false) : void{
 		$this->set($key, new CompoundTagMetadataProperty($value), $force);
 	}
 
-	/**
-	 * @param int          $key
-	 * @param null|Vector3 $value
-	 * @param bool         $force
-	 */
 	public function setBlockPos(int $key, ?Vector3 $value, bool $force = false) : void{
 		$this->set($key, new BlockPosMetadataProperty($value ?? new Vector3(0, 0, 0)), $force);
 	}
 
-	/**
-	 * @param int  $key
-	 * @param int  $value
-	 * @param bool $force
-	 */
 	public function setLong(int $key, int $value, bool $force = false) : void{
 		$this->set($key, new LongMetadataProperty($value), $force);
 	}
 
-	/**
-	 * @param int          $key
-	 * @param null|Vector3 $value
-	 * @param bool         $force
-	 */
 	public function setVector3(int $key, ?Vector3 $value, bool $force = false) : void{
 		$this->set($key, new Vec3MetadataProperty($value ?? new Vector3(0, 0, 0)), $force);
 	}
 
-	/**
-	 * @param int              $key
-	 * @param MetadataProperty $value
-	 * @param bool             $force
-	 */
 	public function set(int $key, MetadataProperty $value, bool $force = false) : void{
 		if(!$force and isset($this->properties[$key]) and !($this->properties[$key] instanceof $value)){
 			throw new \InvalidArgumentException("Can't overwrite property with mismatching types (have " . get_class($this->properties[$key]) . ")");

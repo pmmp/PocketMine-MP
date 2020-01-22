@@ -87,11 +87,6 @@ class PluginManager{
 	/** @var PluginGraylist|null */
 	private $graylist;
 
-	/**
-	 * @param Server              $server
-	 * @param null|string         $pluginDataDirectory
-	 * @param PluginGraylist|null $graylist
-	 */
 	public function __construct(Server $server, ?string $pluginDataDirectory, ?PluginGraylist $graylist = null){
 		$this->server = $server;
 		$this->pluginDataDirectory = $pluginDataDirectory;
@@ -106,11 +101,6 @@ class PluginManager{
 		$this->graylist = $graylist;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return null|Plugin
-	 */
 	public function getPlugin(string $name) : ?Plugin{
 		if(isset($this->plugins[$name])){
 			return $this->plugins[$name];
@@ -119,9 +109,6 @@ class PluginManager{
 		return null;
 	}
 
-	/**
-	 * @param PluginLoader $loader
-	 */
 	public function registerInterface(PluginLoader $loader) : void{
 		$this->fileAssociations[get_class($loader)] = $loader;
 	}
@@ -141,10 +128,7 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string         $path
 	 * @param PluginLoader[] $loaders
-	 *
-	 * @return Plugin|null
 	 */
 	public function loadPlugin(string $path, ?array $loaders = null) : ?Plugin{
 		foreach($loaders ?? $this->fileAssociations as $loader){
@@ -197,7 +181,6 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string $directory
 	 * @param array  $newLoaders
 	 *
 	 * @return Plugin[]
@@ -372,8 +355,6 @@ class PluginManager{
 	 * Returns whether a specified API version string is considered compatible with the server's API version.
 	 *
 	 * @param string ...$versions
-	 *
-	 * @return bool
 	 */
 	public function isCompatibleApi(string ...$versions) : bool{
 		$serverString = $this->server->getApiVersion();
@@ -411,18 +392,10 @@ class PluginManager{
 		return false;
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 *
-	 * @return bool
-	 */
 	public function isPluginEnabled(Plugin $plugin) : bool{
 		return isset($this->plugins[$plugin->getDescription()->getName()]) and $plugin->isEnabled();
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 */
 	public function enablePlugin(Plugin $plugin) : void{
 		if(!$plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
@@ -446,9 +419,6 @@ class PluginManager{
 		}
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 */
 	public function disablePlugin(Plugin $plugin) : void{
 		if($plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.disable", [$plugin->getDescription()->getFullName()]));
@@ -481,9 +451,6 @@ class PluginManager{
 
 	/**
 	 * Registers all the events in the given Listener class
-	 *
-	 * @param Listener $listener
-	 * @param Plugin   $plugin
 	 *
 	 * @throws PluginException
 	 */
@@ -548,10 +515,6 @@ class PluginManager{
 
 	/**
 	 * @param string   $event Class name that extends Event
-	 * @param \Closure $handler
-	 * @param int      $priority
-	 * @param Plugin   $plugin
-	 * @param bool     $handleCancelled
 	 *
 	 * @throws \ReflectionException
 	 */

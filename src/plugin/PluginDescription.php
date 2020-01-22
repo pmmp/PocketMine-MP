@@ -86,8 +86,6 @@ class PluginDescription{
 	}
 
 	/**
-	 * @param array $plugin
-	 *
 	 * @throws PluginException
 	 */
 	private function loadMap(array $plugin) : void{
@@ -161,16 +159,10 @@ class PluginDescription{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getFullName() : string{
 		return $this->name . " v" . $this->version;
 	}
 
-	/**
-	 * @return array
-	 */
 	public function getCompatibleApis() : array{
 		return $this->api;
 	}
@@ -189,16 +181,10 @@ class PluginDescription{
 		return $this->authors;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPrefix() : string{
 		return $this->prefix;
 	}
 
-	/**
-	 * @return array
-	 */
 	public function getCommands() : array{
 		return $this->commands;
 	}
@@ -244,44 +230,26 @@ class PluginDescription{
 		}
 	}
 
-	/**
-	 * @return array
-	 */
 	public function getDepend() : array{
 		return $this->depend;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDescription() : string{
 		return $this->description;
 	}
 
-	/**
-	 * @return array
-	 */
 	public function getLoadBefore() : array{
 		return $this->loadBefore;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getMain() : string{
 		return $this->main;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
 
-	/**
-	 * @return PluginLoadOrder
-	 */
 	public function getOrder() : PluginLoadOrder{
 		return $this->order;
 	}
@@ -293,23 +261,14 @@ class PluginDescription{
 		return $this->permissions;
 	}
 
-	/**
-	 * @return array
-	 */
 	public function getSoftDepend() : array{
 		return $this->softDepend;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getVersion() : string{
 		return $this->version;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getWebsite() : string{
 		return $this->website;
 	}

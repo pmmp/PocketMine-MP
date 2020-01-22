@@ -34,11 +34,6 @@ class CompressBatchTask extends AsyncTask{
 	/** @var string */
 	private $data;
 
-	/**
-	 * @param string               $data
-	 * @param int                  $compressionLevel
-	 * @param CompressBatchPromise $promise
-	 */
 	public function __construct(string $data, int $compressionLevel, CompressBatchPromise $promise){
 		$this->data = $data;
 		$this->level = $compressionLevel;

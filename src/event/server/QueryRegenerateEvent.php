@@ -71,10 +71,6 @@ class QueryRegenerateEvent extends ServerEvent{
 	/** @var string|null */
 	private $shortQueryCache = null;
 
-
-	/**
-	 * @param Server $server
-	 */
 	public function __construct(Server $server){
 		$this->serverName = $server->getMotd();
 		$this->listPlugins = $server->getProperty("settings.query-plugins", true);
@@ -99,31 +95,19 @@ class QueryRegenerateEvent extends ServerEvent{
 		$this->shortQueryCache = null;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getServerName() : string{
 		return $this->serverName;
 	}
 
-	/**
-	 * @param string $serverName
-	 */
 	public function setServerName(string $serverName) : void{
 		$this->serverName = $serverName;
 		$this->destroyCache();
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function canListPlugins() : bool{
 		return $this->listPlugins;
 	}
 
-	/**
-	 * @param bool $value
-	 */
 	public function setListPlugins(bool $value) : void{
 		$this->listPlugins = $value;
 		$this->destroyCache();
@@ -159,46 +143,28 @@ class QueryRegenerateEvent extends ServerEvent{
 		$this->destroyCache();
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPlayerCount() : int{
 		return $this->numPlayers;
 	}
 
-	/**
-	 * @param int $count
-	 */
 	public function setPlayerCount(int $count) : void{
 		$this->numPlayers = $count;
 		$this->destroyCache();
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMaxPlayerCount() : int{
 		return $this->maxPlayers;
 	}
 
-	/**
-	 * @param int $count
-	 */
 	public function setMaxPlayerCount(int $count) : void{
 		$this->maxPlayers = $count;
 		$this->destroyCache();
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getWorld() : string{
 		return $this->map;
 	}
 
-	/**
-	 * @param string $world
-	 */
 	public function setWorld(string $world) : void{
 		$this->map = $world;
 		$this->destroyCache();
@@ -206,24 +172,16 @@ class QueryRegenerateEvent extends ServerEvent{
 
 	/**
 	 * Returns the extra Query data in key => value form
-	 *
-	 * @return array
 	 */
 	public function getExtraData() : array{
 		return $this->extraData;
 	}
 
-	/**
-	 * @param array $extraData
-	 */
 	public function setExtraData(array $extraData) : void{
 		$this->extraData = $extraData;
 		$this->destroyCache();
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getLongQuery() : string{
 		if($this->longQueryCache !== null){
 			return $this->longQueryCache;
@@ -273,9 +231,6 @@ class QueryRegenerateEvent extends ServerEvent{
 		return $this->longQueryCache = $query;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getShortQuery() : string{
 		return $this->shortQueryCache ?? ($this->shortQueryCache = $this->serverName . "\x00" . $this->gametype . "\x00" . $this->map . "\x00" . $this->numPlayers . "\x00" . $this->maxPlayers . "\x00" . Binary::writeLShort($this->port) . $this->ip . "\x00");
 	}

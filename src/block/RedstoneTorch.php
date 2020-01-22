@@ -49,8 +49,6 @@ class RedstoneTorch extends Torch{
 	}
 
 	/**
-	 * @param bool $lit
-	 *
 	 * @return $this
 	 */
 	public function setLit(bool $lit = true) : self{

@@ -69,30 +69,18 @@ final class ToolTier{
 		$this->baseEfficiency = $baseEfficiency;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getHarvestLevel() : int{
 		return $this->harvestLevel;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMaxDurability() : int{
 		return $this->maxDurability;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBaseAttackPoints() : int{
 		return $this->baseAttackPoints;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBaseEfficiency() : int{
 		return $this->baseEfficiency;
 	}

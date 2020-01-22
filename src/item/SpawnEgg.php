@@ -37,10 +37,6 @@ class SpawnEgg extends Item{
 	private $entityClass;
 
 	/**
-	 * @param int    $id
-	 * @param int    $variant
-	 * @param string $name
-	 *
 	 * @param string $entityClass instanceof Entity
 	 *
 	 * @throws \InvalidArgumentException

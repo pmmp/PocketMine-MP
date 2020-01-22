@@ -47,9 +47,6 @@ class BlockTransaction{
 	/**
 	 * Adds a block to the transaction at the given position.
 	 *
-	 * @param Vector3 $pos
-	 * @param Block   $state
-	 *
 	 * @return $this
 	 */
 	public function addBlock(Vector3 $pos, Block $state) : self{
@@ -58,11 +55,6 @@ class BlockTransaction{
 
 	/**
 	 * Adds a block to the batch at the given coordinates.
-	 *
-	 * @param int   $x
-	 * @param int   $y
-	 * @param int   $z
-	 * @param Block $state
 	 *
 	 * @return $this
 	 */
@@ -74,10 +66,6 @@ class BlockTransaction{
 	/**
 	 * Reads a block from the given world, masked by the blocks in this transaction. This can be useful if you want to
 	 * add blocks to the transaction that depend on previous blocks should they exist.
-	 *
-	 * @param Vector3 $pos
-	 *
-	 * @return Block
 	 */
 	public function fetchBlock(Vector3 $pos) : Block{
 		return $this->fetchBlockAt($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
@@ -85,12 +73,6 @@ class BlockTransaction{
 
 	/**
 	 * @see BlockTransaction::fetchBlock()
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return Block
 	 */
 	public function fetchBlockAt(int $x, int $y, int $z) : Block{
 		return $this->blocks[$x][$y][$z] ?? $this->world->getBlockAt($x, $y, $z);
@@ -133,8 +115,6 @@ class BlockTransaction{
 	 * Add a validation predicate which will be used to validate every block.
 	 * The callable signature should be the same as the below dummy function.
 	 * @see BlockTransaction::dummyValidator()
-	 *
-	 * @param \Closure $validator
 	 */
 	public function addValidator(\Closure $validator) : void{
 		Utils::validateCallableSignature([$this, 'dummyValidator'], $validator);
@@ -146,13 +126,6 @@ class BlockTransaction{
 	 * @see BlockTransaction::addValidator()
 	 *
 	 * @dummy
-	 *
-	 * @param ChunkManager $world
-	 * @param int          $x
-	 * @param int          $y
-	 * @param int          $z
-	 *
-	 * @return bool
 	 */
 	public function dummyValidator(ChunkManager $world, int $x, int $y, int $z) : bool{
 		return true;

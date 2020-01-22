@@ -217,10 +217,6 @@ abstract class Living extends Entity{
 	/**
 	 * Causes the mob to consume the given Consumable object, applying applicable effects, health bonuses, food bonuses,
 	 * etc.
-	 *
-	 * @param Consumable $consumable
-	 *
-	 * @return bool
 	 */
 	public function consumeObject(Consumable $consumable) : bool{
 		foreach($consumable->getAdditionalEffects() as $effect){
@@ -234,7 +230,6 @@ abstract class Living extends Entity{
 
 	/**
 	 * Returns the initial upwards velocity of a jumping entity in blocks/tick, including additional velocity due to effects.
-	 * @return float
 	 */
 	public function getJumpVelocity() : float{
 		return $this->jumpVelocity + ($this->effectManager->has(VanillaEffects::JUMP_BOOST()) ? ($this->effectManager->get(VanillaEffects::JUMP_BOOST())->getEffectLevel() / 10) : 0);
@@ -261,8 +256,6 @@ abstract class Living extends Entity{
 	 * Returns how many armour points this mob has. Armour points provide a percentage reduction to damage.
 	 * For mobs which can wear armour, this should return the sum total of the armour points provided by their
 	 * equipment.
-	 *
-	 * @return int
 	 */
 	public function getArmorPoints() : int{
 		$total = 0;
@@ -275,10 +268,6 @@ abstract class Living extends Entity{
 
 	/**
 	 * Returns the highest level of the specified enchantment on any armour piece that the entity is currently wearing.
-	 *
-	 * @param Enchantment $enchantment
-	 *
-	 * @return int
 	 */
 	public function getHighestArmorEnchantmentLevel(Enchantment $enchantment) : int{
 		$result = 0;
@@ -289,9 +278,6 @@ abstract class Living extends Entity{
 		return $result;
 	}
 
-	/**
-	 * @return ArmorInventory
-	 */
 	public function getArmorInventory() : ArmorInventory{
 		return $this->armorInventory;
 	}
@@ -303,8 +289,6 @@ abstract class Living extends Entity{
 	/**
 	 * Called prior to EntityDamageEvent execution to apply modifications to the event's damage, such as reduction due
 	 * to effects or armour.
-	 *
-	 * @param EntityDamageEvent $source
 	 */
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
 		if($source->canBeReducedByArmor()){
@@ -332,8 +316,6 @@ abstract class Living extends Entity{
 	 * Called after EntityDamageEvent execution to apply post-hurt effects, such as reducing absorption or modifying
 	 * armour durability.
 	 * This will not be called by damage sources causing death.
-	 *
-	 * @param EntityDamageEvent $source
 	 */
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getModifier(EntityDamageEvent::MODIFIER_ABSORPTION)));
@@ -363,8 +345,6 @@ abstract class Living extends Entity{
 	/**
 	 * Damages the worn armour according to the amount of damage given. Each 4 points (rounded down) deals 1 damage
 	 * point to each armour piece, but never less than 1 total.
-	 *
-	 * @param float $damage
 	 */
 	public function damageArmor(float $damage) : void{
 		$durabilityRemoved = (int) max(floor($damage / 4), 1);
@@ -544,10 +524,6 @@ abstract class Living extends Entity{
 
 	/**
 	 * Ticks the entity's air supply, consuming it when underwater and regenerating it when out of water.
-	 *
-	 * @param int $tickDiff
-	 *
-	 * @return bool
 	 */
 	protected function doAirSupplyTick(int $tickDiff) : bool{
 		$ticks = $this->getAirSupplyTicks();
@@ -583,7 +559,6 @@ abstract class Living extends Entity{
 
 	/**
 	 * Returns whether the entity can currently breathe.
-	 * @return bool
 	 */
 	public function canBreathe() : bool{
 		return $this->effectManager->has(VanillaEffects::WATER_BREATHING()) or $this->effectManager->has(VanillaEffects::CONDUIT_POWER()) or !$this->isUnderwater();
@@ -591,7 +566,6 @@ abstract class Living extends Entity{
 
 	/**
 	 * Returns whether the entity is currently breathing or not. If this is false, the entity's air supply will be used.
-	 * @return bool
 	 */
 	public function isBreathing() : bool{
 		return $this->breathing;
@@ -600,8 +574,6 @@ abstract class Living extends Entity{
 	/**
 	 * Sets whether the entity is currently breathing. If false, it will cause the entity's air supply to be used.
 	 * For players, this also shows the oxygen bar.
-	 *
-	 * @param bool $value
 	 */
 	public function setBreathing(bool $value = true) : void{
 		$this->breathing = $value;
@@ -610,8 +582,6 @@ abstract class Living extends Entity{
 	/**
 	 * Returns the number of ticks remaining in the entity's air supply. Note that the entity may survive longer than
 	 * this amount of time without damage due to enchantments such as Respiration.
-	 *
-	 * @return int
 	 */
 	public function getAirSupplyTicks() : int{
 		return $this->breathTicks;
@@ -619,8 +589,6 @@ abstract class Living extends Entity{
 
 	/**
 	 * Sets the number of air ticks left in the entity's air supply.
-	 *
-	 * @param int $ticks
 	 */
 	public function setAirSupplyTicks(int $ticks) : void{
 		$this->breathTicks = $ticks;
@@ -628,7 +596,6 @@ abstract class Living extends Entity{
 
 	/**
 	 * Returns the maximum amount of air ticks the entity's air supply can contain.
-	 * @return int
 	 */
 	public function getMaxAirSupplyTicks() : int{
 		return $this->maxBreathTicks;
@@ -636,8 +603,6 @@ abstract class Living extends Entity{
 
 	/**
 	 * Sets the maximum amount of air ticks the air supply can hold.
-	 *
-	 * @param int $ticks
 	 */
 	public function setMaxAirSupplyTicks(int $ticks) : void{
 		$this->maxBreathTicks = $ticks;
@@ -661,17 +626,12 @@ abstract class Living extends Entity{
 
 	/**
 	 * Returns the amount of XP this mob will drop on death.
-	 * @return int
 	 */
 	public function getXpDropAmount() : int{
 		return 0;
 	}
 
 	/**
-	 * @param int   $maxDistance
-	 * @param int   $maxLength
-	 * @param array $transparent
-	 *
 	 * @return Block[]
 	 */
 	public function getLineOfSight(int $maxDistance, int $maxLength = 0, array $transparent = []) : array{
@@ -711,12 +671,6 @@ abstract class Living extends Entity{
 		return $blocks;
 	}
 
-	/**
-	 * @param int   $maxDistance
-	 * @param array $transparent
-	 *
-	 * @return Block|null
-	 */
 	public function getTargetBlock(int $maxDistance, array $transparent = []) : ?Block{
 		$line = $this->getLineOfSight($maxDistance, 1, $transparent);
 		if(count($line) > 0){
@@ -729,8 +683,6 @@ abstract class Living extends Entity{
 	/**
 	 * Changes the entity's yaw and pitch to make it look at the specified Vector3 position. For mobs, this will cause
 	 * their heads to turn.
-	 *
-	 * @param Vector3 $target
 	 */
 	public function lookAt(Vector3 $target) : void{
 		$horizontal = sqrt(($target->x - $this->location->x) ** 2 + ($target->z - $this->location->z) ** 2);

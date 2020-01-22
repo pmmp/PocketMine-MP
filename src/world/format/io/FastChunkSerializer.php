@@ -48,10 +48,6 @@ final class FastChunkSerializer{
 	/**
 	 * Fast-serializes the chunk for passing between threads
 	 * TODO: tiles and entities
-	 *
-	 * @param Chunk $chunk
-	 *
-	 * @return string
 	 */
 	public static function serialize(Chunk $chunk) : string{
 		$stream = new BinaryStream();
@@ -97,10 +93,6 @@ final class FastChunkSerializer{
 
 	/**
 	 * Deserializes a fast-serialized chunk
-	 *
-	 * @param string $data
-	 *
-	 * @return Chunk
 	 */
 	public static function deserialize(string $data) : Chunk{
 		$stream = new BinaryStream($data);

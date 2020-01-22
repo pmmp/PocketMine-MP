@@ -86,14 +86,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param string $id
-	 * @param float  $minValue
-	 * @param float  $maxValue
-	 * @param float  $defaultValue
-	 * @param bool   $shouldSend
-	 *
-	 * @return Attribute
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public static function register(string $id, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true) : Attribute{
@@ -104,11 +96,6 @@ class Attribute{
 		return self::$attributes[$id] = new Attribute($id, $minValue, $maxValue, $defaultValue, $shouldSend);
 	}
 
-	/**
-	 * @param string $id
-	 *
-	 * @return Attribute|null
-	 */
 	public static function get(string $id) : ?Attribute{
 		return isset(self::$attributes[$id]) ? clone self::$attributes[$id] : null;
 	}
@@ -128,8 +115,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param float $minValue
-	 *
 	 * @return $this
 	 */
 	public function setMinValue(float $minValue){
@@ -149,8 +134,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param float $maxValue
-	 *
 	 * @return $this
 	 */
 	public function setMaxValue(float $maxValue){
@@ -170,8 +153,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param float $defaultValue
-	 *
 	 * @return $this
 	 */
 	public function setDefaultValue(float $defaultValue){
@@ -195,10 +176,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param float $value
-	 * @param bool  $fit
-	 * @param bool  $forceSend
-	 *
 	 * @return $this
 	 */
 	public function setValue(float $value, bool $fit = false, bool $forceSend = false){

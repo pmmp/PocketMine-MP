@@ -88,8 +88,6 @@ class NetworkInventoryAction{
 	public $newItem;
 
 	/**
-	 * @param NetworkBinaryStream $packet
-	 *
 	 * @return $this
 	 *
 	 * @throws BinaryDataException
@@ -122,8 +120,6 @@ class NetworkInventoryAction{
 	}
 
 	/**
-	 * @param NetworkBinaryStream $packet
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function write(NetworkBinaryStream $packet) : void{
@@ -151,10 +147,6 @@ class NetworkInventoryAction{
 	}
 
 	/**
-	 * @param Player $player
-	 *
-	 * @return InventoryAction|null
-	 *
 	 * @throws \UnexpectedValueException
 	 */
 	public function createInventoryAction(Player $player) : ?InventoryAction{

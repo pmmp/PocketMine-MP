@@ -56,8 +56,6 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * Returns the action of the event.
-	 *
-	 * @return int
 	 */
 	public function getAction() : int{
 		return $this->action;
@@ -65,8 +63,6 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * Returns the book before it was modified.
-	 *
-	 * @return WritableBookBase
 	 */
 	public function getOldBook() : WritableBookBase{
 		return $this->oldBook;
@@ -75,8 +71,6 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * Returns the book after it was modified.
 	 * The new book may be a written book, if the book was signed.
-	 *
-	 * @return WritableBookBase
 	 */
 	public function getNewBook() : WritableBookBase{
 		return $this->newBook;
@@ -84,8 +78,6 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * Sets the new book as the given instance.
-	 *
-	 * @param WritableBookBase $book
 	 */
 	public function setNewBook(WritableBookBase $book) : void{
 		$this->newBook = $book;

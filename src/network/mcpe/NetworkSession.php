@@ -205,7 +205,6 @@ class NetworkSession{
 	/**
 	 * TODO: this shouldn't be accessible after the initial login phase
 	 *
-	 * @param PlayerInfo $info
 	 * @throws \InvalidStateException
 	 */
 	public function setPlayerInfo(PlayerInfo $info) : void{
@@ -221,16 +220,10 @@ class NetworkSession{
 		return $this->connected;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getIp() : string{
 		return $this->ip;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPort() : int{
 		return $this->port;
 	}
@@ -241,8 +234,6 @@ class NetworkSession{
 
 	/**
 	 * Returns the last recorded ping measurement for this session, in milliseconds.
-	 *
-	 * @return int
 	 */
 	public function getPing() : int{
 		return $this->ping;
@@ -250,8 +241,6 @@ class NetworkSession{
 
 	/**
 	 * @internal Called by the network interface to update last recorded ping measurements.
-	 *
-	 * @param int $ping
 	 */
 	public function updatePing(int $ping) : void{
 		$this->ping = $ping;
@@ -269,8 +258,6 @@ class NetworkSession{
 	}
 
 	/**
-	 * @param string $payload
-	 *
 	 * @throws BadPacketException
 	 */
 	public function handleEncoded(string $payload) : void{
@@ -323,8 +310,6 @@ class NetworkSession{
 	}
 
 	/**
-	 * @param Packet $packet
-	 *
 	 * @throws BadPacketException
 	 */
 	public function handleDataPacket(Packet $packet) : void{
@@ -384,7 +369,6 @@ class NetworkSession{
 
 	/**
 	 * @internal
-	 * @param ClientboundPacket $packet
 	 */
 	public function addToSendBuffer(ClientboundPacket $packet) : void{
 		$timings = Timings::getSendDataPacketTimings($packet);
@@ -462,9 +446,6 @@ class NetworkSession{
 
 	/**
 	 * Disconnects the session, destroying the associated player (if it exists).
-	 *
-	 * @param string $reason
-	 * @param bool   $notify
 	 */
 	public function disconnect(string $reason, bool $notify = true) : void{
 		$this->tryDisconnect(function() use ($reason, $notify){
@@ -477,10 +458,6 @@ class NetworkSession{
 
 	/**
 	 * Instructs the remote client to connect to a different server.
-	 *
-	 * @param string $ip
-	 * @param int    $port
-	 * @param string $reason
 	 *
 	 * @throws \UnsupportedOperationException
 	 */
@@ -497,9 +474,6 @@ class NetworkSession{
 
 	/**
 	 * Called by the Player when it is closed (for example due to getting kicked).
-	 *
-	 * @param string $reason
-	 * @param bool   $notify
 	 */
 	public function onPlayerDestroyed(string $reason, bool $notify = true) : void{
 		$this->tryDisconnect(function() use ($reason, $notify){
@@ -509,9 +483,6 @@ class NetworkSession{
 
 	/**
 	 * Internal helper function used to handle server disconnections.
-	 *
-	 * @param string $reason
-	 * @param bool   $notify
 	 */
 	private function doServerDisconnect(string $reason, bool $notify = true) : void{
 		if($notify){
@@ -524,8 +495,6 @@ class NetworkSession{
 	/**
 	 * Called by the network interface to close the session when the client disconnects without server input, for
 	 * example in a timeout condition or voluntary client disconnect.
-	 *
-	 * @param string $reason
 	 */
 	public function onClientDisconnect(string $reason) : void{
 		$this->tryDisconnect(function() use ($reason){
@@ -662,8 +631,6 @@ class NetworkSession{
 
 	/**
 	 * TODO: make this less specialized
-	 *
-	 * @param Player $for
 	 */
 	public function syncAdventureSettings(Player $for) : void{
 		$pk = new AdventureSettingsPacket();
@@ -763,8 +730,6 @@ class NetworkSession{
 
 	/**
 	 * Instructs the networksession to start using the chunk at the given coordinates. This may occur asynchronously.
-	 * @param int      $chunkX
-	 * @param int      $chunkZ
 	 * @param \Closure $onCompletion To be called when chunk sending has completed.
 	 */
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
@@ -805,9 +770,6 @@ class NetworkSession{
 		$world->sendDifficulty($this->player);
 	}
 
-	/**
-	 * @return InventoryManager
-	 */
 	public function getInvManager() : InventoryManager{
 		return $this->invManager;
 	}
@@ -815,8 +777,6 @@ class NetworkSession{
 	/**
 	 * TODO: expand this to more than just humans
 	 * TODO: offhand
-	 *
-	 * @param Human $mob
 	 */
 	public function onMobEquipmentChange(Human $mob) : void{
 		//TODO: we could send zero for slot here because remote players don't need to know which slot was selected
@@ -891,9 +851,6 @@ class NetworkSession{
 	 * This function takes care of handling gamemodes known to MCPE (as of 1.1.0.3, that includes Survival, Creative and Adventure)
 	 *
 	 * @internal
-	 * @param GameMode $gamemode
-	 *
-	 * @return int
 	 */
 	public static function getClientFriendlyGamemode(GameMode $gamemode) : int{
 		if($gamemode->equals(GameMode::SPECTATOR())){

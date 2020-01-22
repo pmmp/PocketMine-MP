@@ -95,9 +95,6 @@ class Utils{
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
 	 *
-	 * @param \Closure $closure
-	 *
-	 * @return string
 	 * @throws \ReflectionException
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
@@ -123,9 +120,6 @@ class Utils{
 	/**
 	 * Returns a readable identifier for the class of the given object. Sanitizes class names for anonymous classes.
 	 *
-	 * @param object $obj
-	 *
-	 * @return string
 	 * @throws \ReflectionException
 	 */
 	public static function getNiceClassName(object $obj) : string{
@@ -163,8 +157,6 @@ class Utils{
 	 * The rest of the hash will change depending on other factors.
 	 *
 	 * @param string $extra optional, additional data to identify the machine
-	 *
-	 * @return UUID
 	 */
 	public static function getMachineUniqueId(string $extra = "") : UUID{
 		if(self::$serverUniqueId !== null and $extra === ""){
@@ -233,10 +225,6 @@ class Utils{
 	 * Linux => Linux
 	 * BSD => bsd
 	 * Other => other
-	 *
-	 * @param bool $recalculate
-	 *
-	 * @return string
 	 */
 	public static function getOS(bool $recalculate = false) : string{
 		if(self::$os === null or $recalculate){
@@ -265,11 +253,6 @@ class Utils{
 		return self::$os;
 	}
 
-	/**
-	 * @param bool $recalculate
-	 *
-	 * @return int
-	 */
 	public static function getCoreCount(bool $recalculate = false) : int{
 		static $processors = 0;
 
@@ -307,10 +290,6 @@ class Utils{
 
 	/**
 	 * Returns a prettified hexdump
-	 *
-	 * @param string $bin
-	 *
-	 * @return string
 	 */
 	public static function hexdump(string $bin) : string{
 		$output = "";
@@ -329,8 +308,6 @@ class Utils{
 	 * Returns a string that can be printed, replaces non-printable characters
 	 *
 	 * @param mixed $str
-	 *
-	 * @return string
 	 */
 	public static function printable($str) : string{
 		if(!is_string($str)){
@@ -373,8 +350,6 @@ class Utils{
 
 
 	/**
-	 * @param string $token
-	 *
 	 * @return array of claims
 	 *
 	 * @throws \UnexpectedValueException
@@ -399,9 +374,6 @@ class Utils{
 
 	/**
 	 * @param object $value
-	 * @param bool   $includeCurrent
-	 *
-	 * @return int
 	 */
 	public static function getReferenceCount($value, bool $includeCurrent = true) : int{
 		ob_start();
@@ -415,12 +387,6 @@ class Utils{
 		return -1;
 	}
 
-	/**
-	 * @param array $trace
-	 * @param int   $maxStringLength
-	 *
-	 * @return array
-	 */
 	public static function printableTrace(array $trace, int $maxStringLength = 80) : array{
 		$messages = [];
 		for($i = 0; isset($trace[$i]); ++$i){
@@ -450,11 +416,6 @@ class Utils{
 		return $messages;
 	}
 
-	/**
-	 * @param int $skipFrames
-	 *
-	 * @return array
-	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames
 		if(function_exists("xdebug_get_function_stack")){
@@ -469,19 +430,12 @@ class Utils{
 		return array_values($trace);
 	}
 
-	/**
-	 * @param int $skipFrames
-	 *
-	 * @return array
-	 */
 	public static function printableCurrentTrace(int $skipFrames = 0) : array{
 		return self::printableTrace(self::currentTrace(++$skipFrames));
 	}
 
 	/**
 	 * Extracts one-line tags from the doc-comment
-	 *
-	 * @param string $docComment
 	 *
 	 * @return string[] an array of tagName => tag value. If the tag has no value, an empty string is used as the value.
 	 */

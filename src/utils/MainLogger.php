@@ -61,9 +61,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	private $timezone;
 
 	/**
-	 * @param string $logFile
-	 * @param bool   $logDebug
-	 *
 	 * @throws \RuntimeException
 	 */
 	public function __construct(string $logFile, bool $logDebug = false){
@@ -82,8 +79,6 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	/**
 	 * Returns the current logger format used for console output.
-	 *
-	 * @return string
 	 */
 	public function getFormat() : string{
 		return $this->format;
@@ -99,8 +94,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	 * - message
 	 *
 	 * @see http://php.net/manual/en/function.sprintf.php
-	 *
-	 * @param string $format
 	 */
 	public function setFormat(string $format) : void{
 		$this->format = $format;
@@ -141,15 +134,11 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->send($message, \LogLevel::DEBUG, "DEBUG", TextFormat::GRAY);
 	}
 
-	/**
-	 * @param bool $logDebug
-	 */
 	public function setLogDebug(bool $logDebug) : void{
 		$this->logDebug = $logDebug;
 	}
 
 	/**
-	 * @param \Throwable $e
 	 * @param array|null $trace
 	 *
 	 * @return void

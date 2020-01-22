@@ -52,20 +52,10 @@ class PermissionManager{
 	/** @var Permissible[] */
 	protected $defSubsOp = [];
 
-	/**
-	 * @param string $name
-	 *
-	 * @return null|Permission
-	 */
 	public function getPermission(string $name) : ?Permission{
 		return $this->permissions[$name] ?? null;
 	}
 
-	/**
-	 * @param Permission $permission
-	 *
-	 * @return bool
-	 */
 	public function addPermission(Permission $permission) : bool{
 		if(!isset($this->permissions[$permission->getName()])){
 			$this->permissions[$permission->getName()] = $permission;
@@ -89,8 +79,6 @@ class PermissionManager{
 	}
 
 	/**
-	 * @param bool $op
-	 *
 	 * @return Permission[]
 	 */
 	public function getDefaultPermissions(bool $op) : array{
@@ -101,9 +89,6 @@ class PermissionManager{
 		}
 	}
 
-	/**
-	 * @param Permission $permission
-	 */
 	public function recalculatePermissionDefaults(Permission $permission) : void{
 		if(isset($this->permissions[$permission->getName()])){
 			unset($this->defaultPermsOp[$permission->getName()]);
@@ -112,9 +97,6 @@ class PermissionManager{
 		}
 	}
 
-	/**
-	 * @param Permission $permission
-	 */
 	private function calculatePermissionDefault(Permission $permission) : void{
 		Timings::$permissionDefaultTimer->startTiming();
 		if($permission->getDefault() === Permission::DEFAULT_OP or $permission->getDefault() === Permission::DEFAULT_TRUE){
@@ -129,19 +111,12 @@ class PermissionManager{
 		Timings::$permissionDefaultTimer->startTiming();
 	}
 
-	/**
-	 * @param bool $op
-	 */
 	private function dirtyPermissibles(bool $op) : void{
 		foreach($this->getDefaultPermSubscriptions($op) as $p){
 			$p->recalculatePermissions();
 		}
 	}
 
-	/**
-	 * @param string      $permission
-	 * @param Permissible $permissible
-	 */
 	public function subscribeToPermission(string $permission, Permissible $permissible) : void{
 		if(!isset($this->permSubs[$permission])){
 			$this->permSubs[$permission] = [];
@@ -149,10 +124,6 @@ class PermissionManager{
 		$this->permSubs[$permission][spl_object_id($permissible)] = $permissible;
 	}
 
-	/**
-	 * @param string      $permission
-	 * @param Permissible $permissible
-	 */
 	public function unsubscribeFromPermission(string $permission, Permissible $permissible) : void{
 		if(isset($this->permSubs[$permission])){
 			unset($this->permSubs[$permission][spl_object_id($permissible)]);
@@ -162,9 +133,6 @@ class PermissionManager{
 		}
 	}
 
-	/**
-	 * @param Permissible $permissible
-	 */
 	public function unsubscribeFromAllPermissions(Permissible $permissible) : void{
 		foreach($this->permSubs as $permission => &$subs){
 			unset($subs[spl_object_id($permissible)]);
@@ -175,18 +143,12 @@ class PermissionManager{
 	}
 
 	/**
-	 * @param string $permission
-	 *
 	 * @return array|Permissible[]
 	 */
 	public function getPermissionSubscriptions(string $permission) : array{
 		return $this->permSubs[$permission] ?? [];
 	}
 
-	/**
-	 * @param bool        $op
-	 * @param Permissible $permissible
-	 */
 	public function subscribeToDefaultPerms(bool $op, Permissible $permissible) : void{
 		if($op){
 			$this->defSubsOp[spl_object_id($permissible)] = $permissible;
@@ -195,10 +157,6 @@ class PermissionManager{
 		}
 	}
 
-	/**
-	 * @param bool        $op
-	 * @param Permissible $permissible
-	 */
 	public function unsubscribeFromDefaultPerms(bool $op, Permissible $permissible) : void{
 		if($op){
 			unset($this->defSubsOp[spl_object_id($permissible)]);
@@ -208,8 +166,6 @@ class PermissionManager{
 	}
 
 	/**
-	 * @param bool $op
-	 *
 	 * @return Permissible[]
 	 */
 	public function getDefaultPermSubscriptions(bool $op) : array{

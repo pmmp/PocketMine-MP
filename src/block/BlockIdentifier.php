@@ -41,9 +41,6 @@ class BlockIdentifier{
 		$this->tileClass = $tileClass;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBlockId() : int{
 		return $this->blockId;
 	}
@@ -55,23 +52,14 @@ class BlockIdentifier{
 		return [$this->blockId];
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getVariant() : int{
 		return $this->variant;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getItemId() : int{
 		return $this->itemId ?? ($this->blockId > 255 ? 255 - $this->blockId : $this->blockId);
 	}
 
-	/**
-	 * @return string|null
-	 */
 	public function getTileClass() : ?string{
 		return $this->tileClass;
 	}

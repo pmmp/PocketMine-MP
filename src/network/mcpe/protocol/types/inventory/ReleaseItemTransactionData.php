@@ -41,30 +41,18 @@ class ReleaseItemTransactionData extends TransactionData{
 	/** @var Vector3 */
 	private $headPos;
 
-	/**
-	 * @return int
-	 */
 	public function getActionType() : int{
 		return $this->actionType;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getHotbarSlot() : int{
 		return $this->hotbarSlot;
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getItemInHand() : Item{
 		return $this->itemInHand;
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	public function getHeadPos() : Vector3{
 		return $this->headPos;
 	}

@@ -71,8 +71,6 @@ class Furnace extends Opaque{
 	}
 
 	/**
-	 * @param bool $lit
-	 *
 	 * @return $this
 	 */
 	public function setLit(bool $lit = true) : self{

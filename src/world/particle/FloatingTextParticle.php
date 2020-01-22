@@ -51,10 +51,6 @@ class FloatingTextParticle implements Particle{
 	/** @var bool */
 	protected $invisible = false;
 
-	/**
-	 * @param string $text
-	 * @param string $title
-	 */
 	public function __construct(string $text, string $title = ""){
 		$this->text = $text;
 		$this->title = $title;

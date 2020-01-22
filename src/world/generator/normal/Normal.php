@@ -58,10 +58,6 @@ class Normal extends Generator{
 	private static $SMOOTH_SIZE = 2;
 
 	/**
-	 * @param ChunkManager $world
-	 * @param int          $seed
-	 * @param array        $options
-	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public function __construct(ChunkManager $world, int $seed, array $options = []){

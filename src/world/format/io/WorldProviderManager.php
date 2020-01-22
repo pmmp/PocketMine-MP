@@ -47,8 +47,6 @@ abstract class WorldProviderManager{
 
 	/**
 	 * Returns the default format used to generate new worlds.
-	 *
-	 * @return string
 	 */
 	public static function getDefault() : string{
 		return self::$default;
@@ -67,12 +65,6 @@ abstract class WorldProviderManager{
 		self::$default = $class;
 	}
 
-	/**
-	 * @param string $class
-	 *
-	 * @param string $name
-	 * @param bool   $overwrite
-	 */
 	public static function addProvider(string $class, string $name, bool $overwrite = false) : void{
 		Utils::testValidInstance($class, WorldProvider::class);
 
@@ -87,8 +79,6 @@ abstract class WorldProviderManager{
 
 	/**
 	 * Returns a WorldProvider class for this path, or null
-	 *
-	 * @param string $path
 	 *
 	 * @return string[]|WorldProvider[]
 	 */
@@ -112,10 +102,6 @@ abstract class WorldProviderManager{
 
 	/**
 	 * Returns a WorldProvider by name, or null if not found
-	 *
-	 * @param string $name
-	 *
-	 * @return string|null
 	 */
 	public static function getProviderByName(string $name) : ?string{
 		return self::$providers[trim(strtolower($name))] ?? null;

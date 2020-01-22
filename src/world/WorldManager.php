@@ -83,9 +83,6 @@ class WorldManager{
 		return $this->worlds;
 	}
 
-	/**
-	 * @return World|null
-	 */
 	public function getDefaultWorld() : ?World{
 		return $this->defaultWorld;
 	}
@@ -94,8 +91,6 @@ class WorldManager{
 	 * Sets the default world to a different world
 	 * This won't change the level-name property,
 	 * it only affects the server on runtime
-	 *
-	 * @param World|null $world
 	 */
 	public function setDefaultWorld(?World $world) : void{
 		if($world === null or ($this->isWorldLoaded($world->getFolderName()) and $world !== $this->defaultWorld)){
@@ -103,30 +98,16 @@ class WorldManager{
 		}
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
 	public function isWorldLoaded(string $name) : bool{
 		return $this->getWorldByName($name) instanceof World;
 	}
 
-	/**
-	 * @param int $worldId
-	 *
-	 * @return World|null
-	 */
 	public function getWorld(int $worldId) : ?World{
 		return $this->worlds[$worldId] ?? null;
 	}
 
 	/**
 	 * NOTE: This matches worlds based on the FOLDER name, NOT the display name.
-	 *
-	 * @param string $name
-	 *
-	 * @return World|null
 	 */
 	public function getWorldByName(string $name) : ?World{
 		foreach($this->worlds as $world){
@@ -139,11 +120,6 @@ class WorldManager{
 	}
 
 	/**
-	 * @param World $world
-	 * @param bool  $forceUnload
-	 *
-	 * @return bool
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function unloadWorld(World $world, bool $forceUnload = false) : bool{
@@ -186,10 +162,7 @@ class WorldManager{
 	/**
 	 * Loads a world from the data directory
 	 *
-	 * @param string $name
 	 * @param bool   $autoUpgrade Converts worlds to the default format if the world's format is not writable / deprecated
-	 *
-	 * @return bool
 	 *
 	 * @throws WorldException
 	 */
@@ -261,13 +234,8 @@ class WorldManager{
 	/**
 	 * Generates a new world if it does not exist
 	 *
-	 * @param string   $name
-	 * @param int|null $seed
 	 * @param string   $generator Class name that extends pocketmine\world\generator\Generator
-	 * @param array    $options
-	 * @param bool     $backgroundGeneration
 	 *
-	 * @return bool
 	 * @throws \InvalidArgumentException
 	 */
 	public function generateWorld(string $name, ?int $seed = null, string $generator = Normal::class, array $options = [], bool $backgroundGeneration = true) : bool{
@@ -325,11 +293,6 @@ class WorldManager{
 		return true;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
 	public function isWorldGenerated(string $name) : bool{
 		if(trim($name) === ""){
 			return false;
@@ -345,10 +308,6 @@ class WorldManager{
 	/**
 	 * Searches all worlds for the entity with the specified ID.
 	 * Useful for tracking entities across multiple worlds without needing strong references.
-	 *
-	 * @param int $entityId
-	 *
-	 * @return Entity|null
 	 */
 	public function findEntity(int $entityId) : ?Entity{
 		foreach($this->worlds as $world){
@@ -388,17 +347,10 @@ class WorldManager{
 		}
 	}
 
-
-	/**
-	 * @return bool
-	 */
 	public function getAutoSave() : bool{
 		return $this->autoSave;
 	}
 
-	/**
-	 * @param bool $value
-	 */
 	public function setAutoSave(bool $value) : void{
 		$this->autoSave = $value;
 		foreach($this->worlds as $world){
@@ -408,16 +360,11 @@ class WorldManager{
 
 	/**
 	 * Returns the period in ticks after which loaded worlds will be automatically saved to disk.
-	 *
-	 * @return int
 	 */
 	public function getAutoSaveInterval() : int{
 		return $this->autoSaveTicks;
 	}
 
-	/**
-	 * @param int $autoSaveTicks
-	 */
 	public function setAutoSaveInterval(int $autoSaveTicks) : void{
 		if($autoSaveTicks <= 0){
 			throw new \InvalidArgumentException("Autosave ticks must be positive");

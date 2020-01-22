@@ -126,9 +126,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 	}
 
-	/**
-	 * @return bool
-	 */
 	final public function isEnabled() : bool{
 		return $this->isEnabled;
 	}
@@ -139,8 +136,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @internal This is intended for core use only and should not be used by plugins
 	 * @see PluginManager::enablePlugin()
 	 * @see PluginManager::disablePlugin()
-	 *
-	 * @param bool $enabled
 	 */
 	final public function onEnableStateChange(bool $enabled) : void{
 		if($this->isEnabled !== $enabled){
@@ -153,9 +148,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		}
 	}
 
-	/**
-	 * @return bool
-	 */
 	final public function isDisabled() : bool{
 		return !$this->isEnabled;
 	}
@@ -168,9 +160,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return $this->description;
 	}
 
-	/**
-	 * @return \AttachableLogger
-	 */
 	public function getLogger() : \AttachableLogger{
 		return $this->logger;
 	}
@@ -233,8 +222,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return Command|PluginIdentifiableCommand|null
 	 */
 	public function getCommand(string $name){
@@ -251,12 +238,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @param CommandSender $sender
-	 * @param Command       $command
-	 * @param string        $label
 	 * @param string[]      $args
-	 *
-	 * @return bool
 	 */
 	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool{
 		return false;
@@ -266,8 +248,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * Gets an embedded resource on the plugin file.
 	 * WARNING: You must close the resource given using fclose()
 	 *
-	 * @param string $filename
-	 *
 	 * @return null|resource Resource data, or null
 	 */
 	public function getResource(string $filename){
@@ -276,11 +256,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 	/**
 	 * Saves an embedded resource to its relative location in the data folder
-	 *
-	 * @param string $filename
-	 * @param bool   $replace
-	 *
-	 * @return bool
 	 */
 	public function saveResource(string $filename, bool $replace = false) : bool{
 		if(trim($filename) === ""){
@@ -315,9 +290,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return $this->resourceProvider->getResources();
 	}
 
-	/**
-	 * @return Config
-	 */
 	public function getConfig() : Config{
 		if($this->config === null){
 			$this->reloadConfig();
@@ -342,44 +314,26 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$this->config = new Config($this->configFile);
 	}
 
-	/**
-	 * @return Server
-	 */
 	final public function getServer() : Server{
 		return $this->server;
 	}
 
-	/**
-	 * @return string
-	 */
 	final public function getName() : string{
 		return $this->description->getName();
 	}
 
-	/**
-	 * @return string
-	 */
 	final public function getFullName() : string{
 		return $this->description->getFullName();
 	}
 
-	/**
-	 * @return string
-	 */
 	protected function getFile() : string{
 		return $this->file;
 	}
 
-	/**
-	 * @return PluginLoader
-	 */
 	public function getPluginLoader() : PluginLoader{
 		return $this->loader;
 	}
 
-	/**
-	 * @return TaskScheduler
-	 */
 	public function getScheduler() : TaskScheduler{
 		return $this->scheduler;
 	}

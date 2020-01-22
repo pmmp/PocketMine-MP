@@ -44,16 +44,10 @@ class ConcretePowder extends Opaque implements Fallable{
 		}
 	}
 
-	/**
-	 * @return null|Block
-	 */
 	public function tickFalling() : ?Block{
 		return $this->checkAdjacentWater();
 	}
 
-	/**
-	 * @return null|Block
-	 */
 	private function checkAdjacentWater() : ?Block{
 		foreach(Facing::ALL as $i){
 			if($i === Facing::DOWN){

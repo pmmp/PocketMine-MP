@@ -29,7 +29,6 @@ class TranslationContainer extends TextContainer{
 	protected $params = [];
 
 	/**
-	 * @param string               $text
 	 * @param (float|int|string)[] $params
 	 */
 	public function __construct(string $text, array $params = []){
@@ -50,11 +49,6 @@ class TranslationContainer extends TextContainer{
 		return $this->params;
 	}
 
-	/**
-	 * @param int $i
-	 *
-	 * @return string|null
-	 */
 	public function getParameter(int $i) : ?string{
 		return $this->params[$i] ?? null;
 	}

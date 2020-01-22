@@ -79,7 +79,6 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 	}
 
 	/**
-	 * @param string    $key
 	 * @param string[]  $parameters
 	 *
 	 * @return TextPacket
@@ -93,7 +92,6 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 	}
 
 	/**
-	 * @param string   $key
 	 * @param string[] $parameters
 	 *
 	 * @return TextPacket
@@ -103,7 +101,6 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 	}
 
 	/**
-	 * @param string   $key
 	 * @param string[] $parameters
 	 *
 	 * @return TextPacket

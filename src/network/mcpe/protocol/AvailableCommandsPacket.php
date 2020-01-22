@@ -150,7 +150,6 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @param string[] $enumValueList
 	 *
-	 * @return CommandEnum
 	 * @throws BadPacketException
 	 * @throws BinaryDataException
 	 */
@@ -173,7 +172,6 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	/**
-	 * @return CommandEnum
 	 * @throws BinaryDataException
 	 */
 	protected function getSoftEnum() : CommandEnum{
@@ -189,7 +187,6 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	/**
-	 * @param CommandEnum $enum
 	 * @param int[]       $enumValueMap
 	 */
 	protected function putEnum(CommandEnum $enum, array $enumValueMap) : void{
@@ -218,9 +215,6 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	/**
-	 * @param int $valueCount
-	 *
-	 * @return int
 	 * @throws BinaryDataException
 	 */
 	protected function getEnumValueIndex(int $valueCount) : int{
@@ -247,7 +241,6 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 * @param CommandEnum[] $enums
 	 * @param string[]      $enumValues
 	 *
-	 * @return CommandEnumConstraint
 	 * @throws BadPacketException
 	 * @throws BinaryDataException
 	 */
@@ -276,7 +269,6 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	/**
-	 * @param CommandEnumConstraint $constraint
 	 * @param int[]                 $enumIndexes string enum name -> int index
 	 * @param int[]                 $enumValueIndexes string value -> int index
 	 */
@@ -293,7 +285,6 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 * @param CommandEnum[] $enums
 	 * @param string[]      $postfixes
 	 *
-	 * @return CommandData
 	 * @throws BadPacketException
 	 * @throws BinaryDataException
 	 */
@@ -338,7 +329,6 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	/**
-	 * @param CommandData $data
 	 * @param int[]       $enumIndexes string enum name -> int index
 	 * @param int[]       $postfixIndexes
 	 */

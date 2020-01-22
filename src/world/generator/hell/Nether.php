@@ -51,10 +51,6 @@ class Nether extends Generator{
 	private $noiseBase;
 
 	/**
-	 * @param ChunkManager $world
-	 * @param int          $seed
-	 * @param array        $options
-	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public function __construct(ChunkManager $world, int $seed, array $options = []){

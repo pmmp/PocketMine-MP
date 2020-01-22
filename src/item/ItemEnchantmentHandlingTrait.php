@@ -35,37 +35,20 @@ trait ItemEnchantmentHandlingTrait{
 	/** @var EnchantmentInstance[] */
 	protected $enchantments = [];
 
-	/**
-	 * @return bool
-	 */
 	public function hasEnchantments() : bool{
 		return !empty($this->enchantments);
 	}
 
-	/**
-	 * @param Enchantment $enchantment
-	 * @param int         $level
-	 *
-	 * @return bool
-	 */
 	public function hasEnchantment(Enchantment $enchantment, int $level = -1) : bool{
 		$id = $enchantment->getId();
 		return isset($this->enchantments[$id]) and ($level === -1 or $this->enchantments[$id]->getLevel() === $level);
 	}
 
-	/**
-	 * @param Enchantment $enchantment
-	 *
-	 * @return EnchantmentInstance|null
-	 */
 	public function getEnchantment(Enchantment $enchantment) : ?EnchantmentInstance{
 		return $this->enchantments[$enchantment->getId()] ?? null;
 	}
 
 	/**
-	 * @param Enchantment $enchantment
-	 * @param int         $level
-	 *
 	 * @return $this
 	 */
 	public function removeEnchantment(Enchantment $enchantment, int $level = -1) : self{
@@ -86,8 +69,6 @@ trait ItemEnchantmentHandlingTrait{
 	}
 
 	/**
-	 * @param EnchantmentInstance $enchantment
-	 *
 	 * @return $this
 	 */
 	public function addEnchantment(EnchantmentInstance $enchantment) : self{
@@ -105,10 +86,6 @@ trait ItemEnchantmentHandlingTrait{
 	/**
 	 * Returns the level of the enchantment on this item with the specified ID, or 0 if the item does not have the
 	 * enchantment.
-	 *
-	 * @param Enchantment $enchantment
-	 *
-	 * @return int
 	 */
 	public function getEnchantmentLevel(Enchantment $enchantment) : int{
 		return ($instance = $this->getEnchantment($enchantment)) !== null ? $instance->getLevel() : 0;

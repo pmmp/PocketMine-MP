@@ -120,7 +120,6 @@ class Banner extends Transparent{
 
 	/**
 	 * TODO: interface method? this is only the BASE colour...
-	 * @return DyeColor
 	 */
 	public function getColor() : DyeColor{
 		return $this->baseColor;

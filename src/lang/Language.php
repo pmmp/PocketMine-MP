@@ -44,9 +44,6 @@ class Language{
 	public const FALLBACK_LANGUAGE = "eng";
 
 	/**
-	 * @param string $path
-	 *
-	 * @return array
 	 * @throws LanguageNotFoundException
 	 */
 	public static function getLanguageList(string $path = "") : array{
@@ -88,10 +85,6 @@ class Language{
 	protected $fallbackLang = [];
 
 	/**
-	 * @param string      $lang
-	 * @param string|null $path
-	 * @param string      $fallback
-	 *
 	 * @throws LanguageNotFoundException
 	 */
 	public function __construct(string $lang, ?string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
@@ -123,11 +116,7 @@ class Language{
 	}
 
 	/**
-	 * @param string               $str
 	 * @param (float|int|string)[] $params
-	 * @param string|null          $onlyPrefix
-	 *
-	 * @return string
 	 */
 	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
 		$baseText = $this->get($str);
@@ -155,30 +144,14 @@ class Language{
 		return $baseText;
 	}
 
-	/**
-	 * @param string $id
-	 *
-	 * @return string|null
-	 */
 	protected function internalGet(string $id) : ?string{
 		return $this->lang[$id] ?? $this->fallbackLang[$id] ?? null;
 	}
 
-	/**
-	 * @param string $id
-	 *
-	 * @return string
-	 */
 	public function get(string $id) : string{
 		return $this->internalGet($id) ?? $id;
 	}
 
-	/**
-	 * @param string      $text
-	 * @param string|null $onlyPrefix
-	 *
-	 * @return string
-	 */
 	protected function parseTranslation(string $text, ?string $onlyPrefix = null) : string{
 		$newString = "";
 

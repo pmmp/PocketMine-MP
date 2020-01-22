@@ -128,12 +128,6 @@ final class RuntimeBlockMapping{
 		return $table;
 	}
 
-	/**
-	 * @param int $id
-	 * @param int $meta
-	 *
-	 * @return int
-	 */
 	public static function toStaticRuntimeId(int $id, int $meta = 0) : int{
 		self::lazyInit();
 		/*
@@ -145,8 +139,6 @@ final class RuntimeBlockMapping{
 	}
 
 	/**
-	 * @param int $runtimeId
-	 *
 	 * @return int[] [id, meta]
 	 */
 	public static function fromStaticRuntimeId(int $runtimeId) : array{

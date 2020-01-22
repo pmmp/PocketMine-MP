@@ -76,8 +76,6 @@ class RedstoneRepeater extends Flowable{
 	}
 
 	/**
-	 * @param bool $powered
-	 *
 	 * @return $this
 	 */
 	public function setPowered(bool $powered = true) : self{

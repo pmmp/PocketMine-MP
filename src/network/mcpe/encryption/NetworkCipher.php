@@ -65,9 +65,6 @@ class NetworkCipher{
 	}
 
 	/**
-	 * @param string $encrypted
-	 *
-	 * @return string
 	 * @throws \UnexpectedValueException
 	 */
 	public function decrypt(string $encrypted) : string{

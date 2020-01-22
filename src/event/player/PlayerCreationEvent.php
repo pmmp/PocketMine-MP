@@ -41,31 +41,18 @@ class PlayerCreationEvent extends Event{
 	/** @var string */
 	private $playerClass = Player::class;
 
-
-	/**
-	 * @param NetworkSession $session
-	 */
 	public function __construct(NetworkSession $session){
 		$this->session = $session;
 	}
 
-	/**
-	 * @return NetworkSession
-	 */
 	public function getNetworkSession() : NetworkSession{
 		return $this->session;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getAddress() : string{
 		return $this->session->getIp();
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPort() : int{
 		return $this->session->getPort();
 	}

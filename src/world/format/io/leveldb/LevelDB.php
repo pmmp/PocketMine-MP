@@ -108,9 +108,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	/**
-	 * @param string $path
-	 *
-	 * @return \LevelDB
 	 * @throws \LevelDBException
 	 */
 	private static function createDB(string $path) : \LevelDB{
@@ -197,9 +194,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	/**
-	 * @param string $index
-	 * @param int    $chunkVersion
-	 *
 	 * @return PalettedBlockArray[]
 	 */
 	protected function deserializeLegacyExtraData(string $index, int $chunkVersion) : array{
@@ -232,10 +226,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws CorruptedChunkException
 	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
@@ -490,8 +480,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	/**
 	 * @param CompoundTag[]      $targets
-	 * @param string             $index
-	 * @param \LevelDBWriteBatch $write
 	 */
 	private function writeTags(array $targets, string $index, \LevelDBWriteBatch $write) : void{
 		if(!empty($targets)){
@@ -502,9 +490,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}
 	}
 
-	/**
-	 * @return \LevelDB
-	 */
 	public function getDatabase() : \LevelDB{
 		return $this->db;
 	}

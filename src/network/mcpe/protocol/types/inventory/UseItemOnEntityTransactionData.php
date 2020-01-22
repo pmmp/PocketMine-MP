@@ -45,44 +45,26 @@ class UseItemOnEntityTransactionData extends TransactionData{
 	/** @var Vector3 */
 	private $clickPos;
 
-	/**
-	 * @return int
-	 */
 	public function getEntityRuntimeId() : int{
 		return $this->entityRuntimeId;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getActionType() : int{
 		return $this->actionType;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getHotbarSlot() : int{
 		return $this->hotbarSlot;
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getItemInHand() : Item{
 		return $this->itemInHand;
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	public function getPlayerPos() : Vector3{
 		return $this->playerPos;
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	public function getClickPos() : Vector3{
 		return $this->clickPos;
 	}

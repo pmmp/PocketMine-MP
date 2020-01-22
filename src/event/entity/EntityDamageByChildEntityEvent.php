@@ -33,11 +33,6 @@ class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent{
 	private $childEntityEid;
 
 	/**
-	 * @param Entity  $damager
-	 * @param Entity  $childEntity
-	 * @param Entity  $entity
-	 * @param int     $cause
-	 * @param float   $damage
 	 * @param float[] $modifiers
 	 */
 	public function __construct(Entity $damager, Entity $childEntity, Entity $entity, int $cause, float $damage, array $modifiers = []){
@@ -47,8 +42,6 @@ class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent{
 
 	/**
 	 * Returns the entity which caused the damage, or null if the entity has been killed or closed.
-	 *
-	 * @return Entity|null
 	 */
 	public function getChild() : ?Entity{
 		return $this->getEntity()->getWorld()->getServer()->getWorldManager()->findEntity($this->childEntityEid);

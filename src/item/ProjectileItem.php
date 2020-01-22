@@ -45,8 +45,6 @@ abstract class ProjectileItem extends Item{
 
 	/**
 	 * Helper function to apply extra NBT tags to pass to the created projectile.
-	 *
-	 * @param CompoundTag $tag
 	 */
 	protected function addExtraTags(CompoundTag $tag) : void{
 

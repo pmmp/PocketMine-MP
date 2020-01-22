@@ -56,18 +56,9 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 	private $vrGazeDirection = null;
 
 	/**
-	 * @param Vector3      $position
-	 * @param float        $pitch
-	 * @param float        $yaw
-	 * @param float        $headYaw
-	 * @param float        $moveVecX
-	 * @param float        $moveVecZ
-	 * @param int          $inputFlags
 	 * @param int          $inputMode @see InputMode
 	 * @param int          $playMode @see PlayMode
 	 * @param Vector3|null $vrGazeDirection only used when PlayMode::VR
-	 *
-	 * @return self
 	 */
 	public static function create(Vector3 $position, float $pitch, float $yaw, float $headYaw, float $moveVecX, float $moveVecZ, int $inputFlags, int $inputMode, int $playMode, ?Vector3 $vrGazeDirection = null) : self{
 		if($playMode === PlayMode::VR and $vrGazeDirection === null){
@@ -120,7 +111,6 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 
 	/**
 	 * @see InputMode
-	 * @return int
 	 */
 	public function getInputMode() : int{
 		return $this->inputMode;
@@ -128,7 +118,6 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 
 	/**
 	 * @see PlayMode
-	 * @return int
 	 */
 	public function getPlayMode() : int{
 		return $this->playMode;

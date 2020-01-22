@@ -72,16 +72,12 @@ class Slab extends Transparent{
 
 	/**
 	 * Returns the type of slab block.
-	 *
-	 * @return SlabType
 	 */
 	public function getSlabType() : SlabType{
 		return $this->slabType;
 	}
 
 	/**
-	 * @param SlabType $slabType
-	 *
 	 * @return $this
 	 */
 	public function setSlabType(SlabType $slabType) : self{

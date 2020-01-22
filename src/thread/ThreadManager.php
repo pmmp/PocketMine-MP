@@ -34,9 +34,6 @@ class ThreadManager extends \Volatile{
 		self::$instance = new ThreadManager();
 	}
 
-	/**
-	 * @return ThreadManager
-	 */
 	public static function getInstance() : ThreadManager{
 		return self::$instance;
 	}

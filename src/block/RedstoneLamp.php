@@ -48,8 +48,6 @@ class RedstoneLamp extends Opaque{
 	}
 
 	/**
-	 * @param bool $lit
-	 *
 	 * @return $this
 	 */
 	public function setLit(bool $lit = true) : self{

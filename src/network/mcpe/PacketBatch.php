@@ -36,7 +36,6 @@ class PacketBatch extends NetworkBinaryStream{
 	}
 
 	/**
-	 * @return Packet
 	 * @throws BinaryDataException
 	 */
 	public function getPacket() : Packet{

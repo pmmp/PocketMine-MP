@@ -205,16 +205,6 @@ abstract class Noise{
 		return $result;
 	}
 
-
-	/**
-	 * @param int $xSize
-	 * @param int $samplingRate
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return \SplFixedArray
-	 */
 	public function getFastNoise1D(int $xSize, int $samplingRate, int $x, int $y, int $z) : \SplFixedArray{
 		if($samplingRate === 0){
 			throw new \InvalidArgumentException("samplingRate cannot be 0");
@@ -239,16 +229,6 @@ abstract class Noise{
 		return $noiseArray;
 	}
 
-	/**
-	 * @param int $xSize
-	 * @param int $zSize
-	 * @param int $samplingRate
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return \SplFixedArray
-	 */
 	public function getFastNoise2D(int $xSize, int $zSize, int $samplingRate, int $x, int $y, int $z) : \SplFixedArray{
 		assert($samplingRate !== 0, new \InvalidArgumentException("samplingRate cannot be 0"));
 
@@ -285,19 +265,6 @@ abstract class Noise{
 		return $noiseArray;
 	}
 
-	/**
-	 * @param int $xSize
-	 * @param int $ySize
-	 * @param int $zSize
-	 * @param int $xSamplingRate
-	 * @param int $ySamplingRate
-	 * @param int $zSamplingRate
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return array
-	 */
 	public function getFastNoise3D(int $xSize, int $ySize, int $zSize, int $xSamplingRate, int $ySamplingRate, int $zSamplingRate, int $x, int $y, int $z) : array{
 
 		assert($xSamplingRate !== 0, new \InvalidArgumentException("xSamplingRate cannot be 0"));

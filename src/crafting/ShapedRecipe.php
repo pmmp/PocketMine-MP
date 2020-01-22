@@ -114,8 +114,6 @@ class ShapedRecipe implements CraftingRecipe{
 	}
 
 	/**
-	 * @param CraftingGrid $grid
-	 *
 	 * @return Item[]
 	 */
 	public function getResultsFor(CraftingGrid $grid) : array{
@@ -155,12 +153,6 @@ class ShapedRecipe implements CraftingRecipe{
 		return $ingredients;
 	}
 
-	/**
-	 * @param int $x
-	 * @param int $y
-	 *
-	 * @return Item
-	 */
 	public function getIngredient(int $x, int $y) : Item{
 		$exists = $this->ingredientList[$this->shape[$y]{$x}] ?? null;
 		return $exists !== null ? clone $exists : ItemFactory::air();
@@ -174,12 +166,6 @@ class ShapedRecipe implements CraftingRecipe{
 		return $this->shape;
 	}
 
-	/**
-	 * @param CraftingGrid $grid
-	 * @param bool         $reverse
-	 *
-	 * @return bool
-	 */
 	private function matchInputMap(CraftingGrid $grid, bool $reverse) : bool{
 		for($y = 0; $y < $this->height; ++$y){
 			for($x = 0; $x < $this->width; ++$x){
@@ -195,11 +181,6 @@ class ShapedRecipe implements CraftingRecipe{
 		return true;
 	}
 
-	/**
-	 * @param CraftingGrid $grid
-	 *
-	 * @return bool
-	 */
 	public function matchesCraftingGrid(CraftingGrid $grid) : bool{
 		if($this->width !== $grid->getRecipeWidth() or $this->height !== $grid->getRecipeHeight()){
 			return false;

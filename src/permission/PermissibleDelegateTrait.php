@@ -30,11 +30,8 @@ trait PermissibleDelegateTrait{
 	/** @var PermissibleBase */
 	private $perm = null;
 
-
 	/**
 	 * @param Permission|string $name
-	 *
-	 * @return bool
 	 */
 	public function isPermissionSet($name) : bool{
 		return $this->perm->isPermissionSet($name);
@@ -42,27 +39,19 @@ trait PermissibleDelegateTrait{
 
 	/**
 	 * @param Permission|string $name
-	 *
-	 * @return bool
 	 */
 	public function hasPermission($name) : bool{
 		return $this->perm->hasPermission($name);
 	}
 
 	/**
-	 * @param Plugin $plugin
 	 * @param string $name
 	 * @param bool   $value
-	 *
-	 * @return PermissionAttachment
 	 */
 	public function addAttachment(Plugin $plugin, ?string $name = null, ?bool $value = null) : PermissionAttachment{
 		return $this->perm->addAttachment($plugin, $name, $value);
 	}
 
-	/**
-	 * @param PermissionAttachment $attachment
-	 */
 	public function removeAttachment(PermissionAttachment $attachment) : void{
 		$this->perm->removeAttachment($attachment);
 	}

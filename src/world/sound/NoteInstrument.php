@@ -59,9 +59,6 @@ final class NoteInstrument{
 		$this->magicNumber = $magicNumber;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMagicNumber() : int{
 		return $this->magicNumber;
 	}

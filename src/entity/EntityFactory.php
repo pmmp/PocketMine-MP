@@ -163,8 +163,6 @@ final class EntityFactory{
 
 	/**
 	 * Returns a new runtime entity ID for a new entity.
-	 *
-	 * @return int
 	 */
 	public static function nextRuntimeId() : int{
 		return self::$entityCount++;
@@ -176,9 +174,6 @@ final class EntityFactory{
 	 *
 	 * TODO: make this NBT-independent
 	 *
-	 * @param string      $baseClass
-	 * @param World       $world
-	 * @param CompoundTag $nbt
 	 * @param mixed       ...$args
 	 *
 	 * @return Entity instanceof $baseClass
@@ -203,10 +198,6 @@ final class EntityFactory{
 	/**
 	 * Creates an entity from data stored on a chunk.
 	 *
-	 * @param World       $world
-	 * @param CompoundTag $nbt
-	 *
-	 * @return Entity|null
 	 * @throws \RuntimeException
 	 *@internal
 	 *
@@ -243,13 +234,6 @@ final class EntityFactory{
 
 	/**
 	 * Helper function which creates minimal NBT needed to spawn an entity.
-	 *
-	 * @param Vector3      $pos
-	 * @param Vector3|null $motion
-	 * @param float        $yaw
-	 * @param float        $pitch
-	 *
-	 * @return CompoundTag
 	 */
 	public static function createBaseNBT(Vector3 $pos, ?Vector3 $motion = null, float $yaw = 0.0, float $pitch = 0.0) : CompoundTag{
 		return CompoundTag::create()

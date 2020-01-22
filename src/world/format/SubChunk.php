@@ -39,10 +39,7 @@ class SubChunk implements SubChunkInterface{
 	/**
 	 * SubChunk constructor.
 	 *
-	 * @param int                  $default
 	 * @param PalettedBlockArray[] $blocks
-	 * @param LightArray|null      $skyLight
-	 * @param LightArray|null      $blockLight
 	 */
 	public function __construct(int $default, array $blocks, ?LightArray $skyLight = null, ?LightArray $blockLight = null){
 		$this->defaultBlock = $default;

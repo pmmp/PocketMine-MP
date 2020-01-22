@@ -89,7 +89,6 @@ final class TileFactory{
 	}
 
 	/**
-	 * @param string   $className
 	 * @param string[] $saveNames
 	 */
 	public static function register(string $className, array $saveNames = []) : void{
@@ -125,10 +124,6 @@ final class TileFactory{
 	}
 
 	/**
-	 * @param string  $baseClass
-	 * @param World   $world
-	 * @param Vector3 $pos
-	 *
 	 * @return Tile (will be an instanceof $baseClass)
 	 * @throws \InvalidArgumentException if the specified class is not a registered tile
 	 */
@@ -149,12 +144,7 @@ final class TileFactory{
 	}
 
 	/**
-	 * @param World       $world
-	 * @param CompoundTag $nbt
-	 *
-	 * @return Tile|null
 	 *@internal
-	 *
 	 */
 	public static function createFromData(World $world, CompoundTag $nbt) : ?Tile{
 		$type = $nbt->getString(Tile::TAG_ID, "", true);

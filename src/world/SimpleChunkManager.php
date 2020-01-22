@@ -43,8 +43,6 @@ class SimpleChunkManager implements ChunkManager{
 
 	/**
 	 * SimpleChunkManager constructor.
-	 *
-	 * @param int $worldHeight
 	 */
 	public function __construct(int $worldHeight = World::Y_MAX){
 		$this->worldHeight = $worldHeight;
@@ -67,23 +65,11 @@ class SimpleChunkManager implements ChunkManager{
 		}
 	}
 
-	/**
-	 * @param int  $chunkX
-	 * @param int  $chunkZ
-	 * @param bool $create
-	 *
-	 * @return Chunk|null
-	 */
 	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
 		$hash = World::chunkHash($chunkX, $chunkZ);
 		return $this->chunks[$hash] ?? ($create ? $this->chunks[$hash] = new Chunk($chunkX, $chunkZ) : null);
 	}
 
-	/**
-	 * @param int        $chunkX
-	 * @param int        $chunkZ
-	 * @param Chunk|null $chunk
-	 */
 	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk) : void{
 		if($chunk === null){
 			unset($this->chunks[World::chunkHash($chunkX, $chunkZ)]);

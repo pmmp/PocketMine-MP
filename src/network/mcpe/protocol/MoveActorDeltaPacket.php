@@ -56,9 +56,6 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 	public $zRot = 0.0;
 
 	/**
-	 * @param int $flag
-	 *
-	 * @return int
 	 * @throws BinaryDataException
 	 */
 	private function maybeReadCoord(int $flag) : int{
@@ -69,9 +66,6 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	/**
-	 * @param int $flag
-	 *
-	 * @return float
 	 * @throws BinaryDataException
 	 */
 	private function maybeReadRotation(int $flag) : float{

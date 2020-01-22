@@ -34,9 +34,6 @@ interface Packet{
 	 * TODO: this can't have a native return type yet because of incompatibility with BinaryUtils
 	 * really this should be addressed by making packets not extend BinaryStream, but that's a task for another day.
 	 *
-	 * @param string $buffer
-	 * @param int    $offset
-	 *
 	 * @return void
 	 */
 	public function setBuffer(string $buffer = "", int $offset = 0);
@@ -47,7 +44,6 @@ interface Packet{
 
 	/**
 	 * Returns whether the offset has reached the end of the buffer.
-	 * @return bool
 	 */
 	public function feof() : bool;
 
@@ -73,8 +69,6 @@ interface Packet{
 	 *
 	 * Typically this method returns the return value of the handler in the supplied PacketHandler. See other packets
 	 * for examples how to implement this.
-	 *
-	 * @param PacketHandler $handler
 	 *
 	 * @return bool true if the packet was handled successfully, false if not.
 	 * @throws BadPacketException if broken data was found in the packet

@@ -46,7 +46,6 @@ final class Color{
 
 	/**
 	 * Returns the alpha (opacity) value of this colour.
-	 * @return int
 	 */
 	public function getA() : int{
 		return $this->a;
@@ -54,7 +53,6 @@ final class Color{
 
 	/**
 	 * Retuns the red value of this colour.
-	 * @return int
 	 */
 	public function getR() : int{
 		return $this->r;
@@ -62,7 +60,6 @@ final class Color{
 
 	/**
 	 * Returns the green value of this colour.
-	 * @return int
 	 */
 	public function getG() : int{
 		return $this->g;
@@ -70,7 +67,6 @@ final class Color{
 
 	/**
 	 * Returns the blue value of this colour.
-	 * @return int
 	 */
 	public function getB() : int{
 		return $this->b;
@@ -79,10 +75,7 @@ final class Color{
 	/**
 	 * Mixes the supplied list of colours together to produce a result colour.
 	 *
-	 * @param Color $color1
 	 * @param Color ...$colors
-	 *
-	 * @return Color
 	 */
 	public static function mix(Color $color1, Color ...$colors) : Color{
 		$colors[] = $color1;
@@ -102,10 +95,6 @@ final class Color{
 
 	/**
 	 * Returns a Color from the supplied RGB colour code (24-bit)
-	 *
-	 * @param int $code
-	 *
-	 * @return Color
 	 */
 	public static function fromRGB(int $code) : Color{
 		return new Color(($code >> 16) & 0xff, ($code >> 8) & 0xff, $code & 0xff);
@@ -113,10 +102,6 @@ final class Color{
 
 	/**
 	 * Returns a Color from the supplied ARGB colour code (32-bit)
-	 *
-	 * @param int $code
-	 *
-	 * @return Color
 	 */
 	public static function fromARGB(int $code) : Color{
 		return new Color(($code >> 16) & 0xff, ($code >> 8) & 0xff, $code & 0xff, ($code >> 24) & 0xff);
@@ -124,7 +109,6 @@ final class Color{
 
 	/**
 	 * Returns an ARGB 32-bit colour value.
-	 * @return int
 	 */
 	public function toARGB() : int{
 		return ($this->a << 24) | ($this->r << 16) | ($this->g << 8) | $this->b;
@@ -132,10 +116,6 @@ final class Color{
 
 	/**
 	 * Returns a Color from the supplied RGBA colour code (32-bit)
-	 *
-	 * @param int $c
-	 *
-	 * @return Color
 	 */
 	public static function fromRGBA(int $c) : Color{
 		return new Color(($c >> 24) & 0xff, ($c >> 16) & 0xff, ($c >> 8) & 0xff, $c & 0xff);
@@ -143,7 +123,6 @@ final class Color{
 
 	/**
 	 * Returns an RGBA 32-bit colour value.
-	 * @return int
 	 */
 	public function toRGBA() : int{
 		return ($this->r << 24) | ($this->g << 16) | ($this->b << 8) | $this->a;

@@ -63,7 +63,6 @@ class Armor extends Durable{
 
 	/**
 	 * @see ArmorInventory
-	 * @return int
 	 */
 	public function getArmorSlot() : int{
 		return $this->armorInfo->getArmorSlot();
@@ -75,7 +74,6 @@ class Armor extends Durable{
 
 	/**
 	 * Returns the dyed colour of this armour piece. This generally only applies to leather armour.
-	 * @return Color|null
 	 */
 	public function getCustomColor() : ?Color{
 		return $this->customColor;
@@ -83,8 +81,6 @@ class Armor extends Durable{
 
 	/**
 	 * Sets the dyed colour of this armour piece. This generally only applies to leather armour.
-	 *
-	 * @param Color $color
 	 *
 	 * @return $this
 	 */
@@ -96,10 +92,6 @@ class Armor extends Durable{
 	/**
 	 * Returns the total enchantment protection factor this armour piece offers from all applicable protection
 	 * enchantments on the item.
-	 *
-	 * @param EntityDamageEvent $event
-	 *
-	 * @return int
 	 */
 	public function getEnchantmentProtectionFactor(EntityDamageEvent $event) : int{
 		$epf = 0;

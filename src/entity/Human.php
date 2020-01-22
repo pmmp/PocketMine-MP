@@ -112,25 +112,17 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 * @deprecated
 	 *
 	 * Checks the length of a supplied skin bitmap and returns whether the length is valid.
-	 *
-	 * @param string $skin
-	 *
-	 * @return bool
 	 */
 	public static function isValidSkin(string $skin) : bool{
 		return in_array(strlen($skin), Skin::ACCEPTED_SKIN_SIZES, true);
 	}
 
-	/**
-	 * @return UUID
-	 */
 	public function getUniqueId() : UUID{
 		return $this->uuid;
 	}
 
 	/**
 	 * Returns a Skin object containing information about this human's skin.
-	 * @return Skin
 	 */
 	public function getSkin() : Skin{
 		return $this->skin;
@@ -139,8 +131,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	/**
 	 * Sets the human's skin. This will not send any update to viewers, you need to do that manually using
 	 * {@link sendSkin}.
-	 *
-	 * @param Skin $skin
 	 */
 	public function setSkin(Skin $skin) : void{
 		$this->skin = $skin;
@@ -168,9 +158,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 	}
 
-	/**
-	 * @return HungerManager
-	 */
 	public function getHungerManager() : HungerManager{
 		return $this->hungerManager;
 	}
@@ -188,9 +175,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return parent::consumeObject($consumable);
 	}
 
-	/**
-	 * @return ExperienceManager
-	 */
 	public function getXpManager() : ExperienceManager{
 		return $this->xpManager;
 	}
@@ -214,8 +198,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * For Human entities which are not players, sets their properties such as nametag, skin and UUID from NBT.
-	 *
-	 * @param CompoundTag $nbt
 	 */
 	protected function initHumanData(CompoundTag $nbt) : void{
 		if($nbt->hasTag("NameTag", StringTag::class)){

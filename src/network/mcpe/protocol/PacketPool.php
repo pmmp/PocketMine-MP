@@ -177,26 +177,15 @@ class PacketPool{
 		static::registerPacket(new PlayerAuthInputPacket());
 	}
 
-	/**
-	 * @param Packet $packet
-	 */
 	public static function registerPacket(Packet $packet) : void{
 		static::$pool[$packet->pid()] = clone $packet;
 	}
 
-	/**
-	 * @param int $pid
-	 *
-	 * @return Packet
-	 */
 	public static function getPacketById(int $pid) : Packet{
 		return isset(static::$pool[$pid]) ? clone static::$pool[$pid] : new UnknownPacket();
 	}
 
 	/**
-	 * @param string $buffer
-	 *
-	 * @return Packet
 	 * @throws BinaryDataException
 	 */
 	public static function getPacket(string $buffer) : Packet{

@@ -37,8 +37,6 @@ class ClientCacheMissResponsePacket extends DataPacket implements ClientboundPac
 
 	/**
 	 * @param ChunkCacheBlob[] $blobs
-	 *
-	 * @return self
 	 */
 	public static function create(array $blobs) : self{
 		//type check

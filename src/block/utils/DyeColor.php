@@ -87,10 +87,8 @@ final class DyeColor{
 	 * Returns a DyeColor object matching the given magic number
 	 * @internal
 	 *
-	 * @param int  $magicNumber
 	 * @param bool $inverted Invert the ID before using it (useful for actual dye magic IDs)
 	 *
-	 * @return DyeColor
 	 * @throws \InvalidArgumentException
 	 */
 	public static function fromMagicNumber(int $magicNumber, bool $inverted = false) : DyeColor{
@@ -116,30 +114,18 @@ final class DyeColor{
 		$this->rgbValue = $rgbValue;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDisplayName() : string{
 		return $this->displayName;
 	}
 
-	/**
-	 * @return Color
-	 */
 	public function getRgbValue() : Color{
 		return $this->rgbValue;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMagicNumber() : int{
 		return $this->magicNumber;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getInvertedMagicNumber() : int{
 		return ~$this->magicNumber & 0xf;
 	}

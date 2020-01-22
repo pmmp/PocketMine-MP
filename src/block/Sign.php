@@ -135,8 +135,6 @@ class Sign extends Transparent{
 
 	/**
 	 * Returns an object containing information about the sign text.
-	 *
-	 * @return SignText
 	 */
 	public function getText() : SignText{
 		return $this->text;
@@ -144,9 +142,6 @@ class Sign extends Transparent{
 
 	/**
 	 * Called by the player controller (network session) to update the sign text, firing events as appropriate.
-	 *
-	 * @param Player   $author
-	 * @param SignText $text
 	 *
 	 * @return bool if the sign update was successful.
 	 * @throws \UnexpectedValueException if the text payload is too large

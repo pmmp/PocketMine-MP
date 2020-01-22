@@ -49,7 +49,6 @@ class EmotePacket extends DataPacket implements ClientboundPacket, ServerboundPa
 
 	/**
 	 * TODO: we can't call this getEntityRuntimeId() because of base class collision (crap architecture, thanks Shoghi)
-	 * @return int
 	 */
 	public function getEntityRuntimeIdField() : int{
 		return $this->entityRuntimeId;

@@ -67,11 +67,6 @@ final class CreativeInventory{
 		return self::$creative;
 	}
 
-	/**
-	 * @param int $index
-	 *
-	 * @return Item|null
-	 */
 	public static function getItem(int $index) : ?Item{
 		return self::$creative[$index] ?? null;
 	}
@@ -89,8 +84,6 @@ final class CreativeInventory{
 	/**
 	 * Adds an item to the creative menu.
 	 * Note: Players who are already online when this is called will not see this change.
-	 *
-	 * @param Item $item
 	 */
 	public static function add(Item $item) : void{
 		self::$creative[] = clone $item;
@@ -99,8 +92,6 @@ final class CreativeInventory{
 	/**
 	 * Removes an item from the creative menu.
 	 * Note: Players who are already online when this is called will not see this change.
-	 *
-	 * @param Item $item
 	 */
 	public static function remove(Item $item) : void{
 		$index = self::getItemIndex($item);

@@ -73,8 +73,6 @@ class EffectManager{
 
 	/**
 	 * Removes the effect with the specified ID from the mob.
-	 *
-	 * @param Effect $effectType
 	 */
 	public function remove(Effect $effectType) : void{
 		$index = $effectType->getId();
@@ -105,10 +103,6 @@ class EffectManager{
 	/**
 	 * Returns the effect instance active on this entity with the specified ID, or null if the mob does not have the
 	 * effect.
-	 *
-	 * @param Effect $effect
-	 *
-	 * @return EffectInstance|null
 	 */
 	public function get(Effect $effect) : ?EffectInstance{
 		return $this->effects[$effect->getId()] ?? null;
@@ -116,10 +110,6 @@ class EffectManager{
 
 	/**
 	 * Returns whether the specified effect is active on the mob.
-	 *
-	 * @param Effect $effect
-	 *
-	 * @return bool
 	 */
 	public function has(Effect $effect) : bool{
 		return isset($this->effects[$effect->getId()]);
@@ -129,8 +119,6 @@ class EffectManager{
 	 * Adds an effect to the mob.
 	 * If a weaker effect of the same type is already applied, it will be replaced.
 	 * If a weaker or equal-strength effect is already applied but has a shorter duration, it will be replaced.
-	 *
-	 * @param EffectInstance $effect
 	 *
 	 * @return bool whether the effect has been successfully applied.
 	 */
@@ -203,16 +191,10 @@ class EffectManager{
 		}
 	}
 
-	/**
-	 * @return Color
-	 */
 	public function getBubbleColor() : Color{
 		return $this->bubbleColor;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasOnlyAmbientEffects() : bool{
 		return $this->onlyAmbientEffects;
 	}

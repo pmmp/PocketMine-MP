@@ -45,9 +45,6 @@ abstract class BiomeSelector{
 	/**
 	 * Lookup function called by recalculate() to determine the biome to use for this temperature and rainfall.
 	 *
-	 * @param float $temperature
-	 * @param float $rainfall
-	 *
 	 * @return int biome ID 0-255
 	 */
 	abstract protected function lookup(float $temperature, float $rainfall) : int;
@@ -89,8 +86,6 @@ abstract class BiomeSelector{
 	/**
 	 * @param int $x
 	 * @param int $z
-	 *
-	 * @return Biome
 	 */
 	public function pickBiome($x, $z) : Biome{
 		$temperature = (int) ($this->getTemperature($x, $z) * 63);

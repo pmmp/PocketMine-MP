@@ -147,7 +147,6 @@ class TimingsHandler{
 	private $violations = 0;
 
 	/**
-	 * @param string         $name
 	 * @param TimingsHandler $parent
 	 */
 	public function __construct(string $name, ?TimingsHandler $parent = null){
@@ -200,8 +199,6 @@ class TimingsHandler{
 	}
 
 	/**
-	 * @param \Closure $closure
-	 *
 	 * @return mixed the result of the given closure
 	 */
 	public function time(\Closure $closure){

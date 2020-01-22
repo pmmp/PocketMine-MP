@@ -142,22 +142,17 @@ class SplashPotion extends Throwable{
 
 	/**
 	 * Returns the meta value of the potion item that this splash potion corresponds to. This decides what effects will be applied to the entity when it collides with its target.
-	 * @return int
 	 */
 	public function getPotionId() : int{
 		return $this->potionId;
 	}
 
-	/**
-	 * @param int $id
-	 */
 	public function setPotionId(int $id) : void{
 		$this->potionId = $id; //TODO: validation
 	}
 
 	/**
 	 * Returns whether this splash potion will create an area-effect cloud when it lands.
-	 * @return bool
 	 */
 	public function willLinger() : bool{
 		return $this->linger;
@@ -165,8 +160,6 @@ class SplashPotion extends Throwable{
 
 	/**
 	 * Sets whether this splash potion will create an area-effect-cloud when it lands.
-	 *
-	 * @param bool $value
 	 */
 	public function setLinger(bool $value = true) : void{
 		$this->linger = $value;

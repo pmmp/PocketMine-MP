@@ -39,7 +39,6 @@ class UpdateAttributesPacket extends DataPacket implements ClientboundPacket{
 	public $entries = [];
 
 	/**
-	 * @param int         $entityRuntimeId
 	 * @param Attribute[] $attributes
 	 *
 	 * @return UpdateAttributesPacket

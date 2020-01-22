@@ -37,10 +37,6 @@ interface Container extends InventoryHolder{
 
 	/**
 	 * Returns whether this container can be opened by an item with the given custom name.
-	 *
-	 * @param string $key
-	 *
-	 * @return bool
 	 */
 	public function canOpenWith(string $key) : bool;
 }

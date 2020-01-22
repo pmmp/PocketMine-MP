@@ -90,9 +90,6 @@ class Furnace extends Spawnable implements Container, Nameable{
 		$this->saveItems($nbt);
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDefaultName() : string{
 		return "Furnace";
 	}

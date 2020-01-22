@@ -35,37 +35,25 @@ interface AdvancedNetworkInterface extends NetworkInterface{
 	/**
 	 * Prevents packets received from the IP address getting processed for the given timeout.
 	 *
-	 * @param string $address
 	 * @param int    $timeout Seconds
 	 */
 	public function blockAddress(string $address, int $timeout = 300) : void;
 
 	/**
 	 * Unblocks a previously-blocked address.
-	 *
-	 * @param string $address
 	 */
 	public function unblockAddress(string $address) : void;
 
-	/**
-	 * @param Network $network
-	 */
 	public function setNetwork(Network $network) : void;
 
 	/**
 	 * Sends a raw payload to the network interface, bypassing any sessions.
-	 *
-	 * @param string $address
-	 * @param int    $port
-	 * @param string $payload
 	 */
 	public function sendRawPacket(string $address, int $port, string $payload) : void;
 
 	/**
 	 * Adds a regex filter for raw packets to this network interface. This filter should be used to check validity of
 	 * raw packets before relaying them to the main thread.
-	 *
-	 * @param string $regex
 	 */
 	public function addRawPacketFilter(string $regex) : void;
 }

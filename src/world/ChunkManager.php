@@ -30,58 +30,28 @@ interface ChunkManager{
 
 	/**
 	 * Returns a Block object representing the block state at the given coordinates.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return Block
 	 */
 	public function getBlockAt(int $x, int $y, int $z) : Block;
 
 	/**
 	 * Sets the block at the given coordinates to the block state specified.
 	 *
-	 * @param int   $x
-	 * @param int   $y
-	 * @param int   $z
-	 * @param Block $block
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : void;
 
-	/**
-	 * @param int  $chunkX
-	 * @param int  $chunkZ
-	 * @param bool $create
-	 *
-	 * @return Chunk|null
-	 */
 	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk;
 
-	/**
-	 * @param int        $chunkX
-	 * @param int        $chunkZ
-	 * @param Chunk|null $chunk
-	 */
 	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk) : void;
 
 	/**
 	 * Returns the height of the world
-	 * @return int
 	 */
 	public function getWorldHeight() : int;
 
 	/**
 	 * Returns whether the specified coordinates are within the valid world boundaries, taking world format limitations
 	 * into account.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return bool
 	 */
 	public function isInWorld(int $x, int $y, int $z) : bool;
 }

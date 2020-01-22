@@ -60,10 +60,7 @@ final class UUID{
 	/**
 	 * Creates an UUID from an hexadecimal representation
 	 *
-	 * @param string $uuid
 	 * @param int    $version
-	 *
-	 * @return UUID
 	 */
 	public static function fromString(string $uuid, ?int $version = null) : UUID{
 		return self::fromBinary(hex2bin(str_replace("-", "", trim($uuid))), $version);
@@ -72,10 +69,7 @@ final class UUID{
 	/**
 	 * Creates an UUID from a binary representation
 	 *
-	 * @param string $uuid
 	 * @param int    $version
-	 *
-	 * @return UUID
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -91,8 +85,6 @@ final class UUID{
 	 * Creates an UUIDv3 from binary data or list of binary data
 	 *
 	 * @param string ...$data
-	 *
-	 * @return UUID
 	 */
 	public static function fromData(string ...$data) : UUID{
 		$hash = hash("md5", implode($data), true);
@@ -120,8 +112,6 @@ final class UUID{
 	}
 
 	/**
-	 * @param int $partNumber
-	 *
 	 * @return int
 	 * @throws \InvalidArgumentException
 	 */

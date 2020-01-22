@@ -763,7 +763,6 @@ class BlockFactory{
 	 * NOTE: If you are registering a new block type, you will need to add it to the creative inventory yourself - it
 	 * will not automatically appear there.
 	 *
-	 * @param Block $block
 	 * @param bool  $override Whether to override existing registrations
 	 *
 	 * @throws \RuntimeException if something attempted to override an already-registered block without specifying the
@@ -828,11 +827,6 @@ class BlockFactory{
 
 	/**
 	 * Returns a new Block instance with the specified ID, meta and position.
-	 *
-	 * @param int $id
-	 * @param int $meta
-	 *
-	 * @return Block
 	 */
 	public static function get(int $id, int $meta = 0) : Block{
 		if($meta < 0 or $meta > 0xf){
@@ -863,11 +857,6 @@ class BlockFactory{
 
 	/**
 	 * Returns whether a specified block state is already registered in the block factory.
-	 *
-	 * @param int $id
-	 * @param int $meta
-	 *
-	 * @return bool
 	 */
 	public static function isRegistered(int $id, int $meta = 0) : bool{
 		$b = self::$fullList[($id << 4) | $meta];

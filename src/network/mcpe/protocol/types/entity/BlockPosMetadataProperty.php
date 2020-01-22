@@ -31,16 +31,10 @@ final class BlockPosMetadataProperty implements MetadataProperty{
 	/** @var Vector3 */
 	private $value;
 
-	/**
-	 * @param Vector3 $value
-	 */
 	public function __construct(Vector3 $value){
 		$this->value = $value->floor();
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	public function getValue() : Vector3{
 		return $this->value;
 	}

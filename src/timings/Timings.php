@@ -161,12 +161,6 @@ abstract class Timings{
 
 	}
 
-	/**
-	 * @param TaskHandler $task
-	 * @param int         $period
-	 *
-	 * @return TimingsHandler
-	 */
 	public static function getScheduledTaskTimings(TaskHandler $task, int $period) : TimingsHandler{
 		$name = "Task: " . ($task->getOwnerName() ?? "Unknown") . " Runnable: " . $task->getTaskName();
 
@@ -183,11 +177,6 @@ abstract class Timings{
 		return self::$pluginTaskTimingMap[$name];
 	}
 
-	/**
-	 * @param Entity $entity
-	 *
-	 * @return TimingsHandler
-	 */
 	public static function getEntityTimings(Entity $entity) : TimingsHandler{
 		$entityType = (new \ReflectionClass($entity))->getShortName();
 		if(!isset(self::$entityTypeTimingMap[$entityType])){
@@ -201,11 +190,6 @@ abstract class Timings{
 		return self::$entityTypeTimingMap[$entityType];
 	}
 
-	/**
-	 * @param Tile $tile
-	 *
-	 * @return TimingsHandler
-	 */
 	public static function getTileEntityTimings(Tile $tile) : TimingsHandler{
 		$tileType = (new \ReflectionClass($tile))->getShortName();
 		if(!isset(self::$tileEntityTypeTimingMap[$tileType])){
@@ -215,11 +199,6 @@ abstract class Timings{
 		return self::$tileEntityTypeTimingMap[$tileType];
 	}
 
-	/**
-	 * @param ServerboundPacket $pk
-	 *
-	 * @return TimingsHandler
-	 */
 	public static function getReceiveDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
 		$pid = $pk->pid();
 		if(!isset(self::$packetReceiveTimingMap[$pid])){
@@ -230,12 +209,6 @@ abstract class Timings{
 		return self::$packetReceiveTimingMap[$pid];
 	}
 
-
-	/**
-	 * @param ClientboundPacket $pk
-	 *
-	 * @return TimingsHandler
-	 */
 	public static function getSendDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
 		$pid = $pk->pid();
 		if(!isset(self::$packetSendTimingMap[$pid])){

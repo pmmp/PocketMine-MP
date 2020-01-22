@@ -33,10 +33,6 @@ class EntityCombustEvent extends EntityEvent implements Cancellable{
 	/** @var int */
 	protected $duration;
 
-	/**
-	 * @param Entity $combustee
-	 * @param int    $duration
-	 */
 	public function __construct(Entity $combustee, int $duration){
 		$this->entity = $combustee;
 		$this->duration = $duration;
@@ -44,7 +40,6 @@ class EntityCombustEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * Returns the duration in seconds the entity will burn for.
-	 * @return int
 	 */
 	public function getDuration() : int{
 		return $this->duration;

@@ -73,7 +73,6 @@ final class GeneratorManager{
 	/**
 	 * Returns a class name of a registered Generator matching the given name.
 	 *
-	 * @param string $name
 	 * @param bool   $throwOnMissing @deprecated this is for backwards compatibility only
 	 *
 	 * @return string|Generator Name of class that extends Generator (not an actual Generator object)
@@ -95,7 +94,6 @@ final class GeneratorManager{
 	 *
 	 * @param string $class Fully qualified name of class that extends \pocketmine\world\generator\Generator
 	 *
-	 * @return string
 	 * @throws \InvalidArgumentException if the class type cannot be matched to a known alias
 	 */
 	public static function getGeneratorName(string $class) : string{

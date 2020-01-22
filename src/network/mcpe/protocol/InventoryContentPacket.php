@@ -38,7 +38,6 @@ class InventoryContentPacket extends DataPacket implements ClientboundPacket{
 	public $items = [];
 
 	/**
-	 * @param int    $windowId
 	 * @param Item[] $items
 	 *
 	 * @return InventoryContentPacket

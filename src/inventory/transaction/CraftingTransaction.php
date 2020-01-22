@@ -61,10 +61,7 @@ class CraftingTransaction extends InventoryTransaction{
 	/**
 	 * @param Item[] $txItems
 	 * @param Item[] $recipeItems
-	 * @param bool   $wildcards
-	 * @param int    $iterations
 	 *
-	 * @return int
 	 * @throws TransactionValidationException
 	 */
 	protected function matchRecipeItems(array $txItems, array $recipeItems, bool $wildcards, int $iterations = 0) : int{

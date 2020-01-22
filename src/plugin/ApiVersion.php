@@ -36,10 +36,7 @@ final class ApiVersion{
 	}
 
 	/**
-	 * @param string   $myVersionStr
 	 * @param string[] $wantVersionsStr
-	 *
-	 * @return bool
 	 */
 	public static function isCompatible(string $myVersionStr, array $wantVersionsStr) : bool{
 		$myVersion = new VersionString($myVersionStr);

@@ -284,72 +284,42 @@ class Server{
 	/** @var Player[] */
 	private $playerList = [];
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return \pocketmine\NAME;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isRunning() : bool{
 		return $this->isRunning;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPocketMineVersion() : string{
 		return \pocketmine\VERSION;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getVersion() : string{
 		return ProtocolInfo::MINECRAFT_VERSION;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getApiVersion() : string{
 		return \pocketmine\BASE_VERSION;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getFilePath() : string{
 		return \pocketmine\PATH;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getResourcePath() : string{
 		return \pocketmine\RESOURCE_PATH;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDataPath() : string{
 		return $this->dataPath;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPluginPath() : string{
 		return $this->pluginPath;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMaxPlayers() : int{
 		return $this->maxPlayers;
 	}
@@ -357,8 +327,6 @@ class Server{
 	/**
 	 * Returns whether the server requires that players be authenticated to Xbox Live. If true, connecting players who
 	 * are not logged into Xbox Live will be disconnected.
-	 *
-	 * @return bool
 	 */
 	public function getOnlineMode() : bool{
 		return $this->onlineMode;
@@ -366,40 +334,26 @@ class Server{
 
 	/**
 	 * Alias of {@link #getOnlineMode()}.
-	 * @return bool
 	 */
 	public function requiresAuthentication() : bool{
 		return $this->getOnlineMode();
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPort() : int{
 		return $this->getConfigInt("server-port", 19132);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getViewDistance() : int{
 		return max(2, $this->getConfigInt("view-distance", 8));
 	}
 
 	/**
 	 * Returns a view distance up to the currently-allowed limit.
-	 *
-	 * @param int $distance
-	 *
-	 * @return int
 	 */
 	public function getAllowedViewDistance(int $distance) : int{
 		return max(2, min($distance, $this->memoryManager->getViewDistance($this->getViewDistance())));
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getIp() : string{
 		$str = $this->getConfigString("server-ip");
 		return $str !== "" ? $str : "0.0.0.0";
@@ -412,45 +366,29 @@ class Server{
 		return $this->serverID;
 	}
 
-	/**
-	 * @return GameMode
-	 */
 	public function getGamemode() : GameMode{
 		return GameMode::fromMagicNumber($this->getConfigInt("gamemode", 0) & 0b11);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function getForceGamemode() : bool{
 		return $this->getConfigBool("force-gamemode", false);
 	}
 
 	/**
 	 * Returns Server global difficulty. Note that this may be overridden in individual worlds.
-	 * @return int
 	 */
 	public function getDifficulty() : int{
 		return $this->getConfigInt("difficulty", World::DIFFICULTY_NORMAL);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasWhitelist() : bool{
 		return $this->getConfigBool("white-list", false);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isHardcore() : bool{
 		return $this->getConfigBool("hardcore", false);
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getMotd() : string{
 		return $this->getConfigString("motd", \pocketmine\NAME . " Server");
 	}
@@ -490,16 +428,10 @@ class Server{
 		return $this->craftingManager;
 	}
 
-	/**
-	 * @return ResourcePackManager
-	 */
 	public function getResourcePackManager() : ResourcePackManager{
 		return $this->resourceManager;
 	}
 
-	/**
-	 * @return WorldManager
-	 */
 	public function getWorldManager() : WorldManager{
 		return $this->worldManager;
 	}
@@ -508,17 +440,12 @@ class Server{
 		return $this->asyncPool;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getTick() : int{
 		return $this->tickCounter;
 	}
 
 	/**
 	 * Returns the last server TPS measure
-	 *
-	 * @return float
 	 */
 	public function getTicksPerSecond() : float{
 		return round($this->currentTPS, 2);
@@ -526,8 +453,6 @@ class Server{
 
 	/**
 	 * Returns the last server TPS average measure
-	 *
-	 * @return float
 	 */
 	public function getTicksPerSecondAverage() : float{
 		return round(array_sum($this->tickAverage) / count($this->tickAverage), 2);
@@ -535,8 +460,6 @@ class Server{
 
 	/**
 	 * Returns the TPS usage/load in %
-	 *
-	 * @return float
 	 */
 	public function getTickUsage() : float{
 		return round($this->currentUse * 100, 2);
@@ -544,16 +467,11 @@ class Server{
 
 	/**
 	 * Returns the TPS usage/load average in %
-	 *
-	 * @return float
 	 */
 	public function getTickUsageAverage() : float{
 		return round((array_sum($this->useAverage) / count($this->useAverage)) * 100, 2);
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getStartTime() : float{
 		return $this->startTime;
 	}
@@ -577,8 +495,6 @@ class Server{
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return OfflinePlayer|Player
 	 */
 	public function getOfflinePlayer(string $name){
@@ -594,21 +510,12 @@ class Server{
 
 	/**
 	 * Returns whether the server has stored any saved data for this player.
-	 *
-	 * @param string $name
-	 *
-	 * @return bool
 	 */
 	public function hasOfflinePlayerData(string $name) : bool{
 		$name = strtolower($name);
 		return file_exists($this->getDataPath() . "players/$name.dat");
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return CompoundTag|null
-	 */
 	public function getOfflinePlayerData(string $name) : ?CompoundTag{
 		$name = strtolower($name);
 		$path = $this->getDataPath() . "players/";
@@ -624,10 +531,6 @@ class Server{
 		return null;
 	}
 
-	/**
-	 * @param string      $name
-	 * @param CompoundTag $nbtTag
-	 */
 	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag) : void{
 		$ev = new PlayerDataSaveEvent($nbtTag, $name);
 		$ev->setCancelled(!$this->shouldSavePlayerData());
@@ -650,10 +553,6 @@ class Server{
 	 * The closest match will be returned, or null if there are no online matches.
 	 *
 	 * @see Server::getPlayerExact()
-	 *
-	 * @param string $name
-	 *
-	 * @return Player|null
 	 */
 	public function getPlayer(string $name) : ?Player{
 		$found = null;
@@ -677,10 +576,6 @@ class Server{
 
 	/**
 	 * Returns an online player with the given name (case insensitive), or null if not found.
-	 *
-	 * @param string $name
-	 *
-	 * @return Player|null
 	 */
 	public function getPlayerExact(string $name) : ?Player{
 		$name = strtolower($name);
@@ -696,8 +591,6 @@ class Server{
 	/**
 	 * Returns a list of online players whose names contain with the given string (case insensitive).
 	 * If an exact match is found, only that match is returned.
-	 *
-	 * @param string $partialName
 	 *
 	 * @return Player[]
 	 */
@@ -718,10 +611,6 @@ class Server{
 
 	/**
 	 * Returns the player online with the specified raw UUID, or null if not found
-	 *
-	 * @param string $rawUUID
-	 *
-	 * @return null|Player
 	 */
 	public function getPlayerByRawUUID(string $rawUUID) : ?Player{
 		return $this->playerList[$rawUUID] ?? null;
@@ -729,17 +618,12 @@ class Server{
 
 	/**
 	 * Returns the player online with a UUID equivalent to the specified UUID object, or null if not found
-	 *
-	 * @param UUID $uuid
-	 *
-	 * @return null|Player
 	 */
 	public function getPlayerByUUID(UUID $uuid) : ?Player{
 		return $this->getPlayerByRawUUID($uuid->toBinary());
 	}
 
 	/**
-	 * @param string $variable
 	 * @param mixed  $defaultValue
 	 *
 	 * @return mixed
@@ -757,12 +641,6 @@ class Server{
 		return $this->propertyCache[$variable] ?? $defaultValue;
 	}
 
-	/**
-	 * @param string $variable
-	 * @param string $defaultValue
-	 *
-	 * @return string
-	 */
 	public function getConfigString(string $variable, string $defaultValue = "") : string{
 		$v = getopt("", ["$variable::"]);
 		if(isset($v[$variable])){
@@ -772,20 +650,10 @@ class Server{
 		return $this->properties->exists($variable) ? (string) $this->properties->get($variable) : $defaultValue;
 	}
 
-	/**
-	 * @param string $variable
-	 * @param string $value
-	 */
 	public function setConfigString(string $variable, string $value) : void{
 		$this->properties->set($variable, $value);
 	}
 
-	/**
-	 * @param string $variable
-	 * @param int    $defaultValue
-	 *
-	 * @return int
-	 */
 	public function getConfigInt(string $variable, int $defaultValue = 0) : int{
 		$v = getopt("", ["$variable::"]);
 		if(isset($v[$variable])){
@@ -795,20 +663,10 @@ class Server{
 		return $this->properties->exists($variable) ? (int) $this->properties->get($variable) : $defaultValue;
 	}
 
-	/**
-	 * @param string $variable
-	 * @param int    $value
-	 */
 	public function setConfigInt(string $variable, int $value) : void{
 		$this->properties->set($variable, $value);
 	}
 
-	/**
-	 * @param string $variable
-	 * @param bool   $defaultValue
-	 *
-	 * @return bool
-	 */
 	public function getConfigBool(string $variable, bool $defaultValue = false) : bool{
 		$v = getopt("", ["$variable::"]);
 		if(isset($v[$variable])){
@@ -831,17 +689,11 @@ class Server{
 		return false;
 	}
 
-	/**
-	 * @param string $variable
-	 * @param bool   $value
-	 */
 	public function setConfigBool(string $variable, bool $value) : void{
 		$this->properties->set($variable, $value ? "1" : "0");
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return PluginIdentifiableCommand|null
 	 */
 	public function getPluginCommand(string $name){
@@ -866,9 +718,6 @@ class Server{
 		return $this->banByIP;
 	}
 
-	/**
-	 * @param string $name
-	 */
 	public function addOp(string $name) : void{
 		$this->operators->set(strtolower($name), true);
 
@@ -878,9 +727,6 @@ class Server{
 		$this->operators->save();
 	}
 
-	/**
-	 * @param string $name
-	 */
 	public function removeOp(string $name) : void{
 		$this->operators->remove(strtolower($name));
 
@@ -890,36 +736,20 @@ class Server{
 		$this->operators->save();
 	}
 
-	/**
-	 * @param string $name
-	 */
 	public function addWhitelist(string $name) : void{
 		$this->whitelist->set(strtolower($name), true);
 		$this->whitelist->save();
 	}
 
-	/**
-	 * @param string $name
-	 */
 	public function removeWhitelist(string $name) : void{
 		$this->whitelist->remove(strtolower($name));
 		$this->whitelist->save();
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
 	public function isWhitelisted(string $name) : bool{
 		return !$this->hasWhitelist() or $this->operators->exists($name, true) or $this->whitelist->exists($name, true);
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
 	public function isOp(string $name) : bool{
 		return $this->operators->exists($name, true);
 	}
@@ -960,9 +790,6 @@ class Server{
 		return $result;
 	}
 
-	/**
-	 * @return Server
-	 */
 	public static function getInstance() : Server{
 		if(self::$instance === null){
 			throw new \RuntimeException("Attempt to retrieve Server instance outside server thread");
@@ -970,12 +797,6 @@ class Server{
 		return self::$instance;
 	}
 
-	/**
-	 * @param \DynamicClassLoader       $autoloader
-	 * @param \AttachableThreadedLogger $logger
-	 * @param string                    $dataPath
-	 * @param string                    $pluginPath
-	 */
 	public function __construct(\DynamicClassLoader $autoloader, \AttachableThreadedLogger $logger, string $dataPath, string $pluginPath){
 		if(self::$instance !== null){
 			throw new \InvalidStateException("Only one server instance can exist at once");
@@ -1316,8 +1137,6 @@ class Server{
 	/**
 	 * @param TextContainer|string $message
 	 * @param CommandSender[]      $recipients
-	 *
-	 * @return int
 	 */
 	public function broadcastMessage($message, ?array $recipients = null) : int{
 		if(!is_array($recipients)){
@@ -1343,10 +1162,7 @@ class Server{
 	}
 
 	/**
-	 * @param string   $tip
 	 * @param Player[] $recipients
-	 *
-	 * @return int
 	 */
 	public function broadcastTip(string $tip, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
@@ -1359,10 +1175,7 @@ class Server{
 	}
 
 	/**
-	 * @param string   $popup
 	 * @param Player[] $recipients
-	 *
-	 * @return int
 	 */
 	public function broadcastPopup(string $popup, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
@@ -1375,14 +1188,10 @@ class Server{
 	}
 
 	/**
-	 * @param string        $title
-	 * @param string        $subtitle
 	 * @param int           $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
 	 * @param int           $stay Duration in ticks to stay on screen for
 	 * @param int           $fadeOut Duration in ticks for fade-out.
 	 * @param Player[]|null $recipients
-	 *
-	 * @return int
 	 */
 	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
@@ -1396,9 +1205,6 @@ class Server{
 
 	/**
 	 * @param TextContainer|string $message
-	 * @param string               $permissions
-	 *
-	 * @return int
 	 */
 	public function broadcast($message, string $permissions) : int{
 		/** @var CommandSender[] $recipients */
@@ -1421,8 +1227,6 @@ class Server{
 	/**
 	 * @param Player[]            $players
 	 * @param ClientboundPacket[] $packets
-	 *
-	 * @return bool
 	 */
 	public function broadcastPackets(array $players, array $packets) : bool{
 		if(count($packets) === 0){
@@ -1467,11 +1271,6 @@ class Server{
 
 	/**
 	 * Broadcasts a list of packets in a batch to a list of players
-	 *
-	 * @param PacketBatch $stream
-	 * @param bool        $forceSync
-	 *
-	 * @return CompressBatchPromise
 	 */
 	public function prepareBatch(PacketBatch $stream, bool $forceSync = false) : CompressBatchPromise{
 		try{
@@ -1498,9 +1297,6 @@ class Server{
 		}
 	}
 
-	/**
-	 * @param PluginLoadOrder $type
-	 */
 	public function enablePlugins(PluginLoadOrder $type) : void{
 		foreach($this->pluginManager->getPlugins() as $plugin){
 			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder()->equals($type)){
@@ -1516,12 +1312,6 @@ class Server{
 
 	/**
 	 * Executes a command from a CommandSender
-	 *
-	 * @param CommandSender $sender
-	 * @param string        $commandLine
-	 * @param bool          $internal
-	 *
-	 * @return bool
 	 */
 	public function dispatchCommand(CommandSender $sender, string $commandLine, bool $internal = false) : bool{
 		if(!$internal){
@@ -1627,7 +1417,6 @@ class Server{
 	}
 
 	/**
-	 * @param \Throwable $e
 	 * @param array|null $trace
 	 */
 	public function exceptionHandler(\Throwable $e, $trace = null) : void{
@@ -1799,9 +1588,6 @@ class Server{
 		return $this->language;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isLanguageForced() : bool{
 		return $this->forceLanguage;
 	}

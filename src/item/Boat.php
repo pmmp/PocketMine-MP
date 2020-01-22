@@ -34,9 +34,6 @@ class Boat extends Item{
 		$this->woodType = $woodType;
 	}
 
-	/**
-	 * @return TreeType
-	 */
 	public function getWoodType() : TreeType{
 		return $this->woodType;
 	}

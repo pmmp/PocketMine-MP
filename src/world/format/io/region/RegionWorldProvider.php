@@ -51,13 +51,11 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 
 	/**
 	 * Returns the file extension used for regions in this region-based format.
-	 * @return string
 	 */
 	abstract protected static function getRegionFileExtension() : string;
 
 	/**
 	 * Returns the storage version as per Minecraft PC world formats.
-	 * @return int
 	 */
 	abstract protected static function getPcWorldFormatVersion() : int;
 
@@ -105,8 +103,6 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
 	 * @param int $regionX reference parameter
 	 * @param int $regionZ reference parameter
 	 */
@@ -115,32 +111,17 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		$regionZ = $chunkZ >> 5;
 	}
 
-	/**
-	 * @param int $regionX
-	 * @param int $regionZ
-	 *
-	 * @return RegionLoader|null
-	 */
 	protected function getRegion(int $regionX, int $regionZ) : ?RegionLoader{
 		return $this->regions[World::chunkHash($regionX, $regionZ)] ?? null;
 	}
 
 	/**
 	 * Returns the path to a specific region file based on its X/Z coordinates
-	 *
-	 * @param int $regionX
-	 * @param int $regionZ
-	 *
-	 * @return string
 	 */
 	protected function pathToRegion(int $regionX, int $regionZ) : string{
 		return $this->path . "/region/r.$regionX.$regionZ." . static::getRegionFileExtension();
 	}
 
-	/**
-	 * @param int $regionX
-	 * @param int $regionZ
-	 */
 	protected function loadRegion(int $regionX, int $regionZ) : void{
 		if(!isset($this->regions[$index = World::chunkHash($regionX, $regionZ)])){
 			$path = $this->pathToRegion($regionX, $regionZ);
@@ -183,17 +164,11 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	abstract protected function serializeChunk(Chunk $chunk) : string;
 
 	/**
-	 * @param string $data
-	 *
-	 * @return Chunk
 	 * @throws CorruptedChunkException
 	 */
 	abstract protected function deserializeChunk(string $data) : Chunk;
 
 	/**
-	 * @param string $context
-	 * @param ListTag $list
-	 *
 	 * @return CompoundTag[]
 	 * @throws CorruptedChunkException
 	 */
@@ -216,10 +191,6 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws CorruptedChunkException
 	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{

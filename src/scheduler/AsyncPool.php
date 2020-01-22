@@ -69,8 +69,6 @@ class AsyncPool{
 
 	/**
 	 * Returns the maximum size of the pool. Note that there may be less active workers than this number.
-	 *
-	 * @return int
 	 */
 	public function getSize() : int{
 		return $this->size;
@@ -78,8 +76,6 @@ class AsyncPool{
 
 	/**
 	 * Increases the maximum size of the pool to the specified amount. This does not immediately start new workers.
-	 *
-	 * @param int $newSize
 	 */
 	public function increaseSize(int $newSize) : void{
 		if($newSize > $this->size){
@@ -92,8 +88,6 @@ class AsyncPool{
 	 * The signature should be `function(int $worker) : void`
 	 *
 	 * This function will call the hook for every already-running worker.
-	 *
-	 * @param \Closure $hook
 	 */
 	public function addWorkerStartHook(\Closure $hook) : void{
 		Utils::validateCallableSignature(function(int $worker) : void{}, $hook);
@@ -105,8 +99,6 @@ class AsyncPool{
 
 	/**
 	 * Removes a previously-registered callback listening for workers being started.
-	 *
-	 * @param \Closure $hook
 	 */
 	public function removeWorkerStartHook(\Closure $hook) : void{
 		unset($this->workerStartHooks[spl_object_id($hook)]);
@@ -124,10 +116,6 @@ class AsyncPool{
 	/**
 	 * Fetches the worker with the specified ID, starting it if it does not exist, and firing any registered worker
 	 * start hooks.
-	 *
-	 * @param int $worker
-	 *
-	 * @return AsyncWorker
 	 */
 	private function getWorker(int $worker) : AsyncWorker{
 		if(!isset($this->workers[$worker])){
@@ -148,9 +136,6 @@ class AsyncPool{
 
 	/**
 	 * Submits an AsyncTask to an arbitrary worker.
-	 *
-	 * @param AsyncTask $task
-	 * @param int       $worker
 	 */
 	public function submitTaskToWorker(AsyncTask $task, int $worker) : void{
 		if($worker < 0 or $worker >= $this->size){
@@ -174,8 +159,6 @@ class AsyncPool{
 	 * - if an idle worker is found, it will be selected
 	 * - else, if the worker pool is not full, a new worker will be selected
 	 * - else, the worker with the smallest backlog is chosen.
-	 *
-	 * @return int
 	 */
 	public function selectWorker() : int{
 		$worker = null;
@@ -206,10 +189,6 @@ class AsyncPool{
 	/**
 	 * Submits an AsyncTask to the worker with the least load. If all workers are busy and the pool is not full, a new
 	 * worker may be started.
-	 *
-	 * @param AsyncTask $task
-	 *
-	 * @return int
 	 */
 	public function submitTask(AsyncTask $task) : int{
 		if($task->isSubmitted()){

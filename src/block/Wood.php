@@ -37,7 +37,6 @@ class Wood extends Opaque{
 
 	/**
 	 * TODO: this is ad hoc, but add an interface for this to all tree-related blocks
-	 * @return TreeType
 	 */
 	public function getTreeType() : TreeType{
 		return $this->treeType;
