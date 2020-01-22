@@ -82,9 +82,7 @@ abstract class Entity{
 
 	public const NETWORK_ID = -1;
 
-	/**
-	 * @var Player[]
-	 */
+	/** @var Player[] */
 	protected $hasSpawned = [];
 
 	/** @var int */

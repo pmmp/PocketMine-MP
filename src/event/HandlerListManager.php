@@ -35,9 +35,7 @@ class HandlerListManager{
 		return self::$globalInstance ?? (self::$globalInstance = new self);
 	}
 
-	/**
-	 * @var HandlerList[] classname => HandlerList
-	 */
+	/** @var HandlerList[] classname => HandlerList */
 	private $allLists = [];
 
 	/**
