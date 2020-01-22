@@ -308,9 +308,6 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	/**
 	 * Hack to work around a stupid bug in Minecraft W10 which causes empty strings to be sent unquoted in form responses.
 	 *
-	 * @param string $json
-	 * @param bool   $assoc
-	 *
 	 * @return mixed
 	 */
 	private static function stupid_json_decode(string $json, bool $assoc = false){

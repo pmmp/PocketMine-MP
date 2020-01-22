@@ -31,7 +31,6 @@ class TranslationContainer extends TextContainer{
 	protected $params = [];
 
 	/**
-	 * @param string               $text
 	 * @param (float|int|string)[] $params
 	 */
 	public function __construct(string $text, array $params = []){
@@ -48,8 +47,6 @@ class TranslationContainer extends TextContainer{
 	}
 
 	/**
-	 * @param int $i
-	 *
 	 * @return string|null
 	 */
 	public function getParameter(int $i){
@@ -57,8 +54,7 @@ class TranslationContainer extends TextContainer{
 	}
 
 	/**
-	 * @param int    $i
-	 * @param string $str
+	 * @return void
 	 */
 	public function setParameter(int $i, string $str){
 		if($i < 0 or $i > count($this->params)){ //Intended, allow to set the last
@@ -70,6 +66,8 @@ class TranslationContainer extends TextContainer{
 
 	/**
 	 * @param string[] $params
+	 *
+	 * @return void
 	 */
 	public function setParameters(array $params){
 		$i = 0;

@@ -1,10 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^PHPDoc tag @param has invalid value \\(.+\\)\\: Unexpected token \"&\", expected variable at offset \\d+$#"
-			path: ../../../src
-
-		-
 			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
 			path: ../../../src
 
@@ -47,8 +43,3 @@ parameters:
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/entity/projectile/Projectile.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between int\\<1, max\\> and 0 will always evaluate to false\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/utils/Config.php

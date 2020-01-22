@@ -115,7 +115,7 @@ class MemoryManager{
 		$this->init();
 	}
 
-	private function init(){
+	private function init() : void{
 		$this->memoryLimit = ((int) $this->server->getProperty("memory.main-limit", 0)) * 1024 * 1024;
 
 		$defaultMemory = 1024;
@@ -169,26 +169,16 @@ class MemoryManager{
 		gc_enable();
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isLowMemory() : bool{
 		return $this->lowMemory;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function canUseChunkCache() : bool{
 		return !$this->lowMemory or !$this->lowMemDisableChunkCache;
 	}
 
 	/**
 	 * Returns the allowed chunk radius based on the current memory usage.
-	 *
-	 * @param int $distance
-	 *
-	 * @return int
 	 */
 	public function getViewDistance(int $distance) : int{
 		return ($this->lowMemory and $this->lowMemChunkRadiusOverride > 0) ? (int) min($this->lowMemChunkRadiusOverride, $distance) : $distance;
@@ -197,10 +187,7 @@ class MemoryManager{
 	/**
 	 * Triggers garbage collection and cache cleanup to try and free memory.
 	 *
-	 * @param int  $memory
-	 * @param int  $limit
-	 * @param bool $global
-	 * @param int  $triggerCount
+	 * @return void
 	 */
 	public function trigger(int $memory, int $limit, bool $global = false, int $triggerCount = 0){
 		$this->server->getLogger()->debug(sprintf("[Memory Manager] %sLow memory triggered, limit %gMB, using %gMB",
@@ -230,6 +217,8 @@ class MemoryManager{
 
 	/**
 	 * Called every tick to update the memory manager state.
+	 *
+	 * @return void
 	 */
 	public function check(){
 		Timings::$memoryManagerTimer->startTiming();
@@ -268,9 +257,6 @@ class MemoryManager{
 		Timings::$memoryManagerTimer->stopTiming();
 	}
 
-	/**
-	 * @return int
-	 */
 	public function triggerGarbageCollector() : int{
 		Timings::$garbageCollectorTimer->startTiming();
 
@@ -294,9 +280,7 @@ class MemoryManager{
 	/**
 	 * Dumps the server memory into the specified output folder.
 	 *
-	 * @param string $outputFolder
-	 * @param int    $maxNesting
-	 * @param int    $maxStringSize
+	 * @return void
 	 */
 	public function dumpServerMemory(string $outputFolder, int $maxNesting, int $maxStringSize){
 		$this->server->getLogger()->notice("[Dump] After the memory dump is done, the server might crash");
@@ -314,11 +298,8 @@ class MemoryManager{
 	 * Static memory dumper accessible from any thread.
 	 *
 	 * @param mixed   $startingObject
-	 * @param string  $outputFolder
-	 * @param int     $maxNesting
-	 * @param int     $maxStringSize
-	 * @param \Logger $logger
 	 *
+	 * @return void
 	 * @throws \ReflectionException
 	 */
 	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger){
@@ -451,7 +432,6 @@ class MemoryManager{
 				fwrite($obData, "$hash@$className: " . json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
 			}
 
-
 		}while($continue);
 
 		$logger->info("[Dump] Wrote " . count($objects) . " objects");
@@ -472,14 +452,11 @@ class MemoryManager{
 
 	/**
 	 * @param mixed    $from
-	 * @param mixed    &$data
-	 * @param object[] &$objects
-	 * @param int[]    &$refCounts
-	 * @param int      $recursion
-	 * @param int      $maxNesting
-	 * @param int      $maxStringSize
+	 * @param mixed    $data reference parameter
+	 * @param object[] $objects reference parameter
+	 * @param int[]    $refCounts reference parameter
 	 */
-	private static function continueDump($from, &$data, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize){
+	private static function continueDump($from, &$data, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize) : void{
 		if($maxNesting <= 0){
 			$data = "(error) NESTING LIMIT REACHED";
 			return;

@@ -169,6 +169,9 @@ use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 
 abstract class NetworkSession{
 
+	/**
+	 * @return void
+	 */
 	abstract public function handleDataPacket(DataPacket $packet);
 
 	public function handleLogin(LoginPacket $packet) : bool{

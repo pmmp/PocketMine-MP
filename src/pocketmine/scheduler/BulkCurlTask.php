@@ -34,6 +34,7 @@ use function unserialize;
  * The result of this AsyncTask is an array of arrays (returned from {@link Internet::simpleCurl}) or InternetException objects.
  */
 class BulkCurlTask extends AsyncTask{
+	/** @var string */
 	private $operations;
 
 	/**
@@ -43,7 +44,6 @@ class BulkCurlTask extends AsyncTask{
 	 * "timeout", "extraHeaders" and "extraOpts". Documentation of these options are same as those in
 	 * {@link Utils::simpleCurl}.
 	 *
-	 * @param array      $operations
 	 * @param mixed|null $complexData
 	 */
 	public function __construct(array $operations, $complexData = null){

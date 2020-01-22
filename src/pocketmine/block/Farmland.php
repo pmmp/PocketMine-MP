@@ -52,7 +52,6 @@ class Farmland extends Transparent{
 		return BlockToolType::TYPE_SHOVEL;
 	}
 
-
 	protected function recalculateBoundingBox() : ?AxisAlignedBB{
 		return new AxisAlignedBB(
 			$this->x,

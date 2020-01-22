@@ -28,8 +28,12 @@ use pocketmine\event\Listener;
 
 class MethodEventExecutor implements EventExecutor{
 
+	/** @var string */
 	private $method;
 
+	/**
+	 * @param string $method
+	 */
 	public function __construct($method){
 		$this->method = $method;
 	}
@@ -38,6 +42,9 @@ class MethodEventExecutor implements EventExecutor{
 		$listener->{$this->getMethod()}($event);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getMethod(){
 		return $this->method;
 	}

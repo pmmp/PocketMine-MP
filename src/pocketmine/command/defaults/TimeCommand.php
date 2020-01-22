@@ -108,7 +108,6 @@ class TimeCommand extends VanillaCommand{
 			return true;
 		}
 
-
 		if(count($args) < 2){
 			throw new InvalidCommandSyntaxException();
 		}

@@ -74,6 +74,9 @@ class TNT extends Solid{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function ignite(int $fuse = 80){
 		$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
 

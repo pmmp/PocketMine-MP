@@ -39,18 +39,17 @@ use function str_repeat;
 class FloatingTextParticle extends Particle{
 	//TODO: HACK!
 
+	/** @var string */
 	protected $text;
+	/** @var string */
 	protected $title;
-	protected $entityId;
+	/** @var int|null */
+	protected $entityId = null;
+	/** @var bool */
 	protected $invisible = false;
 	/** @var Skin */
 	private $skin;
 
-	/**
-	 * @param Vector3 $pos
-	 * @param string  $text
-	 * @param string  $title
-	 */
 	public function __construct(Vector3 $pos, string $text, string $title = ""){
 		parent::__construct($pos->x, $pos->y, $pos->z);
 		$this->text = $text;

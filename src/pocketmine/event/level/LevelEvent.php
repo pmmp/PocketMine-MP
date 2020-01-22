@@ -33,16 +33,10 @@ abstract class LevelEvent extends Event{
 	/** @var Level */
 	private $level;
 
-	/**
-	 * @param Level $level
-	 */
 	public function __construct(Level $level){
 		$this->level = $level;
 	}
 
-	/**
-	 * @return Level
-	 */
 	public function getLevel() : Level{
 		return $this->level;
 	}

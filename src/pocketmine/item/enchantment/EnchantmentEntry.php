@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-
 class EnchantmentEntry{
 
 	/** @var Enchantment[] */
@@ -35,8 +34,6 @@ class EnchantmentEntry{
 
 	/**
 	 * @param Enchantment[] $enchantments
-	 * @param int           $cost
-	 * @param string        $randomName
 	 */
 	public function __construct(array $enchantments, int $cost, string $randomName){
 		$this->enchantments = $enchantments;

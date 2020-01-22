@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-
 class IronHelmet extends Armor{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::IRON_HELMET, $meta, "Iron Helmet");

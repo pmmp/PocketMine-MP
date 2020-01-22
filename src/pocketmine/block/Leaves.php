@@ -39,6 +39,7 @@ class Leaves extends Transparent{
 	public const DARK_OAK = 1;
 
 	protected $id = self::LEAVES;
+	/** @var int */
 	protected $woodType = self::WOOD;
 
 	public function __construct(int $meta = 0){
@@ -67,8 +68,7 @@ class Leaves extends Transparent{
 		return true;
 	}
 
-
-	protected function findLog(Block $pos, array $visited, int $distance, ?int $fromSide = null) : bool{
+	protected function findLog(Block $pos, array &$visited, int $distance, ?int $fromSide = null) : bool{
 		$index = $pos->x . "." . $pos->y . "." . $pos->z;
 		if(isset($visited[$index])){
 			return false;

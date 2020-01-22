@@ -31,10 +31,6 @@ abstract class ExperienceUtils{
 
 	/**
 	 * Calculates and returns the amount of XP needed to get from level 0 to level $level
-	 *
-	 * @param int $level
-	 *
-	 * @return int
 	 */
 	public static function getXpToReachLevel(int $level) : int{
 		if($level <= 16){
@@ -48,10 +44,6 @@ abstract class ExperienceUtils{
 
 	/**
 	 * Returns the amount of XP needed to reach $level + 1.
-	 *
-	 * @param int $level
-	 *
-	 * @return int
 	 */
 	public static function getXpToCompleteLevel(int $level) : int{
 		if($level <= 15){
@@ -66,10 +58,6 @@ abstract class ExperienceUtils{
 	/**
 	 * Calculates and returns the number of XP levels the specified amount of XP points are worth.
 	 * This returns a floating-point number, the decimal part being the progress through the resulting level.
-	 *
-	 * @param int $xp
-	 *
-	 * @return float
 	 */
 	public static function getLevelFromXp(int $xp) : float{
 		if($xp <= self::getXpToReachLevel(16)){

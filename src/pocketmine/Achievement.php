@@ -30,9 +30,7 @@ use pocketmine\utils\TextFormat;
  * Handles the achievement list and a bit more
  */
 abstract class Achievement{
-	/**
-	 * @var array[]
-	 */
+	/** @var array[] */
 	public static $list = [
 		/*"openInventory" => array(
 			"name" => "Taking Inventory",
@@ -106,13 +104,6 @@ abstract class Achievement{
 
 	];
 
-
-	/**
-	 * @param Player $player
-	 * @param string $achievementId
-	 *
-	 * @return bool
-	 */
 	public static function broadcast(Player $player, string $achievementId) : bool{
 		if(isset(Achievement::$list[$achievementId])){
 			$translation = new TranslationContainer("chat.type.achievement", [$player->getDisplayName(), TextFormat::GREEN . Achievement::$list[$achievementId]["name"] . TextFormat::RESET]);
@@ -128,13 +119,6 @@ abstract class Achievement{
 		return false;
 	}
 
-	/**
-	 * @param string $achievementId
-	 * @param string $achievementName
-	 * @param array  $requires
-	 *
-	 * @return bool
-	 */
 	public static function add(string $achievementId, string $achievementName, array $requires = []) : bool{
 		if(!isset(Achievement::$list[$achievementId])){
 			Achievement::$list[$achievementId] = [

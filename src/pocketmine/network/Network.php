@@ -34,6 +34,7 @@ use function spl_object_hash;
 
 class Network{
 
+	/** @var int */
 	public static $BATCH_THRESHOLD = 512;
 
 	/** @var Server */
@@ -45,7 +46,9 @@ class Network{
 	/** @var AdvancedSourceInterface[] */
 	private $advancedInterfaces = [];
 
+	/** @var float */
 	private $upload = 0;
+	/** @var float */
 	private $download = 0;
 
 	/** @var string */
@@ -58,19 +61,34 @@ class Network{
 
 	}
 
+	/**
+	 * @param float $upload
+	 * @param float $download
+	 *
+	 * @return void
+	 */
 	public function addStatistics($upload, $download){
 		$this->upload += $upload;
 		$this->download += $download;
 	}
 
+	/**
+	 * @return float
+	 */
 	public function getUpload(){
 		return $this->upload;
 	}
 
+	/**
+	 * @return float
+	 */
 	public function getDownload(){
 		return $this->download;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function resetStatistics(){
 		$this->upload = 0;
 		$this->download = 0;
@@ -83,6 +101,9 @@ class Network{
 		return $this->interfaces;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function processInterfaces(){
 		foreach($this->interfaces as $interface){
 			$interface->process();
@@ -91,14 +112,13 @@ class Network{
 
 	/**
 	 * @deprecated
-	 * @param SourceInterface $interface
 	 */
 	public function processInterface(SourceInterface $interface) : void{
 		$interface->process();
 	}
 
 	/**
-	 * @param SourceInterface $interface
+	 * @return void
 	 */
 	public function registerInterface(SourceInterface $interface){
 		$ev = new NetworkInterfaceRegisterEvent($interface);
@@ -115,7 +135,7 @@ class Network{
 	}
 
 	/**
-	 * @param SourceInterface $interface
+	 * @return void
 	 */
 	public function unregisterInterface(SourceInterface $interface){
 		(new NetworkInterfaceUnregisterEvent($interface))->call();
@@ -125,7 +145,7 @@ class Network{
 	/**
 	 * Sets the server name shown on each interface Query
 	 *
-	 * @param string $name
+	 * @return void
 	 */
 	public function setName(string $name){
 		$this->name = $name;
@@ -134,30 +154,25 @@ class Network{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function updateName(){
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name);
 		}
 	}
 
-	/**
-	 * @return Server
-	 */
 	public function getServer() : Server{
 		return $this->server;
 	}
 
 	/**
-	 * @param string $address
-	 * @param int    $port
-	 * @param string $payload
+	 * @return void
 	 */
 	public function sendPacket(string $address, int $port, string $payload){
 		foreach($this->advancedInterfaces as $interface){
@@ -168,8 +183,7 @@ class Network{
 	/**
 	 * Blocks an IP address from the main interface. Setting timeout to -1 will block it forever
 	 *
-	 * @param string $address
-	 * @param int    $timeout
+	 * @return void
 	 */
 	public function blockAddress(string $address, int $timeout = 300){
 		foreach($this->advancedInterfaces as $interface){
@@ -177,6 +191,9 @@ class Network{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function unblockAddress(string $address){
 		foreach($this->advancedInterfaces as $interface){
 			$interface->unblockAddress($address);

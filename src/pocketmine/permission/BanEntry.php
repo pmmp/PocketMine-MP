@@ -32,9 +32,7 @@ use function strtolower;
 use function trim;
 
 class BanEntry{
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	public static $format = "Y-m-d H:i:s O";
 
 	/** @var string */
@@ -61,6 +59,9 @@ class BanEntry{
 		return $this->creationDate;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setCreated(\DateTime $date){
 		self::validateDate($date);
 		$this->creationDate = $date;
@@ -70,6 +71,9 @@ class BanEntry{
 		return $this->source;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setSource(string $source){
 		$this->source = $source;
 	}
@@ -82,7 +86,7 @@ class BanEntry{
 	}
 
 	/**
-	 * @param \DateTime|null $date
+	 * @return void
 	 */
 	public function setExpires(\DateTime $date = null){
 		if($date !== null){
@@ -101,6 +105,9 @@ class BanEntry{
 		return $this->reason;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setReason(string $reason){
 		$this->reason = $reason;
 	}
@@ -126,8 +133,6 @@ class BanEntry{
 	 *
 	 * @link https://bugs.php.net/bug.php?id=75992
 	 *
-	 * @param \DateTime $dateTime
-	 *
 	 * @throws \RuntimeException if the argument can't be parsed from a formatted date string
 	 */
 	private static function validateDate(\DateTime $dateTime) : void{
@@ -135,9 +140,6 @@ class BanEntry{
 	}
 
 	/**
-	 * @param string $date
-	 *
-	 * @return \DateTime
 	 * @throws \RuntimeException
 	 */
 	private static function parseDate(string $date) : \DateTime{
@@ -150,9 +152,6 @@ class BanEntry{
 	}
 
 	/**
-	 * @param string $str
-	 *
-	 * @return BanEntry|null
 	 * @throws \RuntimeException
 	 */
 	public static function fromString(string $str) : ?BanEntry{

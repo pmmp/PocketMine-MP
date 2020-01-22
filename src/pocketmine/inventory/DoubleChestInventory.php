@@ -88,7 +88,6 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 
 	/**
 	 * @param Item[] $items
-	 * @param bool   $send
 	 */
 	public function setContents(array $items, bool $send = true) : void{
 		$size = $this->getSize();
@@ -128,20 +127,17 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		parent::onClose($who);
 	}
 
-	/**
-	 * @return ChestInventory
-	 */
 	public function getLeftSide() : ChestInventory{
 		return $this->left;
 	}
 
-	/**
-	 * @return ChestInventory
-	 */
 	public function getRightSide() : ChestInventory{
 		return $this->right;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function invalidate(){
 		$this->left = null;
 		$this->right = null;

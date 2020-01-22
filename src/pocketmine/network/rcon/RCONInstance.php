@@ -75,11 +75,7 @@ class RCONInstance extends Thread{
 
 	/**
 	 * @param resource             $socket
-	 * @param string               $password
-	 * @param int                  $maxClients
-	 * @param \ThreadedLogger      $logger
 	 * @param resource             $ipcSocket
-	 * @param null|SleeperNotifier $notifier
 	 */
 	public function __construct($socket, string $password, int $maxClients = 50, \ThreadedLogger $logger, $ipcSocket, ?SleeperNotifier $notifier){
 		$this->stop = false;
@@ -95,6 +91,11 @@ class RCONInstance extends Thread{
 		$this->start(PTHREADS_INHERIT_NONE);
 	}
 
+	/**
+	 * @param resource $client
+	 *
+	 * @return int|false
+	 */
 	private function writePacket($client, int $requestID, int $packetType, string $payload){
 		$pk = Binary::writeLInt($requestID)
 			. Binary::writeLInt($packetType)
@@ -103,6 +104,14 @@ class RCONInstance extends Thread{
 		return socket_write($client, Binary::writeLInt(strlen($pk)) . $pk);
 	}
 
+	/**
+	 * @param resource $client
+	 * @param int      $requestID reference parameter
+	 * @param int      $packetType reference parameter
+	 * @param string   $payload reference parameter
+	 *
+	 * @return bool
+	 */
 	private function readPacket($client, ?int &$requestID, ?int &$packetType, ?string &$payload){
 		$d = @socket_read($client, 4);
 
@@ -143,10 +152,16 @@ class RCONInstance extends Thread{
 		return true;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function close(){
 		$this->stop = true;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function run(){
 		$this->registerClassLoader();
 
@@ -192,8 +207,6 @@ class RCONInstance extends Thread{
 						$p = $this->readPacket($sock, $requestID, $packetType, $payload);
 						if($p === false){
 							$disconnect[$id] = $sock;
-							continue;
-						}elseif($p === null){
 							continue;
 						}
 
@@ -251,6 +264,9 @@ class RCONInstance extends Thread{
 		}
 	}
 
+	/**
+	 * @param resource $client
+	 */
 	private function disconnectClient($client) : void{
 		socket_getpeername($client, $ip, $port);
 		@socket_set_option($client, SOL_SOCKET, SO_LINGER, ["l_onoff" => 1, "l_linger" => 1]);

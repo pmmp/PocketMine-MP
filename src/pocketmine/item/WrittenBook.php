@@ -45,8 +45,6 @@ class WrittenBook extends WritableBook{
 	/**
 	 * Returns the generation of the book.
 	 * Generations higher than 1 can not be copied.
-	 *
-	 * @return int
 	 */
 	public function getGeneration() : int{
 		return $this->getNamedTag()->getInt(self::TAG_GENERATION, -1);
@@ -54,8 +52,6 @@ class WrittenBook extends WritableBook{
 
 	/**
 	 * Sets the generation of a book.
-	 *
-	 * @param int $generation
 	 */
 	public function setGeneration(int $generation) : void{
 		if($generation < 0 or $generation > 3){
@@ -70,8 +66,6 @@ class WrittenBook extends WritableBook{
 	 * Returns the author of this book.
 	 * This is not a reliable way to get the name of the player who signed this book.
 	 * The author can be set to anything when signing a book.
-	 *
-	 * @return string
 	 */
 	public function getAuthor() : string{
 		return $this->getNamedTag()->getString(self::TAG_AUTHOR, "");
@@ -79,8 +73,6 @@ class WrittenBook extends WritableBook{
 
 	/**
 	 * Sets the author of this book.
-	 *
-	 * @param string $authorName
 	 */
 	public function setAuthor(string $authorName) : void{
 		$namedTag = $this->getNamedTag();
@@ -90,8 +82,6 @@ class WrittenBook extends WritableBook{
 
 	/**
 	 * Returns the title of this book.
-	 *
-	 * @return string
 	 */
 	public function getTitle() : string{
 		return $this->getNamedTag()->getString(self::TAG_TITLE, "");
@@ -99,8 +89,6 @@ class WrittenBook extends WritableBook{
 
 	/**
 	 * Sets the author of this book.
-	 *
-	 * @param string $title
 	 */
 	public function setTitle(string $title) : void{
 		$namedTag = $this->getNamedTag();

@@ -77,7 +77,7 @@ class BatchPacket extends DataPacket{
 	}
 
 	/**
-	 * @param DataPacket $packet
+	 * @return void
 	 */
 	public function addPacket(DataPacket $packet){
 		if(!$packet->canBeBatched()){
@@ -108,6 +108,9 @@ class BatchPacket extends DataPacket{
 		return $this->compressionLevel;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setCompressionLevel(int $level){
 		$this->compressionLevel = $level;
 	}

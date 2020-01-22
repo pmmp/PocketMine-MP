@@ -61,12 +61,18 @@ class AddPlayerPacket extends DataPacket{
 	public $metadata = [];
 
 	//TODO: adventure settings stuff
+	/** @var int */
 	public $uvarint1 = 0;
+	/** @var int */
 	public $uvarint2 = 0;
+	/** @var int */
 	public $uvarint3 = 0;
+	/** @var int */
 	public $uvarint4 = 0;
+	/** @var int */
 	public $uvarint5 = 0;
 
+	/** @var int */
 	public $long1 = 0;
 
 	/** @var EntityLink[] */

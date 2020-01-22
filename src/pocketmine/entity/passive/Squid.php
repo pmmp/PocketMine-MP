@@ -43,8 +43,10 @@ class Squid extends WaterAnimal{
 
 	/** @var Vector3|null */
 	public $swimDirection = null;
+	/** @var float */
 	public $swimSpeed = 0.1;
 
+	/** @var int */
 	private $switchDirectionTicker = 0;
 
 	public function initEntity() : void{
@@ -76,7 +78,6 @@ class Squid extends WaterAnimal{
 	private function generateRandomDirection() : Vector3{
 		return new Vector3(mt_rand(-1000, 1000) / 1000, mt_rand(-500, 500) / 1000, mt_rand(-1000, 1000) / 1000);
 	}
-
 
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->closed){

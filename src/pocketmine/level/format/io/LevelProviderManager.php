@@ -31,6 +31,7 @@ use function strtolower;
 use function trim;
 
 abstract class LevelProviderManager{
+	/** @var string[] */
 	protected static $providers = [];
 
 	public static function init() : void{
@@ -41,8 +42,7 @@ abstract class LevelProviderManager{
 	}
 
 	/**
-	 * @param string $class
-	 *
+	 * @return void
 	 * @throws \InvalidArgumentException
 	 */
 	public static function addProvider(string $class){
@@ -65,8 +65,6 @@ abstract class LevelProviderManager{
 	/**
 	 * Returns a LevelProvider class for this path, or null
 	 *
-	 * @param string $path
-	 *
 	 * @return string|null
 	 */
 	public static function getProvider(string $path){
@@ -82,8 +80,6 @@ abstract class LevelProviderManager{
 
 	/**
 	 * Returns a LevelProvider by name, or null if not found
-	 *
-	 * @param string $name
 	 *
 	 * @return string|null
 	 */

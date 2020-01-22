@@ -128,8 +128,6 @@ class CraftingManager{
 
 	/**
 	 * Returns a pre-compressed CraftingDataPacket for sending to players. Rebuilds the cache if it is not found.
-	 *
-	 * @return BatchPacket
 	 */
 	public function getCraftingDataPacket() : BatchPacket{
 		if($this->craftingDataCache === null){
@@ -141,9 +139,6 @@ class CraftingManager{
 
 	/**
 	 * Function used to arrange Shapeless Recipe ingredient lists into a consistent order.
-	 *
-	 * @param Item $i1
-	 * @param Item $i2
 	 *
 	 * @return int
 	 */
@@ -210,27 +205,18 @@ class CraftingManager{
 		return $this->furnaceRecipes;
 	}
 
-	/**
-	 * @param ShapedRecipe $recipe
-	 */
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
 		$this->craftingDataCache = null;
 	}
 
-	/**
-	 * @param ShapelessRecipe $recipe
-	 */
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
 		$this->craftingDataCache = null;
 	}
 
-	/**
-	 * @param FurnaceRecipe $recipe
-	 */
 	public function registerFurnaceRecipe(FurnaceRecipe $recipe) : void{
 		$input = $recipe->getInput();
 		$this->furnaceRecipes[$input->getId() . ":" . ($input->hasAnyDamageValue() ? "?" : $input->getDamage())] = $recipe;
@@ -238,10 +224,7 @@ class CraftingManager{
 	}
 
 	/**
-	 * @param CraftingGrid $grid
 	 * @param Item[]       $outputs
-	 *
-	 * @return CraftingRecipe|null
 	 */
 	public function matchRecipe(CraftingGrid $grid, array $outputs) : ?CraftingRecipe{
 		//TODO: try to match special recipes before anything else (first they need to be implemented!)
@@ -290,18 +273,10 @@ class CraftingManager{
 		}
 	}
 
-	/**
-	 * @param Item $input
-	 *
-	 * @return FurnaceRecipe|null
-	 */
 	public function matchFurnaceRecipe(Item $input) : ?FurnaceRecipe{
 		return $this->furnaceRecipes[$input->getId() . ":" . $input->getDamage()] ?? $this->furnaceRecipes[$input->getId() . ":?"] ?? null;
 	}
 
-	/**
-	 * @param Recipe $recipe
-	 */
 	public function registerRecipe(Recipe $recipe) : void{
 		$recipe->registerToCraftingManager($this);
 	}

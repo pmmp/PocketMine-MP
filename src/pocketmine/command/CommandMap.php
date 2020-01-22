@@ -26,26 +26,14 @@ namespace pocketmine\command;
 interface CommandMap{
 
 	/**
-	 * @param string    $fallbackPrefix
 	 * @param Command[] $commands
+	 *
+	 * @return void
 	 */
 	public function registerAll(string $fallbackPrefix, array $commands);
 
-	/**
-	 * @param string      $fallbackPrefix
-	 * @param Command     $command
-	 * @param string|null $label
-	 *
-	 * @return bool
-	 */
 	public function register(string $fallbackPrefix, Command $command, string $label = null) : bool;
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $cmdLine
-	 *
-	 * @return bool
-	 */
 	public function dispatch(CommandSender $sender, string $cmdLine) : bool;
 
 	/**
@@ -54,11 +42,8 @@ interface CommandMap{
 	public function clearCommands();
 
 	/**
-	 * @param string $name
-	 *
 	 * @return Command|null
 	 */
 	public function getCommand(string $name);
-
 
 }

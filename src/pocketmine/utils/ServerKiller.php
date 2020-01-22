@@ -29,15 +29,22 @@ use function time;
 
 class ServerKiller extends Thread{
 
+	/** @var int */
 	public $time;
 
 	/** @var bool */
 	private $stopped = false;
 
+	/**
+	 * @param int $time
+	 */
 	public function __construct($time = 15){
 		$this->time = $time;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function run(){
 		$this->registerClassLoader();
 		$start = time();

@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -38,6 +37,9 @@ class Bed extends Spawnable{
 		return $this->color;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setColor(int $color){
 		$this->color = $color & 0xf;
 		$this->onChanged();

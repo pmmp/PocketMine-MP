@@ -79,9 +79,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	private $timezone;
 
 	/**
-	 * @param string $logFile
-	 * @param bool   $logDebug
-	 *
 	 * @throws \RuntimeException
 	 */
 	public function __construct(string $logFile, bool $logDebug = false){
@@ -101,16 +98,12 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->start(PTHREADS_INHERIT_NONE);
 	}
 
-	/**
-	 * @return MainLogger
-	 */
 	public static function getLogger() : MainLogger{
 		return static::$logger;
 	}
 
 	/**
 	 * Returns whether a MainLogger instance is statically registered on this thread.
-	 * @return bool
 	 */
 	public static function isRegisteredStatic() : bool{
 		return static::$logger !== null;
@@ -121,6 +114,8 @@ class MainLogger extends \AttachableThreadedLogger{
 	 *
 	 * WARNING: Because static properties are thread-local, this MUST be called from the body of every Thread if you
 	 * want the logger to be accessible via {@link MainLogger#getLogger}.
+	 *
+	 * @return void
 	 */
 	public function registerStatic(){
 		if(static::$logger === null){
@@ -130,8 +125,6 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	/**
 	 * Returns the current logger format used for console output.
-	 *
-	 * @return string
 	 */
 	public function getFormat() : string{
 		return $this->format;
@@ -147,8 +140,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	 * - message
 	 *
 	 * @see http://php.net/manual/en/function.sprintf.php
-	 *
-	 * @param string $format
 	 */
 	public function setFormat(string $format) : void{
 		$this->format = $format;
@@ -190,26 +181,40 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	/**
-	 * @param bool $logDebug
+	 * @return void
 	 */
 	public function setLogDebug(bool $logDebug){
 		$this->logDebug = $logDebug;
 	}
 
 	/**
-	 * @param \Throwable $e
 	 * @param array|null $trace
+	 *
+	 * @return void
 	 */
 	public function logException(\Throwable $e, $trace = null){
 		if($trace === null){
 			$trace = $e->getTrace();
 		}
-		$errstr = $e->getMessage();
-		$errfile = $e->getFile();
-		$errno = $e->getCode();
-		$errline = $e->getLine();
 
-		$errorConversion = [
+		$this->synchronized(function() use ($e, $trace) : void{
+			$this->critical(self::printExceptionMessage($e));
+			foreach(Utils::printableTrace($trace) as $line){
+				$this->debug($line, true);
+			}
+			for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
+				$this->debug("Previous: " . self::printExceptionMessage($prev), true);
+				foreach(Utils::printableTrace($prev->getTrace()) as $line){
+					$this->debug("  " . $line, true);
+				}
+			}
+		});
+
+		$this->syncFlushBuffer();
+	}
+
+	private static function printExceptionMessage(\Throwable $e) : string{
+		static $errorConversion = [
 			0 => "EXCEPTION",
 			E_ERROR => "E_ERROR",
 			E_WARNING => "E_WARNING",
@@ -227,26 +232,16 @@ class MainLogger extends \AttachableThreadedLogger{
 			E_DEPRECATED => "E_DEPRECATED",
 			E_USER_DEPRECATED => "E_USER_DEPRECATED"
 		];
-		if($errno === 0){
-			$type = LogLevel::CRITICAL;
-		}else{
-			$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? LogLevel::WARNING : LogLevel::NOTICE);
-		}
+
+		$errstr = preg_replace('/\s+/', ' ', trim($e->getMessage()));
+
+		$errno = $e->getCode();
 		$errno = $errorConversion[$errno] ?? $errno;
-		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
-		$errfile = Utils::cleanPath($errfile);
 
-		$message = get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
-		$stack = Utils::printableTrace($trace);
+		$errfile = Utils::cleanPath($e->getFile());
+		$errline = $e->getLine();
 
-		$this->synchronized(function() use ($type, $message, $stack) : void{
-			$this->log($type, $message);
-			foreach($stack as $line){
-				$this->debug($line, true);
-			}
-		});
-
-		$this->syncFlushBuffer();
+		return get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
 	}
 
 	public function log($level, $message){
@@ -278,11 +273,22 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function shutdown(){
 		$this->shutdown = true;
 		$this->notify();
 	}
 
+	/**
+	 * @param string $message
+	 * @param string $level
+	 * @param string $prefix
+	 * @param string $color
+	 *
+	 * @return void
+	 */
 	protected function send($message, $level, $prefix, $color){
 		/** @var \DateTime|null $time */
 		static $time = null;
@@ -317,6 +323,9 @@ class MainLogger extends \AttachableThreadedLogger{
 		});
 	}
 
+	/**
+	 * @return void
+	 */
 	public function syncFlushBuffer(){
 		$this->syncFlush = true;
 		$this->synchronized(function(){
@@ -331,7 +340,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	/**
 	 * @param resource $logResource
 	 */
-	private function writeLogStream($logResource){
+	private function writeLogStream($logResource) : void{
 		while($this->logStream->count() > 0){
 			$chunk = $this->logStream->shift();
 			fwrite($logResource, $chunk);
@@ -343,6 +352,9 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function run(){
 		$logResource = fopen($this->logFile, "ab");
 		if(!is_resource($logResource)){

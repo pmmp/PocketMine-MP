@@ -32,19 +32,35 @@ use pocketmine\utils\Random;
 class Tree extends Populator{
 	/** @var ChunkManager */
 	private $level;
+	/** @var int */
 	private $randomAmount = 1;
+	/** @var int */
 	private $baseAmount = 0;
 
+	/** @var int */
 	private $type;
 
+	/**
+	 * @param int $type
+	 */
 	public function __construct($type = Sapling::OAK){
 		$this->type = $type;
 	}
 
+	/**
+	 * @param int $amount
+	 *
+	 * @return void
+	 */
 	public function setRandomAmount($amount){
 		$this->randomAmount = $amount;
 	}
 
+	/**
+	 * @param int $amount
+	 *
+	 * @return void
+	 */
 	public function setBaseAmount($amount){
 		$this->baseAmount = $amount;
 	}

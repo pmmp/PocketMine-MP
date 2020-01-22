@@ -55,8 +55,6 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * @param Item[] $items
-	 * @param int    $size
-	 * @param string $title
 	 */
 	public function __construct(array $items = [], int $size = null, string $title = null){
 		$this->slots = new \SplFixedArray($size ?? $this->getDefaultSize());
@@ -73,7 +71,6 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * Returns the size of the inventory.
-	 * @return int
 	 */
 	public function getSize() : int{
 		return $this->slots->getSize();
@@ -83,7 +80,7 @@ abstract class BaseInventory implements Inventory{
 	 * Sets the new size of the inventory.
 	 * WARNING: If the size is smaller, any items past the new size will be lost.
 	 *
-	 * @param int $size
+	 * @return void
 	 */
 	public function setSize(int $size){
 		$this->slots->setSize($size);
@@ -100,8 +97,6 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	/**
-	 * @param bool $includeEmpty
-	 *
 	 * @return Item[]
 	 */
 	public function getContents(bool $includeEmpty = false) : array{
@@ -121,7 +116,6 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * @param Item[] $items
-	 * @param bool   $send
 	 */
 	public function setContents(array $items, bool $send = true) : void{
 		if(count($items) > $this->getSize()){
@@ -148,9 +142,6 @@ abstract class BaseInventory implements Inventory{
 	/**
 	 * Drops the contents of the inventory into the specified Level at the specified position and clears the inventory
 	 * contents.
-	 *
-	 * @param Level   $level
-	 * @param Vector3 $position
 	 */
 	public function dropContents(Level $level, Vector3 $position) : void{
 		foreach($this->getContents() as $item){
@@ -430,7 +421,6 @@ abstract class BaseInventory implements Inventory{
 		}
 	}
 
-
 	/**
 	 * @param Player|Player[] $target
 	 */
@@ -453,7 +443,6 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	/**
-	 * @param int             $index
 	 * @param Player|Player[] $target
 	 */
 	public function sendSlot(int $index, $target) : void{

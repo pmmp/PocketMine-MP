@@ -40,12 +40,11 @@ class Permission{
 	public const DEFAULT_TRUE = "true";
 	public const DEFAULT_FALSE = "false";
 
+	/** @var string */
 	public static $DEFAULT_PERMISSION = self::DEFAULT_OP;
 
 	/**
 	 * @param bool|string $value
-	 *
-	 * @return string
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -84,9 +83,6 @@ class Permission{
 	}
 
 	/**
-	 * @param array  $data
-	 * @param string $default
-	 *
 	 * @return Permission[]
 	 */
 	public static function loadPermissions(array $data, string $default = self::DEFAULT_OP) : array{
@@ -99,13 +95,6 @@ class Permission{
 	}
 
 	/**
-	 * @param string $name
-	 * @param array  $data
-	 * @param string $default
-	 * @param array  $output
-	 *
-	 * @return Permission
-	 *
 	 * @throws \Exception
 	 */
 	public static function loadPermission(string $name, array $data, string $default = self::DEFAULT_OP, array &$output = []) : Permission{
@@ -143,9 +132,7 @@ class Permission{
 	/** @var string */
 	private $description;
 
-	/**
-	 * @var bool[]
-	 */
+	/** @var bool[] */
 	private $children;
 
 	/** @var string */
@@ -154,9 +141,6 @@ class Permission{
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
 	 *
-	 * @param string $name
-	 * @param string $description
-	 * @param string $defaultValue
 	 * @param bool[] $children
 	 */
 	public function __construct(string $name, string $description = null, string $defaultValue = null, array $children = []){
@@ -168,9 +152,6 @@ class Permission{
 		$this->recalculatePermissibles();
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
@@ -182,15 +163,12 @@ class Permission{
 		return $this->children;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDefault() : string{
 		return $this->defaultValue;
 	}
 
 	/**
-	 * @param string $value
+	 * @return void
 	 */
 	public function setDefault(string $value){
 		if($value !== $this->defaultValue){
@@ -199,15 +177,12 @@ class Permission{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDescription() : string{
 		return $this->description;
 	}
 
 	/**
-	 * @param string $value
+	 * @return void
 	 */
 	public function setDescription(string $value){
 		$this->description = $value;
@@ -220,6 +195,9 @@ class Permission{
 		return PermissionManager::getInstance()->getPermissionSubscriptions($this->name);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function recalculatePermissibles(){
 		$perms = $this->getPermissibles();
 
@@ -230,10 +208,8 @@ class Permission{
 		}
 	}
 
-
 	/**
 	 * @param string|Permission $name
-	 * @param bool              $value
 	 *
 	 * @return Permission|null Permission if $name is a string, null if it's a Permission
 	 */

@@ -30,6 +30,9 @@ class PacketPool{
 	/** @var \SplFixedArray<DataPacket> */
 	protected static $pool = null;
 
+	/**
+	 * @return void
+	 */
 	public static function init(){
 		static::$pool = new \SplFixedArray(256);
 
@@ -178,25 +181,17 @@ class PacketPool{
 	}
 
 	/**
-	 * @param DataPacket $packet
+	 * @return void
 	 */
 	public static function registerPacket(DataPacket $packet){
 		static::$pool[$packet->pid()] = clone $packet;
 	}
 
-	/**
-	 * @param int $pid
-	 *
-	 * @return DataPacket
-	 */
 	public static function getPacketById(int $pid) : DataPacket{
 		return isset(static::$pool[$pid]) ? clone static::$pool[$pid] : new UnknownPacket();
 	}
 
 	/**
-	 * @param string $buffer
-	 *
-	 * @return DataPacket
 	 * @throws BinaryDataException
 	 */
 	public static function getPacket(string $buffer) : DataPacket{

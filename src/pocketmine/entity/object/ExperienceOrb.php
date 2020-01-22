@@ -49,10 +49,6 @@ class ExperienceOrb extends Entity{
 	/**
 	 * Returns the largest size of normal XP orb that will be spawned for the specified amount of XP. Used to split XP
 	 * up into multiple orbs when an amount of XP is dropped.
-	 *
-	 * @param int $amount
-	 *
-	 * @return int
 	 */
 	public static function getMaxOrbSize(int $amount) : int{
 		foreach(self::ORB_SPLIT_SIZES as $split){
@@ -66,8 +62,6 @@ class ExperienceOrb extends Entity{
 
 	/**
 	 * Splits the specified amount of XP into an array of acceptable XP orb sizes.
-	 *
-	 * @param int $amount
 	 *
 	 * @return int[]
 	 */

@@ -64,8 +64,6 @@ class Flat extends Generator{
 	}
 
 	/**
-	 * @param array $options
-	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public function __construct(array $options = []){
@@ -96,8 +94,6 @@ class Flat extends Generator{
 	}
 
 	/**
-	 * @param string $layers
-	 *
 	 * @return int[][]
 	 * @throws InvalidGeneratorOptionsException
 	 */

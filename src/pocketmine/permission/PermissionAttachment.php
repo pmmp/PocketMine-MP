@@ -30,9 +30,7 @@ class PermissionAttachment{
 	/** @var PermissionRemovedExecutor */
 	private $removed = null;
 
-	/**
-	 * @var bool[]
-	 */
+	/** @var bool[] */
 	private $permissions = [];
 
 	/** @var Permissible */
@@ -42,9 +40,6 @@ class PermissionAttachment{
 	private $plugin;
 
 	/**
-	 * @param Plugin      $plugin
-	 * @param Permissible $permissible
-	 *
 	 * @throws PluginException
 	 */
 	public function __construct(Plugin $plugin, Permissible $permissible){
@@ -56,15 +51,12 @@ class PermissionAttachment{
 		$this->plugin = $plugin;
 	}
 
-	/**
-	 * @return Plugin
-	 */
 	public function getPlugin() : Plugin{
 		return $this->plugin;
 	}
 
 	/**
-	 * @param PermissionRemovedExecutor $ex
+	 * @return void
 	 */
 	public function setRemovalCallback(PermissionRemovedExecutor $ex){
 		$this->removed = $ex;
@@ -77,9 +69,6 @@ class PermissionAttachment{
 		return $this->removed;
 	}
 
-	/**
-	 * @return Permissible
-	 */
 	public function getPermissible() : Permissible{
 		return $this->permissible;
 	}
@@ -91,6 +80,9 @@ class PermissionAttachment{
 		return $this->permissions;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function clearPermissions(){
 		$this->permissions = [];
 		$this->permissible->recalculatePermissions();
@@ -98,6 +90,8 @@ class PermissionAttachment{
 
 	/**
 	 * @param bool[] $permissions
+	 *
+	 * @return void
 	 */
 	public function setPermissions(array $permissions){
 		foreach($permissions as $key => $value){
@@ -108,6 +102,8 @@ class PermissionAttachment{
 
 	/**
 	 * @param string[] $permissions
+	 *
+	 * @return void
 	 */
 	public function unsetPermissions(array $permissions){
 		foreach($permissions as $node){
@@ -118,7 +114,8 @@ class PermissionAttachment{
 
 	/**
 	 * @param string|Permission $name
-	 * @param bool              $value
+	 *
+	 * @return void
 	 */
 	public function setPermission($name, bool $value){
 		$name = $name instanceof Permission ? $name->getName() : $name;
@@ -134,6 +131,8 @@ class PermissionAttachment{
 
 	/**
 	 * @param string|Permission $name
+	 *
+	 * @return void
 	 */
 	public function unsetPermission($name){
 		$name = $name instanceof Permission ? $name->getName() : $name;

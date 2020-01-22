@@ -114,10 +114,6 @@ abstract class BaseRail extends Flowable{
 	/**
 	 * Returns a meta value for the rail with the given connections.
 	 *
-	 * @param array $connections
-	 *
-	 * @return int
-	 *
 	 * @throws \InvalidArgumentException if no state matches the given connections
 	 */
 	protected function getMetaForState(array $connections) : int{

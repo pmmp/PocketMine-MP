@@ -135,11 +135,6 @@ class CraftingGrid extends BaseInventory implements FakeInventory{
 
 	/**
 	 * Returns the item at offset x,y, offset by where the starts of the recipe rectangle are.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 *
-	 * @return Item
 	 */
 	public function getIngredient(int $x, int $y) : Item{
 		if($this->startX !== null and $this->startY !== null){
@@ -151,8 +146,6 @@ class CraftingGrid extends BaseInventory implements FakeInventory{
 
 	/**
 	 * Returns the width of the recipe we're trying to craft, based on items currently in the grid.
-	 *
-	 * @return int
 	 */
 	public function getRecipeWidth() : int{
 		return $this->xLen ?? 0;
@@ -160,7 +153,6 @@ class CraftingGrid extends BaseInventory implements FakeInventory{
 
 	/**
 	 * Returns the height of the recipe we're trying to craft, based on items currently in the grid.
-	 * @return int
 	 */
 	public function getRecipeHeight() : int{
 		return $this->yLen ?? 0;

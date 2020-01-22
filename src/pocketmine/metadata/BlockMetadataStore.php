@@ -42,6 +42,9 @@ class BlockMetadataStore extends MetadataStore{
 		return $block->x . ":" . $block->y . ":" . $block->z . ":" . $metadataKey;
 	}
 
+	/**
+	 * @return MetadataValue[]
+	 */
 	public function getMetadata(Block $subject, string $metadataKey){
 		return $this->getMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
@@ -50,10 +53,16 @@ class BlockMetadataStore extends MetadataStore{
 		return $this->hasMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
 
+	/**
+	 * @return void
+	 */
 	public function removeMetadata(Block $subject, string $metadataKey, Plugin $owningPlugin){
 		$this->removeMetadataInternal($this->disambiguate($subject, $metadataKey), $owningPlugin);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setMetadata(Block $subject, string $metadataKey, MetadataValue $newMetadataValue){
 		$this->setMetadataInternal($this->disambiguate($subject, $metadataKey), $newMetadataValue);
 	}

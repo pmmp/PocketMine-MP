@@ -105,6 +105,11 @@ class BaseLang{
 		return $this->langName;
 	}
 
+	/**
+	 * @param string[] $d reference parameter
+	 *
+	 * @return bool
+	 */
 	protected static function loadLang(string $path, array &$d){
 		if(file_exists($path)){
 			$d = array_map('\stripcslashes', parse_ini_file($path, false, INI_SCANNER_RAW));
@@ -115,11 +120,7 @@ class BaseLang{
 	}
 
 	/**
-	 * @param string               $str
 	 * @param (float|int|string)[] $params
-	 * @param string|null          $onlyPrefix
-	 *
-	 * @return string
 	 */
 	public function translateString(string $str, array $params = [], string $onlyPrefix = null) : string{
 		$baseText = $this->get($str);
@@ -132,6 +133,9 @@ class BaseLang{
 		return $baseText;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function translate(TextContainer $c){
 		if($c instanceof TranslationContainer){
 			$baseText = $this->internalGet($c->getText());
@@ -148,8 +152,6 @@ class BaseLang{
 	}
 
 	/**
-	 * @param string $id
-	 *
 	 * @return string|null
 	 */
 	public function internalGet(string $id){
@@ -162,11 +164,6 @@ class BaseLang{
 		return null;
 	}
 
-	/**
-	 * @param string $id
-	 *
-	 * @return string
-	 */
 	public function get(string $id) : string{
 		if(isset($this->lang[$id])){
 			return $this->lang[$id];
@@ -177,12 +174,6 @@ class BaseLang{
 		return $id;
 	}
 
-	/**
-	 * @param string      $text
-	 * @param string|null $onlyPrefix
-	 *
-	 * @return string
-	 */
 	protected function parseTranslation(string $text, string $onlyPrefix = null) : string{
 		$newString = "";
 

@@ -217,6 +217,11 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		);
 	}
 
+	/**
+	 * @param bool $name
+	 *
+	 * @return void
+	 */
 	public function setPortCheck($name){
 		$this->interface->sendOption("portChecking", (bool) $name);
 	}

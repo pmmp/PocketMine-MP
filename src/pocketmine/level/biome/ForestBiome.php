@@ -33,6 +33,7 @@ class ForestBiome extends GrassyBiome{
 	public const TYPE_NORMAL = 0;
 	public const TYPE_BIRCH = 1;
 
+	/** @var int */
 	public $type;
 
 	public function __construct(int $type = self::TYPE_NORMAL){

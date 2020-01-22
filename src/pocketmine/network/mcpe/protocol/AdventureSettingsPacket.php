@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 
@@ -102,6 +101,9 @@ class AdventureSettingsPacket extends DataPacket{
 		return ($this->flags & $flag) !== 0;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setFlag(int $flag, bool $value){
 		if($flag & self::BITFLAG_SECOND_SET){
 			$flagSet =& $this->flags2;

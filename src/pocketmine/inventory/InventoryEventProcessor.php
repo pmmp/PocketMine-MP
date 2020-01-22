@@ -37,11 +37,6 @@ interface InventoryEventProcessor{
 	 * Called prior to a slot in the given inventory changing. This is called by inventories that this listener is
 	 * attached to.
 	 *
-	 * @param Inventory $inventory
-	 * @param int       $slot
-	 * @param Item      $oldItem
-	 * @param Item      $newItem
-	 *
 	 * @return Item|null that should be used in place of $newItem, or null if the slot change should not proceed.
 	 */
 	public function onSlotChange(Inventory $inventory, int $slot, Item $oldItem, Item $newItem) : ?Item;

@@ -34,18 +34,31 @@ use function sqrt;
  * http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
  */
 class Simplex extends Perlin{
+	/** @var float */
 	protected static $SQRT_3;
+	/** @var float */
 	protected static $SQRT_5;
+	/** @var float */
 	protected static $F2;
+	/** @var float */
 	protected static $G2;
+	/** @var float */
 	protected static $G22;
+	/** @var float */
 	protected static $F3;
+	/** @var float */
 	protected static $G3;
+	/** @var float */
 	protected static $F4;
+	/** @var float */
 	protected static $G4;
+	/** @var float */
 	protected static $G42;
+	/** @var float */
 	protected static $G43;
+	/** @var float */
 	protected static $G44;
+	/** @var int[][] */
 	protected static $grad4 = [[0, 1, 1, 1], [0, 1, 1, -1], [0, 1, -1, 1], [0, 1, -1, -1],
 		[0, -1, 1, 1], [0, -1, 1, -1], [0, -1, -1, 1], [0, -1, -1, -1],
 		[1, 0, 1, 1], [1, 0, 1, -1], [1, 0, -1, 1], [1, 0, -1, -1],
@@ -54,6 +67,8 @@ class Simplex extends Perlin{
 		[-1, 1, 0, 1], [-1, 1, 0, -1], [-1, -1, 0, 1], [-1, -1, 0, -1],
 		[1, 1, 1, 0], [1, 1, -1, 0], [1, -1, 1, 0], [1, -1, -1, 0],
 		[-1, 1, 1, 0], [-1, 1, -1, 0], [-1, -1, 1, 0], [-1, -1, -1, 0]];
+
+	/** @var int[][] */
 	protected static $simplex = [
 		[0, 1, 2, 3], [0, 1, 3, 2], [0, 0, 0, 0], [0, 2, 3, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 2, 3, 0],
 		[0, 2, 1, 3], [0, 0, 0, 0], [0, 3, 1, 2], [0, 3, 2, 1], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 3, 2, 0],
@@ -63,9 +78,15 @@ class Simplex extends Perlin{
 		[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
 		[2, 0, 1, 3], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [3, 0, 1, 2], [3, 0, 2, 1], [0, 0, 0, 0], [3, 1, 2, 0],
 		[2, 1, 0, 3], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [3, 1, 0, 2], [0, 0, 0, 0], [3, 2, 0, 1], [3, 2, 1, 0]];
+
+	/** @var float */
 	protected $offsetW;
 
-
+	/**
+	 * @param int    $octaves
+	 * @param float  $persistence
+	 * @param float  $expansion
+	 */
 	public function __construct(Random $random, $octaves, $persistence, $expansion = 1){
 		parent::__construct($random, $octaves, $persistence, $expansion);
 		$this->offsetW = $random->nextFloat() * 256;
@@ -83,14 +104,38 @@ class Simplex extends Perlin{
 		self::$G44 = self::$G4 * 4.0 - 1.0;
 	}
 
+	/**
+	 * @param int[] $g
+	 * @param float $x
+	 * @param float $y
+	 *
+	 * @return float
+	 */
 	protected static function dot2D($g, $x, $y){
 		return $g[0] * $x + $g[1] * $y;
 	}
 
+	/**
+	 * @param int[] $g
+	 * @param float $x
+	 * @param float $y
+	 * @param float $z
+	 *
+	 * @return float
+	 */
 	protected static function dot3D($g, $x, $y, $z){
 		return $g[0] * $x + $g[1] * $y + $g[2] * $z;
 	}
 
+	/**
+	 * @param int[] $g
+	 * @param float $x
+	 * @param float $y
+	 * @param float $z
+	 * @param float $w
+	 *
+	 * @return float
+	 */
 	protected static function dot4D($g, $x, $y, $z, $w){
 		return $g[0] * $x + $g[1] * $y + $g[2] * $z + $g[3] * $w;
 	}
@@ -219,6 +264,12 @@ class Simplex extends Perlin{
 		return 32.0 * $n;
 	}
 
+	/**
+	 * @param float $x
+	 * @param float $y
+	 *
+	 * @return float
+	 */
 	public function getNoise2D($x, $y){
 		$x += $this->offsetX;
 		$y += $this->offsetY;

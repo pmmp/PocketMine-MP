@@ -36,14 +36,10 @@ class TaskScheduler{
 	/** @var bool */
 	private $enabled = true;
 
-	/**
-	 * @var ReversePriorityQueue<Task>
-	 */
+	/** @var ReversePriorityQueue<Task> */
 	protected $queue;
 
-	/**
-	 * @var TaskHandler[]
-	 */
+	/** @var TaskHandler[] */
 	protected $tasks = [];
 
 	/** @var int */
@@ -54,7 +50,6 @@ class TaskScheduler{
 
 	/**
 	 * @param \Logger     $logger @deprecated
-	 * @param null|string $owner
 	 */
 	public function __construct(\Logger $logger, ?string $owner = null){
 		$this->owner = $owner;
@@ -62,8 +57,6 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param Task $task
-	 *
 	 * @return TaskHandler
 	 */
 	public function scheduleTask(Task $task){
@@ -71,9 +64,6 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param Task $task
-	 * @param int  $delay
-	 *
 	 * @return TaskHandler
 	 */
 	public function scheduleDelayedTask(Task $task, int $delay){
@@ -81,9 +71,6 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param Task $task
-	 * @param int  $period
-	 *
 	 * @return TaskHandler
 	 */
 	public function scheduleRepeatingTask(Task $task, int $period){
@@ -91,10 +78,6 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param Task $task
-	 * @param int  $delay
-	 * @param int  $period
-	 *
 	 * @return TaskHandler
 	 */
 	public function scheduleDelayedRepeatingTask(Task $task, int $delay, int $period){
@@ -102,7 +85,7 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param int $taskId
+	 * @return void
 	 */
 	public function cancelTask(int $taskId){
 		if(isset($this->tasks[$taskId])){
@@ -114,6 +97,9 @@ class TaskScheduler{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function cancelAllTasks(){
 		foreach($this->tasks as $id => $task){
 			$this->cancelTask($id);
@@ -125,20 +111,11 @@ class TaskScheduler{
 		$this->ids = 1;
 	}
 
-	/**
-	 * @param int $taskId
-	 *
-	 * @return bool
-	 */
 	public function isQueued(int $taskId) : bool{
 		return isset($this->tasks[$taskId]);
 	}
 
 	/**
-	 * @param Task $task
-	 * @param int  $delay
-	 * @param int  $period
-	 *
 	 * @return TaskHandler
 	 *
 	 * @throws \InvalidStateException
@@ -185,7 +162,7 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @param int $currentTick
+	 * @return void
 	 */
 	public function mainThreadHeartbeat(int $currentTick){
 		$this->currentTick = $currentTick;
@@ -211,9 +188,6 @@ class TaskScheduler{
 		return !$this->queue->isEmpty() and $this->queue->current()->getNextRun() <= $currentTick;
 	}
 
-	/**
-	 * @return int
-	 */
 	private function nextId() : int{
 		return $this->ids++;
 	}

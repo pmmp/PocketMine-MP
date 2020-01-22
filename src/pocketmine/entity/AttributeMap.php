@@ -25,6 +25,9 @@ namespace pocketmine\entity;
 
 use function array_filter;
 
+/**
+ * @phpstan-implements \ArrayAccess<int, float>
+ */
 class AttributeMap implements \ArrayAccess{
 	/** @var Attribute[] */
 	private $attributes = [];
@@ -33,11 +36,6 @@ class AttributeMap implements \ArrayAccess{
 		$this->attributes[$attribute->getId()] = $attribute;
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return Attribute|null
-	 */
 	public function getAttribute(int $id) : ?Attribute{
 		return $this->attributes[$id] ?? null;
 	}
@@ -58,14 +56,15 @@ class AttributeMap implements \ArrayAccess{
 		});
 	}
 
+	/**
+	 * @param int $offset
+	 */
 	public function offsetExists($offset) : bool{
 		return isset($this->attributes[$offset]);
 	}
 
 	/**
 	 * @param int $offset
-	 *
-	 * @return float
 	 */
 	public function offsetGet($offset) : float{
 		return $this->attributes[$offset]->getValue();
@@ -79,6 +78,9 @@ class AttributeMap implements \ArrayAccess{
 		$this->attributes[$offset]->setValue($value);
 	}
 
+	/**
+	 * @param int $offset
+	 */
 	public function offsetUnset($offset) : void{
 		throw new \RuntimeException("Could not unset an attribute from an attribute map");
 	}

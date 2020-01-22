@@ -94,7 +94,6 @@ class Skin{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isValid() : bool{
 		try{
@@ -139,17 +138,10 @@ class Skin{
 			$this->resourcePatch = (string) json_encode((new CommentedJsonDecoder())->decode($this->resourcePatch));
 		}
 	}
-
-	/**
-	 * @return bool
-	 */
 	public function isPremium() : bool{
 		return $this->premium;
 	}
-
-	/**
-	 * @return bool
-	 */
+	
 	public function isPersona() : bool{
 		return $this->persona;
 	}
@@ -160,52 +152,33 @@ class Skin{
 	public function getAnimations() : array{
 		return $this->animations;
 	}
-
-	/**
-	 * @return Cape
-	 */
+	
 	public function getCape() : Cape{
 		return $this->cape;
 	}
-
-	/**
-	 * @return string
-	 */
+	
 	public function getAnimationData() : string{
 		return $this->animationData;
 	}
-
-	/**
-	 * @return SkinImage
-	 */
+	
 	public function getSkinImage() : SkinImage{
 		return $this->skinImage;
 	}
-
-	/**
-	 * @return string
-	 */
+	
 	public function getSkinId() : string{
 		return $this->skinId;
 	}
-
-	/**
-	 * @return string
-	 */
+	
 	public function getGeometryData() : string{
 		return $this->geometryData;
 	}
-
-	/**
-	 * @return string
-	 */
+	
 	public function getResourcePatch() : string{
 		return $this->resourcePatch;
 	}
 
 	/**
 	 * @deprecated
-	 * @return string
 	 */
 	public function getSkinData() : string{
 		return $this->getSkinImage()->getData();
@@ -213,7 +186,6 @@ class Skin{
 
 	/**
 	 * @deprecated
-	 * @return string
 	 */
 	public function getCapeData() : string{
 		return $this->getCape()->getImage()->getData();
@@ -221,16 +193,11 @@ class Skin{
 
 	/**
 	 * @deprecated
-	 * @return string
 	 */
 	public function getGeometryName() : string{
 		return $this->geometryName;
 	}
-
-	/**
-	 * @param SkinImage $skinImage
-	 * @return Skin
-	 */
+	
 	public function setSkinImage(SkinImage $skinImage) : Skin{
 		$this->skinImage = $skinImage;
 		return $this;
@@ -238,44 +205,27 @@ class Skin{
 
 	/**
 	 * @param SkinAnimation[] $animations
-	 * @return Skin
 	 */
 	public function setAnimations(array $animations) : Skin{
 		$this->animations = $animations;
 		return $this;
 	}
-
-	/**
-	 * @param string $animationData
-	 * @return Skin
-	 */
+	
 	public function setAnimationData(string $animationData) : Skin{
 		$this->animationData = $animationData;
 		return $this;
 	}
-
-	/**
-	 * @param bool $persona
-	 * @return Skin
-	 */
+	
 	public function setPersona(bool $persona) : Skin{
 		$this->persona = $persona;
 		return $this;
 	}
-
-	/**
-	 * @param bool $premium
-	 * @return Skin
-	 */
+	
 	public function setPremium(bool $premium) : Skin{
 		$this->premium = $premium;
 		return $this;
 	}
-
-	/**
-	 * @param Cape $cape
-	 * @return Skin
-	 */
+	
 	public function setCape(Cape $cape) : Skin{
 		$this->cape = $cape;
 		return $this;

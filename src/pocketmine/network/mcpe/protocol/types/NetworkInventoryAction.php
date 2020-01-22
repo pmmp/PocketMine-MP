@@ -89,8 +89,6 @@ class NetworkInventoryAction{
 	public $newItem;
 
 	/**
-	 * @param InventoryTransactionPacket $packet
-	 *
 	 * @return $this
 	 */
 	public function read(InventoryTransactionPacket $packet){
@@ -131,7 +129,7 @@ class NetworkInventoryAction{
 	}
 
 	/**
-	 * @param InventoryTransactionPacket $packet
+	 * @return void
 	 */
 	public function write(InventoryTransactionPacket $packet){
 		$packet->putUnsignedVarInt($this->sourceType);
@@ -161,8 +159,6 @@ class NetworkInventoryAction{
 	}
 
 	/**
-	 * @param Player $player
-	 *
 	 * @return InventoryAction|null
 	 *
 	 * @throws \UnexpectedValueException

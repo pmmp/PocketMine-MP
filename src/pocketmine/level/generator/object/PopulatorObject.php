@@ -26,7 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\level\generator\object;
 
-
 abstract class PopulatorObject{
 
 }

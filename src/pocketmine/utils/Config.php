@@ -71,6 +71,7 @@ class Config{
 	/** @var array */
 	private $config = [];
 
+	/** @var mixed[] */
 	private $nestedCache = [];
 
 	/** @var string */
@@ -85,6 +86,7 @@ class Config{
 	/** @var bool */
 	private $changed = false;
 
+	/** @var int[] */
 	public static $formats = [
 		"properties" => Config::PROPERTIES,
 		"cnf" => Config::CNF,
@@ -104,10 +106,10 @@ class Config{
 	];
 
 	/**
-	 * @param string $file     Path of the file to be loaded
-	 * @param int    $type     Config type to load, -1 by default (detect)
-	 * @param array  $default  Array with the default values that will be written to the file if it did not exist
-	 * @param null   &$correct Sets correct to true if everything has been loaded correctly
+	 * @param string $file    Path of the file to be loaded
+	 * @param int    $type    Config type to load, -1 by default (detect)
+	 * @param array  $default Array with the default values that will be written to the file if it did not exist
+	 * @param null   $correct reference parameter, Sets correct to true if everything has been loaded correctly
 	 */
 	public function __construct(string $file, int $type = Config::DETECT, array $default = [], &$correct = null){
 		$this->load($file, $type, $default);
@@ -116,6 +118,8 @@ class Config{
 
 	/**
 	 * Removes all the changes in memory and loads the file again
+	 *
+	 * @return void
 	 */
 	public function reload(){
 		$this->config = [];
@@ -132,22 +136,10 @@ class Config{
 		$this->changed = $changed;
 	}
 
-	/**
-	 * @param string $str
-	 *
-	 * @return string
-	 */
 	public static function fixYAMLIndexes(string $str) : string{
 		return preg_replace("#^( *)(y|Y|yes|Yes|YES|n|N|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF)( *)\:#m", "$1\"$2\"$3:", $str);
 	}
 
-	/**
-	 * @param string $file
-	 * @param int    $type
-	 * @param array  $default
-	 *
-	 * @return bool
-	 */
 	public function load(string $file, int $type = Config::DETECT, array $default = []) : bool{
 		$this->correct = true;
 		$this->file = $file;
@@ -205,16 +197,10 @@ class Config{
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function check() : bool{
 		return $this->correct;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function save() : bool{
 		if($this->correct){
 			$content = null;
@@ -251,8 +237,6 @@ class Config{
 	/**
 	 * Sets the options for the JSON encoding when saving
 	 *
-	 * @param int $options
-	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
@@ -269,8 +253,6 @@ class Config{
 
 	/**
 	 * Enables the given option in addition to the currently set JSON options
-	 *
-	 * @param int $option
 	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
@@ -289,8 +271,6 @@ class Config{
 	/**
 	 * Disables the given option for the JSON encoding when saving
 	 *
-	 * @param int $option
-	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
@@ -308,7 +288,6 @@ class Config{
 	/**
 	 * Returns the options for the JSON encoding when saving
 	 *
-	 * @return int
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
 	 */
@@ -331,6 +310,8 @@ class Config{
 	/**
 	 * @param string $k
 	 * @param mixed  $v
+	 *
+	 * @return void
 	 */
 	public function __set($k, $v){
 		$this->set($k, $v);
@@ -355,6 +336,8 @@ class Config{
 	/**
 	 * @param string $key
 	 * @param mixed  $value
+	 *
+	 * @return void
 	 */
 	public function setNested($key, $value){
 		$vars = explode(".", $key);
@@ -444,6 +427,8 @@ class Config{
 	/**
 	 * @param string $k key to be set
 	 * @param mixed  $v value to set key
+	 *
+	 * @return void
 	 */
 	public function set($k, $v = true){
 		$this->config[$k] = $v;
@@ -456,7 +441,7 @@ class Config{
 	}
 
 	/**
-	 * @param array $v
+	 * @return void
 	 */
 	public function setAll(array $v){
 		$this->config = $v;
@@ -466,8 +451,6 @@ class Config{
 	/**
 	 * @param string $k
 	 * @param bool   $lowercase If set, searches Config in single-case / lowercase.
-	 *
-	 * @return bool
 	 */
 	public function exists($k, bool $lowercase = false) : bool{
 		if($lowercase){
@@ -481,33 +464,27 @@ class Config{
 
 	/**
 	 * @param string $k
+	 *
+	 * @return void
 	 */
 	public function remove($k){
 		unset($this->config[$k]);
 		$this->changed = true;
 	}
 
-	/**
-	 * @param bool $keys
-	 *
-	 * @return array
-	 */
 	public function getAll(bool $keys = false) : array{
 		return ($keys ? array_keys($this->config) : $this->config);
 	}
 
 	/**
-	 * @param array $defaults
+	 * @return void
 	 */
 	public function setDefaults(array $defaults){
 		$this->fillDefaults($defaults, $this->config);
 	}
 
 	/**
-	 * @param array $default
-	 * @param array &$data
-	 *
-	 * @return int
+	 * @param array $data reference parameter
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;
@@ -530,10 +507,7 @@ class Config{
 		return $changed;
 	}
 
-	/**
-	 * @param string $content
-	 */
-	private function parseList(string $content){
+	private function parseList(string $content) : void{
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
 			if($v == ""){
@@ -543,9 +517,6 @@ class Config{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	private function writeProperties() : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
 		foreach($this->config as $k => $v){
@@ -560,10 +531,7 @@ class Config{
 		return $content;
 	}
 
-	/**
-	 * @param string $content
-	 */
-	private function parseProperties(string $content){
+	private function parseProperties(string $content) : void{
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);

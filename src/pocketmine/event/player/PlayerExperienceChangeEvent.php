@@ -51,16 +51,10 @@ class PlayerExperienceChangeEvent extends EntityEvent implements Cancellable{
 		$this->newProgress = $newProgress;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getOldLevel() : int{
 		return $this->oldLevel;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getOldProgress() : float{
 		return $this->oldProgress;
 	}
@@ -79,16 +73,10 @@ class PlayerExperienceChangeEvent extends EntityEvent implements Cancellable{
 		return $this->newProgress;
 	}
 
-	/**
-	 * @param int|null $newLevel
-	 */
 	public function setNewLevel(?int $newLevel) : void{
 		$this->newLevel = $newLevel;
 	}
 
-	/**
-	 * @param float|null $newProgress
-	 */
 	public function setNewProgress(?float $newProgress) : void{
 		$this->newProgress = $newProgress;
 	}

@@ -100,6 +100,9 @@ class RCON{
 		$this->server->getLogger()->info("RCON running on $addr:$port");
 	}
 
+	/**
+	 * @return void
+	 */
 	public function stop(){
 		$this->instance->close();
 		socket_write($this->ipcMainSocket, "\x00"); //make select() return
@@ -110,6 +113,9 @@ class RCON{
 		@socket_close($this->ipcThreadSocket);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function check(){
 		$response = new RemoteConsoleCommandSender();
 		$command = $this->instance->cmd;

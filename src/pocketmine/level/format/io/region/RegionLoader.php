@@ -62,6 +62,7 @@ class RegionLoader{
 
 	private const FIRST_SECTOR = 2; //location table occupies 0 and 1
 
+	/** @var int */
 	public static $COMPRESSION_LEVEL = 7;
 
 	/** @var int */
@@ -86,6 +87,7 @@ class RegionLoader{
 	}
 
 	/**
+	 * @return void
 	 * @throws CorruptedRegionException
 	 */
 	public function open(){
@@ -120,10 +122,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return null|string
 	 * @throws \InvalidArgumentException if invalid coordinates are given
 	 * @throws CorruptedChunkException if chunk corruption is detected
 	 */
@@ -172,10 +170,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return bool
 	 * @throws \InvalidArgumentException
 	 */
 	public function chunkExists(int $x, int $z) : bool{
@@ -183,10 +177,7 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int    $x
-	 * @param int    $z
-	 * @param string $chunkData
-	 *
+	 * @return void
 	 * @throws ChunkException
 	 * @throws \InvalidArgumentException
 	 */
@@ -216,9 +207,7 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
+	 * @return void
 	 * @throws \InvalidArgumentException
 	 */
 	public function removeChunk(int $x, int $z){
@@ -228,10 +217,6 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return int
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function getChunkOffset(int $x, int $z) : int{
@@ -242,9 +227,8 @@ class RegionLoader{
 	}
 
 	/**
-	 * @param int $offset
-	 * @param int &$x
-	 * @param int &$z
+	 * @param int $x reference parameter
+	 * @param int $z reference parameter
 	 */
 	protected static function getChunkCoords(int $offset, ?int &$x, ?int &$z) : void{
 		$x = $offset & 0x1f;
@@ -254,7 +238,7 @@ class RegionLoader{
 	/**
 	 * Writes the region header and closes the file
 	 *
-	 * @param bool $writeHeader
+	 * @return void
 	 */
 	public function close(bool $writeHeader = true){
 		if(is_resource($this->filePointer)){
@@ -267,6 +251,7 @@ class RegionLoader{
 	}
 
 	/**
+	 * @return void
 	 * @throws CorruptedRegionException
 	 */
 	protected function loadLocationTable(){
@@ -328,7 +313,7 @@ class RegionLoader{
 		}
 	}
 
-	private function writeLocationTable(){
+	private function writeLocationTable() : void{
 		$write = [];
 
 		for($i = 0; $i < 1024; ++$i){
@@ -341,6 +326,11 @@ class RegionLoader{
 		fwrite($this->filePointer, pack("N*", ...$write), 4096 * 2);
 	}
 
+	/**
+	 * @param int $index
+	 *
+	 * @return void
+	 */
 	protected function writeLocationIndex($index){
 		fseek($this->filePointer, $index << 2);
 		fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$index]->getFirstSector() << 8) | $this->locationTable[$index]->getSectorCount()), 4);
@@ -348,6 +338,9 @@ class RegionLoader{
 		fwrite($this->filePointer, Binary::writeInt($this->locationTable[$index]->getTimestamp()), 4);
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function createBlank(){
 		fseek($this->filePointer, 0);
 		ftruncate($this->filePointer, 8192); // this fills the file with the null byte

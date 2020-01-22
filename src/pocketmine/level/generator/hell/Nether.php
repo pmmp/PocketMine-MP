@@ -57,7 +57,10 @@ class Nether extends Generator{
 	/** @var Simplex */
 	private $noiseBase;
 
-	public function __construct(array $settings = []){
+	/**
+	 * @throws InvalidGeneratorOptionsException
+	 */
+	public function __construct(array $options = []){
 
 	}
 

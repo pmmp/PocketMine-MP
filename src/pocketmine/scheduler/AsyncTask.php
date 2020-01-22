@@ -59,14 +59,21 @@ abstract class AsyncTask extends Collectable{
 	/** @var \Threaded */
 	public $progressUpdates;
 
+	/** @var scalar|null */
 	private $result = null;
+	/** @var bool */
 	private $serialized = false;
+	/** @var bool */
 	private $cancelRun = false;
 	/** @var int|null */
 	private $taskId = null;
 
+	/** @var bool */
 	private $crashed = false;
 
+	/**
+	 * @return void
+	 */
 	public function run(){
 		$this->result = null;
 
@@ -93,6 +100,9 @@ abstract class AsyncTask extends Collectable{
 		return $this->serialized ? unserialize($this->result) : $this->result;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function cancelRun(){
 		$this->cancelRun = true;
 	}
@@ -101,20 +111,22 @@ abstract class AsyncTask extends Collectable{
 		return $this->cancelRun;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasResult() : bool{
 		return $this->result !== null;
 	}
 
 	/**
 	 * @param mixed $result
+	 *
+	 * @return void
 	 */
 	public function setResult($result){
 		$this->result = ($this->serialized = !is_scalar($result)) ? serialize($result) : $result;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setTaskId(int $taskId){
 		$this->taskId = $taskId;
 	}
@@ -129,8 +141,6 @@ abstract class AsyncTask extends Collectable{
 	/**
 	 * @see AsyncWorker::getFromThreadStore()
 	 *
-	 * @param string $identifier
-	 *
 	 * @return mixed
 	 */
 	public function getFromThreadStore(string $identifier){
@@ -143,8 +153,9 @@ abstract class AsyncTask extends Collectable{
 	/**
 	 * @see AsyncWorker::saveToThreadStore()
 	 *
-	 * @param string $identifier
 	 * @param mixed  $value
+	 *
+	 * @return void
 	 */
 	public function saveToThreadStore(string $identifier, $value){
 		if($this->worker === null or $this->isGarbage()){
@@ -155,8 +166,6 @@ abstract class AsyncTask extends Collectable{
 
 	/**
 	 * @see AsyncWorker::removeFromThreadStore()
-	 *
-	 * @param string $identifier
 	 */
 	public function removeFromThreadStore(string $identifier) : void{
 		if($this->worker === null or $this->isGarbage()){
@@ -176,8 +185,6 @@ abstract class AsyncTask extends Collectable{
 	 * Actions to execute when completed (on main thread)
 	 * Implement this if you want to handle the data in your AsyncTask after it has been processed
 	 *
-	 * @param Server $server
-	 *
 	 * @return void
 	 */
 	public function onCompletion(Server $server){
@@ -189,6 +196,8 @@ abstract class AsyncTask extends Collectable{
 	 * {@link AsyncTask::onProgressUpdate} from the main thread with the given progress parameter.
 	 *
 	 * @param mixed $progress A value that can be safely serialize()'ed.
+	 *
+	 * @return void
 	 */
 	public function publishProgress($progress){
 		$this->progressUpdates[] = serialize($progress);
@@ -197,7 +206,7 @@ abstract class AsyncTask extends Collectable{
 	/**
 	 * @internal Only call from AsyncPool.php on the main thread
 	 *
-	 * @param Server $server
+	 * @return void
 	 */
 	public function checkProgressUpdates(Server $server){
 		while($this->progressUpdates->count() !== 0){
@@ -211,9 +220,10 @@ abstract class AsyncTask extends Collectable{
 	 * All {@link AsyncTask::publishProgress} calls should result in {@link AsyncTask::onProgressUpdate} calls before
 	 * {@link AsyncTask::onCompletion} is called.
 	 *
-	 * @param Server $server
 	 * @param mixed  $progress The parameter passed to {@link AsyncTask::publishProgress}. It is serialize()'ed
 	 *                         and then unserialize()'ed, as if it has been cloned.
+	 *
+	 * @return void
 	 */
 	public function onProgressUpdate(Server $server, $progress){
 
@@ -233,6 +243,7 @@ abstract class AsyncTask extends Collectable{
 	 *
 	 * @param mixed $complexData the data to store
 	 *
+	 * @return void
 	 * @throws \BadMethodCallException if called from any thread except the main thread
 	 */
 	protected function storeLocal($complexData){
@@ -308,7 +319,6 @@ abstract class AsyncTask extends Collectable{
 
 	/**
 	 * @internal Called by the AsyncPool to destroy any leftover stored objects that this task failed to retrieve.
-	 * @return bool
 	 */
 	public function removeDanglingStoredObjects() : bool{
 		if(self::$localObjectStorage !== null and isset(self::$localObjectStorage[$this])){

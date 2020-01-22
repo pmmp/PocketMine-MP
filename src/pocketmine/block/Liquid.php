@@ -38,6 +38,7 @@ use function min;
 
 abstract class Liquid extends Transparent{
 
+	/** @var int */
 	public $adjacentSources = 0;
 
 	/** @var Vector3|null */
@@ -90,6 +91,9 @@ abstract class Liquid extends Transparent{
 
 	abstract public function getBucketEmptySound() : int;
 
+	/**
+	 * @return float
+	 */
 	public function getFluidHeightPercent(){
 		$d = $this->meta;
 		if($d >= 8){
@@ -207,8 +211,6 @@ abstract class Liquid extends Transparent{
 
 	/**
 	 * Returns how many liquid levels are lost per block flowed horizontally. Affects how far the liquid can flow.
-	 *
-	 * @return int
 	 */
 	public function getFlowDecayPerBlock() : int{
 		return 1;
@@ -430,6 +432,9 @@ abstract class Liquid extends Transparent{
 		return ($decay >= 0 && $blockDecay >= $decay) ? $decay : $blockDecay;
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function checkForHarden(){
 
 	}

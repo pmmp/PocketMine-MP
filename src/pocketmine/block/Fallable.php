@@ -48,9 +48,6 @@ abstract class Fallable extends Solid{
 		}
 	}
 
-	/**
-	 * @return null|Block
-	 */
 	public function tickFalling() : ?Block{
 		return null;
 	}

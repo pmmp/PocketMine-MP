@@ -21,9 +21,7 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\utils;
-
 
 use function count;
 
@@ -94,7 +92,6 @@ class Color{
 
 	/**
 	 * Returns the alpha (opacity) value of this colour.
-	 * @return int
 	 */
 	public function getA() : int{
 		return $this->a;
@@ -103,7 +100,7 @@ class Color{
 	/**
 	 * Sets the alpha (opacity) value of this colour, lower = more transparent
 	 *
-	 * @param int $a
+	 * @return void
 	 */
 	public function setA(int $a){
 		$this->a = $a & 0xff;
@@ -111,7 +108,6 @@ class Color{
 
 	/**
 	 * Retuns the red value of this colour.
-	 * @return int
 	 */
 	public function getR() : int{
 		return $this->r;
@@ -120,7 +116,7 @@ class Color{
 	/**
 	 * Sets the red value of this colour.
 	 *
-	 * @param int $r
+	 * @return void
 	 */
 	public function setR(int $r){
 		$this->r = $r & 0xff;
@@ -128,7 +124,6 @@ class Color{
 
 	/**
 	 * Returns the green value of this colour.
-	 * @return int
 	 */
 	public function getG() : int{
 		return $this->g;
@@ -137,7 +132,7 @@ class Color{
 	/**
 	 * Sets the green value of this colour.
 	 *
-	 * @param int $g
+	 * @return void
 	 */
 	public function setG(int $g){
 		$this->g = $g & 0xff;
@@ -145,7 +140,6 @@ class Color{
 
 	/**
 	 * Returns the blue value of this colour.
-	 * @return int
 	 */
 	public function getB() : int{
 		return $this->b;
@@ -154,7 +148,7 @@ class Color{
 	/**
 	 * Sets the blue value of this colour.
 	 *
-	 * @param int $b
+	 * @return void
 	 */
 	public function setB(int $b){
 		$this->b = $b & 0xff;
@@ -164,8 +158,6 @@ class Color{
 	 * Mixes the supplied list of colours together to produce a result colour.
 	 *
 	 * @param Color ...$colors
-	 *
-	 * @return Color
 	 */
 	public static function mix(Color ...$colors) : Color{
 		$count = count($colors);
@@ -192,8 +184,6 @@ class Color{
 	/**
 	 * Returns a Color from the supplied RGB colour code (24-bit)
 	 *
-	 * @param int $code
-	 *
 	 * @return Color
 	 */
 	public static function fromRGB(int $code){
@@ -203,8 +193,6 @@ class Color{
 	/**
 	 * Returns a Color from the supplied ARGB colour code (32-bit)
 	 *
-	 * @param int $code
-	 *
 	 * @return Color
 	 */
 	public static function fromARGB(int $code){
@@ -213,7 +201,6 @@ class Color{
 
 	/**
 	 * Returns an ARGB 32-bit colour value.
-	 * @return int
 	 */
 	public function toARGB() : int{
 		return ($this->a << 24) | ($this->r << 16) | ($this->g << 8) | $this->b;
@@ -221,7 +208,6 @@ class Color{
 
 	/**
 	 * Returns a little-endian ARGB 32-bit colour value.
-	 * @return int
 	 */
 	public function toBGRA() : int{
 		return ($this->b << 24) | ($this->g << 16) | ($this->r << 8) | $this->a;
@@ -229,7 +215,6 @@ class Color{
 
 	/**
 	 * Returns an RGBA 32-bit colour value.
-	 * @return int
 	 */
 	public function toRGBA() : int{
 		return ($this->r << 24) | ($this->g << 16) | ($this->b << 8) | $this->a;
@@ -237,12 +222,14 @@ class Color{
 
 	/**
 	 * Returns a little-endian RGBA colour value.
-	 * @return int
 	 */
 	public function toABGR() : int{
 		return ($this->a << 24) | ($this->b << 16) | ($this->g << 8) | $this->r;
 	}
 
+	/**
+	 * @return Color
+	 */
 	public static function fromABGR(int $code){
 		return new Color($code & 0xff, ($code >> 8) & 0xff, ($code >> 16) & 0xff, ($code >> 24) & 0xff);
 	}

@@ -100,14 +100,13 @@ use const STR_PAD_RIGHT;
  * Big collection of functions
  */
 class Utils{
+	/** @var string|null */
 	public static $os;
 	/** @var UUID|null */
 	private static $serverUniqueId = null;
 
 	/**
 	 * Generates an unique identifier to a callable
-	 *
-	 * @param callable $variable
 	 *
 	 * @return string
 	 */
@@ -122,9 +121,6 @@ class Utils{
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
 	 *
-	 * @param \Closure $closure
-	 *
-	 * @return string
 	 * @throws \ReflectionException
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
@@ -150,9 +146,6 @@ class Utils{
 	/**
 	 * Returns a readable identifier for the class of the given object. Sanitizes class names for anonymous classes.
 	 *
-	 * @param object $obj
-	 *
-	 * @return string
 	 * @throws \ReflectionException
 	 */
 	public static function getNiceClassName(object $obj) : string{
@@ -171,8 +164,6 @@ class Utils{
 	 * The rest of the hash will change depending on other factors.
 	 *
 	 * @param string $extra optional, additional data to identify the machine
-	 *
-	 * @return UUID
 	 */
 	public static function getMachineUniqueId(string $extra = "") : UUID{
 		if(self::$serverUniqueId !== null and $extra === ""){
@@ -253,10 +244,6 @@ class Utils{
 	 * Linux => Linux
 	 * BSD => bsd
 	 * Other => other
-	 *
-	 * @param bool $recalculate
-	 *
-	 * @return string
 	 */
 	public static function getOS(bool $recalculate = false) : string{
 		if(self::$os === null or $recalculate){
@@ -309,8 +296,6 @@ class Utils{
 	}
 
 	/**
-	 * @param bool $advanced
-	 *
 	 * @return int[]|int
 	 */
 	public static function getMemoryUsage(bool $advanced = false){
@@ -356,11 +341,6 @@ class Utils{
 		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
 	}
 
-	/**
-	 * @param bool $recalculate
-	 *
-	 * @return int
-	 */
 	public static function getCoreCount(bool $recalculate = false) : int{
 		static $processors = 0;
 
@@ -398,10 +378,6 @@ class Utils{
 
 	/**
 	 * Returns a prettified hexdump
-	 *
-	 * @param string $bin
-	 *
-	 * @return string
 	 */
 	public static function hexdump(string $bin) : string{
 		$output = "";
@@ -415,13 +391,10 @@ class Utils{
 		return $output;
 	}
 
-
 	/**
 	 * Returns a string that can be printed, replaces non-printable characters
 	 *
 	 * @param mixed $str
-	 *
-	 * @return string
 	 */
 	public static function printable($str) : string{
 		if(!is_string($str)){
@@ -447,12 +420,10 @@ class Utils{
 	 * @deprecated
 	 * @see Internet::getURL()
 	 *
-	 * @param string  $page
 	 * @param int     $timeout default 10
-	 * @param array   $extraHeaders
-	 * @param string  &$err    Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param array[] &$headers
-	 * @param int     &$httpCode
+	 * @param string  $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param array[] $headers reference parameter
+	 * @param int     $httpCode reference parameter
 	 *
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
@@ -464,13 +435,10 @@ class Utils{
 	 * @deprecated
 	 * @see Internet::postURL()
 	 *
-	 * @param string       $page
 	 * @param array|string $args
-	 * @param int          $timeout
-	 * @param array        $extraHeaders
-	 * @param string       &$err Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param array[]      &$headers
-	 * @param int          &$httpCode
+	 * @param string       $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param array[]      $headers reference parameter
+	 * @param int          $httpCode reference parameter
 	 *
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
@@ -482,7 +450,6 @@ class Utils{
 	 * @deprecated
 	 * @see Internet::simpleCurl()
 	 *
-	 * @param string        $page
 	 * @param float|int     $timeout      The maximum connect timeout and timeout in seconds, correct to ms.
 	 * @param string[]      $extraHeaders extra headers to send as a plain string array
 	 * @param array         $extraOpts    extra CURLOPT_* to set as an [opt => value] map
@@ -515,11 +482,10 @@ class Utils{
 		return $hash;
 	}
 
-
 	/**
 	 * @param string      $command Command to execute
-	 * @param string|null &$stdout Reference parameter to write stdout to
-	 * @param string|null &$stderr Reference parameter to write stderr to
+	 * @param string|null $stdout Reference parameter to write stdout to
+	 * @param string|null $stderr Reference parameter to write stderr to
 	 *
 	 * @return int process exit code
 	 */
@@ -553,6 +519,9 @@ class Utils{
 		return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
 	}
 
+	/**
+	 * @param int $pid
+	 */
 	public static function kill($pid) : void{
 		if(MainLogger::isRegisteredStatic()){
 			MainLogger::getLogger()->syncFlushBuffer();
@@ -574,7 +543,6 @@ class Utils{
 
 	/**
 	 * @param object $value
-	 * @param bool   $includeCurrent
 	 *
 	 * @return int
 	 */
@@ -590,12 +558,6 @@ class Utils{
 		return -1;
 	}
 
-	/**
-	 * @param array $trace
-	 * @param int   $maxStringLength
-	 *
-	 * @return array
-	 */
 	public static function printableTrace(array $trace, int $maxStringLength = 80) : array{
 		$messages = [];
 		for($i = 0; isset($trace[$i]); ++$i){
@@ -625,11 +587,6 @@ class Utils{
 		return $messages;
 	}
 
-	/**
-	 * @param int $skipFrames
-	 *
-	 * @return array
-	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames
 		if(function_exists("xdebug_get_function_stack")){
@@ -644,15 +601,15 @@ class Utils{
 		return array_values($trace);
 	}
 
-	/**
-	 * @param int $skipFrames
-	 *
-	 * @return array
-	 */
 	public static function printableCurrentTrace(int $skipFrames = 0) : array{
 		return self::printableTrace(self::currentTrace(++$skipFrames));
 	}
 
+	/**
+	 * @param string $path
+	 *
+	 * @return string
+	 */
 	public static function cleanPath($path){
 		$result = str_replace(["\\", ".php", "phar://"], ["/", "", ""], $path);
 
@@ -674,8 +631,6 @@ class Utils{
 	/**
 	 * Extracts one-line tags from the doc-comment
 	 *
-	 * @param string $docComment
-	 *
 	 * @return string[] an array of tagName => tag value. If the tag has no value, an empty string is used as the value.
 	 */
 	public static function parseDocComment(string $docComment) : array{
@@ -685,12 +640,6 @@ class Utils{
 	}
 
 	/**
-	 * @param int    $severity
-	 * @param string $message
-	 * @param string $file
-	 * @param int    $line
-	 *
-	 * @return bool
 	 * @throws \ErrorException
 	 */
 	public static function errorExceptionHandler(int $severity, string $message, string $file, int $line) : bool{
