@@ -2174,7 +2174,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return Entity|null an entity of type $entityType, or null if not found
 	 */
-	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false) : ?Entity{
+	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false, array $filters = []) : ?Entity{
 		assert(is_a($entityType, Entity::class, true));
 
 		$minX = ((int) floor($pos->x - $maxDistance)) >> 4;
