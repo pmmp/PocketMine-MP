@@ -299,7 +299,7 @@
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
             "support": {
-                "source": "https://github.com/pmmp/SPL/tree/0.3",
+                "source": "https://github.com/pmmp/SPL/tree/0.3.5",
                 "issues": "https://github.com/pmmp/SPL/issues"
             },
             "time": "2020-01-14T16:23:26+00:00"
