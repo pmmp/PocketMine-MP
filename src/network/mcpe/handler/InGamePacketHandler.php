@@ -260,6 +260,11 @@ class InGamePacketHandler extends PacketHandler{
 				return false;
 			}
 
+			if(count($actions) === 0){
+				//TODO: 1.13+ often sends transactions with nothing but useless crap in them, no need for the debug noise
+				return true;
+			}
+
 			$transaction = new InventoryTransaction($this->player, $actions);
 			try{
 				$transaction->execute();
