@@ -9,8 +9,8 @@ while getopts "p:t:" OPTION 2> /dev/null; do
 			PHP_BINARY="$OPTARG"
 			;;
 		t)
-		    PM_WORKERS="$OPTARG"
-		    ;;
+			PM_WORKERS="$OPTARG"
+			;;
 	esac
 done
 
