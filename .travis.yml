@@ -16,9 +16,12 @@ before_script:
  - make install
  - cd ..
  - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
- - composer install
 
 script:
+ - composer install
+ - ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
+ - ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
+ - composer install --no-dev
  - ./tests/travis.sh -t4
 
 notifications:

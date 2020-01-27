@@ -73,5 +73,9 @@
          "type": "vcs",
          "url": "https://github.com/pmmp/Snooze"
       }
-   ]
+   ],
+   "require-dev": {
+      "phpstan/phpstan": "^0.12.8",
+      "irstea/phpunit-shim": "^7.5"
+   }
 }

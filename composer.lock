@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f693f278b3bb9c1d266079fa17644dcb",
+    "content-hash": "38e3ec606dda17c95dd5456b24af547b",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -305,7 +305,95 @@
             "time": "2020-01-14T16:23:26+00:00"
         }
     ],
-    "packages-dev": [],
+    "packages-dev": [
+        {
+            "name": "irstea/phpunit-shim",
+            "version": "7.5.20",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.irstea.fr/pole-is/tools/phpunit-shim.git",
+                "reference": "81cd2d11e12165fddd2731033187dce4fbe8e013"
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-json": "*",
+                "ext-libxml": "*",
+                "ext-mbstring": "*",
+                "ext-xml": "*",
+                "php": "^7.1"
+            },
+            "replace": {
+                "phpunit/phpunit": "self.version"
+            },
+            "suggest": {
+                "ext-soap": "*",
+                "ext-xdebug": "*"
+            },
+            "bin": [
+                "phpunit"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian Bergmann",
+                    "email": "sebastian@phpunit.de",
+                    "role": "lead"
+                }
+            ],
+            "description": "Shim repository for phpunit/phpunit",
+            "homepage": "https://phpunit.de/",
+            "keywords": [
+                "phpunit",
+                "shim",
+                "testing",
+                "xunit"
+            ],
+            "time": "2020-01-09T03:20:19+00:00"
+        },
+        {
+            "name": "phpstan/phpstan",
+            "version": "0.12.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan.git",
+                "reference": "62a552602b7586d82826231f2fd4cbfe39fe0b1d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/62a552602b7586d82826231f2fd4cbfe39fe0b1d",
+                "reference": "62a552602b7586d82826231f2fd4cbfe39fe0b1d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1"
+            },
+            "bin": [
+                "phpstan",
+                "phpstan.phar"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.12-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPStan - PHP Static Analysis Tool",
+            "time": "2020-01-26T23:36:48+00:00"
+        }
+    ],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
