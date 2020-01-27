@@ -59,16 +59,3 @@ parameters:
 			message: "#^If condition is always false\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
-
-		-
-			#missing from current stubs
-			message: "#^Caught class com_exception not found\\.$#"
-			count: 2
-			path: ../../../src/network/upnp/UPnP.php
-
-		-
-			#missing from current stubs
-			message: "#^Call to method getMessage\\(\\) on an unknown class com_exception\\.$#"
-			count: 1
-			path: ../../../src/network/upnp/UPnP.php
-
