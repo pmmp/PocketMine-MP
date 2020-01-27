@@ -27,11 +27,23 @@ use pocketmine\utils\Utils;
 
 class CallbackInventoryChangeListener implements InventoryChangeListener{
 
-	/** @var \Closure|null */
+	//TODO: turn the closure signatures into type aliases when PHPStan supports them
+
+	/**
+	 * @var \Closure|null
+	 * @phpstan-var (\Closure(Inventory, int) : void)|null
+	 */
 	private $onSlotChangeCallback;
-	/** @var \Closure|null */
+	/**
+	 * @var \Closure|null
+	 * @phpstan-var (\Closure(Inventory) : void)|null
+	 */
 	private $onContentChangeCallback;
 
+	/**
+	 * @phpstan-param (\Closure(Inventory, int) : void)|null $onSlotChange
+	 * @phpstan-param (\Closure(Inventory) : void)|null $onContentChange
+	 */
 	public function __construct(?\Closure $onSlotChange, ?\Closure $onContentChange){
 		if($onSlotChange !== null){
 			Utils::validateCallableSignature(function(Inventory	$inventory, int $slot){}, $onSlotChange);
@@ -44,6 +56,9 @@ class CallbackInventoryChangeListener implements InventoryChangeListener{
 		$this->onContentChangeCallback = $onContentChange;
 	}
 
+	/**
+	 * @phpstan-param \Closure(Inventory) : void $onChange
+	 */
 	public static function onAnyChange(\Closure $onChange) : self{
 		return new self(
 			static function(Inventory $inventory, int $unused) use ($onChange) : void{
