@@ -33,6 +33,10 @@
       "daverandom/callback-validator": "dev-master",
       "adhocore/json-comment": "^0.0.7"
    },
+   "require-dev": {
+      "phpstan/phpstan": "^0.12.8",
+      "irstea/phpunit-shim": "^7.5"
+   },
    "autoload": {
       "psr-4": {
          "": ["src"]
@@ -73,9 +77,5 @@
          "type": "vcs",
          "url": "https://github.com/pmmp/Snooze"
       }
-   ],
-   "require-dev": {
-      "phpstan/phpstan": "^0.12.8",
-      "irstea/phpunit-shim": "^7.5"
-   }
+   ]
 }
