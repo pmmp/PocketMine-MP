@@ -299,17 +299,20 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "7b50fa2b212c54e2a280217c84955b23e90cf5a1"
+                "reference": "a36705550b42e7e93e2a9748a8b9fa88985780bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/7b50fa2b212c54e2a280217c84955b23e90cf5a1",
-                "reference": "7b50fa2b212c54e2a280217c84955b23e90cf5a1",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/a36705550b42e7e93e2a9748a8b9fa88985780bf",
+                "reference": "a36705550b42e7e93e2a9748a8b9fa88985780bf",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2",
                 "php-64bit": "*"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
             },
             "type": "library",
             "autoload": {
@@ -325,7 +328,7 @@
                 "source": "https://github.com/pmmp/BinaryUtils/tree/master",
                 "issues": "https://github.com/pmmp/BinaryUtils/issues"
             },
-            "time": "2019-10-21T14:41:23+00:00"
+            "time": "2020-01-28T12:17:38+00:00"
         },
         {
             "name": "pocketmine/classloader",
@@ -398,17 +401,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "45f5156bf41083523568ec08f22bd52f31dcd109"
+                "reference": "9aa4018635e7d634c535d4c7d9e032c7d905c29d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/45f5156bf41083523568ec08f22bd52f31dcd109",
-                "reference": "45f5156bf41083523568ec08f22bd52f31dcd109",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/9aa4018635e7d634c535d4c7d9e032c7d905c29d",
+                "reference": "9aa4018635e7d634c535d4c7d9e032c7d905c29d",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2.0",
                 "php-64bit": "*"
+            },
+            "require-dev": {
+                "irstea/phpunit-shim": "^7.5",
+                "phpstan/phpstan": "^0.12.8"
             },
             "type": "library",
             "autoload": {
@@ -429,7 +436,7 @@
                 "source": "https://github.com/pmmp/Math/tree/master",
                 "issues": "https://github.com/pmmp/Math/issues"
             },
-            "time": "2019-11-27T06:54:09+00:00"
+            "time": "2020-01-28T14:13:55+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -437,12 +444,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "c1d440cccb0be90f8ef519f231de7e91bb8db28f"
+                "reference": "a30398cdb3d3c431f29862f5a84578d3ed2a6c6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/c1d440cccb0be90f8ef519f231de7e91bb8db28f",
-                "reference": "c1d440cccb0be90f8ef519f231de7e91bb8db28f",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/a30398cdb3d3c431f29862f5a84578d3ed2a6c6c",
+                "reference": "a30398cdb3d3c431f29862f5a84578d3ed2a6c6c",
                 "shasum": ""
             },
             "require": {
@@ -450,6 +457,9 @@
                 "php": ">=7.2.0",
                 "php-64bit": "*",
                 "pocketmine/binaryutils": "dev-master"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
             },
             "type": "library",
             "autoload": {
@@ -470,7 +480,7 @@
                 "source": "https://github.com/pmmp/NBT/tree/master",
                 "issues": "https://github.com/pmmp/NBT/issues"
             },
-            "time": "2020-01-01T10:09:55+00:00"
+            "time": "2020-01-27T15:15:07+00:00"
         },
         {
             "name": "pocketmine/raklib",
