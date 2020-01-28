@@ -43,6 +43,10 @@
       "adhocore/json-comment": "^0.0.7",
       "particle/validator": "^2.3"
    },
+   "require-dev": {
+      "phpstan/phpstan": "^0.12.8",
+      "irstea/phpunit-shim": "^7.5"
+   },
    "autoload": {
       "psr-4": {
          "pocketmine\\": "src/"
