@@ -448,7 +448,7 @@ class NetworkSession{
 	 * Disconnects the session, destroying the associated player (if it exists).
 	 */
 	public function disconnect(string $reason, bool $notify = true) : void{
-		$this->tryDisconnect(function() use ($reason, $notify){
+		$this->tryDisconnect(function() use ($reason, $notify) : void{
 			if($this->player !== null){
 				$this->player->disconnect($reason, null, $notify);
 			}
@@ -462,7 +462,7 @@ class NetworkSession{
 	 * @throws \UnsupportedOperationException
 	 */
 	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
-		$this->tryDisconnect(function() use ($ip, $port, $reason){
+		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{
 			$this->sendDataPacket(TransferPacket::create($ip, $port), true);
 			$this->disconnect($reason, false);
 			if($this->player !== null){
@@ -476,7 +476,7 @@ class NetworkSession{
 	 * Called by the Player when it is closed (for example due to getting kicked).
 	 */
 	public function onPlayerDestroyed(string $reason, bool $notify = true) : void{
-		$this->tryDisconnect(function() use ($reason, $notify){
+		$this->tryDisconnect(function() use ($reason, $notify) : void{
 			$this->doServerDisconnect($reason, $notify);
 		}, $reason);
 	}
@@ -497,7 +497,7 @@ class NetworkSession{
 	 * example in a timeout condition or voluntary client disconnect.
 	 */
 	public function onClientDisconnect(string $reason) : void{
-		$this->tryDisconnect(function() use ($reason){
+		$this->tryDisconnect(function() use ($reason) : void{
 			if($this->player !== null){
 				$this->player->disconnect($reason, null, false);
 			}
@@ -740,7 +740,7 @@ class NetworkSession{
 		ChunkCache::getInstance($world)->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion){
+			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion) : void{
 				if(!$this->isConnected()){
 					return;
 				}
