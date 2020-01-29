@@ -18,7 +18,7 @@ assignees: ''
 
 ### OS and versions
 <!-- try the `version` command | LATEST IS NOT A VALID VERSION -->
-* PocketMine-MP:
+* Altay:
 * PHP:
 * Server OS:
 * Game version: PE/Win10 (delete as appropriate)
