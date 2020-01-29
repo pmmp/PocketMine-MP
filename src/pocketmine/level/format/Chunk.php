@@ -440,11 +440,9 @@ class Chunk{
 
 				$light = 15;
 				for(; $y >= 0; --$y){
-					if($light > 0){
-						$light -= BlockFactory::$lightFilter[$this->getBlockId($x, $y, $z)];
-						if($light <= 0){
-							break;
-						}
+					$light -= BlockFactory::$lightFilter[$this->getBlockId($x, $y, $z)];
+					if($light <= 0){
+						break;
 					}
 					$this->setBlockSkyLight($x, $y, $z, $light);
 				}
