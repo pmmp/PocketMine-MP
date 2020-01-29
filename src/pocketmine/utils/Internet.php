@@ -187,7 +187,7 @@ class Internet{
 	 * @param callable|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
 	 * @phpstan-param (callable(resource) : void)|null $onSuccess
 	 *
-	 * @return array a plain array of three [result body : string, headers : string[], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
+	 * @return array a plain array of three [result body : string, headers : string[][], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
 	 *
 	 * @throws InternetException if a cURL error occurs
 	 */
