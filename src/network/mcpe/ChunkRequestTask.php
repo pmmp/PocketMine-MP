@@ -68,7 +68,7 @@ class ChunkRequestTask extends AsyncTask{
 	}
 
 	public function onError() : void{
-		/** @var \Closure $hook */
+		/** @var \Closure|null $hook */
 		$hook = $this->fetchLocal(self::TLS_KEY_ERROR_HOOK);
 		if($hook !== null){
 			$hook();
