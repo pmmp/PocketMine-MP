@@ -104,7 +104,11 @@ abstract class Animal extends Mob implements Ageable{
 
 		$this->inLove = $this->namedtag->getInt("InLove", 0);
 	}
-
+	
+	public function canDespawn() : bool{
+		return false;
+	}
+	
 	public function saveNBT() : void{
 		parent::saveNBT();
 

@@ -34,6 +34,7 @@ use pocketmine\entity\helper\EntityMoveHelper;
 use pocketmine\entity\pathfinder\EntityNavigator;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\Player;
 use pocketmine\timings\Timings;
 use function abs;
 use function boolval;
@@ -219,6 +220,8 @@ abstract class Mob extends Living{
 		$this->moveWithHeading($this->moveStrafing, $this->moveForward);
 
 		$this->bodyHelper->onUpdate();
+		
+		$this->tryToDespawn();
 	}
 
 	/**
@@ -325,6 +328,12 @@ abstract class Mob extends Living{
 			if($f > 10){
 				$this->clearLeashed(true, true);
 			}
+		}
+	}
+	
+	protected function tryToDespawn() : void{
+		if($this->canDespawn() and $this->level->getNearestEntity($this, 128, Player::class, true) === null){
+			$this->flagForDespawn();
 		}
 	}
 

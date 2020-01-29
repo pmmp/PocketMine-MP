@@ -49,7 +49,6 @@ use function count;
 use function is_a;
 
 class AnimalSpawner{
-
 	public const MAX_MOBS = 289;
 
 	/** @var CreatureType[] */
@@ -60,24 +59,6 @@ class AnimalSpawner{
 		self::$creatureTypes[Animal::class] = new CreatureType(Animal::class, 10, Block::AIR, true);
 		self::$creatureTypes[Creature::class] = new CreatureType(Creature::class, 15, Block::AIR, false);
 		self::$creatureTypes[WaterAnimal::class] = new CreatureType(WaterAnimal::class, 5, Block::STILL_WATER, false);
-	}
-
-	/**
-	 * @param Level $level
-	 * @param int   $tick
-	 */
-	public function despawnMobs(Level $level, int $tick) : void{
-		if($tick % 20 === 0){
-			foreach($level->getEntities() as $entity){
-				if($entity instanceof Mob){
-					if(!$entity->isFlaggedForDespawn() and $entity->canDespawn()){
-						if($level->getNearestEntity($entity, 128, Player::class) === null){
-							$entity->flagForDespawn();
-						}
-					}
-				}
-			}
-		}
 	}
 
 	/**

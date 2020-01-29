@@ -938,8 +938,6 @@ class Level implements ChunkManager, Metadatable{
 			$this->mobSpawner->findChunksForSpawning($this, $this->spawnHostileMobs, $this->spawnPeacefulMobs, $eligibleChunks);
 		}
 
-		$this->mobSpawner->despawnMobs($this, $currentTick);
-
 		$this->executeQueuedLightUpdates();
 
 		if(count($this->changedBlocks) > 0){
