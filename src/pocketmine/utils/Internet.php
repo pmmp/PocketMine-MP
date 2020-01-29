@@ -140,7 +140,7 @@ class Internet{
 	 * @param string[] $headers reference parameter
 	 * @param int      $httpCode reference parameter
 	 *
-	 * @return bool|mixed false if an error occurred, mixed data if successful.
+	 * @return string|false
 	 */
 	public static function getURL(string $page, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		try{
@@ -162,7 +162,7 @@ class Internet{
 	 * @param string[]     $headers reference parameter
 	 * @param int          $httpCode reference parameter
 	 *
-	 * @return bool|mixed false if an error occurred, mixed data if successful.
+	 * @return string|false
 	 */
 	public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		try{
