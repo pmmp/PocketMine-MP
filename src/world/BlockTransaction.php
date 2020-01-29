@@ -34,7 +34,10 @@ class BlockTransaction{
 	/** @var Block[][][] */
 	private $blocks = [];
 
-	/** @var \Closure[] */
+	/**
+	 * @var \Closure[]
+	 * @phpstan-var (\Closure(ChunkManager $world, int $x, int $y, int $z) : bool)[]
+	 */
 	private $validators = [];
 
 	public function __construct(ChunkManager $world){
@@ -115,6 +118,8 @@ class BlockTransaction{
 	 * Add a validation predicate which will be used to validate every block.
 	 * The callable signature should be the same as the below dummy function.
 	 * @see BlockTransaction::dummyValidator()
+	 *
+	 * @phpstan-param \Closure(ChunkManager $world, int $x, int $y, int $z) : bool $validator
 	 */
 	public function addValidator(\Closure $validator) : void{
 		Utils::validateCallableSignature([$this, 'dummyValidator'], $validator);

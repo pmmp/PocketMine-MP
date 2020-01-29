@@ -27,7 +27,10 @@ use pocketmine\utils\Utils;
 use function array_push;
 
 class CompressBatchPromise{
-	/** @var \Closure[] */
+	/**
+	 * @var \Closure[]
+	 * @phpstan-var (\Closure(self) : void)[]
+	 */
 	private $callbacks = [];
 
 	/** @var string|null */
@@ -36,6 +39,9 @@ class CompressBatchPromise{
 	/** @var bool */
 	private $cancelled = false;
 
+	/**
+	 * @phpstan-param \Closure(self) : void ...$callbacks
+	 */
 	public function onResolve(\Closure ...$callbacks) : void{
 		$this->checkCancelled();
 		foreach($callbacks as $callback){
@@ -65,6 +71,7 @@ class CompressBatchPromise{
 
 	/**
 	 * @return \Closure[]
+	 * @phpstan-return (\Closure(self) : void)[]
 	 */
 	public function getResolveCallbacks() : array{
 		return $this->callbacks;

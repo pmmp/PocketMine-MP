@@ -499,6 +499,7 @@ class PluginManager{
 					}
 				}
 
+				/** @phpstan-var \ReflectionClass<Event> $eventClass */
 				$this->registerEvent($eventClass->getName(), $handlerClosure, $priority, $plugin, $handleCancelled);
 			}
 		}
@@ -506,6 +507,10 @@ class PluginManager{
 
 	/**
 	 * @param string   $event Class name that extends Event
+	 *
+	 * @phpstan-template TEvent of Event
+	 * @phpstan-param class-string<TEvent> $event
+	 * @phpstan-param \Closure(TEvent) : void $handler
 	 *
 	 * @throws \ReflectionException
 	 */

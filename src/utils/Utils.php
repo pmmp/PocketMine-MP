@@ -131,6 +131,9 @@ class Utils{
 		return $reflect->getName();
 	}
 
+	/**
+	 * @phpstan-return \Closure(object) : object
+	 */
 	public static function cloneCallback() : \Closure{
 		return static function(object $o){
 			return clone $o;

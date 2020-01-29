@@ -44,9 +44,15 @@ class EffectManager{
 	/** @var bool */
 	protected $onlyAmbientEffects = false;
 
-	/** @var \Closure[] */
+	/**
+	 * @var \Closure[]
+	 * @phpstan-var (\Closure(EffectInstance, bool $replacesOldEffect) : void)[]
+	 */
 	protected $effectAddHooks = [];
-	/** @var \Closure[] */
+	/**
+	 * @var \Closure[]
+	 * @phpstan-var (\Closure(EffectInstance) : void)[]
+	 */
 	protected $effectRemoveHooks = [];
 
 	public function __construct(Living $entity){
@@ -214,11 +220,17 @@ class EffectManager{
 		return !empty($this->effects);
 	}
 
+	/**
+	 * @phpstan-param \Closure(EffectInstance, bool $replacesOldEffect) : void $closure
+	 */
 	public function onEffectAdd(\Closure $closure) : void{
 		Utils::validateCallableSignature(function(EffectInstance $effect, bool $replacesOldEffect) : void{}, $closure);
 		$this->effectAddHooks[spl_object_id($closure)] = $closure;
 	}
 
+	/**
+	 * @phpstan-param \Closure(EffectInstance) : void $closure
+	 */
 	public function onEffectRemove(\Closure $closure) : void{
 		Utils::validateCallableSignature(function(EffectInstance $effect) : void{}, $closure);
 		$this->effectRemoveHooks[spl_object_id($closure)] = $closure;

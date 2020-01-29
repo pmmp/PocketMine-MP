@@ -197,6 +197,10 @@ class TimingsHandler{
 
 	/**
 	 * @return mixed the result of the given closure
+	 *
+	 * @phpstan-template TClosureReturn
+	 * @phpstan-param \Closure() : TClosureReturn $closure
+	 * @phpstan-return TClosureReturn
 	 */
 	public function time(\Closure $closure){
 		$this->startTiming();

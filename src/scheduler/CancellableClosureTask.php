@@ -45,7 +45,10 @@ class CancellableClosureTask extends Task{
 	public const CONTINUE = true;
 	public const CANCEL = false;
 
-	/** @var \Closure */
+	/**
+	 * @var \Closure
+	 * @phpstan-var \Closure(int $currentTick) : bool
+	 */
 	private $closure;
 
 	/**
@@ -53,6 +56,8 @@ class CancellableClosureTask extends Task{
 	 *
 	 * The closure should follow the signature callback(int $currentTick) : bool. The return value will be used to
 	 * decide whether to continue repeating.
+	 *
+	 * @phpstan-param \Closure(int $currentTick) : bool $closure
 	 */
 	public function __construct(\Closure $closure){
 		Utils::validateCallableSignature(function(int $currentTick) : bool{ return false; }, $closure);

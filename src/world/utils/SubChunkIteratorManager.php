@@ -45,7 +45,10 @@ class SubChunkIteratorManager{
 	/** @var int */
 	protected $currentZ;
 
-	/** @var \Closure|null */
+	/**
+	 * @var \Closure|null
+	 * @phpstan-var (\Closure() : void)|null
+	 */
 	private $onSubChunkChangeFunc = null;
 
 	public function __construct(ChunkManager $world){
@@ -83,6 +86,9 @@ class SubChunkIteratorManager{
 		return true;
 	}
 
+	/**
+	 * @phpstan-param \Closure() : void $callback
+	 */
 	public function onSubChunkChange(\Closure $callback) : void{
 		Utils::validateCallableSignature(function(){}, $callback);
 		$this->onSubChunkChangeFunc = $callback;

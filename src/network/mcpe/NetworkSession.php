@@ -430,6 +430,9 @@ class NetworkSession{
 		$this->sender->send($payload, $immediate);
 	}
 
+	/**
+	 * @phpstan-param \Closure() : void $func
+	 */
 	private function tryDisconnect(\Closure $func, string $reason) : void{
 		if($this->connected and !$this->disconnectGuard){
 			$this->disconnectGuard = true;
@@ -731,6 +734,7 @@ class NetworkSession{
 	/**
 	 * Instructs the networksession to start using the chunk at the given coordinates. This may occur asynchronously.
 	 * @param \Closure $onCompletion To be called when chunk sending has completed.
+	 * @phpstan-param \Closure(int $chunkX, int $chunkZ) : void $onCompletion
 	 */
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
 		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ){}, $onCompletion);
