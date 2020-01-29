@@ -420,10 +420,11 @@ class Utils{
 	 * @deprecated
 	 * @see Internet::getURL()
 	 *
-	 * @param int     $timeout default 10
-	 * @param string  $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param array[] $headers reference parameter
-	 * @param int     $httpCode reference parameter
+	 * @param int      $timeout default 10
+	 * @param string[] $extraHeaders
+	 * @param string   $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param string[] $headers reference parameter
+	 * @param int      $httpCode reference parameter
 	 *
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
 	 */
@@ -436,8 +437,9 @@ class Utils{
 	 * @see Internet::postURL()
 	 *
 	 * @param array|string $args
+	 * @param string[]     $extraHeaders
 	 * @param string       $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param array[]      $headers reference parameter
+	 * @param string[]     $headers reference parameter
 	 * @param int          $httpCode reference parameter
 	 *
 	 * @return bool|mixed false if an error occurred, mixed data if successful.
@@ -456,7 +458,7 @@ class Utils{
 	 * @param callable|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
 	 * @phpstan-param (callable(resource) : void)|null $onSuccess
 	 *
-	 * @return array a plain array of three [result body : string, headers : array[], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
+	 * @return array a plain array of three [result body : string, headers : string[], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
 	 *
 	 * @throws \RuntimeException if a cURL error occurs
 	 */
