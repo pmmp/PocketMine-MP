@@ -248,6 +248,7 @@ class CraftingManager{
 	 * @param Item[] $outputs
 	 *
 	 * @return CraftingRecipe[]|\Generator
+	 * @phpstan-return \Generator<int, CraftingRecipe, void, void>
 	 */
 	public function matchRecipeByOutputs(array $outputs) : \Generator{
 		//TODO: try to match special recipes before anything else (first they need to be implemented!)
