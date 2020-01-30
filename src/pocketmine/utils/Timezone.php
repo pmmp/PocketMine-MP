@@ -51,6 +51,9 @@ abstract class Timezone{
 		return ini_get('date.timezone');
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public static function init() : array{
 		$messages = [];
 		do{

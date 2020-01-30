@@ -203,7 +203,7 @@ abstract class Terminal{
 	 * Returns a string with colorized ANSI Escape codes for the current terminal
 	 * Note that this is platform-dependent and might produce different results depending on the terminal type and/or OS.
 	 *
-	 * @param string|array $string
+	 * @param string|string[] $string
 	 */
 	public static function toANSI($string) : string{
 		if(!is_array($string)){

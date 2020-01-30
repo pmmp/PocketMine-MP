@@ -68,7 +68,7 @@ class Config{
 	public const ENUM = 5; // .txt, .list, .enum
 	public const ENUMERATION = Config::ENUM;
 
-	/** @var array */
+	/** @var mixed[] */
 	private $config = [];
 
 	/** @var mixed[] */
@@ -106,10 +106,10 @@ class Config{
 	];
 
 	/**
-	 * @param string $file    Path of the file to be loaded
-	 * @param int    $type    Config type to load, -1 by default (detect)
-	 * @param array  $default Array with the default values that will be written to the file if it did not exist
-	 * @param null   $correct reference parameter, Sets correct to true if everything has been loaded correctly
+	 * @param string  $file    Path of the file to be loaded
+	 * @param int     $type    Config type to load, -1 by default (detect)
+	 * @param mixed[] $default Array with the default values that will be written to the file if it did not exist
+	 * @param null    $correct reference parameter, Sets correct to true if everything has been loaded correctly
 	 */
 	public function __construct(string $file, int $type = Config::DETECT, array $default = [], &$correct = null){
 		$this->load($file, $type, $default);
@@ -140,6 +140,9 @@ class Config{
 		return preg_replace("#^( *)(y|Y|yes|Yes|YES|n|N|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF)( *)\:#m", "$1\"$2\"$3:", $str);
 	}
 
+	/**
+	 * @param mixed[] $default
+	 */
 	public function load(string $file, int $type = Config::DETECT, array $default = []) : bool{
 		$this->correct = true;
 		$this->file = $file;
@@ -441,6 +444,8 @@ class Config{
 	}
 
 	/**
+	 * @param mixed[] $v
+	 *
 	 * @return void
 	 */
 	public function setAll(array $v){
@@ -472,11 +477,16 @@ class Config{
 		$this->changed = true;
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function getAll(bool $keys = false) : array{
 		return ($keys ? array_keys($this->config) : $this->config);
 	}
 
 	/**
+	 * @param mixed[] $defaults
+	 *
 	 * @return void
 	 */
 	public function setDefaults(array $defaults){
