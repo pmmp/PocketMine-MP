@@ -63,7 +63,7 @@ class QueryRegenerateEvent extends ServerEvent{
 	/** @var string */
 	private $ip;
 
-	/** @var array */
+	/** @var string[] */
 	private $extraData = [];
 
 	/** @var string|null */
@@ -190,11 +190,16 @@ class QueryRegenerateEvent extends ServerEvent{
 
 	/**
 	 * Returns the extra Query data in key => value form
+	 *
+	 * @return string[]
 	 */
 	public function getExtraData() : array{
 		return $this->extraData;
 	}
 
+	/**
+	 * @param string[] $extraData
+	 */
 	public function setExtraData(array $extraData) : void{
 		$this->extraData = $extraData;
 		$this->destroyCache();
