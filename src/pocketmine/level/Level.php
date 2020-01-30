@@ -1137,6 +1137,9 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function __debugInfo() : array{
 		return [];
 	}

@@ -53,6 +53,8 @@ interface LevelProvider{
 	/**
 	 * Generate the needed files in the path given
 	 *
+	 * @param mixed[] $options
+	 *
 	 * @return void
 	 */
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []);
@@ -62,6 +64,9 @@ interface LevelProvider{
 	 */
 	public function getGenerator() : string;
 
+	/**
+	 * @return mixed[]
+	 */
 	public function getGeneratorOptions() : array;
 
 	/**

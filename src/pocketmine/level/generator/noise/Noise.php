@@ -307,6 +307,9 @@ abstract class Noise{
 		return $noiseArray;
 	}
 
+	/**
+	 * @return float[][][]
+	 */
 	public function getFastNoise3D(int $xSize, int $ySize, int $zSize, int $xSamplingRate, int $ySamplingRate, int $zSamplingRate, int $x, int $y, int $z) : array{
 
 		assert($xSamplingRate !== 0, new \InvalidArgumentException("xSamplingRate cannot be 0"));

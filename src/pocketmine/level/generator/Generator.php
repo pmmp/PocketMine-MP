@@ -56,6 +56,8 @@ abstract class Generator{
 
 	/**
 	 * @throws InvalidGeneratorOptionsException
+	 *
+	 * @param mixed[] $settings
 	 */
 	abstract public function __construct(array $settings = []);
 
@@ -68,6 +70,9 @@ abstract class Generator{
 
 	abstract public function populateChunk(int $chunkX, int $chunkZ) : void;
 
+	/**
+	 * @return mixed[]
+	 */
 	abstract public function getSettings() : array;
 
 	abstract public function getName() : string;

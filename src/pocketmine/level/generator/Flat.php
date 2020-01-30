@@ -64,6 +64,8 @@ class Flat extends Generator{
 	}
 
 	/**
+	 * @param mixed[] $options
+	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public function __construct(array $options = []){

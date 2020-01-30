@@ -45,6 +45,9 @@ class GeneratorRegisterTask extends AsyncTask{
 	/** @var int */
 	public $worldHeight = Level::Y_MAX;
 
+	/**
+	 * @param mixed[] $generatorSettings
+	 */
 	public function __construct(Level $level, string $generatorClass, array $generatorSettings = []){
 		$this->generatorClass = $generatorClass;
 		$this->settings = serialize($generatorSettings);
