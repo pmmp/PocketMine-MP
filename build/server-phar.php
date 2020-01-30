@@ -41,7 +41,7 @@ function preg_quote_array(array $strings, string $delim = null) : array{
  * @param string   $pharPath
  * @param string   $basePath
  * @param string[] $includedPaths
- * @param array    $metadata
+ * @param mixed[]  $metadata
  * @param string   $stub
  * @param int      $signatureAlgo
  * @param int|null $compression
