@@ -188,7 +188,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	/**
-	 * @param array|null $trace
+	 * @param mixed[][]|null $trace
 	 *
 	 * @return void
 	 */

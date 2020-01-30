@@ -494,7 +494,8 @@ class Config{
 	}
 
 	/**
-	 * @param array $data reference parameter
+	 * @param mixed[] $default
+	 * @param mixed[] $data reference parameter
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;
