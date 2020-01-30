@@ -173,6 +173,9 @@ class CraftingManager{
 		return $result;
 	}
 
+	/**
+	 * @param Item[] $outputs
+	 */
 	private static function hashOutputs(array $outputs) : string{
 		$outputs = self::pack($outputs);
 		usort($outputs, [self::class, "sort"]);

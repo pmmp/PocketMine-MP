@@ -46,6 +46,9 @@ class ShapelessRecipe implements CraftingRecipe{
 		$this->results = array_map(function(Item $item) : Item{ return clone $item; }, $results);
 	}
 
+	/**
+	 * @return Item[]
+	 */
 	public function getResults() : array{
 		return array_map(function(Item $item) : Item{ return clone $item; }, $this->results);
 	}
