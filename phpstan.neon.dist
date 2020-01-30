@@ -33,16 +33,6 @@ parameters:
 #			comment: "not actually possible, but high cost to fix warning"
 
 		-
-			message: "#^Array \\(array\\<string\\>\\) does not accept pocketmine\\\\entity\\\\Entity\\.$#"
-			count: 2
-			path: src/pocketmine/entity/Entity.php
-
-		-
-			message: "#^Invalid array key type pocketmine\\\\entity\\\\Entity\\.$#"
-			count: 1
-			path: src/pocketmine/entity/Entity.php
-
-		-
 			message: "#^Method pocketmine\\\\event\\\\entity\\\\EntityDeathEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\Living but returns pocketmine\\\\entity\\\\Entity\\.$#"
 			count: 1
 			path: src/pocketmine/event/entity/EntityDeathEvent.php
