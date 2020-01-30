@@ -115,6 +115,8 @@ abstract class Tile extends Position{
 	}
 
 	/**
+	 * @param string[] $saveNames
+	 *
 	 * @throws \ReflectionException
 	 */
 	public static function registerTile(string $className, array $saveNames = []) : bool{
