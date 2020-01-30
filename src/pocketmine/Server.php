@@ -977,6 +977,7 @@ class Server{
 	 * Generates a new level if it does not exist
 	 *
 	 * @param string|null $generator Class name that extends pocketmine\level\generator\Generator
+	 * @param mixed[]     $options
 	 */
 	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = []) : bool{
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
@@ -1997,7 +1998,7 @@ class Server{
 	}
 
 	/**
-	 * @param array|null $trace
+	 * @param mixed[][]|null $trace
 	 *
 	 * @return void
 	 */

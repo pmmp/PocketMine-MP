@@ -119,6 +119,9 @@ abstract class Achievement{
 		return false;
 	}
 
+	/**
+	 * @param string[] $requires
+	 */
 	public static function add(string $achievementId, string $achievementName, array $requires = []) : bool{
 		if(!isset(Achievement::$list[$achievementId])){
 			Achievement::$list[$achievementId] = [
