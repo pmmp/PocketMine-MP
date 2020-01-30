@@ -41,7 +41,7 @@ class AutoUpdater{
 	protected $server;
 	/** @var string */
 	protected $endpoint;
-	/** @var array|null */
+	/* @var mixed[]|null */
 	protected $updateInfo = null;
 	/** @var VersionString|null */
 	protected $newVersion;
@@ -57,6 +57,8 @@ class AutoUpdater{
 
 	/**
 	 * Callback used at the end of the update checking task
+	 *
+	 * @param mixed[] $updateInfo
 	 *
 	 * @return void
 	 */
@@ -132,6 +134,8 @@ class AutoUpdater{
 	}
 
 	/**
+	 * @param string[] $lines
+	 *
 	 * @return void
 	 */
 	protected function printConsoleMessage(array $lines, string $logLevel = \LogLevel::INFO){
@@ -148,7 +152,7 @@ class AutoUpdater{
 	/**
 	 * Returns the last retrieved update data.
 	 *
-	 * @return array|null
+	 * @return mixed[]|null
 	 */
 	public function getUpdateInfo(){
 		return $this->updateInfo;
