@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38e3ec606dda17c95dd5456b24af547b",
+    "content-hash": "45791e0408e4df8ebd7ae825c54d400a",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -92,21 +92,24 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.1.10",
+            "version": "0.1.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "435f2ee265bce75ef1aa9563f9b60ff36d705e80"
+                "reference": "e8cb65db1b7998eebb739b124f2a989fe87366eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/435f2ee265bce75ef1aa9563f9b60ff36d705e80",
-                "reference": "435f2ee265bce75ef1aa9563f9b60ff36d705e80",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/e8cb65db1b7998eebb739b124f2a989fe87366eb",
+                "reference": "e8cb65db1b7998eebb739b124f2a989fe87366eb",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2",
                 "php-64bit": "*"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
             },
             "type": "library",
             "autoload": {
@@ -114,15 +117,12 @@
                     "pocketmine\\utils\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "LGPL-3.0"
             ],
             "description": "Classes and methods for conveniently handling binary data",
-            "support": {
-                "source": "https://github.com/pmmp/BinaryUtils/tree/0.1.10",
-                "issues": "https://github.com/pmmp/BinaryUtils/issues"
-            },
-            "time": "2019-10-21T14:40:32+00:00"
+            "time": "2020-01-28T12:09:56+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -276,17 +276,22 @@
         },
         {
             "name": "pocketmine/spl",
-            "version": "0.3.5",
+            "version": "0.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "88052c67d3df2cc2dc2d99ebeae3d7ede3fc64ab"
+                "reference": "999ce2519327cc76a788d63be5687d50e296b79e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/88052c67d3df2cc2dc2d99ebeae3d7ede3fc64ab",
-                "reference": "88052c67d3df2cc2dc2d99ebeae3d7ede3fc64ab",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/999ce2519327cc76a788d63be5687d50e296b79e",
+                "reference": "999ce2519327cc76a788d63be5687d50e296b79e",
                 "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": "~3.2.0",
+                "ext-reflection": "*",
+                "php": ">=7.2"
             },
             "type": "library",
             "autoload": {
@@ -299,10 +304,10 @@
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
             "support": {
-                "source": "https://github.com/pmmp/SPL/tree/0.3",
+                "source": "https://github.com/pmmp/SPL/tree/0.3.6",
                 "issues": "https://github.com/pmmp/SPL/issues"
             },
-            "time": "2020-01-14T16:23:26+00:00"
+            "time": "2020-01-29T20:03:42+00:00"
         }
     ],
     "packages-dev": [

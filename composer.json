@@ -25,7 +25,7 @@
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
       "pocketmine/raklib": "^0.12.5",
-      "pocketmine/spl": "^0.3.5",
+      "pocketmine/spl": "^0.3.6",
       "pocketmine/binaryutils": "^0.1.9",
       "pocketmine/nbt": "^0.2.10",
       "pocketmine/math": "^0.2.0",
