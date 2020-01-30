@@ -45,6 +45,8 @@ abstract class LevelProviderManager{
 	}
 
 	/**
+	 * @phpstan-param class-string<LevelProvider> $class
+	 *
 	 * @return void
 	 * @throws \InvalidArgumentException
 	 */
@@ -69,10 +71,11 @@ abstract class LevelProviderManager{
 	 * Returns a LevelProvider class for this path, or null
 	 *
 	 * @return string|null
+	 * @phpstan-return class-string<LevelProvider>|null
 	 */
 	public static function getProvider(string $path){
 		foreach(self::$providers as $provider){
-			/** @var $provider LevelProvider */
+			/** @phpstan-var class-string<LevelProvider> $provider */
 			if($provider::isValid($path)){
 				return $provider;
 			}
@@ -85,6 +88,7 @@ abstract class LevelProviderManager{
 	 * Returns a LevelProvider by name, or null if not found
 	 *
 	 * @return string|null
+	 * @phpstan-return class-string<LevelProvider>|null
 	 */
 	public static function getProviderByName(string $name){
 		return self::$providers[trim(strtolower($name))] ?? null;

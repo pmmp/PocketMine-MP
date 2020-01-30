@@ -68,9 +68,15 @@ abstract class Tile extends Position{
 	/** @var int */
 	public static $tileCount = 1;
 
-	/** @var string[] classes that extend Tile */
+	/**
+	 * @var string[] classes that extend Tile
+	 * @phpstan-var array<string, class-string<Tile>>
+	 */
 	private static $knownTiles = [];
-	/** @var string[][] */
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<class-string<Tile>, list<string>>
+	 */
 	private static $saveNames = [];
 
 	/** @var string */
@@ -116,6 +122,7 @@ abstract class Tile extends Position{
 
 	/**
 	 * @param string[] $saveNames
+	 * @phpstan-param class-string<Tile> $className
 	 *
 	 * @throws \ReflectionException
 	 */

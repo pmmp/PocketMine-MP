@@ -382,13 +382,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param string   $className Class that extends Entity
 	 * @param bool     $force Force registration even if the entity does not have a valid network ID
 	 * @param string[] $saveNames An array of save names which this entity might be saved under. Defaults to the short name of the class itself if empty.
+	 * @phpstan-param class-string<Entity> $className
 	 *
 	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
 	 * name of the class will be appended to the end and only used if no other save names are specified.
 	 */
 	public static function registerEntity(string $className, bool $force = false, array $saveNames = []) : bool{
-		/** @var Entity $className */
-
 		$class = new \ReflectionClass($className);
 		if(is_a($className, Entity::class, true) and !$class->isAbstract()){
 			if($className::NETWORK_ID !== -1){
