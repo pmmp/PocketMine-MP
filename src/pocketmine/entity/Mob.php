@@ -84,15 +84,6 @@ abstract class Mob extends Living{
 	}
 
 	/**
-	 * Get number of ticks, at least during which the living entity will be silent.
-	 *
-	 * @return int
-	 */
-	public function getTalkInterval() : int{
-		return 80;
-	}
-
-	/**
 	 * @param Vector3 $homePosition
 	 */
 	public function setHomePosition(Vector3 $homePosition) : void{
