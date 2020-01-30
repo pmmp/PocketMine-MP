@@ -140,6 +140,9 @@ class Item implements ItemIds, \JsonSerializable{
 		Item::$creative = [];
 	}
 
+	/**
+	 * @return Item[]
+	 */
 	public static function getCreativeItems() : array{
 		return Item::$creative;
 	}
