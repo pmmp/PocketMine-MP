@@ -769,6 +769,8 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * Returns an array of item stack properties that can be serialized to json.
+	 *
+	 * @return mixed[]
 	 */
 	final public function jsonSerialize() : array{
 		$data = [
@@ -792,6 +794,7 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
+	 * @param mixed[] $data
 	 */
 	final public static function jsonDeserialize(array $data) : Item{
 		$nbt = "";
