@@ -43,6 +43,9 @@ class BaseLang{
 
 	public const FALLBACK_LANGUAGE = "eng";
 
+	/**
+	 * @return string[]
+	 */
 	public static function getLanguageList(string $path = "") : array{
 		if($path === ""){
 			$path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
