@@ -54,11 +54,11 @@ class LoginPacket extends DataPacket{
 	/** @var string */
 	public $locale;
 
-	/** @var array (the "chain" index contains one or more JWTs) */
+	/** @var string[][] (the "chain" index contains one or more JWTs) */
 	public $chainData = [];
 	/** @var string */
 	public $clientDataJwt;
-	/** @var array decoded payload of the clientData JWT */
+	/** @var mixed[] decoded payload of the clientData JWT */
 	public $clientData = [];
 
 	/**

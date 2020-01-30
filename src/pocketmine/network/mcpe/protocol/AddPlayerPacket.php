@@ -57,7 +57,7 @@ class AddPlayerPacket extends DataPacket{
 	public $headYaw = null; //TODO
 	/** @var Item */
 	public $item;
-	/** @var array */
+	/** @var mixed[][] */
 	public $metadata = [];
 
 	//TODO: adventure settings stuff

@@ -32,7 +32,7 @@ class SetActorDataPacket extends DataPacket{
 
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var array */
+	/** @var mixed[][] */
 	public $metadata;
 
 	protected function decodePayload(){
