@@ -46,6 +46,7 @@ class BulkCurlTask extends AsyncTask{
 	 *
 	 * @param mixed[][]  $operations
 	 * @param mixed|null $complexData
+	 * @phpstan-param list<array{page: string, timeout?: float, extraHeaders?: list<string>, extraOpts?: array<int, mixed>}> $operations
 	 */
 	public function __construct(array $operations, $complexData = null){
 		$this->storeLocal($complexData);
@@ -53,6 +54,7 @@ class BulkCurlTask extends AsyncTask{
 	}
 
 	public function onRun(){
+		/** @phpstan-var list<array{page: string, timeout?: float, extraHeaders?: list<string>, extraOpts?: array<int, mixed>}> $operations */
 		$operations = unserialize($this->operations);
 		$results = [];
 		foreach($operations as $op){

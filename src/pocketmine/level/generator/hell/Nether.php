@@ -54,6 +54,7 @@ class Nether extends Generator{
 
 	/**
 	 * @param mixed[] $options
+	 * @phpstan-param array<string, mixed> $options
 	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */

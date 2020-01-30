@@ -47,6 +47,7 @@ class GeneratorRegisterTask extends AsyncTask{
 
 	/**
 	 * @param mixed[] $generatorSettings
+	 * @phpstan-param array<string, mixed> $generatorSettings
 	 */
 	public function __construct(Level $level, string $generatorClass, array $generatorSettings = []){
 		$this->generatorClass = $generatorClass;

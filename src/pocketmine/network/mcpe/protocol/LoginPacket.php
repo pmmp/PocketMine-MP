@@ -54,11 +54,17 @@ class LoginPacket extends DataPacket{
 	/** @var string */
 	public $locale;
 
-	/** @var string[][] (the "chain" index contains one or more JWTs) */
+	/**
+	 * @var string[][] (the "chain" index contains one or more JWTs)
+	 * @phpstan-var array{chain?: list<string>}
+	 */
 	public $chainData = [];
 	/** @var string */
 	public $clientDataJwt;
-	/** @var mixed[] decoded payload of the clientData JWT */
+	/**
+	 * @var mixed[] decoded payload of the clientData JWT
+	 * @phpstan-var array<string, mixed>
+	 */
 	public $clientData = [];
 
 	/**

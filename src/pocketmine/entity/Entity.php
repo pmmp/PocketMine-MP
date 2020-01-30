@@ -319,9 +319,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/** @var int */
 	public static $entityCount = 1;
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<int|string, class-string<Entity>>
+	 */
 	private static $knownEntities = [];
-	/** @var string[][] */
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<class-string<Entity>, list<string>>
+	 */
 	private static $saveNames = [];
 
 	/**
@@ -2056,6 +2062,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/**
 	 * @param Player[]|Player $player
 	 * @param mixed[][]       $data Properly formatted entity data, defaults to everything
+	 * @phpstan-param array<int, array{0: int, 1: mixed}> $data
 	 */
 	public function sendData($player, ?array $data = null) : void{
 		if(!is_array($player)){

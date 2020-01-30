@@ -102,6 +102,7 @@ abstract class BaseRail extends Flowable{
 	/**
 	 * @param int[]   $connections
 	 * @param int[][] $lookup
+	 * @phpstan-param array<int, list<int>> $lookup
 	 */
 	protected static function searchState(array $connections, array $lookup) : int{
 		$meta = array_search($connections, $lookup, true);
@@ -170,6 +171,7 @@ abstract class BaseRail extends Flowable{
 	 * @param int[] $constraints
 	 *
 	 * @return true[]
+	 * @phpstan-return array<int, true>
 	 */
 	private function getPossibleConnectionDirections(array $constraints) : array{
 		switch(count($constraints)){
@@ -197,6 +199,7 @@ abstract class BaseRail extends Flowable{
 
 	/**
 	 * @return true[]
+	 * @phpstan-return array<int, true>
 	 */
 	protected function getPossibleConnectionDirectionsOneConstraint(int $constraint) : array{
 		$opposite = Vector3::getOppositeSide($constraint & ~self::FLAG_ASCEND);

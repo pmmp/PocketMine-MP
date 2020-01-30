@@ -526,6 +526,7 @@ class Utils{
 
 	/**
 	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
 	 */
 	public static function decodeJWT(string $token) : array{
 		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
@@ -574,6 +575,7 @@ class Utils{
 
 	/**
 	 * @param mixed[][] $trace
+	 * @phpstan-param list<array<string, mixed>> $trace
 	 *
 	 * @return string[]
 	 */
@@ -608,6 +610,7 @@ class Utils{
 
 	/**
 	 * @return mixed[][]
+	 * @phpstan-return list<array<string, mixed>>
 	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames

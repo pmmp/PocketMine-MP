@@ -30,7 +30,10 @@ use function is_subclass_of;
 use function strtolower;
 
 final class GeneratorManager{
-	/** @var string[] name => classname mapping */
+	/**
+	 * @var string[] name => classname mapping
+	 * @phpstan-var array<string, class-string<Generator>>
+	 */
 	private static $list = [];
 
 	/**

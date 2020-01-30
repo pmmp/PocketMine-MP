@@ -54,6 +54,7 @@ interface LevelProvider{
 	 * Generate the needed files in the path given
 	 *
 	 * @param mixed[] $options
+	 * @phpstan-param array<string, mixed> $options
 	 *
 	 * @return void
 	 */
@@ -66,6 +67,7 @@ interface LevelProvider{
 
 	/**
 	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
 	 */
 	public function getGeneratorOptions() : array;
 

@@ -771,6 +771,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * Returns an array of item stack properties that can be serialized to json.
 	 *
 	 * @return mixed[]
+	 * @phpstan-return array{id: int, damage?: int, count?: int, nbt_b64?: string}
 	 */
 	final public function jsonSerialize() : array{
 		$data = [
@@ -795,6 +796,14 @@ class Item implements ItemIds, \JsonSerializable{
 	/**
 	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
 	 * @param mixed[] $data
+	 * @phpstan-param array{
+	 * 	id: int,
+	 * 	damage?: int,
+	 * 	count?: int,
+	 * 	nbt?: string,
+	 * 	nbt_hex?: string,
+	 * 	nbt_b64?: string
+	 * } $data
 	 */
 	final public static function jsonDeserialize(array $data) : Item{
 		$nbt = "";

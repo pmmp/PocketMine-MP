@@ -314,7 +314,10 @@ class Server{
 	/** @var string */
 	private $pluginPath;
 
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
 	private $uniquePlayers = [];
 
 	/** @var QueryHandler */
@@ -978,6 +981,7 @@ class Server{
 	 *
 	 * @param string|null $generator Class name that extends pocketmine\level\generator\Generator
 	 * @param mixed[]     $options
+	 * @phpstan-param array<string, mixed> $options
 	 */
 	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = []) : bool{
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
@@ -1999,6 +2003,7 @@ class Server{
 
 	/**
 	 * @param mixed[][]|null $trace
+	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 *
 	 * @return void
 	 */

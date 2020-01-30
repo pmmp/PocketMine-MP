@@ -45,6 +45,7 @@ class BaseLang{
 
 	/**
 	 * @return string[]
+	 * @phpstan-return array<string, string>
 	 */
 	public static function getLanguageList(string $path = "") : array{
 		if($path === ""){

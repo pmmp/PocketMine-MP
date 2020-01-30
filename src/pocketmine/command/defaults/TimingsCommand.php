@@ -128,6 +128,7 @@ class TimingsCommand extends VanillaCommand{
 
 					/**
 					 * @param string[] $data
+					 * @phpstan-param array<string, string> $data
 					 */
 					public function __construct(CommandSender $sender, string $host, string $agent, array $data){
 						parent::__construct([

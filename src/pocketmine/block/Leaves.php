@@ -70,6 +70,7 @@ class Leaves extends Transparent{
 
 	/**
 	 * @param true[] $visited reference parameter
+	 * @phpstan-param array<string, true> $visited
 	 */
 	protected function findLog(Block $pos, array &$visited, int $distance, ?int $fromSide = null) : bool{
 		$index = $pos->x . "." . $pos->y . "." . $pos->z;

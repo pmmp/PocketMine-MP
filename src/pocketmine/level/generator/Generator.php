@@ -58,6 +58,7 @@ abstract class Generator{
 	 * @throws InvalidGeneratorOptionsException
 	 *
 	 * @param mixed[] $settings
+	 * @phpstan-param array<string, mixed> $settings
 	 */
 	abstract public function __construct(array $settings = []);
 
@@ -72,6 +73,7 @@ abstract class Generator{
 
 	/**
 	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
 	 */
 	abstract public function getSettings() : array;
 

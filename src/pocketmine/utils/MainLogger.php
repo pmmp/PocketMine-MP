@@ -189,6 +189,7 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	/**
 	 * @param mixed[][]|null $trace
+	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 *
 	 * @return void
 	 */

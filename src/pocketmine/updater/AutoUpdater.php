@@ -41,7 +41,10 @@ class AutoUpdater{
 	protected $server;
 	/** @var string */
 	protected $endpoint;
-	/** @var mixed[]|null */
+	/**
+	 * @var mixed[]|null
+	 * @phpstan-var array<string, mixed>|null
+	 */
 	protected $updateInfo = null;
 	/** @var VersionString|null */
 	protected $newVersion;
@@ -59,6 +62,7 @@ class AutoUpdater{
 	 * Callback used at the end of the update checking task
 	 *
 	 * @param mixed[] $updateInfo
+	 * @phpstan-param array<string, mixed> $updateInfo
 	 *
 	 * @return void
 	 */
@@ -153,6 +157,7 @@ class AutoUpdater{
 	 * Returns the last retrieved update data.
 	 *
 	 * @return mixed[]|null
+	 * @phpstan-return array<string, mixed>|null
 	 */
 	public function getUpdateInfo(){
 		return $this->updateInfo;

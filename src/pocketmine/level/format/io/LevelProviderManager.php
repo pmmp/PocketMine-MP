@@ -31,7 +31,10 @@ use function strtolower;
 use function trim;
 
 abstract class LevelProviderManager{
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, class-string<LevelProvider>>
+	 */
 	protected static $providers = [];
 
 	public static function init() : void{

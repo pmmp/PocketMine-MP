@@ -68,10 +68,16 @@ class Config{
 	public const ENUM = 5; // .txt, .list, .enum
 	public const ENUMERATION = Config::ENUM;
 
-	/** @var mixed[] */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $config = [];
 
-	/** @var mixed[] */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $nestedCache = [];
 
 	/** @var string */
@@ -110,6 +116,7 @@ class Config{
 	 * @param int     $type    Config type to load, -1 by default (detect)
 	 * @param mixed[] $default Array with the default values that will be written to the file if it did not exist
 	 * @param null    $correct reference parameter, Sets correct to true if everything has been loaded correctly
+	 * @phpstan-param array<string, mixed> $default
 	 */
 	public function __construct(string $file, int $type = Config::DETECT, array $default = [], &$correct = null){
 		$this->load($file, $type, $default);
@@ -142,6 +149,7 @@ class Config{
 
 	/**
 	 * @param mixed[] $default
+	 * @phpstan-param array<string, mixed> $default
 	 */
 	public function load(string $file, int $type = Config::DETECT, array $default = []) : bool{
 		$this->correct = true;
@@ -445,6 +453,7 @@ class Config{
 
 	/**
 	 * @param mixed[] $v
+	 * @phpstan-param array<string, mixed> $v
 	 *
 	 * @return void
 	 */
@@ -479,6 +488,7 @@ class Config{
 
 	/**
 	 * @return mixed[]
+	 * @phpstan-return list<string>|array<string, mixed>
 	 */
 	public function getAll(bool $keys = false) : array{
 		return ($keys ? array_keys($this->config) : $this->config);
@@ -486,6 +496,7 @@ class Config{
 
 	/**
 	 * @param mixed[] $defaults
+	 * @phpstan-param array<string, mixed> $defaults
 	 *
 	 * @return void
 	 */
@@ -496,6 +507,8 @@ class Config{
 	/**
 	 * @param mixed[] $default
 	 * @param mixed[] $data reference parameter
+	 * @phpstan-param array<string, mixed> $default
+	 * @phpstan-param array<string, mixed> $data
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;
