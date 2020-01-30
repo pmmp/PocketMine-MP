@@ -150,7 +150,9 @@ class Utils{
 	 * @phpstan-return T[]
 	 */
 	public static function cloneObjectArray(array $array) : array{
-		return array_map(self::cloneCallback(), $array);
+		/** @phpstan-var \Closure(T) : T $callback */
+		$callback = self::cloneCallback();
+		return array_map($callback, $array);
 	}
 
 	/**
