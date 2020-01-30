@@ -79,13 +79,14 @@ class PluginDescription{
 	private $permissions = [];
 
 	/**
-	 * @param string|array $yamlString
+	 * @param string|mixed[] $yamlString
 	 */
 	public function __construct($yamlString){
 		$this->loadMap(!is_array($yamlString) ? yaml_parse($yamlString) : $yamlString);
 	}
 
 	/**
+	 * @param mixed[] $plugin
 	 * @throws PluginException
 	 */
 	private function loadMap(array $plugin) : void{
@@ -161,6 +162,9 @@ class PluginDescription{
 		return $this->name . " v" . $this->version;
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getCompatibleApis() : array{
 		return $this->api;
 	}
@@ -183,6 +187,9 @@ class PluginDescription{
 		return $this->prefix;
 	}
 
+	/**
+	 * @return mixed[][]
+	 */
 	public function getCommands() : array{
 		return $this->commands;
 	}
@@ -229,6 +236,9 @@ class PluginDescription{
 		}
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getDepend() : array{
 		return $this->depend;
 	}
@@ -237,6 +247,9 @@ class PluginDescription{
 		return $this->description;
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getLoadBefore() : array{
 		return $this->loadBefore;
 	}
@@ -260,6 +273,9 @@ class PluginDescription{
 		return $this->permissions;
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getSoftDepend() : array{
 		return $this->softDepend;
 	}
@@ -272,6 +288,9 @@ class PluginDescription{
 		return $this->website;
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function getMap() : array{
 		return $this->map;
 	}
