@@ -792,6 +792,8 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	/**
+	 * @param true[] $transparent
+	 *
 	 * @return Block[]
 	 */
 	public function getLineOfSight(int $maxDistance, int $maxLength = 0, array $transparent = []) : array{
@@ -831,6 +833,9 @@ abstract class Living extends Entity implements Damageable{
 		return $blocks;
 	}
 
+	/**
+	 * @param true[] $transparent
+	 */
 	public function getTargetBlock(int $maxDistance, array $transparent = []) : ?Block{
 		$line = $this->getLineOfSight($maxDistance, 1, $transparent);
 		if(count($line) > 0){

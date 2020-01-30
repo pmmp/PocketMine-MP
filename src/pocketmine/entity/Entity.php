@@ -2055,7 +2055,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/**
 	 * @param Player[]|Player $player
-	 * @param array           $data Properly formatted entity data, defaults to everything
+	 * @param mixed[][]       $data Properly formatted entity data, defaults to everything
 	 */
 	public function sendData($player, ?array $data = null) : void{
 		if(!is_array($player)){
@@ -2078,6 +2078,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 	}
 
+	/**
+	 * @param Player[]|null $players
+	 */
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
 		$pk = new ActorEventPacket();
 		$pk->entityRuntimeId = $this->id;

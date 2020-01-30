@@ -176,6 +176,8 @@ class DataPropertyManager{
 
 	/**
 	 * Returns all properties.
+	 *
+	 * @return mixed[][]
 	 */
 	public function getAll() : array{
 		return $this->properties;
@@ -183,6 +185,8 @@ class DataPropertyManager{
 
 	/**
 	 * Returns properties that have changed and need to be broadcasted.
+	 *
+	 * @return mixed[][]
 	 */
 	public function getDirty() : array{
 		return $this->dirtyProperties;
