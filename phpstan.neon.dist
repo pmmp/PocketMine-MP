@@ -21,7 +21,6 @@ parameters:
 	stubFiles:
 		- tests/phpstan/stubs/pthreads.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
-	checkMissingIterableValueType: false #TODO: pthreads Threaded base for too many things, fix this later
 	ignoreErrors:
 		-
 			message: "#^Cannot instantiate interface pocketmine\\\\level\\\\format\\\\io\\\\LevelProvider\\.$#"
