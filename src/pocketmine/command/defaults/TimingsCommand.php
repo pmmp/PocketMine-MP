@@ -126,6 +126,9 @@ class TimingsCommand extends VanillaCommand{
 					/** @var string */
 					private $host;
 
+					/**
+					 * @param string[] $data
+					 */
 					public function __construct(CommandSender $sender, string $host, string $agent, array $data){
 						parent::__construct([
 							[
