@@ -41,7 +41,7 @@ class AutoUpdater{
 	protected $server;
 	/** @var string */
 	protected $endpoint;
-	/* @var mixed[]|null */
+	/** @var mixed[]|null */
 	protected $updateInfo = null;
 	/** @var VersionString|null */
 	protected $newVersion;
