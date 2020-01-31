@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "51da75bceb2b0b627149ca8ced4da8db",
+    "content-hash": "e75353b6127ffbd846cdbad57b83a65f",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -125,6 +125,81 @@
             "time": "2020-01-28T12:09:56+00:00"
         },
         {
+            "name": "pocketmine/classloader",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/ClassLoader.git",
+                "reference": "4ccdb30e48f030bfcad04bb0a208d198ec631993"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/4ccdb30e48f030bfcad04bb0a208d198ec631993",
+                "reference": "4ccdb30e48f030bfcad04bb0a208d198ec631993",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": "~3.2.0",
+                "ext-reflection": "*",
+                "php": ">=7.2.0"
+            },
+            "conflict": {
+                "pocketmine/spl": "<0.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./src"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Ad-hoc autoloading components used by PocketMine-MP",
+            "time": "2020-01-31T14:25:52+00:00"
+        },
+        {
+            "name": "pocketmine/log",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/Log.git",
+                "reference": "62c1f0ea5a5c0ae4b308f9bd231fb11638ff866e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/Log/zipball/62c1f0ea5a5c0ae4b308f9bd231fb11638ff866e",
+                "reference": "62c1f0ea5a5c0ae4b308f9bd231fb11638ff866e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": "~3.2.0",
+                "php": ">=7.2"
+            },
+            "conflict": {
+                "pocketmine/spl": "<0.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./src"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Logging components used by PocketMine-MP and related projects",
+            "time": "2020-01-31T14:31:47+00:00"
+        },
+        {
             "name": "pocketmine/math",
             "version": "0.2.3",
             "source": {
@@ -201,16 +276,16 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.12.6",
+            "version": "0.12.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "18450e01185e6064790bda563ac672e7141c6992"
+                "reference": "01abb4e78e2ef69a83d50037d558e0b274f8245b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/18450e01185e6064790bda563ac672e7141c6992",
-                "reference": "18450e01185e6064790bda563ac672e7141c6992",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/01abb4e78e2ef69a83d50037d558e0b274f8245b",
+                "reference": "01abb4e78e2ef69a83d50037d558e0b274f8245b",
                 "shasum": ""
             },
             "require": {
@@ -221,8 +296,11 @@
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "^0.1.9",
-                "pocketmine/snooze": "^0.1.0",
-                "pocketmine/spl": "^0.3.0"
+                "pocketmine/log": "^0.1.0",
+                "pocketmine/snooze": "^0.1.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
             },
             "type": "library",
             "autoload": {
@@ -235,7 +313,7 @@
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
-            "time": "2019-12-07T13:43:34+00:00"
+            "time": "2020-01-31T15:33:05+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -273,21 +351,19 @@
         },
         {
             "name": "pocketmine/spl",
-            "version": "0.3.6",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "999ce2519327cc76a788d63be5687d50e296b79e"
+                "reference": "bd6e1d24280a63838fe4b143205fe1161ea95a23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/999ce2519327cc76a788d63be5687d50e296b79e",
-                "reference": "999ce2519327cc76a788d63be5687d50e296b79e",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/bd6e1d24280a63838fe4b143205fe1161ea95a23",
+                "reference": "bd6e1d24280a63838fe4b143205fe1161ea95a23",
                 "shasum": ""
             },
             "require": {
-                "ext-pthreads": "~3.2.0",
-                "ext-reflection": "*",
                 "php": ">=7.2"
             },
             "type": "library",
@@ -301,7 +377,7 @@
                 "LGPL-3.0"
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
-            "time": "2020-01-29T20:03:42+00:00"
+            "time": "2020-01-31T14:16:50+00:00"
         }
     ],
     "packages-dev": [
