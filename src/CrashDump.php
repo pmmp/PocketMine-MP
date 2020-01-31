@@ -127,6 +127,9 @@ class CrashDump{
 		return $this->encodedData;
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function getData() : array{
 		return $this->data;
 	}

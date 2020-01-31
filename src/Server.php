@@ -1416,7 +1416,7 @@ class Server{
 	}
 
 	/**
-	 * @param array|null $trace
+	 * @param mixed[][]|null $trace
 	 */
 	public function exceptionHandler(\Throwable $e, $trace = null) : void{
 		while(@ob_end_flush()){}
