@@ -83,7 +83,7 @@ abstract class Command{
 	}
 
 	/**
-	 * @param string[]      $args
+	 * @param string[] $args
 	 *
 	 * @return mixed
 	 * @throws CommandException
