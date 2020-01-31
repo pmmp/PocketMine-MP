@@ -114,6 +114,7 @@ final class EntityFactory{
 	 * @param string   $className Class that extends Entity
 	 * @param string[] $saveNames An array of save names which this entity might be saved under. Defaults to the short name of the class itself if empty.
 	 * @param int|null $legacyMcpeSaveId
+	 * @phpstan-param class-string<Entity> $className
 	 *
 	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
 	 * name of the class will be appended to the end and only used if no other save names are specified.

@@ -34,9 +34,15 @@ use function reset;
 
 final class TileFactory{
 
-	/** @var string[] classes that extend Tile */
+	/**
+	 * @var string[] classes that extend Tile
+	 * @phpstan-var array<string, class-string<Tile>>
+	 */
 	private static $knownTiles = [];
-	/** @var string[][] */
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<class-string<Tile>, list<string>>
+	 */
 	private static $saveNames = [];
 	/** @var string[] base class => overridden class */
 	private static $classMapping = [];
@@ -90,6 +96,7 @@ final class TileFactory{
 
 	/**
 	 * @param string[] $saveNames
+	 * @phpstan-param class-string<Tile> $className
 	 */
 	public static function register(string $className, array $saveNames = []) : void{
 		Utils::testValidInstance($className, Tile::class);

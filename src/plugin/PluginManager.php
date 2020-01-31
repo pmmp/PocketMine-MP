@@ -73,7 +73,10 @@ class PluginManager{
 	/** @var Plugin[] */
 	protected $enabledPlugins = [];
 
-	/** @var PluginLoader[] */
+	/**
+	 * @var PluginLoader[]
+	 * @phpstan-var array<class-string<PluginLoader>, PluginLoader>
+	 */
 	protected $fileAssociations = [];
 
 	/** @var string|null */
@@ -176,6 +179,7 @@ class PluginManager{
 
 	/**
 	 * @param string[]|null $newLoaders
+	 * @phpstan-param list<class-string<PluginLoader>> $newLoaders
 	 *
 	 * @return Plugin[]
 	 */

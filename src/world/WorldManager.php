@@ -235,6 +235,7 @@ class WorldManager{
 	 * Generates a new world if it does not exist
 	 *
 	 * @param string   $generator Class name that extends pocketmine\world\generator\Generator
+	 * @phpstan-param class-string<Generator> $generator
 	 *
 	 * @throws \InvalidArgumentException
 	 */

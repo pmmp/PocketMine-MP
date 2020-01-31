@@ -68,6 +68,9 @@ abstract class WorldProviderManager{
 		self::$default = $class;
 	}
 
+	/**
+	 * @phpstan-param class-string<WorldProvider> $class
+	 */
 	public static function addProvider(string $class, string $name, bool $overwrite = false) : void{
 		Utils::testValidInstance($class, WorldProvider::class);
 
@@ -105,6 +108,8 @@ abstract class WorldProviderManager{
 
 	/**
 	 * Returns a WorldProvider by name, or null if not found
+	 *
+	 * @phpstan-return class-string<WorldProvider>|null
 	 */
 	public static function getProviderByName(string $name) : ?string{
 		return self::$providers[trim(strtolower($name))] ?? null;
