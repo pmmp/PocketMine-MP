@@ -70,6 +70,8 @@ class PermissionParser{
 	}
 
 	/**
+	 * @param mixed[][] $data
+	 *
 	 * @return Permission[]
 	 */
 	public static function loadPermissions(array $data, string $default = Permission::DEFAULT_OP) : array{
@@ -82,6 +84,9 @@ class PermissionParser{
 	}
 
 	/**
+	 * @param mixed[]      $data
+	 * @param Permission[] $output reference parameter
+	 *
 	 * @throws \Exception
 	 */
 	public static function loadPermission(string $name, array $data, string $default = Permission::DEFAULT_OP, array &$output = []) : Permission{
