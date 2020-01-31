@@ -1,0 +1,6 @@
+<?php
+
+/**
+ * @implements \Traversable<array-key, mixed>
+ */
+class Threaded implements \Traversable{}
