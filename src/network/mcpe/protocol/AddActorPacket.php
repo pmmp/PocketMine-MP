@@ -165,7 +165,10 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 
 	/** @var Attribute[] */
 	public $attributes = [];
-	/** @var MetadataProperty[] */
+	/**
+	 * @var MetadataProperty[]
+	 * @phpstan-var array<int, MetadataProperty>
+	 */
 	public $metadata = [];
 	/** @var EntityLink[] */
 	public $links = [];

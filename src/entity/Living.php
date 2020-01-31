@@ -632,6 +632,7 @@ abstract class Living extends Entity{
 
 	/**
 	 * @param true[] $transparent
+	 * @phpstan-param array<int, true> $transparent
 	 *
 	 * @return Block[]
 	 */
@@ -674,6 +675,7 @@ abstract class Living extends Entity{
 
 	/**
 	 * @param true[] $transparent
+	 * @phpstan-param array<int, true> $transparent
 	 */
 	public function getTargetBlock(int $maxDistance, array $transparent = []) : ?Block{
 		$line = $this->getLineOfSight($maxDistance, 1, $transparent);

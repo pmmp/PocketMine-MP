@@ -86,7 +86,10 @@ class CrashDump{
 	private $fp;
 	/** @var int */
 	private $time;
-	/** @var mixed[] */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $data = [];
 	/** @var string */
 	private $encodedData = "";
@@ -129,6 +132,7 @@ class CrashDump{
 
 	/**
 	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
 	 */
 	public function getData() : array{
 		return $this->data;

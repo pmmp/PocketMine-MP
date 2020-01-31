@@ -58,7 +58,10 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	public $headYaw = null; //TODO
 	/** @var Item */
 	public $item;
-	/** @var MetadataProperty[] */
+	/**
+	 * @var MetadataProperty[]
+	 * @phpstan-var array<int, MetadataProperty>
+	 */
 	public $metadata = [];
 
 	//TODO: adventure settings stuff

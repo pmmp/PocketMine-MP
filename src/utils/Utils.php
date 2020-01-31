@@ -354,6 +354,7 @@ class Utils{
 
 	/**
 	 * @return mixed[] array of claims
+	 * @phpstan-return array<string, mixed>
 	 *
 	 * @throws \UnexpectedValueException
 	 */
@@ -392,6 +393,7 @@ class Utils{
 
 	/**
 	 * @param mixed[][] $trace
+	 * @phpstan-param list<array<string, mixed>> $trace
 	 *
 	 * @return string[]
 	 */
@@ -426,6 +428,7 @@ class Utils{
 
 	/**
 	 * @return mixed[][]
+	 * @phpstan-return list<array<string, mixed>>
 	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames

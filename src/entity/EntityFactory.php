@@ -65,9 +65,15 @@ final class EntityFactory{
 	private static $entityCount = 1;
 	/** @var string[] base class => currently used class for construction */
 	private static $classMapping = [];
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<int|string, class-string<Entity>>
+	 */
 	private static $knownEntities = [];
-	/** @var string[][] */
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<class-string<Entity>, list<string>>
+	 */
 	private static $saveNames = [];
 
 	private function __construct(){

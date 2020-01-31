@@ -41,7 +41,10 @@ class Flat extends Generator{
 	private $chunk;
 	/** @var Populator[] */
 	private $populators = [];
-	/** @var int[] */
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
 	private $structure;
 	/** @var int */
 	private $floorLevel;
@@ -52,6 +55,7 @@ class Flat extends Generator{
 
 	/**
 	 * @param mixed[] $options
+	 * @phpstan-param array<string, mixed> $options
 	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
@@ -87,6 +91,8 @@ class Flat extends Generator{
 
 	/**
 	 * @return int[]
+	 * @phpstan-return array<int, int>
+	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public static function parseLayers(string $layers) : array{

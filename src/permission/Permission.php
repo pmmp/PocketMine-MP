@@ -45,7 +45,10 @@ class Permission{
 	/** @var string */
 	private $description;
 
-	/** @var bool[] */
+	/**
+	 * @var bool[]
+	 * @phpstan-var array<string, bool>
+	 */
 	private $children;
 
 	/** @var string */
@@ -55,6 +58,7 @@ class Permission{
 	 * Creates a new Permission object to be attached to Permissible objects
 	 *
 	 * @param bool[] $children
+	 * @phpstan-param array<string, bool> $children
 	 */
 	public function __construct(string $name, ?string $description = null, ?string $defaultValue = null, array $children = []){
 		$this->name = $name;
@@ -71,6 +75,7 @@ class Permission{
 
 	/**
 	 * @return bool[]
+	 * @phpstan-return array<string, bool>
 	 */
 	public function &getChildren() : array{
 		return $this->children;

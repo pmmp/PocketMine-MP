@@ -71,6 +71,7 @@ class PermissionParser{
 
 	/**
 	 * @param mixed[][] $data
+	 * @phpstan-param array<string, array<string, mixed>> $data
 	 *
 	 * @return Permission[]
 	 */
@@ -86,6 +87,7 @@ class PermissionParser{
 	/**
 	 * @param mixed[]      $data
 	 * @param Permission[] $output reference parameter
+	 * @phpstan-param array<string, mixed> $data
 	 *
 	 * @throws \Exception
 	 */

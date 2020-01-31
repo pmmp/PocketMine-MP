@@ -1636,6 +1636,7 @@ abstract class Entity{
 	/**
 	 * @param Player[]|Player    $player
 	 * @param MetadataProperty[] $data Properly formatted entity data, defaults to everything
+	 * @phpstan-param array<int, MetadataProperty> $data
 	 */
 	public function sendData($player, ?array $data = null) : void{
 		if(!is_array($player)){

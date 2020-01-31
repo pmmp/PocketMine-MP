@@ -39,7 +39,10 @@ use function version_compare;
 use function yaml_parse;
 
 class PluginDescription{
-	/** @var mixed[] */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $map;
 
 	/** @var string */
@@ -50,7 +53,10 @@ class PluginDescription{
 	private $api;
 	/** @var int[] */
 	private $compatibleMcpeProtocols = [];
-	/** @var string[][] */
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<string, list<mixed>>
+	 */
 	private $extensions = [];
 	/** @var string[] */
 	private $depend = [];
@@ -60,7 +66,10 @@ class PluginDescription{
 	private $loadBefore = [];
 	/** @var string */
 	private $version;
-	/** @var mixed[][] */
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<string, array<string, mixed>>
+	 */
 	private $commands = [];
 	/** @var string */
 	private $description = "";
@@ -78,6 +87,7 @@ class PluginDescription{
 
 	/**
 	 * @param string|mixed[] $yamlString
+	 * @phpstan-param string|array<string, mixed> $yamlString
 	 */
 	public function __construct($yamlString){
 		$this->loadMap(!is_array($yamlString) ? yaml_parse($yamlString) : $yamlString);
@@ -85,6 +95,7 @@ class PluginDescription{
 
 	/**
 	 * @param mixed[] $plugin
+	 * @phpstan-param array<string, mixed> $plugin
 	 * @throws PluginException
 	 */
 	private function loadMap(array $plugin) : void{
@@ -189,6 +200,7 @@ class PluginDescription{
 
 	/**
 	 * @return mixed[][]
+	 * @phpstan-return array<string, array<string, mixed>>
 	 */
 	public function getCommands() : array{
 		return $this->commands;
@@ -196,6 +208,7 @@ class PluginDescription{
 
 	/**
 	 * @return string[][]
+	 * @phpstan-return array<string, list<string>>
 	 */
 	public function getRequiredExtensions() : array{
 		return $this->extensions;
@@ -289,6 +302,7 @@ class PluginDescription{
 
 	/**
 	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
 	 */
 	public function getMap() : array{
 		return $this->map;

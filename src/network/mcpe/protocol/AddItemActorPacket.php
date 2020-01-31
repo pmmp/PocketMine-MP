@@ -43,7 +43,10 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	public $position;
 	/** @var Vector3|null */
 	public $motion;
-	/** @var MetadataProperty[] */
+	/**
+	 * @var MetadataProperty[]
+	 * @phpstan-var array<int, MetadataProperty>
+	 */
 	public $metadata = [];
 	/** @var bool */
 	public $isFromFishing = false;

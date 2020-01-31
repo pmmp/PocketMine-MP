@@ -68,10 +68,16 @@ class Config{
 	public const ENUM = 5; // .txt, .list, .enum
 	public const ENUMERATION = Config::ENUM;
 
-	/** @var mixed[] */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $config = [];
 
-	/** @var mixed[] */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $nestedCache = [];
 
 	/** @var string */
@@ -107,6 +113,7 @@ class Config{
 	 * @param string  $file Path of the file to be loaded
 	 * @param int     $type Config type to load, -1 by default (detect)
 	 * @param mixed[] $default Array with the default values that will be written to the file if it did not exist
+	 * @phpstan-param array<string, mixed> $default
 	 */
 	public function __construct(string $file, int $type = Config::DETECT, array $default = []){
 		$this->load($file, $type, $default);
@@ -135,6 +142,7 @@ class Config{
 
 	/**
 	 * @param mixed[] $default
+	 * @phpstan-param array<string, mixed> $default
 	 *
 	 * @throws \InvalidArgumentException if config type could not be auto-detected
 	 * @throws \InvalidStateException if config type is invalid
@@ -428,6 +436,7 @@ class Config{
 
 	/**
 	 * @param mixed[] $v
+	 * @phpstan-param array<string, mixed> $v
 	 */
 	public function setAll(array $v) : void{
 		$this->config = $v;
@@ -458,6 +467,7 @@ class Config{
 
 	/**
 	 * @return mixed[]
+	 * @phpstan-return list<string>|array<string, mixed>
 	 */
 	public function getAll(bool $keys = false) : array{
 		return ($keys ? array_keys($this->config) : $this->config);
@@ -465,6 +475,7 @@ class Config{
 
 	/**
 	 * @param mixed[] $defaults
+	 * @phpstan-param array<string, mixed> $defaults
 	 */
 	public function setDefaults(array $defaults) : void{
 		$this->fillDefaults($defaults, $this->config);
@@ -473,6 +484,8 @@ class Config{
 	/**
 	 * @param mixed[] $default
 	 * @param mixed[] $data reference parameter
+	 * @phpstan-param array<string, mixed> $default
+	 * @phpstan-param array<string, mixed> $data
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;

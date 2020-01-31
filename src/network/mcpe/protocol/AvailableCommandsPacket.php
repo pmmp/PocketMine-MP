@@ -371,6 +371,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 
 	/**
 	 * @param string[] $postfixes
+	 * @phpstan-param array<int, string> $postfixes
 	 */
 	private function argTypeToString(int $argtype, array $postfixes) : string{
 		if($argtype & self::ARG_FLAG_VALID){

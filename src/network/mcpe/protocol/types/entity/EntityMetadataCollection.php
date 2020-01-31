@@ -29,9 +29,15 @@ use function get_class;
 
 class EntityMetadataCollection{
 
-	/** @var MetadataProperty[] */
+	/**
+	 * @var MetadataProperty[]
+	 * @phpstan-var array<int, MetadataProperty>
+	 */
 	private $properties = [];
-	/** @var MetadataProperty[] */
+	/**
+	 * @var MetadataProperty[]
+	 * @phpstan-var array<int, MetadataProperty>
+	 */
 	private $dirtyProperties = [];
 
 	public function __construct(){
@@ -121,6 +127,7 @@ class EntityMetadataCollection{
 	 * Returns all properties.
 	 *
 	 * @return MetadataProperty[]
+	 * @phpstan-return array<int, MetadataProperty>
 	 */
 	public function getAll() : array{
 		return $this->properties;
@@ -130,6 +137,7 @@ class EntityMetadataCollection{
 	 * Returns properties that have changed and need to be broadcasted.
 	 *
 	 * @return MetadataProperty[]
+	 * @phpstan-return array<int, MetadataProperty>
 	 */
 	public function getDirty() : array{
 		return $this->dirtyProperties;

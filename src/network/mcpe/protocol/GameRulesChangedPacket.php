@@ -30,7 +30,10 @@ use pocketmine\network\mcpe\handler\PacketHandler;
 class GameRulesChangedPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::GAME_RULES_CHANGED_PACKET;
 
-	/** @var mixed[][] */
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<string, array{0: int, 1: bool|int|float}>
+	 */
 	public $gameRules = [];
 
 	protected function decodePayload() : void{

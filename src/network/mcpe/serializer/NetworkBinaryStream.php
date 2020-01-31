@@ -297,6 +297,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Decodes entity metadata from the stream.
 	 *
 	 * @return MetadataProperty[]
+	 * @phpstan-return array<int, MetadataProperty>
 	 *
 	 * @throws BadPacketException
 	 * @throws BinaryDataException
@@ -334,6 +335,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Writes entity metadata to the packet buffer.
 	 *
 	 * @param MetadataProperty[] $metadata
+	 * @phpstan-param array<int, MetadataProperty> $metadata
 	 */
 	public function putEntityMetadata(array $metadata) : void{
 		$this->putUnsignedVarInt(count($metadata));
@@ -530,6 +532,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * TODO: implement this properly
 	 *
 	 * @return mixed[][], members are in the structure [name => [type, value]]
+	 * @phpstan-return array<string, array{0: int, 1: bool|int|float}>
 	 *
 	 * @throws BadPacketException
 	 * @throws BinaryDataException
@@ -566,6 +569,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * TODO: implement this properly
 	 *
 	 * @param mixed[][] $rules
+	 * @phpstan-param array<string, array{0: int, 1: bool|int|float}> $rules
 	 */
 	public function putGameRules(array $rules) : void{
 		$this->putUnsignedVarInt(count($rules));

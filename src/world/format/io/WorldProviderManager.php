@@ -32,7 +32,10 @@ use function strtolower;
 use function trim;
 
 abstract class WorldProviderManager{
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, class-string<WorldProvider>>
+	 */
 	protected static $providers = [];
 
 	/** @var string|WorldProvider */

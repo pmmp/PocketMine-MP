@@ -69,6 +69,7 @@ class Leaves extends Transparent{
 
 	/**
 	 * @param true[] $visited reference parameter
+	 * @phpstan-param array<string, true> $visited
 	 */
 	protected function findLog(Vector3 $pos, array &$visited = [], int $distance = 0) : bool{
 		$index = World::blockHash($pos->x, $pos->y, $pos->z);

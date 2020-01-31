@@ -45,12 +45,14 @@ class BulkCurlTask extends AsyncTask{
 	 * {@link Utils::simpleCurl}.
 	 *
 	 * @param mixed[][]  $operations
+	 * @phpstan-param list<array{page: string, timeout?: float, extraHeaders?: list<string>, extraOpts?: array<int, mixed>}> $operations
 	 */
 	public function __construct(array $operations){
 		$this->operations = serialize($operations);
 	}
 
 	public function onRun() : void{
+		/** @phpstan-var list<array{page: string, timeout?: float, extraHeaders?: list<string>, extraOpts?: array<int, mixed>}> $operations */
 		$operations = unserialize($this->operations);
 		$results = [];
 		foreach($operations as $op){

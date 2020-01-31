@@ -45,6 +45,7 @@ class Language{
 
 	/**
 	 * @return string[]
+	 * @phpstan-return array<string, string>
 	 *
 	 * @throws LanguageNotFoundException
 	 */

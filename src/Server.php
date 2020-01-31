@@ -267,7 +267,10 @@ class Server{
 	/** @var string */
 	private $pluginPath;
 
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
 	private $uniquePlayers = [];
 
 	/** @var QueryRegenerateEvent */
@@ -1417,6 +1420,7 @@ class Server{
 
 	/**
 	 * @param mixed[][]|null $trace
+	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 */
 	public function exceptionHandler(\Throwable $e, $trace = null) : void{
 		while(@ob_end_flush()){}
