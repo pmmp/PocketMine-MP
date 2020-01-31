@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\mcpe\protocol\types\MapDecoration;
 use pocketmine\network\mcpe\protocol\types\MapTrackedObject;
 use pocketmine\utils\Color;
 use function assert;
@@ -58,7 +59,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 
 	/** @var MapTrackedObject[] */
 	public $trackedEntities = [];
-	/** @var array */
+	/** @var MapDecoration[] */
 	public $decorations = [];
 
 	/** @var int */
@@ -104,13 +105,13 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 			}
 
 			for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-				$this->decorations[$i]["img"] = $this->getByte();
-				$this->decorations[$i]["rot"] = $this->getByte();
-				$this->decorations[$i]["xOffset"] = $this->getByte();
-				$this->decorations[$i]["yOffset"] = $this->getByte();
-				$this->decorations[$i]["label"] = $this->getString();
-
-				$this->decorations[$i]["color"] = Color::fromRGBA(Binary::flipIntEndianness($this->getUnsignedVarInt()));
+				$icon = $this->getByte();
+				$rotation = $this->getByte();
+				$xOffset = $this->getByte();
+				$yOffset = $this->getByte();
+				$label = $this->getString();
+				$color = Color::fromRGBA(Binary::flipIntEndianness($this->getUnsignedVarInt()));
+				$this->decorations[] = new MapDecoration($icon, $rotation, $xOffset, $yOffset, $label, $color);
 			}
 		}
 
@@ -177,14 +178,12 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 
 			$this->putUnsignedVarInt($decorationCount);
 			foreach($this->decorations as $decoration){
-				$this->putByte($decoration["img"]);
-				$this->putByte($decoration["rot"]);
-				$this->putByte($decoration["xOffset"]);
-				$this->putByte($decoration["yOffset"]);
-				$this->putString($decoration["label"]);
-
-				assert($decoration["color"] instanceof Color);
-				$this->putUnsignedVarInt(Binary::flipIntEndianness($decoration["color"]->toRGBA()));
+				$this->putByte($decoration->getIcon());
+				$this->putByte($decoration->getRotation());
+				$this->putByte($decoration->getXOffset());
+				$this->putByte($decoration->getYOffset());
+				$this->putString($decoration->getLabel());
+				$this->putUnsignedVarInt(Binary::flipIntEndianness($decoration->getColor()->toRGBA()));
 			}
 		}
 
