@@ -1687,6 +1687,9 @@ abstract class Entity{
 		$this->networkProperties->setGenericFlag(EntityMetadataFlags::WALLCLIMBING, $this->canClimbWalls);
 	}
 
+	/**
+	 * @param Player[]|null $players
+	 */
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
 		$this->server->broadcastPackets($players ?? $this->getViewers(), [ActorEventPacket::create($this->id, $eventId, $eventData ?? 0)]);
 	}
