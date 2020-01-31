@@ -52,6 +52,9 @@ class ShapelessRecipe implements CraftingRecipe{
 		$this->results = Utils::cloneObjectArray($results);
 	}
 
+	/**
+	 * @return Item[]
+	 */
 	public function getResults() : array{
 		return Utils::cloneObjectArray($this->results);
 	}
