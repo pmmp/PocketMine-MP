@@ -38,7 +38,10 @@ abstract class WorldProviderManager{
 	 */
 	protected static $providers = [];
 
-	/** @var string|WorldProvider */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<WritableWorldProvider>
+	 */
 	private static $default = LevelDB::class;
 
 	public static function init() : void{
@@ -50,6 +53,8 @@ abstract class WorldProviderManager{
 
 	/**
 	 * Returns the default format used to generate new worlds.
+	 *
+	 * @phpstan-return class-string<WritableWorldProvider>
 	 */
 	public static function getDefault() : string{
 		return self::$default;
@@ -59,6 +64,7 @@ abstract class WorldProviderManager{
 	 * Sets the default format.
 	 *
 	 * @param string $class Class implementing WritableWorldProvider
+	 * @phpstan-param class-string<WritableWorldProvider> $class
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -86,12 +92,12 @@ abstract class WorldProviderManager{
 	/**
 	 * Returns a WorldProvider class for this path, or null
 	 *
-	 * @return string[]|WorldProvider[]
+	 * @return string[]
+	 * @phpstan-return array<string, class-string<WorldProvider>>
 	 */
 	public static function getMatchingProviders(string $path) : array{
 		$result = [];
 		foreach(self::$providers as $alias => $provider){
-			/** @var WorldProvider|string $provider */
 			if($provider::isValid($path)){
 				$result[$alias] = $provider;
 			}
@@ -100,7 +106,8 @@ abstract class WorldProviderManager{
 	}
 
 	/**
-	 * @return string[]|WorldProvider[]
+	 * @return string[]
+	 * @phpstan-return array<string, class-string<WorldProvider>>
 	 */
 	public static function getAvailableProviders() : array{
 		return self::$providers;

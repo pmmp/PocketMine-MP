@@ -23,6 +23,12 @@ parameters:
 			path: ../../../src/MemoryManager.php
 
 		-
+			#is_a() type narrowing isn't respected yet
+			message: "#^Parameter \\#1 \\$class of static method pocketmine\\\\world\\\\format\\\\io\\\\WorldProviderManager\\:\\:setDefault\\(\\) expects class\\-string\\<pocketmine\\\\world\\\\format\\\\io\\\\WritableWorldProvider\\>, class\\-string\\<pocketmine\\\\world\\\\format\\\\io\\\\WorldProvider\\> given\\.$#"
+			count: 1
+			path: ../../../src/Server.php
+
+		-
 			message: "#^Comparison operation \"\\>\\=\" between 0 and 2 is always false\\.$#"
 			count: 1
 			path: ../../../src/block/Liquid.php

@@ -63,7 +63,10 @@ final class EntityFactory{
 
 	/** @var int */
 	private static $entityCount = 1;
-	/** @var string[] base class => currently used class for construction */
+	/**
+	 * @var string[] base class => currently used class for construction
+	 * @phpstan-var array<class-string<Entity>, class-string<Entity>>
+	 */
 	private static $classMapping = [];
 	/**
 	 * @var string[]
@@ -148,6 +151,10 @@ final class EntityFactory{
 	 * @param string $baseClass Already-registered entity class to override
 	 * @param string $newClass Class which extends the base class
 	 *
+	 * TODO: use an explicit template for param1
+	 * @phpstan-param class-string<Entity> $baseClass
+	 * @phpstan-param class-string<Entity> $newClass
+	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public static function override(string $baseClass, string $newClass) : void{
@@ -163,6 +170,7 @@ final class EntityFactory{
 	 * Returns an array of all registered entity classpaths.
 	 *
 	 * @return string[]
+	 * @return class-string<Entity>[]
 	 */
 	public static function getKnownTypes() : array{
 		return array_keys(self::$classMapping);
@@ -181,9 +189,14 @@ final class EntityFactory{
 	 *
 	 * TODO: make this NBT-independent
 	 *
+	 * @phpstan-template TEntity of Entity
+	 *
 	 * @param mixed       ...$args
+	 * @phpstan-param class-string<TEntity> $baseClass
 	 *
 	 * @return Entity instanceof $baseClass
+	 * @phpstan-return TEntity
+	 *
 	 * @throws \InvalidArgumentException if the class doesn't exist or is not registered
 	 */
 	public static function create(string $baseClass, World $world, CompoundTag $nbt, ...$args) : Entity{
@@ -192,6 +205,7 @@ final class EntityFactory{
 			assert(is_a($class, $baseClass, true));
 			/**
 			 * @var Entity $entity
+			 * @phpstan-var TEntity $entity
 			 * @see Entity::__construct()
 			 */
 			$entity = new $class($world, $nbt, ...$args);
@@ -230,6 +244,9 @@ final class EntityFactory{
 		return $entity;
 	}
 
+	/**
+	 * @phpstan-param class-string<Entity> $class
+	 */
 	public static function getSaveId(string $class) : string{
 		if(isset(self::$saveNames[$class])){
 			return reset(self::$saveNames[$class]);
