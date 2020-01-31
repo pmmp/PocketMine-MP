@@ -529,7 +529,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Reads gamerules
 	 * TODO: implement this properly
 	 *
-	 * @return array, members are in the structure [name => [type, value]]
+	 * @return mixed[][], members are in the structure [name => [type, value]]
 	 *
 	 * @throws BadPacketException
 	 * @throws BinaryDataException
@@ -564,6 +564,8 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Writes a gamerule array, members should be in the structure [name => [type, value]]
 	 * TODO: implement this properly
+	 *
+	 * @param mixed[][] $rules
 	 */
 	public function putGameRules(array $rules) : void{
 		$this->putUnsignedVarInt(count($rules));

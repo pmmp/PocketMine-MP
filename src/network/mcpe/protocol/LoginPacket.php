@@ -87,7 +87,7 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 	public $extraData = null;
 	/** @var string */
 	public $clientDataJwt;
-	/** @var array decoded payload of the clientData JWT */
+	/** @var mixed[] decoded payload of the clientData JWT */
 	public $clientData = [];
 
 	/**

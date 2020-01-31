@@ -56,6 +56,9 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
+	/**
+	 * @param int[] $usedBlobHashes
+	 */
 	public static function withCache(int $chunkX, int $chunkZ, int $subChunkCount, array $usedBlobHashes, string $extraPayload) : self{
 		(static function(int ...$hashes){})(...$usedBlobHashes);
 		$result = new self;

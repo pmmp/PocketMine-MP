@@ -103,7 +103,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public $commandsEnabled;
 	/** @var bool */
 	public $isTexturePacksRequired = true;
-	/** @var array */
+	/** @var mixed[][] */
 	public $gameRules = [ //TODO: implement this
 		"naturalregeneration" => [1, false] //Hack for client side regeneration
 	];
@@ -153,7 +153,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 
 	/** @var ListTag|null */
 	public $blockTable = null;
-	/** @var array|null string (name) => int16 (legacyID) */
+	/** @var int[]|null string (name) => int16 (legacyID) */
 	public $itemTable = null;
 
 	protected function decodePayload() : void{
@@ -300,6 +300,9 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$this->putString($this->multiplayerCorrelationId);
 	}
 
+	/**
+	 * @param int[] $table
+	 */
 	private static function serializeItemTable(array $table) : string{
 		$stream = new NetworkBinaryStream();
 		$stream->putUnsignedVarInt(count($table));
