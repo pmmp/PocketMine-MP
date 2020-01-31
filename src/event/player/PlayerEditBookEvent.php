@@ -46,6 +46,9 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	/** @var int[] */
 	private $modifiedPages;
 
+	/**
+	 * @param int[] $modifiedPages
+	 */
 	public function __construct(Player $player, WritableBookBase $oldBook, WritableBookBase $newBook, int $action, array $modifiedPages){
 		$this->player = $player;
 		$this->oldBook = $oldBook;
