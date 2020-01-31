@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "45791e0408e4df8ebd7ae825c54d400a",
+    "content-hash": "51da75bceb2b0b627149ca8ced4da8db",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -230,14 +230,11 @@
                     "raklib\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
-            "support": {
-                "source": "https://github.com/pmmp/RakLib/tree/0.12.6",
-                "issues": "https://github.com/pmmp/RakLib/issues"
-            },
             "time": "2019-12-07T13:43:34+00:00"
         },
         {
@@ -299,14 +296,11 @@
                     "./"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "LGPL-3.0"
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
-            "support": {
-                "source": "https://github.com/pmmp/SPL/tree/0.3.6",
-                "issues": "https://github.com/pmmp/SPL/issues"
-            },
             "time": "2020-01-29T20:03:42+00:00"
         }
     ],
