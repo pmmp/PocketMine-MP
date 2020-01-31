@@ -68,7 +68,7 @@ class Config{
 	public const ENUM = 5; // .txt, .list, .enum
 	public const ENUMERATION = Config::ENUM;
 
-	/** @var array */
+	/** @var mixed[] */
 	private $config = [];
 
 	/** @var mixed[] */
@@ -104,9 +104,9 @@ class Config{
 	];
 
 	/**
-	 * @param string $file Path of the file to be loaded
-	 * @param int    $type Config type to load, -1 by default (detect)
-	 * @param array  $default Array with the default values that will be written to the file if it did not exist
+	 * @param string  $file Path of the file to be loaded
+	 * @param int     $type Config type to load, -1 by default (detect)
+	 * @param mixed[] $default Array with the default values that will be written to the file if it did not exist
 	 */
 	public function __construct(string $file, int $type = Config::DETECT, array $default = []){
 		$this->load($file, $type, $default);
@@ -134,6 +134,8 @@ class Config{
 	}
 
 	/**
+	 * @param mixed[] $default
+	 *
 	 * @throws \InvalidArgumentException if config type could not be auto-detected
 	 * @throws \InvalidStateException if config type is invalid
 	 */
@@ -424,6 +426,9 @@ class Config{
 		}
 	}
 
+	/**
+	 * @param mixed[] $v
+	 */
 	public function setAll(array $v) : void{
 		$this->config = $v;
 		$this->changed = true;
@@ -451,10 +456,16 @@ class Config{
 		$this->changed = true;
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function getAll(bool $keys = false) : array{
 		return ($keys ? array_keys($this->config) : $this->config);
 	}
 
+	/**
+	 * @param mixed[] $defaults
+	 */
 	public function setDefaults(array $defaults) : void{
 		$this->fillDefaults($defaults, $this->config);
 	}

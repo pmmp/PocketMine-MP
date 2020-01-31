@@ -353,7 +353,7 @@ class Utils{
 	}
 
 	/**
-	 * @return array of claims
+	 * @return mixed[] array of claims
 	 *
 	 * @throws \UnexpectedValueException
 	 */
@@ -390,6 +390,11 @@ class Utils{
 		return -1;
 	}
 
+	/**
+	 * @param mixed[][] $trace
+	 *
+	 * @return string[]
+	 */
 	public static function printableTrace(array $trace, int $maxStringLength = 80) : array{
 		$messages = [];
 		for($i = 0; isset($trace[$i]); ++$i){
@@ -419,6 +424,9 @@ class Utils{
 		return $messages;
 	}
 
+	/**
+	 * @return mixed[][]
+	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames
 		if(function_exists("xdebug_get_function_stack")){
@@ -433,6 +441,9 @@ class Utils{
 		return array_values($trace);
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public static function printableCurrentTrace(int $skipFrames = 0) : array{
 		return self::printableTrace(self::currentTrace(++$skipFrames));
 	}
