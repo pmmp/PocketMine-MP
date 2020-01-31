@@ -24,7 +24,7 @@ If you use a custom binary, you'll need to replace `composer` usages in this gui
 
 ## Optimizing for release builds
 1. Add the flags `--no-dev --classmap-authoritative` to your `composer install` command. This will reduce build size and improve autoloading speed.
-2. Preprocess the source code by running `build/preprocessor/PreProcessor.php`. Usage instructions are provided in `build/php/README.md`.
+2. Preprocess the source code by running `build/preprocessor/PreProcessor.php`. Usage instructions are provided in `build/preprocessor/README.md`.
 
 ### Note
 Preprocessor requires that the `cpp` (c preprocessor) is available in your PATH.
