@@ -949,6 +949,9 @@ class World implements ChunkManager{
 		}
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function __debugInfo() : array{
 		return [];
 	}

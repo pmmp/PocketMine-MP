@@ -28,6 +28,8 @@ use pocketmine\world\format\Chunk;
 interface WritableWorldProvider extends WorldProvider{
 	/**
 	 * Generate the needed files in the path given
+	 *
+	 * @param mixed[] $options
 	 */
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void;
 

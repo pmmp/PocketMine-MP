@@ -51,6 +51,8 @@ class Flat extends Generator{
 	private $preset;
 
 	/**
+	 * @param mixed[] $options
+	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public function __construct(ChunkManager $world, int $seed, array $options = []){

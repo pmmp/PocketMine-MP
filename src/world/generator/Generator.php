@@ -60,6 +60,8 @@ abstract class Generator{
 
 	/**
 	 * @throws InvalidGeneratorOptionsException
+	 *
+	 * @param mixed[] $options
 	 */
 	public function __construct(ChunkManager $world, int $seed, array $options = []){
 		$this->world = $world;
