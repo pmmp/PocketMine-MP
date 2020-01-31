@@ -43,6 +43,9 @@ class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";
 	public const TAG_TEXT_LINE = "Text%d"; //sprintf()able
 
+	/**
+	 * @return string[]
+	 */
 	public static function fixTextBlob(string $blob) : array{
 		return array_slice(array_pad(explode("\n", $blob), 4, ""), 0, 4);
 	}
