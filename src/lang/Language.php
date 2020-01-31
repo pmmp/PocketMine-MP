@@ -44,6 +44,8 @@ class Language{
 	public const FALLBACK_LANGUAGE = "eng";
 
 	/**
+	 * @return string[]
+	 *
 	 * @throws LanguageNotFoundException
 	 */
 	public static function getLanguageList(string $path = "") : array{
