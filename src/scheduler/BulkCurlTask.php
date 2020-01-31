@@ -43,6 +43,8 @@ class BulkCurlTask extends AsyncTask{
 	 * $operations accepts an array of arrays. Each member array must contain a string mapped to "page", and optionally,
 	 * "timeout", "extraHeaders" and "extraOpts". Documentation of these options are same as those in
 	 * {@link Utils::simpleCurl}.
+	 *
+	 * @param mixed[][]  $operations
 	 */
 	public function __construct(array $operations){
 		$this->operations = serialize($operations);
