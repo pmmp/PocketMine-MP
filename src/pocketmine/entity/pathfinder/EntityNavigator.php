@@ -264,7 +264,7 @@ class EntityNavigator{
 	 * @param array     $cache
 	 * @param int       $startY
 	 *
-	 * @return Vector2[]
+	 * @return PathPoint[]
 	 */
 	public function getNeighbors(PathPoint $tile, array &$cache, int $startY) : array{
 		$block = $this->mob->level->getBlock(new Vector3($tile->x, $startY, $tile->y));
