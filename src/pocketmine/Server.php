@@ -1588,7 +1588,7 @@ class Server{
 
 	/**
 	 * @param TextContainer|string $message
-	 * @param CommandSender[]      $recipients
+	 * @param CommandSender[]|null $recipients
 	 */
 	public function broadcastMessage($message, array $recipients = null) : int{
 		if(!is_array($recipients)){
@@ -1603,7 +1603,7 @@ class Server{
 	}
 
 	/**
-	 * @param Player[] $recipients
+	 * @param Player[]|null $recipients
 	 */
 	public function broadcastTip(string $tip, array $recipients = null) : int{
 		if(!is_array($recipients)){
@@ -1624,7 +1624,7 @@ class Server{
 	}
 
 	/**
-	 * @param Player[] $recipients
+	 * @param Player[]|null $recipients
 	 */
 	public function broadcastPopup(string $popup, array $recipients = null) : int{
 		if(!is_array($recipients)){
