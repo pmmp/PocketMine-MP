@@ -108,6 +108,9 @@ class SubChunk implements SubChunkInterface{
 		$this->blockLight = $data;
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function __debugInfo() : array{
 		return [];
 	}

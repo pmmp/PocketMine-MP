@@ -423,6 +423,9 @@ class World implements ChunkManager{
 		$this->closed = true;
 	}
 
+	/**
+	 * @param Player[]|null $players
+	 */
 	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null) : void{
 		$pk = $sound->encode($pos);
 		if(!is_array($pk)){
@@ -439,6 +442,9 @@ class World implements ChunkManager{
 		}
 	}
 
+	/**
+	 * @param Player[]|null $players
+	 */
 	public function addParticle(Vector3 $pos, Particle $particle, ?array $players = null) : void{
 		$pk = $particle->encode($pos);
 		if(!is_array($pk)){

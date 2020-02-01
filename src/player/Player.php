@@ -837,6 +837,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 	}
 
+	/**
+	 * @return \Generator<int, int, void, void>
+	 */
 	protected function selectChunks() : \Generator{
 		$radius = $this->server->getAllowedViewDistance($this->viewDistance);
 		$radiusSquared = $radius ** 2;
@@ -2007,6 +2010,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		parent::destroyCycles();
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function __debugInfo() : array{
 		return [];
 	}

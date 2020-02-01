@@ -90,6 +90,9 @@ final class GameMode{
 	/** @var string[] */
 	private $aliases;
 
+	/**
+	 * @param string[] $aliases
+	 */
 	private function __construct(string $enumName, int $magicNumber, string $englishName, string $translationKey, array $aliases = []){
 		$this->Enum___construct($enumName);
 		$this->magicNumber = $magicNumber;

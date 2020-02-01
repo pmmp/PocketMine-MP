@@ -91,6 +91,9 @@ class UseItemOnEntityTransactionData extends TransactionData{
 		$stream->putVector3($this->clickPos);
 	}
 
+	/**
+	 * @param NetworkInventoryAction[] $actions
+	 */
 	public static function new(array $actions, int $entityRuntimeId, int $actionType, int $hotbarSlot, Item $itemInHand, Vector3 $playerPos, Vector3 $clickPos) : self{
 		$result = new self;
 		$result->actions = $actions;

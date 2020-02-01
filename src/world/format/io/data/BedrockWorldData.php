@@ -53,6 +53,11 @@ class BedrockWorldData extends BaseNbtWorldData{
 	public const GENERATOR_INFINITE = 1;
 	public const GENERATOR_FLAT = 2;
 
+	/**
+	 * @param mixed[] $options
+	 * @phpstan-param class-string<Generator> $generator
+	 * @phpstan-param array<string, mixed>    $options
+	 */
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
 		Utils::testValidInstance($generator, Generator::class);
 		switch($generator){

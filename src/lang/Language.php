@@ -109,6 +109,10 @@ class Language{
 		return $this->langName;
 	}
 
+	/**
+	 * @return string[]
+	 * @phpstan-return array<string, string>
+	 */
 	protected static function loadLang(string $path, string $languageCode) : array{
 		$file = $path . $languageCode . ".ini";
 		if(file_exists($file)){

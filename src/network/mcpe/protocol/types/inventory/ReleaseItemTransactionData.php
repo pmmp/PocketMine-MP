@@ -75,6 +75,9 @@ class ReleaseItemTransactionData extends TransactionData{
 		$stream->putVector3($this->headPos);
 	}
 
+	/**
+	 * @param NetworkInventoryAction[] $actions
+	 */
 	public static function new(array $actions, int $actionType, int $hotbarSlot, Item $itemInHand, Vector3 $headPos) : self{
 		$result = new self;
 		$result->actions = $actions;

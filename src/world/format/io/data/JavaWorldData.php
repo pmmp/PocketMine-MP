@@ -41,6 +41,11 @@ use function microtime;
 
 class JavaWorldData extends BaseNbtWorldData{
 
+	/**
+	 * @param mixed[] $options
+	 * @phpstan-param class-string<Generator> $generator
+	 * @phpstan-param array<string, mixed>    $options
+	 */
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = [], int $version = 19133) : void{
 		Utils::testValidInstance($generator, Generator::class);
 		//TODO, add extra details

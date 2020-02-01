@@ -122,6 +122,9 @@ class PermissionParser{
 
 	/**
 	 * @param Permission[] $permissions
+	 *
+	 * @return mixed[]
+	 * @phpstan-return array<string, array<string, mixed>>
 	 */
 	public static function emitPermissions(array $permissions) : array{
 		$result = [];
@@ -132,6 +135,10 @@ class PermissionParser{
 		return $result;
 	}
 
+	/**
+	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
+	 */
 	private static function emitPermission(Permission $permission) : array{
 		$result = [
 			"description" => $permission->getDescription(),

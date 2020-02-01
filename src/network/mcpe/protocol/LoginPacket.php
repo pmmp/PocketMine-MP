@@ -83,7 +83,10 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 
 	/** @var string[] array of encoded JWT */
 	public $chainDataJwt = [];
-	/** @var array|null extraData index of whichever JWT has it */
+	/**
+	 * @var mixed[]|null extraData index of whichever JWT has it
+	 * @phpstan-var array<string, mixed>
+	 */
 	public $extraData = null;
 	/** @var string */
 	public $clientDataJwt;

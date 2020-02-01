@@ -46,6 +46,10 @@ trait IntegerishMetadataProperty{
 		return $other instanceof self and $other->value === $this->value;
 	}
 
+	/**
+	 * @param bool[] $flags
+	 * @phpstan-param array<int, bool> $flags
+	 */
 	public static function buildFromFlags(array $flags) : self{
 		$value = 0;
 		foreach($flags as $flag => $v){

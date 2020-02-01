@@ -109,6 +109,9 @@ class UseItemTransactionData extends TransactionData{
 		$stream->putUnsignedVarInt($this->blockRuntimeId);
 	}
 
+	/**
+	 * @param NetworkInventoryAction[] $actions
+	 */
 	public static function new(array $actions, int $actionType, Vector3 $blockPos, int $face, int $hotbarSlot, Item $itemInHand, Vector3 $playerPos, Vector3 $clickPos, int $blockRuntimeId) : self{
 		$result = new self;
 		$result->actions = $actions;

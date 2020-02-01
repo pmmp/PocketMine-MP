@@ -1153,6 +1153,9 @@ class Server{
 		return count($recipients);
 	}
 
+	/**
+	 * @return Player[]
+	 */
 	private function selectPermittedPlayers(string $permission) : array{
 		/** @var Player[] $players */
 		$players = [];
@@ -1536,6 +1539,9 @@ class Server{
 		exit(1);
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function __debugInfo() : array{
 		return [];
 	}

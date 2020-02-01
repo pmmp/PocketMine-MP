@@ -104,6 +104,9 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	 */
 	abstract protected function encodePayload() : void;
 
+	/**
+	 * @return mixed[]
+	 */
 	public function __debugInfo() : array{
 		$data = [];
 		foreach((array) $this as $k => $v){

@@ -711,6 +711,9 @@ class NetworkSession{
 		$this->sendDataPacket(TextPacket::raw($message));
 	}
 
+	/**
+	 * @param string[] $parameters
+	 */
 	public function onTranslatedChatMessage(string $key, array $parameters) : void{
 		$this->sendDataPacket(TextPacket::translation($key, $parameters));
 	}

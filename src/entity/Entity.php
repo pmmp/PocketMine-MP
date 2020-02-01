@@ -1695,6 +1695,9 @@ abstract class Entity{
 		$this->server->broadcastPackets($players ?? $this->getViewers(), [ActorEventPacket::create($this->id, $eventId, $eventData ?? 0)]);
 	}
 
+	/**
+	 * @param Player[]|null $players
+	 */
 	public function broadcastAnimation(?array $players, int $animationId) : void{
 		$this->server->broadcastPackets($players ?? $this->getViewers(), [AnimatePacket::create($this->id, $animationId)]);
 	}

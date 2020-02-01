@@ -72,6 +72,11 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		return false;
 	}
 
+	/**
+	 * @param mixed[] $options
+	 * @phpstan-param class-string<Generator> $generator
+	 * @phpstan-param array<string, mixed>    $options
+	 */
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
 		Utils::testValidInstance($generator, Generator::class);
 		if(!file_exists($path)){

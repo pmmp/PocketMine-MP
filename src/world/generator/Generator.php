@@ -52,7 +52,10 @@ abstract class Generator{
 	protected $world;
 	/** @var int */
 	protected $seed;
-	/** @var array */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	protected $options;
 
 	/** @var Random */
