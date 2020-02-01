@@ -29,71 +29,70 @@ use function spl_object_hash;
 
 class BehaviorPool{
 
-	/** @var Behavior[][] */
-	protected $behaviors = [];
-	/** @var Behavior[] */
+	/** @var BehaviorEntry[] */
+	protected $behaviorEntries = [];
+	/** @var BehaviorEntry[] */
 	protected $workingBehaviors = [];
 	/** @var int */
 	protected $tickRate = 3;
-
-	public function __construct(array $behaviors = []){
-		$this->behaviors = $behaviors;
-	}
+	/** @var int */
+	protected $tickCounter = 0;
 
 	public function setBehavior(int $priority, Behavior $behavior) : void{
-		$this->behaviors[spl_object_hash($behavior)] = [
-			$priority, $behavior
-		];
+		$this->behaviorEntries[spl_object_id($behavior)] = new BehaviorEntry($priority, $behavior);
 	}
 
 	public function removeBehavior(Behavior $behavior) : void{
-		unset($this->behaviors[spl_object_hash($behavior)]);
+		unset($this->behaviorEntries[spl_object_id($behavior)]);
 	}
 
 	/**
 	 * Updates behaviors
 	 */
 	public function onUpdate() : void{
-		if(Server::getInstance()->getTick() % $this->tickRate === 0){
-			foreach($this->workingBehaviors as $hash => $bh){
-				if(isset($this->behaviors[$hash])){
-					if(!$this->canUse($this->behaviors[$hash]) or !$bh->canContinue()){
-						$bh->onEnd();
-						unset($this->workingBehaviors[$hash]);
+		if($this->tickCounter++ % $this->tickRate === 0){
+			foreach($this->behaviorEntries as $id => $entry){
+				$behavior = $entry->getBehavior();
+				
+				if(isset($this->workingBehaviors[$id])){
+					if(!$this->canUse($entry) or !$behavior->canContinue()){
+						$behavior->onEnd();
+						
+						unset($this->workingBehaviors[$id]);
 					}
 				}
-			}
-			/** @var \pocketmine\entity\behavior\Behavior[] $data */
-			foreach($this->behaviors as $i => $data){
-				if(!isset($this->workingBehaviors[$i]) and $data[1]->canStart() and $this->canUse($data)){
-					$this->workingBehaviors[$i] = $data[1];
-					$data[1]->onStart();
+				
+				if($this->canUse($entry) and $behavior->canStart()){
+					$behavior->onStart();
+					
+					$this->workingBehaviors[$id] = $entry;
 				}
 			}
 		}else{
-			foreach($this->workingBehaviors as $hash => $b){
-				if(!$b->canContinue()){
-					$b->onEnd();
-					unset($this->workingBehaviors[$hash]);
+			foreach($this->workingBehaviors as $id => $entry){
+				if(!$entry->getBehavior()->canContinue()){
+					$entry->getBehavior()->onEnd();
+					
+					unset($this->workingBehaviors[$id]);
 				}
 			}
 		}
 
-		foreach($this->workingBehaviors as $behavior){
-			$behavior->onTick();
+		foreach($this->workingBehaviors as $entry){
+			$entry->getBehavior()->onTick();
 		}
 	}
 
-	public function canUse(array $data) : bool{
-		$priority = $data[0];
-		foreach($this->behaviors as $h => $b){
-			if($b[1] === $data[1]) continue;
-			if($priority >= $b[0]){
-				if(!$this->theyCanWorkCompatible($data[1], $b[1]) and isset($this->workingBehaviors[$h])){
+	public function canUse(BehaviorEntry $entry) : bool{
+		foreach($this->behaviorEntries as $id => $behaviorEntry){
+			if($behaviorEntry->getBehavior() !== $entry->getBehavior()){
+				if($entry->getPriority() >= $behaviorEntry->getPriority()){
+					if(!$this->theyCanWorkCompatible($entry->getBehavior(), $behaviorEntry->getBehavior()) and isset($this->workingBehaviors[$id])){
+						return false;
+					}
+				}elseif(!$behaviorEntry->getBehavior()->isMutable() and isset($this->workingBehaviors[$id])){
 					return false;
 				}
-			}elseif(!$b[1]->isMutable() and isset($this->workingBehaviors[$h])){
-				return false;
 			}
 		}
 
@@ -102,5 +101,25 @@ class BehaviorPool{
 
 	public function theyCanWorkCompatible(Behavior $b1, Behavior $b2) : bool{
 		return ($b1->getMutexBits() & $b2->getMutexBits()) === 0;
+	}
+	
+	public function getTickRate() : int{
+		return $this->tickRate;
+	}
+	
+	public function setTickRate(int $tickRate) : void{
+		$this->tickRate = $tickRate;
+	}
+	
+	/**
+	 * @return BehaviorEntry[]
+	 */
+	public function getBehaviorEntries() : array{
+		return $this->behaviorEntries;
+	}
+	
+	public function clearBehaviors() : void{
+		$this->behaviorEntries = [];
+		$this->workingBehaviors = [];
 	}
 }
