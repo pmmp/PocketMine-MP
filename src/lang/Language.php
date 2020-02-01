@@ -82,9 +82,15 @@ class Language{
 	/** @var string */
 	protected $langName;
 
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
 	protected $lang = [];
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
 	protected $fallbackLang = [];
 
 	/**
