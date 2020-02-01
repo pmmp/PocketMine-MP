@@ -13,7 +13,7 @@
 
 ## Discussion/Help
 - [Forums](https://forums.pmmp.io/)
-- [Community Discord](https://discord.gg/bmSAZBG)
+- [Discord](https://discord.gg/bmSAZBG)
 - [StackOverflow](https://stackoverflow.com/tags/pocketmine)
 
 ## For developers
