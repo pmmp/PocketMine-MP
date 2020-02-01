@@ -34,19 +34,13 @@ class PanicBehavior extends RandomStrollBehavior{
 	}
 
 	public function canStart() : bool{
-		if($this->mob->getLastAttacker() !== null or $this->mob->isOnFire()){
+		if($this->mob->getRevengeTarget() !== null or $this->mob->isOnFire()){
 			$this->targetPos = RandomPositionGenerator::findRandomTargetBlock($this->mob, 5, 4);
 
 			if($this->targetPos !== null){
-				$this->followRange = $this->mob->distanceSquared($this->targetPos) + 2;
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public function onEnd() : void{
-		$this->mob->setLastAttacker(null);
-		parent::onEnd();
 	}
 }

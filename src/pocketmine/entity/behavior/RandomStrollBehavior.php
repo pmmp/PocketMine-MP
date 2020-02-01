@@ -26,14 +26,15 @@ namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Mob;
 use pocketmine\entity\utils\RandomPositionGenerator;
+use pocketmine\math\Vector3;
 
 class RandomStrollBehavior extends Behavior{
 
 	/** @var float */
-	protected $speedMultiplier = 1.0, $followRange = 16.0;
+	protected $speedMultiplier = 1.0;
 	/** @var int */
 	protected $chance = 120;
-
+	/** @var Vector3|null */
 	protected $targetPos;
 
 	public function __construct(Mob $mob, float $speedMultiplier = 1.0, int $chance = 120){
@@ -50,8 +51,6 @@ class RandomStrollBehavior extends Behavior{
 
 			if($pos === null) return false;
 
-			$this->followRange = $this->mob->distanceSquared($pos) + 2;
-
 			$this->targetPos = $pos;
 
 			return true;
@@ -65,7 +64,7 @@ class RandomStrollBehavior extends Behavior{
 	}
 
 	public function onStart() : void{
-		$this->mob->getNavigator()->tryMoveTo($this->targetPos, $this->speedMultiplier, $this->followRange);
+		$this->mob->getNavigator()->tryMoveTo($this->targetPos, $this->speedMultiplier);
 	}
 
 	public function onEnd() : void{
