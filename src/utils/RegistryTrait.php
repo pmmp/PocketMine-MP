@@ -81,8 +81,9 @@ trait RegistryTrait{
 	}
 
 	/**
-	 * @param string $name
-	 * @param array $arguments
+	 * @param string  $name
+	 * @param mixed[] $arguments
+	 * @phpstan-param list<mixed> $arguments
 	 *
 	 * @return object
 	 */
