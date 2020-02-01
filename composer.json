@@ -62,39 +62,5 @@
          "pocketmine\\": "tests/phpunit/",
          "pocketmine\\phpstan\\rules\\": "tests/phpstan/rules"
       }
-   },
-   "repositories": [
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/RakLib"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/SPL"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/BinaryUtils"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/NBT"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/Math"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/Snooze"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/Log"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/ClassLoader"
-      }
-   ]
+   }
 }
