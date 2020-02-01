@@ -518,21 +518,24 @@
         },
         {
             "name": "pocketmine/snooze",
-            "version": "0.1.1",
+            "version": "0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "b7bd231bdb75e69300cac89ccd515fc731c38c40"
+                "reference": "88420da3d9335dbcb3ee2decfd5e5453d057dcdf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/b7bd231bdb75e69300cac89ccd515fc731c38c40",
-                "reference": "b7bd231bdb75e69300cac89ccd515fc731c38c40",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/88420da3d9335dbcb3ee2decfd5e5453d057dcdf",
+                "reference": "88420da3d9335dbcb3ee2decfd5e5453d057dcdf",
                 "shasum": ""
             },
             "require": {
                 "ext-pthreads": ">=3.1.7dev",
                 "php-64bit": ">=7.2.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
             },
             "type": "library",
             "autoload": {
@@ -545,7 +548,7 @@
                 "LGPL-3.0"
             ],
             "description": "Thread notification management library for code using the pthreads extension",
-            "time": "2019-01-04T15:54:45+00:00"
+            "time": "2020-01-28T19:08:10+00:00"
         },
         {
             "name": "pocketmine/spl",
