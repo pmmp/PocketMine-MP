@@ -37,11 +37,11 @@ use pocketmine\utils\EnumTrait;
 final class ItemUseResult{
 	use EnumTrait;
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new self("none"),
 			new self("fail"),
 			new self("success")
-		];
+		);
 	}
 }

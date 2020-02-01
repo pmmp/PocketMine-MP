@@ -41,14 +41,14 @@ final class ToolTier{
 		__construct as Enum___construct;
 	}
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new self("wood", 1, 60, 5, 2),
 			new self("gold", 2, 33, 5, 12),
 			new self("stone", 3, 132, 6, 4),
 			new self("iron", 4, 251, 7, 6),
 			new self("diamond", 5, 1562, 8, 8)
-		];
+		);
 	}
 
 	/** @var int */

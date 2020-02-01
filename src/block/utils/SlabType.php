@@ -37,11 +37,11 @@ use pocketmine\utils\EnumTrait;
 final class SlabType{
 	use EnumTrait;
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new self("bottom"),
 			new self("top"),
 			new self("double")
-		];
+		);
 	}
 }

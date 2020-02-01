@@ -46,15 +46,15 @@ final class TreeType{
 	/** @var TreeType[] */
 	private static $numericIdMap = [];
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new TreeType("oak", "Oak", 0),
 			new TreeType("spruce", "Spruce", 1),
 			new TreeType("birch", "Birch", 2),
 			new TreeType("jungle", "Jungle", 3),
 			new TreeType("acacia", "Acacia", 4),
 			new TreeType("dark_oak", "Dark Oak", 5)
-		];
+		);
 	}
 
 	protected static function register(TreeType $type) : void{

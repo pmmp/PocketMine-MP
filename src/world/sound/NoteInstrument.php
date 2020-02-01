@@ -41,14 +41,14 @@ final class NoteInstrument{
 		__construct as Enum___construct;
 	}
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new self("piano", 0),
 			new self("bass_drum", 1),
 			new self("snare", 2),
 			new self("clicks_and_sticks", 3),
 			new self("double_bass", 4)
-		];
+		);
 	}
 
 	/** @var int */

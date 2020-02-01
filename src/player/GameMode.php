@@ -47,13 +47,13 @@ final class GameMode{
 	/** @var self[] */
 	protected static $magicNumberMap = [];
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new self("survival", 0, "Survival", "gameMode.survival", ["s", "0"]),
 			new self("creative", 1, "Creative", "gameMode.creative", ["c", "1"]),
 			new self("adventure", 2, "Adventure", "gameMode.adventure", ["a", "2"]),
 			new self("spectator", 3, "Spectator", "gameMode.spectator", ["v", "view", "3"])
-		];
+		);
 	}
 
 	protected static function register(self $member) : void{

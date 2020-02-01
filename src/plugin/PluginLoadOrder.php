@@ -36,10 +36,10 @@ use pocketmine\utils\EnumTrait;
 final class PluginLoadOrder{
 	use EnumTrait;
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new self("startup"),
 			new self("postworld")
-		];
+		);
 	}
 }

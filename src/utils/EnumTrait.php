@@ -38,26 +38,9 @@ trait EnumTrait{
 		self::_registryRegister($member->name(), $member);
 	}
 
-	/**
-	 * Returns an array of enum members to be registered.
-	 *
-	 * (This ought to be private, but traits suck too much for that.)
-	 *
-	 * @return self[]|iterable
-	 */
-	abstract protected static function setup() : iterable;
-
-	/**
-	 * @internal Lazy-inits the enum if necessary.
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	protected static function checkInit() : void{
-		if(self::$members === null){
-			self::$members = [];
-			foreach(self::setup() as $item){
-				self::register($item);
-			}
+	protected static function registerAll(self ...$members) : void{
+		foreach($members as $member){
+			self::register($member);
 		}
 	}
 
