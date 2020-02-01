@@ -71,6 +71,7 @@ use function explode;
 use function implode;
 use function min;
 use function preg_match_all;
+use function strcasecmp;
 use function stripslashes;
 use function strpos;
 use function strtolower;
@@ -289,7 +290,7 @@ class SimpleCommandMap implements CommandMap{
 
 				if($command === null){
 					$bad[] = $commandString;
-				}elseif($commandName === $alias){
+				}elseif(strcasecmp($commandName, $alias) === 0){
 					$recursive[] = $commandString;
 				}else{
 					$targets[] = $commandString;
