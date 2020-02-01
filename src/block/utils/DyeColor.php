@@ -74,7 +74,7 @@ final class DyeColor{
 			new DyeColor("brown", "Brown", 12, new Color(0x83, 0x54, 0x32)),
 			new DyeColor("green", "Green", 13, new Color(0x5e, 0x7c, 0x16)),
 			new DyeColor("red", "Red", 14, new Color(0xb0, 0x2e, 0x26)),
-			new DyeColor("black", "Black", 15, new Color(0x1d, 0x1d, 0x21)),
+			new DyeColor("black", "Black", 15, new Color(0x1d, 0x1d, 0x21))
 		);
 	}
 
