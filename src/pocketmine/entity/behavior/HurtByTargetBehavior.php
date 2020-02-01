@@ -41,14 +41,14 @@ class HurtByTargetBehavior extends TargetBehavior{
 	}
 
 	public function canStart() : bool{
-		$attacker = $this->mob->getLastAttacker();
+		$attacker = $this->mob->getRevengeTarget();
 		$i = $this->mob->getRevengeTimer();
 
 		return $i !== $this->revengeTimerOld and $attacker instanceof Living and !($this->hurtOwner and $this->mob->getOwningEntity() === $attacker) and $this->isSuitableTargetLocal($attacker, false);
 	}
 
 	public function onStart() : void{
-		$this->mob->setTargetEntity($this->mob->getLastAttacker());
+		$this->mob->setTargetEntity($this->mob->getRevengeTarget());
 		$this->revengeTimerOld = $this->mob->getRevengeTimer();
 
 		if($this->alertSameType){
@@ -56,7 +56,7 @@ class HurtByTargetBehavior extends TargetBehavior{
 
 			foreach($this->mob->level->getNearbyEntities($this->mob->getBoundingBox()->expandedCopy($d, 10, $d), $this->mob) as $entity){
 				if($entity->getTargetEntity() === null){
-					$entity->setTargetEntity($this->mob->getLastAttacker());
+					$entity->setTargetEntity($this->mob->getRevengeTarget());
 				}
 			}
 		}

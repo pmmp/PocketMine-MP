@@ -106,7 +106,7 @@ class Creeper extends Monster implements Ageable{
 	}
 
 	public function getXpDropAmount() : int{
-		return $this->getLastAttacker() instanceof Player ? 5 : 0;
+		return $this->getRevengeTarget() instanceof Player ? 5 : 0;
 	}
 
 	public function getDrops() : array{
@@ -114,7 +114,7 @@ class Creeper extends Monster implements Ageable{
 		if($this->timeSinceIgnited !== $this->fuseTime){
 			$drops[] = ItemFactory::get(Item::GUNPOWDER, 0, rand(0, 2));
 		}
-		$attacker = $this->getLastAttacker();
+		$attacker = $this->getRevengeTarget();
 		if($attacker instanceof Skeleton){
 			$drops[] = ItemFactory::get(rand(Item::RECORD_13, Item::RECORD_WAIT));
 		}elseif($attacker instanceof Creeper and $attacker->isPowered()){

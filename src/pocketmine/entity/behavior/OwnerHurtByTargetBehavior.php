@@ -45,7 +45,7 @@ class OwnerHurtByTargetBehavior extends TargetBehavior{
 			$owner = $this->mob->getOwningEntity();
 
 			if($owner instanceof Living){
-				$this->ownerAttacker = $owner->getLastAttacker();
+				$this->ownerAttacker = $owner->getRevengeTarget();
 				$i = $owner->getRevengeTimer();
 
 				return $i !== $this->revengeTimerOld and $this->ownerAttacker instanceof Living and $this->isSuitableTargetLocal($this->ownerAttacker, false);

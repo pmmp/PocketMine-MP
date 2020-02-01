@@ -90,17 +90,18 @@ abstract class Living extends Entity implements Damageable{
 
 	/** @var ArmorInventory */
 	protected $armorInventory;
-
+	
 	/** @var int|null */
-	protected $lastAttackerId = null;
+	protected $revengeTargetId = null;
 	protected $revengeTimer = 0;
+	
+	/** @var int|null */
+	protected $lastAttackedEntityId = null;
 
 	/** @var bool */
 	protected $leashed = false;
-
 	/** @var CompoundTag */
 	protected $leashNbt;
-
 	/** @var int|null */
 	protected $leashedToEntityId = null;
 
@@ -110,32 +111,45 @@ abstract class Living extends Entity implements Damageable{
 	protected $moveStrafing = 0.0;
 
 	abstract public function getName() : string;
-
-	/**
-	 * @return null|Entity
-	 */
-	public function getLastAttacker() : ?Entity{
-		if($this->lastAttackerId !== null){
-			return $this->server->findEntity($this->lastAttackerId);
+	
+	public function getRevengeTarget() : ?Entity{
+		if($this->revengeTargetId !== null){
+			return $this->server->findEntity($this->revengeTargetId);
 		}
-
+		
 		return null;
 	}
-
-	/**
-	 * @param null|Entity $lastAttacker
-	 */
-	public function setLastAttacker(?Entity $lastAttacker) : void{
-		if($lastAttacker === null){
-			$this->lastAttackerId = null;
+	
+	public function setRevengeTarget(?Entity $revengeTarget) : void{
+		if($revengeTarget === null){
+			$this->revengeTargetId = null;
 		}else{
-			$this->lastAttackerId = $lastAttacker->getId();
+			$this->revengeTargetId = $revengeTarget->getId();
+		}
+		
+		$this->revengeTimer = $this->ticksLived;
+	}
+	
+	public function getLastAttackedEntity() : ?Entity{
+		if($this->lastAttackedEntityId !== null){
+			return $this->server->findEntity($this->lastAttackedEntityId);
+		}
+		
+		return null;
+	}
+	
+	public function setLastAttackedEntity(?Entity $attackedEntity) : void{
+		if($attackedEntity === null){
+			$this->lastAttackedEntityId = null;
+		}else{
+			$this->lastAttackedEntityId = $attackedEntity->getId();
 		}
 	}
-
-	/**
-	 * @return null|Entity
-	 */
+	
+	public function getRevengeTimer() : int{
+		return $this->revengeTimer;
+	}
+	
 	public function getLeashedToEntity() : ?Entity{
 		if($this->leashedToEntityId !== null){
 			return $this->server->findEntity($this->leashedToEntityId);
@@ -143,11 +157,7 @@ abstract class Living extends Entity implements Damageable{
 
 		return null;
 	}
-
-	/**
-	 * @param Entity $leashedToEntity
-	 * @param bool   $send
-	 */
+	
 	public function setLeashedToEntity(Entity $leashedToEntity, bool $send = true) : void{
 		$this->leashed = true;
 		$this->leashedToEntityId = $leashedToEntity->getId();
@@ -157,24 +167,7 @@ abstract class Living extends Entity implements Damageable{
 			$this->propertyManager->setLong(self::DATA_LEAD_HOLDER_EID, $leashedToEntity->getId());
 		}
 	}
-
-	/**
-	 * @return int
-	 */
-	public function getRevengeTimer() : int{
-		return $this->revengeTimer;
-	}
-
-	/**
-	 * @param int $revengeTimer
-	 */
-	public function setRevengeTimer(int $revengeTimer) : void{
-		$this->revengeTimer = $revengeTimer;
-	}
-
-	/**
-	 * @return bool
-	 */
+	
 	public function isLeashed() : bool{
 		return $this->leashed;
 	}
@@ -694,15 +687,11 @@ abstract class Living extends Entity implements Damageable{
 				$this->knockBack($e, $source->getBaseDamage(), $deltaX, $deltaZ, $source->getKnockBack());
 
 				$e->broadcastEntityEvent(ActorEventPacket::ARM_SWING);
-
-				$this->setRevengeTimer($this->ticksLived);
-
-				if($e instanceof Living){
-					$e->setTargetEntity($this);
-					$this->setLastAttacker($e);
-				}elseif($e instanceof Projectile and $e->getOwningEntity() instanceof Living){
-					$e->getOwningEntity()->setTargetEntity($this);
-					$this->setLastAttacker($e->getOwningEntity());
+				
+				$attacker = $source->getDamager();
+				if($attacker instanceof Living){
+					$this->setRevengeTarget($attacker);
+					$attacker->setLastAttackedEntity($this);
 				}
 			}
 		}
@@ -790,8 +779,10 @@ abstract class Living extends Entity implements Damageable{
 	public function entityBaseTick(int $tickDiff = 1) : bool{
 		Timings::$timerLivingEntityBaseTick->startTiming();
 
-		if($this->getTargetEntity() instanceof Entity and $this->getTargetEntity()->isClosed()){
-			$this->setTargetEntity(null);
+		if($revengeTarget = $this->getRevengeTarget()){
+			if(!$revengeTarget->isAlive() or ($this->ticksLived - $this->revengeTimer) > 100){
+				$this->setRevengeTarget(null);
+			}
 		}
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
