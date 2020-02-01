@@ -36,39 +36,36 @@ class RandomPositionGenerator{
 	 * @param int     $y
 	 * @param Vector3 $targetPos
 	 *
-	 * @return Block|null
+	 * @return Vector3|null
 	 */
-	public static function findRandomTargetBlockAwayFrom(Mob $entity, int $xz, int $y, Vector3 $targetPos) : ?Block{
+	public static function findRandomTargetBlockAwayFrom(Mob $entity, int $xz, int $y, Vector3 $targetPos) : ?Vector3{
 		return self::findRandomTargetBlock($entity, $xz, $y, $entity->subtract($targetPos));
 	}
-
-	/**
-	 * @param Mob          $entity
-	 * @param int          $dxz
-	 * @param int          $dy
-	 * @param Vector3|null $targetPos
-	 *
-	 * @return Block|null
-	 */
-	public static function findRandomTargetBlock(Mob $entity, int $dxz, int $dy, ?Vector3 $targetPos = null) : ?Block{
+	
+	public static function findRandomTargetBlock(Mob $entity, int $dxz, int $dy, ?Vector3 $targetPos = null) : ?Vector3{
 		$currentWeight = PHP_INT_MIN;
-		$currentBlock = null;
+		$currentPos = null;
 		for($i = 0; $i < 10; $i++){
 			$x = $entity->random->nextBoundedInt(2 * $dxz + 1) - $dxz;
 			$y = $entity->random->nextBoundedInt(2 * $dy + 1) - $dy;
 			$z = $entity->random->nextBoundedInt(2 * $dxz + 1) - $dxz;
 
 			if($targetPos === null or ($x * $targetPos->x + $z * $targetPos->z) > 0){
-				$blockCoords = new Vector3($x, $y, $z);
-				$block = $entity->level->getBlock($entity->asVector3()->add($blockCoords));
-				$weight = $entity->getBlockPathWeight($block->asVector3());
+				$targetVector = $entity->asVector3()->add($x, $y, $z);
+				
+				// TODO: remove this temp fix
+				if(($maxY = $entity->level->getHeightMap($targetVector->getFloorX(), $targetVector->getFloorZ()) + 1) < $targetVector->y){
+					$targetVector->y = $maxY;
+				}
+				
+				$weight = $entity->getBlockPathWeight($targetVector);
 				if($weight > $currentWeight){
 					$currentWeight = $weight;
-					$currentBlock = $block;
+					$currentPos = $targetVector;
 				}
 			}
 		}
 
-		return $currentBlock;
+		return $currentPos;
 	}
 }
