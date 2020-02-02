@@ -5,6 +5,7 @@ php:
  - 7.3
 
 before_script:
+ - phpenv config-rm xdebug.ini
 # - pecl install channel://pecl.php.net/pthreads-3.1.6
  - echo | pecl install channel://pecl.php.net/yaml-2.0.4
  - git clone https://github.com/pmmp/pthreads.git
