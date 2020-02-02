@@ -20,6 +20,7 @@ parameters:
 		- pocketmine\DEBUG
 	stubFiles:
 		- tests/phpstan/stubs/pthreads.stub
+		- tests/phpstan/stubs/chunkutils.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	ignoreErrors:
 		-
