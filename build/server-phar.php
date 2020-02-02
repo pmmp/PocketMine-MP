@@ -104,14 +104,9 @@ function buildPhar(string $pharPath, string $basePath, array $includedPaths, arr
 	yield "Added $count files";
 
 	if($compression !== null){
-		yield "Checking for compressible files...";
-		foreach($phar as $file => $finfo){
-			/** @var \PharFileInfo $finfo */
-			if($finfo->getSize() > (1024 * 512)){
-				yield "Compressing " . $finfo->getFilename();
-				$finfo->compress($compression);
-			}
-		}
+		yield "Compressing files...";
+		$phar->compressFiles($compression);
+		yield "Finished compression";
 	}
 	$phar->stopBuffering();
 
@@ -137,7 +132,23 @@ function main() : void{
 		[
 			'git' => $gitHash
 		],
-		'<?php require("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php"); __HALT_COMPILER();'
+		<<<'STUB'
+<?php
+
+$tmpDir = sys_get_temp_dir();
+if(!is_readable($tmpDir) or !is_writable($tmpDir)){
+	echo "ERROR: tmpdir $tmpDir is not accessible." . PHP_EOL;
+	echo "Check that the directory exists, and that the current user has read/write permissions for it." . PHP_EOL;
+	echo "Alternatively, set 'sys_temp_dir' to a different directory in your php.ini file." . PHP_EOL;
+	exit(1);
+}
+
+require("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php");
+__HALT_COMPILER();
+STUB
+,
+		\Phar::SHA1,
+		\Phar::GZ
 	) as $line){
 		echo $line . PHP_EOL;
 	}
