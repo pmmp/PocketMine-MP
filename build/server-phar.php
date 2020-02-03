@@ -24,12 +24,28 @@ declare(strict_types=1);
 namespace pocketmine\build\server_phar;
 
 use pocketmine\utils\Git;
+use function array_map;
+use function count;
+use function defined;
+use function dirname;
+use function file_exists;
+use function getcwd;
+use function getopt;
+use function implode;
+use function ini_get;
+use function microtime;
+use function preg_quote;
+use function realpath;
+use function round;
+use function rtrim;
+use function sprintf;
+use function str_replace;
+use function unlink;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 /**
  * @param string[]    $strings
- * @param string|null $delim
  *
  * @return string[]
  */
@@ -38,13 +54,8 @@ function preg_quote_array(array $strings, string $delim = null) : array{
 }
 
 /**
- * @param string   $pharPath
- * @param string   $basePath
  * @param string[] $includedPaths
  * @param mixed[]  $metadata
- * @param string   $stub
- * @param int      $signatureAlgo
- * @param int|null $compression
  * @phpstan-param array<string, mixed> $metadata
  *
  * @return \Generator|string[]
