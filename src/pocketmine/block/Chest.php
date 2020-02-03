@@ -116,7 +116,7 @@ class Chest extends Transparent{
 
 			if(
 				!$this->getSide(Vector3::SIDE_UP)->isTransparent() or
-				($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()) or
+				(($pair = $chest->getPair()) !== null and !$pair->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()) or
 				!$chest->canOpenWith($item->getCustomName())
 			){
 				return true;
