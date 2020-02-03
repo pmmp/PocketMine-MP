@@ -58,7 +58,7 @@ function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev
 	);
 	$versionInfo = preg_replace(
 		'/^const IS_DEVELOPMENT_BUILD = (?:true|false);$/m',
-		'const IS_DEVELOPMENT_BUILD = ' . ($isDev ? 'true' : 'false'). ';',
+		'const IS_DEVELOPMENT_BUILD = ' . ($isDev ? 'true' : 'false') . ';',
 		$versionInfo
 	);
 	file_put_contents($versionInfoPath, $versionInfo);
