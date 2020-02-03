@@ -46,7 +46,6 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 /**
  * @param string[]    $strings
- * @param string|null $delim
  *
  * @return string[]
  */
@@ -55,13 +54,8 @@ function preg_quote_array(array $strings, string $delim = null) : array{
 }
 
 /**
- * @param string   $pharPath
- * @param string   $basePath
  * @param string[] $includedPaths
  * @param mixed[]  $metadata
- * @param string   $stub
- * @param int      $signatureAlgo
- * @param int|null $compression
  * @phpstan-param array<string, mixed> $metadata
  *
  * @return \Generator|string[]
