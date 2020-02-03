@@ -28,7 +28,6 @@ use function dirname;
 use function fgets;
 use function file_get_contents;
 use function file_put_contents;
-use function preg_quote;
 use function preg_replace;
 use function sleep;
 use function sprintf;
