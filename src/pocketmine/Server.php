@@ -275,8 +275,8 @@ class Server{
 	/** @var bool */
 	private $autoSave;
 
-	/** @var RCON */
-	private $rcon;
+	/** @var RCON|null */
+	private $rcon = null;
 
 	/** @var EntityMetadataStore */
 	private $entityMetadata;
