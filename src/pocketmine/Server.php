@@ -320,8 +320,8 @@ class Server{
 	 */
 	private $uniquePlayers = [];
 
-	/** @var QueryHandler */
-	private $queryHandler;
+	/** @var QueryHandler|null */
+	private $queryHandler = null;
 
 	/** @var QueryRegenerateEvent */
 	private $queryRegenerateTask = null;
