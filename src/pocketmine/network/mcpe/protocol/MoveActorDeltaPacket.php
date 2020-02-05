@@ -55,14 +55,14 @@ class MoveActorDeltaPacket extends DataPacket{
 	public $zRot = 0.0;
 
 	private function maybeReadCoord(int $flag) : int{
-		if($this->flags & $flag){
+		if(($this->flags & $flag) !== 0){
 			return $this->getVarInt();
 		}
 		return 0;
 	}
 
 	private function maybeReadRotation(int $flag) : float{
-		if($this->flags & $flag){
+		if(($this->flags & $flag) !== 0){
 			return $this->getByteRotation();
 		}
 		return 0.0;
@@ -80,13 +80,13 @@ class MoveActorDeltaPacket extends DataPacket{
 	}
 
 	private function maybeWriteCoord(int $flag, int $val) : void{
-		if($this->flags & $flag){
+		if(($this->flags & $flag) !== 0){
 			$this->putVarInt($val);
 		}
 	}
 
 	private function maybeWriteRotation(int $flag, float $val) : void{
-		if($this->flags & $flag){
+		if(($this->flags & $flag) !== 0){
 			$this->putByteRotation($val);
 		}
 	}

@@ -1885,7 +1885,7 @@ class Server{
 				$this->rcon->stop();
 			}
 
-			if($this->getProperty("network.upnp-forwarding", false)){
+			if((bool) $this->getProperty("network.upnp-forwarding", false)){
 				$this->logger->info("[UPnP] Removing port forward...");
 				UPnP::RemovePortForward($this->getPort());
 			}
@@ -1958,12 +1958,12 @@ class Server{
 			$this->network->blockAddress($entry->getName(), -1);
 		}
 
-		if($this->getProperty("settings.send-usage", true)){
+		if((bool) $this->getProperty("settings.send-usage", true)){
 			$this->sendUsageTicker = 6000;
 			$this->sendUsage(SendUsageTask::TYPE_OPEN);
 		}
 
-		if($this->getProperty("network.upnp-forwarding", false)){
+		if((bool) $this->getProperty("network.upnp-forwarding", false)){
 			$this->logger->info("[UPnP] Trying to port forward...");
 			try{
 				UPnP::PortForward($this->getPort());
@@ -2089,7 +2089,7 @@ class Server{
 				}
 
 				if($report){
-					$url = ($this->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
+					$url = ((bool) $this->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
 					$reply = Internet::postURL($url, [
 						"report" => "yes",
 						"name" => $this->getName() . " " . $this->getPocketMineVersion(),

@@ -478,7 +478,7 @@ class Utils{
 		$hash = 0;
 		for($i = 0, $len = strlen($string); $i < $len; $i++){
 			$ord = ord($string[$i]);
-			if($ord & 0x80){
+			if(($ord & 0x80) !== 0){
 				$ord -= 0x100;
 			}
 			$hash = 31 * $hash + $ord;
@@ -671,7 +671,7 @@ class Utils{
 	 * @throws \ErrorException
 	 */
 	public static function errorExceptionHandler(int $severity, string $message, string $file, int $line) : bool{
-		if(error_reporting() & $severity){
+		if((error_reporting() & $severity) !== 0){
 			throw new \ErrorException($message, 0, $severity, $file, $line);
 		}
 

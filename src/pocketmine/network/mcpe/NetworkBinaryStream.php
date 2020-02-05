@@ -516,7 +516,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * @see NetworkBinaryStream::putVector3()
 	 */
 	public function putVector3Nullable(?Vector3 $vector) : void{
-		if($vector){
+		if($vector !== null){
 			$this->putVector3($vector);
 		}else{
 			$this->putLFloat(0.0);

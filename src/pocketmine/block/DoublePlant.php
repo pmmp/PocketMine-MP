@@ -70,7 +70,7 @@ class DoublePlant extends Flowable{
 	 * Returns whether this double-plant has a corresponding other half.
 	 */
 	public function isValidHalfPlant() : bool{
-		if($this->meta & self::BITFLAG_TOP){
+		if(($this->meta & self::BITFLAG_TOP) !== 0){
 			$other = $this->getSide(Vector3::SIDE_DOWN);
 		}else{
 			$other = $this->getSide(Vector3::SIDE_UP);
@@ -102,7 +102,7 @@ class DoublePlant extends Flowable{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($this->meta & self::BITFLAG_TOP){
+		if(($this->meta & self::BITFLAG_TOP) !== 0){
 			if($this->isCompatibleWithTool($item)){
 				return parent::getDrops($item);
 			}

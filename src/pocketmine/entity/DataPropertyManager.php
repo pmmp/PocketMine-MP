@@ -115,7 +115,7 @@ class DataPropertyManager{
 	}
 
 	public function setBlockPos(int $key, ?Vector3 $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_POS, $value ? $value->floor() : null, $force);
+		$this->setPropertyValue($key, Entity::DATA_TYPE_POS, $value !== null ? $value->floor() : null, $force);
 	}
 
 	public function getLong(int $key) : ?int{
@@ -135,7 +135,7 @@ class DataPropertyManager{
 	}
 
 	public function setVector3(int $key, ?Vector3 $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_VECTOR3F, $value ? $value->asVector3() : null, $force);
+		$this->setPropertyValue($key, Entity::DATA_TYPE_VECTOR3F, $value !== null ? $value->asVector3() : null, $force);
 	}
 
 	public function removeProperty(int $key) : void{

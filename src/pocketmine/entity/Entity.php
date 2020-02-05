@@ -424,9 +424,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				new DoubleTag("", $pos->z)
 			]),
 			new ListTag("Motion", [
-				new DoubleTag("", $motion ? $motion->x : 0.0),
-				new DoubleTag("", $motion ? $motion->y : 0.0),
-				new DoubleTag("", $motion ? $motion->z : 0.0)
+				new DoubleTag("", $motion !== null ? $motion->x : 0.0),
+				new DoubleTag("", $motion !== null ? $motion->y : 0.0),
+				new DoubleTag("", $motion !== null ? $motion->z : 0.0)
 			]),
 			new ListTag("Rotation", [
 				new FloatTag("", $yaw),
