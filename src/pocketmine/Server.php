@@ -1522,10 +1522,9 @@ class Server{
 
 			$this->queryRegenerateTask = new QueryRegenerateEvent($this);
 
-			$this->pluginManager->loadPlugins($this->pluginPath);
-
 			$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "update.pmmp.io"));
 
+			$this->pluginManager->loadPlugins($this->pluginPath);
 			$this->enablePlugins(PluginLoadOrder::STARTUP);
 
 			$this->network->registerInterface(new RakLibInterface($this));
