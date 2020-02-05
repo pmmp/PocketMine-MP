@@ -173,7 +173,7 @@ namespace pocketmine {
 
 		$opts = getopt("", ["bootstrap:"]);
 		if(isset($opts["bootstrap"])){
-			$bootstrap = realpath($opts["bootstrap"]) ?: $opts["bootstrap"];
+			$bootstrap = ($real = realpath($opts["bootstrap"])) !== false ? $real : $opts["bootstrap"];
 		}else{
 			$bootstrap = dirname(__FILE__, 3) . '/vendor/autoload.php';
 		}
