@@ -1051,7 +1051,7 @@ class Server{
 		}
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
 		if(!($this->getLevelByName($name) instanceof Level)){
-			return is_dir($path) and count(array_filter(scandir($path, SCANDIR_SORT_NONE), function($v){
+			return is_dir($path) and count(array_filter(scandir($path, SCANDIR_SORT_NONE), function(string $v) : bool{
 				return $v !== ".." and $v !== ".";
 			})) > 0;
 		}
@@ -1284,7 +1284,7 @@ class Server{
 	 * @return void
 	 */
 	public static function microSleep(int $microseconds){
-		Server::$sleeper->synchronized(function(int $ms){
+		Server::$sleeper->synchronized(function(int $ms) : void{
 			Server::$sleeper->wait($ms);
 		}, $microseconds);
 	}

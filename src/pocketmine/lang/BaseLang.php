@@ -56,7 +56,7 @@ class BaseLang{
 			$allFiles = scandir($path, SCANDIR_SORT_NONE);
 
 			if($allFiles !== false){
-				$files = array_filter($allFiles, function($filename){
+				$files = array_filter($allFiles, function(string $filename) : bool{
 					return substr($filename, -4) === ".ini";
 				});
 

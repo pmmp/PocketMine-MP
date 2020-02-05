@@ -128,7 +128,7 @@ class RCON{
 		}
 
 		$this->instance->response = TextFormat::clean($response->getMessage());
-		$this->instance->synchronized(function(RCONInstance $thread){
+		$this->instance->synchronized(function(RCONInstance $thread) : void{
 			$thread->notify();
 		}, $this->instance);
 	}

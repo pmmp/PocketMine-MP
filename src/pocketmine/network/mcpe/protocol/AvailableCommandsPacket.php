@@ -413,7 +413,7 @@ class AvailableCommandsPacket extends DataPacket{
 		/** @var CommandEnum[] $enums */
 		$enums = [];
 
-		$addEnumFn = static function(CommandEnum $enum) use (&$enums, &$enumIndexes, &$enumValueIndexes){
+		$addEnumFn = static function(CommandEnum $enum) use (&$enums, &$enumIndexes, &$enumValueIndexes) : void{
 			if(!isset($enumIndexes[$enum->enumName])){
 				$enums[$enumIndexes[$enum->enumName] = count($enumIndexes)] = $enum;
 			}
