@@ -80,7 +80,7 @@ class Tree extends Populator{
 	}
 
 	private function getHighestWorkableBlock(int $x, int $z) : int{
-		for($y = 127; $y > 0; --$y){
+		for($y = 127; $y >= 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
 			if($b === Block::DIRT or $b === Block::GRASS){
 				return $y + 1;
