@@ -438,7 +438,6 @@ class Item implements ItemIds, \JsonSerializable{
 			return $this->clearCustomName();
 		}
 
-		/** @var CompoundTag $display */
 		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if(!($display instanceof CompoundTag)){
 			$display = new CompoundTag(self::TAG_DISPLAY);
