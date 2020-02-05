@@ -687,23 +687,21 @@ class Chunk{
 
 			$level->timings->syncChunkLoadEntitiesTimer->startTiming();
 			foreach($this->NBTentities as $nbt){
-				if($nbt instanceof CompoundTag){
-					if(!$nbt->hasTag("id")){ //allow mixed types (because of leveldb)
-						$changed = true;
-						continue;
-					}
+				if(!$nbt->hasTag("id")){ //allow mixed types (because of leveldb)
+					$changed = true;
+					continue;
+				}
 
-					try{
-						$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
-						if(!($entity instanceof Entity)){
-							$changed = true;
-							continue;
-						}
-					}catch(\Throwable $t){
-						$level->getServer()->getLogger()->logException($t);
+				try{
+					$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
+					if(!($entity instanceof Entity)){
 						$changed = true;
 						continue;
 					}
+				}catch(\Throwable $t){
+					$level->getServer()->getLogger()->logException($t);
+					$changed = true;
+					continue;
 				}
 			}
 			$this->NBTentities = [];
@@ -711,16 +709,14 @@ class Chunk{
 
 			$level->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 			foreach($this->NBTtiles as $nbt){
-				if($nbt instanceof CompoundTag){
-					if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
-						$changed = true;
-						continue;
-					}
+				if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
+					$changed = true;
+					continue;
+				}
 
-					if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){
-						$changed = true;
-						continue;
-					}
+				if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){
+					$changed = true;
+					continue;
 				}
 			}
 
