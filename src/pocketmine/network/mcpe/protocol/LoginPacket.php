@@ -45,8 +45,8 @@ class LoginPacket extends DataPacket{
 	public $clientUUID;
 	/** @var int */
 	public $clientId;
-	/** @var string */
-	public $xuid;
+	/** @var string|null */
+	public $xuid = null;
 	/** @var string */
 	public $identityPublicKey;
 	/** @var string */

@@ -53,7 +53,7 @@ abstract class AsyncTask extends Collectable{
 	 */
 	private static $localObjectStorage;
 
-	/** @var AsyncWorker $worker */
+	/** @var AsyncWorker|null $worker */
 	public $worker = null;
 
 	/** @var \Threaded */

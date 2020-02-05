@@ -60,7 +60,7 @@ class Item implements ItemIds, \JsonSerializable{
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
 
-	/** @var LittleEndianNBTStream */
+	/** @var LittleEndianNBTStream|null */
 	private static $cachedParser = null;
 
 	private static function parseCompoundTag(string $tag) : CompoundTag{

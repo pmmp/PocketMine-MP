@@ -183,7 +183,7 @@ class Server{
 	public const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
-	/** @var Server */
+	/** @var Server|null */
 	private static $instance = null;
 
 	/** @var \Threaded|null */
@@ -346,7 +346,7 @@ class Server{
 	/** @var Level[] */
 	private $levels = [];
 
-	/** @var Level */
+	/** @var Level|null */
 	private $levelDefault = null;
 
 	public function getName() : string{
