@@ -904,8 +904,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function initEntity() : void{
-		assert($this->namedtag instanceof CompoundTag);
-
 		if($this->namedtag->hasTag("CustomName", StringTag::class)){
 			$this->setNameTag($this->namedtag->getString("CustomName"));
 
