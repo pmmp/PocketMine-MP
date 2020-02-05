@@ -263,7 +263,6 @@ namespace pocketmine {
 
 			//TODO: move this to a Server field
 			define('pocketmine\START_TIME', microtime(true));
-			ThreadManager::init();
 
 			/*
 			 * We now use the Composer autoloader, but this autoloader is still for loading plugins.

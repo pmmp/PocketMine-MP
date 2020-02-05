@@ -28,10 +28,11 @@ use function spl_object_hash;
 
 class ThreadManager extends \Volatile{
 
-	/** @var ThreadManager */
+	/** @var ThreadManager|null */
 	private static $instance = null;
 
 	/**
+	 * @deprecated
 	 * @return void
 	 */
 	public static function init(){
@@ -42,6 +43,9 @@ class ThreadManager extends \Volatile{
 	 * @return ThreadManager
 	 */
 	public static function getInstance(){
+		if(self::$instance === null){
+			self::$instance = new ThreadManager();
+		}
 		return self::$instance;
 	}
 
