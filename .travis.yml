@@ -25,5 +25,8 @@ script:
  - composer install --no-dev
  - ./tests/travis.sh -t4
 
+cache:
+ directories:
+  - $HOME/.composer/cache/files
 notifications:
  email: false
