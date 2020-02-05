@@ -287,7 +287,8 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 					if($quoteType === null){
 						$quoteType = $raw[$i];
 					}elseif($raw[$i] === $quoteType){
-						for($backslashes = 0; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
+						$backslashes = 0;
+						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
 						if(($backslashes % 2) === 0){ //unescaped quote
 							$quoteType = null;
 						}

@@ -411,8 +411,8 @@ class Chunk{
 	 * @return int New calculated heightmap value (0-256 inclusive)
 	 */
 	public function recalculateHeightMapColumn(int $x, int $z) : int{
-		$max = $this->getHighestBlockAt($x, $z);
-		for($y = $max; $y >= 0; --$y){
+		$y = $this->getHighestBlockAt($x, $z);
+		for(; $y >= 0; --$y){
 			if(BlockFactory::$lightFilter[$id = $this->getBlockId($x, $y, $z)] > 1 or BlockFactory::$diffusesSkyLight[$id]){
 				break;
 			}
@@ -438,9 +438,9 @@ class Chunk{
 
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
+				$y = $maxY;
 				$heightMap = $this->getHeightMap($x, $z);
-
-				for($y = $maxY; $y >= $heightMap; --$y){
+				for(; $y >= $heightMap; --$y){
 					$this->setBlockSkyLight($x, $y, $z, 15);
 				}
 
@@ -805,10 +805,10 @@ class Chunk{
 				//No need to thoroughly prune empties at runtime, this will just reduce performance.
 				continue;
 			}
-			break;
+			return $y;
 		}
 
-		return $y;
+		return -1;
 	}
 
 	/**

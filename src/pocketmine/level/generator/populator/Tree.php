@@ -83,12 +83,12 @@ class Tree extends Populator{
 		for($y = 127; $y > 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
 			if($b === Block::DIRT or $b === Block::GRASS){
-				break;
+				return $y + 1;
 			}elseif($b !== Block::AIR and $b !== Block::SNOW_LAYER){
 				return -1;
 			}
 		}
 
-		return ++$y;
+		return -1;
 	}
 }

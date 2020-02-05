@@ -47,7 +47,8 @@ class GroundCover extends Populator{
 					}
 
 					$column = $chunk->getBlockIdColumn($x, $z);
-					for($y = 127; $y > 0; --$y){
+					$y = 127;
+					for(; $y > 0; --$y){
 						if($column[$y] !== "\x00" and !BlockFactory::get(ord($column[$y]))->isTransparent()){
 							break;
 						}
