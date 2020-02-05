@@ -186,7 +186,7 @@ class SimpleCommandMap implements CommandMap{
 			return false;
 		}
 
-		if(isset($this->knownCommands[$label]) and $this->knownCommands[$label]->getLabel() !== null and $this->knownCommands[$label]->getLabel() === $label){
+		if(isset($this->knownCommands[$label]) and $this->knownCommands[$label]->getLabel() === $label){
 			return false;
 		}
 
