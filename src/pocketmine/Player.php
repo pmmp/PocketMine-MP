@@ -1860,12 +1860,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$skinData = new SkinData(
 			$packet->clientData["SkinId"],
-			base64_decode($packet->clientData["SkinResourcePatch"] ?? ""),
-			new SkinImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"])),
+			base64_decode($packet->clientData["SkinResourcePatch"] ?? "", true),
+			new SkinImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"], true)),
 			$animations,
-			new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"] ?? "")),
-			base64_decode($packet->clientData["SkinGeometryData"] ?? ""),
-			base64_decode($packet->clientData["SkinAnimationData"] ?? ""),
+			new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"] ?? "", true)),
+			base64_decode($packet->clientData["SkinGeometryData"] ?? "", true),
+			base64_decode($packet->clientData["SkinAnimationData"] ?? "", true),
 			$packet->clientData["PremiumSkin"] ?? false,
 			$packet->clientData["PersonaSkin"] ?? false,
 			$packet->clientData["CapeOnClassicSkin"] ?? false,
