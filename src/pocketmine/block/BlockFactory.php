@@ -33,22 +33,22 @@ use function min;
  */
 class BlockFactory{
 	/** @var \SplFixedArray<Block> */
-	private static $fullList = null;
+	private static $fullList;
 
 	/** @var \SplFixedArray<bool> */
-	public static $solid = null;
+	public static $solid;
 	/** @var \SplFixedArray<bool> */
-	public static $transparent = null;
+	public static $transparent;
 	/** @var \SplFixedArray<float> */
-	public static $hardness = null;
+	public static $hardness;
 	/** @var \SplFixedArray<int> */
-	public static $light = null;
+	public static $light;
 	/** @var \SplFixedArray<int> */
-	public static $lightFilter = null;
+	public static $lightFilter;
 	/** @var \SplFixedArray<bool> */
-	public static $diffusesSkyLight = null;
+	public static $diffusesSkyLight;
 	/** @var \SplFixedArray<float> */
-	public static $blastResistance = null;
+	public static $blastResistance;
 
 	/**
 	 * Initializes the block factory. By default this is called only once on server start, however you may wish to use

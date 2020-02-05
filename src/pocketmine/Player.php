@@ -286,7 +286,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var PlayerCursorInventory */
 	protected $cursorInventory;
 	/** @var CraftingGrid */
-	protected $craftingGrid = null;
+	protected $craftingGrid;
 	/** @var CraftingTransaction|null */
 	protected $craftingTransaction = null;
 
@@ -348,7 +348,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $flying = false;
 
 	/** @var PermissibleBase */
-	private $perm = null;
+	private $perm;
 
 	/** @var int|null */
 	protected $lineHeight = null;

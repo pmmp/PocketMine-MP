@@ -47,7 +47,7 @@ class ItemFactory{
 	 * @var \SplFixedArray
 	 * @phpstan-var \SplFixedArray<Item>
 	 */
-	private static $list = null;
+	private static $list;
 
 	/**
 	 * @return void

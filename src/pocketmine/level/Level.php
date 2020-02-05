@@ -265,7 +265,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var bool */
 	private $clearChunksOnTick;
 	/** @var \SplFixedArray<Block> */
-	private $randomTickBlocks = null;
+	private $randomTickBlocks;
 
 	/** @var LevelTimings */
 	public $timings;

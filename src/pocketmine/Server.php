@@ -193,16 +193,16 @@ class Server{
 	private $tickSleeper;
 
 	/** @var BanList */
-	private $banByName = null;
+	private $banByName;
 
 	/** @var BanList */
-	private $banByIP = null;
+	private $banByIP;
 
 	/** @var Config */
-	private $operators = null;
+	private $operators;
 
 	/** @var Config */
-	private $whitelist = null;
+	private $whitelist;
 
 	/** @var bool */
 	private $isRunning = true;
@@ -211,13 +211,13 @@ class Server{
 	private $hasStopped = false;
 
 	/** @var PluginManager */
-	private $pluginManager = null;
+	private $pluginManager;
 
 	/** @var float */
 	private $profilingTickRate = 20;
 
 	/** @var AutoUpdater */
-	private $updater = null;
+	private $updater;
 
 	/** @var AsyncPool */
 	private $asyncPool;
@@ -255,10 +255,10 @@ class Server{
 	private $memoryManager;
 
 	/** @var CommandReader */
-	private $console = null;
+	private $console;
 
 	/** @var SimpleCommandMap */
-	private $commandMap = null;
+	private $commandMap;
 
 	/** @var CraftingManager */
 	private $craftingManager;
@@ -324,7 +324,7 @@ class Server{
 	private $queryHandler = null;
 
 	/** @var QueryRegenerateEvent */
-	private $queryRegenerateTask = null;
+	private $queryRegenerateTask;
 
 	/** @var Config */
 	private $properties;

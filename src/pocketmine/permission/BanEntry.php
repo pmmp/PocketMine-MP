@@ -38,7 +38,7 @@ class BanEntry{
 	/** @var string */
 	private $name;
 	/** @var \DateTime */
-	private $creationDate = null;
+	private $creationDate;
 	/** @var string */
 	private $source = "(Unknown)";
 	/** @var \DateTime|null */
