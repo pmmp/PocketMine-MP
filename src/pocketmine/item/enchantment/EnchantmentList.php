@@ -25,7 +25,10 @@ namespace pocketmine\item\enchantment;
 
 class EnchantmentList{
 
-	/** @var \SplFixedArray|EnchantmentEntry[] */
+	/**
+	 * @var \SplFixedArray|EnchantmentEntry[]
+	 * @phpstan-var \SplFixedArray<EnchantmentEntry>
+	 */
 	private $enchantments;
 
 	public function __construct(int $size){

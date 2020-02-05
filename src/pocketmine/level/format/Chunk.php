@@ -72,7 +72,10 @@ class Chunk{
 	/** @var int */
 	protected $height = Chunk::MAX_SUBCHUNKS;
 
-	/** @var \SplFixedArray|SubChunkInterface[] */
+	/**
+	 * @var \SplFixedArray|SubChunkInterface[]
+	 * @phpstan-var \SplFixedArray<SubChunkInterface>
+	 */
 	protected $subChunks;
 
 	/** @var EmptySubChunk */
@@ -86,7 +89,10 @@ class Chunk{
 	/** @var Entity[] */
 	protected $entities = [];
 
-	/** @var \SplFixedArray|int[] */
+	/**
+	 * @var \SplFixedArray|int[]
+	 * @phpstan-var \SplFixedArray<int>
+	 */
 	protected $heightMap;
 
 	/** @var string */
@@ -784,6 +790,7 @@ class Chunk{
 
 	/**
 	 * @return \SplFixedArray|SubChunkInterface[]
+	 * @phpstan-return \SplFixedArray<SubChunkInterface>
 	 */
 	public function getSubChunks() : \SplFixedArray{
 		return $this->subChunks;

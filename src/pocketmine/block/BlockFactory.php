@@ -391,6 +391,7 @@ class BlockFactory{
 
 	/**
 	 * @internal
+	 * @phpstan-return \SplFixedArray<Block>
 	 */
 	public static function getBlockStatesArray() : \SplFixedArray{
 		return self::$fullList;

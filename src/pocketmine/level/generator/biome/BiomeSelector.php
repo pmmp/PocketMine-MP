@@ -34,7 +34,10 @@ abstract class BiomeSelector{
 	/** @var Simplex */
 	private $rainfall;
 
-	/** @var Biome[]|\SplFixedArray */
+	/**
+	 * @var Biome[]|\SplFixedArray
+	 * @phpstan-var \SplFixedArray<Biome>
+	 */
 	private $map = null;
 
 	public function __construct(Random $random){

@@ -43,7 +43,10 @@ use function trim;
  */
 class ItemFactory{
 
-	/** @var \SplFixedArray */
+	/**
+	 * @var \SplFixedArray
+	 * @phpstan-var \SplFixedArray<Item>
+	 */
 	private static $list = null;
 
 	/**

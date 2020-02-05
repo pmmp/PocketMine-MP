@@ -247,7 +247,10 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Vector3 */
 	private $temporalVector;
 
-	/** @var \SplFixedArray */
+	/**
+	 * @var \SplFixedArray
+	 * @phpstan-var \SplFixedArray<Block>
+	 */
 	private $blockStates;
 
 	/** @var int */
@@ -1038,6 +1041,9 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunkCache[Level::chunkHash($chunkX, $chunkZ)]);
 	}
 
+	/**
+	 * @phpstan-return \SplFixedArray<Block>
+	 */
 	public function getRandomTickedBlocks() : \SplFixedArray{
 		return $this->randomTickBlocks;
 	}

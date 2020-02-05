@@ -49,7 +49,10 @@ abstract class Biome{
 
 	public const MAX_BIOMES = 256;
 
-	/** @var Biome[]|\SplFixedArray */
+	/**
+	 * @var Biome[]|\SplFixedArray
+	 * @phpstan-var \SplFixedArray<Biome>
+	 */
 	private static $biomes;
 
 	/** @var int */
