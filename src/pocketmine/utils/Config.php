@@ -172,31 +172,30 @@ class Config{
 		}else{
 			if($this->correct){
 				$content = file_get_contents($this->file);
+				$config = null;
 				switch($this->type){
 					case Config::PROPERTIES:
-						$this->parseProperties($content);
+						$config = $this->parseProperties($content);
 						break;
 					case Config::JSON:
-						$this->config = json_decode($content, true);
+						$config = json_decode($content, true);
 						break;
 					case Config::YAML:
 						$content = self::fixYAMLIndexes($content);
-						$this->config = yaml_parse($content);
+						$config = yaml_parse($content);
 						break;
 					case Config::SERIALIZED:
-						$this->config = unserialize($content);
+						$config = unserialize($content);
 						break;
 					case Config::ENUM:
-						$this->parseList($content);
+						$config = self::parseList($content);
 						break;
 					default:
 						$this->correct = false;
 
 						return false;
 				}
-				if(!is_array($this->config)){
-					$this->config = $default;
-				}
+				$this->config = is_array($config) ? $config : $default;
 				if($this->fillDefaults($default, $this->config) > 0){
 					$this->save();
 				}
@@ -531,14 +530,20 @@ class Config{
 		return $changed;
 	}
 
-	private function parseList(string $content) : void{
+	/**
+	 * @return true[]
+	 * @phpstan-return array<string, true>
+	 */
+	private static function parseList(string $content) : array{
+		$result = [];
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
 			if($v == ""){
 				continue;
 			}
-			$this->config[$v] = true;
+			$result[$v] = true;
 		}
+		return $result;
 	}
 
 	private function writeProperties() : string{
@@ -555,7 +560,12 @@ class Config{
 		return $content;
 	}
 
-	private function parseProperties(string $content) : void{
+	/**
+	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
+	 */
+	private function parseProperties(string $content) : array{
+		$result = [];
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);
@@ -571,11 +581,13 @@ class Config{
 						$v = false;
 						break;
 				}
-				if(isset($this->config[$k])){
+				if(isset($result[$k])){
 					MainLogger::getLogger()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
 				}
-				$this->config[$k] = $v;
+				$result[$k] = $v;
 			}
 		}
+
+		return $result;
 	}
 }
