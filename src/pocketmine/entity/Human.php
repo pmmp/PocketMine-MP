@@ -489,9 +489,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$equipment[$mainHandIndex] = $item;
 		}
 		//TODO: check offhand
-		foreach($this->armorInventory->getContents() as $k => $item){
-			if($item instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
-				$equipment[$k] = $item;
+		foreach($this->armorInventory->getContents() as $k => $armorItem){
+			if($armorItem instanceof Durable and $armorItem->hasEnchantment(Enchantment::MENDING)){
+				$equipment[$k] = $armorItem;
 			}
 		}
 
