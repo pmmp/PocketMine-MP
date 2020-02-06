@@ -82,7 +82,7 @@ class HelpCommand extends VanillaCommand{
 			}
 			ksort($commands, SORT_NATURAL | SORT_FLAG_CASE);
 			$commands = array_chunk($commands, $pageHeight);
-			$pageNumber = (int) min(count($commands), $pageNumber);
+			$pageNumber = min(count($commands), $pageNumber);
 			if($pageNumber < 1){
 				$pageNumber = 1;
 			}
