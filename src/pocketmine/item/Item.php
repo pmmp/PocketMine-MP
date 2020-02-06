@@ -735,20 +735,9 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @param bool $checkCompound Whether to verify that the items' NBT match.
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		if($this->id === $item->getId() and (!$checkDamage or $this->getDamage() === $item->getDamage())){
-			if($checkCompound){
-				if($item->getCompoundTag() === $this->getCompoundTag()){
-					return true;
-				}elseif($this->hasCompoundTag() and $item->hasCompoundTag()){
-					//Serialized NBT didn't match, check the cached object tree.
-					return $this->getNamedTag()->equals($item->getNamedTag());
-				}
-			}else{
-				return true;
-			}
-		}
-
-		return false;
+		return $this->id === $item->getId() and
+			(!$checkDamage or $this->getDamage() === $item->getDamage()) and
+			(!$checkCompound or $this->getNamedTag()->equals($item->getNamedTag()));
 	}
 
 	/**
