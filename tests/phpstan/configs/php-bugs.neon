@@ -1,0 +1,3 @@
+parameters:
+	ignoreErrors:
+			- "#^Method ReflectionMethod\\:\\:getClosure\\(\\) invoked with 0 parameters, 1 required\\.$#"
