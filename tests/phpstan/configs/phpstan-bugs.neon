@@ -1,5 +1,6 @@
 parameters:
 	ignoreErrors:
+		- "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 		-
 			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
 			path: ../../../src
@@ -34,6 +35,29 @@ parameters:
 			path: ../../../src/pocketmine/block/Liquid.php
 
 		-
+			#readline() may return false
+			message: "#^Strict comparison using \\!\\=\\= between string and false will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/CommandReader.php
+
+		-
+			#generics corruption, this might show up in other forms too
+			message: "#^Parameter \\#1 \\$offset \\(int\\) of method pocketmine\\\\entity\\\\AttributeMap\\:\\:offsetGet\\(\\) should be contravariant with parameter \\$offset \\(mixed\\) of method ArrayAccess\\<int,float\\>\\:\\:offsetGet\\(\\)$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/AttributeMap.php
+
+		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/entity/projectile/Projectile.php
+
+		-
+			message: "#^Call to function method_exists\\(\\) with pocketmine\\\\network\\\\mcpe\\\\CachedEncapsulatedPacket and '__toString' will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/DataPacket.php
+
+		-
+			#phpstan doesn't understand that SplFixedArray may contain null
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../tests/phpunit/block/BlockTest.php
