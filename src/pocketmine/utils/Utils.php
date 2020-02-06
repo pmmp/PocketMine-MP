@@ -543,7 +543,7 @@ class Utils{
 		}
 		switch(Utils::getOS()){
 			case "win":
-				exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
+				exec("taskkill.exe /F /PID $pid > NUL");
 				break;
 			case "mac":
 			case "linux":
@@ -551,7 +551,7 @@ class Utils{
 				if(function_exists("posix_kill")){
 					posix_kill($pid, 9); //SIGKILL
 				}else{
-					exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
+					exec("kill -9 $pid > /dev/null 2>&1");
 				}
 		}
 	}
