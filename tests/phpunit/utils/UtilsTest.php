@@ -29,7 +29,7 @@ use function defined;
 
 class UtilsTest extends TestCase{
 
-	public function setUp(){
+	public function setUp() : void{
 		if(!defined('pocketmine\PATH')){
 			define('pocketmine\PATH', 'dummy');
 		}

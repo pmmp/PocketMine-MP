@@ -55,7 +55,7 @@ class StupidJsonDecodeTest extends TestCase{
 	 *
 	 * @throws \ReflectionException
 	 */
-	public function testStupidJsonDecode(string $brokenJson, $expect){
+	public function testStupidJsonDecode(string $brokenJson, $expect) : void{
 		$decoded = ($this->stupidJsonDecodeFunc)($brokenJson, true);
 		self::assertEquals($expect, $decoded);
 	}

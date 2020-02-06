@@ -38,7 +38,7 @@ class RegionLoaderTest extends TestCase{
 	/** @var RegionLoader */
 	private $region;
 
-	public function setUp(){
+	public function setUp() : void{
 		$this->regionPath = sys_get_temp_dir() . '/test.testregion';
 		if(file_exists($this->regionPath)){
 			unlink($this->regionPath);
@@ -47,7 +47,7 @@ class RegionLoaderTest extends TestCase{
 		$this->region->open();
 	}
 
-	public function tearDown(){
+	public function tearDown() : void{
 		$this->region->close();
 		if(file_exists($this->regionPath)){
 			unlink($this->regionPath);
