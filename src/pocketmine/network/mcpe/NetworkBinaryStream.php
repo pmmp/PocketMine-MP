@@ -535,7 +535,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	public function getByteRotation() : float{
-		return (float) ($this->getByte() * (360 / 256));
+		return ($this->getByte() * (360 / 256));
 	}
 
 	public function putByteRotation(float $rotation) : void{

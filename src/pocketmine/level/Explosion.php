@@ -100,7 +100,7 @@ class Explosion{
 		$currentChunk = null;
 		$currentSubChunk = null;
 
-		$mRays = (int) ($this->rays - 1);
+		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
 				for($k = 0; $k < $this->rays; ++$k){
