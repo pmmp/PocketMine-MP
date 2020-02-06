@@ -33,6 +33,10 @@ class StupidJsonDecodeTest extends TestCase{
 		$this->stupidJsonDecodeFunc = (new \ReflectionMethod(PlayerNetworkSessionAdapter::class, 'stupid_json_decode'))->getClosure();
 	}
 
+	/**
+	 * @return mixed[][]
+	 * @phpstan-return list<array{string,mixed}>
+	 */
 	public function stupidJsonDecodeProvider() : array{
 		return [
 			["[\n   \"a\",\"b,c,d,e\\\"   \",,0,1,2, false, 0.001]", ['a', 'b,c,d,e"   ', '', 0, 1, 2, false, 0.001]],

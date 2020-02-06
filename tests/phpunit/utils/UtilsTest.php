@@ -38,6 +38,10 @@ class UtilsTest extends TestCase{
 		}
 	}
 
+	/**
+	 * @return string[][]
+	 * @phpstan-return list<array{string}>
+	 */
 	public function parseDocCommentNewlineProvider() : array{
 		return [
 			["\t/**\r\n\t * @param PlayerJoinEvent \$event\r\n\t * @priority HIGHEST\r\n\t * @notHandler\r\n\t */"],

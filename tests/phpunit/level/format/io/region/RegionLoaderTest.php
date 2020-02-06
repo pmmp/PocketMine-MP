@@ -69,6 +69,10 @@ class RegionLoaderTest extends TestCase{
 		self::assertSame($data, $r->readChunk(0, 0));
 	}
 
+	/**
+	 * @return \Generator|int[][]
+	 * @phpstan-return \Generator<int, array{int,int}, void, void>
+	 */
 	public function outOfBoundsCoordsProvider() : \Generator{
 		yield [-1, -1];
 		yield [32, 32];

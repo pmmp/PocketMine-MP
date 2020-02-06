@@ -95,7 +95,8 @@ class BlockTest extends TestCase{
 	}
 
 	/**
-	 * @return array
+	 * @return int[][]
+	 * @phpstan-return list<array{int,int}>
 	 */
 	public function blockGetProvider() : array{
 		return [
