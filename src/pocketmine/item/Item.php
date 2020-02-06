@@ -195,10 +195,8 @@ class Item implements ItemIds, \JsonSerializable{
 	protected $id;
 	/** @var int */
 	protected $meta;
-	/** @var string */
-	private $tags = "";
 	/** @var CompoundTag|null */
-	private $cachedNBT = null;
+	private $nbt = null;
 	/** @var int */
 	public $count = 1;
 	/** @var string */
@@ -221,7 +219,8 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * Sets the Item's NBT
+	 * @deprecated This method accepts NBT serialized in a network-dependent format.
+	 * @see Item::setNamedTag()
 	 *
 	 * @param CompoundTag|string|null $tags
 	 *
@@ -230,9 +229,10 @@ class Item implements ItemIds, \JsonSerializable{
 	public function setCompoundTag($tags) : Item{
 		if($tags instanceof CompoundTag){
 			$this->setNamedTag($tags);
+		}elseif(is_string($tags) and strlen($tags) > 0){
+			$this->setNamedTag(self::parseCompoundTag($tags));
 		}else{
-			$this->tags = $tags === null ? "" : (string) $tags;
-			$this->cachedNBT = null;
+			$this->clearNamedTag();
 		}
 
 		return $this;
@@ -245,14 +245,14 @@ class Item implements ItemIds, \JsonSerializable{
 	 * Returns the serialized NBT of the Item
 	 */
 	public function getCompoundTag() : string{
-		return $this->tags;
+		return $this->nbt !== null ? self::writeCompoundTag($this->nbt) : "";
 	}
 
 	/**
 	 * Returns whether this Item has a non-empty NBT.
 	 */
 	public function hasCompoundTag() : bool{
-		return $this->tags !== "";
+		return $this->nbt !== null and $this->nbt->getCount() > 0;
 	}
 
 	public function hasCustomBlockData() : bool{
@@ -520,11 +520,7 @@ class Item implements ItemIds, \JsonSerializable{
 	 * object is returned to allow the caller to manipulate and apply back to the item.
 	 */
 	public function getNamedTag() : CompoundTag{
-		if(!$this->hasCompoundTag() and $this->cachedNBT === null){
-			$this->cachedNBT = new CompoundTag();
-		}
-
-		return $this->cachedNBT ?? ($this->cachedNBT = self::parseCompoundTag($this->tags));
+		return $this->nbt ?? ($this->nbt = new CompoundTag());
 	}
 
 	/**
@@ -537,8 +533,7 @@ class Item implements ItemIds, \JsonSerializable{
 			return $this->clearNamedTag();
 		}
 
-		$this->cachedNBT = $tag;
-		$this->tags = self::writeCompoundTag($tag);
+		$this->nbt = clone $tag;
 
 		return $this;
 	}
@@ -548,7 +543,8 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return $this
 	 */
 	public function clearNamedTag() : Item{
-		return $this->setCompoundTag("");
+		$this->nbt = null;
+		return $this;
 	}
 
 	public function getCount() : int{
@@ -888,6 +884,8 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	public function __clone(){
-		$this->cachedNBT = null;
+		if($this->nbt !== null){
+			$this->nbt = clone $this->nbt;
+		}
 	}
 }
