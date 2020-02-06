@@ -50,7 +50,7 @@ abstract class ContainerInventory extends BaseInventory{
 
 		if($holder instanceof Entity){
 			$pk->entityUniqueId = $holder->getId();
-		}elseif($holder instanceof Vector3){
+		}else{
 			$pk->x = $holder->getFloorX();
 			$pk->y = $holder->getFloorY();
 			$pk->z = $holder->getFloorZ();
