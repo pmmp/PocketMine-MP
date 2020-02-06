@@ -7,6 +7,8 @@ includes:
 	- tests/phpstan/configs/phpunit-wiring-tests.neon
 	- tests/phpstan/configs/pthreads-bugs.neon
 	- tests/phpstan/configs/runtime-type-checks.neon
+	- vendor/phpstan/phpstan-phpunit/extension.neon
+	- vendor/phpstan/phpstan-phpunit/rules.neon
 
 parameters:
 	level: 6
