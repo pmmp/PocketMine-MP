@@ -95,7 +95,7 @@ class PermissionAttachment{
 	 */
 	public function setPermissions(array $permissions){
 		foreach($permissions as $key => $value){
-			$this->permissions[$key] = (bool) $value;
+			$this->permissions[$key] = $value;
 		}
 		$this->permissible->recalculatePermissions();
 	}
