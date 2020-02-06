@@ -2026,8 +2026,11 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @param string  $entityType Class of entity to use for instanceof
 	 * @param bool    $includeDead Whether to include entitites which are dead
+	 * @phpstan-template TEntity of Entity
+	 * @phpstan-param class-string<TEntity> $entityType
 	 *
 	 * @return Entity|null an entity of type $entityType, or null if not found
+	 * @phpstan-return TEntity
 	 */
 	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false) : ?Entity{
 		assert(is_a($entityType, Entity::class, true));
@@ -2039,7 +2042,10 @@ class Level implements ChunkManager, Metadatable{
 
 		$currentTargetDistSq = $maxDistance ** 2;
 
-		/** @var Entity|null $currentTarget */
+		/**
+		 * @var Entity|null $currentTarget
+		 * @phpstan-var TEntity|null $currentTarget
+		 */
 		$currentTarget = null;
 
 		for($x = $minX; $x <= $maxX; ++$x){
