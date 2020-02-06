@@ -37,7 +37,7 @@
    },
    "require-dev": {
       "phpstan/phpstan": "^0.12.8",
-      "irstea/phpunit-shim": "^7.5"
+      "irstea/phpunit-shim": "^8.5"
    },
    "autoload": {
       "psr-4": {
