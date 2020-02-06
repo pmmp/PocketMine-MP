@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1294d03ca688653618a4f1d58f5e4ec3",
+    "content-hash": "d8245ae04afc2a5b7a3c8f52ccd4f892",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -382,11 +382,11 @@
     "packages-dev": [
         {
             "name": "irstea/phpunit-shim",
-            "version": "7.5.20",
+            "version": "8.5.2",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.irstea.fr/pole-is/tools/phpunit-shim.git",
-                "reference": "81cd2d11e12165fddd2731033187dce4fbe8e013"
+                "reference": "39b6155954d6caec1110a9e78582c4816ab247bc"
             },
             "require": {
                 "ext-dom": "*",
@@ -394,7 +394,8 @@
                 "ext-libxml": "*",
                 "ext-mbstring": "*",
                 "ext-xml": "*",
-                "php": "^7.1"
+                "ext-xmlwriter": "*",
+                "php": "^7.2"
             },
             "replace": {
                 "phpunit/phpunit": "self.version"
@@ -426,7 +427,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2020-01-09T03:20:19+00:00"
+            "time": "2020-01-09T03:20:20+00:00"
         },
         {
             "name": "phpstan/phpstan",
