@@ -65,7 +65,7 @@ class TranslationContainer extends TextContainer{
 	}
 
 	/**
-	 * @param string[] $params
+	 * @param (float|int|string)[] $params
 	 *
 	 * @return void
 	 */
