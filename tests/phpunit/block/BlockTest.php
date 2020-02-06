@@ -62,7 +62,7 @@ class BlockTest extends TestCase{
 			}
 		}
 
-		self::assertTrue(false, "Can't test registering new blocks because no unused spaces left");
+		throw new \RuntimeException("Can't test registering new blocks because no unused spaces left");
 	}
 
 	/**
