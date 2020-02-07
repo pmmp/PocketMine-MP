@@ -22,6 +22,12 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
+			#dynamic instanceof
+			message: "#^Instanceof between pocketmine\\\\block\\\\tile\\\\Tile and class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\> will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/block/Block.php
+
+		-
 			message: "#^Comparison operation \"\\>\\=\" between 0 and 2 is always false\\.$#"
 			count: 1
 			path: ../../../src/block/Liquid.php
@@ -61,7 +67,18 @@ parameters:
 			path: ../../../src/network/mcpe/protocol/DataPacket.php
 
 		-
+			#object to array cast analysis bug
+			message: "#^Casting to string something that's already string\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/protocol/DataPacket.php
+
+		-
 			message: "#^If condition is always false\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\entity\\\\MetadataProperty and pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\entity\\\\MetadataProperty will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
 

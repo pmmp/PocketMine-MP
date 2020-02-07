@@ -1,6 +1,21 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Instanceof between pocketmine\\\\block\\\\utils\\\\BannerPattern and pocketmine\\\\block\\\\utils\\\\BannerPattern will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/block/Banner.php
+
+		-
+			message: "#^Call to function assert\\(\\) with bool will always evaluate to true\\.$#"
+			count: 2
+			path: ../../../src/block/tile/TileFactory.php
+
+		-
+			message: "#^Call to function assert\\(\\) with bool will always evaluate to true\\.$#"
+			count: 2
+			path: ../../../src/entity/EntityFactory.php
+
+		-
 			message: "#^Instanceof between pocketmine\\\\event\\\\RegisteredListener and pocketmine\\\\event\\\\RegisteredListener will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/event/HandlerList.php
@@ -9,6 +24,12 @@ parameters:
 			#jsonDeserialize(), not currently validated
 			message: "#^Casting to int something that's already int\\.$#"
 			count: 3
+			path: ../../../src/item/Item.php
+
+		-
+			#setLore()
+			message: "#^Call to function is_string\\(\\) with string will always evaluate to true\\.$#"
+			count: 1
 			path: ../../../src/item/Item.php
 
 		-
