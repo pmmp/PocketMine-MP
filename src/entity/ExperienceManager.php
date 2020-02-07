@@ -31,6 +31,7 @@ use pocketmine\world\sound\XpCollectSound;
 use pocketmine\world\sound\XpLevelUpSound;
 use function array_rand;
 use function ceil;
+use function count;
 use function max;
 use function min;
 
@@ -251,7 +252,7 @@ class ExperienceManager{
 			}
 		}
 
-		if(!empty($equipment)){
+		if(count($equipment) > 0){
 			$repairItem = $equipment[$k = array_rand($equipment)];
 			if($repairItem->getDamage() > 0){
 				$repairAmount = min($repairItem->getDamage(), $xpValue * 2);

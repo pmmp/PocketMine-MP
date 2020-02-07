@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use function count;
 
 /**
  * This trait encapsulates all enchantment handling needed for itemstacks.
@@ -35,7 +36,7 @@ trait ItemEnchantmentHandlingTrait{
 	protected $enchantments = [];
 
 	public function hasEnchantments() : bool{
-		return !empty($this->enchantments);
+		return count($this->enchantments) > 0;
 	}
 
 	public function hasEnchantment(Enchantment $enchantment, int $level = -1) : bool{

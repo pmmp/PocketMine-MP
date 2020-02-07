@@ -182,7 +182,7 @@ class WorldManager{
 		if(count($providers) !== 1){
 			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [
 				$name,
-				empty($providers) ?
+				count($providers) === 0 ?
 					$this->server->getLanguage()->translateString("pocketmine.level.unknownFormat") :
 					$this->server->getLanguage()->translateString("pocketmine.level.ambiguousFormat", [implode(", ", array_keys($providers))])
 			]));
@@ -302,7 +302,7 @@ class WorldManager{
 		}
 		$path = $this->server->getDataPath() . "worlds/" . $name . "/";
 		if(!($this->getWorldByName($name) instanceof World)){
-			return !empty(WorldProviderManager::getMatchingProviders($path));
+			return count(WorldProviderManager::getMatchingProviders($path)) > 0;
 		}
 
 		return true;

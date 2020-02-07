@@ -482,7 +482,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 * @param CompoundTag[]      $targets
 	 */
 	private function writeTags(array $targets, string $index, \LevelDBWriteBatch $write) : void{
-		if(!empty($targets)){
+		if(count($targets) > 0){
 			$nbt = new LittleEndianNbtSerializer();
 			$write->put($index, $nbt->writeMultiple(array_map(function(CompoundTag $tag) : TreeRoot{ return new TreeRoot($tag); }, $targets)));
 		}else{

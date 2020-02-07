@@ -901,7 +901,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		$this->loadQueue = $newOrder;
-		if(!empty($this->loadQueue) or !empty($unloadChunks)){
+		if(count($this->loadQueue) > 0 or count($unloadChunks) > 0){
 			$this->networkSession->syncViewAreaCenterPoint($this->location, $this->viewDistance);
 		}
 

@@ -548,7 +548,7 @@ class Chunk{
 	}
 
 	public function isDirty() : bool{
-		return $this->dirtyFlags !== 0 or !empty($this->tiles) or !empty($this->getSavableEntities());
+		return $this->dirtyFlags !== 0 or count($this->tiles) > 0 or count($this->getSavableEntities()) > 0;
 	}
 
 	public function getDirtyFlag(int $flag) : bool{

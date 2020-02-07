@@ -644,7 +644,7 @@ abstract class Entity{
 		$this->justCreated = false;
 
 		$changedProperties = $this->getSyncedNetworkData(true);
-		if(!empty($changedProperties)){
+		if(count($changedProperties) > 0){
 			$this->sendData($this->hasSpawned, $changedProperties);
 			$this->networkProperties->clearDirtyProperties();
 		}

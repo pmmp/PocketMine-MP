@@ -29,6 +29,7 @@ use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\utils\Color;
 use pocketmine\utils\Utils;
 use function abs;
+use function count;
 use function spl_object_id;
 
 class EffectManager{
@@ -188,7 +189,7 @@ class EffectManager{
 			}
 		}
 
-		if(!empty($colors)){
+		if(count($colors) > 0){
 			$this->bubbleColor = Color::mix(...$colors);
 			$this->onlyAmbientEffects = $ambient;
 		}else{
@@ -217,7 +218,7 @@ class EffectManager{
 			}
 		}
 
-		return !empty($this->effects);
+		return count($this->effects) > 0;
 	}
 
 	/**

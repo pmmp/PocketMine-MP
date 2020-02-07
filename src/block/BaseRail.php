@@ -79,7 +79,7 @@ abstract class BaseRail extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		if(empty($this->connections)){
+		if(count($this->connections) === 0){
 			return BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
 		}
 		return $this->getMetaForState($this->connections);

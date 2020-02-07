@@ -26,6 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\event\Event;
 use pocketmine\player\PlayerInfo;
 use function array_keys;
+use function count;
 
 /**
  * Called when a player connects to the server, prior to authentication taking place.
@@ -139,7 +140,7 @@ class PlayerPreLoginEvent extends Event{
 	 * Returns whether the player is allowed to continue logging in.
 	 */
 	public function isAllowed() : bool{
-		return empty($this->kickReasons);
+		return count($this->kickReasons) === 0;
 	}
 
 	/**

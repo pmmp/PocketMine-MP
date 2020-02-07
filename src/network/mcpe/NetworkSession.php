@@ -682,7 +682,7 @@ class NetworkSession{
 			$lname = strtolower($command->getName());
 			$aliases = $command->getAliases();
 			$aliasObj = null;
-			if(!empty($aliases)){
+			if(count($aliases) > 0){
 				if(!in_array($lname, $aliases, true)){
 					//work around a client bug which makes the original name not show when aliases are used
 					$aliases[] = $lname;

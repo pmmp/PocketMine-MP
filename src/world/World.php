@@ -608,7 +608,7 @@ class World implements ChunkManager{
 		$hash = World::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunkListeners[$hash])){
 			unset($this->chunkListeners[$hash][spl_object_id($listener)]);
-			if(empty($this->chunkListeners[$hash])){
+			if(count($this->chunkListeners[$hash]) === 0){
 				unset($this->chunkListeners[$hash]);
 			}
 		}
@@ -622,7 +622,7 @@ class World implements ChunkManager{
 		foreach($this->chunkListeners as $hash => $listeners){
 			if(isset($listeners[$id])){
 				unset($this->chunkListeners[$hash][$id]);
-				if(empty($this->chunkListeners[$hash])){
+				if(count($this->chunkListeners[$hash]) === 0){
 					unset($this->chunkListeners[$hash]);
 				}
 			}
@@ -646,7 +646,7 @@ class World implements ChunkManager{
 	public function sendTime(Player ...$targets) : void{
 		$pk = SetTimePacket::create($this->time);
 
-		if(empty($targets)){
+		if(count($targets) === 0){
 			$this->broadcastGlobalPacket($pk);
 		}else{
 			$this->server->broadcastPackets($targets, [$pk]);
@@ -2370,7 +2370,7 @@ class World implements ChunkManager{
 	 */
 	public function sendDifficulty(Player ...$targets) : void{
 		$pk = SetDifficultyPacket::create($this->getDifficulty());
-		if(empty($targets)){
+		if(count($targets) === 0){
 			$this->broadcastGlobalPacket($pk);
 		}else{
 			$this->server->broadcastPackets($targets, [$pk]);

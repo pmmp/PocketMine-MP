@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use function count;
 use function is_array;
 use function is_bool;
 use function ksort;
@@ -151,7 +152,7 @@ class PermissionParser{
 			}
 			$children[$name] = self::emitPermission($child);
 		}
-		if(!empty($children)){
+		if(count($children) > 0){
 			ksort($children);
 			$result["children"] = $children;
 		}

@@ -186,7 +186,7 @@ abstract class Living extends Entity{
 
 		$nbt->setShort("Air", $this->getAirSupplyTicks());
 
-		if(!empty($this->effectManager->all())){
+		if(count($this->effectManager->all()) > 0){
 			$effects = [];
 			foreach($this->effectManager->all() as $effect){
 				$effects[] = CompoundTag::create()

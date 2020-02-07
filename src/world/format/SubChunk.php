@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\format;
 
 use function array_values;
+use function count;
 
 class SubChunk implements SubChunkInterface{
 	/** @var int */
@@ -55,18 +56,18 @@ class SubChunk implements SubChunkInterface{
 	}
 
 	public function isEmptyFast() : bool{
-		return empty($this->blockLayers);
+		return count($this->blockLayers) === 0;
 	}
 
 	public function getFullBlock(int $x, int $y, int $z) : int{
-		if(empty($this->blockLayers)){
+		if(count($this->blockLayers) === 0){
 			return $this->defaultBlock;
 		}
 		return $this->blockLayers[0]->get($x, $y, $z);
 	}
 
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		if(empty($this->blockLayers)){
+		if(count($this->blockLayers) === 0){
 			$this->blockLayers[] = new PalettedBlockArray($this->defaultBlock);
 		}
 		$this->blockLayers[0]->set($x, $y, $z, $block);
@@ -80,7 +81,7 @@ class SubChunk implements SubChunkInterface{
 	}
 
 	public function getHighestBlockAt(int $x, int $z) : int{
-		if(empty($this->blockLayers)){
+		if(count($this->blockLayers) === 0){
 			return -1;
 		}
 		for($y = 15; $y >= 0; --$y){

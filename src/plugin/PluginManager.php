@@ -243,7 +243,7 @@ class PluginManager{
 					continue;
 				}
 				$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
-				if(!empty($ambiguousVersions)){
+				if(count($ambiguousVersions) > 0){
 					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 						$name,
 						$this->server->getLanguage()->translateString("pocketmine.plugin.ambiguousMinAPI", [implode(", ", $ambiguousVersions)])

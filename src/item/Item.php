@@ -48,6 +48,7 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 use function base64_decode;
 use function base64_encode;
+use function count;
 use function get_class;
 use function gettype;
 use function hex2bin;
@@ -326,7 +327,7 @@ class Item implements \JsonSerializable{
 			$display->setString(self::TAG_DISPLAY_NAME, $this->getCustomName()) :
 			$display->removeTag(self::TAG_DISPLAY);
 
-		if(!empty($this->lore)){
+		if(count($this->lore) > 0){
 			$loreTag = new ListTag();
 			foreach($this->lore as $line){
 				$loreTag->push(new StringTag($line));
