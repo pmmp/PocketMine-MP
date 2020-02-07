@@ -45,7 +45,7 @@ class CompressBatchPromise{
 	public function onResolve(\Closure ...$callbacks) : void{
 		$this->checkCancelled();
 		foreach($callbacks as $callback){
-			Utils::validateCallableSignature(function(CompressBatchPromise $promise){}, $callback);
+			Utils::validateCallableSignature(function(CompressBatchPromise $promise) : void{}, $callback);
 		}
 		if($this->result !== null){
 			foreach($callbacks as $callback){

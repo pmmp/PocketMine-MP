@@ -124,7 +124,7 @@ class SendUsageTask extends AsyncTask{
 					$playerList[$k] = md5($v);
 				}
 
-				$players = array_map(function(Player $p){ return md5($p->getUniqueId()->toBinary()); }, $server->getOnlinePlayers());
+				$players = array_map(function(Player $p) : string{ return md5($p->getUniqueId()->toBinary()); }, $server->getOnlinePlayers());
 
 				$data["players"] = [
 					"count" => count($players),

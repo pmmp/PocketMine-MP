@@ -46,10 +46,10 @@ class CallbackInventoryChangeListener implements InventoryChangeListener{
 	 */
 	public function __construct(?\Closure $onSlotChange, ?\Closure $onContentChange){
 		if($onSlotChange !== null){
-			Utils::validateCallableSignature(function(Inventory $inventory, int $slot){}, $onSlotChange);
+			Utils::validateCallableSignature(function(Inventory $inventory, int $slot) : void{}, $onSlotChange);
 		}
 		if($onContentChange !== null){
-			Utils::validateCallableSignature(function(Inventory $inventory){}, $onContentChange);
+			Utils::validateCallableSignature(function(Inventory $inventory) : void{}, $onContentChange);
 		}
 
 		$this->onSlotChangeCallback = $onSlotChange;

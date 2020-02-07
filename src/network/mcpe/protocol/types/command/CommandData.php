@@ -41,9 +41,9 @@ class CommandData{
 	 * @param CommandParameter[][] $overloads
 	 */
 	public function __construct(string $name, string $description, int $flags, int $permission, ?CommandEnum $aliases, array $overloads){
-		(function(array ...$overloads){
+		(function(array ...$overloads) : void{
 			foreach($overloads as $overload){
-				(function(CommandParameter ...$parameters){})(...$overload);
+				(function(CommandParameter ...$parameters) : void{})(...$overload);
 			}
 		})(...$overloads);
 		$this->name = $name;

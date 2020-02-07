@@ -63,7 +63,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	}
 
 	public function setUp() : void{
-		$resourcePackEntries = array_map(static function(ResourcePack $pack){
+		$resourcePackEntries = array_map(static function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
 			return new ResourcePackInfoEntry($pack->getPackId(), $pack->getPackVersion(), $pack->getPackSize(), "", "", "", false);
 		}, $this->resourcePackManager->getResourceStack());
@@ -109,7 +109,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 
 				break;
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
-				$stack = array_map(static function(ResourcePack $pack){
+				$stack = array_map(static function(ResourcePack $pack) : ResourcePackStackEntry{
 					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
 				}, $this->resourcePackManager->getResourceStack());
 

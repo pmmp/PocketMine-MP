@@ -90,7 +90,7 @@ class SubChunkIteratorManager{
 	 * @phpstan-param \Closure() : void $callback
 	 */
 	public function onSubChunkChange(\Closure $callback) : void{
-		Utils::validateCallableSignature(function(){}, $callback);
+		Utils::validateCallableSignature(function() : void{}, $callback);
 		$this->onSubChunkChangeFunc = $callback;
 	}
 

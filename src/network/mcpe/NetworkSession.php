@@ -740,7 +740,7 @@ class NetworkSession{
 	 * @phpstan-param \Closure(int $chunkX, int $chunkZ) : void $onCompletion
 	 */
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
-		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ){}, $onCompletion);
+		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ) : void{}, $onCompletion);
 
 		$world = $this->player->getLocation()->getWorld();
 		assert($world !== null);
@@ -797,7 +797,7 @@ class NetworkSession{
 	}
 
 	public function syncPlayerList() : void{
-		$this->sendDataPacket(PlayerListPacket::add(array_map(function(Player $player){
+		$this->sendDataPacket(PlayerListPacket::add(array_map(function(Player $player) : PlayerListEntry{
 			return PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), SkinAdapterSingleton::get()->toSkinData($player->getSkin()), $player->getXuid());
 		}, $this->server->getOnlinePlayers())));
 	}
