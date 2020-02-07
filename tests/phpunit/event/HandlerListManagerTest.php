@@ -33,7 +33,7 @@ class HandlerListManagerTest extends TestCase{
 	private $resolveParentFunc;
 
 
-	public function setUp(){
+	public function setUp() : void{
 		/** @see HandlerListManager::isValidClass() */
 		$this->isValidFunc = (new \ReflectionMethod(HandlerListManager::class, 'isValidClass'))->getClosure();
 		/** @see HandlerListManager::resolveNearestHandleableParent() */
