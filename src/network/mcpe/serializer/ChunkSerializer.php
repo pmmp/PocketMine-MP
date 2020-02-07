@@ -44,10 +44,10 @@ final class ChunkSerializer{
 			if($chunk->getSubChunk($count - 1)->isEmptyFast()){
 				continue;
 			}
-			break;
+			return $count;
 		}
 
-		return $count;
+		return 0;
 	}
 
 	public static function serialize(Chunk $chunk, ?string $tiles = null) : string{
