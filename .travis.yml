@@ -7,10 +7,10 @@ php:
 
 before_script:
  - phpenv config-rm xdebug.ini
- - LEVELDB_VERSION=f1463cb0b2486b0caf7d42ca3c7684545e875f04
- - curl -fsSL "https://github.com/pmmp/leveldb-mcpe/archive/f1463cb0b2486b0caf7d42ca3c7684545e875f04.tar.gz" | tar -zx
+ - LEVELDB_VERSION=10f59b56bec1db3ffe42ff265afe22182073e0e2
+ - curl -fsSL "https://github.com/pmmp/leveldb-mcpe/archive/$LEVELDB_VERSION.tar.gz" | tar -zx
  - mv leveldb-mcpe-$LEVELDB_VERSION leveldb-mcpe
- - cd leveldb-mcpe && make -j4 && mv out-shared/libleveldb.* . && cd ..
+ - cd leveldb-mcpe && make -j4 sharedlibs && mv out-shared/libleveldb.* . && cd ..
  - git clone https://github.com/reeze/php-leveldb.git leveldb
  - cd leveldb
  - git checkout 9bcae79f71b81a5c3ea6f67e45ae9ae9fb2775a5
