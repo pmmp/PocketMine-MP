@@ -47,7 +47,6 @@ class ChorusFruit extends Food{
 
 	public function onConsume(Living $consumer) : void{
 		$world = $consumer->getWorld();
-		assert($world !== null);
 
 		$origin = $consumer->getPosition();
 		$minX = $origin->getFloorX() - 8;
