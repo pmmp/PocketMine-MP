@@ -135,7 +135,7 @@ class ProcessLoginTask extends AsyncTask{
 		$v = openssl_verify(
 			"$headB64.$payloadB64",
 			(new DerSignatureSerializer())->serialize($sig),
-			(new PemPublicKeySerializer($derSerializer))->serialize($derSerializer->parse(base64_decode($currentPublicKey))),
+			(new PemPublicKeySerializer($derSerializer))->serialize($derSerializer->parse(base64_decode($currentPublicKey, true))),
 			OPENSSL_ALGO_SHA384
 		);
 
