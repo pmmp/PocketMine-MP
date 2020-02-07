@@ -732,7 +732,7 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string        $event Class name that extends Event
+	 * @param string $event Class name that extends Event
 	 *
 	 * @throws PluginException
 	 */
