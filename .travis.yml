@@ -7,10 +7,7 @@ php:
 
 before_script:
  - phpenv config-rm xdebug.ini
- - LEVELDB_VERSION=10f59b56bec1db3ffe42ff265afe22182073e0e2
- - curl -fsSL "https://github.com/pmmp/leveldb-mcpe/archive/$LEVELDB_VERSION.tar.gz" | tar -zx
- - mv leveldb-mcpe-$LEVELDB_VERSION leveldb-mcpe
- - cd leveldb-mcpe && make -j4 sharedlibs && mv out-shared/libleveldb.* . && cd ..
+ - ./tests/build-leveldb.sh 10f59b56bec1db3ffe42ff265afe22182073e0e2
  - git clone https://github.com/reeze/php-leveldb.git leveldb
  - cd leveldb
  - git checkout 9bcae79f71b81a5c3ea6f67e45ae9ae9fb2775a5
@@ -46,6 +43,9 @@ script:
  - ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
  - composer install --no-dev
  - ./tests/travis.sh -t4
+
+cache:
+ - leveldb-mcpe
 
 notifications:
  email: false
