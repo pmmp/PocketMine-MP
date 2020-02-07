@@ -512,7 +512,7 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string   $event Class name that extends Event
+	 * @param string $event Class name that extends Event
 	 *
 	 * @phpstan-template TEvent of Event
 	 * @phpstan-param class-string<TEvent> $event

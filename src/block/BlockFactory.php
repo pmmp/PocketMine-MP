@@ -60,14 +60,26 @@ use function min;
  * Manages block registration and instance creation
  */
 class BlockFactory{
-	/** @var \SplFixedArray|Block[] */
+	/**
+	 * @var \SplFixedArray|Block[]
+	 * @phpstan-var \SplFixedArray<Block>
+	 */
 	private static $fullList;
 
-	/** @var \SplFixedArray|int[] */
+	/**
+	 * @var \SplFixedArray|int[]
+	 * @phpstan-var \SplFixedArray<int>
+	 */
 	public static $lightFilter;
-	/** @var \SplFixedArray|bool[] */
+	/**
+	 * @var \SplFixedArray|bool[]
+	 * @phpstan-var \SplFixedArray<bool>
+	 */
 	public static $diffusesSkyLight;
-	/** @var \SplFixedArray|float[] */
+	/**
+	 * @var \SplFixedArray|float[]
+	 * @phpstan-var \SplFixedArray<float>
+	 */
 	public static $blastResistance;
 
 	/**

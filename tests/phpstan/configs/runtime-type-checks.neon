@@ -18,6 +18,11 @@ parameters:
 			path: ../../../src/plugin/PluginBase.php
 
 		-
+			message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<pocketmine\\\\event\\\\Event\\> and 'pocketmine\\\\\\\\event…' will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginManager.php
+
+		-
 			#::add() / ::remove() thread parameter
 			message: "#^If condition is always true\\.$#"
 			count: 2
