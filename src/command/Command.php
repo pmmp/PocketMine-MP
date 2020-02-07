@@ -65,11 +65,11 @@ abstract class Command{
 	/** @var string|null */
 	private $permission = null;
 
-	/** @var string */
+	/** @var string|null */
 	private $permissionMessage = null;
 
-	/** @var TimingsHandler */
-	public $timings;
+	/** @var TimingsHandler|null */
+	public $timings = null;
 
 	/**
 	 * @param string[] $aliases

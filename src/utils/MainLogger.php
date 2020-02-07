@@ -252,7 +252,7 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	public function syncFlushBuffer() : void{
 		$this->syncFlush = true;
-		$this->synchronized(function(){
+		$this->synchronized(function() : void{
 			$this->notify(); //write immediately
 
 			while($this->syncFlush){
@@ -284,7 +284,7 @@ class MainLogger extends \AttachableThreadedLogger{
 
 		while(!$this->shutdown){
 			$this->writeLogStream($logResource);
-			$this->synchronized(function(){
+			$this->synchronized(function() : void{
 				$this->wait(25000);
 			});
 		}

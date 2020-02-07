@@ -35,7 +35,7 @@ class CommandEnumConstraint{
 	 * @param int[]       $constraints
 	 */
 	public function __construct(CommandEnum $enum, int $valueOffset, array $constraints){
-		(static function(int ...$_){})(...$constraints);
+		(static function(int ...$_) : void{})(...$constraints);
 		if(!isset($enum->getValues()[$valueOffset])){
 			throw new \InvalidArgumentException("Invalid enum value offset $valueOffset");
 		}

@@ -54,7 +54,7 @@ abstract class AsyncTask extends \Threaded{
 	 */
 	private static $threadLocalStorage = null;
 
-	/** @var AsyncWorker $worker */
+	/** @var AsyncWorker|null $worker */
 	public $worker = null;
 
 	/** @var \Threaded */

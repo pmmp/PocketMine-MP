@@ -61,14 +61,14 @@ use function min;
  */
 class BlockFactory{
 	/** @var \SplFixedArray|Block[] */
-	private static $fullList = null;
+	private static $fullList;
 
 	/** @var \SplFixedArray|int[] */
-	public static $lightFilter = null;
+	public static $lightFilter;
 	/** @var \SplFixedArray|bool[] */
-	public static $diffusesSkyLight = null;
+	public static $diffusesSkyLight;
 	/** @var \SplFixedArray|float[] */
-	public static $blastResistance = null;
+	public static $blastResistance;
 
 	/**
 	 * Initializes the block factory. By default this is called only once on server start, however you may wish to use

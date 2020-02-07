@@ -36,7 +36,10 @@ abstract class BaseInventory implements Inventory{
 
 	/** @var int */
 	protected $maxStackSize = Inventory::MAX_STACK;
-	/** @var \SplFixedArray|(Item|null)[] */
+	/**
+	 * @var \SplFixedArray|(Item|null)[]
+	 * @phpstan-var \SplFixedArray<Item|null>
+	 */
 	protected $slots;
 	/** @var Player[] */
 	protected $viewers = [];

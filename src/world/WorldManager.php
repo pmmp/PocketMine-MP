@@ -145,7 +145,7 @@ class WorldManager{
 		foreach($world->getPlayers() as $player){
 			if($world === $this->defaultWorld or $this->defaultWorld === null){
 				$player->disconnect("Forced default world unload");
-			}elseif($this->defaultWorld instanceof World){
+			}else{
 				$player->teleport($this->defaultWorld->getSafeSpawn());
 			}
 		}

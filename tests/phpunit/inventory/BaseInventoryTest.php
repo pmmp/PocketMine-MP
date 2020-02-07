@@ -29,7 +29,7 @@ use pocketmine\item\ItemIds;
 
 class BaseInventoryTest extends TestCase{
 
-	public static function setUpBeforeClass(){
+	public static function setUpBeforeClass() : void{
 		ItemFactory::init();
 	}
 

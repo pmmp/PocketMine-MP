@@ -245,9 +245,9 @@ class ExperienceManager{
 			$equipment[$mainHandIndex] = $item;
 		}
 		//TODO: check offhand
-		foreach($this->entity->getArmorInventory()->getContents() as $k => $item){
-			if($item instanceof Durable and $item->hasEnchantment(Enchantment::MENDING())){
-				$equipment[$k] = $item;
+		foreach($this->entity->getArmorInventory()->getContents() as $k => $armorItem){
+			if($armorItem instanceof Durable and $armorItem->hasEnchantment(Enchantment::MENDING())){
+				$equipment[$k] = $armorItem;
 			}
 		}
 

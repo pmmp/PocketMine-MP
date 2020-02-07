@@ -304,13 +304,13 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 				$parameter->isOptional = $this->getBool();
 				$parameter->flags = $this->getByte();
 
-				if($parameter->paramType & self::ARG_FLAG_ENUM){
+				if(($parameter->paramType & self::ARG_FLAG_ENUM) !== 0){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->enum = $enums[$index] ?? null;
 					if($parameter->enum === null){
 						throw new BadPacketException("deserializing $name parameter $parameter->paramName: expected enum at $index, but got none");
 					}
-				}elseif($parameter->paramType & self::ARG_FLAG_POSTFIX){
+				}elseif(($parameter->paramType & self::ARG_FLAG_POSTFIX) !== 0){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->postfix = $postfixes[$index] ?? null;
 					if($parameter->postfix === null){
@@ -374,8 +374,8 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 * @phpstan-param array<int, string> $postfixes
 	 */
 	private function argTypeToString(int $argtype, array $postfixes) : string{
-		if($argtype & self::ARG_FLAG_VALID){
-			if($argtype & self::ARG_FLAG_ENUM){
+		if(($argtype & self::ARG_FLAG_VALID) !== 0){
+			if(($argtype & self::ARG_FLAG_ENUM) !== 0){
 				return "stringenum (" . ($argtype & 0xffff) . ")";
 			}
 
@@ -401,7 +401,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 				case self::ARG_TYPE_COMMAND:
 					return "command";
 			}
-		}elseif($argtype & self::ARG_FLAG_POSTFIX){
+		}elseif(($argtype & self::ARG_FLAG_POSTFIX) !== 0){
 			$postfix = $postfixes[$argtype & 0xffff];
 
 			return "int (postfix $postfix)";
@@ -422,7 +422,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 		/** @var CommandEnum[] $enums */
 		$enums = [];
 
-		$addEnumFn = static function(CommandEnum $enum) use (&$enums, &$enumIndexes, &$enumValueIndexes){
+		$addEnumFn = static function(CommandEnum $enum) use (&$enums, &$enumIndexes, &$enumValueIndexes) : void{
 			if(!isset($enumIndexes[$enum->getName()])){
 				$enums[$enumIndexes[$enum->getName()] = count($enumIndexes)] = $enum;
 			}

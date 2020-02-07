@@ -124,7 +124,7 @@ class Leaves extends Transparent{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->getBlockToolType() & BlockToolType::SHEARS){
+		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
 			return $this->getDropsForCompatibleTool($item);
 		}
 

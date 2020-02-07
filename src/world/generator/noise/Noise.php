@@ -203,6 +203,10 @@ abstract class Noise{
 		return $result;
 	}
 
+	/**
+	 * @return \SplFixedArray|float[]
+	 * @phpstan-return \SplFixedArray<float>
+	 */
 	public function getFastNoise1D(int $xSize, int $samplingRate, int $x, int $y, int $z) : \SplFixedArray{
 		if($samplingRate === 0){
 			throw new \InvalidArgumentException("samplingRate cannot be 0");
@@ -227,6 +231,10 @@ abstract class Noise{
 		return $noiseArray;
 	}
 
+	/**
+	 * @return \SplFixedArray|float[][]
+	 * @phpstan-return \SplFixedArray<\SplFixedArray<float>>
+	 */
 	public function getFastNoise2D(int $xSize, int $zSize, int $samplingRate, int $x, int $y, int $z) : \SplFixedArray{
 		assert($samplingRate !== 0, new \InvalidArgumentException("samplingRate cannot be 0"));
 

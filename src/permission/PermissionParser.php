@@ -102,9 +102,7 @@ class PermissionParser{
 			if(is_array($data["children"])){
 				foreach($data["children"] as $k => $v){
 					if(is_array($v)){
-						if(($perm = self::loadPermission($k, $v, $default, $output)) !== null){
-							$output[] = $perm;
-						}
+						$output[] = self::loadPermission($k, $v, $default, $output);
 					}
 					$children[$k] = true;
 				}

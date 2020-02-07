@@ -82,7 +82,7 @@ class LoginPacketHandler extends PacketHandler{
 					new SkinImage(
 						$animation[LoginPacket::I_ANIMATION_IMAGE_HEIGHT],
 						$animation[LoginPacket::I_ANIMATION_IMAGE_WIDTH],
-						base64_decode($animation[LoginPacket::I_ANIMATION_IMAGE_DATA])
+						base64_decode($animation[LoginPacket::I_ANIMATION_IMAGE_DATA], true)
 					),
 					$animation[LoginPacket::I_ANIMATION_IMAGE_TYPE],
 					$animation[LoginPacket::I_ANIMATION_IMAGE_FRAMES]
@@ -90,12 +90,12 @@ class LoginPacketHandler extends PacketHandler{
 			}
 			$skinData = new SkinData(
 				$packet->clientData[LoginPacket::I_SKIN_ID],
-				base64_decode($packet->clientData[LoginPacket::I_SKIN_RESOURCE_PATCH]),
-				new SkinImage($packet->clientData[LoginPacket::I_SKIN_HEIGHT], $packet->clientData[LoginPacket::I_SKIN_WIDTH], base64_decode($packet->clientData[LoginPacket::I_SKIN_DATA])),
+				base64_decode($packet->clientData[LoginPacket::I_SKIN_RESOURCE_PATCH], true),
+				new SkinImage($packet->clientData[LoginPacket::I_SKIN_HEIGHT], $packet->clientData[LoginPacket::I_SKIN_WIDTH], base64_decode($packet->clientData[LoginPacket::I_SKIN_DATA], true)),
 				$animations,
-				new SkinImage($packet->clientData[LoginPacket::I_CAPE_HEIGHT], $packet->clientData[LoginPacket::I_CAPE_WIDTH], base64_decode($packet->clientData[LoginPacket::I_CAPE_DATA])),
-				base64_decode($packet->clientData[LoginPacket::I_GEOMETRY_DATA]),
-				base64_decode($packet->clientData[LoginPacket::I_ANIMATION_DATA]),
+				new SkinImage($packet->clientData[LoginPacket::I_CAPE_HEIGHT], $packet->clientData[LoginPacket::I_CAPE_WIDTH], base64_decode($packet->clientData[LoginPacket::I_CAPE_DATA], true)),
+				base64_decode($packet->clientData[LoginPacket::I_GEOMETRY_DATA], true),
+				base64_decode($packet->clientData[LoginPacket::I_ANIMATION_DATA], true),
 				$packet->clientData[LoginPacket::I_PREMIUM_SKIN],
 				$packet->clientData[LoginPacket::I_PERSONA_SKIN],
 				$packet->clientData[LoginPacket::I_PERSONA_CAPE_ON_CLASSIC_SKIN],

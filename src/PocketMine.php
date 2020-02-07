@@ -178,7 +178,7 @@ namespace pocketmine {
 
 		$opts = getopt("", ["bootstrap:"]);
 		if(isset($opts["bootstrap"])){
-			$bootstrap = realpath($opts["bootstrap"]) ?: $opts["bootstrap"];
+			$bootstrap = ($real = realpath($opts["bootstrap"])) !== false ? $real : $opts["bootstrap"];
 		}else{
 			$bootstrap = dirname(__FILE__, 2) . '/vendor/autoload.php';
 		}
@@ -256,7 +256,6 @@ namespace pocketmine {
 				}
 			}
 
-			ThreadManager::init();
 			/*
 			 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
 			 */

@@ -182,7 +182,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function getXpDropAmount() : int{
 		//this causes some XP to be lost on death when above level 1 (by design), dropping at most enough points for
 		//about 7.5 levels of XP.
-		return (int) min(100, 7 * $this->xpManager->getXpLevel());
+		return min(100, 7 * $this->xpManager->getXpLevel());
 	}
 
 	/**

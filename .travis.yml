@@ -38,14 +38,16 @@ before_script:
  - echo "extension=leveldb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 script:
- - composer install
+ - composer install --prefer-dist
  - ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
  - ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
- - composer install --no-dev
+ - composer install --no-dev --prefer-dist
  - ./tests/travis.sh -t4
 
 cache:
- - leveldb-mcpe
+  - leveldb-mcpe
+  - $HOME/.composer/cache/files
+  - $HOME/.composer/cache/vcs
 
 notifications:
  email: false

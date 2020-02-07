@@ -328,7 +328,7 @@ class PluginManager{
 				if(!isset($dependencies[$name]) and !isset($softDependencies[$name])){
 					unset($plugins[$name]);
 					$loadedThisLoop++;
-					if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
+					if(($plugin = $this->loadPlugin($file, $loaders)) instanceof Plugin){
 						$loadedPlugins[$name] = $plugin;
 					}else{
 						$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.genericLoadError", [$name]));

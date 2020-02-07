@@ -1,15 +1,8 @@
 parameters:
 	ignoreErrors:
+		- "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 		-
 			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
-			path: ../../../src
-
-		-
-			message: "#^Cannot access an offset on Threaded\\.$#"
-			path: ../../../src
-
-		-
-			message: "#^Cannot assign new offset to Threaded\\.$#"
 			path: ../../../src
 
 		-
@@ -40,6 +33,12 @@ parameters:
 			path: ../../../src/block/Liquid.php
 
 		-
+			#readline() may return false
+			message: "#^Strict comparison using \\!\\=\\= between string and false will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/command/CommandReader.php
+
+		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
@@ -65,3 +64,9 @@ parameters:
 			message: "#^If condition is always false\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
+
+		-
+			#phpstan doesn't understand that SplFixedArray may contain null
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../tests/phpunit/block/BlockTest.php

@@ -121,9 +121,9 @@ class Flat extends Generator{
 
 	protected function parsePreset() : void{
 		$preset = explode(";", $this->preset);
-		$blocks = (string) ($preset[1] ?? "");
+		$blocks = $preset[1] ?? "";
 		$this->biome = (int) ($preset[2] ?? 1);
-		$options = (string) ($preset[3] ?? "");
+		$options = $preset[3] ?? "";
 		$this->structure = self::parseLayers($blocks);
 
 		$this->floorLevel = count($this->structure);

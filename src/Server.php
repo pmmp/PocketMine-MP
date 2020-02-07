@@ -159,23 +159,23 @@ class Server{
 	public const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
-	/** @var Server */
+	/** @var Server|null */
 	private static $instance = null;
 
 	/** @var SleeperHandler */
 	private $tickSleeper;
 
 	/** @var BanList */
-	private $banByName = null;
+	private $banByName;
 
 	/** @var BanList */
-	private $banByIP = null;
+	private $banByIP;
 
 	/** @var Config */
-	private $operators = null;
+	private $operators;
 
 	/** @var Config */
-	private $whitelist = null;
+	private $whitelist;
 
 	/** @var bool */
 	private $isRunning = true;
@@ -184,13 +184,13 @@ class Server{
 	private $hasStopped = false;
 
 	/** @var PluginManager */
-	private $pluginManager = null;
+	private $pluginManager;
 
 	/** @var float */
 	private $profilingTickRate = 20;
 
 	/** @var AutoUpdater */
-	private $updater = null;
+	private $updater;
 
 	/** @var AsyncPool */
 	private $asyncPool;
@@ -227,10 +227,10 @@ class Server{
 	private $memoryManager;
 
 	/** @var CommandReader */
-	private $console = null;
+	private $console;
 
 	/** @var SimpleCommandMap */
-	private $commandMap = null;
+	private $commandMap;
 
 	/** @var CraftingManager */
 	private $craftingManager;
@@ -274,7 +274,7 @@ class Server{
 	private $uniquePlayers = [];
 
 	/** @var QueryRegenerateEvent */
-	private $queryRegenerateTask = null;
+	private $queryRegenerateTask;
 
 	/** @var Config */
 	private $properties;
@@ -914,7 +914,7 @@ class Server{
 				$poolSize = max(1, (int) $poolSize);
 			}
 
-			$this->asyncPool = new AsyncPool($poolSize, (int) max(-1, (int) $this->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger);
+			$this->asyncPool = new AsyncPool($poolSize, max(-1, (int) $this->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger);
 
 			if($this->getProperty("network.batch-threshold", 256) >= 0){
 				ZlibNetworkCompression::$THRESHOLD = (int) $this->getProperty("network.batch-threshold", 256);
@@ -1093,7 +1093,7 @@ class Server{
 				$this->network->blockAddress($entry->getName(), -1);
 			}
 
-			if($this->getProperty("network.upnp-forwarding", false)){
+			if((bool) $this->getProperty("network.upnp-forwarding", false)){
 				try{
 					$this->network->registerInterface(new UPnP($this->logger, Internet::getInternalIP(), $this->getPort()));
 				}catch(\RuntimeException $e){
@@ -1101,7 +1101,7 @@ class Server{
 				}
 			}
 
-			if($this->getProperty("settings.send-usage", true)){
+			if((bool) $this->getProperty("settings.send-usage", true)){
 				$this->sendUsageTicker = 6000;
 				$this->sendUsage(SendUsageTask::TYPE_OPEN);
 			}
@@ -1504,7 +1504,7 @@ class Server{
 				}
 
 				if($report){
-					$url = ($this->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
+					$url = ((bool) $this->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
 					$reply = Internet::postURL($url, [
 						"report" => "yes",
 						"name" => $this->getName() . " " . $this->getPocketMineVersion(),

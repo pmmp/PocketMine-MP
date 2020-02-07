@@ -126,7 +126,7 @@ abstract class Living extends Entity{
 
 		$this->setAirSupplyTicks($nbt->getShort("Air", self::DEFAULT_BREATH_TICKS));
 
-		/** @var CompoundTag[]|ListTag $activeEffectsTag */
+		/** @var CompoundTag[]|ListTag|null $activeEffectsTag */
 		$activeEffectsTag = $nbt->getListTag("ActiveEffects");
 		if($activeEffectsTag !== null){
 			foreach($activeEffectsTag as $e){

@@ -28,7 +28,7 @@ use pocketmine\plugin\Plugin;
 trait PermissibleDelegateTrait{
 
 	/** @var PermissibleBase */
-	private $perm = null;
+	private $perm;
 
 	/**
 	 * @param Permission|string $name

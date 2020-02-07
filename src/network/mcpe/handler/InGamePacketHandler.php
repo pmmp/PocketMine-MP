@@ -695,9 +695,9 @@ class InGamePacketHandler extends PacketHandler{
 			$raw = $matches[1];
 			$lastComma = -1;
 			$newParts = [];
-			$quoteType = null;
+			$inQuotes = false;
 			for($i = 0, $len = strlen($raw); $i <= $len; ++$i){
-				if($i === $len or ($raw[$i] === "," and $quoteType === null)){
+				if($i === $len or ($raw[$i] === "," and !$inQuotes)){
 					$part = substr($raw, $lastComma + 1, $i - ($lastComma + 1));
 					if(trim($part) === ""){ //regular parts will have quotes or something else that makes them non-empty
 						$part = '""';
@@ -705,12 +705,13 @@ class InGamePacketHandler extends PacketHandler{
 					$newParts[] = $part;
 					$lastComma = $i;
 				}elseif($raw[$i] === '"'){
-					if($quoteType === null){
-						$quoteType = $raw[$i];
-					}elseif($raw[$i] === $quoteType){
-						for($backslashes = 0; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
+					if(!$inQuotes){
+						$inQuotes = true;
+					}else{
+						$backslashes = 0;
+						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
 						if(($backslashes % 2) === 0){ //unescaped quote
-							$quoteType = null;
+							$inQuotes = false;
 						}
 					}
 				}

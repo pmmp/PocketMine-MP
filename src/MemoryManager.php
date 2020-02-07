@@ -190,7 +190,7 @@ class MemoryManager{
 	 * Returns the allowed chunk radius based on the current memory usage.
 	 */
 	public function getViewDistance(int $distance) : int{
-		return ($this->lowMemory and $this->lowMemChunkRadiusOverride > 0) ? (int) min($this->lowMemChunkRadiusOverride, $distance) : $distance;
+		return ($this->lowMemory and $this->lowMemChunkRadiusOverride > 0) ? min($this->lowMemChunkRadiusOverride, $distance) : $distance;
 	}
 
 	/**
@@ -340,7 +340,7 @@ class MemoryManager{
 				}
 
 				$staticCount++;
-				self::continueDump($property->getValue(), $staticProperties[$className][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+				$staticProperties[$className][$property->getName()] = self::continueDump($property->getValue(), $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 			}
 
 			if(count($staticProperties[$className]) === 0){
@@ -373,14 +373,14 @@ class MemoryManager{
 				}
 
 				$globalCount++;
-				self::continueDump($value, $globalVariables[$varName], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+				$globalVariables[$varName] = self::continueDump($value, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 			}
 
 			file_put_contents($outputFolder . "/globalVariables.js", json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 			$logger->info("Wrote $globalCount global variables");
 		}
 
-		self::continueDump($startingObject, $data, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+		$data = self::continueDump($startingObject, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 
 		do{
 			$continue = false;
@@ -428,7 +428,7 @@ class MemoryManager{
 							$property->setAccessible(true);
 						}
 
-						self::continueDump($property->getValue($object), $info["properties"][$name], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+						$info["properties"][$name] = self::continueDump($property->getValue($object), $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 					}
 				}
 
@@ -455,14 +455,14 @@ class MemoryManager{
 
 	/**
 	 * @param mixed    $from
-	 * @param mixed    $data reference parameter
 	 * @param object[] $objects reference parameter
 	 * @param int[]    $refCounts reference parameter
+	 *
+	 * @return mixed
 	 */
-	private static function continueDump($from, &$data, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize) : void{
+	private static function continueDump($from, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize){
 		if($maxNesting <= 0){
-			$data = "(error) NESTING LIMIT REACHED";
-			return;
+			return "(error) NESTING LIMIT REACHED";
 		}
 
 		--$maxNesting;
@@ -478,12 +478,11 @@ class MemoryManager{
 			$data = "(object) $hash@" . get_class($from);
 		}elseif(is_array($from)){
 			if($recursion >= 5){
-				$data = "(error) ARRAY RECURSION LIMIT REACHED";
-				return;
+				return "(error) ARRAY RECURSION LIMIT REACHED";
 			}
 			$data = [];
 			foreach($from as $key => $value){
-				self::continueDump($value, $data[$key], $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
+				$data[$key] = self::continueDump($value, $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
 			}
 		}elseif(is_string($from)){
 			$data = "(string) len(" . strlen($from) . ") " . substr(Utils::printable($from), 0, $maxStringSize);
@@ -492,5 +491,7 @@ class MemoryManager{
 		}else{
 			$data = $from;
 		}
+
+		return $data;
 	}
 }

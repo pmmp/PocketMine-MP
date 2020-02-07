@@ -57,7 +57,7 @@ class AutoUpdater{
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Auto Updater");
 		$this->endpoint = "http://$endpoint/api/";
 
-		if($server->getProperty("auto-updater.enabled", true)){
+		if((bool) $server->getProperty("auto-updater.enabled", true)){
 			$this->doCheck();
 		}
 	}
@@ -77,10 +77,10 @@ class AutoUpdater{
 		$this->checkUpdate();
 		if($this->hasUpdate()){
 			(new UpdateNotifyEvent($this))->call();
-			if($this->server->getProperty("auto-updater.on-update.warn-console", true)){
+			if((bool) $this->server->getProperty("auto-updater.on-update.warn-console", true)){
 				$this->showConsoleUpdate();
 			}
-		}elseif($this->server->getProperty("auto-updater.preferred-channel", true)){
+		}else{
 			if(!\pocketmine\IS_DEVELOPMENT_BUILD and $this->getChannel() !== "stable"){
 				$this->showChannelSuggestionStable();
 			}elseif(\pocketmine\IS_DEVELOPMENT_BUILD and $this->getChannel() === "stable"){

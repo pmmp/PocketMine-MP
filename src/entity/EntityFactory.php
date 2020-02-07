@@ -265,9 +265,9 @@ final class EntityFactory{
 				new DoubleTag($pos->z)
 			]))
 			->setTag("Motion", new ListTag([
-				new DoubleTag($motion ? $motion->x : 0.0),
-				new DoubleTag($motion ? $motion->y : 0.0),
-				new DoubleTag($motion ? $motion->z : 0.0)
+				new DoubleTag($motion !== null ? $motion->x : 0.0),
+				new DoubleTag($motion !== null ? $motion->y : 0.0),
+				new DoubleTag($motion !== null ? $motion->z : 0.0)
 			]))
 			->setTag("Rotation", new ListTag([
 				new FloatTag($yaw),

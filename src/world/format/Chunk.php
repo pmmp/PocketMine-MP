@@ -68,7 +68,10 @@ class Chunk{
 	/** @var bool */
 	protected $terrainPopulated = false;
 
-	/** @var \SplFixedArray|SubChunk[] */
+	/**
+	 * @var \SplFixedArray|SubChunk[]
+	 * @phpstan-var \SplFixedArray<SubChunk>
+	 */
 	protected $subChunks;
 
 	/** @var Tile[] */
@@ -77,7 +80,10 @@ class Chunk{
 	/** @var Entity[] */
 	protected $entities = [];
 
-	/** @var \SplFixedArray|int[] */
+	/**
+	 * @var \SplFixedArray|int[]
+	 * @phpstan-var \SplFixedArray<int>
+	 */
 	protected $heightMap;
 
 	/** @var string */
@@ -289,8 +295,8 @@ class Chunk{
 	 * @return int New calculated heightmap value (0-256 inclusive)
 	 */
 	public function recalculateHeightMapColumn(int $x, int $z) : int{
-		$max = $this->getHighestBlockAt($x, $z);
-		for($y = $max; $y >= 0; --$y){
+		$y = $this->getHighestBlockAt($x, $z);
+		for(; $y >= 0; --$y){
 			if(BlockFactory::$lightFilter[$state = $this->getFullBlock($x, $y, $z)] > 1 or BlockFactory::$diffusesSkyLight[$state]){
 				break;
 			}
@@ -312,9 +318,10 @@ class Chunk{
 
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
+				$y = ($this->subChunks->count() * 16) - 1;
 				$heightMap = $this->getHeightMap($x, $z);
 
-				for($y = ($this->subChunks->count() * 16) - 1; $y >= $heightMap; --$y){
+				for(; $y >= $heightMap; --$y){
 					$this->setBlockSkyLight($x, $y, $z, 15);
 				}
 
@@ -486,17 +493,15 @@ class Chunk{
 			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
 			$world->timings->syncChunkLoadEntitiesTimer->startTiming();
 			foreach($this->NBTentities as $nbt){
-				if($nbt instanceof CompoundTag){
-					try{
-						$entity = EntityFactory::createFromData($world, $nbt);
-						if(!($entity instanceof Entity)){
-							$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type " . $nbt->getString("id", $nbt->getString("identifier", "<unknown>", true), true));
-							continue;
-						}
-					}catch(\Exception $t){ //TODO: this shouldn't be here
-						$world->getLogger()->logException($t);
+				try{
+					$entity = EntityFactory::createFromData($world, $nbt);
+					if(!($entity instanceof Entity)){
+						$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type " . $nbt->getString("id", $nbt->getString("identifier", "<unknown>", true), true));
 						continue;
 					}
+				}catch(\Exception $t){ //TODO: this shouldn't be here
+					$world->getLogger()->logException($t);
+					continue;
 				}
 			}
 
@@ -507,13 +512,11 @@ class Chunk{
 			$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
 			$world->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 			foreach($this->NBTtiles as $nbt){
-				if($nbt instanceof CompoundTag){
-					if(($tile = TileFactory::createFromData($world, $nbt)) !== null){
-						$world->addTile($tile);
-					}else{
-						$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>", true));
-						continue;
-					}
+				if(($tile = TileFactory::createFromData($world, $nbt)) !== null){
+					$world->addTile($tile);
+				}else{
+					$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>", true));
+					continue;
 				}
 			}
 
@@ -597,6 +600,7 @@ class Chunk{
 
 	/**
 	 * @return \SplFixedArray|SubChunk[]
+	 * @phpstan-return \SplFixedArray<SubChunk>
 	 */
 	public function getSubChunks() : \SplFixedArray{
 		return $this->subChunks;

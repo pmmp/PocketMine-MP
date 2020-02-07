@@ -3,9 +3,14 @@ includes:
 	- tests/phpstan/configs/custom-leveldb.neon
 	- tests/phpstan/configs/ds-bugs.neon
 	- tests/phpstan/configs/gc-hacks.neon
+	- tests/phpstan/configs/php-bugs.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
+	- tests/phpstan/configs/phpunit-wiring-tests.neon
 	- tests/phpstan/configs/pthreads-bugs.neon
 	- tests/phpstan/configs/runtime-type-checks.neon
+	- vendor/phpstan/phpstan-phpunit/extension.neon
+	- vendor/phpstan/phpstan-phpunit/rules.neon
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 rules:
 	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
@@ -15,11 +20,15 @@ parameters:
 	autoload_files:
 		- tests/phpstan/bootstrap.php
 		- src/PocketMine.php
+		- build/make-release.php
 		- build/server-phar.php
+		- vendor/irstea/phpunit-shim/phpunit
 	paths:
 		- src
 		- tests/phpstan/rules
+		- build/make-release.php
 		- build/server-phar.php
+		- tests/phpunit
 	dynamicConstantNames:
 		- pocketmine\IS_DEVELOPMENT_BUILD
 		- pocketmine\DEBUG
@@ -28,9 +37,34 @@ parameters:
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	ignoreErrors:
 		-
+			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
+			count: 1
+			path: src/CrashDump.php
+
+		-
 			message: "#^Function parallel\\\\bootstrap not found\\.$#"
 			count: 1
 			path: src/PocketMine.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
+			count: 1
+			path: src/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\scheduler\\\\AsyncPool and pocketmine\\\\scheduler\\\\AsyncPool will always evaluate to true\\.$#"
+			count: 1
+			path: src/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\command\\\\CommandReader and pocketmine\\\\command\\\\CommandReader will always evaluate to true\\.$#"
+			count: 1
+			path: src/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\network\\\\Network and pocketmine\\\\network\\\\Network will always evaluate to true\\.$#"
+			count: 2
+			path: src/Server.php
 
 		-
 			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
@@ -74,6 +108,11 @@ parameters:
 			path: src/event/entity/ProjectileLaunchEvent.php
 
 		-
+			message: "#^pocketmine\\\\inventory\\\\DoubleChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\inventory\\\\ChestInventory\\.$#"
+			count: 1
+			path: src/inventory/DoubleChestInventory.php
+
+		-
 			message: "#^Cannot instantiate interface pocketmine\\\\world\\\\format\\\\io\\\\WorldProvider\\.$#"
 			count: 1
 			path: src/world/WorldManager.php
@@ -82,6 +121,11 @@ parameters:
 			message: "#^Cannot instantiate interface pocketmine\\\\world\\\\format\\\\io\\\\WritableWorldProvider\\.$#"
 			count: 1
 			path: src/world/WorldManager.php
+
+		-
+			message: "#^Variable property access on \\$this\\(pocketmine\\\\world\\\\generator\\\\PopulationTask\\)\\.$#"
+			count: 4
+			path: src/world/generator/PopulationTask.php
 
 		-
 			message: "#^Cannot instantiate interface pocketmine\\\\world\\\\format\\\\io\\\\WritableWorldProvider\\.$#"

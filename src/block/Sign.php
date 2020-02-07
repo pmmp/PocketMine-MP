@@ -155,7 +155,7 @@ class Sign extends Transparent{
 			throw new \UnexpectedValueException($author->getName() . " tried to write $size bytes of text onto a sign (bigger than max 1000)");
 		}
 		$removeFormat = $author->getRemoveFormat();
-		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) use ($removeFormat){
+		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) use ($removeFormat) : string{
 			return TextFormat::clean($line, $removeFormat);
 		}, $text->getLines())));
 		$ev->call();

@@ -69,10 +69,10 @@ class TallGrass extends Populator{
 		for($y = 127; $y >= 0; --$y){
 			$b = $this->world->getBlockAt($x, $y, $z)->getId();
 			if($b !== BlockLegacyIds::AIR and $b !== BlockLegacyIds::LEAVES and $b !== BlockLegacyIds::LEAVES2 and $b !== BlockLegacyIds::SNOW_LAYER){
-				break;
+				return $y + 1;
 			}
 		}
 
-		return $y === 0 ? -1 : ++$y;
+		return -1;
 	}
 }

@@ -337,7 +337,7 @@ class Utils{
 		$hash = 0;
 		for($i = 0, $len = strlen($string); $i < $len; $i++){
 			$ord = ord($string[$i]);
-			if($ord & 0x80){
+			if(($ord & 0x80) !== 0){
 				$ord -= 0x100;
 			}
 			$hash = 31 * $hash + $ord;
@@ -408,7 +408,7 @@ class Utils{
 					$args = $trace[$i]["params"];
 				}
 
-				$params = implode(", ", array_map(function($value) use($maxStringLength){
+				$params = implode(", ", array_map(function($value) use($maxStringLength) : string{
 					if(is_object($value)){
 						return "object " . self::getNiceClassName($value);
 					}
