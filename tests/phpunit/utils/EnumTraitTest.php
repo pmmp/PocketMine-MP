@@ -27,9 +27,12 @@ use PHPUnit\Framework\TestCase;
 
 class EnumTraitTest extends TestCase{
 
+	/**
+	 * @doesNotPerformAssertions
+	 */
 	public function testEnumLazyInit() : void{
 		foreach([TestEnum::ONE(), TestEnum::TWO(), TestEnum::THREE()] as $member){
-			self::assertInstanceOf(TestEnum::class, $member);
+			//NOOP
 		}
 	}
 }
