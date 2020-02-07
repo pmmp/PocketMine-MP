@@ -71,10 +71,13 @@ class HandlerListManager{
 	 * @phpstan-return \ReflectionClass<Event>|null
 	 */
 	private static function resolveNearestHandleableParent(\ReflectionClass $class) : ?\ReflectionClass{
-		for($parent = $class->getParentClass(); $parent !== false && !self::isValidClass($parent); $parent = $parent->getParentClass()){
+		for($parent = $class->getParentClass(); $parent !== false; $parent = $parent->getParentClass()){
+			if(self::isValidClass($parent)){
+				return $parent;
+			}
 			//NOOP
 		}
-		return $parent ?: null;
+		return null;
 	}
 
 	/**
