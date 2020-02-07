@@ -27,6 +27,10 @@ use PHPUnit\Framework\TestCase;
 
 class ApiVersionTest extends TestCase{
 
+	/**
+	 * @return \Generator|mixed[][]
+	 * @phpstan-return \Generator<int, array{string, string, bool}, void, void>
+	 */
 	public function compatibleApiProvider() : \Generator{
 		yield ["3.0.0", "3.0.0", true];
 		yield ["3.1.0", "3.0.0", true];
@@ -53,6 +57,10 @@ class ApiVersionTest extends TestCase{
 		self::assertSame($expected, ApiVersion::isCompatible($myVersion, [$wantVersion]), "my version: $myVersion, their version: $wantVersion, expect " . ($expected ? "yes" : "no"));
 	}
 
+	/**
+	 * @return mixed[][][]
+	 * @phpstan-return \Generator<int, array{list<string>, list<string>}, void, void>
+	 */
 	public function ambiguousVersionsProvider() : \Generator{
 		yield [["3.0.0"], []];
 		yield [["3.0.0", "3.0.1"], ["3.0.0", "3.0.1"]];
