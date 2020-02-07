@@ -93,7 +93,7 @@ class BlockFactory{
 
 		self::$lightFilter = \SplFixedArray::fromArray(array_fill(0, 8192, 1));
 		self::$diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 8192, false));
-		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 8192, 0));
+		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 8192, 0.0));
 
 		self::register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail"));
 		self::register(new Air(new BID(Ids::AIR), "Air"));
