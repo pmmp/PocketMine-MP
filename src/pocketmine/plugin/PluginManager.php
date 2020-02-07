@@ -733,6 +733,7 @@ class PluginManager{
 
 	/**
 	 * @param string $event Class name that extends Event
+	 * @phpstan-param class-string<Event> $event
 	 *
 	 * @throws PluginException
 	 */

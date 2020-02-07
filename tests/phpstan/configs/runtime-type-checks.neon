@@ -80,3 +80,8 @@ parameters:
 			message: "#^Call to function is_array\\(\\) with array\\<string, mixed\\> will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/plugin/PluginManager.php
+
+		-
+			message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<pocketmine\\\\event\\\\Event\\> and 'pocketmine\\\\\\\\event…' will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginManager.php
