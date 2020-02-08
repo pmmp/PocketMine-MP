@@ -45,7 +45,7 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
-use pocketmine\lang\TextContainer;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
@@ -1138,8 +1138,8 @@ class Server{
 	}
 
 	/**
-	 * @param TextContainer|string $message
-	 * @param CommandSender[]|null $recipients
+	 * @param TranslationContainer|string $message
+	 * @param CommandSender[]|null        $recipients
 	 */
 	public function broadcastMessage($message, ?array $recipients = null) : int{
 		if(!is_array($recipients)){
@@ -1210,7 +1210,7 @@ class Server{
 	}
 
 	/**
-	 * @param TextContainer|string $message
+	 * @param TranslationContainer|string $message
 	 */
 	public function broadcast($message, string $permissions) : int{
 		/** @var CommandSender[] $recipients */

@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
-class TranslationContainer extends TextContainer{
+final class TranslationContainer{
 
+	/** @var string $text */
+	protected $text;
 	/** @var string[] $params */
 	protected $params = [];
 
@@ -32,7 +34,7 @@ class TranslationContainer extends TextContainer{
 	 * @param (float|int|string)[] $params
 	 */
 	public function __construct(string $text, array $params = []){
-		parent::__construct($text);
+		$this->text = $text;
 
 		$i = 0;
 		foreach($params as $str){
@@ -40,6 +42,10 @@ class TranslationContainer extends TextContainer{
 
 			++$i;
 		}
+	}
+
+	public function getText() : string{
+		return $this->text;
 	}
 
 	/**
@@ -51,5 +57,9 @@ class TranslationContainer extends TextContainer{
 
 	public function getParameter(int $i) : ?string{
 		return $this->params[$i] ?? null;
+	}
+
+	public function __toString() : string{
+		return $this->getText();
 	}
 }

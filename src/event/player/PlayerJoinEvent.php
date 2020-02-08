@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\lang\TextContainer;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\player\Player;
 
 /**
@@ -34,13 +34,13 @@ use pocketmine\player\Player;
  * @see PlayerLoginEvent
  */
 class PlayerJoinEvent extends PlayerEvent{
-	/** @var string|TextContainer */
+	/** @var string|TranslationContainer */
 	protected $joinMessage;
 
 	/**
 	 * PlayerJoinEvent constructor.
 	 *
-	 * @param TextContainer|string $joinMessage
+	 * @param TranslationContainer|string $joinMessage
 	 */
 	public function __construct(Player $player, $joinMessage){
 		$this->player = $player;
@@ -48,14 +48,14 @@ class PlayerJoinEvent extends PlayerEvent{
 	}
 
 	/**
-	 * @param string|TextContainer $joinMessage
+	 * @param string|TranslationContainer $joinMessage
 	 */
 	public function setJoinMessage($joinMessage) : void{
 		$this->joinMessage = $joinMessage;
 	}
 
 	/**
-	 * @return string|TextContainer
+	 * @return string|TranslationContainer
 	 */
 	public function getJoinMessage(){
 		return $this->joinMessage;

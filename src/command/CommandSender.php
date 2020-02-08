@@ -23,14 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
-use pocketmine\lang\TextContainer;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\Permissible;
 use pocketmine\Server;
 
 interface CommandSender extends Permissible{
 
 	/**
-	 * @param TextContainer|string $message
+	 * @param TranslationContainer|string $message
 	 */
 	public function sendMessage($message) : void;
 

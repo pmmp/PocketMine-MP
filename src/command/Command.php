@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\command\utils\CommandException;
-use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
@@ -224,20 +223,15 @@ abstract class Command{
 	}
 
 	/**
-	 * @param TextContainer|string $message
+	 * @param TranslationContainer|string $message
 	 */
 	public static function broadcastCommandMessage(CommandSender $source, $message, bool $sendToSource = true) : void{
 		$users = PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-		if($message instanceof TextContainer){
-			$m = clone $message;
-			$result = "[" . $source->getName() . ": " . ($source->getServer()->getLanguage()->get($m->getText()) !== $m->getText() ? "%" : "") . $m->getText() . "]";
+		if($message instanceof TranslationContainer){
+			$formatted = "[" . $source->getName() . ": %" . $message->getText() . "]";
 
-			$colored = TextFormat::GRAY . TextFormat::ITALIC . $result;
-
-			$m->setText($result);
-			$result = clone $m;
-			$m->setText($colored);
-			$colored = clone $m;
+			$result = new TranslationContainer($formatted, $message->getParameters());
+			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . $formatted, $message->getParameters());
 		}else{
 			$result = new TranslationContainer("chat.type.admin", [$source->getName(), $message]);
 			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%chat.type.admin", [$source->getName(), $message]);

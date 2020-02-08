@@ -73,7 +73,6 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
-use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -1813,15 +1812,12 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * Sends a direct chat message to a player
 	 *
-	 * @param TextContainer|string $message
+	 * @param TranslationContainer|string $message
 	 */
 	public function sendMessage($message) : void{
-		if($message instanceof TextContainer){
-			if($message instanceof TranslationContainer){
-				$this->sendTranslation($message->getText(), $message->getParameters());
-				return;
-			}
-			$message = $message->getText();
+		if($message instanceof TranslationContainer){
+			$this->sendTranslation($message->getText(), $message->getParameters());
+			return;
 		}
 
 		$this->networkSession->onRawChatMessage($this->server->getLanguage()->translateString($message));
@@ -1910,7 +1906,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * Kicks a player from the server
 	 *
-	 * @param TextContainer|string $quitMessage
+	 * @param TranslationContainer|string $quitMessage
 	 */
 	public function kick(string $reason = "", bool $isAdmin = true, $quitMessage = null) : bool{
 		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
@@ -1942,8 +1938,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * Note for plugin developers: Prefer kick() with the isAdmin flag set to kick without the "Kicked by admin" part
 	 * instead of this method. This way other plugins can have a say in whether the player is removed or not.
 	 *
-	 * @param string               $reason Shown to the player, usually this will appear on their disconnect screen.
-	 * @param TextContainer|string $quitMessage Message to broadcast to online players (null will use default)
+	 * @param string                      $reason Shown to the player, usually this will appear on their disconnect screen.
+	 * @param TranslationContainer|string $quitMessage Message to broadcast to online players (null will use default)
 	 */
 	public function disconnect(string $reason, $quitMessage = null, bool $notify = true) : void{
 		if(!$this->isConnected()){

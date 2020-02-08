@@ -142,16 +142,12 @@ class Language{
 		return $baseText;
 	}
 
-	public function translate(TextContainer $c) : string{
-		if($c instanceof TranslationContainer){
-			$baseText = $this->internalGet($c->getText());
-			$baseText = $this->parseTranslation($baseText ?? $c->getText());
+	public function translate(TranslationContainer $c) : string{
+		$baseText = $this->internalGet($c->getText());
+		$baseText = $this->parseTranslation($baseText ?? $c->getText());
 
-			foreach($c->getParameters() as $i => $p){
-				$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
-			}
-		}else{
-			$baseText = $this->parseTranslation($c->getText());
+		foreach($c->getParameters() as $i => $p){
+			$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
 		}
 
 		return $baseText;
