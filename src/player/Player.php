@@ -1958,7 +1958,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$ev = new PlayerQuitEvent($this, $quitMessage ?? $this->getLeaveMessage(), $reason);
 		$ev->call();
-		if($quitMessage != ""){
+		if(($quitMessage = $ev->getQuitMessage()) != ""){
 			$this->server->broadcastMessage($quitMessage);
 		}
 		$this->save();
