@@ -30,7 +30,6 @@ use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\MapDecoration;
 use pocketmine\network\mcpe\protocol\types\MapTrackedObject;
 use pocketmine\utils\Color;
-use function assert;
 use function count;
 
 class ClientboundMapItemDataPacket extends DataPacket{

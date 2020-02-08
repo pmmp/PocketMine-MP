@@ -49,7 +49,9 @@ use function base64_encode;
 use function file_get_contents;
 use function get_class;
 use function hex2bin;
+use function is_string;
 use function json_decode;
+use function strlen;
 use const DIRECTORY_SEPARATOR;
 
 class Item implements ItemIds, \JsonSerializable{
