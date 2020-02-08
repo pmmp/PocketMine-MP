@@ -87,6 +87,7 @@ use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 use pocketmine\player\Player;
 use function array_push;
 use function base64_encode;
+use function count;
 use function fmod;
 use function implode;
 use function json_decode;
