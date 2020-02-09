@@ -346,6 +346,9 @@ class AsyncPool{
 			/** @var string */
 			private $closures;
 
+			/**
+			 * @param SerializableClosure[] $closures
+			 */
 			public function __construct(array $closures) {
 				$this->closures = serialize($closures);
 			}
