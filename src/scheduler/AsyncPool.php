@@ -343,12 +343,9 @@ class AsyncPool{
 	private function scheduleClosuresForWorker(int $worker, array $closures) : void{
 		// use an anonymous class so this functionality isn't publicly exposed
 		$task = new class($closures) extends AsyncTask {
-			/** @var string[] */
+			/** @var string */
 			private $closures;
 
-			/**
-			 * @param string[] $closures
-			 */
 			public function __construct(array $closures) {
 				$this->closures = serialize($closures);
 			}
