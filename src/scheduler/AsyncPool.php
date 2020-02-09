@@ -171,7 +171,8 @@ class AsyncPool{
 				$hook($worker);
 			}
 
-			if(count($this->workerInitHooks) > 0) {
+			// make sure there are hooks so we don't schedule a task for no reason
+			if(count($this->workerInitHooks) > 0){
 				$this->scheduleClosuresForWorker($worker, $this->workerInitHooks);
 			}
 		}
