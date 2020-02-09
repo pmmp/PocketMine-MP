@@ -54,7 +54,7 @@ class ChunkRequestTask extends AsyncTask{
 	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise, ?\Closure $onError = null){
 		$this->compressionLevel = Zlib::$LEVEL;
 
-		$this->chunk = FastChunkSerializer::serialize($chunk);
+		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
 		$this->tiles = ChunkSerializer::serializeTiles($chunk);
