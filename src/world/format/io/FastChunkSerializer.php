@@ -45,15 +45,21 @@ final class FastChunkSerializer{
 		//NOOP
 	}
 
+	public static function serializeWithoutLight(Chunk $chunk) : string{
+		return self::serialize($chunk, false);
+	}
+
 	/**
 	 * Fast-serializes the chunk for passing between threads
 	 * TODO: tiles and entities
 	 */
-	public static function serialize(Chunk $chunk) : string{
+	public static function serialize(Chunk $chunk, bool $includeLight = true) : string{
+		$includeLight = $includeLight && $chunk->isLightPopulated();
+
 		$stream = new BinaryStream();
 		$stream->putInt($chunk->getX());
 		$stream->putInt($chunk->getZ());
-		$stream->putByte(($chunk->isLightPopulated() ? 4 : 0) | ($chunk->isPopulated() ? 2 : 0) | ($chunk->isGenerated() ? 1 : 0));
+		$stream->putByte(($includeLight ? 4 : 0) | ($chunk->isPopulated() ? 2 : 0) | ($chunk->isGenerated() ? 1 : 0));
 		if($chunk->isGenerated()){
 			//subchunks
 			$subChunks = $chunk->getSubChunks();
@@ -75,7 +81,7 @@ final class FastChunkSerializer{
 					$stream->put($serialPalette);
 				}
 
-				if($chunk->isLightPopulated()){
+				if($includeLight){
 					$stream->put($subChunk->getBlockSkyLightArray()->getData());
 					$stream->put($subChunk->getBlockLightArray()->getData());
 				}
@@ -83,7 +89,7 @@ final class FastChunkSerializer{
 
 			//biomes
 			$stream->put($chunk->getBiomeIdArray());
-			if($chunk->isLightPopulated()){
+			if($includeLight){
 				$stream->put(pack("v*", ...$chunk->getHeightMapArray()));
 			}
 		}
