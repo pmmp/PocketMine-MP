@@ -23,12 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use Opis\Closure\SerializableClosure;
 use pocketmine\utils\Utils;
 use function array_keys;
 use function assert;
 use function count;
+use function serialize;
 use function spl_object_id;
 use function time;
+use function unserialize;
 use const PHP_INT_MAX;
 use const PTHREADS_INHERIT_CONSTANTS;
 use const PTHREADS_INHERIT_INI;
@@ -62,6 +65,12 @@ class AsyncPool{
 	 * @phpstan-var (\Closure(int $workerId) : void)[]
 	 */
 	private $workerStartHooks = [];
+
+	/**
+	 * @var SerializableClosure[]
+	 * @phpstan-var array<int, SerializableClosure>
+	 */
+	private $workerInitHooks = [];
 
 	public function __construct(int $size, int $workerMemoryLimit, \ClassLoader $classLoader, \ThreadedLogger $logger){
 		$this->size = $size;
@@ -112,6 +121,31 @@ class AsyncPool{
 	}
 
 	/**
+	 * Registers a Closure callback to be fired on a new worker when it is started by the pool.
+	 * The signature should be `function() : void`
+	 *
+	 * This function will call the hook for every already-running worker.
+	 *
+	 * @phpstan-param \Closure() : void $hook
+	 */
+	public function addWorkerInitHook(\Closure $hook) : void{
+		Utils::validateCallableSignature(function() : void{}, $hook);
+		$this->workerInitHooks[$id = spl_object_id($hook)] = $serialized = new SerializableClosure($hook);
+		foreach($this->workers as $i => $_){
+			$this->scheduleClosuresForWorker($i, [$serialized]);
+		}
+	}
+
+	/**
+	 * Removes a previously-registered callback listening for workers being started.
+	 *
+	 * @phpstan-param \Closure(int $workerId) : void $hook
+	 */
+	public function removeWorkerInitHook(\Closure $hook) : void{
+		unset($this->workerInitHooks[$id = spl_object_id($hook)]);
+	}
+
+	/**
 	 * Returns an array of IDs of currently running workers.
 	 *
 	 * @return int[]
@@ -135,6 +169,10 @@ class AsyncPool{
 
 			foreach($this->workerStartHooks as $hook){
 				$hook($worker);
+			}
+
+			if(count($this->workerInitHooks) > 0) {
+				$this->scheduleClosuresForWorker($worker, $this->workerInitHooks);
 			}
 		}
 
@@ -293,5 +331,35 @@ class AsyncPool{
 		$this->workers = [];
 		$this->taskQueues = [];
 		$this->workerLastUsed = [];
+	}
+
+	/**
+	 * Schedule an array of serializable closures to run on a worker thread.
+	 *
+	 * @param int   $worker
+	 * @param SerializableClosure[] $closures
+	 */
+	private function scheduleClosuresForWorker(int $worker, array $closures) : void{
+		// use an anonymous class so this functionality isn't publicly exposed
+		$task = new class($closures) extends AsyncTask {
+			/** @var string[] */
+			private $closures;
+
+			/**
+			 * @param string[] $closures
+			 */
+			public function __construct(array $closures) {
+				$this->closures = serialize($closures);
+			}
+
+			public function onRun() : void{
+				/** @var SerializableClosure[] $closures */
+				$closures = unserialize($this->closures);
+				foreach($closures as $closure){
+					($closure->getClosure())();
+				}
+			}
+		};
+		$this->submitTaskToWorker($task, $worker);
 	}
 }
