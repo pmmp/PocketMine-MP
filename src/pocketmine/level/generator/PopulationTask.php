@@ -113,11 +113,12 @@ class PopulationTask extends AsyncTask{
 
 		$generator->populateChunk($chunk->getX(), $chunk->getZ());
 		$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
+		$chunk->setPopulated();
 
 		$chunk->recalculateHeightMap();
 		$chunk->populateSkyLight();
 		$chunk->setLightPopulated();
-		$chunk->setPopulated();
+
 		$this->chunk = $chunk->fastSerialize();
 
 		foreach($chunks as $i => $c){
