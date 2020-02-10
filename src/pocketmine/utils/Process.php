@@ -104,7 +104,6 @@ final class Process{
 		return [$heap, $stack];
 	}
 
-
 	public static function getThreadCount() : int{
 		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
 			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
