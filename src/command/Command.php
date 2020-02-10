@@ -228,7 +228,7 @@ abstract class Command{
 	public static function broadcastCommandMessage(CommandSender $source, $message, bool $sendToSource = true) : void{
 		$users = PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
 		if($message instanceof TranslationContainer){
-			$formatted = "[" . $source->getName() . ": %" . $message->getText() . "]";
+			$formatted = "[" . $source->getName() . ": " . ($source->getServer()->getLanguage()->get($message->getText()) !== $message->getText() ? "%" : "") . $message->getText() . "]";
 
 			$result = new TranslationContainer($formatted, $message->getParameters());
 			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . $formatted, $message->getParameters());
