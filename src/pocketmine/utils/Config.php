@@ -246,8 +246,6 @@ class Config{
 
 	/**
 	 * Returns the path of the config.
-	 *
-	 * @return string
 	 */
 	public function getPath() : string{
 		return $this->file;

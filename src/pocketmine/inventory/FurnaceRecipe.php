@@ -55,8 +55,6 @@ class FurnaceRecipe implements Recipe{
 
 	/**
 	 * @deprecated
-	 *
-	 * @param CraftingManager $manager
 	 */
 	public function registerToCraftingManager(CraftingManager $manager) : void{
 		$manager->registerFurnaceRecipe($this);

@@ -2842,8 +2842,6 @@ class Level implements ChunkManager, Metadatable{
 
 	/**
 	 * Returns the current time of day
-	 * 
-	 * @return int
 	 */
 	public function getTimeOfDay() : int{
 		return $this->time % self::TIME_FULL;

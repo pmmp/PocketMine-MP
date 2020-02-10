@@ -3236,8 +3236,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * Adds a title text to the user's screen, with an optional subtitle.
 	 *
-	 * @param string $title
-	 * @param string $subtitle
 	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
 	 * @param int    $stay Duration in ticks to stay on screen for
 	 * @param int    $fadeOut Duration in ticks for fade-out.
@@ -3262,8 +3260,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * Sets the subtitle message, without sending a title.
-	 *
-	 * @param string $subtitle
 	 */
 	public function sendSubTitle(string $subtitle) : void{
 		$this->sendTitleText($subtitle, SetTitlePacket::TYPE_SET_SUBTITLE);
@@ -3281,8 +3277,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/**
 	 * Adds small text to the user's screen.
-	 *
-	 * @param string $message
 	 */
 	public function sendActionBarMessage(string $message) : void{
 		$this->sendTitleText($message, SetTitlePacket::TYPE_SET_ACTIONBAR_MESSAGE);

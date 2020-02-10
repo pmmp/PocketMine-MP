@@ -154,9 +154,6 @@ interface Inventory{
 
 	/**
 	 * Swaps the specified slots.
-	 *
-	 * @param int $slot1
-	 * @param int $slot2
 	 */
 	public function swap(int $slot1, int $slot2) : void;
 

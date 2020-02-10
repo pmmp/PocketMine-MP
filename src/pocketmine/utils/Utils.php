@@ -293,8 +293,6 @@ class Utils{
 	/**
 	 * @deprecated
 	 * @see Process::getThreadCount()
-	 *
-	 * @return int
 	 */
 	public static function getThreadCount() : int{
 		return Process::getThreadCount();
