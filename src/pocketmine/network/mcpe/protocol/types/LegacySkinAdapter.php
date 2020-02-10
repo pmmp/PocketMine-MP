@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\entity\Skin;
 
-use function is_array;
 use function is_string;
 use function json_decode;
 use function json_encode;
@@ -59,7 +58,7 @@ class LegacySkinAdapter implements SkinAdapter{
 
 		$geometryName = "";
 		$resourcePatch = json_decode($data->getResourcePatch(), true);
-		if(is_array($resourcePatch["geometry"]) && is_string($resourcePatch["geometry"]["default"])){
+		if(isset($resourcePatch["geometry"]["default"]) && is_string($resourcePatch["geometry"]["default"])){
 			$geometryName = $resourcePatch["geometry"]["default"];
 		}else{
 			//TODO: Kick for invalid skin

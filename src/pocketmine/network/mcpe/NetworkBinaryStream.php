@@ -103,6 +103,9 @@ class NetworkBinaryStream extends BinaryStream{
 		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function putSkin(SkinData $skin){
 		$this->putString($skin->getSkinId());
 		$this->putString($skin->getResourcePatch());
@@ -198,7 +201,6 @@ class NetworkBinaryStream extends BinaryStream{
 		return ItemFactory::get($id, $data, $cnt, $nbt);
 	}
 
-
 	public function putSlot(Item $item) : void{
 		if($item->getId() === 0){
 			$this->putVarInt(0);
@@ -271,7 +273,8 @@ class NetworkBinaryStream extends BinaryStream{
 	 *
 	 * @param bool $types Whether to include metadata types along with values in the returned array
 	 *
-	 * @return array
+	 * @return mixed[]|mixed[][]
+	 * @phpstan-return array<int, mixed>|array<int, array{0: int, 1: mixed}>
 	 */
 	public function getEntityMetadata(bool $types = true) : array{
 		$count = $this->getUnsignedVarInt();
@@ -325,7 +328,8 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Writes entity metadata to the packet buffer.
 	 *
-	 * @param array $metadata
+	 * @param mixed[][] $metadata
+	 * @phpstan-param array<int, array{0: int, 1: mixed}> $metadata
 	 */
 	public function putEntityMetadata(array $metadata) : void{
 		$this->putUnsignedVarInt(count($metadata));
@@ -422,7 +426,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Reads and returns an EntityUniqueID
-	 * @return int
 	 */
 	public function getEntityUniqueId() : int{
 		return $this->getVarLong();
@@ -430,8 +433,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes an EntityUniqueID
-	 *
-	 * @param int $eid
 	 */
 	public function putEntityUniqueId(int $eid) : void{
 		$this->putVarLong($eid);
@@ -439,7 +440,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Reads and returns an EntityRuntimeID
-	 * @return int
 	 */
 	public function getEntityRuntimeId() : int{
 		return $this->getUnsignedVarLong();
@@ -447,8 +447,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes an EntityRuntimeID
-	 *
-	 * @param int $eid
 	 */
 	public function putEntityRuntimeId(int $eid) : void{
 		$this->putUnsignedVarLong($eid);
@@ -457,9 +455,9 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Reads an block position with unsigned Y coordinate.
 	 *
-	 * @param int &$x
-	 * @param int &$y
-	 * @param int &$z
+	 * @param int $x reference parameter
+	 * @param int $y reference parameter
+	 * @param int $z reference parameter
 	 */
 	public function getBlockPosition(&$x, &$y, &$z) : void{
 		$x = $this->getVarInt();
@@ -469,10 +467,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes a block position with unsigned Y coordinate.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
 	 */
 	public function putBlockPosition(int $x, int $y, int $z) : void{
 		$this->putVarInt($x);
@@ -483,9 +477,9 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Reads a block position with a signed Y coordinate.
 	 *
-	 * @param int &$x
-	 * @param int &$y
-	 * @param int &$z
+	 * @param int $x reference parameter
+	 * @param int $y reference parameter
+	 * @param int $z reference parameter
 	 */
 	public function getSignedBlockPosition(&$x, &$y, &$z) : void{
 		$x = $this->getVarInt();
@@ -495,10 +489,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes a block position with a signed Y coordinate.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
 	 */
 	public function putSignedBlockPosition(int $x, int $y, int $z) : void{
 		$this->putVarInt($x);
@@ -508,8 +498,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Reads a floating-point Vector3 object with coordinates rounded to 4 decimal places.
-	 *
-	 * @return Vector3
 	 */
 	public function getVector3() : Vector3{
 		return new Vector3(
@@ -526,11 +514,9 @@ class NetworkBinaryStream extends BinaryStream{
 	 * For all other purposes, use the non-nullable version.
 	 *
 	 * @see NetworkBinaryStream::putVector3()
-	 *
-	 * @param Vector3|null $vector
 	 */
 	public function putVector3Nullable(?Vector3 $vector) : void{
-		if($vector){
+		if($vector !== null){
 			$this->putVector3($vector);
 		}else{
 			$this->putLFloat(0.0);
@@ -541,8 +527,6 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes a floating-point Vector3 object
-	 *
-	 * @param Vector3 $vector
 	 */
 	public function putVector3(Vector3 $vector) : void{
 		$this->putLFloat($vector->x);
@@ -551,7 +535,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	public function getByteRotation() : float{
-		return (float) ($this->getByte() * (360 / 256));
+		return ($this->getByte() * (360 / 256));
 	}
 
 	public function putByteRotation(float $rotation) : void{
@@ -562,7 +546,8 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Reads gamerules
 	 * TODO: implement this properly
 	 *
-	 * @return array, members are in the structure [name => [type, value]]
+	 * @return mixed[][], members are in the structure [name => [type, value]]
+	 * @phpstan-return array<string, array{0: int, 1: bool|int|float}>
 	 */
 	public function getGameRules() : array{
 		$count = $this->getUnsignedVarInt();
@@ -593,7 +578,8 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Writes a gamerule array, members should be in the structure [name => [type, value]]
 	 * TODO: implement this properly
 	 *
-	 * @param array $rules
+	 * @param mixed[][] $rules
+	 * @phpstan-param array<string, array{0: int, 1: bool|int|float}> $rules
 	 */
 	public function putGameRules(array $rules) : void{
 		$this->putUnsignedVarInt(count($rules));
@@ -614,9 +600,6 @@ class NetworkBinaryStream extends BinaryStream{
 		}
 	}
 
-	/**
-	 * @return EntityLink
-	 */
 	protected function getEntityLink() : EntityLink{
 		$link = new EntityLink();
 
@@ -628,9 +611,6 @@ class NetworkBinaryStream extends BinaryStream{
 		return $link;
 	}
 
-	/**
-	 * @param EntityLink $link
-	 */
 	protected function putEntityLink(EntityLink $link) : void{
 		$this->putEntityUniqueId($link->fromEntityUniqueId);
 		$this->putEntityUniqueId($link->toEntityUniqueId);

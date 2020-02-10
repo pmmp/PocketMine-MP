@@ -1,0 +1,26 @@
+<?php
+
+namespace pocketmine\level\format\io;
+
+class ChunkUtils{
+	/**
+	 * @param string $byte_array
+	 *
+	 * @return string
+	 */
+	public static function reorderByteArray($byte_array){}
+
+	/**
+	 * @param string $nibble_array
+	 *
+	 * @return string
+	 */
+	public static function reorderNibbleArray($nibble_array){}
+
+	/**
+	 * @param int[] $color_array
+	 *
+	 * @return string
+	 */
+	public static function convertBiomeColors($color_array){}
+}

@@ -143,13 +143,13 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	}
 
-	/**
-	 * @return CompoundTag
-	 */
 	public function getLevelData() : CompoundTag{
 		return $this->levelData;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function saveLevelData(){
 		$nbt = new BigEndianNBTStream();
 		$buffer = $nbt->writeCompressed(new CompoundTag("", [
@@ -159,10 +159,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws CorruptedChunkException
 	 * @throws UnsupportedChunkFormatException
 	 */
@@ -178,10 +174,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws UnsupportedChunkFormatException
 	 * @throws CorruptedChunkException
 	 */

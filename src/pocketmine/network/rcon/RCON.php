@@ -94,12 +94,15 @@ class RCON{
 		$this->server->getTickSleeper()->addNotifier($notifier, function() : void{
 			$this->check();
 		});
-		$this->instance = new RCONInstance($this->socket, $password, (int) max(1, $maxClients), $this->server->getLogger(), $this->ipcThreadSocket, $notifier);
+		$this->instance = new RCONInstance($this->socket, $password, max(1, $maxClients), $this->server->getLogger(), $this->ipcThreadSocket, $notifier);
 
 		socket_getsockname($this->socket, $addr, $port);
 		$this->server->getLogger()->info("RCON running on $addr:$port");
 	}
 
+	/**
+	 * @return void
+	 */
 	public function stop(){
 		$this->instance->close();
 		socket_write($this->ipcMainSocket, "\x00"); //make select() return
@@ -110,6 +113,9 @@ class RCON{
 		@socket_close($this->ipcThreadSocket);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function check(){
 		$response = new RemoteConsoleCommandSender();
 		$command = $this->instance->cmd;
@@ -122,7 +128,7 @@ class RCON{
 		}
 
 		$this->instance->response = TextFormat::clean($response->getMessage());
-		$this->instance->synchronized(function(RCONInstance $thread){
+		$this->instance->synchronized(function(RCONInstance $thread) : void{
 			$thread->notify();
 		}, $this->instance);
 	}

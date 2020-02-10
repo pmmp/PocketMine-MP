@@ -76,29 +76,21 @@ class PluginManager{
 	/** @var SimpleCommandMap */
 	private $commandMap;
 
-	/**
-	 * @var Plugin[]
-	 */
+	/** @var Plugin[] */
 	protected $plugins = [];
 
-	/**
-	 * @var Plugin[]
-	 */
+	/** @var Plugin[] */
 	protected $enabledPlugins = [];
 
 	/**
 	 * @var PluginLoader[]
+	 * @phpstan-var array<class-string<PluginLoader>, PluginLoader>
 	 */
 	protected $fileAssociations = [];
 
 	/** @var string|null */
 	private $pluginDataDirectory;
 
-	/**
-	 * @param Server           $server
-	 * @param SimpleCommandMap $commandMap
-	 * @param null|string      $pluginDataDirectory
-	 */
 	public function __construct(Server $server, SimpleCommandMap $commandMap, ?string $pluginDataDirectory){
 		$this->server = $server;
 		$this->commandMap = $commandMap;
@@ -113,8 +105,6 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return null|Plugin
 	 */
 	public function getPlugin(string $name){
@@ -125,9 +115,6 @@ class PluginManager{
 		return null;
 	}
 
-	/**
-	 * @param PluginLoader $loader
-	 */
 	public function registerInterface(PluginLoader $loader) : void{
 		$this->fileAssociations[get_class($loader)] = $loader;
 	}
@@ -147,10 +134,7 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string         $path
 	 * @param PluginLoader[] $loaders
-	 *
-	 * @return Plugin|null
 	 */
 	public function loadPlugin(string $path, array $loaders = null) : ?Plugin{
 		foreach($loaders ?? $this->fileAssociations as $loader){
@@ -215,8 +199,8 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string $directory
-	 * @param array  $newLoaders
+	 * @param string[]|null $newLoaders
+	 * @phpstan-param list<class-string<PluginLoader>> $newLoaders
 	 *
 	 * @return Plugin[]
 	 */
@@ -304,7 +288,6 @@ class PluginManager{
 			}
 		}
 
-
 		while(count($plugins) > 0){
 			$loadedThisLoop = 0;
 			foreach($plugins as $name => $file){
@@ -349,7 +332,7 @@ class PluginManager{
 				if(!isset($dependencies[$name]) and !isset($softDependencies[$name])){
 					unset($plugins[$name]);
 					$loadedThisLoop++;
-					if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
+					if(($plugin = $this->loadPlugin($file, $loaders)) instanceof Plugin){
 						$loadedPlugins[$name] = $plugin;
 					}else{
 						$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.genericLoadError", [$name]));
@@ -373,8 +356,6 @@ class PluginManager{
 	 * Returns whether a specified API version string is considered compatible with the server's API version.
 	 *
 	 * @param string ...$versions
-	 *
-	 * @return bool
 	 */
 	public function isCompatibleApi(string ...$versions) : bool{
 		$serverString = $this->server->getApiVersion();
@@ -416,8 +397,6 @@ class PluginManager{
 	 * @deprecated
 	 * @see PermissionManager::getPermission()
 	 *
-	 * @param string $name
-	 *
 	 * @return null|Permission
 	 */
 	public function getPermission(string $name){
@@ -427,10 +406,6 @@ class PluginManager{
 	/**
 	 * @deprecated
 	 * @see PermissionManager::addPermission()
-	 *
-	 * @param Permission $permission
-	 *
-	 * @return bool
 	 */
 	public function addPermission(Permission $permission) : bool{
 		return PermissionManager::getInstance()->addPermission($permission);
@@ -441,6 +416,8 @@ class PluginManager{
 	 * @see PermissionManager::removePermission()
 	 *
 	 * @param string|Permission $permission
+	 *
+	 * @return void
 	 */
 	public function removePermission($permission){
 		PermissionManager::getInstance()->removePermission($permission);
@@ -449,8 +426,6 @@ class PluginManager{
 	/**
 	 * @deprecated
 	 * @see PermissionManager::getDefaultPermissions()
-	 *
-	 * @param bool $op
 	 *
 	 * @return Permission[]
 	 */
@@ -462,7 +437,7 @@ class PluginManager{
 	 * @deprecated
 	 * @see PermissionManager::recalculatePermissionDefaults()
 	 *
-	 * @param Permission $permission
+	 * @return void
 	 */
 	public function recalculatePermissionDefaults(Permission $permission){
 		PermissionManager::getInstance()->recalculatePermissionDefaults($permission);
@@ -472,8 +447,7 @@ class PluginManager{
 	 * @deprecated
 	 * @see PermissionManager::subscribeToPermission()
 	 *
-	 * @param string      $permission
-	 * @param Permissible $permissible
+	 * @return void
 	 */
 	public function subscribeToPermission(string $permission, Permissible $permissible){
 		PermissionManager::getInstance()->subscribeToPermission($permission, $permissible);
@@ -483,8 +457,7 @@ class PluginManager{
 	 * @deprecated
 	 * @see PermissionManager::unsubscribeFromPermission()
 	 *
-	 * @param string      $permission
-	 * @param Permissible $permissible
+	 * @return void
 	 */
 	public function unsubscribeFromPermission(string $permission, Permissible $permissible){
 		PermissionManager::getInstance()->unsubscribeFromPermission($permission, $permissible);
@@ -493,8 +466,6 @@ class PluginManager{
 	/**
 	 * @deprecated
 	 * @see PermissionManager::unsubscribeFromAllPermissions()
-	 *
-	 * @param Permissible $permissible
 	 */
 	public function unsubscribeFromAllPermissions(Permissible $permissible) : void{
 		PermissionManager::getInstance()->unsubscribeFromAllPermissions($permissible);
@@ -503,8 +474,6 @@ class PluginManager{
 	/**
 	 * @deprecated
 	 * @see PermissionManager::getPermissionSubscriptions()
-	 *
-	 * @param string $permission
 	 *
 	 * @return array|Permissible[]
 	 */
@@ -516,8 +485,7 @@ class PluginManager{
 	 * @deprecated
 	 * @see PermissionManager::subscribeToDefaultPerms()
 	 *
-	 * @param bool        $op
-	 * @param Permissible $permissible
+	 * @return void
 	 */
 	public function subscribeToDefaultPerms(bool $op, Permissible $permissible){
 		PermissionManager::getInstance()->subscribeToDefaultPerms($op, $permissible);
@@ -527,8 +495,7 @@ class PluginManager{
 	 * @deprecated
 	 * @see PermissionManager::unsubscribeFromDefaultPerms()
 	 *
-	 * @param bool        $op
-	 * @param Permissible $permissible
+	 * @return void
 	 */
 	public function unsubscribeFromDefaultPerms(bool $op, Permissible $permissible){
 		PermissionManager::getInstance()->unsubscribeFromDefaultPerms($op, $permissible);
@@ -537,8 +504,6 @@ class PluginManager{
 	/**
 	 * @deprecated
 	 * @see PermissionManager::getDefaultPermSubscriptions()
-	 *
-	 * @param bool $op
 	 *
 	 * @return Permissible[]
 	 */
@@ -556,17 +521,12 @@ class PluginManager{
 		return PermissionManager::getInstance()->getPermissions();
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 *
-	 * @return bool
-	 */
 	public function isPluginEnabled(Plugin $plugin) : bool{
 		return isset($this->plugins[$plugin->getDescription()->getName()]) and $plugin->isEnabled();
 	}
 
 	/**
-	 * @param Plugin $plugin
+	 * @return void
 	 */
 	public function enablePlugin(Plugin $plugin){
 		if(!$plugin->isEnabled()){
@@ -591,8 +551,6 @@ class PluginManager{
 	}
 
 	/**
-	 * @param Plugin $plugin
-	 *
 	 * @return PluginCommand[]
 	 */
 	protected function parseYamlCommands(Plugin $plugin) : array{
@@ -647,6 +605,9 @@ class PluginManager{
 		return $pluginCmds;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function disablePlugins(){
 		foreach($this->getPlugins() as $plugin){
 			$this->disablePlugin($plugin);
@@ -654,7 +615,7 @@ class PluginManager{
 	}
 
 	/**
-	 * @param Plugin $plugin
+	 * @return void
 	 */
 	public function disablePlugin(Plugin $plugin){
 		if($plugin->isEnabled()){
@@ -683,6 +644,9 @@ class PluginManager{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function clearPlugins(){
 		$this->disablePlugins();
 		$this->plugins = [];
@@ -696,7 +660,7 @@ class PluginManager{
 	 * @deprecated
 	 * @see Event::call()
 	 *
-	 * @param Event $event
+	 * @return void
 	 */
 	public function callEvent(Event $event){
 		$event->call();
@@ -704,9 +668,6 @@ class PluginManager{
 
 	/**
 	 * Registers all the events in the given Listener class
-	 *
-	 * @param Listener $listener
-	 * @param Plugin   $plugin
 	 *
 	 * @throws PluginException
 	 */
@@ -771,12 +732,8 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string        $event Class name that extends Event
-	 * @param Listener      $listener
-	 * @param int           $priority
-	 * @param EventExecutor $executor
-	 * @param Plugin        $plugin
-	 * @param bool          $ignoreCancelled
+	 * @param string $event Class name that extends Event
+	 * @phpstan-param class-string<Event> $event
 	 *
 	 * @throws PluginException
 	 */
@@ -794,11 +751,6 @@ class PluginManager{
 		$this->getEventListeners($event)->register(new RegisteredListener($listener, $executor, $priority, $plugin, $ignoreCancelled, $timings));
 	}
 
-	/**
-	 * @param string $event
-	 *
-	 * @return HandlerList
-	 */
 	private function getEventListeners(string $event) : HandlerList{
 		$list = HandlerList::getHandlerListFor($event);
 		if($list === null){

@@ -43,6 +43,8 @@ class TimingsHandler{
 
 	/**
 	 * @param resource $fp
+	 *
+	 * @return void
 	 */
 	public static function printTimings($fp){
 		fwrite($fp, "Minecraft" . PHP_EOL);
@@ -93,6 +95,9 @@ class TimingsHandler{
 		return self::$timingStart;
 	}
 
+	/**
+	 * @return void
+	 */
 	public static function reload(){
 		if(self::$enabled){
 			foreach(self::$HANDLERS as $timings){
@@ -102,6 +107,9 @@ class TimingsHandler{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public static function tick(bool $measure = true){
 		if(self::$enabled){
 			if($measure){
@@ -128,7 +136,7 @@ class TimingsHandler{
 
 	/** @var string */
 	private $name;
-	/** @var TimingsHandler */
+	/** @var TimingsHandler|null */
 	private $parent = null;
 
 	/** @var int */
@@ -146,10 +154,6 @@ class TimingsHandler{
 	/** @var int */
 	private $violations = 0;
 
-	/**
-	 * @param string         $name
-	 * @param TimingsHandler $parent
-	 */
 	public function __construct(string $name, TimingsHandler $parent = null){
 		$this->name = $name;
 		$this->parent = $parent;
@@ -157,33 +161,58 @@ class TimingsHandler{
 		self::$HANDLERS[spl_object_hash($this)] = $this;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function startTiming(){
-		if(self::$enabled and ++$this->timingDepth === 1){
-			$this->start = microtime(true);
-			if($this->parent !== null and ++$this->parent->timingDepth === 1){
-				$this->parent->start = $this->start;
+		if(self::$enabled){
+			$this->internalStartTiming(microtime(true));
+		}
+	}
+
+	private function internalStartTiming(float $now) : void{
+		if(++$this->timingDepth === 1){
+			$this->start = $now;
+			if($this->parent !== null){
+				$this->parent->internalStartTiming($now);
 			}
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function stopTiming(){
 		if(self::$enabled){
-			if(--$this->timingDepth !== 0 or $this->start == 0){
-				return;
-			}
-
-			$diff = microtime(true) - $this->start;
-			$this->totalTime += $diff;
-			$this->curTickTotal += $diff;
-			++$this->curCount;
-			++$this->count;
-			$this->start = 0;
-			if($this->parent !== null){
-				$this->parent->stopTiming();
-			}
+			$this->internalStopTiming(microtime(true));
 		}
 	}
 
+	private function internalStopTiming(float $now) : void{
+		if($this->timingDepth === 0){
+			//TODO: it would be nice to bail here, but since we'd have to track timing depth across resets
+			//and enable/disable, it would have a performance impact. Therefore, considering the limited
+			//usefulness of bailing here anyway, we don't currently bother.
+			return;
+		}
+		if(--$this->timingDepth !== 0 or $this->start == 0){
+			return;
+		}
+
+		$diff = $now - $this->start;
+		$this->totalTime += $diff;
+		$this->curTickTotal += $diff;
+		++$this->curCount;
+		++$this->count;
+		$this->start = 0;
+		if($this->parent !== null){
+			$this->parent->internalStopTiming($now);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
 	public function reset(){
 		$this->count = 0;
 		$this->curCount = 0;
@@ -194,6 +223,9 @@ class TimingsHandler{
 		$this->timingDepth = 0;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function remove(){
 		unset(self::$HANDLERS[spl_object_hash($this)]);
 	}

@@ -33,7 +33,6 @@ class EntityDeathEvent extends EntityEvent{
 	private $xp;
 
 	/**
-	 * @param Living $entity
 	 * @param Item[] $drops
 	 * @param int    $xp
 	 */

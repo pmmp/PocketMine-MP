@@ -37,9 +37,6 @@ class EntityDespawnEvent extends EntityEvent{
 	/** @var int */
 	private $entityType;
 
-	/**
-	 * @param Entity $entity
-	 */
 	public function __construct(Entity $entity){
 		$this->entity = $entity;
 		$this->entityType = $entity::NETWORK_ID;
@@ -47,7 +44,6 @@ class EntityDespawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return int
 	 */
 	public function getType() : int{
 		return $this->entityType;
@@ -55,7 +51,6 @@ class EntityDespawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isCreature() : bool{
 		return $this->entity instanceof Creature;
@@ -63,7 +58,6 @@ class EntityDespawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isHuman() : bool{
 		return $this->entity instanceof Human;
@@ -71,7 +65,6 @@ class EntityDespawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isProjectile() : bool{
 		return $this->entity instanceof Projectile;
@@ -79,7 +72,6 @@ class EntityDespawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isVehicle() : bool{
 		return $this->entity instanceof Vehicle;
@@ -87,7 +79,6 @@ class EntityDespawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isItem() : bool{
 		return $this->entity instanceof ItemEntity;

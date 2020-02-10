@@ -28,9 +28,6 @@ use pocketmine\event\Cancellable;
 
 class ItemDespawnEvent extends EntityEvent implements Cancellable{
 
-	/**
-	 * @param ItemEntity $item
-	 */
 	public function __construct(ItemEntity $item){
 		$this->entity = $item;
 

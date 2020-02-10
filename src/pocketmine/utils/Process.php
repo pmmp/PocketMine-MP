@@ -118,13 +118,16 @@ final class Process{
 		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
 	}
 
+	/**
+	 * @param int $pid
+	 */
 	public static function kill($pid) : void{
 		if(MainLogger::isRegisteredStatic()){
 			MainLogger::getLogger()->syncFlushBuffer();
 		}
 		switch(Utils::getOS()){
 			case "win":
-				exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
+				exec("taskkill.exe /F /PID $pid > NUL");
 				break;
 			case "mac":
 			case "linux":
@@ -132,15 +135,15 @@ final class Process{
 				if(function_exists("posix_kill")){
 					posix_kill($pid, 9); //SIGKILL
 				}else{
-					exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
+					exec("kill -9 $pid > /dev/null 2>&1");
 				}
 		}
 	}
 
 	/**
 	 * @param string      $command Command to execute
-	 * @param string|null &$stdout Reference parameter to write stdout to
-	 * @param string|null &$stderr Reference parameter to write stderr to
+	 * @param string|null $stdout Reference parameter to write stdout to
+	 * @param string|null $stderr Reference parameter to write stderr to
 	 *
 	 * @return int process exit code
 	 */

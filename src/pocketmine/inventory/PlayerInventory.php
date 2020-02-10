@@ -41,9 +41,6 @@ class PlayerInventory extends BaseInventory{
 	/** @var int */
 	protected $itemInHandIndex = 0;
 
-	/**
-	 * @param Human $player
-	 */
 	public function __construct(Human $player){
 		$this->holder = $player;
 		parent::__construct();
@@ -93,11 +90,9 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	/**
-	 * @param int $slot
-	 *
 	 * @throws \InvalidArgumentException
 	 */
-	private function throwIfNotHotbarSlot(int $slot){
+	private function throwIfNotHotbarSlot(int $slot) : void{
 		if(!$this->isHotbarSlot($slot)){
 			throw new \InvalidArgumentException("$slot is not a valid hotbar slot index (expected 0 - " . ($this->getHotbarSize() - 1) . ")");
 		}
@@ -105,10 +100,6 @@ class PlayerInventory extends BaseInventory{
 
 	/**
 	 * Returns the item in the specified hotbar slot.
-	 *
-	 * @param int $hotbarSlot
-	 *
-	 * @return Item
 	 *
 	 * @throws \InvalidArgumentException if the hotbar slot index is out of range
 	 */
@@ -119,7 +110,6 @@ class PlayerInventory extends BaseInventory{
 
 	/**
 	 * Returns the hotbar slot number the holder is currently holding.
-	 * @return int
 	 */
 	public function getHeldItemIndex() : int{
 		return $this->itemInHandIndex;
@@ -132,6 +122,7 @@ class PlayerInventory extends BaseInventory{
 	 * @param bool $send Whether to send updates back to the inventory holder. This should usually be true for plugin calls.
 	 *                    It should only be false to prevent feedback loops of equipment packets between client and server.
 	 *
+	 * @return void
 	 * @throws \InvalidArgumentException if the hotbar slot is out of range
 	 */
 	public function setHeldItemIndex(int $hotbarSlot, bool $send = true){
@@ -148,8 +139,6 @@ class PlayerInventory extends BaseInventory{
 
 	/**
 	 * Returns the currently-held item.
-	 *
-	 * @return Item
 	 */
 	public function getItemInHand() : Item{
 		return $this->getHotbarSlotItem($this->itemInHandIndex);
@@ -157,10 +146,6 @@ class PlayerInventory extends BaseInventory{
 
 	/**
 	 * Sets the item in the currently-held slot to the specified item.
-	 *
-	 * @param Item $item
-	 *
-	 * @return bool
 	 */
 	public function setItemInHand(Item $item) : bool{
 		return $this->setItem($this->getHeldItemIndex(), $item);
@@ -170,6 +155,8 @@ class PlayerInventory extends BaseInventory{
 	 * Sends the currently-held item to specified targets.
 	 *
 	 * @param Player|Player[] $target
+	 *
+	 * @return void
 	 */
 	public function sendHeldItem($target){
 		$item = $this->getItemInHand();
@@ -195,12 +182,14 @@ class PlayerInventory extends BaseInventory{
 
 	/**
 	 * Returns the number of slots in the hotbar.
-	 * @return int
 	 */
 	public function getHotbarSize() : int{
 		return 9;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function sendCreativeContents(){
 		//TODO: this mess shouldn't be in here
 		$holder = $this->getHolder();

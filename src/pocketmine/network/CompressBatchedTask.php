@@ -30,11 +30,12 @@ use pocketmine\Server;
 
 class CompressBatchedTask extends AsyncTask{
 
+	/** @var int */
 	public $level = 7;
+	/** @var string */
 	public $data;
 
 	/**
-	 * @param BatchPacket $batch
 	 * @param Player[]    $targets
 	 */
 	public function __construct(BatchPacket $batch, array $targets){
@@ -46,7 +47,6 @@ class CompressBatchedTask extends AsyncTask{
 	public function onRun(){
 		$batch = new BatchPacket();
 		$batch->payload = $this->data;
-		$this->data = null;
 
 		$batch->setCompressionLevel($this->level);
 		$batch->encode();

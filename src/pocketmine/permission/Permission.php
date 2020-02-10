@@ -40,12 +40,11 @@ class Permission{
 	public const DEFAULT_TRUE = "true";
 	public const DEFAULT_FALSE = "false";
 
+	/** @var string */
 	public static $DEFAULT_PERMISSION = self::DEFAULT_OP;
 
 	/**
 	 * @param bool|string $value
-	 *
-	 * @return string
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -84,8 +83,8 @@ class Permission{
 	}
 
 	/**
-	 * @param array  $data
-	 * @param string $default
+	 * @param mixed[][] $data
+	 * @phpstan-param array<string, array<string, mixed>> $data
 	 *
 	 * @return Permission[]
 	 */
@@ -99,12 +98,9 @@ class Permission{
 	}
 
 	/**
-	 * @param string $name
-	 * @param array  $data
-	 * @param string $default
-	 * @param array  $output
-	 *
-	 * @return Permission
+	 * @param mixed[]      $data
+	 * @param Permission[] $output reference parameter
+	 * @phpstan-param array<string, mixed> $data
 	 *
 	 * @throws \Exception
 	 */
@@ -119,9 +115,7 @@ class Permission{
 			if(is_array($data["children"])){
 				foreach($data["children"] as $k => $v){
 					if(is_array($v)){
-						if(($perm = self::loadPermission($k, $v, $default, $output)) !== null){
-							$output[] = $perm;
-						}
+						$output[] = self::loadPermission($k, $v, $default, $output);
 					}
 					$children[$k] = true;
 				}
@@ -145,6 +139,7 @@ class Permission{
 
 	/**
 	 * @var bool[]
+	 * @phpstan-var array<string, bool>
 	 */
 	private $children;
 
@@ -154,10 +149,8 @@ class Permission{
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
 	 *
-	 * @param string $name
-	 * @param string $description
-	 * @param string $defaultValue
 	 * @param bool[] $children
+	 * @phpstan-param array<string, bool> $children
 	 */
 	public function __construct(string $name, string $description = null, string $defaultValue = null, array $children = []){
 		$this->name = $name;
@@ -168,29 +161,24 @@ class Permission{
 		$this->recalculatePermissibles();
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
 
 	/**
 	 * @return bool[]
+	 * @phpstan-return array<string, bool>
 	 */
 	public function &getChildren() : array{
 		return $this->children;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDefault() : string{
 		return $this->defaultValue;
 	}
 
 	/**
-	 * @param string $value
+	 * @return void
 	 */
 	public function setDefault(string $value){
 		if($value !== $this->defaultValue){
@@ -199,15 +187,12 @@ class Permission{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDescription() : string{
 		return $this->description;
 	}
 
 	/**
-	 * @param string $value
+	 * @return void
 	 */
 	public function setDescription(string $value){
 		$this->description = $value;
@@ -220,6 +205,9 @@ class Permission{
 		return PermissionManager::getInstance()->getPermissionSubscriptions($this->name);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function recalculatePermissibles(){
 		$perms = $this->getPermissibles();
 
@@ -230,10 +218,8 @@ class Permission{
 		}
 	}
 
-
 	/**
 	 * @param string|Permission $name
-	 * @param bool              $value
 	 *
 	 * @return Permission|null Permission if $name is a string, null if it's a Permission
 	 */

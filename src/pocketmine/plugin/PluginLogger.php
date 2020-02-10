@@ -29,6 +29,7 @@ use function spl_object_hash;
 
 class PluginLogger implements \AttachableLogger{
 
+	/** @var string */
 	private $pluginName;
 
 	/** @var \LoggerAttachment[] */
@@ -50,9 +51,6 @@ class PluginLogger implements \AttachableLogger{
 		return $this->attachments;
 	}
 
-	/**
-	 * @param Plugin $context
-	 */
 	public function __construct(Plugin $context){
 		$prefix = $context->getDescription()->getPrefix();
 		$this->pluginName = $prefix != null ? "[$prefix] " : "[" . $context->getDescription()->getName() . "] ";

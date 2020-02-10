@@ -163,7 +163,10 @@ class AddActorPacket extends DataPacket{
 
 	/** @var Attribute[] */
 	public $attributes = [];
-	/** @var array */
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<int, array{0: int, 1: mixed}>
+	 */
 	public $metadata = [];
 	/** @var EntityLink[] */
 	public $links = [];

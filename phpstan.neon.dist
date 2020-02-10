@@ -1,41 +1,86 @@
 includes:
-	- tests/phpstan/configs/debug-const-checks.neon
+	- tests/phpstan/configs/com-dotnet-magic.neon
+	- tests/phpstan/configs/custom-leveldb.neon
 	- tests/phpstan/configs/gc-hacks.neon
-	- tests/phpstan/configs/optional-com-dotnet.neon
-	- tests/phpstan/configs/optional-leveldb.neon
+	- tests/phpstan/configs/php-bugs.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
+	- tests/phpstan/configs/phpunit-wiring-tests.neon
 	- tests/phpstan/configs/pthreads-bugs.neon
 	- tests/phpstan/configs/runtime-type-checks.neon
+	- vendor/phpstan/phpstan-phpunit/extension.neon
+	- vendor/phpstan/phpstan-phpunit/rules.neon
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 parameters:
-	level: 5
+	level: 6
 	autoload_files:
 		- tests/phpstan/bootstrap.php
 		- src/pocketmine/PocketMine.php
+		- build/make-release.php
+		- build/server-phar.php
+		- vendor/irstea/phpunit-shim/phpunit
 	paths:
 		- src
+		- build/make-release.php
+		- build/server-phar.php
+		- tests/phpunit
+	dynamicConstantNames:
+		- pocketmine\IS_DEVELOPMENT_BUILD
+		- pocketmine\DEBUG
+	stubFiles:
+		- tests/phpstan/stubs/pthreads.stub
+		- tests/phpstan/stubs/chunkutils.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	ignoreErrors:
+		-
+			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
+			count: 1
+			path: src/pocketmine/CrashDump.php
+
+		-
+			message: "#^pocketmine\\\\Player\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\entity\\\\Human\\.$#"
+			count: 1
+			path: src/pocketmine/Player.php
+
 		-
 			message: "#^Cannot instantiate interface pocketmine\\\\level\\\\format\\\\io\\\\LevelProvider\\.$#"
 			count: 1
 			path: src/pocketmine/Server.php
 
 		-
+			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
+			count: 1
+			path: src/pocketmine/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\scheduler\\\\AsyncPool and pocketmine\\\\scheduler\\\\AsyncPool will always evaluate to true\\.$#"
+			count: 1
+			path: src/pocketmine/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\command\\\\CommandReader and pocketmine\\\\command\\\\CommandReader will always evaluate to true\\.$#"
+			count: 1
+			path: src/pocketmine/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\network\\\\Network and pocketmine\\\\network\\\\Network will always evaluate to true\\.$#"
+			count: 1
+			path: src/pocketmine/Server.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\[A-Za-z\\d]+\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			path: src/pocketmine/block
+
+		-
+			message: "#^pocketmine\\\\block\\\\Block\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\level\\\\Position\\.$#"
+			count: 1
+			path: src/pocketmine/block/Block.php
+
+		-
 			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
 			count: 1
 			path: src/pocketmine/command/defaults/TeleportCommand.php
 #			comment: "not actually possible, but high cost to fix warning"
-
-		-
-			message: "#^Array \\(array\\<string\\>\\) does not accept pocketmine\\\\entity\\\\Entity\\.$#"
-			count: 2
-			path: src/pocketmine/entity/Entity.php
-
-		-
-			message: "#^Invalid array key type pocketmine\\\\entity\\\\Entity\\.$#"
-			count: 1
-			path: src/pocketmine/entity/Entity.php
 
 		-
 			message: "#^Method pocketmine\\\\event\\\\entity\\\\EntityDeathEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\Living but returns pocketmine\\\\entity\\\\Entity\\.$#"
@@ -73,6 +118,31 @@ parameters:
 			path: src/pocketmine/event/entity/ProjectileLaunchEvent.php
 
 		-
+			message: "#^pocketmine\\\\inventory\\\\DoubleChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\inventory\\\\ChestInventory\\.$#"
+			count: 1
+			path: src/pocketmine/inventory/DoubleChestInventory.php
+
+		-
+			message: "#^pocketmine\\\\inventory\\\\EnderChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\inventory\\\\ChestInventory\\.$#"
+			count: 1
+			path: src/pocketmine/inventory/EnderChestInventory.php
+
+		-
+			message: "#^pocketmine\\\\item\\\\GoldenAppleEnchanted\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\item\\\\GoldenApple\\.$#"
+			count: 1
+			path: src/pocketmine/item/GoldenAppleEnchanted.php
+
+		-
+			message: "#^pocketmine\\\\item\\\\WrittenBook\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\item\\\\WritableBook\\.$#"
+			count: 1
+			path: src/pocketmine/item/WrittenBook.php
+
+		-
+			message: "#^Variable property access on \\$this\\(pocketmine\\\\level\\\\generator\\\\PopulationTask\\)\\.$#"
+			count: 4
+			path: src/pocketmine/level/generator/PopulationTask.php
+
+		-
 			message: "#^Constructor of class pocketmine\\\\level\\\\generator\\\\hell\\\\Nether has an unused parameter \\$options\\.$#"
 			count: 1
 			path: src/pocketmine/level/generator/hell/Nether.php
@@ -83,9 +153,9 @@ parameters:
 			path: src/pocketmine/level/generator/normal/Normal.php
 
 		-
-			message: "#^Used constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
+			message: "#^Variable method call on pocketmine\\\\event\\\\Listener\\.$#"
 			count: 1
-			path: src/pocketmine/network/mcpe/protocol/StartGamePacket.php
+			path: src/pocketmine/plugin/MethodEventExecutor.php
 
 		-
 			message: "#^Constructor of class pocketmine\\\\scheduler\\\\TaskScheduler has an unused parameter \\$logger\\.$#"
@@ -105,15 +175,7 @@ parameters:
 			path: src
 
 		-
-			message: "#^Constant pocketmine\\\\PATH not found\\.$#"
-			path: src
-
-		-
 			message: "#^Constant pocketmine\\\\PLUGIN_PATH not found\\.$#"
-			path: src
-
-		-
-			message: "#^Constant pocketmine\\\\RESOURCE_PATH not found\\.$#"
 			path: src
 
 		-

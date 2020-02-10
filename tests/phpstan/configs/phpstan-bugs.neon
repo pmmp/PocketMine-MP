@@ -1,19 +1,8 @@
 parameters:
 	ignoreErrors:
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(.+\\)\\: Unexpected token \"&\", expected variable at offset \\d+$#"
-			path: ../../../src
-
+		- "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 		-
 			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
-			path: ../../../src
-
-		-
-			message: "#^Cannot access an offset on Threaded\\.$#"
-			path: ../../../src
-
-		-
-			message: "#^Cannot assign new offset to Threaded\\.$#"
 			path: ../../../src
 
 		-
@@ -38,10 +27,16 @@ parameters:
 			path: ../../../src/pocketmine/block/Liquid.php
 
 		-
-			#$class::NETWORK_ID false positive
-			message: "#^Strict comparison using \\!\\=\\= between \\-1 and \\-1 will always evaluate to false\\.$#"
+			#readline() may return false
+			message: "#^Strict comparison using \\!\\=\\= between string and false will always evaluate to true\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/entity/Entity.php
+			path: ../../../src/pocketmine/command/CommandReader.php
+
+		-
+			#generics corruption, this might show up in other forms too
+			message: "#^Parameter \\#1 \\$offset \\(int\\) of method pocketmine\\\\entity\\\\AttributeMap\\:\\:offsetGet\\(\\) should be contravariant with parameter \\$offset \\(mixed\\) of method ArrayAccess\\<int,float\\>\\:\\:offsetGet\\(\\)$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/AttributeMap.php
 
 		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
@@ -49,23 +44,12 @@ parameters:
 			path: ../../../src/pocketmine/entity/projectile/Projectile.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between int\\<min, 3\\> and 4 will always evaluate to false\\.$#"
+			message: "#^Call to function method_exists\\(\\) with pocketmine\\\\network\\\\mcpe\\\\CachedEncapsulatedPacket and '__toString' will always evaluate to true\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/level/Level.php
+			path: ../../../src/pocketmine/network/mcpe/protocol/DataPacket.php
 
 		-
-			message: "#^Instanceof between int and PharFileInfo will always evaluate to false\\.$#"
+			#phpstan doesn't understand that SplFixedArray may contain null
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/plugin/PharPluginLoader.php
-
-		-
-			#ReflectionFunction::getClosureThis() should be nullable
-			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/utils/Utils.php
-
-		-
-			#ReflectionFunction::getClosureScopeClass() should be nullable
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/utils/Utils.php
+			path: ../../../tests/phpunit/block/BlockTest.php

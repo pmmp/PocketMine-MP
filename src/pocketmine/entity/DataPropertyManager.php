@@ -32,110 +32,68 @@ use function is_string;
 
 class DataPropertyManager{
 
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<int, array{0: int, 1: mixed}>
+	 */
 	private $properties = [];
 
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<int, array{0: int, 1: mixed}>
+	 */
 	private $dirtyProperties = [];
 
 	public function __construct(){
 
 	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return int|null
-	 */
 	public function getByte(int $key) : ?int{
 		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_BYTE);
 		assert(is_int($value) or $value === null);
 		return $value;
 	}
 
-	/**
-	 * @param int  $key
-	 * @param int  $value
-	 * @param bool $force
-	 */
 	public function setByte(int $key, int $value, bool $force = false) : void{
 		$this->setPropertyValue($key, Entity::DATA_TYPE_BYTE, $value, $force);
 	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return int|null
-	 */
 	public function getShort(int $key) : ?int{
 		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_SHORT);
 		assert(is_int($value) or $value === null);
 		return $value;
 	}
 
-	/**
-	 * @param int  $key
-	 * @param int  $value
-	 * @param bool $force
-	 */
 	public function setShort(int $key, int $value, bool $force = false) : void{
 		$this->setPropertyValue($key, Entity::DATA_TYPE_SHORT, $value, $force);
 	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return int|null
-	 */
 	public function getInt(int $key) : ?int{
 		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_INT);
 		assert(is_int($value) or $value === null);
 		return $value;
 	}
 
-	/**
-	 * @param int  $key
-	 * @param int  $value
-	 * @param bool $force
-	 */
 	public function setInt(int $key, int $value, bool $force = false) : void{
 		$this->setPropertyValue($key, Entity::DATA_TYPE_INT, $value, $force);
 	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return float|null
-	 */
 	public function getFloat(int $key) : ?float{
 		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_FLOAT);
 		assert(is_float($value) or $value === null);
 		return $value;
 	}
 
-	/**
-	 * @param int   $key
-	 * @param float $value
-	 * @param bool  $force
-	 */
 	public function setFloat(int $key, float $value, bool $force = false) : void{
 		$this->setPropertyValue($key, Entity::DATA_TYPE_FLOAT, $value, $force);
 	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return null|string
-	 */
 	public function getString(int $key) : ?string{
 		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_STRING);
 		assert(is_string($value) or $value === null);
 		return $value;
 	}
 
-	/**
-	 * @param int    $key
-	 * @param string $value
-	 * @param bool   $force
-	 */
 	public function setString(int $key, string $value, bool $force = false) : void{
 		$this->setPropertyValue($key, Entity::DATA_TYPE_STRING, $value, $force);
 	}
@@ -150,87 +108,44 @@ class DataPropertyManager{
 		$this->setPropertyValue($key, Entity::DATA_TYPE_COMPOUND_TAG, $value, $force);
 	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return null|Vector3
-	 */
 	public function getBlockPos(int $key) : ?Vector3{
 		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_POS);
 		assert($value instanceof Vector3 or $value === null);
 		return $value;
 	}
 
-	/**
-	 * @param int          $key
-	 * @param null|Vector3 $value
-	 * @param bool         $force
-	 */
 	public function setBlockPos(int $key, ?Vector3 $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_POS, $value ? $value->floor() : null, $force);
+		$this->setPropertyValue($key, Entity::DATA_TYPE_POS, $value !== null ? $value->floor() : null, $force);
 	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return int|null
-	 */
 	public function getLong(int $key) : ?int{
 		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_LONG);
 		assert(is_int($value) or $value === null);
 		return $value;
 	}
 
-	/**
-	 * @param int  $key
-	 * @param int  $value
-	 * @param bool $force
-	 */
 	public function setLong(int $key, int $value, bool $force = false) : void{
 		$this->setPropertyValue($key, Entity::DATA_TYPE_LONG, $value, $force);
 	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return null|Vector3
-	 */
 	public function getVector3(int $key) : ?Vector3{
 		$value = $this->getPropertyValue($key, Entity::DATA_TYPE_VECTOR3F);
 		assert($value instanceof Vector3 or $value === null);
 		return $value;
 	}
 
-	/**
-	 * @param int          $key
-	 * @param null|Vector3 $value
-	 * @param bool         $force
-	 */
 	public function setVector3(int $key, ?Vector3 $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_VECTOR3F, $value ? $value->asVector3() : null, $force);
+		$this->setPropertyValue($key, Entity::DATA_TYPE_VECTOR3F, $value !== null ? $value->asVector3() : null, $force);
 	}
 
-	/**
-	 * @param int $key
-	 */
 	public function removeProperty(int $key) : void{
 		unset($this->properties[$key]);
 	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return bool
-	 */
 	public function hasProperty(int $key) : bool{
 		return isset($this->properties[$key]);
 	}
 
-	/**
-	 * @param int $key
-	 *
-	 * @return int
-	 */
 	public function getPropertyType(int $key) : int{
 		if(isset($this->properties[$key])){
 			return $this->properties[$key][0];
@@ -246,9 +161,6 @@ class DataPropertyManager{
 	}
 
 	/**
-	 * @param int $key
-	 * @param int $type
-	 *
 	 * @return mixed
 	 */
 	public function getPropertyValue(int $key, int $type){
@@ -259,10 +171,7 @@ class DataPropertyManager{
 	}
 
 	/**
-	 * @param int   $key
-	 * @param int   $type
 	 * @param mixed $value
-	 * @param bool  $force
 	 */
 	public function setPropertyValue(int $key, int $type, $value, bool $force = false) : void{
 		if(!$force){
@@ -274,7 +183,8 @@ class DataPropertyManager{
 	/**
 	 * Returns all properties.
 	 *
-	 * @return array
+	 * @return mixed[][]
+	 * @phpstan-return array<int, array{0: int, 1: mixed}>
 	 */
 	public function getAll() : array{
 		return $this->properties;
@@ -283,7 +193,8 @@ class DataPropertyManager{
 	/**
 	 * Returns properties that have changed and need to be broadcasted.
 	 *
-	 * @return array
+	 * @return mixed[][]
+	 * @phpstan-return array<int, array{0: int, 1: mixed}>
 	 */
 	public function getDirty() : array{
 		return $this->dirtyProperties;

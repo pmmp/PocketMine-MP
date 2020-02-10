@@ -31,18 +31,11 @@ class InventoryPickupItemEvent extends InventoryEvent implements Cancellable{
 	/** @var ItemEntity */
 	private $item;
 
-	/**
-	 * @param Inventory  $inventory
-	 * @param ItemEntity $item
-	 */
 	public function __construct(Inventory $inventory, ItemEntity $item){
 		$this->item = $item;
 		parent::__construct($inventory);
 	}
 
-	/**
-	 * @return ItemEntity
-	 */
 	public function getItem() : ItemEntity{
 		return $this->item;
 	}

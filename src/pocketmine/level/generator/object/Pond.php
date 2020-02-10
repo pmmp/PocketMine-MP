@@ -29,7 +29,9 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 class Pond{
+	/** @var Random */
 	private $random;
+	/** @var Block */
 	public $type;
 
 	public function __construct(Random $random, Block $type){
@@ -41,6 +43,9 @@ class Pond{
 		return false;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function placeObject(ChunkManager $level, Vector3 $pos){
 
 	}

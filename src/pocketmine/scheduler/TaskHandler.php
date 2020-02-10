@@ -54,13 +54,6 @@ class TaskHandler{
 	/** @var string */
 	private $ownerName;
 
-	/**
-	 * @param Task        $task
-	 * @param int         $taskId
-	 * @param int         $delay
-	 * @param int         $period
-	 * @param string|null $ownerName
-	 */
 	public function __construct(Task $task, int $taskId, int $delay = -1, int $period = -1, ?string $ownerName = null){
 		$this->task = $task;
 		$this->taskId = $taskId;
@@ -72,69 +65,48 @@ class TaskHandler{
 		$this->task->setHandler($this);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isCancelled() : bool{
 		return $this->cancelled;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getNextRun() : int{
 		return $this->nextRun;
 	}
 
 	/**
-	 * @param int $ticks
+	 * @return void
 	 */
 	public function setNextRun(int $ticks){
 		$this->nextRun = $ticks;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getTaskId() : int{
 		return $this->taskId;
 	}
 
-	/**
-	 * @return Task
-	 */
 	public function getTask() : Task{
 		return $this->task;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getDelay() : int{
 		return $this->delay;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isDelayed() : bool{
 		return $this->delay > 0;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isRepeating() : bool{
 		return $this->period > 0;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPeriod() : int{
 		return $this->period;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function cancel(){
 		try{
 			if(!$this->isCancelled()){
@@ -145,13 +117,16 @@ class TaskHandler{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function remove(){
 		$this->cancelled = true;
 		$this->task->setHandler(null);
 	}
 
 	/**
-	 * @param int $currentTick
+	 * @return void
 	 */
 	public function run(int $currentTick){
 		$this->timings->startTiming();
@@ -162,9 +137,6 @@ class TaskHandler{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getTaskName() : string{
 		return $this->taskName;
 	}

@@ -45,32 +45,21 @@ class BanList{
 	/** @var bool */
 	private $enabled = true;
 
-	/**
-	 * @param string $file
-	 */
 	public function __construct(string $file){
 		$this->file = $file;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isEnabled() : bool{
 		return $this->enabled;
 	}
 
 	/**
-	 * @param bool $flag
+	 * @return void
 	 */
 	public function setEnabled(bool $flag){
 		$this->enabled = $flag;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return BanEntry|null
-	 */
 	public function getEntry(string $name) : ?BanEntry{
 		$this->removeExpired();
 
@@ -86,11 +75,6 @@ class BanList{
 		return $this->list;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return bool
-	 */
 	public function isBanned(string $name) : bool{
 		$name = strtolower($name);
 		if(!$this->isEnabled()){
@@ -103,21 +87,13 @@ class BanList{
 	}
 
 	/**
-	 * @param BanEntry $entry
+	 * @return void
 	 */
 	public function add(BanEntry $entry){
 		$this->list[$entry->getName()] = $entry;
 		$this->save();
 	}
 
-	/**
-	 * @param string    $target
-	 * @param string    $reason
-	 * @param \DateTime $expires
-	 * @param string    $source
-	 *
-	 * @return BanEntry
-	 */
 	public function addBan(string $target, string $reason = null, \DateTime $expires = null, string $source = null) : BanEntry{
 		$entry = new BanEntry($target);
 		$entry->setSource($source ?? $entry->getSource());
@@ -131,7 +107,7 @@ class BanList{
 	}
 
 	/**
-	 * @param string $name
+	 * @return void
 	 */
 	public function remove(string $name){
 		$name = strtolower($name);
@@ -141,6 +117,9 @@ class BanList{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function removeExpired(){
 		foreach($this->list as $name => $entry){
 			if($entry->hasExpired()){
@@ -149,6 +128,9 @@ class BanList{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function load(){
 		$this->list = [];
 		$fp = @fopen($this->file, "r");
@@ -174,7 +156,7 @@ class BanList{
 	}
 
 	/**
-	 * @param bool $writeHeader
+	 * @return void
 	 */
 	public function save(bool $writeHeader = true){
 		$this->removeExpired();

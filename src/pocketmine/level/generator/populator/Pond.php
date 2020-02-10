@@ -30,8 +30,11 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 class Pond extends Populator{
+	/** @var int */
 	private $waterOdd = 4;
+	/** @var int */
 	private $lavaOdd = 4;
+	/** @var int */
 	private $lavaSurfaceOdd = 4;
 
 	public function populate(ChunkManager $level, int $chunkX, int $chunkZ, Random $random){
@@ -46,14 +49,23 @@ class Pond extends Populator{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setWaterOdd(int $waterOdd){
 		$this->waterOdd = $waterOdd;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setLavaOdd(int $lavaOdd){
 		$this->lavaOdd = $lavaOdd;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setLavaSurfaceOdd(int $lavaSurfaceOdd){
 		$this->lavaSurfaceOdd = $lavaSurfaceOdd;
 	}

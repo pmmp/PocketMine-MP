@@ -45,6 +45,7 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use function array_values;
 use function chr;
+use function count;
 use function defined;
 use function explode;
 use function extension_loaded;
@@ -101,7 +102,7 @@ class LevelDB extends BaseLevelProvider{
 	/** @var \LevelDB */
 	protected $db;
 
-	private static function checkForLevelDBExtension(){
+	private static function checkForLevelDBExtension() : void{
 		if(!extension_loaded('leveldb')){
 			throw new LevelException("The leveldb PHP extension is required to use this world format");
 		}
@@ -125,8 +126,12 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	protected function loadLevelData() : void{
+		$rawLevelData = file_get_contents($this->getPath() . "level.dat");
+		if($rawLevelData === false or strlen($rawLevelData) <= 8){
+			throw new LevelException("Truncated level.dat");
+		}
 		$nbt = new LittleEndianNBTStream();
-		$levelData = $nbt->read(substr(file_get_contents($this->getPath() . "level.dat"), 8));
+		$levelData = $nbt->read(substr($rawLevelData, 8));
 		if($levelData instanceof CompoundTag){
 			$this->levelData = $levelData;
 		}else{
@@ -247,7 +252,6 @@ class LevelDB extends BaseLevelProvider{
 		$buffer = $nbt->write($levelData);
 		file_put_contents($path . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 
-
 		$db = self::createDB($path);
 
 		if($generatorType === self::GENERATOR_FLAT and isset($options["preset"])){
@@ -292,10 +296,6 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws UnsupportedChunkFormatException
 	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
@@ -516,10 +516,9 @@ class LevelDB extends BaseLevelProvider{
 
 	/**
 	 * @param CompoundTag[] $targets
-	 * @param string        $index
 	 */
-	private function writeTags(array $targets, string $index){
-		if(!empty($targets)){
+	private function writeTags(array $targets, string $index) : void{
+		if(count($targets) > 0){
 			$nbt = new LittleEndianNBTStream();
 			$this->db->put($index, $nbt->write($targets));
 		}else{
@@ -527,9 +526,6 @@ class LevelDB extends BaseLevelProvider{
 		}
 	}
 
-	/**
-	 * @return \LevelDB
-	 */
 	public function getDatabase() : \LevelDB{
 		return $this->db;
 	}

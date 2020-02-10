@@ -61,6 +61,10 @@ class ItemTest extends TestCase{
 		}
 	}
 
+	/**
+	 * @return mixed[][]
+	 * @phpstan-return list<array{string,int,int}>
+	 */
 	public function itemFromStringProvider() : array{
 		return [
 			["dye:4", ItemIds::DYE, 4],

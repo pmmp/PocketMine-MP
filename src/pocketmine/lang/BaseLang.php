@@ -43,6 +43,10 @@ class BaseLang{
 
 	public const FALLBACK_LANGUAGE = "eng";
 
+	/**
+	 * @return string[]
+	 * @phpstan-return array<string, string>
+	 */
 	public static function getLanguageList(string $path = "") : array{
 		if($path === ""){
 			$path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
@@ -52,7 +56,7 @@ class BaseLang{
 			$allFiles = scandir($path, SCANDIR_SORT_NONE);
 
 			if($allFiles !== false){
-				$files = array_filter($allFiles, function($filename){
+				$files = array_filter($allFiles, function(string $filename) : bool{
 					return substr($filename, -4) === ".ini";
 				});
 
@@ -105,6 +109,11 @@ class BaseLang{
 		return $this->langName;
 	}
 
+	/**
+	 * @param string[] $d reference parameter
+	 *
+	 * @return bool
+	 */
 	protected static function loadLang(string $path, array &$d){
 		if(file_exists($path)){
 			$d = array_map('\stripcslashes', parse_ini_file($path, false, INI_SCANNER_RAW));
@@ -115,15 +124,11 @@ class BaseLang{
 	}
 
 	/**
-	 * @param string               $str
 	 * @param (float|int|string)[] $params
-	 * @param string|null          $onlyPrefix
-	 *
-	 * @return string
 	 */
 	public function translateString(string $str, array $params = [], string $onlyPrefix = null) : string{
 		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation(($baseText !== null and ($onlyPrefix === null or strpos($str, $onlyPrefix) === 0)) ? $baseText : $str, $onlyPrefix);
+		$baseText = $this->parseTranslation(($onlyPrefix === null or strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
 
 		foreach($params as $i => $p){
 			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText, $onlyPrefix);
@@ -132,6 +137,9 @@ class BaseLang{
 		return $baseText;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function translate(TextContainer $c){
 		if($c instanceof TranslationContainer){
 			$baseText = $this->internalGet($c->getText());
@@ -148,8 +156,6 @@ class BaseLang{
 	}
 
 	/**
-	 * @param string $id
-	 *
 	 * @return string|null
 	 */
 	public function internalGet(string $id){
@@ -162,11 +168,6 @@ class BaseLang{
 		return null;
 	}
 
-	/**
-	 * @param string $id
-	 *
-	 * @return string
-	 */
 	public function get(string $id) : string{
 		if(isset($this->lang[$id])){
 			return $this->lang[$id];
@@ -177,12 +178,6 @@ class BaseLang{
 		return $id;
 	}
 
-	/**
-	 * @param string      $text
-	 * @param string|null $onlyPrefix
-	 *
-	 * @return string
-	 */
 	protected function parseTranslation(string $text, string $onlyPrefix = null) : string{
 		$newString = "";
 

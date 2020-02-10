@@ -41,19 +41,37 @@ use function version_compare;
 use function yaml_parse;
 
 class PluginDescription{
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $map;
 
+	/** @var string */
 	private $name;
+	/** @var string */
 	private $main;
+	/** @var string[] */
 	private $api;
 	/** @var int[] */
 	private $compatibleMcpeProtocols = [];
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<string, list<mixed>>
+	 */
 	private $extensions = [];
+	/** @var string[] */
 	private $depend = [];
+	/** @var string[] */
 	private $softDepend = [];
+	/** @var string[] */
 	private $loadBefore = [];
 	/** @var string */
 	private $version;
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<string, array<string, mixed>>
+	 */
 	private $commands = [];
 	/** @var string */
 	private $description = "";
@@ -63,26 +81,26 @@ class PluginDescription{
 	private $website = "";
 	/** @var string */
 	private $prefix = "";
+	/** @var int */
 	private $order = PluginLoadOrder::POSTWORLD;
 
-	/**
-	 * @var Permission[]
-	 */
+	/** @var Permission[] */
 	private $permissions = [];
 
 	/**
-	 * @param string|array $yamlString
+	 * @param string|mixed[] $yamlString
+	 * @phpstan-param string|array<string, mixed> $yamlString
 	 */
 	public function __construct($yamlString){
 		$this->loadMap(!is_array($yamlString) ? yaml_parse($yamlString) : $yamlString);
 	}
 
 	/**
-	 * @param array $plugin
-	 *
+	 * @param mixed[] $plugin
+	 * @phpstan-param array<string, mixed> $plugin
 	 * @throws PluginException
 	 */
-	private function loadMap(array $plugin){
+	private function loadMap(array $plugin) : void{
 		$this->map = $plugin;
 
 		$this->name = $plugin["name"];
@@ -151,15 +169,12 @@ class PluginDescription{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getFullName() : string{
 		return $this->name . " v" . $this->version;
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getCompatibleApis() : array{
 		return $this->api;
@@ -179,22 +194,21 @@ class PluginDescription{
 		return $this->authors;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPrefix() : string{
 		return $this->prefix;
 	}
 
 	/**
-	 * @return array
+	 * @return mixed[][]
+	 * @phpstan-return array<string, array<string, mixed>>
 	 */
 	public function getCommands() : array{
 		return $this->commands;
 	}
 
 	/**
-	 * @return array
+	 * @return string[][]
+	 * @phpstan-return array<string, list<string>>
 	 */
 	public function getRequiredExtensions() : array{
 		return $this->extensions;
@@ -203,6 +217,7 @@ class PluginDescription{
 	/**
 	 * Checks if the current PHP runtime has the extensions required by the plugin.
 	 *
+	 * @return void
 	 * @throws PluginException if there are required extensions missing or have incompatible version, or if the version constraint cannot be parsed
 	 */
 	public function checkRequiredExtensions(){
@@ -211,9 +226,6 @@ class PluginDescription{
 				throw new PluginException("Required extension $name not loaded");
 			}
 
-			if(!is_array($versionConstrs)){
-				$versionConstrs = [$versionConstrs];
-			}
 			$gotVersion = phpversion($name);
 			foreach($versionConstrs as $constr){ // versionConstrs_loop
 				if($constr === "*"){
@@ -238,43 +250,31 @@ class PluginDescription{
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getDepend() : array{
 		return $this->depend;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDescription() : string{
 		return $this->description;
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getLoadBefore() : array{
 		return $this->loadBefore;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getMain() : string{
 		return $this->main;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getOrder() : int{
 		return $this->order;
 	}
@@ -287,26 +287,24 @@ class PluginDescription{
 	}
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function getSoftDepend() : array{
 		return $this->softDepend;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getVersion() : string{
 		return $this->version;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getWebsite() : string{
 		return $this->website;
 	}
 
+	/**
+	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
+	 */
 	public function getMap() : array{
 		return $this->map;
 	}

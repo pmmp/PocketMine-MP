@@ -49,6 +49,9 @@ class Ore{
 		return $level->getBlockIdAt($x, $y, $z) === Block::STONE;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z){
 		$clusterSize = $this->type->clusterSize;
 		$angle = $this->random->nextFloat() * M_PI;
@@ -72,24 +75,24 @@ class Ore{
 			$endY = (int) ($seedY + $size);
 			$endZ = (int) ($seedZ + $size);
 
-			for($x = $startX; $x <= $endX; ++$x){
-				$sizeX = ($x + 0.5 - $seedX) / $size;
+			for($xx = $startX; $xx <= $endX; ++$xx){
+				$sizeX = ($xx + 0.5 - $seedX) / $size;
 				$sizeX *= $sizeX;
 
 				if($sizeX < 1){
-					for($y = $startY; $y <= $endY; ++$y){
-						$sizeY = ($y + 0.5 - $seedY) / $size;
+					for($yy = $startY; $yy <= $endY; ++$yy){
+						$sizeY = ($yy + 0.5 - $seedY) / $size;
 						$sizeY *= $sizeY;
 
-						if($y > 0 and ($sizeX + $sizeY) < 1){
-							for($z = $startZ; $z <= $endZ; ++$z){
-								$sizeZ = ($z + 0.5 - $seedZ) / $size;
+						if($yy > 0 and ($sizeX + $sizeY) < 1){
+							for($zz = $startZ; $zz <= $endZ; ++$zz){
+								$sizeZ = ($zz + 0.5 - $seedZ) / $size;
 								$sizeZ *= $sizeZ;
 
-								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->getBlockIdAt($x, $y, $z) === Block::STONE){
-									$level->setBlockIdAt($x, $y, $z, $this->type->material->getId());
+								if(($sizeX + $sizeY + $sizeZ) < 1 and $level->getBlockIdAt($xx, $yy, $zz) === Block::STONE){
+									$level->setBlockIdAt($xx, $yy, $zz, $this->type->material->getId());
 									if($this->type->material->getDamage() !== 0){
-										$level->setBlockDataAt($x, $y, $z, $this->type->material->getDamage());
+										$level->setBlockDataAt($xx, $yy, $zz, $this->type->material->getDamage());
 									}
 								}
 							}

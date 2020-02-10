@@ -38,12 +38,6 @@ class EntityShootBowEvent extends EntityEvent implements Cancellable{
 	/** @var float */
 	private $force;
 
-	/**
-	 * @param Living     $shooter
-	 * @param Item       $bow
-	 * @param Projectile $projectile
-	 * @param float      $force
-	 */
 	public function __construct(Living $shooter, Item $bow, Projectile $projectile, float $force){
 		$this->entity = $shooter;
 		$this->bow = $bow;
@@ -58,9 +52,6 @@ class EntityShootBowEvent extends EntityEvent implements Cancellable{
 		return $this->entity;
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getBow() : Item{
 		return $this->bow;
 	}
@@ -69,16 +60,11 @@ class EntityShootBowEvent extends EntityEvent implements Cancellable{
 	 * Returns the entity considered as the projectile in this event.
 	 *
 	 * NOTE: This might not return a Projectile if a plugin modified the target entity.
-	 *
-	 * @return Entity
 	 */
 	public function getProjectile() : Entity{
 		return $this->projectile;
 	}
 
-	/**
-	 * @param Entity $projectile
-	 */
 	public function setProjectile(Entity $projectile) : void{
 		if($projectile !== $this->projectile){
 			if(count($this->projectile->getViewers()) === 0){
@@ -88,16 +74,10 @@ class EntityShootBowEvent extends EntityEvent implements Cancellable{
 		}
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getForce() : float{
 		return $this->force;
 	}
 
-	/**
-	 * @param float $force
-	 */
 	public function setForce(float $force) : void{
 		$this->force = $force;
 	}

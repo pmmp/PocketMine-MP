@@ -31,25 +31,16 @@ class ChunkCacheBlob{
 
 	/**
 	 * ChunkCacheBlob constructor.
-	 *
-	 * @param int    $hash
-	 * @param string $payload
 	 */
 	public function __construct(int $hash, string $payload){
 		$this->hash = $hash;
 		$this->payload = $payload;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getHash() : int{
 		return $this->hash;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPayload() : string{
 		return $this->payload;
 	}

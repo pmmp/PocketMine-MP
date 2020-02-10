@@ -31,6 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
 use function array_rand;
+use function count;
 
 class PaintingItem extends Item{
 	public function __construct(int $meta = 0){
@@ -66,7 +67,7 @@ class PaintingItem extends Item{
 			}
 		}
 
-		if(empty($motives)){ //No space available
+		if(count($motives) === 0){ //No space available
 			return false;
 		}
 

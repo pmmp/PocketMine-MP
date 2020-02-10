@@ -21,14 +21,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\build_script;
+namespace pocketmine\build\make_release;
 
 use pocketmine\utils\VersionString;
 use function dirname;
 use function fgets;
 use function file_get_contents;
 use function file_put_contents;
-use function preg_quote;
 use function preg_replace;
 use function sleep;
 use function sprintf;
@@ -36,20 +35,8 @@ use function system;
 use const pocketmine\BASE_VERSION;
 use const STDIN;
 
-require_once dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-if(isset($argv[1])){
-	$currentVer = new VersionString($argv[1]);
-}else{
-	$currentVer = new VersionString(BASE_VERSION);
-}
-$nextVer = new VersionString(sprintf(
-	"%u.%u.%u",
-	$currentVer->getMajor(),
-	$currentVer->getMinor(),
-	$currentVer->getPatch() + 1
-));
 
 function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev) : void{
 	$versionInfo = file_get_contents($versionInfoPath);
@@ -60,22 +47,45 @@ function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev
 	);
 	$versionInfo = preg_replace(
 		'/^const IS_DEVELOPMENT_BUILD = (?:true|false);$/m',
-		'const IS_DEVELOPMENT_BUILD = ' . ($isDev ? 'true' : 'false'). ';',
+		'const IS_DEVELOPMENT_BUILD = ' . ($isDev ? 'true' : 'false') . ';',
 		$versionInfo
 	);
 	file_put_contents($versionInfoPath, $versionInfo);
 }
-$versionInfoPath = dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
-replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false);
 
-echo "please add appropriate notes to the changelog and press enter...";
-fgets(STDIN);
-system('git add "' . dirname(__DIR__) . '/changelogs"');
-system('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"');
-system('git tag ' . $currentVer->getBaseVersion());
-replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true);
-system('git add "' . $versionInfoPath . '"');
-system('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"');
-echo "pushing changes in 5 seconds\n";
-sleep(5);
-system('git push origin HEAD ' . $currentVer->getBaseVersion());
+/**
+ * @param string[] $argv
+ * @phpstan-param list<string> $argv
+ */
+function main(array $argv) : void{
+	if(isset($argv[1])){
+		$currentVer = new VersionString($argv[1]);
+	}else{
+		$currentVer = new VersionString(BASE_VERSION);
+	}
+	$nextVer = new VersionString(sprintf(
+		"%u.%u.%u",
+		$currentVer->getMajor(),
+		$currentVer->getMinor(),
+		$currentVer->getPatch() + 1
+	));
+
+	$versionInfoPath = dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
+	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false);
+	
+	echo "please add appropriate notes to the changelog and press enter...";
+	fgets(STDIN);
+	system('git add "' . dirname(__DIR__) . '/changelogs"');
+	system('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"');
+	system('git tag ' . $currentVer->getBaseVersion());
+	replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true);
+	system('git add "' . $versionInfoPath . '"');
+	system('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"');
+	echo "pushing changes in 5 seconds\n";
+	sleep(5);
+	system('git push origin HEAD ' . $currentVer->getBaseVersion());
+}
+
+if(!defined('pocketmine\_PHPSTAN_ANALYSIS')){
+	main($argv);
+}

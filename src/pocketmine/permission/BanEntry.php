@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\permission;
 
 use function array_shift;
+use function count;
 use function explode;
 use function implode;
 use function strlen;
@@ -31,15 +32,13 @@ use function strtolower;
 use function trim;
 
 class BanEntry{
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	public static $format = "Y-m-d H:i:s O";
 
 	/** @var string */
 	private $name;
 	/** @var \DateTime */
-	private $creationDate = null;
+	private $creationDate;
 	/** @var string */
 	private $source = "(Unknown)";
 	/** @var \DateTime|null */
@@ -60,6 +59,9 @@ class BanEntry{
 		return $this->creationDate;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setCreated(\DateTime $date){
 		self::validateDate($date);
 		$this->creationDate = $date;
@@ -69,6 +71,9 @@ class BanEntry{
 		return $this->source;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setSource(string $source){
 		$this->source = $source;
 	}
@@ -81,7 +86,7 @@ class BanEntry{
 	}
 
 	/**
-	 * @param \DateTime|null $date
+	 * @return void
 	 */
 	public function setExpires(\DateTime $date = null){
 		if($date !== null){
@@ -100,6 +105,9 @@ class BanEntry{
 		return $this->reason;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setReason(string $reason){
 		$this->reason = $reason;
 	}
@@ -125,8 +133,6 @@ class BanEntry{
 	 *
 	 * @link https://bugs.php.net/bug.php?id=75992
 	 *
-	 * @param \DateTime $dateTime
-	 *
 	 * @throws \RuntimeException if the argument can't be parsed from a formatted date string
 	 */
 	private static function validateDate(\DateTime $dateTime) : void{
@@ -134,9 +140,6 @@ class BanEntry{
 	}
 
 	/**
-	 * @param string $date
-	 *
-	 * @return \DateTime
 	 * @throws \RuntimeException
 	 */
 	private static function parseDate(string $date) : \DateTime{
@@ -149,9 +152,6 @@ class BanEntry{
 	}
 
 	/**
-	 * @param string $str
-	 *
-	 * @return BanEntry|null
 	 * @throws \RuntimeException
 	 */
 	public static function fromString(string $str) : ?BanEntry{
@@ -161,17 +161,17 @@ class BanEntry{
 			$str = explode("|", trim($str));
 			$entry = new BanEntry(trim(array_shift($str)));
 			do{
-				if(empty($str)){
+				if(count($str) === 0){
 					break;
 				}
 
 				$entry->setCreated(self::parseDate(array_shift($str)));
-				if(empty($str)){
+				if(count($str) === 0){
 					break;
 				}
 
 				$entry->setSource(trim(array_shift($str)));
-				if(empty($str)){
+				if(count($str) === 0){
 					break;
 				}
 
@@ -179,7 +179,7 @@ class BanEntry{
 				if($expire !== "" and strtolower($expire) !== "forever"){
 					$entry->setExpires(self::parseDate($expire));
 				}
-				if(empty($str)){
+				if(count($str) === 0){
 					break;
 				}
 

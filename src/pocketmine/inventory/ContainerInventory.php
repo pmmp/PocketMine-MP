@@ -50,7 +50,7 @@ abstract class ContainerInventory extends BaseInventory{
 
 		if($holder instanceof Entity){
 			$pk->entityUniqueId = $holder->getId();
-		}elseif($holder instanceof Vector3){
+		}else{
 			$pk->x = $holder->getFloorX();
 			$pk->y = $holder->getFloorY();
 			$pk->z = $holder->getFloorZ();
@@ -70,7 +70,6 @@ abstract class ContainerInventory extends BaseInventory{
 
 	/**
 	 * Returns the Minecraft PE inventory type used to show the inventory window to clients.
-	 * @return int
 	 */
 	abstract public function getNetworkType() : int;
 

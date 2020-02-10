@@ -68,9 +68,15 @@ abstract class Tile extends Position{
 	/** @var int */
 	public static $tileCount = 1;
 
-	/** @var string[] classes that extend Tile */
+	/**
+	 * @var string[] classes that extend Tile
+	 * @phpstan-var array<string, class-string<Tile>>
+	 */
 	private static $knownTiles = [];
-	/** @var string[][] */
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<class-string<Tile>, list<string>>
+	 */
 	private static $saveNames = [];
 
 	/** @var string */
@@ -84,6 +90,9 @@ abstract class Tile extends Position{
 	/** @var TimingsHandler */
 	protected $timings;
 
+	/**
+	 * @return void
+	 */
 	public static function init(){
 		self::registerTile(Banner::class, [self::BANNER, "minecraft:banner"]);
 		self::registerTile(Bed::class, [self::BED, "minecraft:bed"]);
@@ -99,11 +108,7 @@ abstract class Tile extends Position{
 
 	/**
 	 * @param string      $type
-	 * @param Level       $level
-	 * @param CompoundTag $nbt
 	 * @param mixed       ...$args
-	 *
-	 * @return Tile|null
 	 */
 	public static function createTile($type, Level $level, CompoundTag $nbt, ...$args) : ?Tile{
 		if(isset(self::$knownTiles[$type])){
@@ -116,10 +121,9 @@ abstract class Tile extends Position{
 	}
 
 	/**
-	 * @param string $className
-	 * @param array  $saveNames
+	 * @param string[] $saveNames
+	 * @phpstan-param class-string<Tile> $className
 	 *
-	 * @return bool
 	 * @throws \ReflectionException
 	 */
 	public static function registerTile(string $className, array $saveNames = []) : bool{
@@ -136,7 +140,6 @@ abstract class Tile extends Position{
 
 			self::$saveNames[$className] = $saveNames;
 
-
 			return true;
 		}
 
@@ -145,7 +148,6 @@ abstract class Tile extends Position{
 
 	/**
 	 * Returns the short save name
-	 * @return string
 	 */
 	public static function getSaveId() : string{
 		if(!isset(self::$saveNames[static::class])){
@@ -175,15 +177,11 @@ abstract class Tile extends Position{
 
 	/**
 	 * Reads additional data from the CompoundTag on tile creation.
-	 *
-	 * @param CompoundTag $nbt
 	 */
 	abstract protected function readSaveData(CompoundTag $nbt) : void;
 
 	/**
 	 * Writes additional save data to a CompoundTag, not including generic things like ID and coordinates.
-	 *
-	 * @param CompoundTag $nbt
 	 */
 	abstract protected function writeSaveData(CompoundTag $nbt) : void;
 
@@ -205,13 +203,6 @@ abstract class Tile extends Position{
 
 	/**
 	 * Creates and returns a CompoundTag containing the necessary information to spawn a tile of this type.
-	 *
-	 * @param Vector3     $pos
-	 * @param int|null    $face
-	 * @param Item|null   $item
-	 * @param Player|null $player
-	 *
-	 * @return CompoundTag
 	 */
 	public static function createNBT(Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : CompoundTag{
 		if(static::class === self::class){
@@ -240,27 +231,15 @@ abstract class Tile extends Position{
 
 	/**
 	 * Called by createNBT() to allow descendent classes to add their own base NBT using the parameters provided.
-	 *
-	 * @param CompoundTag $nbt
-	 * @param Vector3     $pos
-	 * @param int|null    $face
-	 * @param Item|null   $item
-	 * @param Player|null $player
 	 */
 	protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, ?int $face = null, ?Item $item = null, ?Player $player = null) : void{
 
 	}
 
-	/**
-	 * @return Block
-	 */
 	public function getBlock() : Block{
 		return $this->level->getBlockAt($this->x, $this->y, $this->z);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function onUpdate() : bool{
 		return false;
 	}

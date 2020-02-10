@@ -33,12 +33,19 @@ abstract class Thread extends \Thread{
 	/** @var string|null */
 	protected $composerAutoloaderPath;
 
+	/** @var bool */
 	protected $isKilled = false;
 
+	/**
+	 * @return \ClassLoader|null
+	 */
 	public function getClassLoader(){
 		return $this->classLoader;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setClassLoader(\ClassLoader $loader = null){
 		$this->composerAutoloaderPath = \pocketmine\COMPOSER_AUTOLOADER_PATH;
 
@@ -54,6 +61,8 @@ abstract class Thread extends \Thread{
 	 * WARNING: This method MUST be called from any descendent threads' run() method to make autoloading usable.
 	 * If you do not do this, you will not be able to use new classes that were not loaded when the thread was started
 	 * (unless you are using a custom autoloader).
+	 *
+	 * @return void
 	 */
 	public function registerClassLoader(){
 		if($this->composerAutoloaderPath !== null){
@@ -64,6 +73,11 @@ abstract class Thread extends \Thread{
 		}
 	}
 
+	/**
+	 * @param int|null $options TODO: pthreads bug
+	 *
+	 * @return bool
+	 */
 	public function start(?int $options = \PTHREADS_INHERIT_ALL){
 		ThreadManager::getInstance()->add($this);
 
@@ -75,6 +89,8 @@ abstract class Thread extends \Thread{
 
 	/**
 	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.
+	 *
+	 * @return void
 	 */
 	public function quit(){
 		$this->isKilled = true;

@@ -39,6 +39,9 @@ class SpruceTree extends Tree{
 		$this->treeHeight = 10;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random){
 		$this->treeHeight = $random->nextBoundedInt(4) + 6;
 

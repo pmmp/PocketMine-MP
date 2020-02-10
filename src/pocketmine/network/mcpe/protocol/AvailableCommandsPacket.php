@@ -38,7 +38,6 @@ use function dechex;
 class AvailableCommandsPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::AVAILABLE_COMMANDS_PACKET;
 
-
 	/**
 	 * This flag is set on all types EXCEPT the POSTFIX type. Not completely sure what this is for, but it is required
 	 * for the argtype to work correctly. VALID seems as good a name as any.
@@ -149,7 +148,6 @@ class AvailableCommandsPacket extends DataPacket{
 	/**
 	 * @param string[] $enumValueList
 	 *
-	 * @return CommandEnum
 	 * @throws \UnexpectedValueException
 	 * @throws BinaryDataException
 	 */
@@ -184,7 +182,6 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	/**
-	 * @param CommandEnum $enum
 	 * @param int[]       $enumValueMap string enum name -> int index
 	 */
 	protected function putEnum(CommandEnum $enum, array $enumValueMap) : void{
@@ -211,9 +208,6 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	/**
-	 * @param int $valueCount
-	 *
-	 * @return int
 	 * @throws BinaryDataException
 	 */
 	protected function getEnumValueIndex(int $valueCount) : int{
@@ -239,8 +233,6 @@ class AvailableCommandsPacket extends DataPacket{
 	/**
 	 * @param CommandEnum[] $enums
 	 * @param string[]      $enumValues
-	 *
-	 * @return CommandEnumConstraint
 	 */
 	protected function getEnumConstraint(array $enums, array $enumValues) : CommandEnumConstraint{
 		//wtf, what was wrong with an offset inside the enum? :(
@@ -267,7 +259,6 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	/**
-	 * @param CommandEnumConstraint $constraint
 	 * @param int[]                 $enumIndexes string enum name -> int index
 	 * @param int[]                 $enumValueIndexes string value -> int index
 	 */
@@ -284,7 +275,6 @@ class AvailableCommandsPacket extends DataPacket{
 	 * @param CommandEnum[] $enums
 	 * @param string[]      $postfixes
 	 *
-	 * @return CommandData
 	 * @throws \UnexpectedValueException
 	 * @throws BinaryDataException
 	 */
@@ -305,13 +295,13 @@ class AvailableCommandsPacket extends DataPacket{
 				$parameter->isOptional = $this->getBool();
 				$parameter->flags = $this->getByte();
 
-				if($parameter->paramType & self::ARG_FLAG_ENUM){
+				if(($parameter->paramType & self::ARG_FLAG_ENUM) !== 0){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->enum = $enums[$index] ?? null;
 					if($parameter->enum === null){
 						throw new \UnexpectedValueException("deserializing $retval->commandName parameter $parameter->paramName: expected enum at $index, but got none");
 					}
-				}elseif($parameter->paramType & self::ARG_FLAG_POSTFIX){
+				}elseif(($parameter->paramType & self::ARG_FLAG_POSTFIX) !== 0){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->postfix = $postfixes[$index] ?? null;
 					if($parameter->postfix === null){
@@ -329,7 +319,6 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 
 	/**
-	 * @param CommandData $data
 	 * @param int[]       $enumIndexes string enum name -> int index
 	 * @param int[]       $postfixIndexes
 	 */
@@ -371,9 +360,13 @@ class AvailableCommandsPacket extends DataPacket{
 		}
 	}
 
+	/**
+	 * @param string[] $postfixes
+	 * @phpstan-param array<int, string> $postfixes
+	 */
 	private function argTypeToString(int $argtype, array $postfixes) : string{
-		if($argtype & self::ARG_FLAG_VALID){
-			if($argtype & self::ARG_FLAG_ENUM){
+		if(($argtype & self::ARG_FLAG_VALID) !== 0){
+			if(($argtype & self::ARG_FLAG_ENUM) !== 0){
 				return "stringenum (" . ($argtype & 0xffff) . ")";
 			}
 
@@ -399,7 +392,7 @@ class AvailableCommandsPacket extends DataPacket{
 				case self::ARG_TYPE_COMMAND:
 					return "command";
 			}
-		}elseif($argtype & self::ARG_FLAG_POSTFIX){
+		}elseif(($argtype & self::ARG_FLAG_POSTFIX) !== 0){
 			$postfix = $postfixes[$argtype & 0xffff];
 
 			return "int (postfix $postfix)";
@@ -420,7 +413,7 @@ class AvailableCommandsPacket extends DataPacket{
 		/** @var CommandEnum[] $enums */
 		$enums = [];
 
-		$addEnumFn = static function(CommandEnum $enum) use (&$enums, &$enumIndexes, &$enumValueIndexes){
+		$addEnumFn = static function(CommandEnum $enum) use (&$enums, &$enumIndexes, &$enumValueIndexes) : void{
 			if(!isset($enumIndexes[$enum->enumName])){
 				$enums[$enumIndexes[$enum->enumName] = count($enumIndexes)] = $enum;
 			}

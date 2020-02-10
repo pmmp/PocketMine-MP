@@ -83,8 +83,8 @@ class Painting extends Entity{
 		$this->namedtag->setInt("TileY", (int) $this->blockIn->y);
 		$this->namedtag->setInt("TileZ", (int) $this->blockIn->z);
 
-		$this->namedtag->setByte("Facing", (int) $this->direction);
-		$this->namedtag->setByte("Direction", (int) $this->direction); //Save both for full compatibility
+		$this->namedtag->setByte("Facing", $this->direction);
+		$this->namedtag->setByte("Direction", $this->direction); //Save both for full compatibility
 
 		$this->namedtag->setString("Motive", $this->motive);
 	}
@@ -168,7 +168,6 @@ class Painting extends Entity{
 
 	/**
 	 * Returns the painting motive (which image is displayed on the painting)
-	 * @return PaintingMotive
 	 */
 	public function getMotive() : PaintingMotive{
 		return PaintingMotive::getMotiveByName($this->motive);
@@ -180,12 +179,6 @@ class Painting extends Entity{
 
 	/**
 	 * Returns the bounding-box a painting with the specified motive would have at the given position and direction.
-	 *
-	 * @param Vector3        $blockIn
-	 * @param int            $facing
-	 * @param PaintingMotive $motive
-	 *
-	 * @return AxisAlignedBB
 	 */
 	private static function getPaintingBB(Vector3 $blockIn, int $facing, PaintingMotive $motive) : AxisAlignedBB{
 		$width = $motive->getWidth();
@@ -241,14 +234,6 @@ class Painting extends Entity{
 
 	/**
 	 * Returns whether a painting with the specified motive can be placed at the given position.
-	 *
-	 * @param Level          $level
-	 * @param Vector3        $blockIn
-	 * @param int            $facing
-	 * @param bool           $checkOverlap
-	 * @param PaintingMotive $motive
-	 *
-	 * @return bool
 	 */
 	public static function canFit(Level $level, Vector3 $blockIn, int $facing, bool $checkOverlap, PaintingMotive $motive) : bool{
 		$width = $motive->getWidth();

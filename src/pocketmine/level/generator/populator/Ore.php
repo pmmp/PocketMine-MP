@@ -48,6 +48,8 @@ class Ore extends Populator{
 
 	/**
 	 * @param OreType[] $types
+	 *
+	 * @return void
 	 */
 	public function setOreTypes(array $types){
 		$this->oreTypes = $types;

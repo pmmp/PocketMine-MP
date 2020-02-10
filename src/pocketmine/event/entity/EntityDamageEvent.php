@@ -73,11 +73,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	/** @var int */
 	private $attackCooldown = 10;
 
-
 	/**
-	 * @param Entity  $entity
-	 * @param int     $cause
-	 * @param float   $damage
 	 * @param float[] $modifiers
 	 */
 	public function __construct(Entity $entity, int $cause, float $damage, array $modifiers = []){
@@ -89,17 +85,12 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		$this->originals = $this->modifiers;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getCause() : int{
 		return $this->cause;
 	}
 
 	/**
 	 * Returns the base amount of damage applied, before modifiers.
-	 *
-	 * @return float
 	 */
 	public function getBaseDamage() : float{
 		return $this->baseDamage;
@@ -109,8 +100,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 * Sets the base amount of damage applied, optionally recalculating modifiers.
 	 *
 	 * TODO: add ability to recalculate modifiers when this is set
-	 *
-	 * @param float $damage
 	 */
 	public function setBaseDamage(float $damage) : void{
 		$this->baseDamage = $damage;
@@ -118,8 +107,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * Returns the original base amount of damage applied, before alterations by plugins.
-	 *
-	 * @return float
 	 */
 	public function getOriginalBaseDamage() : float{
 		return $this->originalBase;
@@ -132,11 +119,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		return $this->originals;
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return float
-	 */
 	public function getOriginalModifier(int $type) : float{
 		return $this->originals[$type] ?? 0.0;
 	}
@@ -148,42 +130,24 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		return $this->modifiers;
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return float
-	 */
 	public function getModifier(int $type) : float{
 		return $this->modifiers[$type] ?? 0.0;
 	}
 
-	/**
-	 * @param float $damage
-	 * @param int   $type
-	 */
 	public function setModifier(float $damage, int $type) : void{
 		$this->modifiers[$type] = $damage;
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool
-	 */
 	public function isApplicable(int $type) : bool{
 		return isset($this->modifiers[$type]);
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getFinalDamage() : float{
 		return $this->baseDamage + array_sum($this->modifiers);
 	}
 
 	/**
 	 * Returns whether an entity can use armour points to reduce this type of damage.
-	 * @return bool
 	 */
 	public function canBeReducedByArmor() : bool{
 		switch($this->cause){
@@ -204,8 +168,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * Returns the cooldown in ticks before the target entity can be attacked again.
-	 *
-	 * @return int
 	 */
 	public function getAttackCooldown() : int{
 		return $this->attackCooldown;
@@ -215,8 +177,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 * Sets the cooldown in ticks before the target entity can be attacked again.
 	 *
 	 * NOTE: This value is not used in non-Living entities
-	 *
-	 * @param int $attackCooldown
 	 */
 	public function setAttackCooldown(int $attackCooldown) : void{
 		$this->attackCooldown = $attackCooldown;
