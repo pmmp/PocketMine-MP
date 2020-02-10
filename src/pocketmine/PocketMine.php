@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine {
 
 	use pocketmine\utils\Git;
-	use pocketmine\utils\Internet;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Process;
 	use pocketmine\utils\ServerKiller;

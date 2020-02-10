@@ -32,6 +32,7 @@ use function file_get_contents;
 use function function_exists;
 use function hexdec;
 use function memory_get_usage;
+use function posix_kill;
 use function preg_match;
 use function proc_close;
 use function proc_open;
