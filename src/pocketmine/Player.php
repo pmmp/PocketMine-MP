@@ -1594,7 +1594,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
 					$this->teleport($ev->getTo());
 				}else{
-					$this->broadcastMovement();
+					$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_NORMAL, $this->getViewers());
 
 					$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
 					//TODO: check swimming (adds 0.015 exhaustion in MCPE)
