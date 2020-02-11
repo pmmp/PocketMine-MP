@@ -375,6 +375,7 @@ class Chunk{
 
 	public function setPopulated(bool $value = true) : void{
 		$this->terrainPopulated = $value;
+		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
 	public function isGenerated() : bool{
@@ -383,6 +384,7 @@ class Chunk{
 
 	public function setGenerated(bool $value = true) : void{
 		$this->terrainGenerated = $value;
+		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
 	public function addEntity(Entity $entity) : void{
