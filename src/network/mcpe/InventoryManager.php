@@ -31,6 +31,9 @@ use pocketmine\inventory\EnchantInventory;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\HopperInventory;
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\transaction\action\SlotChangeAction;
+use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
@@ -55,6 +58,12 @@ class InventoryManager{
 	/** @var int */
 	private $lastInventoryNetworkId = ContainerIds::FIRST;
 
+	/**
+	 * @var Item[][]
+	 * @phpstan-var array<int, array<int, Item>>
+	 */
+	private $initiatedSlotChanges = [];
+
 	public function __construct(Player $player, NetworkSession $session){
 		$this->player = $player;
 		$this->session = $session;
@@ -74,6 +83,15 @@ class InventoryManager{
 
 	public function getWindow(int $windowId) : ?Inventory{
 		return $this->windowMap[$windowId] ?? null;
+	}
+
+	public function onTransactionStart(InventoryTransaction $tx) : void{
+		foreach($tx->getActions() as $action){
+			if($action instanceof SlotChangeAction and ($windowId = $this->getWindowId($action->getInventory())) !== null){
+				//in some cases the inventory might not have a window ID, but still be referenced by a transaction (e.g. crafting grid changes), so we can't unconditionally record the change here or we might leak things
+				$this->initiatedSlotChanges[$windowId][$action->getSlot()] = $action->getTargetItem();
+			}
+		}
 	}
 
 	public function onCurrentWindowChange(Inventory $inventory) : void{
@@ -114,6 +132,7 @@ class InventoryManager{
 	public function onCurrentWindowRemove() : void{
 		if(isset($this->windowMap[$this->lastInventoryNetworkId])){
 			unset($this->windowMap[$this->lastInventoryNetworkId]);
+			unset($this->initiatedSlotChanges[$this->lastInventoryNetworkId]);
 			$this->session->sendDataPacket(ContainerClosePacket::create($this->lastInventoryNetworkId));
 		}
 	}
@@ -121,13 +140,19 @@ class InventoryManager{
 	public function syncSlot(Inventory $inventory, int $slot) : void{
 		$windowId = $this->getWindowId($inventory);
 		if($windowId !== null){
-			$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, $inventory->getItem($slot)));
+			$currentItem = $inventory->getItem($slot);
+			$clientSideItem = $this->initiatedSlotChanges[$windowId][$slot] ?? null;
+			if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
+				$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, $currentItem));
+			}
+			unset($this->initiatedSlotChanges[$windowId][$slot]);
 		}
 	}
 
 	public function syncContents(Inventory $inventory) : void{
 		$windowId = $this->getWindowId($inventory);
 		if($windowId !== null){
+			unset($this->initiatedSlotChanges[$windowId]);
 			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $inventory->getContents(true)));
 		}
 	}

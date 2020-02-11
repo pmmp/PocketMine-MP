@@ -245,6 +245,7 @@ class InGamePacketHandler extends PacketHandler{
 
 			if($isFinalCraftingPart){
 				try{
+					$this->session->getInvManager()->onTransactionStart($this->craftingTransaction);
 					$this->craftingTransaction->execute();
 				}catch(TransactionValidationException $e){
 					$this->session->getLogger()->debug("Failed to execute crafting transaction: " . $e->getMessage());
@@ -267,6 +268,7 @@ class InGamePacketHandler extends PacketHandler{
 			}
 
 			$transaction = new InventoryTransaction($this->player, $actions);
+			$this->session->getInvManager()->onTransactionStart($transaction);
 			try{
 				$transaction->execute();
 			}catch(TransactionValidationException $e){

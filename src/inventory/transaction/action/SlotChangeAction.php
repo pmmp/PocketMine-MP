@@ -79,11 +79,6 @@ class SlotChangeAction extends InventoryAction{
 	 * Sets the item into the target inventory.
 	 */
 	public function execute(Player $source) : void{
-		$this->inventory->setItem($this->inventorySlot, $this->targetItem, false);
-		foreach($this->inventory->getViewers() as $viewer){
-			if($viewer !== $source){
-				$viewer->getNetworkSession()->getInvManager()->syncSlot($this->inventory, $this->inventorySlot);
-			}
-		}
+		$this->inventory->setItem($this->inventorySlot, $this->targetItem);
 	}
 }
