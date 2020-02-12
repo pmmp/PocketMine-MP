@@ -68,9 +68,17 @@ class InventoryManager{
 		$this->player = $player;
 		$this->session = $session;
 
-		$this->windowMap[ContainerIds::INVENTORY] = $this->player->getInventory();
-		$this->windowMap[ContainerIds::ARMOR] = $this->player->getArmorInventory();
-		$this->windowMap[ContainerIds::UI] = $this->player->getCursorInventory();
+		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
+		$this->add(ContainerIds::ARMOR, $this->player->getArmorInventory());
+		$this->add(ContainerIds::UI, $this->player->getCursorInventory());
+	}
+
+	private function add(int $id, Inventory $inventory) : void{
+		$this->windowMap[$id] = $inventory;
+	}
+
+	private function remove(int $id) : void{
+		unset($this->windowMap[$id], $this->initiatedSlotChanges[$id]);
 	}
 
 	public function getWindowId(Inventory $inventory) : ?int{
@@ -96,7 +104,7 @@ class InventoryManager{
 
 	public function onCurrentWindowChange(Inventory $inventory) : void{
 		$this->onCurrentWindowRemove();
-		$this->windowMap[$this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % ContainerIds::LAST)] = $inventory;
+		$this->add($this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % ContainerIds::LAST), $inventory);
 
 		$pk = $this->createContainerOpen($this->lastInventoryNetworkId, $inventory);
 		if($pk !== null){
@@ -131,16 +139,14 @@ class InventoryManager{
 
 	public function onCurrentWindowRemove() : void{
 		if(isset($this->windowMap[$this->lastInventoryNetworkId])){
-			unset($this->windowMap[$this->lastInventoryNetworkId]);
-			unset($this->initiatedSlotChanges[$this->lastInventoryNetworkId]);
+			$this->remove($this->lastInventoryNetworkId);
 			$this->session->sendDataPacket(ContainerClosePacket::create($this->lastInventoryNetworkId));
 		}
 	}
 
 	public function onClientRemoveWindow(int $id) : void{
 		if($id === $this->lastInventoryNetworkId){
-			unset($this->windowMap[$id]);
-			unset($this->initiatedSlotChanges[$id]);
+			$this->remove($id);
 			$this->player->removeCurrentWindow();
 		}else{
 			$this->session->getLogger()->debug("Attempted to close inventory with network ID $id, but current is $this->lastInventoryNetworkId");
