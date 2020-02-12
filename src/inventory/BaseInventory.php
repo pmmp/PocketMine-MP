@@ -92,16 +92,21 @@ abstract class BaseInventory implements Inventory{
 
 		$listeners = $this->listeners;
 		$this->listeners = [];
+		$viewers = $this->viewers;
+		$this->viewers = [];
 
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			if(!isset($items[$i])){
-				$this->clear($i, false);
+				$this->clear($i);
 			}else{
-				$this->setItem($i, $items[$i], false);
+				$this->setItem($i, $items[$i]);
 			}
 		}
 
 		$this->addChangeListeners(...$listeners); //don't directly write, in case listeners were added while operation was in progress
+		foreach($viewers as $id => $viewer){
+			$this->viewers[$id] = $viewer;
+		}
 
 		foreach($this->listeners as $listener){
 			$listener->onContentChange($this);
