@@ -119,7 +119,7 @@ abstract class BaseInventory implements Inventory{
 		}
 	}
 
-	public function setItem(int $index, Item $item, bool $send = true) : void{
+	public function setItem(int $index, Item $item) : void{
 		if($item->isNull()){
 			$item = ItemFactory::air();
 		}else{
@@ -129,7 +129,7 @@ abstract class BaseInventory implements Inventory{
 		$oldItem = $this->getItem($index);
 
 		$this->slots[$index] = $item->isNull() ? null : $item;
-		$this->onSlotChange($index, $oldItem, $send);
+		$this->onSlotChange($index, $oldItem);
 	}
 
 	public function contains(Item $item) : bool{
@@ -313,8 +313,8 @@ abstract class BaseInventory implements Inventory{
 		return $itemSlots;
 	}
 
-	public function clear(int $index, bool $send = true) : void{
-		$this->setItem($index, ItemFactory::air(), $send);
+	public function clear(int $index) : void{
+		$this->setItem($index, ItemFactory::air());
 	}
 
 	public function clearAll(bool $send = true) : void{
@@ -359,14 +359,12 @@ abstract class BaseInventory implements Inventory{
 		unset($this->viewers[spl_object_id($who)]);
 	}
 
-	protected function onSlotChange(int $index, Item $before, bool $send) : void{
+	protected function onSlotChange(int $index, Item $before) : void{
 		foreach($this->listeners as $listener){
 			$listener->onSlotChange($this, $index);
 		}
-		if($send){
-			foreach($this->viewers as $viewer){
-				$viewer->getNetworkSession()->getInvManager()->syncSlot($this, $index);
-			}
+		foreach($this->viewers as $viewer){
+			$viewer->getNetworkSession()->getInvManager()->syncSlot($this, $index);
 		}
 	}
 

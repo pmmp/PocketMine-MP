@@ -43,7 +43,7 @@ interface Inventory{
 	/**
 	 * Puts an Item in a slot.
 	 */
-	public function setItem(int $index, Item $item, bool $send = true) : void;
+	public function setItem(int $index, Item $item) : void;
 
 	/**
 	 * Stores the given Items in the inventory. This will try to fill
@@ -122,7 +122,7 @@ interface Inventory{
 	/**
 	 * Will clear a specific slot
 	 */
-	public function clear(int $index, bool $send = true) : void;
+	public function clear(int $index) : void;
 
 	/**
 	 * Clears all the slots

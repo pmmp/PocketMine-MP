@@ -58,8 +58,8 @@ class CraftingGrid extends BaseInventory{
 		return $this->gridWidth;
 	}
 
-	public function setItem(int $index, Item $item, bool $send = true) : void{
-		parent::setItem($index, $item, $send);
+	public function setItem(int $index, Item $item) : void{
+		parent::setItem($index, $item);
 		$this->seekRecipeBounds();
 	}
 
