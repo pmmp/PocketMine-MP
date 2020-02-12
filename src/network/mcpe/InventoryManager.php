@@ -137,6 +137,16 @@ class InventoryManager{
 		}
 	}
 
+	public function onClientRemoveWindow(int $id) : void{
+		if($id === $this->lastInventoryNetworkId){
+			unset($this->windowMap[$id]);
+			unset($this->initiatedSlotChanges[$id]);
+			$this->player->removeCurrentWindow();
+		}else{
+			$this->session->getLogger()->debug("Attempted to close inventory with network ID $id, but current is $this->lastInventoryNetworkId");
+		}
+	}
+
 	public function syncSlot(Inventory $inventory, int $slot) : void{
 		$windowId = $this->getWindowId($inventory);
 		if($windowId !== null){

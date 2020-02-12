@@ -496,14 +496,9 @@ class InGamePacketHandler extends PacketHandler{
 			return true;
 		}
 
-		$window = $this->player->getCurrentWindow();
-		if($window !== null and $packet->windowId === $this->session->getInvManager()->getCurrentWindowId()){
-			$this->player->removeCurrentWindow();
-			return true;
-		}
+		$this->session->getInvManager()->onClientRemoveWindow($packet->windowId);
 
-		$this->session->getLogger()->debug("Attempted to close inventory with network ID $packet->windowId, but current is " . $this->session->getInvManager()->getCurrentWindowId());
-		return false;
+		return true;
 	}
 
 	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{
