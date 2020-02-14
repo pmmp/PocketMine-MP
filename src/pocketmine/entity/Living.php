@@ -111,7 +111,7 @@ abstract class Living extends Entity implements Damageable{
 
 		$this->setHealth($health);
 
-		/** @var CompoundTag[]|ListTag|null */
+		/** @var CompoundTag[]|ListTag|null $activeEffectsTag */
 		$activeEffectsTag = $this->namedtag->getListTag("ActiveEffects");
 		if($activeEffectsTag !== null){
 			foreach($activeEffectsTag as $e){
