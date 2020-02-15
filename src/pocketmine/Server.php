@@ -98,6 +98,7 @@ use pocketmine\snooze\SleeperNotifier;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Color;
 use pocketmine\utils\Config;
 use pocketmine\utils\MainLogger;
