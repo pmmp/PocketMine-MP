@@ -53,9 +53,9 @@ class AutoUpdater{
 		$this->server = $server;
 		$this->endpoint = "http://$endpoint/api/";
 
-		if((bool) $server->getProperty("auto-updater.enabled", true)){
-			$this->doCheck();
-		}
+		//if((bool) $server->getProperty("auto-updater.enabled", true)){
+			//$this->doCheck();
+		//}
 	}
 
 	/**

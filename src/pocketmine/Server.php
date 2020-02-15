@@ -2561,4 +2561,8 @@ class Server{
 	public function __sleep(){
 		throw new \BadMethodCallException("Cannot serialize Server instance");
 	}
+	
+	public function getUpdater() : AutoUpdater{
+		return $this->updater;
+	}
 }
