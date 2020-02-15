@@ -30,7 +30,6 @@ use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\MapDecoration;
 use pocketmine\network\mcpe\protocol\types\MapTrackedObject;
 use pocketmine\utils\Color;
-use function assert;
 use function count;
 
 class ClientboundMapItemDataPacket extends DataPacket{
@@ -101,16 +100,13 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			}
 
 			for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-				$decoration = new MapDecoration();
-				$decoration->icon = $this->getByte();
-				$decoration->rot = $this->getByte();
-				$decoration->xOffset = $this->getByte();
-				$decoration->yOffset = $this->getByte();
-				$decoration->label = $this->getString();
-
-				$decoration->color = Color::fromABGR($this->getUnsignedVarInt());
-
-				$this->decorations[$i] = $decoration;
+				$icon = $this->getByte();
+				$rotation = $this->getByte();
+				$xOffset = $this->getByte();
+				$yOffset = $this->getByte();
+				$label = $this->getString();
+				$color = Color::fromABGR($this->getUnsignedVarInt());
+				$this->decorations[] = new MapDecoration($icon, $rotation, $xOffset, $yOffset, $label, $color);
 			}
 		}
 
@@ -177,14 +173,12 @@ class ClientboundMapItemDataPacket extends DataPacket{
 
 			$this->putUnsignedVarInt($decorationCount);
 			foreach($this->decorations as $decoration){
-				$this->putByte($decoration->icon);
-				$this->putByte($decoration->rot);
-				$this->putByte($decoration->xOffset);
-				$this->putByte($decoration->yOffset);
-				$this->putString($decoration->label);
-
-				assert($decoration->color instanceof Color);
-				$this->putUnsignedVarInt($decoration->color->toABGR());
+				$this->putByte($decoration->getIcon());
+				$this->putByte($decoration->getRotation());
+				$this->putByte($decoration->getXOffset());
+				$this->putByte($decoration->getYOffset());
+				$this->putString($decoration->getLabel());
+				$this->putUnsignedVarInt($decoration->getColor()->toABGR());
 			}
 		}
 

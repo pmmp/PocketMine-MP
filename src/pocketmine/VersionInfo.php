@@ -31,6 +31,6 @@ if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
 const _VERSION_INFO_INCLUDED = true;
 
 const NAME = "Altay";
-const BASE_VERSION = "3.11.5";
+const BASE_VERSION = "3.11.6";
 const IS_DEVELOPMENT_BUILD = true;
 const BUILD_NUMBER = 0;

@@ -27,6 +27,7 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\GameRules;
+use pocketmine\level\generator\Generator;
 use pocketmine\math\Vector3;
 
 interface LevelProvider{
@@ -54,6 +55,10 @@ interface LevelProvider{
 	/**
 	 * Generate the needed files in the path given
 	 *
+	 * @param mixed[] $options
+	 * @phpstan-param class-string<Generator> $generator
+	 * @phpstan-param array<string, mixed>    $options
+	 *
 	 * @return void
 	 */
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []);
@@ -63,6 +68,10 @@ interface LevelProvider{
 	 */
 	public function getGenerator() : string;
 
+	/**
+	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
+	 */
 	public function getGeneratorOptions() : array;
 
 	/**

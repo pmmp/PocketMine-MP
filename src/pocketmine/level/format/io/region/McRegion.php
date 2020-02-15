@@ -239,7 +239,7 @@ class McRegion extends BaseLevelProvider{
 		$isValid = (file_exists($path . "/level.dat") and is_dir($path . "/region/"));
 
 		if($isValid){
-			$files = array_filter(scandir($path . "/region/", SCANDIR_SORT_NONE), function($file){
+			$files = array_filter(scandir($path . "/region/", SCANDIR_SORT_NONE), function(string $file) : bool{
 				return substr($file, strrpos($file, ".") + 1, 2) === "mc"; //region file
 			});
 

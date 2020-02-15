@@ -61,6 +61,9 @@ class Normal extends Generator{
 	private static $SMOOTH_SIZE = 2;
 
 	/**
+	 * @param mixed[] $options
+	 * @phpstan-param array<string, mixed> $options
+	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public function __construct(array $options = []){

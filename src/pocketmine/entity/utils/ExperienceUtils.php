@@ -76,6 +76,6 @@ abstract class ExperienceUtils{
 
 		$x = Math::solveQuadratic($a, $b, $c - $xp);
 
-		return (float) max($x); //we're only interested in the positive solution
+		return max($x); //we're only interested in the positive solution
 	}
 }

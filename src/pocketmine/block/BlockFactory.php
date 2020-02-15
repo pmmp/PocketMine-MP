@@ -32,23 +32,47 @@ use function min;
  * Manages block registration and instance creation
  */
 class BlockFactory{
-	/** @var \SplFixedArray<Block> */
-	private static $fullList = null;
+	/**
+	 * @var \SplFixedArray|Block[]
+	 * @phpstan-var \SplFixedArray<Block>
+	 */
+	private static $fullList;
 
-	/** @var \SplFixedArray<bool> */
-	public static $solid = null;
-	/** @var \SplFixedArray<bool> */
-	public static $transparent = null;
-	/** @var \SplFixedArray<float> */
-	public static $hardness = null;
-	/** @var \SplFixedArray<int> */
-	public static $light = null;
-	/** @var \SplFixedArray<int> */
-	public static $lightFilter = null;
-	/** @var \SplFixedArray<bool> */
-	public static $diffusesSkyLight = null;
-	/** @var \SplFixedArray<float> */
-	public static $blastResistance = null;
+	/**
+	 * @var \SplFixedArray|bool[]
+	 * @phpstan-var \SplFixedArray<bool>
+	 */
+	public static $solid;
+	/**
+	 * @var \SplFixedArray|bool[]
+	 * @phpstan-var \SplFixedArray<bool>
+	 */
+	public static $transparent;
+	/**
+	 * @var \SplFixedArray|float[]
+	 * @phpstan-var \SplFixedArray<float>
+	 */
+	public static $hardness;
+	/**
+	 * @var \SplFixedArray|int[]
+	 * @phpstan-var \SplFixedArray<int>
+	 */
+	public static $light;
+	/**
+	 * @var \SplFixedArray|int[]
+	 * @phpstan-var \SplFixedArray<int>
+	 */
+	public static $lightFilter;
+	/**
+	 * @var \SplFixedArray|bool[]
+	 * @phpstan-var \SplFixedArray<bool>
+	 */
+	public static $diffusesSkyLight;
+	/**
+	 * @var \SplFixedArray|float[]
+	 * @phpstan-var \SplFixedArray<float>
+	 */
+	public static $blastResistance;
 
 	/**
 	 * Initializes the block factory. By default this is called only once on server start, however you may wish to use
@@ -391,6 +415,7 @@ class BlockFactory{
 
 	/**
 	 * @internal
+	 * @phpstan-return \SplFixedArray<Block>
 	 */
 	public static function getBlockStatesArray() : \SplFixedArray{
 		return self::$fullList;

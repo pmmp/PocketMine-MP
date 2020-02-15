@@ -183,26 +183,26 @@ class Server{
 	public const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
-	/** @var Server */
+	/** @var Server|null */
 	private static $instance = null;
 
-	/** @var \Threaded */
+	/** @var \Threaded|null */
 	private static $sleeper = null;
 
 	/** @var SleeperHandler */
 	private $tickSleeper;
 
 	/** @var BanList */
-	private $banByName = null;
+	private $banByName;
 
 	/** @var BanList */
-	private $banByIP = null;
+	private $banByIP;
 
 	/** @var Config */
-	private $operators = null;
+	private $operators;
 
 	/** @var Config */
-	private $whitelist = null;
+	private $whitelist;
 
 	/** @var bool */
 	private $isRunning = true;
@@ -211,10 +211,13 @@ class Server{
 	private $hasStopped = false;
 
 	/** @var PluginManager */
-	private $pluginManager = null;
+	private $pluginManager;
 
 	/** @var float */
 	private $profilingTickRate = 20;
+
+	/** @var AutoUpdater */
+	private $updater;
 
 	/** @var AsyncPool */
 	private $asyncPool;
@@ -249,10 +252,10 @@ class Server{
 	private $memoryManager;
 
 	/** @var CommandReader */
-	private $console = null;
+	private $console;
 
 	/** @var SimpleCommandMap */
-	private $commandMap = null;
+	private $commandMap;
 
 	/** @var CraftingManager */
 	private $craftingManager;
@@ -269,8 +272,8 @@ class Server{
 	/** @var bool */
 	private $autoSave;
 
-	/** @var RCON */
-	private $rcon;
+	/** @var RCON|null */
+	private $rcon = null;
 
 	/** @var EntityMetadataStore */
 	private $entityMetadata;
@@ -308,14 +311,17 @@ class Server{
 	/** @var string */
 	private $pluginPath;
 
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
 	private $uniquePlayers = [];
 
-	/** @var QueryHandler */
-	private $queryHandler;
+	/** @var QueryHandler|null */
+	private $queryHandler = null;
 
 	/** @var QueryRegenerateEvent */
-	private $queryRegenerateTask = null;
+	private $queryRegenerateTask;
 
 	/** @var Config */
 	private $properties;
@@ -343,7 +349,7 @@ class Server{
 	/** @var Level[] */
 	private $levels = [];
 
-	/** @var Level */
+	/** @var Level|null */
 	private $levelDefault = null;
 	/** @var Level */
 	private $levelNether = null;
@@ -1020,6 +1026,8 @@ class Server{
 	 * Generates a new level if it does not exist
 	 *
 	 * @param string|null $generator Class name that extends pocketmine\level\generator\Generator
+	 * @phpstan-param class-string<Generator> $generator
+	 * @phpstan-param array<string, mixed>    $options
 	 */
 	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = []) : bool{
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
@@ -1089,7 +1097,7 @@ class Server{
 		}
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
 		if(!($this->getLevelByName($name) instanceof Level)){
-			return is_dir($path) and count(array_filter(scandir($path, SCANDIR_SORT_NONE), function($v){
+			return is_dir($path) and count(array_filter(scandir($path, SCANDIR_SORT_NONE), function(string $v) : bool{
 				return $v !== ".." and $v !== ".";
 			})) > 0;
 		}
@@ -1330,7 +1338,10 @@ class Server{
 	 * @return void
 	 */
 	public static function microSleep(int $microseconds){
-		Server::$sleeper->synchronized(function(int $ms){
+		if(self::$sleeper === null){
+			self::$sleeper = new \Threaded();
+		}
+		self::$sleeper->synchronized(function(int $ms) : void{
 			Server::$sleeper->wait($ms);
 		}, $microseconds);
 	}
@@ -1340,7 +1351,6 @@ class Server{
 			throw new \InvalidStateException("Only one server instance can exist at once");
 		}
 		self::$instance = $this;
-		self::$sleeper = new \Threaded;
 		$this->tickSleeper = new SleeperHandler();
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
@@ -1444,7 +1454,7 @@ class Server{
 				$poolSize = max(1, (int) $poolSize);
 			}
 
-			$this->asyncPool = new AsyncPool($this, $poolSize, (int) max(-1, (int) $this->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger);
+			$this->asyncPool = new AsyncPool($this, $poolSize, max(-1, (int) $this->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger);
 
 			if($this->getProperty("network.batch-threshold", 256) >= 0){
 				Network::$BATCH_THRESHOLD = (int) $this->getProperty("network.batch-threshold", 256);
@@ -1583,12 +1593,13 @@ class Server{
 
 			$this->queryRegenerateTask = new QueryRegenerateEvent($this);
 
-			$this->pluginManager->loadPlugins($this->pluginPath);
+			$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "update.pmmp.io"));
 			
 			foreach($this->getAdditionalPluginDirs() as $path){
 				$this->pluginManager->loadPlugins($path);
 			}
 
+			$this->pluginManager->loadPlugins($this->pluginPath);
 			$this->enablePlugins(PluginLoadOrder::STARTUP);
 
 			$this->network->registerInterface(new RakLibInterface($this));
@@ -1687,7 +1698,7 @@ class Server{
 
 	/**
 	 * @param TextContainer|string $message
-	 * @param CommandSender[]      $recipients
+	 * @param CommandSender[]|null $recipients
 	 */
 	public function broadcastMessage($message, array $recipients = null) : int{
 		if(!is_array($recipients)){
@@ -1702,7 +1713,7 @@ class Server{
 	}
 
 	/**
-	 * @param Player[] $recipients
+	 * @param Player[]|null $recipients
 	 */
 	public function broadcastTip(string $tip, array $recipients = null) : int{
 		if(!is_array($recipients)){
@@ -1723,7 +1734,7 @@ class Server{
 	}
 
 	/**
-	 * @param Player[] $recipients
+	 * @param Player[]|null $recipients
 	 */
 	public function broadcastPopup(string $popup, array $recipients = null) : int{
 		if(!is_array($recipients)){
@@ -1985,7 +1996,7 @@ class Server{
 				$this->rcon->stop();
 			}
 
-			if($this->getProperty("network.upnp-forwarding", false)){
+			if((bool) $this->getProperty("network.upnp-forwarding", false)){
 				$this->logger->info("[UPnP] Removing port forward...");
 				UPnP::RemovePortForward($this->getPort());
 			}
@@ -2061,7 +2072,7 @@ class Server{
 			$this->network->blockAddress($entry->getName(), -1);
 		}
 
-		if($this->getProperty("network.upnp-forwarding", false)){
+		if((bool) $this->getProperty("network.upnp-forwarding", false)){
 			$this->logger->info("[UPnP] Trying to port forward...");
 			try{
 				UPnP::PortForward($this->getPort());
@@ -2100,7 +2111,8 @@ class Server{
 	}
 
 	/**
-	 * @param array|null $trace
+	 * @param mixed[][]|null $trace
+	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 *
 	 * @return void
 	 */
@@ -2183,7 +2195,7 @@ class Server{
 				}
 
 				if($report){
-					$url = ($this->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
+					$url = ((bool) $this->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
 					$reply = Internet::postURL($url, [
 						"report" => "yes",
 						"name" => $this->getName() . " " . $this->getPocketMineVersion(),

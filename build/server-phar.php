@@ -24,12 +24,28 @@ declare(strict_types=1);
 namespace pocketmine\build\server_phar;
 
 use pocketmine\utils\Git;
+use function array_map;
+use function count;
+use function defined;
+use function dirname;
+use function file_exists;
+use function getcwd;
+use function getopt;
+use function implode;
+use function ini_get;
+use function microtime;
+use function preg_quote;
+use function realpath;
+use function round;
+use function rtrim;
+use function sprintf;
+use function str_replace;
+use function unlink;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 /**
  * @param string[]    $strings
- * @param string|null $delim
  *
  * @return string[]
  */
@@ -38,19 +54,15 @@ function preg_quote_array(array $strings, string $delim = null) : array{
 }
 
 /**
- * @param string   $pharPath
- * @param string   $basePath
  * @param string[] $includedPaths
- * @param array    $metadata
- * @param string   $stub
- * @param int      $signatureAlgo
- * @param int|null $compression
+ * @param mixed[]  $metadata
+ * @phpstan-param array<string, mixed> $metadata
  *
  * @return \Generator|string[]
  */
 function buildPhar(string $pharPath, string $basePath, array $includedPaths, array $metadata, string $stub, int $signatureAlgo = \Phar::SHA1, ?int $compression = null){
 	$basePath = rtrim(str_replace("/", DIRECTORY_SEPARATOR, $basePath), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-	$includedPaths = array_map(function($path){
+	$includedPaths = array_map(function(string $path) : string{
 		return rtrim(str_replace("/", DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	}, $includedPaths);
 	yield "Creating output file $pharPath";
@@ -103,14 +115,9 @@ function buildPhar(string $pharPath, string $basePath, array $includedPaths, arr
 	yield "Added $count files";
 
 	if($compression !== null){
-		yield "Checking for compressible files...";
-		foreach($phar as $file => $finfo){
-			/** @var \PharFileInfo $finfo */
-			if($finfo->getSize() > (1024 * 512)){
-				yield "Compressing " . $finfo->getFilename();
-				$finfo->compress($compression);
-			}
-		}
+		yield "Compressing files...";
+		$phar->compressFiles($compression);
+		yield "Finished compression";
 	}
 	$phar->stopBuffering();
 
@@ -136,7 +143,23 @@ function main() : void{
 		[
 			'git' => $gitHash
 		],
-		'<?php require("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php"); __HALT_COMPILER();'
+		<<<'STUB'
+<?php
+
+$tmpDir = sys_get_temp_dir();
+if(!is_readable($tmpDir) or !is_writable($tmpDir)){
+	echo "ERROR: tmpdir $tmpDir is not accessible." . PHP_EOL;
+	echo "Check that the directory exists, and that the current user has read/write permissions for it." . PHP_EOL;
+	echo "Alternatively, set 'sys_temp_dir' to a different directory in your php.ini file." . PHP_EOL;
+	exit(1);
+}
+
+require("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php");
+__HALT_COMPILER();
+STUB
+,
+		\Phar::SHA1,
+		\Phar::GZ
 	) as $line){
 		echo $line . PHP_EOL;
 	}

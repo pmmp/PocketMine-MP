@@ -83,6 +83,9 @@ class Permission{
 	}
 
 	/**
+	 * @param mixed[][] $data
+	 * @phpstan-param array<string, array<string, mixed>> $data
+	 *
 	 * @return Permission[]
 	 */
 	public static function loadPermissions(array $data, string $default = self::DEFAULT_OP) : array{
@@ -95,6 +98,10 @@ class Permission{
 	}
 
 	/**
+	 * @param mixed[]      $data
+	 * @param Permission[] $output reference parameter
+	 * @phpstan-param array<string, mixed> $data
+	 *
 	 * @throws \Exception
 	 */
 	public static function loadPermission(string $name, array $data, string $default = self::DEFAULT_OP, array &$output = []) : Permission{
@@ -108,9 +115,7 @@ class Permission{
 			if(is_array($data["children"])){
 				foreach($data["children"] as $k => $v){
 					if(is_array($v)){
-						if(($perm = self::loadPermission($k, $v, $default, $output)) !== null){
-							$output[] = $perm;
-						}
+						$output[] = self::loadPermission($k, $v, $default, $output);
 					}
 					$children[$k] = true;
 				}
@@ -132,7 +137,10 @@ class Permission{
 	/** @var string */
 	private $description;
 
-	/** @var bool[] */
+	/**
+	 * @var bool[]
+	 * @phpstan-var array<string, bool>
+	 */
 	private $children;
 
 	/** @var string */
@@ -142,6 +150,7 @@ class Permission{
 	 * Creates a new Permission object to be attached to Permissible objects
 	 *
 	 * @param bool[] $children
+	 * @phpstan-param array<string, bool> $children
 	 */
 	public function __construct(string $name, string $description = null, string $defaultValue = null, array $children = []){
 		$this->name = $name;
@@ -158,6 +167,7 @@ class Permission{
 
 	/**
 	 * @return bool[]
+	 * @phpstan-return array<string, bool>
 	 */
 	public function &getChildren() : array{
 		return $this->children;

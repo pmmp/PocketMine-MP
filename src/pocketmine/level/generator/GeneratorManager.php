@@ -32,7 +32,10 @@ use function is_subclass_of;
 use function strtolower;
 
 final class GeneratorManager{
-	/** @var string[] name => classname mapping */
+	/**
+	 * @var string[] name => classname mapping
+	 * @phpstan-var array<string, class-string<Generator>>
+	 */
 	private static $list = [];
 
 	/**
@@ -52,6 +55,7 @@ final class GeneratorManager{
 	 * @param string $class Fully qualified name of class that extends \pocketmine\level\generator\Generator
 	 * @param string $name Alias for this generator type that can be written in configs
 	 * @param bool   $overwrite Whether to force overwriting any existing registered generator with the same name
+	 * @phpstan-param class-string<Generator> $class
 	 */
 	public static function addGenerator(string $class, string $name, bool $overwrite = false) : void{
 		if(!is_subclass_of($class, Generator::class)){
@@ -79,7 +83,9 @@ final class GeneratorManager{
 	 *
 	 * @param bool   $throwOnMissing @deprecated this is for backwards compatibility only
 	 *
-	 * @return string|Generator Name of class that extends Generator (not an actual Generator object)
+	 * @return string Name of class that extends Generator
+	 * @phpstan-return class-string<Generator>
+	 *
 	 * @throws \InvalidArgumentException if the generator type isn't registered
 	 */
 	public static function getGenerator(string $name, bool $throwOnMissing = false){
@@ -97,6 +103,7 @@ final class GeneratorManager{
 	 * Returns the registered name of the given Generator class.
 	 *
 	 * @param string $class Fully qualified name of class that extends \pocketmine\level\generator\Generator
+	 * @phpstan-param class-string<Generator> $class
 	 */
 	public static function getGeneratorName(string $class) : string{
 		foreach(self::$list as $name => $c){

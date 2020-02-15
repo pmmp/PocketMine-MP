@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\tile\Chest;
 use function array_merge;
@@ -56,7 +57,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	}
 
 	/**
-	 * @return Chest
+	 * @return Chest|Position
 	 */
 	public function getHolder(){
 		return $this->left->getHolder();

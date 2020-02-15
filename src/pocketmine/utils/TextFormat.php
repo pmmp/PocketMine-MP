@@ -68,6 +68,8 @@ abstract class TextFormat{
 
 	/**
 	 * Splits the string by Format tokens
+	 *
+	 * @return string[]
 	 */
 	public static function tokenize(string $string) : array{
 		return preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
@@ -99,7 +101,7 @@ abstract class TextFormat{
 	/**
 	 * Returns an JSON-formatted string with colors/markup
 	 *
-	 * @param string|array $string
+	 * @param string|string[] $string
 	 */
 	public static function toJSON($string) : string{
 		if(!is_array($string)){
@@ -285,7 +287,7 @@ abstract class TextFormat{
 	/**
 	 * Returns an HTML-formatted string with colors/markup
 	 *
-	 * @param string|array $string
+	 * @param string|string[] $string
 	 */
 	public static function toHTML($string) : string{
 		if(!is_array($string)){

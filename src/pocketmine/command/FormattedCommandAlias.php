@@ -64,6 +64,9 @@ class FormattedCommandAlias extends Command{
 		return (bool) $result;
 	}
 
+	/**
+	 * @param string[] $args
+	 */
 	private function buildCommand(string $formatString, array $args) : string{
 		$index = strpos($formatString, '$');
 		while($index !== false){

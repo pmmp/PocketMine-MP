@@ -285,6 +285,9 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Decodes entity metadata from the stream.
 	 *
 	 * @param bool $types Whether to include metadata types along with values in the returned array
+	 *
+	 * @return mixed[]|mixed[][]
+	 * @phpstan-return array<int, mixed>|array<int, array{0: int, 1: mixed}>
 	 */
 	public function getEntityMetadata(bool $types = true) : array{
 		$count = $this->getUnsignedVarInt();
@@ -337,6 +340,9 @@ class NetworkBinaryStream extends BinaryStream{
 
 	/**
 	 * Writes entity metadata to the packet buffer.
+	 *
+	 * @param mixed[][] $metadata
+	 * @phpstan-param array<int, array{0: int, 1: mixed}> $metadata
 	 */
 	public function putEntityMetadata(array $metadata) : void{
 		$this->putUnsignedVarInt(count($metadata));
@@ -523,7 +529,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * @see NetworkBinaryStream::putVector3()
 	 */
 	public function putVector3Nullable(?Vector3 $vector) : void{
-		if($vector){
+		if($vector !== null){
 			$this->putVector3($vector);
 		}else{
 			$this->putLFloat(0.0);
@@ -542,7 +548,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	public function getByteRotation() : float{
-		return (float) ($this->getByte() * (360 / 256));
+		return ($this->getByte() * (360 / 256));
 	}
 
 	public function putByteRotation(float $rotation) : void{
@@ -553,7 +559,8 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Reads gamerules
 	 * TODO: implement this properly
 	 *
-	 * @return array, members are in the structure [name => [type, value]]
+	 * @return mixed[][], members are in the structure [name => [type, value]]
+	 * @phpstan-return array<string, array{0: int, 1: bool|int|float}>
 	 */
 	public function getGameRules() : array{
 		$count = $this->getUnsignedVarInt();
@@ -583,6 +590,9 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Writes a gamerule array, members should be in the structure [name => [type, value]]
 	 * TODO: implement this properly
+	 *
+	 * @param mixed[][] $rules
+	 * @phpstan-param array<string, array{0: int, 1: bool|int|float}> $rules
 	 */
 	public function putGameRules(array $rules) : void{
 		$this->putUnsignedVarInt(count($rules));

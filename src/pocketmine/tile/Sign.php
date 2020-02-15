@@ -42,6 +42,9 @@ class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";
 	public const TAG_TEXT_LINE = "Text%d"; //sprintf()able
 
+	/**
+	 * @return string[]
+	 */
 	private static function fixTextBlob(string $blob) : array{
 		return array_slice(array_pad(explode("\n", $blob), 4, ""), 0, 4);
 	}
@@ -154,7 +157,7 @@ class Sign extends Spawnable{
 
 		$removeFormat = $player->getRemoveFormat();
 
-		$ev = new SignChangeEvent($this->getBlock(), $player, array_map(function(string $line) use ($removeFormat){ return TextFormat::clean($line, $removeFormat); }, $lines));
+		$ev = new SignChangeEvent($this->getBlock(), $player, array_map(function(string $line) use ($removeFormat) : string{ return TextFormat::clean($line, $removeFormat); }, $lines));
 		$ev->call();
 
 		if(!$ev->isCancelled()){

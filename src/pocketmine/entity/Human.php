@@ -534,14 +534,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(($item = $this->inventory->getItemInHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
 			$equipment[$mainHandIndex] = $item;
 		}
-
+		
 		if(($item = $this->offHandInventory->getItemInOffHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
 			$equipment[$offHandIndex] = $item;
 		}
-
-		foreach($this->armorInventory->getContents() as $k => $item){
-			if($item instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
-				$equipment[$k] = $item;
+		
+		foreach($this->armorInventory->getContents() as $k => $armorItem){
+			if($armorItem instanceof Durable and $armorItem->hasEnchantment(Enchantment::MENDING)){
+				$equipment[$k] = $armorItem;
 			}
 		}
 
@@ -575,7 +575,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function getXpDropAmount() : int{
 		//this causes some XP to be lost on death when above level 1 (by design), dropping at most enough points for
 		//about 7.5 levels of XP.
-		return (int) min(100, 7 * $this->getXpLevel());
+		return min(100, 7 * $this->getXpLevel());
 	}
 
 	/**

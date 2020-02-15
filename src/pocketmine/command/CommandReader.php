@@ -156,7 +156,7 @@ class CommandReader extends Thread{
 				case self::TYPE_PIPED:
 					if(($raw = fgets(self::$stdin)) === false){ //broken pipe or EOF
 						$this->initStdin();
-						$this->synchronized(function(){
+						$this->synchronized(function() : void{
 							$this->wait(200000);
 						}); //prevent CPU waste if it's end of pipe
 						return true; //loop back round

@@ -5,6 +5,7 @@ php:
  - 7.3
 
 before_script:
+ - phpenv config-rm xdebug.ini
 # - pecl install channel://pecl.php.net/pthreads-3.1.6
  - echo | pecl install channel://pecl.php.net/yaml-2.0.4
  - git clone https://github.com/pmmp/pthreads.git
@@ -16,10 +17,18 @@ before_script:
  - make install
  - cd ..
  - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
- - composer install
 
 script:
+ - composer install --prefer-dist
+ - ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
+ - ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
+ - composer install --no-dev --prefer-dist
  - ./tests/travis.sh -t4
+
+cache:
+ directories:
+  - $HOME/.composer/cache/files
+  - $HOME/.composer/cache/vcs
 
 notifications:
  email: false

@@ -111,7 +111,10 @@ class Enchantment{
 	public const SLOT_SHIELD = 0x32000;
 	public const SLOT_CROSSBOW = 0x64000;
 
-	/** @var \SplFixedArray|Enchantment[] */
+	/**
+	 * @var \SplFixedArray|Enchantment[]
+	 * @phpstan-var \SplFixedArray<Enchantment>
+	 */
 	protected static $enchantments;
 
 	public static function init() : void{

@@ -46,7 +46,10 @@ abstract class BaseInventory implements Inventory{
 	protected $name;
 	/** @var string */
 	protected $title;
-	/** @var \SplFixedArray|(Item|null)[] */
+	/**
+	 * @var \SplFixedArray|(Item|null)[]
+	 * @phpstan-var \SplFixedArray<Item|null>
+	 */
 	protected $slots;
 	/** @var Player[] */
 	protected $viewers = [];

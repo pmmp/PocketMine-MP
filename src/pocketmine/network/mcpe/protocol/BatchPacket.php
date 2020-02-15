@@ -92,6 +92,7 @@ class BatchPacket extends DataPacket{
 
 	/**
 	 * @return \Generator
+	 * @phpstan-return \Generator<int, string, void, void>
 	 */
 	public function getPackets(){
 		$stream = new NetworkBinaryStream($this->payload);

@@ -99,6 +99,11 @@ abstract class BaseRail extends Flowable{
 		return false;
 	}
 
+	/**
+	 * @param int[]   $connections
+	 * @param int[][] $lookup
+	 * @phpstan-param array<int, list<int>> $lookup
+	 */
 	protected static function searchState(array $connections, array $lookup) : int{
 		$meta = array_search($connections, $lookup, true);
 		if($meta === false){
@@ -113,6 +118,8 @@ abstract class BaseRail extends Flowable{
 
 	/**
 	 * Returns a meta value for the rail with the given connections.
+	 *
+	 * @param int[] $connections
 	 *
 	 * @throws \InvalidArgumentException if no state matches the given connections
 	 */
@@ -160,6 +167,12 @@ abstract class BaseRail extends Flowable{
 		return $connections;
 	}
 
+	/**
+	 * @param int[] $constraints
+	 *
+	 * @return true[]
+	 * @phpstan-return array<int, true>
+	 */
 	private function getPossibleConnectionDirections(array $constraints) : array{
 		switch(count($constraints)){
 			case 0:
@@ -184,6 +197,10 @@ abstract class BaseRail extends Flowable{
 		}
 	}
 
+	/**
+	 * @return true[]
+	 * @phpstan-return array<int, true>
+	 */
 	protected function getPossibleConnectionDirectionsOneConstraint(int $constraint) : array{
 		$opposite = Vector3::getOppositeSide($constraint & ~self::FLAG_ASCEND);
 
@@ -243,6 +260,9 @@ abstract class BaseRail extends Flowable{
 		}
 	}
 
+	/**
+	 * @param int[] $connections
+	 */
 	private function updateState(array $connections) : void{
 		if(count($connections) === 1){
 			$connections[] = Vector3::getOppositeSide($connections[0] & ~self::FLAG_ASCEND);

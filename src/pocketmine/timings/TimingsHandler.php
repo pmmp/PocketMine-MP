@@ -136,7 +136,7 @@ class TimingsHandler{
 
 	/** @var string */
 	private $name;
-	/** @var TimingsHandler */
+	/** @var TimingsHandler|null */
 	private $parent = null;
 
 	/** @var int */

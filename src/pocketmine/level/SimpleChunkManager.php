@@ -51,7 +51,7 @@ class SimpleChunkManager implements ChunkManager{
 	 * @return int 0-255
 	 */
 	public function getBlockIdAt(int $x, int $y, int $z) : int{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
 			return $chunk->getBlockId($x & 0xf, $y, $z & 0xf);
 		}
 		return 0;
@@ -65,7 +65,7 @@ class SimpleChunkManager implements ChunkManager{
 	 * @return void
 	 */
 	public function setBlockIdAt(int $x, int $y, int $z, int $id){
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
 			$chunk->setBlockId($x & 0xf, $y, $z & 0xf, $id);
 		}
 	}
@@ -76,7 +76,7 @@ class SimpleChunkManager implements ChunkManager{
 	 * @return int 0-15
 	 */
 	public function getBlockDataAt(int $x, int $y, int $z) : int{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
 			return $chunk->getBlockData($x & 0xf, $y, $z & 0xf);
 		}
 		return 0;
@@ -90,13 +90,13 @@ class SimpleChunkManager implements ChunkManager{
 	 * @return void
 	 */
 	public function setBlockDataAt(int $x, int $y, int $z, int $data){
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
 			$chunk->setBlockData($x & 0xf, $y, $z & 0xf, $data);
 		}
 	}
 
 	public function getBlockLightAt(int $x, int $y, int $z) : int{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
 			return $chunk->getBlockLight($x & 0xf, $y, $z & 0xf);
 		}
 
@@ -104,13 +104,13 @@ class SimpleChunkManager implements ChunkManager{
 	}
 
 	public function setBlockLightAt(int $x, int $y, int $z, int $level){
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
 			$chunk->setBlockLight($x & 0xf, $y, $z & 0xf, $level);
 		}
 	}
 
 	public function getBlockSkyLightAt(int $x, int $y, int $z) : int{
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
 			return $chunk->getBlockSkyLight($x & 0xf, $y, $z & 0xf);
 		}
 
@@ -118,7 +118,7 @@ class SimpleChunkManager implements ChunkManager{
 	}
 
 	public function setBlockSkyLightAt(int $x, int $y, int $z, int $level){
-		if($chunk = $this->getChunk($x >> 4, $z >> 4)){
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
 			$chunk->setBlockSkyLight($x & 0xf, $y, $z & 0xf, $level);
 		}
 	}

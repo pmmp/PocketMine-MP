@@ -27,7 +27,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
 
 class PermissionAttachment{
-	/** @var PermissionRemovedExecutor */
+	/** @var PermissionRemovedExecutor|null */
 	private $removed = null;
 
 	/** @var bool[] */
@@ -95,7 +95,7 @@ class PermissionAttachment{
 	 */
 	public function setPermissions(array $permissions){
 		foreach($permissions as $key => $value){
-			$this->permissions[$key] = (bool) $value;
+			$this->permissions[$key] = $value;
 		}
 		$this->permissible->recalculatePermissions();
 	}

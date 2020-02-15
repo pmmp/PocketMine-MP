@@ -188,7 +188,8 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	/**
-	 * @param array|null $trace
+	 * @param mixed[][]|null $trace
+	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 *
 	 * @return void
 	 */
@@ -328,7 +329,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	 */
 	public function syncFlushBuffer(){
 		$this->syncFlush = true;
-		$this->synchronized(function(){
+		$this->synchronized(function() : void{
 			$this->notify(); //write immediately
 
 			while($this->syncFlush){
@@ -363,7 +364,7 @@ class MainLogger extends \AttachableThreadedLogger{
 
 		while(!$this->shutdown){
 			$this->writeLogStream($logResource);
-			$this->synchronized(function(){
+			$this->synchronized(function() : void{
 				$this->wait(25000);
 			});
 		}

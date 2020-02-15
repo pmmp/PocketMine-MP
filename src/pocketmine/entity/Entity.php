@@ -361,9 +361,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/** @var int */
 	public static $entityCount = 1;
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<int|string, class-string<Entity>>
+	 */
 	private static $knownEntities = [];
-	/** @var string[][] */
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<class-string<Entity>, list<string>>
+	 */
 	private static $saveNames = [];
 
 	/**
@@ -443,13 +449,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 * @param string   $className Class that extends Entity
 	 * @param bool     $force Force registration even if the entity does not have a valid network ID
 	 * @param string[] $saveNames An array of save names which this entity might be saved under. Defaults to the short name of the class itself if empty.
+	 * @phpstan-param class-string<Entity> $className
 	 *
 	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
 	 * name of the class will be appended to the end and only used if no other save names are specified.
 	 */
 	public static function registerEntity(string $className, bool $force = false, array $saveNames = []) : bool{
-		/** @var Entity $className */
-
 		$class = new \ReflectionClass($className);
 		if(is_a($className, Entity::class, true) and !$class->isAbstract()){
 			if($className::NETWORK_ID !== -1){
@@ -481,12 +486,18 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public static function createBaseNBT(Vector3 $pos, ?Vector3 $motion = null, float $yaw = 0.0, float $pitch = 0.0) : CompoundTag{
 		return new CompoundTag("", [
 			new ListTag("Pos", [
-				new DoubleTag("", $pos->x), new DoubleTag("", $pos->y), new DoubleTag("", $pos->z)
-			]), new ListTag("Motion", [
-				new DoubleTag("", $motion ? $motion->x : 0.0), new DoubleTag("", $motion ? $motion->y : 0.0),
-				new DoubleTag("", $motion ? $motion->z : 0.0)
-			]), new ListTag("Rotation", [
-				new FloatTag("", $yaw), new FloatTag("", $pitch)
+				new DoubleTag("", $pos->x),
+				new DoubleTag("", $pos->y),
+				new DoubleTag("", $pos->z)
+			]),
+			new ListTag("Motion", [
+				new DoubleTag("", $motion !== null ? $motion->x : 0.0),
+				new DoubleTag("", $motion !== null ? $motion->y : 0.0),
+				new DoubleTag("", $motion !== null ? $motion->z : 0.0)
+			]),
+			new ListTag("Rotation", [
+				new FloatTag("", $yaw),
+				new FloatTag("", $pitch)
 			])
 		]);
 	}
@@ -1115,8 +1126,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function initEntity() : void{
-		assert($this->namedtag instanceof CompoundTag);
-
 		if($this->namedtag->hasTag("CustomName", StringTag::class)){
 			$this->setNameTag($this->namedtag->getString("CustomName"));
 
@@ -2662,7 +2671,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/**
 	 * @param Player[]|Player $player
-	 * @param array           $data Properly formatted entity data, defaults to everything
+	 * @param mixed[][]       $data Properly formatted entity data, defaults to everything
+	 * @phpstan-param array<int, array{0: int, 1: mixed}> $data
 	 */
 	public function sendData($player, ?array $data = null) : void{
 		if(!is_array($player)){
@@ -2685,6 +2695,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 	}
 
+	/**
+	 * @param Player[]|null $players
+	 */
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
 		$pk = new ActorEventPacket();
 		$pk->entityRuntimeId = $this->id;

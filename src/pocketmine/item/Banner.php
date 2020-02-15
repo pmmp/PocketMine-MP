@@ -97,6 +97,9 @@ class Banner extends Item{
 
 	/**
 	 * Returns the data of a pattern with the given ID.
+	 *
+	 * @return mixed[]
+	 * @phpstan-return array{Color?: int, Pattern?: string}
 	 */
 	public function getPatternData(int $patternId) : array{
 		if(!$this->patternExists($patternId)){

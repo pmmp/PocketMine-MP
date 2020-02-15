@@ -303,7 +303,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var PlayerOffHandInventory */
 	protected $offHandInventory;
 	/** @var CraftingGrid */
-	protected $craftingGrid = null;
+	protected $craftingGrid;
 	/** @var CraftingTransaction|null */
 	protected $craftingTransaction = null;
 
@@ -367,7 +367,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $muted = false;
 
 	/** @var PermissibleBase */
-	private $perm = null;
+	private $perm;
 
 	/** @var int|null */
 	protected $lineHeight = null;
@@ -1698,7 +1698,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
 					$this->teleport($ev->getTo());
 				}else{
-					$this->broadcastMovement();
+					//TODO: workaround 1.14.30 bug: MoveActor(Absolute|Delta)Packet don't work on players anymore :(
+					$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_NORMAL, $this->hasSpawned);
 
 					$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
 					//TODO: check swimming (adds 0.015 exhaustion in MCPE)
@@ -3824,7 +3825,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->namedtag->setInt("playerGameType", $this->gamemode);
 		$this->namedtag->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 
-		if($this->username != "" and $this->namedtag instanceof CompoundTag){
+		if($this->username != ""){
 			$this->server->saveOfflinePlayerData($this->username, $this->namedtag);
 		}
 	}

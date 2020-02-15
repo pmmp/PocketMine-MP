@@ -74,7 +74,10 @@ class Chunk{
 	/** @var int */
 	protected $height = Chunk::MAX_SUBCHUNKS;
 
-	/** @var \SplFixedArray|SubChunkInterface[] */
+	/**
+	 * @var \SplFixedArray|SubChunkInterface[]
+	 * @phpstan-var \SplFixedArray<SubChunkInterface>
+	 */
 	protected $subChunks;
 
 	/** @var EmptySubChunk */
@@ -88,7 +91,10 @@ class Chunk{
 	/** @var Entity[] */
 	protected $entities = [];
 
-	/** @var \SplFixedArray|int[] */
+	/**
+	 * @var \SplFixedArray|int[]
+	 * @phpstan-var \SplFixedArray<int>
+	 */
 	protected $heightMap;
 
 	/** @var string */
@@ -407,8 +413,8 @@ class Chunk{
 	 * @return int New calculated heightmap value (0-256 inclusive)
 	 */
 	public function recalculateHeightMapColumn(int $x, int $z) : int{
-		$max = $this->getHighestBlockAt($x, $z);
-		for($y = $max; $y >= 0; --$y){
+		$y = $this->getHighestBlockAt($x, $z);
+		for(; $y >= 0; --$y){
 			if(BlockFactory::$lightFilter[$id = $this->getBlockId($x, $y, $z)] > 1 or BlockFactory::$diffusesSkyLight[$id]){
 				break;
 			}
@@ -434,19 +440,17 @@ class Chunk{
 
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
+				$y = $maxY;
 				$heightMap = $this->getHeightMap($x, $z);
-
-				for($y = $maxY; $y >= $heightMap; --$y){
+				for(; $y >= $heightMap; --$y){
 					$this->setBlockSkyLight($x, $y, $z, 15);
 				}
 
 				$light = 15;
 				for(; $y >= 0; --$y){
-					if($light > 0){
-						$light -= BlockFactory::$lightFilter[$this->getBlockId($x, $y, $z)];
-						if($light <= 0){
-							break;
-						}
+					$light -= BlockFactory::$lightFilter[$this->getBlockId($x, $y, $z)];
+					if($light <= 0){
+						break;
 					}
 					$this->setBlockSkyLight($x, $y, $z, $light);
 				}
@@ -546,6 +550,7 @@ class Chunk{
 	 */
 	public function setLightPopulated(bool $value = true){
 		$this->lightPopulated = $value;
+		$this->hasChanged = true;
 	}
 
 	public function isPopulated() : bool{
@@ -557,6 +562,7 @@ class Chunk{
 	 */
 	public function setPopulated(bool $value = true){
 		$this->terrainPopulated = $value;
+		$this->hasChanged = true;
 	}
 
 	public function isGenerated() : bool{
@@ -568,6 +574,7 @@ class Chunk{
 	 */
 	public function setGenerated(bool $value = true){
 		$this->terrainGenerated = $value;
+		$this->hasChanged = true;
 	}
 
 	/**
@@ -699,23 +706,21 @@ class Chunk{
 
 			$level->timings->syncChunkLoadEntitiesTimer->startTiming();
 			foreach($this->NBTentities as $nbt){
-				if($nbt instanceof CompoundTag){
-					if(!$nbt->hasTag("id")){ //allow mixed types (because of leveldb)
-						$changed = true;
-						continue;
-					}
+				if(!$nbt->hasTag("id")){ //allow mixed types (because of leveldb)
+					$changed = true;
+					continue;
+				}
 
-					try{
-						$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
-						if(!($entity instanceof Entity)){
-							$changed = true;
-							continue;
-						}
-					}catch(\Throwable $t){
-						$level->getServer()->getLogger()->logException($t);
+				try{
+					$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
+					if(!($entity instanceof Entity)){
 						$changed = true;
 						continue;
 					}
+				}catch(\Throwable $t){
+					$level->getServer()->getLogger()->logException($t);
+					$changed = true;
+					continue;
 				}
 			}
 			$this->NBTentities = [];
@@ -723,16 +728,14 @@ class Chunk{
 
 			$level->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 			foreach($this->NBTtiles as $nbt){
-				if($nbt instanceof CompoundTag){
-					if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
-						$changed = true;
-						continue;
-					}
+				if(!$nbt->hasTag(Tile::TAG_ID, StringTag::class)){
+					$changed = true;
+					continue;
+				}
 
-					if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){
-						$changed = true;
-						continue;
-					}
+				if(Tile::createTile($nbt->getString(Tile::TAG_ID), $level, $nbt) === null){
+					$changed = true;
+					continue;
 				}
 			}
 
@@ -802,6 +805,7 @@ class Chunk{
 
 	/**
 	 * @return \SplFixedArray|SubChunkInterface[]
+	 * @phpstan-return \SplFixedArray<SubChunkInterface>
 	 */
 	public function getSubChunks() : \SplFixedArray{
 		return $this->subChunks;
@@ -816,10 +820,10 @@ class Chunk{
 				//No need to thoroughly prune empties at runtime, this will just reduce performance.
 				continue;
 			}
-			break;
+			return $y;
 		}
 
-		return $y;
+		return -1;
 	}
 
 	/**

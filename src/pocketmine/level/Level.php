@@ -254,7 +254,10 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Vector3 */
 	private $temporalVector;
 
-	/** @var \SplFixedArray */
+	/**
+	 * @var \SplFixedArray
+	 * @phpstan-var \SplFixedArray<Block>
+	 */
 	private $blockStates;
 
 	/** @var int */
@@ -269,7 +272,7 @@ class Level implements ChunkManager, Metadatable{
 	/** @var bool */
 	private $clearChunksOnTick;
 	/** @var \SplFixedArray<Block> */
-	private $randomTickBlocks = null;
+	private $randomTickBlocks;
 
 	/** @var LevelTimings */
 	public $timings;
@@ -646,8 +649,8 @@ class Level implements ChunkManager, Metadatable{
 		foreach($this->getPlayers() as $player){
 			if($this === $defaultLevel or $defaultLevel === null){
 				$player->close($player->getLeaveMessage(), "Forced default world unload");
-			}elseif($defaultLevel instanceof Level){
-				$player->teleport($this->server->getDefaultLevel()->getSafeSpawn());
+			}else{
+				$player->teleport($defaultLevel->getSafeSpawn());
 			}
 		}
 
@@ -1112,6 +1115,9 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->chunkCache[Level::chunkHash($chunkX, $chunkZ)]);
 	}
 
+	/**
+	 * @phpstan-return \SplFixedArray<Block>
+	 */
 	public function getRandomTickedBlocks() : \SplFixedArray{
 		return $this->randomTickBlocks;
 	}
@@ -1220,6 +1226,9 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function __debugInfo() : array{
 		return [];
 	}
@@ -2169,8 +2178,11 @@ class Level implements ChunkManager, Metadatable{
 	 * @param string  $entityType Class of entity to use for instanceof
 	 * @param bool    $includeDead Whether to include entitites which are dead
 	 * @param \Closure[] $filters
+	 * @phpstan-template TEntity of Entity
+	 * @phpstan-param class-string<TEntity> $entityType
 	 *
 	 * @return Entity|null an entity of type $entityType, or null if not found
+	 * @phpstan-return TEntity
 	 */
 	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false, array $filters = []) : ?Entity{
 		assert(is_a($entityType, Entity::class, true));
@@ -2180,9 +2192,13 @@ class Level implements ChunkManager, Metadatable{
 		$minZ = ((int) floor($pos->z - $maxDistance)) >> 4;
 		$maxZ = ((int) floor($pos->z + $maxDistance)) >> 4;
 
-		/** @var Entity|null $currentTarget */
-		$currentTarget = null;
 		$currentTargetDistSq = $maxDistance ** 2;
+
+		/**
+		 * @var Entity|null $currentTarget
+		 * @phpstan-var TEntity|null $currentTarget
+		 */
+		$currentTarget = null;
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){

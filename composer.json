@@ -24,14 +24,22 @@
       "ext-yaml": ">=2.0.0",
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
-      "pocketmine/raklib": "^0.12.5",
-      "pocketmine/spl": "^0.3.5",
+      "pocketmine/raklib": "^0.12.7",
+      "pocketmine/spl": "^0.4.0",
       "pocketmine/binaryutils": "^0.1.9",
       "pocketmine/nbt": "^0.2.10",
       "pocketmine/math": "^0.2.0",
       "pocketmine/snooze": "^0.1.0",
+      "pocketmine/classloader": "^0.1.0",
+      "pocketmine/log": "^0.1.0",
       "daverandom/callback-validator": "dev-master",
-      "adhocore/json-comment": "^0.0.7"
+      "adhocore/json-comment": "^0.1.0"
+   },
+   "require-dev": {
+      "phpstan/phpstan": "^0.12.9",
+      "irstea/phpunit-shim": "^8.5",
+      "phpstan/phpstan-phpunit": "^0.12.6",
+      "phpstan/phpstan-strict-rules": "^0.12.2"
    },
    "autoload": {
       "psr-4": {
@@ -47,31 +55,5 @@
       "psr-4": {
          "pocketmine\\": "tests/phpunit/"
       }
-   },
-   "repositories": [
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/RakLib"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/SPL"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/BinaryUtils"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/NBT"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/Math"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/Snooze"
-      }
-   ]
+   }
 }

@@ -144,7 +144,7 @@ class CraftingManager{
 	 */
 	public static function sort(Item $i1, Item $i2){
 		//Use spaceship operator to compare each property, then try the next one if they are equivalent.
-		($retval = $i1->getId() <=> $i2->getId()) === 0 && ($retval = $i1->getDamage() <=> $i2->getDamage()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount());
+		($retval = $i1->getId() <=> $i2->getId()) === 0 && ($retval = $i1->getDamage() <=> $i2->getDamage()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount()) === 0;
 
 		return $retval;
 	}
@@ -173,6 +173,9 @@ class CraftingManager{
 		return $result;
 	}
 
+	/**
+	 * @param Item[] $outputs
+	 */
 	private static function hashOutputs(array $outputs) : string{
 		$outputs = self::pack($outputs);
 		usort($outputs, [self::class, "sort"]);
@@ -254,6 +257,7 @@ class CraftingManager{
 	 * @param Item[] $outputs
 	 *
 	 * @return CraftingRecipe[]|\Generator
+	 * @phpstan-return \Generator<int, CraftingRecipe, void, void>
 	 */
 	public function matchRecipeByOutputs(array $outputs) : \Generator{
 		//TODO: try to match special recipes before anything else (first they need to be implemented!)

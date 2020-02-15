@@ -233,7 +233,7 @@ class RCONInstance extends Thread{
 								}
 								if($payload !== ""){
 									$this->cmd = ltrim($payload);
-									$this->synchronized(function(){
+									$this->synchronized(function() : void{
 										$this->notifier->wakeupSleeper();
 										$this->wait();
 									});

@@ -32,10 +32,16 @@ use function is_string;
 
 class DataPropertyManager{
 
-	/** @var mixed[][] */
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<int, array{0: int, 1: mixed}>
+	 */
 	private $properties = [];
 
-	/** @var mixed[][] */
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<int, array{0: int, 1: mixed}>
+	 */
 	private $dirtyProperties = [];
 
 	public function __construct(){
@@ -109,7 +115,7 @@ class DataPropertyManager{
 	}
 
 	public function setBlockPos(int $key, ?Vector3 $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_POS, $value ? $value->floor() : null, $force);
+		$this->setPropertyValue($key, Entity::DATA_TYPE_POS, $value !== null ? $value->floor() : null, $force);
 	}
 
 	public function getLong(int $key) : ?int{
@@ -129,7 +135,7 @@ class DataPropertyManager{
 	}
 
 	public function setVector3(int $key, ?Vector3 $value, bool $force = false) : void{
-		$this->setPropertyValue($key, Entity::DATA_TYPE_VECTOR3F, $value ? $value->asVector3() : null, $force);
+		$this->setPropertyValue($key, Entity::DATA_TYPE_VECTOR3F, $value !== null ? $value->asVector3() : null, $force);
 	}
 
 	public function removeProperty(int $key) : void{
@@ -176,6 +182,9 @@ class DataPropertyManager{
 
 	/**
 	 * Returns all properties.
+	 *
+	 * @return mixed[][]
+	 * @phpstan-return array<int, array{0: int, 1: mixed}>
 	 */
 	public function getAll() : array{
 		return $this->properties;
@@ -183,6 +192,9 @@ class DataPropertyManager{
 
 	/**
 	 * Returns properties that have changed and need to be broadcasted.
+	 *
+	 * @return mixed[][]
+	 * @phpstan-return array<int, array{0: int, 1: mixed}>
 	 */
 	public function getDirty() : array{
 		return $this->dirtyProperties;

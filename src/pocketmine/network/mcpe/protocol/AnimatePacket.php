@@ -47,16 +47,16 @@ class AnimatePacket extends DataPacket{
 	protected function decodePayload(){
 		$this->action = $this->getVarInt();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		if($this->action === self::ACTION_ROW_LEFT or $this->action === self::ACTION_ROW_RIGHT){
-			$this->rowingTime = $this->getLFloat();
+		if(($this->action & 0x80) !== 0){
+			$this->float = $this->getLFloat();
 		}
 	}
 
 	protected function encodePayload(){
 		$this->putVarInt($this->action);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		if($this->action === self::ACTION_ROW_LEFT or $this->action === self::ACTION_ROW_RIGHT){
-			$this->putLFloat($this->rowingTime);
+		if(($this->action & 0x80) !== 0){
+			$this->putLFloat($this->float);
 		}
 	}
 

@@ -94,7 +94,7 @@ class AdventureSettingsPacket extends DataPacket{
 	}
 
 	public function getFlag(int $flag) : bool{
-		if($flag & self::BITFLAG_SECOND_SET){
+		if(($flag & self::BITFLAG_SECOND_SET) !== 0){
 			return ($this->flags2 & $flag) !== 0;
 		}
 
@@ -105,7 +105,7 @@ class AdventureSettingsPacket extends DataPacket{
 	 * @return void
 	 */
 	public function setFlag(int $flag, bool $value){
-		if($flag & self::BITFLAG_SECOND_SET){
+		if(($flag & self::BITFLAG_SECOND_SET) !== 0){
 			$flagSet =& $this->flags2;
 		}else{
 			$flagSet =& $this->flags;

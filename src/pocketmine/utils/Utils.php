@@ -420,12 +420,15 @@ class Utils{
 	 * @deprecated
 	 * @see Internet::getURL()
 	 *
-	 * @param int     $timeout default 10
-	 * @param string  $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param array[] $headers reference parameter
-	 * @param int     $httpCode reference parameter
+	 * @param int      $timeout default 10
+	 * @param string[] $extraHeaders
+	 * @param string   $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param string[] $headers reference parameter
+	 * @param int      $httpCode reference parameter
+	 * @phpstan-param list<string>          $extraHeaders
+	 * @phpstan-param array<string, string> $headers
 	 *
-	 * @return bool|mixed false if an error occurred, mixed data if successful.
+	 * @return string|false
 	 */
 	public static function getURL(string $page, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		return Internet::getURL($page, $timeout, $extraHeaders, $err, $headers, $httpCode);
@@ -435,12 +438,16 @@ class Utils{
 	 * @deprecated
 	 * @see Internet::postURL()
 	 *
-	 * @param array|string $args
-	 * @param string       $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param array[]      $headers reference parameter
-	 * @param int          $httpCode reference parameter
+	 * @param string[]|string $args
+	 * @param string[]        $extraHeaders
+	 * @param string          $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param string[]        $headers reference parameter
+	 * @param int             $httpCode reference parameter
+	 * @phpstan-param string|array<string, string> $args
+	 * @phpstan-param list<string>                 $extraHeaders
+	 * @phpstan-param array<string, string>        $headers
 	 *
-	 * @return bool|mixed false if an error occurred, mixed data if successful.
+	 * @return string|false
 	 */
 	public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		return Internet::postURL($page, $args, $timeout, $extraHeaders, $err, $headers, $httpCode);
@@ -454,8 +461,12 @@ class Utils{
 	 * @param string[]      $extraHeaders extra headers to send as a plain string array
 	 * @param array         $extraOpts    extra CURLOPT_* to set as an [opt => value] map
 	 * @param callable|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
+	 * @phpstan-param array<int, mixed>                $extraOpts
+	 * @phpstan-param list<string>                     $extraHeaders
+	 * @phpstan-param (callable(resource) : void)|null $onSuccess
 	 *
-	 * @return array a plain array of three [result body : string, headers : array[], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
+	 * @return array a plain array of three [result body : string, headers : string[][], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
+	 * @phpstan-return array{string, list<array<string, string>>, int}
 	 *
 	 * @throws \RuntimeException if a cURL error occurs
 	 */
@@ -467,7 +478,7 @@ class Utils{
 		$hash = 0;
 		for($i = 0, $len = strlen($string); $i < $len; $i++){
 			$ord = ord($string[$i]);
-			if($ord & 0x80){
+			if(($ord & 0x80) !== 0){
 				$ord -= 0x100;
 			}
 			$hash = 31 * $hash + $ord;
@@ -513,6 +524,10 @@ class Utils{
 		return proc_close($process);
 	}
 
+	/**
+	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
+	 */
 	public static function decodeJWT(string $token) : array{
 		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
 
@@ -528,7 +543,7 @@ class Utils{
 		}
 		switch(Utils::getOS()){
 			case "win":
-				exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
+				exec("taskkill.exe /F /PID $pid > NUL");
 				break;
 			case "mac":
 			case "linux":
@@ -536,7 +551,7 @@ class Utils{
 				if(function_exists("posix_kill")){
 					posix_kill($pid, 9); //SIGKILL
 				}else{
-					exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
+					exec("kill -9 $pid > /dev/null 2>&1");
 				}
 		}
 	}
@@ -558,6 +573,12 @@ class Utils{
 		return -1;
 	}
 
+	/**
+	 * @param mixed[][] $trace
+	 * @phpstan-param list<array<string, mixed>> $trace
+	 *
+	 * @return string[]
+	 */
 	public static function printableTrace(array $trace, int $maxStringLength = 80) : array{
 		$messages = [];
 		for($i = 0; isset($trace[$i]); ++$i){
@@ -569,7 +590,7 @@ class Utils{
 					$args = $trace[$i]["params"];
 				}
 
-				$params = implode(", ", array_map(function($value) use($maxStringLength){
+				$params = implode(", ", array_map(function($value) use($maxStringLength) : string{
 					if(is_object($value)){
 						return "object " . self::getNiceClassName($value);
 					}
@@ -587,6 +608,10 @@ class Utils{
 		return $messages;
 	}
 
+	/**
+	 * @return mixed[][]
+	 * @phpstan-return list<array<string, mixed>>
+	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames
 		if(function_exists("xdebug_get_function_stack")){
@@ -601,6 +626,9 @@ class Utils{
 		return array_values($trace);
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public static function printableCurrentTrace(int $skipFrames = 0) : array{
 		return self::printableTrace(self::currentTrace(++$skipFrames));
 	}
@@ -643,7 +671,7 @@ class Utils{
 	 * @throws \ErrorException
 	 */
 	public static function errorExceptionHandler(int $severity, string $message, string $file, int $line) : bool{
-		if(error_reporting() & $severity){
+		if((error_reporting() & $severity) !== 0){
 			throw new \ErrorException($message, 0, $severity, $file, $line);
 		}
 

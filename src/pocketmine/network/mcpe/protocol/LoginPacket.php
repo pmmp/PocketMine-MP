@@ -45,8 +45,8 @@ class LoginPacket extends DataPacket{
 	public $clientUUID;
 	/** @var int */
 	public $clientId;
-	/** @var string */
-	public $xuid;
+	/** @var string|null */
+	public $xuid = null;
 	/** @var string */
 	public $identityPublicKey;
 	/** @var string */
@@ -54,11 +54,17 @@ class LoginPacket extends DataPacket{
 	/** @var string */
 	public $locale;
 
-	/** @var array (the "chain" index contains one or more JWTs) */
+	/**
+	 * @var string[][] (the "chain" index contains one or more JWTs)
+	 * @phpstan-var array{chain?: list<string>}
+	 */
 	public $chainData = [];
 	/** @var string */
 	public $clientDataJwt;
-	/** @var array decoded payload of the clientData JWT */
+	/**
+	 * @var mixed[] decoded payload of the clientData JWT
+	 * @phpstan-var array<string, mixed>
+	 */
 	public $clientData = [];
 
 	/**

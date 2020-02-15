@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\level\Position;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
@@ -53,7 +54,7 @@ class ChestInventory extends ContainerInventory{
 
 	/**
 	 * This override is here for documentation and code completion purposes only.
-	 * @return Chest
+	 * @return Chest|Position
 	 */
 	public function getHolder(){
 		return $this->holder;

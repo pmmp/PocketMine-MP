@@ -68,7 +68,7 @@ class BanListCommand extends VanillaCommand{
 		}
 
 		$list = $list->getEntries();
-		$message = implode(", ", array_map(function(BanEntry $entry){
+		$message = implode(", ", array_map(function(BanEntry $entry) : string{
 			return $entry->getName();
 		}, $list));
 

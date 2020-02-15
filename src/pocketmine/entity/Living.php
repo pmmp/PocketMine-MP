@@ -194,7 +194,7 @@ abstract class Living extends Entity implements Damageable{
 
 		$this->setHealth($health);
 
-		/** @var CompoundTag[]|ListTag $activeEffectsTag */
+		/** @var CompoundTag[]|ListTag|null $activeEffectsTag */
 		$activeEffectsTag = $this->namedtag->getListTag("ActiveEffects");
 		if($activeEffectsTag !== null){
 			foreach($activeEffectsTag as $e){
@@ -937,6 +937,9 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	/**
+	 * @param true[] $transparent
+	 * @phpstan-param array<int, true> $transparent
+	 *
 	 * @return Block[]
 	 */
 	public function getLineOfSight(int $maxDistance, int $maxLength = 0, array $transparent = []) : array{
@@ -976,6 +979,10 @@ abstract class Living extends Entity implements Damageable{
 		return $blocks;
 	}
 
+	/**
+	 * @param true[] $transparent
+	 * @phpstan-param array<int, true> $transparent
+	 */
 	public function getTargetBlock(int $maxDistance, array $transparent = []) : ?Block{
 		$line = $this->getLineOfSight($maxDistance, 1, $transparent);
 		if(count($line) > 0){

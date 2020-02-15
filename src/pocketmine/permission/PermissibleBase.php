@@ -32,7 +32,7 @@ class PermissibleBase implements Permissible{
 	/** @var ServerOperator */
 	private $opable;
 
-	/** @var Permissible */
+	/** @var Permissible|null */
 	private $parent = null;
 
 	/** @var PermissionAttachment[] */

@@ -82,7 +82,10 @@ class PluginManager{
 	/** @var Plugin[] */
 	protected $enabledPlugins = [];
 
-	/** @var PluginLoader[] */
+	/**
+	 * @var PluginLoader[]
+	 * @phpstan-var array<class-string<PluginLoader>, PluginLoader>
+	 */
 	protected $fileAssociations = [];
 
 	/** @var string|null */
@@ -196,6 +199,9 @@ class PluginManager{
 	}
 
 	/**
+	 * @param string[]|null $newLoaders
+	 * @phpstan-param list<class-string<PluginLoader>> $newLoaders
+	 *
 	 * @return Plugin[]
 	 */
 	public function loadPlugins(string $directory, array $newLoaders = null){
@@ -326,7 +332,7 @@ class PluginManager{
 				if(!isset($dependencies[$name]) and !isset($softDependencies[$name])){
 					unset($plugins[$name]);
 					$loadedThisLoop++;
-					if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
+					if(($plugin = $this->loadPlugin($file, $loaders)) instanceof Plugin){
 						$loadedPlugins[$name] = $plugin;
 					}else{
 						$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.genericLoadError", [$name]));
@@ -726,7 +732,8 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string        $event Class name that extends Event
+	 * @param string $event Class name that extends Event
+	 * @phpstan-param class-string<Event> $event
 	 *
 	 * @throws PluginException
 	 */

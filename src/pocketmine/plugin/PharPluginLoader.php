@@ -57,10 +57,7 @@ class PharPluginLoader implements PluginLoader{
 	public function getPluginDescription(string $file) : ?PluginDescription{
 		$phar = new \Phar($file);
 		if(isset($phar["plugin.yml"])){
-			$pluginYml = $phar["plugin.yml"];
-			if($pluginYml instanceof \PharFileInfo){
-				return new PluginDescription($pluginYml->getContent());
-			}
+			return new PluginDescription($phar["plugin.yml"]->getContent());
 		}
 
 		return null;

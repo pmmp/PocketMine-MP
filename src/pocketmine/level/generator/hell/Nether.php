@@ -58,6 +58,9 @@ class Nether extends Generator{
 	private $noiseBase;
 
 	/**
+	 * @param mixed[] $options
+	 * @phpstan-param array<string, mixed> $options
+	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public function __construct(array $options = []){

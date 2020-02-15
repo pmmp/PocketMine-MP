@@ -68,7 +68,10 @@ class AsyncPool{
 	/** @var int[] */
 	private $workerLastUsed = [];
 
-	/** @var \Closure[] */
+	/**
+	 * @var \Closure[]
+	 * @phpstan-var (\Closure(int $workerId) : void)[]
+	 */
 	private $workerStartHooks = [];
 
 	public function __construct(Server $server, int $size, int $workerMemoryLimit, \ClassLoader $classLoader, \ThreadedLogger $logger){
@@ -100,6 +103,8 @@ class AsyncPool{
 	 * The signature should be `function(int $worker) : void`
 	 *
 	 * This function will call the hook for every already-running worker.
+	 *
+	 * @phpstan-param \Closure(int $workerId) : void $hook
 	 */
 	public function addWorkerStartHook(\Closure $hook) : void{
 		Utils::validateCallableSignature(function(int $worker) : void{}, $hook);
@@ -111,6 +116,8 @@ class AsyncPool{
 
 	/**
 	 * Removes a previously-registered callback listening for workers being started.
+	 *
+	 * @phpstan-param \Closure(int $workerId) : void $hook
 	 */
 	public function removeWorkerStartHook(\Closure $hook) : void{
 		unset($this->workerStartHooks[spl_object_hash($hook)]);

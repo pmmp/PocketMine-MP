@@ -83,8 +83,8 @@ class Painting extends Entity{
 		$this->namedtag->setInt("TileY", (int) $this->blockIn->y);
 		$this->namedtag->setInt("TileZ", (int) $this->blockIn->z);
 
-		$this->namedtag->setByte("Facing", (int) $this->direction);
-		$this->namedtag->setByte("Direction", (int) $this->direction); //Save both for full compatibility
+		$this->namedtag->setByte("Facing", $this->direction);
+		$this->namedtag->setByte("Direction", $this->direction); //Save both for full compatibility
 
 		$this->namedtag->setString("Motive", $this->motive);
 	}

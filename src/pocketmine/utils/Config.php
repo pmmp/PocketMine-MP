@@ -68,10 +68,16 @@ class Config{
 	public const ENUM = 5; // .txt, .list, .enum
 	public const ENUMERATION = Config::ENUM;
 
-	/** @var array */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $config = [];
 
-	/** @var mixed[] */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $nestedCache = [];
 
 	/** @var string */
@@ -106,10 +112,11 @@ class Config{
 	];
 
 	/**
-	 * @param string $file    Path of the file to be loaded
-	 * @param int    $type    Config type to load, -1 by default (detect)
-	 * @param array  $default Array with the default values that will be written to the file if it did not exist
-	 * @param null   $correct reference parameter, Sets correct to true if everything has been loaded correctly
+	 * @param string  $file    Path of the file to be loaded
+	 * @param int     $type    Config type to load, -1 by default (detect)
+	 * @param mixed[] $default Array with the default values that will be written to the file if it did not exist
+	 * @param null    $correct reference parameter, Sets correct to true if everything has been loaded correctly
+	 * @phpstan-param array<string, mixed> $default
 	 */
 	public function __construct(string $file, int $type = Config::DETECT, array $default = [], &$correct = null){
 		$this->load($file, $type, $default);
@@ -140,6 +147,10 @@ class Config{
 		return preg_replace("#^( *)(y|Y|yes|Yes|YES|n|N|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF)( *)\:#m", "$1\"$2\"$3:", $str);
 	}
 
+	/**
+	 * @param mixed[] $default
+	 * @phpstan-param array<string, mixed> $default
+	 */
 	public function load(string $file, int $type = Config::DETECT, array $default = []) : bool{
 		$this->correct = true;
 		$this->file = $file;
@@ -161,31 +172,30 @@ class Config{
 		}else{
 			if($this->correct){
 				$content = file_get_contents($this->file);
+				$config = null;
 				switch($this->type){
 					case Config::PROPERTIES:
-						$this->parseProperties($content);
+						$config = $this->parseProperties($content);
 						break;
 					case Config::JSON:
-						$this->config = json_decode($content, true);
+						$config = json_decode($content, true);
 						break;
 					case Config::YAML:
 						$content = self::fixYAMLIndexes($content);
-						$this->config = yaml_parse($content);
+						$config = yaml_parse($content);
 						break;
 					case Config::SERIALIZED:
-						$this->config = unserialize($content);
+						$config = unserialize($content);
 						break;
 					case Config::ENUM:
-						$this->parseList($content);
+						$config = self::parseList($content);
 						break;
 					default:
 						$this->correct = false;
 
 						return false;
 				}
-				if(!is_array($this->config)){
-					$this->config = $default;
-				}
+				$this->config = is_array($config) ? $config : $default;
 				if($this->fillDefaults($default, $this->config) > 0){
 					$this->save();
 				}
@@ -441,6 +451,9 @@ class Config{
 	}
 
 	/**
+	 * @param mixed[] $v
+	 * @phpstan-param array<string, mixed> $v
+	 *
 	 * @return void
 	 */
 	public function setAll(array $v){
@@ -472,11 +485,18 @@ class Config{
 		$this->changed = true;
 	}
 
+	/**
+	 * @return mixed[]
+	 * @phpstan-return list<string>|array<string, mixed>
+	 */
 	public function getAll(bool $keys = false) : array{
 		return ($keys ? array_keys($this->config) : $this->config);
 	}
 
 	/**
+	 * @param mixed[] $defaults
+	 * @phpstan-param array<string, mixed> $defaults
+	 *
 	 * @return void
 	 */
 	public function setDefaults(array $defaults){
@@ -484,7 +504,10 @@ class Config{
 	}
 
 	/**
-	 * @param array $data reference parameter
+	 * @param mixed[] $default
+	 * @param mixed[] $data reference parameter
+	 * @phpstan-param array<string, mixed> $default
+	 * @phpstan-param array<string, mixed> $data
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;
@@ -507,14 +530,20 @@ class Config{
 		return $changed;
 	}
 
-	private function parseList(string $content) : void{
+	/**
+	 * @return true[]
+	 * @phpstan-return array<string, true>
+	 */
+	private static function parseList(string $content) : array{
+		$result = [];
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
 			if($v == ""){
 				continue;
 			}
-			$this->config[$v] = true;
+			$result[$v] = true;
 		}
+		return $result;
 	}
 
 	private function writeProperties() : string{
@@ -531,7 +560,12 @@ class Config{
 		return $content;
 	}
 
-	private function parseProperties(string $content) : void{
+	/**
+	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
+	 */
+	private function parseProperties(string $content) : array{
+		$result = [];
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);
@@ -547,11 +581,13 @@ class Config{
 						$v = false;
 						break;
 				}
-				if(isset($this->config[$k])){
+				if(isset($result[$k])){
 					MainLogger::getLogger()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
 				}
-				$this->config[$k] = $v;
+				$result[$k] = $v;
 			}
 		}
+
+		return $result;
 	}
 }
