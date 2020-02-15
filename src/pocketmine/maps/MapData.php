@@ -444,16 +444,15 @@ class MapData{
 				$b1 = (int) ($j * 2 + 1);
 			}
 		}
-
-		$deco = new MapDecoration();
-		$deco->icon = $type;
-		$deco->rot = $b2;
-		$deco->xOffset = $b0;
-		$deco->yOffset = $b1;
-		$deco->color = $color ?? new Color(255, 255, 255);
-		$deco->label = $entityIdentifier;
-
-		$this->decorations[$entityIdentifier] = $deco;
+		
+		$this->decorations[$entityIdentifier] = new MapDecoration(
+			$type,
+			$b2,
+			$b0,
+			$b1,
+			$entityIdentifier,
+			$color ?? new Color(255, 255, 255)
+		);
 	}
 
 	/**
