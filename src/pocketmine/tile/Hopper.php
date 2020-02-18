@@ -96,6 +96,10 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 	}
 
 	public function onUpdate() : bool{
+		if($this->closed){
+			return false;
+		}
+		
 		if($this->isOnTransferCooldown()){
 			$this->transferCooldown--;
 		}else{
