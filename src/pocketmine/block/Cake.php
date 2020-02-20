@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\EffectInstance;
+use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
@@ -128,7 +129,19 @@ class Cake extends Transparent implements FoodSource{
 		return [];
 	}
 
+	/**
+	 * This method always receives a Player object
+	 *
+	 * @param Human|Living $consumer
+	 * @return bool
+	 */
+	public function canBeConsumedBy(Living $consumer) : bool{
+		return $consumer->isHungry();
+	}
+
 	public function onConsume(Living $consumer) : void{
+		$consumer->addFood($this->getFoodRestore());
+		$consumer->addSaturation($this->getSaturationRestore());
 		$this->level->setBlock($this, $this->getResidue());
 	}
 }

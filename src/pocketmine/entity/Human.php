@@ -294,19 +294,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $ev->getAmount();
 	}
 
-	public function consumeObject(Consumable $consumable) : bool{
-		if($consumable instanceof FoodSource){
-			if($consumable->requiresHunger() and !$this->isHungry()){
-				return false;
-			}
-
-			$this->addFood($consumable->getFoodRestore());
-			$this->addSaturation($consumable->getSaturationRestore());
-		}
-
-		return parent::consumeObject($consumable);
-	}
-
 	/**
 	 * Returns the player's experience level.
 	 */

@@ -107,7 +107,7 @@ class Bucket extends Item implements Consumable{
 		return [];
 	}
 
-	public function canBeConsumed() : bool{
+	public function canBeConsumedBy(Living $consumer) : bool{
 		return $this->meta === 1; //Milk
 	}
 

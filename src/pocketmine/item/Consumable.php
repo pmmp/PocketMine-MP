@@ -46,6 +46,11 @@ interface Consumable{
 	public function getAdditionalEffects() : array;
 
 	/**
+	 * @return bool
+	 */
+	public function canBeConsumedBy(Living $consumer) : bool;
+
+	/**
 	 * Called when this Consumable is consumed by mob, after standard resulting effects have been applied.
 	 *
 	 * @return void

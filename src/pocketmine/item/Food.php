@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 
 abstract class Food extends Item implements FoodSource{
@@ -41,7 +42,14 @@ abstract class Food extends Item implements FoodSource{
 		return [];
 	}
 
-	public function onConsume(Living $consumer){
+	public function canBeConsumedBy(Living $consumer): bool{
+		return ($this->requiresHunger() and $consumer instanceof Human and !$consumer->isHungry()) ? false : true;
+	}
 
+	public function onConsume(Living $consumer){
+		if($consumer instanceof Human) {
+			$consumer->addFood($this->getFoodRestore());
+			$consumer->addSaturation($this->getSaturationRestore());
+		}
 	}
 }
