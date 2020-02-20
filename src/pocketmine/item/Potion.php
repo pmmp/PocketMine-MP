@@ -221,6 +221,10 @@ class Potion extends Item implements Consumable{
 		return 1;
 	}
 
+	public function canBeConsumedBy(Living $consumer) : bool{
+		return true;
+	}
+
 	public function onConsume(Living $consumer){
 
 	}
