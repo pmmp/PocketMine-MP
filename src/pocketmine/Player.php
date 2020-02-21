@@ -81,6 +81,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
+use pocketmine\item\MaybeConsumable;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
 use pocketmine\lang\TextContainer;
@@ -2451,7 +2452,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_AIR:
 						if($this->isUsingItem()){
 							$slot = $this->inventory->getItemInHand();
-							if($slot instanceof Consumable){
+							if($slot instanceof Consumable and !($slot instanceof MaybeConsumable and !$slot->canBeConsumed())){
 								$ev = new PlayerItemConsumeEvent($this, $slot);
 								if($this->hasItemCooldown($slot)){
 									$ev->setCancelled();

@@ -38,6 +38,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
+use pocketmine\item\MaybeConsumable;
 use pocketmine\item\Totem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
@@ -296,6 +297,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function consumeObject(Consumable $consumable) : bool{
+		if($consumable instanceof MaybeConsumable and !$consumable->canBeConsumed()){
+			return false;
+		}
+
 		if($consumable instanceof FoodSource){
 			if($consumable->requiresHunger() and !$this->isHungry()){
 				return false;
