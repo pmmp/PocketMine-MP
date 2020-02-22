@@ -39,6 +39,7 @@ use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
+use pocketmine\item\MaybeConsumable;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\ByteTag;
@@ -490,6 +491,10 @@ abstract class Living extends Entity implements Damageable{
 	 * etc.
 	 */
 	public function consumeObject(Consumable $consumable) : bool{
+		if($consumable instanceof MaybeConsumable and !$consumable->canBeConsumed()){
+			return false;
+		}
+
 		foreach($consumable->getAdditionalEffects() as $effect){
 			$this->addEffect($effect);
 		}

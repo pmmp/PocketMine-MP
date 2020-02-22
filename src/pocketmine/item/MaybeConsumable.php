@@ -21,16 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\item;
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-// TODO: drop this file and use a final class with constants
-if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
-	return;
+/**
+ * Items which are sometimes (but not always) consumable should implement this interface.
+ *
+ * Note: If implementing custom items, consider making separate items instead of using this.
+ * This interface serves as a workaround for the consumability of buckets and shouldn't
+ * really be used for anything else.
+ */
+interface MaybeConsumable extends Consumable{
+
+	public function canBeConsumed() : bool;
 }
-const _VERSION_INFO_INCLUDED = true;
-
-const NAME = "Altay";
-const BASE_VERSION = "3.11.7";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;

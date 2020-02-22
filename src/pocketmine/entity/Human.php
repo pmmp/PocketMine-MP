@@ -38,8 +38,9 @@ use pocketmine\item\Consumable;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
-use pocketmine\item\Totem;
 use pocketmine\item\Item;
+use pocketmine\item\MaybeConsumable;
+use pocketmine\item\Totem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
@@ -53,6 +54,7 @@ use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
@@ -141,7 +143,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				}
 			}
 		}
-		
+
 		if(($capeData = $skinTag->getByteArray("CapeData", "")) !== ""){
 			$cape = new Cape(
 				$skinTag->hasTag("CapeId", StringTag::class) ? $skinTag->getString("CapeId") : UUID::fromRandom()->toString(),
@@ -150,7 +152,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}else{
 			$cape = new Cape("", new SkinImage(0, 0, ""));
 		}
-		
+
 		$skin = (new Skin(
 			$skinTag->getString("Name"),
 			"",
@@ -333,6 +335,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function consumeObject(Consumable $consumable) : bool{
+		if($consumable instanceof MaybeConsumable and !$consumable->canBeConsumed()){
+			return false;
+		}
+
 		if($consumable instanceof FoodSource){
 			if($consumable->requiresHunger() and !$this->isHungry()){
 				return false;
@@ -534,11 +540,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(($item = $this->inventory->getItemInHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
 			$equipment[$mainHandIndex] = $item;
 		}
-		
+
 		if(($item = $this->offHandInventory->getItemInOffHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
 			$equipment[$offHandIndex] = $item;
 		}
-		
+
 		foreach($this->armorInventory->getContents() as $k => $armorItem){
 			if($armorItem instanceof Durable and $armorItem->hasEnchantment(Enchantment::MENDING)){
 				$equipment[$k] = $armorItem;
@@ -897,6 +903,19 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$pk->entries = [PlayerListEntry::createRemovalEntry($this->uuid)];
 			$player->dataPacket($pk);
 		}
+	}
+
+	public function broadcastMovement(bool $teleport = false) : void{
+		//TODO: workaround 1.14.30 bug: MoveActor(Absolute|Delta)Packet don't work on players anymore :(
+		$pk = new MovePlayerPacket();
+		$pk->entityRuntimeId = $this->getId();
+		$pk->position = $this->getOffsetPosition($this);
+		$pk->yaw = $this->yaw;
+		$pk->pitch = $this->pitch;
+		$pk->headYaw = $this->yaw;
+		$pk->mode = $teleport ? MovePlayerPacket::MODE_TELEPORT : MovePlayerPacket::MODE_NORMAL;
+
+		$this->level->addChunkPacket($this->getFloorX() >> 4, $this->getFloorZ() >> 4, $pk);
 	}
 
 	public function close() : void{
