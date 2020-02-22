@@ -48,9 +48,13 @@ class LookAtEntityBehavior extends Behavior{
 
 	public function canStart() : bool{
 		if($this->random->nextFloat() < 0.02){
-			$this->nearestEntity = $this->mob->level->getNearestEntity($this->mob->asVector3(), $this->lookDistance, $this->targetClass);
+			$target = $this->mob->level->getNearestEntity($this->mob->asVector3(), $this->lookDistance, $this->targetClass);
 
-			return $this->nearestEntity !== null;
+			if($target !== null){
+				$this->nearestEntity = $target;
+				
+				return true;
+			}
 		}
 
 		return false;
