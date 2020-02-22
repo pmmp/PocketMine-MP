@@ -134,7 +134,7 @@ function main() : void{
 	$gitHash = Git::getRepositoryStatePretty(dirname(__DIR__));
 	echo "Git hash detected as $gitHash" . PHP_EOL;
 	foreach(buildPhar(
-		$opts["out"] ?? getcwd() . DIRECTORY_SEPARATOR . "PocketMine-MP.phar",
+		$opts["out"] ?? getcwd() . DIRECTORY_SEPARATOR . "Altay.phar",
 		dirname(__DIR__) . DIRECTORY_SEPARATOR,
 		[
 			'src',
