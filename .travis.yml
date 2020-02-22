@@ -19,7 +19,7 @@ before_script:
  - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 script:
-# - composer install --prefer-dist
+ - composer install --prefer-dist
 # - ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
  - ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
  - composer install --no-dev --prefer-dist
