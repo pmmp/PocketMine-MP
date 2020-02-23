@@ -557,6 +557,10 @@ class Item implements ItemIds, \JsonSerializable{
 	 * @return $this
 	 */
 	public function setCount(int $count) : Item{
+		if($count < 0 or $count > 255){
+			throw new \InvalidArgumentException("Count must be in the range 0-255");
+		}
+
 		$this->count = $count;
 
 		return $this;

@@ -89,4 +89,18 @@ class ItemTest extends TestCase{
 		self::assertEquals($id, $item->getId());
 		self::assertEquals($meta, $item->getDamage());
 	}
+
+	public function testSetCountTooBig() : void{
+		$this->expectException(\InvalidArgumentException::class);
+
+		$item = ItemFactory::get(ItemIds::STONE);
+		$item->setCount(256);
+	}
+
+	public function testSetCountTooSmall() : void{
+		$this->expectException(\InvalidArgumentException::class);
+
+		$item = ItemFactory::get(ItemIds::STONE);
+		$item->setCount(-1);
+	}
 }
