@@ -85,7 +85,7 @@ abstract class BaseInventory implements Inventory{
 	/**
 	 * @param Item[] $items
 	 */
-	public function setContents(array $items, bool $send = true) : void{
+	public function setContents(array $items) : void{
 		if(count($items) > $this->getSize()){
 			$items = array_slice($items, 0, $this->getSize(), true);
 		}
@@ -112,10 +112,8 @@ abstract class BaseInventory implements Inventory{
 			$listener->onContentChange($this);
 		}
 
-		if($send){
-			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->getInvManager()->syncContents($this);
-			}
+		foreach($this->getViewers() as $viewer){
+			$viewer->getNetworkSession()->getInvManager()->syncContents($this);
 		}
 	}
 
@@ -317,8 +315,8 @@ abstract class BaseInventory implements Inventory{
 		$this->setItem($index, ItemFactory::air());
 	}
 
-	public function clearAll(bool $send = true) : void{
-		$this->setContents([], $send);
+	public function clearAll() : void{
+		$this->setContents([]);
 	}
 
 	public function swap(int $slot1, int $slot2) : void{

@@ -80,7 +80,7 @@ interface Inventory{
 	/**
 	 * @param Item[] $items
 	 */
-	public function setContents(array $items, bool $send = true) : void;
+	public function setContents(array $items) : void;
 
 	/**
 	 * Checks if the inventory contains any Item with the same material data.
@@ -127,7 +127,7 @@ interface Inventory{
 	/**
 	 * Clears all the slots
 	 */
-	public function clearAll(bool $send = true) : void;
+	public function clearAll() : void;
 
 	/**
 	 * Swaps the specified slots.

@@ -98,6 +98,6 @@ trait ContainerTrait{
 		foreach($inv->getContents() as $k => $item){
 			$pos->world->dropItem($pos->add(0.5, 0.5, 0.5), $item);
 		}
-		$inv->clearAll(false);
+		$inv->clearAll();
 	}
 }
