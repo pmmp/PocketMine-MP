@@ -61,6 +61,7 @@ class ContainerOpenPacket extends DataPacket implements ClientboundPacket{
 		$result->windowId = $windowId;
 		$result->type = $windowType;
 		$result->entityUniqueId = $entityUniqueId;
+		$result->x = $result->y = $result->z = 0; //these have to be set even if they aren't used
 		return $result;
 	}
 
