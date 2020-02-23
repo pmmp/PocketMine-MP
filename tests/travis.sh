@@ -15,14 +15,14 @@ DATA_DIR="test_data"
 PLUGINS_DIR="$DATA_DIR/plugins"
 
 rm -rf "$DATA_DIR"
-rm PocketMine-MP.phar 2> /dev/null
+rm Altay.phar 2> /dev/null
 
 cd tests/plugins/PocketMine-DevTools
 php -dphar.readonly=0 ./src/DevTools/ConsoleScript.php --make ./ --relative ./ --out ../../../DevTools.phar
 cd ../../..
 
-php -dphar.readonly=0 ./build/server-phar.php ./PocketMine-MP.phar
-if [ -f PocketMine-MP.phar ]; then
+php -dphar.readonly=0 ./build/server-phar.php ./Altay.phar
+if [ -f Altay.phar ]; then
 	echo Server phar created successfully.
 else
 	echo Server phar was not created!
@@ -33,7 +33,7 @@ mkdir "$DATA_DIR"
 mkdir "$PLUGINS_DIR"
 mv DevTools.phar "$PLUGINS_DIR"
 cp -r tests/plugins/TesterPlugin "$PLUGINS_DIR"
-echo -e "stop\n" | php PocketMine-MP.phar --no-wizard --disable-ansi --disable-readline --debug.level=2 --data="$DATA_DIR" --plugins="$PLUGINS_DIR" --anonymous-statistics.enabled=0 --settings.async-workers="$PM_WORKERS" --settings.enable-dev-builds=1
+echo -e "stop\n" | php Altay.phar --no-wizard --disable-ansi --disable-readline --debug.level=2 --data="$DATA_DIR" --plugins="$PLUGINS_DIR" --anonymous-statistics.enabled=0 --settings.async-workers="$PM_WORKERS" --settings.enable-dev-builds=1
 
 output=$(grep '\[TesterPlugin\]' "$DATA_DIR/server.log")
 if [ "$output" == "" ]; then
