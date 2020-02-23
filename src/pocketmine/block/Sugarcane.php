@@ -62,7 +62,7 @@ class Sugarcane extends Flowable{
 				$this->getLevel()->setBlock($this, $this, true);
 			}
 
-			$item->count--;
+			$item->pop();
 
 			return true;
 		}

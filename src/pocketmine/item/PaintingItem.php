@@ -96,7 +96,7 @@ class PaintingItem extends Item{
 		$entity = Entity::createEntity("Painting", $blockReplace->getLevel(), $nbt);
 
 		if($entity instanceof Entity){
-			--$this->count;
+			$this->pop();
 			$entity->spawnToAll();
 
 			$player->getLevel()->broadcastLevelEvent($blockReplace->add(0.5, 0.5, 0.5), LevelEventPacket::EVENT_SOUND_ITEMFRAME_PLACE); //item frame and painting have the same sound
