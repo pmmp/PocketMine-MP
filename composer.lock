@@ -443,12 +443,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "c81711e2110545880f5d9a76028b7987d2ac5e32"
+                "reference": "1cdf6aec3024e2061b8c3e5045c43250df94a740"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/c81711e2110545880f5d9a76028b7987d2ac5e32",
-                "reference": "c81711e2110545880f5d9a76028b7987d2ac5e32",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/1cdf6aec3024e2061b8c3e5045c43250df94a740",
+                "reference": "1cdf6aec3024e2061b8c3e5045c43250df94a740",
                 "shasum": ""
             },
             "require": {
@@ -459,7 +459,7 @@
             },
             "require-dev": {
                 "irstea/phpunit-shim": "^7.5",
-                "phpstan/phpstan": "^0.12.8"
+                "phpstan/phpstan": "^0.12.11"
             },
             "type": "library",
             "autoload": {
@@ -472,7 +472,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library for working with Named Binary Tags",
-            "time": "2020-01-28T17:04:17+00:00"
+            "time": "2020-02-24T21:43:33+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -591,7 +591,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.irstea.fr/pole-is/tools/phpunit-shim.git",
-                "reference": "8ec63f895972681271191821a36f9081c236b993"
+                "reference": "39b6155954d6caec1110a9e78582c4816ab247bc"
             },
             "require": {
                 "ext-dom": "*",
@@ -613,11 +613,6 @@
                 "phpunit"
             ],
             "type": "library",
-            "autoload": {
-                "exclude-from-classmap": [
-                    "phpunit"
-                ]
-            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
@@ -637,7 +632,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2020-01-23T13:39:47+00:00"
+            "time": "2020-01-09T03:20:20+00:00"
         },
         {
             "name": "phpstan/phpstan",
