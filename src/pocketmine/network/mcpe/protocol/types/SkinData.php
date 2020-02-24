@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\utils\UUID;
+
 class SkinData{
 
 	/** @var string */
@@ -47,11 +49,13 @@ class SkinData{
 	private $personaCapeOnClassic;
 	/** @var string */
 	private $capeId;
+	/** @var string */
+	private $fullSkinId;
 
 	/**
 	 * @param SkinAnimation[] $animations
 	 */
-	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = ""){
+	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = "", ?string $fullSkinId = null){
 		$this->skinId = $skinId;
 		$this->resourcePatch = $resourcePatch;
 		$this->skinImage = $skinImage;
@@ -63,6 +67,8 @@ class SkinData{
 		$this->persona = $persona;
 		$this->personaCapeOnClassic = $personaCapeOnClassic;
 		$this->capeId = $capeId;
+		//this has to be unique or the client will do stupid things
+		$this->fullSkinId = $fullSkinId ?? UUID::fromRandom()->toString();
 	}
 
 	public function getSkinId() : string{
@@ -112,4 +118,7 @@ class SkinData{
 		return $this->capeId;
 	}
 
+	public function getFullSkinId() : string{
+		return $this->fullSkinId;
+	}
 }
