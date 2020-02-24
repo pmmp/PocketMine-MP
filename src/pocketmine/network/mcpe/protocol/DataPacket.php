@@ -39,6 +39,12 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	public const NETWORK_ID = 0;
 
+	public const PID_MASK = 0x3ff; //10 bits
+
+	private const SUBCLIENT_ID_MASK = 0x03; //2 bits
+	private const SENDER_SUBCLIENT_ID_SHIFT = 10;
+	private const RECIPIENT_SUBCLIENT_ID_SHIFT = 12;
+
 	/** @var bool */
 	public $isEncoded = false;
 	/** @var CachedEncapsulatedPacket|null */
@@ -92,10 +98,13 @@ abstract class DataPacket extends NetworkBinaryStream{
 	 * @throws \UnexpectedValueException
 	 */
 	protected function decodeHeader(){
-		$pid = $this->getUnsignedVarInt();
+		$header = $this->getUnsignedVarInt();
+		$pid = $header & self::PID_MASK;
 		if($pid !== static::NETWORK_ID){
 			throw new \UnexpectedValueException("Expected " . static::NETWORK_ID . " for packet ID, got $pid");
 		}
+		$this->senderSubId = ($header >> self::SENDER_SUBCLIENT_ID_SHIFT) & self::SUBCLIENT_ID_MASK;
+		$this->recipientSubId = ($header >> self::RECIPIENT_SUBCLIENT_ID_SHIFT) & self::SUBCLIENT_ID_MASK;
 	}
 
 	/**
@@ -123,7 +132,11 @@ abstract class DataPacket extends NetworkBinaryStream{
 	 * @return void
 	 */
 	protected function encodeHeader(){
-		$this->putUnsignedVarInt(static::NETWORK_ID);
+		$this->putUnsignedVarInt(
+			static::NETWORK_ID |
+			($this->senderSubId << self::SENDER_SUBCLIENT_ID_SHIFT) |
+			($this->recipientSubId << self::RECIPIENT_SUBCLIENT_ID_SHIFT)
+		);
 	}
 
 	/**

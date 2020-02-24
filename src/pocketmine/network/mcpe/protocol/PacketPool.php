@@ -196,7 +196,7 @@ class PacketPool{
 	 */
 	public static function getPacket(string $buffer) : DataPacket{
 		$offset = 0;
-		$pk = static::getPacketById(Binary::readUnsignedVarInt($buffer, $offset));
+		$pk = static::getPacketById(Binary::readUnsignedVarInt($buffer, $offset) & DataPacket::PID_MASK);
 		$pk->setBuffer($buffer, $offset);
 
 		return $pk;
