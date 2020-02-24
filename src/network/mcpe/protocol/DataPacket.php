@@ -39,6 +39,12 @@ abstract class DataPacket implements Packet{
 
 	public const NETWORK_ID = 0;
 
+	public const PID_MASK = 0x3ff; //10 bits
+
+	private const SUBCLIENT_ID_MASK = 0x03; //2 bits
+	private const SENDER_SUBCLIENT_ID_SHIFT = 10;
+	private const RECIPIENT_SUBCLIENT_ID_SHIFT = 12;
+
 	/** @var int */
 	public $senderSubId = 0;
 	/** @var int */
@@ -85,11 +91,15 @@ abstract class DataPacket implements Packet{
 	 * @throws \UnexpectedValueException
 	 */
 	protected function decodeHeader() : void{
-		$pid = $this->buf->getUnsignedVarInt();
+		$header = $this->buf->getUnsignedVarInt();
+		$pid = $header & self::PID_MASK;
 		if($pid !== static::NETWORK_ID){
 			//TODO: this means a logical error in the code, but how to prevent it from happening?
 			throw new \UnexpectedValueException("Expected " . static::NETWORK_ID . " for packet ID, got $pid");
 		}
+		$this->senderSubId = ($header >> self::SENDER_SUBCLIENT_ID_SHIFT) & self::SUBCLIENT_ID_MASK;
+		$this->recipientSubId = ($header >> self::RECIPIENT_SUBCLIENT_ID_SHIFT) & self::SUBCLIENT_ID_MASK;
+
 	}
 
 	/**
@@ -107,7 +117,11 @@ abstract class DataPacket implements Packet{
 	}
 
 	protected function encodeHeader() : void{
-		$this->buf->putUnsignedVarInt(static::NETWORK_ID);
+		$this->buf->putUnsignedVarInt(
+			static::NETWORK_ID |
+			($this->senderSubId << self::SENDER_SUBCLIENT_ID_SHIFT) |
+			($this->recipientSubId << self::RECIPIENT_SUBCLIENT_ID_SHIFT)
+		);
 	}
 
 	/**

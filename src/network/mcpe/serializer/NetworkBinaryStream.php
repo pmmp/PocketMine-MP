@@ -117,7 +117,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$capeId = $this->getString();
 		$fullSkinId = $this->getString();
 
-		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId);
+		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId);
 	}
 
 	public function putSkin(SkinData $skin): void{
@@ -137,9 +137,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putBool($skin->isPersona());
 		$this->putBool($skin->isPersonaCapeOnClassic());
 		$this->putString($skin->getCapeId());
-
-		//this has to be unique or the client will do stupid things
-		$this->putString(UUID::fromRandom()->toString()); //full skin ID
+		$this->putString($skin->getFullSkinId());
 	}
 
 	private function getSkinImage() : SkinImage{
