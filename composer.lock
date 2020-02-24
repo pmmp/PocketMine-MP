@@ -591,7 +591,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.irstea.fr/pole-is/tools/phpunit-shim.git",
-                "reference": "39b6155954d6caec1110a9e78582c4816ab247bc"
+                "reference": "8ec63f895972681271191821a36f9081c236b993"
             },
             "require": {
                 "ext-dom": "*",
@@ -613,6 +613,11 @@
                 "phpunit"
             ],
             "type": "library",
+            "autoload": {
+                "exclude-from-classmap": [
+                    "phpunit"
+                ]
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
@@ -632,20 +637,20 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2020-01-09T03:20:20+00:00"
+            "time": "2020-01-23T13:39:47+00:00"
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.9",
+            "version": "0.12.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "297cb2458a96ea96d5e9d6ef38f1b7305c071f32"
+                "reference": "ca5f2b7cf81c6d8fba74f9576970399c5817e03b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/297cb2458a96ea96d5e9d6ef38f1b7305c071f32",
-                "reference": "297cb2458a96ea96d5e9d6ef38f1b7305c071f32",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ca5f2b7cf81c6d8fba74f9576970399c5817e03b",
+                "reference": "ca5f2b7cf81c6d8fba74f9576970399c5817e03b",
                 "shasum": ""
             },
             "require": {
@@ -671,7 +676,7 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2020-02-04T22:30:27+00:00"
+            "time": "2020-02-16T14:00:29+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",

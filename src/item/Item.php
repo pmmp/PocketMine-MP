@@ -385,6 +385,10 @@ class Item implements \JsonSerializable{
 	 * @return $this
 	 */
 	public function setCount(int $count) : Item{
+		if($count < 0 or $count > 255){
+			throw new \InvalidArgumentException("Count must be in the range 0-255");
+		}
+
 		$this->count = $count;
 
 		return $this;
@@ -393,7 +397,7 @@ class Item implements \JsonSerializable{
 	/**
 	 * Pops an item from the stack and returns it, decreasing the stack count of this item stack by one.
 	 *
-	 * @return $this
+	 * @return static A clone of this itemstack containing the amount of items that were removed from this stack.
 	 * @throws \InvalidArgumentException if trying to pop more items than are on the stack
 	 */
 	public function pop(int $count = 1) : Item{

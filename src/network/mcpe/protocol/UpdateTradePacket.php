@@ -48,9 +48,9 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $displayName;
 	/** @var bool */
-	public $isWilling;
-	/** @var bool */
 	public $isV2Trading;
+	/** @var bool */
+	public $isWilling;
 	/** @var string */
 	public $offers;
 
@@ -62,8 +62,8 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 		$this->traderEid = $this->buf->getEntityUniqueId();
 		$this->playerEid = $this->buf->getEntityUniqueId();
 		$this->displayName = $this->buf->getString();
-		$this->isWilling = $this->buf->getBool();
 		$this->isV2Trading = $this->buf->getBool();
+		$this->isWilling = $this->buf->getBool();
 		$this->offers = $this->buf->getRemaining();
 	}
 
@@ -75,8 +75,8 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 		$this->buf->putEntityUniqueId($this->traderEid);
 		$this->buf->putEntityUniqueId($this->playerEid);
 		$this->buf->putString($this->displayName);
-		$this->buf->putBool($this->isWilling);
 		$this->buf->putBool($this->isV2Trading);
+		$this->buf->putBool($this->isWilling);
 		$this->buf->put($this->offers);
 	}
 

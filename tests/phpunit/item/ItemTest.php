@@ -143,4 +143,18 @@ class ItemTest extends TestCase{
 		$this->item->removeEnchantment(Enchantment::FIRE_ASPECT(), 2);
 		self::assertFalse($this->item->hasEnchantment(Enchantment::FIRE_ASPECT()));
 	}
+
+	public function testSetCountTooBig() : void{
+		$this->expectException(\InvalidArgumentException::class);
+
+		$item = ItemFactory::get(ItemIds::STONE);
+		$item->setCount(256);
+	}
+
+	public function testSetCountTooSmall() : void{
+		$this->expectException(\InvalidArgumentException::class);
+
+		$item = ItemFactory::get(ItemIds::STONE);
+		$item->setCount(-1);
+	}
 }

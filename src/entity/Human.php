@@ -43,6 +43,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -414,6 +415,22 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if(!($this instanceof Player)){
 			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($this->uuid)]));
 		}
+	}
+
+	public function broadcastMovement(bool $teleport = false) : void{
+		//TODO: workaround 1.14.30 bug: MoveActor(Absolute|Delta)Packet don't work on players anymore :(
+		$pk = new MovePlayerPacket();
+		$pk->entityRuntimeId = $this->getId();
+		$pk->position = $this->getOffsetPosition($this->location);
+		$pk->yaw = $this->location->yaw;
+		$pk->pitch = $this->location->pitch;
+		$pk->headYaw = $this->location->yaw;
+		$pk->mode = $teleport ? MovePlayerPacket::MODE_TELEPORT : MovePlayerPacket::MODE_NORMAL;
+		//we can't assume that everyone who is using our chunk wants to see this movement,
+		//because this human might be a player who shouldn't be receiving his own movement.
+		//this didn't matter when we were able to use MoveActorPacket because
+		//the client just ignored MoveActor for itself, but it doesn't ignore MovePlayer for itself.
+		$this->server->broadcastPackets($this->hasSpawned, [$pk]);
 	}
 
 	protected function onDispose() : void{
