@@ -38,15 +38,15 @@ class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 	public $bookId; //photos are stored in a sibling directory to the games folder (screenshots/(some UUID)/bookID/example.png)
 
 	protected function decodePayload() : void{
-		$this->photoName = $this->getString();
-		$this->photoData = $this->getString();
-		$this->bookId = $this->getString();
+		$this->photoName = $this->buf->getString();
+		$this->photoData = $this->buf->getString();
+		$this->bookId = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->photoName);
-		$this->putString($this->photoData);
-		$this->putString($this->bookId);
+		$this->buf->putString($this->photoName);
+		$this->buf->putString($this->photoData);
+		$this->buf->putString($this->bookId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

@@ -60,15 +60,15 @@ class SetSpawnPositionPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->spawnType = $this->getVarInt();
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->spawnForced = $this->getBool();
+		$this->spawnType = $this->buf->getVarInt();
+		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
+		$this->spawnForced = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->spawnType);
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putBool($this->spawnForced);
+		$this->buf->putVarInt($this->spawnType);
+		$this->buf->putBlockPosition($this->x, $this->y, $this->z);
+		$this->buf->putBool($this->spawnForced);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

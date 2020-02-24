@@ -34,11 +34,11 @@ class SubClientLoginPacket extends DataPacket implements ServerboundPacket{
 	public $connectionRequestData;
 
 	protected function decodePayload() : void{
-		$this->connectionRequestData = $this->getString();
+		$this->connectionRequestData = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->connectionRequestData);
+		$this->buf->putString($this->connectionRequestData);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

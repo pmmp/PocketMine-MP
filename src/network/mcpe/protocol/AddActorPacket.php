@@ -174,24 +174,24 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 	public $links = [];
 
 	protected function decodePayload() : void{
-		$this->entityUniqueId = $this->getEntityUniqueId();
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->type = array_search($t = $this->getString(), self::LEGACY_ID_MAP_BC, true);
+		$this->entityUniqueId = $this->buf->getEntityUniqueId();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->type = array_search($t = $this->buf->getString(), self::LEGACY_ID_MAP_BC, true);
 		if($this->type === false){
 			throw new BadPacketException("Can't map ID $t to legacy ID");
 		}
-		$this->position = $this->getVector3();
-		$this->motion = $this->getVector3();
-		$this->pitch = $this->getLFloat();
-		$this->yaw = $this->getLFloat();
-		$this->headYaw = $this->getLFloat();
+		$this->position = $this->buf->getVector3();
+		$this->motion = $this->buf->getVector3();
+		$this->pitch = $this->buf->getLFloat();
+		$this->yaw = $this->buf->getLFloat();
+		$this->headYaw = $this->buf->getLFloat();
 
-		$attrCount = $this->getUnsignedVarInt();
+		$attrCount = $this->buf->getUnsignedVarInt();
 		for($i = 0; $i < $attrCount; ++$i){
-			$id = $this->getString();
-			$min = $this->getLFloat();
-			$current = $this->getLFloat();
-			$max = $this->getLFloat();
+			$id = $this->buf->getString();
+			$min = $this->buf->getLFloat();
+			$current = $this->buf->getLFloat();
+			$max = $this->buf->getLFloat();
 			$attr = Attribute::get($id);
 
 			if($attr !== null){
@@ -208,38 +208,38 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 			}
 		}
 
-		$this->metadata = $this->getEntityMetadata();
-		$linkCount = $this->getUnsignedVarInt();
+		$this->metadata = $this->buf->getEntityMetadata();
+		$linkCount = $this->buf->getUnsignedVarInt();
 		for($i = 0; $i < $linkCount; ++$i){
-			$this->links[] = $this->getEntityLink();
+			$this->links[] = $this->buf->getEntityLink();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
 		if(!isset(self::LEGACY_ID_MAP_BC[$this->type])){
 			throw new \InvalidArgumentException("Unknown entity numeric ID $this->type");
 		}
-		$this->putString(self::LEGACY_ID_MAP_BC[$this->type]);
-		$this->putVector3($this->position);
-		$this->putVector3Nullable($this->motion);
-		$this->putLFloat($this->pitch);
-		$this->putLFloat($this->yaw);
-		$this->putLFloat($this->headYaw);
+		$this->buf->putString(self::LEGACY_ID_MAP_BC[$this->type]);
+		$this->buf->putVector3($this->position);
+		$this->buf->putVector3Nullable($this->motion);
+		$this->buf->putLFloat($this->pitch);
+		$this->buf->putLFloat($this->yaw);
+		$this->buf->putLFloat($this->headYaw);
 
-		$this->putUnsignedVarInt(count($this->attributes));
+		$this->buf->putUnsignedVarInt(count($this->attributes));
 		foreach($this->attributes as $attribute){
-			$this->putString($attribute->getId());
-			$this->putLFloat($attribute->getMinValue());
-			$this->putLFloat($attribute->getValue());
-			$this->putLFloat($attribute->getMaxValue());
+			$this->buf->putString($attribute->getId());
+			$this->buf->putLFloat($attribute->getMinValue());
+			$this->buf->putLFloat($attribute->getValue());
+			$this->buf->putLFloat($attribute->getMaxValue());
 		}
 
-		$this->putEntityMetadata($this->metadata);
-		$this->putUnsignedVarInt(count($this->links));
+		$this->buf->putEntityMetadata($this->metadata);
+		$this->buf->putUnsignedVarInt(count($this->links));
 		foreach($this->links as $link){
-			$this->putEntityLink($link);
+			$this->buf->putEntityLink($link);
 		}
 	}
 

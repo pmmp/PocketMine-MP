@@ -109,7 +109,7 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->protocol = $this->getInt();
+		$this->protocol = $this->buf->getInt();
 		$this->decodeConnectionRequest();
 	}
 
@@ -134,7 +134,7 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 	 * @throws BinaryDataException
 	 */
 	protected function decodeConnectionRequest() : void{
-		$buffer = new BinaryStream($this->getString());
+		$buffer = new BinaryStream($this->buf->getString());
 
 		$chainData = json_decode($buffer->get($buffer->getLInt()), true);
 		if(!is_array($chainData)){

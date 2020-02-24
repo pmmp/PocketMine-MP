@@ -43,13 +43,13 @@ class TakeItemActorPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->target = $this->getEntityRuntimeId();
-		$this->eid = $this->getEntityRuntimeId();
+		$this->target = $this->buf->getEntityRuntimeId();
+		$this->eid = $this->buf->getEntityRuntimeId();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->target);
-		$this->putEntityRuntimeId($this->eid);
+		$this->buf->putEntityRuntimeId($this->target);
+		$this->buf->putEntityRuntimeId($this->eid);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

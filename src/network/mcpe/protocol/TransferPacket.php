@@ -43,13 +43,13 @@ class TransferPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->address = $this->getString();
-		$this->port = $this->getLShort();
+		$this->address = $this->buf->getString();
+		$this->port = $this->buf->getLShort();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->address);
-		$this->putLShort($this->port);
+		$this->buf->putString($this->address);
+		$this->buf->putLShort($this->port);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

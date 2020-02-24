@@ -51,13 +51,13 @@ class SettingsCommandPacket extends DataPacket implements ServerboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->command = $this->getString();
-		$this->suppressOutput = $this->getBool();
+		$this->command = $this->buf->getString();
+		$this->suppressOutput = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->command);
-		$this->putBool($this->suppressOutput);
+		$this->buf->putString($this->command);
+		$this->buf->putBool($this->suppressOutput);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

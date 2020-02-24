@@ -34,11 +34,11 @@ class ShowProfilePacket extends DataPacket implements ClientboundPacket{
 	public $xuid;
 
 	protected function decodePayload() : void{
-		$this->xuid = $this->getString();
+		$this->xuid = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->xuid);
+		$this->buf->putString($this->xuid);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

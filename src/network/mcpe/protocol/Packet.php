@@ -25,27 +25,11 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 interface Packet{
 
-	public function setOffset(int $offset) : void;
-
-	/**
-	 * TODO: this can't have a native return type yet because of incompatibility with BinaryUtils
-	 * really this should be addressed by making packets not extend BinaryStream, but that's a task for another day.
-	 *
-	 * @return void
-	 */
-	public function setBuffer(string $buffer = "", int $offset = 0);
-
-	public function getOffset() : int;
-
-	public function getBuffer() : string;
-
-	/**
-	 * Returns whether the offset has reached the end of the buffer.
-	 */
-	public function feof() : bool;
+	public function getBinaryStream() : NetworkBinaryStream;
 
 	public function pid() : int;
 

@@ -36,17 +36,17 @@ class StructureTemplateDataResponsePacket extends DataPacket implements Clientbo
 	public $namedtag;
 
 	protected function decodePayload() : void{
-		$this->structureTemplateName = $this->getString();
-		if($this->getBool()){
-			$this->namedtag = $this->getRemaining();
+		$this->structureTemplateName = $this->buf->getString();
+		if($this->buf->getBool()){
+			$this->namedtag = $this->buf->getRemaining();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->structureTemplateName);
-		$this->putBool($this->namedtag !== null);
+		$this->buf->putString($this->structureTemplateName);
+		$this->buf->putBool($this->namedtag !== null);
 		if($this->namedtag !== null){
-			$this->put($this->namedtag);
+			$this->buf->put($this->namedtag);
 		}
 	}
 

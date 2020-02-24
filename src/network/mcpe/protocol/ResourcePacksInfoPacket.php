@@ -57,29 +57,29 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->mustAccept = $this->getBool();
-		$this->hasScripts = $this->getBool();
-		$behaviorPackCount = $this->getLShort();
+		$this->mustAccept = $this->buf->getBool();
+		$this->hasScripts = $this->buf->getBool();
+		$behaviorPackCount = $this->buf->getLShort();
 		while($behaviorPackCount-- > 0){
-			$this->behaviorPackEntries[] = ResourcePackInfoEntry::read($this);
+			$this->behaviorPackEntries[] = ResourcePackInfoEntry::read($this->buf);
 		}
 
-		$resourcePackCount = $this->getLShort();
+		$resourcePackCount = $this->buf->getLShort();
 		while($resourcePackCount-- > 0){
-			$this->resourcePackEntries[] = ResourcePackInfoEntry::read($this);
+			$this->resourcePackEntries[] = ResourcePackInfoEntry::read($this->buf);
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putBool($this->mustAccept);
-		$this->putBool($this->hasScripts);
-		$this->putLShort(count($this->behaviorPackEntries));
+		$this->buf->putBool($this->mustAccept);
+		$this->buf->putBool($this->hasScripts);
+		$this->buf->putLShort(count($this->behaviorPackEntries));
 		foreach($this->behaviorPackEntries as $entry){
-			$entry->write($this);
+			$entry->write($this->buf);
 		}
-		$this->putLShort(count($this->resourcePackEntries));
+		$this->buf->putLShort(count($this->resourcePackEntries));
 		foreach($this->resourcePackEntries as $entry){
-			$entry->write($this);
+			$entry->write($this->buf);
 		}
 	}
 

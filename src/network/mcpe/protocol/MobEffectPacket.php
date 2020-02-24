@@ -67,21 +67,21 @@ class MobEffectPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->eventId = $this->getByte();
-		$this->effectId = $this->getVarInt();
-		$this->amplifier = $this->getVarInt();
-		$this->particles = $this->getBool();
-		$this->duration = $this->getVarInt();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->eventId = $this->buf->getByte();
+		$this->effectId = $this->buf->getVarInt();
+		$this->amplifier = $this->buf->getVarInt();
+		$this->particles = $this->buf->getBool();
+		$this->duration = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putByte($this->eventId);
-		$this->putVarInt($this->effectId);
-		$this->putVarInt($this->amplifier);
-		$this->putBool($this->particles);
-		$this->putVarInt($this->duration);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putByte($this->eventId);
+		$this->buf->putVarInt($this->effectId);
+		$this->buf->putVarInt($this->amplifier);
+		$this->buf->putBool($this->particles);
+		$this->buf->putVarInt($this->duration);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

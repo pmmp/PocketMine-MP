@@ -119,29 +119,29 @@ class BossEventPacket extends DataPacket implements ClientboundPacket, Serverbou
 	}
 
 	protected function decodePayload() : void{
-		$this->bossEid = $this->getEntityUniqueId();
-		$this->eventType = $this->getUnsignedVarInt();
+		$this->bossEid = $this->buf->getEntityUniqueId();
+		$this->eventType = $this->buf->getUnsignedVarInt();
 		switch($this->eventType){
 			case self::TYPE_REGISTER_PLAYER:
 			case self::TYPE_UNREGISTER_PLAYER:
-				$this->playerEid = $this->getEntityUniqueId();
+				$this->playerEid = $this->buf->getEntityUniqueId();
 				break;
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_SHOW:
-				$this->title = $this->getString();
-				$this->healthPercent = $this->getLFloat();
+				$this->title = $this->buf->getString();
+				$this->healthPercent = $this->buf->getLFloat();
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_UNKNOWN_6:
-				$this->unknownShort = $this->getLShort();
+				$this->unknownShort = $this->buf->getLShort();
 			case self::TYPE_TEXTURE:
-				$this->color = $this->getUnsignedVarInt();
-				$this->overlay = $this->getUnsignedVarInt();
+				$this->color = $this->buf->getUnsignedVarInt();
+				$this->overlay = $this->buf->getUnsignedVarInt();
 				break;
 			case self::TYPE_HEALTH_PERCENT:
-				$this->healthPercent = $this->getLFloat();
+				$this->healthPercent = $this->buf->getLFloat();
 				break;
 			case self::TYPE_TITLE:
-				$this->title = $this->getString();
+				$this->title = $this->buf->getString();
 				break;
 			default:
 				break;
@@ -149,29 +149,29 @@ class BossEventPacket extends DataPacket implements ClientboundPacket, Serverbou
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->bossEid);
-		$this->putUnsignedVarInt($this->eventType);
+		$this->buf->putEntityUniqueId($this->bossEid);
+		$this->buf->putUnsignedVarInt($this->eventType);
 		switch($this->eventType){
 			case self::TYPE_REGISTER_PLAYER:
 			case self::TYPE_UNREGISTER_PLAYER:
-				$this->putEntityUniqueId($this->playerEid);
+				$this->buf->putEntityUniqueId($this->playerEid);
 				break;
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_SHOW:
-				$this->putString($this->title);
-				$this->putLFloat($this->healthPercent);
+				$this->buf->putString($this->title);
+				$this->buf->putLFloat($this->healthPercent);
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_UNKNOWN_6:
-				$this->putLShort($this->unknownShort);
+				$this->buf->putLShort($this->unknownShort);
 			case self::TYPE_TEXTURE:
-				$this->putUnsignedVarInt($this->color);
-				$this->putUnsignedVarInt($this->overlay);
+				$this->buf->putUnsignedVarInt($this->color);
+				$this->buf->putUnsignedVarInt($this->overlay);
 				break;
 			case self::TYPE_HEALTH_PERCENT:
-				$this->putLFloat($this->healthPercent);
+				$this->buf->putLFloat($this->healthPercent);
 				break;
 			case self::TYPE_TITLE:
-				$this->putString($this->title);
+				$this->buf->putString($this->title);
 				break;
 			default:
 				break;

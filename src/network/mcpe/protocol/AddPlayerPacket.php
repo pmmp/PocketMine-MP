@@ -88,65 +88,65 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	public $buildPlatform = -1;
 
 	protected function decodePayload() : void{
-		$this->uuid = $this->getUUID();
-		$this->username = $this->getString();
-		$this->entityUniqueId = $this->getEntityUniqueId();
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->platformChatId = $this->getString();
-		$this->position = $this->getVector3();
-		$this->motion = $this->getVector3();
-		$this->pitch = $this->getLFloat();
-		$this->yaw = $this->getLFloat();
-		$this->headYaw = $this->getLFloat();
-		$this->item = $this->getSlot();
-		$this->metadata = $this->getEntityMetadata();
+		$this->uuid = $this->buf->getUUID();
+		$this->username = $this->buf->getString();
+		$this->entityUniqueId = $this->buf->getEntityUniqueId();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->platformChatId = $this->buf->getString();
+		$this->position = $this->buf->getVector3();
+		$this->motion = $this->buf->getVector3();
+		$this->pitch = $this->buf->getLFloat();
+		$this->yaw = $this->buf->getLFloat();
+		$this->headYaw = $this->buf->getLFloat();
+		$this->item = $this->buf->getSlot();
+		$this->metadata = $this->buf->getEntityMetadata();
 
-		$this->uvarint1 = $this->getUnsignedVarInt();
-		$this->uvarint2 = $this->getUnsignedVarInt();
-		$this->uvarint3 = $this->getUnsignedVarInt();
-		$this->uvarint4 = $this->getUnsignedVarInt();
-		$this->uvarint5 = $this->getUnsignedVarInt();
+		$this->uvarint1 = $this->buf->getUnsignedVarInt();
+		$this->uvarint2 = $this->buf->getUnsignedVarInt();
+		$this->uvarint3 = $this->buf->getUnsignedVarInt();
+		$this->uvarint4 = $this->buf->getUnsignedVarInt();
+		$this->uvarint5 = $this->buf->getUnsignedVarInt();
 
-		$this->long1 = $this->getLLong();
+		$this->long1 = $this->buf->getLLong();
 
-		$linkCount = $this->getUnsignedVarInt();
+		$linkCount = $this->buf->getUnsignedVarInt();
 		for($i = 0; $i < $linkCount; ++$i){
-			$this->links[$i] = $this->getEntityLink();
+			$this->links[$i] = $this->buf->getEntityLink();
 		}
 
-		$this->deviceId = $this->getString();
-		$this->buildPlatform = $this->getLInt();
+		$this->deviceId = $this->buf->getString();
+		$this->buildPlatform = $this->buf->getLInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putUUID($this->uuid);
-		$this->putString($this->username);
-		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putString($this->platformChatId);
-		$this->putVector3($this->position);
-		$this->putVector3Nullable($this->motion);
-		$this->putLFloat($this->pitch);
-		$this->putLFloat($this->yaw);
-		$this->putLFloat($this->headYaw ?? $this->yaw);
-		$this->putSlot($this->item);
-		$this->putEntityMetadata($this->metadata);
+		$this->buf->putUUID($this->uuid);
+		$this->buf->putString($this->username);
+		$this->buf->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putString($this->platformChatId);
+		$this->buf->putVector3($this->position);
+		$this->buf->putVector3Nullable($this->motion);
+		$this->buf->putLFloat($this->pitch);
+		$this->buf->putLFloat($this->yaw);
+		$this->buf->putLFloat($this->headYaw ?? $this->yaw);
+		$this->buf->putSlot($this->item);
+		$this->buf->putEntityMetadata($this->metadata);
 
-		$this->putUnsignedVarInt($this->uvarint1);
-		$this->putUnsignedVarInt($this->uvarint2);
-		$this->putUnsignedVarInt($this->uvarint3);
-		$this->putUnsignedVarInt($this->uvarint4);
-		$this->putUnsignedVarInt($this->uvarint5);
+		$this->buf->putUnsignedVarInt($this->uvarint1);
+		$this->buf->putUnsignedVarInt($this->uvarint2);
+		$this->buf->putUnsignedVarInt($this->uvarint3);
+		$this->buf->putUnsignedVarInt($this->uvarint4);
+		$this->buf->putUnsignedVarInt($this->uvarint5);
 
-		$this->putLLong($this->long1);
+		$this->buf->putLLong($this->long1);
 
-		$this->putUnsignedVarInt(count($this->links));
+		$this->buf->putUnsignedVarInt(count($this->links));
 		foreach($this->links as $link){
-			$this->putEntityLink($link);
+			$this->buf->putEntityLink($link);
 		}
 
-		$this->putString($this->deviceId);
-		$this->putLInt($this->buildPlatform);
+		$this->buf->putString($this->deviceId);
+		$this->buf->putLInt($this->buildPlatform);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

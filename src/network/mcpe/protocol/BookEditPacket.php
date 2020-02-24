@@ -59,27 +59,27 @@ class BookEditPacket extends DataPacket implements ServerboundPacket{
 	public $xuid;
 
 	protected function decodePayload() : void{
-		$this->type = $this->getByte();
-		$this->inventorySlot = $this->getByte();
+		$this->type = $this->buf->getByte();
+		$this->inventorySlot = $this->buf->getByte();
 
 		switch($this->type){
 			case self::TYPE_REPLACE_PAGE:
 			case self::TYPE_ADD_PAGE:
-				$this->pageNumber = $this->getByte();
-				$this->text = $this->getString();
-				$this->photoName = $this->getString();
+				$this->pageNumber = $this->buf->getByte();
+				$this->text = $this->buf->getString();
+				$this->photoName = $this->buf->getString();
 				break;
 			case self::TYPE_DELETE_PAGE:
-				$this->pageNumber = $this->getByte();
+				$this->pageNumber = $this->buf->getByte();
 				break;
 			case self::TYPE_SWAP_PAGES:
-				$this->pageNumber = $this->getByte();
-				$this->secondaryPageNumber = $this->getByte();
+				$this->pageNumber = $this->buf->getByte();
+				$this->secondaryPageNumber = $this->buf->getByte();
 				break;
 			case self::TYPE_SIGN_BOOK:
-				$this->title = $this->getString();
-				$this->author = $this->getString();
-				$this->xuid = $this->getString();
+				$this->title = $this->buf->getString();
+				$this->author = $this->buf->getString();
+				$this->xuid = $this->buf->getString();
 				break;
 			default:
 				throw new BadPacketException("Unknown book edit type $this->type!");
@@ -87,27 +87,27 @@ class BookEditPacket extends DataPacket implements ServerboundPacket{
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->type);
-		$this->putByte($this->inventorySlot);
+		$this->buf->putByte($this->type);
+		$this->buf->putByte($this->inventorySlot);
 
 		switch($this->type){
 			case self::TYPE_REPLACE_PAGE:
 			case self::TYPE_ADD_PAGE:
-				$this->putByte($this->pageNumber);
-				$this->putString($this->text);
-				$this->putString($this->photoName);
+				$this->buf->putByte($this->pageNumber);
+				$this->buf->putString($this->text);
+				$this->buf->putString($this->photoName);
 				break;
 			case self::TYPE_DELETE_PAGE:
-				$this->putByte($this->pageNumber);
+				$this->buf->putByte($this->pageNumber);
 				break;
 			case self::TYPE_SWAP_PAGES:
-				$this->putByte($this->pageNumber);
-				$this->putByte($this->secondaryPageNumber);
+				$this->buf->putByte($this->pageNumber);
+				$this->buf->putByte($this->secondaryPageNumber);
 				break;
 			case self::TYPE_SIGN_BOOK:
-				$this->putString($this->title);
-				$this->putString($this->author);
-				$this->putString($this->xuid);
+				$this->buf->putString($this->title);
+				$this->buf->putString($this->author);
+				$this->buf->putString($this->xuid);
 				break;
 			default:
 				throw new \InvalidArgumentException("Unknown book edit type $this->type!");

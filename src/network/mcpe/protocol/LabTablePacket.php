@@ -44,15 +44,15 @@ class LabTablePacket extends DataPacket implements ClientboundPacket, Serverboun
 	public $reactionType;
 
 	protected function decodePayload() : void{
-		$this->uselessByte = $this->getByte();
-		$this->getSignedBlockPosition($this->x, $this->y, $this->z);
-		$this->reactionType = $this->getByte();
+		$this->uselessByte = $this->buf->getByte();
+		$this->buf->getSignedBlockPosition($this->x, $this->y, $this->z);
+		$this->reactionType = $this->buf->getByte();
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->uselessByte);
-		$this->putSignedBlockPosition($this->x, $this->y, $this->z);
-		$this->putByte($this->reactionType);
+		$this->buf->putByte($this->uselessByte);
+		$this->buf->putSignedBlockPosition($this->x, $this->y, $this->z);
+		$this->buf->putByte($this->reactionType);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

@@ -40,11 +40,11 @@ class ContainerClosePacket extends DataPacket implements ClientboundPacket, Serv
 	}
 
 	protected function decodePayload() : void{
-		$this->windowId = $this->getByte();
+		$this->windowId = $this->buf->getByte();
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->windowId);
+		$this->buf->putByte($this->windowId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

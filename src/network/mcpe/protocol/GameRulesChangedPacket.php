@@ -37,11 +37,11 @@ class GameRulesChangedPacket extends DataPacket implements ClientboundPacket{
 	public $gameRules = [];
 
 	protected function decodePayload() : void{
-		$this->gameRules = $this->getGameRules();
+		$this->gameRules = $this->buf->getGameRules();
 	}
 
 	protected function encodePayload() : void{
-		$this->putGameRules($this->gameRules);
+		$this->buf->putGameRules($this->gameRules);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

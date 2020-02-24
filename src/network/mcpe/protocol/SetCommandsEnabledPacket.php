@@ -34,11 +34,11 @@ class SetCommandsEnabledPacket extends DataPacket implements ClientboundPacket{
 	public $enabled;
 
 	protected function decodePayload() : void{
-		$this->enabled = $this->getBool();
+		$this->enabled = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putBool($this->enabled);
+		$this->buf->putBool($this->enabled);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

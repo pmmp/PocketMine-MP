@@ -36,13 +36,13 @@ class ResourcePackChunkRequestPacket extends DataPacket implements ServerboundPa
 	public $chunkIndex;
 
 	protected function decodePayload() : void{
-		$this->packId = $this->getString();
-		$this->chunkIndex = $this->getLInt();
+		$this->packId = $this->buf->getString();
+		$this->chunkIndex = $this->buf->getLInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->packId);
-		$this->putLInt($this->chunkIndex);
+		$this->buf->putString($this->packId);
+		$this->buf->putLInt($this->chunkIndex);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

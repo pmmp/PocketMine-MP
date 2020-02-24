@@ -49,7 +49,7 @@ class PlayStatusPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->status = $this->getInt();
+		$this->status = $this->buf->getInt();
 	}
 
 	public function canBeSentBeforeLogin() : bool{
@@ -57,7 +57,7 @@ class PlayStatusPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function encodePayload() : void{
-		$this->putInt($this->status);
+		$this->buf->putInt($this->status);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

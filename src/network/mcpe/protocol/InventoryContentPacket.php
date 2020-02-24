@@ -50,18 +50,18 @@ class InventoryContentPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->windowId = $this->getUnsignedVarInt();
-		$count = $this->getUnsignedVarInt();
+		$this->windowId = $this->buf->getUnsignedVarInt();
+		$count = $this->buf->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
-			$this->items[] = $this->getSlot();
+			$this->items[] = $this->buf->getSlot();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->windowId);
-		$this->putUnsignedVarInt(count($this->items));
+		$this->buf->putUnsignedVarInt($this->windowId);
+		$this->buf->putUnsignedVarInt(count($this->items));
 		foreach($this->items as $item){
-			$this->putSlot($item);
+			$this->buf->putSlot($item);
 		}
 	}
 

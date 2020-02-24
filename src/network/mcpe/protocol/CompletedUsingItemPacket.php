@@ -53,13 +53,13 @@ class CompletedUsingItemPacket extends DataPacket implements ClientboundPacket{
 	public $action;
 
 	public function decodePayload() : void{
-		$this->itemId = $this->getShort();
-		$this->action = $this->getLInt();
+		$this->itemId = $this->buf->getShort();
+		$this->action = $this->buf->getLInt();
 	}
 
 	public function encodePayload() : void{
-		$this->putShort($this->itemId);
-		$this->putLInt($this->action);
+		$this->buf->putShort($this->itemId);
+		$this->buf->putLInt($this->action);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

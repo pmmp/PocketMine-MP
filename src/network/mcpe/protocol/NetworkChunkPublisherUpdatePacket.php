@@ -49,13 +49,13 @@ class NetworkChunkPublisherUpdatePacket extends DataPacket implements Clientboun
 	}
 
 	protected function decodePayload() : void{
-		$this->getSignedBlockPosition($this->x, $this->y, $this->z);
-		$this->radius = $this->getUnsignedVarInt();
+		$this->buf->getSignedBlockPosition($this->x, $this->y, $this->z);
+		$this->radius = $this->buf->getUnsignedVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putSignedBlockPosition($this->x, $this->y, $this->z);
-		$this->putUnsignedVarInt($this->radius);
+		$this->buf->putSignedBlockPosition($this->x, $this->y, $this->z);
+		$this->buf->putUnsignedVarInt($this->radius);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

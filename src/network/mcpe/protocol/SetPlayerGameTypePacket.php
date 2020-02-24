@@ -40,11 +40,11 @@ class SetPlayerGameTypePacket extends DataPacket implements ClientboundPacket, S
 	}
 
 	protected function decodePayload() : void{
-		$this->gamemode = $this->getVarInt();
+		$this->gamemode = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->gamemode);
+		$this->buf->putVarInt($this->gamemode);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

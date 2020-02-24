@@ -50,7 +50,7 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 	public $trData;
 
 	protected function decodePayload() : void{
-		$transactionType = $this->getUnsignedVarInt();
+		$transactionType = $this->buf->getUnsignedVarInt();
 
 		switch($transactionType){
 			case self::TYPE_NORMAL:
@@ -72,12 +72,12 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 				throw new BadPacketException("Unknown transaction type $transactionType");
 		}
 
-		$this->trData->decode($this);
+		$this->trData->decode($this->buf);
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->trData->getTypeId());
-		$this->trData->encode($this);
+		$this->buf->putUnsignedVarInt($this->trData->getTypeId());
+		$this->trData->encode($this->buf);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

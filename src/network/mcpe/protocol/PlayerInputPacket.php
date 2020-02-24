@@ -40,17 +40,17 @@ class PlayerInputPacket extends DataPacket implements ServerboundPacket{
 	public $sneaking;
 
 	protected function decodePayload() : void{
-		$this->motionX = $this->getLFloat();
-		$this->motionY = $this->getLFloat();
-		$this->jumping = $this->getBool();
-		$this->sneaking = $this->getBool();
+		$this->motionX = $this->buf->getLFloat();
+		$this->motionY = $this->buf->getLFloat();
+		$this->jumping = $this->buf->getBool();
+		$this->sneaking = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putLFloat($this->motionX);
-		$this->putLFloat($this->motionY);
-		$this->putBool($this->jumping);
-		$this->putBool($this->sneaking);
+		$this->buf->putLFloat($this->motionX);
+		$this->buf->putLFloat($this->motionY);
+		$this->buf->putBool($this->jumping);
+		$this->buf->putBool($this->sneaking);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

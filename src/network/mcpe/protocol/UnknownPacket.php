@@ -49,7 +49,7 @@ class UnknownPacket extends DataPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->payload = $this->getRemaining();
+		$this->payload = $this->buf->getRemaining();
 	}
 
 	protected function encodeHeader() : void{
@@ -57,7 +57,7 @@ class UnknownPacket extends DataPacket{
 	}
 
 	protected function encodePayload() : void{
-		$this->put($this->payload);
+		$this->buf->put($this->payload);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

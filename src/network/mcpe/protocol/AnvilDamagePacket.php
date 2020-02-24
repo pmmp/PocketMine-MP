@@ -63,13 +63,13 @@ class AnvilDamagePacket extends DataPacket implements ServerboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->damageAmount = $this->getByte();
-		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->damageAmount = $this->buf->getByte();
+		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->damageAmount);
-		$this->putBlockPosition($this->x, $this->y, $this->z);
+		$this->buf->putByte($this->damageAmount);
+		$this->buf->putBlockPosition($this->x, $this->y, $this->z);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

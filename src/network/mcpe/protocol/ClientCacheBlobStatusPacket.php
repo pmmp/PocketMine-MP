@@ -66,24 +66,24 @@ class ClientCacheBlobStatusPacket extends DataPacket implements ServerboundPacke
 	}
 
 	protected function decodePayload() : void{
-		$hitCount = $this->getUnsignedVarInt();
-		$missCount = $this->getUnsignedVarInt();
+		$hitCount = $this->buf->getUnsignedVarInt();
+		$missCount = $this->buf->getUnsignedVarInt();
 		for($i = 0; $i < $hitCount; ++$i){
-			$this->hitHashes[] = $this->getLLong();
+			$this->hitHashes[] = $this->buf->getLLong();
 		}
 		for($i = 0; $i < $missCount; ++$i){
-			$this->missHashes[] = $this->getLLong();
+			$this->missHashes[] = $this->buf->getLLong();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt(count($this->hitHashes));
-		$this->putUnsignedVarInt(count($this->missHashes));
+		$this->buf->putUnsignedVarInt(count($this->hitHashes));
+		$this->buf->putUnsignedVarInt(count($this->missHashes));
 		foreach($this->hitHashes as $hash){
-			$this->putLLong($hash);
+			$this->buf->putLLong($hash);
 		}
 		foreach($this->missHashes as $hash){
-			$this->putLLong($hash);
+			$this->buf->putLLong($hash);
 		}
 	}
 

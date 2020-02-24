@@ -47,11 +47,11 @@ class ServerToClientHandshakePacket extends DataPacket implements ClientboundPac
 	}
 
 	protected function decodePayload() : void{
-		$this->jwt = $this->getString();
+		$this->jwt = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->jwt);
+		$this->buf->putString($this->jwt);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

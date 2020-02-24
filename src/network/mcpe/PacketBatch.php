@@ -32,7 +32,7 @@ class PacketBatch extends NetworkBinaryStream{
 
 	public function putPacket(Packet $packet) : void{
 		$packet->encode();
-		$this->putString($packet->getBuffer());
+		$this->putString($packet->getBinaryStream()->getBuffer());
 	}
 
 	/**

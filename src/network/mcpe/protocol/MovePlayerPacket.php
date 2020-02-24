@@ -58,32 +58,32 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 	public $teleportItem = 0;
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->position = $this->getVector3();
-		$this->pitch = $this->getLFloat();
-		$this->yaw = $this->getLFloat();
-		$this->headYaw = $this->getLFloat();
-		$this->mode = $this->getByte();
-		$this->onGround = $this->getBool();
-		$this->ridingEid = $this->getEntityRuntimeId();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->position = $this->buf->getVector3();
+		$this->pitch = $this->buf->getLFloat();
+		$this->yaw = $this->buf->getLFloat();
+		$this->headYaw = $this->buf->getLFloat();
+		$this->mode = $this->buf->getByte();
+		$this->onGround = $this->buf->getBool();
+		$this->ridingEid = $this->buf->getEntityRuntimeId();
 		if($this->mode === MovePlayerPacket::MODE_TELEPORT){
-			$this->teleportCause = $this->getLInt();
-			$this->teleportItem = $this->getLInt();
+			$this->teleportCause = $this->buf->getLInt();
+			$this->teleportItem = $this->buf->getLInt();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVector3($this->position);
-		$this->putLFloat($this->pitch);
-		$this->putLFloat($this->yaw);
-		$this->putLFloat($this->headYaw); //TODO
-		$this->putByte($this->mode);
-		$this->putBool($this->onGround);
-		$this->putEntityRuntimeId($this->ridingEid);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putVector3($this->position);
+		$this->buf->putLFloat($this->pitch);
+		$this->buf->putLFloat($this->yaw);
+		$this->buf->putLFloat($this->headYaw); //TODO
+		$this->buf->putByte($this->mode);
+		$this->buf->putBool($this->onGround);
+		$this->buf->putEntityRuntimeId($this->ridingEid);
 		if($this->mode === MovePlayerPacket::MODE_TELEPORT){
-			$this->putLInt($this->teleportCause);
-			$this->putLInt($this->teleportItem);
+			$this->buf->putLInt($this->teleportCause);
+			$this->buf->putLInt($this->teleportItem);
 		}
 	}
 

@@ -36,13 +36,13 @@ class ScriptCustomEventPacket extends DataPacket{ //TODO: this doesn't have hand
 	public $eventData;
 
 	protected function decodePayload() : void{
-		$this->eventName = $this->getString();
-		$this->eventData = $this->getString();
+		$this->eventName = $this->buf->getString();
+		$this->eventData = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->eventName);
-		$this->putString($this->eventData);
+		$this->buf->putString($this->eventName);
+		$this->buf->putString($this->eventData);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

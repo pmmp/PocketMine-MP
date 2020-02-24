@@ -44,20 +44,20 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 	public $pitch;
 
 	protected function decodePayload() : void{
-		$this->soundName = $this->getString();
-		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->soundName = $this->buf->getString();
+		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
 		$this->x /= 8;
 		$this->y /= 8;
 		$this->z /= 8;
-		$this->volume = $this->getLFloat();
-		$this->pitch = $this->getLFloat();
+		$this->volume = $this->buf->getLFloat();
+		$this->pitch = $this->buf->getLFloat();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->soundName);
-		$this->putBlockPosition((int) ($this->x * 8), (int) ($this->y * 8), (int) ($this->z * 8));
-		$this->putLFloat($this->volume);
-		$this->putLFloat($this->pitch);
+		$this->buf->putString($this->soundName);
+		$this->buf->putBlockPosition((int) ($this->x * 8), (int) ($this->y * 8), (int) ($this->z * 8));
+		$this->buf->putLFloat($this->volume);
+		$this->buf->putLFloat($this->pitch);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

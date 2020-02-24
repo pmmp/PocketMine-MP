@@ -48,11 +48,11 @@ class MultiplayerSettingsPacket extends DataPacket implements ServerboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->action = $this->getVarInt();
+		$this->action = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->action);
+		$this->buf->putVarInt($this->action);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

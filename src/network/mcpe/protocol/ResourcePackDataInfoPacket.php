@@ -57,23 +57,23 @@ class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket
 	}
 
 	protected function decodePayload() : void{
-		$this->packId = $this->getString();
-		$this->maxChunkSize = $this->getLInt();
-		$this->chunkCount = $this->getLInt();
-		$this->compressedPackSize = $this->getLLong();
-		$this->sha256 = $this->getString();
-		$this->isPremium = $this->getBool();
-		$this->packType = $this->getByte();
+		$this->packId = $this->buf->getString();
+		$this->maxChunkSize = $this->buf->getLInt();
+		$this->chunkCount = $this->buf->getLInt();
+		$this->compressedPackSize = $this->buf->getLLong();
+		$this->sha256 = $this->buf->getString();
+		$this->isPremium = $this->buf->getBool();
+		$this->packType = $this->buf->getByte();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->packId);
-		$this->putLInt($this->maxChunkSize);
-		$this->putLInt($this->chunkCount);
-		$this->putLLong($this->compressedPackSize);
-		$this->putString($this->sha256);
-		$this->putBool($this->isPremium);
-		$this->putByte($this->packType);
+		$this->buf->putString($this->packId);
+		$this->buf->putLInt($this->maxChunkSize);
+		$this->buf->putLInt($this->chunkCount);
+		$this->buf->putLLong($this->compressedPackSize);
+		$this->buf->putString($this->sha256);
+		$this->buf->putBool($this->isPremium);
+		$this->buf->putByte($this->packType);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

@@ -38,15 +38,15 @@ class GuiDataPickItemPacket extends DataPacket implements ClientboundPacket{
 	public $hotbarSlot;
 
 	protected function decodePayload() : void{
-		$this->itemDescription = $this->getString();
-		$this->itemEffects = $this->getString();
-		$this->hotbarSlot = $this->getLInt();
+		$this->itemDescription = $this->buf->getString();
+		$this->itemEffects = $this->buf->getString();
+		$this->hotbarSlot = $this->buf->getLInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->itemDescription);
-		$this->putString($this->itemEffects);
-		$this->putLInt($this->hotbarSlot);
+		$this->buf->putString($this->itemDescription);
+		$this->buf->putString($this->itemEffects);
+		$this->buf->putLInt($this->hotbarSlot);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

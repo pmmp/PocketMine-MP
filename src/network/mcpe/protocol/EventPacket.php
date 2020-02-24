@@ -57,17 +57,17 @@ class EventPacket extends DataPacket implements ClientboundPacket{
 	public $type;
 
 	protected function decodePayload() : void{
-		$this->playerRuntimeId = $this->getEntityRuntimeId();
-		$this->eventData = $this->getVarInt();
-		$this->type = $this->getByte();
+		$this->playerRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->eventData = $this->buf->getVarInt();
+		$this->type = $this->buf->getByte();
 
 		//TODO: nice confusing mess
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->playerRuntimeId);
-		$this->putVarInt($this->eventData);
-		$this->putByte($this->type);
+		$this->buf->putEntityRuntimeId($this->playerRuntimeId);
+		$this->buf->putVarInt($this->eventData);
+		$this->buf->putByte($this->type);
 
 		//TODO: also nice confusing mess
 	}

@@ -58,18 +58,18 @@ class AnimatePacket extends DataPacket implements ClientboundPacket, Serverbound
 	}
 
 	protected function decodePayload() : void{
-		$this->action = $this->getVarInt();
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->action = $this->buf->getVarInt();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
 		if(($this->action & 0x80) !== 0){
-			$this->float = $this->getLFloat();
+			$this->float = $this->buf->getLFloat();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->action);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putVarInt($this->action);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
 		if(($this->action & 0x80) !== 0){
-			$this->putLFloat($this->float);
+			$this->buf->putLFloat($this->float);
 		}
 	}
 

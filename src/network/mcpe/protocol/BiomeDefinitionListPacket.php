@@ -38,11 +38,11 @@ class BiomeDefinitionListPacket extends DataPacket implements ClientboundPacket{
 	public $namedtag;
 
 	protected function decodePayload() : void{
-		$this->namedtag = $this->getRemaining();
+		$this->namedtag = $this->buf->getRemaining();
 	}
 
 	protected function encodePayload() : void{
-		$this->put(
+		$this->buf->put(
 			$this->namedtag ??
 			self::$DEFAULT_NBT_CACHE ??
 			(self::$DEFAULT_NBT_CACHE = file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/biome_definitions.nbt'))

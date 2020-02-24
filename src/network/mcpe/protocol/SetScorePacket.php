@@ -42,21 +42,21 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 	public $entries = [];
 
 	protected function decodePayload() : void{
-		$this->type = $this->getByte();
-		for($i = 0, $i2 = $this->getUnsignedVarInt(); $i < $i2; ++$i){
+		$this->type = $this->buf->getByte();
+		for($i = 0, $i2 = $this->buf->getUnsignedVarInt(); $i < $i2; ++$i){
 			$entry = new ScorePacketEntry();
-			$entry->scoreboardId = $this->getVarLong();
-			$entry->objectiveName = $this->getString();
-			$entry->score = $this->getLInt();
+			$entry->scoreboardId = $this->buf->getVarLong();
+			$entry->objectiveName = $this->buf->getString();
+			$entry->score = $this->buf->getLInt();
 			if($this->type !== self::TYPE_REMOVE){
-				$entry->type = $this->getByte();
+				$entry->type = $this->buf->getByte();
 				switch($entry->type){
 					case ScorePacketEntry::TYPE_PLAYER:
 					case ScorePacketEntry::TYPE_ENTITY:
-						$entry->entityUniqueId = $this->getEntityUniqueId();
+						$entry->entityUniqueId = $this->buf->getEntityUniqueId();
 						break;
 					case ScorePacketEntry::TYPE_FAKE_PLAYER:
-						$entry->customName = $this->getString();
+						$entry->customName = $this->buf->getString();
 						break;
 					default:
 						throw new BadPacketException("Unknown entry type $entry->type");
@@ -67,21 +67,21 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->type);
-		$this->putUnsignedVarInt(count($this->entries));
+		$this->buf->putByte($this->type);
+		$this->buf->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
-			$this->putVarLong($entry->scoreboardId);
-			$this->putString($entry->objectiveName);
-			$this->putLInt($entry->score);
+			$this->buf->putVarLong($entry->scoreboardId);
+			$this->buf->putString($entry->objectiveName);
+			$this->buf->putLInt($entry->score);
 			if($this->type !== self::TYPE_REMOVE){
-				$this->putByte($entry->type);
+				$this->buf->putByte($entry->type);
 				switch($entry->type){
 					case ScorePacketEntry::TYPE_PLAYER:
 					case ScorePacketEntry::TYPE_ENTITY:
-						$this->putEntityUniqueId($entry->entityUniqueId);
+						$this->buf->putEntityUniqueId($entry->entityUniqueId);
 						break;
 					case ScorePacketEntry::TYPE_FAKE_PLAYER:
-						$this->putString($entry->customName);
+						$this->buf->putString($entry->customName);
 						break;
 					default:
 						throw new \InvalidArgumentException("Unknown entry type $entry->type");

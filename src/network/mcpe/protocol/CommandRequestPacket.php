@@ -39,15 +39,15 @@ class CommandRequestPacket extends DataPacket implements ServerboundPacket{
 	public $isInternal;
 
 	protected function decodePayload() : void{
-		$this->command = $this->getString();
-		$this->originData = $this->getCommandOriginData();
-		$this->isInternal = $this->getBool();
+		$this->command = $this->buf->getString();
+		$this->originData = $this->buf->getCommandOriginData();
+		$this->isInternal = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->command);
-		$this->putCommandOriginData($this->originData);
-		$this->putBool($this->isInternal);
+		$this->buf->putString($this->command);
+		$this->buf->putCommandOriginData($this->originData);
+		$this->buf->putBool($this->isInternal);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

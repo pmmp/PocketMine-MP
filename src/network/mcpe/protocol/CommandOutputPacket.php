@@ -46,16 +46,16 @@ class CommandOutputPacket extends DataPacket implements ClientboundPacket{
 	public $unknownString;
 
 	protected function decodePayload() : void{
-		$this->originData = $this->getCommandOriginData();
-		$this->outputType = $this->getByte();
-		$this->successCount = $this->getUnsignedVarInt();
+		$this->originData = $this->buf->getCommandOriginData();
+		$this->outputType = $this->buf->getByte();
+		$this->successCount = $this->buf->getUnsignedVarInt();
 
-		for($i = 0, $size = $this->getUnsignedVarInt(); $i < $size; ++$i){
+		for($i = 0, $size = $this->buf->getUnsignedVarInt(); $i < $size; ++$i){
 			$this->messages[] = $this->getCommandMessage();
 		}
 
 		if($this->outputType === 4){
-			$this->unknownString = $this->getString();
+			$this->unknownString = $this->buf->getString();
 		}
 	}
 
@@ -65,38 +65,38 @@ class CommandOutputPacket extends DataPacket implements ClientboundPacket{
 	protected function getCommandMessage() : CommandOutputMessage{
 		$message = new CommandOutputMessage();
 
-		$message->isInternal = $this->getBool();
-		$message->messageId = $this->getString();
+		$message->isInternal = $this->buf->getBool();
+		$message->messageId = $this->buf->getString();
 
-		for($i = 0, $size = $this->getUnsignedVarInt(); $i < $size; ++$i){
-			$message->parameters[] = $this->getString();
+		for($i = 0, $size = $this->buf->getUnsignedVarInt(); $i < $size; ++$i){
+			$message->parameters[] = $this->buf->getString();
 		}
 
 		return $message;
 	}
 
 	protected function encodePayload() : void{
-		$this->putCommandOriginData($this->originData);
-		$this->putByte($this->outputType);
-		$this->putUnsignedVarInt($this->successCount);
+		$this->buf->putCommandOriginData($this->originData);
+		$this->buf->putByte($this->outputType);
+		$this->buf->putUnsignedVarInt($this->successCount);
 
-		$this->putUnsignedVarInt(count($this->messages));
+		$this->buf->putUnsignedVarInt(count($this->messages));
 		foreach($this->messages as $message){
 			$this->putCommandMessage($message);
 		}
 
 		if($this->outputType === 4){
-			$this->putString($this->unknownString);
+			$this->buf->putString($this->unknownString);
 		}
 	}
 
 	protected function putCommandMessage(CommandOutputMessage $message) : void{
-		$this->putBool($message->isInternal);
-		$this->putString($message->messageId);
+		$this->buf->putBool($message->isInternal);
+		$this->buf->putString($message->messageId);
 
-		$this->putUnsignedVarInt(count($message->parameters));
+		$this->buf->putUnsignedVarInt(count($message->parameters));
 		foreach($message->parameters as $parameter){
-			$this->putString($parameter);
+			$this->buf->putString($parameter);
 		}
 	}
 

@@ -53,16 +53,16 @@ class DisconnectPacket extends DataPacket implements ClientboundPacket, Serverbo
 	}
 
 	protected function decodePayload() : void{
-		$this->hideDisconnectionScreen = $this->getBool();
+		$this->hideDisconnectionScreen = $this->buf->getBool();
 		if(!$this->hideDisconnectionScreen){
-			$this->message = $this->getString();
+			$this->message = $this->buf->getString();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putBool($this->hideDisconnectionScreen);
+		$this->buf->putBool($this->hideDisconnectionScreen);
 		if(!$this->hideDisconnectionScreen){
-			$this->putString($this->message);
+			$this->buf->putString($this->message);
 		}
 	}
 

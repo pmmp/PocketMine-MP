@@ -61,23 +61,23 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->type = $this->getByte();
-		$count = $this->getUnsignedVarInt();
+		$this->type = $this->buf->getByte();
+		$count = $this->buf->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
 			$entry = new PlayerListEntry();
 
 			if($this->type === self::TYPE_ADD){
-				$entry->uuid = $this->getUUID();
-				$entry->entityUniqueId = $this->getEntityUniqueId();
-				$entry->username = $this->getString();
-				$entry->xboxUserId = $this->getString();
-				$entry->platformChatId = $this->getString();
-				$entry->buildPlatform = $this->getLInt();
-				$entry->skinData = $this->getSkin();
-				$entry->isTeacher = $this->getBool();
-				$entry->isHost = $this->getBool();
+				$entry->uuid = $this->buf->getUUID();
+				$entry->entityUniqueId = $this->buf->getEntityUniqueId();
+				$entry->username = $this->buf->getString();
+				$entry->xboxUserId = $this->buf->getString();
+				$entry->platformChatId = $this->buf->getString();
+				$entry->buildPlatform = $this->buf->getLInt();
+				$entry->skinData = $this->buf->getSkin();
+				$entry->isTeacher = $this->buf->getBool();
+				$entry->isHost = $this->buf->getBool();
 			}else{
-				$entry->uuid = $this->getUUID();
+				$entry->uuid = $this->buf->getUUID();
 			}
 
 			$this->entries[$i] = $entry;
@@ -85,21 +85,21 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->type);
-		$this->putUnsignedVarInt(count($this->entries));
+		$this->buf->putByte($this->type);
+		$this->buf->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
 			if($this->type === self::TYPE_ADD){
-				$this->putUUID($entry->uuid);
-				$this->putEntityUniqueId($entry->entityUniqueId);
-				$this->putString($entry->username);
-				$this->putString($entry->xboxUserId);
-				$this->putString($entry->platformChatId);
-				$this->putLInt($entry->buildPlatform);
-				$this->putSkin($entry->skinData);
-				$this->putBool($entry->isTeacher);
-				$this->putBool($entry->isHost);
+				$this->buf->putUUID($entry->uuid);
+				$this->buf->putEntityUniqueId($entry->entityUniqueId);
+				$this->buf->putString($entry->username);
+				$this->buf->putString($entry->xboxUserId);
+				$this->buf->putString($entry->platformChatId);
+				$this->buf->putLInt($entry->buildPlatform);
+				$this->buf->putSkin($entry->skinData);
+				$this->buf->putBool($entry->isTeacher);
+				$this->buf->putBool($entry->isHost);
 			}else{
-				$this->putUUID($entry->uuid);
+				$this->buf->putUUID($entry->uuid);
 			}
 		}
 	}

@@ -45,34 +45,34 @@ class CraftingEventPacket extends DataPacket implements ServerboundPacket{
 	public $output = [];
 
 	protected function decodePayload() : void{
-		$this->windowId = $this->getByte();
-		$this->type = $this->getVarInt();
-		$this->id = $this->getUUID();
+		$this->windowId = $this->buf->getByte();
+		$this->type = $this->buf->getVarInt();
+		$this->id = $this->buf->getUUID();
 
-		$size = $this->getUnsignedVarInt();
+		$size = $this->buf->getUnsignedVarInt();
 		for($i = 0; $i < $size and $i < 128; ++$i){
-			$this->input[] = $this->getSlot();
+			$this->input[] = $this->buf->getSlot();
 		}
 
-		$size = $this->getUnsignedVarInt();
+		$size = $this->buf->getUnsignedVarInt();
 		for($i = 0; $i < $size and $i < 128; ++$i){
-			$this->output[] = $this->getSlot();
+			$this->output[] = $this->buf->getSlot();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->windowId);
-		$this->putVarInt($this->type);
-		$this->putUUID($this->id);
+		$this->buf->putByte($this->windowId);
+		$this->buf->putVarInt($this->type);
+		$this->buf->putUUID($this->id);
 
-		$this->putUnsignedVarInt(count($this->input));
+		$this->buf->putUnsignedVarInt(count($this->input));
 		foreach($this->input as $item){
-			$this->putSlot($item);
+			$this->buf->putSlot($item);
 		}
 
-		$this->putUnsignedVarInt(count($this->output));
+		$this->buf->putUnsignedVarInt(count($this->output));
 		foreach($this->output as $item){
-			$this->putSlot($item);
+			$this->buf->putSlot($item);
 		}
 	}
 

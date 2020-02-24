@@ -51,15 +51,15 @@ class RespawnPacket extends DataPacket implements ClientboundPacket, Serverbound
 	}
 
 	protected function decodePayload() : void{
-		$this->position = $this->getVector3();
-		$this->respawnState = $this->getByte();
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->position = $this->buf->getVector3();
+		$this->respawnState = $this->buf->getByte();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVector3($this->position);
-		$this->putByte($this->respawnState);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putVector3($this->position);
+		$this->buf->putByte($this->respawnState);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

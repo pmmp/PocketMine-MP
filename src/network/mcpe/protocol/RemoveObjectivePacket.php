@@ -34,11 +34,11 @@ class RemoveObjectivePacket extends DataPacket implements ClientboundPacket{
 	public $objectiveName;
 
 	protected function decodePayload() : void{
-		$this->objectiveName = $this->getString();
+		$this->objectiveName = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->objectiveName);
+		$this->buf->putString($this->objectiveName);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

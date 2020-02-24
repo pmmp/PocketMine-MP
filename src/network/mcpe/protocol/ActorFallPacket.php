@@ -38,15 +38,15 @@ class ActorFallPacket extends DataPacket implements ServerboundPacket{
 	public $isInVoid;
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->fallDistance = $this->getLFloat();
-		$this->isInVoid = $this->getBool();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->fallDistance = $this->buf->getLFloat();
+		$this->isInVoid = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putLFloat($this->fallDistance);
-		$this->putBool($this->isInVoid);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putLFloat($this->fallDistance);
+		$this->buf->putBool($this->isInVoid);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

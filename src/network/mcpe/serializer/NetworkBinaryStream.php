@@ -595,7 +595,7 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * @throws BinaryDataException
 	 */
-	protected function getEntityLink() : EntityLink{
+	public function getEntityLink() : EntityLink{
 		$link = new EntityLink();
 
 		$link->fromEntityUniqueId = $this->getEntityUniqueId();
@@ -606,7 +606,7 @@ class NetworkBinaryStream extends BinaryStream{
 		return $link;
 	}
 
-	protected function putEntityLink(EntityLink $link) : void{
+	public function putEntityLink(EntityLink $link) : void{
 		$this->putEntityUniqueId($link->fromEntityUniqueId);
 		$this->putEntityUniqueId($link->toEntityUniqueId);
 		$this->putByte($link->type);
@@ -616,7 +616,7 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * @throws BinaryDataException
 	 */
-	protected function getCommandOriginData() : CommandOriginData{
+	public function getCommandOriginData() : CommandOriginData{
 		$result = new CommandOriginData();
 
 		$result->type = $this->getUnsignedVarInt();
@@ -630,7 +630,7 @@ class NetworkBinaryStream extends BinaryStream{
 		return $result;
 	}
 
-	protected function putCommandOriginData(CommandOriginData $data) : void{
+	public function putCommandOriginData(CommandOriginData $data) : void{
 		$this->putUnsignedVarInt($data->type);
 		$this->putUUID($data->uuid);
 		$this->putString($data->requestId);
@@ -640,7 +640,7 @@ class NetworkBinaryStream extends BinaryStream{
 		}
 	}
 
-	protected function getStructureSettings() : StructureSettings{
+	public function getStructureSettings() : StructureSettings{
 		$result = new StructureSettings();
 
 		$result->paletteName = $this->getString();
@@ -660,7 +660,7 @@ class NetworkBinaryStream extends BinaryStream{
 		return $result;
 	}
 
-	protected function putStructureSettings(StructureSettings $structureSettings) : void{
+	public function putStructureSettings(StructureSettings $structureSettings) : void{
 		$this->putString($structureSettings->paletteName);
 
 		$this->putBool($structureSettings->ignoreEntities);

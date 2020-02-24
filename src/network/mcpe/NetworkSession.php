@@ -303,7 +303,7 @@ class NetworkSession{
 			try{
 				$this->handleDataPacket($pk);
 			}catch(BadPacketException $e){
-				$this->logger->debug($pk->getName() . ": " . base64_encode($pk->getBuffer()));
+				$this->logger->debug($pk->getName() . ": " . base64_encode($pk->getBinaryStream()->getBuffer()));
 				throw new BadPacketException("Error processing " . $pk->getName() . ": " . $e->getMessage(), 0, $e);
 			}
 		}
@@ -315,7 +315,7 @@ class NetworkSession{
 	public function handleDataPacket(Packet $packet) : void{
 		if(!($packet instanceof ServerboundPacket)){
 			if($packet instanceof GarbageServerboundPacket){
-				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($packet->getBuffer()));
+				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($packet->getBinaryStream()->getBuffer()));
 				return;
 			}
 			throw new BadPacketException("Unexpected non-serverbound packet");
@@ -326,15 +326,16 @@ class NetworkSession{
 
 		try{
 			$packet->decode();
-			if(!$packet->feof()){
-				$remains = substr($packet->getBuffer(), $packet->getOffset());
+			$stream = $packet->getBinaryStream();
+			if(!$stream->feof()){
+				$remains = substr($stream->getBuffer(), $stream->getOffset());
 				$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
 			}
 
 			$ev = new DataPacketReceiveEvent($this, $packet);
 			$ev->call();
 			if(!$ev->isCancelled() and !$packet->handle($this->handler)){
-				$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($packet->getBuffer()));
+				$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
 			}
 		}finally{
 			$timings->stopTiming();

@@ -36,13 +36,13 @@ class NetworkStackLatencyPacket extends DataPacket implements ClientboundPacket,
 	public $needResponse;
 
 	protected function decodePayload() : void{
-		$this->timestamp = $this->getLLong();
-		$this->needResponse = $this->getBool();
+		$this->timestamp = $this->buf->getLLong();
+		$this->needResponse = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putLLong($this->timestamp);
-		$this->putBool($this->needResponse);
+		$this->buf->putLLong($this->timestamp);
+		$this->buf->putBool($this->needResponse);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

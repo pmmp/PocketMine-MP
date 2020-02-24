@@ -34,11 +34,11 @@ class OnScreenTextureAnimationPacket extends DataPacket implements ClientboundPa
 	public $effectId;
 
 	protected function decodePayload() : void{
-		$this->effectId = $this->getLInt(); //unsigned
+		$this->effectId = $this->buf->getLInt(); //unsigned
 	}
 
 	protected function encodePayload() : void{
-		$this->putLInt($this->effectId);
+		$this->buf->putLInt($this->effectId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

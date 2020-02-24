@@ -43,19 +43,19 @@ class AddPaintingPacket extends DataPacket implements ClientboundPacket{
 	public $title;
 
 	protected function decodePayload() : void{
-		$this->entityUniqueId = $this->getEntityUniqueId();
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->position = $this->getVector3();
-		$this->direction = $this->getVarInt();
-		$this->title = $this->getString();
+		$this->entityUniqueId = $this->buf->getEntityUniqueId();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->position = $this->buf->getVector3();
+		$this->direction = $this->buf->getVarInt();
+		$this->title = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVector3($this->position);
-		$this->putVarInt($this->direction);
-		$this->putString($this->title);
+		$this->buf->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putVector3($this->position);
+		$this->buf->putVarInt($this->direction);
+		$this->buf->putString($this->title);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

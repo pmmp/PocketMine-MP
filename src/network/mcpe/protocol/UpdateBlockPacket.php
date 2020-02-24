@@ -59,17 +59,17 @@ class UpdateBlockPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->blockRuntimeId = $this->getUnsignedVarInt();
-		$this->flags = $this->getUnsignedVarInt();
-		$this->dataLayerId = $this->getUnsignedVarInt();
+		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
+		$this->blockRuntimeId = $this->buf->getUnsignedVarInt();
+		$this->flags = $this->buf->getUnsignedVarInt();
+		$this->dataLayerId = $this->buf->getUnsignedVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putUnsignedVarInt($this->blockRuntimeId);
-		$this->putUnsignedVarInt($this->flags);
-		$this->putUnsignedVarInt($this->dataLayerId);
+		$this->buf->putBlockPosition($this->x, $this->y, $this->z);
+		$this->buf->putUnsignedVarInt($this->blockRuntimeId);
+		$this->buf->putUnsignedVarInt($this->flags);
+		$this->buf->putUnsignedVarInt($this->dataLayerId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

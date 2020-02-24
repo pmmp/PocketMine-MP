@@ -47,13 +47,13 @@ class BlockActorDataPacket extends DataPacket implements ClientboundPacket, Serv
 	}
 
 	protected function decodePayload() : void{
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->namedtag = $this->getRemaining();
+		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
+		$this->namedtag = $this->buf->getRemaining();
 	}
 
 	protected function encodePayload() : void{
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->put($this->namedtag);
+		$this->buf->putBlockPosition($this->x, $this->y, $this->z);
+		$this->buf->put($this->namedtag);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

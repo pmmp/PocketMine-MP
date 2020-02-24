@@ -48,25 +48,25 @@ class InteractPacket extends DataPacket implements ServerboundPacket{
 	public $z;
 
 	protected function decodePayload() : void{
-		$this->action = $this->getByte();
-		$this->target = $this->getEntityRuntimeId();
+		$this->action = $this->buf->getByte();
+		$this->target = $this->buf->getEntityRuntimeId();
 
 		if($this->action === self::ACTION_MOUSEOVER){
 			//TODO: should this be a vector3?
-			$this->x = $this->getLFloat();
-			$this->y = $this->getLFloat();
-			$this->z = $this->getLFloat();
+			$this->x = $this->buf->getLFloat();
+			$this->y = $this->buf->getLFloat();
+			$this->z = $this->buf->getLFloat();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->action);
-		$this->putEntityRuntimeId($this->target);
+		$this->buf->putByte($this->action);
+		$this->buf->putEntityRuntimeId($this->target);
 
 		if($this->action === self::ACTION_MOUSEOVER){
-			$this->putLFloat($this->x);
-			$this->putLFloat($this->y);
-			$this->putLFloat($this->z);
+			$this->buf->putLFloat($this->x);
+			$this->buf->putLFloat($this->y);
+			$this->buf->putLFloat($this->z);
 		}
 	}
 

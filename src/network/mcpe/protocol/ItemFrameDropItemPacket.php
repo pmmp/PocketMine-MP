@@ -39,11 +39,11 @@ class ItemFrameDropItemPacket extends DataPacket implements ServerboundPacket{
 	public $z;
 
 	protected function decodePayload() : void{
-		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
 	}
 
 	protected function encodePayload() : void{
-		$this->putBlockPosition($this->x, $this->y, $this->z);
+		$this->buf->putBlockPosition($this->x, $this->y, $this->z);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

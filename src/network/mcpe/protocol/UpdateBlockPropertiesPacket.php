@@ -43,11 +43,11 @@ class UpdateBlockPropertiesPacket extends DataPacket implements ClientboundPacke
 	}
 
 	protected function decodePayload() : void{
-		$this->nbt = $this->getRemaining();
+		$this->nbt = $this->buf->getRemaining();
 	}
 
 	protected function encodePayload() : void{
-		$this->put($this->nbt);
+		$this->buf->put($this->nbt);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

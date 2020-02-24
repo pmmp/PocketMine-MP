@@ -50,13 +50,13 @@ class UpdateAttributesPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->entries = $this->getAttributeList();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->entries = $this->buf->getAttributeList();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putAttributeList(...array_values($this->entries));
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putAttributeList(...array_values($this->entries));
 	}
 
 	public function handle(PacketHandler $handler) : bool{

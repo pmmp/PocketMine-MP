@@ -35,16 +35,16 @@ class PurchaseReceiptPacket extends DataPacket implements ServerboundPacket{
 	public $entries = [];
 
 	protected function decodePayload() : void{
-		$count = $this->getUnsignedVarInt();
+		$count = $this->buf->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
-			$this->entries[] = $this->getString();
+			$this->entries[] = $this->buf->getString();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt(count($this->entries));
+		$this->buf->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
-			$this->putString($entry);
+			$this->buf->putString($entry);
 		}
 	}
 

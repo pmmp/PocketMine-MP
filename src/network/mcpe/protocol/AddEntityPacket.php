@@ -44,11 +44,11 @@ class AddEntityPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->uvarint1 = $this->getUnsignedVarInt();
+		$this->uvarint1 = $this->buf->getUnsignedVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->uvarint1);
+		$this->buf->putUnsignedVarInt($this->uvarint1);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

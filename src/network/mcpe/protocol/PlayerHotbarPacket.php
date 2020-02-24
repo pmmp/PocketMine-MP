@@ -47,15 +47,15 @@ class PlayerHotbarPacket extends DataPacket implements ClientboundPacket, Server
 	}
 
 	protected function decodePayload() : void{
-		$this->selectedHotbarSlot = $this->getUnsignedVarInt();
-		$this->windowId = $this->getByte();
-		$this->selectHotbarSlot = $this->getBool();
+		$this->selectedHotbarSlot = $this->buf->getUnsignedVarInt();
+		$this->windowId = $this->buf->getByte();
+		$this->selectHotbarSlot = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->selectedHotbarSlot);
-		$this->putByte($this->windowId);
-		$this->putBool($this->selectHotbarSlot);
+		$this->buf->putUnsignedVarInt($this->selectedHotbarSlot);
+		$this->buf->putByte($this->windowId);
+		$this->buf->putBool($this->selectHotbarSlot);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

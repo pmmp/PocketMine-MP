@@ -55,29 +55,29 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	public $offers;
 
 	protected function decodePayload() : void{
-		$this->windowId = $this->getByte();
-		$this->windowType = $this->getByte();
-		$this->thisIsAlwaysZero = $this->getVarInt();
-		$this->tradeTier = $this->getVarInt();
-		$this->traderEid = $this->getEntityUniqueId();
-		$this->playerEid = $this->getEntityUniqueId();
-		$this->displayName = $this->getString();
-		$this->isWilling = $this->getBool();
-		$this->isV2Trading = $this->getBool();
-		$this->offers = $this->getRemaining();
+		$this->windowId = $this->buf->getByte();
+		$this->windowType = $this->buf->getByte();
+		$this->thisIsAlwaysZero = $this->buf->getVarInt();
+		$this->tradeTier = $this->buf->getVarInt();
+		$this->traderEid = $this->buf->getEntityUniqueId();
+		$this->playerEid = $this->buf->getEntityUniqueId();
+		$this->displayName = $this->buf->getString();
+		$this->isWilling = $this->buf->getBool();
+		$this->isV2Trading = $this->buf->getBool();
+		$this->offers = $this->buf->getRemaining();
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->windowId);
-		$this->putByte($this->windowType);
-		$this->putVarInt($this->thisIsAlwaysZero);
-		$this->putVarInt($this->tradeTier);
-		$this->putEntityUniqueId($this->traderEid);
-		$this->putEntityUniqueId($this->playerEid);
-		$this->putString($this->displayName);
-		$this->putBool($this->isWilling);
-		$this->putBool($this->isV2Trading);
-		$this->put($this->offers);
+		$this->buf->putByte($this->windowId);
+		$this->buf->putByte($this->windowType);
+		$this->buf->putVarInt($this->thisIsAlwaysZero);
+		$this->buf->putVarInt($this->tradeTier);
+		$this->buf->putEntityUniqueId($this->traderEid);
+		$this->buf->putEntityUniqueId($this->playerEid);
+		$this->buf->putString($this->displayName);
+		$this->buf->putBool($this->isWilling);
+		$this->buf->putBool($this->isV2Trading);
+		$this->buf->put($this->offers);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

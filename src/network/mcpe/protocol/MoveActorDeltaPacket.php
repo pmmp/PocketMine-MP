@@ -60,7 +60,7 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 	 */
 	private function maybeReadCoord(int $flag) : int{
 		if(($this->flags & $flag) !== 0){
-			return $this->getVarInt();
+			return $this->buf->getVarInt();
 		}
 		return 0;
 	}
@@ -70,14 +70,14 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 	 */
 	private function maybeReadRotation(int $flag) : float{
 		if(($this->flags & $flag) !== 0){
-			return $this->getByteRotation();
+			return $this->buf->getByteRotation();
 		}
 		return 0.0;
 	}
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->flags = $this->getLShort();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->flags = $this->buf->getLShort();
 		$this->xDiff = $this->maybeReadCoord(self::FLAG_HAS_X);
 		$this->yDiff = $this->maybeReadCoord(self::FLAG_HAS_Y);
 		$this->zDiff = $this->maybeReadCoord(self::FLAG_HAS_Z);
@@ -88,19 +88,19 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 
 	private function maybeWriteCoord(int $flag, int $val) : void{
 		if(($this->flags & $flag) !== 0){
-			$this->putVarInt($val);
+			$this->buf->putVarInt($val);
 		}
 	}
 
 	private function maybeWriteRotation(int $flag, float $val) : void{
 		if(($this->flags & $flag) !== 0){
-			$this->putByteRotation($val);
+			$this->buf->putByteRotation($val);
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putLShort($this->flags);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putLShort($this->flags);
 		$this->maybeWriteCoord(self::FLAG_HAS_X, $this->xDiff);
 		$this->maybeWriteCoord(self::FLAG_HAS_Y, $this->yDiff);
 		$this->maybeWriteCoord(self::FLAG_HAS_Z, $this->zDiff);

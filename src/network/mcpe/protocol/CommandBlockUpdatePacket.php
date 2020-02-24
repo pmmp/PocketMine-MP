@@ -63,46 +63,46 @@ class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 	public $executeOnFirstTick;
 
 	protected function decodePayload() : void{
-		$this->isBlock = $this->getBool();
+		$this->isBlock = $this->buf->getBool();
 
 		if($this->isBlock){
-			$this->getBlockPosition($this->x, $this->y, $this->z);
-			$this->commandBlockMode = $this->getUnsignedVarInt();
-			$this->isRedstoneMode = $this->getBool();
-			$this->isConditional = $this->getBool();
+			$this->buf->getBlockPosition($this->x, $this->y, $this->z);
+			$this->commandBlockMode = $this->buf->getUnsignedVarInt();
+			$this->isRedstoneMode = $this->buf->getBool();
+			$this->isConditional = $this->buf->getBool();
 		}else{
 			//Minecart with command block
-			$this->minecartEid = $this->getEntityRuntimeId();
+			$this->minecartEid = $this->buf->getEntityRuntimeId();
 		}
 
-		$this->command = $this->getString();
-		$this->lastOutput = $this->getString();
-		$this->name = $this->getString();
+		$this->command = $this->buf->getString();
+		$this->lastOutput = $this->buf->getString();
+		$this->name = $this->buf->getString();
 
-		$this->shouldTrackOutput = $this->getBool();
-		$this->tickDelay = $this->getLInt();
-		$this->executeOnFirstTick = $this->getBool();
+		$this->shouldTrackOutput = $this->buf->getBool();
+		$this->tickDelay = $this->buf->getLInt();
+		$this->executeOnFirstTick = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putBool($this->isBlock);
+		$this->buf->putBool($this->isBlock);
 
 		if($this->isBlock){
-			$this->putBlockPosition($this->x, $this->y, $this->z);
-			$this->putUnsignedVarInt($this->commandBlockMode);
-			$this->putBool($this->isRedstoneMode);
-			$this->putBool($this->isConditional);
+			$this->buf->putBlockPosition($this->x, $this->y, $this->z);
+			$this->buf->putUnsignedVarInt($this->commandBlockMode);
+			$this->buf->putBool($this->isRedstoneMode);
+			$this->buf->putBool($this->isConditional);
 		}else{
-			$this->putEntityRuntimeId($this->minecartEid);
+			$this->buf->putEntityRuntimeId($this->minecartEid);
 		}
 
-		$this->putString($this->command);
-		$this->putString($this->lastOutput);
-		$this->putString($this->name);
+		$this->buf->putString($this->command);
+		$this->buf->putString($this->lastOutput);
+		$this->buf->putString($this->name);
 
-		$this->putBool($this->shouldTrackOutput);
-		$this->putLInt($this->tickDelay);
-		$this->putBool($this->executeOnFirstTick);
+		$this->buf->putBool($this->shouldTrackOutput);
+		$this->buf->putLInt($this->tickDelay);
+		$this->buf->putBool($this->executeOnFirstTick);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

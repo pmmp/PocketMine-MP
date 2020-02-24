@@ -163,147 +163,149 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public $itemTable = null;
 
 	protected function decodePayload() : void{
-		$this->entityUniqueId = $this->getEntityUniqueId();
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->playerGamemode = $this->getVarInt();
+		$this->entityUniqueId = $this->buf->getEntityUniqueId();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->playerGamemode = $this->buf->getVarInt();
 
-		$this->playerPosition = $this->getVector3();
+		$this->playerPosition = $this->buf->getVector3();
 
-		$this->pitch = $this->getLFloat();
-		$this->yaw = $this->getLFloat();
+		$this->pitch = $this->buf->getLFloat();
+		$this->yaw = $this->buf->getLFloat();
 
 		//Level settings
-		$this->seed = $this->getVarInt();
-		$this->dimension = $this->getVarInt();
-		$this->generator = $this->getVarInt();
-		$this->worldGamemode = $this->getVarInt();
-		$this->difficulty = $this->getVarInt();
-		$this->getBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
-		$this->hasAchievementsDisabled = $this->getBool();
-		$this->time = $this->getVarInt();
-		$this->eduEditionOffer = $this->getVarInt();
-		$this->hasEduFeaturesEnabled = $this->getBool();
-		$this->rainLevel = $this->getLFloat();
-		$this->lightningLevel = $this->getLFloat();
-		$this->hasConfirmedPlatformLockedContent = $this->getBool();
-		$this->isMultiplayerGame = $this->getBool();
-		$this->hasLANBroadcast = $this->getBool();
-		$this->xboxLiveBroadcastMode = $this->getVarInt();
-		$this->platformBroadcastMode = $this->getVarInt();
-		$this->commandsEnabled = $this->getBool();
-		$this->isTexturePacksRequired = $this->getBool();
-		$this->gameRules = $this->getGameRules();
-		$this->hasBonusChestEnabled = $this->getBool();
-		$this->hasStartWithMapEnabled = $this->getBool();
-		$this->defaultPlayerPermission = $this->getVarInt();
-		$this->serverChunkTickRadius = $this->getLInt();
-		$this->hasLockedBehaviorPack = $this->getBool();
-		$this->hasLockedResourcePack = $this->getBool();
-		$this->isFromLockedWorldTemplate = $this->getBool();
-		$this->useMsaGamertagsOnly = $this->getBool();
-		$this->isFromWorldTemplate = $this->getBool();
-		$this->isWorldTemplateOptionLocked = $this->getBool();
-		$this->onlySpawnV1Villagers = $this->getBool();
+		$this->seed = $this->buf->getVarInt();
+		$this->dimension = $this->buf->getVarInt();
+		$this->generator = $this->buf->getVarInt();
+		$this->worldGamemode = $this->buf->getVarInt();
+		$this->difficulty = $this->buf->getVarInt();
+		$this->buf->getBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
+		$this->hasAchievementsDisabled = $this->buf->getBool();
+		$this->time = $this->buf->getVarInt();
+		$this->eduEditionOffer = $this->buf->getVarInt();
+		$this->hasEduFeaturesEnabled = $this->buf->getBool();
+		$this->rainLevel = $this->buf->getLFloat();
+		$this->lightningLevel = $this->buf->getLFloat();
+		$this->hasConfirmedPlatformLockedContent = $this->buf->getBool();
+		$this->isMultiplayerGame = $this->buf->getBool();
+		$this->hasLANBroadcast = $this->buf->getBool();
+		$this->xboxLiveBroadcastMode = $this->buf->getVarInt();
+		$this->platformBroadcastMode = $this->buf->getVarInt();
+		$this->commandsEnabled = $this->buf->getBool();
+		$this->isTexturePacksRequired = $this->buf->getBool();
+		$this->gameRules = $this->buf->getGameRules();
+		$this->hasBonusChestEnabled = $this->buf->getBool();
+		$this->hasStartWithMapEnabled = $this->buf->getBool();
+		$this->defaultPlayerPermission = $this->buf->getVarInt();
+		$this->serverChunkTickRadius = $this->buf->getLInt();
+		$this->hasLockedBehaviorPack = $this->buf->getBool();
+		$this->hasLockedResourcePack = $this->buf->getBool();
+		$this->isFromLockedWorldTemplate = $this->buf->getBool();
+		$this->useMsaGamertagsOnly = $this->buf->getBool();
+		$this->isFromWorldTemplate = $this->buf->getBool();
+		$this->isWorldTemplateOptionLocked = $this->buf->getBool();
+		$this->onlySpawnV1Villagers = $this->buf->getBool();
 
-		$this->vanillaVersion = $this->getString();
-		$this->levelId = $this->getString();
-		$this->worldName = $this->getString();
-		$this->premiumWorldTemplateId = $this->getString();
-		$this->isTrial = $this->getBool();
-		$this->isMovementServerAuthoritative = $this->getBool();
-		$this->currentTick = $this->getLLong();
+		$this->vanillaVersion = $this->buf->getString();
+		$this->levelId = $this->buf->getString();
+		$this->worldName = $this->buf->getString();
+		$this->premiumWorldTemplateId = $this->buf->getString();
+		$this->isTrial = $this->buf->getBool();
+		$this->isMovementServerAuthoritative = $this->buf->getBool();
+		$this->currentTick = $this->buf->getLLong();
 
-		$this->enchantmentSeed = $this->getVarInt();
+		$this->enchantmentSeed = $this->buf->getVarInt();
 
-		$blockTable = (new NetworkNbtSerializer())->read($this->buffer, $this->offset, 512)->getTag();
+		$offset = $this->buf->getOffset();
+		$blockTable = (new NetworkNbtSerializer())->read($this->buf->getBuffer(), $offset, 512)->getTag();
+		$this->buf->setOffset($offset);
 		if(!($blockTable instanceof ListTag)){
 			throw new \UnexpectedValueException("Wrong block table root NBT tag type");
 		}
 		$this->blockTable = $blockTable;
 
 		$this->itemTable = [];
-		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$id = $this->getString();
-			$legacyId = $this->getSignedLShort();
+		for($i = 0, $count = $this->buf->getUnsignedVarInt(); $i < $count; ++$i){
+			$id = $this->buf->getString();
+			$legacyId = $this->buf->getSignedLShort();
 
 			$this->itemTable[$id] = $legacyId;
 		}
 
-		$this->multiplayerCorrelationId = $this->getString();
+		$this->multiplayerCorrelationId = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->entityUniqueId);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVarInt($this->playerGamemode);
+		$this->buf->putEntityUniqueId($this->entityUniqueId);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putVarInt($this->playerGamemode);
 
-		$this->putVector3($this->playerPosition);
+		$this->buf->putVector3($this->playerPosition);
 
-		$this->putLFloat($this->pitch);
-		$this->putLFloat($this->yaw);
+		$this->buf->putLFloat($this->pitch);
+		$this->buf->putLFloat($this->yaw);
 
 		//Level settings
-		$this->putVarInt($this->seed);
-		$this->putVarInt($this->dimension);
-		$this->putVarInt($this->generator);
-		$this->putVarInt($this->worldGamemode);
-		$this->putVarInt($this->difficulty);
-		$this->putBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
-		$this->putBool($this->hasAchievementsDisabled);
-		$this->putVarInt($this->time);
-		$this->putVarInt($this->eduEditionOffer);
-		$this->putBool($this->hasEduFeaturesEnabled);
-		$this->putLFloat($this->rainLevel);
-		$this->putLFloat($this->lightningLevel);
-		$this->putBool($this->hasConfirmedPlatformLockedContent);
-		$this->putBool($this->isMultiplayerGame);
-		$this->putBool($this->hasLANBroadcast);
-		$this->putVarInt($this->xboxLiveBroadcastMode);
-		$this->putVarInt($this->platformBroadcastMode);
-		$this->putBool($this->commandsEnabled);
-		$this->putBool($this->isTexturePacksRequired);
-		$this->putGameRules($this->gameRules);
-		$this->putBool($this->hasBonusChestEnabled);
-		$this->putBool($this->hasStartWithMapEnabled);
-		$this->putVarInt($this->defaultPlayerPermission);
-		$this->putLInt($this->serverChunkTickRadius);
-		$this->putBool($this->hasLockedBehaviorPack);
-		$this->putBool($this->hasLockedResourcePack);
-		$this->putBool($this->isFromLockedWorldTemplate);
-		$this->putBool($this->useMsaGamertagsOnly);
-		$this->putBool($this->isFromWorldTemplate);
-		$this->putBool($this->isWorldTemplateOptionLocked);
-		$this->putBool($this->onlySpawnV1Villagers);
+		$this->buf->putVarInt($this->seed);
+		$this->buf->putVarInt($this->dimension);
+		$this->buf->putVarInt($this->generator);
+		$this->buf->putVarInt($this->worldGamemode);
+		$this->buf->putVarInt($this->difficulty);
+		$this->buf->putBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
+		$this->buf->putBool($this->hasAchievementsDisabled);
+		$this->buf->putVarInt($this->time);
+		$this->buf->putVarInt($this->eduEditionOffer);
+		$this->buf->putBool($this->hasEduFeaturesEnabled);
+		$this->buf->putLFloat($this->rainLevel);
+		$this->buf->putLFloat($this->lightningLevel);
+		$this->buf->putBool($this->hasConfirmedPlatformLockedContent);
+		$this->buf->putBool($this->isMultiplayerGame);
+		$this->buf->putBool($this->hasLANBroadcast);
+		$this->buf->putVarInt($this->xboxLiveBroadcastMode);
+		$this->buf->putVarInt($this->platformBroadcastMode);
+		$this->buf->putBool($this->commandsEnabled);
+		$this->buf->putBool($this->isTexturePacksRequired);
+		$this->buf->putGameRules($this->gameRules);
+		$this->buf->putBool($this->hasBonusChestEnabled);
+		$this->buf->putBool($this->hasStartWithMapEnabled);
+		$this->buf->putVarInt($this->defaultPlayerPermission);
+		$this->buf->putLInt($this->serverChunkTickRadius);
+		$this->buf->putBool($this->hasLockedBehaviorPack);
+		$this->buf->putBool($this->hasLockedResourcePack);
+		$this->buf->putBool($this->isFromLockedWorldTemplate);
+		$this->buf->putBool($this->useMsaGamertagsOnly);
+		$this->buf->putBool($this->isFromWorldTemplate);
+		$this->buf->putBool($this->isWorldTemplateOptionLocked);
+		$this->buf->putBool($this->onlySpawnV1Villagers);
 
-		$this->putString($this->vanillaVersion);
-		$this->putString($this->levelId);
-		$this->putString($this->worldName);
-		$this->putString($this->premiumWorldTemplateId);
-		$this->putBool($this->isTrial);
-		$this->putBool($this->isMovementServerAuthoritative);
-		$this->putLLong($this->currentTick);
+		$this->buf->putString($this->vanillaVersion);
+		$this->buf->putString($this->levelId);
+		$this->buf->putString($this->worldName);
+		$this->buf->putString($this->premiumWorldTemplateId);
+		$this->buf->putBool($this->isTrial);
+		$this->buf->putBool($this->isMovementServerAuthoritative);
+		$this->buf->putLLong($this->currentTick);
 
-		$this->putVarInt($this->enchantmentSeed);
+		$this->buf->putVarInt($this->enchantmentSeed);
 
 		if($this->blockTable === null){
 			if(self::$blockTableCache === null){
 				//this is a really nasty hack, but it'll do for now
 				self::$blockTableCache = (new NetworkNbtSerializer())->write(new TreeRoot(new ListTag(RuntimeBlockMapping::getBedrockKnownStates())));
 			}
-			$this->put(self::$blockTableCache);
+			$this->buf->put(self::$blockTableCache);
 		}else{
-			$this->put((new NetworkNbtSerializer())->write(new TreeRoot($this->blockTable)));
+			$this->buf->put((new NetworkNbtSerializer())->write(new TreeRoot($this->blockTable)));
 		}
 		if($this->itemTable === null){
 			if(self::$itemTableCache === null){
 				self::$itemTableCache = self::serializeItemTable(json_decode(file_get_contents(RESOURCE_PATH . '/vanilla/item_id_map.json'), true));
 			}
-			$this->put(self::$itemTableCache);
+			$this->buf->put(self::$itemTableCache);
 		}else{
-			$this->put(self::serializeItemTable($this->itemTable));
+			$this->buf->put(self::serializeItemTable($this->itemTable));
 		}
 
-		$this->putString($this->multiplayerCorrelationId);
+		$this->buf->putString($this->multiplayerCorrelationId);
 	}
 
 	/**

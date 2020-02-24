@@ -53,19 +53,19 @@ class MobEquipmentPacket extends DataPacket implements ClientboundPacket, Server
 	}
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->item = $this->getSlot();
-		$this->inventorySlot = $this->getByte();
-		$this->hotbarSlot = $this->getByte();
-		$this->windowId = $this->getByte();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->item = $this->buf->getSlot();
+		$this->inventorySlot = $this->buf->getByte();
+		$this->hotbarSlot = $this->buf->getByte();
+		$this->windowId = $this->buf->getByte();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putSlot($this->item);
-		$this->putByte($this->inventorySlot);
-		$this->putByte($this->hotbarSlot);
-		$this->putByte($this->windowId);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putSlot($this->item);
+		$this->buf->putByte($this->inventorySlot);
+		$this->buf->putByte($this->hotbarSlot);
+		$this->buf->putByte($this->windowId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

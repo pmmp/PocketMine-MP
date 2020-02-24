@@ -50,17 +50,17 @@ class ResourcePackChunkDataPacket extends DataPacket implements ClientboundPacke
 	}
 
 	protected function decodePayload() : void{
-		$this->packId = $this->getString();
-		$this->chunkIndex = $this->getLInt();
-		$this->progress = $this->getLLong();
-		$this->data = $this->getString();
+		$this->packId = $this->buf->getString();
+		$this->chunkIndex = $this->buf->getLInt();
+		$this->progress = $this->buf->getLLong();
+		$this->data = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->packId);
-		$this->putLInt($this->chunkIndex);
-		$this->putLLong($this->progress);
-		$this->putString($this->data);
+		$this->buf->putString($this->packId);
+		$this->buf->putLInt($this->chunkIndex);
+		$this->buf->putLLong($this->progress);
+		$this->buf->putString($this->data);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

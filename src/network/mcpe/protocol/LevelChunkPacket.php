@@ -101,30 +101,30 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->chunkX = $this->getVarInt();
-		$this->chunkZ = $this->getVarInt();
-		$this->subChunkCount = $this->getUnsignedVarInt();
-		$this->cacheEnabled = $this->getBool();
+		$this->chunkX = $this->buf->getVarInt();
+		$this->chunkZ = $this->buf->getVarInt();
+		$this->subChunkCount = $this->buf->getUnsignedVarInt();
+		$this->cacheEnabled = $this->buf->getBool();
 		if($this->cacheEnabled){
-			for($i =  0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-				$this->usedBlobHashes[] = $this->getLLong();
+			for($i =  0, $count = $this->buf->getUnsignedVarInt(); $i < $count; ++$i){
+				$this->usedBlobHashes[] = $this->buf->getLLong();
 			}
 		}
-		$this->extraPayload = $this->getString();
+		$this->extraPayload = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->chunkX);
-		$this->putVarInt($this->chunkZ);
-		$this->putUnsignedVarInt($this->subChunkCount);
-		$this->putBool($this->cacheEnabled);
+		$this->buf->putVarInt($this->chunkX);
+		$this->buf->putVarInt($this->chunkZ);
+		$this->buf->putUnsignedVarInt($this->subChunkCount);
+		$this->buf->putBool($this->cacheEnabled);
 		if($this->cacheEnabled){
-			$this->putUnsignedVarInt(count($this->usedBlobHashes));
+			$this->buf->putUnsignedVarInt(count($this->usedBlobHashes));
 			foreach($this->usedBlobHashes as $hash){
-				$this->putLLong($hash);
+				$this->buf->putLLong($hash);
 			}
 		}
-		$this->putString($this->extraPayload);
+		$this->buf->putString($this->extraPayload);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

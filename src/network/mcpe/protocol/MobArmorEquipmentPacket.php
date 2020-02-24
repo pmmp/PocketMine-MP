@@ -56,19 +56,19 @@ class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, S
 	}
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->head = $this->getSlot();
-		$this->chest = $this->getSlot();
-		$this->legs = $this->getSlot();
-		$this->feet = $this->getSlot();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->head = $this->buf->getSlot();
+		$this->chest = $this->buf->getSlot();
+		$this->legs = $this->buf->getSlot();
+		$this->feet = $this->buf->getSlot();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putSlot($this->head);
-		$this->putSlot($this->chest);
-		$this->putSlot($this->legs);
-		$this->putSlot($this->feet);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putSlot($this->head);
+		$this->buf->putSlot($this->chest);
+		$this->buf->putSlot($this->legs);
+		$this->buf->putSlot($this->feet);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

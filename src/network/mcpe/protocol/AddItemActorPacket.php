@@ -52,23 +52,23 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	public $isFromFishing = false;
 
 	protected function decodePayload() : void{
-		$this->entityUniqueId = $this->getEntityUniqueId();
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->item = $this->getSlot();
-		$this->position = $this->getVector3();
-		$this->motion = $this->getVector3();
-		$this->metadata = $this->getEntityMetadata();
-		$this->isFromFishing = $this->getBool();
+		$this->entityUniqueId = $this->buf->getEntityUniqueId();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->item = $this->buf->getSlot();
+		$this->position = $this->buf->getVector3();
+		$this->motion = $this->buf->getVector3();
+		$this->metadata = $this->buf->getEntityMetadata();
+		$this->isFromFishing = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putSlot($this->item);
-		$this->putVector3($this->position);
-		$this->putVector3Nullable($this->motion);
-		$this->putEntityMetadata($this->metadata);
-		$this->putBool($this->isFromFishing);
+		$this->buf->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putSlot($this->item);
+		$this->buf->putVector3($this->position);
+		$this->buf->putVector3Nullable($this->motion);
+		$this->buf->putEntityMetadata($this->metadata);
+		$this->buf->putBool($this->isFromFishing);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

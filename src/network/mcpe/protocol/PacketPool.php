@@ -191,7 +191,7 @@ class PacketPool{
 	public static function getPacket(string $buffer) : Packet{
 		$offset = 0;
 		$pk = static::getPacketById(Binary::readUnsignedVarInt($buffer, $offset));
-		$pk->setBuffer($buffer, $offset);
+		$pk->getBinaryStream()->setBuffer($buffer, $offset);
 
 		return $pk;
 	}

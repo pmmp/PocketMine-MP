@@ -40,11 +40,11 @@ class SetTimePacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->time = $this->getVarInt();
+		$this->time = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->time);
+		$this->buf->putVarInt($this->time);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

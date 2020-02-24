@@ -34,11 +34,11 @@ class AutomationClientConnectPacket extends DataPacket implements ClientboundPac
 	public $serverUri;
 
 	protected function decodePayload() : void{
-		$this->serverUri = $this->getString();
+		$this->serverUri = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->serverUri);
+		$this->buf->putString($this->serverUri);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

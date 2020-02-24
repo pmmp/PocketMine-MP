@@ -37,14 +37,14 @@ class UpdateBlockSyncedPacket extends UpdateBlockPacket{
 
 	protected function decodePayload() : void{
 		parent::decodePayload();
-		$this->entityUniqueId = $this->getUnsignedVarLong();
-		$this->uvarint64_2 = $this->getUnsignedVarLong();
+		$this->entityUniqueId = $this->buf->getUnsignedVarLong();
+		$this->uvarint64_2 = $this->buf->getUnsignedVarLong();
 	}
 
 	protected function encodePayload() : void{
 		parent::encodePayload();
-		$this->putUnsignedVarLong($this->entityUniqueId);
-		$this->putUnsignedVarLong($this->uvarint64_2);
+		$this->buf->putUnsignedVarLong($this->entityUniqueId);
+		$this->buf->putUnsignedVarLong($this->uvarint64_2);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

@@ -35,11 +35,11 @@ class SetActorLinkPacket extends DataPacket implements ClientboundPacket{
 	public $link;
 
 	protected function decodePayload() : void{
-		$this->link = $this->getEntityLink();
+		$this->link = $this->buf->getEntityLink();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityLink($this->link);
+		$this->buf->putEntityLink($this->link);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

@@ -40,17 +40,17 @@ class NpcRequestPacket extends DataPacket implements ServerboundPacket{
 	public $actionType;
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->requestType = $this->getByte();
-		$this->commandString = $this->getString();
-		$this->actionType = $this->getByte();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->requestType = $this->buf->getByte();
+		$this->commandString = $this->buf->getString();
+		$this->actionType = $this->buf->getByte();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putByte($this->requestType);
-		$this->putString($this->commandString);
-		$this->putByte($this->actionType);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putByte($this->requestType);
+		$this->buf->putString($this->commandString);
+		$this->buf->putByte($this->actionType);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

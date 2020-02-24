@@ -35,7 +35,7 @@ use function is_object;
 use function is_string;
 use function method_exists;
 
-abstract class DataPacket extends NetworkBinaryStream implements Packet{
+abstract class DataPacket implements Packet{
 
 	public const NETWORK_ID = 0;
 
@@ -43,6 +43,17 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	public $senderSubId = 0;
 	/** @var int */
 	public $recipientSubId = 0;
+	
+	/** @var NetworkBinaryStream */
+	protected $buf;
+
+	public function __construct(){
+		$this->buf = new NetworkBinaryStream();
+	}
+
+	public function getBinaryStream() : NetworkBinaryStream{
+		return $this->buf;
+	}
 
 	public function pid() : int{
 		return $this::NETWORK_ID;
@@ -60,7 +71,7 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	 * @throws BadPacketException
 	 */
 	final public function decode() : void{
-		$this->rewind();
+		$this->buf->rewind();
 		try{
 			$this->decodeHeader();
 			$this->decodePayload();
@@ -74,7 +85,7 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	 * @throws \UnexpectedValueException
 	 */
 	protected function decodeHeader() : void{
-		$pid = $this->getUnsignedVarInt();
+		$pid = $this->buf->getUnsignedVarInt();
 		if($pid !== static::NETWORK_ID){
 			//TODO: this means a logical error in the code, but how to prevent it from happening?
 			throw new \UnexpectedValueException("Expected " . static::NETWORK_ID . " for packet ID, got $pid");
@@ -90,37 +101,19 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	abstract protected function decodePayload() : void;
 
 	final public function encode() : void{
-		$this->reset();
+		$this->buf->reset();
 		$this->encodeHeader();
 		$this->encodePayload();
 	}
 
 	protected function encodeHeader() : void{
-		$this->putUnsignedVarInt(static::NETWORK_ID);
+		$this->buf->putUnsignedVarInt(static::NETWORK_ID);
 	}
 
 	/**
 	 * Encodes the packet body, without the packet ID or other generic header fields.
 	 */
 	abstract protected function encodePayload() : void;
-
-	/**
-	 * @return mixed[]
-	 */
-	public function __debugInfo() : array{
-		$data = [];
-		foreach((array) $this as $k => $v){
-			if($v === $this->getBuffer()){
-				$data[$k] = bin2hex($v);
-			}elseif(is_string($v) or (is_object($v) and method_exists($v, "__toString"))){
-				$data[$k] = Utils::printable((string) $v);
-			}else{
-				$data[$k] = $v;
-			}
-		}
-
-		return $data;
-	}
 
 	/**
 	 * @param string $name

@@ -34,11 +34,11 @@ class SetHealthPacket extends DataPacket implements ClientboundPacket{
 	public $health;
 
 	protected function decodePayload() : void{
-		$this->health = $this->getVarInt();
+		$this->health = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->health);
+		$this->buf->putVarInt($this->health);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

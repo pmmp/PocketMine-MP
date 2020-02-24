@@ -42,17 +42,17 @@ class SpawnParticleEffectPacket extends DataPacket implements ClientboundPacket{
 	public $particleName;
 
 	protected function decodePayload() : void{
-		$this->dimensionId = $this->getByte();
-		$this->entityUniqueId = $this->getEntityUniqueId();
-		$this->position = $this->getVector3();
-		$this->particleName = $this->getString();
+		$this->dimensionId = $this->buf->getByte();
+		$this->entityUniqueId = $this->buf->getEntityUniqueId();
+		$this->position = $this->buf->getVector3();
+		$this->particleName = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->dimensionId);
-		$this->putEntityUniqueId($this->entityUniqueId);
-		$this->putVector3($this->position);
-		$this->putString($this->particleName);
+		$this->buf->putByte($this->dimensionId);
+		$this->buf->putEntityUniqueId($this->entityUniqueId);
+		$this->buf->putVector3($this->position);
+		$this->buf->putString($this->particleName);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

@@ -49,19 +49,19 @@ class SetTitlePacket extends DataPacket implements ClientboundPacket{
 	public $fadeOutTime = 0;
 
 	protected function decodePayload() : void{
-		$this->type = $this->getVarInt();
-		$this->text = $this->getString();
-		$this->fadeInTime = $this->getVarInt();
-		$this->stayTime = $this->getVarInt();
-		$this->fadeOutTime = $this->getVarInt();
+		$this->type = $this->buf->getVarInt();
+		$this->text = $this->buf->getString();
+		$this->fadeInTime = $this->buf->getVarInt();
+		$this->stayTime = $this->buf->getVarInt();
+		$this->fadeOutTime = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->type);
-		$this->putString($this->text);
-		$this->putVarInt($this->fadeInTime);
-		$this->putVarInt($this->stayTime);
-		$this->putVarInt($this->fadeOutTime);
+		$this->buf->putVarInt($this->type);
+		$this->buf->putString($this->text);
+		$this->buf->putVarInt($this->fadeInTime);
+		$this->buf->putVarInt($this->stayTime);
+		$this->buf->putVarInt($this->fadeOutTime);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

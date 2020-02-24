@@ -134,15 +134,15 @@ class LevelEventPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->evid = $this->getVarInt();
-		$this->position = $this->getVector3();
-		$this->data = $this->getVarInt();
+		$this->evid = $this->buf->getVarInt();
+		$this->position = $this->buf->getVector3();
+		$this->data = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->evid);
-		$this->putVector3Nullable($this->position);
-		$this->putVarInt($this->data);
+		$this->buf->putVarInt($this->evid);
+		$this->buf->putVector3Nullable($this->position);
+		$this->buf->putVarInt($this->data);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

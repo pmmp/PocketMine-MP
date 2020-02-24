@@ -36,13 +36,13 @@ class CameraPacket extends DataPacket implements ClientboundPacket{
 	public $playerUniqueId;
 
 	protected function decodePayload() : void{
-		$this->cameraUniqueId = $this->getEntityUniqueId();
-		$this->playerUniqueId = $this->getEntityUniqueId();
+		$this->cameraUniqueId = $this->buf->getEntityUniqueId();
+		$this->playerUniqueId = $this->buf->getEntityUniqueId();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->cameraUniqueId);
-		$this->putEntityUniqueId($this->playerUniqueId);
+		$this->buf->putEntityUniqueId($this->cameraUniqueId);
+		$this->buf->putEntityUniqueId($this->playerUniqueId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

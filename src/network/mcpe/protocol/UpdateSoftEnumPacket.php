@@ -43,20 +43,20 @@ class UpdateSoftEnumPacket extends DataPacket implements ClientboundPacket{
 	public $type;
 
 	protected function decodePayload() : void{
-		$this->enumName = $this->getString();
-		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$this->values[] = $this->getString();
+		$this->enumName = $this->buf->getString();
+		for($i = 0, $count = $this->buf->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->values[] = $this->buf->getString();
 		}
-		$this->type = $this->getByte();
+		$this->type = $this->buf->getByte();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->enumName);
-		$this->putUnsignedVarInt(count($this->values));
+		$this->buf->putString($this->enumName);
+		$this->buf->putUnsignedVarInt(count($this->values));
 		foreach($this->values as $v){
-			$this->putString($v);
+			$this->buf->putString($v);
 		}
-		$this->putByte($this->type);
+		$this->buf->putByte($this->type);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

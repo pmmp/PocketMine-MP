@@ -71,17 +71,17 @@ class PlayerActionPacket extends DataPacket implements ServerboundPacket{
 	public $face;
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->action = $this->getVarInt();
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->face = $this->getVarInt();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->action = $this->buf->getVarInt();
+		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
+		$this->face = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVarInt($this->action);
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putVarInt($this->face);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putVarInt($this->action);
+		$this->buf->putBlockPosition($this->x, $this->y, $this->z);
+		$this->buf->putVarInt($this->face);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

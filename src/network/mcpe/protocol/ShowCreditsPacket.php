@@ -39,13 +39,13 @@ class ShowCreditsPacket extends DataPacket implements ClientboundPacket, Serverb
 	public $status;
 
 	protected function decodePayload() : void{
-		$this->playerEid = $this->getEntityRuntimeId();
-		$this->status = $this->getVarInt();
+		$this->playerEid = $this->buf->getEntityRuntimeId();
+		$this->status = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->playerEid);
-		$this->putVarInt($this->status);
+		$this->buf->putEntityRuntimeId($this->playerEid);
+		$this->buf->putVarInt($this->status);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

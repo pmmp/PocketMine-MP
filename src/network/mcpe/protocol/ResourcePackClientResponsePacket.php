@@ -42,18 +42,18 @@ class ResourcePackClientResponsePacket extends DataPacket implements Serverbound
 	public $packIds = [];
 
 	protected function decodePayload() : void{
-		$this->status = $this->getByte();
-		$entryCount = $this->getLShort();
+		$this->status = $this->buf->getByte();
+		$entryCount = $this->buf->getLShort();
 		while($entryCount-- > 0){
-			$this->packIds[] = $this->getString();
+			$this->packIds[] = $this->buf->getString();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->status);
-		$this->putLShort(count($this->packIds));
+		$this->buf->putByte($this->status);
+		$this->buf->putLShort(count($this->packIds));
 		foreach($this->packIds as $id){
-			$this->putString($id);
+			$this->buf->putString($id);
 		}
 	}
 

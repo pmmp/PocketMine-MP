@@ -40,11 +40,11 @@ class RemoveActorPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->entityUniqueId = $this->getEntityUniqueId();
+		$this->entityUniqueId = $this->buf->getEntityUniqueId();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->entityUniqueId);
+		$this->buf->putEntityUniqueId($this->entityUniqueId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

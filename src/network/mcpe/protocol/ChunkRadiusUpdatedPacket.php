@@ -40,11 +40,11 @@ class ChunkRadiusUpdatedPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->radius = $this->getVarInt();
+		$this->radius = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->radius);
+		$this->buf->putVarInt($this->radius);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

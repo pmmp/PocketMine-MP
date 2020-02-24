@@ -47,13 +47,13 @@ class SetActorMotionPacket extends DataPacket implements ClientboundPacket, Garb
 	}
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->motion = $this->getVector3();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->motion = $this->buf->getVector3();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVector3($this->motion);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putVector3($this->motion);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

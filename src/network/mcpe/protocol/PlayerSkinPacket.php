@@ -42,17 +42,17 @@ class PlayerSkinPacket extends DataPacket implements ClientboundPacket, Serverbo
 	public $skin;
 
 	protected function decodePayload() : void{
-		$this->uuid = $this->getUUID();
-		$this->skin = $this->getSkin();
-		$this->newSkinName = $this->getString();
-		$this->oldSkinName = $this->getString();
+		$this->uuid = $this->buf->getUUID();
+		$this->skin = $this->buf->getSkin();
+		$this->newSkinName = $this->buf->getString();
+		$this->oldSkinName = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putUUID($this->uuid);
-		$this->putSkin($this->skin);
-		$this->putString($this->newSkinName);
-		$this->putString($this->oldSkinName);
+		$this->buf->putUUID($this->uuid);
+		$this->buf->putSkin($this->skin);
+		$this->buf->putString($this->newSkinName);
+		$this->buf->putString($this->oldSkinName);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

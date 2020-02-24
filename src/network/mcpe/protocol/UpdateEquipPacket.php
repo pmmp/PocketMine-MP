@@ -42,19 +42,19 @@ class UpdateEquipPacket extends DataPacket implements ClientboundPacket{
 	public $namedtag;
 
 	protected function decodePayload() : void{
-		$this->windowId = $this->getByte();
-		$this->windowType = $this->getByte();
-		$this->unknownVarint = $this->getVarInt();
-		$this->entityUniqueId = $this->getEntityUniqueId();
-		$this->namedtag = $this->getRemaining();
+		$this->windowId = $this->buf->getByte();
+		$this->windowType = $this->buf->getByte();
+		$this->unknownVarint = $this->buf->getVarInt();
+		$this->entityUniqueId = $this->buf->getEntityUniqueId();
+		$this->namedtag = $this->buf->getRemaining();
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->windowId);
-		$this->putByte($this->windowType);
-		$this->putVarInt($this->unknownVarint);
-		$this->putEntityUniqueId($this->entityUniqueId);
-		$this->put($this->namedtag);
+		$this->buf->putByte($this->windowId);
+		$this->buf->putByte($this->windowType);
+		$this->buf->putVarInt($this->unknownVarint);
+		$this->buf->putEntityUniqueId($this->entityUniqueId);
+		$this->buf->put($this->namedtag);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

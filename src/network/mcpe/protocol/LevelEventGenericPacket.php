@@ -54,13 +54,13 @@ class LevelEventGenericPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->eventId = $this->getVarInt();
-		$this->eventData = $this->getRemaining();
+		$this->eventId = $this->buf->getVarInt();
+		$this->eventData = $this->buf->getRemaining();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->eventId);
-		$this->put($this->eventData);
+		$this->buf->putVarInt($this->eventId);
+		$this->buf->put($this->eventData);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

@@ -76,21 +76,21 @@ class AdventureSettingsPacket extends DataPacket implements ClientboundPacket, S
 	public $entityUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
 
 	protected function decodePayload() : void{
-		$this->flags = $this->getUnsignedVarInt();
-		$this->commandPermission = $this->getUnsignedVarInt();
-		$this->flags2 = $this->getUnsignedVarInt();
-		$this->playerPermission = $this->getUnsignedVarInt();
-		$this->customFlags = $this->getUnsignedVarInt();
-		$this->entityUniqueId = $this->getLLong();
+		$this->flags = $this->buf->getUnsignedVarInt();
+		$this->commandPermission = $this->buf->getUnsignedVarInt();
+		$this->flags2 = $this->buf->getUnsignedVarInt();
+		$this->playerPermission = $this->buf->getUnsignedVarInt();
+		$this->customFlags = $this->buf->getUnsignedVarInt();
+		$this->entityUniqueId = $this->buf->getLLong();
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->flags);
-		$this->putUnsignedVarInt($this->commandPermission);
-		$this->putUnsignedVarInt($this->flags2);
-		$this->putUnsignedVarInt($this->playerPermission);
-		$this->putUnsignedVarInt($this->customFlags);
-		$this->putLLong($this->entityUniqueId);
+		$this->buf->putUnsignedVarInt($this->flags);
+		$this->buf->putUnsignedVarInt($this->commandPermission);
+		$this->buf->putUnsignedVarInt($this->flags2);
+		$this->buf->putUnsignedVarInt($this->playerPermission);
+		$this->buf->putUnsignedVarInt($this->customFlags);
+		$this->buf->putLLong($this->entityUniqueId);
 	}
 
 	public function getFlag(int $flag) : bool{

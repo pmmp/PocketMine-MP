@@ -41,12 +41,12 @@ class SetScoreboardIdentityPacket extends DataPacket implements ClientboundPacke
 	public $entries = [];
 
 	protected function decodePayload() : void{
-		$this->type = $this->getByte();
-		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+		$this->type = $this->buf->getByte();
+		for($i = 0, $count = $this->buf->getUnsignedVarInt(); $i < $count; ++$i){
 			$entry = new ScoreboardIdentityPacketEntry();
-			$entry->scoreboardId = $this->getVarLong();
+			$entry->scoreboardId = $this->buf->getVarLong();
 			if($this->type === self::TYPE_REGISTER_IDENTITY){
-				$entry->entityUniqueId = $this->getEntityUniqueId();
+				$entry->entityUniqueId = $this->buf->getEntityUniqueId();
 			}
 
 			$this->entries[] = $entry;
@@ -54,12 +54,12 @@ class SetScoreboardIdentityPacket extends DataPacket implements ClientboundPacke
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->type);
-		$this->putUnsignedVarInt(count($this->entries));
+		$this->buf->putByte($this->type);
+		$this->buf->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
-			$this->putVarLong($entry->scoreboardId);
+			$this->buf->putVarLong($entry->scoreboardId);
 			if($this->type === self::TYPE_REGISTER_IDENTITY){
-				$this->putEntityUniqueId($entry->entityUniqueId);
+				$this->buf->putEntityUniqueId($entry->entityUniqueId);
 			}
 		}
 	}

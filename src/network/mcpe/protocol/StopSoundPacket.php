@@ -36,13 +36,13 @@ class StopSoundPacket extends DataPacket implements ClientboundPacket{
 	public $stopAll;
 
 	protected function decodePayload() : void{
-		$this->soundName = $this->getString();
-		$this->stopAll = $this->getBool();
+		$this->soundName = $this->buf->getString();
+		$this->stopAll = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->soundName);
-		$this->putBool($this->stopAll);
+		$this->buf->putString($this->soundName);
+		$this->buf->putBool($this->stopAll);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

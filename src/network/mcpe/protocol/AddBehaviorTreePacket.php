@@ -34,11 +34,11 @@ class AddBehaviorTreePacket extends DataPacket implements ClientboundPacket{
 	public $behaviorTreeJson;
 
 	protected function decodePayload() : void{
-		$this->behaviorTreeJson = $this->getString();
+		$this->behaviorTreeJson = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->behaviorTreeJson);
+		$this->buf->putString($this->behaviorTreeJson);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

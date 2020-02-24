@@ -66,17 +66,17 @@ class ContainerOpenPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->windowId = $this->getByte();
-		$this->type = $this->getByte();
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->entityUniqueId = $this->getEntityUniqueId();
+		$this->windowId = $this->buf->getByte();
+		$this->type = $this->buf->getByte();
+		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
+		$this->entityUniqueId = $this->buf->getEntityUniqueId();
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->windowId);
-		$this->putByte($this->type);
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putEntityUniqueId($this->entityUniqueId);
+		$this->buf->putByte($this->windowId);
+		$this->buf->putByte($this->type);
+		$this->buf->putBlockPosition($this->x, $this->y, $this->z);
+		$this->buf->putEntityUniqueId($this->entityUniqueId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

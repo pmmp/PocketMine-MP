@@ -37,11 +37,11 @@ class SimpleEventPacket extends DataPacket implements ClientboundPacket, Serverb
 	public $eventType;
 
 	protected function decodePayload() : void{
-		$this->eventType = $this->getLShort();
+		$this->eventType = $this->buf->getLShort();
 	}
 
 	protected function encodePayload() : void{
-		$this->putLShort($this->eventType);
+		$this->buf->putLShort($this->eventType);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

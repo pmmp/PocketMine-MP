@@ -37,13 +37,13 @@ class SpawnExperienceOrbPacket extends DataPacket implements ServerboundPacket{
 	public $amount;
 
 	protected function decodePayload() : void{
-		$this->position = $this->getVector3();
-		$this->amount = $this->getVarInt();
+		$this->position = $this->buf->getVector3();
+		$this->amount = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVector3($this->position);
-		$this->putVarInt($this->amount);
+		$this->buf->putVector3($this->position);
+		$this->buf->putVarInt($this->amount);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

@@ -42,15 +42,15 @@ class BlockPickRequestPacket extends DataPacket implements ServerboundPacket{
 	public $hotbarSlot;
 
 	protected function decodePayload() : void{
-		$this->getSignedBlockPosition($this->blockX, $this->blockY, $this->blockZ);
-		$this->addUserData = $this->getBool();
-		$this->hotbarSlot = $this->getByte();
+		$this->buf->getSignedBlockPosition($this->blockX, $this->blockY, $this->blockZ);
+		$this->addUserData = $this->buf->getBool();
+		$this->hotbarSlot = $this->buf->getByte();
 	}
 
 	protected function encodePayload() : void{
-		$this->putSignedBlockPosition($this->blockX, $this->blockY, $this->blockZ);
-		$this->putBool($this->addUserData);
-		$this->putByte($this->hotbarSlot);
+		$this->buf->putSignedBlockPosition($this->blockX, $this->blockY, $this->blockZ);
+		$this->buf->putBool($this->addUserData);
+		$this->buf->putByte($this->hotbarSlot);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

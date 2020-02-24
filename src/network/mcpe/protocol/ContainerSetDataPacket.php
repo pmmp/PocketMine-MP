@@ -56,15 +56,15 @@ class ContainerSetDataPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->windowId = $this->getByte();
-		$this->property = $this->getVarInt();
-		$this->value = $this->getVarInt();
+		$this->windowId = $this->buf->getByte();
+		$this->property = $this->buf->getVarInt();
+		$this->value = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->windowId);
-		$this->putVarInt($this->property);
-		$this->putVarInt($this->value);
+		$this->buf->putByte($this->windowId);
+		$this->buf->putVarInt($this->property);
+		$this->buf->putVarInt($this->value);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

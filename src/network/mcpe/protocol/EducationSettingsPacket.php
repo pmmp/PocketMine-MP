@@ -51,13 +51,13 @@ class EducationSettingsPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->codeBuilderDefaultUri = $this->getString();
-		$this->hasQuiz = $this->getBool();
+		$this->codeBuilderDefaultUri = $this->buf->getString();
+		$this->hasQuiz = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->codeBuilderDefaultUri);
-		$this->putBool($this->hasQuiz);
+		$this->buf->putString($this->codeBuilderDefaultUri);
+		$this->buf->putBool($this->hasQuiz);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

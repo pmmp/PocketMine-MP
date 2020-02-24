@@ -43,13 +43,13 @@ class ModalFormRequestPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->formId = $this->getUnsignedVarInt();
-		$this->formData = $this->getString();
+		$this->formId = $this->buf->getUnsignedVarInt();
+		$this->formData = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->formId);
-		$this->putString($this->formData);
+		$this->buf->putUnsignedVarInt($this->formId);
+		$this->buf->putString($this->formData);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

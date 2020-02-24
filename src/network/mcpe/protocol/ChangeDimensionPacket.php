@@ -39,15 +39,15 @@ class ChangeDimensionPacket extends DataPacket implements ClientboundPacket{
 	public $respawn = false;
 
 	protected function decodePayload() : void{
-		$this->dimension = $this->getVarInt();
-		$this->position = $this->getVector3();
-		$this->respawn = $this->getBool();
+		$this->dimension = $this->buf->getVarInt();
+		$this->position = $this->buf->getVector3();
+		$this->respawn = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->dimension);
-		$this->putVector3($this->position);
-		$this->putBool($this->respawn);
+		$this->buf->putVarInt($this->dimension);
+		$this->buf->putVector3($this->position);
+		$this->buf->putBool($this->respawn);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

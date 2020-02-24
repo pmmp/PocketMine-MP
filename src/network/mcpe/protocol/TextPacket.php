@@ -116,65 +116,65 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 	}
 
 	protected function decodePayload() : void{
-		$this->type = $this->getByte();
-		$this->needsTranslation = $this->getBool();
+		$this->type = $this->buf->getByte();
+		$this->needsTranslation = $this->buf->getBool();
 		switch($this->type){
 			case self::TYPE_CHAT:
 			case self::TYPE_WHISPER:
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
-				$this->sourceName = $this->getString();
+				$this->sourceName = $this->buf->getString();
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
 			case self::TYPE_JSON:
-				$this->message = $this->getString();
+				$this->message = $this->buf->getString();
 				break;
 
 			case self::TYPE_TRANSLATION:
 			case self::TYPE_POPUP:
 			case self::TYPE_JUKEBOX_POPUP:
-				$this->message = $this->getString();
-				$count = $this->getUnsignedVarInt();
+				$this->message = $this->buf->getString();
+				$count = $this->buf->getUnsignedVarInt();
 				for($i = 0; $i < $count; ++$i){
-					$this->parameters[] = $this->getString();
+					$this->parameters[] = $this->buf->getString();
 				}
 				break;
 		}
 
-		$this->xboxUserId = $this->getString();
-		$this->platformChatId = $this->getString();
+		$this->xboxUserId = $this->buf->getString();
+		$this->platformChatId = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->type);
-		$this->putBool($this->needsTranslation);
+		$this->buf->putByte($this->type);
+		$this->buf->putBool($this->needsTranslation);
 		switch($this->type){
 			case self::TYPE_CHAT:
 			case self::TYPE_WHISPER:
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
-				$this->putString($this->sourceName);
+				$this->buf->putString($this->sourceName);
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
 			case self::TYPE_JSON:
-				$this->putString($this->message);
+				$this->buf->putString($this->message);
 				break;
 
 			case self::TYPE_TRANSLATION:
 			case self::TYPE_POPUP:
 			case self::TYPE_JUKEBOX_POPUP:
-				$this->putString($this->message);
-				$this->putUnsignedVarInt(count($this->parameters));
+				$this->buf->putString($this->message);
+				$this->buf->putUnsignedVarInt(count($this->parameters));
 				foreach($this->parameters as $p){
-					$this->putString($p);
+					$this->buf->putString($p);
 				}
 				break;
 		}
 
-		$this->putString($this->xboxUserId);
-		$this->putString($this->platformChatId);
+		$this->buf->putString($this->xboxUserId);
+		$this->buf->putString($this->platformChatId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

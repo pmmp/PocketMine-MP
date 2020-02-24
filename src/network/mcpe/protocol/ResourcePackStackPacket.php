@@ -61,36 +61,36 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->mustAccept = $this->getBool();
-		$behaviorPackCount = $this->getUnsignedVarInt();
+		$this->mustAccept = $this->buf->getBool();
+		$behaviorPackCount = $this->buf->getUnsignedVarInt();
 		while($behaviorPackCount-- > 0){
-			$this->behaviorPackStack[] = ResourcePackStackEntry::read($this);
+			$this->behaviorPackStack[] = ResourcePackStackEntry::read($this->buf);
 		}
 
-		$resourcePackCount = $this->getUnsignedVarInt();
+		$resourcePackCount = $this->buf->getUnsignedVarInt();
 		while($resourcePackCount-- > 0){
-			$this->resourcePackStack[] = ResourcePackStackEntry::read($this);
+			$this->resourcePackStack[] = ResourcePackStackEntry::read($this->buf);
 		}
 
-		$this->isExperimental = $this->getBool();
-		$this->baseGameVersion = $this->getString();
+		$this->isExperimental = $this->buf->getBool();
+		$this->baseGameVersion = $this->buf->getString();
 	}
 
 	protected function encodePayload() : void{
-		$this->putBool($this->mustAccept);
+		$this->buf->putBool($this->mustAccept);
 
-		$this->putUnsignedVarInt(count($this->behaviorPackStack));
+		$this->buf->putUnsignedVarInt(count($this->behaviorPackStack));
 		foreach($this->behaviorPackStack as $entry){
-			$entry->write($this);
+			$entry->write($this->buf);
 		}
 
-		$this->putUnsignedVarInt(count($this->resourcePackStack));
+		$this->buf->putUnsignedVarInt(count($this->resourcePackStack));
 		foreach($this->resourcePackStack as $entry){
-			$entry->write($this);
+			$entry->write($this->buf);
 		}
 
-		$this->putBool($this->isExperimental);
-		$this->putString($this->baseGameVersion);
+		$this->buf->putBool($this->isExperimental);
+		$this->buf->putString($this->baseGameVersion);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

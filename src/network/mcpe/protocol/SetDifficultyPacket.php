@@ -40,11 +40,11 @@ class SetDifficultyPacket extends DataPacket implements ClientboundPacket, Serve
 	}
 
 	protected function decodePayload() : void{
-		$this->difficulty = $this->getUnsignedVarInt();
+		$this->difficulty = $this->buf->getUnsignedVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->difficulty);
+		$this->buf->putUnsignedVarInt($this->difficulty);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

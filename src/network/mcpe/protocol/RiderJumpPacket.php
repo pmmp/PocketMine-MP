@@ -34,11 +34,11 @@ class RiderJumpPacket extends DataPacket implements ServerboundPacket{
 	public $jumpStrength; //percentage
 
 	protected function decodePayload() : void{
-		$this->jumpStrength = $this->getVarInt();
+		$this->jumpStrength = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putVarInt($this->jumpStrength);
+		$this->buf->putVarInt($this->jumpStrength);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

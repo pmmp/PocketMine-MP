@@ -47,11 +47,11 @@ class NetworkSettingsPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->compressionThreshold = $this->getLShort();
+		$this->compressionThreshold = $this->buf->getLShort();
 	}
 
 	protected function encodePayload() : void{
-		$this->putLShort($this->compressionThreshold);
+		$this->buf->putLShort($this->compressionThreshold);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

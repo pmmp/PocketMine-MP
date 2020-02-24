@@ -52,13 +52,13 @@ class SetActorDataPacket extends DataPacket implements ClientboundPacket, Server
 	}
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->metadata = $this->getEntityMetadata();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
+		$this->metadata = $this->buf->getEntityMetadata();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putEntityMetadata($this->metadata);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putEntityMetadata($this->metadata);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

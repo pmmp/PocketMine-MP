@@ -48,17 +48,17 @@ class StructureTemplateDataRequestPacket extends DataPacket implements Serverbou
 	public $structureTemplateResponseType;
 
 	protected function decodePayload() : void{
-		$this->structureTemplateName = $this->getString();
-		$this->getBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
-		$this->structureSettings = $this->getStructureSettings();
-		$this->structureTemplateResponseType = $this->getByte();
+		$this->structureTemplateName = $this->buf->getString();
+		$this->buf->getBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
+		$this->structureSettings = $this->buf->getStructureSettings();
+		$this->structureTemplateResponseType = $this->buf->getByte();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->structureTemplateName);
-		$this->putBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
-		$this->putStructureSettings($this->structureSettings);
-		$this->putByte($this->structureTemplateResponseType);
+		$this->buf->putString($this->structureTemplateName);
+		$this->buf->putBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
+		$this->buf->putStructureSettings($this->structureSettings);
+		$this->buf->putByte($this->structureTemplateResponseType);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

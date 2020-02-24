@@ -47,15 +47,15 @@ class InventorySlotPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->windowId = $this->getUnsignedVarInt();
-		$this->inventorySlot = $this->getUnsignedVarInt();
-		$this->item = $this->getSlot();
+		$this->windowId = $this->buf->getUnsignedVarInt();
+		$this->inventorySlot = $this->buf->getUnsignedVarInt();
+		$this->item = $this->buf->getSlot();
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->windowId);
-		$this->putUnsignedVarInt($this->inventorySlot);
-		$this->putSlot($this->item);
+		$this->buf->putUnsignedVarInt($this->windowId);
+		$this->buf->putUnsignedVarInt($this->inventorySlot);
+		$this->buf->putSlot($this->item);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

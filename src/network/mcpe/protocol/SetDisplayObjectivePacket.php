@@ -42,19 +42,19 @@ class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
 	public $sortOrder;
 
 	protected function decodePayload() : void{
-		$this->displaySlot = $this->getString();
-		$this->objectiveName = $this->getString();
-		$this->displayName = $this->getString();
-		$this->criteriaName = $this->getString();
-		$this->sortOrder = $this->getVarInt();
+		$this->displaySlot = $this->buf->getString();
+		$this->objectiveName = $this->buf->getString();
+		$this->displayName = $this->buf->getString();
+		$this->criteriaName = $this->buf->getString();
+		$this->sortOrder = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->displaySlot);
-		$this->putString($this->objectiveName);
-		$this->putString($this->displayName);
-		$this->putString($this->criteriaName);
-		$this->putVarInt($this->sortOrder);
+		$this->buf->putString($this->displaySlot);
+		$this->buf->putString($this->objectiveName);
+		$this->buf->putString($this->displayName);
+		$this->buf->putString($this->criteriaName);
+		$this->buf->putVarInt($this->sortOrder);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

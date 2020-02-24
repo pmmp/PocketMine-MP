@@ -55,18 +55,18 @@ class ClientCacheMissResponsePacket extends DataPacket implements ClientboundPac
 	}
 
 	protected function decodePayload() : void{
-		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$hash = $this->getLLong();
-			$payload = $this->getString();
+		for($i = 0, $count = $this->buf->getUnsignedVarInt(); $i < $count; ++$i){
+			$hash = $this->buf->getLLong();
+			$payload = $this->buf->getString();
 			$this->blobs[] = new ChunkCacheBlob($hash, $payload);
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putUnsignedVarInt(count($this->blobs));
+		$this->buf->putUnsignedVarInt(count($this->blobs));
 		foreach($this->blobs as $blob){
-			$this->putLLong($blob->getHash());
-			$this->putString($blob->getPayload());
+			$this->buf->putLLong($blob->getHash());
+			$this->buf->putString($blob->getPayload());
 		}
 	}
 

@@ -128,33 +128,33 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->yaw = $this->getLFloat();
-		$this->pitch = $this->getLFloat();
-		$this->position = $this->getVector3();
-		$this->moveVecX = $this->getLFloat();
-		$this->moveVecZ = $this->getLFloat();
-		$this->headYaw = $this->getLFloat();
-		$this->inputFlags = $this->getUnsignedVarLong();
-		$this->inputMode = $this->getUnsignedVarInt();
-		$this->playMode = $this->getUnsignedVarInt();
+		$this->yaw = $this->buf->getLFloat();
+		$this->pitch = $this->buf->getLFloat();
+		$this->position = $this->buf->getVector3();
+		$this->moveVecX = $this->buf->getLFloat();
+		$this->moveVecZ = $this->buf->getLFloat();
+		$this->headYaw = $this->buf->getLFloat();
+		$this->inputFlags = $this->buf->getUnsignedVarLong();
+		$this->inputMode = $this->buf->getUnsignedVarInt();
+		$this->playMode = $this->buf->getUnsignedVarInt();
 		if($this->playMode === PlayMode::VR){
-			$this->vrGazeDirection = $this->getVector3();
+			$this->vrGazeDirection = $this->buf->getVector3();
 		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putLFloat($this->yaw);
-		$this->putLFloat($this->pitch);
-		$this->putVector3($this->position);
-		$this->putLFloat($this->moveVecX);
-		$this->putLFloat($this->moveVecZ);
-		$this->putLFloat($this->headYaw);
-		$this->putUnsignedVarLong($this->inputFlags);
-		$this->putUnsignedVarInt($this->inputMode);
-		$this->putUnsignedVarInt($this->playMode);
+		$this->buf->putLFloat($this->yaw);
+		$this->buf->putLFloat($this->pitch);
+		$this->buf->putVector3($this->position);
+		$this->buf->putLFloat($this->moveVecX);
+		$this->buf->putLFloat($this->moveVecZ);
+		$this->buf->putLFloat($this->headYaw);
+		$this->buf->putUnsignedVarLong($this->inputFlags);
+		$this->buf->putUnsignedVarInt($this->inputMode);
+		$this->buf->putUnsignedVarInt($this->playMode);
 		if($this->playMode === PlayMode::VR){
 			assert($this->vrGazeDirection !== null);
-			$this->putVector3($this->vrGazeDirection);
+			$this->buf->putVector3($this->vrGazeDirection);
 		}
 	}
 

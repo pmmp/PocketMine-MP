@@ -36,13 +36,13 @@ class ShowStoreOfferPacket extends DataPacket implements ClientboundPacket{
 	public $showAll;
 
 	protected function decodePayload() : void{
-		$this->offerId = $this->getString();
-		$this->showAll = $this->getBool();
+		$this->offerId = $this->buf->getString();
+		$this->showAll = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->offerId);
-		$this->putBool($this->showAll);
+		$this->buf->putString($this->offerId);
+		$this->buf->putBool($this->showAll);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

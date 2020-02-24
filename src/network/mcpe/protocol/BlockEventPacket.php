@@ -53,15 +53,15 @@ class BlockEventPacket extends DataPacket implements ClientboundPacket{
 	}
 
 	protected function decodePayload() : void{
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->eventType = $this->getVarInt();
-		$this->eventData = $this->getVarInt();
+		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
+		$this->eventType = $this->buf->getVarInt();
+		$this->eventData = $this->buf->getVarInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putVarInt($this->eventType);
-		$this->putVarInt($this->eventData);
+		$this->buf->putBlockPosition($this->x, $this->y, $this->z);
+		$this->buf->putVarInt($this->eventType);
+		$this->buf->putVarInt($this->eventData);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

@@ -45,19 +45,19 @@ class VideoStreamConnectPacket extends DataPacket implements ClientboundPacket{
 	public $resolutionY;
 
 	protected function decodePayload() : void{
-		$this->serverUri = $this->getString();
-		$this->frameSendFrequency = $this->getLFloat();
-		$this->action = $this->getByte();
-		$this->resolutionX = $this->getLInt();
-		$this->resolutionY = $this->getLInt();
+		$this->serverUri = $this->buf->getString();
+		$this->frameSendFrequency = $this->buf->getLFloat();
+		$this->action = $this->buf->getByte();
+		$this->resolutionX = $this->buf->getLInt();
+		$this->resolutionY = $this->buf->getLInt();
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->serverUri);
-		$this->putLFloat($this->frameSendFrequency);
-		$this->putByte($this->action);
-		$this->putLInt($this->resolutionX);
-		$this->putLInt($this->resolutionY);
+		$this->buf->putString($this->serverUri);
+		$this->buf->putLFloat($this->frameSendFrequency);
+		$this->buf->putByte($this->action);
+		$this->buf->putLInt($this->resolutionX);
+		$this->buf->putLInt($this->resolutionY);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

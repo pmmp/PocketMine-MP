@@ -48,21 +48,21 @@ class LevelSoundEventPacketV2 extends DataPacket{
 	public $disableRelativeVolume = false;
 
 	protected function decodePayload() : void{
-		$this->sound = $this->getByte();
-		$this->position = $this->getVector3();
-		$this->extraData = $this->getVarInt();
-		$this->entityType = $this->getString();
-		$this->isBabyMob = $this->getBool();
-		$this->disableRelativeVolume = $this->getBool();
+		$this->sound = $this->buf->getByte();
+		$this->position = $this->buf->getVector3();
+		$this->extraData = $this->buf->getVarInt();
+		$this->entityType = $this->buf->getString();
+		$this->isBabyMob = $this->buf->getBool();
+		$this->disableRelativeVolume = $this->buf->getBool();
 	}
 
 	protected function encodePayload() : void{
-		$this->putByte($this->sound);
-		$this->putVector3($this->position);
-		$this->putVarInt($this->extraData);
-		$this->putString($this->entityType);
-		$this->putBool($this->isBabyMob);
-		$this->putBool($this->disableRelativeVolume);
+		$this->buf->putByte($this->sound);
+		$this->buf->putVector3($this->position);
+		$this->buf->putVarInt($this->extraData);
+		$this->buf->putString($this->entityType);
+		$this->buf->putBool($this->isBabyMob);
+		$this->buf->putBool($this->disableRelativeVolume);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

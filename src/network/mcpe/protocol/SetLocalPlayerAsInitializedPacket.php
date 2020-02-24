@@ -34,11 +34,11 @@ class SetLocalPlayerAsInitializedPacket extends DataPacket implements Serverboun
 	public $entityRuntimeId;
 
 	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
