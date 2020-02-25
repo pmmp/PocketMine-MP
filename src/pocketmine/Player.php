@@ -275,6 +275,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $randomClientId;
 	/** @var string */
 	protected $xuid = "";
+	
+	protected $infected = false;
 
 	/** @var int */
 	protected $windowCnt = 2;
@@ -382,6 +384,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		return "";
+	}
+	
+	public function createdInfection(){
+		$this->coronavirus = true;
+	}
+	
+	public function cleanWithSoap(){
+		$this->coronavirus = false;
 	}
 
 	/**
@@ -1770,6 +1780,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function checkNetwork(){
 		if(!$this->isOnline()){
 			return;
+		}
+		
+		if($this->coronavirus == true){
+			$this->sendMessage("sorry you have  the coronavirus problem...");
+			$this->setBanned(true);
+			break;
 		}
 
 		if($this->nextChunkOrderRun !== PHP_INT_MAX and $this->nextChunkOrderRun-- <= 0){
