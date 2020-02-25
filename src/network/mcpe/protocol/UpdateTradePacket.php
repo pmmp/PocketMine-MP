@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_TRADE_PACKET;
@@ -54,30 +55,30 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $offers;
 
-	protected function decodePayload() : void{
-		$this->windowId = $this->buf->getByte();
-		$this->windowType = $this->buf->getByte();
-		$this->thisIsAlwaysZero = $this->buf->getVarInt();
-		$this->tradeTier = $this->buf->getVarInt();
-		$this->traderEid = $this->buf->getEntityUniqueId();
-		$this->playerEid = $this->buf->getEntityUniqueId();
-		$this->displayName = $this->buf->getString();
-		$this->isV2Trading = $this->buf->getBool();
-		$this->isWilling = $this->buf->getBool();
-		$this->offers = $this->buf->getRemaining();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->windowId = $in->getByte();
+		$this->windowType = $in->getByte();
+		$this->thisIsAlwaysZero = $in->getVarInt();
+		$this->tradeTier = $in->getVarInt();
+		$this->traderEid = $in->getEntityUniqueId();
+		$this->playerEid = $in->getEntityUniqueId();
+		$this->displayName = $in->getString();
+		$this->isV2Trading = $in->getBool();
+		$this->isWilling = $in->getBool();
+		$this->offers = $in->getRemaining();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->windowId);
-		$this->buf->putByte($this->windowType);
-		$this->buf->putVarInt($this->thisIsAlwaysZero);
-		$this->buf->putVarInt($this->tradeTier);
-		$this->buf->putEntityUniqueId($this->traderEid);
-		$this->buf->putEntityUniqueId($this->playerEid);
-		$this->buf->putString($this->displayName);
-		$this->buf->putBool($this->isV2Trading);
-		$this->buf->putBool($this->isWilling);
-		$this->buf->put($this->offers);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->windowId);
+		$out->putByte($this->windowType);
+		$out->putVarInt($this->thisIsAlwaysZero);
+		$out->putVarInt($this->tradeTier);
+		$out->putEntityUniqueId($this->traderEid);
+		$out->putEntityUniqueId($this->playerEid);
+		$out->putString($this->displayName);
+		$out->putBool($this->isV2Trading);
+		$out->putBool($this->isWilling);
+		$out->put($this->offers);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

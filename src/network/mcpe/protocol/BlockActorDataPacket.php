@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class BlockActorDataPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::BLOCK_ACTOR_DATA_PACKET;
@@ -46,14 +47,14 @@ class BlockActorDataPacket extends DataPacket implements ClientboundPacket, Serv
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
-		$this->namedtag = $this->buf->getRemaining();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$in->getBlockPosition($this->x, $this->y, $this->z);
+		$this->namedtag = $in->getRemaining();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putBlockPosition($this->x, $this->y, $this->z);
-		$this->buf->put($this->namedtag);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putBlockPosition($this->x, $this->y, $this->z);
+		$out->put($this->namedtag);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

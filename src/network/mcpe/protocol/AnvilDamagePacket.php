@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class AnvilDamagePacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ANVIL_DAMAGE_PACKET;
@@ -62,14 +63,14 @@ class AnvilDamagePacket extends DataPacket implements ServerboundPacket{
 		return $this->z;
 	}
 
-	protected function decodePayload() : void{
-		$this->damageAmount = $this->buf->getByte();
-		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->damageAmount = $in->getByte();
+		$in->getBlockPosition($this->x, $this->y, $this->z);
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->damageAmount);
-		$this->buf->putBlockPosition($this->x, $this->y, $this->z);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->damageAmount);
+		$out->putBlockPosition($this->x, $this->y, $this->z);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

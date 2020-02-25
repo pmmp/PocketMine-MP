@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class SetActorDataPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{ //TODO: check why this is serverbound
 	public const NETWORK_ID = ProtocolInfo::SET_ACTOR_DATA_PACKET;
@@ -51,14 +52,14 @@ class SetActorDataPacket extends DataPacket implements ClientboundPacket, Server
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
-		$this->metadata = $this->buf->getEntityMetadata();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->metadata = $in->getEntityMetadata();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
-		$this->buf->putEntityMetadata($this->metadata);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putEntityMetadata($this->metadata);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

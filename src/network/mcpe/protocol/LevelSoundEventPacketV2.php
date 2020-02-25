@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 /**
  * Useless leftover from a 1.9 refactor, does nothing
@@ -47,22 +48,22 @@ class LevelSoundEventPacketV2 extends DataPacket{
 	/** @var bool */
 	public $disableRelativeVolume = false;
 
-	protected function decodePayload() : void{
-		$this->sound = $this->buf->getByte();
-		$this->position = $this->buf->getVector3();
-		$this->extraData = $this->buf->getVarInt();
-		$this->entityType = $this->buf->getString();
-		$this->isBabyMob = $this->buf->getBool();
-		$this->disableRelativeVolume = $this->buf->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->sound = $in->getByte();
+		$this->position = $in->getVector3();
+		$this->extraData = $in->getVarInt();
+		$this->entityType = $in->getString();
+		$this->isBabyMob = $in->getBool();
+		$this->disableRelativeVolume = $in->getBool();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->sound);
-		$this->buf->putVector3($this->position);
-		$this->buf->putVarInt($this->extraData);
-		$this->buf->putString($this->entityType);
-		$this->buf->putBool($this->isBabyMob);
-		$this->buf->putBool($this->disableRelativeVolume);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->sound);
+		$out->putVector3($this->position);
+		$out->putVarInt($this->extraData);
+		$out->putString($this->entityType);
+		$out->putBool($this->isBabyMob);
+		$out->putBool($this->disableRelativeVolume);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

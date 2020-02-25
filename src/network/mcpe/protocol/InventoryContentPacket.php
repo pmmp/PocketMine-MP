@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class InventoryContentPacket extends DataPacket implements ClientboundPacket{
@@ -49,19 +50,19 @@ class InventoryContentPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->windowId = $this->buf->getUnsignedVarInt();
-		$count = $this->buf->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->windowId = $in->getUnsignedVarInt();
+		$count = $in->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
-			$this->items[] = $this->buf->getSlot();
+			$this->items[] = $in->getSlot();
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putUnsignedVarInt($this->windowId);
-		$this->buf->putUnsignedVarInt(count($this->items));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt($this->windowId);
+		$out->putUnsignedVarInt(count($this->items));
 		foreach($this->items as $item){
-			$this->buf->putSlot($item);
+			$out->putSlot($item);
 		}
 	}
 

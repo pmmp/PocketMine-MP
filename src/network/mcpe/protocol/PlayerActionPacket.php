@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class PlayerActionPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_ACTION_PACKET;
@@ -70,18 +71,18 @@ class PlayerActionPacket extends DataPacket implements ServerboundPacket{
 	/** @var int */
 	public $face;
 
-	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
-		$this->action = $this->buf->getVarInt();
-		$this->buf->getBlockPosition($this->x, $this->y, $this->z);
-		$this->face = $this->buf->getVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->action = $in->getVarInt();
+		$in->getBlockPosition($this->x, $this->y, $this->z);
+		$this->face = $in->getVarInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
-		$this->buf->putVarInt($this->action);
-		$this->buf->putBlockPosition($this->x, $this->y, $this->z);
-		$this->buf->putVarInt($this->face);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putVarInt($this->action);
+		$out->putBlockPosition($this->x, $this->y, $this->z);
+		$out->putVarInt($this->face);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

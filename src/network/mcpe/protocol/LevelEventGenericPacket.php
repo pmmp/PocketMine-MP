@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 
 class LevelEventGenericPacket extends DataPacket implements ClientboundPacket{
@@ -53,14 +54,14 @@ class LevelEventGenericPacket extends DataPacket implements ClientboundPacket{
 		return $this->eventData;
 	}
 
-	protected function decodePayload() : void{
-		$this->eventId = $this->buf->getVarInt();
-		$this->eventData = $this->buf->getRemaining();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->eventId = $in->getVarInt();
+		$this->eventData = $in->getRemaining();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putVarInt($this->eventId);
-		$this->buf->put($this->eventData);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putVarInt($this->eventId);
+		$out->put($this->eventData);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

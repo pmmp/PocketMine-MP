@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class UpdateEquipPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_EQUIP_PACKET;
@@ -41,20 +42,20 @@ class UpdateEquipPacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $namedtag;
 
-	protected function decodePayload() : void{
-		$this->windowId = $this->buf->getByte();
-		$this->windowType = $this->buf->getByte();
-		$this->unknownVarint = $this->buf->getVarInt();
-		$this->entityUniqueId = $this->buf->getEntityUniqueId();
-		$this->namedtag = $this->buf->getRemaining();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->windowId = $in->getByte();
+		$this->windowType = $in->getByte();
+		$this->unknownVarint = $in->getVarInt();
+		$this->entityUniqueId = $in->getEntityUniqueId();
+		$this->namedtag = $in->getRemaining();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->windowId);
-		$this->buf->putByte($this->windowType);
-		$this->buf->putVarInt($this->unknownVarint);
-		$this->buf->putEntityUniqueId($this->entityUniqueId);
-		$this->buf->put($this->namedtag);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->windowId);
+		$out->putByte($this->windowType);
+		$out->putVarInt($this->unknownVarint);
+		$out->putEntityUniqueId($this->entityUniqueId);
+		$out->put($this->namedtag);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

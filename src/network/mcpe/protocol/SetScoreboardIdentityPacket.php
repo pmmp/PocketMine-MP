@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\ScoreboardIdentityPacketEntry;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class SetScoreboardIdentityPacket extends DataPacket implements ClientboundPacket{
@@ -40,26 +41,26 @@ class SetScoreboardIdentityPacket extends DataPacket implements ClientboundPacke
 	/** @var ScoreboardIdentityPacketEntry[] */
 	public $entries = [];
 
-	protected function decodePayload() : void{
-		$this->type = $this->buf->getByte();
-		for($i = 0, $count = $this->buf->getUnsignedVarInt(); $i < $count; ++$i){
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->type = $in->getByte();
+		for($i = 0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
 			$entry = new ScoreboardIdentityPacketEntry();
-			$entry->scoreboardId = $this->buf->getVarLong();
+			$entry->scoreboardId = $in->getVarLong();
 			if($this->type === self::TYPE_REGISTER_IDENTITY){
-				$entry->entityUniqueId = $this->buf->getEntityUniqueId();
+				$entry->entityUniqueId = $in->getEntityUniqueId();
 			}
 
 			$this->entries[] = $entry;
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->type);
-		$this->buf->putUnsignedVarInt(count($this->entries));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->type);
+		$out->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
-			$this->buf->putVarLong($entry->scoreboardId);
+			$out->putVarLong($entry->scoreboardId);
 			if($this->type === self::TYPE_REGISTER_IDENTITY){
-				$this->buf->putEntityUniqueId($entry->entityUniqueId);
+				$out->putEntityUniqueId($entry->entityUniqueId);
 			}
 		}
 	}

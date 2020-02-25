@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
@@ -60,37 +61,37 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->mustAccept = $this->buf->getBool();
-		$behaviorPackCount = $this->buf->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->mustAccept = $in->getBool();
+		$behaviorPackCount = $in->getUnsignedVarInt();
 		while($behaviorPackCount-- > 0){
-			$this->behaviorPackStack[] = ResourcePackStackEntry::read($this->buf);
+			$this->behaviorPackStack[] = ResourcePackStackEntry::read($in);
 		}
 
-		$resourcePackCount = $this->buf->getUnsignedVarInt();
+		$resourcePackCount = $in->getUnsignedVarInt();
 		while($resourcePackCount-- > 0){
-			$this->resourcePackStack[] = ResourcePackStackEntry::read($this->buf);
+			$this->resourcePackStack[] = ResourcePackStackEntry::read($in);
 		}
 
-		$this->isExperimental = $this->buf->getBool();
-		$this->baseGameVersion = $this->buf->getString();
+		$this->isExperimental = $in->getBool();
+		$this->baseGameVersion = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putBool($this->mustAccept);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putBool($this->mustAccept);
 
-		$this->buf->putUnsignedVarInt(count($this->behaviorPackStack));
+		$out->putUnsignedVarInt(count($this->behaviorPackStack));
 		foreach($this->behaviorPackStack as $entry){
-			$entry->write($this->buf);
+			$entry->write($out);
 		}
 
-		$this->buf->putUnsignedVarInt(count($this->resourcePackStack));
+		$out->putUnsignedVarInt(count($this->resourcePackStack));
 		foreach($this->resourcePackStack as $entry){
-			$entry->write($this->buf);
+			$entry->write($out);
 		}
 
-		$this->buf->putBool($this->isExperimental);
-		$this->buf->putString($this->baseGameVersion);
+		$out->putBool($this->isExperimental);
+		$out->putString($this->baseGameVersion);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

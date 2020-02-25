@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
@@ -56,30 +57,30 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->mustAccept = $this->buf->getBool();
-		$this->hasScripts = $this->buf->getBool();
-		$behaviorPackCount = $this->buf->getLShort();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->mustAccept = $in->getBool();
+		$this->hasScripts = $in->getBool();
+		$behaviorPackCount = $in->getLShort();
 		while($behaviorPackCount-- > 0){
-			$this->behaviorPackEntries[] = ResourcePackInfoEntry::read($this->buf);
+			$this->behaviorPackEntries[] = ResourcePackInfoEntry::read($in);
 		}
 
-		$resourcePackCount = $this->buf->getLShort();
+		$resourcePackCount = $in->getLShort();
 		while($resourcePackCount-- > 0){
-			$this->resourcePackEntries[] = ResourcePackInfoEntry::read($this->buf);
+			$this->resourcePackEntries[] = ResourcePackInfoEntry::read($in);
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putBool($this->mustAccept);
-		$this->buf->putBool($this->hasScripts);
-		$this->buf->putLShort(count($this->behaviorPackEntries));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putBool($this->mustAccept);
+		$out->putBool($this->hasScripts);
+		$out->putLShort(count($this->behaviorPackEntries));
 		foreach($this->behaviorPackEntries as $entry){
-			$entry->write($this->buf);
+			$entry->write($out);
 		}
-		$this->buf->putLShort(count($this->resourcePackEntries));
+		$out->putLShort(count($this->resourcePackEntries));
 		foreach($this->resourcePackEntries as $entry){
-			$entry->write($this->buf);
+			$entry->write($out);
 		}
 	}
 

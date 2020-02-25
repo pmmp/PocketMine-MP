@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\command\CommandOutputMessage;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\BinaryDataException;
 use function count;
 
@@ -45,58 +46,58 @@ class CommandOutputPacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $unknownString;
 
-	protected function decodePayload() : void{
-		$this->originData = $this->buf->getCommandOriginData();
-		$this->outputType = $this->buf->getByte();
-		$this->successCount = $this->buf->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->originData = $in->getCommandOriginData();
+		$this->outputType = $in->getByte();
+		$this->successCount = $in->getUnsignedVarInt();
 
-		for($i = 0, $size = $this->buf->getUnsignedVarInt(); $i < $size; ++$i){
-			$this->messages[] = $this->getCommandMessage();
+		for($i = 0, $size = $in->getUnsignedVarInt(); $i < $size; ++$i){
+			$this->messages[] = $this->getCommandMessage($in);
 		}
 
 		if($this->outputType === 4){
-			$this->unknownString = $this->buf->getString();
+			$this->unknownString = $in->getString();
 		}
 	}
 
 	/**
 	 * @throws BinaryDataException
 	 */
-	protected function getCommandMessage() : CommandOutputMessage{
+	protected function getCommandMessage(NetworkBinaryStream $in) : CommandOutputMessage{
 		$message = new CommandOutputMessage();
 
-		$message->isInternal = $this->buf->getBool();
-		$message->messageId = $this->buf->getString();
+		$message->isInternal = $in->getBool();
+		$message->messageId = $in->getString();
 
-		for($i = 0, $size = $this->buf->getUnsignedVarInt(); $i < $size; ++$i){
-			$message->parameters[] = $this->buf->getString();
+		for($i = 0, $size = $in->getUnsignedVarInt(); $i < $size; ++$i){
+			$message->parameters[] = $in->getString();
 		}
 
 		return $message;
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putCommandOriginData($this->originData);
-		$this->buf->putByte($this->outputType);
-		$this->buf->putUnsignedVarInt($this->successCount);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putCommandOriginData($this->originData);
+		$out->putByte($this->outputType);
+		$out->putUnsignedVarInt($this->successCount);
 
-		$this->buf->putUnsignedVarInt(count($this->messages));
+		$out->putUnsignedVarInt(count($this->messages));
 		foreach($this->messages as $message){
-			$this->putCommandMessage($message);
+			$this->putCommandMessage($message, $out);
 		}
 
 		if($this->outputType === 4){
-			$this->buf->putString($this->unknownString);
+			$out->putString($this->unknownString);
 		}
 	}
 
-	protected function putCommandMessage(CommandOutputMessage $message) : void{
-		$this->buf->putBool($message->isInternal);
-		$this->buf->putString($message->messageId);
+	protected function putCommandMessage(CommandOutputMessage $message, NetworkBinaryStream $out) : void{
+		$out->putBool($message->isInternal);
+		$out->putString($message->messageId);
 
-		$this->buf->putUnsignedVarInt(count($message->parameters));
+		$out->putUnsignedVarInt(count($message->parameters));
 		foreach($message->parameters as $parameter){
-			$this->buf->putString($parameter);
+			$out->putString($parameter);
 		}
 	}
 

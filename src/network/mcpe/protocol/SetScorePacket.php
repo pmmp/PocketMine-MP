@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class SetScorePacket extends DataPacket implements ClientboundPacket{
@@ -41,22 +42,22 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 	/** @var ScorePacketEntry[] */
 	public $entries = [];
 
-	protected function decodePayload() : void{
-		$this->type = $this->buf->getByte();
-		for($i = 0, $i2 = $this->buf->getUnsignedVarInt(); $i < $i2; ++$i){
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->type = $in->getByte();
+		for($i = 0, $i2 = $in->getUnsignedVarInt(); $i < $i2; ++$i){
 			$entry = new ScorePacketEntry();
-			$entry->scoreboardId = $this->buf->getVarLong();
-			$entry->objectiveName = $this->buf->getString();
-			$entry->score = $this->buf->getLInt();
+			$entry->scoreboardId = $in->getVarLong();
+			$entry->objectiveName = $in->getString();
+			$entry->score = $in->getLInt();
 			if($this->type !== self::TYPE_REMOVE){
-				$entry->type = $this->buf->getByte();
+				$entry->type = $in->getByte();
 				switch($entry->type){
 					case ScorePacketEntry::TYPE_PLAYER:
 					case ScorePacketEntry::TYPE_ENTITY:
-						$entry->entityUniqueId = $this->buf->getEntityUniqueId();
+						$entry->entityUniqueId = $in->getEntityUniqueId();
 						break;
 					case ScorePacketEntry::TYPE_FAKE_PLAYER:
-						$entry->customName = $this->buf->getString();
+						$entry->customName = $in->getString();
 						break;
 					default:
 						throw new BadPacketException("Unknown entry type $entry->type");
@@ -66,22 +67,22 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->type);
-		$this->buf->putUnsignedVarInt(count($this->entries));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->type);
+		$out->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
-			$this->buf->putVarLong($entry->scoreboardId);
-			$this->buf->putString($entry->objectiveName);
-			$this->buf->putLInt($entry->score);
+			$out->putVarLong($entry->scoreboardId);
+			$out->putString($entry->objectiveName);
+			$out->putLInt($entry->score);
 			if($this->type !== self::TYPE_REMOVE){
-				$this->buf->putByte($entry->type);
+				$out->putByte($entry->type);
 				switch($entry->type){
 					case ScorePacketEntry::TYPE_PLAYER:
 					case ScorePacketEntry::TYPE_ENTITY:
-						$this->buf->putEntityUniqueId($entry->entityUniqueId);
+						$out->putEntityUniqueId($entry->entityUniqueId);
 						break;
 					case ScorePacketEntry::TYPE_FAKE_PLAYER:
-						$this->buf->putString($entry->customName);
+						$out->putString($entry->customName);
 						break;
 					default:
 						throw new \InvalidArgumentException("Unknown entry type $entry->type");

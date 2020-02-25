@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 
 class UpdateBlockPropertiesPacket extends DataPacket implements ClientboundPacket{
@@ -42,12 +43,12 @@ class UpdateBlockPropertiesPacket extends DataPacket implements ClientboundPacke
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->nbt = $this->buf->getRemaining();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->nbt = $in->getRemaining();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->put($this->nbt);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->put($this->nbt);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

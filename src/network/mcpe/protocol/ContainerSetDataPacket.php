@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ContainerSetDataPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CONTAINER_SET_DATA_PACKET;
@@ -55,16 +56,16 @@ class ContainerSetDataPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->windowId = $this->buf->getByte();
-		$this->property = $this->buf->getVarInt();
-		$this->value = $this->buf->getVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->windowId = $in->getByte();
+		$this->property = $in->getVarInt();
+		$this->value = $in->getVarInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->windowId);
-		$this->buf->putVarInt($this->property);
-		$this->buf->putVarInt($this->value);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->windowId);
+		$out->putVarInt($this->property);
+		$out->putVarInt($this->value);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

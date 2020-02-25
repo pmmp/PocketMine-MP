@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -115,66 +116,66 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 		return self::messageOnly(self::TYPE_TIP, $message);
 	}
 
-	protected function decodePayload() : void{
-		$this->type = $this->buf->getByte();
-		$this->needsTranslation = $this->buf->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->type = $in->getByte();
+		$this->needsTranslation = $in->getBool();
 		switch($this->type){
 			case self::TYPE_CHAT:
 			case self::TYPE_WHISPER:
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
-				$this->sourceName = $this->buf->getString();
+				$this->sourceName = $in->getString();
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
 			case self::TYPE_JSON:
-				$this->message = $this->buf->getString();
+				$this->message = $in->getString();
 				break;
 
 			case self::TYPE_TRANSLATION:
 			case self::TYPE_POPUP:
 			case self::TYPE_JUKEBOX_POPUP:
-				$this->message = $this->buf->getString();
-				$count = $this->buf->getUnsignedVarInt();
+				$this->message = $in->getString();
+				$count = $in->getUnsignedVarInt();
 				for($i = 0; $i < $count; ++$i){
-					$this->parameters[] = $this->buf->getString();
+					$this->parameters[] = $in->getString();
 				}
 				break;
 		}
 
-		$this->xboxUserId = $this->buf->getString();
-		$this->platformChatId = $this->buf->getString();
+		$this->xboxUserId = $in->getString();
+		$this->platformChatId = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->type);
-		$this->buf->putBool($this->needsTranslation);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->type);
+		$out->putBool($this->needsTranslation);
 		switch($this->type){
 			case self::TYPE_CHAT:
 			case self::TYPE_WHISPER:
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
-				$this->buf->putString($this->sourceName);
+				$out->putString($this->sourceName);
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
 			case self::TYPE_JSON:
-				$this->buf->putString($this->message);
+				$out->putString($this->message);
 				break;
 
 			case self::TYPE_TRANSLATION:
 			case self::TYPE_POPUP:
 			case self::TYPE_JUKEBOX_POPUP:
-				$this->buf->putString($this->message);
-				$this->buf->putUnsignedVarInt(count($this->parameters));
+				$out->putString($this->message);
+				$out->putUnsignedVarInt(count($this->parameters));
 				foreach($this->parameters as $p){
-					$this->buf->putString($p);
+					$out->putString($p);
 				}
 				break;
 		}
 
-		$this->buf->putString($this->xboxUserId);
-		$this->buf->putString($this->platformChatId);
+		$out->putString($this->xboxUserId);
+		$out->putString($this->platformChatId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

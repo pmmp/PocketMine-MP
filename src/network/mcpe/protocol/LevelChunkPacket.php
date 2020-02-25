@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class LevelChunkPacket extends DataPacket implements ClientboundPacket{
@@ -100,31 +101,31 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 		return $this->extraPayload;
 	}
 
-	protected function decodePayload() : void{
-		$this->chunkX = $this->buf->getVarInt();
-		$this->chunkZ = $this->buf->getVarInt();
-		$this->subChunkCount = $this->buf->getUnsignedVarInt();
-		$this->cacheEnabled = $this->buf->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->chunkX = $in->getVarInt();
+		$this->chunkZ = $in->getVarInt();
+		$this->subChunkCount = $in->getUnsignedVarInt();
+		$this->cacheEnabled = $in->getBool();
 		if($this->cacheEnabled){
-			for($i =  0, $count = $this->buf->getUnsignedVarInt(); $i < $count; ++$i){
-				$this->usedBlobHashes[] = $this->buf->getLLong();
+			for($i =  0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
+				$this->usedBlobHashes[] = $in->getLLong();
 			}
 		}
-		$this->extraPayload = $this->buf->getString();
+		$this->extraPayload = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putVarInt($this->chunkX);
-		$this->buf->putVarInt($this->chunkZ);
-		$this->buf->putUnsignedVarInt($this->subChunkCount);
-		$this->buf->putBool($this->cacheEnabled);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putVarInt($this->chunkX);
+		$out->putVarInt($this->chunkZ);
+		$out->putUnsignedVarInt($this->subChunkCount);
+		$out->putBool($this->cacheEnabled);
 		if($this->cacheEnabled){
-			$this->buf->putUnsignedVarInt(count($this->usedBlobHashes));
+			$out->putUnsignedVarInt(count($this->usedBlobHashes));
 			foreach($this->usedBlobHashes as $hash){
-				$this->buf->putLLong($hash);
+				$out->putLLong($hash);
 			}
 		}
-		$this->buf->putString($this->extraPayload);
+		$out->putString($this->extraPayload);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

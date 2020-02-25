@@ -33,6 +33,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\TransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 /**
  * This packet effectively crams multiple packets into one.
@@ -49,8 +50,8 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 	/** @var TransactionData */
 	public $trData;
 
-	protected function decodePayload() : void{
-		$transactionType = $this->buf->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$transactionType = $in->getUnsignedVarInt();
 
 		switch($transactionType){
 			case self::TYPE_NORMAL:
@@ -72,12 +73,12 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 				throw new BadPacketException("Unknown transaction type $transactionType");
 		}
 
-		$this->trData->decode($this->buf);
+		$this->trData->decode($in);
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putUnsignedVarInt($this->trData->getTypeId());
-		$this->trData->encode($this->buf);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt($this->trData->getTypeId());
+		$this->trData->encode($out);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class MultiplayerSettingsPacket extends DataPacket implements ServerboundPacket{ //TODO: this might be clientbound too, but unsure
 	public const NETWORK_ID = ProtocolInfo::MULTIPLAYER_SETTINGS_PACKET;
@@ -47,12 +48,12 @@ class MultiplayerSettingsPacket extends DataPacket implements ServerboundPacket{
 		return $this->action;
 	}
 
-	protected function decodePayload() : void{
-		$this->action = $this->buf->getVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->action = $in->getVarInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putVarInt($this->action);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putVarInt($this->action);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

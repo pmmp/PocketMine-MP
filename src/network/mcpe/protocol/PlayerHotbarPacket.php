@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class PlayerHotbarPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_HOTBAR_PACKET;
@@ -46,16 +47,16 @@ class PlayerHotbarPacket extends DataPacket implements ClientboundPacket, Server
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->selectedHotbarSlot = $this->buf->getUnsignedVarInt();
-		$this->windowId = $this->buf->getByte();
-		$this->selectHotbarSlot = $this->buf->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->selectedHotbarSlot = $in->getUnsignedVarInt();
+		$this->windowId = $in->getByte();
+		$this->selectHotbarSlot = $in->getBool();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putUnsignedVarInt($this->selectedHotbarSlot);
-		$this->buf->putByte($this->windowId);
-		$this->buf->putBool($this->selectHotbarSlot);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt($this->selectedHotbarSlot);
+		$out->putByte($this->windowId);
+		$out->putBool($this->selectHotbarSlot);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

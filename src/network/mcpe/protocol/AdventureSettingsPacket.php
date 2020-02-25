@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class AdventureSettingsPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADVENTURE_SETTINGS_PACKET;
@@ -75,22 +76,22 @@ class AdventureSettingsPacket extends DataPacket implements ClientboundPacket, S
 	/** @var int */
 	public $entityUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
 
-	protected function decodePayload() : void{
-		$this->flags = $this->buf->getUnsignedVarInt();
-		$this->commandPermission = $this->buf->getUnsignedVarInt();
-		$this->flags2 = $this->buf->getUnsignedVarInt();
-		$this->playerPermission = $this->buf->getUnsignedVarInt();
-		$this->customFlags = $this->buf->getUnsignedVarInt();
-		$this->entityUniqueId = $this->buf->getLLong();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->flags = $in->getUnsignedVarInt();
+		$this->commandPermission = $in->getUnsignedVarInt();
+		$this->flags2 = $in->getUnsignedVarInt();
+		$this->playerPermission = $in->getUnsignedVarInt();
+		$this->customFlags = $in->getUnsignedVarInt();
+		$this->entityUniqueId = $in->getLLong();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putUnsignedVarInt($this->flags);
-		$this->buf->putUnsignedVarInt($this->commandPermission);
-		$this->buf->putUnsignedVarInt($this->flags2);
-		$this->buf->putUnsignedVarInt($this->playerPermission);
-		$this->buf->putUnsignedVarInt($this->customFlags);
-		$this->buf->putLLong($this->entityUniqueId);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt($this->flags);
+		$out->putUnsignedVarInt($this->commandPermission);
+		$out->putUnsignedVarInt($this->flags2);
+		$out->putUnsignedVarInt($this->playerPermission);
+		$out->putUnsignedVarInt($this->customFlags);
+		$out->putLLong($this->entityUniqueId);
 	}
 
 	public function getFlag(int $flag) : bool{

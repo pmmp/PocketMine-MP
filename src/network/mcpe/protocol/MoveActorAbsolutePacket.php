@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class MoveActorAbsolutePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOVE_ACTOR_ABSOLUTE_PACKET;
@@ -47,22 +48,22 @@ class MoveActorAbsolutePacket extends DataPacket implements ClientboundPacket, S
 	/** @var float */
 	public $zRot;
 
-	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
-		$this->flags = $this->buf->getByte();
-		$this->position = $this->buf->getVector3();
-		$this->xRot = $this->buf->getByteRotation();
-		$this->yRot = $this->buf->getByteRotation();
-		$this->zRot = $this->buf->getByteRotation();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->flags = $in->getByte();
+		$this->position = $in->getVector3();
+		$this->xRot = $in->getByteRotation();
+		$this->yRot = $in->getByteRotation();
+		$this->zRot = $in->getByteRotation();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
-		$this->buf->putByte($this->flags);
-		$this->buf->putVector3($this->position);
-		$this->buf->putByteRotation($this->xRot);
-		$this->buf->putByteRotation($this->yRot);
-		$this->buf->putByteRotation($this->zRot);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putByte($this->flags);
+		$out->putVector3($this->position);
+		$out->putByteRotation($this->xRot);
+		$out->putByteRotation($this->yRot);
+		$out->putByteRotation($this->zRot);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

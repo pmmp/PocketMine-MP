@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function file_get_contents;
 
 class BiomeDefinitionListPacket extends DataPacket implements ClientboundPacket{
@@ -37,12 +38,12 @@ class BiomeDefinitionListPacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $namedtag;
 
-	protected function decodePayload() : void{
-		$this->namedtag = $this->buf->getRemaining();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->namedtag = $in->getRemaining();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->put(
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->put(
 			$this->namedtag ??
 			self::$DEFAULT_NBT_CACHE ??
 			(self::$DEFAULT_NBT_CACHE = file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/biome_definitions.nbt'))

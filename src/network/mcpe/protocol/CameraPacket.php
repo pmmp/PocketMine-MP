@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class CameraPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CAMERA_PACKET;
@@ -35,14 +36,14 @@ class CameraPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $playerUniqueId;
 
-	protected function decodePayload() : void{
-		$this->cameraUniqueId = $this->buf->getEntityUniqueId();
-		$this->playerUniqueId = $this->buf->getEntityUniqueId();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->cameraUniqueId = $in->getEntityUniqueId();
+		$this->playerUniqueId = $in->getEntityUniqueId();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putEntityUniqueId($this->cameraUniqueId);
-		$this->buf->putEntityUniqueId($this->playerUniqueId);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityUniqueId($this->cameraUniqueId);
+		$out->putEntityUniqueId($this->playerUniqueId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

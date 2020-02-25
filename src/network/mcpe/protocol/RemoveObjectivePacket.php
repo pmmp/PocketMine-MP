@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class RemoveObjectivePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::REMOVE_OBJECTIVE_PACKET;
@@ -33,12 +34,12 @@ class RemoveObjectivePacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $objectiveName;
 
-	protected function decodePayload() : void{
-		$this->objectiveName = $this->buf->getString();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->objectiveName = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putString($this->objectiveName);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->objectiveName);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

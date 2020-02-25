@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ServerSettingsResponsePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SERVER_SETTINGS_RESPONSE_PACKET;
@@ -35,14 +36,14 @@ class ServerSettingsResponsePacket extends DataPacket implements ClientboundPack
 	/** @var string */
 	public $formData; //json
 
-	protected function decodePayload() : void{
-		$this->formId = $this->buf->getUnsignedVarInt();
-		$this->formData = $this->buf->getString();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->formId = $in->getUnsignedVarInt();
+		$this->formData = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putUnsignedVarInt($this->formId);
-		$this->buf->putString($this->formData);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt($this->formId);
+		$out->putString($this->formData);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

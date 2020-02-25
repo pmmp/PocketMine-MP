@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class PlayerListPacket extends DataPacket implements ClientboundPacket{
@@ -60,46 +61,46 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->type = $this->buf->getByte();
-		$count = $this->buf->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->type = $in->getByte();
+		$count = $in->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
 			$entry = new PlayerListEntry();
 
 			if($this->type === self::TYPE_ADD){
-				$entry->uuid = $this->buf->getUUID();
-				$entry->entityUniqueId = $this->buf->getEntityUniqueId();
-				$entry->username = $this->buf->getString();
-				$entry->xboxUserId = $this->buf->getString();
-				$entry->platformChatId = $this->buf->getString();
-				$entry->buildPlatform = $this->buf->getLInt();
-				$entry->skinData = $this->buf->getSkin();
-				$entry->isTeacher = $this->buf->getBool();
-				$entry->isHost = $this->buf->getBool();
+				$entry->uuid = $in->getUUID();
+				$entry->entityUniqueId = $in->getEntityUniqueId();
+				$entry->username = $in->getString();
+				$entry->xboxUserId = $in->getString();
+				$entry->platformChatId = $in->getString();
+				$entry->buildPlatform = $in->getLInt();
+				$entry->skinData = $in->getSkin();
+				$entry->isTeacher = $in->getBool();
+				$entry->isHost = $in->getBool();
 			}else{
-				$entry->uuid = $this->buf->getUUID();
+				$entry->uuid = $in->getUUID();
 			}
 
 			$this->entries[$i] = $entry;
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->type);
-		$this->buf->putUnsignedVarInt(count($this->entries));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->type);
+		$out->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
 			if($this->type === self::TYPE_ADD){
-				$this->buf->putUUID($entry->uuid);
-				$this->buf->putEntityUniqueId($entry->entityUniqueId);
-				$this->buf->putString($entry->username);
-				$this->buf->putString($entry->xboxUserId);
-				$this->buf->putString($entry->platformChatId);
-				$this->buf->putLInt($entry->buildPlatform);
-				$this->buf->putSkin($entry->skinData);
-				$this->buf->putBool($entry->isTeacher);
-				$this->buf->putBool($entry->isHost);
+				$out->putUUID($entry->uuid);
+				$out->putEntityUniqueId($entry->entityUniqueId);
+				$out->putString($entry->username);
+				$out->putString($entry->xboxUserId);
+				$out->putString($entry->platformChatId);
+				$out->putLInt($entry->buildPlatform);
+				$out->putSkin($entry->skinData);
+				$out->putBool($entry->isTeacher);
+				$out->putBool($entry->isHost);
 			}else{
-				$this->buf->putUUID($entry->uuid);
+				$out->putUUID($entry->uuid);
 			}
 		}
 	}

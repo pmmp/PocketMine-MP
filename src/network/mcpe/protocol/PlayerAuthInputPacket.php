@@ -29,6 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\InputMode;
 use pocketmine\network\mcpe\protocol\types\PlayMode;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function assert;
 
 class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
@@ -127,34 +128,34 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		return $this->vrGazeDirection;
 	}
 
-	protected function decodePayload() : void{
-		$this->yaw = $this->buf->getLFloat();
-		$this->pitch = $this->buf->getLFloat();
-		$this->position = $this->buf->getVector3();
-		$this->moveVecX = $this->buf->getLFloat();
-		$this->moveVecZ = $this->buf->getLFloat();
-		$this->headYaw = $this->buf->getLFloat();
-		$this->inputFlags = $this->buf->getUnsignedVarLong();
-		$this->inputMode = $this->buf->getUnsignedVarInt();
-		$this->playMode = $this->buf->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->yaw = $in->getLFloat();
+		$this->pitch = $in->getLFloat();
+		$this->position = $in->getVector3();
+		$this->moveVecX = $in->getLFloat();
+		$this->moveVecZ = $in->getLFloat();
+		$this->headYaw = $in->getLFloat();
+		$this->inputFlags = $in->getUnsignedVarLong();
+		$this->inputMode = $in->getUnsignedVarInt();
+		$this->playMode = $in->getUnsignedVarInt();
 		if($this->playMode === PlayMode::VR){
-			$this->vrGazeDirection = $this->buf->getVector3();
+			$this->vrGazeDirection = $in->getVector3();
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putLFloat($this->yaw);
-		$this->buf->putLFloat($this->pitch);
-		$this->buf->putVector3($this->position);
-		$this->buf->putLFloat($this->moveVecX);
-		$this->buf->putLFloat($this->moveVecZ);
-		$this->buf->putLFloat($this->headYaw);
-		$this->buf->putUnsignedVarLong($this->inputFlags);
-		$this->buf->putUnsignedVarInt($this->inputMode);
-		$this->buf->putUnsignedVarInt($this->playMode);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putLFloat($this->yaw);
+		$out->putLFloat($this->pitch);
+		$out->putVector3($this->position);
+		$out->putLFloat($this->moveVecX);
+		$out->putLFloat($this->moveVecZ);
+		$out->putLFloat($this->headYaw);
+		$out->putUnsignedVarLong($this->inputFlags);
+		$out->putUnsignedVarInt($this->inputMode);
+		$out->putUnsignedVarInt($this->playMode);
 		if($this->playMode === PlayMode::VR){
 			assert($this->vrGazeDirection !== null);
-			$this->buf->putVector3($this->vrGazeDirection);
+			$out->putVector3($this->vrGazeDirection);
 		}
 	}
 

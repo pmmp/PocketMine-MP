@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::COMMAND_BLOCK_UPDATE_PACKET;
@@ -62,47 +63,47 @@ class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 	/** @var bool */
 	public $executeOnFirstTick;
 
-	protected function decodePayload() : void{
-		$this->isBlock = $this->buf->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->isBlock = $in->getBool();
 
 		if($this->isBlock){
-			$this->buf->getBlockPosition($this->x, $this->y, $this->z);
-			$this->commandBlockMode = $this->buf->getUnsignedVarInt();
-			$this->isRedstoneMode = $this->buf->getBool();
-			$this->isConditional = $this->buf->getBool();
+			$in->getBlockPosition($this->x, $this->y, $this->z);
+			$this->commandBlockMode = $in->getUnsignedVarInt();
+			$this->isRedstoneMode = $in->getBool();
+			$this->isConditional = $in->getBool();
 		}else{
 			//Minecart with command block
-			$this->minecartEid = $this->buf->getEntityRuntimeId();
+			$this->minecartEid = $in->getEntityRuntimeId();
 		}
 
-		$this->command = $this->buf->getString();
-		$this->lastOutput = $this->buf->getString();
-		$this->name = $this->buf->getString();
+		$this->command = $in->getString();
+		$this->lastOutput = $in->getString();
+		$this->name = $in->getString();
 
-		$this->shouldTrackOutput = $this->buf->getBool();
-		$this->tickDelay = $this->buf->getLInt();
-		$this->executeOnFirstTick = $this->buf->getBool();
+		$this->shouldTrackOutput = $in->getBool();
+		$this->tickDelay = $in->getLInt();
+		$this->executeOnFirstTick = $in->getBool();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putBool($this->isBlock);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putBool($this->isBlock);
 
 		if($this->isBlock){
-			$this->buf->putBlockPosition($this->x, $this->y, $this->z);
-			$this->buf->putUnsignedVarInt($this->commandBlockMode);
-			$this->buf->putBool($this->isRedstoneMode);
-			$this->buf->putBool($this->isConditional);
+			$out->putBlockPosition($this->x, $this->y, $this->z);
+			$out->putUnsignedVarInt($this->commandBlockMode);
+			$out->putBool($this->isRedstoneMode);
+			$out->putBool($this->isConditional);
 		}else{
-			$this->buf->putEntityRuntimeId($this->minecartEid);
+			$out->putEntityRuntimeId($this->minecartEid);
 		}
 
-		$this->buf->putString($this->command);
-		$this->buf->putString($this->lastOutput);
-		$this->buf->putString($this->name);
+		$out->putString($this->command);
+		$out->putString($this->lastOutput);
+		$out->putString($this->name);
 
-		$this->buf->putBool($this->shouldTrackOutput);
-		$this->buf->putLInt($this->tickDelay);
-		$this->buf->putBool($this->executeOnFirstTick);
+		$out->putBool($this->shouldTrackOutput);
+		$out->putLInt($this->tickDelay);
+		$out->putBool($this->executeOnFirstTick);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

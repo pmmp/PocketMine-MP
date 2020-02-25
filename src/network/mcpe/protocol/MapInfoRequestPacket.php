@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class MapInfoRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MAP_INFO_REQUEST_PACKET;
@@ -33,12 +34,12 @@ class MapInfoRequestPacket extends DataPacket implements ServerboundPacket{
 	/** @var int */
 	public $mapId;
 
-	protected function decodePayload() : void{
-		$this->mapId = $this->buf->getEntityUniqueId();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->mapId = $in->getEntityUniqueId();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putEntityUniqueId($this->mapId);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityUniqueId($this->mapId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

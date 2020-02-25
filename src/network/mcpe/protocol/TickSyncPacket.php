@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class TickSyncPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::TICK_SYNC_PACKET;
@@ -57,14 +58,14 @@ class TickSyncPacket extends DataPacket implements ClientboundPacket, Serverboun
 		return $this->serverReceiveTime;
 	}
 
-	protected function decodePayload() : void{
-		$this->clientSendTime = $this->buf->getLLong();
-		$this->serverReceiveTime = $this->buf->getLLong();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->clientSendTime = $in->getLLong();
+		$this->serverReceiveTime = $in->getLLong();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putLLong($this->clientSendTime);
-		$this->buf->putLLong($this->serverReceiveTime);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putLLong($this->clientSendTime);
+		$out->putLLong($this->serverReceiveTime);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

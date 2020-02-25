@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function strlen;
 
 class ResourcePackChunkDataPacket extends DataPacket implements ClientboundPacket{
@@ -49,18 +50,18 @@ class ResourcePackChunkDataPacket extends DataPacket implements ClientboundPacke
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->packId = $this->buf->getString();
-		$this->chunkIndex = $this->buf->getLInt();
-		$this->progress = $this->buf->getLLong();
-		$this->data = $this->buf->getString();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->packId = $in->getString();
+		$this->chunkIndex = $in->getLInt();
+		$this->progress = $in->getLLong();
+		$this->data = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putString($this->packId);
-		$this->buf->putLInt($this->chunkIndex);
-		$this->buf->putLLong($this->progress);
-		$this->buf->putString($this->data);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->packId);
+		$out->putLInt($this->chunkIndex);
+		$out->putLLong($this->progress);
+		$out->putString($this->data);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

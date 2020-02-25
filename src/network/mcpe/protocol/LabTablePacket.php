@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class LabTablePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LAB_TABLE_PACKET;
@@ -43,16 +44,16 @@ class LabTablePacket extends DataPacket implements ClientboundPacket, Serverboun
 	/** @var int */
 	public $reactionType;
 
-	protected function decodePayload() : void{
-		$this->uselessByte = $this->buf->getByte();
-		$this->buf->getSignedBlockPosition($this->x, $this->y, $this->z);
-		$this->reactionType = $this->buf->getByte();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->uselessByte = $in->getByte();
+		$in->getSignedBlockPosition($this->x, $this->y, $this->z);
+		$this->reactionType = $in->getByte();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->uselessByte);
-		$this->buf->putSignedBlockPosition($this->x, $this->y, $this->z);
-		$this->buf->putByte($this->reactionType);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->uselessByte);
+		$out->putSignedBlockPosition($this->x, $this->y, $this->z);
+		$out->putByte($this->reactionType);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

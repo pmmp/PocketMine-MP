@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class UpdateBlockSyncedPacket extends UpdateBlockPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_SYNCED_PACKET;
@@ -35,16 +36,16 @@ class UpdateBlockSyncedPacket extends UpdateBlockPacket{
 	/** @var int */
 	public $uvarint64_2 = 0;
 
-	protected function decodePayload() : void{
-		parent::decodePayload();
-		$this->entityUniqueId = $this->buf->getUnsignedVarLong();
-		$this->uvarint64_2 = $this->buf->getUnsignedVarLong();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		parent::decodePayload($in);
+		$this->entityUniqueId = $in->getUnsignedVarLong();
+		$this->uvarint64_2 = $in->getUnsignedVarLong();
 	}
 
-	protected function encodePayload() : void{
-		parent::encodePayload();
-		$this->buf->putUnsignedVarLong($this->entityUniqueId);
-		$this->buf->putUnsignedVarLong($this->uvarint64_2);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		parent::encodePayload($out);
+		$out->putUnsignedVarLong($this->entityUniqueId);
+		$out->putUnsignedVarLong($this->uvarint64_2);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

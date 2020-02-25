@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class NetworkSettingsPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::NETWORK_SETTINGS_PACKET;
@@ -46,12 +47,12 @@ class NetworkSettingsPacket extends DataPacket implements ClientboundPacket{
 		return $this->compressionThreshold;
 	}
 
-	protected function decodePayload() : void{
-		$this->compressionThreshold = $this->buf->getLShort();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->compressionThreshold = $in->getLShort();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putLShort($this->compressionThreshold);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putLShort($this->compressionThreshold);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

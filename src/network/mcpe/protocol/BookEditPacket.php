@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class BookEditPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::BOOK_EDIT_PACKET;
@@ -58,56 +59,56 @@ class BookEditPacket extends DataPacket implements ServerboundPacket{
 	/** @var string */
 	public $xuid;
 
-	protected function decodePayload() : void{
-		$this->type = $this->buf->getByte();
-		$this->inventorySlot = $this->buf->getByte();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->type = $in->getByte();
+		$this->inventorySlot = $in->getByte();
 
 		switch($this->type){
 			case self::TYPE_REPLACE_PAGE:
 			case self::TYPE_ADD_PAGE:
-				$this->pageNumber = $this->buf->getByte();
-				$this->text = $this->buf->getString();
-				$this->photoName = $this->buf->getString();
+				$this->pageNumber = $in->getByte();
+				$this->text = $in->getString();
+				$this->photoName = $in->getString();
 				break;
 			case self::TYPE_DELETE_PAGE:
-				$this->pageNumber = $this->buf->getByte();
+				$this->pageNumber = $in->getByte();
 				break;
 			case self::TYPE_SWAP_PAGES:
-				$this->pageNumber = $this->buf->getByte();
-				$this->secondaryPageNumber = $this->buf->getByte();
+				$this->pageNumber = $in->getByte();
+				$this->secondaryPageNumber = $in->getByte();
 				break;
 			case self::TYPE_SIGN_BOOK:
-				$this->title = $this->buf->getString();
-				$this->author = $this->buf->getString();
-				$this->xuid = $this->buf->getString();
+				$this->title = $in->getString();
+				$this->author = $in->getString();
+				$this->xuid = $in->getString();
 				break;
 			default:
 				throw new BadPacketException("Unknown book edit type $this->type!");
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->type);
-		$this->buf->putByte($this->inventorySlot);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->type);
+		$out->putByte($this->inventorySlot);
 
 		switch($this->type){
 			case self::TYPE_REPLACE_PAGE:
 			case self::TYPE_ADD_PAGE:
-				$this->buf->putByte($this->pageNumber);
-				$this->buf->putString($this->text);
-				$this->buf->putString($this->photoName);
+				$out->putByte($this->pageNumber);
+				$out->putString($this->text);
+				$out->putString($this->photoName);
 				break;
 			case self::TYPE_DELETE_PAGE:
-				$this->buf->putByte($this->pageNumber);
+				$out->putByte($this->pageNumber);
 				break;
 			case self::TYPE_SWAP_PAGES:
-				$this->buf->putByte($this->pageNumber);
-				$this->buf->putByte($this->secondaryPageNumber);
+				$out->putByte($this->pageNumber);
+				$out->putByte($this->secondaryPageNumber);
 				break;
 			case self::TYPE_SIGN_BOOK:
-				$this->buf->putString($this->title);
-				$this->buf->putString($this->author);
-				$this->buf->putString($this->xuid);
+				$out->putString($this->title);
+				$out->putString($this->author);
+				$out->putString($this->xuid);
 				break;
 			default:
 				throw new \InvalidArgumentException("Unknown book edit type $this->type!");

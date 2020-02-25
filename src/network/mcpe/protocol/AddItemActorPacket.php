@@ -29,6 +29,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_ITEM_ACTOR_PACKET;
@@ -51,24 +52,24 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $isFromFishing = false;
 
-	protected function decodePayload() : void{
-		$this->entityUniqueId = $this->buf->getEntityUniqueId();
-		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
-		$this->item = $this->buf->getSlot();
-		$this->position = $this->buf->getVector3();
-		$this->motion = $this->buf->getVector3();
-		$this->metadata = $this->buf->getEntityMetadata();
-		$this->isFromFishing = $this->buf->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->entityUniqueId = $in->getEntityUniqueId();
+		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->item = $in->getSlot();
+		$this->position = $in->getVector3();
+		$this->motion = $in->getVector3();
+		$this->metadata = $in->getEntityMetadata();
+		$this->isFromFishing = $in->getBool();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
-		$this->buf->putSlot($this->item);
-		$this->buf->putVector3($this->position);
-		$this->buf->putVector3Nullable($this->motion);
-		$this->buf->putEntityMetadata($this->metadata);
-		$this->buf->putBool($this->isFromFishing);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
+		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putSlot($this->item);
+		$out->putVector3($this->position);
+		$out->putVector3Nullable($this->motion);
+		$out->putEntityMetadata($this->metadata);
+		$out->putBool($this->isFromFishing);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

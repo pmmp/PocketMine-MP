@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class AddBehaviorTreePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_BEHAVIOR_TREE_PACKET;
@@ -33,12 +34,12 @@ class AddBehaviorTreePacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $behaviorTreeJson;
 
-	protected function decodePayload() : void{
-		$this->behaviorTreeJson = $this->buf->getString();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->behaviorTreeJson = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putString($this->behaviorTreeJson);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->behaviorTreeJson);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

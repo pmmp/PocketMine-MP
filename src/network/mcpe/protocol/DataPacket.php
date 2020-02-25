@@ -51,7 +51,7 @@ abstract class DataPacket implements Packet{
 	public $recipientSubId = 0;
 	
 	/** @var NetworkBinaryStream */
-	protected $buf;
+	private $buf;
 
 	public function __construct(){
 		$this->buf = new NetworkBinaryStream();
@@ -79,8 +79,8 @@ abstract class DataPacket implements Packet{
 	final public function decode() : void{
 		$this->buf->rewind();
 		try{
-			$this->decodeHeader();
-			$this->decodePayload();
+			$this->decodeHeader($this->buf);
+			$this->decodePayload($this->buf);
 		}catch(BinaryDataException | BadPacketException $e){
 			throw new BadPacketException($this->getName() . ": " . $e->getMessage(), 0, $e);
 		}
@@ -90,8 +90,8 @@ abstract class DataPacket implements Packet{
 	 * @throws BinaryDataException
 	 * @throws \UnexpectedValueException
 	 */
-	protected function decodeHeader() : void{
-		$header = $this->buf->getUnsignedVarInt();
+	protected function decodeHeader(NetworkBinaryStream $in) : void{
+		$header = $in->getUnsignedVarInt();
 		$pid = $header & self::PID_MASK;
 		if($pid !== static::NETWORK_ID){
 			//TODO: this means a logical error in the code, but how to prevent it from happening?
@@ -108,16 +108,16 @@ abstract class DataPacket implements Packet{
 	 * @throws BadPacketException
 	 * @throws BinaryDataException
 	 */
-	abstract protected function decodePayload() : void;
+	abstract protected function decodePayload(NetworkBinaryStream $in) : void;
 
 	final public function encode() : void{
 		$this->buf->reset();
-		$this->encodeHeader();
-		$this->encodePayload();
+		$this->encodeHeader($this->buf);
+		$this->encodePayload($this->buf);
 	}
 
-	protected function encodeHeader() : void{
-		$this->buf->putUnsignedVarInt(
+	protected function encodeHeader(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt(
 			static::NETWORK_ID |
 			($this->senderSubId << self::SENDER_SUBCLIENT_ID_SHIFT) |
 			($this->recipientSubId << self::RECIPIENT_SUBCLIENT_ID_SHIFT)
@@ -127,7 +127,7 @@ abstract class DataPacket implements Packet{
 	/**
 	 * Encodes the packet body, without the packet ID or other generic header fields.
 	 */
-	abstract protected function encodePayload() : void;
+	abstract protected function encodePayload(NetworkBinaryStream $out) : void;
 
 	/**
 	 * @param string $name

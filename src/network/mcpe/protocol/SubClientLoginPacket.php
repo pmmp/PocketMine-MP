@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class SubClientLoginPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SUB_CLIENT_LOGIN_PACKET;
@@ -33,12 +34,12 @@ class SubClientLoginPacket extends DataPacket implements ServerboundPacket{
 	/** @var string */
 	public $connectionRequestData;
 
-	protected function decodePayload() : void{
-		$this->connectionRequestData = $this->buf->getString();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->connectionRequestData = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putString($this->connectionRequestData);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->connectionRequestData);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

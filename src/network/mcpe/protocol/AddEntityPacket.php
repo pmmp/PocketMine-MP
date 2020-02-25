@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class AddEntityPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_ENTITY_PACKET;
@@ -43,12 +44,12 @@ class AddEntityPacket extends DataPacket implements ClientboundPacket{
 		return $this->uvarint1;
 	}
 
-	protected function decodePayload() : void{
-		$this->uvarint1 = $this->buf->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->uvarint1 = $in->getUnsignedVarInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putUnsignedVarInt($this->uvarint1);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt($this->uvarint1);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

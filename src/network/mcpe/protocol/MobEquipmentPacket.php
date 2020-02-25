@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class MobEquipmentPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOB_EQUIPMENT_PACKET;
@@ -52,20 +53,20 @@ class MobEquipmentPacket extends DataPacket implements ClientboundPacket, Server
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->buf->getEntityRuntimeId();
-		$this->item = $this->buf->getSlot();
-		$this->inventorySlot = $this->buf->getByte();
-		$this->hotbarSlot = $this->buf->getByte();
-		$this->windowId = $this->buf->getByte();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->item = $in->getSlot();
+		$this->inventorySlot = $in->getByte();
+		$this->hotbarSlot = $in->getByte();
+		$this->windowId = $in->getByte();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putEntityRuntimeId($this->entityRuntimeId);
-		$this->buf->putSlot($this->item);
-		$this->buf->putByte($this->inventorySlot);
-		$this->buf->putByte($this->hotbarSlot);
-		$this->buf->putByte($this->windowId);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putSlot($this->item);
+		$out->putByte($this->inventorySlot);
+		$out->putByte($this->hotbarSlot);
+		$out->putByte($this->windowId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

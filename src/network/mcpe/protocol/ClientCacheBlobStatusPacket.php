@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class ClientCacheBlobStatusPacket extends DataPacket implements ServerboundPacket{
@@ -65,25 +66,25 @@ class ClientCacheBlobStatusPacket extends DataPacket implements ServerboundPacke
 		return $this->missHashes;
 	}
 
-	protected function decodePayload() : void{
-		$hitCount = $this->buf->getUnsignedVarInt();
-		$missCount = $this->buf->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$hitCount = $in->getUnsignedVarInt();
+		$missCount = $in->getUnsignedVarInt();
 		for($i = 0; $i < $hitCount; ++$i){
-			$this->hitHashes[] = $this->buf->getLLong();
+			$this->hitHashes[] = $in->getLLong();
 		}
 		for($i = 0; $i < $missCount; ++$i){
-			$this->missHashes[] = $this->buf->getLLong();
+			$this->missHashes[] = $in->getLLong();
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putUnsignedVarInt(count($this->hitHashes));
-		$this->buf->putUnsignedVarInt(count($this->missHashes));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt(count($this->hitHashes));
+		$out->putUnsignedVarInt(count($this->missHashes));
 		foreach($this->hitHashes as $hash){
-			$this->buf->putLLong($hash);
+			$out->putLLong($hash);
 		}
 		foreach($this->missHashes as $hash){
-			$this->buf->putLLong($hash);
+			$out->putLLong($hash);
 		}
 	}
 

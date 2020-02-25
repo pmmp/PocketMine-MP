@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class StructureTemplateDataRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_REQUEST_PACKET;
@@ -47,18 +48,18 @@ class StructureTemplateDataRequestPacket extends DataPacket implements Serverbou
 	/** @var int */
 	public $structureTemplateResponseType;
 
-	protected function decodePayload() : void{
-		$this->structureTemplateName = $this->buf->getString();
-		$this->buf->getBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
-		$this->structureSettings = $this->buf->getStructureSettings();
-		$this->structureTemplateResponseType = $this->buf->getByte();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->structureTemplateName = $in->getString();
+		$in->getBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
+		$this->structureSettings = $in->getStructureSettings();
+		$this->structureTemplateResponseType = $in->getByte();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putString($this->structureTemplateName);
-		$this->buf->putBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
-		$this->buf->putStructureSettings($this->structureSettings);
-		$this->buf->putByte($this->structureTemplateResponseType);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->structureTemplateName);
+		$out->putBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
+		$out->putStructureSettings($this->structureSettings);
+		$out->putByte($this->structureTemplateResponseType);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

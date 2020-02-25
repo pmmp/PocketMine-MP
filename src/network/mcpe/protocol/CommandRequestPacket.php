@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class CommandRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::COMMAND_REQUEST_PACKET;
@@ -38,16 +39,16 @@ class CommandRequestPacket extends DataPacket implements ServerboundPacket{
 	/** @var bool */
 	public $isInternal;
 
-	protected function decodePayload() : void{
-		$this->command = $this->buf->getString();
-		$this->originData = $this->buf->getCommandOriginData();
-		$this->isInternal = $this->buf->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->command = $in->getString();
+		$this->originData = $in->getCommandOriginData();
+		$this->isInternal = $in->getBool();
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putString($this->command);
-		$this->buf->putCommandOriginData($this->originData);
-		$this->buf->putBool($this->isInternal);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->command);
+		$out->putCommandOriginData($this->originData);
+		$out->putBool($this->isInternal);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

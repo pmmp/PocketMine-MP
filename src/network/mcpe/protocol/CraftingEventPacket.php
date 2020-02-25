@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\UUID;
 use function count;
 
@@ -44,35 +45,35 @@ class CraftingEventPacket extends DataPacket implements ServerboundPacket{
 	/** @var Item[] */
 	public $output = [];
 
-	protected function decodePayload() : void{
-		$this->windowId = $this->buf->getByte();
-		$this->type = $this->buf->getVarInt();
-		$this->id = $this->buf->getUUID();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->windowId = $in->getByte();
+		$this->type = $in->getVarInt();
+		$this->id = $in->getUUID();
 
-		$size = $this->buf->getUnsignedVarInt();
+		$size = $in->getUnsignedVarInt();
 		for($i = 0; $i < $size and $i < 128; ++$i){
-			$this->input[] = $this->buf->getSlot();
+			$this->input[] = $in->getSlot();
 		}
 
-		$size = $this->buf->getUnsignedVarInt();
+		$size = $in->getUnsignedVarInt();
 		for($i = 0; $i < $size and $i < 128; ++$i){
-			$this->output[] = $this->buf->getSlot();
+			$this->output[] = $in->getSlot();
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putByte($this->windowId);
-		$this->buf->putVarInt($this->type);
-		$this->buf->putUUID($this->id);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->windowId);
+		$out->putVarInt($this->type);
+		$out->putUUID($this->id);
 
-		$this->buf->putUnsignedVarInt(count($this->input));
+		$out->putUnsignedVarInt(count($this->input));
 		foreach($this->input as $item){
-			$this->buf->putSlot($item);
+			$out->putSlot($item);
 		}
 
-		$this->buf->putUnsignedVarInt(count($this->output));
+		$out->putUnsignedVarInt(count($this->output));
 		foreach($this->output as $item){
-			$this->buf->putSlot($item);
+			$out->putSlot($item);
 		}
 	}
 

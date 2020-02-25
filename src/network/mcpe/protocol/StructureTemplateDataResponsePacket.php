@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class StructureTemplateDataResponsePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_RESPONSE_PACKET;
@@ -35,18 +36,18 @@ class StructureTemplateDataResponsePacket extends DataPacket implements Clientbo
 	/** @var string|null */
 	public $namedtag;
 
-	protected function decodePayload() : void{
-		$this->structureTemplateName = $this->buf->getString();
-		if($this->buf->getBool()){
-			$this->namedtag = $this->buf->getRemaining();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->structureTemplateName = $in->getString();
+		if($in->getBool()){
+			$this->namedtag = $in->getRemaining();
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putString($this->structureTemplateName);
-		$this->buf->putBool($this->namedtag !== null);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->structureTemplateName);
+		$out->putBool($this->namedtag !== null);
 		if($this->namedtag !== null){
-			$this->buf->put($this->namedtag);
+			$out->put($this->namedtag);
 		}
 	}
 

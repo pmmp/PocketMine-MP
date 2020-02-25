@@ -65,62 +65,62 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 	/** @var mixed[][] */
 	public $decodedEntries = [];
 
-	protected function decodePayload() : void{
+	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->decodedEntries = [];
-		$recipeCount = $this->buf->getUnsignedVarInt();
+		$recipeCount = $in->getUnsignedVarInt();
 		for($i = 0; $i < $recipeCount; ++$i){
 			$entry = [];
-			$entry["type"] = $recipeType = $this->buf->getVarInt();
+			$entry["type"] = $recipeType = $in->getVarInt();
 
 			switch($recipeType){
 				case self::ENTRY_SHAPELESS:
 				case self::ENTRY_SHULKER_BOX:
 				case self::ENTRY_SHAPELESS_CHEMISTRY:
-					$entry["recipe_id"] = $this->buf->getString();
-					$ingredientCount = $this->buf->getUnsignedVarInt();
+					$entry["recipe_id"] = $in->getString();
+					$ingredientCount = $in->getUnsignedVarInt();
 					/** @var Item */
 					$entry["input"] = [];
 					for($j = 0; $j < $ingredientCount; ++$j){
-						$entry["input"][] = $in = $this->buf->getRecipeIngredient();
+						$entry["input"][] = $in = $in->getRecipeIngredient();
 						$in->setCount(1); //TODO HACK: they send a useless count field which breaks the PM crafting system because it isn't always 1
 					}
-					$resultCount = $this->buf->getUnsignedVarInt();
+					$resultCount = $in->getUnsignedVarInt();
 					$entry["output"] = [];
 					for($k = 0; $k < $resultCount; ++$k){
-						$entry["output"][] = $this->buf->getSlot();
+						$entry["output"][] = $in->getSlot();
 					}
-					$entry["uuid"] = $this->buf->getUUID()->toString();
-					$entry["block"] = $this->buf->getString();
-					$entry["priority"] = $this->buf->getVarInt();
+					$entry["uuid"] = $in->getUUID()->toString();
+					$entry["block"] = $in->getString();
+					$entry["priority"] = $in->getVarInt();
 
 					break;
 				case self::ENTRY_SHAPED:
 				case self::ENTRY_SHAPED_CHEMISTRY:
-					$entry["recipe_id"] = $this->buf->getString();
-					$entry["width"] = $this->buf->getVarInt();
-					$entry["height"] = $this->buf->getVarInt();
+					$entry["recipe_id"] = $in->getString();
+					$entry["width"] = $in->getVarInt();
+					$entry["height"] = $in->getVarInt();
 					$count = $entry["width"] * $entry["height"];
 					$entry["input"] = [];
 					for($j = 0; $j < $count; ++$j){
-						$entry["input"][] = $in = $this->buf->getRecipeIngredient();
+						$entry["input"][] = $in = $in->getRecipeIngredient();
 						$in->setCount(1); //TODO HACK: they send a useless count field which breaks the PM crafting system
 					}
-					$resultCount = $this->buf->getUnsignedVarInt();
+					$resultCount = $in->getUnsignedVarInt();
 					$entry["output"] = [];
 					for($k = 0; $k < $resultCount; ++$k){
-						$entry["output"][] = $this->buf->getSlot();
+						$entry["output"][] = $in->getSlot();
 					}
-					$entry["uuid"] = $this->buf->getUUID()->toString();
-					$entry["block"] = $this->buf->getString();
-					$entry["priority"] = $this->buf->getVarInt();
+					$entry["uuid"] = $in->getUUID()->toString();
+					$entry["block"] = $in->getString();
+					$entry["priority"] = $in->getVarInt();
 
 					break;
 				case self::ENTRY_FURNACE:
 				case self::ENTRY_FURNACE_DATA:
-					$inputId = $this->buf->getVarInt();
+					$inputId = $in->getVarInt();
 					$inputData = -1;
 					if($recipeType === self::ENTRY_FURNACE_DATA){
-						$inputData = $this->buf->getVarInt();
+						$inputData = $in->getVarInt();
 						if($inputData === 0x7fff){
 							$inputData = -1;
 						}
@@ -130,34 +130,34 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 					}catch(\InvalidArgumentException $e){
 						throw new BadPacketException($e->getMessage(), 0, $e);
 					}
-					$entry["output"] = $out = $this->buf->getSlot();
+					$entry["output"] = $out = $in->getSlot();
 					if($out->getMeta() === 0x7fff){
 						$entry["output"] = ItemFactory::get($out->getId(), 0); //TODO HACK: some 1.12 furnace recipe outputs have wildcard damage values
 					}
-					$entry["block"] = $this->buf->getString();
+					$entry["block"] = $in->getString();
 
 					break;
 				case self::ENTRY_MULTI:
-					$entry["uuid"] = $this->buf->getUUID()->toString();
+					$entry["uuid"] = $in->getUUID()->toString();
 					break;
 				default:
 					throw new BadPacketException("Unhandled recipe type $recipeType!"); //do not continue attempting to decode
 			}
 			$this->decodedEntries[] = $entry;
 		}
-		for($i = 0, $count = $this->buf->getUnsignedVarInt(); $i < $count; ++$i){
-			$input = $this->buf->getVarInt();
-			$ingredient = $this->buf->getVarInt();
-			$output = $this->buf->getVarInt();
+		for($i = 0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
+			$input = $in->getVarInt();
+			$ingredient = $in->getVarInt();
+			$output = $in->getVarInt();
 			$this->potionTypeRecipes[] = new PotionTypeRecipe($input, $ingredient, $output);
 		}
-		for($i = 0, $count = $this->buf->getUnsignedVarInt(); $i < $count; ++$i){
-			$input = $this->buf->getVarInt();
-			$ingredient = $this->buf->getVarInt();
-			$output = $this->buf->getVarInt();
+		for($i = 0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
+			$input = $in->getVarInt();
+			$ingredient = $in->getVarInt();
+			$output = $in->getVarInt();
 			$this->potionContainerRecipes[] = new PotionContainerChangeRecipe($input, $ingredient, $output);
 		}
-		$this->cleanRecipes = $this->buf->getBool();
+		$this->cleanRecipes = $in->getBool();
 	}
 
 	/**
@@ -244,36 +244,36 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 		$this->entries[] = $recipe;
 	}
 
-	protected function encodePayload() : void{
-		$this->buf->putUnsignedVarInt(count($this->entries));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt(count($this->entries));
 
 		$writer = new NetworkBinaryStream();
 		$counter = 0;
 		foreach($this->entries as $d){
 			$entryType = self::writeEntry($d, $writer, $counter++);
 			if($entryType >= 0){
-				$this->buf->putVarInt($entryType);
-				$this->buf->put($writer->getBuffer());
+				$out->putVarInt($entryType);
+				$out->put($writer->getBuffer());
 			}else{
-				$this->buf->putVarInt(-1);
+				$out->putVarInt(-1);
 			}
 
 			$writer->reset();
 		}
-		$this->buf->putUnsignedVarInt(count($this->potionTypeRecipes));
+		$out->putUnsignedVarInt(count($this->potionTypeRecipes));
 		foreach($this->potionTypeRecipes as $recipe){
-			$this->buf->putVarInt($recipe->getInputPotionType());
-			$this->buf->putVarInt($recipe->getIngredientItemId());
-			$this->buf->putVarInt($recipe->getOutputPotionType());
+			$out->putVarInt($recipe->getInputPotionType());
+			$out->putVarInt($recipe->getIngredientItemId());
+			$out->putVarInt($recipe->getOutputPotionType());
 		}
-		$this->buf->putUnsignedVarInt(count($this->potionContainerRecipes));
+		$out->putUnsignedVarInt(count($this->potionContainerRecipes));
 		foreach($this->potionContainerRecipes as $recipe){
-			$this->buf->putVarInt($recipe->getInputItemId());
-			$this->buf->putVarInt($recipe->getIngredientItemId());
-			$this->buf->putVarInt($recipe->getOutputItemId());
+			$out->putVarInt($recipe->getInputItemId());
+			$out->putVarInt($recipe->getIngredientItemId());
+			$out->putVarInt($recipe->getOutputItemId());
 		}
 
-		$this->buf->putBool($this->cleanRecipes);
+		$out->putBool($this->cleanRecipes);
 	}
 
 	public function handle(PacketHandler $handler) : bool{
