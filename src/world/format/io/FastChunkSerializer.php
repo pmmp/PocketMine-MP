@@ -76,7 +76,7 @@ final class FastChunkSerializer{
 
 					$stream->putByte($blocks->getBitsPerBlock());
 					$stream->put($wordArray);
-					$serialPalette = pack("N*", ...$palette);
+					$serialPalette = pack("L*", ...$palette);
 					$stream->putInt(strlen($serialPalette));
 					$stream->put($serialPalette);
 				}
@@ -90,7 +90,7 @@ final class FastChunkSerializer{
 			//biomes
 			$stream->put($chunk->getBiomeIdArray());
 			if($includeLight){
-				$stream->put(pack("v*", ...$chunk->getHeightMapArray()));
+				$stream->put(pack("S*", ...$chunk->getHeightMapArray()));
 			}
 		}
 
@@ -123,7 +123,7 @@ final class FastChunkSerializer{
 				for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
 					$bitsPerBlock = $stream->getByte();
 					$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
-					$palette = array_values(unpack("N*", $stream->get($stream->getInt())));
+					$palette = array_values(unpack("L*", $stream->get($stream->getInt())));
 
 					$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 				}
@@ -134,7 +134,7 @@ final class FastChunkSerializer{
 
 			$biomeIds = $stream->get(256);
 			if($lightPopulated){
-				$heightMap = array_values(unpack("v*", $stream->get(512)));
+				$heightMap = array_values(unpack("S*", $stream->get(512)));
 			}
 		}
 
