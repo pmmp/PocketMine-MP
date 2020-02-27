@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\ChunkCacheBlob;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class ClientCacheMissResponsePacket extends DataPacket implements ClientboundPacket{
@@ -37,12 +38,10 @@ class ClientCacheMissResponsePacket extends DataPacket implements ClientboundPac
 
 	/**
 	 * @param ChunkCacheBlob[] $blobs
-	 *
-	 * @return self
 	 */
 	public static function create(array $blobs) : self{
 		//type check
-		(static function(ChunkCacheBlob ...$blobs){})($blobs);
+		(static function(ChunkCacheBlob ...$blobs) : void{})(...$blobs);
 
 		$result = new self;
 		$result->blobs = $blobs;
@@ -56,19 +55,19 @@ class ClientCacheMissResponsePacket extends DataPacket implements ClientboundPac
 		return $this->blobs;
 	}
 
-	protected function decodePayload() : void{
-		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$hash = $this->getLLong();
-			$payload = $this->getString();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		for($i = 0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
+			$hash = $in->getLLong();
+			$payload = $in->getString();
 			$this->blobs[] = new ChunkCacheBlob($hash, $payload);
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->putUnsignedVarInt(count($this->blobs));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt(count($this->blobs));
 		foreach($this->blobs as $blob){
-			$this->putLLong($blob->getHash());
-			$this->putString($blob->getPayload());
+			$out->putLLong($blob->getHash());
+			$out->putString($blob->getPayload());
 		}
 	}
 

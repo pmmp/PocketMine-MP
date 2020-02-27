@@ -32,36 +32,18 @@ use pocketmine\player\Player;
 interface Inventory{
 	public const MAX_STACK = 64;
 
-	/**
-	 * @return int
-	 */
 	public function getSize() : int;
 
-	/**
-	 * @return int
-	 */
 	public function getMaxStackSize() : int;
 
-	/**
-	 * @param int $size
-	 */
 	public function setMaxStackSize(int $size) : void;
 
-	/**
-	 * @param int $index
-	 *
-	 * @return Item
-	 */
 	public function getItem(int $index) : Item;
 
 	/**
 	 * Puts an Item in a slot.
-	 *
-	 * @param int  $index
-	 * @param Item $item
-	 * @param bool $send
 	 */
-	public function setItem(int $index, Item $item, bool $send = true) : void;
+	public function setItem(int $index, Item $item) : void;
 
 	/**
 	 * Stores the given Items in the inventory. This will try to fill
@@ -77,10 +59,6 @@ interface Inventory{
 
 	/**
 	 * Checks if a given Item can be added to the inventory
-	 *
-	 * @param Item $item
-	 *
-	 * @return bool
 	 */
 	public function canAddItem(Item $item) : bool;
 
@@ -95,33 +73,24 @@ interface Inventory{
 	public function removeItem(Item ...$slots) : array;
 
 	/**
-	 * @param bool $includeEmpty
-	 *
 	 * @return Item[]
 	 */
 	public function getContents(bool $includeEmpty = false) : array;
 
 	/**
 	 * @param Item[] $items
-	 * @param bool   $send
 	 */
-	public function setContents(array $items, bool $send = true) : void;
+	public function setContents(array $items) : void;
 
 	/**
 	 * Checks if the inventory contains any Item with the same material data.
 	 * It will check id, amount, and metadata (if not null)
-	 *
-	 * @param Item $item
-	 *
-	 * @return bool
 	 */
 	public function contains(Item $item) : bool;
 
 	/**
 	 * Will return all the Items that has the same id and metadata (if not null).
 	 * Won't check amount
-	 *
-	 * @param Item $item
 	 *
 	 * @return Item[]
 	 */
@@ -132,57 +101,36 @@ interface Inventory{
 	 * and count >= to the count of the specified item stack.
 	 *
 	 * If $exact is true, only items with equal ID, damage, NBT and count will match.
-	 *
-	 * @param Item $item
-	 * @param bool $exact
-	 *
-	 * @return int
 	 */
 	public function first(Item $item, bool $exact = false) : int;
 
 	/**
 	 * Returns the first empty slot, or -1 if not found
-	 *
-	 * @return int
 	 */
 	public function firstEmpty() : int;
 
 	/**
 	 * Returns whether the given slot is empty.
-	 *
-	 * @param int $index
-	 *
-	 * @return bool
 	 */
 	public function isSlotEmpty(int $index) : bool;
 
 	/**
 	 * Will remove all the Items that has the same id and metadata (if not null)
-	 *
-	 * @param Item $item
 	 */
 	public function remove(Item $item) : void;
 
 	/**
 	 * Will clear a specific slot
-	 *
-	 * @param int  $index
-	 * @param bool $send
 	 */
-	public function clear(int $index, bool $send = true) : void;
+	public function clear(int $index) : void;
 
 	/**
 	 * Clears all the slots
-	 *
-	 * @param bool $send
 	 */
-	public function clearAll(bool $send = true) : void;
+	public function clearAll() : void;
 
 	/**
 	 * Swaps the specified slots.
-	 *
-	 * @param int $slot1
-	 * @param int $slot2
 	 */
 	public function swap(int $slot1, int $slot2) : void;
 
@@ -196,8 +144,6 @@ interface Inventory{
 
 	/**
 	 * Called when a player opens this inventory.
-	 *
-	 * @param Player $who
 	 */
 	public function onOpen(Player $who) : void;
 
@@ -205,10 +151,6 @@ interface Inventory{
 
 	/**
 	 * Returns whether the specified slot exists in the inventory.
-	 *
-	 * @param int $slot
-	 *
-	 * @return bool
 	 */
 	public function slotExists(int $slot) : bool;
 

@@ -80,7 +80,6 @@ class ItemEntity extends Entity{
 		$this->owner = $nbt->getString("Owner", $this->owner);
 		$this->thrower = $nbt->getString("Thrower", $this->thrower);
 
-
 		$itemTag = $nbt->getCompoundTag("Item");
 		if($itemTag === null){
 			throw new \UnexpectedValueException("Invalid " . get_class($this) . " entity: expected \"Item\" NBT tag not found");
@@ -90,7 +89,6 @@ class ItemEntity extends Entity{
 		if($this->item->isNull()){
 			throw new \UnexpectedValueException("Item for " . get_class($this) . " is invalid");
 		}
-
 
 		(new ItemSpawnEvent($this))->call();
 	}
@@ -154,9 +152,6 @@ class ItemEntity extends Entity{
 		return $nbt;
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getItem() : Item{
 		return $this->item;
 	}
@@ -169,32 +164,22 @@ class ItemEntity extends Entity{
 		return false;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPickupDelay() : int{
 		return $this->pickupDelay;
 	}
 
-	/**
-	 * @param int $delay
-	 */
 	public function setPickupDelay(int $delay) : void{
 		$this->pickupDelay = $delay;
 	}
 
 	/**
 	 * Returns the number of ticks left before this item will despawn. If -1, the item will never despawn.
-	 *
-	 * @return int
 	 */
 	public function getDespawnDelay() : int{
 		return $this->despawnDelay;
 	}
 
 	/**
-	 * @param int $despawnDelay
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function setDespawnDelay(int $despawnDelay) : void{
@@ -204,30 +189,18 @@ class ItemEntity extends Entity{
 		$this->despawnDelay = $despawnDelay;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getOwner() : string{
 		return $this->owner;
 	}
 
-	/**
-	 * @param string $owner
-	 */
 	public function setOwner(string $owner) : void{
 		$this->owner = $owner;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getThrower() : string{
 		return $this->thrower;
 	}
 
-	/**
-	 * @param string $thrower
-	 */
 	public function setThrower(string $thrower) : void{
 		$this->thrower = $thrower;
 	}

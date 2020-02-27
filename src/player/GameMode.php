@@ -47,13 +47,13 @@ final class GameMode{
 	/** @var self[] */
 	protected static $magicNumberMap = [];
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new self("survival", 0, "Survival", "gameMode.survival", ["s", "0"]),
 			new self("creative", 1, "Creative", "gameMode.creative", ["c", "1"]),
 			new self("adventure", 2, "Adventure", "gameMode.adventure", ["a", "2"]),
 			new self("spectator", 3, "Spectator", "gameMode.spectator", ["v", "view", "3"])
-		];
+		);
 	}
 
 	protected static function register(self $member) : void{
@@ -70,8 +70,6 @@ final class GameMode{
 	}
 
 	/**
-	 * @param int $n
-	 *
 	 * @return GameMode
 	 * @throws \InvalidArgumentException
 	 */
@@ -92,6 +90,9 @@ final class GameMode{
 	/** @var string[] */
 	private $aliases;
 
+	/**
+	 * @param string[] $aliases
+	 */
 	private function __construct(string $enumName, int $magicNumber, string $englishName, string $translationKey, array $aliases = []){
 		$this->Enum___construct($enumName);
 		$this->magicNumber = $magicNumber;
@@ -100,23 +101,14 @@ final class GameMode{
 		$this->aliases = $aliases;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMagicNumber() : int{
 		return $this->magicNumber;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getEnglishName() : string{
 		return $this->englishName;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getTranslationKey() : string{
 		return "%" . $this->translationKey;
 	}

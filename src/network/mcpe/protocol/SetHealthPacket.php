@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class SetHealthPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_HEALTH_PACKET;
@@ -34,12 +34,12 @@ class SetHealthPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $health;
 
-	protected function decodePayload() : void{
-		$this->health = $this->getVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->health = $in->getVarInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->putVarInt($this->health);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putVarInt($this->health);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

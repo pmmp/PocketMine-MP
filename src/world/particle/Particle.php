@@ -29,8 +29,6 @@ use pocketmine\network\mcpe\protocol\ClientboundPacket;
 interface Particle{
 
 	/**
-	 * @param Vector3 $pos
-	 *
 	 * @return ClientboundPacket|ClientboundPacket[]
 	 */
 	public function encode(Vector3 $pos);

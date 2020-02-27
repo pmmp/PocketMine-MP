@@ -47,24 +47,29 @@ use function unserialize;
  */
 abstract class AsyncTask extends \Threaded{
 	/**
-	 * @var \ArrayObject|mixed[] object hash => mixed data
+	 * @var \ArrayObject|mixed[]|null object hash => mixed data
+	 * @phpstan-var \ArrayObject<int, array<string, mixed>>|null
 	 *
 	 * Used to store objects which are only needed on one thread and should not be serialized.
 	 */
 	private static $threadLocalStorage = null;
 
-	/** @var AsyncWorker $worker */
+	/** @var AsyncWorker|null $worker */
 	public $worker = null;
 
 	/** @var \Threaded */
 	public $progressUpdates;
 
+	/** @var scalar|null */
 	private $result = null;
+	/** @var bool */
 	private $serialized = false;
+	/** @var bool */
 	private $cancelRun = false;
 	/** @var bool */
 	private $submitted = false;
 
+	/** @var bool */
 	private $crashed = false;
 	/** @var bool */
 	private $finished = false;
@@ -91,8 +96,6 @@ abstract class AsyncTask extends \Threaded{
 	/**
 	 * Returns whether this task has finished executing, whether successfully or not. This differs from isRunning()
 	 * because it is not true prior to task execution.
-	 *
-	 * @return bool
 	 */
 	public function isFinished() : bool{
 		return $this->finished or $this->isCrashed();
@@ -113,9 +116,6 @@ abstract class AsyncTask extends \Threaded{
 		return $this->cancelRun;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasResult() : bool{
 		return $this->result !== null;
 	}
@@ -131,9 +131,6 @@ abstract class AsyncTask extends \Threaded{
 		$this->submitted = true;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isSubmitted() : bool{
 		return $this->submitted;
 	}
@@ -205,7 +202,6 @@ abstract class AsyncTask extends \Threaded{
 	 * Objects stored in this storage can be retrieved using fetchLocal() on the same thread that this method was called
 	 * from.
 	 *
-	 * @param string $key
 	 * @param mixed  $complexData the data to store
 	 */
 	protected function storeLocal(string $key, $complexData) : void{
@@ -226,8 +222,6 @@ abstract class AsyncTask extends \Threaded{
 	 *
 	 * If you used storeLocal(), you can use this on the same thread to fetch data stored. This should be used during
 	 * onProgressUpdate() and onCompletion() to fetch thread-local data stored on the parent thread.
-	 *
-	 * @param string $key
 	 *
 	 * @return mixed
 	 *

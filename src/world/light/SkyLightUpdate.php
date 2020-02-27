@@ -24,11 +24,20 @@ declare(strict_types=1);
 namespace pocketmine\world\light;
 
 use pocketmine\block\BlockFactory;
+use pocketmine\world\World;
 use function max;
 
 class SkyLightUpdate extends LightUpdate{
 	protected function updateLightArrayRef() : void{
 		$this->currentLightArray = $this->subChunkHandler->currentSubChunk->getBlockSkyLightArray();
+	}
+
+	protected function getEffectiveLight(int $x, int $y, int $z) : int{
+		if($y >= World::Y_MAX){
+			$this->subChunkHandler->invalidate();
+			return 15;
+		}
+		return parent::getEffectiveLight($x, $y, $z);
 	}
 
 	public function recalculateNode(int $x, int $y, int $z) : void{

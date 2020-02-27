@@ -36,9 +36,6 @@ interface NetworkInterface{
 	 */
 	public function start() : void;
 
-	/**
-	 * @param string $name
-	 */
 	public function setName(string $name) : void;
 
 	/**

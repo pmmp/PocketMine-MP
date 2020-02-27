@@ -38,9 +38,6 @@ abstract class InventoryEvent extends Event{
 		$this->inventory = $inventory;
 	}
 
-	/**
-	 * @return Inventory
-	 */
 	public function getInventory() : Inventory{
 		return $this->inventory;
 	}

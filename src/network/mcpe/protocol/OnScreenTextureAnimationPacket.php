@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class OnScreenTextureAnimationPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ON_SCREEN_TEXTURE_ANIMATION_PACKET;
@@ -33,12 +34,12 @@ class OnScreenTextureAnimationPacket extends DataPacket implements ClientboundPa
 	/** @var int */
 	public $effectId;
 
-	protected function decodePayload() : void{
-		$this->effectId = $this->getLInt(); //unsigned
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->effectId = $in->getLInt(); //unsigned
 	}
 
-	protected function encodePayload() : void{
-		$this->putLInt($this->effectId);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putLInt($this->effectId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

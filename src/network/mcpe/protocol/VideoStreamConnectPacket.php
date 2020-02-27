@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class VideoStreamConnectPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::VIDEO_STREAM_CONNECT_PACKET;
@@ -44,20 +45,20 @@ class VideoStreamConnectPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $resolutionY;
 
-	protected function decodePayload() : void{
-		$this->serverUri = $this->getString();
-		$this->frameSendFrequency = $this->getLFloat();
-		$this->action = $this->getByte();
-		$this->resolutionX = $this->getLInt();
-		$this->resolutionY = $this->getLInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->serverUri = $in->getString();
+		$this->frameSendFrequency = $in->getLFloat();
+		$this->action = $in->getByte();
+		$this->resolutionX = $in->getLInt();
+		$this->resolutionY = $in->getLInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->putString($this->serverUri);
-		$this->putLFloat($this->frameSendFrequency);
-		$this->putByte($this->action);
-		$this->putLInt($this->resolutionX);
-		$this->putLInt($this->resolutionY);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->serverUri);
+		$out->putLFloat($this->frameSendFrequency);
+		$out->putByte($this->action);
+		$out->putLInt($this->resolutionX);
+		$out->putLInt($this->resolutionY);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

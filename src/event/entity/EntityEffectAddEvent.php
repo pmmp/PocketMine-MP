@@ -33,11 +33,6 @@ class EntityEffectAddEvent extends EntityEffectEvent{
 	/** @var EffectInstance|null */
 	private $oldEffect;
 
-	/**
-	 * @param Entity         $entity
-	 * @param EffectInstance $effect
-	 * @param EffectInstance $oldEffect
-	 */
 	public function __construct(Entity $entity, EffectInstance $effect, ?EffectInstance $oldEffect = null){
 		parent::__construct($entity, $effect);
 		$this->oldEffect = $oldEffect;
@@ -45,23 +40,15 @@ class EntityEffectAddEvent extends EntityEffectEvent{
 
 	/**
 	 * Returns whether the effect addition will replace an existing effect already applied to the entity.
-	 *
-	 * @return bool
 	 */
 	public function willModify() : bool{
 		return $this->hasOldEffect();
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasOldEffect() : bool{
 		return $this->oldEffect instanceof EffectInstance;
 	}
 
-	/**
-	 * @return EffectInstance|null
-	 */
 	public function getOldEffect() : ?EffectInstance{
 		return $this->oldEffect;
 	}

@@ -75,15 +75,19 @@ use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 use pocketmine\player\Player;
 use function array_push;
 use function base64_encode;
+use function count;
 use function fmod;
 use function implode;
 use function json_decode;
@@ -197,8 +201,24 @@ class InGamePacketHandler extends PacketHandler{
 		$isCrafting = false;
 		$isFinalCraftingPart = false;
 		foreach($data->getActions() as $networkInventoryAction){
-			$isCrafting = $isCrafting || $networkInventoryAction->isCraftingPart();
-			$isFinalCraftingPart = $isFinalCraftingPart || $networkInventoryAction->isFinalCraftingPart();
+			if(
+				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER and
+				$networkInventoryAction->windowId === ContainerIds::UI and
+				$networkInventoryAction->inventorySlot === 50 and
+				!$networkInventoryAction->oldItem->equalsExact($networkInventoryAction->newItem)
+			){
+				$isCrafting = true;
+				if(!$networkInventoryAction->oldItem->isNull() and $networkInventoryAction->newItem->isNull()){
+					$isFinalCraftingPart = true;
+				}
+			}elseif(
+				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO and (
+					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
+					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
+				)
+			){
+				$isCrafting = true;
+			}
 
 			try{
 				$action = $networkInventoryAction->createInventoryAction($this->player);
@@ -225,6 +245,7 @@ class InGamePacketHandler extends PacketHandler{
 
 			if($isFinalCraftingPart){
 				try{
+					$this->session->getInvManager()->onTransactionStart($this->craftingTransaction);
 					$this->craftingTransaction->execute();
 				}catch(TransactionValidationException $e){
 					$this->session->getLogger()->debug("Failed to execute crafting transaction: " . $e->getMessage());
@@ -241,7 +262,13 @@ class InGamePacketHandler extends PacketHandler{
 				return false;
 			}
 
+			if(count($actions) === 0){
+				//TODO: 1.13+ often sends transactions with nothing but useless crap in them, no need for the debug noise
+				return true;
+			}
+
 			$transaction = new InventoryTransaction($this->player, $actions);
+			$this->session->getInvManager()->onTransactionStart($transaction);
 			try{
 				$transaction->execute();
 			}catch(TransactionValidationException $e){
@@ -285,6 +312,12 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
+				if($this->player->isUsingItem()){
+					if(!$this->player->consumeHeldItem()){
+						$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
+					}
+					return true;
+				}
 				if(!$this->player->useHeldItem()){
 					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
@@ -296,9 +329,6 @@ class InGamePacketHandler extends PacketHandler{
 
 	/**
 	 * Internal function used to execute rollbacks when an action fails on a block.
-	 *
-	 * @param Vector3  $blockPos
-	 * @param int|null $face
 	 */
 	private function onFailedBlockAction(Vector3 $blockPos, ?int $face) : void{
 		$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
@@ -345,11 +375,6 @@ class InGamePacketHandler extends PacketHandler{
 			case ReleaseItemTransactionData::ACTION_RELEASE:
 				if(!$this->player->releaseHeldItem()){
 					$this->session->getInvManager()->syncContents($this->player->getInventory());
-				}
-				return true;
-			case ReleaseItemTransactionData::ACTION_CONSUME:
-				if(!$this->player->consumeHeldItem()){
-					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
 				return true;
 		}
@@ -471,14 +496,9 @@ class InGamePacketHandler extends PacketHandler{
 			return true;
 		}
 
-		$window = $this->player->getCurrentWindow();
-		if($window !== null and $packet->windowId === $this->session->getInvManager()->getCurrentWindowId()){
-			$this->player->removeCurrentWindow();
-			return true;
-		}
+		$this->session->getInvManager()->onClientRemoveWindow($packet->windowId);
 
-		$this->session->getLogger()->debug("Attempted to close inventory with network ID $packet->windowId, but current is " . $this->session->getInvManager()->getCurrentWindowId());
-		return false;
+		return true;
 	}
 
 	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{
@@ -518,7 +538,7 @@ class InGamePacketHandler extends PacketHandler{
 		$block = $this->player->getLocation()->getWorld()->getBlock($pos);
 		try{
 			$offset = 0;
-			$nbt = (new NetworkNbtSerializer())->read($packet->namedtag, $offset, 512)->getTag();
+			$nbt = (new NetworkNbtSerializer())->read($packet->namedtag, $offset, 512)->mustGetCompoundTag();
 		}catch(NbtDataException $e){
 			throw new BadPacketException($e->getMessage(), 0, $e);
 		}
@@ -603,7 +623,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
-		return $this->player->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
+		return $this->player->changeSkin(SkinAdapterSingleton::get()->fromSkinData($packet->skin), $packet->newSkinName, $packet->oldSkinName);
 	}
 
 	public function handleSubClientLogin(SubClientLoginPacket $packet) : bool{
@@ -667,9 +687,6 @@ class InGamePacketHandler extends PacketHandler{
 	/**
 	 * Hack to work around a stupid bug in Minecraft W10 which causes empty strings to be sent unquoted in form responses.
 	 *
-	 * @param string $json
-	 * @param bool   $assoc
-	 *
 	 * @return mixed
 	 * @throws BadPacketException
 	 */
@@ -678,9 +695,9 @@ class InGamePacketHandler extends PacketHandler{
 			$raw = $matches[1];
 			$lastComma = -1;
 			$newParts = [];
-			$quoteType = null;
+			$inQuotes = false;
 			for($i = 0, $len = strlen($raw); $i <= $len; ++$i){
-				if($i === $len or ($raw[$i] === "," and $quoteType === null)){
+				if($i === $len or ($raw[$i] === "," and !$inQuotes)){
 					$part = substr($raw, $lastComma + 1, $i - ($lastComma + 1));
 					if(trim($part) === ""){ //regular parts will have quotes or something else that makes them non-empty
 						$part = '""';
@@ -688,12 +705,13 @@ class InGamePacketHandler extends PacketHandler{
 					$newParts[] = $part;
 					$lastComma = $i;
 				}elseif($raw[$i] === '"'){
-					if($quoteType === null){
-						$quoteType = $raw[$i];
-					}elseif($raw[$i] === $quoteType){
-						for($backslashes = 0; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
+					if(!$inQuotes){
+						$inQuotes = true;
+					}else{
+						$backslashes = 0;
+						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
 						if(($backslashes % 2) === 0){ //unescaped quote
-							$quoteType = null;
+							$inQuotes = false;
 						}
 					}
 				}

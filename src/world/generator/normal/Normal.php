@@ -52,13 +52,14 @@ class Normal extends Generator{
 	/** @var BiomeSelector */
 	private $selector;
 
+	/** @var float[][]|null */
 	private static $GAUSSIAN_KERNEL = null;
+	/** @var int */
 	private static $SMOOTH_SIZE = 2;
 
 	/**
-	 * @param ChunkManager $world
-	 * @param int          $seed
-	 * @param array        $options
+	 * @param mixed[] $options
+	 * @phpstan-param array<string, mixed> $options
 	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */

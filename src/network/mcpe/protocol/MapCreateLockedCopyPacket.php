@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class MapCreateLockedCopyPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MAP_CREATE_LOCKED_COPY_PACKET;
@@ -35,14 +36,14 @@ class MapCreateLockedCopyPacket extends DataPacket implements ServerboundPacket{
 	/** @var int */
 	public $newMapId;
 
-	protected function decodePayload() : void{
-		$this->originalMapId = $this->getEntityUniqueId();
-		$this->newMapId = $this->getEntityUniqueId();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->originalMapId = $in->getEntityUniqueId();
+		$this->newMapId = $in->getEntityUniqueId();
 	}
 
-	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->originalMapId);
-		$this->putEntityUniqueId($this->newMapId);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityUniqueId($this->originalMapId);
+		$out->putEntityUniqueId($this->newMapId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

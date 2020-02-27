@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\tile\Tile;
+
 class BlockIdentifier{
 
 	/** @var int */
@@ -31,9 +33,15 @@ class BlockIdentifier{
 	private $variant;
 	/** @var int|null */
 	private $itemId;
-	/** @var string|null */
+	/**
+	 * @var string|null
+	 * @phpstan-var class-string<Tile>|null
+	 */
 	private $tileClass;
 
+	/**
+	 * @phpstan-param class-string<Tile>|null $tileClass
+	 */
 	public function __construct(int $blockId, int $variant = 0, ?int $itemId = null, ?string $tileClass = null){
 		$this->blockId = $blockId;
 		$this->variant = $variant;
@@ -41,9 +49,6 @@ class BlockIdentifier{
 		$this->tileClass = $tileClass;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBlockId() : int{
 		return $this->blockId;
 	}
@@ -55,22 +60,16 @@ class BlockIdentifier{
 		return [$this->blockId];
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getVariant() : int{
 		return $this->variant;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getItemId() : int{
 		return $this->itemId ?? ($this->blockId > 255 ? 255 - $this->blockId : $this->blockId);
 	}
 
 	/**
-	 * @return string|null
+	 * @phpstan-return class-string<Tile>|null
 	 */
 	public function getTileClass() : ?string{
 		return $this->tileClass;

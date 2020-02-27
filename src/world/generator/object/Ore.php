@@ -72,22 +72,22 @@ class Ore{
 			$endY = (int) ($seedY + $size);
 			$endZ = (int) ($seedZ + $size);
 
-			for($x = $startX; $x <= $endX; ++$x){
-				$sizeX = ($x + 0.5 - $seedX) / $size;
+			for($xx = $startX; $xx <= $endX; ++$xx){
+				$sizeX = ($xx + 0.5 - $seedX) / $size;
 				$sizeX *= $sizeX;
 
 				if($sizeX < 1){
-					for($y = $startY; $y <= $endY; ++$y){
-						$sizeY = ($y + 0.5 - $seedY) / $size;
+					for($yy = $startY; $yy <= $endY; ++$yy){
+						$sizeY = ($yy + 0.5 - $seedY) / $size;
 						$sizeY *= $sizeY;
 
-						if($y > 0 and ($sizeX + $sizeY) < 1){
-							for($z = $startZ; $z <= $endZ; ++$z){
-								$sizeZ = ($z + 0.5 - $seedZ) / $size;
+						if($yy > 0 and ($sizeX + $sizeY) < 1){
+							for($zz = $startZ; $zz <= $endZ; ++$zz){
+								$sizeZ = ($zz + 0.5 - $seedZ) / $size;
 								$sizeZ *= $sizeZ;
 
-								if(($sizeX + $sizeY + $sizeZ) < 1 and $world->getBlockAt($x, $y, $z)->getId() === BlockLegacyIds::STONE){
-									$world->setBlockAt($x, $y, $z, $this->type->material);
+								if(($sizeX + $sizeY + $sizeZ) < 1 and $world->getBlockAt($xx, $yy, $zz)->getId() === BlockLegacyIds::STONE){
+									$world->setBlockAt($xx, $yy, $zz, $this->type->material);
 								}
 							}
 						}

@@ -26,19 +26,23 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class GameRulesChangedPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::GAME_RULES_CHANGED_PACKET;
 
-	/** @var array */
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<string, array{0: int, 1: bool|int|float}>
+	 */
 	public $gameRules = [];
 
-	protected function decodePayload() : void{
-		$this->gameRules = $this->getGameRules();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->gameRules = $in->getGameRules();
 	}
 
-	protected function encodePayload() : void{
-		$this->putGameRules($this->gameRules);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putGameRules($this->gameRules);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

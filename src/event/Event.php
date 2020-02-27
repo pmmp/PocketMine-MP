@@ -26,7 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\event;
 
-use function assert;
 use function get_class;
 
 abstract class Event{
@@ -37,9 +36,6 @@ abstract class Event{
 	/** @var string|null */
 	protected $eventName = null;
 
-	/**
-	 * @return string
-	 */
 	final public function getEventName() : string{
 		return $this->eventName ?? get_class($this);
 	}

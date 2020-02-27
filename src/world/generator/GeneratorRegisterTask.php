@@ -32,12 +32,21 @@ use function unserialize;
 
 class GeneratorRegisterTask extends AsyncTask{
 
+	/** @var string */
 	public $generatorClass;
+	/** @var string */
 	public $settings;
+	/** @var int */
 	public $seed;
+	/** @var int */
 	public $worldId;
+	/** @var int */
 	public $worldHeight = World::Y_MAX;
 
+	/**
+	 * @param mixed[] $generatorSettings
+	 * @phpstan-param array<string, mixed> $generatorSettings
+	 */
 	public function __construct(World $world, string $generatorClass, array $generatorSettings = []){
 		$this->generatorClass = $generatorClass;
 		$this->settings = serialize($generatorSettings);

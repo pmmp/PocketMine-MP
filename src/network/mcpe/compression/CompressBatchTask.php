@@ -29,14 +29,11 @@ class CompressBatchTask extends AsyncTask{
 
 	private const TLS_KEY_PROMISE = "promise";
 
+	/** @var int */
 	private $level;
+	/** @var string */
 	private $data;
 
-	/**
-	 * @param string               $data
-	 * @param int                  $compressionLevel
-	 * @param CompressBatchPromise $promise
-	 */
 	public function __construct(string $data, int $compressionLevel, CompressBatchPromise $promise){
 		$this->data = $data;
 		$this->level = $compressionLevel;

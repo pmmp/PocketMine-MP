@@ -30,6 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function array_intersect_key;
+use function count;
 
 class Vine extends Flowable{
 
@@ -113,7 +114,7 @@ class Vine extends Flowable{
 		}
 
 		if($changed){
-			if(empty($this->faces)){
+			if(count($this->faces) === 0){
 				$this->pos->getWorld()->useBreakOn($this->pos);
 			}else{
 				$this->pos->getWorld()->setBlock($this->pos, $this);
@@ -130,7 +131,7 @@ class Vine extends Flowable{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->getBlockToolType() & BlockToolType::SHEARS){
+		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
 			return $this->getDropsForCompatibleTool($item);
 		}
 

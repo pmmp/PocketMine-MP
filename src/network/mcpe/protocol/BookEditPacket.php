@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class BookEditPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::BOOK_EDIT_PACKET;
@@ -58,56 +59,56 @@ class BookEditPacket extends DataPacket implements ServerboundPacket{
 	/** @var string */
 	public $xuid;
 
-	protected function decodePayload() : void{
-		$this->type = $this->getByte();
-		$this->inventorySlot = $this->getByte();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->type = $in->getByte();
+		$this->inventorySlot = $in->getByte();
 
 		switch($this->type){
 			case self::TYPE_REPLACE_PAGE:
 			case self::TYPE_ADD_PAGE:
-				$this->pageNumber = $this->getByte();
-				$this->text = $this->getString();
-				$this->photoName = $this->getString();
+				$this->pageNumber = $in->getByte();
+				$this->text = $in->getString();
+				$this->photoName = $in->getString();
 				break;
 			case self::TYPE_DELETE_PAGE:
-				$this->pageNumber = $this->getByte();
+				$this->pageNumber = $in->getByte();
 				break;
 			case self::TYPE_SWAP_PAGES:
-				$this->pageNumber = $this->getByte();
-				$this->secondaryPageNumber = $this->getByte();
+				$this->pageNumber = $in->getByte();
+				$this->secondaryPageNumber = $in->getByte();
 				break;
 			case self::TYPE_SIGN_BOOK:
-				$this->title = $this->getString();
-				$this->author = $this->getString();
-				$this->xuid = $this->getString();
+				$this->title = $in->getString();
+				$this->author = $in->getString();
+				$this->xuid = $in->getString();
 				break;
 			default:
 				throw new BadPacketException("Unknown book edit type $this->type!");
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->putByte($this->type);
-		$this->putByte($this->inventorySlot);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->type);
+		$out->putByte($this->inventorySlot);
 
 		switch($this->type){
 			case self::TYPE_REPLACE_PAGE:
 			case self::TYPE_ADD_PAGE:
-				$this->putByte($this->pageNumber);
-				$this->putString($this->text);
-				$this->putString($this->photoName);
+				$out->putByte($this->pageNumber);
+				$out->putString($this->text);
+				$out->putString($this->photoName);
 				break;
 			case self::TYPE_DELETE_PAGE:
-				$this->putByte($this->pageNumber);
+				$out->putByte($this->pageNumber);
 				break;
 			case self::TYPE_SWAP_PAGES:
-				$this->putByte($this->pageNumber);
-				$this->putByte($this->secondaryPageNumber);
+				$out->putByte($this->pageNumber);
+				$out->putByte($this->secondaryPageNumber);
 				break;
 			case self::TYPE_SIGN_BOOK:
-				$this->putString($this->title);
-				$this->putString($this->author);
-				$this->putString($this->xuid);
+				$out->putString($this->title);
+				$out->putString($this->author);
+				$out->putString($this->xuid);
 				break;
 			default:
 				throw new \InvalidArgumentException("Unknown book edit type $this->type!");

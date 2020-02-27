@@ -21,13 +21,12 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class SetTitlePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_TITLE_PACKET;
@@ -50,20 +49,20 @@ class SetTitlePacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $fadeOutTime = 0;
 
-	protected function decodePayload() : void{
-		$this->type = $this->getVarInt();
-		$this->text = $this->getString();
-		$this->fadeInTime = $this->getVarInt();
-		$this->stayTime = $this->getVarInt();
-		$this->fadeOutTime = $this->getVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->type = $in->getVarInt();
+		$this->text = $in->getString();
+		$this->fadeInTime = $in->getVarInt();
+		$this->stayTime = $in->getVarInt();
+		$this->fadeOutTime = $in->getVarInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->putVarInt($this->type);
-		$this->putString($this->text);
-		$this->putVarInt($this->fadeInTime);
-		$this->putVarInt($this->stayTime);
-		$this->putVarInt($this->fadeOutTime);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putVarInt($this->type);
+		$out->putString($this->text);
+		$out->putVarInt($this->fadeInTime);
+		$out->putVarInt($this->stayTime);
+		$out->putVarInt($this->fadeOutTime);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

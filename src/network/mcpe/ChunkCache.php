@@ -45,8 +45,6 @@ class ChunkCache implements ChunkListener{
 	/**
 	 * Fetches the ChunkCache instance for the given world. This lazily creates cache systems as needed.
 	 *
-	 * @param World $world
-	 *
 	 * @return ChunkCache
 	 */
 	public static function getInstance(World $world) : self{
@@ -64,18 +62,12 @@ class ChunkCache implements ChunkListener{
 	/** @var int */
 	private $misses = 0;
 
-	/**
-	 * @param World $world
-	 */
 	private function __construct(World $world){
 		$this->world = $world;
 	}
 
 	/**
 	 * Requests asynchronous preparation of the chunk at the given coordinates.
-	 *
-	 * @param int $chunkX
-	 * @param int $chunkZ
 	 *
 	 * @return CompressBatchPromise a promise of resolution which will contain a compressed chunk packet.
 	 */
@@ -100,7 +92,7 @@ class ChunkCache implements ChunkListener{
 					$chunkZ,
 					$this->world->getChunk($chunkX, $chunkZ),
 					$this->caches[$chunkHash],
-					function() use ($chunkX, $chunkZ){
+					function() use ($chunkX, $chunkZ) : void{
 						$this->world->getLogger()->error("Failed preparing chunk $chunkX $chunkZ, retrying");
 
 						$this->restartPendingRequest($chunkX, $chunkZ);
@@ -125,14 +117,11 @@ class ChunkCache implements ChunkListener{
 	/**
 	 * Restarts an async request for an unresolved chunk.
 	 *
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	private function restartPendingRequest(int $chunkX, int $chunkZ) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$existing = $this->caches[$chunkHash];
+		$existing = $this->caches[$chunkHash] ?? null;
 		if($existing === null or $existing->hasResult()){
 			throw new \InvalidArgumentException("Restart can only be applied to unresolved promises");
 		}
@@ -143,9 +132,6 @@ class ChunkCache implements ChunkListener{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	private function destroyOrRestart(int $chunkX, int $chunkZ) : void{
@@ -170,7 +156,6 @@ class ChunkCache implements ChunkListener{
 
 	/**
 	 * @see ChunkListener::onChunkChanged()
-	 * @param Chunk $chunk
 	 */
 	public function onChunkChanged(Chunk $chunk) : void{
 		//FIXME: this gets fired for stuff that doesn't change terrain related things (like lighting updates)
@@ -179,7 +164,6 @@ class ChunkCache implements ChunkListener{
 
 	/**
 	 * @see ChunkListener::onBlockChanged()
-	 * @param Vector3 $block
 	 */
 	public function onBlockChanged(Vector3 $block) : void{
 		//FIXME: requesters will still receive this chunk after it's been dropped, but we can't mark this for a simple
@@ -189,7 +173,6 @@ class ChunkCache implements ChunkListener{
 
 	/**
 	 * @see ChunkListener::onChunkUnloaded()
-	 * @param Chunk $chunk
 	 */
 	public function onChunkUnloaded(Chunk $chunk) : void{
 		$this->destroy($chunk->getX(), $chunk->getZ());
@@ -199,8 +182,6 @@ class ChunkCache implements ChunkListener{
 	/**
 	 * Returns the number of bytes occupied by the cache data in this cache. This does not include the size of any
 	 * promises referenced by the cache.
-	 *
-	 * @return int
 	 */
 	public function calculateCacheSize() : int{
 		$result = 0;
@@ -214,8 +195,6 @@ class ChunkCache implements ChunkListener{
 
 	/**
 	 * Returns the percentage of requests to the cache which resulted in a cache hit.
-	 *
-	 * @return float
 	 */
 	public function getHitPercentage() : float{
 		$total = $this->hits + $this->misses;

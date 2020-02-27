@@ -39,9 +39,6 @@ use function str_repeat;
 class McRegion extends RegionWorldProvider{
 
 	/**
-	 * @param Chunk $chunk
-	 *
-	 * @return string
 	 * @throws \RuntimeException
 	 */
 	protected function serializeChunk(Chunk $chunk) : string{
@@ -49,15 +46,12 @@ class McRegion extends RegionWorldProvider{
 	}
 
 	/**
-	 * @param string $data
-	 *
-	 * @return Chunk
 	 * @throws CorruptedChunkException
 	 */
 	protected function deserializeChunk(string $data) : Chunk{
 		$nbt = new BigEndianNbtSerializer();
 		try{
-			$chunk = $nbt->readCompressed($data)->getTag();
+			$chunk = $nbt->readCompressed($data)->mustGetCompoundTag();
 		}catch(NbtDataException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
 		}
@@ -87,8 +81,8 @@ class McRegion extends RegionWorldProvider{
 			$chunk->getInt("xPos"),
 			$chunk->getInt("zPos"),
 			$subChunks,
-			$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
-			$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
+			$chunk->hasTag("Entities", ListTag::class) ? self::getCompoundList("Entities", $chunk->getListTag("Entities")) : [],
+			$chunk->hasTag("TileEntities", ListTag::class) ? self::getCompoundList("TileEntities", $chunk->getListTag("TileEntities")) : [],
 			$biomeIds
 		);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);

@@ -41,7 +41,6 @@ trait PillarRotationTrait{
 
 	/**
 	 * @see Block::writeStateToMeta()
-	 * @return int
 	 */
 	protected function writeStateToMeta() : int{
 		return $this->writeAxisToMeta();
@@ -49,9 +48,6 @@ trait PillarRotationTrait{
 
 	/**
 	 * @see Block::readStateFromData()
-	 *
-	 * @param int $id
-	 * @param int $stateMeta
 	 */
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->readAxisFromMeta($stateMeta);
@@ -59,7 +55,6 @@ trait PillarRotationTrait{
 
 	/**
 	 * @see Block::getStateBitmask()
-	 * @return int
 	 */
 	public function getStateBitmask() : int{
 		return 0b11 << $this->getAxisMetaShift();
@@ -89,16 +84,6 @@ trait PillarRotationTrait{
 
 	/**
 	 * @see Block::place()
-	 *
-	 * @param BlockTransaction $tx
-	 * @param Item             $item
-	 * @param Block            $blockReplace
-	 * @param Block            $blockClicked
-	 * @param int              $face
-	 * @param Vector3          $clickVector
-	 * @param Player|null      $player
-	 *
-	 * @return bool
 	 */
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->axis = Facing::axis($face);

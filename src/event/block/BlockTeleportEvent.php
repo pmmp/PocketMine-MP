@@ -34,25 +34,15 @@ class BlockTeleportEvent extends BlockEvent implements Cancellable{
 	/** @var Vector3 */
 	private $to;
 
-	/**
-	 * @param Block   $block
-	 * @param Vector3 $to
-	 */
 	public function __construct(Block $block, Vector3 $to){
 		parent::__construct($block);
 		$this->to = $to;
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	public function getTo() : Vector3{
 		return $this->to;
 	}
 
-	/**
-	 * @param Vector3 $to
-	 */
 	public function setTo(Vector3 $to) : void{
 		$this->to = $to;
 	}

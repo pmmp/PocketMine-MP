@@ -164,7 +164,6 @@ class Painting extends Entity{
 
 	/**
 	 * Returns the painting motive (which image is displayed on the painting)
-	 * @return PaintingMotive
 	 */
 	public function getMotive() : PaintingMotive{
 		return PaintingMotive::getMotiveByName($this->motive);
@@ -176,11 +175,6 @@ class Painting extends Entity{
 
 	/**
 	 * Returns the bounding-box a painting with the specified motive would have at the given position and direction.
-	 *
-	 * @param int            $facing
-	 * @param PaintingMotive $motive
-	 *
-	 * @return AxisAlignedBB
 	 */
 	private static function getPaintingBB(int $facing, PaintingMotive $motive) : AxisAlignedBB{
 		$width = $motive->getWidth();
@@ -199,14 +193,6 @@ class Painting extends Entity{
 
 	/**
 	 * Returns whether a painting with the specified motive can be placed at the given position.
-	 *
-	 * @param World          $world
-	 * @param Vector3        $blockIn
-	 * @param int            $facing
-	 * @param bool           $checkOverlap
-	 * @param PaintingMotive $motive
-	 *
-	 * @return bool
 	 */
 	public static function canFit(World $world, Vector3 $blockIn, int $facing, bool $checkOverlap, PaintingMotive $motive) : bool{
 		$width = $motive->getWidth();

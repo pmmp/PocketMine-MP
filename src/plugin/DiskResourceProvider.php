@@ -49,14 +49,12 @@ class DiskResourceProvider implements ResourceProvider{
 	 * Gets an embedded resource on the plugin file.
 	 * WARNING: You must close the resource given using fclose()
 	 *
-	 * @param string $filename
-	 *
 	 * @return null|resource Resource data, or null
 	 */
 	public function getResource(string $filename){
 		$filename = rtrim(str_replace("\\", "/", $filename), "/");
-		if(file_exists($this->file . "/resources/" . $filename)){
-			return fopen($this->file . "/resources/" . $filename, "rb");
+		if(file_exists($this->file . "/" . $filename)){
+			return fopen($this->file . "/" . $filename, "rb");
 		}
 
 		return null;
@@ -69,10 +67,10 @@ class DiskResourceProvider implements ResourceProvider{
 	 */
 	public function getResources() : array{
 		$resources = [];
-		if(is_dir($this->file . "resources/")){
-			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file . "resources/")) as $resource){
+		if(is_dir($this->file)){
+			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file)) as $resource){
 				if($resource->isFile()){
-					$path = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($this->file . "resources/")));
+					$path = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($this->file)));
 					$resources[$path] = $resource;
 				}
 			}

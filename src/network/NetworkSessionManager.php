@@ -37,8 +37,6 @@ class NetworkSessionManager{
 
 	/**
 	 * Adds a network session to the manager. This should only be called on session creation.
-	 *
-	 * @param NetworkSession $session
 	 */
 	public function add(NetworkSession $session) : void{
 		$idx = spl_object_id($session);
@@ -48,8 +46,6 @@ class NetworkSessionManager{
 	/**
 	 * Removes the given network session, due to disconnect. This should only be called by a network session on
 	 * disconnection.
-	 *
-	 * @param NetworkSession $session
 	 */
 	public function remove(NetworkSession $session) : void{
 		$idx = spl_object_id($session);
@@ -58,8 +54,6 @@ class NetworkSessionManager{
 
 	/**
 	 * Requests an update to be scheduled on the given network session at the next tick.
-	 *
-	 * @param NetworkSession $session
 	 */
 	public function scheduleUpdate(NetworkSession $session) : void{
 		$this->updateSessions[spl_object_id($session)] = $session;
@@ -68,8 +62,6 @@ class NetworkSessionManager{
 	/**
 	 * Checks whether this network session is a duplicate of an already-connected session (same player connecting from
 	 * 2 locations).
-	 *
-	 * @param NetworkSession $connectingSession
 	 *
 	 * @return bool if the network session is still connected.
 	 */
@@ -96,8 +88,6 @@ class NetworkSessionManager{
 
 	/**
 	 * Returns the number of known connected sessions.
-	 *
-	 * @return int
 	 */
 	public function getSessionCount() : int{
 		return count($this->sessions);
@@ -116,8 +106,6 @@ class NetworkSessionManager{
 
 	/**
 	 * Terminates all connected sessions with the given reason.
-	 *
-	 * @param string $reason
 	 */
 	public function close(string $reason = "") : void{
 		foreach($this->sessions as $session){

@@ -1,0 +1,89 @@
+parameters:
+	ignoreErrors:
+		- "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
+		-
+			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
+			path: ../../../src
+
+		-
+			message: "#^Offset string does not exist on array\\(\\)\\.$#"
+			count: 3
+			path: ../../../src/MemoryManager.php
+
+		-
+			message: "#^Offset \\(int\\|string\\) does not exist on array\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/MemoryManager.php
+
+		-
+			#is_a() type narrowing isn't respected yet
+			message: "#^Parameter \\#1 \\$class of static method pocketmine\\\\world\\\\format\\\\io\\\\WorldProviderManager\\:\\:setDefault\\(\\) expects class\\-string\\<pocketmine\\\\world\\\\format\\\\io\\\\WritableWorldProvider\\>, class\\-string\\<pocketmine\\\\world\\\\format\\\\io\\\\WorldProvider\\> given\\.$#"
+			count: 1
+			path: ../../../src/Server.php
+
+		-
+			#dynamic instanceof
+			message: "#^Instanceof between pocketmine\\\\block\\\\tile\\\\Tile and class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\> will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/block/Block.php
+
+		-
+			message: "#^Comparison operation \"\\>\\=\" between 0 and 2 is always false\\.$#"
+			count: 1
+			path: ../../../src/block/Liquid.php
+
+		-
+			#adjacentSources comparison FP
+			message: "#^If condition is always false\\.$#"
+			count: 1
+			path: ../../../src/block/Liquid.php
+
+		-
+			#readline() may return false
+			message: "#^Strict comparison using \\!\\=\\= between string and false will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/command/CommandReader.php
+
+		-
+			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/entity/projectile/Projectile.php
+
+		-
+			#dynamic Entity class access of ::ID constant
+			message: "#^Strict comparison using \\!\\=\\= between \\-1 and \\-1 will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/item/ItemFactory.php
+
+		-
+			message: "#^If condition is always false\\.$#"
+			count: 1
+			path: ../../../src/item/ItemFactory.php
+
+		-
+			#object to array cast analysis bug
+			message: "#^Call to function is_object\\(\\) with int will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/protocol/DataPacket.php
+
+		-
+			#object to array cast analysis bug
+			message: "#^Casting to string something that's already string\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/protocol/DataPacket.php
+
+		-
+			message: "#^If condition is always false\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\entity\\\\MetadataProperty and pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\entity\\\\MetadataProperty will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
+
+		-
+			#phpstan doesn't understand that SplFixedArray may contain null
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../tests/phpunit/block/BlockTest.php

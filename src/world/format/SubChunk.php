@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\format;
 
 use function array_values;
+use function count;
 
 class SubChunk implements SubChunkInterface{
 	/** @var int */
@@ -39,10 +40,7 @@ class SubChunk implements SubChunkInterface{
 	/**
 	 * SubChunk constructor.
 	 *
-	 * @param int                  $default
 	 * @param PalettedBlockArray[] $blocks
-	 * @param LightArray|null      $skyLight
-	 * @param LightArray|null      $blockLight
 	 */
 	public function __construct(int $default, array $blocks, ?LightArray $skyLight = null, ?LightArray $blockLight = null){
 		$this->defaultBlock = $default;
@@ -52,32 +50,24 @@ class SubChunk implements SubChunkInterface{
 		$this->blockLight = $blockLight ?? new LightArray(LightArray::ZERO);
 	}
 
-	public function isEmpty(bool $checkLight = true) : bool{
-		foreach($this->blockLayers as $layer){
-			$palette = $layer->getPalette();
-			foreach($palette as $p){
-				if($p !== $this->defaultBlock){
-					return false;
-				}
-			}
-		}
-		return
-			(!$checkLight or (
-				$this->skyLight->getData() === LightArray::FIFTEEN and
-				$this->blockLight->getData() === LightArray::ZERO
-			)
-		);
+	public function isEmptyAuthoritative() : bool{
+		$this->collectGarbage();
+		return $this->isEmptyFast();
+	}
+
+	public function isEmptyFast() : bool{
+		return count($this->blockLayers) === 0;
 	}
 
 	public function getFullBlock(int $x, int $y, int $z) : int{
-		if(empty($this->blockLayers)){
+		if(count($this->blockLayers) === 0){
 			return $this->defaultBlock;
 		}
 		return $this->blockLayers[0]->get($x, $y, $z);
 	}
 
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		if(empty($this->blockLayers)){
+		if(count($this->blockLayers) === 0){
 			$this->blockLayers[] = new PalettedBlockArray($this->defaultBlock);
 		}
 		$this->blockLayers[0]->set($x, $y, $z, $block);
@@ -91,7 +81,7 @@ class SubChunk implements SubChunkInterface{
 	}
 
 	public function getHighestBlockAt(int $x, int $z) : int{
-		if(empty($this->blockLayers)){
+		if(count($this->blockLayers) === 0){
 			return -1;
 		}
 		for($y = 15; $y >= 0; --$y){
@@ -119,7 +109,10 @@ class SubChunk implements SubChunkInterface{
 		$this->blockLight = $data;
 	}
 
-	public function __debugInfo(){
+	/**
+	 * @return mixed[]
+	 */
+	public function __debugInfo() : array{
 		return [];
 	}
 

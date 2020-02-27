@@ -36,6 +36,7 @@ class Permission{
 	public const DEFAULT_TRUE = "true";
 	public const DEFAULT_FALSE = "false";
 
+	/** @var string */
 	public static $DEFAULT_PERMISSION = self::DEFAULT_OP;
 
 	/** @var string */
@@ -46,6 +47,7 @@ class Permission{
 
 	/**
 	 * @var bool[]
+	 * @phpstan-var array<string, bool>
 	 */
 	private $children;
 
@@ -55,10 +57,8 @@ class Permission{
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
 	 *
-	 * @param string $name
-	 * @param string $description
-	 * @param string $defaultValue
 	 * @param bool[] $children
+	 * @phpstan-param array<string, bool> $children
 	 */
 	public function __construct(string $name, ?string $description = null, ?string $defaultValue = null, array $children = []){
 		$this->name = $name;
@@ -69,30 +69,22 @@ class Permission{
 		$this->recalculatePermissibles();
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
 
 	/**
 	 * @return bool[]
+	 * @phpstan-return array<string, bool>
 	 */
 	public function &getChildren() : array{
 		return $this->children;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDefault() : string{
 		return $this->defaultValue;
 	}
 
-	/**
-	 * @param string $value
-	 */
 	public function setDefault(string $value) : void{
 		if($value !== $this->defaultValue){
 			$this->defaultValue = $value;
@@ -100,16 +92,10 @@ class Permission{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDescription() : string{
 		return $this->description;
 	}
 
-	/**
-	 * @param string $value
-	 */
 	public function setDescription(string $value) : void{
 		$this->description = $value;
 	}
@@ -131,10 +117,8 @@ class Permission{
 		}
 	}
 
-
 	/**
 	 * @param string|Permission $name
-	 * @param bool              $value
 	 *
 	 * @return Permission|null Permission if $name is a string, null if it's a Permission
 	 */

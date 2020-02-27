@@ -38,19 +38,12 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 	/** @var bool */
 	private $blockBreaking;
 
-	/**
-	 * @param Entity $entity
-	 * @param float  $force
-	 */
 	public function __construct(Entity $entity, float $force){
 		$this->entity = $entity;
 		$this->force = $force;
 		$this->blockBreaking = true;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getForce() : float{
 		return $this->force;
 	}
@@ -59,16 +52,10 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 		$this->force = $force;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isBlockBreaking() : bool{
 		return $this->blockBreaking;
 	}
 
-	/**
-	 * @param bool $affectsBlocks
-	 */
 	public function setBlockBreaking(bool $affectsBlocks) : void{
 		$this->blockBreaking = $affectsBlocks;
 	}

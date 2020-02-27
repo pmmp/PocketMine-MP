@@ -34,14 +34,10 @@ class PluginCommand extends Command implements PluginIdentifiableCommand{
 	/** @var CommandExecutor */
 	private $executor;
 
-	/**
-	 * @param string $name
-	 * @param Plugin $owner
-	 */
-	public function __construct(string $name, Plugin $owner){
+	public function __construct(string $name, Plugin $owner, CommandExecutor $executor){
 		parent::__construct($name);
 		$this->owningPlugin = $owner;
-		$this->executor = $owner;
+		$this->executor = $executor;
 		$this->usageMessage = "";
 	}
 
@@ -68,16 +64,10 @@ class PluginCommand extends Command implements PluginIdentifiableCommand{
 		return $this->executor;
 	}
 
-	/**
-	 * @param CommandExecutor $executor
-	 */
-	public function setExecutor(CommandExecutor $executor){
+	public function setExecutor(CommandExecutor $executor) : void{
 		$this->executor = $executor;
 	}
 
-	/**
-	 * @return Plugin
-	 */
 	public function getPlugin() : Plugin{
 		return $this->owningPlugin;
 	}

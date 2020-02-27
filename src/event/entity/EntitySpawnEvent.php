@@ -30,9 +30,6 @@ use pocketmine\entity\Entity;
  */
 class EntitySpawnEvent extends EntityEvent{
 
-	/**
-	 * @param Entity $entity
-	 */
 	public function __construct(Entity $entity){
 		$this->entity = $entity;
 	}

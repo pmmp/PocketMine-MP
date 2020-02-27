@@ -38,17 +38,12 @@ class CommandData{
 	public $overloads = [];
 
 	/**
-	 * @param string               $name
-	 * @param string               $description
-	 * @param int                  $flags
-	 * @param int                  $permission
-	 * @param CommandEnum|null     $aliases
 	 * @param CommandParameter[][] $overloads
 	 */
 	public function __construct(string $name, string $description, int $flags, int $permission, ?CommandEnum $aliases, array $overloads){
-		(function(array ...$overloads){
+		(function(array ...$overloads) : void{
 			foreach($overloads as $overload){
-				(function(CommandParameter ...$parameters){})(...$overload);
+				(function(CommandParameter ...$parameters) : void{})(...$overload);
 			}
 		})(...$overloads);
 		$this->name = $name;
@@ -59,37 +54,22 @@ class CommandData{
 		$this->overloads = $overloads;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->name;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDescription() : string{
 		return $this->description;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getFlags() : int{
 		return $this->flags;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPermission() : int{
 		return $this->permission;
 	}
 
-	/**
-	 * @return CommandEnum|null
-	 */
 	public function getAliases() : ?CommandEnum{
 		return $this->aliases;
 	}

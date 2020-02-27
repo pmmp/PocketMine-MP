@@ -52,6 +52,9 @@ class ShapelessRecipe implements CraftingRecipe{
 		$this->results = Utils::cloneObjectArray($results);
 	}
 
+	/**
+	 * @return Item[]
+	 */
 	public function getResults() : array{
 		return Utils::cloneObjectArray($this->results);
 	}
@@ -67,9 +70,6 @@ class ShapelessRecipe implements CraftingRecipe{
 		return Utils::cloneObjectArray($this->ingredients);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getIngredientCount() : int{
 		$count = 0;
 		foreach($this->ingredients as $ingredient){
@@ -79,11 +79,6 @@ class ShapelessRecipe implements CraftingRecipe{
 		return $count;
 	}
 
-	/**
-	 * @param CraftingGrid $grid
-	 *
-	 * @return bool
-	 */
 	public function matchesCraftingGrid(CraftingGrid $grid) : bool{
 		//don't pack the ingredients - shapeless recipes require that each ingredient be in a separate slot
 		$input = $grid->getContents();
@@ -99,6 +94,6 @@ class ShapelessRecipe implements CraftingRecipe{
 			return false; //failed to match the needed item to a given item
 		}
 
-		return empty($input); //crafting grid should be empty apart from the given ingredient stacks
+		return count($input) === 0; //crafting grid should be empty apart from the given ingredient stacks
 	}
 }

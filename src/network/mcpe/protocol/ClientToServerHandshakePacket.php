@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ClientToServerHandshakePacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CLIENT_TO_SERVER_HANDSHAKE_PACKET;
@@ -35,11 +35,11 @@ class ClientToServerHandshakePacket extends DataPacket implements ServerboundPac
 		return true;
 	}
 
-	protected function decodePayload() : void{
+	protected function decodePayload(NetworkBinaryStream $in) : void{
 		//No payload
 	}
 
-	protected function encodePayload() : void{
+	protected function encodePayload(NetworkBinaryStream $out) : void{
 		//No payload
 	}
 

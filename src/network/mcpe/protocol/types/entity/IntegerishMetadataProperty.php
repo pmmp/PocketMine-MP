@@ -27,9 +27,6 @@ trait IntegerishMetadataProperty{
 	/** @var int */
 	private $value;
 
-	/**
-	 * @param int $value
-	 */
 	public function __construct(int $value){
 		if($value < $this->min() or $value > $this->max()){
 			throw new \InvalidArgumentException("Value is out of range " . $this->min() . " - " . $this->max());
@@ -41,17 +38,18 @@ trait IntegerishMetadataProperty{
 
 	abstract protected function max() : int;
 
-	/**
-	 * @return int
-	 */
 	public function getValue() : int{
 		return $this->value;
 	}
 
 	public function equals(MetadataProperty $other) : bool{
-		return $other instanceof $this and $other->value === $this->value;
+		return $other instanceof self and $other->value === $this->value;
 	}
 
+	/**
+	 * @param bool[] $flags
+	 * @phpstan-param array<int, bool> $flags
+	 */
 	public static function buildFromFlags(array $flags) : self{
 		$value = 0;
 		foreach($flags as $flag => $v){

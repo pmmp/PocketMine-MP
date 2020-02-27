@@ -41,7 +41,10 @@ class AutoUpdater{
 	protected $server;
 	/** @var string */
 	protected $endpoint;
-	/** @var array|null */
+	/**
+	 * @var mixed[]|null
+	 * @phpstan-var array<string, mixed>|null
+	 */
 	protected $updateInfo = null;
 	/** @var VersionString|null */
 	protected $newVersion;
@@ -49,16 +52,12 @@ class AutoUpdater{
 	/** @var \Logger */
 	private $logger;
 
-	/**
-	 * @param Server $server
-	 * @param string $endpoint
-	 */
 	public function __construct(Server $server, string $endpoint){
 		$this->server = $server;
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Auto Updater");
 		$this->endpoint = "http://$endpoint/api/";
 
-		if($server->getProperty("auto-updater.enabled", true)){
+		if((bool) $server->getProperty("auto-updater.enabled", true)){
 			$this->doCheck();
 		}
 	}
@@ -70,17 +69,18 @@ class AutoUpdater{
 	/**
 	 * Callback used at the end of the update checking task
 	 *
-	 * @param array $updateInfo
+	 * @param mixed[] $updateInfo
+	 * @phpstan-param array<string, mixed> $updateInfo
 	 */
 	public function checkUpdateCallback(array $updateInfo) : void{
 		$this->updateInfo = $updateInfo;
 		$this->checkUpdate();
 		if($this->hasUpdate()){
 			(new UpdateNotifyEvent($this))->call();
-			if($this->server->getProperty("auto-updater.on-update.warn-console", true)){
+			if((bool) $this->server->getProperty("auto-updater.on-update.warn-console", true)){
 				$this->showConsoleUpdate();
 			}
-		}elseif($this->server->getProperty("auto-updater.preferred-channel", true)){
+		}else{
 			if(!\pocketmine\IS_DEVELOPMENT_BUILD and $this->getChannel() !== "stable"){
 				$this->showChannelSuggestionStable();
 			}elseif(\pocketmine\IS_DEVELOPMENT_BUILD and $this->getChannel() === "stable"){
@@ -91,8 +91,6 @@ class AutoUpdater{
 
 	/**
 	 * Returns whether there is an update available.
-	 *
-	 * @return bool
 	 */
 	public function hasUpdate() : bool{
 		return $this->newVersion !== null;
@@ -115,8 +113,6 @@ class AutoUpdater{
 
 	/**
 	 * Shows a warning to a player to tell them there is an update available
-	 *
-	 * @param Player $player
 	 */
 	public function showPlayerUpdate(Player $player) : void{
 		$player->sendMessage(TextFormat::DARK_PURPLE . "The version of " . $this->server->getName() . " that this server is running is out of date. Please consider updating to the latest version.");
@@ -137,6 +133,9 @@ class AutoUpdater{
 		]);
 	}
 
+	/**
+	 * @param string[] $lines
+	 */
 	protected function printConsoleMessage(array $lines, string $logLevel = \LogLevel::INFO) : void{
 		$title = $this->server->getName() . ' Auto Updater';
 		$this->logger->log($logLevel, sprintf('----- %s -----', $title));
@@ -149,7 +148,8 @@ class AutoUpdater{
 	/**
 	 * Returns the last retrieved update data.
 	 *
-	 * @return array|null
+	 * @return mixed[]|null
+	 * @phpstan-return array<string, mixed>|null
 	 */
 	public function getUpdateInfo() : ?array{
 		return $this->updateInfo;
@@ -185,8 +185,6 @@ class AutoUpdater{
 
 	/**
 	 * Returns the channel used for update checking (stable, beta, dev)
-	 *
-	 * @return string
 	 */
 	public function getChannel() : string{
 		$channel = strtolower($this->server->getProperty("auto-updater.preferred-channel", "stable"));
@@ -199,8 +197,6 @@ class AutoUpdater{
 
 	/**
 	 * Returns the host used for update checks.
-	 *
-	 * @return string
 	 */
 	public function getEndpoint() : string{
 		return $this->endpoint;

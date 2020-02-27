@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ChunkRadiusUpdatedPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CHUNK_RADIUS_UPDATED_PACKET;
@@ -40,12 +40,12 @@ class ChunkRadiusUpdatedPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->radius = $this->getVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->radius = $in->getVarInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->putVarInt($this->radius);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putVarInt($this->radius);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

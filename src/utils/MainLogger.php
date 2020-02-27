@@ -45,7 +45,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	/** @var \Threaded */
 	protected $logStream;
 	/** @var bool */
-	protected $shutdown;
+	protected $shutdown = false;
 	/** @var bool */
 	protected $logDebug;
 	/** @var bool */
@@ -61,9 +61,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	private $timezone;
 
 	/**
-	 * @param string $logFile
-	 * @param bool   $logDebug
-	 *
 	 * @throws \RuntimeException
 	 */
 	public function __construct(string $logFile, bool $logDebug = false){
@@ -82,8 +79,6 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	/**
 	 * Returns the current logger format used for console output.
-	 *
-	 * @return string
 	 */
 	public function getFormat() : string{
 		return $this->format;
@@ -99,8 +94,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	 * - message
 	 *
 	 * @see http://php.net/manual/en/function.sprintf.php
-	 *
-	 * @param string $format
 	 */
 	public function setFormat(string $format) : void{
 		$this->format = $format;
@@ -141,45 +134,51 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->send($message, \LogLevel::DEBUG, "DEBUG", TextFormat::GRAY);
 	}
 
-	/**
-	 * @param bool $logDebug
-	 */
 	public function setLogDebug(bool $logDebug) : void{
 		$this->logDebug = $logDebug;
 	}
 
 	/**
-	 * @param \Throwable $e
-	 * @param array|null $trace
+	 * @param mixed[][]|null $trace
+	 * @phpstan-param list<array<string, mixed>>|null $trace
+	 *
+	 * @return void
 	 */
 	public function logException(\Throwable $e, $trace = null){
 		if($trace === null){
 			$trace = $e->getTrace();
 		}
-		$errstr = $e->getMessage();
-		$errfile = $e->getFile();
-		$errno = $e->getCode();
-		$errline = $e->getLine();
 
+		$this->synchronized(function() use ($e, $trace) : void{
+			$this->critical(self::printExceptionMessage($e));
+			foreach(Utils::printableTrace($trace) as $line){
+				$this->debug($line, true);
+			}
+			for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
+				$this->debug("Previous: " . self::printExceptionMessage($prev), true);
+				foreach(Utils::printableTrace($prev->getTrace()) as $line){
+					$this->debug("  " . $line, true);
+				}
+			}
+		});
+
+		$this->syncFlushBuffer();
+	}
+
+	private static function printExceptionMessage(\Throwable $e) : string{
+		$errstr = preg_replace('/\s+/', ' ', trim($e->getMessage()));
+
+		$errno = $e->getCode();
 		try{
 			$errno = \ErrorUtils::errorTypeToString($errno);
 		}catch(\InvalidArgumentException $e){
 			//pass
 		}
-		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
-		$errfile = Filesystem::cleanPath($errfile);
 
-		$message = get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
-		$stack = Utils::printableTrace($trace);
+		$errfile = Filesystem::cleanPath($e->getFile());
+		$errline = $e->getLine();
 
-		$this->synchronized(function() use ($message, $stack) : void{
-			$this->log(LogLevel::CRITICAL, $message);
-			foreach($stack as $line){
-				$this->debug($line, true);
-			}
-		});
-
-		$this->syncFlushBuffer();
+		return get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
 	}
 
 	public function log($level, $message){
@@ -216,6 +215,12 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->notify();
 	}
 
+	/**
+	 * @param string $message
+	 * @param string $level
+	 * @param string $prefix
+	 * @param string $color
+	 */
 	protected function send($message, $level, $prefix, $color) : void{
 		$time = new \DateTime('now', new \DateTimeZone($this->timezone));
 
@@ -247,7 +252,7 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	public function syncFlushBuffer() : void{
 		$this->syncFlush = true;
-		$this->synchronized(function(){
+		$this->synchronized(function() : void{
 			$this->notify(); //write immediately
 
 			while($this->syncFlush){
@@ -272,7 +277,6 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	public function run() : void{
-		$this->shutdown = false;
 		$logResource = fopen($this->logFile, "ab");
 		if(!is_resource($logResource)){
 			throw new \RuntimeException("Couldn't open log file");
@@ -280,7 +284,7 @@ class MainLogger extends \AttachableThreadedLogger{
 
 		while(!$this->shutdown){
 			$this->writeLogStream($logResource);
-			$this->synchronized(function(){
+			$this->synchronized(function() : void{
 				$this->wait(25000);
 			});
 		}

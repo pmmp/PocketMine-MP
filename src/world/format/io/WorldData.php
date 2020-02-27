@@ -32,73 +32,46 @@ interface WorldData{
 	 */
 	public function save() : void;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string;
 
 	/**
 	 * Returns the generator name
-	 *
-	 * @return string
 	 */
 	public function getGenerator() : string;
 
 	/**
-	 * @return array
+	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
 	 */
 	public function getGeneratorOptions() : array;
 
-	/**
-	 * @return int
-	 */
 	public function getSeed() : int;
 
-
-
-	/**
-	 * @return int
-	 */
 	public function getTime() : int;
 
-	/**
-	 * @param int $value
-	 */
 	public function setTime(int $value) : void;
 
-
-	/**
-	 * @return Vector3
-	 */
 	public function getSpawn() : Vector3;
 
-	/**
-	 * @param Vector3 $pos
-	 */
 	public function setSpawn(Vector3 $pos) : void;
 
 	/**
 	 * Returns the world difficulty. This will be one of the World constants.
-	 * @return int
 	 */
 	public function getDifficulty() : int;
 
 	/**
 	 * Sets the world difficulty.
-	 *
-	 * @param int $difficulty
 	 */
 	public function setDifficulty(int $difficulty) : void;
 
 	/**
 	 * Returns the time in ticks to the next rain level change.
-	 * @return int
 	 */
 	public function getRainTime() : int;
 
 	/**
 	 * Sets the time in ticks to the next rain level change.
-	 * @param int $ticks
 	 */
 	public function setRainTime(int $ticks) : void;
 
@@ -114,13 +87,11 @@ interface WorldData{
 
 	/**
 	 * Returns the time in ticks to the next lightning level change.
-	 * @return int
 	 */
 	public function getLightningTime() : int;
 
 	/**
 	 * Sets the time in ticks to the next lightning level change.
-	 * @param int $ticks
 	 */
 	public function setLightningTime(int $ticks) : void;
 

@@ -26,12 +26,6 @@ namespace pocketmine\permission;
 abstract class DefaultPermissions{
 	public const ROOT = "pocketmine";
 
-	/**
-	 * @param Permission $perm
-	 * @param Permission $parent
-	 *
-	 * @return Permission
-	 */
 	public static function registerPermission(Permission $perm, ?Permission $parent = null) : Permission{
 		if($parent instanceof Permission){
 			$parent->getChildren()[$perm->getName()] = true;
@@ -43,7 +37,7 @@ abstract class DefaultPermissions{
 		return PermissionManager::getInstance()->getPermission($perm->getName());
 	}
 
-	public static function registerCorePermissions(){
+	public static function registerCorePermissions() : void{
 		$parent = self::registerPermission(new Permission(self::ROOT, "Allows using all PocketMine commands and utilities"));
 
 		$broadcasts = self::registerPermission(new Permission(self::ROOT . ".broadcast", "Allows the user to receive all broadcast messages"), $parent);

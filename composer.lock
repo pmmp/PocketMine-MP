@@ -4,27 +4,27 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eedc6357547d912c1cc4d47477573086",
+    "content-hash": "bb9233cea6e62cc28ea22863681e066e",
     "packages": [
         {
             "name": "adhocore/json-comment",
-            "version": "v0.0.7",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/adhocore/php-json-comment.git",
-                "reference": "135356c7e7336ef59924f1d921c770045f937a76"
+                "reference": "8448076039389f558f39ad0553aab87db3f81614"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/adhocore/php-json-comment/zipball/135356c7e7336ef59924f1d921c770045f937a76",
-                "reference": "135356c7e7336ef59924f1d921c770045f937a76",
+                "url": "https://api.github.com/repos/adhocore/php-json-comment/zipball/8448076039389f558f39ad0553aab87db3f81614",
+                "reference": "8448076039389f558f39ad0553aab87db3f81614",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5"
+                "phpunit/phpunit": "^6.5 || ^7.5"
             },
             "type": "library",
             "autoload": {
@@ -48,7 +48,7 @@
                 "json",
                 "strip-comment"
             ],
-            "time": "2018-08-01T12:27:26+00:00"
+            "time": "2020-01-03T13:51:23+00:00"
         },
         {
             "name": "daverandom/callback-validator",
@@ -299,17 +299,20 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "ea71180bb494217abdb8867f4a0f1c353551b425"
+                "reference": "a36705550b42e7e93e2a9748a8b9fa88985780bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/ea71180bb494217abdb8867f4a0f1c353551b425",
-                "reference": "ea71180bb494217abdb8867f4a0f1c353551b425",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/a36705550b42e7e93e2a9748a8b9fa88985780bf",
+                "reference": "a36705550b42e7e93e2a9748a8b9fa88985780bf",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2",
                 "php-64bit": "*"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
             },
             "type": "library",
             "autoload": {
@@ -317,15 +320,87 @@
                     "pocketmine\\utils\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "LGPL-3.0"
             ],
             "description": "Classes and methods for conveniently handling binary data",
-            "support": {
-                "source": "https://github.com/pmmp/BinaryUtils/tree/master",
-                "issues": "https://github.com/pmmp/BinaryUtils/issues"
+            "time": "2020-01-28T12:17:38+00:00"
+        },
+        {
+            "name": "pocketmine/classloader",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/ClassLoader.git",
+                "reference": "70ab2a59217c4ebd33a58388ce87c86d770edfc3"
             },
-            "time": "2019-08-25T14:54:25+00:00"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/70ab2a59217c4ebd33a58388ce87c86d770edfc3",
+                "reference": "70ab2a59217c4ebd33a58388ce87c86d770edfc3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": "~3.2.0",
+                "ext-reflection": "*",
+                "php": ">=7.2.0"
+            },
+            "conflict": {
+                "pocketmine/spl": "<0.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./src"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Ad-hoc autoloading components used by PocketMine-MP",
+            "time": "2020-01-31T14:26:22+00:00"
+        },
+        {
+            "name": "pocketmine/log",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/Log.git",
+                "reference": "aabbbdf660b6a82bb1c187743bd3f3d136b64814"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/Log/zipball/aabbbdf660b6a82bb1c187743bd3f3d136b64814",
+                "reference": "aabbbdf660b6a82bb1c187743bd3f3d136b64814",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": "~3.2.0",
+                "php": ">=7.2"
+            },
+            "conflict": {
+                "pocketmine/spl": "<0.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./src"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Logging components used by PocketMine-MP and related projects",
+            "time": "2020-01-31T14:32:08+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -333,17 +408,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "d7fda7a3abb078f6c709f02ddbb79444efa8cbe2"
+                "reference": "9aa4018635e7d634c535d4c7d9e032c7d905c29d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/d7fda7a3abb078f6c709f02ddbb79444efa8cbe2",
-                "reference": "d7fda7a3abb078f6c709f02ddbb79444efa8cbe2",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/9aa4018635e7d634c535d4c7d9e032c7d905c29d",
+                "reference": "9aa4018635e7d634c535d4c7d9e032c7d905c29d",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2.0",
                 "php-64bit": "*"
+            },
+            "require-dev": {
+                "irstea/phpunit-shim": "^7.5",
+                "phpstan/phpstan": "^0.12.8"
             },
             "type": "library",
             "autoload": {
@@ -351,20 +430,12 @@
                     "pocketmine\\math\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "pocketmine\\math\\": "tests/phpunit/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "LGPL-3.0"
             ],
             "description": "PHP library containing math related code used in PocketMine-MP",
-            "support": {
-                "source": "https://github.com/pmmp/Math/tree/master",
-                "issues": "https://github.com/pmmp/Math/issues"
-            },
-            "time": "2019-08-14T16:30:00+00:00"
+            "time": "2020-01-28T14:13:55+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -372,12 +443,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "56cb637f904d8cce05d45ff275ee1634bb52e9c3"
+                "reference": "1cdf6aec3024e2061b8c3e5045c43250df94a740"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/56cb637f904d8cce05d45ff275ee1634bb52e9c3",
-                "reference": "56cb637f904d8cce05d45ff275ee1634bb52e9c3",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/1cdf6aec3024e2061b8c3e5045c43250df94a740",
+                "reference": "1cdf6aec3024e2061b8c3e5045c43250df94a740",
                 "shasum": ""
             },
             "require": {
@@ -386,26 +457,22 @@
                 "php-64bit": "*",
                 "pocketmine/binaryutils": "dev-master"
             },
+            "require-dev": {
+                "irstea/phpunit-shim": "^7.5",
+                "phpstan/phpstan": "^0.12.11"
+            },
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "pocketmine\\nbt\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "pocketmine\\nbt\\": "tests/phpunit/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "LGPL-3.0"
             ],
             "description": "PHP library for working with Named Binary Tags",
-            "support": {
-                "source": "https://github.com/pmmp/NBT/tree/master",
-                "issues": "https://github.com/pmmp/NBT/issues"
-            },
-            "time": "2019-08-25T15:00:08+00:00"
+            "time": "2020-02-24T21:43:33+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -413,12 +480,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "9b6e021dcecd6ac3e0fa11655d6b42c13c541e54"
+                "reference": "8d7e27ca17dda204fbefa084efbbba9e9681cadd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/9b6e021dcecd6ac3e0fa11655d6b42c13c541e54",
-                "reference": "9b6e021dcecd6ac3e0fa11655d6b42c13c541e54",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/8d7e27ca17dda204fbefa084efbbba9e9681cadd",
+                "reference": "8d7e27ca17dda204fbefa084efbbba9e9681cadd",
                 "shasum": ""
             },
             "require": {
@@ -429,8 +496,12 @@
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "dev-master",
+                "pocketmine/log": "dev-master",
                 "pocketmine/snooze": "^0.1.0",
                 "pocketmine/spl": "dev-master"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
             },
             "type": "library",
             "autoload": {
@@ -438,33 +509,33 @@
                     "raklib\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
-            "support": {
-                "source": "https://github.com/pmmp/RakLib/tree/master",
-                "issues": "https://github.com/pmmp/RakLib/issues"
-            },
-            "time": "2019-08-25T15:01:01+00:00"
+            "time": "2020-01-31T15:36:55+00:00"
         },
         {
             "name": "pocketmine/snooze",
-            "version": "0.1.1",
+            "version": "0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "b7bd231bdb75e69300cac89ccd515fc731c38c40"
+                "reference": "88420da3d9335dbcb3ee2decfd5e5453d057dcdf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/b7bd231bdb75e69300cac89ccd515fc731c38c40",
-                "reference": "b7bd231bdb75e69300cac89ccd515fc731c38c40",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/88420da3d9335dbcb3ee2decfd5e5453d057dcdf",
+                "reference": "88420da3d9335dbcb3ee2decfd5e5453d057dcdf",
                 "shasum": ""
             },
             "require": {
                 "ext-pthreads": ">=3.1.7dev",
                 "php-64bit": ">=7.2.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
             },
             "type": "library",
             "autoload": {
@@ -472,15 +543,12 @@
                     "pocketmine\\snooze\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "LGPL-3.0"
             ],
             "description": "Thread notification management library for code using the pthreads extension",
-            "support": {
-                "source": "https://github.com/pmmp/Snooze/tree/0.1.1",
-                "issues": "https://github.com/pmmp/Snooze/issues"
-            },
-            "time": "2019-01-04T15:54:45+00:00"
+            "time": "2020-01-28T19:08:10+00:00"
         },
         {
             "name": "pocketmine/spl",
@@ -488,39 +556,241 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "6fee4ae7d2b4b0463702cb427626bc9def32fb61"
+                "reference": "9856cb78ebeeea40375a432a4f87aa47307b9351"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/6fee4ae7d2b4b0463702cb427626bc9def32fb61",
-                "reference": "6fee4ae7d2b4b0463702cb427626bc9def32fb61",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/9856cb78ebeeea40375a432a4f87aa47307b9351",
+                "reference": "9856cb78ebeeea40375a432a4f87aa47307b9351",
                 "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.8"
             },
             "type": "library",
             "autoload": {
                 "classmap": [
-                    "./"
+                    "./src"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "LGPL-3.0"
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
-            "support": {
-                "source": "https://github.com/pmmp/SPL/tree/master"
-            },
-            "time": "2019-08-25T18:29:14+00:00"
+            "time": "2020-01-31T16:18:46+00:00"
         }
     ],
-    "packages-dev": [],
+    "packages-dev": [
+        {
+            "name": "irstea/phpunit-shim",
+            "version": "8.5.2",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.irstea.fr/pole-is/tools/phpunit-shim.git",
+                "reference": "39b6155954d6caec1110a9e78582c4816ab247bc"
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-json": "*",
+                "ext-libxml": "*",
+                "ext-mbstring": "*",
+                "ext-xml": "*",
+                "ext-xmlwriter": "*",
+                "php": "^7.2"
+            },
+            "replace": {
+                "phpunit/phpunit": "self.version"
+            },
+            "suggest": {
+                "ext-soap": "*",
+                "ext-xdebug": "*"
+            },
+            "bin": [
+                "phpunit"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian Bergmann",
+                    "email": "sebastian@phpunit.de",
+                    "role": "lead"
+                }
+            ],
+            "description": "Shim repository for phpunit/phpunit",
+            "homepage": "https://phpunit.de/",
+            "keywords": [
+                "phpunit",
+                "shim",
+                "testing",
+                "xunit"
+            ],
+            "time": "2020-01-09T03:20:20+00:00"
+        },
+        {
+            "name": "phpstan/phpstan",
+            "version": "0.12.11",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan.git",
+                "reference": "ca5f2b7cf81c6d8fba74f9576970399c5817e03b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ca5f2b7cf81c6d8fba74f9576970399c5817e03b",
+                "reference": "ca5f2b7cf81c6d8fba74f9576970399c5817e03b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1"
+            },
+            "bin": [
+                "phpstan",
+                "phpstan.phar"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.12-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPStan - PHP Static Analysis Tool",
+            "time": "2020-02-16T14:00:29+00:00"
+        },
+        {
+            "name": "phpstan/phpstan-phpunit",
+            "version": "0.12.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan-phpunit.git",
+                "reference": "26394996368b6d033d012547d3197f4e07e23021"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/26394996368b6d033d012547d3197f4e07e23021",
+                "reference": "26394996368b6d033d012547d3197f4e07e23021",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~7.1",
+                "phpstan/phpstan": "^0.12.4"
+            },
+            "conflict": {
+                "phpunit/phpunit": "<7.0"
+            },
+            "require-dev": {
+                "consistence/coding-standard": "^3.5",
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.4.4",
+                "ergebnis/composer-normalize": "^2.0.2",
+                "jakub-onderka/php-parallel-lint": "^1.0",
+                "phing/phing": "^2.16.0",
+                "phpstan/phpstan-strict-rules": "^0.12",
+                "phpunit/phpunit": "^7.0",
+                "satooshi/php-coveralls": "^1.0",
+                "slevomat/coding-standard": "^4.7.2"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.12-dev"
+                },
+                "phpstan": {
+                    "includes": [
+                        "extension.neon",
+                        "rules.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPUnit extensions and rules for PHPStan",
+            "time": "2020-01-10T12:07:21+00:00"
+        },
+        {
+            "name": "phpstan/phpstan-strict-rules",
+            "version": "0.12.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan-strict-rules.git",
+                "reference": "a670a59aff7cf96f75d21b974860ada10e25b2ee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/a670a59aff7cf96f75d21b974860ada10e25b2ee",
+                "reference": "a670a59aff7cf96f75d21b974860ada10e25b2ee",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~7.1",
+                "phpstan/phpstan": "^0.12.6"
+            },
+            "require-dev": {
+                "consistence/coding-standard": "^3.0.1",
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.4.4",
+                "ergebnis/composer-normalize": "^2.0.2",
+                "jakub-onderka/php-parallel-lint": "^1.0",
+                "phing/phing": "^2.16.0",
+                "phpstan/phpstan-phpunit": "^0.12",
+                "phpunit/phpunit": "^7.0",
+                "slevomat/coding-standard": "^4.5.2"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.12-dev"
+                },
+                "phpstan": {
+                    "includes": [
+                        "rules.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Extra strict and opinionated rules for PHPStan",
+            "time": "2020-01-20T13:08:52+00:00"
+        }
+    ],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "pocketmine/raklib": 20,
         "pocketmine/spl": 20,
         "pocketmine/binaryutils": 20,
+        "pocketmine/log": 20,
         "pocketmine/nbt": 20,
         "pocketmine/math": 20,
+        "pocketmine/classloader": 20,
         "daverandom/callback-validator": 20
     },
     "prefer-stable": false,
@@ -537,6 +807,7 @@
         "ext-ds": "^1.2.7",
         "ext-gmp": "*",
         "ext-hash": "*",
+        "ext-igbinary": "^3.0.1",
         "ext-json": "*",
         "ext-leveldb": "^0.2.1",
         "ext-mbstring": "*",

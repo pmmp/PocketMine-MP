@@ -46,12 +46,13 @@ class GroundCover extends Populator{
 						$diffY = 1;
 					}
 
-					for($y = 127; $y > 0; --$y){
-						if(!BlockFactory::fromFullBlock($chunk->getFullBlock($x, $y, $z))->isTransparent()){
+					$startY = 127;
+					for(; $startY > 0; --$startY){
+						if(!BlockFactory::fromFullBlock($chunk->getFullBlock($x, $startY, $z))->isTransparent()){
 							break;
 						}
 					}
-					$startY = min(127, $y + $diffY);
+					$startY = min(127, $startY + $diffY);
 					$endY = $startY - count($cover);
 					for($y = $startY; $y > $endY and $y >= 0; --$y){
 						$b = $cover[$startY - $y];

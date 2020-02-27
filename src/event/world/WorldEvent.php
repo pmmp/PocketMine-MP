@@ -33,16 +33,10 @@ abstract class WorldEvent extends Event{
 	/** @var World */
 	private $world;
 
-	/**
-	 * @param World $world
-	 */
 	public function __construct(World $world){
 		$this->world = $world;
 	}
 
-	/**
-	 * @return World
-	 */
 	public function getWorld() : World{
 		return $this->world;
 	}

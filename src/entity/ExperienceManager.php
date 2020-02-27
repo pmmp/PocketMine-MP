@@ -31,6 +31,7 @@ use pocketmine\world\sound\XpCollectSound;
 use pocketmine\world\sound\XpLevelUpSound;
 use function array_rand;
 use function ceil;
+use function count;
 use function max;
 use function min;
 
@@ -64,7 +65,6 @@ class ExperienceManager{
 
 	/**
 	 * Returns the player's experience level.
-	 * @return int
 	 */
 	public function getXpLevel() : int{
 		return (int) $this->levelAttr->getValue();
@@ -72,10 +72,6 @@ class ExperienceManager{
 
 	/**
 	 * Sets the player's experience level. This does not affect their total XP or their XP progress.
-	 *
-	 * @param int $level
-	 *
-	 * @return bool
 	 */
 	public function setXpLevel(int $level) : bool{
 		return $this->setXpAndProgress($level, null);
@@ -83,11 +79,6 @@ class ExperienceManager{
 
 	/**
 	 * Adds a number of XP levels to the player.
-	 *
-	 * @param int  $amount
-	 * @param bool $playSound
-	 *
-	 * @return bool
 	 */
 	public function addXpLevels(int $amount, bool $playSound = true) : bool{
 		$oldLevel = $this->getXpLevel();
@@ -107,10 +98,6 @@ class ExperienceManager{
 
 	/**
 	 * Subtracts a number of XP levels from the player.
-	 *
-	 * @param int $amount
-	 *
-	 * @return bool
 	 */
 	public function subtractXpLevels(int $amount) : bool{
 		return $this->addXpLevels(-$amount);
@@ -118,7 +105,6 @@ class ExperienceManager{
 
 	/**
 	 * Returns a value between 0.0 and 1.0 to indicate how far through the current level the player is.
-	 * @return float
 	 */
 	public function getXpProgress() : float{
 		return $this->progressAttr->getValue();
@@ -126,10 +112,6 @@ class ExperienceManager{
 
 	/**
 	 * Sets the player's progress through the current level to a value between 0.0 and 1.0.
-	 *
-	 * @param float $progress
-	 *
-	 * @return bool
 	 */
 	public function setXpProgress(float $progress) : bool{
 		return $this->setXpAndProgress(null, $progress);
@@ -137,7 +119,6 @@ class ExperienceManager{
 
 	/**
 	 * Returns the number of XP points the player has progressed into their current level.
-	 * @return int
 	 */
 	public function getRemainderXp() : int{
 		return (int) (ExperienceUtils::getXpToCompleteLevel($this->getXpLevel()) * $this->getXpProgress());
@@ -147,8 +128,6 @@ class ExperienceManager{
 	 * Returns the amount of XP points the player currently has, calculated from their current level and progress
 	 * through their current level. This will be reduced by enchanting deducting levels and is used to calculate the
 	 * amount of XP the player drops on death.
-	 *
-	 * @return int
 	 */
 	public function getCurrentTotalXp() : int{
 		return ExperienceUtils::getXpToReachLevel($this->getXpLevel()) + $this->getRemainderXp();
@@ -157,10 +136,6 @@ class ExperienceManager{
 	/**
 	 * Sets the current total of XP the player has, recalculating their XP level and progress.
 	 * Note that this DOES NOT update the player's lifetime total XP.
-	 *
-	 * @param int $amount
-	 *
-	 * @return bool
 	 */
 	public function setCurrentTotalXp(int $amount) : bool{
 		$newLevel = ExperienceUtils::getLevelFromXp($amount);
@@ -172,10 +147,7 @@ class ExperienceManager{
 	 * Adds an amount of XP to the player, recalculating their XP level and progress. XP amount will be added to the
 	 * player's lifetime XP.
 	 *
-	 * @param int  $amount
 	 * @param bool $playSound Whether to play level-up and XP gained sounds.
-	 *
-	 * @return bool
 	 */
 	public function addXp(int $amount, bool $playSound = true) : bool{
 		$this->totalXp += $amount;
@@ -201,10 +173,6 @@ class ExperienceManager{
 
 	/**
 	 * Takes an amount of XP from the player, recalculating their XP level and progress.
-	 *
-	 * @param int $amount
-	 *
-	 * @return bool
 	 */
 	public function subtractXp(int $amount) : bool{
 		return $this->addXp(-$amount);
@@ -234,9 +202,6 @@ class ExperienceManager{
 
 	/**
 	 * @internal
-	 *
-	 * @param int   $level
-	 * @param float $progress
 	 */
 	public function setXpAndProgressNoEvent(int $level, float $progress) : void{
 		$this->levelAttr->setValue($level);
@@ -246,8 +211,6 @@ class ExperienceManager{
 	/**
 	 * Returns the total XP the player has collected in their lifetime. Resets when the player dies.
 	 * XP levels being removed in enchanting do not reduce this number.
-	 *
-	 * @return int
 	 */
 	public function getLifetimeTotalXp() : int{
 		return $this->totalXp;
@@ -256,8 +219,6 @@ class ExperienceManager{
 	/**
 	 * Sets the lifetime total XP of the player. This does not recalculate their level or progress. Used for player
 	 * score when they die. (TODO: add this when MCPE supports it)
-	 *
-	 * @param int $amount
 	 */
 	public function setLifetimeTotalXp(int $amount) : void{
 		if($amount < 0){
@@ -267,10 +228,8 @@ class ExperienceManager{
 		$this->totalXp = $amount;
 	}
 
-
 	/**
 	 * Returns whether the human can pickup XP orbs (checks cooldown time)
-	 * @return bool
 	 */
 	public function canPickupXp() : bool{
 		return $this->xpCooldown === 0;
@@ -287,13 +246,13 @@ class ExperienceManager{
 			$equipment[$mainHandIndex] = $item;
 		}
 		//TODO: check offhand
-		foreach($this->entity->getArmorInventory()->getContents() as $k => $item){
-			if($item instanceof Durable and $item->hasEnchantment(Enchantment::MENDING())){
-				$equipment[$k] = $item;
+		foreach($this->entity->getArmorInventory()->getContents() as $k => $armorItem){
+			if($armorItem instanceof Durable and $armorItem->hasEnchantment(Enchantment::MENDING())){
+				$equipment[$k] = $armorItem;
 			}
 		}
 
-		if(!empty($equipment)){
+		if(count($equipment) > 0){
 			$repairItem = $equipment[$k = array_rand($equipment)];
 			if($repairItem->getDamage() > 0){
 				$repairAmount = min($repairItem->getDamage(), $xpValue * 2);
@@ -314,8 +273,6 @@ class ExperienceManager{
 
 	/**
 	 * Sets the duration in ticks until the human can pick up another XP orb.
-	 *
-	 * @param int $value
 	 */
 	public function resetXpCooldown(int $value = 2) : void{
 		$this->xpCooldown = $value;

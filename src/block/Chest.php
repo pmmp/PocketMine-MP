@@ -96,7 +96,7 @@ class Chest extends Transparent{
 			if($chest instanceof TileChest){
 				if(
 					!$this->getSide(Facing::UP)->isTransparent() or
-					($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Facing::UP)->isTransparent()) or
+					(($pair = $chest->getPair()) !== null and !$pair->getBlock()->getSide(Facing::UP)->isTransparent()) or
 					!$chest->canOpenWith($item->getCustomName())
 				){
 					return true;

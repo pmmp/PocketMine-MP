@@ -92,4 +92,9 @@ final class LightArray{
 	public function getData() : string{
 		return $this->data;
 	}
+
+	public function __wakeup(){
+		//const refs aren't preserved when unserializing
+		$this->collectGarbage();
+	}
 }

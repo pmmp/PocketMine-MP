@@ -82,9 +82,7 @@ abstract class Entity{
 
 	public const NETWORK_ID = -1;
 
-	/**
-	 * @var Player[]
-	 */
+	/** @var Player[] */
 	protected $hasSpawned = [];
 
 	/** @var int */
@@ -99,8 +97,8 @@ abstract class Entity{
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
 
-	/** @var Block[] */
-	protected $blocksAround = [];
+	/** @var Block[]|null */
+	protected $blocksAround;
 
 	/** @var Location */
 	protected $location;
@@ -134,6 +132,7 @@ abstract class Entity{
 
 	/** @var float */
 	private $health = 20.0;
+	/** @var int */
 	private $maxHealth = 20;
 
 	/** @var float */
@@ -280,72 +279,42 @@ abstract class Entity{
 
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getNameTag() : string{
 		return $this->nameTag;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isNameTagVisible() : bool{
 		return $this->nameTagVisible;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isNameTagAlwaysVisible() : bool{
 		return $this->alwaysShowNameTag;
 	}
 
-	/**
-	 * @param string $name
-	 */
 	public function setNameTag(string $name) : void{
 		$this->nameTag = $name;
 	}
 
-	/**
-	 * @param bool $value
-	 */
 	public function setNameTagVisible(bool $value = true) : void{
 		$this->nameTagVisible = $value;
 	}
 
-	/**
-	 * @param bool $value
-	 */
 	public function setNameTagAlwaysVisible(bool $value = true) : void{
 		$this->alwaysShowNameTag = $value;
 	}
 
-	/**
-	 * @return string|null
-	 */
 	public function getScoreTag() : ?string{
 		return $this->scoreTag; //TODO: maybe this shouldn't be nullable?
 	}
 
-	/**
-	 * @param string $score
-	 */
 	public function setScoreTag(string $score) : void{
 		$this->scoreTag = $score;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getScale() : float{
 		return $this->scale;
 	}
 
-	/**
-	 * @param float $value
-	 */
 	public function setScale(float $value) : void{
 		if($value <= 0){
 			throw new \InvalidArgumentException("Scale must be greater than 0");
@@ -416,7 +385,6 @@ abstract class Entity{
 
 	/**
 	 * Returns whether the entity is able to climb blocks such as ladders or vines.
-	 * @return bool
 	 */
 	public function canClimb() : bool{
 		return $this->canClimb;
@@ -424,8 +392,6 @@ abstract class Entity{
 
 	/**
 	 * Sets whether the entity is able to climb climbable blocks.
-	 *
-	 * @param bool $value
 	 */
 	public function setCanClimb(bool $value = true) : void{
 		$this->canClimb = $value;
@@ -433,8 +399,6 @@ abstract class Entity{
 
 	/**
 	 * Returns whether this entity is climbing a block. By default this is only true if the entity is climbing a ladder or vine or similar block.
-	 *
-	 * @return bool
 	 */
 	public function canClimbWalls() : bool{
 		return $this->canClimbWalls;
@@ -442,8 +406,6 @@ abstract class Entity{
 
 	/**
 	 * Sets whether the entity is climbing a block. If true, the entity can climb anything.
-	 *
-	 * @param bool $value
 	 */
 	public function setCanClimbWalls(bool $value = true) : void{
 		$this->canClimbWalls = $value;
@@ -451,7 +413,6 @@ abstract class Entity{
 
 	/**
 	 * Returns the entity ID of the owning entity, or null if the entity doesn't have an owner.
-	 * @return int|null
 	 */
 	public function getOwningEntityId() : ?int{
 		return $this->ownerId;
@@ -459,7 +420,6 @@ abstract class Entity{
 
 	/**
 	 * Returns the owning entity, or null if the entity was not found.
-	 * @return Entity|null
 	 */
 	public function getOwningEntity() : ?Entity{
 		return $this->ownerId !== null ? $this->server->getWorldManager()->findEntity($this->ownerId) : null;
@@ -467,8 +427,6 @@ abstract class Entity{
 
 	/**
 	 * Sets the owner of the entity. Passing null will remove the current owner.
-	 *
-	 * @param Entity|null $owner
 	 *
 	 * @throws \InvalidArgumentException if the supplied entity is not valid
 	 */
@@ -484,7 +442,6 @@ abstract class Entity{
 
 	/**
 	 * Returns the entity ID of the entity's target, or null if it doesn't have a target.
-	 * @return int|null
 	 */
 	public function getTargetEntityId() : ?int{
 		return $this->targetId;
@@ -493,8 +450,6 @@ abstract class Entity{
 	/**
 	 * Returns the entity's target entity, or null if not found.
 	 * This is used for things like hostile mobs attacking entities, and for fishing rods reeling hit entities in.
-	 *
-	 * @return Entity|null
 	 */
 	public function getTargetEntity() : ?Entity{
 		return $this->targetId !== null ? $this->server->getWorldManager()->findEntity($this->targetId) : null;
@@ -502,8 +457,6 @@ abstract class Entity{
 
 	/**
 	 * Sets the entity's target entity. Passing null will remove the current target.
-	 *
-	 * @param Entity|null $target
 	 *
 	 * @throws \InvalidArgumentException if the target entity is not valid
 	 */
@@ -519,7 +472,6 @@ abstract class Entity{
 
 	/**
 	 * Returns whether this entity will be saved when its chunk is unloaded.
-	 * @return bool
 	 */
 	public function canSaveWithChunk() : bool{
 		return $this->savedWithChunk;
@@ -528,8 +480,6 @@ abstract class Entity{
 	/**
 	 * Sets whether this entity will be saved when its chunk is unloaded. This can be used to prevent the entity being
 	 * saved to disk.
-	 *
-	 * @param bool $value
 	 */
 	public function setCanSaveWithChunk(bool $value) : void{
 		$this->savedWithChunk = $value;
@@ -595,9 +545,6 @@ abstract class Entity{
 
 	}
 
-	/**
-	 * @param EntityDamageEvent $source
-	 */
 	public function attack(EntityDamageEvent $source) : void{
 		$source->call();
 		if($source->isCancelled()){
@@ -609,9 +556,6 @@ abstract class Entity{
 		$this->setHealth($this->getHealth() - $source->getFinalDamage());
 	}
 
-	/**
-	 * @param EntityRegainHealthEvent $source
-	 */
 	public function heal(EntityRegainHealthEvent $source) : void{
 		$source->call();
 		if($source->isCancelled()){
@@ -638,10 +582,6 @@ abstract class Entity{
 
 	/**
 	 * Called to tick entities while dead. Returns whether the entity should be flagged for despawn yet.
-	 *
-	 * @param int $tickDiff
-	 *
-	 * @return bool
 	 */
 	protected function onDeathUpdate(int $tickDiff) : bool{
 		return true;
@@ -651,17 +591,12 @@ abstract class Entity{
 		return $this->health > 0;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getHealth() : float{
 		return $this->health;
 	}
 
 	/**
 	 * Sets the health of the Entity. This won't send any update to the players
-	 *
-	 * @param float $amount
 	 */
 	public function setHealth(float $amount) : void{
 		if($amount == $this->health){
@@ -679,30 +614,18 @@ abstract class Entity{
 		}
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMaxHealth() : int{
 		return $this->maxHealth;
 	}
 
-	/**
-	 * @param int $amount
-	 */
 	public function setMaxHealth(int $amount) : void{
 		$this->maxHealth = $amount;
 	}
 
-	/**
-	 * @param EntityDamageEvent $type
-	 */
 	public function setLastDamageCause(EntityDamageEvent $type) : void{
 		$this->lastDamageCause = $type;
 	}
 
-	/**
-	 * @return EntityDamageEvent|null
-	 */
 	public function getLastDamageCause() : ?EntityDamageEvent{
 		return $this->lastDamageCause;
 	}
@@ -721,7 +644,7 @@ abstract class Entity{
 		$this->justCreated = false;
 
 		$changedProperties = $this->getSyncedNetworkData(true);
-		if(!empty($changedProperties)){
+		if(count($changedProperties) > 0){
 			$this->sendData($this->hasSpawned, $changedProperties);
 			$this->networkProperties->clearDirtyProperties();
 		}
@@ -763,15 +686,11 @@ abstract class Entity{
 		}
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getFireTicks() : int{
 		return $this->fireTicks;
 	}
 
 	/**
-	 * @param int $fireTicks
 	 * @throws \InvalidArgumentException
 	 */
 	public function setFireTicks(int $fireTicks) : void{
@@ -826,21 +745,25 @@ abstract class Entity{
 	}
 
 	protected function updateMovement(bool $teleport = false) : void{
-		//TODO: hack for client-side AI interference: prevent client sided movement when motion is 0
-		$this->setImmobile($this->motion->x == 0 and $this->motion->y == 0 and $this->motion->z == 0);
-
 		$diffPosition = $this->location->distanceSquared($this->lastLocation);
 		$diffRotation = ($this->location->yaw - $this->lastLocation->yaw) ** 2 + ($this->location->pitch - $this->lastLocation->pitch) ** 2;
 
 		$diffMotion = $this->motion->subtract($this->lastMotion)->lengthSquared();
 
-		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0){
+		$still = $this->motion->lengthSquared() == 0.0;
+		$wasStill = $this->lastMotion->lengthSquared() == 0.0;
+		if($wasStill !== $still){
+			//TODO: hack for client-side AI interference: prevent client sided movement when motion is 0
+			$this->setImmobile($still);
+		}
+
+		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0 or (!$wasStill and $still)){
 			$this->lastLocation = $this->location->asLocation();
 
 			$this->broadcastMovement($teleport);
 		}
 
-		if($diffMotion > 0.0025 or ($diffMotion > 0.0001 and $this->motion->lengthSquared() <= 0.0001)){ //0.05 ** 2
+		if($diffMotion > 0.0025 or $wasStill !== $still){ //0.05 ** 2
 			$this->lastMotion = clone $this->motion;
 
 			$this->broadcastMotion();
@@ -1028,9 +951,6 @@ abstract class Entity{
 		return Facing::EAST;
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	public function getDirectionVector() : Vector3{
 		$y = -sin(deg2rad($this->location->pitch));
 		$xz = cos(deg2rad($this->location->pitch));
@@ -1068,7 +988,6 @@ abstract class Entity{
 			return true;
 		}
 
-
 		$this->timings->startTiming();
 
 		if($this->hasMovementUpdate()){
@@ -1097,7 +1016,6 @@ abstract class Entity{
 		$hasUpdate = $this->entityBaseTick($tickDiff);
 		Timings::$timerEntityBaseTick->stopTiming();
 
-
 		$this->timings->stopTiming();
 
 		//if($this->isStatic())
@@ -1120,8 +1038,6 @@ abstract class Entity{
 	/**
 	 * Flags the entity as needing a movement update on the next tick. Setting this forces a movement update even if the
 	 * entity's motion is zero. Used to trigger movement updates when blocks change near entities.
-	 *
-	 * @param bool $value
 	 */
 	final public function setForceMovementUpdate(bool $value = true) : void{
 		$this->forceMovementUpdate = $value;
@@ -1131,7 +1047,6 @@ abstract class Entity{
 
 	/**
 	 * Returns whether the entity needs a movement update on the next tick.
-	 * @return bool
 	 */
 	public function hasMovementUpdate() : bool{
 		return (
@@ -1147,10 +1062,6 @@ abstract class Entity{
 		$this->fallDistance = 0.0;
 	}
 
-	/**
-	 * @param float $distanceThisTick
-	 * @param bool  $onGround
-	 */
 	protected function updateFallState(float $distanceThisTick, bool $onGround) : void{
 		if($onGround){
 			if($this->fallDistance > 0){
@@ -1164,8 +1075,6 @@ abstract class Entity{
 
 	/**
 	 * Called when a falling entity hits the ground.
-	 *
-	 * @param float $fallDistance
 	 */
 	public function fall(float $fallDistance) : void{
 
@@ -1276,7 +1185,6 @@ abstract class Entity{
 			}
 
 			$moveBB->offset(0, 0, $dz);
-
 
 			if($this->stepHeight > 0 and $fallingFlag and ($movX != $dx or $movZ != $dz)){
 				$cx = $dx;
@@ -1392,8 +1300,6 @@ abstract class Entity{
 
 	/**
 	 * Returns whether this entity can be moved by currents in liquids.
-	 *
-	 * @return bool
 	 */
 	public function canBeMovedByCurrents() : bool{
 		return true;
@@ -1528,10 +1434,6 @@ abstract class Entity{
 
 	/**
 	 * Adds the given values to the entity's motion vector.
-	 *
-	 * @param float $x
-	 * @param float $y
-	 * @param float $z
 	 */
 	public function addMotion(float $x, float $y, float $z) : void{
 		$this->motion->x += $x;
@@ -1545,10 +1447,6 @@ abstract class Entity{
 
 	/**
 	 * @param Vector3|Position|Location $pos
-	 * @param float|null                $yaw
-	 * @param float|null                $pitch
-	 *
-	 * @return bool
 	 */
 	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
 		if($pos instanceof Location){
@@ -1610,8 +1508,6 @@ abstract class Entity{
 
 	/**
 	 * Called by spawnTo() to send whatever packets needed to spawn the entity to the client.
-	 *
-	 * @param Player $player
 	 */
 	protected function sendSpawnPacket(Player $player) : void{
 		$pk = new AddActorPacket();
@@ -1628,12 +1524,9 @@ abstract class Entity{
 		$player->getNetworkSession()->sendDataPacket($pk);
 	}
 
-	/**
-	 * @param Player $player
-	 */
 	public function spawnTo(Player $player) : void{
 		$id = spl_object_id($player);
-		if(!isset($this->hasSpawned[$id])){
+		if(!isset($this->hasSpawned[$id]) and $player->isUsingChunk($this->location->getFloorX() >> 4, $this->location->getFloorZ() >> 4)){
 			$this->hasSpawned[$id] = $player;
 
 			$this->sendSpawnPacket($player);
@@ -1659,9 +1552,6 @@ abstract class Entity{
 	/**
 	 * @deprecated WARNING: This function DOES NOT permanently hide the entity from the player. As soon as the entity or
 	 * player moves, the player will once again be able to see the entity.
-	 *
-	 * @param Player $player
-	 * @param bool   $send
 	 */
 	public function despawnFrom(Player $player, bool $send = true) : void{
 		$id = spl_object_id($player);
@@ -1697,7 +1587,6 @@ abstract class Entity{
 
 	/**
 	 * Returns whether the entity has been "closed".
-	 * @return bool
 	 */
 	public function isClosed() : bool{
 		return $this->closed;
@@ -1747,6 +1636,7 @@ abstract class Entity{
 	/**
 	 * @param Player[]|Player    $player
 	 * @param MetadataProperty[] $data Properly formatted entity data, defaults to everything
+	 * @phpstan-param array<int, MetadataProperty> $data
 	 */
 	public function sendData($player, ?array $data = null) : void{
 		if(!is_array($player)){
@@ -1768,8 +1658,6 @@ abstract class Entity{
 	}
 
 	/**
-	 * @param bool $dirtyOnly
-	 *
 	 * @return MetadataProperty[]
 	 */
 	final protected function getSyncedNetworkData(bool $dirtyOnly) : array{
@@ -1785,7 +1673,7 @@ abstract class Entity{
 		$this->networkProperties->setFloat(EntityMetadataProperties::SCALE, $this->scale);
 		$this->networkProperties->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
 		$this->networkProperties->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);
-		$this->networkProperties->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? -1);
+		$this->networkProperties->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? 0);
 		$this->networkProperties->setString(EntityMetadataProperties::NAMETAG, $this->nameTag);
 		$this->networkProperties->setString(EntityMetadataProperties::SCORE_TAG, $this->scoreTag);
 
@@ -1800,10 +1688,16 @@ abstract class Entity{
 		$this->networkProperties->setGenericFlag(EntityMetadataFlags::WALLCLIMBING, $this->canClimbWalls);
 	}
 
+	/**
+	 * @param Player[]|null $players
+	 */
 	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
 		$this->server->broadcastPackets($players ?? $this->getViewers(), [ActorEventPacket::create($this->id, $eventId, $eventData ?? 0)]);
 	}
 
+	/**
+	 * @param Player[]|null $players
+	 */
 	public function broadcastAnimation(?array $players, int $animationId) : void{
 		$this->server->broadcastPackets($players ?? $this->getViewers(), [AnimatePacket::create($this->id, $animationId)]);
 	}

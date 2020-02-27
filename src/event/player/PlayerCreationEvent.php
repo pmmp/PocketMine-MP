@@ -36,49 +36,36 @@ class PlayerCreationEvent extends Event{
 	/** @var NetworkSession */
 	private $session;
 
-	/** @var Player::class */
+	/** @var string */
 	private $baseClass = Player::class;
-	/** @var Player::class */
+	/** @var string */
 	private $playerClass = Player::class;
 
-
-	/**
-	 * @param NetworkSession $session
-	 */
 	public function __construct(NetworkSession $session){
 		$this->session = $session;
 	}
 
-	/**
-	 * @return NetworkSession
-	 */
 	public function getNetworkSession() : NetworkSession{
 		return $this->session;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getAddress() : string{
 		return $this->session->getIp();
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPort() : int{
 		return $this->session->getPort();
 	}
 
 	/**
-	 * @return Player::class
+	 * @return string
 	 */
 	public function getBaseClass(){
 		return $this->baseClass;
 	}
 
 	/**
-	 * @param Player::class $class
+	 * @param string $class
 	 */
 	public function setBaseClass($class) : void{
 		if(!is_a($class, $this->baseClass, true)){
@@ -89,14 +76,14 @@ class PlayerCreationEvent extends Event{
 	}
 
 	/**
-	 * @return Player::class
+	 * @return string
 	 */
 	public function getPlayerClass(){
 		return $this->playerClass;
 	}
 
 	/**
-	 * @param Player::class $class
+	 * @param string $class
 	 */
 	public function setPlayerClass($class) : void{
 		if(!is_a($class, $this->baseClass, true)){

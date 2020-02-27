@@ -25,9 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class MovePlayerPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOVE_PLAYER_PACKET;
@@ -58,33 +58,33 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 	/** @var int */
 	public $teleportItem = 0;
 
-	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->position = $this->getVector3();
-		$this->pitch = $this->getLFloat();
-		$this->yaw = $this->getLFloat();
-		$this->headYaw = $this->getLFloat();
-		$this->mode = $this->getByte();
-		$this->onGround = $this->getBool();
-		$this->ridingEid = $this->getEntityRuntimeId();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->position = $in->getVector3();
+		$this->pitch = $in->getLFloat();
+		$this->yaw = $in->getLFloat();
+		$this->headYaw = $in->getLFloat();
+		$this->mode = $in->getByte();
+		$this->onGround = $in->getBool();
+		$this->ridingEid = $in->getEntityRuntimeId();
 		if($this->mode === MovePlayerPacket::MODE_TELEPORT){
-			$this->teleportCause = $this->getLInt();
-			$this->teleportItem = $this->getLInt();
+			$this->teleportCause = $in->getLInt();
+			$this->teleportItem = $in->getLInt();
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVector3($this->position);
-		$this->putLFloat($this->pitch);
-		$this->putLFloat($this->yaw);
-		$this->putLFloat($this->headYaw); //TODO
-		$this->putByte($this->mode);
-		$this->putBool($this->onGround);
-		$this->putEntityRuntimeId($this->ridingEid);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putVector3($this->position);
+		$out->putLFloat($this->pitch);
+		$out->putLFloat($this->yaw);
+		$out->putLFloat($this->headYaw); //TODO
+		$out->putByte($this->mode);
+		$out->putBool($this->onGround);
+		$out->putEntityRuntimeId($this->ridingEid);
 		if($this->mode === MovePlayerPacket::MODE_TELEPORT){
-			$this->putLInt($this->teleportCause);
-			$this->putLInt($this->teleportItem);
+			$out->putLInt($this->teleportCause);
+			$out->putLInt($this->teleportItem);
 		}
 	}
 

@@ -28,28 +28,28 @@ use function assert;
 
 class Position extends Vector3{
 
-	/** @var World */
+	/** @var World|null */
 	public $world = null;
 
 	/**
-	 * @param int   $x
-	 * @param int   $y
-	 * @param int   $z
-	 * @param World $world
+	 * @param float|int $x
+	 * @param float|int $y
+	 * @param float|int $z
 	 */
 	public function __construct($x = 0, $y = 0, $z = 0, ?World $world = null){
 		parent::__construct($x, $y, $z);
 		$this->setWorld($world);
 	}
 
+	/**
+	 * @return Position
+	 */
 	public static function fromObject(Vector3 $pos, ?World $world = null){
 		return new Position($pos->x, $pos->y, $pos->z, $world);
 	}
 
 	/**
 	 * Return a Position instance
-	 *
-	 * @return Position
 	 */
 	public function asPosition() : Position{
 		return new Position($this->x, $this->y, $this->z, $this->world);
@@ -73,8 +73,6 @@ class Position extends Vector3{
 	/**
 	 * Sets the target world of the position.
 	 *
-	 * @param World|null $world
-	 *
 	 * @return $this
 	 *
 	 * @throws \InvalidArgumentException if the specified World has been closed
@@ -90,8 +88,6 @@ class Position extends Vector3{
 
 	/**
 	 * Checks if this object has a valid reference to a loaded world
-	 *
-	 * @return bool
 	 */
 	public function isValid() : bool{
 		if($this->world !== null and $this->world->isClosed()){
@@ -105,9 +101,6 @@ class Position extends Vector3{
 
 	/**
 	 * Returns a side Vector
-	 *
-	 * @param int $side
-	 * @param int $step
 	 *
 	 * @return Position
 	 */

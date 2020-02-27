@@ -73,6 +73,11 @@ final class Filesystem{
 		}
 	}
 
+	/**
+	 * @param string $path
+	 *
+	 * @return string
+	 */
 	public static function cleanPath($path){
 		$result = str_replace(["\\", ".php", "phar://"], ["/", "", ""], $path);
 
@@ -91,6 +96,14 @@ final class Filesystem{
 		return $result;
 	}
 
+	/**
+	 * Attempts to get a lock on the specified file, creating it if it does not exist. This is typically used for IPC to
+	 * inform other processes that some file or folder is already in use, to avoid data corruption.
+	 * If this function succeeds in gaining a lock on the file, it writes the current PID to the file.
+	 *
+	 * @return int|null process ID of the process currently holding the lock failure, null on success.
+	 * @throws \InvalidArgumentException if the lock file path is invalid (e.g. parent directory doesn't exist, permission denied)
+	 */
 	public static function createLockFile(string $lockFilePath) : ?int{
 		$resource = fopen($lockFilePath, "a+b");
 		if($resource === false){
@@ -114,6 +127,11 @@ final class Filesystem{
 		return null;
 	}
 
+	/**
+	 * Releases a file lock previously acquired by createLockFile() and deletes the lock file.
+	 *
+	 * @throws \InvalidArgumentException if the lock file path is invalid (e.g. parent directory doesn't exist, permission denied)
+	 */
 	public static function releaseLockFile(string $lockFilePath) : void{
 		$lockFilePath = realpath($lockFilePath);
 		if($lockFilePath === false){

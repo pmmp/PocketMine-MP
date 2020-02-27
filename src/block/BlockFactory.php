@@ -60,15 +60,27 @@ use function min;
  * Manages block registration and instance creation
  */
 class BlockFactory{
-	/** @var \SplFixedArray|Block[] */
-	private static $fullList = null;
+	/**
+	 * @var \SplFixedArray|Block[]
+	 * @phpstan-var \SplFixedArray<Block>
+	 */
+	private static $fullList;
 
-	/** @var \SplFixedArray|int[] */
-	public static $lightFilter = null;
-	/** @var \SplFixedArray|bool[] */
-	public static $diffusesSkyLight = null;
-	/** @var \SplFixedArray|float[] */
-	public static $blastResistance = null;
+	/**
+	 * @var \SplFixedArray|int[]
+	 * @phpstan-var \SplFixedArray<int>
+	 */
+	public static $lightFilter;
+	/**
+	 * @var \SplFixedArray|bool[]
+	 * @phpstan-var \SplFixedArray<bool>
+	 */
+	public static $diffusesSkyLight;
+	/**
+	 * @var \SplFixedArray|float[]
+	 * @phpstan-var \SplFixedArray<float>
+	 */
+	public static $blastResistance;
 
 	/**
 	 * Initializes the block factory. By default this is called only once on server start, however you may wish to use
@@ -81,7 +93,7 @@ class BlockFactory{
 
 		self::$lightFilter = \SplFixedArray::fromArray(array_fill(0, 8192, 1));
 		self::$diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 8192, false));
-		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 8192, 0));
+		self::$blastResistance = \SplFixedArray::fromArray(array_fill(0, 8192, 0.0));
 
 		self::register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail"));
 		self::register(new Air(new BID(Ids::AIR), "Air"));
@@ -307,8 +319,6 @@ class BlockFactory{
 		self::register(new SeaPickle(new BID(Ids::SEA_PICKLE), "Sea Pickle"));
 		self::register(new Skull(new BID(Ids::MOB_HEAD_BLOCK, 0, null, TileSkull::class), "Mob Head"));
 
-
-
 		self::register(new Snow(new BID(Ids::SNOW), "Snow Block"));
 		self::register(new SnowLayer(new BID(Ids::SNOW_LAYER), "Snow Layer"));
 		self::register(new SoulSand(new BID(Ids::SOUL_SAND), "Soul Sand"));
@@ -398,7 +408,6 @@ class BlockFactory{
 		self::register(new WeightedPressurePlateHeavy(new BID(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Heavy"));
 		self::register(new WeightedPressurePlateLight(new BID(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Light"));
 		self::register(new Wheat(new BID(Ids::WHEAT_BLOCK), "Wheat Block"));
-
 
 		//region ugly treetype -> blockID mapping tables
 		$woodenStairIds = [
@@ -763,7 +772,6 @@ class BlockFactory{
 	 * NOTE: If you are registering a new block type, you will need to add it to the creative inventory yourself - it
 	 * will not automatically appear there.
 	 *
-	 * @param Block $block
 	 * @param bool  $override Whether to override existing registrations
 	 *
 	 * @throws \RuntimeException if something attempted to override an already-registered block without specifying the
@@ -828,11 +836,6 @@ class BlockFactory{
 
 	/**
 	 * Returns a new Block instance with the specified ID, meta and position.
-	 *
-	 * @param int $id
-	 * @param int $meta
-	 *
-	 * @return Block
 	 */
 	public static function get(int $id, int $meta = 0) : Block{
 		if($meta < 0 or $meta > 0xf){
@@ -863,11 +866,6 @@ class BlockFactory{
 
 	/**
 	 * Returns whether a specified block state is already registered in the block factory.
-	 *
-	 * @param int $id
-	 * @param int $meta
-	 *
-	 * @return bool
 	 */
 	public static function isRegistered(int $id, int $meta = 0) : bool{
 		$b = self::$fullList[($id << 4) | $meta];

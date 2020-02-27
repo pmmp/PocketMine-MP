@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class LevelSoundEventPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LEVEL_SOUND_EVENT_PACKET;
@@ -335,22 +336,22 @@ class LevelSoundEventPacket extends DataPacket implements ClientboundPacket, Ser
 	/** @var bool */
 	public $disableRelativeVolume = false;
 
-	protected function decodePayload() : void{
-		$this->sound = $this->getUnsignedVarInt();
-		$this->position = $this->getVector3();
-		$this->extraData = $this->getVarInt();
-		$this->entityType = $this->getString();
-		$this->isBabyMob = $this->getBool();
-		$this->disableRelativeVolume = $this->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->sound = $in->getUnsignedVarInt();
+		$this->position = $in->getVector3();
+		$this->extraData = $in->getVarInt();
+		$this->entityType = $in->getString();
+		$this->isBabyMob = $in->getBool();
+		$this->disableRelativeVolume = $in->getBool();
 	}
 
-	protected function encodePayload() : void{
-		$this->putUnsignedVarInt($this->sound);
-		$this->putVector3($this->position);
-		$this->putVarInt($this->extraData);
-		$this->putString($this->entityType);
-		$this->putBool($this->isBabyMob);
-		$this->putBool($this->disableRelativeVolume);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt($this->sound);
+		$out->putVector3($this->position);
+		$out->putVarInt($this->extraData);
+		$out->putString($this->entityType);
+		$out->putBool($this->isBabyMob);
+		$out->putBool($this->disableRelativeVolume);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

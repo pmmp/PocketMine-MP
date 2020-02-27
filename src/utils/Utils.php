@@ -71,6 +71,7 @@ use function str_split;
 use function stripos;
 use function strlen;
 use function strpos;
+use function strtr;
 use function substr;
 use function sys_get_temp_dir;
 use function trim;
@@ -86,7 +87,7 @@ use const STR_PAD_RIGHT;
  * Big collection of functions
  */
 class Utils{
-	/** @var string */
+	/** @var string|null */
 	private static $os;
 	/** @var UUID|null */
 	private static $serverUniqueId = null;
@@ -94,9 +95,6 @@ class Utils{
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
 	 *
-	 * @param \Closure $closure
-	 *
-	 * @return string
 	 * @throws \ReflectionException
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
@@ -122,9 +120,6 @@ class Utils{
 	/**
 	 * Returns a readable identifier for the class of the given object. Sanitizes class names for anonymous classes.
 	 *
-	 * @param object $obj
-	 *
-	 * @return string
 	 * @throws \ReflectionException
 	 */
 	public static function getNiceClassName(object $obj) : string{
@@ -136,14 +131,28 @@ class Utils{
 		return $reflect->getName();
 	}
 
+	/**
+	 * @phpstan-return \Closure(object) : object
+	 */
 	public static function cloneCallback() : \Closure{
 		return static function(object $o){
 			return clone $o;
 		};
 	}
 
+	/**
+	 * @phpstan-template T of object
+	 *
+	 * @param object[] $array
+	 * @phpstan-param T[] $array
+	 *
+	 * @return object[]
+	 * @phpstan-return T[]
+	 */
 	public static function cloneObjectArray(array $array) : array{
-		return array_map(self::cloneCallback(), $array);
+		/** @phpstan-var \Closure(T) : T $callback */
+		$callback = self::cloneCallback();
+		return array_map($callback, $array);
 	}
 
 	/**
@@ -153,8 +162,6 @@ class Utils{
 	 * The rest of the hash will change depending on other factors.
 	 *
 	 * @param string $extra optional, additional data to identify the machine
-	 *
-	 * @return UUID
 	 */
 	public static function getMachineUniqueId(string $extra = "") : UUID{
 		if(self::$serverUniqueId !== null and $extra === ""){
@@ -223,10 +230,6 @@ class Utils{
 	 * Linux => Linux
 	 * BSD => bsd
 	 * Other => other
-	 *
-	 * @param bool $recalculate
-	 *
-	 * @return string
 	 */
 	public static function getOS(bool $recalculate = false) : string{
 		if(self::$os === null or $recalculate){
@@ -255,11 +258,6 @@ class Utils{
 		return self::$os;
 	}
 
-	/**
-	 * @param bool $recalculate
-	 *
-	 * @return int
-	 */
 	public static function getCoreCount(bool $recalculate = false) : int{
 		static $processors = 0;
 
@@ -297,10 +295,6 @@ class Utils{
 
 	/**
 	 * Returns a prettified hexdump
-	 *
-	 * @param string $bin
-	 *
-	 * @return string
 	 */
 	public static function hexdump(string $bin) : string{
 		$output = "";
@@ -314,13 +308,10 @@ class Utils{
 		return $output;
 	}
 
-
 	/**
 	 * Returns a string that can be printed, replaces non-printable characters
 	 *
 	 * @param mixed $str
-	 *
-	 * @return string
 	 */
 	public static function printable($str) : string{
 		if(!is_string($str)){
@@ -346,7 +337,7 @@ class Utils{
 		$hash = 0;
 		for($i = 0, $len = strlen($string); $i < $len; $i++){
 			$ord = ord($string[$i]);
-			if($ord & 0x80){
+			if(($ord & 0x80) !== 0){
 				$ord -= 0x100;
 			}
 			$hash = 31 * $hash + $ord;
@@ -361,11 +352,9 @@ class Utils{
 		return $hash;
 	}
 
-
 	/**
-	 * @param string $token
-	 *
-	 * @return array of claims
+	 * @return mixed[] array of claims
+	 * @phpstan-return array<string, mixed>
 	 *
 	 * @throws \UnexpectedValueException
 	 */
@@ -389,9 +378,6 @@ class Utils{
 
 	/**
 	 * @param object $value
-	 * @param bool   $includeCurrent
-	 *
-	 * @return int
 	 */
 	public static function getReferenceCount($value, bool $includeCurrent = true) : int{
 		ob_start();
@@ -406,10 +392,10 @@ class Utils{
 	}
 
 	/**
-	 * @param array $trace
-	 * @param int   $maxStringLength
+	 * @param mixed[][] $trace
+	 * @phpstan-param list<array<string, mixed>> $trace
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public static function printableTrace(array $trace, int $maxStringLength = 80) : array{
 		$messages = [];
@@ -422,7 +408,7 @@ class Utils{
 					$args = $trace[$i]["params"];
 				}
 
-				$params = implode(", ", array_map(function($value) use($maxStringLength){
+				$params = implode(", ", array_map(function($value) use($maxStringLength) : string{
 					if(is_object($value)){
 						return "object " . self::getNiceClassName($value);
 					}
@@ -441,9 +427,8 @@ class Utils{
 	}
 
 	/**
-	 * @param int $skipFrames
-	 *
-	 * @return array
+	 * @return mixed[][]
+	 * @phpstan-return list<array<string, mixed>>
 	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames
@@ -460,9 +445,7 @@ class Utils{
 	}
 
 	/**
-	 * @param int $skipFrames
-	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public static function printableCurrentTrace(int $skipFrames = 0) : array{
 		return self::printableTrace(self::currentTrace(++$skipFrames));
@@ -470,8 +453,6 @@ class Utils{
 
 	/**
 	 * Extracts one-line tags from the doc-comment
-	 *
-	 * @param string $docComment
 	 *
 	 * @return string[] an array of tagName => tag value. If the tag has no value, an empty string is used as the value.
 	 */

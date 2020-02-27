@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class PlayerInputPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_INPUT_PACKET;
@@ -40,18 +40,18 @@ class PlayerInputPacket extends DataPacket implements ServerboundPacket{
 	/** @var bool */
 	public $sneaking;
 
-	protected function decodePayload() : void{
-		$this->motionX = $this->getLFloat();
-		$this->motionY = $this->getLFloat();
-		$this->jumping = $this->getBool();
-		$this->sneaking = $this->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->motionX = $in->getLFloat();
+		$this->motionY = $in->getLFloat();
+		$this->jumping = $in->getBool();
+		$this->sneaking = $in->getBool();
 	}
 
-	protected function encodePayload() : void{
-		$this->putLFloat($this->motionX);
-		$this->putLFloat($this->motionY);
-		$this->putBool($this->jumping);
-		$this->putBool($this->sneaking);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putLFloat($this->motionX);
+		$out->putLFloat($this->motionY);
+		$out->putBool($this->jumping);
+		$out->putBool($this->sneaking);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

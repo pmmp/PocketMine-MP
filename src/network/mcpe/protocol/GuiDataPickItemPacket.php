@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class GuiDataPickItemPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::GUI_DATA_PICK_ITEM_PACKET;
@@ -37,16 +38,16 @@ class GuiDataPickItemPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $hotbarSlot;
 
-	protected function decodePayload() : void{
-		$this->itemDescription = $this->getString();
-		$this->itemEffects = $this->getString();
-		$this->hotbarSlot = $this->getLInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->itemDescription = $in->getString();
+		$this->itemEffects = $in->getString();
+		$this->hotbarSlot = $in->getLInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->putString($this->itemDescription);
-		$this->putString($this->itemEffects);
-		$this->putLInt($this->hotbarSlot);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->itemDescription);
+		$out->putString($this->itemEffects);
+		$out->putLInt($this->hotbarSlot);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

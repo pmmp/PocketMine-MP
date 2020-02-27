@@ -21,14 +21,13 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
@@ -44,12 +43,12 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 
 	/** @var bool */
 	public $isExperimental = false;
+	/** @var string */
+	public $baseGameVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK;
 
 	/**
 	 * @param ResourcePackStackEntry[] $resourcePacks
 	 * @param ResourcePackStackEntry[] $behaviorPacks
-	 * @param bool                     $mustAccept
-	 * @param bool                     $isExperimental
 	 *
 	 * @return ResourcePackStackPacket
 	 */
@@ -62,35 +61,37 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->mustAccept = $this->getBool();
-		$behaviorPackCount = $this->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->mustAccept = $in->getBool();
+		$behaviorPackCount = $in->getUnsignedVarInt();
 		while($behaviorPackCount-- > 0){
-			$this->behaviorPackStack[] = ResourcePackStackEntry::read($this);
+			$this->behaviorPackStack[] = ResourcePackStackEntry::read($in);
 		}
 
-		$resourcePackCount = $this->getUnsignedVarInt();
+		$resourcePackCount = $in->getUnsignedVarInt();
 		while($resourcePackCount-- > 0){
-			$this->resourcePackStack[] = ResourcePackStackEntry::read($this);
+			$this->resourcePackStack[] = ResourcePackStackEntry::read($in);
 		}
 
-		$this->isExperimental = $this->getBool();
+		$this->isExperimental = $in->getBool();
+		$this->baseGameVersion = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->putBool($this->mustAccept);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putBool($this->mustAccept);
 
-		$this->putUnsignedVarInt(count($this->behaviorPackStack));
+		$out->putUnsignedVarInt(count($this->behaviorPackStack));
 		foreach($this->behaviorPackStack as $entry){
-			$entry->write($this);
+			$entry->write($out);
 		}
 
-		$this->putUnsignedVarInt(count($this->resourcePackStack));
+		$out->putUnsignedVarInt(count($this->resourcePackStack));
 		foreach($this->resourcePackStack as $entry){
-			$entry->write($this);
+			$entry->write($out);
 		}
 
-		$this->putBool($this->isExperimental);
+		$out->putBool($this->isExperimental);
+		$out->putString($this->baseGameVersion);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

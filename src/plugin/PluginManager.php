@@ -25,7 +25,6 @@ namespace pocketmine\plugin;
 
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
-use pocketmine\event\HandlerList;
 use pocketmine\event\HandlerListManager;
 use pocketmine\event\Listener;
 use pocketmine\event\plugin\PluginDisableEvent;
@@ -38,6 +37,7 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
 use function array_intersect;
 use function array_map;
+use function array_merge;
 use function array_pad;
 use function class_exists;
 use function count;
@@ -67,18 +67,15 @@ class PluginManager{
 	/** @var Server */
 	private $server;
 
-	/**
-	 * @var Plugin[]
-	 */
+	/** @var Plugin[] */
 	protected $plugins = [];
 
-	/**
-	 * @var Plugin[]
-	 */
+	/** @var Plugin[] */
 	protected $enabledPlugins = [];
 
 	/**
 	 * @var PluginLoader[]
+	 * @phpstan-var array<class-string<PluginLoader>, PluginLoader>
 	 */
 	protected $fileAssociations = [];
 
@@ -87,11 +84,6 @@ class PluginManager{
 	/** @var PluginGraylist|null */
 	private $graylist;
 
-	/**
-	 * @param Server              $server
-	 * @param null|string         $pluginDataDirectory
-	 * @param PluginGraylist|null $graylist
-	 */
 	public function __construct(Server $server, ?string $pluginDataDirectory, ?PluginGraylist $graylist = null){
 		$this->server = $server;
 		$this->pluginDataDirectory = $pluginDataDirectory;
@@ -106,11 +98,6 @@ class PluginManager{
 		$this->graylist = $graylist;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return null|Plugin
-	 */
 	public function getPlugin(string $name) : ?Plugin{
 		if(isset($this->plugins[$name])){
 			return $this->plugins[$name];
@@ -119,9 +106,6 @@ class PluginManager{
 		return null;
 	}
 
-	/**
-	 * @param PluginLoader $loader
-	 */
 	public function registerInterface(PluginLoader $loader) : void{
 		$this->fileAssociations[get_class($loader)] = $loader;
 	}
@@ -141,10 +125,7 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string         $path
 	 * @param PluginLoader[] $loaders
-	 *
-	 * @return Plugin|null
 	 */
 	public function loadPlugin(string $path, ?array $loaders = null) : ?Plugin{
 		foreach($loaders ?? $this->fileAssociations as $loader){
@@ -185,7 +166,7 @@ class PluginManager{
 					 * @var Plugin $plugin
 					 * @see Plugin::__construct()
 					 */
-					$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed . "/"));
+					$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed . "/resources/"));
 					$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 
 					return $plugin;
@@ -197,8 +178,8 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string $directory
-	 * @param array  $newLoaders
+	 * @param string[]|null $newLoaders
+	 * @phpstan-param list<class-string<PluginLoader>> $newLoaders
 	 *
 	 * @return Plugin[]
 	 */
@@ -262,7 +243,7 @@ class PluginManager{
 					continue;
 				}
 				$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
-				if(!empty($ambiguousVersions)){
+				if(count($ambiguousVersions) > 0){
 					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 						$name,
 						$this->server->getLanguage()->translateString("pocketmine.plugin.ambiguousMinAPI", [implode(", ", $ambiguousVersions)])
@@ -302,7 +283,6 @@ class PluginManager{
 				}
 			}
 		}
-
 
 		while(count($plugins) > 0){
 			$loadedThisLoop = 0;
@@ -348,7 +328,7 @@ class PluginManager{
 				if(!isset($dependencies[$name]) and !isset($softDependencies[$name])){
 					unset($plugins[$name]);
 					$loadedThisLoop++;
-					if($plugin = $this->loadPlugin($file, $loaders) and $plugin instanceof Plugin){
+					if(($plugin = $this->loadPlugin($file, $loaders)) instanceof Plugin){
 						$loadedPlugins[$name] = $plugin;
 					}else{
 						$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.genericLoadError", [$name]));
@@ -372,8 +352,6 @@ class PluginManager{
 	 * Returns whether a specified API version string is considered compatible with the server's API version.
 	 *
 	 * @param string ...$versions
-	 *
-	 * @return bool
 	 */
 	public function isCompatibleApi(string ...$versions) : bool{
 		$serverString = $this->server->getApiVersion();
@@ -411,18 +389,10 @@ class PluginManager{
 		return false;
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 *
-	 * @return bool
-	 */
 	public function isPluginEnabled(Plugin $plugin) : bool{
 		return isset($this->plugins[$plugin->getDescription()->getName()]) and $plugin->isEnabled();
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 */
 	public function enablePlugin(Plugin $plugin) : void{
 		if(!$plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
@@ -446,9 +416,6 @@ class PluginManager{
 		}
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 */
 	public function disablePlugin(Plugin $plugin) : void{
 		if($plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.disable", [$plugin->getDescription()->getFullName()]));
@@ -482,9 +449,6 @@ class PluginManager{
 	/**
 	 * Registers all the events in the given Listener class
 	 *
-	 * @param Listener $listener
-	 * @param Plugin   $plugin
-	 *
 	 * @throws PluginException
 	 */
 	public function registerEvents(Listener $listener, Plugin $plugin) : void{
@@ -511,7 +475,7 @@ class PluginManager{
 					$eventClass = $parameters[0]->getClass();
 				}catch(\ReflectionException $e){ //class doesn't exist
 					if(isset($tags["softDepend"]) && !isset($this->plugins[$tags["softDepend"]])){
-						$this->server->getLogger()->debug("Not registering @softDepend listener " . Utils::getNiceClosureName($handlerClosure) . "(" . $parameters[0]->getType()->getName() . ") because plugin \"" . $tags["softDepend"] . "\" not found");
+						$this->server->getLogger()->debug("Not registering @softDepend listener " . Utils::getNiceClosureName($handlerClosure) . "() because plugin \"" . $tags["softDepend"] . "\" not found");
 						continue;
 					}
 
@@ -541,17 +505,18 @@ class PluginManager{
 					}
 				}
 
+				/** @phpstan-var \ReflectionClass<Event> $eventClass */
 				$this->registerEvent($eventClass->getName(), $handlerClosure, $priority, $plugin, $handleCancelled);
 			}
 		}
 	}
 
 	/**
-	 * @param string   $event Class name that extends Event
-	 * @param \Closure $handler
-	 * @param int      $priority
-	 * @param Plugin   $plugin
-	 * @param bool     $handleCancelled
+	 * @param string $event Class name that extends Event
+	 *
+	 * @phpstan-template TEvent of Event
+	 * @phpstan-param class-string<TEvent> $event
+	 * @phpstan-param \Closure(TEvent) : void $handler
 	 *
 	 * @throws \ReflectionException
 	 */

@@ -42,38 +42,27 @@ interface ChunkListener{
 
 	/**
 	 * This method will be called when a Chunk is replaced by a new one
-	 *
-	 * @param Chunk $chunk
 	 */
 	public function onChunkChanged(Chunk $chunk) : void;
 
 	/**
 	 * This method will be called when a registered chunk is loaded
-	 *
-	 * @param Chunk $chunk
 	 */
 	public function onChunkLoaded(Chunk $chunk) : void;
 
-
 	/**
 	 * This method will be called when a registered chunk is unloaded
-	 *
-	 * @param Chunk $chunk
 	 */
 	public function onChunkUnloaded(Chunk $chunk) : void;
 
 	/**
 	 * This method will be called when a registered chunk is populated
 	 * Usually it'll be sent with another call to onChunkChanged()
-	 *
-	 * @param Chunk $chunk
 	 */
 	public function onChunkPopulated(Chunk $chunk) : void;
 
 	/**
 	 * This method will be called when a block changes in a registered chunk
-	 *
-	 * @param Vector3 $block
 	 */
 	public function onBlockChanged(Vector3 $block) : void;
 }

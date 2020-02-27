@@ -39,16 +39,11 @@ abstract class Spawnable extends Tile{
 
 	/**
 	 * Returns whether the tile needs to be respawned to viewers.
-	 *
-	 * @return bool
 	 */
 	public function isDirty() : bool{
 		return $this->dirty;
 	}
 
-	/**
-	 * @param bool $dirty
-	 */
 	public function setDirty(bool $dirty = true) : void{
 		if($dirty){
 			$this->spawnCompoundCache = null;
@@ -74,9 +69,6 @@ abstract class Spawnable extends Tile{
 		return $this->spawnCompoundCache;
 	}
 
-	/**
-	 * @return CompoundTag
-	 */
 	final public function getSpawnCompound() : CompoundTag{
 		$nbt = CompoundTag::create()
 			->setString(self::TAG_ID, TileFactory::getSaveId(get_class($this))) //TODO: disassociate network ID from save ID
@@ -90,8 +82,6 @@ abstract class Spawnable extends Tile{
 	/**
 	 * An extension to getSpawnCompound() for
 	 * further modifying the generic tile NBT.
-	 *
-	 * @param CompoundTag $nbt
 	 */
 	abstract protected function addAdditionalSpawnData(CompoundTag $nbt) : void;
 }

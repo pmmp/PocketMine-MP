@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class MobEffectPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOB_EFFECT_PACKET;
@@ -67,22 +67,22 @@ class MobEffectPacket extends DataPacket implements ClientboundPacket{
 		return $pk;
 	}
 
-	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->eventId = $this->getByte();
-		$this->effectId = $this->getVarInt();
-		$this->amplifier = $this->getVarInt();
-		$this->particles = $this->getBool();
-		$this->duration = $this->getVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->eventId = $in->getByte();
+		$this->effectId = $in->getVarInt();
+		$this->amplifier = $in->getVarInt();
+		$this->particles = $in->getBool();
+		$this->duration = $in->getVarInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putByte($this->eventId);
-		$this->putVarInt($this->effectId);
-		$this->putVarInt($this->amplifier);
-		$this->putBool($this->particles);
-		$this->putVarInt($this->duration);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putByte($this->eventId);
+		$out->putVarInt($this->effectId);
+		$out->putVarInt($this->amplifier);
+		$out->putBool($this->particles);
+		$out->putVarInt($this->duration);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

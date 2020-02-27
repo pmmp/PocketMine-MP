@@ -1,0 +1,7 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Access to an undefined property COM\\:\\:\\$StaticPortMappingCollection\\.$#"
+			count: 1
+			path: ../../../src/network/upnp/UPnP.php
+

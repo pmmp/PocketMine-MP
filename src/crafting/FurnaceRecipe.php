@@ -33,25 +33,15 @@ class FurnaceRecipe{
 	/** @var Item */
 	private $ingredient;
 
-	/**
-	 * @param Item $result
-	 * @param Item $ingredient
-	 */
 	public function __construct(Item $result, Item $ingredient){
 		$this->output = clone $result;
 		$this->ingredient = clone $ingredient;
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getInput() : Item{
 		return clone $this->ingredient;
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getResult() : Item{
 		return clone $this->output;
 	}

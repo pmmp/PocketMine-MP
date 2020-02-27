@@ -39,8 +39,6 @@ abstract class BaseNbtWorldData implements WorldData{
 	protected $compoundTag;
 
 	/**
-	 * @param string $dataPath
-	 *
 	 * @throws CorruptedWorldException
 	 * @throws UnsupportedWorldFormatException
 	 */
@@ -60,7 +58,6 @@ abstract class BaseNbtWorldData implements WorldData{
 	}
 
 	/**
-	 * @return CompoundTag
 	 * @throws CorruptedWorldException
 	 * @throws UnsupportedWorldFormatException
 	 */
@@ -107,7 +104,6 @@ abstract class BaseNbtWorldData implements WorldData{
 	public function getCompoundTag() : CompoundTag{
 		return $this->compoundTag;
 	}
-
 
 	/* The below are common between PC and PE */
 

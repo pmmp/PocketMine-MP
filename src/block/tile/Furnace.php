@@ -90,9 +90,6 @@ class Furnace extends Spawnable implements Container, Nameable{
 		$this->saveItems($nbt);
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDefaultName() : string{
 		return "Furnace";
 	}
@@ -120,7 +117,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 		return $this->getInventory();
 	}
 
-	protected function checkFuel(Item $fuel){
+	protected function checkFuel(Item $fuel) : void{
 		$ev = new FurnaceBurnEvent($this, $fuel, $fuel->getFuelTime());
 		$ev->call();
 		if($ev->isCancelled()){

@@ -45,7 +45,7 @@ class Chest extends Spawnable implements Container, Nameable{
 
 	/** @var ChestInventory */
 	protected $inventory;
-	/** @var DoubleChestInventory */
+	/** @var DoubleChestInventory|null */
 	protected $doubleInventory = null;
 
 	/** @var int|null */
@@ -136,7 +136,7 @@ class Chest extends Spawnable implements Container, Nameable{
 		return $this->inventory;
 	}
 
-	protected function checkPairing(){
+	protected function checkPairing() : void{
 		if($this->isPaired() and !$this->pos->getWorld()->isInLoadedTerrain(new Vector3($this->pairX, $this->pos->y, $this->pairZ))){
 			//paired to a tile in an unloaded chunk
 			$this->doubleInventory = null;
@@ -163,20 +163,14 @@ class Chest extends Spawnable implements Container, Nameable{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDefaultName() : string{
 		return "Chest";
 	}
 
-	public function isPaired(){
+	public function isPaired() : bool{
 		return $this->pairX !== null and $this->pairZ !== null;
 	}
 
-	/**
-	 * @return Chest|null
-	 */
 	public function getPair() : ?Chest{
 		if($this->isPaired()){
 			$tile = $this->pos->getWorld()->getTileAt($this->pairX, $this->pos->y, $this->pairZ);
@@ -188,7 +182,7 @@ class Chest extends Spawnable implements Container, Nameable{
 		return null;
 	}
 
-	public function pairWith(Chest $tile){
+	public function pairWith(Chest $tile) : bool{
 		if($this->isPaired() or $tile->isPaired()){
 			return false;
 		}
@@ -202,7 +196,7 @@ class Chest extends Spawnable implements Container, Nameable{
 		return true;
 	}
 
-	private function createPair(Chest $tile){
+	private function createPair(Chest $tile) : void{
 		$this->pairX = $tile->getPos()->x;
 		$this->pairZ = $tile->getPos()->z;
 
@@ -210,7 +204,7 @@ class Chest extends Spawnable implements Container, Nameable{
 		$tile->pairZ = $this->getPos()->z;
 	}
 
-	public function unpair(){
+	public function unpair() : bool{
 		if(!$this->isPaired()){
 			return false;
 		}

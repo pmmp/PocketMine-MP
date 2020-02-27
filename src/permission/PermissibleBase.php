@@ -32,22 +32,15 @@ class PermissibleBase implements Permissible{
 	/** @var ServerOperator */
 	private $opable;
 
-	/** @var Permissible */
+	/** @var Permissible|null */
 	private $parent = null;
 
-	/**
-	 * @var PermissionAttachment[]
-	 */
+	/** @var PermissionAttachment[] */
 	private $attachments = [];
 
-	/**
-	 * @var PermissionAttachmentInfo[]
-	 */
+	/** @var PermissionAttachmentInfo[] */
 	private $permissions = [];
 
-	/**
-	 * @param ServerOperator $opable
-	 */
 	public function __construct(ServerOperator $opable){
 		$this->opable = $opable;
 		if($opable instanceof Permissible){
@@ -55,24 +48,16 @@ class PermissibleBase implements Permissible{
 		}
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isOp() : bool{
 		return $this->opable->isOp();
 	}
 
-	/**
-	 * @param bool $value
-	 */
 	public function setOp(bool $value) : void{
 		$this->opable->setOp($value);
 	}
 
 	/**
 	 * @param Permission|string $name
-	 *
-	 * @return bool
 	 */
 	public function isPermissionSet($name) : bool{
 		return isset($this->permissions[$name instanceof Permission ? $name->getName() : $name]);
@@ -80,8 +65,6 @@ class PermissibleBase implements Permissible{
 
 	/**
 	 * @param Permission|string $name
-	 *
-	 * @return bool
 	 */
 	public function hasPermission($name) : bool{
 		if($name instanceof Permission){
@@ -104,12 +87,6 @@ class PermissibleBase implements Permissible{
 
 	/**
 	 * //TODO: tick scheduled attachments
-	 *
-	 * @param Plugin $plugin
-	 * @param string $name
-	 * @param bool   $value
-	 *
-	 * @return PermissionAttachment
 	 */
 	public function addAttachment(Plugin $plugin, ?string $name = null, ?bool $value = null) : PermissionAttachment{
 		if(!$plugin->isEnabled()){
@@ -127,9 +104,6 @@ class PermissibleBase implements Permissible{
 		return $result;
 	}
 
-	/**
-	 * @param PermissionAttachment $attachment
-	 */
 	public function removeAttachment(PermissionAttachment $attachment) : void{
 		if(isset($this->attachments[spl_object_id($attachment)])){
 			unset($this->attachments[spl_object_id($attachment)]);
@@ -177,8 +151,6 @@ class PermissibleBase implements Permissible{
 
 	/**
 	 * @param bool[]                    $children
-	 * @param bool                      $invert
-	 * @param PermissionAttachment|null $attachment
 	 */
 	private function calculateChildPermissions(array $children, bool $invert, ?PermissionAttachment $attachment) : void{
 		$permManager = PermissionManager::getInstance();

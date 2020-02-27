@@ -38,9 +38,6 @@ class BlockBreakInfo{
 	private $toolHarvestLevel;
 
 	/**
-	 * @param float      $hardness
-	 * @param int        $toolType
-	 * @param int        $toolHarvestLevel
 	 * @param float|null $blastResistance default 5x hardness
 	 */
 	public function __construct(float $hardness, int $toolType = BlockToolType::NONE, int $toolHarvestLevel = 0, ?float $blastResistance = null){
@@ -60,8 +57,6 @@ class BlockBreakInfo{
 
 	/**
 	 * Returns a base value used to compute block break times.
-	 *
-	 * @return float
 	 */
 	public function getHardness() : float{
 		return $this->hardness;
@@ -69,8 +64,6 @@ class BlockBreakInfo{
 
 	/**
 	 * Returns whether the block can be broken at all.
-	 *
-	 * @return bool
 	 */
 	public function isBreakable() : bool{
 		return $this->hardness >= 0;
@@ -78,8 +71,6 @@ class BlockBreakInfo{
 
 	/**
 	 * Returns whether this block can be instantly broken.
-	 *
-	 * @return bool
 	 */
 	public function breaksInstantly() : bool{
 		return $this->hardness == 0.0;
@@ -87,16 +78,11 @@ class BlockBreakInfo{
 
 	/**
 	 * Returns the block's resistance to explosions. Usually 5x hardness.
-	 *
-	 * @return float
 	 */
 	public function getBlastResistance() : float{
 		return $this->blastResistance;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getToolType() : int{
 		return $this->toolType;
 	}
@@ -110,8 +96,6 @@ class BlockBreakInfo{
 	 * Otherwise, 1 should be returned if a tool is required, 0 if not.
 	 *
 	 * @see Item::getBlockToolHarvestLevel()
-	 *
-	 * @return int
 	 */
 	public function getToolHarvestLevel() : int{
 		return $this->toolHarvestLevel;
@@ -123,10 +107,6 @@ class BlockBreakInfo{
 	 *
 	 * In most cases this is also used to determine whether block drops should be created or not, except in some
 	 * special cases such as vines.
-	 *
-	 * @param Item $tool
-	 *
-	 * @return bool
 	 */
 	public function isToolCompatible(Item $tool) : bool{
 		if($this->hardness < 0){
@@ -140,9 +120,6 @@ class BlockBreakInfo{
 	/**
 	 * Returns the seconds that this block takes to be broken using an specific Item
 	 *
-	 * @param Item $item
-	 *
-	 * @return float
 	 * @throws \InvalidArgumentException if the item efficiency is not a positive number
 	 */
 	public function getBreakTime(Item $item) : float{

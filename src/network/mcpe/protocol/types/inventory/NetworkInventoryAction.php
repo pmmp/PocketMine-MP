@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
+use pocketmine\crafting\CraftingGrid;
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\inventory\EnchantInventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
@@ -41,7 +42,6 @@ class NetworkInventoryAction{
 
 	public const SOURCE_WORLD = 2; //drop/pickup item entity
 	public const SOURCE_CREATIVE = 3;
-	public const SOURCE_CRAFTING_GRID = 100;
 	public const SOURCE_TODO = 99999;
 
 	/**
@@ -53,18 +53,12 @@ class NetworkInventoryAction{
 	 *
 	 * Expect these to change in the future.
 	 */
-	public const SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = -2;
-	public const SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = -3;
 	public const SOURCE_TYPE_CRAFTING_RESULT = -4;
 	public const SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
 
-	public const SOURCE_TYPE_ANVIL_INPUT = -10;
-	public const SOURCE_TYPE_ANVIL_MATERIAL = -11;
 	public const SOURCE_TYPE_ANVIL_RESULT = -12;
 	public const SOURCE_TYPE_ANVIL_OUTPUT = -13;
 
-	public const SOURCE_TYPE_ENCHANT_INPUT = -15;
-	public const SOURCE_TYPE_ENCHANT_MATERIAL = -16;
 	public const SOURCE_TYPE_ENCHANT_OUTPUT = -17;
 
 	public const SOURCE_TYPE_TRADING_INPUT_1 = -20;
@@ -73,9 +67,6 @@ class NetworkInventoryAction{
 	public const SOURCE_TYPE_TRADING_OUTPUT = -23;
 
 	public const SOURCE_TYPE_BEACON = -24;
-
-	/** Any client-side window dropping its contents when the player closes it */
-	public const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
 
 	public const ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
 	public const ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
@@ -97,8 +88,6 @@ class NetworkInventoryAction{
 	public $newItem;
 
 	/**
-	 * @param NetworkBinaryStream $packet
-	 *
 	 * @return $this
 	 *
 	 * @throws BinaryDataException
@@ -116,7 +105,6 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
-			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				$this->windowId = $packet->getVarInt();
 				break;
@@ -132,8 +120,6 @@ class NetworkInventoryAction{
 	}
 
 	/**
-	 * @param NetworkBinaryStream $packet
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function write(NetworkBinaryStream $packet) : void{
@@ -148,7 +134,6 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
-			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				$packet->putVarInt($this->windowId);
 				break;
@@ -162,18 +147,40 @@ class NetworkInventoryAction{
 	}
 
 	/**
-	 * @param Player $player
-	 *
-	 * @return InventoryAction|null
-	 *
 	 * @throws \UnexpectedValueException
 	 */
 	public function createInventoryAction(Player $player) : ?InventoryAction{
+		if($this->oldItem->equalsExact($this->newItem)){
+			//filter out useless noise in 1.13
+			return null;
+		}
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
-				$window = $player->getNetworkSession()->getInvManager()->getWindow($this->windowId);
+				if($this->windowId === ContainerIds::UI and $this->inventorySlot > 0){
+					if($this->inventorySlot === 50){
+						return null; //useless noise
+					}
+					if($this->inventorySlot >= 28 and $this->inventorySlot <= 31){
+						$window = $player->getCraftingGrid();
+						if($window->getGridWidth() !== CraftingGrid::SIZE_SMALL){
+							throw new \UnexpectedValueException("Expected small crafting grid");
+						}
+						$slot = $this->inventorySlot - 28;
+					}elseif($this->inventorySlot >= 32 and $this->inventorySlot <= 40){
+						$window = $player->getCraftingGrid();
+						if($window->getGridWidth() !== CraftingGrid::SIZE_BIG){
+							throw new \UnexpectedValueException("Expected big crafting grid");
+						}
+						$slot = $this->inventorySlot - 32;
+					}else{
+						throw new \UnexpectedValueException("Unhandled magic UI slot offset $this->inventorySlot");
+					}
+				}else{
+					$window = $player->getNetworkSession()->getInvManager()->getWindow($this->windowId);
+					$slot = $this->inventorySlot;
+				}
 				if($window !== null){
-					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+					return new SlotChangeAction($window, $slot, $this->oldItem, $this->newItem);
 				}
 
 				throw new \UnexpectedValueException("No open container with window ID $this->windowId");
@@ -193,31 +200,12 @@ class NetworkInventoryAction{
 						throw new \UnexpectedValueException("Unexpected creative action type $this->inventorySlot");
 
 				}
-			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				//These types need special handling.
 				switch($this->windowId){
-					case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
-					case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
-					case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS: //TODO: this type applies to all fake windows, not just crafting
-						return new SlotChangeAction($player->getCraftingGrid(), $this->inventorySlot, $this->oldItem, $this->newItem);
 					case self::SOURCE_TYPE_CRAFTING_RESULT:
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						return null;
-					case self::SOURCE_TYPE_ANVIL_INPUT:
-					case self::SOURCE_TYPE_ANVIL_MATERIAL:
-						$window = $player->getCurrentWindow();
-						if(!($window instanceof AnvilInventory)){
-							throw new \UnexpectedValueException("Current open container is not an anvil");
-						}
-						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
-					case self::SOURCE_TYPE_ENCHANT_INPUT:
-					case self::SOURCE_TYPE_ENCHANT_MATERIAL:
-						$window = $player->getCurrentWindow();
-						if(!($window instanceof EnchantInventory)){
-							throw new \UnexpectedValueException("Current open container is not an enchanting table");
-						}
-						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}
 
 				//TODO: more stuff
@@ -225,19 +213,5 @@ class NetworkInventoryAction{
 			default:
 				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
 		}
-	}
-
-	/**
-	 * Hack to allow identifying crafting transaction parts.
-	 *
-	 * @return bool
-	 */
-	public function isCraftingPart() : bool{
-		return ($this->sourceType === self::SOURCE_TODO or $this->sourceType === self::SOURCE_CRAFTING_GRID) and
-			($this->windowId === self::SOURCE_TYPE_CRAFTING_RESULT or $this->windowId === self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT);
-	}
-
-	public function isFinalCraftingPart() : bool{
-		return $this->isCraftingPart() and $this->windowId === self::SOURCE_TYPE_CRAFTING_RESULT;
 	}
 }

@@ -51,9 +51,8 @@ class Nether extends Generator{
 	private $noiseBase;
 
 	/**
-	 * @param ChunkManager $world
-	 * @param int          $seed
-	 * @param array        $options
+	 * @param mixed[] $options
+	 * @phpstan-param array<string, mixed> $options
 	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */

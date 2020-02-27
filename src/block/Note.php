@@ -58,16 +58,10 @@ class Note extends Opaque{
 		return 300;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPitch() : int{
 		return $this->pitch;
 	}
 
-	/**
-	 * @param int $pitch
-	 */
 	public function setPitch(int $pitch) : void{
 		if($pitch < self::MIN_PITCH or $pitch > self::MAX_PITCH){
 			throw new \InvalidArgumentException("Pitch must be in range " . self::MIN_PITCH . " - " . self::MAX_PITCH);

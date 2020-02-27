@@ -71,8 +71,6 @@ class Villager extends Living implements Ageable{
 
 	/**
 	 * Sets the villager profession
-	 *
-	 * @param int $profession
 	 */
 	public function setProfession(int $profession) : void{
 		$this->profession = $profession; //TODO: validation

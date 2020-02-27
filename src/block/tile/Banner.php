@@ -46,8 +46,11 @@ class Banner extends Spawnable{
 	/** @var DyeColor */
 	private $baseColor;
 
-	/** @var BannerPattern[]|Deque */
-	private $patterns = [];
+	/**
+	 * @var BannerPattern[]|Deque
+	 * @phpstan-var Deque<BannerPattern>
+	 */
+	private $patterns;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->baseColor = DyeColor::BLACK();
@@ -95,8 +98,6 @@ class Banner extends Spawnable{
 
 	/**
 	 * Returns the color of the banner base.
-	 *
-	 * @return DyeColor
 	 */
 	public function getBaseColor() : DyeColor{
 		return $this->baseColor;
@@ -104,8 +105,6 @@ class Banner extends Spawnable{
 
 	/**
 	 * Sets the color of the banner base.
-	 *
-	 * @param DyeColor $color
 	 */
 	public function setBaseColor(DyeColor $color) : void{
 		$this->baseColor = $color;
@@ -113,6 +112,7 @@ class Banner extends Spawnable{
 
 	/**
 	 * @return BannerPattern[]|Deque
+	 * @phpstan-return Deque<BannerPattern>
 	 */
 	public function getPatterns() : Deque{
 		return $this->patterns;
@@ -120,6 +120,7 @@ class Banner extends Spawnable{
 
 	/**
 	 * @param BannerPattern[]|Deque $patterns
+	 * @phpstan-param Deque<BannerPattern> $patterns
 	 */
 	public function setPatterns(Deque $patterns) : void{
 		$this->patterns = $patterns;

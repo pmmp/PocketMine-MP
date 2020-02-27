@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
-
 use pocketmine\utils\Color;
 use pocketmine\utils\RegistryTrait;
 use function assert;
@@ -104,17 +103,9 @@ final class VanillaEffects{
 		self::$mcpeIdMap[$member->getId()] = $member;
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return Effect
-	 */
-	public static function byMcpeId(int $id) : Effect{
+	public static function byMcpeId(int $id) : ?Effect{
 		self::checkInit();
-		if(!isset(self::$mcpeIdMap[$id])){
-			throw new \InvalidArgumentException("No such effect with MCPE ID $id");
-		}
-		return self::$mcpeIdMap[$id];
+		return self::$mcpeIdMap[$id] ?? null;
 	}
 
 	/**
@@ -124,11 +115,6 @@ final class VanillaEffects{
 		return self::_registryGetAll();
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return Effect
-	 */
 	public static function fromString(string $name) : Effect{
 		$result = self::_registryFromString($name);
 		assert($result instanceof Effect);

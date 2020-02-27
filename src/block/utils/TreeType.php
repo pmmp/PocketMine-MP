@@ -46,15 +46,15 @@ final class TreeType{
 	/** @var TreeType[] */
 	private static $numericIdMap = [];
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new TreeType("oak", "Oak", 0),
 			new TreeType("spruce", "Spruce", 1),
 			new TreeType("birch", "Birch", 2),
 			new TreeType("jungle", "Jungle", 3),
 			new TreeType("acacia", "Acacia", 4),
 			new TreeType("dark_oak", "Dark Oak", 5)
-		];
+		);
 	}
 
 	protected static function register(TreeType $type) : void{
@@ -65,9 +65,6 @@ final class TreeType{
 	/**
 	 * @internal
 	 *
-	 * @param int $magicNumber
-	 *
-	 * @return TreeType
 	 * @throws \InvalidArgumentException
 	 */
 	public static function fromMagicNumber(int $magicNumber) : TreeType{
@@ -83,27 +80,16 @@ final class TreeType{
 	/** @var int */
 	private $magicNumber;
 
-	/**
-	 * @param string $enumName
-	 * @param string $displayName
-	 * @param int    $magicNumber
-	 */
 	private function __construct(string $enumName, string $displayName, int $magicNumber){
 		$this->Enum___construct($enumName);
 		$this->displayName = $displayName;
 		$this->magicNumber = $magicNumber;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDisplayName() : string{
 		return $this->displayName;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMagicNumber() : int{
 		return $this->magicNumber;
 	}

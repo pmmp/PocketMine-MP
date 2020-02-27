@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 
 abstract class Animal extends Living implements Ageable{

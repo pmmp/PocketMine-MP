@@ -21,7 +21,6 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\event\world;
 
 use pocketmine\world\format\Chunk;
@@ -39,9 +38,6 @@ class ChunkLoadEvent extends ChunkEvent{
 		$this->newChunk = $newChunk;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isNewChunk() : bool{
 		return $this->newChunk;
 	}

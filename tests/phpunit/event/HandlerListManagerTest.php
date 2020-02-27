@@ -33,13 +33,17 @@ class HandlerListManagerTest extends TestCase{
 	private $resolveParentFunc;
 
 
-	public function setUp(){
+	public function setUp() : void{
 		/** @see HandlerListManager::isValidClass() */
 		$this->isValidFunc = (new \ReflectionMethod(HandlerListManager::class, 'isValidClass'))->getClosure();
 		/** @see HandlerListManager::resolveNearestHandleableParent() */
 		$this->resolveParentFunc = (new \ReflectionMethod(HandlerListManager::class, 'resolveNearestHandleableParent'))->getClosure();
 	}
 
+	/**
+	 * @return \Generator|mixed[][]
+	 * @phpstan-return \Generator<int, array{\ReflectionClass<Event>, bool, string}, void, void>
+	 */
 	public function isValidClassProvider() : \Generator{
 		yield [new \ReflectionClass(Event::class), false, "event base should not be handleable"];
 		yield [new \ReflectionClass(TestConcreteEvent::class), true, ""];
@@ -53,11 +57,16 @@ class HandlerListManagerTest extends TestCase{
 	 * @param \ReflectionClass $class
 	 * @param bool             $isValid
 	 * @param string           $reason
+	 * @phpstan-param \ReflectionClass<Event> $class
 	 */
 	public function testIsValidClass(\ReflectionClass $class, bool $isValid, string $reason) : void{
 		self::assertSame($isValid, ($this->isValidFunc)($class), $reason);
 	}
 
+	/**
+	 * @return \Generator|\ReflectionClass[][]
+	 * @phpstan-return \Generator<int, array{\ReflectionClass<Event>, \ReflectionClass<Event>|null}, void, void>
+	 */
 	public function resolveParentClassProvider() : \Generator{
 		yield [new \ReflectionClass(TestConcreteExtendsAllowHandleEvent::class), new \ReflectionClass(TestAbstractAllowHandleEvent::class)];
 		yield [new \ReflectionClass(TestConcreteEvent::class), null];
@@ -70,6 +79,8 @@ class HandlerListManagerTest extends TestCase{
 	 *
 	 * @param \ReflectionClass      $class
 	 * @param \ReflectionClass|null $expect
+	 * @phpstan-param \ReflectionClass<Event>      $class
+	 * @phpstan-param \ReflectionClass<Event>|null $expect
 	 */
 	public function testResolveParentClass(\ReflectionClass $class, ?\ReflectionClass $expect) : void{
 		if($expect === null){

@@ -55,7 +55,10 @@ class Banner extends Transparent{
 	/** @var DyeColor */
 	protected $baseColor;
 
-	/** @var Deque|BannerPattern[] */
+	/**
+	 * @var Deque|BannerPattern[]
+	 * @phpstan-var Deque<BannerPattern>
+	 */
 	protected $patterns;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
@@ -117,7 +120,6 @@ class Banner extends Transparent{
 
 	/**
 	 * TODO: interface method? this is only the BASE colour...
-	 * @return DyeColor
 	 */
 	public function getColor() : DyeColor{
 		return $this->baseColor;
@@ -125,6 +127,7 @@ class Banner extends Transparent{
 
 	/**
 	 * @return Deque|BannerPattern[]
+	 * @phpstan-return Deque<BannerPattern>
 	 */
 	public function getPatterns() : Deque{
 		return $this->patterns;
@@ -132,9 +135,10 @@ class Banner extends Transparent{
 
 	/**
 	 * @param Deque|BannerPattern[] $patterns
+	 * @phpstan-param Deque<BannerPattern> $patterns
 	 */
 	public function setPatterns(Deque $patterns) : void{
-		$checked = $patterns->filter(function($v){ return $v instanceof BannerPattern; });
+		$checked = $patterns->filter(function($v) : bool{ return $v instanceof BannerPattern; });
 		if($checked->count() !== $patterns->count()){
 			throw new \TypeError("Deque must only contain " . BannerPattern::class . " objects");
 		}

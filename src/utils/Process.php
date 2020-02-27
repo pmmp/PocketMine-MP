@@ -32,6 +32,7 @@ use function file_get_contents;
 use function function_exists;
 use function hexdec;
 use function memory_get_usage;
+use function posix_kill;
 use function preg_match;
 use function proc_close;
 use function proc_open;
@@ -46,8 +47,6 @@ final class Process{
 	}
 
 	/**
-	 * @param bool $advanced
-	 *
 	 * @return int[]|int
 	 */
 	public static function getMemoryUsage(bool $advanced = false){
@@ -105,7 +104,6 @@ final class Process{
 		return [$heap, $stack];
 	}
 
-
 	public static function getThreadCount() : int{
 		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
 			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
@@ -118,6 +116,9 @@ final class Process{
 		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
 	}
 
+	/**
+	 * @param int $pid
+	 */
 	public static function kill($pid) : void{
 		$logger = \GlobalLogger::get();
 		if($logger instanceof MainLogger){
@@ -125,7 +126,7 @@ final class Process{
 		}
 		switch(Utils::getOS()){
 			case "win":
-				exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
+				exec("taskkill.exe /F /PID $pid > NUL");
 				break;
 			case "mac":
 			case "linux":
@@ -133,15 +134,15 @@ final class Process{
 				if(function_exists("posix_kill")){
 					posix_kill($pid, 9); //SIGKILL
 				}else{
-					exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
+					exec("kill -9 $pid > /dev/null 2>&1");
 				}
 		}
 	}
 
 	/**
 	 * @param string      $command Command to execute
-	 * @param string|null &$stdout Reference parameter to write stdout to
-	 * @param string|null &$stderr Reference parameter to write stderr to
+	 * @param string|null $stdout Reference parameter to write stdout to
+	 * @param string|null $stderr Reference parameter to write stderr to
 	 *
 	 * @return int process exit code
 	 */

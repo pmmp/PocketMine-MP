@@ -34,7 +34,10 @@ abstract class BiomeSelector{
 	/** @var Simplex */
 	private $rainfall;
 
-	/** @var Biome[]|\SplFixedArray */
+	/**
+	 * @var Biome[]|\SplFixedArray
+	 * @phpstan-var \SplFixedArray<Biome>
+	 */
 	private $map = null;
 
 	public function __construct(Random $random){
@@ -44,9 +47,6 @@ abstract class BiomeSelector{
 
 	/**
 	 * Lookup function called by recalculate() to determine the biome to use for this temperature and rainfall.
-	 *
-	 * @param float $temperature
-	 * @param float $rainfall
 	 *
 	 * @return int biome ID 0-255
 	 */
@@ -66,20 +66,29 @@ abstract class BiomeSelector{
 		}
 	}
 
+	/**
+	 * @param float $x
+	 * @param float $z
+	 *
+	 * @return float
+	 */
 	public function getTemperature($x, $z){
 		return ($this->temperature->noise2D($x, $z, true) + 1) / 2;
 	}
 
+	/**
+	 * @param float $x
+	 * @param float $z
+	 *
+	 * @return float
+	 */
 	public function getRainfall($x, $z){
 		return ($this->rainfall->noise2D($x, $z, true) + 1) / 2;
 	}
 
 	/**
-	 * TODO: not sure on types here
-	 * @param int|float $x
-	 * @param int|float $z
-	 *
-	 * @return Biome
+	 * @param int $x
+	 * @param int $z
 	 */
 	public function pickBiome($x, $z) : Biome{
 		$temperature = (int) ($this->getTemperature($x, $z) * 63);

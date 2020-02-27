@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class AddPaintingPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_PAINTING_PACKET;
@@ -42,20 +43,20 @@ class AddPaintingPacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $title;
 
-	protected function decodePayload() : void{
-		$this->entityUniqueId = $this->getEntityUniqueId();
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->position = $this->getVector3();
-		$this->direction = $this->getVarInt();
-		$this->title = $this->getString();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->entityUniqueId = $in->getEntityUniqueId();
+		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->position = $in->getVector3();
+		$this->direction = $in->getVarInt();
+		$this->title = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVector3($this->position);
-		$this->putVarInt($this->direction);
-		$this->putString($this->title);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
+		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putVector3($this->position);
+		$out->putVarInt($this->direction);
+		$out->putString($this->title);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

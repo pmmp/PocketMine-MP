@@ -32,8 +32,6 @@ class PlayerJumpEvent extends PlayerEvent{
 
 	/**
 	 * PlayerJumpEvent constructor.
-	 *
-	 * @param Player $player
 	 */
 	public function __construct(Player $player){
 		$this->player = $player;

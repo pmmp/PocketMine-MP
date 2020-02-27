@@ -41,10 +41,12 @@ class Squid extends WaterAnimal{
 	public $width = 0.95;
 	public $height = 0.95;
 
-	/** @var Vector3 */
+	/** @var Vector3|null */
 	public $swimDirection = null;
+	/** @var float */
 	public $swimSpeed = 0.1;
 
+	/** @var int */
 	private $switchDirectionTicker = 0;
 
 	public function initEntity(CompoundTag $nbt) : void{
@@ -77,13 +79,12 @@ class Squid extends WaterAnimal{
 		return new Vector3(mt_rand(-1000, 1000) / 1000, mt_rand(-500, 500) / 1000, mt_rand(-1000, 1000) / 1000);
 	}
 
-
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		if($this->closed){
 			return false;
 		}
 
-		if(++$this->switchDirectionTicker === 100 or $this->isCollided){
+		if(++$this->switchDirectionTicker === 100){
 			$this->switchDirectionTicker = 0;
 			if(mt_rand(0, 100) < 50){
 				$this->swimDirection = null;

@@ -28,7 +28,9 @@ use function zlib_encode;
 use const ZLIB_ENCODING_DEFLATE;
 
 final class Zlib{
+	/** @var int */
 	public static $LEVEL = 7;
+	/** @var int */
 	public static $THRESHOLD = 256;
 
 	private function __construct(){
@@ -36,10 +38,8 @@ final class Zlib{
 	}
 
 	/**
-	 * @param string $payload
 	 * @param int    $maxDecodedLength default 2MB
 	 *
-	 * @return string
 	 * @throws \ErrorException
 	 */
 	public static function decompress(string $payload, int $maxDecodedLength = 1024 * 1024 * 2) : string{
@@ -47,10 +47,7 @@ final class Zlib{
 	}
 
 	/**
-	 * @param string $payload
 	 * @param int    $compressionLevel
-	 *
-	 * @return string
 	 */
 	public static function compress(string $payload, ?int $compressionLevel = null) : string{
 		return zlib_encode($payload, ZLIB_ENCODING_DEFLATE, $compressionLevel ?? self::$LEVEL);

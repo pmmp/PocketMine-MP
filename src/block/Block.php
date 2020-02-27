@@ -68,9 +68,7 @@ class Block{
 	protected $collisionBoxes = null;
 
 	/**
-	 * @param BlockIdentifier $idInfo
 	 * @param string          $name English name of the block type (TODO: implement translations)
-	 * @param BlockBreakInfo  $breakInfo
 	 */
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		if(($idInfo->getVariant() & $this->getStateBitmask()) !== 0){
@@ -90,23 +88,16 @@ class Block{
 		return $this->idInfo;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->fallbackName;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getId() : int{
 		return $this->idInfo->getBlockId();
 	}
 
 	/**
 	 * @internal
-	 * @return int
 	 */
 	public function getFullId() : int{
 		return ($this->getId() << 4) | $this->getMeta();
@@ -118,26 +109,19 @@ class Block{
 
 	/**
 	 * @internal
-	 * @return int
 	 */
 	public function getRuntimeId() : int{
 		return RuntimeBlockMapping::toStaticRuntimeId($this->getId(), $this->getMeta());
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMeta() : int{
 		$stateMeta = $this->writeStateToMeta();
 		assert(($stateMeta & ~$this->getStateBitmask()) === 0);
 		return $this->idInfo->getVariant() | $stateMeta;
 	}
 
-
 	/**
 	 * Returns a bitmask used to extract state bits from block metadata.
-	 *
-	 * @return int
 	 */
 	public function getStateBitmask() : int{
 		return 0;
@@ -148,9 +132,6 @@ class Block{
 	}
 
 	/**
-	 * @param int $id
-	 * @param int $stateMeta
-	 *
 	 * @throws InvalidBlockStateException
 	 */
 	public function readStateFromData(int $id, int $stateMeta) : void{
@@ -191,10 +172,6 @@ class Block{
 	 *
 	 * Note: This ignores additional IDs used to represent additional states. This means that, for example, a lit
 	 * furnace and unlit furnace are considered the same type.
-	 *
-	 * @param Block $other
-	 *
-	 * @return bool
 	 */
 	public function isSameType(Block $other) : bool{
 		return $this->idInfo->getBlockId() === $other->idInfo->getBlockId() and $this->idInfo->getVariant() === $other->idInfo->getVariant();
@@ -202,10 +179,6 @@ class Block{
 
 	/**
 	 * Returns whether the given block has the same type and properties as this block.
-	 *
-	 * @param Block $other
-	 *
-	 * @return bool
 	 */
 	public function isSameState(Block $other) : bool{
 		return $this->isSameType($other) and $this->writeStateToMeta() === $other->writeStateToMeta();
@@ -213,15 +186,11 @@ class Block{
 
 	/**
 	 * AKA: Block->isPlaceable
-	 * @return bool
 	 */
 	public function canBePlaced() : bool{
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function canBeReplaced() : bool{
 		return false;
 	}
@@ -232,16 +201,6 @@ class Block{
 
 	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
-	 *
-	 * @param BlockTransaction $tx
-	 * @param Item             $item
-	 * @param Block            $blockReplace
-	 * @param Block            $blockClicked
-	 * @param int              $face
-	 * @param Vector3          $clickVector
-	 * @param Player|null      $player
-	 *
-	 * @return bool
 	 */
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$tx->addBlock($blockReplace->pos, $this);
@@ -254,8 +213,6 @@ class Block{
 
 	/**
 	 * Returns an object containing information about the destruction requirements of this block.
-	 *
-	 * @return BlockBreakInfo
 	 */
 	public function getBreakInfo() : BlockBreakInfo{
 		return $this->breakInfo;
@@ -263,11 +220,6 @@ class Block{
 
 	/**
 	 * Do the actions needed so the block is broken with the Item
-	 *
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
 	 */
 	public function onBreak(Item $item, ?Player $player = null) : bool{
 		if(($t = $this->pos->getWorld()->getTile($this->pos)) !== null){
@@ -286,8 +238,6 @@ class Block{
 
 	/**
 	 * Returns whether random block updates will be done on this block.
-	 *
-	 * @return bool
 	 */
 	public function ticksRandomly() : bool{
 		return false;
@@ -310,13 +260,6 @@ class Block{
 
 	/**
 	 * Do actions when interacted by Item. Returns if it has done anything
-	 *
-	 * @param Item        $item
-	 * @param int         $face
-	 * @param Vector3     $clickVector
-	 * @param Player|null $player
-	 *
-	 * @return bool
 	 */
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		return false;
@@ -326,19 +269,12 @@ class Block{
 	 * Called when this block is attacked (left-clicked). This is called when a player left-clicks the block to try and
 	 * start to break it in survival mode.
 	 *
-	 * @param Item        $item
-	 * @param int         $face
-	 * @param Player|null $player
-	 *
 	 * @return bool if an action took place, prevents starting to break the block if true.
 	 */
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
 		return false;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getFrictionFactor() : float{
 		return 0.6;
 	}
@@ -366,16 +302,11 @@ class Block{
 	 * Examples of this behaviour include leaves and cobwebs.
 	 *
 	 * Light-diffusing blocks are included by the heightmap.
-	 *
-	 * @return bool
 	 */
 	public function diffusesSkyLight() : bool{
 		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isTransparent() : bool{
 		return false;
 	}
@@ -386,7 +317,6 @@ class Block{
 
 	/**
 	 * AKA: Block->isFlowable
-	 * @return bool
 	 */
 	public function canBeFlowedInto() : bool{
 		return false;
@@ -398,12 +328,10 @@ class Block{
 
 	/**
 	 * Returns whether entities can climb up this block.
-	 * @return bool
 	 */
 	public function canClimb() : bool{
 		return false;
 	}
-
 
 	public function addVelocityToEntity(Entity $entity, Vector3 $vector) : void{
 
@@ -415,11 +343,6 @@ class Block{
 
 	/**
 	 * @internal
-	 *
-	 * @param World $world
-	 * @param int   $x
-	 * @param int   $y
-	 * @param int   $z
 	 */
 	final public function position(World $world, int $x, int $y, int $z) : void{
 		$this->pos->x = $x;
@@ -430,8 +353,6 @@ class Block{
 
 	/**
 	 * Returns an array of Item objects to be dropped
-	 *
-	 * @param Item $item
 	 *
 	 * @return Item[]
 	 */
@@ -450,8 +371,6 @@ class Block{
 	/**
 	 * Returns an array of Items to be dropped when the block is broken using the correct tool type.
 	 *
-	 * @param Item $item
-	 *
 	 * @return Item[]
 	 */
 	public function getDropsForCompatibleTool(Item $item) : array{
@@ -461,8 +380,6 @@ class Block{
 	/**
 	 * Returns an array of Items to be dropped when the block is broken using a compatible Silk Touch-enchanted tool.
 	 *
-	 * @param Item $item
-	 *
 	 * @return Item[]
 	 */
 	public function getSilkTouchDrops(Item $item) : array{
@@ -471,10 +388,6 @@ class Block{
 
 	/**
 	 * Returns how much XP will be dropped by breaking this block with the given item.
-	 *
-	 * @param Item $item
-	 *
-	 * @return int
 	 */
 	public function getXpDropForTool(Item $item) : int{
 		if($item->hasEnchantment(Enchantment::SILK_TOUCH()) or !$this->breakInfo->isToolCompatible($item)){
@@ -486,8 +399,6 @@ class Block{
 
 	/**
 	 * Returns how much XP this block will drop when broken with an appropriate tool.
-	 *
-	 * @return int
 	 */
 	protected function getXpDropAmount() : int{
 		return 0;
@@ -496,8 +407,6 @@ class Block{
 	/**
 	 * Returns whether Silk Touch enchanted tools will cause this block to drop as itself. Since most blocks drop
 	 * themselves anyway, this is implicitly true.
-	 *
-	 * @return bool
 	 */
 	public function isAffectedBySilkTouch() : bool{
 		return true;
@@ -505,10 +414,6 @@ class Block{
 
 	/**
 	 * Returns the item that players will equip when middle-clicking on this block.
-	 *
-	 * @param bool $addUserData
-	 *
-	 * @return Item
 	 */
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$item = $this->asItem();
@@ -527,7 +432,6 @@ class Block{
 
 	/**
 	 * Returns the time in ticks which the block will fuel a furnace for.
-	 * @return int
 	 */
 	public function getFuelTime() : int{
 		return 0;
@@ -536,8 +440,6 @@ class Block{
 	/**
 	 * Returns the chance that the block will catch fire from nearby fire sources. Higher values lead to faster catching
 	 * fire.
-	 *
-	 * @return int
 	 */
 	public function getFlameEncouragement() : int{
 		return 0;
@@ -545,8 +447,6 @@ class Block{
 
 	/**
 	 * Returns the base flammability of this block. Higher values lead to the block burning away more quickly.
-	 *
-	 * @return int
 	 */
 	public function getFlammability() : int{
 		return 0;
@@ -554,8 +454,6 @@ class Block{
 
 	/**
 	 * Returns whether fire lit on this block will burn indefinitely.
-	 *
-	 * @return bool
 	 */
 	public function burnsForever() : bool{
 		return false;
@@ -563,8 +461,6 @@ class Block{
 
 	/**
 	 * Returns whether this block can catch fire.
-	 *
-	 * @return bool
 	 */
 	public function isFlammable() : bool{
 		return $this->getFlammability() > 0;
@@ -579,9 +475,6 @@ class Block{
 
 	/**
 	 * Returns the Block on the side $side, works like Vector3::getSide()
-	 *
-	 * @param int $side
-	 * @param int $step
 	 *
 	 * @return Block
 	 */
@@ -641,10 +534,6 @@ class Block{
 
 	/**
 	 * Checks for collision against an AxisAlignedBB
-	 *
-	 * @param AxisAlignedBB $bb
-	 *
-	 * @return bool
 	 */
 	public function collidesWithBB(AxisAlignedBB $bb) : bool{
 		foreach($this->getCollisionBoxes() as $bb2){
@@ -659,8 +548,6 @@ class Block{
 	/**
 	 * Called when an entity's bounding box clips inside this block's cell. Note that the entity may not be intersecting
 	 * with the collision box or bounding box.
-	 *
-	 * @param Entity $entity
 	 */
 	public function onEntityInside(Entity $entity) : void{
 
@@ -687,24 +574,15 @@ class Block{
 		return [AxisAlignedBB::one()];
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isFullCube() : bool{
 		$bb = $this->getCollisionBoxes();
 
 		return count($bb) === 1 and $bb[0]->getAverageEdgeLength() >= 1; //TODO: average length 1 != cube
 	}
 
-	/**
-	 * @param Vector3 $pos1
-	 * @param Vector3 $pos2
-	 *
-	 * @return RayTraceResult|null
-	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?RayTraceResult{
 		$bbs = $this->getCollisionBoxes();
-		if(empty($bbs)){
+		if(count($bbs) === 0){
 			return null;
 		}
 

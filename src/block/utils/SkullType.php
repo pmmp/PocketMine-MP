@@ -46,15 +46,15 @@ final class SkullType{
 	/** @var SkullType[] */
 	private static $numericIdMap = [];
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new SkullType("skeleton", "Skeleton Skull", 0),
 			new SkullType("wither_skeleton", "Wither Skeleton Skull", 1),
 			new SkullType("zombie", "Zombie Head", 2),
 			new SkullType("player", "Player Head", 3),
 			new SkullType("creeper", "Creeper Head", 4),
 			new SkullType("dragon", "Dragon Head", 5)
-		];
+		);
 	}
 
 	protected static function register(SkullType $type) : void{
@@ -64,9 +64,7 @@ final class SkullType{
 
 	/**
 	 * @internal
-	 * @param int $magicNumber
 	 *
-	 * @return SkullType
 	 * @throws \InvalidArgumentException
 	 */
 	public static function fromMagicNumber(int $magicNumber) : SkullType{
@@ -87,16 +85,10 @@ final class SkullType{
 		$this->magicNumber = $magicNumber;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDisplayName() : string{
 		return $this->displayName;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMagicNumber() : int{
 		return $this->magicNumber;
 	}

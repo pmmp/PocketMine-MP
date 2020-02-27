@@ -86,30 +86,18 @@ class ItemFrame extends Flowable{
 		return 0b111;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getFacing() : int{
 		return $this->facing;
 	}
 
-	/**
-	 * @param int $facing
-	 */
 	public function setFacing(int $facing) : void{
 		$this->facing = $facing;
 	}
 
-	/**
-	 * @return Item|null
-	 */
 	public function getFramedItem() : ?Item{
 		return $this->framedItem !== null ? clone $this->framedItem : null;
 	}
 
-	/**
-	 * @param Item|null $item
-	 */
 	public function setFramedItem(?Item $item) : void{
 		if($item === null or $item->isNull()){
 			$this->framedItem = null;
@@ -119,30 +107,18 @@ class ItemFrame extends Flowable{
 		}
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getItemRotation() : int{
 		return $this->itemRotation;
 	}
 
-	/**
-	 * @param int $itemRotation
-	 */
 	public function setItemRotation(int $itemRotation) : void{
 		$this->itemRotation = $itemRotation;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getItemDropChance() : float{
 		return $this->itemDropChance;
 	}
 
-	/**
-	 * @param float $itemDropChance
-	 */
 	public function setItemDropChance(float $itemDropChance) : void{
 		$this->itemDropChance = $itemDropChance;
 	}

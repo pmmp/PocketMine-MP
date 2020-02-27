@@ -36,23 +36,22 @@ abstract class BaseInventory implements Inventory{
 
 	/** @var int */
 	protected $maxStackSize = Inventory::MAX_STACK;
-	/** @var \SplFixedArray|Item[] */
-	protected $slots = [];
+	/**
+	 * @var \SplFixedArray|(Item|null)[]
+	 * @phpstan-var \SplFixedArray<Item|null>
+	 */
+	protected $slots;
 	/** @var Player[] */
 	protected $viewers = [];
 	/** @var InventoryChangeListener[] */
 	protected $listeners = [];
 
-	/**
-	 * @param int $size
-	 */
 	public function __construct(int $size){
 		$this->slots = new \SplFixedArray($size);
 	}
 
 	/**
 	 * Returns the size of the inventory.
-	 * @return int
 	 */
 	public function getSize() : int{
 		return $this->slots->getSize();
@@ -67,8 +66,6 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	/**
-	 * @param bool $includeEmpty
-	 *
 	 * @return Item[]
 	 */
 	public function getContents(bool $includeEmpty = false) : array{
@@ -87,38 +84,40 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * @param Item[] $items
-	 * @param bool   $send
 	 */
-	public function setContents(array $items, bool $send = true) : void{
+	public function setContents(array $items) : void{
 		if(count($items) > $this->getSize()){
 			$items = array_slice($items, 0, $this->getSize(), true);
 		}
 
 		$listeners = $this->listeners;
 		$this->listeners = [];
+		$viewers = $this->viewers;
+		$this->viewers = [];
 
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			if(!isset($items[$i])){
-				$this->clear($i, false);
+				$this->clear($i);
 			}else{
-				$this->setItem($i, $items[$i], false);
+				$this->setItem($i, $items[$i]);
 			}
 		}
 
 		$this->addChangeListeners(...$listeners); //don't directly write, in case listeners were added while operation was in progress
+		foreach($viewers as $id => $viewer){
+			$this->viewers[$id] = $viewer;
+		}
 
 		foreach($this->listeners as $listener){
 			$listener->onContentChange($this);
 		}
 
-		if($send){
-			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->getInvManager()->syncContents($this);
-			}
+		foreach($this->getViewers() as $viewer){
+			$viewer->getNetworkSession()->getInvManager()->syncContents($this);
 		}
 	}
 
-	public function setItem(int $index, Item $item, bool $send = true) : void{
+	public function setItem(int $index, Item $item) : void{
 		if($item->isNull()){
 			$item = ItemFactory::air();
 		}else{
@@ -128,7 +127,7 @@ abstract class BaseInventory implements Inventory{
 		$oldItem = $this->getItem($index);
 
 		$this->slots[$index] = $item->isNull() ? null : $item;
-		$this->onSlotChange($index, $oldItem, $send);
+		$this->onSlotChange($index, $oldItem);
 	}
 
 	public function contains(Item $item) : bool{
@@ -200,18 +199,18 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function canAddItem(Item $item) : bool{
-		$item = clone $item;
+		$count = $item->getCount();
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$slot = $this->getItem($i);
 			if($item->equals($slot)){
 				if(($diff = $slot->getMaxStackSize() - $slot->getCount()) > 0){
-					$item->setCount($item->getCount() - $diff);
+					$count -= $diff;
 				}
 			}elseif($slot->isNull()){
-				$item->setCount($item->getCount() - $this->getMaxStackSize());
+				$count -= $this->getMaxStackSize();
 			}
 
-			if($item->getCount() <= 0){
+			if($count <= 0){
 				return true;
 			}
 		}
@@ -312,12 +311,12 @@ abstract class BaseInventory implements Inventory{
 		return $itemSlots;
 	}
 
-	public function clear(int $index, bool $send = true) : void{
-		$this->setItem($index, ItemFactory::air(), $send);
+	public function clear(int $index) : void{
+		$this->setItem($index, ItemFactory::air());
 	}
 
-	public function clearAll(bool $send = true) : void{
-		$this->setContents([], $send);
+	public function clearAll() : void{
+		$this->setContents([]);
 	}
 
 	public function swap(int $slot1, int $slot2) : void{
@@ -358,14 +357,12 @@ abstract class BaseInventory implements Inventory{
 		unset($this->viewers[spl_object_id($who)]);
 	}
 
-	protected function onSlotChange(int $index, Item $before, bool $send) : void{
+	protected function onSlotChange(int $index, Item $before) : void{
 		foreach($this->listeners as $listener){
 			$listener->onSlotChange($this, $index);
 		}
-		if($send){
-			foreach($this->viewers as $viewer){
-				$viewer->getNetworkSession()->getInvManager()->syncSlot($this, $index);
-			}
+		foreach($this->viewers as $viewer){
+			$viewer->getNetworkSession()->getInvManager()->syncSlot($this, $index);
 		}
 	}
 

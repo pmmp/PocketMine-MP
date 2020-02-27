@@ -21,13 +21,12 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ShowCreditsPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SHOW_CREDITS_PACKET;
@@ -40,14 +39,14 @@ class ShowCreditsPacket extends DataPacket implements ClientboundPacket, Serverb
 	/** @var int */
 	public $status;
 
-	protected function decodePayload() : void{
-		$this->playerEid = $this->getEntityRuntimeId();
-		$this->status = $this->getVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->playerEid = $in->getEntityRuntimeId();
+		$this->status = $in->getVarInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->playerEid);
-		$this->putVarInt($this->status);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityRuntimeId($this->playerEid);
+		$out->putVarInt($this->status);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

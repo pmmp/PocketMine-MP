@@ -40,11 +40,6 @@ class PlayerItemUseEvent extends PlayerEvent implements Cancellable{
 	/** @var Vector3 */
 	private $directionVector;
 
-	/**
-	 * @param Player  $player
-	 * @param Item    $item
-	 * @param Vector3 $directionVector
-	 */
 	public function __construct(Player $player, Item $item, Vector3 $directionVector){
 		$this->player = $player;
 		$this->item = $item;
@@ -53,8 +48,6 @@ class PlayerItemUseEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * Returns the item used.
-	 *
-	 * @return Item
 	 */
 	public function getItem() : Item{
 		return $this->item;
@@ -62,8 +55,6 @@ class PlayerItemUseEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * Returns the direction the player is aiming when activating this item. Used for projectile direction.
-	 *
-	 * @return Vector3
 	 */
 	public function getDirectionVector() : Vector3{
 		return $this->directionVector;

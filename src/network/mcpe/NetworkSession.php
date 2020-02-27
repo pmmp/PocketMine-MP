@@ -64,6 +64,7 @@ use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
+use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
@@ -72,6 +73,7 @@ use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\NetworkSessionManager;
 use pocketmine\player\GameMode;
@@ -203,7 +205,6 @@ class NetworkSession{
 	/**
 	 * TODO: this shouldn't be accessible after the initial login phase
 	 *
-	 * @param PlayerInfo $info
 	 * @throws \InvalidStateException
 	 */
 	public function setPlayerInfo(PlayerInfo $info) : void{
@@ -219,16 +220,10 @@ class NetworkSession{
 		return $this->connected;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getIp() : string{
 		return $this->ip;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPort() : int{
 		return $this->port;
 	}
@@ -239,8 +234,6 @@ class NetworkSession{
 
 	/**
 	 * Returns the last recorded ping measurement for this session, in milliseconds.
-	 *
-	 * @return int
 	 */
 	public function getPing() : int{
 		return $this->ping;
@@ -248,8 +241,6 @@ class NetworkSession{
 
 	/**
 	 * @internal Called by the network interface to update last recorded ping measurements.
-	 *
-	 * @param int $ping
 	 */
 	public function updatePing(int $ping) : void{
 		$this->ping = $ping;
@@ -267,8 +258,6 @@ class NetworkSession{
 	}
 
 	/**
-	 * @param string $payload
-	 *
 	 * @throws BadPacketException
 	 */
 	public function handleEncoded(string $payload) : void{
@@ -314,21 +303,19 @@ class NetworkSession{
 			try{
 				$this->handleDataPacket($pk);
 			}catch(BadPacketException $e){
-				$this->logger->debug($pk->getName() . ": " . base64_encode($pk->getBuffer()));
+				$this->logger->debug($pk->getName() . ": " . base64_encode($pk->getBinaryStream()->getBuffer()));
 				throw new BadPacketException("Error processing " . $pk->getName() . ": " . $e->getMessage(), 0, $e);
 			}
 		}
 	}
 
 	/**
-	 * @param Packet $packet
-	 *
 	 * @throws BadPacketException
 	 */
 	public function handleDataPacket(Packet $packet) : void{
 		if(!($packet instanceof ServerboundPacket)){
 			if($packet instanceof GarbageServerboundPacket){
-				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($packet->getBuffer()));
+				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($packet->getBinaryStream()->getBuffer()));
 				return;
 			}
 			throw new BadPacketException("Unexpected non-serverbound packet");
@@ -339,15 +326,16 @@ class NetworkSession{
 
 		try{
 			$packet->decode();
-			if(!$packet->feof()){
-				$remains = substr($packet->getBuffer(), $packet->getOffset());
+			$stream = $packet->getBinaryStream();
+			if(!$stream->feof()){
+				$remains = substr($stream->getBuffer(), $stream->getOffset());
 				$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
 			}
 
 			$ev = new DataPacketReceiveEvent($this, $packet);
 			$ev->call();
 			if(!$ev->isCancelled() and !$packet->handle($this->handler)){
-				$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($packet->getBuffer()));
+				$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
 			}
 		}finally{
 			$timings->stopTiming();
@@ -382,7 +370,6 @@ class NetworkSession{
 
 	/**
 	 * @internal
-	 * @param ClientboundPacket $packet
 	 */
 	public function addToSendBuffer(ClientboundPacket $packet) : void{
 		$timings = Timings::getSendDataPacketTimings($packet);
@@ -444,6 +431,9 @@ class NetworkSession{
 		$this->sender->send($payload, $immediate);
 	}
 
+	/**
+	 * @phpstan-param \Closure() : void $func
+	 */
 	private function tryDisconnect(\Closure $func, string $reason) : void{
 		if($this->connected and !$this->disconnectGuard){
 			$this->disconnectGuard = true;
@@ -460,12 +450,9 @@ class NetworkSession{
 
 	/**
 	 * Disconnects the session, destroying the associated player (if it exists).
-	 *
-	 * @param string $reason
-	 * @param bool   $notify
 	 */
 	public function disconnect(string $reason, bool $notify = true) : void{
-		$this->tryDisconnect(function() use ($reason, $notify){
+		$this->tryDisconnect(function() use ($reason, $notify) : void{
 			if($this->player !== null){
 				$this->player->disconnect($reason, null, $notify);
 			}
@@ -476,14 +463,10 @@ class NetworkSession{
 	/**
 	 * Instructs the remote client to connect to a different server.
 	 *
-	 * @param string $ip
-	 * @param int    $port
-	 * @param string $reason
-	 *
 	 * @throws \UnsupportedOperationException
 	 */
 	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
-		$this->tryDisconnect(function() use ($ip, $port, $reason){
+		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{
 			$this->sendDataPacket(TransferPacket::create($ip, $port), true);
 			$this->disconnect($reason, false);
 			if($this->player !== null){
@@ -495,21 +478,15 @@ class NetworkSession{
 
 	/**
 	 * Called by the Player when it is closed (for example due to getting kicked).
-	 *
-	 * @param string $reason
-	 * @param bool   $notify
 	 */
 	public function onPlayerDestroyed(string $reason, bool $notify = true) : void{
-		$this->tryDisconnect(function() use ($reason, $notify){
+		$this->tryDisconnect(function() use ($reason, $notify) : void{
 			$this->doServerDisconnect($reason, $notify);
 		}, $reason);
 	}
 
 	/**
 	 * Internal helper function used to handle server disconnections.
-	 *
-	 * @param string $reason
-	 * @param bool   $notify
 	 */
 	private function doServerDisconnect(string $reason, bool $notify = true) : void{
 		if($notify){
@@ -522,11 +499,9 @@ class NetworkSession{
 	/**
 	 * Called by the network interface to close the session when the client disconnects without server input, for
 	 * example in a timeout condition or voluntary client disconnect.
-	 *
-	 * @param string $reason
 	 */
 	public function onClientDisconnect(string $reason) : void{
-		$this->tryDisconnect(function() use ($reason){
+		$this->tryDisconnect(function() use ($reason) : void{
 			if($this->player !== null){
 				$this->player->disconnect($reason, null, false);
 			}
@@ -660,8 +635,6 @@ class NetworkSession{
 
 	/**
 	 * TODO: make this less specialized
-	 *
-	 * @param Player $for
 	 */
 	public function syncAdventureSettings(Player $for) : void{
 		$pk = new AdventureSettingsPacket();
@@ -682,7 +655,7 @@ class NetworkSession{
 		$this->sendDataPacket($pk);
 	}
 
-	public function syncAttributes(Living $entity, bool $sendAll = false){
+	public function syncAttributes(Living $entity, bool $sendAll = false) : void{
 		$entries = $sendAll ? $entity->getAttributeMap()->getAll() : $entity->getAttributeMap()->needSend();
 		if(count($entries) > 0){
 			$this->sendDataPacket(UpdateAttributesPacket::create($entity->getId(), $entries));
@@ -710,7 +683,7 @@ class NetworkSession{
 			$lname = strtolower($command->getName());
 			$aliases = $command->getAliases();
 			$aliasObj = null;
-			if(!empty($aliases)){
+			if(count($aliases) > 0){
 				if(!in_array($lname, $aliases, true)){
 					//work around a client bug which makes the original name not show when aliases are used
 					$aliases[] = $lname;
@@ -725,7 +698,7 @@ class NetworkSession{
 				0,
 				$aliasObj,
 				[
-					[CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, true)]
+					[CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)]
 				]
 			);
 
@@ -739,6 +712,9 @@ class NetworkSession{
 		$this->sendDataPacket(TextPacket::raw($message));
 	}
 
+	/**
+	 * @param string[] $parameters
+	 */
 	public function onTranslatedChatMessage(string $key, array $parameters) : void{
 		$this->sendDataPacket(TextPacket::translation($key, $parameters));
 	}
@@ -761,19 +737,18 @@ class NetworkSession{
 
 	/**
 	 * Instructs the networksession to start using the chunk at the given coordinates. This may occur asynchronously.
-	 * @param int      $chunkX
-	 * @param int      $chunkZ
 	 * @param \Closure $onCompletion To be called when chunk sending has completed.
+	 * @phpstan-param \Closure(int $chunkX, int $chunkZ) : void $onCompletion
 	 */
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
-		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ){}, $onCompletion);
+		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ) : void{}, $onCompletion);
 
 		$world = $this->player->getLocation()->getWorld();
 		assert($world !== null);
 		ChunkCache::getInstance($world)->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion){
+			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion) : void{
 				if(!$this->isConnected()){
 					return;
 				}
@@ -803,9 +778,6 @@ class NetworkSession{
 		$world->sendDifficulty($this->player);
 	}
 
-	/**
-	 * @return InventoryManager
-	 */
 	public function getInvManager() : InventoryManager{
 		return $this->invManager;
 	}
@@ -813,8 +785,6 @@ class NetworkSession{
 	/**
 	 * TODO: expand this to more than just humans
 	 * TODO: offhand
-	 *
-	 * @param Human $mob
 	 */
 	public function onMobEquipmentChange(Human $mob) : void{
 		//TODO: we could send zero for slot here because remote players don't need to know which slot was selected
@@ -828,19 +798,43 @@ class NetworkSession{
 	}
 
 	public function syncPlayerList() : void{
-		$this->sendDataPacket(PlayerListPacket::add(array_map(function(Player $player){
-			return PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXuid());
+		$this->sendDataPacket(PlayerListPacket::add(array_map(function(Player $player) : PlayerListEntry{
+			return PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), SkinAdapterSingleton::get()->toSkinData($player->getSkin()), $player->getXuid());
 		}, $this->server->getOnlinePlayers())));
 	}
 
 	public function onPlayerAdded(Player $p) : void{
-		$this->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($p->getUniqueId(), $p->getId(), $p->getDisplayName(), $p->getSkin(), $p->getXuid())]));
+		$this->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($p->getUniqueId(), $p->getId(), $p->getDisplayName(), SkinAdapterSingleton::get()->toSkinData($p->getSkin()), $p->getXuid())]));
 	}
 
 	public function onPlayerRemoved(Player $p) : void{
 		if($p !== $this->player){
 			$this->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($p->getUniqueId())]));
 		}
+	}
+
+	public function onTitle(string $title) : void{
+		$this->sendDataPacket(SetTitlePacket::title($title));
+	}
+
+	public function onSubTitle(string $subtitle) : void{
+		$this->sendDataPacket(SetTitlePacket::subtitle($subtitle));
+	}
+
+	public function onActionBar(string $actionBar) : void{
+		$this->sendDataPacket(SetTitlePacket::actionBarMessage($actionBar));
+	}
+
+	public function onClearTitle() : void{
+		$this->sendDataPacket(SetTitlePacket::clearTitle());
+	}
+
+	public function onResetTitleOptions() : void{
+		$this->sendDataPacket(SetTitlePacket::resetTitleOptions());
+	}
+
+	public function onTitleDuration(int $fadeIn, int $stay, int $fadeOut) : void{
+		$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
 	}
 
 	public function tick() : bool{
@@ -865,9 +859,6 @@ class NetworkSession{
 	 * This function takes care of handling gamemodes known to MCPE (as of 1.1.0.3, that includes Survival, Creative and Adventure)
 	 *
 	 * @internal
-	 * @param GameMode $gamemode
-	 *
-	 * @return int
 	 */
 	public static function getClientFriendlyGamemode(GameMode $gamemode) : int{
 		if($gamemode->equals(GameMode::SPECTATOR())){

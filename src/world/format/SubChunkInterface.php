@@ -26,27 +26,20 @@ namespace pocketmine\world\format;
 interface SubChunkInterface{
 
 	/**
-	 * @param bool $checkLight
-	 *
-	 * @return bool
+	 * Returns whether this subchunk contains any non-air blocks.
+	 * This function will do a slow check, usually by garbage collecting first.
+	 * This is typically useful for disk saving.
 	 */
-	public function isEmpty(bool $checkLight = true) : bool;
+	public function isEmptyAuthoritative() : bool;
 
 	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 *
-	 * @return int
+	 * Returns a non-authoritative bool to indicate whether the chunk contains any blocks.
+	 * This is a fast check, but may be inaccurate if the chunk has been modified and not garbage-collected.
 	 */
+	public function isEmptyFast() : bool;
+
 	public function getFullBlock(int $x, int $y, int $z) : int;
 
-	/**
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param int $block
-	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void;
 
 	/**
@@ -54,31 +47,13 @@ interface SubChunkInterface{
 	 */
 	public function getBlockLayers() : array;
 
-	/**
-	 * @param int $x
-	 * @param int $z
-	 *
-	 * @return int
-	 */
 	public function getHighestBlockAt(int $x, int $z) : int;
 
-	/**
-	 * @return LightArray
-	 */
 	public function getBlockSkyLightArray() : LightArray;
 
-	/**
-	 * @param LightArray $data
-	 */
 	public function setBlockSkyLightArray(LightArray $data) : void;
 
-	/**
-	 * @return LightArray
-	 */
 	public function getBlockLightArray() : LightArray;
 
-	/**
-	 * @param LightArray $data
-	 */
 	public function setBlockLightArray(LightArray $data) : void;
 }

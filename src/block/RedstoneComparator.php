@@ -87,7 +87,6 @@ class RedstoneComparator extends Flowable{
 
 	/**
 	 * TODO: ad hoc, move to interface
-	 * @return int
 	 */
 	public function getFacing() : int{
 		return $this->facing;
@@ -95,50 +94,31 @@ class RedstoneComparator extends Flowable{
 
 	/**
 	 * TODO: ad hoc, move to interface
-	 * @param int $facing
 	 */
 	public function setFacing(int $facing) : void{
 		$this->facing = $facing;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isSubtractMode() : bool{
 		return $this->isSubtractMode;
 	}
 
-	/**
-	 * @param bool $isSubtractMode
-	 */
 	public function setSubtractMode(bool $isSubtractMode) : void{
 		$this->isSubtractMode = $isSubtractMode;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isPowered() : bool{
 		return $this->powered;
 	}
 
-	/**
-	 * @param bool $powered
-	 */
 	public function setPowered(bool $powered) : void{
 		$this->powered = $powered;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getSignalStrength() : int{
 		return $this->signalStrength;
 	}
 
-	/**
-	 * @param int $signalStrength
-	 */
 	public function setSignalStrength(int $signalStrength) : void{
 		$this->signalStrength = $signalStrength;
 	}

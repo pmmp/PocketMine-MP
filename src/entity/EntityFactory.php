@@ -61,12 +61,22 @@ use function reset;
  */
 final class EntityFactory{
 
+	/** @var int */
 	private static $entityCount = 1;
-	/** @var string[] base class => currently used class for construction */
+	/**
+	 * @var string[] base class => currently used class for construction
+	 * @phpstan-var array<class-string<Entity>, class-string<Entity>>
+	 */
 	private static $classMapping = [];
-	/** @var Entity[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<int|string, class-string<Entity>>
+	 */
 	private static $knownEntities = [];
-	/** @var string[][] */
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<class-string<Entity>, list<string>>
+	 */
 	private static $saveNames = [];
 
 	private function __construct(){
@@ -107,6 +117,7 @@ final class EntityFactory{
 	 * @param string   $className Class that extends Entity
 	 * @param string[] $saveNames An array of save names which this entity might be saved under. Defaults to the short name of the class itself if empty.
 	 * @param int|null $legacyMcpeSaveId
+	 * @phpstan-param class-string<Entity> $className
 	 *
 	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
 	 * name of the class will be appended to the end and only used if no other save names are specified.
@@ -140,6 +151,10 @@ final class EntityFactory{
 	 * @param string $baseClass Already-registered entity class to override
 	 * @param string $newClass Class which extends the base class
 	 *
+	 * TODO: use an explicit template for param1
+	 * @phpstan-param class-string<Entity> $baseClass
+	 * @phpstan-param class-string<Entity> $newClass
+	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public static function override(string $baseClass, string $newClass) : void{
@@ -155,6 +170,7 @@ final class EntityFactory{
 	 * Returns an array of all registered entity classpaths.
 	 *
 	 * @return string[]
+	 * @return class-string<Entity>[]
 	 */
 	public static function getKnownTypes() : array{
 		return array_keys(self::$classMapping);
@@ -162,8 +178,6 @@ final class EntityFactory{
 
 	/**
 	 * Returns a new runtime entity ID for a new entity.
-	 *
-	 * @return int
 	 */
 	public static function nextRuntimeId() : int{
 		return self::$entityCount++;
@@ -175,12 +189,14 @@ final class EntityFactory{
 	 *
 	 * TODO: make this NBT-independent
 	 *
-	 * @param string      $baseClass
-	 * @param World       $world
-	 * @param CompoundTag $nbt
+	 * @phpstan-template TEntity of Entity
+	 *
 	 * @param mixed       ...$args
+	 * @phpstan-param class-string<TEntity> $baseClass
 	 *
 	 * @return Entity instanceof $baseClass
+	 * @phpstan-return TEntity
+	 *
 	 * @throws \InvalidArgumentException if the class doesn't exist or is not registered
 	 */
 	public static function create(string $baseClass, World $world, CompoundTag $nbt, ...$args) : Entity{
@@ -189,6 +205,7 @@ final class EntityFactory{
 			assert(is_a($class, $baseClass, true));
 			/**
 			 * @var Entity $entity
+			 * @phpstan-var TEntity $entity
 			 * @see Entity::__construct()
 			 */
 			$entity = new $class($world, $nbt, ...$args);
@@ -202,13 +219,8 @@ final class EntityFactory{
 	/**
 	 * Creates an entity from data stored on a chunk.
 	 *
-	 * @param World       $world
-	 * @param CompoundTag $nbt
-	 *
-	 * @return Entity|null
 	 * @throws \RuntimeException
-	 *@internal
-	 *
+	 * @internal
 	 */
 	public static function createFromData(World $world, CompoundTag $nbt) : ?Entity{
 		$saveId = $nbt->getTag("id") ?? $nbt->getTag("identifier");
@@ -232,6 +244,9 @@ final class EntityFactory{
 		return $entity;
 	}
 
+	/**
+	 * @phpstan-param class-string<Entity> $class
+	 */
 	public static function getSaveId(string $class) : string{
 		if(isset(self::$saveNames[$class])){
 			return reset(self::$saveNames[$class]);
@@ -239,16 +254,8 @@ final class EntityFactory{
 		throw new \InvalidArgumentException("Entity $class is not registered");
 	}
 
-
 	/**
 	 * Helper function which creates minimal NBT needed to spawn an entity.
-	 *
-	 * @param Vector3      $pos
-	 * @param Vector3|null $motion
-	 * @param float        $yaw
-	 * @param float        $pitch
-	 *
-	 * @return CompoundTag
 	 */
 	public static function createBaseNBT(Vector3 $pos, ?Vector3 $motion = null, float $yaw = 0.0, float $pitch = 0.0) : CompoundTag{
 		return CompoundTag::create()
@@ -258,9 +265,9 @@ final class EntityFactory{
 				new DoubleTag($pos->z)
 			]))
 			->setTag("Motion", new ListTag([
-				new DoubleTag($motion ? $motion->x : 0.0),
-				new DoubleTag($motion ? $motion->y : 0.0),
-				new DoubleTag($motion ? $motion->z : 0.0)
+				new DoubleTag($motion !== null ? $motion->x : 0.0),
+				new DoubleTag($motion !== null ? $motion->y : 0.0),
+				new DoubleTag($motion !== null ? $motion->z : 0.0)
 			]))
 			->setTag("Rotation", new ListTag([
 				new FloatTag($yaw),

@@ -71,7 +71,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->spawnZ = $spawnPosition->getFloorZ();
 		$pk->hasAchievementsDisabled = true;
 		$pk->time = $location->getWorld()->getTime();
-		$pk->eduMode = false;
+		$pk->eduEditionOffer = 0;
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = true;

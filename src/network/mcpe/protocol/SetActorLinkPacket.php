@@ -25,9 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class SetActorLinkPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_ACTOR_LINK_PACKET;
@@ -35,12 +35,12 @@ class SetActorLinkPacket extends DataPacket implements ClientboundPacket{
 	/** @var EntityLink */
 	public $link;
 
-	protected function decodePayload() : void{
-		$this->link = $this->getEntityLink();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->link = $in->getEntityLink();
 	}
 
-	protected function encodePayload() : void{
-		$this->putEntityLink($this->link);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityLink($this->link);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

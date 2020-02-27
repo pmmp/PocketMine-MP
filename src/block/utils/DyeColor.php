@@ -57,8 +57,8 @@ final class DyeColor{
 	/** @var DyeColor[] */
 	private static $numericIdMap = [];
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new DyeColor("white", "White", 0, new Color(0xf0, 0xf0, 0xf0)),
 			new DyeColor("orange", "Orange", 1, new Color(0xf9, 0x80, 0x1d)),
 			new DyeColor("magenta", "Magenta", 2, new Color(0xc7, 0x4e, 0xbd)),
@@ -74,8 +74,8 @@ final class DyeColor{
 			new DyeColor("brown", "Brown", 12, new Color(0x83, 0x54, 0x32)),
 			new DyeColor("green", "Green", 13, new Color(0x5e, 0x7c, 0x16)),
 			new DyeColor("red", "Red", 14, new Color(0xb0, 0x2e, 0x26)),
-			new DyeColor("black", "Black", 15, new Color(0x1d, 0x1d, 0x21)),
-		];
+			new DyeColor("black", "Black", 15, new Color(0x1d, 0x1d, 0x21))
+		);
 	}
 
 	protected static function register(DyeColor $color) : void{
@@ -87,10 +87,8 @@ final class DyeColor{
 	 * Returns a DyeColor object matching the given magic number
 	 * @internal
 	 *
-	 * @param int  $magicNumber
 	 * @param bool $inverted Invert the ID before using it (useful for actual dye magic IDs)
 	 *
-	 * @return DyeColor
 	 * @throws \InvalidArgumentException
 	 */
 	public static function fromMagicNumber(int $magicNumber, bool $inverted = false) : DyeColor{
@@ -116,30 +114,18 @@ final class DyeColor{
 		$this->rgbValue = $rgbValue;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getDisplayName() : string{
 		return $this->displayName;
 	}
 
-	/**
-	 * @return Color
-	 */
 	public function getRgbValue() : Color{
 		return $this->rgbValue;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMagicNumber() : int{
 		return $this->magicNumber;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getInvertedMagicNumber() : int{
 		return ~$this->magicNumber & 0xf;
 	}

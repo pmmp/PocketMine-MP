@@ -30,6 +30,10 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
+use pocketmine\network\mcpe\protocol\types\SkinAnimation;
+use pocketmine\network\mcpe\protocol\types\SkinData;
+use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\Server;
@@ -45,7 +49,6 @@ class LoginPacketHandler extends PacketHandler{
 	private $server;
 	/** @var NetworkSession */
 	private $session;
-
 
 	public function __construct(Server $server, NetworkSession $session){
 		$this->session = $session;
@@ -72,13 +75,34 @@ class LoginPacketHandler extends PacketHandler{
 		}
 
 		try{
-			$skin = new Skin(
+			/** @var SkinAnimation[] $animations */
+			$animations = [];
+			foreach($packet->clientData[LoginPacket::I_ANIMATION_IMAGES] as $animation){
+				$animations[] = new SkinAnimation(
+					new SkinImage(
+						$animation[LoginPacket::I_ANIMATION_IMAGE_HEIGHT],
+						$animation[LoginPacket::I_ANIMATION_IMAGE_WIDTH],
+						base64_decode($animation[LoginPacket::I_ANIMATION_IMAGE_DATA], true)
+					),
+					$animation[LoginPacket::I_ANIMATION_IMAGE_TYPE],
+					$animation[LoginPacket::I_ANIMATION_IMAGE_FRAMES]
+				);
+			}
+			$skinData = new SkinData(
 				$packet->clientData[LoginPacket::I_SKIN_ID],
-				base64_decode($packet->clientData[LoginPacket::I_SKIN_DATA]),
-				base64_decode($packet->clientData[LoginPacket::I_CAPE_DATA]),
-				$packet->clientData[LoginPacket::I_GEOMETRY_NAME],
-				base64_decode($packet->clientData[LoginPacket::I_GEOMETRY_DATA])
+				base64_decode($packet->clientData[LoginPacket::I_SKIN_RESOURCE_PATCH], true),
+				new SkinImage($packet->clientData[LoginPacket::I_SKIN_HEIGHT], $packet->clientData[LoginPacket::I_SKIN_WIDTH], base64_decode($packet->clientData[LoginPacket::I_SKIN_DATA], true)),
+				$animations,
+				new SkinImage($packet->clientData[LoginPacket::I_CAPE_HEIGHT], $packet->clientData[LoginPacket::I_CAPE_WIDTH], base64_decode($packet->clientData[LoginPacket::I_CAPE_DATA], true)),
+				base64_decode($packet->clientData[LoginPacket::I_GEOMETRY_DATA], true),
+				base64_decode($packet->clientData[LoginPacket::I_ANIMATION_DATA], true),
+				$packet->clientData[LoginPacket::I_PREMIUM_SKIN],
+				$packet->clientData[LoginPacket::I_PERSONA_SKIN],
+				$packet->clientData[LoginPacket::I_PERSONA_CAPE_ON_CLASSIC_SKIN],
+				$packet->clientData[LoginPacket::I_CAPE_ID]
 			);
+
+			$skin = SkinAdapterSingleton::get()->fromSkinData($skinData);
 		}catch(\InvalidArgumentException $e){
 			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
 			$this->session->disconnect("disconnectionScreen.invalidSkin");
@@ -125,9 +149,6 @@ class LoginPacketHandler extends PacketHandler{
 	/**
 	 * TODO: This is separated for the purposes of allowing plugins (like Specter) to hack it and bypass authentication.
 	 * In the future this won't be necessary.
-	 *
-	 * @param LoginPacket $packet
-	 * @param bool        $authRequired
 	 *
 	 * @throws \InvalidArgumentException
 	 */

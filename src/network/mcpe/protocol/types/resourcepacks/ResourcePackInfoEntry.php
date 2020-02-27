@@ -52,51 +52,30 @@ class ResourcePackInfoEntry{
 		$this->hasScripts = $hasScripts;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPackId() : string{
 		return $this->packId;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getVersion() : string{
 		return $this->version;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getSizeBytes() : int{
 		return $this->sizeBytes;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getEncryptionKey() : string{
 		return $this->encryptionKey;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getSubPackName() : string{
 		return $this->subPackName;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getContentId() : string{
 		return $this->contentId;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasScripts() : bool{
 		return $this->hasScripts;
 	}

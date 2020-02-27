@@ -23,22 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
-#include <rules/DataPacket.h>
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-class StructureTemplateDataExportRequestPacket extends DataPacket implements ServerboundPacket{
-	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_REQUEST_PACKET;
+class TestPacket extends DataPacket{
+	public const NETWORK_ID = 1023;
 
-	protected function decodePayload() : void{
-		//TODO
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+
 	}
 
-	protected function encodePayload() : void{
-		//TODO
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+
 	}
 
 	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleStructureTemplateDataExportRequest($this);
+		return false;
 	}
 }

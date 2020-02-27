@@ -21,24 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
+class PotionContainerChangeRecipe{
+	/** @var int */
+	private $inputItemId;
+	/** @var int */
+	private $ingredientItemId;
+	/** @var int */
+	private $outputItemId;
 
-use pocketmine\network\mcpe\handler\PacketHandler;
-
-class StructureTemplateDataExportResponsePacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_RESPONSE_PACKET;
-
-	protected function decodePayload() : void{
-		//TODO
+	public function __construct(int $inputItemId, int $ingredientItemId, int $outputItemId){
+		$this->inputItemId = $inputItemId;
+		$this->ingredientItemId = $ingredientItemId;
+		$this->outputItemId = $outputItemId;
 	}
 
-	protected function encodePayload() : void{
-		//TODO
+	public function getInputItemId() : int{
+		return $this->inputItemId;
 	}
 
-	public function handle(PacketHandler $handler) : bool{
-		return $handler->handleStructureTemplateDataExportResponse($this);
+	public function getIngredientItemId() : int{
+		return $this->ingredientItemId;
+	}
+
+	public function getOutputItemId() : int{
+		return $this->outputItemId;
 	}
 }

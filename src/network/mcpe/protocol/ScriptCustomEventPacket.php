@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ScriptCustomEventPacket extends DataPacket{ //TODO: this doesn't have handlers in either client or server in the game as of 1.8
 	public const NETWORK_ID = ProtocolInfo::SCRIPT_CUSTOM_EVENT_PACKET;
@@ -35,14 +36,14 @@ class ScriptCustomEventPacket extends DataPacket{ //TODO: this doesn't have hand
 	/** @var string json data */
 	public $eventData;
 
-	protected function decodePayload() : void{
-		$this->eventName = $this->getString();
-		$this->eventData = $this->getString();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->eventName = $in->getString();
+		$this->eventData = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->putString($this->eventName);
-		$this->putString($this->eventData);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->eventName);
+		$out->putString($this->eventData);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

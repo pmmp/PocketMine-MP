@@ -30,16 +30,10 @@ class Vec3MetadataProperty implements MetadataProperty{
 	/** @var Vector3 */
 	private $value;
 
-	/**
-	 * @param Vector3 $value
-	 */
 	public function __construct(Vector3 $value){
 		$this->value = $value->asVector3();
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	public function getValue() : Vector3{
 		return clone $this->value;
 	}
@@ -57,6 +51,6 @@ class Vec3MetadataProperty implements MetadataProperty{
 	}
 
 	public function equals(MetadataProperty $other) : bool{
-		return $other instanceof $this and $other->value->equals($this->value);
+		return $other instanceof self and $other->value->equals($this->value);
 	}
 }

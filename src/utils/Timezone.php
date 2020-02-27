@@ -33,6 +33,7 @@ use function implode;
 use function ini_get;
 use function ini_set;
 use function is_link;
+use function is_string;
 use function json_decode;
 use function parse_ini_file;
 use function preg_match;
@@ -95,6 +96,9 @@ abstract class Timezone{
 		\GlobalLogger::get()->warning("Timezone could not be automatically determined or was set to an invalid value. An incorrect timezone will result in incorrect timestamps on console logs. It has been set to \"UTC\" by default. You can change it on the php.ini file.");
 	}
 
+	/**
+	 * @return string|false
+	 */
 	public static function detectSystemTimezone(){
 		switch(Utils::getOS()){
 			case 'win':
@@ -144,7 +148,7 @@ abstract class Timezone{
 				// RHEL / CentOS
 				if(file_exists('/etc/sysconfig/clock')){
 					$data = parse_ini_file('/etc/sysconfig/clock');
-					if(!empty($data['ZONE'])){
+					if(isset($data['ZONE']) and is_string($data['ZONE'])){
 						return trim($data['ZONE']);
 					}
 				}
@@ -172,7 +176,6 @@ abstract class Timezone{
 				return false;
 		}
 	}
-
 
 	/**
 	 * @param string $offset In the format of +09:00, +02:00, -04:00 etc.

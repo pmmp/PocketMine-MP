@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
@@ -48,13 +51,11 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 
 	/**
 	 * Returns the file extension used for regions in this region-based format.
-	 * @return string
 	 */
 	abstract protected static function getRegionFileExtension() : string;
 
 	/**
 	 * Returns the storage version as per Minecraft PC world formats.
-	 * @return int
 	 */
 	abstract protected static function getPcWorldFormatVersion() : int;
 
@@ -71,6 +72,11 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		return false;
 	}
 
+	/**
+	 * @param mixed[] $options
+	 * @phpstan-param class-string<Generator> $generator
+	 * @phpstan-param array<string, mixed>    $options
+	 */
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
 		Utils::testValidInstance($generator, Generator::class);
 		if(!file_exists($path)){
@@ -102,42 +108,25 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 * @param int &$regionX
-	 * @param int &$regionZ
+	 * @param int $regionX reference parameter
+	 * @param int $regionZ reference parameter
 	 */
 	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ) : void{
 		$regionX = $chunkX >> 5;
 		$regionZ = $chunkZ >> 5;
 	}
 
-	/**
-	 * @param int $regionX
-	 * @param int $regionZ
-	 *
-	 * @return RegionLoader|null
-	 */
 	protected function getRegion(int $regionX, int $regionZ) : ?RegionLoader{
 		return $this->regions[World::chunkHash($regionX, $regionZ)] ?? null;
 	}
 
 	/**
 	 * Returns the path to a specific region file based on its X/Z coordinates
-	 *
-	 * @param int $regionX
-	 * @param int $regionZ
-	 *
-	 * @return string
 	 */
 	protected function pathToRegion(int $regionX, int $regionZ) : string{
 		return $this->path . "/region/r.$regionX.$regionZ." . static::getRegionFileExtension();
 	}
 
-	/**
-	 * @param int $regionX
-	 * @param int $regionZ
-	 */
 	protected function loadRegion(int $regionX, int $regionZ) : void{
 		if(!isset($this->regions[$index = World::chunkHash($regionX, $regionZ)])){
 			$path = $this->pathToRegion($regionX, $regionZ);
@@ -180,18 +169,33 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	abstract protected function serializeChunk(Chunk $chunk) : string;
 
 	/**
-	 * @param string $data
-	 *
-	 * @return Chunk
 	 * @throws CorruptedChunkException
 	 */
 	abstract protected function deserializeChunk(string $data) : Chunk;
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
+	 * @return CompoundTag[]
+	 * @throws CorruptedChunkException
+	 */
+	protected static function getCompoundList(string $context, ListTag $list) : array{
+		if($list->count() === 0){ //empty lists might have wrong types, we don't care
+			return [];
+		}
+		if($list->getTagType() !== NBT::TAG_Compound){
+			throw new CorruptedChunkException("Expected TAG_List<TAG_Compound> for '$context'");
+		}
+		$result = [];
+		foreach($list as $tag){
+			if(!($tag instanceof CompoundTag)){
+				//this should never happen, but it's still possible due to lack of native type safety
+				throw new CorruptedChunkException("Expected TAG_List<TAG_Compound> for '$context'");
+			}
+			$result[] = $tag;
+		}
+		return $result;
+	}
+
+	/**
 	 * @throws CorruptedChunkException
 	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{

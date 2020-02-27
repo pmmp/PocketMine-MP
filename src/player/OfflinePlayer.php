@@ -36,10 +36,6 @@ class OfflinePlayer implements IPlayer{
 	/** @var CompoundTag|null */
 	private $namedtag = null;
 
-	/**
-	 * @param Server $server
-	 * @param string $name
-	 */
 	public function __construct(Server $server, string $name){
 		$this->server = $server;
 		$this->name = $name;
@@ -54,7 +50,7 @@ class OfflinePlayer implements IPlayer{
 		return $this->name;
 	}
 
-	public function getServer(){
+	public function getServer() : Server{
 		return $this->server;
 	}
 

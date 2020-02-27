@@ -68,9 +68,16 @@ class Config{
 	public const ENUM = 5; // .txt, .list, .enum
 	public const ENUMERATION = Config::ENUM;
 
-	/** @var array */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $config = [];
 
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	private $nestedCache = [];
 
 	/** @var string */
@@ -83,6 +90,7 @@ class Config{
 	/** @var bool */
 	private $changed = false;
 
+	/** @var int[] */
 	public static $formats = [
 		"properties" => Config::PROPERTIES,
 		"cnf" => Config::CNF,
@@ -102,9 +110,10 @@ class Config{
 	];
 
 	/**
-	 * @param string $file Path of the file to be loaded
-	 * @param int    $type Config type to load, -1 by default (detect)
-	 * @param array  $default Array with the default values that will be written to the file if it did not exist
+	 * @param string  $file Path of the file to be loaded
+	 * @param int     $type Config type to load, -1 by default (detect)
+	 * @param mixed[] $default Array with the default values that will be written to the file if it did not exist
+	 * @phpstan-param array<string, mixed> $default
 	 */
 	public function __construct(string $file, int $type = Config::DETECT, array $default = []){
 		$this->load($file, $type, $default);
@@ -127,19 +136,13 @@ class Config{
 		$this->changed = $changed;
 	}
 
-	/**
-	 * @param string $str
-	 *
-	 * @return string
-	 */
 	public static function fixYAMLIndexes(string $str) : string{
 		return preg_replace("#^( *)(y|Y|yes|Yes|YES|n|N|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF)( *)\:#m", "$1\"$2\"$3:", $str);
 	}
 
 	/**
-	 * @param string $file
-	 * @param int    $type
-	 * @param array  $default
+	 * @param mixed[] $default
+	 * @phpstan-param array<string, mixed> $default
 	 *
 	 * @throws \InvalidArgumentException if config type could not be auto-detected
 	 * @throws \InvalidStateException if config type is invalid
@@ -163,29 +166,28 @@ class Config{
 			$this->save();
 		}else{
 			$content = file_get_contents($this->file);
+			$config = null;
 			switch($this->type){
 				case Config::PROPERTIES:
-					$this->parseProperties($content);
+					$config = $this->parseProperties($content);
 					break;
 				case Config::JSON:
-					$this->config = json_decode($content, true);
+					$config = json_decode($content, true);
 					break;
 				case Config::YAML:
 					$content = self::fixYAMLIndexes($content);
-					$this->config = yaml_parse($content);
+					$config = yaml_parse($content);
 					break;
 				case Config::SERIALIZED:
-					$this->config = unserialize($content);
+					$config = unserialize($content);
 					break;
 				case Config::ENUM:
-					$this->parseList($content);
+					$config = self::parseList($content);
 					break;
 				default:
 					throw new \InvalidStateException("Config type is unknown");
 			}
-			if(!is_array($this->config)){
-				$this->config = $default;
-			}
+			$this->config = is_array($config) ? $config : $default;
 			if($this->fillDefaults($default, $this->config) > 0){
 				$this->save();
 			}
@@ -194,8 +196,6 @@ class Config{
 
 	/**
 	 * Returns the path of the config.
-	 *
-	 * @return string
 	 */
 	public function getPath() : string{
 		return $this->file;
@@ -236,8 +236,6 @@ class Config{
 	/**
 	 * Sets the options for the JSON encoding when saving
 	 *
-	 * @param int $options
-	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
@@ -254,8 +252,6 @@ class Config{
 
 	/**
 	 * Enables the given option in addition to the currently set JSON options
-	 *
-	 * @param int $option
 	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
@@ -274,8 +270,6 @@ class Config{
 	/**
 	 * Disables the given option for the JSON encoding when saving
 	 *
-	 * @param int $option
-	 *
 	 * @return Config $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
@@ -293,7 +287,6 @@ class Config{
 	/**
 	 * Returns the options for the JSON encoding when saving
 	 *
-	 * @return int
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
 	 */
@@ -317,7 +310,7 @@ class Config{
 	 * @param string $k
 	 * @param mixed  $v
 	 */
-	public function __set($k, $v){
+	public function __set($k, $v) : void{
 		$this->set($k, $v);
 	}
 
@@ -405,7 +398,7 @@ class Config{
 		while(count($vars) > 0){
 			$nodeName = array_shift($vars);
 			if(isset($currentNode[$nodeName])){
-				if(empty($vars)){ //final node
+				if(count($vars) === 0){ //final node
 					unset($currentNode[$nodeName]);
 				}elseif(is_array($currentNode[$nodeName])){
 					$currentNode =& $currentNode[$nodeName];
@@ -441,7 +434,8 @@ class Config{
 	}
 
 	/**
-	 * @param array $v
+	 * @param mixed[] $v
+	 * @phpstan-param array<string, mixed> $v
 	 */
 	public function setAll(array $v) : void{
 		$this->config = $v;
@@ -451,8 +445,6 @@ class Config{
 	/**
 	 * @param string $k
 	 * @param bool   $lowercase If set, searches Config in single-case / lowercase.
-	 *
-	 * @return bool
 	 */
 	public function exists($k, bool $lowercase = false) : bool{
 		if($lowercase){
@@ -473,26 +465,26 @@ class Config{
 	}
 
 	/**
-	 * @param bool $keys
-	 *
-	 * @return array
+	 * @return mixed[]
+	 * @phpstan-return list<string>|array<string, mixed>
 	 */
 	public function getAll(bool $keys = false) : array{
 		return ($keys ? array_keys($this->config) : $this->config);
 	}
 
 	/**
-	 * @param array $defaults
+	 * @param mixed[] $defaults
+	 * @phpstan-param array<string, mixed> $defaults
 	 */
 	public function setDefaults(array $defaults) : void{
 		$this->fillDefaults($defaults, $this->config);
 	}
 
 	/**
-	 * @param array $default
-	 * @param array &$data
-	 *
-	 * @return int
+	 * @param mixed[] $default
+	 * @param mixed[] $data reference parameter
+	 * @phpstan-param array<string, mixed> $default
+	 * @phpstan-param array<string, mixed> $data
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;
@@ -516,21 +508,21 @@ class Config{
 	}
 
 	/**
-	 * @param string $content
+	 * @return true[]
+	 * @phpstan-return array<string, true>
 	 */
-	private function parseList(string $content) : void{
+	private static function parseList(string $content) : array{
+		$result = [];
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
 			if($v == ""){
 				continue;
 			}
-			$this->config[$v] = true;
+			$result[$v] = true;
 		}
+		return $result;
 	}
 
-	/**
-	 * @return string
-	 */
 	private function writeProperties() : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
 		foreach($this->config as $k => $v){
@@ -546,9 +538,11 @@ class Config{
 	}
 
 	/**
-	 * @param string $content
+	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
 	 */
-	private function parseProperties(string $content) : void{
+	private function parseProperties(string $content) : array{
+		$result = [];
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);
@@ -564,11 +558,13 @@ class Config{
 						$v = false;
 						break;
 				}
-				if(isset($this->config[$k])){
+				if(isset($result[$k])){
 					\GlobalLogger::get()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
 				}
-				$this->config[$k] = $v;
+				$result[$k] = $v;
 			}
 		}
+
+		return $result;
 	}
 }

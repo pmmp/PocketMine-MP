@@ -1,0 +1,9 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot (access an|assign new) offset (on|to) Ds\\\\Deque\\<.+\\>\\.$#"
+			path: ../../../src
+
+		-
+			message: "#^Cannot (access|assign) offset (int|-?\\d+) (on|to) Ds\\\\Deque\\<.+\\>\\.$#"
+			path: ../../../src

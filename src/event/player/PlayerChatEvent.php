@@ -23,11 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
+use pocketmine\command\CommandSender;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\permission\PermissionManager;
 use pocketmine\player\Player;
 use pocketmine\Server;
+use function spl_object_id;
 
 /**
  * Called when a player chats something
@@ -41,16 +43,11 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	/** @var string */
 	protected $format;
 
-	/**
-	 * @var Player[]
-	 */
+	/** @var CommandSender[] */
 	protected $recipients = [];
 
 	/**
-	 * @param Player   $player
-	 * @param string   $message
-	 * @param string   $format
-	 * @param Player[] $recipients
+	 * @param CommandSender[] $recipients
 	 */
 	public function __construct(Player $player, string $message, string $format = "chat.type.text", ?array $recipients = null){
 		$this->player = $player;
@@ -59,58 +56,48 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 		$this->format = $format;
 
 		if($recipients === null){
-			$this->recipients = PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_USERS);
+			foreach(PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_USERS) as $permissible){
+				if($permissible instanceof CommandSender){
+					$this->recipients[spl_object_id($permissible)] = $permissible;
+				}
+			}
 		}else{
 			$this->recipients = $recipients;
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getMessage() : string{
 		return $this->message;
 	}
 
-	/**
-	 * @param string $message
-	 */
 	public function setMessage(string $message) : void{
 		$this->message = $message;
 	}
 
 	/**
 	 * Changes the player that is sending the message
-	 *
-	 * @param Player $player
 	 */
 	public function setPlayer(Player $player) : void{
 		$this->player = $player;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getFormat() : string{
 		return $this->format;
 	}
 
-	/**
-	 * @param string $format
-	 */
 	public function setFormat(string $format) : void{
 		$this->format = $format;
 	}
 
 	/**
-	 * @return Player[]
+	 * @return CommandSender[]
 	 */
 	public function getRecipients() : array{
 		return $this->recipients;
 	}
 
 	/**
-	 * @param Player[] $recipients
+	 * @param CommandSender[] $recipients
 	 */
 	public function setRecipients(array $recipients) : void{
 		$this->recipients = $recipients;

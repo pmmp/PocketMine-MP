@@ -35,7 +35,11 @@ class EmptySubChunk implements SubChunkInterface{
 		return self::$instance;
 	}
 
-	public function isEmpty(bool $checkLight = true) : bool{
+	public function isEmptyAuthoritative() : bool{
+		return true;
+	}
+
+	public function isEmptyFast() : bool{
 		return true;
 	}
 

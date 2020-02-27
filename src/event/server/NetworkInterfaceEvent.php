@@ -29,16 +29,10 @@ class NetworkInterfaceEvent extends ServerEvent{
 	/** @var NetworkInterface */
 	protected $interface;
 
-	/**
-	 * @param NetworkInterface $interface
-	 */
 	public function __construct(NetworkInterface $interface){
 		$this->interface = $interface;
 	}
 
-	/**
-	 * @return NetworkInterface
-	 */
 	public function getInterface() : NetworkInterface{
 		return $this->interface;
 	}

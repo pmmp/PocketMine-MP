@@ -30,16 +30,10 @@ final class FloatMetadataProperty implements MetadataProperty{
 	/** @var float */
 	private $value;
 
-	/**
-	 * @param float $value
-	 */
 	public function __construct(float $value){
 		$this->value = $value;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getValue() : float{
 		return $this->value;
 	}
@@ -49,7 +43,7 @@ final class FloatMetadataProperty implements MetadataProperty{
 	}
 
 	public function equals(MetadataProperty $other) : bool{
-		return $other instanceof $this and $other->value === $this->value;
+		return $other instanceof self and $other->value === $this->value;
 	}
 
 	public static function read(NetworkBinaryStream $in) : self{

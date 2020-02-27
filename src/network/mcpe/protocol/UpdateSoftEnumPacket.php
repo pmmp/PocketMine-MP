@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class UpdateSoftEnumPacket extends DataPacket implements ClientboundPacket{
@@ -42,21 +43,21 @@ class UpdateSoftEnumPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $type;
 
-	protected function decodePayload() : void{
-		$this->enumName = $this->getString();
-		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$this->values[] = $this->getString();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->enumName = $in->getString();
+		for($i = 0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->values[] = $in->getString();
 		}
-		$this->type = $this->getByte();
+		$this->type = $in->getByte();
 	}
 
-	protected function encodePayload() : void{
-		$this->putString($this->enumName);
-		$this->putUnsignedVarInt(count($this->values));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->enumName);
+		$out->putUnsignedVarInt(count($this->values));
 		foreach($this->values as $v){
-			$this->putString($v);
+			$out->putString($v);
 		}
-		$this->putByte($this->type);
+		$out->putByte($this->type);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

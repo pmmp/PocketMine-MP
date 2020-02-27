@@ -36,25 +36,15 @@ class DataPacketReceiveEvent extends ServerEvent implements Cancellable{
 	/** @var NetworkSession */
 	private $origin;
 
-	/**
-	 * @param NetworkSession    $origin
-	 * @param ServerboundPacket $packet
-	 */
 	public function __construct(NetworkSession $origin, ServerboundPacket $packet){
 		$this->packet = $packet;
 		$this->origin = $origin;
 	}
 
-	/**
-	 * @return ServerboundPacket
-	 */
 	public function getPacket() : ServerboundPacket{
 		return $this->packet;
 	}
 
-	/**
-	 * @return NetworkSession
-	 */
 	public function getOrigin() : NetworkSession{
 		return $this->origin;
 	}

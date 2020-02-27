@@ -100,6 +100,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
+	 *
+	 * @return void
 	 */
 	protected function onLoad()/* : void /* TODO: uncomment this for next major version */{
 
@@ -107,6 +109,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 	/**
 	 * Called when the plugin is enabled
+	 *
+	 * @return void
 	 */
 	protected function onEnable()/* : void /* TODO: uncomment this for next major version */{
 
@@ -115,14 +119,13 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	/**
 	 * Called when the plugin is disabled
 	 * Use this to free open things and finish actions
+	 *
+	 * @return void
 	 */
 	protected function onDisable()/* : void /* TODO: uncomment this for next major version */{
 
 	}
 
-	/**
-	 * @return bool
-	 */
 	final public function isEnabled() : bool{
 		return $this->isEnabled;
 	}
@@ -133,8 +136,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @internal This is intended for core use only and should not be used by plugins
 	 * @see PluginManager::enablePlugin()
 	 * @see PluginManager::disablePlugin()
-	 *
-	 * @param bool $enabled
 	 */
 	final public function onEnableStateChange(bool $enabled) : void{
 		if($this->isEnabled !== $enabled){
@@ -147,9 +148,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		}
 	}
 
-	/**
-	 * @return bool
-	 */
 	final public function isDisabled() : bool{
 		return !$this->isEnabled;
 	}
@@ -162,10 +160,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return $this->description;
 	}
 
-	/**
-	 * @return PluginLogger
-	 */
-	public function getLogger() : PluginLogger{
+	public function getLogger() : \AttachableLogger{
 		return $this->logger;
 	}
 
@@ -181,7 +176,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 				continue;
 			}
 			if(is_array($data)){ //TODO: error out if it isn't
-				$newCmd = new PluginCommand($key, $this);
+				$newCmd = new PluginCommand($key, $this, $this);
 				if(isset($data["description"])){
 					$newCmd->setDescription($data["description"]);
 				}
@@ -227,8 +222,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @param string $name
-	 *
 	 * @return Command|PluginIdentifiableCommand|null
 	 */
 	public function getCommand(string $name){
@@ -245,12 +238,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @param CommandSender $sender
-	 * @param Command       $command
-	 * @param string        $label
 	 * @param string[]      $args
-	 *
-	 * @return bool
 	 */
 	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool{
 		return false;
@@ -260,8 +248,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * Gets an embedded resource on the plugin file.
 	 * WARNING: You must close the resource given using fclose()
 	 *
-	 * @param string $filename
-	 *
 	 * @return null|resource Resource data, or null
 	 */
 	public function getResource(string $filename){
@@ -270,11 +256,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 	/**
 	 * Saves an embedded resource to its relative location in the data folder
-	 *
-	 * @param string $filename
-	 * @param bool   $replace
-	 *
-	 * @return bool
 	 */
 	public function saveResource(string $filename, bool $replace = false) : bool{
 		if(trim($filename) === ""){
@@ -309,9 +290,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return $this->resourceProvider->getResources();
 	}
 
-	/**
-	 * @return Config
-	 */
 	public function getConfig() : Config{
 		if($this->config === null){
 			$this->reloadConfig();
@@ -320,7 +298,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return $this->config;
 	}
 
-	public function saveConfig(){
+	public function saveConfig() : void{
 		$this->getConfig()->save();
 	}
 
@@ -331,49 +309,31 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return false;
 	}
 
-	public function reloadConfig(){
+	public function reloadConfig() : void{
 		$this->saveDefaultConfig();
 		$this->config = new Config($this->configFile);
 	}
 
-	/**
-	 * @return Server
-	 */
 	final public function getServer() : Server{
 		return $this->server;
 	}
 
-	/**
-	 * @return string
-	 */
 	final public function getName() : string{
 		return $this->description->getName();
 	}
 
-	/**
-	 * @return string
-	 */
 	final public function getFullName() : string{
 		return $this->description->getFullName();
 	}
 
-	/**
-	 * @return string
-	 */
 	protected function getFile() : string{
 		return $this->file;
 	}
 
-	/**
-	 * @return PluginLoader
-	 */
 	public function getPluginLoader() : PluginLoader{
 		return $this->loader;
 	}
 
-	/**
-	 * @return TaskScheduler
-	 */
 	public function getScheduler() : TaskScheduler{
 		return $this->scheduler;
 	}

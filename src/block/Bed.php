@@ -99,9 +99,6 @@ class Bed extends Transparent{
 		return $this->head;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isOccupied() : bool{
 		return $this->occupied;
 	}
@@ -116,16 +113,10 @@ class Bed extends Transparent{
 		}
 	}
 
-	/**
-	 * @return int
-	 */
 	private function getOtherHalfSide() : int{
 		return $this->head ? Facing::opposite($this->facing) : $this->facing;
 	}
 
-	/**
-	 * @return Bed|null
-	 */
 	public function getOtherHalf() : ?Bed{
 		$other = $this->getSide($this->getOtherHalfSide());
 		if($other instanceof Bed and $other->head !== $this->head and $other->facing === $this->facing){

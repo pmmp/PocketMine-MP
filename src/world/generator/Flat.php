@@ -41,7 +41,10 @@ class Flat extends Generator{
 	private $chunk;
 	/** @var Populator[] */
 	private $populators = [];
-	/** @var int[] */
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
 	private $structure;
 	/** @var int */
 	private $floorLevel;
@@ -51,9 +54,8 @@ class Flat extends Generator{
 	private $preset;
 
 	/**
-	 * @param ChunkManager $world
-	 * @param int          $seed
-	 * @param array        $options
+	 * @param mixed[] $options
+	 * @phpstan-param array<string, mixed> $options
 	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
@@ -88,9 +90,9 @@ class Flat extends Generator{
 	}
 
 	/**
-	 * @param string $layers
-	 *
 	 * @return int[]
+	 * @phpstan-return array<int, int>
+	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public static function parseLayers(string $layers) : array{
@@ -119,9 +121,9 @@ class Flat extends Generator{
 
 	protected function parsePreset() : void{
 		$preset = explode(";", $this->preset);
-		$blocks = (string) ($preset[1] ?? "");
+		$blocks = $preset[1] ?? "";
 		$this->biome = (int) ($preset[2] ?? 1);
-		$options = (string) ($preset[3] ?? "");
+		$options = $preset[3] ?? "";
 		$this->structure = self::parseLayers($blocks);
 
 		$this->floorLevel = count($this->structure);
@@ -156,7 +158,7 @@ class Flat extends Generator{
 
 		$count = count($this->structure);
 		for($sy = 0; $sy < $count; $sy += 16){
-			$subchunk = $this->chunk->getSubChunk($sy >> 4, true);
+			$subchunk = $this->chunk->getSubChunk($sy >> 4);
 			for($y = 0; $y < 16 and isset($this->structure[$y | $sy]); ++$y){
 				$id = $this->structure[$y | $sy];
 

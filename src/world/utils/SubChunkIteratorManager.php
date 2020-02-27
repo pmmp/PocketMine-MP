@@ -26,8 +26,8 @@ namespace pocketmine\world\utils;
 use pocketmine\utils\Utils;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\format\EmptySubChunk;
-use pocketmine\world\format\SubChunkInterface;
+use pocketmine\world\format\SubChunk;
+use function assert;
 
 class SubChunkIteratorManager{
 	/** @var ChunkManager */
@@ -35,7 +35,7 @@ class SubChunkIteratorManager{
 
 	/** @var Chunk|null */
 	public $currentChunk;
-	/** @var SubChunkInterface|null */
+	/** @var SubChunk|null */
 	public $currentSubChunk;
 
 	/** @var int */
@@ -45,7 +45,10 @@ class SubChunkIteratorManager{
 	/** @var int */
 	protected $currentZ;
 
-	/** @var \Closure|null */
+	/**
+	 * @var \Closure|null
+	 * @phpstan-var (\Closure() : void)|null
+	 */
 	private $onSubChunkChangeFunc = null;
 
 	public function __construct(ChunkManager $world){
@@ -67,11 +70,14 @@ class SubChunkIteratorManager{
 		if($this->currentSubChunk === null or $this->currentY !== ($y >> 4)){
 			$this->currentY = $y >> 4;
 
-			$this->currentSubChunk = $this->currentChunk->getSubChunk($y >> 4, $create);
-			if($this->currentSubChunk instanceof EmptySubChunk){
+			if($this->currentY < 0 or $this->currentY >= $this->currentChunk->getHeight()){
 				$this->currentSubChunk = null;
 				return false;
 			}
+
+			$newSubChunk = $this->currentChunk->getSubChunk($y >> 4);
+			assert($newSubChunk instanceof SubChunk, "chunk inside valid bounds should always be a SubChunk instance");
+			$this->currentSubChunk = $newSubChunk;
 			if($this->onSubChunkChangeFunc !== null){
 				($this->onSubChunkChangeFunc)();
 			}
@@ -80,9 +86,19 @@ class SubChunkIteratorManager{
 		return true;
 	}
 
+	/**
+	 * @phpstan-param \Closure() : void $callback
+	 */
 	public function onSubChunkChange(\Closure $callback) : void{
-		Utils::validateCallableSignature(function(){}, $callback);
+		Utils::validateCallableSignature(function() : void{}, $callback);
 		$this->onSubChunkChangeFunc = $callback;
+	}
+
+	/**
+	 * Returns whether we currently have a valid terrain pointer.
+	 */
+	public function isValid() : bool{
+		return $this->currentSubChunk !== null;
 	}
 
 	public function invalidate() : void{

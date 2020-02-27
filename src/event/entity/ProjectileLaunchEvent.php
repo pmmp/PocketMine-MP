@@ -30,9 +30,6 @@ use pocketmine\event\CancellableTrait;
 class ProjectileLaunchEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/**
-	 * @param Projectile $entity
-	 */
 	public function __construct(Projectile $entity){
 		$this->entity = $entity;
 	}

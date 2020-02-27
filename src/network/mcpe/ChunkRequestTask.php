@@ -42,15 +42,19 @@ class ChunkRequestTask extends AsyncTask{
 	/** @var int */
 	protected $chunkZ;
 
+	/** @var int */
 	protected $compressionLevel;
 
 	/** @var string */
 	private $tiles = "";
 
+	/**
+	 * @phpstan-param (\Closure() : void)|null $onError
+	 */
 	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise, ?\Closure $onError = null){
 		$this->compressionLevel = Zlib::$LEVEL;
 
-		$this->chunk = FastChunkSerializer::serialize($chunk);
+		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
 		$this->tiles = ChunkSerializer::serializeTiles($chunk);
@@ -61,13 +65,16 @@ class ChunkRequestTask extends AsyncTask{
 
 	public function onRun() : void{
 		$chunk = FastChunkSerializer::deserialize($this->chunk);
-		$subCount = $chunk->getSubChunkSendCount();
+		$subCount = ChunkSerializer::getSubChunkCount($chunk);
 		$payload = ChunkSerializer::serialize($chunk, $this->tiles);
 		$this->setResult(Zlib::compress(PacketBatch::fromPackets(LevelChunkPacket::withoutCache($this->chunkX, $this->chunkZ, $subCount, $payload))->getBuffer(), $this->compressionLevel));
 	}
 
 	public function onError() : void{
-		/** @var \Closure $hook */
+		/**
+		 * @var \Closure|null $hook
+		 * @phpstan-var (\Closure() : void)|null $hook
+		 */
 		$hook = $this->fetchLocal(self::TLS_KEY_ERROR_HOOK);
 		if($hook !== null){
 			$hook();

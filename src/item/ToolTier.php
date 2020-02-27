@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -42,14 +41,14 @@ final class ToolTier{
 		__construct as Enum___construct;
 	}
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new self("wood", 1, 60, 5, 2),
 			new self("gold", 2, 33, 5, 12),
 			new self("stone", 3, 132, 6, 4),
 			new self("iron", 4, 251, 7, 6),
 			new self("diamond", 5, 1562, 8, 8)
-		];
+		);
 	}
 
 	/** @var int */
@@ -69,30 +68,18 @@ final class ToolTier{
 		$this->baseEfficiency = $baseEfficiency;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getHarvestLevel() : int{
 		return $this->harvestLevel;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMaxDurability() : int{
 		return $this->maxDurability;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBaseAttackPoints() : int{
 		return $this->baseAttackPoints;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBaseEfficiency() : int{
 		return $this->baseEfficiency;
 	}

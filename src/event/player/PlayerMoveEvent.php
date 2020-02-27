@@ -36,34 +36,20 @@ class PlayerMoveEvent extends PlayerEvent implements Cancellable{
 	/** @var Location */
 	private $to;
 
-	/**
-	 * @param Player   $player
-	 * @param Location $from
-	 * @param Location $to
-	 */
 	public function __construct(Player $player, Location $from, Location $to){
 		$this->player = $player;
 		$this->from = $from;
 		$this->to = $to;
 	}
 
-	/**
-	 * @return Location
-	 */
 	public function getFrom() : Location{
 		return $this->from;
 	}
 
-	/**
-	 * @return Location
-	 */
 	public function getTo() : Location{
 		return $this->to;
 	}
 
-	/**
-	 * @param Location $to
-	 */
 	public function setTo(Location $to) : void{
 		$this->to = $to;
 	}

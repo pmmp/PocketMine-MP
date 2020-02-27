@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use function count;
 
 class Fence extends Transparent{
 	/** @var bool[] facing => dummy */
@@ -80,7 +81,7 @@ class Fence extends Transparent{
 				->trim(Facing::SOUTH, $connectSouth ? 0 : $inset);
 		}
 
-		if(empty($bbs)){
+		if(count($bbs) === 0){
 			//centre post AABB (only needed if not connected on any axis - other BBs overlapping will do this if any connections are made)
 			return [
 				AxisAlignedBB::one()

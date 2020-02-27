@@ -34,11 +34,20 @@ use function reset;
 
 final class TileFactory{
 
-	/** @var string[] classes that extend Tile */
+	/**
+	 * @var string[] classes that extend Tile
+	 * @phpstan-var array<string, class-string<Tile>>
+	 */
 	private static $knownTiles = [];
-	/** @var string[][] */
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<class-string<Tile>, list<string>>
+	 */
 	private static $saveNames = [];
-	/** @var string[] base class => overridden class */
+	/**
+	 * @var string[] base class => overridden class
+	 * @phpstan-var array<class-string<Tile>, class-string<Tile>>
+	 */
 	private static $classMapping = [];
 
 	private function __construct(){
@@ -89,8 +98,8 @@ final class TileFactory{
 	}
 
 	/**
-	 * @param string   $className
 	 * @param string[] $saveNames
+	 * @phpstan-param class-string<Tile> $className
 	 */
 	public static function register(string $className, array $saveNames = []) : void{
 		Utils::testValidInstance($className, Tile::class);
@@ -113,6 +122,10 @@ final class TileFactory{
 	 * @param string $baseClass Already-registered tile class to override
 	 * @param string $newClass Class which extends the base class
 	 *
+	 * TODO: use an explicit template for param1
+	 * @phpstan-param class-string<Tile> $baseClass
+	 * @phpstan-param class-string<Tile> $newClass
+	 *
 	 * @throws \InvalidArgumentException if the base class is not a registered tile
 	 */
 	public static function override(string $baseClass, string $newClass) : void{
@@ -125,11 +138,12 @@ final class TileFactory{
 	}
 
 	/**
-	 * @param string  $baseClass
-	 * @param World   $world
-	 * @param Vector3 $pos
+	 * @phpstan-template TTile of Tile
+	 * @phpstan-param class-string<TTile> $baseClass
 	 *
 	 * @return Tile (will be an instanceof $baseClass)
+	 * @phpstan-return TTile
+	 *
 	 * @throws \InvalidArgumentException if the specified class is not a registered tile
 	 */
 	public static function create(string $baseClass, World $world, Vector3 $pos) : Tile{
@@ -138,6 +152,7 @@ final class TileFactory{
 			assert(is_a($class, $baseClass, true));
 			/**
 			 * @var Tile $tile
+			 * @phpstan-var TTile $tile
 			 * @see Tile::__construct()
 			 */
 			$tile = new $class($world, $pos);
@@ -149,12 +164,7 @@ final class TileFactory{
 	}
 
 	/**
-	 * @param World       $world
-	 * @param CompoundTag $nbt
-	 *
-	 * @return Tile|null
-	 *@internal
-	 *
+	 * @internal
 	 */
 	public static function createFromData(World $world, CompoundTag $nbt) : ?Tile{
 		$type = $nbt->getString(Tile::TAG_ID, "", true);
@@ -173,6 +183,9 @@ final class TileFactory{
 		return $tile;
 	}
 
+	/**
+	 * @phpstan-param class-string<Tile> $class
+	 */
 	public static function getSaveId(string $class) : string{
 		if(isset(self::$saveNames[$class])){
 			return reset(self::$saveNames[$class]);

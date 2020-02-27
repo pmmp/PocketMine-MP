@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;

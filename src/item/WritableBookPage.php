@@ -39,16 +39,10 @@ class WritableBookPage{
 		$this->photoName = $photoName;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getText() : string{
 		return $this->text;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPhotoName() : string{
 		return $this->photoName;
 	}

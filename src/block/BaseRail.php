@@ -79,7 +79,7 @@ abstract class BaseRail extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		if(empty($this->connections)){
+		if(count($this->connections) === 0){
 			return BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
 		}
 		return $this->getMetaForState($this->connections);
@@ -109,6 +109,11 @@ abstract class BaseRail extends Flowable{
 		$this->tryReconnect();
 	}
 
+	/**
+	 * @param int[]   $connections
+	 * @param int[][] $lookup
+	 * @phpstan-param array<int, list<int>> $lookup
+	 */
 	protected static function searchState(array $connections, array $lookup) : int{
 		$meta = array_search($connections, $lookup, true);
 		if($meta === false){
@@ -124,9 +129,7 @@ abstract class BaseRail extends Flowable{
 	/**
 	 * Returns a meta value for the rail with the given connections.
 	 *
-	 * @param array $connections
-	 *
-	 * @return int
+	 * @param int[] $connections
 	 *
 	 * @throws \InvalidArgumentException if no state matches the given connections
 	 */
@@ -136,8 +139,6 @@ abstract class BaseRail extends Flowable{
 
 	/**
 	 * Returns the connection directions of this rail (depending on the current block state)
-	 *
-	 * @param int $meta
 	 *
 	 * @return int[]
 	 */
@@ -176,6 +177,12 @@ abstract class BaseRail extends Flowable{
 		return $connections;
 	}
 
+	/**
+	 * @param int[] $constraints
+	 *
+	 * @return true[]
+	 * @phpstan-return array<int, true>
+	 */
 	private function getPossibleConnectionDirections(array $constraints) : array{
 		switch(count($constraints)){
 			case 0:
@@ -200,6 +207,10 @@ abstract class BaseRail extends Flowable{
 		}
 	}
 
+	/**
+	 * @return true[]
+	 * @phpstan-return array<int, true>
+	 */
 	protected function getPossibleConnectionDirectionsOneConstraint(int $constraint) : array{
 		$opposite = Facing::opposite($constraint & ~self::FLAG_ASCEND);
 
@@ -261,6 +272,9 @@ abstract class BaseRail extends Flowable{
 		}
 	}
 
+	/**
+	 * @param int[] $connections
+	 */
 	private function setConnections(array $connections) : void{
 		if(count($connections) === 1){
 			$connections[] = Facing::opposite($connections[0] & ~self::FLAG_ASCEND);

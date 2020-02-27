@@ -78,10 +78,6 @@ trait ContainerTrait{
 
 	/**
 	 * @see Container::canOpenWith()
-	 *
-	 * @param string $key
-	 *
-	 * @return bool
 	 */
 	public function canOpenWith(string $key) : bool{
 		return $this->lock === null or $this->lock === $key;
@@ -89,7 +85,6 @@ trait ContainerTrait{
 
 	/**
 	 * @see Position::asPosition()
-	 * @return Position
 	 */
 	abstract protected function getPos() : Position;
 
@@ -103,6 +98,6 @@ trait ContainerTrait{
 		foreach($inv->getContents() as $k => $item){
 			$pos->world->dropItem($pos->add(0.5, 0.5, 0.5), $item);
 		}
-		$inv->clearAll(false);
+		$inv->clearAll();
 	}
 }

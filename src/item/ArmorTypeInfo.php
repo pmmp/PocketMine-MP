@@ -38,23 +38,14 @@ class ArmorTypeInfo{
 		$this->armorSlot = $armorSlot;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getDefensePoints() : int{
 		return $this->defensePoints;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMaxDurability() : int{
 		return $this->maxDurability;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getArmorSlot() : int{
 		return $this->armorSlot;
 	}

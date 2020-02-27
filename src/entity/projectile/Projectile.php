@@ -116,8 +116,6 @@ abstract class Projectile extends Entity{
 	/**
 	 * Returns the base damage applied on collision. This is multiplied by the projectile's speed to give a result
 	 * damage.
-	 *
-	 * @return float
 	 */
 	public function getBaseDamage() : float{
 		return $this->damage;
@@ -125,8 +123,6 @@ abstract class Projectile extends Entity{
 
 	/**
 	 * Sets the base amount of damage applied by the projectile.
-	 *
-	 * @param float $damage
 	 */
 	public function setBaseDamage(float $damage) : void{
 		$this->damage = $damage;
@@ -134,7 +130,6 @@ abstract class Projectile extends Entity{
 
 	/**
 	 * Returns the amount of damage this projectile will deal to the entity it hits.
-	 * @return int
 	 */
 	public function getResultDamage() : int{
 		return (int) ceil($this->motion->length() * $this->damage);
@@ -266,7 +261,6 @@ abstract class Projectile extends Entity{
 		$this->checkChunks();
 		$this->checkBlockCollision();
 
-
 		Timings::$entityMoveTimer->stopTiming();
 	}
 
@@ -274,10 +268,6 @@ abstract class Projectile extends Entity{
 	 * Called by move() when raytracing blocks to discover whether the block should be considered as a point of impact.
 	 * This can be overridden by other projectiles to allow altering the blocks which are collided with (for example
 	 * some projectiles collide with any non-air block).
-	 *
-	 * @param Block   $block
-	 * @param Vector3 $start
-	 * @param Vector3 $end
 	 *
 	 * @return RayTraceResult|null the result of the ray trace if successful, or null if no interception is found.
 	 */
@@ -288,8 +278,6 @@ abstract class Projectile extends Entity{
 	/**
 	 * Called when the projectile hits something. Override this to perform non-target-specific effects when the
 	 * projectile hits something.
-	 *
-	 * @param ProjectileHitEvent $event
 	 */
 	protected function onHit(ProjectileHitEvent $event) : void{
 
@@ -297,9 +285,6 @@ abstract class Projectile extends Entity{
 
 	/**
 	 * Called when the projectile collides with an Entity.
-	 *
-	 * @param Entity         $entityHit
-	 * @param RayTraceResult $hitResult
 	 */
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
 		$damage = $this->getResultDamage();
@@ -327,9 +312,6 @@ abstract class Projectile extends Entity{
 
 	/**
 	 * Called when the projectile collides with a Block.
-	 *
-	 * @param Block          $blockHit
-	 * @param RayTraceResult $hitResult
 	 */
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
 		$this->blockHit = clone $blockHit;

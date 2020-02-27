@@ -121,7 +121,6 @@ class ParticleCommand extends VanillaCommand{
 			return true;
 		}
 
-
 		$sender->sendMessage(new TranslationContainer("commands.particle.success", [$name, $count]));
 
 		$random = new Random((int) (microtime(true) * 1000) + mt_rand());
@@ -137,12 +136,6 @@ class ParticleCommand extends VanillaCommand{
 		return true;
 	}
 
-	/**
-	 * @param string   $name
-	 * @param int|null $data
-	 *
-	 * @return Particle|null
-	 */
 	private function getParticle(string $name, ?int $data = null) : ?Particle{
 		switch($name){
 			case "explode":

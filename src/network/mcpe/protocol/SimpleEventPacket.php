@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class SimpleEventPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SIMPLE_EVENT_PACKET;
@@ -36,12 +37,12 @@ class SimpleEventPacket extends DataPacket implements ClientboundPacket, Serverb
 	/** @var int */
 	public $eventType;
 
-	protected function decodePayload() : void{
-		$this->eventType = $this->getLShort();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->eventType = $in->getLShort();
 	}
 
-	protected function encodePayload() : void{
-		$this->putLShort($this->eventType);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putLShort($this->eventType);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

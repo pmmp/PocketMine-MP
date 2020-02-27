@@ -30,7 +30,6 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\item\Item;
-use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\player\Player;
 
@@ -38,15 +37,14 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	/** @var Player */
 	protected $entity;
 
-	/** @var TextContainer|string */
+	/** @var TranslationContainer|string */
 	private $deathMessage;
+	/** @var bool */
 	private $keepInventory = false;
 
 	/**
-	 * @param Player                    $entity
-	 * @param Item[]                    $drops
-	 * @param int                       $xp
-	 * @param string|TextContainer|null $deathMessage Null will cause the default vanilla message to be used
+	 * @param Item[]                           $drops
+	 * @param string|TranslationContainer|null $deathMessage Null will cause the default vanilla message to be used
 	 */
 	public function __construct(Player $entity, array $drops, int $xp, $deathMessage){
 		parent::__construct($entity, $drops, $xp);
@@ -60,22 +58,19 @@ class PlayerDeathEvent extends EntityDeathEvent{
 		return $this->entity;
 	}
 
-	/**
-	 * @return Player
-	 */
 	public function getPlayer() : Player{
 		return $this->entity;
 	}
 
 	/**
-	 * @return TextContainer|string
+	 * @return TranslationContainer|string
 	 */
 	public function getDeathMessage(){
 		return $this->deathMessage;
 	}
 
 	/**
-	 * @param TextContainer|string $deathMessage
+	 * @param TranslationContainer|string $deathMessage
 	 */
 	public function setDeathMessage($deathMessage) : void{
 		$this->deathMessage = $deathMessage;
@@ -91,11 +86,6 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 	/**
 	 * Returns the vanilla death message for the given death cause.
-	 *
-	 * @param string                 $name
-	 * @param null|EntityDamageEvent $deathCause
-	 *
-	 * @return TranslationContainer
 	 */
 	public static function deriveMessage(string $name, ?EntityDamageEvent $deathCause) : TranslationContainer{
 		$message = "death.attack.generic";

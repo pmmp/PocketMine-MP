@@ -16,6 +16,7 @@
       "ext-ds": "^1.2.7",
       "ext-gmp": "*",
       "ext-hash": "*",
+      "ext-igbinary": "^3.0.1",
       "ext-json": "*",
       "ext-leveldb": "^0.2.1",
       "ext-mbstring": "*",
@@ -33,47 +34,35 @@
       "pocketmine/raklib": "dev-master",
       "pocketmine/spl": "dev-master",
       "pocketmine/binaryutils": "dev-master",
+      "pocketmine/log": "dev-master",
       "pocketmine/nbt": "dev-master",
       "pocketmine/math": "dev-master",
       "pocketmine/snooze": "^0.1.0",
+      "pocketmine/classloader": "dev-master",
       "daverandom/callback-validator": "dev-master",
-      "adhocore/json-comment": "^0.0.7",
+      "adhocore/json-comment": "^0.1.0",
       "particle/validator": "^2.3"
+   },
+   "require-dev": {
+      "phpstan/phpstan": "^0.12.9",
+      "irstea/phpunit-shim": "^8.5",
+      "phpstan/phpstan-phpunit": "^0.12.6",
+      "phpstan/phpstan-strict-rules": "^0.12.2"
    },
    "autoload": {
       "psr-4": {
          "pocketmine\\": "src/"
-      }
+      },
+      "files": [
+         "src/CoreConstants.php",
+         "src/GlobalConstants.php",
+         "src/VersionInfo.php"
+      ]
    },
    "autoload-dev": {
       "psr-4": {
-         "pocketmine\\": "tests/phpunit/"
+         "pocketmine\\": "tests/phpunit/",
+         "pocketmine\\phpstan\\rules\\": "tests/phpstan/rules"
       }
-   },
-   "repositories": [
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/RakLib"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/SPL"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/BinaryUtils"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/NBT"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/Math"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/Snooze"
-      }
-   ]
+   }
 }

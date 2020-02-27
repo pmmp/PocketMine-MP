@@ -32,9 +32,16 @@ use function strtolower;
 use function trim;
 
 abstract class WorldProviderManager{
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, class-string<WorldProvider>>
+	 */
 	protected static $providers = [];
 
-	/** @var string|WorldProvider */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<WritableWorldProvider>
+	 */
 	private static $default = LevelDB::class;
 
 	public static function init() : void{
@@ -47,7 +54,7 @@ abstract class WorldProviderManager{
 	/**
 	 * Returns the default format used to generate new worlds.
 	 *
-	 * @return string|WritableWorldProvider
+	 * @phpstan-return class-string<WritableWorldProvider>
 	 */
 	public static function getDefault() : string{
 		return self::$default;
@@ -57,6 +64,7 @@ abstract class WorldProviderManager{
 	 * Sets the default format.
 	 *
 	 * @param string $class Class implementing WritableWorldProvider
+	 * @phpstan-param class-string<WritableWorldProvider> $class
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -67,10 +75,7 @@ abstract class WorldProviderManager{
 	}
 
 	/**
-	 * @param string $class
-	 *
-	 * @param string $name
-	 * @param bool   $overwrite
+	 * @phpstan-param class-string<WorldProvider> $class
 	 */
 	public static function addProvider(string $class, string $name, bool $overwrite = false) : void{
 		Utils::testValidInstance($class, WorldProvider::class);
@@ -87,14 +92,12 @@ abstract class WorldProviderManager{
 	/**
 	 * Returns a WorldProvider class for this path, or null
 	 *
-	 * @param string $path
-	 *
-	 * @return string[]|WorldProvider[]
+	 * @return string[]
+	 * @phpstan-return array<string, class-string<WorldProvider>>
 	 */
 	public static function getMatchingProviders(string $path) : array{
 		$result = [];
 		foreach(self::$providers as $alias => $provider){
-			/** @var WorldProvider|string $provider */
 			if($provider::isValid($path)){
 				$result[$alias] = $provider;
 			}
@@ -103,7 +106,8 @@ abstract class WorldProviderManager{
 	}
 
 	/**
-	 * @return string[]|WorldProvider[]
+	 * @return string[]
+	 * @phpstan-return array<string, class-string<WorldProvider>>
 	 */
 	public static function getAvailableProviders() : array{
 		return self::$providers;
@@ -112,9 +116,7 @@ abstract class WorldProviderManager{
 	/**
 	 * Returns a WorldProvider by name, or null if not found
 	 *
-	 * @param string $name
-	 *
-	 * @return string|null
+	 * @phpstan-return class-string<WorldProvider>|null
 	 */
 	public static function getProviderByName(string $name) : ?string{
 		return self::$providers[trim(strtolower($name))] ?? null;

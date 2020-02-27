@@ -35,10 +35,6 @@ abstract class Generator{
 
 	/**
 	 * Converts a string world seed into an integer for use by the generator.
-	 *
-	 * @param string $seed
-	 *
-	 * @return int|null
 	 */
 	public static function convertSeed(string $seed) : ?int{
 		if($seed === ""){ //empty seed should cause a random seed to be selected - can't use 0 here because 0 is a valid seed
@@ -56,18 +52,20 @@ abstract class Generator{
 	protected $world;
 	/** @var int */
 	protected $seed;
-	/** @var array */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
 	protected $options;
 
 	/** @var Random */
 	protected $random;
 
 	/**
-	 * @param ChunkManager $world
-	 * @param int          $seed
-	 * @param array        $options
-	 *
 	 * @throws InvalidGeneratorOptionsException
+	 *
+	 * @param mixed[] $options
+	 * @phpstan-param array<string, mixed> $options
 	 */
 	public function __construct(ChunkManager $world, int $seed, array $options = []){
 		$this->world = $world;

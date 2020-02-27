@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ActorPickRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ACTOR_PICK_REQUEST_PACKET;
@@ -35,14 +36,14 @@ class ActorPickRequestPacket extends DataPacket implements ServerboundPacket{
 	/** @var int */
 	public $hotbarSlot;
 
-	protected function decodePayload() : void{
-		$this->entityUniqueId = $this->getLLong();
-		$this->hotbarSlot = $this->getByte();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->entityUniqueId = $in->getLLong();
+		$this->hotbarSlot = $in->getByte();
 	}
 
-	protected function encodePayload() : void{
-		$this->putLLong($this->entityUniqueId);
-		$this->putByte($this->hotbarSlot);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putLLong($this->entityUniqueId);
+		$out->putByte($this->hotbarSlot);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

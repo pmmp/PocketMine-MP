@@ -39,13 +39,13 @@ use pocketmine\utils\EnumTrait;
 final class StairShape{
 	use EnumTrait;
 
-	protected static function setup() : iterable{
-		return [
+	protected static function setup() : void{
+		self::registerAll(
 			new self("straight"),
 			new self("inner_left"),
 			new self("inner_right"),
 			new self("outer_left"),
 			new self("outer_right")
-		];
+		);
 	}
 }

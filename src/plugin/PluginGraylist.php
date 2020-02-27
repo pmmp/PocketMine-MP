@@ -36,6 +36,9 @@ class PluginGraylist{
 	/** @var bool */
 	private $isWhitelist = false;
 
+	/**
+	 * @param string[] $plugins
+	 */
 	public function __construct(array $plugins = [], bool $whitelist = false){
 		$this->plugins = array_flip($plugins);
 		$this->isWhitelist = $whitelist;
@@ -48,24 +51,20 @@ class PluginGraylist{
 		return array_flip($this->plugins);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isWhitelist() : bool{
 		return $this->isWhitelist;
 	}
 
 	/**
 	 * Returns whether the given name is permitted by this graylist.
-	 *
-	 * @param string $name
-	 *
-	 * @return bool
 	 */
 	public function isAllowed(string $name) : bool{
 		return $this->isWhitelist() === isset($this->plugins[$name]);
 	}
 
+	/**
+	 * @param mixed[] $array
+	 */
 	public static function fromArray(array $array) : PluginGraylist{
 		$v = new Validator();
 		$v->required("mode")->inArray(['whitelist', 'blacklist'], true);
@@ -82,6 +81,10 @@ class PluginGraylist{
 		return new PluginGraylist($array["plugins"], $array["mode"] === 'whitelist');
 	}
 
+	/**
+	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
+	 */
 	public function toArray() : array{
 		return [
 			"mode" => $this->isWhitelist ? 'whitelist' : 'blacklist',

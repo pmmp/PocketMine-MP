@@ -71,7 +71,7 @@ class EffectCommand extends VanillaCommand{
 		try{
 			$effect = VanillaEffects::fromString($args[1]);
 		}catch(\InvalidArgumentException $e){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.effect.notFound", [(string) $args[1]]));
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.effect.notFound", [$args[1]]));
 			return true;
 		}
 
@@ -118,7 +118,6 @@ class EffectCommand extends VanillaCommand{
 			$effectManager->add($instance);
 			self::broadcastCommandMessage($sender, new TranslationContainer("%commands.effect.success", [$effect->getName(), $instance->getAmplifier(), $player->getDisplayName(), $instance->getDuration() / 20]));
 		}
-
 
 		return true;
 	}

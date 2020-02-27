@@ -54,6 +54,7 @@ use function spl_object_id;
  * @see InventoryAction
  */
 class InventoryTransaction{
+	/** @var bool */
 	protected $hasExecuted = false;
 	/** @var Player */
 	protected $source;
@@ -65,7 +66,6 @@ class InventoryTransaction{
 	protected $actions = [];
 
 	/**
-	 * @param Player            $source
 	 * @param InventoryAction[] $actions
 	 */
 	public function __construct(Player $source, array $actions = []){
@@ -75,9 +75,6 @@ class InventoryTransaction{
 		}
 	}
 
-	/**
-	 * @return Player
-	 */
 	public function getSource() : Player{
 		return $this->source;
 	}
@@ -101,9 +98,6 @@ class InventoryTransaction{
 		return $this->actions;
 	}
 
-	/**
-	 * @param InventoryAction $action
-	 */
 	public function addAction(InventoryAction $action) : void{
 		if(!isset($this->actions[$hash = spl_object_id($action)])){
 			$this->actions[$hash] = $action;
@@ -129,8 +123,6 @@ class InventoryTransaction{
 	/**
 	 * @internal This method should not be used by plugins, it's used to add tracked inventories for InventoryActions
 	 * involving inventories.
-	 *
-	 * @param Inventory $inventory
 	 */
 	public function addInventory(Inventory $inventory) : void{
 		if(!isset($this->inventories[$hash = spl_object_id($inventory)])){
@@ -232,19 +224,16 @@ class InventoryTransaction{
 	}
 
 	/**
-	 * @param Item               $needOrigin
 	 * @param SlotChangeAction[] $possibleActions
-	 *
-	 * @return null|Item
 	 */
 	protected function findResultItem(Item $needOrigin, array $possibleActions) : ?Item{
-		assert(!empty($possibleActions));
+		assert(count($possibleActions) > 0);
 
 		foreach($possibleActions as $i => $action){
 			if($action->getSourceItem()->equalsExact($needOrigin)){
 				$newList = $possibleActions;
 				unset($newList[$i]);
-				if(empty($newList)){
+				if(count($newList) === 0){
 					return $action->getTargetItem();
 				}
 				$result = $this->findResultItem($action->getTargetItem(), $newList);
@@ -294,7 +283,6 @@ class InventoryTransaction{
 
 	/**
 	 * Executes the group of actions, returning whether the transaction executed successfully or not.
-	 * @return bool
 	 *
 	 * @throws TransactionValidationException
 	 */
@@ -329,9 +317,6 @@ class InventoryTransaction{
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasExecuted() : bool{
 		return $this->hasExecuted;
 	}

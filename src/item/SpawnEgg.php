@@ -33,15 +33,15 @@ use function lcg_value;
 
 class SpawnEgg extends Item{
 
-	/** @var string */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<Entity>
+	 */
 	private $entityClass;
 
 	/**
-	 * @param int    $id
-	 * @param int    $variant
-	 * @param string $name
-	 *
 	 * @param string $entityClass instanceof Entity
+	 * @phpstan-param class-string<Entity> $entityClass
 	 *
 	 * @throws \InvalidArgumentException
 	 */

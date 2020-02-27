@@ -50,11 +50,6 @@ abstract class Tree{
 	}
 
 	/**
-	 * @param ChunkManager  $world
-	 * @param int           $x
-	 * @param int           $y
-	 * @param int           $z
-	 * @param Random        $random
 	 * @param TreeType|null $type default oak
 	 *
 	 * @throws \InvalidArgumentException
@@ -86,7 +81,6 @@ abstract class Tree{
 			$tree->placeObject($world, $x, $y, $z, $random);
 		}
 	}
-
 
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
 		$radiusToCheck = 0;

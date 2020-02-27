@@ -34,28 +34,16 @@ abstract class MeleeWeaponEnchantment extends Enchantment{
 	/**
 	 * Returns whether this melee enchantment has an effect on the target entity. For example, Smite only applies to
 	 * undead mobs.
-	 *
-	 * @param Entity $victim
-	 *
-	 * @return bool
 	 */
 	abstract public function isApplicableTo(Entity $victim) : bool;
 
 	/**
 	 * Returns the amount of additional damage caused by this enchantment to applicable targets.
-	 *
-	 * @param int $enchantmentLevel
-	 *
-	 * @return float
 	 */
 	abstract public function getDamageBonus(int $enchantmentLevel) : float;
 
 	/**
 	 * Called after damaging the entity to apply any post damage effects to the target.
-	 *
-	 * @param Entity $attacker
-	 * @param Entity $victim
-	 * @param int    $enchantmentLevel
 	 */
 	public function onPostAttack(Entity $attacker, Entity $victim, int $enchantmentLevel) : void{
 

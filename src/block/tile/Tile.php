@@ -59,15 +59,11 @@ abstract class Tile{
 	/**
 	 * @internal
 	 * Reads additional data from the CompoundTag on tile creation.
-	 *
-	 * @param CompoundTag $nbt
 	 */
 	abstract public function readSaveData(CompoundTag $nbt) : void;
 
 	/**
 	 * Writes additional save data to a CompoundTag, not including generic things like ID and coordinates.
-	 *
-	 * @param CompoundTag $nbt
 	 */
 	abstract protected function writeSaveData(CompoundTag $nbt) : void;
 
@@ -90,8 +86,6 @@ abstract class Tile{
 	/**
 	 * @internal
 	 *
-	 * @param Item $item
-	 *
 	 * @throws \RuntimeException
 	 */
 	public function copyDataFromItem(Item $item) : void{
@@ -100,16 +94,10 @@ abstract class Tile{
 		}
 	}
 
-	/**
-	 * @return Block
-	 */
 	public function getBlock() : Block{
 		return $this->pos->getWorld()->getBlock($this->pos);
 	}
 
-	/**
-	 * @return Position
-	 */
 	public function getPos() : Position{
 		return $this->pos;
 	}

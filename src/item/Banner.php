@@ -40,7 +40,10 @@ class Banner extends Item{
 	/** @var DyeColor */
 	private $color;
 
-	/** @var BannerPattern[]|Deque */
+	/**
+	 * @var BannerPattern[]|Deque
+	 * @phpstan-var Deque<BannerPattern>
+	 */
 	private $patterns;
 
 	public function __construct(int $id, int $variant, string $name, DyeColor $color){
@@ -50,9 +53,6 @@ class Banner extends Item{
 		$this->patterns = new Deque();
 	}
 
-	/**
-	 * @return DyeColor
-	 */
 	public function getColor() : DyeColor{
 		return $this->color;
 	}
@@ -67,6 +67,7 @@ class Banner extends Item{
 
 	/**
 	 * @return Deque|BannerPattern[]
+	 * @phpstan-return Deque<BannerPattern>
 	 */
 	public function getPatterns() : Deque{
 		return $this->patterns;
@@ -74,6 +75,7 @@ class Banner extends Item{
 
 	/**
 	 * @param Deque|BannerPattern[] $patterns
+	 * @phpstan-param Deque<BannerPattern> $patterns
 	 *
 	 * @return $this
 	 */
@@ -112,7 +114,6 @@ class Banner extends Item{
 					->setInt(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
 				);
 			}
-
 
 			$tag->setTag(self::TAG_PATTERNS, $patterns);
 		}else{

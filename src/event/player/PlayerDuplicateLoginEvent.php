@@ -57,16 +57,11 @@ class PlayerDuplicateLoginEvent extends Event implements Cancellable{
 
 	/**
 	 * Returns the message shown to the session which gets disconnected.
-	 *
-	 * @return string
 	 */
 	public function getDisconnectMessage() : string{
 		return $this->disconnectMessage;
 	}
 
-	/**
-	 * @param string $message
-	 */
 	public function setDisconnectMessage(string $message) : void{
 		$this->disconnectMessage = $message;
 	}

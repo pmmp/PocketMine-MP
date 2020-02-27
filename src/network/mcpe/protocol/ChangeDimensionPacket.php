@@ -25,9 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ChangeDimensionPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CHANGE_DIMENSION_PACKET;
@@ -39,16 +39,16 @@ class ChangeDimensionPacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $respawn = false;
 
-	protected function decodePayload() : void{
-		$this->dimension = $this->getVarInt();
-		$this->position = $this->getVector3();
-		$this->respawn = $this->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->dimension = $in->getVarInt();
+		$this->position = $in->getVector3();
+		$this->respawn = $in->getBool();
 	}
 
-	protected function encodePayload() : void{
-		$this->putVarInt($this->dimension);
-		$this->putVector3($this->position);
-		$this->putBool($this->respawn);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putVarInt($this->dimension);
+		$out->putVector3($this->position);
+		$out->putBool($this->respawn);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

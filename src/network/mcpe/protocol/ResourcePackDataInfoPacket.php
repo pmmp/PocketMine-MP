@@ -21,14 +21,13 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
@@ -58,24 +57,24 @@ class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->packId = $this->getString();
-		$this->maxChunkSize = $this->getLInt();
-		$this->chunkCount = $this->getLInt();
-		$this->compressedPackSize = $this->getLLong();
-		$this->sha256 = $this->getString();
-		$this->isPremium = $this->getBool();
-		$this->packType = $this->getByte();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->packId = $in->getString();
+		$this->maxChunkSize = $in->getLInt();
+		$this->chunkCount = $in->getLInt();
+		$this->compressedPackSize = $in->getLLong();
+		$this->sha256 = $in->getString();
+		$this->isPremium = $in->getBool();
+		$this->packType = $in->getByte();
 	}
 
-	protected function encodePayload() : void{
-		$this->putString($this->packId);
-		$this->putLInt($this->maxChunkSize);
-		$this->putLInt($this->chunkCount);
-		$this->putLLong($this->compressedPackSize);
-		$this->putString($this->sha256);
-		$this->putBool($this->isPremium);
-		$this->putByte($this->packType);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->packId);
+		$out->putLInt($this->maxChunkSize);
+		$out->putLInt($this->chunkCount);
+		$out->putLLong($this->compressedPackSize);
+		$out->putString($this->sha256);
+		$out->putBool($this->isPremium);
+		$out->putByte($this->packType);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

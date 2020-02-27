@@ -37,9 +37,6 @@ class XpLevelUpSound implements Sound{
 		$this->xpLevel = $xpLevel;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getXpLevel() : int{
 		return $this->xpLevel;
 	}

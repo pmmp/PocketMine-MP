@@ -35,21 +35,22 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\utils\UUID;
 use function str_repeat;
 
 class FloatingTextParticle implements Particle{
 	//TODO: HACK!
 
+	/** @var string */
 	protected $text;
+	/** @var string */
 	protected $title;
-	protected $entityId;
+	/** @var int|null */
+	protected $entityId = null;
+	/** @var bool */
 	protected $invisible = false;
 
-	/**
-	 * @param string $text
-	 * @param string $title
-	 */
 	public function __construct(string $text, string $title = ""){
 		$this->text = $text;
 		$this->title = $title;
@@ -92,7 +93,7 @@ class FloatingTextParticle implements Particle{
 			$uuid = UUID::fromRandom();
 			$name = $this->title . ($this->text !== "" ? "\n" . $this->text : "");
 
-			$p[] = PlayerListPacket::add([PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, new Skin("Standard_Custom", str_repeat("\x00", 8192)))]);
+			$p[] = PlayerListPacket::add([PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, SkinAdapterSingleton::get()->toSkinData(new Skin("Standard_Custom", str_repeat("\x00", 8192))))]);
 
 			$pk = new AddPlayerPacket();
 			$pk->uuid = $uuid;

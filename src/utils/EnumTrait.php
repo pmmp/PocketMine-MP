@@ -32,34 +32,15 @@ trait EnumTrait{
 	/**
 	 * Registers the given object as an enum member.
 	 *
-	 * @param self $member
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function register(self $member) : void{
 		self::_registryRegister($member->name(), $member);
 	}
 
-	/**
-	 * Returns an array of enum members to be registered.
-	 *
-	 * (This ought to be private, but traits suck too much for that.)
-	 *
-	 * @return self[]|iterable
-	 */
-	abstract protected static function setup() : iterable;
-
-	/**
-	 * @internal Lazy-inits the enum if necessary.
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	protected static function checkInit() : void{
-		if(self::$members === null){
-			self::$members = [];
-			foreach(self::setup() as $item){
-				self::register($item);
-			}
+	protected static function registerAll(self ...$members) : void{
+		foreach($members as $member){
+			self::register($member);
 		}
 	}
 
@@ -77,9 +58,6 @@ trait EnumTrait{
 	 * Returns the enum member matching the given name.
 	 * This is overridden to change the return typehint.
 	 *
-	 * @param string $name
-	 *
-	 * @return self
 	 * @throws \InvalidArgumentException if no member matches.
 	 */
 	public static function fromString(string $name) : self{
@@ -95,7 +73,6 @@ trait EnumTrait{
 	private $runtimeId;
 
 	/**
-	 * @param string $enumName
 	 * @throws \InvalidArgumentException
 	 */
 	private function __construct(string $enumName){
@@ -110,9 +87,6 @@ trait EnumTrait{
 		$this->runtimeId = self::$nextId++;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function name() : string{
 		return $this->enumName;
 	}
@@ -121,8 +95,6 @@ trait EnumTrait{
 	 * Returns a runtime-only identifier for this enum member. This will be different with each run, so don't try to
 	 * hardcode it.
 	 * This can be useful for switches or array indexing.
-	 *
-	 * @return int
 	 */
 	public function id() : int{
 		return $this->runtimeId;
@@ -130,10 +102,6 @@ trait EnumTrait{
 
 	/**
 	 * Returns whether the two objects are equivalent.
-	 *
-	 * @param self $other
-	 *
-	 * @return bool
 	 */
 	public function equals(self $other) : bool{
 		return $this->enumName === $other->enumName;

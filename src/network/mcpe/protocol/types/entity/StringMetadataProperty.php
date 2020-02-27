@@ -29,9 +29,6 @@ final class StringMetadataProperty implements MetadataProperty{
 	/** @var string */
 	private $value;
 
-	/**
-	 * @param string $value
-	 */
 	public function __construct(string $value){
 		$this->value = $value;
 	}
@@ -49,6 +46,6 @@ final class StringMetadataProperty implements MetadataProperty{
 	}
 
 	public function equals(MetadataProperty $other) : bool{
-		return $other instanceof $this and $other->value === $this->value;
+		return $other instanceof self and $other->value === $this->value;
 	}
 }

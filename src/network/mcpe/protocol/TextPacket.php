@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -65,6 +65,9 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 		return $result;
 	}
 
+	/**
+	 * @param string[] $parameters
+	 */
 	private static function baseTranslation(int $type, string $key, array $parameters) : self{
 		$result = new self;
 		$result->type = $type;
@@ -79,7 +82,6 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 	}
 
 	/**
-	 * @param string    $key
 	 * @param string[]  $parameters
 	 *
 	 * @return TextPacket
@@ -93,7 +95,6 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 	}
 
 	/**
-	 * @param string   $key
 	 * @param string[] $parameters
 	 *
 	 * @return TextPacket
@@ -103,7 +104,6 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 	}
 
 	/**
-	 * @param string   $key
 	 * @param string[] $parameters
 	 *
 	 * @return TextPacket
@@ -116,66 +116,66 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 		return self::messageOnly(self::TYPE_TIP, $message);
 	}
 
-	protected function decodePayload() : void{
-		$this->type = $this->getByte();
-		$this->needsTranslation = $this->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->type = $in->getByte();
+		$this->needsTranslation = $in->getBool();
 		switch($this->type){
 			case self::TYPE_CHAT:
 			case self::TYPE_WHISPER:
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
-				$this->sourceName = $this->getString();
+				$this->sourceName = $in->getString();
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
 			case self::TYPE_JSON:
-				$this->message = $this->getString();
+				$this->message = $in->getString();
 				break;
 
 			case self::TYPE_TRANSLATION:
 			case self::TYPE_POPUP:
 			case self::TYPE_JUKEBOX_POPUP:
-				$this->message = $this->getString();
-				$count = $this->getUnsignedVarInt();
+				$this->message = $in->getString();
+				$count = $in->getUnsignedVarInt();
 				for($i = 0; $i < $count; ++$i){
-					$this->parameters[] = $this->getString();
+					$this->parameters[] = $in->getString();
 				}
 				break;
 		}
 
-		$this->xboxUserId = $this->getString();
-		$this->platformChatId = $this->getString();
+		$this->xboxUserId = $in->getString();
+		$this->platformChatId = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->putByte($this->type);
-		$this->putBool($this->needsTranslation);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->type);
+		$out->putBool($this->needsTranslation);
 		switch($this->type){
 			case self::TYPE_CHAT:
 			case self::TYPE_WHISPER:
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
-				$this->putString($this->sourceName);
+				$out->putString($this->sourceName);
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
 			case self::TYPE_JSON:
-				$this->putString($this->message);
+				$out->putString($this->message);
 				break;
 
 			case self::TYPE_TRANSLATION:
 			case self::TYPE_POPUP:
 			case self::TYPE_JUKEBOX_POPUP:
-				$this->putString($this->message);
-				$this->putUnsignedVarInt(count($this->parameters));
+				$out->putString($this->message);
+				$out->putUnsignedVarInt(count($this->parameters));
 				foreach($this->parameters as $p){
-					$this->putString($p);
+					$out->putString($p);
 				}
 				break;
 		}
 
-		$this->putString($this->xboxUserId);
-		$this->putString($this->platformChatId);
+		$out->putString($this->xboxUserId);
+		$out->putString($this->platformChatId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

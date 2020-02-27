@@ -64,7 +64,6 @@ class DoublePlant extends Flowable{
 
 	/**
 	 * Returns whether this double-plant has a corresponding other half.
-	 * @return bool
 	 */
 	public function isValidHalfPlant() : bool{
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);

@@ -44,7 +44,7 @@ class CraftingManager{
 	/** @var FurnaceRecipe[] */
 	protected $furnaceRecipes = [];
 
-	/** @var CompressBatchPromise */
+	/** @var CompressBatchPromise|null */
 	private $craftingDataCache;
 
 	public function __construct(){
@@ -124,8 +124,6 @@ class CraftingManager{
 
 	/**
 	 * Returns a pre-compressed CraftingDataPacket for sending to players. Rebuilds the cache if it is not found.
-	 *
-	 * @return CompressBatchPromise
 	 */
 	public function getCraftingDataPacket() : CompressBatchPromise{
 		if($this->craftingDataCache === null){
@@ -137,15 +135,10 @@ class CraftingManager{
 
 	/**
 	 * Function used to arrange Shapeless Recipe ingredient lists into a consistent order.
-	 *
-	 * @param Item $i1
-	 * @param Item $i2
-	 *
-	 * @return int
 	 */
 	public static function sort(Item $i1, Item $i2) : int{
 		//Use spaceship operator to compare each property, then try the next one if they are equivalent.
-		($retval = $i1->getId() <=> $i2->getId()) === 0 && ($retval = $i1->getMeta() <=> $i2->getMeta()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount());
+		($retval = $i1->getId() <=> $i2->getId()) === 0 && ($retval = $i1->getMeta() <=> $i2->getMeta()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount()) === 0;
 
 		return $retval;
 	}
@@ -174,6 +167,9 @@ class CraftingManager{
 		return $result;
 	}
 
+	/**
+	 * @param Item[] $outputs
+	 */
 	private static function hashOutputs(array $outputs) : string{
 		$outputs = self::pack($outputs);
 		usort($outputs, [self::class, "sort"]);
@@ -206,27 +202,18 @@ class CraftingManager{
 		return $this->furnaceRecipes;
 	}
 
-	/**
-	 * @param ShapedRecipe $recipe
-	 */
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
 		$this->craftingDataCache = null;
 	}
 
-	/**
-	 * @param ShapelessRecipe $recipe
-	 */
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
 		$this->craftingDataCache = null;
 	}
 
-	/**
-	 * @param FurnaceRecipe $recipe
-	 */
 	public function registerFurnaceRecipe(FurnaceRecipe $recipe) : void{
 		$input = $recipe->getInput();
 		$this->furnaceRecipes[$input->getId() . ":" . ($input->hasAnyDamageValue() ? "?" : $input->getMeta())] = $recipe;
@@ -234,10 +221,7 @@ class CraftingManager{
 	}
 
 	/**
-	 * @param CraftingGrid $grid
 	 * @param Item[]       $outputs
-	 *
-	 * @return CraftingRecipe|null
 	 */
 	public function matchRecipe(CraftingGrid $grid, array $outputs) : ?CraftingRecipe{
 		//TODO: try to match special recipes before anything else (first they need to be implemented!)
@@ -267,6 +251,7 @@ class CraftingManager{
 	 * @param Item[] $outputs
 	 *
 	 * @return CraftingRecipe[]|\Generator
+	 * @phpstan-return \Generator<int, CraftingRecipe, void, void>
 	 */
 	public function matchRecipeByOutputs(array $outputs) : \Generator{
 		//TODO: try to match special recipes before anything else (first they need to be implemented!)
@@ -286,11 +271,6 @@ class CraftingManager{
 		}
 	}
 
-	/**
-	 * @param Item $input
-	 *
-	 * @return FurnaceRecipe|null
-	 */
 	public function matchFurnaceRecipe(Item $input) : ?FurnaceRecipe{
 		return $this->furnaceRecipes[$input->getId() . ":" . $input->getMeta()] ?? $this->furnaceRecipes[$input->getId() . ":?"] ?? null;
 	}

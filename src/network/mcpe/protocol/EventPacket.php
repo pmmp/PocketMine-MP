@@ -46,6 +46,7 @@ use pocketmine\network\mcpe\protocol\types\event\PetDiedEventData;
 use pocketmine\network\mcpe\protocol\types\event\PlayerDeathEventData;
 use pocketmine\network\mcpe\protocol\types\event\PortalBuiltEventData;
 use pocketmine\network\mcpe\protocol\types\event\PortalUsedEventData;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class EventPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::EVENT_PACKET;
@@ -101,20 +102,20 @@ class EventPacket extends DataPacket implements ClientboundPacket{
 		}
 	}
 
-	protected function decodePayload() : void{
-		$this->playerRuntimeId = $this->getEntityRuntimeId();
-		$this->eventData = $this->readEventData($this->getVarInt());
-		$this->type = $this->getByte();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->playerRuntimeId = $in->getEntityRuntimeId();
+		$this->eventData = $this->readEventData($in->getVarInt());
+		$this->type = $in->getByte();
 
-		$this->eventData->read($this);
+		$this->eventData->read($in);
 	}
 
-	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->playerRuntimeId);
-		$this->putVarInt($this->eventData->id());
-		$this->putByte($this->type);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityRuntimeId($this->playerRuntimeId);
+		$out->putVarInt($this->eventData->id());
+		$out->putByte($this->type);
 
-		$this->eventData->write($this);
+		$this->eventData->write($out);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

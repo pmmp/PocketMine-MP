@@ -57,14 +57,13 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	/** @var bool[][] uuid => [chunk index => hasSent] */
 	private $downloadedChunks = [];
 
-
 	public function __construct(NetworkSession $session, ResourcePackManager $resourcePackManager){
 		$this->session = $session;
 		$this->resourcePackManager = $resourcePackManager;
 	}
 
 	public function setUp() : void{
-		$resourcePackEntries = array_map(static function(ResourcePack $pack){
+		$resourcePackEntries = array_map(static function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
 			return new ResourcePackInfoEntry($pack->getPackId(), $pack->getPackVersion(), $pack->getPackSize(), "", "", "", false);
 		}, $this->resourcePackManager->getResourceStack());
@@ -110,14 +109,17 @@ class ResourcePacksPacketHandler extends PacketHandler{
 
 				break;
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
-				$stack = array_map(static function(ResourcePack $pack){
+				$stack = array_map(static function(ResourcePack $pack) : ResourcePackStackEntry{
 					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
 				}, $this->resourcePackManager->getResourceStack());
 
 				//we support chemistry blocks by default, the client should already have this installed
-				array_unshift($stack, new ResourcePackStackEntry("0fba4063-dba1-4281-9b89-ff9390653530", "1.0.0", ""));
+				$stack[] = new ResourcePackStackEntry("0fba4063-dba1-4281-9b89-ff9390653530", "1.0.0", "");
 
-				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], $this->resourcePackManager->resourcePacksRequired(), false));
+				//we don't force here, because it doesn't have user-facing effects
+				//but it does have an annoying side-effect when true: it makes
+				//the client remove its own non-server-supplied resource packs.
+				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], false, false));
 				$this->session->getLogger()->debug("Applying resource pack stack");
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:

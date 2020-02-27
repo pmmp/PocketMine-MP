@@ -108,9 +108,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	/**
-	 * @param string $path
-	 *
-	 * @return \LevelDB
 	 * @throws \LevelDBException
 	 */
 	private static function createDB(string $path) : \LevelDB{
@@ -172,7 +169,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$palette = [];
 		for($i = 0, $paletteSize = $stream->getLInt(); $i < $paletteSize; ++$i){
 			$offset = $stream->getOffset();
-			$tag = $nbt->read($stream->getBuffer(), $offset)->getTag();
+			$tag = $nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
 			$stream->setOffset($offset);
 
 			$id = $stringToLegacyId[$tag->getString("name")] ?? BlockLegacyIds::INFO_UPDATE;
@@ -196,6 +193,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}
 	}
 
+	/**
+	 * @return PalettedBlockArray[]
+	 */
 	protected function deserializeLegacyExtraData(string $index, int $chunkVersion) : array{
 		if(($extraRawData = $this->db->get($index . self::TAG_BLOCK_EXTRA_DATA)) === false or $extraRawData === ""){
 			return [];
@@ -226,10 +226,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws CorruptedChunkException
 	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
@@ -263,7 +259,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case 4: //MCPE 1.1
 				//TODO: check beds
 			case 3: //MCPE 1.0
-				/** @var PalettedBlockArray[] $convertedLegacyExtraData */
 				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
 
 				for($y = 0; $y < Chunk::MAX_SUBCHUNKS; ++$y){
@@ -346,7 +341,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case 2: // < MCPE 1.0
 			case 1:
 			case 0: //MCPE 0.9.0.1 beta (first version)
-				/** @var PalettedBlockArray[] $extraDataLayers */
 				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
 
 				$legacyTerrain = $this->db->get($index . self::TAG_LEGACY_TERRAIN);
@@ -388,7 +382,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$entities = [];
 		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and $entityData !== ""){
 			try{
-				$entities = array_map(function(TreeRoot $root) : CompoundTag{ return $root->getTag(); }, $nbt->readMultiple($entityData));
+				$entities = array_map(function(TreeRoot $root) : CompoundTag{ return $root->mustGetCompoundTag(); }, $nbt->readMultiple($entityData));
 			}catch(NbtDataException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
@@ -398,7 +392,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$tiles = [];
 		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and $tileData !== ""){
 			try{
-				$tiles = array_map(function(TreeRoot $root) : CompoundTag{ return $root->getTag(); }, $nbt->readMultiple($tileData));
+				$tiles = array_map(function(TreeRoot $root) : CompoundTag{ return $root->mustGetCompoundTag(); }, $nbt->readMultiple($tileData));
 			}catch(NbtDataException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
@@ -438,7 +432,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$subChunks = $chunk->getSubChunks();
 			foreach($subChunks as $y => $subChunk){
 				$key = $index . self::TAG_SUBCHUNK_PREFIX . chr($y);
-				if($subChunk->isEmpty(false)){ //MCPE doesn't save light anymore as of 1.1
+				if($subChunk->isEmptyAuthoritative()){
 					$write->delete($key);
 				}else{
 					$subStream = new BinaryStream();
@@ -486,11 +480,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	/**
 	 * @param CompoundTag[]      $targets
-	 * @param string             $index
-	 * @param \LevelDBWriteBatch $write
 	 */
 	private function writeTags(array $targets, string $index, \LevelDBWriteBatch $write) : void{
-		if(!empty($targets)){
+		if(count($targets) > 0){
 			$nbt = new LittleEndianNbtSerializer();
 			$write->put($index, $nbt->writeMultiple(array_map(function(CompoundTag $tag) : TreeRoot{ return new TreeRoot($tag); }, $targets)));
 		}else{
@@ -498,9 +490,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}
 	}
 
-	/**
-	 * @return \LevelDB
-	 */
 	public function getDatabase() : \LevelDB{
 		return $this->db;
 	}

@@ -50,9 +50,6 @@ class SignText{
 	 * Parses sign lines from the given string blob.
 	 * TODO: add a strict mode for this
 	 *
-	 * @param string $blob
-	 *
-	 * @return SignText
 	 * @throws \InvalidArgumentException if the text is not valid UTF-8
 	 */
 	public static function fromBlob(string $blob) : SignText{
@@ -86,6 +83,9 @@ class SignText{
 		}
 	}
 
+	/**
+	 * @param int|string $index
+	 */
 	private function checkLineIndex($index) : void{
 		if(!is_int($index)){
 			throw new \InvalidArgumentException("Index must be an integer");
@@ -98,9 +98,6 @@ class SignText{
 	/**
 	 * Returns the sign line at the given offset.
 	 *
-	 * @param int $index
-	 *
-	 * @return string
 	 * @throws \InvalidArgumentException
 	 */
 	public function getLine(int $index) : string{
@@ -110,9 +107,6 @@ class SignText{
 
 	/**
 	 * Sets the line at the given offset.
-	 *
-	 * @param int    $index
-	 * @param string $line
 	 *
 	 * @throws \InvalidArgumentException if the text is not valid UTF-8
 	 * @throws \InvalidArgumentException if the text contains a newline

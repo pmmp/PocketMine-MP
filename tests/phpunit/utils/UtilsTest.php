@@ -29,7 +29,7 @@ use function defined;
 
 class UtilsTest extends TestCase{
 
-	public function setUp(){
+	public function setUp() : void{
 		if(!defined('pocketmine\PATH')){
 			define('pocketmine\PATH', 'dummy');
 		}
@@ -38,6 +38,10 @@ class UtilsTest extends TestCase{
 		}
 	}
 
+	/**
+	 * @return string[][]
+	 * @phpstan-return list<array{string}>
+	 */
 	public function parseDocCommentNewlineProvider() : array{
 		return [
 			["\t/**\r\n\t * @param PlayerJoinEvent \$event\r\n\t * @priority HIGHEST\r\n\t * @notHandler\r\n\t */"],
@@ -61,6 +65,6 @@ class UtilsTest extends TestCase{
 
 	public function testNamespacedNiceClosureName() : void{
 		//be careful with this test. The closure has to be declared on the same line as the assertion.
-		self::assertSame('closure@' . Filesystem::cleanPath(__FILE__) . '#L' . __LINE__, Utils::getNiceClosureName(function(){}));
+		self::assertSame('closure@' . Filesystem::cleanPath(__FILE__) . '#L' . __LINE__, Utils::getNiceClosureName(function() : void{}));
 	}
 }

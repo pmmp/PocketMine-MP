@@ -32,9 +32,10 @@ trait CommonThreadPartsTrait{
 	/** @var string|null */
 	protected $composerAutoloaderPath;
 
+	/** @var bool */
 	protected $isKilled = false;
 
-	public function getClassLoader(){
+	public function getClassLoader() : ?\ClassLoader{
 		return $this->classLoader;
 	}
 

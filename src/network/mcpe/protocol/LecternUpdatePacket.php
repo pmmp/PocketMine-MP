@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class LecternUpdatePacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LECTERN_UPDATE_PACKET;
@@ -43,18 +44,18 @@ class LecternUpdatePacket extends DataPacket implements ServerboundPacket{
 	/** @var bool */
 	public $dropBook;
 
-	protected function decodePayload() : void{
-		$this->page = $this->getByte();
-		$this->totalPages = $this->getByte();
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->dropBook = $this->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->page = $in->getByte();
+		$this->totalPages = $in->getByte();
+		$in->getBlockPosition($this->x, $this->y, $this->z);
+		$this->dropBook = $in->getBool();
 	}
 
-	protected function encodePayload() : void{
-		$this->putByte($this->page);
-		$this->putByte($this->totalPages);
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putBool($this->dropBook);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->page);
+		$out->putByte($this->totalPages);
+		$out->putBlockPosition($this->x, $this->y, $this->z);
+		$out->putBool($this->dropBook);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class LevelChunkPacket extends DataPacket implements ClientboundPacket{
@@ -56,8 +57,11 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
+	/**
+	 * @param int[] $usedBlobHashes
+	 */
 	public static function withCache(int $chunkX, int $chunkZ, int $subChunkCount, array $usedBlobHashes, string $extraPayload) : self{
-		(static function(int ...$hashes){})($usedBlobHashes);
+		(static function(int ...$hashes) : void{})(...$usedBlobHashes);
 		$result = new self;
 		$result->chunkX = $chunkX;
 		$result->chunkZ = $chunkZ;
@@ -70,30 +74,18 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getChunkX() : int{
 		return $this->chunkX;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getChunkZ() : int{
 		return $this->chunkZ;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getSubChunkCount() : int{
 		return $this->subChunkCount;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isCacheEnabled() : bool{
 		return $this->cacheEnabled;
 	}
@@ -105,38 +97,35 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 		return $this->usedBlobHashes;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getExtraPayload() : string{
 		return $this->extraPayload;
 	}
 
-	protected function decodePayload() : void{
-		$this->chunkX = $this->getVarInt();
-		$this->chunkZ = $this->getVarInt();
-		$this->subChunkCount = $this->getUnsignedVarInt();
-		$this->cacheEnabled = $this->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->chunkX = $in->getVarInt();
+		$this->chunkZ = $in->getVarInt();
+		$this->subChunkCount = $in->getUnsignedVarInt();
+		$this->cacheEnabled = $in->getBool();
 		if($this->cacheEnabled){
-			for($i =  0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-				$this->usedBlobHashes[] = $this->getLLong();
+			for($i =  0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
+				$this->usedBlobHashes[] = $in->getLLong();
 			}
 		}
-		$this->extraPayload = $this->getString();
+		$this->extraPayload = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->putVarInt($this->chunkX);
-		$this->putVarInt($this->chunkZ);
-		$this->putUnsignedVarInt($this->subChunkCount);
-		$this->putBool($this->cacheEnabled);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putVarInt($this->chunkX);
+		$out->putVarInt($this->chunkZ);
+		$out->putUnsignedVarInt($this->subChunkCount);
+		$out->putBool($this->cacheEnabled);
 		if($this->cacheEnabled){
-			$this->putUnsignedVarInt(count($this->usedBlobHashes));
+			$out->putUnsignedVarInt(count($this->usedBlobHashes));
 			foreach($this->usedBlobHashes as $hash){
-				$this->putLLong($hash);
+				$out->putLLong($hash);
 			}
 		}
-		$this->putString($this->extraPayload);
+		$out->putString($this->extraPayload);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

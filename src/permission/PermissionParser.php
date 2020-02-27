@@ -23,12 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use function count;
+use function is_array;
+use function is_bool;
+use function ksort;
+use function strtolower;
+
 class PermissionParser{
 
 	/**
 	 * @param bool|string $value
-	 *
-	 * @return string
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -67,8 +71,8 @@ class PermissionParser{
 	}
 
 	/**
-	 * @param array  $data
-	 * @param string $default
+	 * @param mixed[][] $data
+	 * @phpstan-param array<string, array<string, mixed>> $data
 	 *
 	 * @return Permission[]
 	 */
@@ -82,12 +86,9 @@ class PermissionParser{
 	}
 
 	/**
-	 * @param string $name
-	 * @param array  $data
-	 * @param string $default
-	 * @param array  $output
-	 *
-	 * @return Permission
+	 * @param mixed[]      $data
+	 * @param Permission[] $output reference parameter
+	 * @phpstan-param array<string, mixed> $data
 	 *
 	 * @throws \Exception
 	 */
@@ -95,21 +96,14 @@ class PermissionParser{
 		$desc = null;
 		$children = [];
 		if(isset($data["default"])){
-			$value = PermissionParser::defaultFromString($data["default"]);
-			if($value !== null){
-				$default = $value;
-			}else{
-				throw new \InvalidStateException("'default' key contained unknown value");
-			}
+			$default = PermissionParser::defaultFromString($data["default"]);
 		}
 
 		if(isset($data["children"])){
 			if(is_array($data["children"])){
 				foreach($data["children"] as $k => $v){
 					if(is_array($v)){
-						if(($perm = self::loadPermission($k, $v, $default, $output)) !== null){
-							$output[] = $perm;
-						}
+						$output[] = self::loadPermission($k, $v, $default, $output);
 					}
 					$children[$k] = true;
 				}
@@ -128,7 +122,8 @@ class PermissionParser{
 	/**
 	 * @param Permission[] $permissions
 	 *
-	 * @return array
+	 * @return mixed[]
+	 * @phpstan-return array<string, array<string, mixed>>
 	 */
 	public static function emitPermissions(array $permissions) : array{
 		$result = [];
@@ -139,6 +134,10 @@ class PermissionParser{
 		return $result;
 	}
 
+	/**
+	 * @return mixed[]
+	 * @phpstan-return array<string, mixed>
+	 */
 	private static function emitPermission(Permission $permission) : array{
 		$result = [
 			"description" => $permission->getDescription(),
@@ -153,7 +152,7 @@ class PermissionParser{
 			}
 			$children[$name] = self::emitPermission($child);
 		}
-		if(!empty($children)){
+		if(count($children) > 0){
 			ksort($children);
 			$result["children"] = $children;
 		}

@@ -77,16 +77,10 @@ class FlowerPot extends Flowable{
 		$tile->setPlant($this->plant);
 	}
 
-	/**
-	 * @return Block|null
-	 */
 	public function getPlant() : ?Block{
 		return $this->plant;
 	}
 
-	/**
-	 * @param Block|null $plant
-	 */
 	public function setPlant(?Block $plant) : void{
 		if($plant === null or $plant instanceof Air){
 			$this->plant = null;

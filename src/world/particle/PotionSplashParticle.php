@@ -40,16 +40,11 @@ class PotionSplashParticle implements Particle{
 	 * Returns the default water-bottle splash colour.
 	 *
 	 * TODO: replace this with a standard surrogate object constant (first we need to implement them!)
-	 *
-	 * @return Color
 	 */
 	public static function DEFAULT_COLOR() : Color{
 		return new Color(0x38, 0x5d, 0xc6);
 	}
 
-	/**
-	 * @return Color
-	 */
 	public function getColor() : Color{
 		return $this->color;
 	}

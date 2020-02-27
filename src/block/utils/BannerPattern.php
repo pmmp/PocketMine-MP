@@ -79,16 +79,10 @@ class BannerPattern{
 		$this->color = $color;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getId() : string{
 		return $this->id;
 	}
 
-	/**
-	 * @return DyeColor
-	 */
 	public function getColor() : DyeColor{
 		return $this->color;
 	}

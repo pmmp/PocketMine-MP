@@ -27,17 +27,17 @@ use function spl_object_id;
 
 class ThreadManager extends \Volatile{
 
-	/** @var ThreadManager */
+	/** @var ThreadManager|null */
 	private static $instance = null;
 
 	public static function init() : void{
 		self::$instance = new ThreadManager();
 	}
 
-	/**
-	 * @return ThreadManager
-	 */
 	public static function getInstance() : ThreadManager{
+		if(self::$instance === null){
+			self::$instance = new ThreadManager();
+		}
 		return self::$instance;
 	}
 
@@ -46,7 +46,7 @@ class ThreadManager extends \Volatile{
 	 */
 	public function add($thread) : void{
 		if($thread instanceof Thread or $thread instanceof Worker){
-			$this->{spl_object_id($thread)} = $thread;
+			$this[spl_object_id($thread)] = $thread;
 		}
 	}
 
@@ -55,7 +55,7 @@ class ThreadManager extends \Volatile{
 	 */
 	public function remove($thread) : void{
 		if($thread instanceof Thread or $thread instanceof Worker){
-			unset($this->{spl_object_id($thread)});
+			unset($this[spl_object_id($thread)]);
 		}
 	}
 
@@ -81,7 +81,7 @@ class ThreadManager extends \Volatile{
 			try{
 				$thread->quit();
 				$logger->debug($thread->getThreadName() . " thread stopped successfully.");
-			}catch(\ThreadException $e){
+			}catch(ThreadException $e){
 				++$erroredThreads;
 				$logger->debug("Could not stop " . $thread->getThreadName() . " thread: " . $e->getMessage());
 			}

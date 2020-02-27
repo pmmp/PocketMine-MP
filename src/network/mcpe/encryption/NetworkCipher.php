@@ -34,6 +34,7 @@ class NetworkCipher{
 	private const ENCRYPTION_SCHEME = "AES-256-CFB8";
 	private const CHECKSUM_ALGO = "sha256";
 
+	/** @var bool */
 	public static $ENABLED = true;
 
 	/** @var string */
@@ -64,9 +65,6 @@ class NetworkCipher{
 	}
 
 	/**
-	 * @param string $encrypted
-	 *
-	 * @return string
 	 * @throws \UnexpectedValueException
 	 */
 	public function decrypt(string $encrypted) : string{

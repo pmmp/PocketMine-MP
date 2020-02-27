@@ -35,7 +35,7 @@ class MismatchTransactionData extends TransactionData{
 	}
 
 	protected function decodeData(NetworkBinaryStream $stream) : void{
-		if(!empty($this->actions)){
+		if(count($this->actions) > 0){
 			throw new BadPacketException("Mismatch transaction type should not have any actions associated with it, but got " . count($this->actions));
 		}
 	}

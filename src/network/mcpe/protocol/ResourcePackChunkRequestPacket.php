@@ -21,13 +21,12 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ResourcePackChunkRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CHUNK_REQUEST_PACKET;
@@ -37,14 +36,14 @@ class ResourcePackChunkRequestPacket extends DataPacket implements ServerboundPa
 	/** @var int */
 	public $chunkIndex;
 
-	protected function decodePayload() : void{
-		$this->packId = $this->getString();
-		$this->chunkIndex = $this->getLInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->packId = $in->getString();
+		$this->chunkIndex = $in->getLInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->putString($this->packId);
-		$this->putLInt($this->chunkIndex);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->packId);
+		$out->putLInt($this->chunkIndex);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

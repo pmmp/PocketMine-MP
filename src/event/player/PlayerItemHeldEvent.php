@@ -49,8 +49,6 @@ class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 	 * event will result in the **old** slot being changed, not this one.
 	 *
 	 * To change the item in the slot that the player is attempting to hold, set the slot that this function reports.
-	 *
-	 * @return int
 	 */
 	public function getSlot() : int{
 		return $this->hotbarSlot;
@@ -58,8 +56,6 @@ class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * Returns the item in the slot that the player is trying to equip.
-	 *
-	 * @return Item
 	 */
 	public function getItem() : Item{
 		return $this->item;

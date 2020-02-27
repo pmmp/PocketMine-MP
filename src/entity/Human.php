@@ -43,11 +43,13 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\player\Player;
 use pocketmine\utils\Limits;
 use pocketmine\utils\UUID;
@@ -84,6 +86,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	/** @var ExperienceManager */
 	protected $xpManager;
 
+	/** @var int */
 	protected $xpSeed;
 
 	protected $baseOffset = 1.62;
@@ -110,25 +113,17 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 * @deprecated
 	 *
 	 * Checks the length of a supplied skin bitmap and returns whether the length is valid.
-	 *
-	 * @param string $skin
-	 *
-	 * @return bool
 	 */
 	public static function isValidSkin(string $skin) : bool{
 		return in_array(strlen($skin), Skin::ACCEPTED_SKIN_SIZES, true);
 	}
 
-	/**
-	 * @return UUID
-	 */
 	public function getUniqueId() : UUID{
 		return $this->uuid;
 	}
 
 	/**
 	 * Returns a Skin object containing information about this human's skin.
-	 * @return Skin
 	 */
 	public function getSkin() : Skin{
 		return $this->skin;
@@ -137,8 +132,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	/**
 	 * Sets the human's skin. This will not send any update to viewers, you need to do that manually using
 	 * {@link sendSkin}.
-	 *
-	 * @param Skin $skin
 	 */
 	public function setSkin(Skin $skin) : void{
 		$this->skin = $skin;
@@ -153,7 +146,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function sendSkin(?array $targets = null) : void{
 		$pk = new PlayerSkinPacket();
 		$pk->uuid = $this->getUniqueId();
-		$pk->skin = $this->skin;
+		$pk->skin = SkinAdapterSingleton::get()->toSkinData($this->skin);
 		$this->server->broadcastPackets($targets ?? $this->hasSpawned, [$pk]);
 	}
 
@@ -166,9 +159,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 	}
 
-	/**
-	 * @return HungerManager
-	 */
 	public function getHungerManager() : HungerManager{
 		return $this->hungerManager;
 	}
@@ -186,9 +176,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return parent::consumeObject($consumable);
 	}
 
-	/**
-	 * @return ExperienceManager
-	 */
 	public function getXpManager() : ExperienceManager{
 		return $this->xpManager;
 	}
@@ -196,9 +183,12 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function getXpDropAmount() : int{
 		//this causes some XP to be lost on death when above level 1 (by design), dropping at most enough points for
 		//about 7.5 levels of XP.
-		return (int) min(100, 7 * $this->xpManager->getXpLevel());
+		return min(100, 7 * $this->xpManager->getXpLevel());
 	}
 
+	/**
+	 * @return PlayerInventory
+	 */
 	public function getInventory(){
 		return $this->inventory;
 	}
@@ -209,8 +199,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * For Human entities which are not players, sets their properties such as nametag, skin and UUID from NBT.
-	 *
-	 * @param CompoundTag $nbt
 	 */
 	protected function initHumanData(CompoundTag $nbt) : void{
 		if($nbt->hasTag("NameTag", StringTag::class)){
@@ -404,7 +392,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	protected function sendSpawnPacket(Player $player) : void{
 		if(!($this instanceof Player)){
-			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), $this->skin)]));
+			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), SkinAdapterSingleton::get()->toSkinData($this->skin))]));
 		}
 
 		$pk = new AddPlayerPacket();
@@ -427,6 +415,22 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if(!($this instanceof Player)){
 			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($this->uuid)]));
 		}
+	}
+
+	public function broadcastMovement(bool $teleport = false) : void{
+		//TODO: workaround 1.14.30 bug: MoveActor(Absolute|Delta)Packet don't work on players anymore :(
+		$pk = new MovePlayerPacket();
+		$pk->entityRuntimeId = $this->getId();
+		$pk->position = $this->getOffsetPosition($this->location);
+		$pk->yaw = $this->location->yaw;
+		$pk->pitch = $this->location->pitch;
+		$pk->headYaw = $this->location->yaw;
+		$pk->mode = $teleport ? MovePlayerPacket::MODE_TELEPORT : MovePlayerPacket::MODE_NORMAL;
+		//we can't assume that everyone who is using our chunk wants to see this movement,
+		//because this human might be a player who shouldn't be receiving his own movement.
+		//this didn't matter when we were able to use MoveActorPacket because
+		//the client just ignored MoveActor for itself, but it doesn't ignore MovePlayer for itself.
+		$this->server->broadcastPackets($this->hasSpawned, [$pk]);
 	}
 
 	protected function onDispose() : void{

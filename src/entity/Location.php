@@ -35,12 +35,9 @@ class Location extends Position{
 	public $pitch;
 
 	/**
-	 * @param int   $x
-	 * @param int   $y
-	 * @param int   $z
-	 * @param float $yaw
-	 * @param float $pitch
-	 * @param World $world
+	 * @param float|int $x
+	 * @param float|int $y
+	 * @param float|int $z
 	 */
 	public function __construct($x = 0, $y = 0, $z = 0, float $yaw = 0.0, float $pitch = 0.0, ?World $world = null){
 		$this->yaw = $yaw;
@@ -49,11 +46,6 @@ class Location extends Position{
 	}
 
 	/**
-	 * @param Vector3    $pos
-	 * @param World|null $world default null
-	 * @param float      $yaw default 0.0
-	 * @param float      $pitch default 0.0
-	 *
 	 * @return Location
 	 */
 	public static function fromObject(Vector3 $pos, ?World $world = null, float $yaw = 0.0, float $pitch = 0.0){
@@ -62,8 +54,6 @@ class Location extends Position{
 
 	/**
 	 * Return a Location instance
-	 *
-	 * @return Location
 	 */
 	public function asLocation() : Location{
 		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->world);

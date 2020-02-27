@@ -26,7 +26,6 @@ namespace pocketmine\world\format\io;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\format\EmptySubChunk;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
@@ -46,55 +45,52 @@ final class FastChunkSerializer{
 		//NOOP
 	}
 
+	public static function serializeWithoutLight(Chunk $chunk) : string{
+		return self::serialize($chunk, false);
+	}
+
 	/**
 	 * Fast-serializes the chunk for passing between threads
 	 * TODO: tiles and entities
-	 *
-	 * @param Chunk $chunk
-	 *
-	 * @return string
 	 */
-	public static function serialize(Chunk $chunk) : string{
+	public static function serialize(Chunk $chunk, bool $includeLight = true) : string{
+		$includeLight = $includeLight && $chunk->isLightPopulated();
+
 		$stream = new BinaryStream();
 		$stream->putInt($chunk->getX());
 		$stream->putInt($chunk->getZ());
-		$stream->putByte(($chunk->isLightPopulated() ? 4 : 0) | ($chunk->isPopulated() ? 2 : 0) | ($chunk->isGenerated() ? 1 : 0));
+		$stream->putByte(($includeLight ? 4 : 0) | ($chunk->isPopulated() ? 2 : 0) | ($chunk->isGenerated() ? 1 : 0));
 		if($chunk->isGenerated()){
 			//subchunks
-			$count = 0;
-			$subStream = new BinaryStream();
-			foreach($chunk->getSubChunks() as $y => $subChunk){
-				if($subChunk instanceof EmptySubChunk){
-					continue;
-				}
-				++$count;
+			$subChunks = $chunk->getSubChunks();
+			$count = $subChunks->count();
+			$stream->putByte($count);
 
-				$subStream->putByte($y);
+			foreach($subChunks as $y => $subChunk){
+				$stream->putByte($y);
 				$layers = $subChunk->getBlockLayers();
-				$subStream->putByte(count($subChunk->getBlockLayers()));
+				$stream->putByte(count($layers));
 				foreach($layers as $blocks){
 					$wordArray = $blocks->getWordArray();
 					$palette = $blocks->getPalette();
 
-					$subStream->putByte($blocks->getBitsPerBlock());
-					$subStream->put($wordArray);
-					$serialPalette = pack("N*", ...$palette);
-					$subStream->putInt(strlen($serialPalette));
-					$subStream->put($serialPalette);
+					$stream->putByte($blocks->getBitsPerBlock());
+					$stream->put($wordArray);
+					$serialPalette = pack("L*", ...$palette);
+					$stream->putInt(strlen($serialPalette));
+					$stream->put($serialPalette);
 				}
 
-				if($chunk->isLightPopulated()){
-					$subStream->put($subChunk->getBlockSkyLightArray()->getData());
-					$subStream->put($subChunk->getBlockLightArray()->getData());
+				if($includeLight){
+					$stream->put($subChunk->getBlockSkyLightArray()->getData());
+					$stream->put($subChunk->getBlockLightArray()->getData());
 				}
 			}
-			$stream->putByte($count);
-			$stream->put($subStream->getBuffer());
 
 			//biomes
 			$stream->put($chunk->getBiomeIdArray());
-			if($chunk->isLightPopulated()){
-				$stream->put(pack("v*", ...$chunk->getHeightMapArray()));
+			if($includeLight){
+				$stream->put(pack("S*", ...$chunk->getHeightMapArray()));
 			}
 		}
 
@@ -103,10 +99,6 @@ final class FastChunkSerializer{
 
 	/**
 	 * Deserializes a fast-serialized chunk
-	 *
-	 * @param string $data
-	 *
-	 * @return Chunk
 	 */
 	public static function deserialize(string $data) : Chunk{
 		$stream = new BinaryStream($data);
@@ -131,7 +123,7 @@ final class FastChunkSerializer{
 				for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
 					$bitsPerBlock = $stream->getByte();
 					$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
-					$palette = array_values(unpack("N*", $stream->get($stream->getInt())));
+					$palette = array_values(unpack("L*", $stream->get($stream->getInt())));
 
 					$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 				}
@@ -142,7 +134,7 @@ final class FastChunkSerializer{
 
 			$biomeIds = $stream->get(256);
 			if($lightPopulated){
-				$heightMap = array_values(unpack("v*", $stream->get(512)));
+				$heightMap = array_values(unpack("S*", $stream->get(512)));
 			}
 		}
 

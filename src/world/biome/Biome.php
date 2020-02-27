@@ -44,16 +44,16 @@ abstract class Biome{
 
 	public const ICE_PLAINS = 12;
 
-
 	public const SMALL_MOUNTAINS = 20;
-
 
 	public const BIRCH_FOREST = 27;
 
-
 	public const MAX_BIOMES = 256;
 
-	/** @var Biome[]|\SplFixedArray */
+	/**
+	 * @var Biome[]|\SplFixedArray
+	 * @phpstan-var \SplFixedArray<Biome>
+	 */
 	private static $biomes;
 
 	/** @var int */
@@ -96,17 +96,11 @@ abstract class Biome{
 
 		self::register(self::ICE_PLAINS, new IcePlainsBiome());
 
-
 		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
 
 		self::register(self::BIRCH_FOREST, new ForestBiome(TreeType::BIRCH()));
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return Biome
-	 */
 	public static function getBiome(int $id) : Biome{
 		if(self::$biomes[$id] === null){
 			self::register($id, new UnknownBiome());
@@ -122,12 +116,6 @@ abstract class Biome{
 		$this->populators[] = $populator;
 	}
 
-	/**
-	 * @param ChunkManager $world
-	 * @param int          $chunkX
-	 * @param int          $chunkZ
-	 * @param Random       $random
-	 */
 	public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
 		foreach($this->populators as $populator){
 			$populator->populate($world, $chunkX, $chunkZ, $random);

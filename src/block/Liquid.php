@@ -42,6 +42,7 @@ abstract class Liquid extends Transparent{
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
 
+	/** @var int */
 	public $adjacentSources = 0;
 
 	/** @var Vector3|null */
@@ -130,6 +131,9 @@ abstract class Liquid extends Transparent{
 		return !$this->falling and $this->decay === 0;
 	}
 
+	/**
+	 * @return float
+	 */
 	public function getFluidHeightPercent(){
 		return (($this->falling ? 0 : $this->decay) + 1) / 9;
 	}
@@ -139,8 +143,6 @@ abstract class Liquid extends Transparent{
 	}
 
 	/**
-	 * @param bool $still
-	 *
 	 * @return $this
 	 */
 	public function setStill(bool $still = true) : self{
@@ -243,8 +245,6 @@ abstract class Liquid extends Transparent{
 
 	/**
 	 * Returns how many liquid levels are lost per block flowed horizontally. Affects how far the liquid can flow.
-	 *
-	 * @return int
 	 */
 	public function getFlowDecayPerBlock() : int{
 		return 1;

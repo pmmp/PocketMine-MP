@@ -21,9 +21,7 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol\types\inventory;
-
 
 final class WindowTypes{
 

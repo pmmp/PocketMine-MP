@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use function count;
 
 class Thin extends Transparent{
 	/** @var bool[] facing => dummy */
@@ -71,7 +72,7 @@ class Thin extends Transparent{
 			$bbs[] = $bb;
 		}
 
-		if(empty($bbs)){
+		if(count($bbs) === 0){
 			//centre post AABB (only needed if not connected on any axis - other BBs overlapping will do this if any connections are made)
 			return [
 				AxisAlignedBB::one()->contract($inset, 0, $inset)

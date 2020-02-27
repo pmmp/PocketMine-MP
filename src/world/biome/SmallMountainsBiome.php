@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\biome;
 
-
 class SmallMountainsBiome extends MountainsBiome{
 
 	public function __construct(){

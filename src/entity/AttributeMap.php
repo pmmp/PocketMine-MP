@@ -33,11 +33,6 @@ class AttributeMap{
 		$this->attributes[$attribute->getId()] = $attribute;
 	}
 
-	/**
-	 * @param string $id
-	 *
-	 * @return Attribute|null
-	 */
 	public function get(string $id) : ?Attribute{
 		return $this->attributes[$id] ?? null;
 	}
@@ -53,7 +48,7 @@ class AttributeMap{
 	 * @return Attribute[]
 	 */
 	public function needSend() : array{
-		return array_filter($this->attributes, function(Attribute $attribute){
+		return array_filter($this->attributes, function(Attribute $attribute) : bool{
 			return $attribute->isSyncable() and $attribute->isDesynchronized();
 		});
 	}

@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class ClientCacheBlobStatusPacket extends DataPacket implements ServerboundPacket{
@@ -39,13 +40,11 @@ class ClientCacheBlobStatusPacket extends DataPacket implements ServerboundPacke
 	/**
 	 * @param int[] $hitHashes
 	 * @param int[] $missHashes
-	 *
-	 * @return self
 	 */
 	public static function create(array $hitHashes, array $missHashes) : self{
 		//type checks
-		(static function(int ...$hashes){})(...$hitHashes);
-		(static function(int ...$hashes){})(...$missHashes);
+		(static function(int ...$hashes) : void{})(...$hitHashes);
+		(static function(int ...$hashes) : void{})(...$missHashes);
 
 		$result = new self;
 		$result->hitHashes = $hitHashes;
@@ -67,25 +66,25 @@ class ClientCacheBlobStatusPacket extends DataPacket implements ServerboundPacke
 		return $this->missHashes;
 	}
 
-	protected function decodePayload() : void{
-		$hitCount = $this->getUnsignedVarInt();
-		$missCount = $this->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$hitCount = $in->getUnsignedVarInt();
+		$missCount = $in->getUnsignedVarInt();
 		for($i = 0; $i < $hitCount; ++$i){
-			$this->hitHashes[] = $this->getLLong();
+			$this->hitHashes[] = $in->getLLong();
 		}
 		for($i = 0; $i < $missCount; ++$i){
-			$this->missHashes[] = $this->getLLong();
+			$this->missHashes[] = $in->getLLong();
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->putUnsignedVarInt(count($this->hitHashes));
-		$this->putUnsignedVarInt(count($this->missHashes));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt(count($this->hitHashes));
+		$out->putUnsignedVarInt(count($this->missHashes));
 		foreach($this->hitHashes as $hash){
-			$this->putLLong($hash);
+			$out->putLLong($hash);
 		}
 		foreach($this->missHashes as $hash){
-			$this->putLLong($hash);
+			$out->putLLong($hash);
 		}
 	}
 

@@ -25,9 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ContainerOpenPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CONTAINER_OPEN_PACKET;
@@ -62,21 +62,22 @@ class ContainerOpenPacket extends DataPacket implements ClientboundPacket{
 		$result->windowId = $windowId;
 		$result->type = $windowType;
 		$result->entityUniqueId = $entityUniqueId;
+		$result->x = $result->y = $result->z = 0; //these have to be set even if they aren't used
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->windowId = $this->getByte();
-		$this->type = $this->getByte();
-		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->entityUniqueId = $this->getEntityUniqueId();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->windowId = $in->getByte();
+		$this->type = $in->getByte();
+		$in->getBlockPosition($this->x, $this->y, $this->z);
+		$this->entityUniqueId = $in->getEntityUniqueId();
 	}
 
-	protected function encodePayload() : void{
-		$this->putByte($this->windowId);
-		$this->putByte($this->type);
-		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putEntityUniqueId($this->entityUniqueId);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->windowId);
+		$out->putByte($this->type);
+		$out->putBlockPosition($this->x, $this->y, $this->z);
+		$out->putEntityUniqueId($this->entityUniqueId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

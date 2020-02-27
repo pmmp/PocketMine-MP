@@ -41,6 +41,11 @@ use function microtime;
 
 class JavaWorldData extends BaseNbtWorldData{
 
+	/**
+	 * @param mixed[] $options
+	 * @phpstan-param class-string<Generator> $generator
+	 * @phpstan-param array<string, mixed>    $options
+	 */
 	public static function generate(string $path, string $name, int $seed, string $generator, array $options = [], int $version = 19133) : void{
 		Utils::testValidInstance($generator, Generator::class);
 		//TODO, add extra details
@@ -72,7 +77,7 @@ class JavaWorldData extends BaseNbtWorldData{
 	protected function load() : CompoundTag{
 		$nbt = new BigEndianNbtSerializer();
 		try{
-			$worldData = $nbt->readCompressed(file_get_contents($this->dataPath))->getTag();
+			$worldData = $nbt->readCompressed(file_get_contents($this->dataPath))->mustGetCompoundTag();
 		}catch(NbtDataException $e){
 			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
@@ -100,7 +105,6 @@ class JavaWorldData extends BaseNbtWorldData{
 		$buffer = $nbt->writeCompressed(new TreeRoot(CompoundTag::create()->setTag("Data", $this->compoundTag)));
 		file_put_contents($this->dataPath, $buffer);
 	}
-
 
 	public function getDifficulty() : int{
 		return $this->compoundTag->getByte("Difficulty", World::DIFFICULTY_NORMAL);

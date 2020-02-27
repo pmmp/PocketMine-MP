@@ -40,23 +40,14 @@ class ResourcePackStackEntry{
 		$this->subPackName = $subPackName;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPackId() : string{
 		return $this->packId;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getVersion() : string{
 		return $this->version;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getSubPackName() : string{
 		return $this->subPackName;
 	}

@@ -34,7 +34,10 @@ abstract class WritableBookBase extends Item{
 	public const TAG_PAGE_TEXT = "text"; //TAG_String
 	public const TAG_PAGE_PHOTONAME = "photoname"; //TAG_String - TODO
 
-	/** @var WritableBookPage[]|Deque */
+	/**
+	 * @var WritableBookPage[]|Deque
+	 * @phpstan-var Deque<WritableBookPage>
+	 */
 	private $pages;
 
 	public function __construct(int $id, int $variant, string $name){
@@ -44,10 +47,6 @@ abstract class WritableBookBase extends Item{
 
 	/**
 	 * Returns whether the given page exists in this book.
-	 *
-	 * @param int $pageId
-	 *
-	 * @return bool
 	 */
 	public function pageExists(int $pageId) : bool{
 		return isset($this->pages[$pageId]);
@@ -56,9 +55,6 @@ abstract class WritableBookBase extends Item{
 	/**
 	 * Returns a string containing the content of a page (which could be empty), or null if the page doesn't exist.
 	 *
-	 * @param int $pageId
-	 *
-	 * @return string
 	 * @throws \OutOfRangeException if requesting a nonexisting page
 	 */
 	public function getPageText(int $pageId) : string{
@@ -67,9 +63,6 @@ abstract class WritableBookBase extends Item{
 
 	/**
 	 * Sets the text of a page in the book. Adds the page if the page does not yet exist.
-	 *
-	 * @param int    $pageId
-	 * @param string $pageText
 	 *
 	 * @return $this
 	 */
@@ -85,8 +78,6 @@ abstract class WritableBookBase extends Item{
 	/**
 	 * Adds a new page with the given page ID.
 	 * Creates a new page for every page between the given ID and existing pages that doesn't yet exist.
-	 *
-	 * @param int $pageId
 	 *
 	 * @return $this
 	 */
@@ -104,8 +95,6 @@ abstract class WritableBookBase extends Item{
 	/**
 	 * Deletes an existing page with the given page ID.
 	 *
-	 * @param int $pageId
-	 *
 	 * @return $this
 	 */
 	public function deletePage(int $pageId) : self{
@@ -116,9 +105,6 @@ abstract class WritableBookBase extends Item{
 	/**
 	 * Inserts a new page with the given text and moves other pages upwards.
 	 *
-	 * @param int    $pageId
-	 * @param string $pageText
-	 *
 	 * @return $this
 	 */
 	public function insertPage(int $pageId, string $pageText = "") : self{
@@ -128,9 +114,6 @@ abstract class WritableBookBase extends Item{
 
 	/**
 	 * Switches the text of two pages with each other.
-	 *
-	 * @param int $pageId1
-	 * @param int $pageId2
 	 *
 	 * @return bool indicating success
 	 * @throws \OutOfRangeException if either of the pages does not exist

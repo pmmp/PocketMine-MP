@@ -25,11 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\entity\Skin;
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class PlayerListPacket extends DataPacket implements ClientboundPacket{
@@ -43,6 +41,9 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $type;
 
+	/**
+	 * @param PlayerListEntry[] $entries
+	 */
 	public static function add(array $entries) : self{
 		$result = new self;
 		$result->type = self::TYPE_ADD;
@@ -50,6 +51,9 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
+	/**
+	 * @param PlayerListEntry[] $entries
+	 */
 	public static function remove(array $entries) : self{
 		$result = new self;
 		$result->type = self::TYPE_REMOVE;
@@ -57,61 +61,46 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->type = $this->getByte();
-		$count = $this->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->type = $in->getByte();
+		$count = $in->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
 			$entry = new PlayerListEntry();
 
 			if($this->type === self::TYPE_ADD){
-				$entry->uuid = $this->getUUID();
-				$entry->entityUniqueId = $this->getEntityUniqueId();
-				$entry->username = $this->getString();
-
-				$skinId = $this->getString();
-				$skinData = $this->getString();
-				$capeData = $this->getString();
-				$geometryName = $this->getString();
-				$geometryData = $this->getString();
-
-				try{
-					$entry->skin = new Skin(
-						$skinId,
-						$skinData,
-						$capeData,
-						$geometryName,
-						$geometryData
-					);
-				}catch(\InvalidArgumentException $e){
-					throw new BadPacketException($e->getMessage(), 0, $e);
-				}
-				$entry->xboxUserId = $this->getString();
-				$entry->platformChatId = $this->getString();
+				$entry->uuid = $in->getUUID();
+				$entry->entityUniqueId = $in->getEntityUniqueId();
+				$entry->username = $in->getString();
+				$entry->xboxUserId = $in->getString();
+				$entry->platformChatId = $in->getString();
+				$entry->buildPlatform = $in->getLInt();
+				$entry->skinData = $in->getSkin();
+				$entry->isTeacher = $in->getBool();
+				$entry->isHost = $in->getBool();
 			}else{
-				$entry->uuid = $this->getUUID();
+				$entry->uuid = $in->getUUID();
 			}
 
 			$this->entries[$i] = $entry;
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->putByte($this->type);
-		$this->putUnsignedVarInt(count($this->entries));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->type);
+		$out->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
 			if($this->type === self::TYPE_ADD){
-				$this->putUUID($entry->uuid);
-				$this->putEntityUniqueId($entry->entityUniqueId);
-				$this->putString($entry->username);
-				$this->putString($entry->skin->getSkinId());
-				$this->putString($entry->skin->getSkinData());
-				$this->putString($entry->skin->getCapeData());
-				$this->putString($entry->skin->getGeometryName());
-				$this->putString($entry->skin->getGeometryData());
-				$this->putString($entry->xboxUserId);
-				$this->putString($entry->platformChatId);
+				$out->putUUID($entry->uuid);
+				$out->putEntityUniqueId($entry->entityUniqueId);
+				$out->putString($entry->username);
+				$out->putString($entry->xboxUserId);
+				$out->putString($entry->platformChatId);
+				$out->putLInt($entry->buildPlatform);
+				$out->putSkin($entry->skinData);
+				$out->putBool($entry->isTeacher);
+				$out->putBool($entry->isHost);
 			}else{
-				$this->putUUID($entry->uuid);
+				$out->putUUID($entry->uuid);
 			}
 		}
 	}

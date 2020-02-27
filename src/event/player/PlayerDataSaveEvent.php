@@ -48,22 +48,17 @@ class PlayerDataSaveEvent extends Event implements Cancellable{
 
 	/**
 	 * Returns the data to be written to disk as a CompoundTag
-	 * @return CompoundTag
 	 */
 	public function getSaveData() : CompoundTag{
 		return $this->data;
 	}
 
-	/**
-	 * @param CompoundTag $data
-	 */
 	public function setSaveData(CompoundTag $data) : void{
 		$this->data = $data;
 	}
 
 	/**
 	 * Returns the username of the player whose data is being saved. This is not necessarily an online player.
-	 * @return string
 	 */
 	public function getPlayerName() : string{
 		return $this->playerName;

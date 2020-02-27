@@ -32,44 +32,26 @@ class FurnaceInventory extends BlockInventory{
 		parent::__construct($holder, 3);
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getResult() : Item{
 		return $this->getItem(2);
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getFuel() : Item{
 		return $this->getItem(1);
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getSmelting() : Item{
 		return $this->getItem(0);
 	}
 
-	/**
-	 * @param Item $item
-	 */
 	public function setResult(Item $item) : void{
 		$this->setItem(2, $item);
 	}
 
-	/**
-	 * @param Item $item
-	 */
 	public function setFuel(Item $item) : void{
 		$this->setItem(1, $item);
 	}
 
-	/**
-	 * @param Item $item
-	 */
 	public function setSmelting(Item $item) : void{
 		$this->setItem(0, $item);
 	}

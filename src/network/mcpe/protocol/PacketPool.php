@@ -28,7 +28,7 @@ use pocketmine\utils\BinaryDataException;
 
 class PacketPool{
 	/** @var \SplFixedArray<Packet> */
-	protected static $pool = null;
+	protected static $pool;
 
 	public static function init() : void{
 		static::$pool = new \SplFixedArray(256);
@@ -54,7 +54,7 @@ class PacketPool{
 		static::registerPacket(new RiderJumpPacket());
 		static::registerPacket(new UpdateBlockPacket());
 		static::registerPacket(new AddPaintingPacket());
-		static::registerPacket(new ExplodePacket());
+		static::registerPacket(new TickSyncPacket());
 		static::registerPacket(new LevelSoundEventPacketV1());
 		static::registerPacket(new LevelEventPacket());
 		static::registerPacket(new BlockEventPacket());
@@ -162,39 +162,36 @@ class PacketPool{
 		static::registerPacket(new ClientCacheStatusPacket());
 		static::registerPacket(new OnScreenTextureAnimationPacket());
 		static::registerPacket(new MapCreateLockedCopyPacket());
-		static::registerPacket(new StructureTemplateDataExportRequestPacket());
-		static::registerPacket(new StructureTemplateDataExportResponsePacket());
+		static::registerPacket(new StructureTemplateDataRequestPacket());
+		static::registerPacket(new StructureTemplateDataResponsePacket());
 		static::registerPacket(new UpdateBlockPropertiesPacket());
 		static::registerPacket(new ClientCacheBlobStatusPacket());
 		static::registerPacket(new ClientCacheMissResponsePacket());
+		static::registerPacket(new EducationSettingsPacket());
+		static::registerPacket(new EmotePacket());
+		static::registerPacket(new MultiplayerSettingsPacket());
+		static::registerPacket(new SettingsCommandPacket());
+		static::registerPacket(new AnvilDamagePacket());
+		static::registerPacket(new CompletedUsingItemPacket());
+		static::registerPacket(new NetworkSettingsPacket());
+		static::registerPacket(new PlayerAuthInputPacket());
 	}
 
-	/**
-	 * @param Packet $packet
-	 */
 	public static function registerPacket(Packet $packet) : void{
 		static::$pool[$packet->pid()] = clone $packet;
 	}
 
-	/**
-	 * @param int $pid
-	 *
-	 * @return Packet
-	 */
 	public static function getPacketById(int $pid) : Packet{
 		return isset(static::$pool[$pid]) ? clone static::$pool[$pid] : new UnknownPacket();
 	}
 
 	/**
-	 * @param string $buffer
-	 *
-	 * @return Packet
 	 * @throws BinaryDataException
 	 */
 	public static function getPacket(string $buffer) : Packet{
 		$offset = 0;
-		$pk = static::getPacketById(Binary::readUnsignedVarInt($buffer, $offset));
-		$pk->setBuffer($buffer, $offset);
+		$pk = static::getPacketById(Binary::readUnsignedVarInt($buffer, $offset) & DataPacket::PID_MASK);
+		$pk->getBinaryStream()->setBuffer($buffer, $offset);
 
 		return $pk;
 	}

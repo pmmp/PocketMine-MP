@@ -381,9 +381,6 @@ class ItemFactory{
 	 * NOTE: If you are registering a new item type, you will need to add it to the creative inventory yourself - it
 	 * will not automatically appear there.
 	 *
-	 * @param Item $item
-	 * @param bool $override
-	 *
 	 * @throws \RuntimeException if something attempted to override an already-registered item without specifying the
 	 * $override parameter.
 	 */
@@ -401,16 +398,10 @@ class ItemFactory{
 	/**
 	 * Returns an instance of the Item with the specified id, meta, count and NBT.
 	 *
-	 * @param int              $id
-	 * @param int              $meta
-	 * @param int              $count
-	 * @param CompoundTag|null $tags
-	 *
-	 * @return Item
 	 * @throws \InvalidArgumentException
 	 */
 	public static function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
-		/** @var Item $item */
+		/** @var Item|null $item */
 		$item = null;
 		if($meta !== -1){
 			if(isset(self::$list[$offset = self::getListOffset($id, $meta)])){
@@ -444,10 +435,6 @@ class ItemFactory{
 	 * - `minecraft:string`
 	 * - `351:4 (lapis lazuli ID:meta)`
 	 *
-	 * @param string $str
-	 *
-	 * @return Item
-	 *
 	 * @throws \InvalidArgumentException if the given string cannot be parsed as an item identifier
 	 */
 	public static function fromString(string $str) : Item{
@@ -477,11 +464,6 @@ class ItemFactory{
 
 	/**
 	 * Returns whether the specified item ID is already registered in the item factory.
-	 *
-	 * @param int $id
-	 * @param int $variant
-	 *
-	 * @return bool
 	 */
 	public static function isRegistered(int $id, int $variant = 0) : bool{
 		if($id < 256){

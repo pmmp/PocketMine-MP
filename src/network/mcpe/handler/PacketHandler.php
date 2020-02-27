@@ -34,6 +34,7 @@ use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
+use pocketmine\network\mcpe\protocol\AnvilDamagePacket;
 use pocketmine\network\mcpe\protocol\AutomationClientConnectPacket;
 use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
@@ -54,14 +55,16 @@ use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandOutputPacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
+use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
+use pocketmine\network\mcpe\protocol\EducationSettingsPacket;
+use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\EventPacket;
-use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use pocketmine\network\mcpe\protocol\GuiDataPickItemPacket;
 use pocketmine\network\mcpe\protocol\HurtArmorPacket;
@@ -89,12 +92,15 @@ use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\MoveActorDeltaPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
+use pocketmine\network\mcpe\protocol\MultiplayerSettingsPacket;
 use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
+use pocketmine\network\mcpe\protocol\NetworkSettingsPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\NpcRequestPacket;
 use pocketmine\network\mcpe\protocol\OnScreenTextureAnimationPacket;
 use pocketmine\network\mcpe\protocol\PhotoTransferPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
+use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
@@ -133,6 +139,7 @@ use pocketmine\network\mcpe\protocol\SetScoreboardIdentityPacket;
 use pocketmine\network\mcpe\protocol\SetScorePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
+use pocketmine\network\mcpe\protocol\SettingsCommandPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\ShowProfilePacket;
@@ -143,11 +150,12 @@ use pocketmine\network\mcpe\protocol\SpawnParticleEffectPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\StopSoundPacket;
 use pocketmine\network\mcpe\protocol\StructureBlockUpdatePacket;
-use pocketmine\network\mcpe\protocol\StructureTemplateDataExportRequestPacket;
-use pocketmine\network\mcpe\protocol\StructureTemplateDataExportResponsePacket;
+use pocketmine\network\mcpe\protocol\StructureTemplateDataRequestPacket;
+use pocketmine\network\mcpe\protocol\StructureTemplateDataResponsePacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\TickSyncPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
@@ -254,7 +262,7 @@ abstract class PacketHandler{
 		return false;
 	}
 
-	public function handleExplode(ExplodePacket $packet) : bool{
+	public function handleTickSync(TickSyncPacket $packet) : bool{
 		return false;
 	}
 
@@ -686,11 +694,11 @@ abstract class PacketHandler{
 		return false;
 	}
 
-	public function handleStructureTemplateDataExportRequest(StructureTemplateDataExportRequestPacket $packet) : bool{
+	public function handleStructureTemplateDataRequest(StructureTemplateDataRequestPacket $packet) : bool{
 		return false;
 	}
 
-	public function handleStructureTemplateDataExportResponse(StructureTemplateDataExportResponsePacket $packet) : bool{
+	public function handleStructureTemplateDataResponse(StructureTemplateDataResponsePacket $packet) : bool{
 		return false;
 	}
 
@@ -703,6 +711,38 @@ abstract class PacketHandler{
 	}
 
 	public function handleClientCacheMissResponse(ClientCacheMissResponsePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleEducationSettings(EducationSettingsPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleEmote(EmotePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleMultiplayerSettings(MultiplayerSettingsPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleSettingsCommand(SettingsCommandPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleAnvilDamage(AnvilDamagePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleCompletedUsingItem(CompletedUsingItemPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleNetworkSettings(NetworkSettingsPacket $packet) : bool{
+		return false;
+	}
+
+	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
 		return false;
 	}
 }

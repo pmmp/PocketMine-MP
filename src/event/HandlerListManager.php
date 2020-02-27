@@ -35,9 +35,7 @@ class HandlerListManager{
 		return self::$globalInstance ?? (self::$globalInstance = new self);
 	}
 
-	/**
-	 * @var HandlerList[] classname => HandlerList
-	 */
+	/** @var HandlerList[] classname => HandlerList */
 	private $allLists = [];
 
 	/**
@@ -58,16 +56,28 @@ class HandlerListManager{
 		}
 	}
 
+	/**
+	 * @param ReflectionClass $class
+	 * @phpstan-param \ReflectionClass<Event> $class
+	 */
 	private static function isValidClass(\ReflectionClass $class) : bool{
 		$tags = Utils::parseDocComment((string) $class->getDocComment());
 		return !$class->isAbstract() || isset($tags["allowHandle"]);
 	}
 
+	/**
+	 * @phpstan-param \ReflectionClass<Event> $class
+	 *
+	 * @phpstan-return \ReflectionClass<Event>|null
+	 */
 	private static function resolveNearestHandleableParent(\ReflectionClass $class) : ?\ReflectionClass{
-		for($parent = $class->getParentClass(); $parent !== false && !self::isValidClass($parent); $parent = $parent->getParentClass()){
+		for($parent = $class->getParentClass(); $parent !== false; $parent = $parent->getParentClass()){
+			if(self::isValidClass($parent)){
+				return $parent;
+			}
 			//NOOP
 		}
-		return $parent ?: null;
+		return null;
 	}
 
 	/**
@@ -75,9 +85,6 @@ class HandlerListManager{
 	 *
 	 * Calling this method also lazily initializes the $classMap inheritance tree of handler lists.
 	 *
-	 * @param string $event
-	 *
-	 * @return HandlerList
 	 * @throws \ReflectionException
 	 * @throws \InvalidArgumentException
 	 */

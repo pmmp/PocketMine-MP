@@ -42,23 +42,14 @@ class EntityTeleportEvent extends EntityEvent implements Cancellable{
 		$this->to = $to;
 	}
 
-	/**
-	 * @return Position
-	 */
 	public function getFrom() : Position{
 		return $this->from;
 	}
 
-	/**
-	 * @return Position
-	 */
 	public function getTo() : Position{
 		return $this->to;
 	}
 
-	/**
-	 * @param Position $to
-	 */
 	public function setTo(Position $to) : void{
 		$this->to = $to;
 	}

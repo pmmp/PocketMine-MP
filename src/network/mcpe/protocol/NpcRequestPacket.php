@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class NpcRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::NPC_REQUEST_PACKET;
@@ -39,18 +40,18 @@ class NpcRequestPacket extends DataPacket implements ServerboundPacket{
 	/** @var int */
 	public $actionType;
 
-	protected function decodePayload() : void{
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->requestType = $this->getByte();
-		$this->commandString = $this->getString();
-		$this->actionType = $this->getByte();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->requestType = $in->getByte();
+		$this->commandString = $in->getString();
+		$this->actionType = $in->getByte();
 	}
 
-	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putByte($this->requestType);
-		$this->putString($this->commandString);
-		$this->putByte($this->actionType);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putByte($this->requestType);
+		$out->putString($this->commandString);
+		$out->putByte($this->actionType);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

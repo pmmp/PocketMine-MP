@@ -64,7 +64,7 @@ class BlockTest extends TestCase{
 			}
 		}
 
-		self::assertTrue(false, "Can't test registering new blocks because no unused spaces left");
+		throw new \RuntimeException("Can't test registering new blocks because no unused spaces left");
 	}
 
 	/**
@@ -97,7 +97,8 @@ class BlockTest extends TestCase{
 	}
 
 	/**
-	 * @return array
+	 * @return int[][]
+	 * @phpstan-return list<array{int,int}>
 	 */
 	public function blockGetProvider() : array{
 		return [

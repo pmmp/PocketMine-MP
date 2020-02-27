@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_DISPLAY_OBJECTIVE_PACKET;
@@ -41,20 +42,20 @@ class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $sortOrder;
 
-	protected function decodePayload() : void{
-		$this->displaySlot = $this->getString();
-		$this->objectiveName = $this->getString();
-		$this->displayName = $this->getString();
-		$this->criteriaName = $this->getString();
-		$this->sortOrder = $this->getVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->displaySlot = $in->getString();
+		$this->objectiveName = $in->getString();
+		$this->displayName = $in->getString();
+		$this->criteriaName = $in->getString();
+		$this->sortOrder = $in->getVarInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->putString($this->displaySlot);
-		$this->putString($this->objectiveName);
-		$this->putString($this->displayName);
-		$this->putString($this->criteriaName);
-		$this->putVarInt($this->sortOrder);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->displaySlot);
+		$out->putString($this->objectiveName);
+		$out->putString($this->displayName);
+		$out->putString($this->criteriaName);
+		$out->putVarInt($this->sortOrder);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

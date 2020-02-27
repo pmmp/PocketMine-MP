@@ -35,14 +35,31 @@ use function is_object;
 use function is_string;
 use function method_exists;
 
-abstract class DataPacket extends NetworkBinaryStream implements Packet{
+abstract class DataPacket implements Packet{
 
 	public const NETWORK_ID = 0;
+
+	public const PID_MASK = 0x3ff; //10 bits
+
+	private const SUBCLIENT_ID_MASK = 0x03; //2 bits
+	private const SENDER_SUBCLIENT_ID_SHIFT = 10;
+	private const RECIPIENT_SUBCLIENT_ID_SHIFT = 12;
 
 	/** @var int */
 	public $senderSubId = 0;
 	/** @var int */
 	public $recipientSubId = 0;
+	
+	/** @var NetworkBinaryStream */
+	private $buf;
+
+	public function __construct(){
+		$this->buf = new NetworkBinaryStream();
+	}
+
+	public function getBinaryStream() : NetworkBinaryStream{
+		return $this->buf;
+	}
 
 	public function pid() : int{
 		return $this::NETWORK_ID;
@@ -60,10 +77,10 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	 * @throws BadPacketException
 	 */
 	final public function decode() : void{
-		$this->rewind();
+		$this->buf->rewind();
 		try{
-			$this->decodeHeader();
-			$this->decodePayload();
+			$this->decodeHeader($this->buf);
+			$this->decodePayload($this->buf);
 		}catch(BinaryDataException | BadPacketException $e){
 			throw new BadPacketException($this->getName() . ": " . $e->getMessage(), 0, $e);
 		}
@@ -73,12 +90,16 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	 * @throws BinaryDataException
 	 * @throws \UnexpectedValueException
 	 */
-	protected function decodeHeader() : void{
-		$pid = $this->getUnsignedVarInt();
+	protected function decodeHeader(NetworkBinaryStream $in) : void{
+		$header = $in->getUnsignedVarInt();
+		$pid = $header & self::PID_MASK;
 		if($pid !== static::NETWORK_ID){
 			//TODO: this means a logical error in the code, but how to prevent it from happening?
 			throw new \UnexpectedValueException("Expected " . static::NETWORK_ID . " for packet ID, got $pid");
 		}
+		$this->senderSubId = ($header >> self::SENDER_SUBCLIENT_ID_SHIFT) & self::SUBCLIENT_ID_MASK;
+		$this->recipientSubId = ($header >> self::RECIPIENT_SUBCLIENT_ID_SHIFT) & self::SUBCLIENT_ID_MASK;
+
 	}
 
 	/**
@@ -87,43 +108,41 @@ abstract class DataPacket extends NetworkBinaryStream implements Packet{
 	 * @throws BadPacketException
 	 * @throws BinaryDataException
 	 */
-	abstract protected function decodePayload() : void;
+	abstract protected function decodePayload(NetworkBinaryStream $in) : void;
 
 	final public function encode() : void{
-		$this->reset();
-		$this->encodeHeader();
-		$this->encodePayload();
+		$this->buf->reset();
+		$this->encodeHeader($this->buf);
+		$this->encodePayload($this->buf);
 	}
 
-	protected function encodeHeader() : void{
-		$this->putUnsignedVarInt(static::NETWORK_ID);
+	protected function encodeHeader(NetworkBinaryStream $out) : void{
+		$out->putUnsignedVarInt(
+			static::NETWORK_ID |
+			($this->senderSubId << self::SENDER_SUBCLIENT_ID_SHIFT) |
+			($this->recipientSubId << self::RECIPIENT_SUBCLIENT_ID_SHIFT)
+		);
 	}
 
 	/**
 	 * Encodes the packet body, without the packet ID or other generic header fields.
 	 */
-	abstract protected function encodePayload() : void;
+	abstract protected function encodePayload(NetworkBinaryStream $out) : void;
 
-	public function __debugInfo(){
-		$data = [];
-		foreach($this as $k => $v){
-			if($k === "buffer" and is_string($v)){
-				$data[$k] = bin2hex($v);
-			}elseif(is_string($v) or (is_object($v) and method_exists($v, "__toString"))){
-				$data[$k] = Utils::printable((string) $v);
-			}else{
-				$data[$k] = $v;
-			}
-		}
-
-		return $data;
-	}
-
+	/**
+	 * @param string $name
+	 *
+	 * @return mixed
+	 */
 	public function __get($name){
 		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
 	}
 
-	public function __set($name, $value){
+	/**
+	 * @param string $name
+	 * @param mixed  $value
+	 */
+	public function __set($name, $value) : void{
 		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
 	}
 }

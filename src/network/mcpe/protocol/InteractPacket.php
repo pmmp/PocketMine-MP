@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class InteractPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::INTERACT_PACKET;
@@ -48,26 +48,26 @@ class InteractPacket extends DataPacket implements ServerboundPacket{
 	/** @var float */
 	public $z;
 
-	protected function decodePayload() : void{
-		$this->action = $this->getByte();
-		$this->target = $this->getEntityRuntimeId();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->action = $in->getByte();
+		$this->target = $in->getEntityRuntimeId();
 
 		if($this->action === self::ACTION_MOUSEOVER){
 			//TODO: should this be a vector3?
-			$this->x = $this->getLFloat();
-			$this->y = $this->getLFloat();
-			$this->z = $this->getLFloat();
+			$this->x = $in->getLFloat();
+			$this->y = $in->getLFloat();
+			$this->z = $in->getLFloat();
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->putByte($this->action);
-		$this->putEntityRuntimeId($this->target);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putByte($this->action);
+		$out->putEntityRuntimeId($this->target);
 
 		if($this->action === self::ACTION_MOUSEOVER){
-			$this->putLFloat($this->x);
-			$this->putLFloat($this->y);
-			$this->putLFloat($this->z);
+			$out->putLFloat($this->x);
+			$out->putLFloat($this->y);
+			$out->putLFloat($this->z);
 		}
 	}
 

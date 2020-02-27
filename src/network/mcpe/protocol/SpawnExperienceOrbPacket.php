@@ -25,9 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class SpawnExperienceOrbPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SPAWN_EXPERIENCE_ORB_PACKET;
@@ -37,14 +37,14 @@ class SpawnExperienceOrbPacket extends DataPacket implements ServerboundPacket{
 	/** @var int */
 	public $amount;
 
-	protected function decodePayload() : void{
-		$this->position = $this->getVector3();
-		$this->amount = $this->getVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->position = $in->getVector3();
+		$this->amount = $in->getVarInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->putVector3($this->position);
-		$this->putVarInt($this->amount);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putVector3($this->position);
+		$out->putVarInt($this->amount);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

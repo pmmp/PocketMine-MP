@@ -47,13 +47,14 @@ class SendUsageTask extends AsyncTask{
 	public const TYPE_STATUS = 2;
 	public const TYPE_CLOSE = 3;
 
+	/** @var string */
 	public $endpoint;
+	/** @var string */
 	public $data;
 
 	/**
-	 * @param Server $server
-	 * @param int    $type
-	 * @param array  $playerList
+	 * @param string[] $playerList
+	 * @phpstan-param array<string, string> $playerList
 	 */
 	public function __construct(Server $server, int $type, array $playerList = []){
 		$endpoint = "http://" . $server->getProperty("anonymous-statistics.host", "stats.pocketmine.net") . "/";
@@ -118,13 +119,12 @@ class SendUsageTask extends AsyncTask{
 					"ticks" => $server->getTick()
 				];
 
-
 				//This anonymizes the user ids so they cannot be reversed to the original
 				foreach($playerList as $k => $v){
 					$playerList[$k] = md5($v);
 				}
 
-				$players = array_map(function(Player $p){ return md5($p->getUniqueId()->toBinary()); }, $server->getOnlinePlayers());
+				$players = array_map(function(Player $p) : string{ return md5($p->getUniqueId()->toBinary()); }, $server->getOnlinePlayers());
 
 				$data["players"] = [
 					"count" => count($players),

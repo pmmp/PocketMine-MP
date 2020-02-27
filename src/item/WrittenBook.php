@@ -51,8 +51,6 @@ class WrittenBook extends WritableBookBase{
 	/**
 	 * Returns the generation of the book.
 	 * Generations higher than 1 can not be copied.
-	 *
-	 * @return int
 	 */
 	public function getGeneration() : int{
 		return $this->generation;
@@ -60,8 +58,6 @@ class WrittenBook extends WritableBookBase{
 
 	/**
 	 * Sets the generation of a book.
-	 *
-	 * @param int $generation
 	 *
 	 * @return $this
 	 */
@@ -78,8 +74,6 @@ class WrittenBook extends WritableBookBase{
 	 * Returns the author of this book.
 	 * This is not a reliable way to get the name of the player who signed this book.
 	 * The author can be set to anything when signing a book.
-	 *
-	 * @return string
 	 */
 	public function getAuthor() : string{
 		return $this->author;
@@ -87,8 +81,6 @@ class WrittenBook extends WritableBookBase{
 
 	/**
 	 * Sets the author of this book.
-	 *
-	 * @param string $authorName
 	 *
 	 * @return $this
 	 */
@@ -100,8 +92,6 @@ class WrittenBook extends WritableBookBase{
 
 	/**
 	 * Returns the title of this book.
-	 *
-	 * @return string
 	 */
 	public function getTitle() : string{
 		return $this->title;
@@ -109,8 +99,6 @@ class WrittenBook extends WritableBookBase{
 
 	/**
 	 * Sets the author of this book.
-	 *
-	 * @param string $title
 	 *
 	 * @return $this
 	 */

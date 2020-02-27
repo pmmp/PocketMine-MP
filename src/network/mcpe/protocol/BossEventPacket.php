@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class BossEventPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::BOSS_EVENT_PACKET;
@@ -39,9 +39,9 @@ class BossEventPacket extends DataPacket implements ClientboundPacket, Serverbou
 	public const TYPE_HIDE = 2;
 	/* C2S: Unregisters a player from a boss fight. */
 	public const TYPE_UNREGISTER_PLAYER = 3;
-	/* S2C: Appears not to be implemented. Currently bar percentage only appears to change in response to the target entity's health. */
+	/* S2C: Sets the bar percentage. */
 	public const TYPE_HEALTH_PERCENT = 4;
-	/* S2C: Also appears to not be implemented. Title client-side sticks as the target entity's nametag, or their entity type name if not set. */
+	/* S2C: Sets title of the bar. */
 	public const TYPE_TITLE = 5;
 	/* S2C: Not sure on this. Includes color and overlay fields, plus an unknown short. TODO: check this */
 	public const TYPE_UNKNOWN_6 = 6;
@@ -119,60 +119,60 @@ class BossEventPacket extends DataPacket implements ClientboundPacket, Serverbou
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->bossEid = $this->getEntityUniqueId();
-		$this->eventType = $this->getUnsignedVarInt();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->bossEid = $in->getEntityUniqueId();
+		$this->eventType = $in->getUnsignedVarInt();
 		switch($this->eventType){
 			case self::TYPE_REGISTER_PLAYER:
 			case self::TYPE_UNREGISTER_PLAYER:
-				$this->playerEid = $this->getEntityUniqueId();
+				$this->playerEid = $in->getEntityUniqueId();
 				break;
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_SHOW:
-				$this->title = $this->getString();
-				$this->healthPercent = $this->getLFloat();
+				$this->title = $in->getString();
+				$this->healthPercent = $in->getLFloat();
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_UNKNOWN_6:
-				$this->unknownShort = $this->getLShort();
+				$this->unknownShort = $in->getLShort();
 			case self::TYPE_TEXTURE:
-				$this->color = $this->getUnsignedVarInt();
-				$this->overlay = $this->getUnsignedVarInt();
+				$this->color = $in->getUnsignedVarInt();
+				$this->overlay = $in->getUnsignedVarInt();
 				break;
 			case self::TYPE_HEALTH_PERCENT:
-				$this->healthPercent = $this->getLFloat();
+				$this->healthPercent = $in->getLFloat();
 				break;
 			case self::TYPE_TITLE:
-				$this->title = $this->getString();
+				$this->title = $in->getString();
 				break;
 			default:
 				break;
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->bossEid);
-		$this->putUnsignedVarInt($this->eventType);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityUniqueId($this->bossEid);
+		$out->putUnsignedVarInt($this->eventType);
 		switch($this->eventType){
 			case self::TYPE_REGISTER_PLAYER:
 			case self::TYPE_UNREGISTER_PLAYER:
-				$this->putEntityUniqueId($this->playerEid);
+				$out->putEntityUniqueId($this->playerEid);
 				break;
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_SHOW:
-				$this->putString($this->title);
-				$this->putLFloat($this->healthPercent);
+				$out->putString($this->title);
+				$out->putLFloat($this->healthPercent);
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_UNKNOWN_6:
-				$this->putLShort($this->unknownShort);
+				$out->putLShort($this->unknownShort);
 			case self::TYPE_TEXTURE:
-				$this->putUnsignedVarInt($this->color);
-				$this->putUnsignedVarInt($this->overlay);
+				$out->putUnsignedVarInt($this->color);
+				$out->putUnsignedVarInt($this->overlay);
 				break;
 			case self::TYPE_HEALTH_PERCENT:
-				$this->putLFloat($this->healthPercent);
+				$out->putLFloat($this->healthPercent);
 				break;
 			case self::TYPE_TITLE:
-				$this->putString($this->title);
+				$out->putString($this->title);
 				break;
 			default:
 				break;

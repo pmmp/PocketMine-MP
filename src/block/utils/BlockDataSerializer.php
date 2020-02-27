@@ -32,9 +32,6 @@ final class BlockDataSerializer{
 	}
 
 	/**
-	 * @param int $raw
-	 *
-	 * @return int
 	 * @throws InvalidBlockStateException
 	 */
 	public static function readFacing(int $raw) : int{
@@ -68,9 +65,6 @@ final class BlockDataSerializer{
 	}
 
 	/**
-	 * @param int $facing
-	 *
-	 * @return int
 	 * @throws InvalidBlockStateException
 	 */
 	public static function readHorizontalFacing(int $facing) : int{
@@ -89,9 +83,6 @@ final class BlockDataSerializer{
 	}
 
 	/**
-	 * @param int $raw
-	 *
-	 * @return int
 	 * @throws InvalidBlockStateException
 	 */
 	public static function readLegacyHorizontalFacing(int $raw) : int{
@@ -121,9 +112,6 @@ final class BlockDataSerializer{
 	}
 
 	/**
-	 * @param int $value
-	 *
-	 * @return int
 	 * @throws InvalidBlockStateException
 	 */
 	public static function read5MinusHorizontalFacing(int $value) : int{

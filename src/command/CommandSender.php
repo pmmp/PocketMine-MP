@@ -23,39 +23,29 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
-use pocketmine\lang\TextContainer;
+use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\Permissible;
 use pocketmine\Server;
 
 interface CommandSender extends Permissible{
 
 	/**
-	 * @param TextContainer|string $message
+	 * @param TranslationContainer|string $message
 	 */
 	public function sendMessage($message) : void;
 
-	/**
-	 * @return Server
-	 */
 	public function getServer() : Server;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string;
 
 	/**
 	 * Returns the line height of the command-sender's screen. Used for determining sizes for command output pagination
 	 * such as in the /help command.
-	 *
-	 * @return int
 	 */
 	public function getScreenLineHeight() : int;
 
 	/**
 	 * Sets the line height used for command output pagination for this command sender. `null` will reset it to default.
-	 *
-	 * @param int|null $height
 	 */
 	public function setScreenLineHeight(?int $height) : void;
 }

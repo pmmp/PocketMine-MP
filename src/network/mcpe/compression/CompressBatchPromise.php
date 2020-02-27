@@ -27,7 +27,10 @@ use pocketmine\utils\Utils;
 use function array_push;
 
 class CompressBatchPromise{
-	/** @var \Closure[] */
+	/**
+	 * @var \Closure[]
+	 * @phpstan-var (\Closure(self) : void)[]
+	 */
 	private $callbacks = [];
 
 	/** @var string|null */
@@ -36,10 +39,13 @@ class CompressBatchPromise{
 	/** @var bool */
 	private $cancelled = false;
 
+	/**
+	 * @phpstan-param \Closure(self) : void ...$callbacks
+	 */
 	public function onResolve(\Closure ...$callbacks) : void{
 		$this->checkCancelled();
 		foreach($callbacks as $callback){
-			Utils::validateCallableSignature(function(CompressBatchPromise $promise){}, $callback);
+			Utils::validateCallableSignature(function(CompressBatchPromise $promise) : void{}, $callback);
 		}
 		if($this->result !== null){
 			foreach($callbacks as $callback){
@@ -65,6 +71,7 @@ class CompressBatchPromise{
 
 	/**
 	 * @return \Closure[]
+	 * @phpstan-return (\Closure(self) : void)[]
 	 */
 	public function getResolveCallbacks() : array{
 		return $this->callbacks;
@@ -82,9 +89,6 @@ class CompressBatchPromise{
 		return $this->result !== null;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isCancelled() : bool{
 		return $this->cancelled;
 	}

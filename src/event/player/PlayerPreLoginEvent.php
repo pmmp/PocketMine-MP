@@ -26,6 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\event\Event;
 use pocketmine\player\PlayerInfo;
 use function array_keys;
+use function count;
 
 /**
  * Called when a player connects to the server, prior to authentication taking place.
@@ -62,12 +63,6 @@ class PlayerPreLoginEvent extends Event{
 	/** @var string[] reason const => associated message */
 	protected $kickReasons = [];
 
-	/**
-	 * @param PlayerInfo $playerInfo
-	 * @param string     $ip
-	 * @param int        $port
-	 * @param bool       $authRequired
-	 */
 	public function __construct(PlayerInfo $playerInfo, string $ip, int $port, bool $authRequired){
 		$this->playerInfo = $playerInfo;
 		$this->ip = $ip;
@@ -79,37 +74,23 @@ class PlayerPreLoginEvent extends Event{
 	 * Returns an object containing self-proclaimed information about the connecting player.
 	 * WARNING: THE PLAYER IS NOT VERIFIED DURING THIS EVENT. At this point, it's unknown if the player is real or a
 	 * hacker.
-	 *
-	 * @return PlayerInfo
 	 */
 	public function getPlayerInfo() : PlayerInfo{
 		return $this->playerInfo;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getIp() : string{
 		return $this->ip;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPort() : int{
 		return $this->port;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isAuthRequired() : bool{
 		return $this->authRequired;
 	}
 
-	/**
-	 * @param bool $v
-	 */
 	public function setAuthRequired(bool $v) : void{
 		$this->authRequired = $v;
 	}
@@ -125,10 +106,6 @@ class PlayerPreLoginEvent extends Event{
 
 	/**
 	 * Returns whether the given kick reason is set for this event.
-	 *
-	 * @param int $flag
-	 *
-	 * @return bool
 	 */
 	public function isKickReasonSet(int $flag) : bool{
 		return isset($this->kickReasons[$flag]);
@@ -137,9 +114,6 @@ class PlayerPreLoginEvent extends Event{
 	/**
 	 * Sets a reason to disallow the player to continue continue authenticating, with a message.
 	 * This can also be used to change kick messages for already-set flags.
-	 *
-	 * @param int    $flag
-	 * @param string $message
 	 */
 	public function setKickReason(int $flag, string $message) : void{
 		$this->kickReasons[$flag] = $message;
@@ -164,19 +138,13 @@ class PlayerPreLoginEvent extends Event{
 
 	/**
 	 * Returns whether the player is allowed to continue logging in.
-	 *
-	 * @return bool
 	 */
 	public function isAllowed() : bool{
-		return empty($this->kickReasons);
+		return count($this->kickReasons) === 0;
 	}
 
 	/**
 	 * Returns the kick message provided for the given kick flag, or null if not set.
-	 *
-	 * @param int $flag
-	 *
-	 * @return string|null
 	 */
 	public function getKickMessage(int $flag) : ?string{
 		return $this->kickReasons[$flag] ?? null;
@@ -189,8 +157,6 @@ class PlayerPreLoginEvent extends Event{
 	 * messages.
 	 *
 	 * @see PlayerPreLoginEvent::KICK_REASON_PRIORITY
-	 *
-	 * @return string
 	 */
 	public function getFinalKickMessage() : string{
 		foreach(self::KICK_REASON_PRIORITY as $p){

@@ -39,23 +39,14 @@ class Element extends Opaque{
 		$this->symbol = $symbol;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getAtomicWeight() : int{
 		return $this->atomicWeight;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getGroup() : int{
 		return $this->group;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getSymbol() : string{
 		return $this->symbol;
 	}

@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PHOTO_TRANSFER_PACKET;
@@ -37,16 +38,16 @@ class PhotoTransferPacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $bookId; //photos are stored in a sibling directory to the games folder (screenshots/(some UUID)/bookID/example.png)
 
-	protected function decodePayload() : void{
-		$this->photoName = $this->getString();
-		$this->photoData = $this->getString();
-		$this->bookId = $this->getString();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->photoName = $in->getString();
+		$this->photoData = $in->getString();
+		$this->bookId = $in->getString();
 	}
 
-	protected function encodePayload() : void{
-		$this->putString($this->photoName);
-		$this->putString($this->photoData);
-		$this->putString($this->bookId);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putString($this->photoName);
+		$out->putString($this->photoData);
+		$out->putString($this->bookId);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

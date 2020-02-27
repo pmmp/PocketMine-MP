@@ -25,22 +25,11 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 interface Packet{
 
-	public function setOffset(int $offset) : void;
-
-	public function setBuffer(string $buffer = "", int $offset = 0);
-
-	public function getOffset() : int;
-
-	public function getBuffer() : string;
-
-	/**
-	 * Returns whether the offset has reached the end of the buffer.
-	 * @return bool
-	 */
-	public function feof() : bool;
+	public function getBinaryStream() : NetworkBinaryStream;
 
 	public function pid() : int;
 
@@ -64,8 +53,6 @@ interface Packet{
 	 *
 	 * Typically this method returns the return value of the handler in the supplied PacketHandler. See other packets
 	 * for examples how to implement this.
-	 *
-	 * @param PacketHandler $handler
 	 *
 	 * @return bool true if the packet was handled successfully, false if not.
 	 * @throws BadPacketException if broken data was found in the packet

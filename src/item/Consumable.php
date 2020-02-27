@@ -47,8 +47,6 @@ interface Consumable{
 
 	/**
 	 * Called when this Consumable is consumed by mob, after standard resulting effects have been applied.
-	 *
-	 * @param Living $consumer
 	 */
 	public function onConsume(Living $consumer) : void;
 }

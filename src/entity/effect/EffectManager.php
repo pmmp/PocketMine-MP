@@ -29,6 +29,7 @@ use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\utils\Color;
 use pocketmine\utils\Utils;
 use function abs;
+use function count;
 use function spl_object_id;
 
 class EffectManager{
@@ -44,9 +45,15 @@ class EffectManager{
 	/** @var bool */
 	protected $onlyAmbientEffects = false;
 
-	/** @var \Closure[] */
+	/**
+	 * @var \Closure[]
+	 * @phpstan-var (\Closure(EffectInstance, bool $replacesOldEffect) : void)[]
+	 */
 	protected $effectAddHooks = [];
-	/** @var \Closure[] */
+	/**
+	 * @var \Closure[]
+	 * @phpstan-var (\Closure(EffectInstance) : void)[]
+	 */
 	protected $effectRemoveHooks = [];
 
 	public function __construct(Living $entity){
@@ -73,8 +80,6 @@ class EffectManager{
 
 	/**
 	 * Removes the effect with the specified ID from the mob.
-	 *
-	 * @param Effect $effectType
 	 */
 	public function remove(Effect $effectType) : void{
 		$index = $effectType->getId();
@@ -105,10 +110,6 @@ class EffectManager{
 	/**
 	 * Returns the effect instance active on this entity with the specified ID, or null if the mob does not have the
 	 * effect.
-	 *
-	 * @param Effect $effect
-	 *
-	 * @return EffectInstance|null
 	 */
 	public function get(Effect $effect) : ?EffectInstance{
 		return $this->effects[$effect->getId()] ?? null;
@@ -116,10 +117,6 @@ class EffectManager{
 
 	/**
 	 * Returns whether the specified effect is active on the mob.
-	 *
-	 * @param Effect $effect
-	 *
-	 * @return bool
 	 */
 	public function has(Effect $effect) : bool{
 		return isset($this->effects[$effect->getId()]);
@@ -129,8 +126,6 @@ class EffectManager{
 	 * Adds an effect to the mob.
 	 * If a weaker effect of the same type is already applied, it will be replaced.
 	 * If a weaker or equal-strength effect is already applied but has a shorter duration, it will be replaced.
-	 *
-	 * @param EffectInstance $effect
 	 *
 	 * @return bool whether the effect has been successfully applied.
 	 */
@@ -194,7 +189,7 @@ class EffectManager{
 			}
 		}
 
-		if(!empty($colors)){
+		if(count($colors) > 0){
 			$this->bubbleColor = Color::mix(...$colors);
 			$this->onlyAmbientEffects = $ambient;
 		}else{
@@ -203,16 +198,10 @@ class EffectManager{
 		}
 	}
 
-	/**
-	 * @return Color
-	 */
 	public function getBubbleColor() : Color{
 		return $this->bubbleColor;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasOnlyAmbientEffects() : bool{
 		return $this->onlyAmbientEffects;
 	}
@@ -229,14 +218,20 @@ class EffectManager{
 			}
 		}
 
-		return !empty($this->effects);
+		return count($this->effects) > 0;
 	}
 
+	/**
+	 * @phpstan-param \Closure(EffectInstance, bool $replacesOldEffect) : void $closure
+	 */
 	public function onEffectAdd(\Closure $closure) : void{
 		Utils::validateCallableSignature(function(EffectInstance $effect, bool $replacesOldEffect) : void{}, $closure);
 		$this->effectAddHooks[spl_object_id($closure)] = $closure;
 	}
 
+	/**
+	 * @phpstan-param \Closure(EffectInstance) : void $closure
+	 */
 	public function onEffectRemove(\Closure $closure) : void{
 		Utils::validateCallableSignature(function(EffectInstance $effect) : void{}, $closure);
 		$this->effectRemoveHooks[spl_object_id($closure)] = $closure;

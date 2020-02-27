@@ -41,30 +41,18 @@ class ReleaseItemTransactionData extends TransactionData{
 	/** @var Vector3 */
 	private $headPos;
 
-	/**
-	 * @return int
-	 */
 	public function getActionType() : int{
 		return $this->actionType;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getHotbarSlot() : int{
 		return $this->hotbarSlot;
 	}
 
-	/**
-	 * @return Item
-	 */
 	public function getItemInHand() : Item{
 		return $this->itemInHand;
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	public function getHeadPos() : Vector3{
 		return $this->headPos;
 	}
@@ -87,6 +75,9 @@ class ReleaseItemTransactionData extends TransactionData{
 		$stream->putVector3($this->headPos);
 	}
 
+	/**
+	 * @param NetworkInventoryAction[] $actions
+	 */
 	public static function new(array $actions, int $actionType, int $hotbarSlot, Item $itemInHand, Vector3 $headPos) : self{
 		$result = new self;
 		$result->actions = $actions;

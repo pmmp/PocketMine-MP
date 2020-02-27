@@ -25,10 +25,10 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use Particle\Validator\Validator;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
@@ -52,22 +52,49 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 	public const I_SERVER_ADDRESS = 'ServerAddress';
 	public const I_LANGUAGE_CODE = 'LanguageCode';
 
+	public const I_SKIN_RESOURCE_PATCH = 'SkinResourcePatch';
+
 	public const I_SKIN_ID = 'SkinId';
+	public const I_SKIN_HEIGHT = 'SkinImageHeight';
+	public const I_SKIN_WIDTH = 'SkinImageWidth';
 	public const I_SKIN_DATA = 'SkinData';
+
+	public const I_CAPE_ID = 'CapeId';
+	public const I_CAPE_HEIGHT = 'CapeImageHeight';
+	public const I_CAPE_WIDTH = 'CapeImageWidth';
 	public const I_CAPE_DATA = 'CapeData';
-	public const I_GEOMETRY_NAME = 'SkinGeometryName';
-	public const I_GEOMETRY_DATA = 'SkinGeometry';
+
+	public const I_GEOMETRY_DATA = 'SkinGeometryData';
+
+	public const I_ANIMATION_DATA = 'SkinAnimationData';
+	public const I_ANIMATION_IMAGES = 'AnimatedImageData';
+
+	public const I_ANIMATION_IMAGE_HEIGHT = 'ImageHeight';
+	public const I_ANIMATION_IMAGE_WIDTH = 'ImageWidth';
+	public const I_ANIMATION_IMAGE_FRAMES = 'Frames';
+	public const I_ANIMATION_IMAGE_TYPE = 'Type';
+	public const I_ANIMATION_IMAGE_DATA = 'Image';
+
+	public const I_PREMIUM_SKIN = 'PremiumSkin';
+	public const I_PERSONA_SKIN = 'PersonaSkin';
+	public const I_PERSONA_CAPE_ON_CLASSIC_SKIN = 'CapeOnClassicSkin';
 
 	/** @var int */
 	public $protocol;
 
 	/** @var string[] array of encoded JWT */
 	public $chainDataJwt = [];
-	/** @var array|null extraData index of whichever JWT has it */
+	/**
+	 * @var mixed[]|null extraData index of whichever JWT has it
+	 * @phpstan-var array<string, mixed>
+	 */
 	public $extraData = null;
 	/** @var string */
 	public $clientDataJwt;
-	/** @var array decoded payload of the clientData JWT */
+	/**
+	 * @var mixed[] decoded payload of the clientData JWT
+	 * @phpstan-var array<string, mixed>
+	 */
 	public $clientData = [];
 
 	/**
@@ -82,15 +109,13 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 		return true;
 	}
 
-	protected function decodePayload() : void{
-		$this->protocol = $this->getInt();
-		$this->decodeConnectionRequest();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->protocol = $in->getInt();
+		$this->decodeConnectionRequest($in);
 	}
 
 	/**
-	 * @param Validator $v
-	 * @param string    $name
-	 * @param           $data
+	 * @param mixed     $data
 	 *
 	 * @throws BadPacketException
 	 */
@@ -109,8 +134,8 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 	 * @throws BadPacketException
 	 * @throws BinaryDataException
 	 */
-	protected function decodeConnectionRequest() : void{
-		$buffer = new BinaryStream($this->getString());
+	protected function decodeConnectionRequest(NetworkBinaryStream $in) : void{
+		$buffer = new BinaryStream($in->getString());
 
 		$chainData = json_decode($buffer->get($buffer->getLInt()), true);
 		if(!is_array($chainData)){
@@ -164,17 +189,38 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 		$v->required(self::I_SERVER_ADDRESS)->string();
 		$v->required(self::I_LANGUAGE_CODE)->string();
 
+		$v->required(self::I_SKIN_RESOURCE_PATCH)->string();
+
 		$v->required(self::I_SKIN_ID)->string();
 		$v->required(self::I_SKIN_DATA)->string();
+		$v->required(self::I_SKIN_HEIGHT)->integer(true);
+		$v->required(self::I_SKIN_WIDTH)->integer(true);
+
+		$v->required(self::I_CAPE_ID, null, true)->string();
 		$v->required(self::I_CAPE_DATA, null, true)->string();
-		$v->required(self::I_GEOMETRY_NAME)->string();
+		$v->required(self::I_CAPE_HEIGHT)->integer(true);
+		$v->required(self::I_CAPE_WIDTH)->integer(true);
+
 		$v->required(self::I_GEOMETRY_DATA, null, true)->string();
+
+		$v->required(self::I_ANIMATION_DATA, null, true)->string();
+		$v->required(self::I_ANIMATION_IMAGES, null, true)->isArray()->each(function(Validator $vSub) : void{
+			$vSub->required(self::I_ANIMATION_IMAGE_HEIGHT)->integer(true);
+			$vSub->required(self::I_ANIMATION_IMAGE_WIDTH)->integer(true);
+			$vSub->required(self::I_ANIMATION_IMAGE_FRAMES)->numeric(); //float() doesn't accept ints ???
+			$vSub->required(self::I_ANIMATION_IMAGE_TYPE)->integer(true);
+			$vSub->required(self::I_ANIMATION_IMAGE_DATA)->string();
+		});
+		$v->required(self::I_PREMIUM_SKIN)->bool();
+		$v->required(self::I_PERSONA_SKIN)->bool();
+		$v->required(self::I_PERSONA_CAPE_ON_CLASSIC_SKIN)->bool();
+
 		self::validate($v, 'clientData', $clientData);
 
 		$this->clientData = $clientData;
 	}
 
-	protected function encodePayload() : void{
+	protected function encodePayload(NetworkBinaryStream $out) : void{
 		//TODO
 	}
 

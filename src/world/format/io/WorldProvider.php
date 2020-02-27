@@ -31,7 +31,6 @@ use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 interface WorldProvider{
 
 	/**
-	 * @param string $path
 	 * @throws CorruptedWorldException
 	 * @throws UnsupportedWorldFormatException
 	 */
@@ -39,33 +38,19 @@ interface WorldProvider{
 
 	/**
 	 * Gets the build height limit of this world
-	 *
-	 * @return int
 	 */
 	public function getWorldHeight() : int;
 
-	/**
-	 * @return string
-	 */
 	public function getPath() : string;
 
 	/**
 	 * Tells if the path is a valid world.
 	 * This must tell if the current format supports opening the files in the directory
-	 *
-	 * @param string $path
-	 *
-	 * @return bool
 	 */
 	public static function isValid(string $path) : bool;
 
 	/**
 	 * Loads a chunk (usually from disk storage) and returns it. If the chunk does not exist, null is returned.
-	 *
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return null|Chunk
 	 *
 	 * @throws CorruptedChunkException
 	 */
@@ -78,8 +63,6 @@ interface WorldProvider{
 
 	/**
 	 * Returns information about the world
-	 *
-	 * @return WorldData
 	 */
 	public function getWorldData() : WorldData;
 
@@ -91,10 +74,6 @@ interface WorldProvider{
 	/**
 	 * Returns a generator which yields all the chunks in this world.
 	 *
-	 * @param bool         $skipCorrupted
-	 *
-	 * @param \Logger|null $logger
-	 *
 	 * @return \Generator|Chunk[]
 	 * @throws CorruptedChunkException
 	 */
@@ -102,8 +81,6 @@ interface WorldProvider{
 
 	/**
 	 * Returns the number of chunks in the provider. Used for world conversion time estimations.
-	 *
-	 * @return int
 	 */
 	public function calculateChunkCount() : int;
 }

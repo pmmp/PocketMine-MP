@@ -25,9 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
@@ -45,8 +45,6 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @param ResourcePackInfoEntry[] $resourcePacks
 	 * @param ResourcePackInfoEntry[] $behaviorPacks
-	 * @param bool                    $mustAccept
-	 * @param bool                    $hasScripts
 	 *
 	 * @return ResourcePacksInfoPacket
 	 */
@@ -59,30 +57,30 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->mustAccept = $this->getBool();
-		$this->hasScripts = $this->getBool();
-		$behaviorPackCount = $this->getLShort();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->mustAccept = $in->getBool();
+		$this->hasScripts = $in->getBool();
+		$behaviorPackCount = $in->getLShort();
 		while($behaviorPackCount-- > 0){
-			$this->behaviorPackEntries[] = ResourcePackInfoEntry::read($this);
+			$this->behaviorPackEntries[] = ResourcePackInfoEntry::read($in);
 		}
 
-		$resourcePackCount = $this->getLShort();
+		$resourcePackCount = $in->getLShort();
 		while($resourcePackCount-- > 0){
-			$this->resourcePackEntries[] = ResourcePackInfoEntry::read($this);
+			$this->resourcePackEntries[] = ResourcePackInfoEntry::read($in);
 		}
 	}
 
-	protected function encodePayload() : void{
-		$this->putBool($this->mustAccept);
-		$this->putBool($this->hasScripts);
-		$this->putLShort(count($this->behaviorPackEntries));
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putBool($this->mustAccept);
+		$out->putBool($this->hasScripts);
+		$out->putLShort(count($this->behaviorPackEntries));
 		foreach($this->behaviorPackEntries as $entry){
-			$entry->write($this);
+			$entry->write($out);
 		}
-		$this->putLShort(count($this->resourcePackEntries));
+		$out->putLShort(count($this->resourcePackEntries));
 		foreach($this->resourcePackEntries as $entry){
-			$entry->write($this);
+			$entry->write($out);
 		}
 	}
 

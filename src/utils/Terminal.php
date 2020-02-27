@@ -32,29 +32,51 @@ use function stream_isatty;
 use const PHP_EOL;
 
 abstract class Terminal{
+	/** @var string */
 	public static $FORMAT_BOLD = "";
+	/** @var string */
 	public static $FORMAT_OBFUSCATED = "";
+	/** @var string */
 	public static $FORMAT_ITALIC = "";
+	/** @var string */
 	public static $FORMAT_UNDERLINE = "";
+	/** @var string */
 	public static $FORMAT_STRIKETHROUGH = "";
 
+	/** @var string */
 	public static $FORMAT_RESET = "";
 
+	/** @var string */
 	public static $COLOR_BLACK = "";
+	/** @var string */
 	public static $COLOR_DARK_BLUE = "";
+	/** @var string */
 	public static $COLOR_DARK_GREEN = "";
+	/** @var string */
 	public static $COLOR_DARK_AQUA = "";
+	/** @var string */
 	public static $COLOR_DARK_RED = "";
+	/** @var string */
 	public static $COLOR_PURPLE = "";
+	/** @var string */
 	public static $COLOR_GOLD = "";
+	/** @var string */
 	public static $COLOR_GRAY = "";
+	/** @var string */
 	public static $COLOR_DARK_GRAY = "";
+	/** @var string */
 	public static $COLOR_BLUE = "";
+	/** @var string */
 	public static $COLOR_GREEN = "";
+	/** @var string */
 	public static $COLOR_AQUA = "";
+	/** @var string */
 	public static $COLOR_RED = "";
+	/** @var string */
 	public static $COLOR_LIGHT_PURPLE = "";
+	/** @var string */
 	public static $COLOR_YELLOW = "";
+	/** @var string */
 	public static $COLOR_WHITE = "";
 
 	/** @var bool|null */
@@ -176,9 +198,7 @@ abstract class Terminal{
 	 * Returns a string with colorized ANSI Escape codes for the current terminal
 	 * Note that this is platform-dependent and might produce different results depending on the terminal type and/or OS.
 	 *
-	 * @param string|array $string
-	 *
-	 * @return string
+	 * @param string|string[] $string
 	 */
 	public static function toANSI($string) : string{
 		if(!is_array($string)){
@@ -267,8 +287,6 @@ abstract class Terminal{
 
 	/**
 	 * Emits a string containing Minecraft colour codes to the console formatted with native colours.
-	 *
-	 * @param string $line
 	 */
 	public static function write(string $line) : void{
 		echo self::toANSI($line);
@@ -277,8 +295,6 @@ abstract class Terminal{
 	/**
 	 * Emits a string containing Minecraft colour codes to the console formatted with native colours, followed by a
 	 * newline character.
-	 *
-	 * @param string $line
 	 */
 	public static function writeLine(string $line) : void{
 		echo self::toANSI($line) . self::$FORMAT_RESET . PHP_EOL;

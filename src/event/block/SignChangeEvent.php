@@ -44,11 +44,6 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	/** @var SignText */
 	private $text;
 
-	/**
-	 * @param Sign     $sign
-	 * @param Player   $player
-	 * @param SignText $text
-	 */
 	public function __construct(Sign $sign, Player $player, SignText $text){
 		parent::__construct($sign);
 		$this->sign = $sign;
@@ -56,24 +51,16 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 		$this->text = $text;
 	}
 
-	/**
-	 * @return Sign
-	 */
 	public function getSign() : Sign{
 		return $this->sign;
 	}
 
-	/**
-	 * @return Player
-	 */
 	public function getPlayer() : Player{
 		return $this->player;
 	}
 
 	/**
 	 * Returns the text currently on the sign.
-	 *
-	 * @return SignText
 	 */
 	public function getOldText() : SignText{
 		return $this->sign->getText();
@@ -81,8 +68,6 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Returns the text which will be on the sign after the event.
-	 *
-	 * @return SignText
 	 */
 	public function getNewText() : SignText{
 		return $this->text;
@@ -90,8 +75,6 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Sets the text to be written on the sign after the event.
-	 *
-	 * @param SignText $text
 	 */
 	public function setNewText(SignText $text) : void{
 		$this->text = $text;

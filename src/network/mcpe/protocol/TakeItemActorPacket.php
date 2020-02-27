@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class TakeItemActorPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::TAKE_ITEM_ACTOR_PACKET;
@@ -43,14 +43,14 @@ class TakeItemActorPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	protected function decodePayload() : void{
-		$this->target = $this->getEntityRuntimeId();
-		$this->eid = $this->getEntityRuntimeId();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->target = $in->getEntityRuntimeId();
+		$this->eid = $in->getEntityRuntimeId();
 	}
 
-	protected function encodePayload() : void{
-		$this->putEntityRuntimeId($this->target);
-		$this->putEntityRuntimeId($this->eid);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putEntityRuntimeId($this->target);
+		$out->putEntityRuntimeId($this->eid);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

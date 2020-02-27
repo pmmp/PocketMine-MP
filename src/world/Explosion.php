@@ -37,7 +37,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
 use pocketmine\world\utils\SubChunkIteratorManager;
@@ -59,16 +58,14 @@ class Explosion{
 	public $affectedBlocks = [];
 	/** @var float */
 	public $stepLen = 0.3;
-	/** @var Entity|Block */
+	/** @var Entity|Block|null */
 	private $what;
 
 	/** @var SubChunkIteratorManager */
 	private $subChunkHandler;
 
 	/**
-	 * @param Position     $center
-	 * @param float        $size
-	 * @param Entity|Block $what
+	 * @param Entity|Block|null $what
 	 */
 	public function __construct(Position $center, float $size, $what = null){
 		if(!$center->isValid()){
@@ -87,7 +84,8 @@ class Explosion{
 	}
 
 	/**
-	 * @return bool
+	 * Calculates which blocks will be destroyed by this explosion. If explodeB() is called without calling this, no blocks
+	 * will be destroyed.
 	 */
 	public function explodeA() : bool{
 		if($this->size < 0.1){
@@ -99,7 +97,7 @@ class Explosion{
 		$currentChunk = null;
 		$currentSubChunk = null;
 
-		$mRays = (int) ($this->rays - 1);
+		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
 				for($k = 0; $k < $this->rays; ++$k){
@@ -118,6 +116,10 @@ class Explosion{
 							$vBlockY = $pointerY >= $y ? $y : $y - 1;
 							$vBlockZ = $pointerZ >= $z ? $z : $z - 1;
 
+							$pointerX += $vector->x;
+							$pointerY += $vector->y;
+							$pointerZ += $vector->z;
+
 							if(!$this->subChunkHandler->moveTo($vBlockX, $vBlockY, $vBlockZ, false)){
 								continue;
 							}
@@ -134,10 +136,6 @@ class Explosion{
 									}
 								}
 							}
-
-							$pointerX += $vector->x;
-							$pointerY += $vector->y;
-							$pointerZ += $vector->z;
 						}
 					}
 				}
@@ -147,6 +145,10 @@ class Explosion{
 		return true;
 	}
 
+	/**
+	 * Executes the explosion's effects on the world. This includes destroying blocks (if any), harming and knocking back entities,
+	 * and creating sounds and particles.
+	 */
 	public function explodeB() : bool{
 		$send = [];
 		$updateBlocks = [];
@@ -201,7 +203,6 @@ class Explosion{
 			}
 		}
 
-
 		$air = ItemFactory::air();
 		$airBlock = VanillaBlocks::AIR();
 
@@ -219,7 +220,7 @@ class Explosion{
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
 				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock, false); //TODO: should updating really be disabled here?
-				$this->world->updateAllLight($pos);
+				$this->world->updateAllLight($pos->x, $pos->y, $pos->z);
 			}
 
 			foreach(Facing::ALL as $side){
@@ -241,8 +242,6 @@ class Explosion{
 			}
 			$send[] = $pos->subtract($source);
 		}
-
-		$this->world->broadcastPacketToViewers($source, ExplodePacket::create($this->source->asVector3(), $this->size, $send));
 
 		$this->world->addParticle($source, new HugeExplodeSeedParticle());
 		$this->world->addSound($source, new ExplodeSound());

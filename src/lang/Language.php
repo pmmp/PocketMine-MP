@@ -44,9 +44,9 @@ class Language{
 	public const FALLBACK_LANGUAGE = "eng";
 
 	/**
-	 * @param string $path
+	 * @return string[]
+	 * @phpstan-return array<string, string>
 	 *
-	 * @return array
 	 * @throws LanguageNotFoundException
 	 */
 	public static function getLanguageList(string $path = "") : array{
@@ -58,7 +58,7 @@ class Language{
 			$allFiles = scandir($path, SCANDIR_SORT_NONE);
 
 			if($allFiles !== false){
-				$files = array_filter($allFiles, function($filename){
+				$files = array_filter($allFiles, function(string $filename) : bool{
 					return substr($filename, -4) === ".ini";
 				});
 
@@ -82,16 +82,18 @@ class Language{
 	/** @var string */
 	protected $langName;
 
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
 	protected $lang = [];
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
 	protected $fallbackLang = [];
 
 	/**
-	 * @param string      $lang
-	 * @param string|null $path
-	 * @param string      $fallback
-	 *
 	 * @throws LanguageNotFoundException
 	 */
 	public function __construct(string $lang, ?string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
@@ -113,6 +115,10 @@ class Language{
 		return $this->langName;
 	}
 
+	/**
+	 * @return string[]
+	 * @phpstan-return array<string, string>
+	 */
 	protected static function loadLang(string $path, string $languageCode) : array{
 		$file = $path . $languageCode . ".ini";
 		if(file_exists($file)){
@@ -123,15 +129,11 @@ class Language{
 	}
 
 	/**
-	 * @param string      $str
-	 * @param string[]    $params
-	 * @param string|null $onlyPrefix
-	 *
-	 * @return string
+	 * @param (float|int|string)[] $params
 	 */
 	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
 		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation(($baseText !== null and ($onlyPrefix === null or strpos($str, $onlyPrefix) === 0)) ? $baseText : $str, $onlyPrefix);
+		$baseText = $this->parseTranslation(($onlyPrefix === null or strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
 
 		foreach($params as $i => $p){
 			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText, $onlyPrefix);
@@ -140,45 +142,25 @@ class Language{
 		return $baseText;
 	}
 
-	public function translate(TextContainer $c){
-		if($c instanceof TranslationContainer){
-			$baseText = $this->internalGet($c->getText());
-			$baseText = $this->parseTranslation($baseText ?? $c->getText());
+	public function translate(TranslationContainer $c) : string{
+		$baseText = $this->internalGet($c->getText());
+		$baseText = $this->parseTranslation($baseText ?? $c->getText());
 
-			foreach($c->getParameters() as $i => $p){
-				$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
-			}
-		}else{
-			$baseText = $this->parseTranslation($c->getText());
+		foreach($c->getParameters() as $i => $p){
+			$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
 		}
 
 		return $baseText;
 	}
 
-	/**
-	 * @param string $id
-	 *
-	 * @return string|null
-	 */
 	protected function internalGet(string $id) : ?string{
 		return $this->lang[$id] ?? $this->fallbackLang[$id] ?? null;
 	}
 
-	/**
-	 * @param string $id
-	 *
-	 * @return string
-	 */
 	public function get(string $id) : string{
 		return $this->internalGet($id) ?? $id;
 	}
 
-	/**
-	 * @param string      $text
-	 * @param string|null $onlyPrefix
-	 *
-	 * @return string
-	 */
 	protected function parseTranslation(string $text, ?string $onlyPrefix = null) : string{
 		$newString = "";
 

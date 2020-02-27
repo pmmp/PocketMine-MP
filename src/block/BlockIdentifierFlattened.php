@@ -33,9 +33,6 @@ class BlockIdentifierFlattened extends BlockIdentifier{
 		$this->secondId = $secondId;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getSecondId() : int{
 		return $this->secondId;
 	}

@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ClientCacheStatusPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::CLIENT_CACHE_STATUS_PACKET;
@@ -39,19 +40,16 @@ class ClientCacheStatusPacket extends DataPacket implements ServerboundPacket{
 		return $result;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isEnabled() : bool{
 		return $this->enabled;
 	}
 
-	protected function decodePayload() : void{
-		$this->enabled = $this->getBool();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->enabled = $in->getBool();
 	}
 
-	protected function encodePayload() : void{
-		$this->putBool($this->enabled);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putBool($this->enabled);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

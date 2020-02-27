@@ -36,7 +36,7 @@ abstract class LightUpdate{
 	/** @var ChunkManager */
 	protected $world;
 
-	/** @var int[] blockhash => new light level */
+	/** @var int[][] blockhash => [x, y, z, new light level] */
 	protected $updateNodes = [];
 
 	/** @var \SplQueue */
@@ -67,6 +67,13 @@ abstract class LightUpdate{
 
 	abstract public function recalculateNode(int $x, int $y, int $z) : void;
 
+	protected function getEffectiveLight(int $x, int $y, int $z) : int{
+		if($this->subChunkHandler->moveTo($x, $y, $z, false)){
+			return $this->currentLightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
+		}
+		return 0;
+	}
+
 	protected function getHighestAdjacentLight(int $x, int $y, int $z) : int{
 		$adjacent = 0;
 		foreach([
@@ -77,7 +84,7 @@ abstract class LightUpdate{
 			[$x, $y, $z + 1],
 			[$x, $y, $z - 1]
 		] as [$x1, $y1, $z1]){
-			if($this->subChunkHandler->moveTo($x1, $y1, $z1, false) and ($adjacent = max($adjacent, $this->currentLightArray->get($x1 & 0xf, $y1 & 0xf, $z1 & 0xf))) === 15){
+			if(($adjacent = max($adjacent, $this->getEffectiveLight($x1, $y1, $z1))) === 15){
 				break;
 			}
 		}
@@ -125,6 +132,9 @@ abstract class LightUpdate{
 			foreach($points as list($cx, $cy, $cz)){
 				if($this->subChunkHandler->moveTo($cx, $cy, $cz, true)){
 					$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight);
+				}elseif($this->getEffectiveLight($cx, $cy, $cz) > 0 and !isset($this->spreadVisited[$index = World::blockHash($cx, $cy, $cz)])){
+					$this->spreadVisited[$index] = true;
+					$this->spreadQueue->enqueue([$cx, $cy, $cz]);
 				}
 			}
 		}
@@ -134,11 +144,7 @@ abstract class LightUpdate{
 
 			unset($this->spreadVisited[World::blockHash($x, $y, $z)]);
 
-			if(!$this->subChunkHandler->moveTo($x, $y, $z, false)){
-				continue;
-			}
-
-			$newAdjacentLight = $this->currentLightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
+			$newAdjacentLight = $this->getEffectiveLight($x, $y, $z);
 			if($newAdjacentLight <= 0){
 				continue;
 			}

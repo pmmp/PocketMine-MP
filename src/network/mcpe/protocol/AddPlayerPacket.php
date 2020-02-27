@@ -30,6 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
+use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\UUID;
 use function count;
 
@@ -58,16 +59,25 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	public $headYaw = null; //TODO
 	/** @var Item */
 	public $item;
-	/** @var MetadataProperty[] */
+	/**
+	 * @var MetadataProperty[]
+	 * @phpstan-var array<int, MetadataProperty>
+	 */
 	public $metadata = [];
 
 	//TODO: adventure settings stuff
+	/** @var int */
 	public $uvarint1 = 0;
+	/** @var int */
 	public $uvarint2 = 0;
+	/** @var int */
 	public $uvarint3 = 0;
+	/** @var int */
 	public $uvarint4 = 0;
+	/** @var int */
 	public $uvarint5 = 0;
 
+	/** @var int */
 	public $long1 = 0;
 
 	/** @var EntityLink[] */
@@ -75,65 +85,69 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 
 	/** @var string */
 	public $deviceId = ""; //TODO: fill player's device ID (???)
+	/** @var int */
+	public $buildPlatform = -1;
 
-	protected function decodePayload() : void{
-		$this->uuid = $this->getUUID();
-		$this->username = $this->getString();
-		$this->entityUniqueId = $this->getEntityUniqueId();
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->platformChatId = $this->getString();
-		$this->position = $this->getVector3();
-		$this->motion = $this->getVector3();
-		$this->pitch = $this->getLFloat();
-		$this->yaw = $this->getLFloat();
-		$this->headYaw = $this->getLFloat();
-		$this->item = $this->getSlot();
-		$this->metadata = $this->getEntityMetadata();
+	protected function decodePayload(NetworkBinaryStream $in) : void{
+		$this->uuid = $in->getUUID();
+		$this->username = $in->getString();
+		$this->entityUniqueId = $in->getEntityUniqueId();
+		$this->entityRuntimeId = $in->getEntityRuntimeId();
+		$this->platformChatId = $in->getString();
+		$this->position = $in->getVector3();
+		$this->motion = $in->getVector3();
+		$this->pitch = $in->getLFloat();
+		$this->yaw = $in->getLFloat();
+		$this->headYaw = $in->getLFloat();
+		$this->item = $in->getSlot();
+		$this->metadata = $in->getEntityMetadata();
 
-		$this->uvarint1 = $this->getUnsignedVarInt();
-		$this->uvarint2 = $this->getUnsignedVarInt();
-		$this->uvarint3 = $this->getUnsignedVarInt();
-		$this->uvarint4 = $this->getUnsignedVarInt();
-		$this->uvarint5 = $this->getUnsignedVarInt();
+		$this->uvarint1 = $in->getUnsignedVarInt();
+		$this->uvarint2 = $in->getUnsignedVarInt();
+		$this->uvarint3 = $in->getUnsignedVarInt();
+		$this->uvarint4 = $in->getUnsignedVarInt();
+		$this->uvarint5 = $in->getUnsignedVarInt();
 
-		$this->long1 = $this->getLLong();
+		$this->long1 = $in->getLLong();
 
-		$linkCount = $this->getUnsignedVarInt();
+		$linkCount = $in->getUnsignedVarInt();
 		for($i = 0; $i < $linkCount; ++$i){
-			$this->links[$i] = $this->getEntityLink();
+			$this->links[$i] = $in->getEntityLink();
 		}
 
-		$this->deviceId = $this->getString();
+		$this->deviceId = $in->getString();
+		$this->buildPlatform = $in->getLInt();
 	}
 
-	protected function encodePayload() : void{
-		$this->putUUID($this->uuid);
-		$this->putString($this->username);
-		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putString($this->platformChatId);
-		$this->putVector3($this->position);
-		$this->putVector3Nullable($this->motion);
-		$this->putLFloat($this->pitch);
-		$this->putLFloat($this->yaw);
-		$this->putLFloat($this->headYaw ?? $this->yaw);
-		$this->putSlot($this->item);
-		$this->putEntityMetadata($this->metadata);
+	protected function encodePayload(NetworkBinaryStream $out) : void{
+		$out->putUUID($this->uuid);
+		$out->putString($this->username);
+		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
+		$out->putEntityRuntimeId($this->entityRuntimeId);
+		$out->putString($this->platformChatId);
+		$out->putVector3($this->position);
+		$out->putVector3Nullable($this->motion);
+		$out->putLFloat($this->pitch);
+		$out->putLFloat($this->yaw);
+		$out->putLFloat($this->headYaw ?? $this->yaw);
+		$out->putSlot($this->item);
+		$out->putEntityMetadata($this->metadata);
 
-		$this->putUnsignedVarInt($this->uvarint1);
-		$this->putUnsignedVarInt($this->uvarint2);
-		$this->putUnsignedVarInt($this->uvarint3);
-		$this->putUnsignedVarInt($this->uvarint4);
-		$this->putUnsignedVarInt($this->uvarint5);
+		$out->putUnsignedVarInt($this->uvarint1);
+		$out->putUnsignedVarInt($this->uvarint2);
+		$out->putUnsignedVarInt($this->uvarint3);
+		$out->putUnsignedVarInt($this->uvarint4);
+		$out->putUnsignedVarInt($this->uvarint5);
 
-		$this->putLLong($this->long1);
+		$out->putLLong($this->long1);
 
-		$this->putUnsignedVarInt(count($this->links));
+		$out->putUnsignedVarInt(count($this->links));
 		foreach($this->links as $link){
-			$this->putEntityLink($link);
+			$out->putEntityLink($link);
 		}
 
-		$this->putString($this->deviceId);
+		$out->putString($this->deviceId);
+		$out->putLInt($this->buildPlatform);
 	}
 
 	public function handle(PacketHandler $handler) : bool{

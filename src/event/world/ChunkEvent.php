@@ -21,7 +21,6 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\event\world;
 
 use pocketmine\world\format\Chunk;
@@ -34,18 +33,11 @@ abstract class ChunkEvent extends WorldEvent{
 	/** @var Chunk */
 	private $chunk;
 
-	/**
-	 * @param World $world
-	 * @param Chunk $chunk
-	 */
 	public function __construct(World $world, Chunk $chunk){
 		parent::__construct($world);
 		$this->chunk = $chunk;
 	}
 
-	/**
-	 * @return Chunk
-	 */
 	public function getChunk() : Chunk{
 		return $this->chunk;
 	}
