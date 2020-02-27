@@ -1914,7 +1914,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected function sendSpawnPacket(Player $player) : void{
 		$pk = new AddActorPacket();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->type = static::NETWORK_ID;
+		$pk->type = AddActorPacket::LEGACY_ID_MAP_BC[static::NETWORK_ID];
 		$pk->position = $this->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
