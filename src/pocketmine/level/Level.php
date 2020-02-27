@@ -264,7 +264,7 @@ class Level implements ChunkManager, Metadatable{
 	private $chunksPerTick;
 	/** @var bool */
 	private $clearChunksOnTick;
-	/** @var \SplFixedArray<Block> */
+	/** @var \SplFixedArray<Block|null> */
 	private $randomTickBlocks;
 
 	/** @var LevelTimings */
@@ -1042,7 +1042,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @phpstan-return \SplFixedArray<Block>
+	 * @phpstan-return \SplFixedArray<Block|null>
 	 */
 	public function getRandomTickedBlocks() : \SplFixedArray{
 		return $this->randomTickBlocks;

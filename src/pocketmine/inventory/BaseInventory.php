@@ -246,18 +246,18 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function canAddItem(Item $item) : bool{
-		$item = clone $item;
+		$count = $item->getCount();
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$slot = $this->getItem($i);
 			if($item->equals($slot)){
 				if(($diff = $slot->getMaxStackSize() - $slot->getCount()) > 0){
-					$item->setCount($item->getCount() - $diff);
+					$count -= $diff;
 				}
 			}elseif($slot->isNull()){
-				$item->setCount($item->getCount() - $this->getMaxStackSize());
+				$count -= $this->getMaxStackSize();
 			}
 
-			if($item->getCount() <= 0){
+			if($count <= 0){
 				return true;
 			}
 		}

@@ -21,16 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\network\mcpe\protocol;
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-// TODO: drop this file and use a final class with constants
-if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
-	return;
+use PHPUnit\Framework\TestCase;
+
+class DataPacketTest extends TestCase{
+
+	public function testHeaderFidelity() : void{
+		$pk = new TestPacket();
+		$pk->senderSubId = 3;
+		$pk->recipientSubId = 2;
+		$pk->encode();
+
+		$pk2 = new TestPacket();
+		$pk2->setBuffer($pk->getBuffer());
+		$pk2->decode();
+		self::assertSame($pk2->senderSubId, 3);
+		self::assertSame($pk2->recipientSubId, 2);
+	}
 }
-const _VERSION_INFO_INCLUDED = true;
-
-const NAME = "PocketMine-MP";
-const BASE_VERSION = "3.11.7";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;

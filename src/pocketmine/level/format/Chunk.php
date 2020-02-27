@@ -548,6 +548,7 @@ class Chunk{
 	 */
 	public function setLightPopulated(bool $value = true){
 		$this->lightPopulated = $value;
+		$this->hasChanged = true;
 	}
 
 	public function isPopulated() : bool{
@@ -559,6 +560,7 @@ class Chunk{
 	 */
 	public function setPopulated(bool $value = true){
 		$this->terrainPopulated = $value;
+		$this->hasChanged = true;
 	}
 
 	public function isGenerated() : bool{
@@ -570,6 +572,7 @@ class Chunk{
 	 */
 	public function setGenerated(bool $value = true){
 		$this->terrainGenerated = $value;
+		$this->hasChanged = true;
 	}
 
 	/**

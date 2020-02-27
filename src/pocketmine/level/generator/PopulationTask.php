@@ -98,23 +98,27 @@ class PopulationTask extends AsyncTask{
 		$manager->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
 		if(!$chunk->isGenerated()){
 			$generator->generateChunk($chunk->getX(), $chunk->getZ());
+			$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
 			$chunk->setGenerated();
 		}
 
-		foreach($chunks as $c){
+		foreach($chunks as $i => $c){
 			$manager->setChunk($c->getX(), $c->getZ(), $c);
 			if(!$c->isGenerated()){
 				$generator->generateChunk($c->getX(), $c->getZ());
-				$c->setGenerated();
+				$chunks[$i] = $manager->getChunk($c->getX(), $c->getZ());
+				$chunks[$i]->setGenerated();
 			}
 		}
 
 		$generator->populateChunk($chunk->getX(), $chunk->getZ());
+		$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
+		$chunk->setPopulated();
 
 		$chunk->recalculateHeightMap();
 		$chunk->populateSkyLight();
 		$chunk->setLightPopulated();
-		$chunk->setPopulated();
+
 		$this->chunk = $chunk->fastSerialize();
 
 		foreach($chunks as $i => $c){
