@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\item\Item;
+
 /**
  * Classes implementing this interface can be injected into inventories to receive notifications when content changes
  * occur.
@@ -32,7 +34,7 @@ namespace pocketmine\inventory;
  */
 interface InventoryChangeListener{
 
-	public function onSlotChange(Inventory $inventory, int $slot) : void;
+	public function onSlotChange(Inventory $inventory, int $slot, Item $oldItem) : void;
 
-	public function onContentChange(Inventory $inventory) : void;
+	public function onContentChange(Inventory $inventory, array $oldContents) : void;
 }
