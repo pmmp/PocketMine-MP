@@ -76,7 +76,6 @@ class CallbackInventoryChangeListener implements InventoryChangeListener{
 	}
 
 	/**
-	 * @param Inventory $inventory
 	 * @param Item[] $oldContents
 	 */
 	public function onContentChange(Inventory $inventory, array $oldContents) : void{

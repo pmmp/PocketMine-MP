@@ -37,7 +37,6 @@ interface InventoryChangeListener{
 	public function onSlotChange(Inventory $inventory, int $slot, Item $oldItem) : void;
 
 	/**
-	 * @param Inventory $inventory
 	 * @param Item[] $oldContents
 	 */
 	public function onContentChange(Inventory $inventory, array $oldContents) : void;
