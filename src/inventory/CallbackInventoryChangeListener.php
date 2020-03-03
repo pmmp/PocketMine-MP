@@ -75,6 +75,10 @@ class CallbackInventoryChangeListener implements InventoryChangeListener{
 		($this->onSlotChangeCallback)($inventory, $slot, $oldItem);
 	}
 
+	/**
+	 * @param Inventory $inventory
+	 * @param Item[] $oldContents
+	 */
 	public function onContentChange(Inventory $inventory, array $oldContents) : void{
 		($this->onContentChangeCallback)($inventory, $oldContents);
 	}
