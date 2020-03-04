@@ -122,7 +122,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
 
-		$version = $worldData->getInt("StorageVersion", Limits::INT32_MAX, true);
+		$version = $worldData->getInt("StorageVersion", Limits::INT32_MAX);
 		if($version > self::CURRENT_STORAGE_VERSION){
 			throw new UnsupportedWorldFormatException("LevelDB world format version $version is currently unsupported");
 		}

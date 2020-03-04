@@ -273,7 +273,7 @@ class Item implements \JsonSerializable{
 
 		$display = $tag->getCompoundTag(self::TAG_DISPLAY);
 		if($display !== null){
-			$this->customName = $display->getString(self::TAG_DISPLAY_NAME, $this->customName, true);
+			$this->customName = $display->getString(self::TAG_DISPLAY_NAME, $this->customName);
 			$lore = $display->getListTag(self::TAG_DISPLAY_LORE);
 			if($lore !== null and $lore->getTagType() === NBT::TAG_String){
 				/** @var StringTag $t */
@@ -288,8 +288,8 @@ class Item implements \JsonSerializable{
 		if($enchantments !== null and $enchantments->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $enchantment */
 			foreach($enchantments as $enchantment){
-				$magicNumber = $enchantment->getShort("id", -1, true);
-				$level = $enchantment->getShort("lvl", 0, true);
+				$magicNumber = $enchantment->getShort("id", -1);
+				$level = $enchantment->getShort("lvl", 0);
 				if($level <= 0){
 					continue;
 				}

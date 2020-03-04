@@ -66,14 +66,14 @@ class Furnace extends Spawnable implements Container, Nameable{
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		$this->remainingFuelTime = max(0, $nbt->getShort(self::TAG_BURN_TIME, $this->remainingFuelTime, true));
+		$this->remainingFuelTime = max(0, $nbt->getShort(self::TAG_BURN_TIME, $this->remainingFuelTime));
 
-		$this->cookTime = $nbt->getShort(self::TAG_COOK_TIME, $this->cookTime, true);
+		$this->cookTime = $nbt->getShort(self::TAG_COOK_TIME, $this->cookTime);
 		if($this->remainingFuelTime === 0){
 			$this->cookTime = 0;
 		}
 
-		$this->maxFuelTime = $nbt->getShort(self::TAG_MAX_TIME, $this->maxFuelTime, true);
+		$this->maxFuelTime = $nbt->getShort(self::TAG_MAX_TIME, $this->maxFuelTime);
 		if($this->maxFuelTime === 0){
 			$this->maxFuelTime = $this->remainingFuelTime;
 		}

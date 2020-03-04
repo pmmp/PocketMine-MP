@@ -75,7 +75,7 @@ trait LegacyAnvilChunkTrait{
 		if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
 			$biomeIds = ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors")); //Convert back to original format
 		}else{
-			$biomeIds = $chunk->getByteArray("Biomes", "", true);
+			$biomeIds = $chunk->getByteArray("Biomes", "");
 		}
 
 		$result = new Chunk(

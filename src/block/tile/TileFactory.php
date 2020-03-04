@@ -167,7 +167,7 @@ final class TileFactory{
 	 * @internal
 	 */
 	public static function createFromData(World $world, CompoundTag $nbt) : ?Tile{
-		$type = $nbt->getString(Tile::TAG_ID, "", true);
+		$type = $nbt->getString(Tile::TAG_ID, "");
 		if(!isset(self::$knownTiles[$type])){
 			return null;
 		}

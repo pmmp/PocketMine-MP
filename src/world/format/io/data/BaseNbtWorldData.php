@@ -25,6 +25,7 @@ namespace pocketmine\world\format\io\data;
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\io\WorldData;
@@ -124,11 +125,14 @@ abstract class BaseNbtWorldData implements WorldData{
 	}
 
 	public function getTime() : int{
-		return $this->compoundTag->getLong("Time", 0, true);
+		if($this->compoundTag->hasTag("Time", IntTag::class)){ //some older PM worlds had this in the wrong format
+			return $this->compoundTag->getInt("Time");
+		}
+		return $this->compoundTag->getLong("Time", 0);
 	}
 
 	public function setTime(int $value) : void{
-		$this->compoundTag->setLong("Time", $value, true); //some older PM worlds had this in the wrong format
+		$this->compoundTag->setLong("Time", $value);
 	}
 
 	public function getSpawn() : Vector3{

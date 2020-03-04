@@ -33,6 +33,8 @@ use pocketmine\block\tile\TileFactory;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\player\Player;
 use pocketmine\world\World;
 use function array_fill;
@@ -498,7 +500,14 @@ class Chunk{
 				try{
 					$entity = EntityFactory::createFromData($world, $nbt);
 					if(!($entity instanceof Entity)){
-						$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type " . $nbt->getString("id", $nbt->getString("identifier", "<unknown>", true), true));
+						$saveIdTag = $nbt->getTag("id") ?? $nbt->getTag("identifier");
+						$saveId = "<unknown>";
+						if($saveIdTag instanceof StringTag){
+							$saveId = $saveIdTag->getValue();
+						}elseif($saveIdTag instanceof IntTag){ //legacy MCPE format
+							$saveId = "legacy(" . $saveIdTag->getValue() . ")";
+						}
+						$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type $saveId");
 						continue;
 					}
 				}catch(\Exception $t){ //TODO: this shouldn't be here
@@ -517,7 +526,7 @@ class Chunk{
 				if(($tile = TileFactory::createFromData($world, $nbt)) !== null){
 					$world->addTile($tile);
 				}else{
-					$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>", true));
+					$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
 					continue;
 				}
 			}

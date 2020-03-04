@@ -45,7 +45,7 @@ class Comparator extends Tile{
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		$this->signalStrength = $nbt->getInt(self::TAG_OUTPUT_SIGNAL, 0, true);
+		$this->signalStrength = $nbt->getInt(self::TAG_OUTPUT_SIGNAL, 0);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{

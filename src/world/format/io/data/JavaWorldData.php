@@ -90,7 +90,7 @@ class JavaWorldData extends BaseNbtWorldData{
 
 	protected function fix() : void{
 		if(!$this->compoundTag->hasTag("generatorName", StringTag::class)){
-			$this->compoundTag->setString("generatorName", "default", true);
+			$this->compoundTag->setString("generatorName", "default");
 		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($this->compoundTag->getString("generatorName"))) !== null){
 			$this->compoundTag->setString("generatorName", $generatorName);
 		}

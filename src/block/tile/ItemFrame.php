@@ -54,8 +54,8 @@ class ItemFrame extends Spawnable{
 		if(($itemTag = $nbt->getCompoundTag(self::TAG_ITEM)) !== null){
 			$this->item = Item::nbtDeserialize($itemTag);
 		}
-		$this->itemRotation = $nbt->getByte(self::TAG_ITEM_ROTATION, $this->itemRotation, true);
-		$this->itemDropChance = $nbt->getFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance, true);
+		$this->itemRotation = $nbt->getByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
+		$this->itemDropChance = $nbt->getFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{

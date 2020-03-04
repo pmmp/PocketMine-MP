@@ -443,12 +443,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "1cdf6aec3024e2061b8c3e5045c43250df94a740"
+                "reference": "f205b5e6fe47ddf0ead4f1438b37f9cdee1fc407"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/1cdf6aec3024e2061b8c3e5045c43250df94a740",
-                "reference": "1cdf6aec3024e2061b8c3e5045c43250df94a740",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/f205b5e6fe47ddf0ead4f1438b37f9cdee1fc407",
+                "reference": "f205b5e6fe47ddf0ead4f1438b37f9cdee1fc407",
                 "shasum": ""
             },
             "require": {
@@ -472,7 +472,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library for working with Named Binary Tags",
-            "time": "2020-02-24T21:43:33+00:00"
+            "time": "2020-03-04T16:39:25+00:00"
         },
         {
             "name": "pocketmine/raklib",

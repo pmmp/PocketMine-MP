@@ -248,15 +248,15 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0), false);
 
-		$this->hungerManager->setFood((float) $nbt->getInt("foodLevel", (int) $this->hungerManager->getFood(), true));
-		$this->hungerManager->setExhaustion($nbt->getFloat("foodExhaustionLevel", $this->hungerManager->getExhaustion(), true));
-		$this->hungerManager->setSaturation($nbt->getFloat("foodSaturationLevel", $this->hungerManager->getSaturation(), true));
-		$this->hungerManager->setFoodTickTimer($nbt->getInt("foodTickTimer", $this->hungerManager->getFoodTickTimer(), true));
+		$this->hungerManager->setFood((float) $nbt->getInt("foodLevel", (int) $this->hungerManager->getFood()));
+		$this->hungerManager->setExhaustion($nbt->getFloat("foodExhaustionLevel", $this->hungerManager->getExhaustion()));
+		$this->hungerManager->setSaturation($nbt->getFloat("foodSaturationLevel", $this->hungerManager->getSaturation()));
+		$this->hungerManager->setFoodTickTimer($nbt->getInt("foodTickTimer", $this->hungerManager->getFoodTickTimer()));
 
 		$this->xpManager->setXpAndProgressNoEvent(
-			$nbt->getInt("XpLevel", 0, true),
-			$nbt->getFloat("XpP", 0.0, true));
-		$this->xpManager->setLifetimeTotalXp($nbt->getInt("XpTotal", 0, true));
+			$nbt->getInt("XpLevel", 0),
+			$nbt->getFloat("XpP", 0.0));
+		$this->xpManager->setLifetimeTotalXp($nbt->getInt("XpTotal", 0));
 
 		if($nbt->hasTag("XpSeed", IntTag::class)){
 			$this->xpSeed = $nbt->getInt("XpSeed");

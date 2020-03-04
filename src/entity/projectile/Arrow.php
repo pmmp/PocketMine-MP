@@ -78,7 +78,7 @@ class Arrow extends Projectile{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->pickupMode = $nbt->getByte(self::TAG_PICKUP, self::PICKUP_ANY, true);
+		$this->pickupMode = $nbt->getByte(self::TAG_PICKUP, self::PICKUP_ANY);
 		$this->collideTicks = $nbt->getShort("life", $this->collideTicks);
 	}
 

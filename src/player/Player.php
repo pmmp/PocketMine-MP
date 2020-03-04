@@ -267,7 +267,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$spawnReset = false;
 
-		if($namedtag !== null and ($world = $this->server->getWorldManager()->getWorldByName($namedtag->getString("Level", "", true))) !== null){
+		if($namedtag !== null and ($world = $this->server->getWorldManager()->getWorldByName($namedtag->getString("Level", ""))) !== null){
 			/** @var float[] $pos */
 			$pos = $namedtag->getListTag("Pos")->getAllValues();
 			$spawn = new Vector3($pos[0], $pos[1], $pos[2]);

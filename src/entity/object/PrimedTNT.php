@@ -60,7 +60,7 @@ class PrimedTNT extends Entity implements Explosive{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->fuse = $nbt->getShort("Fuse", 80, true);
+		$this->fuse = $nbt->getShort("Fuse", 80);
 
 		$this->getWorld()->addSound($this->location, new IgniteSound());
 	}
