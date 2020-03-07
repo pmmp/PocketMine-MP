@@ -1450,7 +1450,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	protected function broadcastMovement(bool $teleport = false) : void{
 		$pk = new MoveActorAbsolutePacket();
-		$pk = new MoveActorAbsolutePacket();
 		$pk->entityRuntimeId = $this->id;
 		$pk->position = $this->getOffsetPosition($this);
 
