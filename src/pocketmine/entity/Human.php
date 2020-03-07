@@ -915,7 +915,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$pk->headYaw = $this->yaw;
 		$pk->mode = $teleport ? MovePlayerPacket::MODE_TELEPORT : MovePlayerPacket::MODE_NORMAL;
 
-		$this->level->addChunkPacket($this->getFloorX() >> 4, $this->getFloorZ() >> 4, $pk);
+		//we can't assume that everyone who is using our chunk wants to see this movement,
+		//because this human might be a player who shouldn't be receiving his own movement.
+		//this didn't matter when we were able to use MoveActorPacket because
+		//the client just ignored MoveActor for itself, but it doesn't ignore MovePlayer for itself.
+		$this->server->broadcastPacket($this->hasSpawned, $pk);
 	}
 
 	public function close() : void{

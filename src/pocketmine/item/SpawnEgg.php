@@ -50,7 +50,7 @@ class SpawnEgg extends Item{
 			if($entity instanceof Mob){
 				$entity->setImmobile(!Server::getInstance()->mobAiEnabled);
 			}
-			--$this->count;
+			$this->pop();
 			$entity->spawnToAll();
 			return true;
 		}
