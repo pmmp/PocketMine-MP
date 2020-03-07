@@ -97,8 +97,8 @@ class ItemEntity extends Entity{
 				$this->pickupDelay = 0;
 			}
 
-			if($this->ticksLived % 60 === 0){
-				foreach($this->level->getCollidingEntities($this->getBoundingBox()->expandedCopy(1, 1, 1), $this) as $entity){
+			if($this->ticksLived % 25 === 0){
+				foreach($this->level->getCollidingEntities($this->getBoundingBox()->expandedCopy(0.5, 1, 0.5), $this) as $entity){
 					if($entity instanceof ItemEntity){
 						$item = $this->getItem();
 						if($item->getCount() < $item->getMaxStackSize()){
@@ -139,10 +139,6 @@ class ItemEntity extends Entity{
 		return $hasUpdate;
 	}
 
-	protected function getDefaultDrag() : float{
-		return 0.02;
-	}
-
 	protected function tryChangeMovement() : void{
 		$this->checkObstruction($this->x, $this->y, $this->z);
 		parent::tryChangeMovement();
@@ -153,22 +149,26 @@ class ItemEntity extends Entity{
 	}
 
 	protected function applyGravity() : void{
-		$bb = $this->getBoundingBox();
-		$waterCount = 0;
+		if($this->level->getBlockAt($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()) instanceof Water){
+			$bb = $this->getBoundingBox();
+			$waterCount = 0;
 
-		for($j = 0; $j < 5; ++$j){
-			$d1 = $bb->minY + ($bb->maxY - $bb->minY) * $j / 5 + 0.4;
-			$d3 = $bb->minY + ($bb->maxY - $bb->minY) * ($j + 1) / 5 + 1;
+			for($j = 0; $j < 5; ++$j){
+				$d1 = $bb->minY + ($bb->maxY - $bb->minY) * $j / 5 + 0.4;
+				$d3 = $bb->minY + ($bb->maxY - $bb->minY) * ($j + 1) / 5 + 1;
 
-			$bb2 = new AxisAlignedBB($bb->minX, $d1, $bb->minZ, $bb->maxX, $d3, $bb->maxZ);
+				$bb2 = new AxisAlignedBB($bb->minX, $d1, $bb->minZ, $bb->maxX, $d3, $bb->maxZ);
 
-			if($this->level->isLiquidInBoundingBox($bb2, new Water())){
-				$waterCount += 0.2;
+				if($this->level->isLiquidInBoundingBox($bb2, new Water())){
+					$waterCount += 0.2;
+				}
 			}
-		}
 
-		if($waterCount > 0){
-			$this->motion->y += 0.002 * ($waterCount * 2 - 1);
+			if($waterCount > 0){
+				$this->motion->y += 0.002 * ($waterCount * 2 - 1);
+			}else{
+				$this->motion->y -= $this->gravity;
+			}
 		}else{
 			$this->motion->y -= $this->gravity;
 		}

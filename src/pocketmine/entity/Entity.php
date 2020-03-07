@@ -1266,7 +1266,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$hasUpdate = false;
 
 		$this->checkBlockCollision();
-		$this->checkEntityCollision();
 
 		if($this->y <= -16 and $this->isAlive()){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10);
@@ -1513,20 +1512,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->motion->y -= $this->gravity;
 	}
 
-	protected function getDefaultDrag() : float{
-		return 0.09;
-	}
-
 	protected function tryChangeMovement() : void{
-		$friction = 1 - $this->getDefaultDrag();
+		$friction = 1 - $this->drag;
 
 		if($this->applyDragBeforeGravity()){
 			$this->motion->y *= $friction;
 		}
 
-		if(!$this->onGround or $this->forceMovementUpdate){
-			$this->applyGravity();
-		}
+		$this->applyGravity();
 
 		if(!$this->applyDragBeforeGravity()){
 			$this->motion->y *= $friction;
@@ -1711,21 +1704,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function onMovementUpdate() : void{
-		if($this->clientMoveTicks === 0){
-			$f = 1 - $this->drag;
-
-			$this->motion->x *= $f;
-			$this->motion->y *= $f;
-			$this->motion->z *= $f;
-		}
+		$this->tryChangeMovement();
 
 		$this->checkMotion();
 
 		if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
 			$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 		}
-
-		$this->tryChangeMovement();
 	}
 
 	protected function checkMotion() : void{
@@ -1782,9 +1767,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function updateFallState(float $distanceThisTick, bool $onGround) : void{
-		$block = $this->level->getBlock($this->subtract(0, 0.2, 0));
 		if($onGround){
 			if($this->fallDistance > 0){
+				$block = $this->level->getBlockAt($this->getFloorX(), (int) floor($this->y - 0.2), $this->getFloorZ());
 				if($block->isSolid()){
 					$block->onEntityFallenUpon($this, $this->fallDistance);
 				}
@@ -2266,12 +2251,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$block->addVelocityToEntity($this, $vector);
 		}
 
-		$down = $this->level->getBlock($this->getSide(Vector3::SIDE_DOWN));
-		if($down->hasEntityCollision()){
-			$down->onEntityCollideUpon($this);
-		}
+		if($this instanceof Living){
+			$down = $this->level->getBlockAt($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ());
+			if($down->hasEntityCollision()){
+				$down->onEntityCollideUpon($this);
+			}
 
-		$this->setInPortal($this->level->getBlock($this) instanceof Portal);
+			$this->setInPortal($this->level->getBlockAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) instanceof Portal);
+		}
 
 		if($vector->lengthSquared() > 0){
 			$vector = $vector->normalize();
@@ -2283,8 +2270,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function checkEntityCollision() : void{
-		foreach($this->level->getCollidingEntities($this->getBoundingBox()->expandedCopy(0.2, 0, 0.2), $this) as $e){
-			$this->onCollideWithEntity($e);
+		if($this->canBePushed()){
+			foreach($this->level->getCollidingEntities($this->getBoundingBox()->expandedCopy(0.2, 0, 0.2), $this) as $e){
+				$this->onCollideWithEntity($e);
+			}
 		}
 	}
 

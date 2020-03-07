@@ -399,6 +399,24 @@ abstract class Mob extends Living{
 		}
 	}
 
+	protected function onMovementUpdate() : void{
+		if($this->clientMoveTicks === 0){
+			$f = 1 - $this->drag;
+
+			$this->motion->x *= $f;
+			$this->motion->y *= $f;
+			$this->motion->z *= $f;
+		}
+
+		$this->checkMotion();
+
+		if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
+			$this->move($this->motion->x, $this->motion->y, $this->motion->z);
+		}
+
+		$this->tryChangeMovement();
+	}
+
 	protected function tryChangeMovement() : void{
 		if($this->isInsideOfWater()){
 			$this->motion->x *= 0.8;
@@ -413,7 +431,20 @@ abstract class Mob extends Living{
 
 			$this->motion->y -= 0.02;
 		}else{
-			parent::tryChangeMovement();
+			$friction = 0.91;
+
+			if(!$this->onGround or $this->forceMovementUpdate){
+				$this->applyGravity();
+			}
+
+			$this->motion->y *= $friction;
+
+			if($this->onGround){
+				$friction *= $this->level->getBlockAt((int) floor($this->x), (int) floor($this->y - 1), (int) floor($this->z))->getFrictionFactor();
+			}
+
+			$this->motion->x *= $friction;
+			$this->motion->z *= $friction;
 		}
 	}
 
