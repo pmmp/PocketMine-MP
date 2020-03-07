@@ -127,7 +127,7 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 	}
 
 	public function isFull() : bool{
-		foreach($this->inventory->getContents() as $slot => $item){
+		foreach($this->inventory->getContents(true) as $slot => $item){
 			if($item->getMaxStackSize() !== $item->getCount()){
 				return false;
 			}
