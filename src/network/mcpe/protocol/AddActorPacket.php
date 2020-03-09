@@ -151,7 +151,7 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 	public $entityUniqueId = null; //TODO
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var int */
+	/** @var string */
 	public $type;
 	/** @var Vector3 */
 	public $position;
@@ -177,10 +177,7 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->entityUniqueId = $in->getEntityUniqueId();
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
-		$this->type = array_search($t = $in->getString(), self::LEGACY_ID_MAP_BC, true);
-		if($this->type === false){
-			throw new BadPacketException("Can't map ID $t to legacy ID");
-		}
+		$this->type = $in->getString();
 		$this->position = $in->getVector3();
 		$this->motion = $in->getVector3();
 		$this->pitch = $in->getLFloat();
@@ -219,10 +216,7 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 	protected function encodePayload(NetworkBinaryStream $out) : void{
 		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$out->putEntityRuntimeId($this->entityRuntimeId);
-		if(!isset(self::LEGACY_ID_MAP_BC[$this->type])){
-			throw new \InvalidArgumentException("Unknown entity numeric ID $this->type");
-		}
-		$out->putString(self::LEGACY_ID_MAP_BC[$this->type]);
+		$out->putString($this->type);
 		$out->putVector3($this->position);
 		$out->putVector3Nullable($this->motion);
 		$out->putLFloat($this->pitch);
