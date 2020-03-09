@@ -2420,7 +2420,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						if($this->canInteract($blockVector->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7) and $this->level->useBreakOn($blockVector, $item, $this, true)){
 							if($this->isSurvival()){
-								if(!$item->equalsExact($oldItem) and $item->equals($this->inventory->getItemInHand(), false, false)){
+								if(!$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
 									$this->inventory->setItemInHand($item);
 									$this->inventory->sendHeldItem($this->hasSpawned);
 								}
