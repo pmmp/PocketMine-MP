@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\item\Item;
 use pocketmine\utils\Utils;
 
 class CallbackInventoryChangeListener implements InventoryChangeListener{
@@ -31,25 +32,25 @@ class CallbackInventoryChangeListener implements InventoryChangeListener{
 
 	/**
 	 * @var \Closure|null
-	 * @phpstan-var (\Closure(Inventory, int) : void)|null
+	 * @phpstan-var (\Closure(Inventory, int, Item) : void)|null
 	 */
 	private $onSlotChangeCallback;
 	/**
 	 * @var \Closure|null
-	 * @phpstan-var (\Closure(Inventory) : void)|null
+	 * @phpstan-var (\Closure(Inventory, Item[]) : void)|null
 	 */
 	private $onContentChangeCallback;
 
 	/**
-	 * @phpstan-param (\Closure(Inventory, int) : void)|null $onSlotChange
-	 * @phpstan-param (\Closure(Inventory) : void)|null $onContentChange
+	 * @phpstan-param (\Closure(Inventory, int, Item) : void)|null $onSlotChange
+	 * @phpstan-param (\Closure(Inventory, Item[]) : void)|null $onContentChange
 	 */
 	public function __construct(?\Closure $onSlotChange, ?\Closure $onContentChange){
 		if($onSlotChange !== null){
-			Utils::validateCallableSignature(function(Inventory $inventory, int $slot) : void{}, $onSlotChange);
+			Utils::validateCallableSignature(function(Inventory $inventory, int $slot, Item $oldItem) : void{}, $onSlotChange);
 		}
 		if($onContentChange !== null){
-			Utils::validateCallableSignature(function(Inventory $inventory) : void{}, $onContentChange);
+			Utils::validateCallableSignature(function(Inventory $inventory, array $oldContents) : void{}, $onContentChange);
 		}
 
 		$this->onSlotChangeCallback = $onSlotChange;
@@ -61,20 +62,23 @@ class CallbackInventoryChangeListener implements InventoryChangeListener{
 	 */
 	public static function onAnyChange(\Closure $onChange) : self{
 		return new self(
-			static function(Inventory $inventory, int $unused) use ($onChange) : void{
+			static function(Inventory $inventory, int $unused, Item $unusedB) use ($onChange) : void{
 				$onChange($inventory);
 			},
-			static function(Inventory $inventory) use ($onChange) : void{
+			static function(Inventory $inventory, array $unused) use ($onChange) : void{
 				$onChange($inventory);
 			}
 		);
 	}
 
-	public function onSlotChange(Inventory $inventory, int $slot) : void{
-		($this->onSlotChangeCallback)($inventory, $slot);
+	public function onSlotChange(Inventory $inventory, int $slot, Item $oldItem) : void{
+		($this->onSlotChangeCallback)($inventory, $slot, $oldItem);
 	}
 
-	public function onContentChange(Inventory $inventory) : void{
-		($this->onContentChangeCallback)($inventory);
+	/**
+	 * @param Item[] $oldContents
+	 */
+	public function onContentChange(Inventory $inventory, array $oldContents) : void{
+		($this->onContentChangeCallback)($inventory, $oldContents);
 	}
 }
