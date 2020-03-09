@@ -90,6 +90,8 @@ abstract class BaseInventory implements Inventory{
 			$items = array_slice($items, 0, $this->getSize(), true);
 		}
 
+		$oldContents = $this->slots->toArray();
+
 		$listeners = $this->listeners;
 		$this->listeners = [];
 		$viewers = $this->viewers;
@@ -109,7 +111,7 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		foreach($this->listeners as $listener){
-			$listener->onContentChange($this);
+			$listener->onContentChange($this, $oldContents);
 		}
 
 		foreach($this->getViewers() as $viewer){
@@ -359,7 +361,7 @@ abstract class BaseInventory implements Inventory{
 
 	protected function onSlotChange(int $index, Item $before) : void{
 		foreach($this->listeners as $listener){
-			$listener->onSlotChange($this, $index);
+			$listener->onSlotChange($this, $index, $before);
 		}
 		foreach($this->viewers as $viewer){
 			$viewer->getNetworkSession()->getInvManager()->syncSlot($this, $index);
