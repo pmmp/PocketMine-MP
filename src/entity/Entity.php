@@ -1556,7 +1556,7 @@ abstract class Entity{
 	public function despawnFrom(Player $player, bool $send = true) : void{
 		$id = spl_object_id($player);
 		if(isset($this->hasSpawned[$id])){
-			if($send){
+			if($send and $player->isConnected()){
 				$player->getNetworkSession()->sendDataPacket(RemoveActorPacket::create($this->id));
 			}
 			unset($this->hasSpawned[$id]);
