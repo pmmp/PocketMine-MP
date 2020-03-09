@@ -37,6 +37,7 @@ class CreativeInventoryAction extends InventoryAction{
 	 */
 	public const TYPE_CREATE_ITEM = 1;
 
+	/** @var int */
 	protected $actionType;
 
 	public function __construct(Item $sourceItem, Item $targetItem, int $actionType){
@@ -46,10 +47,6 @@ class CreativeInventoryAction extends InventoryAction{
 
 	/**
 	 * Checks that the player is in creative, and (if creating an item) that the item exists in the creative inventory.
-	 *
-	 * @param Player $source
-	 *
-	 * @return bool
 	 */
 	public function isValid(Player $source) : bool{
 		return $source->isCreative(true) and
@@ -65,10 +62,6 @@ class CreativeInventoryAction extends InventoryAction{
 
 	/**
 	 * No need to do anything extra here: this type just provides a place for items to disappear or appear from.
-	 *
-	 * @param Player $source
-	 *
-	 * @return bool
 	 */
 	public function execute(Player $source) : bool{
 		return true;

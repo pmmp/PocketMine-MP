@@ -27,8 +27,5 @@ use pocketmine\plugin\Plugin;
 
 interface PluginIdentifiableCommand{
 
-	/**
-	 * @return Plugin
-	 */
 	public function getPlugin() : Plugin;
 }

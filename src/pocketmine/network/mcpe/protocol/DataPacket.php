@@ -39,9 +39,15 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	public const NETWORK_ID = 0;
 
+	public const PID_MASK = 0x3ff; //10 bits
+
+	private const SUBCLIENT_ID_MASK = 0x03; //2 bits
+	private const SENDER_SUBCLIENT_ID_SHIFT = 10;
+	private const RECIPIENT_SUBCLIENT_ID_SHIFT = 12;
+
 	/** @var bool */
 	public $isEncoded = false;
-	/** @var CachedEncapsulatedPacket */
+	/** @var CachedEncapsulatedPacket|null */
 	public $__encapsulatedPacket = null;
 
 	/** @var int */
@@ -49,6 +55,9 @@ abstract class DataPacket extends NetworkBinaryStream{
 	/** @var int */
 	public $recipientSubId = 0;
 
+	/**
+	 * @return int
+	 */
 	public function pid(){
 		return $this::NETWORK_ID;
 	}
@@ -67,13 +76,13 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	/**
 	 * Returns whether the packet may legally have unread bytes left in the buffer.
-	 * @return bool
 	 */
 	public function mayHaveUnreadBytes() : bool{
 		return false;
 	}
 
 	/**
+	 * @return void
 	 * @throws \OutOfBoundsException
 	 * @throws \UnexpectedValueException
 	 */
@@ -84,19 +93,24 @@ abstract class DataPacket extends NetworkBinaryStream{
 	}
 
 	/**
+	 * @return void
 	 * @throws \OutOfBoundsException
 	 * @throws \UnexpectedValueException
 	 */
 	protected function decodeHeader(){
-		$pid = $this->getUnsignedVarInt();
+		$header = $this->getUnsignedVarInt();
+		$pid = $header & self::PID_MASK;
 		if($pid !== static::NETWORK_ID){
 			throw new \UnexpectedValueException("Expected " . static::NETWORK_ID . " for packet ID, got $pid");
 		}
+		$this->senderSubId = ($header >> self::SENDER_SUBCLIENT_ID_SHIFT) & self::SUBCLIENT_ID_MASK;
+		$this->recipientSubId = ($header >> self::RECIPIENT_SUBCLIENT_ID_SHIFT) & self::SUBCLIENT_ID_MASK;
 	}
 
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
 	 *
+	 * @return void
 	 * @throws \OutOfBoundsException
 	 * @throws \UnexpectedValueException
 	 */
@@ -104,6 +118,9 @@ abstract class DataPacket extends NetworkBinaryStream{
 
 	}
 
+	/**
+	 * @return void
+	 */
 	public function encode(){
 		$this->reset();
 		$this->encodeHeader();
@@ -111,12 +128,21 @@ abstract class DataPacket extends NetworkBinaryStream{
 		$this->isEncoded = true;
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function encodeHeader(){
-		$this->putUnsignedVarInt(static::NETWORK_ID);
+		$this->putUnsignedVarInt(
+			static::NETWORK_ID |
+			($this->senderSubId << self::SENDER_SUBCLIENT_ID_SHIFT) |
+			($this->recipientSubId << self::RECIPIENT_SUBCLIENT_ID_SHIFT)
+		);
 	}
 
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform encoding in here.
+	 *
+	 * @return void
 	 */
 	protected function encodePayload(){
 
@@ -128,12 +154,13 @@ abstract class DataPacket extends NetworkBinaryStream{
 	 * This method returns a bool to indicate whether the packet was handled or not. If the packet was unhandled, a debug message will be logged with a hexdump of the packet.
 	 * Typically this method returns the return value of the handler in the supplied NetworkSession. See other packets for examples how to implement this.
 	 *
-	 * @param NetworkSession $session
-	 *
 	 * @return bool true if the packet was handled successfully, false if not.
 	 */
 	abstract public function handle(NetworkSession $session) : bool;
 
+	/**
+	 * @return $this
+	 */
 	public function clean(){
 		$this->buffer = "";
 		$this->isEncoded = false;
@@ -141,6 +168,9 @@ abstract class DataPacket extends NetworkBinaryStream{
 		return $this;
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function __debugInfo(){
 		$data = [];
 		foreach((array) $this as $k => $v){
@@ -156,10 +186,21 @@ abstract class DataPacket extends NetworkBinaryStream{
 		return $data;
 	}
 
+	/**
+	 * @param string $name
+	 *
+	 * @return mixed
+	 */
 	public function __get($name){
 		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
 	}
 
+	/**
+	 * @param string $name
+	 * @param mixed  $value
+	 *
+	 * @return void
+	 */
 	public function __set($name, $value){
 		throw new \Error("Undefined property: " . get_class($this) . "::\$" . $name);
 	}

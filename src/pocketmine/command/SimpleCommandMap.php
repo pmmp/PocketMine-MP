@@ -72,6 +72,7 @@ use function explode;
 use function implode;
 use function min;
 use function preg_match_all;
+use function strcasecmp;
 use function stripslashes;
 use function strpos;
 use function strtolower;
@@ -79,9 +80,7 @@ use function trim;
 
 class SimpleCommandMap implements CommandMap{
 
-	/**
-	 * @var Command[]
-	 */
+	/** @var Command[] */
 	protected $knownCommands = [];
 
 	/** @var Server */
@@ -92,7 +91,7 @@ class SimpleCommandMap implements CommandMap{
 		$this->setDefaultCommands();
 	}
 
-	private function setDefaultCommands(){
+	private function setDefaultCommands() : void{
 		$this->registerAll("pocketmine", [
 			new BanCommand("ban"),
 			new BanIpCommand("ban-ip"),
@@ -137,20 +136,12 @@ class SimpleCommandMap implements CommandMap{
 		]);
 	}
 
-
 	public function registerAll(string $fallbackPrefix, array $commands){
 		foreach($commands as $command){
 			$this->register($fallbackPrefix, $command);
 		}
 	}
 
-	/**
-	 * @param string      $fallbackPrefix
-	 * @param Command     $command
-	 * @param string|null $label
-	 *
-	 * @return bool
-	 */
 	public function register(string $fallbackPrefix, Command $command, string $label = null) : bool{
 		if($label === null){
 			$label = $command->getName();
@@ -177,11 +168,6 @@ class SimpleCommandMap implements CommandMap{
 		return $registered;
 	}
 
-	/**
-	 * @param Command $command
-	 *
-	 * @return bool
-	 */
 	public function unregister(Command $command) : bool{
 		foreach($this->knownCommands as $lbl => $cmd){
 			if($cmd === $command){
@@ -194,21 +180,13 @@ class SimpleCommandMap implements CommandMap{
 		return true;
 	}
 
-	/**
-	 * @param Command $command
-	 * @param bool    $isAlias
-	 * @param string  $fallbackPrefix
-	 * @param string  $label
-	 *
-	 * @return bool
-	 */
 	private function registerAlias(Command $command, bool $isAlias, string $fallbackPrefix, string $label) : bool{
 		$this->knownCommands[$fallbackPrefix . ":" . $label] = $command;
 		if(($command instanceof VanillaCommand or $isAlias) and isset($this->knownCommands[$label])){
 			return false;
 		}
 
-		if(isset($this->knownCommands[$label]) and $this->knownCommands[$label]->getLabel() !== null and $this->knownCommands[$label]->getLabel() === $label){
+		if(isset($this->knownCommands[$label]) and $this->knownCommands[$label]->getLabel() === $label){
 			return false;
 		}
 
@@ -226,8 +204,8 @@ class SimpleCommandMap implements CommandMap{
 	 * This method is intended to provide capability for handling commands with spaces in their name.
 	 * The referenced parameters will be modified accordingly depending on the resulting matched command.
 	 *
-	 * @param string   &$commandName
-	 * @param string[] &$args
+	 * @param string   $commandName reference parameter
+	 * @param string[] $args reference parameter
 	 *
 	 * @return Command|null
 	 */
@@ -296,7 +274,6 @@ class SimpleCommandMap implements CommandMap{
 		return $this->knownCommands;
 	}
 
-
 	/**
 	 * @return void
 	 */
@@ -318,22 +295,21 @@ class SimpleCommandMap implements CommandMap{
 				$commandName = "";
 				$command = $this->matchCommand($commandName, $args);
 
-
 				if($command === null){
 					$bad[] = $commandString;
-				}elseif($commandName === $alias){
+				}elseif(strcasecmp($commandName, $alias) === 0){
 					$recursive[] = $commandString;
 				}else{
 					$targets[] = $commandString;
 				}
 			}
 
-			if(!empty($recursive)){
+			if(count($recursive) > 0){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.recursive", [$alias, implode(", ", $recursive)]));
 				continue;
 			}
 
-			if(!empty($bad)){
+			if(count($bad) > 0){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.notFound", [$alias, implode(", ", $bad)]));
 				continue;
 			}

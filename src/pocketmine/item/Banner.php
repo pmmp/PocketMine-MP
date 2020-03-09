@@ -52,8 +52,6 @@ class Banner extends Item{
 
 	/**
 	 * Returns the color of the banner base.
-	 *
-	 * @return int
 	 */
 	public function getBaseColor() : int{
 		return $this->getNamedTag()->getInt(self::TAG_BASE, 0);
@@ -62,8 +60,6 @@ class Banner extends Item{
 	/**
 	 * Sets the color of the banner base.
 	 * Banner items have to be resent to see the changes in the inventory.
-	 *
-	 * @param int $color
 	 */
 	public function setBaseColor(int $color) : void{
 		$namedTag = $this->getNamedTag();
@@ -74,9 +70,6 @@ class Banner extends Item{
 	/**
 	 * Applies a new pattern on the banner with the given color.
 	 * Banner items have to be resent to see the changes in the inventory.
-	 *
-	 * @param string $pattern
-	 * @param int    $color
 	 *
 	 * @return int ID of pattern.
 	 */
@@ -96,10 +89,6 @@ class Banner extends Item{
 
 	/**
 	 * Returns whether a pattern with the given ID exists on the banner or not.
-	 *
-	 * @param int $patternId
-	 *
-	 * @return bool
 	 */
 	public function patternExists(int $patternId) : bool{
 		$this->correctNBT();
@@ -109,9 +98,8 @@ class Banner extends Item{
 	/**
 	 * Returns the data of a pattern with the given ID.
 	 *
-	 * @param int $patternId
-	 *
-	 * @return array
+	 * @return mixed[]
+	 * @phpstan-return array{Color?: int, Pattern?: string}
 	 */
 	public function getPatternData(int $patternId) : array{
 		if(!$this->patternExists($patternId)){
@@ -132,10 +120,6 @@ class Banner extends Item{
 	/**
 	 * Changes the pattern of a previously existing pattern.
 	 * Banner items have to be resent to see the changes in the inventory.
-	 *
-	 * @param int    $patternId
-	 * @param string $pattern
-	 * @param int    $color
 	 *
 	 * @return bool indicating success.
 	 */
@@ -159,8 +143,6 @@ class Banner extends Item{
 	/**
 	 * Deletes a pattern from the banner with the given ID.
 	 * Banner items have to be resent to see the changes in the inventory.
-	 *
-	 * @param int $patternId
 	 *
 	 * @return bool indicating whether the pattern existed or not.
 	 */
@@ -200,8 +182,6 @@ class Banner extends Item{
 
 	/**
 	 * Returns the total count of patterns on this banner.
-	 *
-	 * @return int
 	 */
 	public function getPatternCount() : int{
 		return $this->getNamedTag()->getListTag(self::TAG_PATTERNS)->count();

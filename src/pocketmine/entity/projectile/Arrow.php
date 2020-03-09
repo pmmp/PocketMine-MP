@@ -102,16 +102,10 @@ class Arrow extends Projectile{
 		}
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getPunchKnockback() : float{
 		return $this->punchKnockback;
 	}
 
-	/**
-	 * @param float $punchKnockback
-	 */
 	public function setPunchKnockback(float $punchKnockback) : void{
 		$this->punchKnockback = $punchKnockback;
 	}
@@ -157,16 +151,10 @@ class Arrow extends Projectile{
 		}
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPickupMode() : int{
 		return $this->pickupMode;
 	}
 
-	/**
-	 * @param int $pickupMode
-	 */
 	public function setPickupMode(int $pickupMode) : void{
 		$this->pickupMode = $pickupMode;
 	}

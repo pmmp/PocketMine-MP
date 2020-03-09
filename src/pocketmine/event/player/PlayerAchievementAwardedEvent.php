@@ -33,18 +33,11 @@ class PlayerAchievementAwardedEvent extends PlayerEvent implements Cancellable{
 	/** @var string */
 	protected $achievement;
 
-	/**
-	 * @param Player $player
-	 * @param string $achievementId
-	 */
 	public function __construct(Player $player, string $achievementId){
 		$this->player = $player;
 		$this->achievement = $achievementId;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getAchievement() : string{
 		return $this->achievement;
 	}

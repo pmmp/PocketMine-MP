@@ -33,9 +33,7 @@ class EntityDeathEvent extends EntityEvent{
 	private $xp;
 
 	/**
-	 * @param Living $entity
 	 * @param Item[] $drops
-	 * @param int    $xp
 	 */
 	public function __construct(Living $entity, array $drops = [], int $xp = 0){
 		$this->entity = $entity;
@@ -66,15 +64,12 @@ class EntityDeathEvent extends EntityEvent{
 
 	/**
 	 * Returns how much experience is dropped due to this entity's death.
-	 * @return int
 	 */
 	public function getXpDropAmount() : int{
 		return $this->xp;
 	}
 
 	/**
-	 * @param int $xp
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function setXpDropAmount(int $xp) : void{

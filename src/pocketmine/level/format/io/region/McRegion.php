@@ -67,11 +67,6 @@ class McRegion extends BaseLevelProvider{
 	/** @var RegionLoader[] */
 	protected $regions = [];
 
-	/**
-	 * @param Chunk $chunk
-	 *
-	 * @return string
-	 */
 	protected function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
 		$nbt->setInt("xPos", $chunk->getX());
@@ -127,9 +122,6 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	/**
-	 * @param string $data
-	 *
-	 * @return Chunk
 	 * @throws CorruptedChunkException
 	 */
 	protected function nbtDeserialize(string $data) : Chunk{
@@ -194,8 +186,8 @@ class McRegion extends BaseLevelProvider{
 			$chunk->getInt("xPos"),
 			$chunk->getInt("zPos"),
 			$subChunks,
-			$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
-			$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
+			$chunk->hasTag("Entities", ListTag::class) ? self::getCompoundList("Entities", $chunk->getListTag("Entities")) : [],
+			$chunk->hasTag("TileEntities", ListTag::class) ? self::getCompoundList("TileEntities", $chunk->getListTag("TileEntities")) : [],
 			$biomeIds,
 			$heightMap
 		);
@@ -205,13 +197,34 @@ class McRegion extends BaseLevelProvider{
 		return $result;
 	}
 
+	/**
+	 * @return CompoundTag[]
+	 * @throws CorruptedChunkException
+	 */
+	protected static function getCompoundList(string $context, ListTag $list) : array{
+		if($list->count() === 0){ //empty lists might have wrong types, we don't care
+			return [];
+		}
+		if($list->getTagType() !== NBT::TAG_Compound){
+			throw new CorruptedChunkException("Expected TAG_List<TAG_Compound> for '$context'");
+		}
+		$result = [];
+		foreach($list as $tag){
+			if(!($tag instanceof CompoundTag)){
+				//this should never happen, but it's still possible due to lack of native type safety
+				throw new CorruptedChunkException("Expected TAG_List<TAG_Compound> for '$context'");
+			}
+			$result[] = $tag;
+		}
+		return $result;
+	}
+
 	public static function getProviderName() : string{
 		return "mcregion";
 	}
 
 	/**
 	 * Returns the storage version as per Minecraft PC world formats.
-	 * @return int
 	 */
 	public static function getPcWorldFormatVersion() : int{
 		return 19132; //mcregion
@@ -226,7 +239,7 @@ class McRegion extends BaseLevelProvider{
 		$isValid = (file_exists($path . "/level.dat") and is_dir($path . "/region/"));
 
 		if($isValid){
-			$files = array_filter(scandir($path . "/region/", SCANDIR_SORT_NONE), function($file){
+			$files = array_filter(scandir($path . "/region/", SCANDIR_SORT_NONE), function(string $file) : bool{
 				return substr($file, strrpos($file, ".") + 1, 2) === "mc"; //region file
 			});
 
@@ -304,10 +317,10 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 * @param int &$regionX
-	 * @param int &$regionZ
+	 * @param int $regionX reference parameter
+	 * @param int $regionZ reference parameter
+	 *
+	 * @return void
 	 */
 	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ){
 		$regionX = $chunkX >> 5;
@@ -315,9 +328,6 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	/**
-	 * @param int $regionX
-	 * @param int $regionZ
-	 *
 	 * @return RegionLoader|null
 	 */
 	protected function getRegion(int $regionX, int $regionZ){
@@ -326,19 +336,13 @@ class McRegion extends BaseLevelProvider{
 
 	/**
 	 * Returns the path to a specific region file based on its X/Z coordinates
-	 *
-	 * @param int $regionX
-	 * @param int $regionZ
-	 *
-	 * @return string
 	 */
 	protected function pathToRegion(int $regionX, int $regionZ) : string{
 		return $this->path . "region/r.$regionX.$regionZ." . static::REGION_FILE_EXTENSION;
 	}
 
 	/**
-	 * @param int $regionX
-	 * @param int $regionZ
+	 * @return void
 	 */
 	protected function loadRegion(int $regionX, int $regionZ){
 		if(!isset($this->regions[$index = Level::chunkHash($regionX, $regionZ)])){
@@ -373,11 +377,6 @@ class McRegion extends BaseLevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
-	 *
 	 * @throws CorruptedChunkException
 	 */
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{

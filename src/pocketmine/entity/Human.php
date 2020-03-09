@@ -38,6 +38,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
+use pocketmine\item\MaybeConsumable;
 use pocketmine\item\Totem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
@@ -50,9 +51,11 @@ use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
 use function array_filter;
@@ -60,6 +63,7 @@ use function array_merge;
 use function array_rand;
 use function array_values;
 use function ceil;
+use function count;
 use function in_array;
 use function max;
 use function min;
@@ -79,6 +83,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/** @var UUID */
 	protected $uuid;
+	/** @var string */
 	protected $rawUUID;
 
 	public $width = 0.6;
@@ -88,10 +93,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/** @var Skin */
 	protected $skin;
 
+	/** @var int */
 	protected $foodTickTimer = 0;
 
+	/** @var int */
 	protected $totalXp = 0;
+	/** @var int */
 	protected $xpSeed;
+	/** @var int */
 	protected $xpCooldown = 0;
 
 	protected $baseOffset = 1.62;
@@ -109,9 +118,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	/**
-	 * @param CompoundTag $skinTag
-	 *
-	 * @return Skin
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function deserializeSkinNBT(CompoundTag $skinTag) : Skin{
@@ -130,32 +136,21 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @deprecated
 	 *
 	 * Checks the length of a supplied skin bitmap and returns whether the length is valid.
-	 *
-	 * @param string $skin
-	 *
-	 * @return bool
 	 */
 	public static function isValidSkin(string $skin) : bool{
 		return in_array(strlen($skin), Skin::ACCEPTED_SKIN_SIZES, true);
 	}
 
-	/**
-	 * @return UUID|null
-	 */
 	public function getUniqueId() : ?UUID{
 		return $this->uuid;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getRawUniqueId() : string{
 		return $this->rawUUID;
 	}
 
 	/**
 	 * Returns a Skin object containing information about this human's skin.
-	 * @return Skin
 	 */
 	public function getSkin() : Skin{
 		return $this->skin;
@@ -164,8 +159,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/**
 	 * Sets the human's skin. This will not send any update to viewers, you need to do that manually using
 	 * {@link sendSkin}.
-	 *
-	 * @param Skin $skin
 	 */
 	public function setSkin(Skin $skin) : void{
 		$skin->validate();
@@ -182,7 +175,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function sendSkin(?array $targets = null) : void{
 		$pk = new PlayerSkinPacket();
 		$pk->uuid = $this->getUniqueId();
-		$pk->skin = $this->skin;
+		$pk->skin = SkinAdapterSingleton::get()->toSkinData($this->skin);
 		$this->server->broadcastPacket($targets ?? $this->hasSpawned, $pk);
 	}
 
@@ -202,8 +195,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/**
 	 * WARNING: This method does not check if full and may throw an exception if out of bounds.
 	 * Use {@link Human::addFood()} for this purpose
-	 *
-	 * @param float $new
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -234,8 +225,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Returns whether this Human may consume objects requiring hunger.
-	 *
-	 * @return bool
 	 */
 	public function isHungry() : bool{
 		return $this->getFood() < $this->getMaxFood();
@@ -248,8 +237,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/**
 	 * WARNING: This method does not check if saturated and may throw an exception if out of bounds.
 	 * Use {@link Human::addSaturation()} for this purpose
-	 *
-	 * @param float $saturation
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -269,8 +256,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/**
 	 * WARNING: This method does not check if exhausted and does not consume saturation/food.
 	 * Use {@link Human::exhaust()} for this purpose.
-	 *
-	 * @param float $exhaustion
 	 */
 	public function setExhaustion(float $exhaustion) : void{
 		$this->attributeMap->getAttribute(Attribute::EXHAUSTION)->setValue($exhaustion);
@@ -278,9 +263,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Increases a human's exhaustion level.
-	 *
-	 * @param float $amount
-	 * @param int   $cause
 	 *
 	 * @return float the amount of exhaustion level increased
 	 */
@@ -315,6 +297,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function consumeObject(Consumable $consumable) : bool{
+		if($consumable instanceof MaybeConsumable and !$consumable->canBeConsumed()){
+			return false;
+		}
+
 		if($consumable instanceof FoodSource){
 			if($consumable->requiresHunger() and !$this->isHungry()){
 				return false;
@@ -329,7 +315,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Returns the player's experience level.
-	 * @return int
 	 */
 	public function getXpLevel() : int{
 		return (int) $this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->getValue();
@@ -337,10 +322,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Sets the player's experience level. This does not affect their total XP or their XP progress.
-	 *
-	 * @param int $level
-	 *
-	 * @return bool
 	 */
 	public function setXpLevel(int $level) : bool{
 		return $this->setXpAndProgress($level, null);
@@ -348,11 +329,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Adds a number of XP levels to the player.
-	 *
-	 * @param int  $amount
-	 * @param bool $playSound
-	 *
-	 * @return bool
 	 */
 	public function addXpLevels(int $amount, bool $playSound = true) : bool{
 		$oldLevel = $this->getXpLevel();
@@ -372,10 +348,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Subtracts a number of XP levels from the player.
-	 *
-	 * @param int $amount
-	 *
-	 * @return bool
 	 */
 	public function subtractXpLevels(int $amount) : bool{
 		return $this->addXpLevels(-$amount);
@@ -383,7 +355,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Returns a value between 0.0 and 1.0 to indicate how far through the current level the player is.
-	 * @return float
 	 */
 	public function getXpProgress() : float{
 		return $this->attributeMap->getAttribute(Attribute::EXPERIENCE)->getValue();
@@ -391,10 +362,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Sets the player's progress through the current level to a value between 0.0 and 1.0.
-	 *
-	 * @param float $progress
-	 *
-	 * @return bool
 	 */
 	public function setXpProgress(float $progress) : bool{
 		return $this->setXpAndProgress(null, $progress);
@@ -402,7 +369,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Returns the number of XP points the player has progressed into their current level.
-	 * @return int
 	 */
 	public function getRemainderXp() : int{
 		return (int) (ExperienceUtils::getXpToCompleteLevel($this->getXpLevel()) * $this->getXpProgress());
@@ -412,8 +378,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * Returns the amount of XP points the player currently has, calculated from their current level and progress
 	 * through their current level. This will be reduced by enchanting deducting levels and is used to calculate the
 	 * amount of XP the player drops on death.
-	 *
-	 * @return int
 	 */
 	public function getCurrentTotalXp() : int{
 		return ExperienceUtils::getXpToReachLevel($this->getXpLevel()) + $this->getRemainderXp();
@@ -422,10 +386,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/**
 	 * Sets the current total of XP the player has, recalculating their XP level and progress.
 	 * Note that this DOES NOT update the player's lifetime total XP.
-	 *
-	 * @param int $amount
-	 *
-	 * @return bool
 	 */
 	public function setCurrentTotalXp(int $amount) : bool{
 		$newLevel = ExperienceUtils::getLevelFromXp($amount);
@@ -437,10 +397,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * Adds an amount of XP to the player, recalculating their XP level and progress. XP amount will be added to the
 	 * player's lifetime XP.
 	 *
-	 * @param int  $amount
 	 * @param bool $playSound Whether to play level-up and XP gained sounds.
-	 *
-	 * @return bool
 	 */
 	public function addXp(int $amount, bool $playSound = true) : bool{
 		$this->totalXp += $amount;
@@ -471,10 +428,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Takes an amount of XP from the player, recalculating their XP level and progress.
-	 *
-	 * @param int $amount
-	 *
-	 * @return bool
 	 */
 	public function subtractXp(int $amount) : bool{
 		return $this->addXp(-$amount);
@@ -507,8 +460,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/**
 	 * Returns the total XP the player has collected in their lifetime. Resets when the player dies.
 	 * XP levels being removed in enchanting do not reduce this number.
-	 *
-	 * @return int
 	 */
 	public function getLifetimeTotalXp() : int{
 		return $this->totalXp;
@@ -517,8 +468,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/**
 	 * Sets the lifetime total XP of the player. This does not recalculate their level or progress. Used for player
 	 * score when they die. (TODO: add this when MCPE supports it)
-	 *
-	 * @param int $amount
 	 */
 	public function setLifetimeTotalXp(int $amount) : void{
 		if($amount < 0){
@@ -530,7 +479,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Returns whether the human can pickup XP orbs (checks cooldown time)
-	 * @return bool
 	 */
 	public function canPickupXp() : bool{
 		return $this->xpCooldown === 0;
@@ -547,13 +495,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$equipment[$mainHandIndex] = $item;
 		}
 		//TODO: check offhand
-		foreach($this->armorInventory->getContents() as $k => $item){
-			if($item instanceof Durable and $item->hasEnchantment(Enchantment::MENDING)){
-				$equipment[$k] = $item;
+		foreach($this->armorInventory->getContents() as $k => $armorItem){
+			if($armorItem instanceof Durable and $armorItem->hasEnchantment(Enchantment::MENDING)){
+				$equipment[$k] = $armorItem;
 			}
 		}
 
-		if(!empty($equipment)){
+		if(count($equipment) > 0){
 			$repairItem = $equipment[$k = array_rand($equipment)];
 			if($repairItem->getDamage() > 0){
 				$repairAmount = min($repairItem->getDamage(), $xpValue * 2);
@@ -574,8 +522,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Sets the duration in ticks until the human can pick up another XP orb.
-	 *
-	 * @param int $value
 	 */
 	public function resetXpCooldown(int $value = 2) : void{
 		$this->xpCooldown = $value;
@@ -584,7 +530,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function getXpDropAmount() : int{
 		//this causes some XP to be lost on death when above level 1 (by design), dropping at most enough points for
 		//about 7.5 levels of XP.
-		return (int) min(100, 7 * $this->getXpLevel());
+		return min(100, 7 * $this->getXpLevel());
 	}
 
 	/**
@@ -850,7 +796,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			/* we don't use Server->updatePlayerListData() because that uses batches, which could cause race conditions in async compression mode */
 			$pk = new PlayerListPacket();
 			$pk->type = PlayerListPacket::TYPE_ADD;
-			$pk->entries = [PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), $this->skin)];
+			$pk->entries = [PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), SkinAdapterSingleton::get()->toSkinData($this->skin))];
 			$player->dataPacket($pk);
 		}
 
@@ -879,6 +825,23 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		}
 	}
 
+	public function broadcastMovement(bool $teleport = false) : void{
+		//TODO: workaround 1.14.30 bug: MoveActor(Absolute|Delta)Packet don't work on players anymore :(
+		$pk = new MovePlayerPacket();
+		$pk->entityRuntimeId = $this->getId();
+		$pk->position = $this->getOffsetPosition($this);
+		$pk->yaw = $this->yaw;
+		$pk->pitch = $this->pitch;
+		$pk->headYaw = $this->yaw;
+		$pk->mode = $teleport ? MovePlayerPacket::MODE_TELEPORT : MovePlayerPacket::MODE_NORMAL;
+
+		//we can't assume that everyone who is using our chunk wants to see this movement,
+		//because this human might be a player who shouldn't be receiving his own movement.
+		//this didn't matter when we were able to use MoveActorPacket because
+		//the client just ignored MoveActor for itself, but it doesn't ignore MovePlayer for itself.
+		$this->server->broadcastPacket($this->hasSpawned, $pk);
+	}
+
 	public function close() : void{
 		if(!$this->closed){
 			if($this->inventory !== null){
@@ -895,10 +858,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Wrapper around {@link Entity#getDataFlag} for player-specific data flag reading.
-	 *
-	 * @param int $flagId
-	 *
-	 * @return bool
 	 */
 	public function getPlayerFlag(int $flagId) : bool{
 		return $this->getDataFlag(self::DATA_PLAYER_FLAGS, $flagId);
@@ -906,9 +865,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * Wrapper around {@link Entity#setDataFlag} for player-specific data flag setting.
-	 *
-	 * @param int  $flagId
-	 * @param bool $value
 	 */
 	public function setPlayerFlag(int $flagId, bool $value = true) : void{
 		$this->setDataFlag(self::DATA_PLAYER_FLAGS, $flagId, $value, self::DATA_TYPE_BYTE);

@@ -39,15 +39,15 @@ interface ProtocolInfo{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	public const CURRENT_PROTOCOL = 361;
+	public const CURRENT_PROTOCOL = 389;
 	/**
 	 * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
 	 */
-	public const MINECRAFT_VERSION = 'v1.12.0';
+	public const MINECRAFT_VERSION = 'v1.14.0';
 	/**
 	 * Version number sent to clients in ping responses.
 	 */
-	public const MINECRAFT_VERSION_NETWORK = '1.12.0';
+	public const MINECRAFT_VERSION_NETWORK = '1.14.0';
 
 	public const LOGIN_PACKET = 0x01;
 	public const PLAY_STATUS_PACKET = 0x02;
@@ -71,7 +71,7 @@ interface ProtocolInfo{
 	public const RIDER_JUMP_PACKET = 0x14;
 	public const UPDATE_BLOCK_PACKET = 0x15;
 	public const ADD_PAINTING_PACKET = 0x16;
-	public const EXPLODE_PACKET = 0x17;
+	public const TICK_SYNC_PACKET = 0x17;
 	public const LEVEL_SOUND_EVENT_PACKET_V1 = 0x18;
 	public const LEVEL_EVENT_PACKET = 0x19;
 	public const BLOCK_EVENT_PACKET = 0x1a;
@@ -180,10 +180,18 @@ interface ProtocolInfo{
 	public const CLIENT_CACHE_STATUS_PACKET = 0x81;
 	public const ON_SCREEN_TEXTURE_ANIMATION_PACKET = 0x82;
 	public const MAP_CREATE_LOCKED_COPY_PACKET = 0x83;
-	public const STRUCTURE_TEMPLATE_DATA_EXPORT_REQUEST_PACKET = 0x84;
-	public const STRUCTURE_TEMPLATE_DATA_EXPORT_RESPONSE_PACKET = 0x85;
+	public const STRUCTURE_TEMPLATE_DATA_REQUEST_PACKET = 0x84;
+	public const STRUCTURE_TEMPLATE_DATA_RESPONSE_PACKET = 0x85;
 	public const UPDATE_BLOCK_PROPERTIES_PACKET = 0x86;
 	public const CLIENT_CACHE_BLOB_STATUS_PACKET = 0x87;
 	public const CLIENT_CACHE_MISS_RESPONSE_PACKET = 0x88;
+	public const EDUCATION_SETTINGS_PACKET = 0x89;
+	public const EMOTE_PACKET = 0x8a;
+	public const MULTIPLAYER_SETTINGS_PACKET = 0x8b;
+	public const SETTINGS_COMMAND_PACKET = 0x8c;
+	public const ANVIL_DAMAGE_PACKET = 0x8d;
+	public const COMPLETED_USING_ITEM_PACKET = 0x8e;
+	public const NETWORK_SETTINGS_PACKET = 0x8f;
+	public const PLAYER_AUTH_INPUT_PACKET = 0x90;
 
 }

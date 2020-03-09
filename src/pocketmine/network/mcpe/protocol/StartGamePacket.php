@@ -25,8 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NetworkLittleEndianNBTStream;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
@@ -79,8 +80,8 @@ class StartGamePacket extends DataPacket{
 	public $hasAchievementsDisabled = true;
 	/** @var int */
 	public $time = -1;
-	/** @var bool */
-	public $eduMode = false;
+	/** @var int */
+	public $eduEditionOffer = 0;
 	/** @var bool */
 	public $hasEduFeaturesEnabled = false;
 	/** @var float */
@@ -101,7 +102,10 @@ class StartGamePacket extends DataPacket{
 	public $commandsEnabled;
 	/** @var bool */
 	public $isTexturePacksRequired = true;
-	/** @var array */
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<string, array{0: int, 1: bool|int|float}>
+	 */
 	public $gameRules = [ //TODO: implement this
 		"naturalregeneration" => [1, false] //Hack for client side regeneration
 	];
@@ -131,6 +135,8 @@ class StartGamePacket extends DataPacket{
 	public $onlySpawnV1Villagers = false;
 
 	/** @var string */
+	public $vanillaVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK;
+	/** @var string */
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
 	/** @var string */
 	public $worldName;
@@ -138,6 +144,8 @@ class StartGamePacket extends DataPacket{
 	public $premiumWorldTemplateId = "";
 	/** @var bool */
 	public $isTrial = false;
+	/** @var bool */
+	public $isMovementServerAuthoritative = false;
 	/** @var int */
 	public $currentTick = 0; //only used if isTrial is true
 	/** @var int */
@@ -145,9 +153,12 @@ class StartGamePacket extends DataPacket{
 	/** @var string */
 	public $multiplayerCorrelationId = ""; //TODO: this should be filled with a UUID of some sort
 
-	/** @var array|null ["name" (string), "data" (int16), "legacy_id" (int16)] */
+	/** @var ListTag|null */
 	public $blockTable = null;
-	/** @var array|null string (name) => int16 (legacyID) */
+	/**
+	 * @var int[]|null string (name) => int16 (legacyID)
+	 * @phpstan-var array<string, int>|null
+	 */
 	public $itemTable = null;
 
 	protected function decodePayload(){
@@ -169,7 +180,7 @@ class StartGamePacket extends DataPacket{
 		$this->getBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
 		$this->hasAchievementsDisabled = $this->getBool();
 		$this->time = $this->getVarInt();
-		$this->eduMode = $this->getBool();
+		$this->eduEditionOffer = $this->getVarInt();
 		$this->hasEduFeaturesEnabled = $this->getBool();
 		$this->rainLevel = $this->getLFloat();
 		$this->lightningLevel = $this->getLFloat();
@@ -193,22 +204,22 @@ class StartGamePacket extends DataPacket{
 		$this->isWorldTemplateOptionLocked = $this->getBool();
 		$this->onlySpawnV1Villagers = $this->getBool();
 
+		$this->vanillaVersion = $this->getString();
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
 		$this->premiumWorldTemplateId = $this->getString();
 		$this->isTrial = $this->getBool();
+		$this->isMovementServerAuthoritative = $this->getBool();
 		$this->currentTick = $this->getLLong();
 
 		$this->enchantmentSeed = $this->getVarInt();
 
-		$this->blockTable = [];
-		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$id = $this->getString();
-			$data = $this->getSignedLShort();
-			$unknown = $this->getSignedLShort();
-
-			$this->blockTable[$i] = ["name" => $id, "data" => $data, "legacy_id" => $unknown];
+		$blockTable = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
+		if(!($blockTable instanceof ListTag)){
+			throw new \UnexpectedValueException("Wrong block table root NBT tag type");
 		}
+		$this->blockTable = $blockTable;
+
 		$this->itemTable = [];
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			$id = $this->getString();
@@ -239,7 +250,7 @@ class StartGamePacket extends DataPacket{
 		$this->putBlockPosition($this->spawnX, $this->spawnY, $this->spawnZ);
 		$this->putBool($this->hasAchievementsDisabled);
 		$this->putVarInt($this->time);
-		$this->putBool($this->eduMode);
+		$this->putVarInt($this->eduEditionOffer);
 		$this->putBool($this->hasEduFeaturesEnabled);
 		$this->putLFloat($this->rainLevel);
 		$this->putLFloat($this->lightningLevel);
@@ -263,10 +274,12 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->isWorldTemplateOptionLocked);
 		$this->putBool($this->onlySpawnV1Villagers);
 
+		$this->putString($this->vanillaVersion);
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
 		$this->putString($this->premiumWorldTemplateId);
 		$this->putBool($this->isTrial);
+		$this->putBool($this->isMovementServerAuthoritative);
 		$this->putLLong($this->currentTick);
 
 		$this->putVarInt($this->enchantmentSeed);
@@ -274,11 +287,11 @@ class StartGamePacket extends DataPacket{
 		if($this->blockTable === null){
 			if(self::$blockTableCache === null){
 				//this is a really nasty hack, but it'll do for now
-				self::$blockTableCache = self::serializeBlockTable(RuntimeBlockMapping::getBedrockKnownStates());
+				self::$blockTableCache = (new NetworkLittleEndianNBTStream())->write(new ListTag("", RuntimeBlockMapping::getBedrockKnownStates()));
 			}
 			$this->put(self::$blockTableCache);
 		}else{
-			$this->put(self::serializeBlockTable($this->blockTable));
+			$this->put((new NetworkLittleEndianNBTStream())->write($this->blockTable));
 		}
 		if($this->itemTable === null){
 			if(self::$itemTableCache === null){
@@ -292,17 +305,10 @@ class StartGamePacket extends DataPacket{
 		$this->putString($this->multiplayerCorrelationId);
 	}
 
-	private static function serializeBlockTable(array $table) : string{
-		$stream = new NetworkBinaryStream();
-		$stream->putUnsignedVarInt(count($table));
-		foreach($table as $v){
-			$stream->putString($v["name"]);
-			$stream->putLShort($v["data"]);
-			$stream->putLShort($v["legacy_id"]);
-		}
-		return $stream->getBuffer();
-	}
-
+	/**
+	 * @param int[] $table
+	 * @phpstan-param array<string, int> $table
+	 */
 	private static function serializeItemTable(array $table) : string{
 		$stream = new NetworkBinaryStream();
 		$stream->putUnsignedVarInt(count($table));

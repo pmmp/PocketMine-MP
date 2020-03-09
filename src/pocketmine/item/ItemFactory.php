@@ -43,9 +43,15 @@ use function trim;
  */
 class ItemFactory{
 
-	/** @var \SplFixedArray */
-	private static $list = null;
+	/**
+	 * @var \SplFixedArray|Item[]
+	 * @phpstan-var \SplFixedArray<Item>
+	 */
+	private static $list;
 
+	/**
+	 * @return void
+	 */
 	public static function init(){
 		self::$list = new \SplFixedArray(65536);
 
@@ -282,9 +288,7 @@ class ItemFactory{
 	 * NOTE: If you are registering a new item type, you will need to add it to the creative inventory yourself - it
 	 * will not automatically appear there.
 	 *
-	 * @param Item $item
-	 * @param bool $override
-	 *
+	 * @return void
 	 * @throws \RuntimeException if something attempted to override an already-registered item without specifying the
 	 * $override parameter.
 	 */
@@ -300,12 +304,8 @@ class ItemFactory{
 	/**
 	 * Returns an instance of the Item with the specified id, meta, count and NBT.
 	 *
-	 * @param int                     $id
-	 * @param int                     $meta
-	 * @param int                     $count
 	 * @param CompoundTag|string|null $tags
 	 *
-	 * @return Item
 	 * @throws \TypeError
 	 */
 	public static function get(int $id, int $meta = 0, int $count = 1, $tags = null) : Item{
@@ -346,9 +346,6 @@ class ItemFactory{
 	 * If multiple item instances are to be created, their identifiers must be comma-separated, for example:
 	 * `diamond_pickaxe,wooden_shovel:18,iron_ingot`
 	 *
-	 * @param string $str
-	 * @param bool   $multiple
-	 *
 	 * @return Item[]|Item
 	 *
 	 * @throws \InvalidArgumentException if the given string cannot be parsed as an item identifier
@@ -385,9 +382,6 @@ class ItemFactory{
 
 	/**
 	 * Returns whether the specified item ID is already registered in the item factory.
-	 *
-	 * @param int $id
-	 * @return bool
 	 */
 	public static function isRegistered(int $id) : bool{
 		if($id < 256){

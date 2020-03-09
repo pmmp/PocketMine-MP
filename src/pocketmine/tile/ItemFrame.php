@@ -63,6 +63,9 @@ class ItemFrame extends Spawnable{
 		return clone $this->item;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setItem(Item $item = null){
 		if($item !== null and !$item->isNull()){
 			$this->item = clone $item;
@@ -76,6 +79,9 @@ class ItemFrame extends Spawnable{
 		return $this->itemRotation;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setItemRotation(int $rotation){
 		$this->itemRotation = $rotation;
 		$this->onChanged();
@@ -85,6 +91,9 @@ class ItemFrame extends Spawnable{
 		return $this->itemDropChance;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setItemDropChance(float $chance){
 		$this->itemDropChance = $chance;
 		$this->onChanged();

@@ -32,19 +32,35 @@ use pocketmine\utils\Random;
 class Tree extends Populator{
 	/** @var ChunkManager */
 	private $level;
+	/** @var int */
 	private $randomAmount = 1;
+	/** @var int */
 	private $baseAmount = 0;
 
+	/** @var int */
 	private $type;
 
+	/**
+	 * @param int $type
+	 */
 	public function __construct($type = Sapling::OAK){
 		$this->type = $type;
 	}
 
+	/**
+	 * @param int $amount
+	 *
+	 * @return void
+	 */
 	public function setRandomAmount($amount){
 		$this->randomAmount = $amount;
 	}
 
+	/**
+	 * @param int $amount
+	 *
+	 * @return void
+	 */
 	public function setBaseAmount($amount){
 		$this->baseAmount = $amount;
 	}
@@ -64,15 +80,15 @@ class Tree extends Populator{
 	}
 
 	private function getHighestWorkableBlock(int $x, int $z) : int{
-		for($y = 127; $y > 0; --$y){
+		for($y = 127; $y >= 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
 			if($b === Block::DIRT or $b === Block::GRASS){
-				break;
+				return $y + 1;
 			}elseif($b !== Block::AIR and $b !== Block::SNOW_LAYER){
 				return -1;
 			}
 		}
 
-		return ++$y;
+		return -1;
 	}
 }

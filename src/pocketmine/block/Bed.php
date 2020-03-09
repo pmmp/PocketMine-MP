@@ -69,13 +69,13 @@ class Bed extends Transparent{
 		return ($this->meta & self::BITFLAG_HEAD) !== 0;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isOccupied() : bool{
 		return ($this->meta & self::BITFLAG_OCCUPIED) !== 0;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setOccupied(bool $occupied = true){
 		if($occupied){
 			$this->meta |= self::BITFLAG_OCCUPIED;
@@ -90,12 +90,6 @@ class Bed extends Transparent{
 		}
 	}
 
-	/**
-	 * @param int  $meta
-	 * @param bool $isHead
-	 *
-	 * @return int
-	 */
 	public static function getOtherHalfSide(int $meta, bool $isHead = false) : int{
 		$rotation = $meta & 0x03;
 		$side = -1;
@@ -122,9 +116,6 @@ class Bed extends Transparent{
 		return $side;
 	}
 
-	/**
-	 * @return Bed|null
-	 */
 	public function getOtherHalf() : ?Bed{
 		$other = $this->getSide(self::getOtherHalfSide($this->meta, $this->isHeadPart()));
 		if($other instanceof Bed and $other->getId() === $this->getId() and $other->isHeadPart() !== $this->isHeadPart() and (($other->getDamage() & 0x03) === ($this->getDamage() & 0x03))){

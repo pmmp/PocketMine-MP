@@ -40,8 +40,6 @@ abstract class ProjectileItem extends Item{
 
 	/**
 	 * Helper function to apply extra NBT tags to pass to the created projectile.
-	 *
-	 * @param CompoundTag $tag
 	 */
 	protected function addExtraTags(CompoundTag $tag) : void{
 
@@ -56,7 +54,7 @@ abstract class ProjectileItem extends Item{
 			$projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
 		}
 
-		$this->count--;
+		$this->pop();
 
 		if($projectile instanceof Projectile){
 			$projectileEv = new ProjectileLaunchEvent($projectile);

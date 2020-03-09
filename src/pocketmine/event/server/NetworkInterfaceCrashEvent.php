@@ -30,9 +30,7 @@ use pocketmine\network\SourceInterface;
  * @deprecated
  */
 class NetworkInterfaceCrashEvent extends NetworkInterfaceEvent{
-	/**
-	 * @var \Throwable
-	 */
+	/** @var \Throwable */
 	private $exception;
 
 	public function __construct(SourceInterface $interface, \Throwable $throwable){
@@ -40,9 +38,6 @@ class NetworkInterfaceCrashEvent extends NetworkInterfaceEvent{
 		$this->exception = $throwable;
 	}
 
-	/**
-	 * @return \Throwable
-	 */
 	public function getCrashInformation() : \Throwable{
 		return $this->exception;
 	}

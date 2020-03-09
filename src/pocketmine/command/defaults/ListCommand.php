@@ -47,9 +47,9 @@ class ListCommand extends VanillaCommand{
 			return true;
 		}
 
-		$playerNames = array_map(function(Player $player){
+		$playerNames = array_map(function(Player $player) : string{
 			return $player->getName();
-		}, array_filter($sender->getServer()->getOnlinePlayers(), function(Player $player) use ($sender){
+		}, array_filter($sender->getServer()->getOnlinePlayers(), function(Player $player) use ($sender) : bool{
 			return $player->isOnline() and (!($sender instanceof Player) or $sender->canSee($player));
 		}));
 

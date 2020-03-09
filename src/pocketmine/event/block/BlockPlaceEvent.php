@@ -53,7 +53,6 @@ class BlockPlaceEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Returns the player who is placing the block.
-	 * @return Player
 	 */
 	public function getPlayer() : Player{
 		return $this->player;
@@ -61,22 +60,15 @@ class BlockPlaceEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Gets the item in hand
-	 * @return Item
 	 */
 	public function getItem() : Item{
 		return $this->item;
 	}
 
-	/**
-	 * @return Block
-	 */
 	public function getBlockReplaced() : Block{
 		return $this->blockReplace;
 	}
 
-	/**
-	 * @return Block
-	 */
 	public function getBlockAgainst() : Block{
 		return $this->blockAgainst;
 	}

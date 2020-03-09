@@ -29,14 +29,13 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-
 abstract class Door extends Transparent{
 
 	public function isSolid() : bool{
 		return false;
 	}
 
-	private function getFullDamage(){
+	private function getFullDamage() : int{
 		$damage = $this->getDamage();
 		$isUp = ($damage & 0x08) > 0;
 

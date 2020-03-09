@@ -76,7 +76,7 @@ class EffectCommand extends VanillaCommand{
 		}
 
 		if($effect === null){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.effect.notFound", [(string) $args[1]]));
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.effect.notFound", [$args[1]]));
 			return true;
 		}
 
@@ -123,7 +123,6 @@ class EffectCommand extends VanillaCommand{
 			$player->addEffect($instance);
 			self::broadcastCommandMessage($sender, new TranslationContainer("%commands.effect.success", [$effect->getName(), $instance->getAmplifier(), $player->getDisplayName(), $instance->getDuration() / 20, $effect->getId()]));
 		}
-
 
 		return true;
 	}

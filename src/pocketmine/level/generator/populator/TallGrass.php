@@ -30,13 +30,25 @@ use pocketmine\utils\Random;
 class TallGrass extends Populator{
 	/** @var ChunkManager */
 	private $level;
+	/** @var int */
 	private $randomAmount = 1;
+	/** @var int */
 	private $baseAmount = 0;
 
+	/**
+	 * @param int $amount
+	 *
+	 * @return void
+	 */
 	public function setRandomAmount($amount){
 		$this->randomAmount = $amount;
 	}
 
+	/**
+	 * @param int $amount
+	 *
+	 * @return void
+	 */
 	public function setBaseAmount($amount){
 		$this->baseAmount = $amount;
 	}
@@ -65,10 +77,10 @@ class TallGrass extends Populator{
 		for($y = 127; $y >= 0; --$y){
 			$b = $this->level->getBlockIdAt($x, $y, $z);
 			if($b !== Block::AIR and $b !== Block::LEAVES and $b !== Block::LEAVES2 and $b !== Block::SNOW_LAYER){
-				break;
+				return $y + 1;
 			}
 		}
 
-		return $y === 0 ? -1 : ++$y;
+		return -1;
 	}
 }

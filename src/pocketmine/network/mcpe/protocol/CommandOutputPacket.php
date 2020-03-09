@@ -86,6 +86,9 @@ class CommandOutputPacket extends DataPacket{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function putCommandMessage(CommandOutputMessage $message){
 		$this->putBool($message->isInternal);
 		$this->putString($message->messageId);

@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-
 class GoldChestplate extends Armor{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::GOLD_CHESTPLATE, $meta, "Gold Chestplate");

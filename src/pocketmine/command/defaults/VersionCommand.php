@@ -84,7 +84,7 @@ class VersionCommand extends VanillaCommand{
 		return true;
 	}
 
-	private function describeToSender(Plugin $plugin, CommandSender $sender){
+	private function describeToSender(Plugin $plugin, CommandSender $sender) : void{
 		$desc = $plugin->getDescription();
 		$sender->sendMessage(TextFormat::DARK_GREEN . $desc->getName() . TextFormat::WHITE . " version " . TextFormat::DARK_GREEN . $desc->getVersion());
 

@@ -21,9 +21,7 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\resourcepacks;
-
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
 use function count;
@@ -34,6 +32,7 @@ use function filesize;
 use function fopen;
 use function fread;
 use function fseek;
+use function gettype;
 use function hash_file;
 use function implode;
 
@@ -42,10 +41,6 @@ class ZippedResourcePack implements ResourcePack{
 	/**
 	 * Performs basic validation checks on a resource pack's manifest.json.
 	 * TODO: add more manifest validation
-	 *
-	 * @param \stdClass $manifest
-	 *
-	 * @return bool
 	 */
 	public static function verifyManifest(\stdClass $manifest) : bool{
 		if(!isset($manifest->format_version) or !isset($manifest->header) or !isset($manifest->modules)){
@@ -67,7 +62,7 @@ class ZippedResourcePack implements ResourcePack{
 	/** @var \stdClass */
 	protected $manifest;
 
-	/** @var string */
+	/** @var string|null */
 	protected $sha256 = null;
 
 	/** @var resource */

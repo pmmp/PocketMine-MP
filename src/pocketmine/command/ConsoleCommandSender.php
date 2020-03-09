@@ -37,6 +37,7 @@ use const PHP_INT_MAX;
 
 class ConsoleCommandSender implements CommandSender{
 
+	/** @var PermissibleBase */
 	private $perm;
 
 	/** @var int|null */
@@ -48,8 +49,6 @@ class ConsoleCommandSender implements CommandSender{
 
 	/**
 	 * @param Permission|string $name
-	 *
-	 * @return bool
 	 */
 	public function isPermissionSet($name) : bool{
 		return $this->perm->isPermissionSet($name);
@@ -57,27 +56,16 @@ class ConsoleCommandSender implements CommandSender{
 
 	/**
 	 * @param Permission|string $name
-	 *
-	 * @return bool
 	 */
 	public function hasPermission($name) : bool{
 		return $this->perm->hasPermission($name);
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 * @param string $name
-	 * @param bool   $value
-	 *
-	 * @return PermissionAttachment
-	 */
 	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null) : PermissionAttachment{
 		return $this->perm->addAttachment($plugin, $name, $value);
 	}
 
 	/**
-	 * @param PermissionAttachment $attachment
-	 *
 	 * @return void
 	 */
 	public function removeAttachment(PermissionAttachment $attachment){
@@ -104,6 +92,8 @@ class ConsoleCommandSender implements CommandSender{
 
 	/**
 	 * @param TextContainer|string $message
+	 *
+	 * @return void
 	 */
 	public function sendMessage($message){
 		if($message instanceof TextContainer){
@@ -117,22 +107,16 @@ class ConsoleCommandSender implements CommandSender{
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "CONSOLE";
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isOp() : bool{
 		return true;
 	}
 
 	/**
-	 * @param bool $value
+	 * @return void
 	 */
 	public function setOp(bool $value){
 

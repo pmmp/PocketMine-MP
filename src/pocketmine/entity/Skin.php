@@ -57,7 +57,6 @@ class Skin{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isValid() : bool{
 		try{
@@ -85,37 +84,22 @@ class Skin{
 		//TODO: validate geometry
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getSkinId() : string{
 		return $this->skinId;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getSkinData() : string{
 		return $this->skinData;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getCapeData() : string{
 		return $this->capeData;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getGeometryName() : string{
 		return $this->geometryName;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getGeometryData() : string{
 		return $this->geometryData;
 	}

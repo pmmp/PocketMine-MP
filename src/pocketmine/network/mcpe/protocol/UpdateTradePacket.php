@@ -21,11 +21,9 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
-
 
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
@@ -50,9 +48,9 @@ class UpdateTradePacket extends DataPacket{
 	/** @var string */
 	public $displayName;
 	/** @var bool */
-	public $isWilling;
-	/** @var bool */
 	public $isV2Trading;
+	/** @var bool */
+	public $isWilling;
 	/** @var string */
 	public $offers;
 
@@ -64,8 +62,8 @@ class UpdateTradePacket extends DataPacket{
 		$this->traderEid = $this->getEntityUniqueId();
 		$this->playerEid = $this->getEntityUniqueId();
 		$this->displayName = $this->getString();
-		$this->isWilling = $this->getBool();
 		$this->isV2Trading = $this->getBool();
+		$this->isWilling = $this->getBool();
 		$this->offers = $this->getRemaining();
 	}
 
@@ -77,8 +75,8 @@ class UpdateTradePacket extends DataPacket{
 		$this->putEntityUniqueId($this->traderEid);
 		$this->putEntityUniqueId($this->playerEid);
 		$this->putString($this->displayName);
-		$this->putBool($this->isWilling);
 		$this->putBool($this->isV2Trading);
+		$this->putBool($this->isWilling);
 		$this->put($this->offers);
 	}
 

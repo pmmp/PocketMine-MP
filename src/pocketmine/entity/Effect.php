@@ -93,27 +93,14 @@ class Effect{
 		self::registerEffect(new Effect(Effect::CONDUIT_POWER, "%potion.conduitPower", new Color(0x1d, 0xc2, 0xd1)));
 	}
 
-	/**
-	 * @param Effect $effect
-	 */
 	public static function registerEffect(Effect $effect) : void{
 		self::$effects[$effect->getId()] = $effect;
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return Effect|null
-	 */
 	public static function getEffect(int $id) : ?Effect{
 		return self::$effects[$id] ?? null;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return Effect|null
-	 */
 	public static function getEffectByName(string $name) : ?Effect{
 		$const = self::class . "::" . strtoupper($name);
 		if(defined($const)){
@@ -154,7 +141,6 @@ class Effect{
 
 	/**
 	 * Returns the effect ID as per Minecraft PE
-	 * @return int
 	 */
 	public function getId() : int{
 		return $this->id;
@@ -162,7 +148,6 @@ class Effect{
 
 	/**
 	 * Returns the translation key used to translate this effect's name.
-	 * @return string
 	 */
 	public function getName() : string{
 		return $this->name;
@@ -170,7 +155,6 @@ class Effect{
 
 	/**
 	 * Returns a Color object representing this effect's particle colour.
-	 * @return Color
 	 */
 	public function getColor() : Color{
 		return clone $this->color;
@@ -179,8 +163,6 @@ class Effect{
 	/**
 	 * Returns whether this effect is harmful.
 	 * TODO: implement inverse effect results for undead mobs
-	 *
-	 * @return bool
 	 */
 	public function isBad() : bool{
 		return $this->bad;
@@ -188,15 +170,13 @@ class Effect{
 
 	/**
 	 * Returns whether the effect is by default an instant effect.
-	 * @return bool
 	 */
 	public function isInstantEffect() : bool{
 		return $this->defaultDuration <= 1;
 	}
 
 	/**
-	 * Returns the default duration this effect will apply for if a duration is not specified.
-	 * @return int
+	 * Returns the default duration (in ticks) this effect will apply for if a duration is not specified.
 	 */
 	public function getDefaultDuration() : int{
 		return $this->defaultDuration;
@@ -204,7 +184,6 @@ class Effect{
 
 	/**
 	 * Returns whether this effect will give the subject potion bubbles.
-	 * @return bool
 	 */
 	public function hasBubbles() : bool{
 		return $this->hasBubbles;
@@ -212,10 +191,6 @@ class Effect{
 
 	/**
 	 * Returns whether the effect will do something on the current tick.
-	 *
-	 * @param EffectInstance $instance
-	 *
-	 * @return bool
 	 */
 	public function canTick(EffectInstance $instance) : bool{
 		switch($this->id){
@@ -248,12 +223,6 @@ class Effect{
 
 	/**
 	 * Applies effect results to an entity. This will not be called unless canTick() returns true.
-	 *
-	 * @param Living         $entity
-	 * @param EffectInstance $instance
-	 * @param float          $potency
-	 * @param null|Entity    $source
-	 * @param null|Entity    $sourceOwner
 	 */
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null, ?Entity $sourceOwner = null) : void{
 		switch($this->id){
@@ -314,9 +283,6 @@ class Effect{
 
 	/**
 	 * Applies effects to the entity when the effect is first added.
-	 *
-	 * @param Living         $entity
-	 * @param EffectInstance $instance
 	 */
 	public function add(Living $entity, EffectInstance $instance) : void{
 		switch($this->id){
@@ -347,9 +313,6 @@ class Effect{
 
 	/**
 	 * Removes the effect from the entity, resetting any changed values back to their original defaults.
-	 *
-	 * @param Living         $entity
-	 * @param EffectInstance $instance
 	 */
 	public function remove(Living $entity, EffectInstance $instance) : void{
 		switch($this->id){

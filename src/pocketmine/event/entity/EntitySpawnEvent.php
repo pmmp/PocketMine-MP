@@ -38,9 +38,6 @@ class EntitySpawnEvent extends EntityEvent{
 	/** @var int */
 	private $entityType;
 
-	/**
-	 * @param Entity $entity
-	 */
 	public function __construct(Entity $entity){
 		$this->entity = $entity;
 		$this->entityType = $entity::NETWORK_ID;
@@ -48,7 +45,6 @@ class EntitySpawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return Position
 	 */
 	public function getPosition() : Position{
 		return $this->entity->getPosition();
@@ -56,7 +52,6 @@ class EntitySpawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return int
 	 */
 	public function getType() : int{
 		return $this->entityType;
@@ -64,7 +59,6 @@ class EntitySpawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isCreature() : bool{
 		return $this->entity instanceof Creature;
@@ -72,7 +66,6 @@ class EntitySpawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isHuman() : bool{
 		return $this->entity instanceof Human;
@@ -80,7 +73,6 @@ class EntitySpawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isProjectile() : bool{
 		return $this->entity instanceof Projectile;
@@ -88,7 +80,6 @@ class EntitySpawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isVehicle() : bool{
 		return $this->entity instanceof Vehicle;
@@ -96,7 +87,6 @@ class EntitySpawnEvent extends EntityEvent{
 
 	/**
 	 * @deprecated
-	 * @return bool
 	 */
 	public function isItem() : bool{
 		return $this->entity instanceof ItemEntity;

@@ -59,8 +59,14 @@ abstract class LightUpdate{
 
 	abstract protected function getLight(int $x, int $y, int $z) : int;
 
+	/**
+	 * @return void
+	 */
 	abstract protected function setLight(int $x, int $y, int $z, int $level);
 
+	/**
+	 * @return void
+	 */
 	public function setAndUpdateLight(int $x, int $y, int $z, int $newLevel){
 		$this->updateNodes[Level::blockHash($x, $y, $z)] = [$x, $y, $z, $newLevel];
 	}
@@ -84,6 +90,9 @@ abstract class LightUpdate{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function execute(){
 		$this->prepareNodes();
 
@@ -137,6 +146,9 @@ abstract class LightUpdate{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function computeRemoveLight(int $x, int $y, int $z, int $oldAdjacentLevel){
 		$current = $this->getLight($x, $y, $z);
 
@@ -157,6 +169,9 @@ abstract class LightUpdate{
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel){
 		$current = $this->getLight($x, $y, $z);
 		$potentialLight = $newAdjacentLevel - BlockFactory::$lightFilter[$this->subChunkHandler->currentSubChunk->getBlockId($x & 0x0f, $y & 0x0f, $z & 0x0f)];

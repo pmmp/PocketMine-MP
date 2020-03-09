@@ -40,10 +40,6 @@ class WritableBook extends Item{
 
 	/**
 	 * Returns whether the given page exists in this book.
-	 *
-	 * @param int $pageId
-	 *
-	 * @return bool
 	 */
 	public function pageExists(int $pageId) : bool{
 		return $this->getPagesTag()->isset($pageId);
@@ -51,10 +47,6 @@ class WritableBook extends Item{
 
 	/**
 	 * Returns a string containing the content of a page (which could be empty), or null if the page doesn't exist.
-	 *
-	 * @param int $pageId
-	 *
-	 * @return string|null
 	 */
 	public function getPageText(int $pageId) : ?string{
 		$pages = $this->getNamedTag()->getListTag(self::TAG_PAGES);
@@ -72,9 +64,6 @@ class WritableBook extends Item{
 
 	/**
 	 * Sets the text of a page in the book. Adds the page if the page does not yet exist.
-	 *
-	 * @param int    $pageId
-	 * @param string $pageText
 	 *
 	 * @return bool indicating whether the page was created or not.
 	 */
@@ -99,8 +88,6 @@ class WritableBook extends Item{
 	/**
 	 * Adds a new page with the given page ID.
 	 * Creates a new page for every page between the given ID and existing pages that doesn't yet exist.
-	 *
-	 * @param int $pageId
 	 */
 	public function addPage(int $pageId) : void{
 		if($pageId < 0){
@@ -122,8 +109,6 @@ class WritableBook extends Item{
 	/**
 	 * Deletes an existing page with the given page ID.
 	 *
-	 * @param int $pageId
-	 *
 	 * @return bool indicating success
 	 */
 	public function deletePage(int $pageId) : bool{
@@ -136,9 +121,6 @@ class WritableBook extends Item{
 
 	/**
 	 * Inserts a new page with the given text and moves other pages upwards.
-	 *
-	 * @param int    $pageId
-	 * @param string $pageText
 	 *
 	 * @return bool indicating success
 	 */
@@ -157,9 +139,6 @@ class WritableBook extends Item{
 
 	/**
 	 * Switches the text of two pages with each other.
-	 *
-	 * @param int $pageId1
-	 * @param int $pageId2
 	 *
 	 * @return bool indicating success
 	 */
@@ -186,20 +165,21 @@ class WritableBook extends Item{
 	 * @return CompoundTag[]
 	 */
 	public function getPages() : array{
-		$pages = $this->getNamedTag()->getListTag(self::TAG_PAGES);
-		if($pages === null){
-			return [];
-		}
+		/** @var CompoundTag[] $pages */
+		$pages = $this->getPagesTag()->getValue();
 
-		return $pages->getValue();
+		return $pages;
 	}
 
 	protected function getPagesTag() : ListTag{
-		return $this->getNamedTag()->getListTag(self::TAG_PAGES) ?? new ListTag(self::TAG_PAGES, [], NBT::TAG_Compound);
+		$pagesTag = $this->getNamedTag()->getListTag(self::TAG_PAGES);
+		if($pagesTag !== null and $pagesTag->getTagType() === NBT::TAG_Compound){
+			return $pagesTag;
+		}
+		return new ListTag(self::TAG_PAGES, [], NBT::TAG_Compound);
 	}
 
 	/**
-	 *
 	 * @param CompoundTag[] $pages
 	 */
 	public function setPages(array $pages) : void{

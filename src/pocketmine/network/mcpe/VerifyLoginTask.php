@@ -37,6 +37,7 @@ use function openssl_verify;
 use function ord;
 use function str_split;
 use function strlen;
+use function strtr;
 use function time;
 use function wordwrap;
 use const OPENSSL_ALGO_SHA384;
@@ -64,7 +65,6 @@ class VerifyLoginTask extends AsyncTask{
 	 */
 	private $authenticated = false;
 
-
 	public function __construct(Player $player, LoginPacket $packet){
 		$this->storeLocal($player);
 		$this->packet = $packet;
@@ -91,10 +91,6 @@ class VerifyLoginTask extends AsyncTask{
 	}
 
 	/**
-	 * @param string      $jwt
-	 * @param null|string $currentPublicKey
-	 * @param bool        $first
-	 *
 	 * @throws VerifyLoginException if errors are encountered
 	 */
 	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : void{

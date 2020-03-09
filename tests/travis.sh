@@ -1,32 +1,14 @@
 #!/bin/bash
 
-PHP_BINARY="php"
 PM_WORKERS="auto"
 
-while getopts "p:t:" OPTION 2> /dev/null; do
+while getopts "t:" OPTION 2> /dev/null; do
 	case ${OPTION} in
-		p)
-			PHP_BINARY="$OPTARG"
-			;;
 		t)
-		    PM_WORKERS="$OPTARG"
-		    ;;
+			PM_WORKERS="$OPTARG"
+			;;
 	esac
 done
-
-./tests/lint.sh -p "$PHP_BINARY" -d ./src/pocketmine
-
-if [ $? -ne 0 ]; then
-	echo Lint scan failed!
-	exit 1
-fi
-
-[ ! -f phpstan.phar ] && echo "Downloading PHPStan..." && curl -sSLO https://github.com/phpstan/phpstan/releases/download/0.11.19/phpstan.phar
-"$PHP_BINARY" phpstan.phar analyze --no-progress --memory-limit=2G || exit 1
-echo "PHPStan scan succeeded"
-
-[ ! -f phpunit.phar ] && echo "Downloading PHPUnit..." && curl https://phar.phpunit.de/phpunit-7.phar --silent --location -o phpunit.phar
-"$PHP_BINARY" phpunit.phar --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit || exit 1
 
 #Run-the-server tests
 DATA_DIR="test_data"
@@ -36,10 +18,10 @@ rm -rf "$DATA_DIR"
 rm PocketMine-MP.phar 2> /dev/null
 
 cd tests/plugins/PocketMine-DevTools
-"$PHP_BINARY" -dphar.readonly=0 ./src/DevTools/ConsoleScript.php --make ./ --relative ./ --out ../../../DevTools.phar
+php -dphar.readonly=0 ./src/DevTools/ConsoleScript.php --make ./ --relative ./ --out ../../../DevTools.phar
 cd ../../..
 
-"$PHP_BINARY" -dphar.readonly=0 DevTools.phar --make src,vendor --relative ./ --entry src/pocketmine/PocketMine.php --out PocketMine-MP.phar
+php -dphar.readonly=0 ./build/server-phar.php ./PocketMine-MP.phar
 if [ -f PocketMine-MP.phar ]; then
 	echo Server phar created successfully.
 else
@@ -51,7 +33,7 @@ mkdir "$DATA_DIR"
 mkdir "$PLUGINS_DIR"
 mv DevTools.phar "$PLUGINS_DIR"
 cp -r tests/plugins/TesterPlugin "$PLUGINS_DIR"
-echo -e "stop\n" | "$PHP_BINARY" PocketMine-MP.phar --no-wizard --disable-ansi --disable-readline --debug.level=2 --data="$DATA_DIR" --plugins="$PLUGINS_DIR" --anonymous-statistics.enabled=0 --settings.async-workers="$PM_WORKERS" --settings.enable-dev-builds=1
+echo -e "stop\n" | php PocketMine-MP.phar --no-wizard --disable-ansi --disable-readline --debug.level=2 --data="$DATA_DIR" --plugins="$PLUGINS_DIR" --anonymous-statistics.enabled=0 --settings.async-workers="$PM_WORKERS" --settings.enable-dev-builds=1
 
 output=$(grep '\[TesterPlugin\]' "$DATA_DIR/server.log")
 if [ "$output" == "" ]; then
