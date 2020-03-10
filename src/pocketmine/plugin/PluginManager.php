@@ -50,6 +50,7 @@ use function file_exists;
 use function get_class;
 use function gettype;
 use function implode;
+use function in_array;
 use function is_a;
 use function is_array;
 use function is_bool;
