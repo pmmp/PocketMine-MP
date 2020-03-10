@@ -57,6 +57,8 @@ class PluginDescription{
 	private $compatibleMcpeProtocols = [];
 	/** @var string[] */
 	private $compatibleOperatingSystems = [];
+	/** @var string[] */
+	private $compatiblePhpVersions = [];
 	/**
 	 * @var string[][]
 	 * @phpstan-var array<string, list<mixed>>
@@ -117,6 +119,7 @@ class PluginDescription{
 		$this->api = array_map("\strval", (array) ($plugin["api"] ?? []));
 		$this->compatibleMcpeProtocols = array_map("\intval", (array) ($plugin["mcpe-protocol"] ?? []));
 		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin["os"] ?? []));
+		$this->compatiblePhpVersions = array_map("\strval", (array) ($plugin["php"] ?? []));
 
 		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
 			$this->commands = $plugin["commands"];
@@ -193,6 +196,13 @@ class PluginDescription{
 	 */
 	public function getCompatibleOperatingSystems() : array{
 		return $this->compatibleOperatingSystems;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getCompatiblePhpVersions() : array{
+		return $this->compatiblePhpVersions;
 	}
 
 	/**
