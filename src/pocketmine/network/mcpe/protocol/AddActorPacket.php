@@ -30,7 +30,6 @@ use pocketmine\entity\EntityIds;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
-use function array_search;
 use function count;
 
 class AddActorPacket extends DataPacket{
