@@ -22,6 +22,7 @@
 declare(strict_types=1);
 
 namespace pocketmine\thread;
+use const PTHREADS_INHERIT_ALL;
 
 /**
  * This class must be extended by all custom threading classes
@@ -29,7 +30,7 @@ namespace pocketmine\thread;
 abstract class Thread extends \Thread{
 	use CommonThreadPartsTrait;
 
-	public function start(?int $options = \PTHREADS_INHERIT_ALL) : bool{
+	public function start(?int $options = PTHREADS_INHERIT_ALL) : bool{
 		//this is intentionally not traitified
 		ThreadManager::getInstance()->add($this);
 

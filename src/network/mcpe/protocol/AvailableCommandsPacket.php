@@ -77,9 +77,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 */
 	public const ARG_FLAG_ENUM = 0x200000;
 
-	/**
-	 * This is used for /xp <level: int>L. It can only be applied to integer parameters.
-	 */
+	/** This is used for /xp <level: int>L. It can only be applied to integer parameters. */
 	public const ARG_FLAG_POSTFIX = 0x1000000;
 
 	public const HARDCODED_ENUM_NAMES = [

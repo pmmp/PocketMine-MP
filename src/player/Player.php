@@ -1601,7 +1601,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$item = $this->inventory->getItemInHand();
 			$oldItem = clone $item;
 			if($this->getWorld()->useBreakOn($pos, $item, $this, true)){
-				if($this->hasFiniteResources() and !$item->equalsExact($oldItem)){
+				if($this->hasFiniteResources() and !$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
 					$this->inventory->setItemInHand($item);
 				}
 				$this->hungerManager->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
@@ -1625,7 +1625,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
 			if($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
-				if($this->hasFiniteResources() and !$item->equalsExact($oldItem)){
+				if($this->hasFiniteResources() and !$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
 					$this->inventory->setItemInHand($item);
 				}
 				return true;
@@ -1694,7 +1694,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($this->isAlive()){
 			//reactive damage like thorns might cause us to be killed by attacking another mob, which
 			//would mean we'd already have dropped the inventory by the time we reached here
-			if($heldItem->onAttackEntity($entity) and $this->hasFiniteResources()){ //always fire the hook, even if we are survival
+			if($heldItem->onAttackEntity($entity) and $this->hasFiniteResources() and $heldItem->equalsExact($this->inventory->getItemInHand())){ //always fire the hook, even if we are survival
 				$this->inventory->setItemInHand($heldItem);
 			}
 

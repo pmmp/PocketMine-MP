@@ -46,6 +46,7 @@ use function explode;
 use function file_exists;
 use function get_class;
 use function implode;
+use function in_array;
 use function is_a;
 use function is_array;
 use function is_dir;
@@ -247,6 +248,14 @@ class PluginManager{
 					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 						$name,
 						$this->server->getLanguage()->translateString("pocketmine.plugin.ambiguousMinAPI", [implode(", ", $ambiguousVersions)])
+					]));
+					continue;
+				}
+
+				if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+						$name,
+						$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleOS", [implode(", ", $description->getCompatibleOperatingSystems())])
 					]));
 					continue;
 				}

@@ -19,6 +19,8 @@
  *
 */
 
+declare(strict_types=1);
+
 // composer autoload doesn't use require_once and also pthreads can inherit things
 if(defined('pocketmine\_GLOBAL_CONSTANTS_INCLUDED')){
 	return;

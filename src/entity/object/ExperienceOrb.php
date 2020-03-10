@@ -39,14 +39,10 @@ class ExperienceOrb extends Entity{
 	public const TAG_VALUE_PC = "Value"; //short
 	public const TAG_VALUE_PE = "experience value"; //int (WTF?)
 
-	/**
-	 * Max distance an orb will follow a player across.
-	 */
+	/** Max distance an orb will follow a player across. */
 	public const MAX_TARGET_DISTANCE = 8.0;
 
-	/**
-	 * Split sizes used for dropping experience orbs.
-	 */
+	/** Split sizes used for dropping experience orbs. */
 	public const ORB_SPLIT_SIZES = [2477, 1237, 617, 307, 149, 73, 37, 17, 7, 3, 1]; //This is indexed biggest to smallest so that we can return as soon as we found the biggest value.
 
 	/**

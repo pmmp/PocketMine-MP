@@ -159,7 +159,7 @@ class Chunk{
 	 * Returns the internal ID of the blockstate at the given coordinates.
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 *
 	 * @return int bitmap, (id << 4) | meta
@@ -180,7 +180,7 @@ class Chunk{
 	 * Returns the sky light level at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 *
 	 * @return int 0-15
@@ -193,7 +193,7 @@ class Chunk{
 	 * Sets the sky light level at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 * @param int $level 0-15
 	 */
@@ -211,7 +211,7 @@ class Chunk{
 	 * Returns the block light level at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y 0-15
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 *
 	 * @return int 0-15
@@ -224,7 +224,7 @@ class Chunk{
 	 * Sets the block light level at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y 0-15
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 * @param int $level 0-15
 	 */
@@ -452,7 +452,7 @@ class Chunk{
 	 * Returns the tile at the specified chunk block coordinates, or null if no tile exists.
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 */
 	public function getTile(int $x, int $y, int $z) : ?Tile{
@@ -630,7 +630,7 @@ class Chunk{
 	 * Hashes the given chunk block coordinates into a single integer.
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 */
 	public static function blockHash(int $x, int $y, int $z) : int{
