@@ -125,7 +125,7 @@ class Effect{
 	/**
 	 * @param int    $id Effect ID as per Minecraft PE
 	 * @param string $name Translation key used for effect name
-	 * @param Color  $color
+	 * @param Color  $color Color of bubbles given by this effect
 	 * @param bool   $isBad Whether the effect is harmful
 	 * @param int    $defaultDuration Duration in ticks the effect will last for by default if applied without a duration.
 	 * @param bool   $hasBubbles Whether the effect has potion bubbles. Some do not (e.g. Instant Damage has its own particles instead of bubbles)
