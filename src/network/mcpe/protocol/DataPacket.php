@@ -49,7 +49,7 @@ abstract class DataPacket implements Packet{
 	public $senderSubId = 0;
 	/** @var int */
 	public $recipientSubId = 0;
-	
+
 	/** @var NetworkBinaryStream */
 	private $buf;
 
