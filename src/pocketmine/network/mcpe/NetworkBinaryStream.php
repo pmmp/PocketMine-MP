@@ -27,7 +27,6 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Skin;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
