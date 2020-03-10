@@ -258,6 +258,14 @@ class PluginManager{
 						continue;
 					}
 
+					if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
+						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+							$name,
+							$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleOS", [implode(", ", $description->getCompatibleOperatingSystems())])
+						]));
+						continue;
+					}
+
 					if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
 						$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
 						if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
