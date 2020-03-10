@@ -164,7 +164,7 @@ abstract class Terminal{
 			self::$COLOR_LIGHT_PURPLE = $colors >= 256 ? `tput setaf 207` : `tput setaf 13`;
 			self::$COLOR_YELLOW = $colors >= 256 ? `tput setaf 227` : `tput setaf 11`;
 			self::$COLOR_WHITE = $colors >= 256 ? `tput setaf 231` : `tput setaf 15`;
-			self::$COLOR_DARK_YELLOW = $colors >= 256 ? `tput setaf 178` : `tput setaf 11`;
+			self::$COLOR_DARK_YELLOW = $colors >= 256 ? `tput setaf 226` : `tput setaf 11`;
 		}else{
 			self::$COLOR_BLACK = self::$COLOR_DARK_GRAY = `tput setaf 0`;
 			self::$COLOR_RED = self::$COLOR_DARK_RED = `tput setaf 1`;
