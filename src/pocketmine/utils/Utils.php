@@ -333,6 +333,18 @@ class Utils{
 		return $processors;
 	}
 
+	public static function isVersionCompatible(string $version, string $otherVersion) : bool{
+		$parts = explode(".", $version);
+		$otherParts = explode(".", $otherVersion);
+
+		if(count($parts) < 2 or count($otherParts) < 2){
+			throw new \InvalidArgumentException("The versions must include major and minor version!");
+		}
+
+		$sliceLength = (count($parts) > 2 and count($otherParts) > 2) ? 3 : 2;
+		return implode(".", array_slice($parts, 0, $sliceLength)) === implode(".", array_slice($otherParts, 0, $sliceLength));
+	}
+
 	/**
 	 * Returns a prettified hexdump
 	 */
