@@ -333,7 +333,7 @@ class Utils{
 		return $processors;
 	}
 
-	public static function isVersionCompatible(string $version, string $otherVersion) : bool{
+	public static function arePhpVersionsCompatible(string $version, string $otherVersion) : bool{
 		$parts = explode(".", $version);
 		$otherParts = explode(".", $otherVersion);
 
