@@ -852,7 +852,7 @@ class Item implements ItemIds, \JsonSerializable{
 			$item = ItemFactory::get($idTag->getValue(), $meta, $count);
 		}elseif($idTag instanceof StringTag){ //PC item save format
 			try{
-				$item = ItemFactory::fromString($idTag->getValue());
+				$item = ItemFactory::fromStringSingle($idTag->getValue());
 			}catch(\InvalidArgumentException $e){
 				//TODO: improve error handling
 				return ItemFactory::get(Item::AIR, 0, 0);

@@ -120,7 +120,7 @@ class Flat extends Generator{
 
 			$cnt = $matches[1] !== "" ? (int) $matches[1] : 1;
 			try{
-				$b = ItemFactory::fromString($matches[2])->getBlock();
+				$b = ItemFactory::fromStringSingle($matches[2])->getBlock();
 			}catch(\InvalidArgumentException $e){
 				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\": " . $e->getMessage(), 0, $e);
 			}
