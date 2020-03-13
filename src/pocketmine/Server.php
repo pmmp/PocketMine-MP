@@ -2325,7 +2325,7 @@ class Server{
 		Timings::$titleTickTimer->startTiming();
 		$d = Process::getRealMemoryUsage();
 
-		$u = Process::getMemoryUsage(true);
+		$u = Process::getAdvancedMemoryUsage();
 		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Process::getThreadCount());
 
 		echo "\x1b]0;" . $this->getName() . " " .

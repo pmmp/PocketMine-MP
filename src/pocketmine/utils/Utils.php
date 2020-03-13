@@ -283,11 +283,12 @@ class Utils{
 	/**
 	 * @deprecated
 	 * @see Process::getMemoryUsage()
+	 * @see Process::getAdvancedMemoryUsage()
 	 *
 	 * @return int[]|int
 	 */
 	public static function getMemoryUsage(bool $advanced = false){
-		return Process::getMemoryUsage($advanced);
+		return $advanced ? Process::getAdvancedMemoryUsage() : Process::getMemoryUsage();
 	}
 
 	/**

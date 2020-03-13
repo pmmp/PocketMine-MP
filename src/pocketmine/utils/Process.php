@@ -47,9 +47,10 @@ final class Process{
 	}
 
 	/**
-	 * @return int[]|int
+	 * @return int[]
+	 * @phpstan-return array{int,int,int}
 	 */
-	public static function getMemoryUsage(bool $advanced = false){
+	public static function getAdvancedMemoryUsage(){
 		$reserved = memory_get_usage();
 		$VmSize = null;
 		$VmRSS = null;
@@ -70,15 +71,15 @@ final class Process{
 			$VmRSS = memory_get_usage();
 		}
 
-		if(!$advanced){
-			return $VmRSS;
-		}
-
 		if($VmSize === null){
 			$VmSize = memory_get_usage(true);
 		}
 
 		return [$reserved, $VmRSS, $VmSize];
+	}
+
+	public static function getMemoryUsage() : int{
+		return self::getAdvancedMemoryUsage()[1];
 	}
 
 	/**
