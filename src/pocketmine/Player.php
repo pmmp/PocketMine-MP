@@ -2498,7 +2498,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						if($item->onClickAir($this, $directionVector)){
 							$this->resetItemCooldown($item);
-							if($this->isSurvival()){
+							if($this->isSurvival() and $item->equalsExact($this->inventory->getItemInHand())){
 								$this->inventory->setItemInHand($item);
 							}
 						}
