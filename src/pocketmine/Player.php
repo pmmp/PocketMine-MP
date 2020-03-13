@@ -2249,6 +2249,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleEntityEvent(ActorEventPacket $packet) : bool{
+		if($packet->entityRuntimeId !== $this->id){
+			//TODO HACK: EATING_ITEM is sent back to the server when the server sends it for other players (1.14 bug, maybe earlier)
+			return $packet->event === ActorEventPacket::EATING_ITEM;
+		}
 		if(!$this->spawned or !$this->isAlive()){
 			return true;
 		}
