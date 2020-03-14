@@ -133,7 +133,7 @@ class SendUsageTask extends AsyncTask{
 					"historyList" => array_values($playerList)
 				];
 
-				$info = Process::getMemoryUsage(true);
+				$info = Process::getAdvancedMemoryUsage();
 				$data["system"] = [
 					"mainMemory" => $info[0],
 					"totalMemory" => $info[1],

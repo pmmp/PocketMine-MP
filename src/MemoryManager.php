@@ -230,7 +230,7 @@ class MemoryManager{
 
 		if(($this->memoryLimit > 0 or $this->globalMemoryLimit > 0) and ++$this->checkTicker >= $this->checkRate){
 			$this->checkTicker = 0;
-			$memory = Process::getMemoryUsage(true);
+			$memory = Process::getAdvancedMemoryUsage();
 			$trigger = false;
 			if($this->memoryLimit > 0 and $memory[0] > $this->memoryLimit){
 				$trigger = 0;

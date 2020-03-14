@@ -49,7 +49,7 @@ class StatusCommand extends VanillaCommand{
 		}
 
 		$rUsage = Process::getRealMemoryUsage();
-		$mUsage = Process::getMemoryUsage(true);
+		$mUsage = Process::getAdvancedMemoryUsage();
 
 		$server = $sender->getServer();
 		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::WHITE . "Server status" . TextFormat::GREEN . " ----");
