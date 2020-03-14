@@ -81,8 +81,8 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 					/** @var Item */
 					$entry["input"] = [];
 					for($j = 0; $j < $ingredientCount; ++$j){
-						$entry["input"][] = $in = $in->getRecipeIngredient();
-						$in->setCount(1); //TODO HACK: they send a useless count field which breaks the PM crafting system because it isn't always 1
+						$entry["input"][] = $input = $in->getRecipeIngredient();
+						$input->setCount(1); //TODO HACK: they send a useless count field which breaks the PM crafting system because it isn't always 1
 					}
 					$resultCount = $in->getUnsignedVarInt();
 					$entry["output"] = [];
@@ -102,8 +102,8 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 					$count = $entry["width"] * $entry["height"];
 					$entry["input"] = [];
 					for($j = 0; $j < $count; ++$j){
-						$entry["input"][] = $in = $in->getRecipeIngredient();
-						$in->setCount(1); //TODO HACK: they send a useless count field which breaks the PM crafting system
+						$entry["input"][] = $input = $in->getRecipeIngredient();
+						$input->setCount(1); //TODO HACK: they send a useless count field which breaks the PM crafting system
 					}
 					$resultCount = $in->getUnsignedVarInt();
 					$entry["output"] = [];
