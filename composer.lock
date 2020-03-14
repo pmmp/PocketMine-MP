@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bb9233cea6e62cc28ea22863681e066e",
+    "content-hash": "659b3a871754524ad5581db691a2ce8b",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -443,12 +443,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "f205b5e6fe47ddf0ead4f1438b37f9cdee1fc407"
+                "reference": "f2517ec187a8306a3d3f594bf06a7c828645b9d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/f205b5e6fe47ddf0ead4f1438b37f9cdee1fc407",
-                "reference": "f205b5e6fe47ddf0ead4f1438b37f9cdee1fc407",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/f2517ec187a8306a3d3f594bf06a7c828645b9d7",
+                "reference": "f2517ec187a8306a3d3f594bf06a7c828645b9d7",
                 "shasum": ""
             },
             "require": {
@@ -472,7 +472,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library for working with Named Binary Tags",
-            "time": "2020-03-04T16:39:25+00:00"
+            "time": "2020-03-04T18:52:35+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -822,5 +822,6 @@
         "ext-zip": "*",
         "ext-zlib": ">=1.2.11"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }
