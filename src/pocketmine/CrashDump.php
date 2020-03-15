@@ -228,7 +228,10 @@ class CrashDump{
 		if(isset($lastExceptionError)){
 			$error = $lastExceptionError;
 		}else{
-			$error = (array) error_get_last();
+			$error = error_get_last();
+			if($error === null){
+				throw new \RuntimeException("Crash error information missing - did something use exit()?");
+			}
 			$error["trace"] = Utils::currentTrace(3); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
 			$errorConversion = [
 				E_ERROR => "E_ERROR",
