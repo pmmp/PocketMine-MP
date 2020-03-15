@@ -117,10 +117,11 @@ class CrashDump{
 			mkdir($this->server->getDataPath() . "crashdumps");
 		}
 		$this->path = $this->server->getDataPath() . "crashdumps/" . date("D_M_j-H.i.s-T_Y", $this->time) . ".log";
-		$this->fp = @fopen($this->path, "wb");
-		if(!is_resource($this->fp)){
+		$fp = @fopen($this->path, "wb");
+		if(!is_resource($fp)){
 			throw new \RuntimeException("Could not create Crash Dump");
 		}
+		$this->fp = $fp;
 		$this->data["format_version"] = self::FORMAT_VERSION;
 		$this->data["time"] = $this->time;
 		$this->addLine($this->server->getName() . " Crash Dump " . date("D M j H:i:s T Y", $this->time));
