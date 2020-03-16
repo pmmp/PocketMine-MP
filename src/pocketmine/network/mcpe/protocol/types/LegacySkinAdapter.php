@@ -55,6 +55,6 @@ class LegacySkinAdapter implements SkinAdapter{
 			->setAnimations($data->getAnimations())
 			->setAnimationData($data->getAnimationData())
 			->setPremium($data->isPremium())
-			->setPersona($data->isPremium());
+			->setPersona($data->isPersona());
 	}
 }
