@@ -41,6 +41,7 @@ use function socket_getsockname;
 use function socket_last_error;
 use function socket_listen;
 use function socket_set_block;
+use function socket_set_option;
 use function socket_strerror;
 use function socket_write;
 use function trim;
