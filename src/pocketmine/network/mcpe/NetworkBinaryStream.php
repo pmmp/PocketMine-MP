@@ -79,7 +79,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putLInt($uuid->getPart(2));
 	}
 
-	public function getSkin() : Skin{
+	public function getSkin() : SkinData{
 		$skinId = $this->getString();
 		$skinResourcePatch = $this->getString();
 		$skinData = $this->getSkinImage();
@@ -87,9 +87,9 @@ class NetworkBinaryStream extends BinaryStream{
 		$animations = [];
 		for($i = 0; $i < $animationCount; ++$i){
 			$animations[] = new SkinAnimation(
-				$this->getSkinImage(),
-				$this->getLInt(),
-				$this->getLFloat()
+				$skinImage = $this->getSkinImage(),
+				$animationType = $this->getLInt(),
+				$animationFrames = $this->getLFloat()
 			);
 		}
 		$capeData = $this->getSkinImage();
@@ -101,27 +101,15 @@ class NetworkBinaryStream extends BinaryStream{
 		$capeId = $this->getString();
 		$fullSkinId = $this->getString();
 
-		return (new Skin(
-			$skinId,
-			"",
-			"",
-			$skinResourcePatch,
-			$geometryData
-		))->setSkinImage($skinData)
-			->setAnimations($animations)
-			->setAnimationData($animationData)
-			->setCape(new Cape($capeId, $capeData, $capeOnClassic))
-			->setPersona($persona)
-			->setPremium($premium)
-			->setFullSkinId($fullSkinId);
+		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId);
 	}
 
 	/**
 	 * @return void
 	 */
-	public function putSkin(Skin $skin){
+	public function putSkin(SkinData $skin){
 		$this->putString($skin->getSkinId());
-		$this->putString($skin->getResourcePatch()); //resource patch
+		$this->putString($skin->getResourcePatch());
 		$this->putSkinImage($skin->getSkinImage());
 		$this->putLInt(count($skin->getAnimations()));
 		foreach($skin->getAnimations() as $animation){
@@ -129,13 +117,13 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->putLInt($animation->getType());
 			$this->putLFloat($animation->getFrames());
 		}
-		$this->putSkinImage($skin->getCape()->getImage());
+		$this->putSkinImage($skin->getCapeImage());
 		$this->putString($skin->getGeometryData());
 		$this->putString($skin->getAnimationData());
 		$this->putBool($skin->isPremium());
 		$this->putBool($skin->isPersona());
-		$this->putBool($skin->getCape()->isOnClassicSkin());
-		$this->putString($skin->getCape()->getId());
+		$this->putBool($skin->isPersonaCapeOnClassic());
+		$this->putString($skin->getCapeId());
 		$this->putString($skin->getFullSkinId());
 	}
 
