@@ -28,13 +28,9 @@ use pocketmine\Player;
 
 class CreativeInventoryAction extends InventoryAction{
 
-	/**
-	 * Player put an item into the creative window to destroy it.
-	 */
+	/** Player put an item into the creative window to destroy it. */
 	public const TYPE_DELETE_ITEM = 0;
-	/**
-	 * Player took an item from the creative window.
-	 */
+	/** Player took an item from the creative window. */
 	public const TYPE_CREATE_ITEM = 1;
 
 	/** @var int */

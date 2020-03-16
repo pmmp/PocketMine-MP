@@ -177,7 +177,7 @@ class Chunk{
 	 * Returns a bitmap of block ID and meta at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 *
 	 * @return int bitmap, (id << 4) | meta
@@ -190,7 +190,7 @@ class Chunk{
 	 * Sets block ID and meta in one call at the specified chunk block coordinates
 	 *
 	 * @param int      $x 0-15
-	 * @param int      $y
+	 * @param int      $y 0-255
 	 * @param int      $z 0-15
 	 * @param int|null $blockId 0-255 if null, does not change
 	 * @param int|null $meta 0-15 if null, does not change
@@ -207,7 +207,7 @@ class Chunk{
 	 * Returns the block ID at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 *
 	 * @return int 0-255
@@ -220,7 +220,7 @@ class Chunk{
 	 * Sets the block ID at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 * @param int $id 0-255
 	 *
@@ -236,7 +236,7 @@ class Chunk{
 	 * Returns the block meta value at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 *
 	 * @return int 0-15
@@ -249,7 +249,7 @@ class Chunk{
 	 * Sets the block meta value at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 * @param int $data 0-15
 	 *
@@ -265,7 +265,7 @@ class Chunk{
 	 * Returns the sky light level at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 *
 	 * @return int 0-15
@@ -278,7 +278,7 @@ class Chunk{
 	 * Sets the sky light level at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 * @param int $level 0-15
 	 *
@@ -305,7 +305,7 @@ class Chunk{
 	 * Returns the block light level at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y 0-15
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 *
 	 * @return int 0-15
@@ -318,7 +318,7 @@ class Chunk{
 	 * Sets the block light level at the specified chunk block coordinates
 	 *
 	 * @param int $x 0-15
-	 * @param int $y 0-15
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 * @param int $level 0-15
 	 *
@@ -669,7 +669,7 @@ class Chunk{
 	 * Returns the tile at the specified chunk block coordinates, or null if no tile exists.
 	 *
 	 * @param int $x 0-15
-	 * @param int $y
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 *
 	 * @return Tile|null

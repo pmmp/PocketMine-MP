@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
+use const PTHREADS_INHERIT_ALL;
+
 /**
  * This class must be extended by all custom threading classes
  */
@@ -78,7 +80,7 @@ abstract class Thread extends \Thread{
 	 *
 	 * @return bool
 	 */
-	public function start(?int $options = \PTHREADS_INHERIT_ALL){
+	public function start(?int $options = PTHREADS_INHERIT_ALL){
 		ThreadManager::getInstance()->add($this);
 
 		if($this->getClassLoader() === null){

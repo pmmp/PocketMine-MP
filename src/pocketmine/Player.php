@@ -2369,6 +2369,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleEntityEvent(ActorEventPacket $packet) : bool{
+		if($packet->entityRuntimeId !== $this->id){
+			//TODO HACK: EATING_ITEM is sent back to the server when the server sends it for other players (1.14 bug, maybe earlier)
+			return $packet->event === ActorEventPacket::EATING_ITEM;
+		}
 		if(!$this->spawned or !$this->isAlive()){
 			return true;
 		}
@@ -2511,7 +2515,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							$item = $this->inventory->getItemInHand();
 							$oldItem = clone $item;
 							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true)){
-								if(!$item->equalsExact($oldItem)){
+								if(!$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
 									$this->inventory->setItemInHand($item);
 									$this->inventory->sendHeldItem($this->hasSpawned);
 								}
@@ -2543,7 +2547,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						if($this->canInteract($blockVector->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7) and $this->level->useBreakOn($blockVector, $item, $this, true)){
 							if($this->isSurvival()){
-								if(!$item->equalsExact($oldItem)){
+								if(!$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
 									$this->inventory->setItemInHand($item);
 									$this->inventory->sendHeldItem($this->hasSpawned);
 								}
@@ -2737,7 +2741,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						if($this->isAlive()){
 							//reactive damage like thorns might cause us to be killed by attacking another mob, which
 							//would mean we'd already have dropped the inventory by the time we reached here
-							if($heldItem->onAttackEntity($target) and $this->isSurvival()){ //always fire the hook, even if we are survival
+							if($heldItem->onAttackEntity($target) and $this->isSurvival() and $heldItem->equalsExact($this->inventory->getItemInHand())){ //always fire the hook, even if we are survival
 								$this->inventory->setItemInHand($heldItem);
 							}
 
