@@ -285,6 +285,9 @@ abstract class Terminal{
 				case TextFormat::WHITE:
 					$newString .= Terminal::$COLOR_WHITE;
 					break;
+				case TextFormat::DARK_YELLOW:
+					$newString .= Terminal::$COLOR_DARK_YELLOW;
+					break;
 				default:
 					$newString .= $token;
 					break;
