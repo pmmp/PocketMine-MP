@@ -71,10 +71,13 @@ class AttributeMap implements \ArrayAccess{
 	}
 
 	/**
-	 * @param int   $offset
-	 * @param float $value
+	 * @param int|null $offset
+	 * @param float    $value
 	 */
 	public function offsetSet($offset, $value) : void{
+		if($offset === null){
+			throw new \InvalidArgumentException("Array push syntax is not supported");
+		}
 		$this->attributes[$offset]->setValue($value);
 	}
 
