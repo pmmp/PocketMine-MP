@@ -223,7 +223,7 @@ class ParticleCommand extends VanillaCommand{
 		}elseif(strpos($name, "instantspell") === 0){
 			$d = explode("_", $name);
 			if(count($d) === 3){
-				return new InstantEnchantParticle($pos, new Color((int) $d[1], ((int) $d[2], ((int) $d[3]);
+				return new InstantEnchantParticle($pos, new Color((int) $d[1], ((int) $d[2], ((int) $d[3]));
 			}
 		}
 
