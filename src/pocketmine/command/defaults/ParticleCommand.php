@@ -62,6 +62,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Color;
 use function count;
 use function explode;
 use function max;
