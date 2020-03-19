@@ -62,7 +62,6 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
-use pocketmine\utils\Color;
 use function count;
 use function explode;
 use function max;
@@ -223,8 +222,8 @@ class ParticleCommand extends VanillaCommand{
 			}
 		}elseif(strpos($name, "instantspell") === 0){
 			$d = explode("_", $name);
-			if(count($d) === 3){
-				return new InstantEnchantParticle($pos, new Color((int) $d[1], (int) $d[2], (int) $d[3]));
+			if(count($d) === 4){
+				return new InstantEnchantParticle($pos, (int) $d[1], (int) $d[2], (int) $d[3], (int) $d[4]);
 			}
 		}
 
