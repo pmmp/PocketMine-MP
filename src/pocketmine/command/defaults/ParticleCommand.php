@@ -159,8 +159,6 @@ class ParticleCommand extends VanillaCommand{
 				return new SmokeParticle($pos, $data ?? 0);
 			case "spell":
 				return new EnchantParticle($pos);
-			case "instantspell":
-				return new InstantEnchantParticle($pos);
 			case "dripwater":
 				return new WaterDripParticle($pos);
 			case "driplava":
@@ -221,6 +219,11 @@ class ParticleCommand extends VanillaCommand{
 			$d = explode("_", $name);
 			if(count($d) >= 4){
 				return new DustParticle($pos, ((int) $d[1]) & 0xff, ((int) $d[2]) & 0xff, ((int) $d[3]) & 0xff, isset($d[4]) ? ((int) $d[4]) & 0xff : 255);
+			}
+		}elseif(strpos($name, "instantspell") === 0){
+			$d = explode("_", $name);
+			if(count($d) === 3){
+				return new InstantEnchantParticle($pos, new Color((int) $d[1], ((int) $d[2], ((int) $d[3]);
 			}
 		}
 
