@@ -27,7 +27,8 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Color;
 
 class InstantEnchantParticle extends GenericParticle{
-	public function __construct(Vector3 $pos, Color $color){
+	public function __construct(Vector3 $pos, $a = 0xff, $b = 0, $g = 0, $r = 0){
+		$color = new Color($r, $g, $b, $a);
 		parent::__construct($pos, Particle::TYPE_MOB_SPELL_INSTANTANEOUS, $color->toABGR());
 	}
 }
