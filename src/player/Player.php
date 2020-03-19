@@ -74,6 +74,7 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
+use pocketmine\item\ProjectileItem;
 use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
@@ -1567,7 +1568,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		//TODO: check if item has a release action - if it doesn't, this shouldn't be set
-		$this->setUsingItem(false);
+		$this->setUsingItem(!$item instanceof ProjectileItem);
 
 		return true;
 	}
