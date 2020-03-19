@@ -1567,7 +1567,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		//TODO: check if item has a release action - if it doesn't, this shouldn't be set
-		$this->setUsingItem($item->getCooldownTicks() > 0);
+		$this->setUsingItem(false);
 
 		return true;
 	}
