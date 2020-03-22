@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\utils\UUID;
 use function str_repeat;
@@ -105,7 +106,7 @@ class FloatingTextParticle extends Particle{
 
 			$add = new PlayerListPacket();
 			$add->type = PlayerListPacket::TYPE_ADD;
-			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, $this->skin)];
+			$add->entries = [PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, SkinAdapterSingleton::get()->toSkinData($this->skin))];
 			$p[] = $add;
 
 			$pk = new AddPlayerPacket();
