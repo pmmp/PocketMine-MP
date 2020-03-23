@@ -82,7 +82,7 @@ abstract class DataPacket implements Packet{
 			$this->decodeHeader($this->buf);
 			$this->decodePayload($this->buf);
 		}catch(BinaryDataException | BadPacketException $e){
-			throw new BadPacketException($this->getName() . ": " . $e->getMessage(), 0, $e);
+			throw BadPacketException::wrap($e, $this->getName());
 		}
 	}
 

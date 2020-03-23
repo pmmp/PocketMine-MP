@@ -271,7 +271,7 @@ class NetworkSession{
 				$payload = $this->cipher->decrypt($payload);
 			}catch(\UnexpectedValueException $e){
 				$this->logger->debug("Encrypted packet: " . base64_encode($payload));
-				throw new BadPacketException("Packet decryption error: " . $e->getMessage(), 0, $e);
+				throw BadPacketException::wrap($e, "Packet decryption error");
 			}finally{
 				Timings::$playerNetworkReceiveDecryptTimer->stopTiming();
 			}
@@ -283,7 +283,7 @@ class NetworkSession{
 		}catch(\ErrorException $e){
 			$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
 			//TODO: this isn't incompatible game version if we already established protocol version
-			throw new BadPacketException("Compressed packet batch decode error: " . $e->getMessage(), 0, $e);
+			throw BadPacketException::wrap($e, "Compressed packet batch decode error");
 		}finally{
 			Timings::$playerNetworkReceiveDecompressTimer->stopTiming();
 		}
@@ -297,14 +297,14 @@ class NetworkSession{
 				$pk = $stream->getPacket();
 			}catch(BinaryDataException $e){
 				$this->logger->debug("Packet batch: " . base64_encode($stream->getBuffer()));
-				throw new BadPacketException("Packet batch decode error: " . $e->getMessage(), 0, $e);
+				throw BadPacketException::wrap($e, "Packet batch decode error");
 			}
 
 			try{
 				$this->handleDataPacket($pk);
 			}catch(BadPacketException $e){
 				$this->logger->debug($pk->getName() . ": " . base64_encode($pk->getBinaryStream()->getBuffer()));
-				throw new BadPacketException("Error processing " . $pk->getName() . ": " . $e->getMessage(), 0, $e);
+				throw BadPacketException::wrap($e, "Error processing " . $pk->getName());
 			}
 		}
 	}

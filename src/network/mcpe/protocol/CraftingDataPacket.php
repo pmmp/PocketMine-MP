@@ -128,7 +128,7 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 					try{
 						$entry["input"] = ItemFactory::get($inputId, $inputData);
 					}catch(\InvalidArgumentException $e){
-						throw new BadPacketException($e->getMessage(), 0, $e);
+						throw BadPacketException::wrap($e);
 					}
 					$entry["output"] = $out = $in->getSlot();
 					if($out->getMeta() === 0x7fff){

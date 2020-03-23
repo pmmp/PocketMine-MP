@@ -198,7 +198,7 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 					$attr->setMaxValue($max);
 					$attr->setValue($current);
 				}catch(\InvalidArgumentException $e){
-					throw new BadPacketException($e->getMessage(), 0, $e); //TODO: address this properly
+					throw BadPacketException::wrap($e); //TODO: address this properly
 				}
 				$this->attributes[] = $attr;
 			}else{
