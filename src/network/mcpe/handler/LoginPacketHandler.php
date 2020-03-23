@@ -68,38 +68,39 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
-		if(!Player::isValidUserName($packet->extraData[LoginPacket::I_USERNAME])){
+		if(!Player::isValidUserName($packet->extraData->displayName)){
 			$this->session->disconnect("disconnectionScreen.invalidName");
 
 			return true;
 		}
 
 		try{
+			$clientData = $packet->clientData; //this serves no purpose except readability
 			/** @var SkinAnimation[] $animations */
 			$animations = [];
-			foreach($packet->clientData[LoginPacket::I_ANIMATION_IMAGES] as $animation){
+			foreach($clientData->AnimatedImageData as $animation){
 				$animations[] = new SkinAnimation(
 					new SkinImage(
-						$animation[LoginPacket::I_ANIMATION_IMAGE_HEIGHT],
-						$animation[LoginPacket::I_ANIMATION_IMAGE_WIDTH],
-						base64_decode($animation[LoginPacket::I_ANIMATION_IMAGE_DATA], true)
+						$animation->ImageHeight,
+						$animation->ImageWidth,
+						base64_decode($animation->Image, true)
 					),
-					$animation[LoginPacket::I_ANIMATION_IMAGE_TYPE],
-					$animation[LoginPacket::I_ANIMATION_IMAGE_FRAMES]
+					$animation->Type,
+					$animation->Frames
 				);
 			}
 			$skinData = new SkinData(
-				$packet->clientData[LoginPacket::I_SKIN_ID],
-				base64_decode($packet->clientData[LoginPacket::I_SKIN_RESOURCE_PATCH], true),
-				new SkinImage($packet->clientData[LoginPacket::I_SKIN_HEIGHT], $packet->clientData[LoginPacket::I_SKIN_WIDTH], base64_decode($packet->clientData[LoginPacket::I_SKIN_DATA], true)),
+				$clientData->SkinId,
+				base64_decode($clientData->SkinResourcePatch, true),
+				new SkinImage($clientData->SkinImageHeight, $clientData->SkinImageWidth, base64_decode($clientData->SkinData, true)),
 				$animations,
-				new SkinImage($packet->clientData[LoginPacket::I_CAPE_HEIGHT], $packet->clientData[LoginPacket::I_CAPE_WIDTH], base64_decode($packet->clientData[LoginPacket::I_CAPE_DATA], true)),
-				base64_decode($packet->clientData[LoginPacket::I_GEOMETRY_DATA], true),
-				base64_decode($packet->clientData[LoginPacket::I_ANIMATION_DATA], true),
-				$packet->clientData[LoginPacket::I_PREMIUM_SKIN],
-				$packet->clientData[LoginPacket::I_PERSONA_SKIN],
-				$packet->clientData[LoginPacket::I_PERSONA_CAPE_ON_CLASSIC_SKIN],
-				$packet->clientData[LoginPacket::I_CAPE_ID]
+				new SkinImage($clientData->CapeImageHeight, $clientData->CapeImageWidth, base64_decode($clientData->CapeData, true)),
+				base64_decode($clientData->SkinGeometryData, true),
+				base64_decode($clientData->SkinAnimationData, true),
+				$clientData->PremiumSkin,
+				$clientData->PersonaSkin,
+				$clientData->CapeOnClassicSkin,
+				$clientData->CapeId
 			);
 
 			$skin = SkinAdapterSingleton::get()->fromSkinData($skinData);
@@ -111,12 +112,12 @@ class LoginPacketHandler extends PacketHandler{
 		}
 
 		$this->session->setPlayerInfo(new PlayerInfo(
-			$packet->extraData[LoginPacket::I_USERNAME],
-			UUID::fromString($packet->extraData[LoginPacket::I_UUID]),
+			$packet->extraData->displayName,
+			UUID::fromString($packet->extraData->identity),
 			$skin,
-			$packet->clientData[LoginPacket::I_LANGUAGE_CODE],
-			$packet->extraData[LoginPacket::I_XUID],
-			$packet->clientData
+			$packet->clientData->LanguageCode,
+			$packet->extraData->XUID,
+			(array) $packet->clientData
 		));
 
 		$ev = new PlayerPreLoginEvent(

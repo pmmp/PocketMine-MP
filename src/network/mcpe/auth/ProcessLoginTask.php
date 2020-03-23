@@ -95,7 +95,7 @@ class ProcessLoginTask extends AsyncTask{
 		$currentKey = null;
 		$first = true;
 
-		foreach($packet->chainDataJwt as $jwt){
+		foreach($packet->chainDataJwt->chain as $jwt){
 			$this->validateToken($jwt, $currentKey, $first);
 			if($first){
 				$first = false;
