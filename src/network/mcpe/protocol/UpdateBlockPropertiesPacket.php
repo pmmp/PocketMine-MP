@@ -43,6 +43,10 @@ class UpdateBlockPropertiesPacket extends DataPacket implements ClientboundPacke
 		return $result;
 	}
 
+	public function getNbt() : string{
+		return $this->nbt;
+	}
+
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->nbt = $in->getRemaining();
 	}
