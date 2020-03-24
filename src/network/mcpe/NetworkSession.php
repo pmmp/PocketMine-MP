@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
+use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
@@ -70,6 +71,7 @@ use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
+use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
@@ -658,7 +660,9 @@ class NetworkSession{
 	public function syncAttributes(Living $entity, bool $sendAll = false) : void{
 		$entries = $sendAll ? $entity->getAttributeMap()->getAll() : $entity->getAttributeMap()->needSend();
 		if(count($entries) > 0){
-			$this->sendDataPacket(UpdateAttributesPacket::create($entity->getId(), $entries));
+			$this->sendDataPacket(UpdateAttributesPacket::create($entity->getId(), array_map(function(Attribute $attr) : NetworkAttribute{
+				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
+			}, $entries)));
 			foreach($entries as $entry){
 				$entry->markSynchronized();
 			}

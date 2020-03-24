@@ -50,6 +50,7 @@ use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
+use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -62,6 +63,7 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function abs;
+use function array_map;
 use function assert;
 use function cos;
 use function count;
@@ -1518,7 +1520,9 @@ abstract class Entity{
 		$pk->yaw = $this->location->yaw;
 		$pk->headYaw = $this->location->yaw; //TODO
 		$pk->pitch = $this->location->pitch;
-		$pk->attributes = $this->attributeMap->getAll();
+		$pk->attributes = array_map(function(Attribute $attr) : NetworkAttribute{
+			return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
+		}, $this->attributeMap->getAll());
 		$pk->metadata = $this->getSyncedNetworkData(false);
 
 		$player->getNetworkSession()->sendDataPacket($pk);

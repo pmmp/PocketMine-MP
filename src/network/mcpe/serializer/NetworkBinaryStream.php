@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\serializer;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\entity\Attribute;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -37,6 +36,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
+use pocketmine\network\mcpe\protocol\types\entity\Attribute;
 use pocketmine\network\mcpe\protocol\types\entity\BlockPosMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\ByteMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\CompoundTagMetadataProperty;
@@ -362,17 +362,7 @@ class NetworkBinaryStream extends BinaryStream{
 			$default = $this->getLFloat();
 			$id = $this->getString();
 
-			$attr = Attribute::get($id);
-			if($attr !== null){
-				$attr->setMinValue($min);
-				$attr->setMaxValue($max);
-				$attr->setValue($current);
-				$attr->setDefaultValue($default);
-
-				$list[] = $attr;
-			}else{
-				throw new BadPacketException("Unknown attribute type \"$id\"");
-			}
+			$list[] = new Attribute($id, $min, $max, $current, $default);
 		}
 
 		return $list;
@@ -386,10 +376,10 @@ class NetworkBinaryStream extends BinaryStream{
 	public function putAttributeList(Attribute ...$attributes) : void{
 		$this->putUnsignedVarInt(count($attributes));
 		foreach($attributes as $attribute){
-			$this->putLFloat($attribute->getMinValue());
-			$this->putLFloat($attribute->getMaxValue());
-			$this->putLFloat($attribute->getValue());
-			$this->putLFloat($attribute->getDefaultValue());
+			$this->putLFloat($attribute->getMin());
+			$this->putLFloat($attribute->getMax());
+			$this->putLFloat($attribute->getCurrent());
+			$this->putLFloat($attribute->getDefault());
 			$this->putString($attribute->getId());
 		}
 	}

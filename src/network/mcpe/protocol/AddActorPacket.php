@@ -25,10 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\entity\Attribute;
 use pocketmine\math\Vector3;
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\entity\Attribute;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
@@ -190,20 +189,7 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 			$min = $in->getLFloat();
 			$current = $in->getLFloat();
 			$max = $in->getLFloat();
-			$attr = Attribute::get($id);
-
-			if($attr !== null){
-				try{
-					$attr->setMinValue($min);
-					$attr->setMaxValue($max);
-					$attr->setValue($current);
-				}catch(\InvalidArgumentException $e){
-					throw BadPacketException::wrap($e); //TODO: address this properly
-				}
-				$this->attributes[] = $attr;
-			}else{
-				throw new BadPacketException("Unknown attribute type \"$id\"");
-			}
+			$this->attributes[] = new Attribute($id, $min, $max, $current, $current);
 		}
 
 		$this->metadata = $in->getEntityMetadata();
@@ -226,9 +212,9 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 		$out->putUnsignedVarInt(count($this->attributes));
 		foreach($this->attributes as $attribute){
 			$out->putString($attribute->getId());
-			$out->putLFloat($attribute->getMinValue());
-			$out->putLFloat($attribute->getValue());
-			$out->putLFloat($attribute->getMaxValue());
+			$out->putLFloat($attribute->getMin());
+			$out->putLFloat($attribute->getCurrent());
+			$out->putLFloat($attribute->getMax());
 		}
 
 		$out->putEntityMetadata($this->metadata);
