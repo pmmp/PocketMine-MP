@@ -37,8 +37,9 @@ use raklib\protocol\PacketReliability;
 use raklib\RakLib;
 use raklib\server\InterThreadChannelReader;
 use raklib\server\InterThreadChannelWriter;
-use raklib\server\ServerHandler;
-use raklib\server\ServerInstance;
+use raklib\server\RakLibToUserThreadMessageReceiver;
+use raklib\server\ServerEventListener;
+use raklib\server\UserToRakLibThreadMessageSender;
 use raklib\utils\InternetAddress;
 use function addcslashes;
 use function bin2hex;
@@ -50,7 +51,7 @@ use function substr;
 use function unserialize;
 use const PTHREADS_INHERIT_CONSTANTS;
 
-class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
+class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	/**
 	 * Sometimes this gets changed when the MCPE-layer protocol gets broken to the point where old and new can't
 	 * communicate. It's important that we check this to avoid catastrophes.
@@ -74,7 +75,9 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	/** @var NetworkSession[] */
 	private $sessions = [];
 
-	/** @var ServerHandler */
+	/** @var RakLibToUserThreadMessageReceiver */
+	private $eventReceiver;
+	/** @var UserToRakLibThreadMessageSender */
 	private $interface;
 
 	/** @var SleeperNotifier */
@@ -99,16 +102,18 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 			self::MCPE_RAKNET_PROTOCOL_VERSION,
 			$this->sleeper
 		);
-		$this->interface = new ServerHandler(
+		$this->eventReceiver = new RakLibToUserThreadMessageReceiver(
 			$this,
-			new InterThreadChannelReader($threadToMainBuffer),
+			new InterThreadChannelReader($threadToMainBuffer)
+		);
+		$this->interface = new UserToRakLibThreadMessageSender(
 			new InterThreadChannelWriter($mainToThreadBuffer)
 		);
 	}
 
 	public function start() : void{
 		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-			while($this->interface->handlePacket());
+			while($this->eventReceiver->handle());
 		});
 		$this->server->getLogger()->debug("Waiting for RakLib to start...");
 		$this->rakLib->startAndWait(PTHREADS_INHERIT_CONSTANTS); //HACK: MainLogger needs constants for exception logging
@@ -137,10 +142,10 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 		}
 	}
 
-	public function close(int $sessionId, string $reason = "unknown reason") : void{
+	public function close(int $sessionId) : void{
 		if(isset($this->sessions[$sessionId])){
 			unset($this->sessions[$sessionId]);
-			$this->interface->closeSession($sessionId, $reason);
+			$this->interface->closeSession($sessionId);
 		}
 	}
 
@@ -210,7 +215,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	public function setName(string $name) : void{
 		$info = $this->server->getQueryInformation();
 
-		$this->interface->sendOption("name", implode(";",
+		$this->interface->setOption("name", implode(";",
 			[
 				"MCPE",
 				rtrim(addcslashes($name, ";"), '\\'),
@@ -226,7 +231,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	}
 
 	public function setPortCheck(bool $name) : void{
-		$this->interface->sendOption("portChecking", $name);
+		$this->interface->setOption("portChecking", $name);
 	}
 
 	public function handleOption(string $option, string $value) : void{

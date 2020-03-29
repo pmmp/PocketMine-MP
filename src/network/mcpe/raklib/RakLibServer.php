@@ -29,7 +29,9 @@ use raklib\generic\Socket;
 use raklib\RakLib;
 use raklib\server\InterThreadChannelReader;
 use raklib\server\InterThreadChannelWriter;
+use raklib\server\RakLibToUserThreadMessageSender;
 use raklib\server\SessionManager;
+use raklib\server\UserToRakLibThreadMessageReceiver;
 use raklib\utils\ExceptionTraceCleaner;
 use raklib\utils\InternetAddress;
 use function error_get_last;
@@ -159,8 +161,8 @@ class RakLibServer extends Thread{
 				$socket,
 				$this->maxMtuSize,
 				$this->protocolVersion,
-				new InterThreadChannelReader($this->mainToThreadBuffer),
-				new InterThreadChannelWriter($this->threadToMainBuffer, $this->mainThreadNotifier),
+				new UserToRakLibThreadMessageReceiver(new InterThreadChannelReader($this->mainToThreadBuffer)),
+				new RakLibToUserThreadMessageSender(new InterThreadChannelWriter($this->threadToMainBuffer, $this->mainThreadNotifier)),
 				new ExceptionTraceCleaner($this->mainPath)
 			);
 			$this->synchronized(function() : void{

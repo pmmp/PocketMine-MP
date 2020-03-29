@@ -529,12 +529,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "b049d56a3ef5c87e545882737f8e1a8e965fec1d"
+                "reference": "45378244744328ceda76f95f2636a4f2d6e365c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/b049d56a3ef5c87e545882737f8e1a8e965fec1d",
-                "reference": "b049d56a3ef5c87e545882737f8e1a8e965fec1d",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/45378244744328ceda76f95f2636a4f2d6e365c7",
+                "reference": "45378244744328ceda76f95f2636a4f2d6e365c7",
                 "shasum": ""
             },
             "require": {
@@ -563,7 +563,7 @@
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
-            "time": "2020-03-29T17:01:59+00:00"
+            "time": "2020-03-29T22:42:27+00:00"
         },
         {
             "name": "pocketmine/snooze",
