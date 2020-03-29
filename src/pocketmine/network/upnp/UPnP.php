@@ -124,13 +124,16 @@ abstract class UPnP{
 		socket_recvfrom($socket, $buffer, 1024, 0, $responseHost, $responsePort);
 
 		if(!$buffer || !preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches)){
-			throw new \RuntimeException("Unable to find the router");
+			throw new \RuntimeException("Unable to find the router. Ensure that network discovery is enabled in Control Panel.");
 		}
 		$location = trim($matches[1]);
 		$url = parse_url($location);
-		$response = Internet::getURL($location, 3, [], $err);
+		$response = Internet::getURL($location, 3, [], $err, $headers, $httpCode);
 		if(!$response){
 			throw new \RuntimeException("Unable to access XML: {$err}");
+		}
+		if($httpCode !== 200){
+			throw new \RuntimeException("Unable to access XML: {$response}");
 		}
 		$root = new \SimpleXMLElement($response);
 		$device = $root->device;
@@ -175,7 +178,7 @@ abstract class UPnP{
 		];
 
 		if(!Internet::postURL(self::$serviceURL, $contents, 3, $headers)){
-			throw new \RuntimeException("Failed to portforward using UPnP.");
+			throw new \RuntimeException("Failed to portforward using UPnP. Ensure that network discovery is enabled in Control Panel.");
 		}
 	}
 
