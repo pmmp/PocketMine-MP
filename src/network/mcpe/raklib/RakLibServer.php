@@ -144,7 +144,7 @@ class RakLibServer extends Thread{
 		});
 	}
 
-	public function onRun() : void{
+	protected function onRun() : void{
 		try{
 			gc_enable();
 			ini_set("display_errors", '1');
