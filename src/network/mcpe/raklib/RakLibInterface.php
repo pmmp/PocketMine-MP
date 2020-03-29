@@ -35,7 +35,8 @@ use pocketmine\utils\Utils;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\RakLib;
-use raklib\server\RakLibServer;
+use raklib\server\InterThreadChannelReader;
+use raklib\server\InterThreadChannelWriter;
 use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
 use raklib\utils\InternetAddress;
@@ -82,13 +83,16 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),
-			\pocketmine\COMPOSER_AUTOLOADER_PATH,
 			new InternetAddress($this->server->getIp(), $this->server->getPort(), 4),
 			(int) $this->server->getProperty("network.max-mtu-size", 1492),
 			self::MCPE_RAKNET_PROTOCOL_VERSION,
 			$this->sleeper
 		);
-		$this->interface = new ServerHandler($this->rakLib, $this);
+		$this->interface = new ServerHandler(
+			$this,
+			new InterThreadChannelReader($this->rakLib->getExternalQueue()),
+			new InterThreadChannelWriter($this->rakLib->getInternalQueue())
+		);
 	}
 
 	public function start() : void{
@@ -132,6 +136,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	public function shutdown() : void{
 		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
 		$this->interface->shutdown();
+		$this->rakLib->quit();
 	}
 
 	public function openSession(int $sessionId, string $address, int $port, int $clientID) : void{

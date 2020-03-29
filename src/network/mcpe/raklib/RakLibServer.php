@@ -1,0 +1,193 @@
+<?php
+
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+*/
+
+declare(strict_types=1);
+
+namespace pocketmine\network\mcpe\raklib;
+
+use pocketmine\snooze\SleeperNotifier;
+use pocketmine\thread\Thread;
+use raklib\generic\Socket;
+use raklib\RakLib;
+use raklib\server\InterThreadChannelReader;
+use raklib\server\InterThreadChannelWriter;
+use raklib\server\SessionManager;
+use raklib\utils\ExceptionTraceCleaner;
+use raklib\utils\InternetAddress;
+use function error_get_last;
+use function gc_enable;
+use function ini_set;
+use function mt_rand;
+use function register_shutdown_function;
+use const PHP_INT_MAX;
+use const PTHREADS_INHERIT_NONE;
+
+class RakLibServer extends Thread{
+	/** @var InternetAddress */
+	private $address;
+
+	/** @var \ThreadedLogger */
+	protected $logger;
+
+	/** @var bool */
+	protected $cleanShutdown = false;
+	/** @var bool */
+	protected $ready = false;
+
+	/** @var \Threaded */
+	protected $externalQueue;
+	/** @var \Threaded */
+	protected $internalQueue;
+
+	/** @var string */
+	protected $mainPath;
+
+	/** @var int */
+	protected $serverId = 0;
+	/** @var int */
+	protected $maxMtuSize;
+	/** @var int */
+	private $protocolVersion;
+
+	/** @var SleeperNotifier */
+	protected $mainThreadNotifier;
+
+	/** @var \Throwable|null */
+	public $crashInfo = null;
+
+	/**
+	 * @param \ThreadedLogger      $logger
+	 * @param InternetAddress      $address
+	 * @param int                  $maxMtuSize
+	 * @param int|null             $overrideProtocolVersion Optional custom protocol version to use, defaults to current RakLib's protocol
+	 * @param SleeperNotifier|null $sleeper
+	 */
+	public function __construct(\ThreadedLogger $logger, InternetAddress $address, int $maxMtuSize = 1492, ?int $overrideProtocolVersion = null, ?SleeperNotifier $sleeper = null){
+		$this->address = $address;
+
+		$this->serverId = mt_rand(0, PHP_INT_MAX);
+		$this->maxMtuSize = $maxMtuSize;
+
+		$this->logger = $logger;
+
+		$this->externalQueue = new \Threaded;
+		$this->internalQueue = new \Threaded;
+
+		$this->mainPath = \pocketmine\PATH;
+
+		$this->protocolVersion = $overrideProtocolVersion ?? RakLib::DEFAULT_PROTOCOL_VERSION;
+
+		$this->mainThreadNotifier = $sleeper;
+	}
+
+	/**
+	 * Returns the RakNet server ID
+	 * @return int
+	 */
+	public function getServerId() : int{
+		return $this->serverId;
+	}
+
+	/**
+	 * @return \Threaded
+	 */
+	public function getExternalQueue() : \Threaded{
+		return $this->externalQueue;
+	}
+
+	/**
+	 * @return \Threaded
+	 */
+	public function getInternalQueue() : \Threaded{
+		return $this->internalQueue;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function shutdownHandler(){
+		if($this->cleanShutdown !== true){
+			$error = error_get_last();
+
+			if($error !== null){
+				$this->logger->emergency("Fatal error: " . $error["message"] . " in " . $error["file"] . " on line " . $error["line"]);
+				$this->setCrashInfo(new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']));
+			}else{
+				$this->logger->emergency("RakLib shutdown unexpectedly");
+			}
+		}
+	}
+
+	public function getCrashInfo() : ?\Throwable{
+		return $this->crashInfo;
+	}
+
+	private function setCrashInfo(\Throwable $e) : void{
+		$this->synchronized(function(\Throwable $e) : void{
+			$this->crashInfo = $e;
+			$this->notify();
+		}, $e);
+	}
+
+	public function startAndWait(int $options = PTHREADS_INHERIT_NONE) : void{
+		$this->start($options);
+		$this->synchronized(function() : void{
+			while(!$this->ready and $this->crashInfo === null){
+				$this->wait();
+			}
+			if($this->crashInfo !== null){
+				throw $this->crashInfo;
+			}
+		});
+	}
+
+	public function onRun() : void{
+		try{
+			gc_enable();
+			ini_set("display_errors", '1');
+			ini_set("display_startup_errors", '1');
+
+			register_shutdown_function([$this, "shutdownHandler"]);
+
+			$socket = new Socket($this->address);
+			$manager = new SessionManager(
+				$this->serverId,
+				$this->logger,
+				$socket,
+				$this->maxMtuSize,
+				$this->protocolVersion,
+				new InterThreadChannelReader($this->internalQueue),
+				new InterThreadChannelWriter($this->externalQueue, $this->mainThreadNotifier),
+				new ExceptionTraceCleaner($this->mainPath)
+			);
+			$this->synchronized(function() : void{
+				$this->ready = true;
+				$this->notify();
+			});
+			$manager->run();
+			$this->cleanShutdown = true;
+		}catch(\Throwable $e){
+			$this->setCrashInfo($e);
+			$this->logger->logException($e);
+		}
+	}
+
+}
