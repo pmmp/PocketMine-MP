@@ -43,6 +43,7 @@ use raklib\utils\InternetAddress;
 use function addcslashes;
 use function bin2hex;
 use function implode;
+use function mt_rand;
 use function random_bytes;
 use function rtrim;
 use function substr;
@@ -64,6 +65,9 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 	/** @var Network */
 	private $network;
 
+	/** @var int */
+	private $rakServerId;
+
 	/** @var RakLibServer */
 	private $rakLib;
 
@@ -78,20 +82,27 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 
 	public function __construct(Server $server){
 		$this->server = $server;
+		$this->rakServerId = mt_rand(0, PHP_INT_MAX);
 
 		$this->sleeper = new SleeperNotifier();
 
+		$mainToThreadBuffer = new \Threaded;
+		$threadToMainBuffer = new \Threaded;
+
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),
+			$mainToThreadBuffer,
+			$threadToMainBuffer,
 			new InternetAddress($this->server->getIp(), $this->server->getPort(), 4),
+			$this->rakServerId,
 			(int) $this->server->getProperty("network.max-mtu-size", 1492),
 			self::MCPE_RAKNET_PROTOCOL_VERSION,
 			$this->sleeper
 		);
 		$this->interface = new ServerHandler(
 			$this,
-			new InterThreadChannelReader($this->rakLib->getExternalQueue()),
-			new InterThreadChannelWriter($this->rakLib->getInternalQueue())
+			new InterThreadChannelReader($threadToMainBuffer),
+			new InterThreadChannelWriter($mainToThreadBuffer)
 		);
 	}
 
@@ -207,7 +218,7 @@ class RakLibInterface implements ServerInstance, AdvancedNetworkInterface{
 				ProtocolInfo::MINECRAFT_VERSION_NETWORK,
 				$info->getPlayerCount(),
 				$info->getMaxPlayerCount(),
-				$this->rakLib->getServerId(),
+				$this->rakServerId,
 				$this->server->getName(),
 				$this->server->getGamemode()->getEnglishName()
 			]) . ";"

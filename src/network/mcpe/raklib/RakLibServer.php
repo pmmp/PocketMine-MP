@@ -35,9 +35,7 @@ use raklib\utils\InternetAddress;
 use function error_get_last;
 use function gc_enable;
 use function ini_set;
-use function mt_rand;
 use function register_shutdown_function;
-use const PHP_INT_MAX;
 use const PTHREADS_INHERIT_NONE;
 
 class RakLibServer extends Thread{
@@ -53,15 +51,15 @@ class RakLibServer extends Thread{
 	protected $ready = false;
 
 	/** @var \Threaded */
-	protected $externalQueue;
+	protected $mainToThreadBuffer;
 	/** @var \Threaded */
-	protected $internalQueue;
+	protected $threadToMainBuffer;
 
 	/** @var string */
 	protected $mainPath;
 
 	/** @var int */
-	protected $serverId = 0;
+	protected $serverId;
 	/** @var int */
 	protected $maxMtuSize;
 	/** @var int */
@@ -80,44 +78,31 @@ class RakLibServer extends Thread{
 	 * @param int|null             $overrideProtocolVersion Optional custom protocol version to use, defaults to current RakLib's protocol
 	 * @param SleeperNotifier|null $sleeper
 	 */
-	public function __construct(\ThreadedLogger $logger, InternetAddress $address, int $maxMtuSize = 1492, ?int $overrideProtocolVersion = null, ?SleeperNotifier $sleeper = null){
+	public function __construct(
+		\ThreadedLogger $logger,
+		\Threaded $mainToThreadBuffer,
+		\Threaded $threadToMainBuffer,
+		InternetAddress $address,
+		int $serverId,
+		int $maxMtuSize = 1492,
+		?int $overrideProtocolVersion = null,
+		?SleeperNotifier $sleeper = null
+	){
 		$this->address = $address;
 
-		$this->serverId = mt_rand(0, PHP_INT_MAX);
+		$this->serverId = $serverId;
 		$this->maxMtuSize = $maxMtuSize;
 
 		$this->logger = $logger;
 
-		$this->externalQueue = new \Threaded;
-		$this->internalQueue = new \Threaded;
+		$this->mainToThreadBuffer = $mainToThreadBuffer;
+		$this->threadToMainBuffer = $threadToMainBuffer;
 
 		$this->mainPath = \pocketmine\PATH;
 
 		$this->protocolVersion = $overrideProtocolVersion ?? RakLib::DEFAULT_PROTOCOL_VERSION;
 
 		$this->mainThreadNotifier = $sleeper;
-	}
-
-	/**
-	 * Returns the RakNet server ID
-	 * @return int
-	 */
-	public function getServerId() : int{
-		return $this->serverId;
-	}
-
-	/**
-	 * @return \Threaded
-	 */
-	public function getExternalQueue() : \Threaded{
-		return $this->externalQueue;
-	}
-
-	/**
-	 * @return \Threaded
-	 */
-	public function getInternalQueue() : \Threaded{
-		return $this->internalQueue;
 	}
 
 	/**
@@ -174,8 +159,8 @@ class RakLibServer extends Thread{
 				$socket,
 				$this->maxMtuSize,
 				$this->protocolVersion,
-				new InterThreadChannelReader($this->internalQueue),
-				new InterThreadChannelWriter($this->externalQueue, $this->mainThreadNotifier),
+				new InterThreadChannelReader($this->mainToThreadBuffer),
+				new InterThreadChannelWriter($this->threadToMainBuffer, $this->mainThreadNotifier),
 				new ExceptionTraceCleaner($this->mainPath)
 			);
 			$this->synchronized(function() : void{
