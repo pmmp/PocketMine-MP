@@ -147,7 +147,7 @@ abstract class UPnP{
 		self::$serviceURL = "{$url['host']}:{$url['port']}/{$controlURL}";
 	}
 
-	public static function portForward(int $port) : void{
+	public static function PortForward(int $port) : void{
 		if(!Internet::$online){
 			throw new \RuntimeException("Server is offline");
 		}
@@ -182,7 +182,7 @@ abstract class UPnP{
 		}
 	}
 
-	public static function removePortForward(int $port) : bool{
+	public static function RemovePortForward(int $port) : bool{
 		if(!Internet::$online){
 			return false;
 		}

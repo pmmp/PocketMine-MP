@@ -1892,7 +1892,7 @@ class Server{
 
 			if((bool) $this->getProperty("network.upnp-forwarding", false)){
 				$this->logger->info("[UPnP] Removing port forward...");
-				UPnP::removePortForward($this->getPort());
+				UPnP::RemovePortForward($this->getPort());
 			}
 
 			if($this->pluginManager instanceof PluginManager){
@@ -1971,7 +1971,7 @@ class Server{
 		if((bool) $this->getProperty("network.upnp-forwarding", false)){
 			$this->logger->info("[UPnP] Trying to port forward...");
 			try{
-				UPnP::portForward($this->getPort());
+				UPnP::PortForward($this->getPort());
 			}catch(\Exception $e){
 				$this->logger->alert("UPnP portforward failed: " . $e->getMessage());
 			}
