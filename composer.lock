@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6dfad217828972922e86594a573c6c75",
+    "content-hash": "6870d7b85559a32e2929692e0a0da169",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -167,27 +167,27 @@
         },
         {
             "name": "pocketmine/log",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Log.git",
-                "reference": "62c1f0ea5a5c0ae4b308f9bd231fb11638ff866e"
+                "reference": "e59bedb5d4bbeb9a26647cb7c367cb2fa72addfa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Log/zipball/62c1f0ea5a5c0ae4b308f9bd231fb11638ff866e",
-                "reference": "62c1f0ea5a5c0ae4b308f9bd231fb11638ff866e",
+                "url": "https://api.github.com/repos/pmmp/Log/zipball/e59bedb5d4bbeb9a26647cb7c367cb2fa72addfa",
+                "reference": "e59bedb5d4bbeb9a26647cb7c367cb2fa72addfa",
                 "shasum": ""
             },
             "require": {
-                "ext-pthreads": "~3.2.0",
                 "php": ">=7.2"
             },
             "conflict": {
                 "pocketmine/spl": "<0.4"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.8"
+                "phpstan/phpstan": "^0.12.8",
+                "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
             "autoload": {
@@ -200,7 +200,45 @@
                 "LGPL-3.0"
             ],
             "description": "Logging components used by PocketMine-MP and related projects",
-            "time": "2020-01-31T14:31:47+00:00"
+            "time": "2020-03-31T15:43:47+00:00"
+        },
+        {
+            "name": "pocketmine/log-pthreads",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/LogPthreads.git",
+                "reference": "9bbcef398b01487ab47c234a6a7054722abbe067"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/9bbcef398b01487ab47c234a6a7054722abbe067",
+                "reference": "9bbcef398b01487ab47c234a6a7054722abbe067",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": "~3.2.0",
+                "php": ">=7.2",
+                "pocketmine/log": "^0.2.0"
+            },
+            "conflict": {
+                "pocketmine/spl": "<0.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.18"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./src"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Logging components specialized for pthreads used by PocketMine-MP and related projects",
+            "time": "2020-03-31T16:17:19+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -275,31 +313,32 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.12.7",
+            "version": "0.12.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "01abb4e78e2ef69a83d50037d558e0b274f8245b"
+                "reference": "9fea763ffc922db083e4528d4acd0b13d0ea83a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/01abb4e78e2ef69a83d50037d558e0b274f8245b",
-                "reference": "01abb4e78e2ef69a83d50037d558e0b274f8245b",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/9fea763ffc922db083e4528d4acd0b13d0ea83a4",
+                "reference": "9fea763ffc922db083e4528d4acd0b13d0ea83a4",
                 "shasum": ""
             },
             "require": {
-                "ext-bcmath": "*",
                 "ext-pthreads": "~3.2.0",
                 "ext-sockets": "*",
                 "php": ">=7.2.0",
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "^0.1.9",
-                "pocketmine/log": "^0.1.0",
+                "pocketmine/log": "^0.2.0",
+                "pocketmine/log-pthreads": "^0.1.0",
                 "pocketmine/snooze": "^0.1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.8"
+                "phpstan/phpstan": "^0.12.18",
+                "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
             "autoload": {
@@ -312,7 +351,7 @@
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
-            "time": "2020-01-31T15:33:05+00:00"
+            "time": "2020-03-31T17:28:28+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -474,6 +513,20 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
+            "funding": [
+                {
+                    "url": "https://github.com/ondrejmirtes",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/phpstan",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
+                    "type": "tidelift"
+                }
+            ],
             "time": "2020-03-22T16:51:47+00:00"
         },
         {
@@ -610,5 +663,6 @@
         "ext-zip": "*",
         "ext-zlib": ">=1.2.11"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }
