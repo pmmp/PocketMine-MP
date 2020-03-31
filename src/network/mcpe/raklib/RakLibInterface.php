@@ -35,8 +35,6 @@ use pocketmine\utils\Utils;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\RakLib;
-use raklib\server\ipc\InterThreadChannelReader;
-use raklib\server\ipc\InterThreadChannelWriter;
 use raklib\server\ipc\RakLibToUserThreadMessageReceiver;
 use raklib\server\ipc\UserToRakLibThreadMessageSender;
 use raklib\server\ServerEventListener;
@@ -104,10 +102,10 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		);
 		$this->eventReceiver = new RakLibToUserThreadMessageReceiver(
 			$this,
-			new InterThreadChannelReader($threadToMainBuffer)
+			new PthreadsChannelReader($threadToMainBuffer)
 		);
 		$this->interface = new UserToRakLibThreadMessageSender(
-			new InterThreadChannelWriter($mainToThreadBuffer)
+			new PthreadsChannelWriter($mainToThreadBuffer)
 		);
 	}
 

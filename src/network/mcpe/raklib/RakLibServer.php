@@ -27,8 +27,6 @@ use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Thread;
 use raklib\generic\Socket;
 use raklib\RakLib;
-use raklib\server\ipc\InterThreadChannelReader;
-use raklib\server\ipc\InterThreadChannelWriter;
 use raklib\server\ipc\RakLibToUserThreadMessageSender;
 use raklib\server\ipc\UserToRakLibThreadMessageReceiver;
 use raklib\server\SessionManager;
@@ -161,8 +159,8 @@ class RakLibServer extends Thread{
 				$socket,
 				$this->maxMtuSize,
 				$this->protocolVersion,
-				new UserToRakLibThreadMessageReceiver(new InterThreadChannelReader($this->mainToThreadBuffer)),
-				new RakLibToUserThreadMessageSender(new InterThreadChannelWriter($this->threadToMainBuffer, $this->mainThreadNotifier)),
+				new UserToRakLibThreadMessageReceiver(new PthreadsChannelReader($this->mainToThreadBuffer)),
+				new RakLibToUserThreadMessageSender(new PthreadsChannelWriter($this->threadToMainBuffer, $this->mainThreadNotifier)),
 				new ExceptionTraceCleaner($this->mainPath)
 			);
 			$this->synchronized(function() : void{
