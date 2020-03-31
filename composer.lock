@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8a94ad4a1822c04cb884a6dee81923df",
+    "content-hash": "c366a008cb4ae94f92bea5e819d2426f",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -420,23 +420,23 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Log.git",
-                "reference": "aabbbdf660b6a82bb1c187743bd3f3d136b64814"
+                "reference": "23895dce020076e0217b2fbee50b39f523080b4f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Log/zipball/aabbbdf660b6a82bb1c187743bd3f3d136b64814",
-                "reference": "aabbbdf660b6a82bb1c187743bd3f3d136b64814",
+                "url": "https://api.github.com/repos/pmmp/Log/zipball/23895dce020076e0217b2fbee50b39f523080b4f",
+                "reference": "23895dce020076e0217b2fbee50b39f523080b4f",
                 "shasum": ""
             },
             "require": {
-                "ext-pthreads": "~3.2.0",
                 "php": ">=7.2"
             },
             "conflict": {
                 "pocketmine/spl": "<0.4"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.8"
+                "phpstan/phpstan": "^0.12.8",
+                "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
             "autoload": {
@@ -449,7 +449,45 @@
                 "LGPL-3.0"
             ],
             "description": "Logging components used by PocketMine-MP and related projects",
-            "time": "2020-01-31T14:32:08+00:00"
+            "time": "2020-03-31T17:06:15+00:00"
+        },
+        {
+            "name": "pocketmine/log-pthreads",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/LogPthreads.git",
+                "reference": "88ea500715908dfc5c99a0bbde8e823bae0534df"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/88ea500715908dfc5c99a0bbde8e823bae0534df",
+                "reference": "88ea500715908dfc5c99a0bbde8e823bae0534df",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pthreads": "~3.2.0",
+                "php": ">=7.2",
+                "pocketmine/log": "^0.2.0 || dev-master"
+            },
+            "conflict": {
+                "pocketmine/spl": "<0.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.18"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./src"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Logging components specialized for pthreads used by PocketMine-MP and related projects",
+            "time": "2020-03-31T18:31:56+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -529,24 +567,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "637f1ddd682eda6955ca91e301953d3990dc4b37"
+                "reference": "7e883f7498e979a63b079606af0cb8f20b082c46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/637f1ddd682eda6955ca91e301953d3990dc4b37",
-                "reference": "637f1ddd682eda6955ca91e301953d3990dc4b37",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/7e883f7498e979a63b079606af0cb8f20b082c46",
+                "reference": "7e883f7498e979a63b079606af0cb8f20b082c46",
                 "shasum": ""
             },
             "require": {
-                "ext-pthreads": "~3.2.0",
                 "ext-sockets": "*",
                 "php": ">=7.2.0",
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "dev-master",
-                "pocketmine/log": "dev-master",
-                "pocketmine/snooze": "^0.1.0",
-                "pocketmine/spl": "dev-master"
+                "pocketmine/log": "dev-master"
             },
             "require-dev": {
                 "phpstan/phpstan": "^0.12.18",
@@ -563,7 +598,7 @@
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
-            "time": "2020-03-29T23:17:14+00:00"
+            "time": "2020-03-31T18:03:55+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -858,7 +893,8 @@
         "pocketmine/log": 20,
         "pocketmine/nbt": 20,
         "pocketmine/math": 20,
-        "pocketmine/classloader": 20
+        "pocketmine/classloader": 20,
+        "pocketmine/log-pthreads": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

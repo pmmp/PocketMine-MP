@@ -39,6 +39,7 @@
       "pocketmine/math": "dev-master",
       "pocketmine/snooze": "^0.1.0",
       "pocketmine/classloader": "dev-master",
+      "pocketmine/log-pthreads": "dev-master",
       "pocketmine/callback-validator": "^1.0.1",
       "adhocore/json-comment": "^0.1.0",
       "particle/validator": "^2.3",
