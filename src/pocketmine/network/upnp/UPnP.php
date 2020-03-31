@@ -82,7 +82,7 @@ abstract class UPnP{
 	 *
 	 * @return bool
 	 */
-	private static function GetChildDevice(\SimpleXMLElement $device, string $deviceType, &$foundDevice) : bool{
+	private static function getChildDevice(\SimpleXMLElement $device, string $deviceType, &$foundDevice) : bool{
 		foreach($device->deviceList->device as $child){
 			if((string)$child->deviceType === $deviceType){
 				$foundDevice = $child;
@@ -101,7 +101,7 @@ abstract class UPnP{
 	 *
 	 * @return bool
 	 */
-	private static function GetChildService(\SimpleXMLElement $device, string $serviceType, &$foundService) : bool{
+	private static function getChildService(\SimpleXMLElement $device, string $serviceType, &$foundService) : bool{
 		foreach($device->serviceList->service as $child){
 			if((string)$child->serviceType === $serviceType){
 				$foundService = $child;
@@ -111,7 +111,7 @@ abstract class UPnP{
 		return false;
 	}
 	
-	public static function Setup() : void{
+	public static function setup() : void{
 		$socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 		socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array("sec"=>3,"usec"=>0));
 		$contents =
@@ -138,22 +138,22 @@ abstract class UPnP{
 		$root = new \SimpleXMLElement($response);
 		$device = $root->device;
 		if(!((string)$device->deviceType === "urn:schemas-upnp-org:device:InternetGatewayDevice:1")
-		|| !self::GetChildDevice($device, "urn:schemas-upnp-org:device:WANDevice:1", $device)
-		|| !self::GetChildDevice($device, "urn:schemas-upnp-org:device:WANConnectionDevice:1", $device)
-		|| !self::GetChildService($device, "urn:schemas-upnp-org:service:WANIPConnection:1", $service)){
+		|| !self::getChildDevice($device, "urn:schemas-upnp-org:device:WANDevice:1", $device)
+		|| !self::getChildDevice($device, "urn:schemas-upnp-org:device:WANConnectionDevice:1", $device)
+		|| !self::getChildService($device, "urn:schemas-upnp-org:service:WANIPConnection:1", $service)){
 			throw new \RuntimeException("Your router does not support portforwarding");
 		}
 		$controlURL = (string)$service->controlURL;
 		self::$serviceURL = "{$url['host']}:{$url['port']}/{$controlURL}";
 	}
 
-	public static function PortForward(int $port) : void{
+	public static function portForward(int $port) : void{
 		if(!Internet::$online){
 			throw new \RuntimeException("Server is offline");
 		}
 
 		if(!isset(self::$controlURL)){
-			self::Setup();
+			self::setup();
 		}
 		$body =
 			'<u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">'.
@@ -182,7 +182,7 @@ abstract class UPnP{
 		}
 	}
 
-	public static function RemovePortForward(int $port) : bool{
+	public static function removePortForward(int $port) : bool{
 		if(!Internet::$online){
 			return false;
 		}
