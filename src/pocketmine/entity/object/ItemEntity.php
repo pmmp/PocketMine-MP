@@ -149,7 +149,7 @@ class ItemEntity extends Entity{
 	}
 
 	protected function applyGravity() : void{
-		if($this->level->getBlockAt($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()) instanceof Water){
+		if($this->level->getBlockAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) instanceof Water){
 			$bb = $this->getBoundingBox();
 			$waterCount = 0;
 
