@@ -1208,6 +1208,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			return;
 		}
 
+		if($amount > 0){
+			$this->isKilled = false;
+		}
+
 		if($amount <= 0){
 			$this->health = 0;
 			$this->scheduleUpdate();
