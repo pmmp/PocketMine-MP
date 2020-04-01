@@ -29,7 +29,7 @@ use raklib\generic\Socket;
 use raklib\RakLib;
 use raklib\server\ipc\RakLibToUserThreadMessageSender;
 use raklib\server\ipc\UserToRakLibThreadMessageReceiver;
-use raklib\server\SessionManager;
+use raklib\server\Server;
 use raklib\utils\ExceptionTraceCleaner;
 use raklib\utils\InternetAddress;
 use function error_get_last;
@@ -153,7 +153,7 @@ class RakLibServer extends Thread{
 			register_shutdown_function([$this, "shutdownHandler"]);
 
 			$socket = new Socket($this->address);
-			$manager = new SessionManager(
+			$manager = new Server(
 				$this->serverId,
 				$this->logger,
 				$socket,
