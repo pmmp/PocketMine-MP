@@ -56,9 +56,15 @@ declare(strict_types=1);
 namespace pocketmine\network\upnp;
 
 use pocketmine\utils\Internet;
-use pocketmine\utils\Utils;
-use function class_exists;
-use function is_object;
+use SimpleXMLElement;
+use function socket_create;
+use function socket_set_option;
+use function socket_recvfrom;
+use function socket_sendto;
+use function trim;
+use function strlen;
+use function preg_match;
+use function parse_url;
 use const AF_INET;
 use const SOCK_DGRAM;
 use const SOL_UDP;
