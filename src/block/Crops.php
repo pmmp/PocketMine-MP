@@ -45,6 +45,10 @@ abstract class Crops extends Flowable{
 		return $this->age;
 	}
 
+	public function getAge() : int{
+		return $this->age;
+	}
+	
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 7);
 	}
