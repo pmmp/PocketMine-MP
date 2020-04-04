@@ -30,7 +30,8 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 
 class Map extends Item{
-
+	public const TAG_MAP_IS_SCALING = "map_is_scaling"; // TAG_Byte
+	public const TAG_MAP_SCALE = "map_scale"; // TAG_Byte
 	public const TAG_MAP_UUID = "map_uuid"; // TAG_Long
 	public const TAG_MAP_DISPLAY_PLAYERS = "map_display_players"; // TAG_Byte
 	public const TAG_MAP_NAME_INDEX = "map_name_index"; // TAG_Int
