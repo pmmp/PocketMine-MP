@@ -117,8 +117,8 @@ class NetworkSession{
 	private $port;
 	/** @var PlayerInfo */
 	private $info;
-	/** @var int */
-	private $ping;
+	/** @var int|null */
+	private $ping = null;
 
 	/** @var PacketHandler */
 	private $handler;
@@ -235,9 +235,9 @@ class NetworkSession{
 	}
 
 	/**
-	 * Returns the last recorded ping measurement for this session, in milliseconds.
+	 * Returns the last recorded ping measurement for this session, in milliseconds, or null if a ping measurement has not yet been recorded.
 	 */
-	public function getPing() : int{
+	public function getPing() : ?int{
 		return $this->ping;
 	}
 
