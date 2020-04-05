@@ -77,7 +77,7 @@ class Lava extends Liquid{
 	}
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling) : void{
-		if($block instanceof Water){
+		if($block instanceof Water && ($falling || $block->isSource())){
 			$block->liquidCollide($this, VanillaBlocks::STONE());
 		}else{
 			parent::flowIntoBlock($block, $newFlowDecay, $falling);
