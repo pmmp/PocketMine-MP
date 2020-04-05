@@ -45,8 +45,11 @@ class MateBehavior extends Behavior{
 
 	public function canStart() : bool{
 		if($this->mob->isInLove()){
-			$this->targetMate = $this->getNearbyMate();
-			return $this->targetMate !== null;
+			$mate = $this->getNearbyMate();
+			if($mate !== null){
+				$this->targetMate = $mate;
+				return true;
+			}
 		}
 
 		return false;
