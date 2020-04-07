@@ -87,7 +87,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	}
 
 	public function getKeepExperience() : bool{
-		return $this->keepInventory;
+		return $this->keepExperience;
 	}
 
 	public function setKeepExperience(bool $keepExperience) : void{
