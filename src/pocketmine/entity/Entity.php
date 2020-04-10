@@ -1970,8 +1970,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function onCollideWithEntity(Entity $entity) : void{
-		if($entity->canBePushed()){
-			$this->applyEntityCollision($entity);
+		if($this->canBePushed()){
+			$entity->applyEntityCollision($this);
 		}
 	}
 
@@ -1988,7 +1988,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function isWet() : bool{
 		// TODO: check weather
-		return $this->level->getBlock($this) instanceof Water;
+		return $this->isInsideOfWater();
 	}
 
 	public function isInsideOfSolid() : bool{
@@ -1998,13 +1998,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function isInsideOfLava() : bool{
-		$block = $this->level->getBlockAt((int) floor($this->x), (int) floor($this->y + $this->getEyeHeight()), (int) floor($this->z));
+		$block = $this->level->getBlockAt((int) floor($this->x), (int) floor($this->y), (int) floor($this->z));
 
 		return $block instanceof Lava;
 	}
 
 	public function isInsideOfWater() : bool{
-		$block = $this->level->getBlockAt((int) floor($this->x), (int) floor($this->y + $this->getEyeHeight()), (int) floor($this->z));
+		$block = $this->level->getBlockAt((int) floor($this->x), (int) floor($this->y), (int) floor($this->z));
 
 		return $block instanceof Water;
 	}
