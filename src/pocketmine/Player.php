@@ -2373,6 +2373,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			//TODO HACK: EATING_ITEM is sent back to the server when the server sends it for other players (1.14 bug, maybe earlier)
 			return $packet->event === ActorEventPacket::EATING_ITEM;
 		}
+
+		if($packet->event === ActorEventPacket::PLAYER_ADD_XP_LEVELS){
+			// TODO HACK: dont close ui inventory, this causes unexpected behaviours during result inventory transactions
+			return true;
+		}
+
 		if(!$this->spawned or !$this->isAlive()){
 			return true;
 		}

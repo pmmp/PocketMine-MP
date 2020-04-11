@@ -23,9 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use _HumbugBox069fea7e7fc7\Nette\InvalidStateException;
 use pocketmine\inventory\EnchantInventory;
 use pocketmine\inventory\FakeInventory;
 use pocketmine\inventory\FakeResultInventory;
+use pocketmine\inventory\PlayerUIInventory;
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\EnchantAction;
@@ -164,10 +166,19 @@ class NetworkInventoryAction{
 	 * @throws \UnexpectedValueException
 	 */
 	public function createInventoryAction(Player $player){
+		if($this->oldItem->equalsExact($this->newItem)){
+			//filter out useless noise in 1.13
+			return null;
+		}
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
 				$window = $player->getWindow($this->windowId);
 				if($window !== null){
+					if($window instanceof PlayerUIInventory and $this->inventorySlot > 0){
+						// TODO: HACK! dont rely on client due to creation of new item with result inventory actions
+						$this->oldItem = $window->getItem($this->inventorySlot);
+					}
+
 					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
 				}
 
@@ -214,21 +225,15 @@ class NetworkInventoryAction{
 						}
 					case self::SOURCE_TYPE_FAKE_INVENTORY_INPUT:
 					case self::SOURCE_TYPE_FAKE_INVENTORY_MATERIAL:
-						if($window instanceof FakeResultInventory){
-							if(!$window->isSlotEmpty($window->getResultSlot())){
-								return null;
-							}
-						}
-
-						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+						return null; // useless noise
 					case self::SOURCE_TYPE_FAKE_INVENTORY_RESULT:
 						if($window instanceof FakeResultInventory){
 							if(!$window->onResult($player, $this->oldItem)){
-								return null;
+								throw new InvalidStateException("Output doesnt match for Player " . $player->getName() . " in " . get_class($window));
 							}
 						}
 
-						return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+						return null;
 				}
 
 				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");

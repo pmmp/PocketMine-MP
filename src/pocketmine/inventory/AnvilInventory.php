@@ -102,8 +102,6 @@ class AnvilInventory extends ContainerInventory implements FakeInventory, FakeRe
 		if(!$output->isNull()){
 			if($result->hasCustomName()){
 				if($output->getCustomName() !== $result->getCustomName()){ // renaming
-					$output->setCustomName($result->getCustomName());
-
 					$renamed = true;
 					$levelCostBonus++;
 				}
@@ -115,12 +113,12 @@ class AnvilInventory extends ContainerInventory implements FakeInventory, FakeRe
 				if($output instanceof TieredTool and isset($tierIds[$output->getTier()])){
 					$targetMaterial = ItemFactory::get($tierIds[$output->getTier()]);
 					if($sacrifice->equals($targetMaterial)){
-						$d = min($input->getDamage(), $output->getMaxDurability() / 4);
+						$d = min($input->getDamage(), (int) $output->getMaxDurability() / 4);
 
 						for($m2 = 0; $d > 0 and $m2 < $sacrifice->getCount(); $m2++){
 							$output->setDamage($output->getDamage() - $d);
 							$levelCostBonus++;
-							$d = min($output->getDamage(), $output->getMaxDurability() / 4);
+							$d = min($output->getDamage(), (int) $output->getMaxDurability() / 4);
 						}
 
 						$materialCost = $m2;
@@ -211,7 +209,7 @@ class AnvilInventory extends ContainerInventory implements FakeInventory, FakeRe
 				return false;
 			}
 
-			if(!$onlyRenamed and ($player->isSurvival() and $input->getRepairCost() >= 63) or $input->getRepairCost() >= 2147483647){
+			if((!$onlyRenamed and ($player->isSurvival() and $input->getRepairCost() >= 63)) or $input->getRepairCost() >= 2147483647){
 				$this->clear(self::SLOT_OUTPUT);
 
 				return false;
@@ -231,16 +229,19 @@ class AnvilInventory extends ContainerInventory implements FakeInventory, FakeRe
 
 			$this->checkEnchantments($result, $output);
 
-			if($output->equalsExact($result)){
-				$this->clear(self::SLOT_INPUT);
+			if($renamed){
+				$output->setCustomName($result->getCustomName());
+			}
 
+			if($output->equalsExact($result)){
 				if(!$sacrifice->isNull()){
 					$sacrifice->setCount(max(0, $sacrifice->getCount() - $materialCost));
 
 					$this->setItem(self::SLOT_SACRIFICE, $sacrifice);
+					$player->getUIInventory()->setItem(UIInventoryOffsets::OFFSET_ANVIL + 1, $sacrifice);
 				}
 
-				$this->setItem(self::SLOT_OUTPUT, $output, false);
+				$player->getUIInventory()->setItem(UIInventoryOffsets::OFFSET_ANVIL, $output, false);
 
 				if(!$player->isCreative()){
 					$player->addXpLevels(max(-$player->getXpLevel(), -$levelCost));
@@ -261,15 +262,15 @@ class AnvilInventory extends ContainerInventory implements FakeInventory, FakeRe
 
 					if($type !== -1){
 						$player->level->setBlock($this->getHolder(), new Anvil($direction | $type));
-
-						$player->level->broadcastLevelEvent($this->getHolder(), LevelEventPacket::EVENT_SOUND_ANVIL_USE);
 					}else{
 						$player->level->setBlock($this->getHolder(), new Air());
 
 						$player->level->broadcastLevelEvent($this->getHolder(), LevelEventPacket::EVENT_SOUND_ANVIL_BREAK);
+						return true;
 					}
-
 				}
+
+				$player->level->broadcastLevelEvent($this->getHolder(), LevelEventPacket::EVENT_SOUND_ANVIL_USE);
 				return true;
 			}
 		}
@@ -301,7 +302,7 @@ class AnvilInventory extends ContainerInventory implements FakeInventory, FakeRe
 			}
 		}
 
-		if($same){
+		if($same and !empty($map1) and !empty($map2)){
 			$output->setNamedTagEntry($result->getNamedTagEntry(Item::TAG_ENCH) ?? new ListTag(Item::TAG_ENCH, []));
 		}
 	}
