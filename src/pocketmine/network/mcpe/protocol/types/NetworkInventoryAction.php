@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use _HumbugBox069fea7e7fc7\Nette\InvalidStateException;
 use pocketmine\inventory\EnchantInventory;
 use pocketmine\inventory\FakeInventory;
 use pocketmine\inventory\FakeResultInventory;
@@ -229,7 +228,7 @@ class NetworkInventoryAction{
 					case self::SOURCE_TYPE_FAKE_INVENTORY_RESULT:
 						if($window instanceof FakeResultInventory){
 							if(!$window->onResult($player, $this->oldItem)){
-								throw new InvalidStateException("Output doesnt match for Player " . $player->getName() . " in " . get_class($window));
+								throw new \InvalidStateException("Output doesnt match for Player " . $player->getName() . " in " . get_class($window));
 							}
 						}
 
