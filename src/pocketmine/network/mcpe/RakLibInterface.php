@@ -226,6 +226,15 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 		$this->interface->sendOption("portChecking", $name);
 	}
 
+	/**
+	 * @param int $limit
+	 *
+	 * @return void
+	 */
+	public function setPacketLimit(int $limit) : void{
+		$this->interface->sendOption("packetLimit", $limit);
+	}
+
 	public function handleOption(string $option, string $value) : void{
 		if($option === "bandwidth"){
 			$v = unserialize($value);
