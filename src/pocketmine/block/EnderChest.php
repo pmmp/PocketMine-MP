@@ -69,8 +69,8 @@ class EnderChest extends Chest{
 
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
 
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this, $face, $item, $player));
+		$this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
+		Tile::createTile(Tile::ENDER_CHEST, $this->getLevelNonNull(), TileEnderChest::createNBT($this, $face, $item, $player));
 
 		return true;
 	}
@@ -78,12 +78,12 @@ class EnderChest extends Chest{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 
-			$t = $this->getLevel()->getTile($this);
+			$t = $this->getLevelNonNull()->getTile($this);
 			$enderChest = null;
 			if($t instanceof TileEnderChest){
 				$enderChest = $t;
 			}else{
-				$enderChest = Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this));
+				$enderChest = Tile::createTile(Tile::ENDER_CHEST, $this->getLevelNonNull(), TileEnderChest::createNBT($this));
 				if(!($enderChest instanceof TileEnderChest)){
 					return true;
 				}

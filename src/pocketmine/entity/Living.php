@@ -191,7 +191,7 @@ abstract class Living extends Entity implements Damageable{
 	public function hasLineOfSight(Entity $entity) : bool{
 		//TODO: head height
 		return true;
-		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
+		//return $this->getLevelNonNull()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
 	/**
@@ -615,7 +615,7 @@ abstract class Living extends Entity implements Damageable{
 		$ev = new EntityDeathEvent($this, $this->getDrops(), $this->getXpDropAmount());
 		$ev->call();
 		foreach($ev->getDrops() as $item){
-			$this->getLevel()->dropItem($this, $item);
+			$this->getLevelNonNull()->dropItem($this, $item);
 		}
 
 		//TODO: check death conditions (must have been damaged by player < 5 seconds from death)

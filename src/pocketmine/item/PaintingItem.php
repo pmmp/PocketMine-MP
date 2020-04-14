@@ -93,7 +93,7 @@ class PaintingItem extends Item{
 		$nbt->setInt("TileY", $blockClicked->getFloorY());
 		$nbt->setInt("TileZ", $blockClicked->getFloorZ());
 
-		$entity = Entity::createEntity("Painting", $blockReplace->getLevel(), $nbt);
+		$entity = Entity::createEntity("Painting", $blockReplace->getLevelNonNull(), $nbt);
 
 		if($entity instanceof Entity){
 			$this->pop();

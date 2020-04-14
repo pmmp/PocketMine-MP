@@ -62,7 +62,7 @@ class Flower extends Flowable{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() === Block::GRASS or $down->getId() === Block::DIRT or $down->getId() === Block::FARMLAND){
-			$this->getLevel()->setBlock($blockReplace, $this, true);
+			$this->getLevelNonNull()->setBlock($blockReplace, $this, true);
 
 			return true;
 		}
@@ -72,7 +72,7 @@ class Flower extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
-			$this->getLevel()->useBreakOn($this);
+			$this->getLevelNonNull()->useBreakOn($this);
 		}
 	}
 

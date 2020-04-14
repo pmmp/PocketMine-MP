@@ -75,7 +75,7 @@ class Location extends Position{
 	}
 
 	public function __toString(){
-		return "Location (level=" . ($this->isValid() ? $this->getLevel()->getName() : "null") . ", x=$this->x, y=$this->y, z=$this->z, yaw=$this->yaw, pitch=$this->pitch)";
+		return "Location (level=" . ($this->isValid() ? $this->getLevelNonNull()->getName() : "null") . ", x=$this->x, y=$this->y, z=$this->z, yaw=$this->yaw, pitch=$this->pitch)";
 	}
 
 	public function equals(Vector3 $v) : bool{

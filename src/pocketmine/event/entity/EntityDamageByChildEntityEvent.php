@@ -44,6 +44,6 @@ class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent{
 	 * Returns the entity which caused the damage, or null if the entity has been killed or closed.
 	 */
 	public function getChild() : ?Entity{
-		return $this->getEntity()->getLevel()->getServer()->findEntity($this->childEntityEid);
+		return $this->getEntity()->getLevelNonNull()->getServer()->findEntity($this->childEntityEid);
 	}
 }

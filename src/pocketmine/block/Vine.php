@@ -150,7 +150,7 @@ class Vine extends Flowable{
 			$this->meta |= $blockReplace->meta;
 		}
 
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
+		$this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
 		return true;
 	}
 

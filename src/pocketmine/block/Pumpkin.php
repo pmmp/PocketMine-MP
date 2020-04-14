@@ -51,7 +51,7 @@ class Pumpkin extends Solid{
 		if($player instanceof Player){
 			$this->meta = ((int) $player->getDirection() + 1) % 4;
 		}
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
+		$this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
 
 		return true;
 	}

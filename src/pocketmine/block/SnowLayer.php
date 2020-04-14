@@ -60,7 +60,7 @@ class SnowLayer extends Flowable{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($blockReplace->getSide(Vector3::SIDE_DOWN)->isSolid()){
 			//TODO: fix placement
-			$this->getLevel()->setBlock($blockReplace, $this, true);
+			$this->getLevelNonNull()->setBlock($blockReplace, $this, true);
 
 			return true;
 		}
@@ -70,7 +70,7 @@ class SnowLayer extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Vector3::SIDE_DOWN)->isSolid()){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
+			$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
 		}
 	}
 
@@ -80,7 +80,7 @@ class SnowLayer extends Flowable{
 
 	public function onRandomTick() : void{
 		if($this->level->getBlockLightAt($this->x, $this->y, $this->z) >= 12){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
+			$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
 		}
 	}
 

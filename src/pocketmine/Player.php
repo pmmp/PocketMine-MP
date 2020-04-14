@@ -1207,7 +1207,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(!($pos instanceof Position)){
 			$level = $this->level;
 		}else{
-			$level = $pos->getLevel();
+			$level = $pos->getLevelNonNull();
 		}
 		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $level);
 		$pk = new SetSpawnPositionPacket();
@@ -2244,7 +2244,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
 		//TODO: add events so plugins can change this
-		$this->getLevel()->broadcastPacketToViewers($this, $packet);
+		$this->getLevelNonNull()->broadcastPacketToViewers($this, $packet);
 		return true;
 	}
 
@@ -2706,7 +2706,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$item = $block->getPickedItem();
 		if($packet->addUserData){
-			$tile = $this->getLevel()->getTile($block);
+			$tile = $this->getLevelNonNull()->getTile($block);
 			if($tile instanceof Tile){
 				$nbt = $tile->getCleanedNBT();
 				if($nbt instanceof CompoundTag){
@@ -3583,7 +3583,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($this->hasValidSpawnPosition()){
-			$this->namedtag->setString("SpawnLevel", $this->spawnPosition->getLevel()->getFolderName());
+			$this->namedtag->setString("SpawnLevel", $this->spawnPosition->getLevelNonNull()->getFolderName());
 			$this->namedtag->setInt("SpawnX", $this->spawnPosition->getFloorX());
 			$this->namedtag->setInt("SpawnY", $this->spawnPosition->getFloorY());
 			$this->namedtag->setInt("SpawnZ", $this->spawnPosition->getFloorZ());
@@ -3666,7 +3666,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$ev = new PlayerRespawnEvent($this, $this->getSpawn());
 		$ev->call();
 
-		$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getLevel());
+		$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getLevelNonNull());
 		$this->teleport($realSpawn);
 
 		$this->setSprinting(false);

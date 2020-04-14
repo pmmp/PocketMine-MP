@@ -68,18 +68,18 @@ class BurningFurnace extends Solid{
 			3 => 3
 		];
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
+		$this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
 
-		Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this, $face, $item, $player));
+		Tile::createTile(Tile::FURNACE, $this->getLevelNonNull(), TileFurnace::createNBT($this, $face, $item, $player));
 
 		return true;
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
-			$furnace = $this->getLevel()->getTile($this);
+			$furnace = $this->getLevelNonNull()->getTile($this);
 			if(!($furnace instanceof TileFurnace)){
-				$furnace = Tile::createTile(Tile::FURNACE, $this->getLevel(), TileFurnace::createNBT($this));
+				$furnace = Tile::createTile(Tile::FURNACE, $this->getLevelNonNull(), TileFurnace::createNBT($this));
 				if(!($furnace instanceof TileFurnace)){
 					return true;
 				}

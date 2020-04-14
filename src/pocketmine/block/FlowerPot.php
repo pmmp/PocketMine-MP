@@ -62,19 +62,19 @@ class FlowerPot extends Flowable{
 			return false;
 		}
 
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		Tile::createTile(Tile::FLOWER_POT, $this->getLevel(), TileFlowerPot::createNBT($this, $face, $item, $player));
+		$this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
+		Tile::createTile(Tile::FLOWER_POT, $this->getLevelNonNull(), TileFlowerPot::createNBT($this, $face, $item, $player));
 		return true;
 	}
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Vector3::SIDE_DOWN)->isTransparent()){
-			$this->getLevel()->useBreakOn($this);
+			$this->getLevelNonNull()->useBreakOn($this);
 		}
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		$pot = $this->getLevel()->getTile($this);
+		$pot = $this->getLevelNonNull()->getTile($this);
 		if(!($pot instanceof TileFlowerPot)){
 			return false;
 		}
@@ -83,7 +83,7 @@ class FlowerPot extends Flowable{
 		}
 
 		$this->setDamage(self::STATE_FULL); //specific damage value is unnecessary, it just needs to be non-zero to show an item.
-		$this->getLevel()->setBlock($this, $this, true, false);
+		$this->getLevelNonNull()->setBlock($this, $this, true, false);
 		$pot->setItem($item->pop());
 
 		return true;
@@ -96,7 +96,7 @@ class FlowerPot extends Flowable{
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$items = parent::getDropsForCompatibleTool($item);
 
-		$tile = $this->getLevel()->getTile($this);
+		$tile = $this->getLevelNonNull()->getTile($this);
 		if($tile instanceof TileFlowerPot){
 			$item = $tile->getItem();
 			if($item->getId() !== Item::AIR){
