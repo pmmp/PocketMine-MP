@@ -41,14 +41,17 @@ use function socket_getsockname;
 use function socket_last_error;
 use function socket_listen;
 use function socket_set_block;
+use function socket_set_option;
 use function socket_strerror;
 use function socket_write;
 use function trim;
 use const AF_INET;
 use const AF_UNIX;
+use const SO_REUSEADDR;
 use const SOCK_STREAM;
 use const SOCKET_ENOPROTOOPT;
 use const SOCKET_EPROTONOSUPPORT;
+use const SOL_SOCKET;
 use const SOL_TCP;
 
 class RCON{
@@ -73,6 +76,10 @@ class RCON{
 		}
 
 		$this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+
+		if(!socket_set_option($this->socket, SOL_SOCKET, SO_REUSEADDR, 1)){
+			throw new \RuntimeException("Unable to set option on socket: " . trim(socket_strerror(socket_last_error())));
+		}
 
 		if($this->socket === false or !@socket_bind($this->socket, $interface, $port) or !@socket_listen($this->socket, 5)){
 			throw new \RuntimeException(trim(socket_strerror(socket_last_error())));

@@ -33,6 +33,7 @@ use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
+use function zlib_decode;
 
 class Anvil extends McRegion{
 
@@ -96,8 +97,12 @@ class Anvil extends McRegion{
 	}
 
 	protected function nbtDeserialize(string $data) : Chunk{
+		$data = @zlib_decode($data);
+		if($data === false){
+			throw new CorruptedChunkException("Failed to decompress chunk data");
+		}
 		$nbt = new BigEndianNBTStream();
-		$chunk = $nbt->readCompressed($data);
+		$chunk = $nbt->read($data);
 		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
 			throw new CorruptedChunkException("'Level' key is missing from chunk NBT");
 		}
