@@ -31,6 +31,8 @@ parameters:
 		- tests/phpstan/stubs/pthreads.stub
 		- tests/phpstan/stubs/chunkutils.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
+	staticReflectionClassNamePatterns:
+		- "#^COM$#"
 	ignoreErrors:
 		-
 			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
