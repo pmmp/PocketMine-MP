@@ -25,6 +25,7 @@ namespace pocketmine\scheduler;
 
 use pocketmine\Collectable;
 use pocketmine\Server;
+use pocketmine\utils\AssumptionFailedError;
 use function is_scalar;
 use function serialize;
 use function unserialize;
@@ -97,7 +98,11 @@ abstract class AsyncTask extends Collectable{
 	 * @return mixed
 	 */
 	public function getResult(){
-		return $this->serialized ? unserialize($this->result) : $this->result;
+		if($this->serialized){
+			if(!is_string($this->result)) throw new AssumptionFailedError("Result expected to be a serialized string");
+			return unserialize($this->result);
+		}
+		return $this->result;
 	}
 
 	/**
