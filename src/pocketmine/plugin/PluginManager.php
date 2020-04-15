@@ -37,6 +37,7 @@ use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use function array_intersect;
 use function array_map;
@@ -229,6 +230,7 @@ class PluginManager{
 		shuffle($files); //this prevents plugins implicitly relying on the filesystem name order when they should be using dependency properties
 		foreach($loaders as $loader){
 			foreach($files as $file){
+				if(!is_string($file)) throw new AssumptionFailedError("FilesystemIterator current should be string when using CURRENT_AS_PATHNAME");
 				if(!$loader->canLoadPlugin($file)){
 					continue;
 				}
