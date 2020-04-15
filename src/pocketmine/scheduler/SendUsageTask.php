@@ -25,6 +25,7 @@ namespace pocketmine\scheduler;
 
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\Server;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Internet;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
@@ -152,7 +153,9 @@ class SendUsageTask extends AsyncTask{
 		}
 
 		$this->endpoint = $endpoint . "api/post";
-		$this->data = json_encode($data/*, JSON_PRETTY_PRINT*/);
+		$data = json_encode($data/*, JSON_PRETTY_PRINT*/);
+		if($data === false) throw new AssumptionFailedError("Statistics JSON should never fail to encode: " . json_last_error_msg());
+		$this->data = $data;
 	}
 
 	public function onRun(){
