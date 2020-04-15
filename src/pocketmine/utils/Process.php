@@ -55,7 +55,8 @@ final class Process{
 		$VmSize = null;
 		$VmRSS = null;
 		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-			$status = file_get_contents("/proc/self/status");
+			$status = @file_get_contents("/proc/self/status");
+			if($status === false) throw new AssumptionFailedError("/proc/self/status should always be accessible");
 			if(preg_match("/VmRSS:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
 				$VmRSS = $matches[1] * 1024;
 			}
@@ -90,7 +91,8 @@ final class Process{
 		$heap = 0;
 
 		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-			$mappings = file("/proc/self/maps");
+			$mappings = @file("/proc/self/maps");
+			if($mappings === false) throw new AssumptionFailedError("/proc/self/maps should always be accessible");
 			foreach($mappings as $line){
 				if(preg_match("#([a-z0-9]+)\\-([a-z0-9]+) [rwxp\\-]{4} [a-z0-9]+ [^\\[]*\\[([a-zA-z0-9]+)\\]#", trim($line), $matches) > 0){
 					if(strpos($matches[3], "heap") === 0){
@@ -107,7 +109,9 @@ final class Process{
 
 	public static function getThreadCount() : int{
 		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
+			$status = @file_get_contents("/proc/self/status");
+			if($status === false) throw new AssumptionFailedError("/proc/self/status should always be accessible");
+			if(preg_match("/Threads:[ \t]+([0-9]+)/", $status, $matches) > 0){
 				return (int) $matches[1];
 			}
 		}
