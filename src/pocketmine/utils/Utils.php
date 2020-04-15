@@ -179,7 +179,7 @@ class Utils{
 		}
 
 		$machine = php_uname("a");
-		$machine .= file_exists("/proc/cpuinfo") ? implode(preg_grep("/(model name|Processor|Serial)/", file("/proc/cpuinfo"))) : "";
+		$machine .= ($cpuinfo = @file("/proc/cpuinfo")) !== false ? implode(preg_grep("/(model name|Processor|Serial)/", $cpuinfo)) : "";
 		$machine .= sys_get_temp_dir();
 		$machine .= $extra;
 		$os = Utils::getOS();
@@ -321,14 +321,14 @@ class Utils{
 		switch(Utils::getOS()){
 			case "linux":
 			case "android":
-				if(file_exists("/proc/cpuinfo")){
-					foreach(file("/proc/cpuinfo") as $l){
+				if(($cpuinfo = @file('/proc/cpuinfo')) !== false){
+					foreach($cpuinfo as $l){
 						if(preg_match('/^processor[ \t]*:[ \t]*[0-9]+$/m', $l) > 0){
 							++$processors;
 						}
 					}
-				}elseif(is_readable("/sys/devices/system/cpu/present")){
-					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim(file_get_contents("/sys/devices/system/cpu/present")), $matches) > 0){
+				}elseif(($cpuPresent = @file_get_contents("/sys/devices/system/cpu/present")) !== false){
+					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim($cpuPresent), $matches) > 0){
 						$processors = (int) ($matches[2] - $matches[1]);
 					}
 				}
