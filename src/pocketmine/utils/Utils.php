@@ -616,7 +616,9 @@ class Utils{
 	public static function parseDocComment(string $docComment) : array{
 		preg_match_all('/(*ANYCRLF)^[\t ]*\* @([a-zA-Z]+)(?:[\t ]+(.+))?[\t ]*$/m', $docComment, $matches);
 
-		return array_combine($matches[1], $matches[2]);
+		$result = array_combine($matches[1], $matches[2]);
+		if($result === false) throw new AssumptionFailedError("array_combine() doesn't return false with two equal-sized arrays");
+		return $result;
 	}
 
 	/**
