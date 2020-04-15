@@ -48,7 +48,11 @@ use function trim;
 abstract class Timezone{
 
 	public static function get() : string{
-		return ini_get('date.timezone');
+		$tz = ini_get('date.timezone');
+		if($tz === false){
+			throw new AssumptionFailedError('date.timezone INI entry should always exist');
+		}
+		return $tz;
 	}
 
 	/**
@@ -57,7 +61,7 @@ abstract class Timezone{
 	public static function init() : array{
 		$messages = [];
 		do{
-			$timezone = ini_get("date.timezone");
+			$timezone = self::get();
 			if($timezone !== ""){
 				/*
 				 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
