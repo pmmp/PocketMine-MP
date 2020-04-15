@@ -573,7 +573,6 @@ class Config{
 
 	/**
 	 * @return mixed[]
-	 * @phpstan-return array<string, mixed>
 	 */
 	private function parseProperties(string $content) : array{
 		$result = [];
