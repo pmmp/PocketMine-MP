@@ -138,7 +138,12 @@ class Utils{
 			//non-class function
 			return $func->getName();
 		}
-		return "closure@" . self::cleanPath($func->getFileName()) . "#L" . $func->getStartLine();
+		$filename = $func->getFileName();
+
+		return "closure@" . ($filename !== false ?
+				self::cleanPath($filename) . "#L" . $func->getStartLine() :
+				"internal"
+			);
 	}
 
 	/**
@@ -149,7 +154,12 @@ class Utils{
 	public static function getNiceClassName(object $obj) : string{
 		$reflect = new \ReflectionClass($obj);
 		if($reflect->isAnonymous()){
-			return "anonymous@" . self::cleanPath($reflect->getFileName()) . "#L" . $reflect->getStartLine();
+			$filename = $reflect->getFileName();
+
+			return "anonymous@" . ($filename !== false ?
+					self::cleanPath($filename) . "#L" . $reflect->getStartLine() :
+					"internal"
+				);
 		}
 
 		return $reflect->getName();
