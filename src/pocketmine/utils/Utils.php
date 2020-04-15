@@ -480,9 +480,18 @@ class Utils{
 	 * @phpstan-return array<string, mixed>
 	 */
 	public static function decodeJWT(string $token) : array{
-		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
+		[$headB64, $payloadB64, $sigB64] = explode(".", $token);
 
-		return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
+		$rawPayloadJSON = base64_decode(strtr($payloadB64, '-_', '+/'), true);
+		if($rawPayloadJSON === false){
+			throw new \InvalidArgumentException("Payload base64 is invalid and cannot be decoded");
+		}
+		$decodedPayload = json_decode($rawPayloadJSON, true);
+		if(!is_array($decodedPayload)){
+			throw new \InvalidArgumentException("Decoded payload should be array, " . gettype($decodedPayload) . " received");
+		}
+
+		return $decodedPayload;
 	}
 
 	/**
