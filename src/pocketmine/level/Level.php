@@ -1862,11 +1862,15 @@ class Level implements ChunkManager, Metadatable{
 
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if(!$player->isSneaking() and $blockClicked->onActivate($item, $player)){
+				if(!$player->isSneaking()){
+					if($blockClicked->onActivate($item, $player)){
+						return true;
+					}elseif($item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector)){
+						return true;
+					}
+				}elseif($item->getId() === Item::AIR and $blockClicked->onActivate($item, $player)){
 					return true;
-				}
-
-				if(!$player->isSneaking() and $item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector)){
+				}elseif($item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector)){
 					return true;
 				}
 			}else{
