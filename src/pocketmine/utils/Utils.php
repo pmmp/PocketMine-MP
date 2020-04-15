@@ -632,6 +632,10 @@ class Utils{
 		return true; //stfu operator
 	}
 
+	/**
+	 * @phpstan-param class-string $className
+	 * @phpstan-param class-string $baseName
+	 */
 	public static function testValidInstance(string $className, string $baseName) : void{
 		try{
 			$base = new \ReflectionClass($baseName);
