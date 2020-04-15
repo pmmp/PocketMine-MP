@@ -53,18 +53,33 @@ class AsyncPool{
 	/** @var int */
 	private $workerMemoryLimit;
 
-	/** @var AsyncTask[] */
+	/**
+	 * @var AsyncTask[]
+	 * @phpstan-var array<int, AsyncTask>
+	 */
 	private $tasks = [];
-	/** @var int[] */
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
 	private $taskWorkers = [];
 	/** @var int */
 	private $nextTaskId = 1;
 
-	/** @var AsyncWorker[] */
+	/**
+	 * @var AsyncWorker[]
+	 * @phpstan-var array<int, AsyncWorker>
+	 */
 	private $workers = [];
-	/** @var int[] */
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
 	private $workerUsage = [];
-	/** @var int[] */
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
 	private $workerLastUsed = [];
 
 	/**
