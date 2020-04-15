@@ -172,6 +172,10 @@ class Config{
 		}else{
 			if($this->correct){
 				$content = file_get_contents($this->file);
+				if($content === false){
+					$this->correct = false;
+					return false;
+				}
 				$config = null;
 				switch($this->type){
 					case Config::PROPERTIES:
