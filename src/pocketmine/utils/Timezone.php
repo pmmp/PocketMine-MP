@@ -150,19 +150,16 @@ abstract class Timezone{
 				return self::parseOffset($offset);
 			case 'linux':
 				// Ubuntu / Debian.
-				if(file_exists('/etc/timezone')){
-					$data = file_get_contents('/etc/timezone');
-					if($data !== false){
-						return trim($data);
-					}
+				$data = @file_get_contents('/etc/timezone');
+				if($data !== false){
+					return trim($data);
 				}
 
+
 				// RHEL / CentOS
-				if(file_exists('/etc/sysconfig/clock')){
-					$data = parse_ini_file('/etc/sysconfig/clock');
-					if($data !== false and isset($data['ZONE']) and is_string($data['ZONE'])){
-						return trim($data['ZONE']);
-					}
+				$data = @parse_ini_file('/etc/sysconfig/clock');
+				if($data !== false and isset($data['ZONE']) and is_string($data['ZONE'])){
+					return trim($data['ZONE']);
 				}
 
 				//Portable method for incompatible linux distributions.
@@ -175,12 +172,10 @@ abstract class Timezone{
 
 				return self::parseOffset($offset);
 			case 'mac':
-				if(is_link('/etc/localtime')){
-					$filename = readlink('/etc/localtime');
-					if(strpos($filename, '/usr/share/zoneinfo/') === 0){
-						$timezone = substr($filename, 20);
-						return trim($timezone);
-					}
+				$filename = @readlink('/etc/localtime');
+				if($filename !== false and strpos($filename, '/usr/share/zoneinfo/') === 0){
+					$timezone = substr($filename, 20);
+					return trim($timezone);
 				}
 
 				return false;
