@@ -152,7 +152,7 @@ abstract class Timezone{
 				// Ubuntu / Debian.
 				if(file_exists('/etc/timezone')){
 					$data = file_get_contents('/etc/timezone');
-					if($data){
+					if($data !== false){
 						return trim($data);
 					}
 				}
@@ -160,7 +160,7 @@ abstract class Timezone{
 				// RHEL / CentOS
 				if(file_exists('/etc/sysconfig/clock')){
 					$data = parse_ini_file('/etc/sysconfig/clock');
-					if(isset($data['ZONE']) and is_string($data['ZONE'])){
+					if($data !== false and isset($data['ZONE']) and is_string($data['ZONE'])){
 						return trim($data['ZONE']);
 					}
 				}
