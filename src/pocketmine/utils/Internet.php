@@ -116,7 +116,10 @@ class Internet{
 	 * @throws InternetException
 	 */
 	public static function getInternalIP() : string{
-		$sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+		$sock = @socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+		if($sock === false){
+			throw new InternetException("Failed to get internal IP: " . trim(socket_strerror(socket_last_error())));
+		}
 		try{
 			if(!@socket_connect($sock, "8.8.8.8", 65534)){
 				throw new InternetException("Failed to get internal IP: " . trim(socket_strerror(socket_last_error($sock))));
