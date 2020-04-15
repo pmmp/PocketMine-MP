@@ -72,7 +72,7 @@ class Internet{
 	 *
 	 * @param bool $force default false, force IP check even when cached
 	 *
-	 * @return string|bool
+	 * @return string|false
 	 */
 	public static function getIP(bool $force = false){
 		if(!self::$online){
