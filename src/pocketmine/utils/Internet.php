@@ -227,10 +227,10 @@ class Internet{
 		]);
 		try{
 			$raw = curl_exec($ch);
-			$error = curl_error($ch);
-			if($error !== ""){
-				throw new InternetException($error);
+			if($raw === false){
+				throw new InternetException(curl_error($ch));
 			}
+			if(!is_string($raw)) throw new AssumptionFailedError("curl_exec() should return string|false when CURLOPT_RETURNTRANSFER is set");
 			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 			$rawHeaders = substr($raw, 0, $headerSize);
