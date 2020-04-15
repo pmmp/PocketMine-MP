@@ -57,12 +57,14 @@ final class Process{
 		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
 			$status = @file_get_contents("/proc/self/status");
 			if($status === false) throw new AssumptionFailedError("/proc/self/status should always be accessible");
+
+			// the numbers found here should never be bigger than PHP_INT_MAX, so we expect them to always be castable to int
 			if(preg_match("/VmRSS:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-				$VmRSS = $matches[1] * 1024;
+				$VmRSS = ((int) $matches[1]) * 1024;
 			}
 
 			if(preg_match("/VmSize:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-				$VmSize = $matches[1] * 1024;
+				$VmSize = ((int) $matches[1]) * 1024;
 			}
 		}
 
@@ -96,9 +98,9 @@ final class Process{
 			foreach($mappings as $line){
 				if(preg_match("#([a-z0-9]+)\\-([a-z0-9]+) [rwxp\\-]{4} [a-z0-9]+ [^\\[]*\\[([a-zA-z0-9]+)\\]#", trim($line), $matches) > 0){
 					if(strpos($matches[3], "heap") === 0){
-						$heap += hexdec($matches[2]) - hexdec($matches[1]);
+						$heap += (int) hexdec($matches[2]) - (int) hexdec($matches[1]);
 					}elseif(strpos($matches[3], "stack") === 0){
-						$stack += hexdec($matches[2]) - hexdec($matches[1]);
+						$stack += (int) hexdec($matches[2]) - (int) hexdec($matches[1]);
 					}
 				}
 			}
