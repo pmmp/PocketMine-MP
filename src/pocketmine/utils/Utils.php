@@ -111,8 +111,10 @@ class Utils{
 	public static function getCallableIdentifier(callable $variable){
 		if(is_array($variable)){
 			return sha1(strtolower(spl_object_hash($variable[0])) . "::" . strtolower($variable[1]));
-		}else{
+		}elseif(is_string($variable)){
 			return sha1(strtolower($variable));
+		}else{
+			throw new AssumptionFailedError("Unhandled callable type");
 		}
 	}
 
