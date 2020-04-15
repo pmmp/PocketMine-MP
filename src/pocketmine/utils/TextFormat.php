@@ -288,7 +288,11 @@ abstract class TextFormat{
 			}
 		}
 
-		return json_encode($newString, JSON_UNESCAPED_SLASHES);
+		$result = json_encode($newString, JSON_UNESCAPED_SLASHES);
+		if($result === false){
+			throw new \InvalidArgumentException("Failed to encode result JSON: " . json_last_error_msg());
+		}
+		return $result;
 	}
 
 	/**
