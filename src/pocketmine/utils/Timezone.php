@@ -188,7 +188,7 @@ abstract class Timezone{
 	/**
 	 * @param string $offset In the format of +09:00, +02:00, -04:00 etc.
 	 *
-	 * @return string|bool
+	 * @return string|false
 	 */
 	private static function parseOffset($offset){
 		//Make signed offsets unsigned for date_parse
