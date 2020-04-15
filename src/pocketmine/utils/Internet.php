@@ -208,6 +208,9 @@ class Internet{
 		}
 
 		$ch = curl_init($page);
+		if($ch === false){
+			throw new InternetException("Unable to create new cURL session");
+		}
 
 		curl_setopt_array($ch, $extraOpts + [
 			CURLOPT_SSL_VERIFYPEER => false,
