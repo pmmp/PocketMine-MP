@@ -51,11 +51,19 @@ class SkinData{
 	private $capeId;
 	/** @var string */
 	private $fullSkinId;
+	/** @var string */
+	private $armSize;
+	/** @var string */
+	private $skinColor;
+	/** @var int */
+	private $personaPieces;
+	/** @var int */
+	private $pieceTintColor;
 
 	/**
 	 * @param SkinAnimation[] $animations
 	 */
-	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = "", ?string $fullSkinId = null){
+	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = "", ?string $fullSkinId = null, string $armSize = "", string $skinColor = "", int $personaPieces = 0, int $pieceTintColor = 0){
 		$this->skinId = $skinId;
 		$this->resourcePatch = $resourcePatch;
 		$this->skinImage = $skinImage;
@@ -69,6 +77,10 @@ class SkinData{
 		$this->capeId = $capeId;
 		//this has to be unique or the client will do stupid things
 		$this->fullSkinId = $fullSkinId ?? UUID::fromRandom()->toString();
+		$this->armSize = $armSize;
+		$this->skinColor = $skinColor;
+		$this->personaPieces = $personaPieces;
+		$this->pieceTintColor = $pieceTintColor;
 	}
 
 	public function getSkinId() : string{
@@ -120,5 +132,21 @@ class SkinData{
 
 	public function getFullSkinId() : string{
 		return $this->fullSkinId;
+	}
+
+	public function getArmSize() : string{
+		return $this->armSize;
+	}
+
+	public function getSkinColor() : string{
+		return $this->skinColor;
+	}
+
+	public function getPersonaPieces() : int{
+		return $this->personaPieces;
+	}
+
+	public function getPieceTintColor() : int{
+		return $this->pieceTintColor;
 	}
 }
