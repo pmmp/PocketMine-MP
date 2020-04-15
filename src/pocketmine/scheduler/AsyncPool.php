@@ -162,13 +162,14 @@ class AsyncPool{
 		}
 
 		$task->progressUpdates = new \Threaded;
-		$task->setTaskId($this->nextTaskId++);
+		$taskId = $this->nextTaskId++;
+		$task->setTaskId($taskId);
 
-		$this->tasks[$task->getTaskId()] = $task;
+		$this->tasks[$taskId] = $task;
 
 		$this->getWorker($worker)->stack($task);
 		$this->workerUsage[$worker]++;
-		$this->taskWorkers[$task->getTaskId()] = $worker;
+		$this->taskWorkers[$taskId] = $worker;
 		$this->workerLastUsed[$worker] = time();
 	}
 
