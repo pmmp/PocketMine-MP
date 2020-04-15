@@ -514,7 +514,9 @@ class Utils{
 	public static function getReferenceCount($value, bool $includeCurrent = true){
 		ob_start();
 		debug_zval_dump($value);
-		$ret = explode("\n", ob_get_contents());
+		$contents = ob_get_contents();
+		if($contents === false) throw new AssumptionFailedError("ob_get_contents() should never return false here");
+		$ret = explode("\n", $contents);
 		ob_end_clean();
 
 		if(count($ret) >= 1 and preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){
