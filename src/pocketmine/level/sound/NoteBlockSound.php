@@ -32,9 +32,20 @@ class NoteBlockSound extends Sound{
 
 	public const INSTRUMENT_PIANO = 0;
 	public const INSTRUMENT_BASS_DRUM = 1;
-	public const INSTRUMENT_CLICK = 2;
-	public const INSTRUMENT_TABOUR = 3;
+	public const INSTRUMENT_DRUM = 2;
+	public const INSTRUMENT_STICKS = 3;
 	public const INSTRUMENT_BASS = 4;
+	public const INSTRUMENT_GLOCKENSPIEL = 5;
+	public const INSTRUMENT_FLUTE = 6;
+	public const INSTRUMENT_CHIME = 7;
+	public const INSTRUMENT_GUITAR = 8;
+	public const INSTRUMENT_XYLOPHONE = 9;
+	public const INSTRUMENT_VIBRAPHONE = 10;
+	public const INSTRUMENT_COW_BELL = 11;
+	public const INSTRUMENT_DIDGERIDOO = 12;
+	public const INSTRUMENT_SQUARE_WAVE = 13;
+	public const INSTRUMENT_BANJO = 14;
+	public const INSTRUMENT_ELECTRIC_PIANO = 15;
 
 	protected $instrument = self::INSTRUMENT_PIANO;
 	protected $note = 0;
