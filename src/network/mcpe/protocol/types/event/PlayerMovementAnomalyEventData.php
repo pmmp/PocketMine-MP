@@ -26,31 +26,39 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class PlayerDeathEventData implements EventData{
+final class PlayerMovementAnomalyEventData implements EventData{
 	/** @var int */
-	public $killerActorType;
-	/** @var int */
-	public $killerMobVariant;
-	/** @var int */
-	public $cause;
-	/** @var bool */
-	public $inRaid;
+	public $eventType;
+	/** @var float */
+	public $observedScore;
+	/** @var float */
+	public $avgDelta;
+	/** @var float */
+	public $totalDelta;
+	/** @var float */
+	public $minPosDelta;
+	/** @var float */
+	public $maxPosDelta;
 
 	public function id() : int{
-		return EventPacket::TYPE_PLAYER_DEATH;
+		return EventPacket::TYPE_PLAYER_MOVEMENT_ANOMALY;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->killerActorType = $in->getVarInt();
-		$this->killerMobVariant = $in->getVarInt();
-		$this->cause = $in->getVarInt();
-		$this->inRaid = $in->getBool();
+		$this->eventType = $in->getByte();
+		$this->observedScore = $in->getFloat();
+		$this->avgDelta = $in->getFloat();
+		$this->totalDelta = $in->getFloat();
+		$this->minPosDelta = $in->getFloat();
+		$this->maxPosDelta = $in->getFloat();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->killerActorType);
-		$out->putVarInt($this->killerMobVariant);
-		$out->putVarInt($this->cause);
-		$out->putBool($this->inRaid);
+		$out->putByte($this->eventType);
+		$out->putFloat($this->observedScore);
+		$out->putFloat($this->avgDelta);
+		$out->putFloat($this->totalDelta);
+		$out->putFloat($this->minPosDelta);
+		$out->putFloat($this->maxPosDelta);
 	}
 }

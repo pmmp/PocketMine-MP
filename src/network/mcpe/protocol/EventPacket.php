@@ -28,12 +28,14 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\event\AchievementAwardedEventData;
+use pocketmine\network\mcpe\protocol\types\event\ActorDefinitionEventTriggeredEventData;
 use pocketmine\network\mcpe\protocol\types\event\AgentCommandEventData;
 use pocketmine\network\mcpe\protocol\types\event\AgentCreatedEventData;
 use pocketmine\network\mcpe\protocol\types\event\BellBlockUsedEventData;
 use pocketmine\network\mcpe\protocol\types\event\BossKilledEventData;
 use pocketmine\network\mcpe\protocol\types\event\CauldronBlockUsedEventData;
 use pocketmine\network\mcpe\protocol\types\event\CauldronUsedEventData;
+use pocketmine\network\mcpe\protocol\types\event\CollectHoneyEventData;
 use pocketmine\network\mcpe\protocol\types\event\CommandExecutedEventData;
 use pocketmine\network\mcpe\protocol\types\event\ComposterBlockUsedEventData;
 use pocketmine\network\mcpe\protocol\types\event\EntityInteractEventData;
@@ -44,8 +46,11 @@ use pocketmine\network\mcpe\protocol\types\event\MobKilledEventData;
 use pocketmine\network\mcpe\protocol\types\event\PatternRemovedEventData;
 use pocketmine\network\mcpe\protocol\types\event\PetDiedEventData;
 use pocketmine\network\mcpe\protocol\types\event\PlayerDeathEventData;
+use pocketmine\network\mcpe\protocol\types\event\PlayerMovementAnomalyEventData;
+use pocketmine\network\mcpe\protocol\types\event\PlayerMovementCorrectedEventData;
 use pocketmine\network\mcpe\protocol\types\event\PortalBuiltEventData;
 use pocketmine\network\mcpe\protocol\types\event\PortalUsedEventData;
+use pocketmine\network\mcpe\protocol\types\event\RaidUpdateEventData;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class EventPacket extends DataPacket implements ClientboundPacket{
@@ -69,13 +74,18 @@ class EventPacket extends DataPacket implements ClientboundPacket{
 	public const TYPE_CAULDRON_BLOCK_USED = 15;
 	public const TYPE_COMPOSTER_BLOCK_USED = 16;
 	public const TYPE_BELL_BLOCK_USED = 17;
+	public const TYPE_ACTOR_DEFINITION_EVENT_TRIGGERED = 18;
+	public const TYPE_RAID_UPDATE = 19;
+	public const TYPE_PLAYER_MOVEMENT_ANOMALY = 20;
+	public const TYPE_PLAYER_MOVEMENT_CORRECTED = 21;
+	public const TYPE_COLLECT_HONEY = 22; // For "Bee our guest" achievement
 
 	/** @var int */
 	public $playerRuntimeId;
 	/** @var EventData */
 	public $eventData;
 	/** @var int */
-	public $type;
+	public $usePlayerID;
 
 	protected function readEventData(int $eventDataType) : EventData{
 		switch($eventDataType){
@@ -97,6 +107,11 @@ class EventPacket extends DataPacket implements ClientboundPacket{
 			case self::TYPE_CAULDRON_BLOCK_USED: return new CauldronBlockUsedEventData();
 			case self::TYPE_COMPOSTER_BLOCK_USED: return new ComposterBlockUsedEventData();
 			case self::TYPE_BELL_BLOCK_USED: return new BellBlockUsedEventData();
+			case self::TYPE_ACTOR_DEFINITION_EVENT_TRIGGERED: return new ActorDefinitionEventTriggeredEventData();
+			case self::TYPE_RAID_UPDATE: return new RaidUpdateEventData();
+			case self::TYPE_PLAYER_MOVEMENT_ANOMALY: return new PlayerMovementAnomalyEventData();
+			case self::TYPE_PLAYER_MOVEMENT_CORRECTED: return new PlayerMovementCorrectedEventData();
+			case self::TYPE_COLLECT_HONEY: return new CollectHoneyEventData();
 			default:
 				throw new BadPacketException("Unknown event data type " . $eventDataType);
 		}
@@ -105,7 +120,7 @@ class EventPacket extends DataPacket implements ClientboundPacket{
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->playerRuntimeId = $in->getEntityRuntimeId();
 		$this->eventData = $this->readEventData($in->getVarInt());
-		$this->type = $in->getByte();
+		$this->usePlayerID = $in->getByte();
 
 		$this->eventData->read($in);
 	}
@@ -113,7 +128,7 @@ class EventPacket extends DataPacket implements ClientboundPacket{
 	protected function encodePayload(NetworkBinaryStream $out) : void{
 		$out->putEntityRuntimeId($this->playerRuntimeId);
 		$out->putVarInt($this->eventData->id());
-		$out->putByte($this->type);
+		$out->putByte($this->usePlayerID);
 
 		$this->eventData->write($out);
 	}

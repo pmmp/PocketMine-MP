@@ -36,18 +36,18 @@ final class EntityInteractEventData implements EventData{
 	public const TYPE_SUCCESS_TRADE = 7;
 	public const TYPE_FEED_ENTITY = 8;
 	public const TYPE_SET_FIRE_TO = 9; //TODO: Maybe use FlintAndSteel on Creeper
-
+	public const TYPE_DYE_ENTITY = 10;
 	public const TYPE_NAME_ENTITY = 11; // Use TAG item on actor
 	public const TYPE_LEASH = 12;
 	public const TYPE_UNLEASH = 13;
-
+	public const TYPE_PET_SLEEP_WITH_OWNER = 14;
 	public const TYPE_TRUST = 15;
 	public const TYPE_INTERACT_DOG_OR_CAT = 16; // Sit or stand
 
 	/** @var int */
-	public $mobType;
-	/** @var int */
 	public $interactionType;
+	/** @var int */
+	public $mobLegacyId;
 	/** @var int */
 	public $mobVariant;
 	/** @var int */
@@ -58,15 +58,15 @@ final class EntityInteractEventData implements EventData{
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->mobType = $in->getVarInt();
 		$this->interactionType = $in->getVarInt();
+		$this->mobLegacyId = $in->getVarInt();
 		$this->mobVariant = $in->getVarInt();
 		$this->mobColor = $in->getByte();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->mobType);
 		$out->putVarInt($this->interactionType);
+		$out->putVarInt($this->mobLegacyId);
 		$out->putVarInt($this->mobVariant);
 		$out->putByte($this->mobColor);
 	}

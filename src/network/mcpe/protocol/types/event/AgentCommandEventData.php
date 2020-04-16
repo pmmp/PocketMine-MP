@@ -28,33 +28,33 @@ use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 final class AgentCommandEventData implements EventData{
 	/** @var int */
-	public $varint1;
+	public $result;
 	/** @var int */
-	public $varint2;
+	public $resultNumber = -1;
 	/** @var string */
-	public $string1;
+	public $commandName;
 	/** @var string */
-	public $string2;
+	public $resultKey;
 	/** @var string */
-	public $string3;
+	public $resultString;
 
 	public function id() : int{
 		return EventPacket::TYPE_AGENT_COMMAND;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->varint1 = $in->getVarInt(); // Unknown, 0 - 3
-		$this->varint2 = $in->getVarInt(); // Unknown, v9 != -1
-		$this->string1 = $in->getString(); // Unknown, Json
-		$this->string2 = $in->getString(); // Unknown, Json
-		$this->string3 = $in->getString(); // Unknown, Json, maybe named "Result". Contains "commandName"
+		$this->result = $in->getVarInt();
+		$this->resultNumber = $in->getVarInt();
+		$this->commandName = $in->getString();
+		$this->resultKey = $in->getString();
+		$this->resultString = $in->getString();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->varint1);
-		$out->putVarInt($this->varint2);
-		$out->putString($this->string1);
-		$out->putString($this->string2);
-		$out->putString($this->string3);
+		$out->putVarInt($this->result);
+		$out->putVarInt($this->resultNumber);
+		$out->putString($this->commandName);
+		$out->putString($this->resultKey);
+		$out->putString($this->resultString);
 	}
 }

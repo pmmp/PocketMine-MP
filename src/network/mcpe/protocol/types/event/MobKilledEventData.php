@@ -32,7 +32,7 @@ final class MobKilledEventData implements EventData{
 	/** @var int */
 	public $killerUniqueId;
 	/** @var int */
-	public $killMethodType;
+	public $killMethodType = -1;
 	/** @var int */
 	public $traderTier;
 	/** @var string */

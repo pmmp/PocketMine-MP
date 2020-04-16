@@ -32,9 +32,9 @@ final class FishBucketedEventData implements EventData{
 	/** @var int */
 	public $preset;
 	/** @var int */
-	public $type; // Color2 | (Variant << 22) & 0xFC00000 | ((MarkVariant & 0x3F) << 16) | (Color << 8) | (Color === Color2 ? 0 : 0x10000000)
+	public $type; // ((Color === Color2 ? 0 : 1) << 28) | ((Variant & 0x3F) << 22) | ((MarkVariant & 0x3F) << 16) | (Color << 8) | Color2
 	/** @var bool */
-	public $released = false; // Always false
+	public $isRelease; // false if fish bucketed, true if fish unbucketed (click to a block using bucket with a fish)
 
 	public function id() : int{
 		return EventPacket::TYPE_FISH_BUCKETED;
@@ -44,13 +44,13 @@ final class FishBucketedEventData implements EventData{
 		$this->pattern = $in->getVarInt();
 		$this->preset = $in->getVarInt();
 		$this->type = $in->getVarInt();
-		$this->released = $in->getBool();
+		$this->isRelease = $in->getBool();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
 		$out->putVarInt($this->pattern);
 		$out->putVarInt($this->preset);
 		$out->putVarInt($this->type);
-		$out->putBool($this->released);
+		$out->putBool($this->isRelease);
 	}
 }

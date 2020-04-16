@@ -28,33 +28,33 @@ use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 final class PetDiedEventData implements EventData{
 	/** @var bool */
-	public $unknownBool; // If true - PetDeathContext=2
+	public $killedByOwner;
 	/** @var int */
-	public $entityUniqueId;
+	public $killerUniqueId;
 	/** @var int */
-	public $entityRuntimeId;
-	/** @var int */
-	public $petType;
+	public $killedMobUniqueId;
 	/** @var int */
 	public $deathMethodType;
+	/** @var int */
+	public $petType;
 
 	public function id() : int{
 		return EventPacket::TYPE_MOB_KILLED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->unknownBool = $in->getBool();
-		$this->entityUniqueId = $in->getEntityUniqueId();
-		$this->entityRuntimeId = $in->getEntityUniqueId(); // Nice
-		$this->petType = $in->getVarInt();
+		$this->killedByOwner = $in->getBool();
+		$this->killerUniqueId = $in->getEntityUniqueId();
+		$this->killedMobUniqueId = $in->getEntityUniqueId();
 		$this->deathMethodType = $in->getVarInt();
+		$this->petType = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putBool($this->unknownBool);
-		$out->putEntityUniqueId($this->entityUniqueId);
-		$out->putEntityUniqueId($this->entityRuntimeId);
-		$out->putVarInt($this->petType);
+		$out->putBool($this->killedByOwner);
+		$out->putEntityUniqueId($this->killerUniqueId);
+		$out->putEntityUniqueId($this->killedMobUniqueId);
 		$out->putVarInt($this->deathMethodType);
+		$out->putVarInt($this->petType);
 	}
 }

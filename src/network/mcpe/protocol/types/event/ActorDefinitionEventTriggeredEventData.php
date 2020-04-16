@@ -26,31 +26,19 @@ namespace pocketmine\network\mcpe\protocol\types\event;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
-final class PlayerDeathEventData implements EventData{
-	/** @var int */
-	public $killerActorType;
-	/** @var int */
-	public $killerMobVariant;
-	/** @var int */
-	public $cause;
-	/** @var bool */
-	public $inRaid;
+final class ActorDefinitionEventTriggeredEventData implements EventData{
+	/** @var string */
+	public $unknownString;
 
 	public function id() : int{
-		return EventPacket::TYPE_PLAYER_DEATH;
+		return EventPacket::TYPE_ACTOR_DEFINITION_EVENT_TRIGGERED;
 	}
 
 	public function read(NetworkBinaryStream $in) : void{
-		$this->killerActorType = $in->getVarInt();
-		$this->killerMobVariant = $in->getVarInt();
-		$this->cause = $in->getVarInt();
-		$this->inRaid = $in->getBool();
+		$this->unknownString = $in->getString();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->putVarInt($this->killerActorType);
-		$out->putVarInt($this->killerMobVariant);
-		$out->putVarInt($this->cause);
-		$out->putBool($this->inRaid);
+		$out->putString($this->unknownString);
 	}
 }

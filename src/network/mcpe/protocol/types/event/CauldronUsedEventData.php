@@ -32,7 +32,7 @@ final class CauldronUsedEventData implements EventData{
 	/** @var int */
 	public $contentsType;
 	/** @var int */
-	public $cauldronLevel;
+	public $fillLevel;
 
 	public function id() : int{
 		return EventPacket::TYPE_CAULDRON_USED;
@@ -41,12 +41,12 @@ final class CauldronUsedEventData implements EventData{
 	public function read(NetworkBinaryStream $in) : void{
 		$this->dyeColor = $in->getUnsignedVarInt();
 		$this->contentsType = $in->getVarInt();
-		$this->cauldronLevel = $in->getVarInt();
+		$this->fillLevel = $in->getVarInt();
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
 		$out->putUnsignedVarInt($this->dyeColor);
 		$out->putVarInt($this->contentsType);
-		$out->putVarInt($this->cauldronLevel);
+		$out->putVarInt($this->fillLevel);
 	}
 }
