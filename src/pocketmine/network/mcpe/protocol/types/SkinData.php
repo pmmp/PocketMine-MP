@@ -55,15 +55,17 @@ class SkinData{
 	private $armSize;
 	/** @var string */
 	private $skinColor;
-	/** @var int */
+	/** @var PersonaSkinPiece[] */
 	private $personaPieces;
-	/** @var int */
-	private $pieceTintColor;
+	/** @var PersonaPieceTintColor[] */
+	private $pieceTintColors;
 
 	/**
-	 * @param SkinAnimation[] $animations
+	 * @param SkinAnimation[]         $animations
+	 * @param PersonaSkinPiece[]      $personaPieces
+	 * @param PersonaPieceTintColor[] $pieceTintColors
 	 */
-	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = "", ?string $fullSkinId = null, string $armSize = "", string $skinColor = "", int $personaPieces = 0, int $pieceTintColor = 0){
+	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = "", ?string $fullSkinId = null, string $armSize = "", string $skinColor = "", array $personaPieces = [], array $pieceTintColors = []){
 		$this->skinId = $skinId;
 		$this->resourcePatch = $resourcePatch;
 		$this->skinImage = $skinImage;
@@ -80,7 +82,7 @@ class SkinData{
 		$this->armSize = $armSize;
 		$this->skinColor = $skinColor;
 		$this->personaPieces = $personaPieces;
-		$this->pieceTintColor = $pieceTintColor;
+		$this->pieceTintColors = $pieceTintColors;
 	}
 
 	public function getSkinId() : string{
@@ -142,11 +144,17 @@ class SkinData{
 		return $this->skinColor;
 	}
 
-	public function getPersonaPieces() : int{
+	/**
+	 * @return PersonaSkinPiece[]
+	 */
+	public function getPersonaPieces() : array{
 		return $this->personaPieces;
 	}
 
-	public function getPieceTintColor() : int{
-		return $this->pieceTintColor;
+	/**
+	 * @return PersonaPieceTintColor[]
+	 */
+	public function getPieceTintColors() : array{
+		return $this->pieceTintColors;
 	}
 }

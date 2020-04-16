@@ -37,6 +37,8 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
+use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
@@ -100,10 +102,33 @@ class NetworkBinaryStream extends BinaryStream{
 		$fullSkinId = $this->getString();
 		$armSize = $this->getString();
 		$skinColor = $this->getString();
-		$personaPieces = $this->getLInt();
-		$pieceTintColor = $this->getLInt();
+		$personaPieceCount = $this->getLInt();
+		$personaPieces = [];
+		for($i = 0; $i < $personaPieceCount; ++$i){
+			$personaPieces[] = new PersonaSkinPiece(
+				$pieceId = $this->getString(),
+				$pieceType = $this->getString(),
+				$packId = $this->getString(),
+				$isDefaultPiece = $this->getBool(),
+				$productId = $this->getString()
+			);
+		}
+		$pieceTintColorCount = $this->getLInt();
+		$pieceTintColors = [];
+		for($i = 0; $i < $pieceTintColorCount; ++$i){
+			$pieceType = $this->getString();
+			$colorCount = $this->getLInt();
+			$colors = [];
+			for($j = 0; $j < $colorCount; ++$j){
+				$colors[] = $this->getString();
+			}
+			$pieceTintColors[] = new PersonaPieceTintColor(
+				$pieceType,
+				$colors
+			);
+		}
 
-		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId, $armSize, $skinColor, $personaPieces, $pieceTintColor);
+		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId, $armSize, $skinColor, $personaPieces, $pieceTintColors);
 	}
 
 	/**
@@ -129,8 +154,22 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putString($skin->getFullSkinId());
 		$this->putString($skin->getArmSize());
 		$this->putString($skin->getSkinColor());
-		$this->putLInt($skin->getPersonaPieces());
-		$this->putLInt($skin->getPieceTintColor());
+		$this->putLInt(count($skin->getPersonaPieces()));
+		foreach($skin->getPersonaPieces() as $piece){
+			$this->putString($piece->getPieceId());
+			$this->putString($piece->getPieceType());
+			$this->putString($piece->getPackId());
+			$this->putBool($piece->isDefaultPiece());
+			$this->putString($piece->getProductId());
+		}
+		$this->putLInt(count($skin->getPieceTintColors()));
+		foreach($skin->getPieceTintColors() as $tint){
+			$this->putString($tint->getPieceType());
+			$this->putLInt(count($tint->getColors()));
+			foreach($tint->getColors() as $color){
+				$this->putString($color);
+			}
+		}
 	}
 
 	private function getSkinImage() : SkinImage{
