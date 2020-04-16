@@ -67,7 +67,7 @@ class SkinData{
 	 * @param PersonaSkinPiece[]      $personaPieces
 	 * @param PersonaPieceTintColor[] $pieceTintColors
 	 */
-	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = "", ?string $fullSkinId = null, string $armSize = "", string $skinColor = "", array $personaPieces = [], array $pieceTintColors = []){
+	public function __construct(string $skinId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = "", ?string $fullSkinId = null, string $armSize = "", string $skinColor = "", array $personaPieces = [], array $pieceTintColors = [], bool $isVerified = false){
 		$this->skinId = $skinId;
 		$this->resourcePatch = $resourcePatch;
 		$this->skinImage = $skinImage;
@@ -85,7 +85,7 @@ class SkinData{
 		$this->skinColor = $skinColor;
 		$this->personaPieces = $personaPieces;
 		$this->pieceTintColors = $pieceTintColors;
-		$this->isVerified = false; // Placeholder value until setVerified() is called
+		$this->isVerified = $isVerified;
 	}
 
 	public function getSkinId() : string{
