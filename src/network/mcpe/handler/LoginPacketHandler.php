@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\entity\Skin;
 use pocketmine\event\player\PlayerPreLoginEvent;
+use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\auth\ProcessLoginTask;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
@@ -111,9 +112,14 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
+		try{
+			$uuid = UUID::fromString($packet->extraData->identity);
+		}catch(\InvalidArgumentException $e){
+			throw BadPacketException::wrap($e, "Failed to parse login UUID");
+		}
 		$this->session->setPlayerInfo(new PlayerInfo(
 			$packet->extraData->displayName,
-			UUID::fromString($packet->extraData->identity),
+			$uuid,
 			$skin,
 			$packet->clientData->LanguageCode,
 			$packet->extraData->XUID,
