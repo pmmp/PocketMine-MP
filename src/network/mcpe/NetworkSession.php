@@ -162,7 +162,11 @@ class NetworkSession{
 
 		$this->connectTime = time();
 
-		$this->setHandler(new LoginPacketHandler($this->server, $this));
+		$this->setHandler(new LoginPacketHandler($this->server, $this, function(PlayerInfo $info) : void{
+			$this->info = $info;
+			$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
+			$this->logger->setPrefix($this->getLogPrefix());
+		}));
 
 		$this->manager->add($this);
 		$this->logger->info("Session opened");
@@ -202,20 +206,6 @@ class NetworkSession{
 
 	public function getPlayerInfo() : ?PlayerInfo{
 		return $this->info;
-	}
-
-	/**
-	 * TODO: this shouldn't be accessible after the initial login phase
-	 *
-	 * @throws \InvalidStateException
-	 */
-	public function setPlayerInfo(PlayerInfo $info) : void{
-		if($this->info !== null){
-			throw new \InvalidStateException("Player info has already been set");
-		}
-		$this->info = $info;
-		$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
-		$this->logger->setPrefix($this->getLogPrefix());
 	}
 
 	public function isConnected() : bool{

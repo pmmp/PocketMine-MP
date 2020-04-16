@@ -50,10 +50,19 @@ class LoginPacketHandler extends PacketHandler{
 	private $server;
 	/** @var NetworkSession */
 	private $session;
+	/**
+	 * @var \Closure
+	 * @phpstan-var \Closure(PlayerInfo) : void
+	 */
+	private $playerInfoConsumer;
 
-	public function __construct(Server $server, NetworkSession $session){
+	/**
+	 * @phpstan-param \Closure(PlayerInfo) : void $playerInfoConsumer
+	 */
+	public function __construct(Server $server, NetworkSession $session, \Closure $playerInfoConsumer){
 		$this->session = $session;
 		$this->server = $server;
+		$this->playerInfoConsumer = $playerInfoConsumer;
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{
@@ -117,7 +126,7 @@ class LoginPacketHandler extends PacketHandler{
 		}catch(\InvalidArgumentException $e){
 			throw BadPacketException::wrap($e, "Failed to parse login UUID");
 		}
-		$this->session->setPlayerInfo(new PlayerInfo(
+		($this->playerInfoConsumer)(new PlayerInfo(
 			$packet->extraData->displayName,
 			$uuid,
 			$skin,
