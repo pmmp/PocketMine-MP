@@ -49,7 +49,7 @@ final class PersonaPieceTintColor{
 	/**
 	 * @return string[]
 	 */
-	public function getColors(): array{
+	public function getColors() : array{
 		return $this->colors;
 	}
 }
