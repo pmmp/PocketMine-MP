@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-class PersonaPieceTintColor{
+final class PersonaPieceTintColor{
 
 	public const PIECE_TYPE_PERSONA_EYES = "persona_eyes";
 	public const PIECE_TYPE_PERSONA_HAIR = "persona_hair";

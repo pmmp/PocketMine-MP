@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-class PersonaSkinPiece{
+final class PersonaSkinPiece{
 
 	public const PIECE_TYPE_PERSONA_BODY = "persona_body";
 	public const PIECE_TYPE_PERSONA_BOTTOM = "persona_bottom";
