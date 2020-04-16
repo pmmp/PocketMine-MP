@@ -32,8 +32,8 @@ class NoteBlockSound extends Sound{
 
 	public const INSTRUMENT_PIANO = 0;
 	public const INSTRUMENT_BASS_DRUM = 1;
-	public const INSTRUMENT_DRUM = 2;
-	public const INSTRUMENT_STICKS = 3;
+	public const INSTRUMENT_CLICK = 2;
+	public const INSTRUMENT_TABOUR = 3;
 	public const INSTRUMENT_BASS = 4;
 	public const INSTRUMENT_GLOCKENSPIEL = 5;
 	public const INSTRUMENT_FLUTE = 6;
