@@ -59,6 +59,8 @@ class SkinData{
 	private $personaPieces;
 	/** @var PersonaPieceTintColor[] */
 	private $pieceTintColors;
+	/** @var bool */
+	private $isVerified;
 
 	/**
 	 * @param SkinAnimation[]         $animations
@@ -83,6 +85,7 @@ class SkinData{
 		$this->skinColor = $skinColor;
 		$this->personaPieces = $personaPieces;
 		$this->pieceTintColors = $pieceTintColors;
+		$this->isVerified = false; // Placeholder value until setVerified() is called
 	}
 
 	public function getSkinId() : string{
@@ -156,5 +159,16 @@ class SkinData{
 	 */
 	public function getPieceTintColors() : array{
 		return $this->pieceTintColors;
+	}
+
+	public function isVerified() : bool{
+		return $this->isVerified;
+	}
+
+	/**
+	 * @internal
+	 */
+	public function setVerified(bool $verified) : void{
+		$this->isVerified = $verified;
 	}
 }
