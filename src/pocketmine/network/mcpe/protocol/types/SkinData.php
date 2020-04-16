@@ -27,6 +27,9 @@ use pocketmine\utils\UUID;
 
 class SkinData{
 
+	public const ARM_SIZE_SLIM = "slim";
+	public const ARM_SIZE_WIDE = "wide";
+
 	/** @var string */
 	private $skinId;
 	/** @var string */
