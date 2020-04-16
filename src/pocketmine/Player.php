@@ -1884,7 +1884,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$packet->clientData["CapeOnClassicSkin"] ?? false,
 			$packet->clientData["CapeId"] ?? "",
 			null,
-			$packet->clientData["ArmSize"] ?? "",
+			$packet->clientData["ArmSize"] ?? SkinData::ARM_SIZE_WIDE,
 			$packet->clientData["SkinColor"] ?? "",
 			$personaPieces,
 			$pieceTintColors,
