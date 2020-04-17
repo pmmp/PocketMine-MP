@@ -58,6 +58,7 @@ use function strrpos;
 use function substr;
 use function time;
 use function unpack;
+use function zlib_decode;
 use const SCANDIR_SORT_NONE;
 
 class McRegion extends BaseLevelProvider{
@@ -125,8 +126,12 @@ class McRegion extends BaseLevelProvider{
 	 * @throws CorruptedChunkException
 	 */
 	protected function nbtDeserialize(string $data) : Chunk{
+		$data = @zlib_decode($data);
+		if($data === false){
+			throw new CorruptedChunkException("Failed to decompress chunk data");
+		}
 		$nbt = new BigEndianNBTStream();
-		$chunk = $nbt->readCompressed($data);
+		$chunk = $nbt->read($data);
 		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
 			throw new CorruptedChunkException("'Level' key is missing from chunk NBT");
 		}

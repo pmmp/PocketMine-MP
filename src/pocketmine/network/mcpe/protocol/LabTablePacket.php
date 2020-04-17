@@ -30,8 +30,12 @@ use pocketmine\network\mcpe\NetworkSession;
 class LabTablePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::LAB_TABLE_PACKET;
 
+	public const TYPE_START_COMBINE = 0;
+	public const TYPE_START_REACTION = 1;
+	public const TYPE_RESET = 2;
+
 	/** @var int */
-	public $uselessByte; //0 for client -> server, 1 for server -> client. Seems useless.
+	public $type;
 
 	/** @var int */
 	public $x;
@@ -44,13 +48,13 @@ class LabTablePacket extends DataPacket{
 	public $reactionType;
 
 	protected function decodePayload(){
-		$this->uselessByte = $this->getByte();
+		$this->type = $this->getByte();
 		$this->getSignedBlockPosition($this->x, $this->y, $this->z);
 		$this->reactionType = $this->getByte();
 	}
 
 	protected function encodePayload(){
-		$this->putByte($this->uselessByte);
+		$this->putByte($this->type);
 		$this->putSignedBlockPosition($this->x, $this->y, $this->z);
 		$this->putByte($this->reactionType);
 	}

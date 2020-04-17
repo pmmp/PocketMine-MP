@@ -161,9 +161,12 @@ use pocketmine\network\mcpe\protocol\types\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
+use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\Cape;
+use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\network\mcpe\protocol\types\UIInventoryOffsets;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
@@ -1981,18 +1984,37 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$animations[] = new SkinAnimation(new SkinImage($animation["ImageHeight"], $animation["ImageWidth"], base64_decode($animation["Image"])), $animation["Type"], $animation["Frames"]);
 		}
 
-		$skin = (new Skin(
+		$personaPieces = [];
+		foreach($packet->clientData["PersonaPieces"] as $piece){
+			$personaPiece[] = new PersonaSkinPiece($piece["PieceId"], $piece["PieceType"], $piece["PackId"], $piece["IsDefault"], $piece["ProductId"]);
+		}
+
+		$pieceTintColors = [];
+		foreach($packet->clientData["PieceTintColors"] as $tintColor){
+			$pieceTintColors[] = new PersonaPieceTintColor($tintColor["PieceType"], $tintColor["Colors"]);
+		}
+
+		$skinData = new SkinData(
 			$packet->clientData["SkinId"],
-			"",
-			"",
-			base64_decode($packet->clientData["SkinResourcePatch"]),
-			base64_decode($packet->clientData["SkinGeometryData"] ?? "")
-		))->setSkinImage(new SkinImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"])))
-			->setAnimations($animations)
-			->setAnimationData(base64_decode($packet->clientData["SkinAnimationData"] ?? ""))
-			->setCape(new Cape($packet->clientData["CapeId"], new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"]))))
-			->setPersona($packet->clientData["PersonaSkin"] ?? false)
-			->setPremium($packet->clientData["PremiumSkin"] ?? false);
+			base64_decode($packet->clientData["SkinResourcePatch"] ?? "", true),
+			new SkinImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"], true)),
+			$animations,
+			new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"] ?? "", true)),
+			base64_decode($packet->clientData["SkinGeometryData"] ?? "", true),
+			base64_decode($packet->clientData["SkinAnimationData"] ?? "", true),
+			$packet->clientData["PremiumSkin"] ?? false,
+			$packet->clientData["PersonaSkin"] ?? false,
+			$packet->clientData["CapeOnClassicSkin"] ?? false,
+			$packet->clientData["CapeId"] ?? "",
+			null,
+			$packet->clientData["ArmSize"] ?? SkinData::ARM_SIZE_WIDE,
+			$packet->clientData["SkinColor"] ?? "",
+			$personaPieces,
+			$pieceTintColors,
+			true
+		);
+
+		$skin = SkinAdapterSingleton::get()->fromSkinData($skinData);
 
 		if(!$skin->isValid()){
 			$this->close("", "disconnectionScreen.invalidSkin");
@@ -2688,6 +2710,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						$cancelled = false;
 
 						$heldItem = $this->inventory->getItemInHand();
+						$oldItem = clone $heldItem;
 
 						if(!$this->canInteract($target, 8)){
 							$cancelled = true;
@@ -2747,7 +2770,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						if($this->isAlive()){
 							//reactive damage like thorns might cause us to be killed by attacking another mob, which
 							//would mean we'd already have dropped the inventory by the time we reached here
-							if($heldItem->onAttackEntity($target) and $this->isSurvival() and $heldItem->equalsExact($this->inventory->getItemInHand())){ //always fire the hook, even if we are survival
+							if($heldItem->onAttackEntity($target) and $this->isSurvival() and $oldItem->equalsExact($this->inventory->getItemInHand())){ //always fire the hook, even if we are survival
 								$this->inventory->setItemInHand($heldItem);
 							}
 
