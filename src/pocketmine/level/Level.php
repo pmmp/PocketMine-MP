@@ -1868,7 +1868,7 @@ class Level implements ChunkManager, Metadatable{
 					}elseif($item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector)){
 						return true;
 					}
-				}elseif($item->getId() === Item::AIR and $blockClicked->onActivate($item, $player)){
+				}elseif($item->isNull() and $blockClicked->onActivate($item, $player)){
 					return true;
 				}elseif($item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector)){
 					return true;
