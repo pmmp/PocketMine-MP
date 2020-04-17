@@ -23,37 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\math\Vector3;
+class StructureEditorData{
+	public const TYPE_DATA = 0;
+	public const TYPE_SAVE = 1;
+	public const TYPE_LOAD = 2;
+	public const TYPE_CORNER = 3;
+	public const TYPE_INVALID = 4;
+	public const TYPE_EXPORT = 5;
 
-class StructureSettings{
 	/** @var string */
-	public $paletteName;
+	public $structureName;
+	/** @var string */
+	public $structureDataField;
 	/** @var bool */
-	public $ignoreEntities;
+	public $includePlayers;
 	/** @var bool */
-	public $ignoreBlocks;
+	public $showBoundingBox;
 	/** @var int */
-	public $structureSizeX;
+	public $structureBlockType;
+	/** @var StructureSettings */
+	public $structureSettings;
 	/** @var int */
-	public $structureSizeY;
-	/** @var int */
-	public $structureSizeZ;
-	/** @var int */
-	public $structureOffsetX;
-	/** @var int */
-	public $structureOffsetY;
-	/** @var int */
-	public $structureOffsetZ;
-	/** @var int */
-	public $lastTouchedByPlayerID;
-	/** @var int */
-	public $rotation;
-	/** @var int */
-	public $mirror;
-	/** @var float */
-	public $integrityValue;
-	/** @var int */
-	public $integritySeed;
-	/** @var Vector3 */
-	public $pivot;
+	public $structureRedstoneSaveMove;
 }
