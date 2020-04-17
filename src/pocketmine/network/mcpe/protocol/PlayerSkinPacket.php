@@ -46,6 +46,7 @@ class PlayerSkinPacket extends DataPacket{
 		$this->skin = $this->getSkin();
 		$this->newSkinName = $this->getString();
 		$this->oldSkinName = $this->getString();
+		$this->skin->setVerified($this->getBool());
 	}
 
 	protected function encodePayload(){
@@ -53,6 +54,7 @@ class PlayerSkinPacket extends DataPacket{
 		$this->putSkin($this->skin);
 		$this->putString($this->newSkinName);
 		$this->putString($this->oldSkinName);
+		$this->putBool($this->skin->isVerified());
 	}
 
 	public function handle(NetworkSession $session) : bool{
