@@ -39,7 +39,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $windowType = WindowTypes::TRADING; //Mojang hardcoded this -_-
 	/** @var int */
-	public $thisIsAlwaysZero = 0; //hardcoded to 0
+	public $windowSlotCount = 0; //useless, seems to be part of a standard container header
 	/** @var int */
 	public $tradeTier;
 	/** @var int */
@@ -58,7 +58,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->windowId = $in->getByte();
 		$this->windowType = $in->getByte();
-		$this->thisIsAlwaysZero = $in->getVarInt();
+		$this->windowSlotCount = $in->getVarInt();
 		$this->tradeTier = $in->getVarInt();
 		$this->traderEid = $in->getEntityUniqueId();
 		$this->playerEid = $in->getEntityUniqueId();
@@ -71,7 +71,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	protected function encodePayload(NetworkBinaryStream $out) : void{
 		$out->putByte($this->windowId);
 		$out->putByte($this->windowType);
-		$out->putVarInt($this->thisIsAlwaysZero);
+		$out->putVarInt($this->windowSlotCount);
 		$out->putVarInt($this->tradeTier);
 		$out->putEntityUniqueId($this->traderEid);
 		$out->putEntityUniqueId($this->playerEid);

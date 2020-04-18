@@ -36,7 +36,7 @@ class UpdateEquipPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $windowType;
 	/** @var int */
-	public $unknownVarint; //TODO: find out what this is (vanilla always sends 0)
+	public $windowSlotCount; //useless, seems to be part of a standard container header
 	/** @var int */
 	public $entityUniqueId;
 	/** @var string */
@@ -45,7 +45,7 @@ class UpdateEquipPacket extends DataPacket implements ClientboundPacket{
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->windowId = $in->getByte();
 		$this->windowType = $in->getByte();
-		$this->unknownVarint = $in->getVarInt();
+		$this->windowSlotCount = $in->getVarInt();
 		$this->entityUniqueId = $in->getEntityUniqueId();
 		$this->namedtag = $in->getRemaining();
 	}
@@ -53,7 +53,7 @@ class UpdateEquipPacket extends DataPacket implements ClientboundPacket{
 	protected function encodePayload(NetworkBinaryStream $out) : void{
 		$out->putByte($this->windowId);
 		$out->putByte($this->windowType);
-		$out->putVarInt($this->unknownVarint);
+		$out->putVarInt($this->windowSlotCount);
 		$out->putEntityUniqueId($this->entityUniqueId);
 		$out->put($this->namedtag);
 	}

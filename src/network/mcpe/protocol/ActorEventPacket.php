@@ -31,10 +31,11 @@ use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 class ActorEventPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ACTOR_EVENT_PACKET;
 
+	public const JUMP = 1;
 	public const HURT_ANIMATION = 2;
 	public const DEATH_ANIMATION = 3;
 	public const ARM_SWING = 4;
-
+	public const STOP_ATTACK = 5;
 	public const TAME_FAIL = 6;
 	public const TAME_SUCCESS = 7;
 	public const SHAKE_WET = 8;
@@ -51,16 +52,18 @@ class ActorEventPacket extends DataPacket implements ClientboundPacket, Serverbo
 	public const IRON_GOLEM_OFFER_FLOWER = 19;
 	public const IRON_GOLEM_WITHDRAW_FLOWER = 20;
 	public const LOVE_PARTICLES = 21; //breeding
-
+	public const VILLAGER_ANGRY = 22;
+	public const VILLAGER_HAPPY = 23;
 	public const WITCH_SPELL_PARTICLES = 24;
 	public const FIREWORK_PARTICLES = 25;
-
+	public const IN_LOVE_PARTICLES = 26;
 	public const SILVERFISH_SPAWN_ANIMATION = 27;
-
+	public const GUARDIAN_ATTACK = 28;
 	public const WITCH_DRINK_POTION = 29;
 	public const WITCH_THROW_POTION = 30;
 	public const MINECART_TNT_PRIME_FUSE = 31;
-
+	public const CREEPER_PRIME_FUSE = 32;
+	public const AIR_SUPPLY_EXPIRED = 33;
 	public const PLAYER_ADD_XP_LEVELS = 34;
 	public const ELDER_GUARDIAN_CURSE = 35;
 	public const AGENT_ARM_SWING = 36;
@@ -80,6 +83,11 @@ class ActorEventPacket extends DataPacket implements ClientboundPacket, Serverbo
 	public const ENTITY_SPAWN = 67; //used for MinecraftEventing stuff, not needed
 	public const DRAGON_PUKE = 68; //they call this puke particles
 	public const ITEM_ENTITY_MERGE = 69;
+	public const START_SWIM = 70;
+	public const BALLOON_POP = 71;
+	public const TREASURE_HUNT = 72;
+	public const AGENT_SUMMON = 73;
+	public const CHARGED_CROSSBOW = 74;
 
 	//TODO: add more events
 

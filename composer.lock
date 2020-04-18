@@ -530,12 +530,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "f2517ec187a8306a3d3f594bf06a7c828645b9d7"
+                "reference": "6b2234572b5d06a0532e3851e72bdc108e0c4387"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/f2517ec187a8306a3d3f594bf06a7c828645b9d7",
-                "reference": "f2517ec187a8306a3d3f594bf06a7c828645b9d7",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/6b2234572b5d06a0532e3851e72bdc108e0c4387",
+                "reference": "6b2234572b5d06a0532e3851e72bdc108e0c4387",
                 "shasum": ""
             },
             "require": {
@@ -559,7 +559,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library for working with Named Binary Tags",
-            "time": "2020-03-04T18:52:35+00:00"
+            "time": "2020-04-15T11:29:45+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -760,6 +760,20 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
+            "funding": [
+                {
+                    "url": "https://github.com/ondrejmirtes",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/phpstan",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
+                    "type": "tidelift"
+                }
+            ],
             "time": "2020-03-22T16:51:47+00:00"
         },
         {
@@ -911,5 +925,6 @@
         "ext-zip": "*",
         "ext-zlib": ">=1.2.11"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }

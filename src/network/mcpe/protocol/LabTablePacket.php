@@ -31,8 +31,12 @@ use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 class LabTablePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LAB_TABLE_PACKET;
 
+	public const TYPE_START_COMBINE = 0;
+	public const TYPE_START_REACTION = 1;
+	public const TYPE_RESET = 2;
+
 	/** @var int */
-	public $uselessByte; //0 for client -> server, 1 for server -> client. Seems useless.
+	public $type;
 
 	/** @var int */
 	public $x;
@@ -45,13 +49,13 @@ class LabTablePacket extends DataPacket implements ClientboundPacket, Serverboun
 	public $reactionType;
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
-		$this->uselessByte = $in->getByte();
+		$this->type = $in->getByte();
 		$in->getSignedBlockPosition($this->x, $this->y, $this->z);
 		$this->reactionType = $in->getByte();
 	}
 
 	protected function encodePayload(NetworkBinaryStream $out) : void{
-		$out->putByte($this->uselessByte);
+		$out->putByte($this->type);
 		$out->putSignedBlockPosition($this->x, $this->y, $this->z);
 		$out->putByte($this->reactionType);
 	}

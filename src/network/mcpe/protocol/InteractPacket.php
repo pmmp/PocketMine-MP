@@ -33,7 +33,7 @@ class InteractPacket extends DataPacket implements ServerboundPacket{
 
 	public const ACTION_LEAVE_VEHICLE = 3;
 	public const ACTION_MOUSEOVER = 4;
-
+	public const ACTION_OPEN_NPC = 5;
 	public const ACTION_OPEN_INVENTORY = 6;
 
 	/** @var int */
