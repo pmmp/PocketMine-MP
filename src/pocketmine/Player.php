@@ -1986,7 +1986,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$personaPieces = [];
 		foreach($packet->clientData["PersonaPieces"] as $piece){
-			$personaPiece[] = new PersonaSkinPiece($piece["PieceId"], $piece["PieceType"], $piece["PackId"], $piece["IsDefault"], $piece["ProductId"]);
+			$personaPieces[] = new PersonaSkinPiece($piece["PieceId"], $piece["PieceType"], $piece["PackId"], $piece["IsDefault"], $piece["ProductId"]);
 		}
 
 		$pieceTintColors = [];
