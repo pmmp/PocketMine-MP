@@ -130,9 +130,13 @@ function main() : void{
 		exit(1);
 	}
 
-	$opts = getopt("", ["out:"]);
-	$gitHash = Git::getRepositoryStatePretty(dirname(__DIR__));
-	echo "Git hash detected as $gitHash" . PHP_EOL;
+	$opts = getopt("", ["out:", "git:"]);
+	if(isset($opts["git"])){
+		$gitHash = $opts["git"];
+	}else{
+		$gitHash = Git::getRepositoryStatePretty(dirname(__DIR__));
+		echo "Git hash detected as $gitHash" . PHP_EOL;
+	}
 	foreach(buildPhar(
 		$opts["out"] ?? getcwd() . DIRECTORY_SEPARATOR . "PocketMine-MP.phar",
 		dirname(__DIR__) . DIRECTORY_SEPARATOR,
