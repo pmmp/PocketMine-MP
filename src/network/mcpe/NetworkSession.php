@@ -530,23 +530,21 @@ class NetworkSession{
 
 		if($this->manager->kickDuplicates($this)){
 			if(NetworkCipher::$ENABLED){
-				$this->server->getAsyncPool()->submitTask(new PrepareEncryptionTask($this, $clientPubKey));
+				$this->server->getAsyncPool()->submitTask(new PrepareEncryptionTask($clientPubKey, function(string $encryptionKey, string $handshakeJwt) : void{
+					if(!$this->connected){
+						return;
+					}
+					$this->sendDataPacket(ServerToClientHandshakePacket::create($handshakeJwt), true); //make sure this gets sent before encryption is enabled
+
+					$this->cipher = new NetworkCipher($encryptionKey);
+
+					$this->setHandler(new HandshakePacketHandler($this));
+					$this->logger->debug("Enabled encryption");
+				}));
 			}else{
 				$this->onLoginSuccess();
 			}
 		}
-	}
-
-	public function enableEncryption(string $encryptionKey, string $handshakeJwt) : void{
-		if(!$this->connected){
-			return;
-		}
-		$this->sendDataPacket(ServerToClientHandshakePacket::create($handshakeJwt), true); //make sure this gets sent before encryption is enabled
-
-		$this->cipher = new NetworkCipher($encryptionKey);
-
-		$this->setHandler(new HandshakePacketHandler($this));
-		$this->logger->debug("Enabled encryption");
 	}
 
 	public function onLoginSuccess() : void{

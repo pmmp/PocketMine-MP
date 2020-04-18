@@ -30,7 +30,6 @@ use Mdanter\Ecc\Serializer\PrivateKey\DerPrivateKeySerializer;
 use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\scheduler\AsyncTask;
 use function base64_encode;
 use function gmp_strval;
@@ -47,7 +46,7 @@ use const STR_PAD_LEFT;
 
 class PrepareEncryptionTask extends AsyncTask{
 
-	private const TLS_KEY_SESSION = "session";
+	private const TLS_KEY_ON_COMPLETION = "completion";
 
 	/** @var PrivateKeyInterface|null */
 	private static $SERVER_PRIVATE_KEY = null;
@@ -61,15 +60,24 @@ class PrepareEncryptionTask extends AsyncTask{
 	private $handshakeJwt = null;
 	/** @var PublicKeyInterface */
 	private $clientPub;
+	/**
+	 * @var \Closure
+	 * @phpstan-var \Closure(string $encryptionKey, string $handshakeJwt) : void
+	 */
+	private $onCompletion;
 
-	public function __construct(NetworkSession $session, PublicKeyInterface $clientPub){
+	/**
+	 * @phpstan-param \Closure(string $encryptionKey, string $handshakeJwt) : void $onCompletion
+	 */
+	public function __construct(PublicKeyInterface $clientPub, \Closure $onCompletion){
 		if(self::$SERVER_PRIVATE_KEY === null){
 			self::$SERVER_PRIVATE_KEY = EccFactory::getNistCurves()->generator384()->createPrivateKey();
 		}
 
 		$this->serverPrivateKey = self::$SERVER_PRIVATE_KEY;
 		$this->clientPub = $clientPub;
-		$this->storeLocal(self::TLS_KEY_SESSION, $session);
+		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);
+		$this->onCompletion = $onCompletion;
 	}
 
 	public function onRun() : void{
@@ -107,8 +115,11 @@ class PrepareEncryptionTask extends AsyncTask{
 	}
 
 	public function onCompletion() : void{
-		/** @var NetworkSession $session */
-		$session = $this->fetchLocal(self::TLS_KEY_SESSION);
-		$session->enableEncryption($this->aesKey, $this->handshakeJwt);
+		/**
+		 * @var \Closure $callback
+		 * @phpstan-var \Closure(string $encryptionKey, string $handshakeJwt) : void $callback
+		 */
+		$callback = $this->fetchLocal(self::TLS_KEY_ON_COMPLETION);
+		$callback($this->aesKey, $this->handshakeJwt);
 	}
 }
