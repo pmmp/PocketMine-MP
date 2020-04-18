@@ -232,6 +232,10 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->interface->setOption("portChecking", $name);
 	}
 
+	public function setPacketLimit(int $limit) : void{
+		$this->interface->setOption("packetLimit", $limit);
+	}
+
 	public function handleOption(string $option, string $value) : void{
 		if($option === "bandwidth"){
 			$v = unserialize($value);
