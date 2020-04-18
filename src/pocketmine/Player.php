@@ -1820,7 +1820,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 
-		if($packet->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
+		if($packet->protocol !== ProtocolInfo::CURRENT_PROTOCOL && $packet->protocol !== 389){
 			if($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL){
 				$this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_CLIENT, true);
 			}else{
@@ -1860,7 +1860,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		foreach($packet->clientData["AnimatedImageData"] as $animation){
 			$animations[] = new SkinAnimation(new SkinImage($animation["ImageHeight"], $animation["ImageWidth"], base64_decode($animation["Image"], true)), $animation["Type"], $animation["Frames"]);
 		}
-
+        if($packet->protocol == 390){
 		$personaPieces = [];
 		foreach($packet->clientData["PersonaPieces"] as $piece){
 			$personaPiece[] = new PersonaSkinPiece($piece["PieceId"], $piece["PieceType"], $piece["PackId"], $piece["IsDefault"], $piece["ProductId"]);
@@ -1870,7 +1870,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		foreach($packet->clientData["PieceTintColors"] as $tintColor){
 			$pieceTintColors[] = new PersonaPieceTintColor($tintColor["PieceType"], $tintColor["Colors"]);
 		}
-
+		}
+		if($packet->protocol == 390){
 		$skinData = new SkinData(
 			$packet->clientData["SkinId"],
 			base64_decode($packet->clientData["SkinResourcePatch"] ?? "", true),
@@ -1890,7 +1891,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$pieceTintColors,
 			true
 		);
-
+		}
+		if($packet->protocol == 389){
+		$skinData = new SkinData(
+			$packet->clientData["SkinId"],
+			base64_decode($packet->clientData["SkinResourcePatch"] ?? "", true),
+			new SkinImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"], true)),
+			$animations,
+			new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"] ?? "", true)),
+			base64_decode($packet->clientData["SkinGeometryData"] ?? "", true),
+			base64_decode($packet->clientData["SkinAnimationData"] ?? "", true),
+			$packet->clientData["PremiumSkin"] ?? false,
+			$packet->clientData["PersonaSkin"] ?? false,
+			$packet->clientData["CapeOnClassicSkin"] ?? false,
+			$packet->clientData["CapeId"] ?? "",
+		);
+		}
 		$skin = SkinAdapterSingleton::get()->fromSkinData($skinData);
 
 		if(!$skin->isValid()){
