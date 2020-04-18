@@ -103,10 +103,11 @@ class CrashDump{
 			mkdir($this->server->getDataPath() . "crashdumps");
 		}
 		$this->path = $this->server->getDataPath() . "crashdumps/" . date("D_M_j-H.i.s-T_Y", $this->time) . ".log";
-		$this->fp = @fopen($this->path, "wb");
-		if(!is_resource($this->fp)){
+		$fp = @fopen($this->path, "wb");
+		if(!is_resource($fp)){
 			throw new \RuntimeException("Could not create Crash Dump");
 		}
+		$this->fp = $fp;
 		$this->data["format_version"] = self::FORMAT_VERSION;
 		$this->data["time"] = $this->time;
 		$this->addLine($this->server->getName() . " Crash Dump " . date("D M j H:i:s T Y", $this->time));
@@ -211,7 +212,10 @@ class CrashDump{
 		if(isset($lastExceptionError)){
 			$error = $lastExceptionError;
 		}else{
-			$error = (array) error_get_last();
+			$error = error_get_last();
+			if($error === null){
+				throw new \RuntimeException("Crash error information missing - did something use exit()?");
+			}
 			$error["trace"] = Utils::currentTrace(3); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
 			$error["fullFile"] = $error["file"];
 			$error["file"] = Filesystem::cleanPath($error["file"]);
@@ -258,9 +262,11 @@ class CrashDump{
 
 		if($this->server->getProperty("auto-report.send-code", true) !== false and file_exists($error["fullFile"])){
 			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
-			for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 and isset($file[$l]); ++$l){
-				$this->addLine("[" . ($l + 1) . "] " . $file[$l]);
-				$this->data["code"][$l + 1] = $file[$l];
+			if($file !== false){
+				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 and isset($file[$l]); ++$l){
+					$this->addLine("[" . ($l + 1) . "] " . $file[$l]);
+					$this->data["code"][$l + 1] = $file[$l];
+				}
 			}
 		}
 
