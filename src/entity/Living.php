@@ -206,7 +206,7 @@ abstract class Living extends Entity{
 	public function hasLineOfSight(Entity $entity) : bool{
 		//TODO: head height
 		return true;
-		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
+		//return $this->getLevelNonNull()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
 	public function getEffects() : EffectManager{

@@ -95,7 +95,7 @@ abstract class Tile{
 	}
 
 	public function getBlock() : Block{
-		return $this->pos->getWorld()->getBlock($this->pos);
+		return $this->pos->getWorldNonNull()->getBlock($this->pos);
 	}
 
 	public function getPos() : Position{
@@ -130,7 +130,7 @@ abstract class Tile{
 			$this->closed = true;
 
 			if($this->pos->isValid()){
-				$this->pos->getWorld()->removeTile($this);
+				$this->pos->getWorldNonNull()->removeTile($this);
 				$this->pos->setWorld(null);
 			}
 		}

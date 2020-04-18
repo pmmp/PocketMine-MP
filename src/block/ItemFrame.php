@@ -61,7 +61,7 @@ class ItemFrame extends Flowable{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->pos->getWorldNonNull()->getTile($this->pos);
 		if($tile instanceof TileItemFrame){
 			$this->framedItem = $tile->getItem();
 			if($this->framedItem->isNull()){
@@ -74,7 +74,7 @@ class ItemFrame extends Flowable{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->pos->getWorldNonNull()->getTile($this->pos);
 		if($tile instanceof TileItemFrame){
 			$tile->setItem($this->framedItem);
 			$tile->setItemRotation($this->itemRotation);
@@ -132,7 +132,7 @@ class ItemFrame extends Flowable{
 			return true;
 		}
 
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->pos->getWorldNonNull()->setBlock($this->pos, $this);
 
 		return true;
 	}
@@ -142,16 +142,16 @@ class ItemFrame extends Flowable{
 			return false;
 		}
 		if(lcg_value() <= $this->itemDropChance){
-			$this->pos->getWorld()->dropItem($this->pos->add(0.5, 0.5, 0.5), $this->getFramedItem());
+			$this->pos->getWorldNonNull()->dropItem($this->pos->add(0.5, 0.5, 0.5), $this->getFramedItem());
 		}
 		$this->setFramedItem(null);
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->pos->getWorldNonNull()->setBlock($this->pos, $this);
 		return true;
 	}
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->pos->getWorldNonNull()->useBreakOn($this->pos);
 		}
 	}
 

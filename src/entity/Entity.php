@@ -1342,7 +1342,7 @@ abstract class Entity{
 		}
 
 		if($pos instanceof Position and $pos->world !== null and $pos->world !== $this->getWorld()){
-			if(!$this->switchWorld($pos->getWorld())){
+			if(!$this->switchWorld($pos->getWorldNonNull())){
 				return false;
 			}
 		}
@@ -1456,7 +1456,7 @@ abstract class Entity{
 			$pitch = $pitch ?? $pos->pitch;
 		}
 		$from = $this->location->asPosition();
-		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getWorld() : $this->getWorld());
+		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getWorldNonNull() : $this->getWorld());
 		$ev = new EntityTeleportEvent($this, $from, $to);
 		$ev->call();
 		if($ev->isCancelled()){

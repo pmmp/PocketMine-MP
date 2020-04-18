@@ -72,7 +72,7 @@ class Explosion{
 			throw new \InvalidArgumentException("Position does not have a valid world");
 		}
 		$this->source = $center;
-		$this->world = $center->getWorld();
+		$this->world = $center->getWorldNonNull();
 
 		if($size <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be greater than 0, got $size");

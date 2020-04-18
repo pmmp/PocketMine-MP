@@ -346,7 +346,7 @@ class InGamePacketHandler extends PacketHandler{
 			}else{
 				$blocks[] = $blockPos;
 			}
-			$this->player->getLocation()->getWorld()->sendBlocks([$this->player], $blocks);
+			$this->player->getLocation()->getWorldNonNull()->sendBlocks([$this->player], $blocks);
 		}
 	}
 
@@ -539,7 +539,7 @@ class InGamePacketHandler extends PacketHandler{
 			return false;
 		}
 
-		$block = $this->player->getLocation()->getWorld()->getBlock($pos);
+		$block = $this->player->getLocation()->getWorldNonNull()->getBlock($pos);
 		try{
 			$offset = 0;
 			$nbt = (new NetworkNbtSerializer())->read($packet->namedtag, $offset, 512)->mustGetCompoundTag();

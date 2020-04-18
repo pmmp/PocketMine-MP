@@ -99,7 +99,7 @@ class Chest extends Spawnable implements Container, Nameable{
 			$this->inventory->removeAllViewers();
 
 			if($this->doubleInventory !== null){
-				if($this->isPaired() and $this->pos->getWorld()->isChunkLoaded($this->pairX >> 4, $this->pairZ >> 4)){
+				if($this->isPaired() and $this->pos->getWorldNonNull()->isChunkLoaded($this->pairX >> 4, $this->pairZ >> 4)){
 					$this->doubleInventory->removeAllViewers();
 					if(($pair = $this->getPair()) !== null){
 						$pair->doubleInventory = null;
@@ -137,7 +137,7 @@ class Chest extends Spawnable implements Container, Nameable{
 	}
 
 	protected function checkPairing() : void{
-		if($this->isPaired() and !$this->pos->getWorld()->isInLoadedTerrain(new Vector3($this->pairX, $this->pos->y, $this->pairZ))){
+		if($this->isPaired() and !$this->pos->getWorldNonNull()->isInLoadedTerrain(new Vector3($this->pairX, $this->pos->y, $this->pairZ))){
 			//paired to a tile in an unloaded chunk
 			$this->doubleInventory = null;
 
@@ -173,7 +173,7 @@ class Chest extends Spawnable implements Container, Nameable{
 
 	public function getPair() : ?Chest{
 		if($this->isPaired()){
-			$tile = $this->pos->getWorld()->getTileAt($this->pairX, $this->pos->y, $this->pairZ);
+			$tile = $this->pos->getWorldNonNull()->getTileAt($this->pairX, $this->pos->y, $this->pairZ);
 			if($tile instanceof Chest){
 				return $tile;
 			}

@@ -150,10 +150,10 @@ class Block{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->pos->getWorld()->getChunkAtPosition($this->pos)->setFullBlock($this->pos->x & 0xf, $this->pos->y, $this->pos->z & 0xf, $this->getFullId());
+		$this->pos->getWorldNonNull()->getChunkAtPosition($this->pos)->setFullBlock($this->pos->x & 0xf, $this->pos->y, $this->pos->z & 0xf, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
-		$oldTile = $this->pos->getWorld()->getTile($this->pos);
+		$oldTile = $this->pos->getWorldNonNull()->getTile($this->pos);
 		if($oldTile !== null){
 			if($tileType === null or !($oldTile instanceof $tileType)){
 				$oldTile->close();
@@ -163,7 +163,7 @@ class Block{
 			}
 		}
 		if($oldTile === null and $tileType !== null){
-			$this->pos->getWorld()->addTile(TileFactory::create($tileType, $this->pos->getWorld(), $this->pos->asVector3()));
+			$this->pos->getWorldNonNull()->addTile(TileFactory::create($tileType, $this->pos->getWorld(), $this->pos->asVector3()));
 		}
 	}
 
@@ -222,10 +222,10 @@ class Block{
 	 * Do the actions needed so the block is broken with the Item
 	 */
 	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($t = $this->pos->getWorld()->getTile($this->pos)) !== null){
+		if(($t = $this->pos->getWorldNonNull()->getTile($this->pos)) !== null){
 			$t->onBlockDestroyed();
 		}
-		$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::AIR());
+		$this->pos->getWorldNonNull()->setBlock($this->pos, VanillaBlocks::AIR());
 		return true;
 	}
 
@@ -418,7 +418,7 @@ class Block{
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$item = $this->asItem();
 		if($addUserData){
-			$tile = $this->pos->getWorld()->getTile($this->pos);
+			$tile = $this->pos->getWorldNonNull()->getTile($this->pos);
 			if($tile instanceof Tile){
 				$nbt = $tile->getCleanedNBT();
 				if($nbt instanceof CompoundTag){
@@ -480,7 +480,7 @@ class Block{
 	 */
 	public function getSide(int $side, int $step = 1){
 		if($this->pos->isValid()){
-			return $this->pos->getWorld()->getBlock($this->pos->getSide($side, $step));
+			return $this->pos->getWorldNonNull()->getBlock($this->pos->getSide($side, $step));
 		}
 
 		throw new \InvalidStateException("Block does not have a valid world");

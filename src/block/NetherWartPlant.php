@@ -64,7 +64,7 @@ class NetherWartPlant extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::SOUL_SAND){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->pos->getWorldNonNull()->useBreakOn($this->pos);
 		}
 	}
 
@@ -79,7 +79,7 @@ class NetherWartPlant extends Flowable{
 			$ev = new BlockGrowEvent($this, $block);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
+				$this->pos->getWorldNonNull()->setBlock($this->pos, $ev->getNewState());
 			}
 		}
 	}

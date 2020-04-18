@@ -99,7 +99,7 @@ class Banner extends Transparent{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->pos->getWorldNonNull()->getTile($this->pos);
 		if($tile instanceof TileBanner){
 			$this->baseColor = $tile->getBaseColor();
 			$this->setPatterns($tile->getPatterns());
@@ -108,7 +108,7 @@ class Banner extends Transparent{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->pos->getWorldNonNull()->getTile($this->pos);
 		assert($tile instanceof TileBanner);
 		$tile->setBaseColor($this->baseColor);
 		$tile->setPatterns($this->patterns);
@@ -171,7 +171,7 @@ class Banner extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::opposite($this->facing))->getId() === BlockLegacyIds::AIR){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->pos->getWorldNonNull()->useBreakOn($this->pos);
 		}
 	}
 

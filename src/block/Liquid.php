@@ -188,7 +188,7 @@ abstract class Liquid extends Transparent{
 				++$z;
 			}
 
-			$sideBlock = $this->pos->getWorld()->getBlockAt($x, $y, $z);
+			$sideBlock = $this->pos->getWorldNonNull()->getBlockAt($x, $y, $z);
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
 
 			if($blockDecay < 0){
@@ -196,7 +196,7 @@ abstract class Liquid extends Transparent{
 					continue;
 				}
 
-				$blockDecay = $this->getEffectiveFlowDecay($this->pos->getWorld()->getBlockAt($x, $y - 1, $z));
+				$blockDecay = $this->getEffectiveFlowDecay($this->pos->getWorldNonNull()->getBlockAt($x, $y - 1, $z));
 
 				if($blockDecay >= 0){
 					$realDecay = $blockDecay - ($decay - 8);
@@ -216,14 +216,14 @@ abstract class Liquid extends Transparent{
 
 		if($this->falling){
 			if(
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z - 1)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z + 1)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x - 1, $this->pos->y, $this->pos->z)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x + 1, $this->pos->y, $this->pos->z)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z - 1)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z + 1)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x - 1, $this->pos->y + 1, $this->pos->z)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x + 1, $this->pos->y + 1, $this->pos->z))
+				!$this->canFlowInto($this->pos->getWorldNonNull()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z - 1)) or
+				!$this->canFlowInto($this->pos->getWorldNonNull()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z + 1)) or
+				!$this->canFlowInto($this->pos->getWorldNonNull()->getBlockAt($this->pos->x - 1, $this->pos->y, $this->pos->z)) or
+				!$this->canFlowInto($this->pos->getWorldNonNull()->getBlockAt($this->pos->x + 1, $this->pos->y, $this->pos->z)) or
+				!$this->canFlowInto($this->pos->getWorldNonNull()->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z - 1)) or
+				!$this->canFlowInto($this->pos->getWorldNonNull()->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z + 1)) or
+				!$this->canFlowInto($this->pos->getWorldNonNull()->getBlockAt($this->pos->x - 1, $this->pos->y + 1, $this->pos->z)) or
+				!$this->canFlowInto($this->pos->getWorldNonNull()->getBlockAt($this->pos->x + 1, $this->pos->y + 1, $this->pos->z))
 			){
 				$vector = $vector->normalize()->add(0, -6, 0);
 			}
@@ -252,7 +252,7 @@ abstract class Liquid extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		$this->checkForHarden();
-		$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, $this->tickRate());
+		$this->pos->getWorldNonNull()->scheduleDelayedBlockUpdate($this->pos, $this->tickRate());
 	}
 
 	public function onScheduledUpdate() : void{
@@ -261,10 +261,10 @@ abstract class Liquid extends Transparent{
 		if(!$this->isSource()){
 			$smallestFlowDecay = -100;
 			$this->adjacentSources = 0;
-			$smallestFlowDecay = $this->getSmallestFlowDecay($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z - 1), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z + 1), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($this->pos->getWorld()->getBlockAt($this->pos->x - 1, $this->pos->y, $this->pos->z), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($this->pos->getWorld()->getBlockAt($this->pos->x + 1, $this->pos->y, $this->pos->z), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->pos->getWorldNonNull()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z - 1), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->pos->getWorldNonNull()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z + 1), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->pos->getWorldNonNull()->getBlockAt($this->pos->x - 1, $this->pos->y, $this->pos->z), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($this->pos->getWorldNonNull()->getBlockAt($this->pos->x + 1, $this->pos->y, $this->pos->z), $smallestFlowDecay);
 
 			$newDecay = $smallestFlowDecay + $multiplier;
 			$falling = false;
@@ -273,12 +273,12 @@ abstract class Liquid extends Transparent{
 				$newDecay = -1;
 			}
 
-			if($this->getEffectiveFlowDecay($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z)) >= 0){
+			if($this->getEffectiveFlowDecay($this->pos->getWorldNonNull()->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z)) >= 0){
 				$falling = true;
 			}
 
 			if($this->adjacentSources >= 2 and $this instanceof Water){
-				$bottomBlock = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y - 1, $this->pos->z);
+				$bottomBlock = $this->pos->getWorldNonNull()->getBlockAt($this->pos->x, $this->pos->y - 1, $this->pos->z);
 				if($bottomBlock->isSolid() or ($bottomBlock instanceof Water and $bottomBlock->isSource())){
 					$newDecay = 0;
 					$falling = false;
@@ -287,17 +287,17 @@ abstract class Liquid extends Transparent{
 
 			if($falling !== $this->falling or (!$falling and $newDecay !== $this->decay)){
 				if(!$falling and $newDecay < 0){
-					$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::AIR());
+					$this->pos->getWorldNonNull()->setBlock($this->pos, VanillaBlocks::AIR());
 					return;
 				}
 
 				$this->falling = $falling;
 				$this->decay = $falling ? 0 : $newDecay;
-				$this->pos->getWorld()->setBlock($this->pos, $this); //local block update will cause an update to be scheduled
+				$this->pos->getWorldNonNull()->setBlock($this->pos, $this); //local block update will cause an update to be scheduled
 			}
 		}
 
-		$bottomBlock = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y - 1, $this->pos->z);
+		$bottomBlock = $this->pos->getWorldNonNull()->getBlockAt($this->pos->x, $this->pos->y - 1, $this->pos->z);
 
 		$this->flowIntoBlock($bottomBlock, 0, true);
 
@@ -312,19 +312,19 @@ abstract class Liquid extends Transparent{
 				$flags = $this->getOptimalFlowDirections();
 
 				if($flags[0]){
-					$this->flowIntoBlock($this->pos->getWorld()->getBlockAt($this->pos->x - 1, $this->pos->y, $this->pos->z), $adjacentDecay, false);
+					$this->flowIntoBlock($this->pos->getWorldNonNull()->getBlockAt($this->pos->x - 1, $this->pos->y, $this->pos->z), $adjacentDecay, false);
 				}
 
 				if($flags[1]){
-					$this->flowIntoBlock($this->pos->getWorld()->getBlockAt($this->pos->x + 1, $this->pos->y, $this->pos->z), $adjacentDecay, false);
+					$this->flowIntoBlock($this->pos->getWorldNonNull()->getBlockAt($this->pos->x + 1, $this->pos->y, $this->pos->z), $adjacentDecay, false);
 				}
 
 				if($flags[2]){
-					$this->flowIntoBlock($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z - 1), $adjacentDecay, false);
+					$this->flowIntoBlock($this->pos->getWorldNonNull()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z - 1), $adjacentDecay, false);
 				}
 
 				if($flags[3]){
-					$this->flowIntoBlock($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z + 1), $adjacentDecay, false);
+					$this->flowIntoBlock($this->pos->getWorldNonNull()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z + 1), $adjacentDecay, false);
 				}
 			}
 		}
@@ -342,10 +342,10 @@ abstract class Liquid extends Transparent{
 			$ev->call();
 			if(!$ev->isCancelled()){
 				if($block->getId() > 0){
-					$this->pos->getWorld()->useBreakOn($block->pos);
+					$this->pos->getWorldNonNull()->useBreakOn($block->pos);
 				}
 
-				$this->pos->getWorld()->setBlock($block->pos, $ev->getNewState());
+				$this->pos->getWorldNonNull()->setBlock($block->pos, $ev->getNewState());
 			}
 		}
 	}
@@ -373,10 +373,10 @@ abstract class Liquid extends Transparent{
 			}
 
 			if(!isset($this->flowCostVisited[$hash = World::blockHash($x, $y, $z)])){
-				$blockSide = $this->pos->getWorld()->getBlockAt($x, $y, $z);
+				$blockSide = $this->pos->getWorldNonNull()->getBlockAt($x, $y, $z);
 				if(!$this->canFlowInto($blockSide)){
 					$this->flowCostVisited[$hash] = self::BLOCKED;
-				}elseif($this->pos->getWorld()->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
+				}elseif($this->pos->getWorldNonNull()->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
 					$this->flowCostVisited[$hash] = self::CAN_FLOW_DOWN;
 				}else{
 					$this->flowCostVisited[$hash] = self::CAN_FLOW;
@@ -425,12 +425,12 @@ abstract class Liquid extends Transparent{
 			}elseif($j === 3){
 				++$z;
 			}
-			$block = $this->pos->getWorld()->getBlockAt($x, $y, $z);
+			$block = $this->pos->getWorldNonNull()->getBlockAt($x, $y, $z);
 
 			if(!$this->canFlowInto($block)){
 				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::BLOCKED;
 				continue;
-			}elseif($this->pos->getWorld()->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
+			}elseif($this->pos->getWorldNonNull()->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
 				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::CAN_FLOW_DOWN;
 				$flowCost[$j] = $maxCost = 0;
 			}elseif($maxCost > 0){
@@ -477,13 +477,13 @@ abstract class Liquid extends Transparent{
 		$ev = new BlockFormEvent($this, $result);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
-			$this->pos->getWorld()->addSound($this->pos->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
+			$this->pos->getWorldNonNull()->setBlock($this->pos, $ev->getNewState());
+			$this->pos->getWorldNonNull()->addSound($this->pos->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
 		}
 		return true;
 	}
 
 	protected function canFlowInto(Block $block) : bool{
-		return $this->pos->getWorld()->isInWorld($block->pos->x, $block->pos->y, $block->pos->z) and $block->canBeFlowedInto() and !($block instanceof Liquid and $block->isSource()); //TODO: I think this should only be liquids of the same type
+		return $this->pos->getWorldNonNull()->isInWorld($block->pos->x, $block->pos->y, $block->pos->z) and $block->canBeFlowedInto() and !($block instanceof Liquid and $block->isSource()); //TODO: I think this should only be liquids of the same type
 	}
 }

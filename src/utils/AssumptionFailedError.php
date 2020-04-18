@@ -21,23 +21,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\utils;
 
-use pocketmine\item\Hoe;
-use pocketmine\item\Item;
-use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
+/**
+ * This exception should be thrown in places where something is assumed to be true, but the type system does not provide
+ * a guarantee. This makes static analysers happy and makes sure that the server will crash properly if any assumption
+ * does not hold.
+ */
+final class AssumptionFailedError extends \Error{
 
-class CoarseDirt extends Dirt{
-
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::UP and $item instanceof Hoe){
-			$item->applyDamage(1);
-			$this->pos->getWorldNonNull()->setBlock($this->pos, VanillaBlocks::DIRT());
-			return true;
-		}
-
-		return false;
-	}
 }

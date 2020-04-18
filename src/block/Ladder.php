@@ -90,7 +90,7 @@ class Ladder extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){ //Replace with common break method
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->pos->getWorldNonNull()->useBreakOn($this->pos);
 		}
 	}
 }

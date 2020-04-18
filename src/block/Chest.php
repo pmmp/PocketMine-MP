@@ -70,7 +70,7 @@ class Chest extends Transparent{
 	}
 
 	public function onPostPlace() : void{
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->pos->getWorldNonNull()->getTile($this->pos);
 		if($tile instanceof TileChest){
 			foreach([
 				Facing::rotateY($this->facing, true),
@@ -78,7 +78,7 @@ class Chest extends Transparent{
 			] as $side){
 				$c = $this->getSide($side);
 				if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
-					$pair = $this->pos->getWorld()->getTile($c->pos);
+					$pair = $this->pos->getWorldNonNull()->getTile($c->pos);
 					if($pair instanceof TileChest and !$pair->isPaired()){
 						$pair->pairWith($tile);
 						$tile->pairWith($pair);
@@ -92,7 +92,7 @@ class Chest extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 
-			$chest = $this->pos->getWorld()->getTile($this->pos);
+			$chest = $this->pos->getWorldNonNull()->getTile($this->pos);
 			if($chest instanceof TileChest){
 				if(
 					!$this->getSide(Facing::UP)->isTransparent() or
