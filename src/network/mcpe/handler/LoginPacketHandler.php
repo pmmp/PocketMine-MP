@@ -31,6 +31,10 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\types\login\ClientDataPersonaPieceTintColor;
+use pocketmine\network\mcpe\protocol\types\login\ClientDataPersonaSkinPiece;
+use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
+use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinData;
@@ -110,7 +114,16 @@ class LoginPacketHandler extends PacketHandler{
 				$clientData->PremiumSkin,
 				$clientData->PersonaSkin,
 				$clientData->CapeOnClassicSkin,
-				$clientData->CapeId
+				$clientData->CapeId,
+				null,
+				$clientData->ArmSize,
+				$clientData->SkinColor,
+				array_map(function(ClientDataPersonaSkinPiece $piece) : PersonaSkinPiece{
+					return new PersonaSkinPiece($piece->PieceId, $piece->PieceType, $piece->PackId, $piece->IsDefault, $piece->ProductId);
+				}, $clientData->PersonaPieces),
+				array_map(function(ClientDataPersonaPieceTintColor $tint) : PersonaPieceTintColor{
+					return new PersonaPieceTintColor($tint->PieceType, $tint->Colors);
+				}, $clientData->PieceTintColors)
 			);
 
 			$skin = SkinAdapterSingleton::get()->fromSkinData($skinData);

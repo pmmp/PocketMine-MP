@@ -83,6 +83,11 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 
 			$this->entries[$i] = $entry;
 		}
+		if($this->type === self::TYPE_ADD){
+			for($i = 0; $i < $count; ++$i){
+				$this->entries[$i]->skinData->setVerified($in->getBool());
+			}
+		}
 	}
 
 	protected function encodePayload(NetworkBinaryStream $out) : void{
@@ -101,6 +106,11 @@ class PlayerListPacket extends DataPacket implements ClientboundPacket{
 				$out->putBool($entry->isHost);
 			}else{
 				$out->putUUID($entry->uuid);
+			}
+		}
+		if($this->type === self::TYPE_ADD){
+			foreach($this->entries as $entry){
+				$out->putBool($entry->skinData->isVerified());
 			}
 		}
 	}

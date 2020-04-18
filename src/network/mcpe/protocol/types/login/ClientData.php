@@ -38,6 +38,12 @@ final class ClientData{
 	 * @var string
 	 * @required
 	 */
+	public $ArmSize;
+
+	/**
+	 * @var string
+	 * @required
+	 */
 	public $CapeData;
 
 	/**
@@ -119,10 +125,22 @@ final class ClientData{
 	public $LanguageCode;
 
 	/**
+	 * @var ClientDataPersonaSkinPiece[]
+	 * @required
+	 */
+	public $PersonaPieces;
+
+	/**
 	 * @var bool
 	 * @required
 	 */
 	public $PersonaSkin;
+
+	/**
+	 * @var ClientDataPersonaPieceTintColor[]
+	 * @required
+	 */
+	public $PieceTintColors;
 
 	/**
 	 * @var string
@@ -162,6 +180,12 @@ final class ClientData{
 	 * @required
 	 */
 	public $SkinAnimationData;
+
+	/**
+	 * @var string
+	 * @required
+	 */
+	public $SkinColor;
 
 	/**
 	 * @var string
