@@ -23,37 +23,33 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\math\Vector3;
+final class PersonaPieceTintColor{
 
-class StructureSettings{
+	public const PIECE_TYPE_PERSONA_EYES = "persona_eyes";
+	public const PIECE_TYPE_PERSONA_HAIR = "persona_hair";
+	public const PIECE_TYPE_PERSONA_MOUTH = "persona_mouth";
+
 	/** @var string */
-	public $paletteName;
-	/** @var bool */
-	public $ignoreEntities;
-	/** @var bool */
-	public $ignoreBlocks;
-	/** @var int */
-	public $structureSizeX;
-	/** @var int */
-	public $structureSizeY;
-	/** @var int */
-	public $structureSizeZ;
-	/** @var int */
-	public $structureOffsetX;
-	/** @var int */
-	public $structureOffsetY;
-	/** @var int */
-	public $structureOffsetZ;
-	/** @var int */
-	public $lastTouchedByPlayerID;
-	/** @var int */
-	public $rotation;
-	/** @var int */
-	public $mirror;
-	/** @var float */
-	public $integrityValue;
-	/** @var int */
-	public $integritySeed;
-	/** @var Vector3 */
-	public $pivot;
+	private $pieceType;
+	/** @var string[] */
+	private $colors;
+
+	/**
+	 * @param string[] $colors
+	 */
+	public function __construct(string $pieceType, array $colors){
+		$this->pieceType = $pieceType;
+		$this->colors = $colors;
+	}
+
+	public function getPieceType() : string{
+		return $this->pieceType;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getColors() : array{
+		return $this->colors;
+	}
 }

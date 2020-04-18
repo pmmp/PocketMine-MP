@@ -37,9 +37,12 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
+use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
+use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
@@ -98,8 +101,35 @@ class NetworkBinaryStream extends BinaryStream{
 		$capeOnClassic = $this->getBool();
 		$capeId = $this->getString();
 		$fullSkinId = $this->getString();
+		$armSize = $this->getString();
+		$skinColor = $this->getString();
+		$personaPieceCount = $this->getLInt();
+		$personaPieces = [];
+		for($i = 0; $i < $personaPieceCount; ++$i){
+			$personaPieces[] = new PersonaSkinPiece(
+				$pieceId = $this->getString(),
+				$pieceType = $this->getString(),
+				$packId = $this->getString(),
+				$isDefaultPiece = $this->getBool(),
+				$productId = $this->getString()
+			);
+		}
+		$pieceTintColorCount = $this->getLInt();
+		$pieceTintColors = [];
+		for($i = 0; $i < $pieceTintColorCount; ++$i){
+			$pieceType = $this->getString();
+			$colorCount = $this->getLInt();
+			$colors = [];
+			for($j = 0; $j < $colorCount; ++$j){
+				$colors[] = $this->getString();
+			}
+			$pieceTintColors[] = new PersonaPieceTintColor(
+				$pieceType,
+				$colors
+			);
+		}
 
-		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId);
+		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId, $armSize, $skinColor, $personaPieces, $pieceTintColors);
 	}
 
 	/**
@@ -123,6 +153,24 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putBool($skin->isPersonaCapeOnClassic());
 		$this->putString($skin->getCapeId());
 		$this->putString($skin->getFullSkinId());
+		$this->putString($skin->getArmSize());
+		$this->putString($skin->getSkinColor());
+		$this->putLInt(count($skin->getPersonaPieces()));
+		foreach($skin->getPersonaPieces() as $piece){
+			$this->putString($piece->getPieceId());
+			$this->putString($piece->getPieceType());
+			$this->putString($piece->getPackId());
+			$this->putBool($piece->isDefaultPiece());
+			$this->putString($piece->getProductId());
+		}
+		$this->putLInt(count($skin->getPieceTintColors()));
+		foreach($skin->getPieceTintColors() as $tint){
+			$this->putString($tint->getPieceType());
+			$this->putLInt(count($tint->getColors()));
+			foreach($tint->getColors() as $color){
+				$this->putString($color);
+			}
+		}
 	}
 
 	private function getSkinImage() : SkinImage{
@@ -655,6 +703,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$result->mirror = $this->getByte();
 		$result->integrityValue = $this->getFloat();
 		$result->integritySeed = $this->getInt();
+		$result->pivot = $this->getVector3();
 
 		return $result;
 	}
@@ -673,5 +722,34 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putByte($structureSettings->mirror);
 		$this->putFloat($structureSettings->integrityValue);
 		$this->putInt($structureSettings->integritySeed);
+		$this->putVector3($structureSettings->pivot);
+	}
+
+	protected function getStructureEditorData() : StructureEditorData{
+		$result = new StructureEditorData();
+
+		$result->structureName = $this->getString();
+		$result->structureDataField = $this->getString();
+
+		$result->includePlayers = $this->getBool();
+		$result->showBoundingBox = $this->getBool();
+
+		$result->structureBlockType = $this->getVarInt();
+		$result->structureSettings = $this->getStructureSettings();
+		$result->structureRedstoneSaveMove = $this->getVarInt();
+
+		return $result;
+	}
+
+	protected function putStructureEditorData(StructureEditorData $structureEditorData) : void{
+		$this->putString($structureEditorData->structureName);
+		$this->putString($structureEditorData->structureDataField);
+
+		$this->putBool($structureEditorData->includePlayers);
+		$this->putBool($structureEditorData->showBoundingBox);
+
+		$this->putVarInt($structureEditorData->structureBlockType);
+		$this->putStructureSettings($structureEditorData->structureSettings);
+		$this->putVarInt($structureEditorData->structureRedstoneSaveMove);
 	}
 }
