@@ -1909,22 +1909,15 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 *
 	 * @param TranslationContainer|string $quitMessage
 	 */
-	public function kick(string $reason = "", bool $isAdmin = true, $quitMessage = null) : bool{
+	public function kick(string $reason = "", $quitMessage = null) : bool{
 		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$reason = $ev->getReason();
-			$message = $reason;
-			if($isAdmin){
-				if(!$this->isBanned()){
-					$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
-				}
-			}else{
-				if($reason === ""){
-					$message = "disconnectionScreen.noReason";
-				}
+			if($reason === ""){
+				$reason = "disconnectionScreen.noReason";
 			}
-			$this->disconnect($message, $ev->getQuitMessage());
+			$this->disconnect($reason, $ev->getQuitMessage());
 
 			return true;
 		}
@@ -1936,8 +1929,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * Removes the player from the server. This cannot be cancelled.
 	 * This is used for remote disconnects and for uninterruptible disconnects (for example, when the server shuts down).
 	 *
-	 * Note for plugin developers: Prefer kick() with the isAdmin flag set to kick without the "Kicked by admin" part
-	 * instead of this method. This way other plugins can have a say in whether the player is removed or not.
+	 * Note for plugin developers: Prefer kick() instead of this method.
+	 * That way other plugins can have a say in whether the player is removed or not.
 	 *
 	 * @param string                      $reason Shown to the player, usually this will appear on their disconnect screen.
 	 * @param TranslationContainer|string $quitMessage Message to broadcast to online players (null will use default)
