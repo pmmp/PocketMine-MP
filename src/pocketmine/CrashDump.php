@@ -23,13 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
+use PackageVersions\Versions;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
-use raklib\RakLib;
 use function base64_encode;
 use function date;
 use function error_get_last;
@@ -88,7 +88,7 @@ class CrashDump{
 	 * having their content changed, version format changing, etc.
 	 * It is not necessary to increase this when adding new fields.
 	 */
-	private const FORMAT_VERSION = 2;
+	private const FORMAT_VERSION = 3;
 
 	private const PLUGIN_INVOLVEMENT_NONE = "none";
 	private const PLUGIN_INVOLVEMENT_DIRECT = "direct";
@@ -345,18 +345,22 @@ class CrashDump{
 		$this->data["general"]["is_dev"] = \pocketmine\IS_DEVELOPMENT_BUILD;
 		$this->data["general"]["protocol"] = ProtocolInfo::CURRENT_PROTOCOL;
 		$this->data["general"]["git"] = \pocketmine\GIT_COMMIT;
-		$this->data["general"]["raklib"] = RakLib::VERSION;
 		$this->data["general"]["uname"] = php_uname("a");
 		$this->data["general"]["php"] = phpversion();
 		$this->data["general"]["zend"] = zend_version();
 		$this->data["general"]["php_os"] = PHP_OS;
 		$this->data["general"]["os"] = Utils::getOS();
+		$this->data["general"]["composer_libraries"] = Versions::VERSIONS;
 		$this->addLine($this->server->getName() . " version: " . $version->getFullVersion(true) . " [Protocol " . ProtocolInfo::CURRENT_PROTOCOL . "]");
 		$this->addLine("Git commit: " . \pocketmine\GIT_COMMIT);
 		$this->addLine("uname -a: " . php_uname("a"));
 		$this->addLine("PHP Version: " . phpversion());
 		$this->addLine("Zend version: " . zend_version());
 		$this->addLine("OS : " . PHP_OS . ", " . Utils::getOS());
+		$this->addLine("Composer libraries: ");
+		foreach(Versions::VERSIONS as $library => $libraryVersion){
+			$this->addLine("- $library $libraryVersion");
+		}
 	}
 
 	/**
