@@ -70,7 +70,7 @@ function main(array $argv) : void{
 		$currentVer->getPatch() + 1
 	));
 
-	$versionInfoPath = dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
+	$versionInfoPath = dirname(__DIR__) . '/src/VersionInfo.php';
 	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false);
 	
 	echo "please add appropriate notes to the changelog and press enter...";
