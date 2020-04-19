@@ -86,7 +86,7 @@ parameters:
 			#readlink() can return false but phpstan doesn't know this
 			message: "#^Strict comparison using \\!\\=\\= between string and false will always evaluate to true\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/utils/Timezone.php
+			path: ../../../src/utils/Timezone.php
 
 		-
 			#phpstan doesn't understand that SplFixedArray may contain null
