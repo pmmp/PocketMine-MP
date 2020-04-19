@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use pocketmine\utils\AssumptionFailedError;
 use function is_scalar;
 use function serialize;
 use function spl_object_id;
@@ -105,7 +106,11 @@ abstract class AsyncTask extends \Threaded{
 	 * @return mixed
 	 */
 	public function getResult(){
-		return $this->serialized ? unserialize($this->result) : $this->result;
+		if($this->serialized){
+			if(!is_string($this->result)) throw new AssumptionFailedError("Result expected to be a serialized string");
+			return unserialize($this->result);
+		}
+		return $this->result;
 	}
 
 	public function cancelRun() : void{

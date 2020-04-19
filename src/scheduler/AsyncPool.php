@@ -52,9 +52,15 @@ class AsyncPool{
 	/** @var \SplQueue[]|AsyncTask[][] */
 	private $taskQueues = [];
 
-	/** @var AsyncWorker[] */
+	/**
+	 * @var AsyncWorker[]
+	 * @phpstan-var array<int, AsyncWorker>
+	 */
 	private $workers = [];
-	/** @var int[] */
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
 	private $workerLastUsed = [];
 
 	/**

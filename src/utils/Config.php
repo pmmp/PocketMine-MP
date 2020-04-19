@@ -166,6 +166,9 @@ class Config{
 			$this->save();
 		}else{
 			$content = file_get_contents($this->file);
+			if($content === false){
+				throw new \RuntimeException("Unable to load config file");
+			}
 			$config = null;
 			switch($this->type){
 				case Config::PROPERTIES:
@@ -539,7 +542,6 @@ class Config{
 
 	/**
 	 * @return mixed[]
-	 * @phpstan-return array<string, mixed>
 	 */
 	private function parseProperties(string $content) : array{
 		$result = [];

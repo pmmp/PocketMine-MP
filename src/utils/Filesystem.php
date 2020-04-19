@@ -58,6 +58,7 @@ final class Filesystem{
 	public static function recursiveUnlink(string $dir) : void{
 		if(is_dir($dir)){
 			$objects = scandir($dir, SCANDIR_SORT_NONE);
+			if($objects === false) throw new AssumptionFailedError("scandir() shouldn't return false when is_dir() returns true");
 			foreach($objects as $object){
 				if($object !== "." and $object !== ".."){
 					if(is_dir($dir . "/" . $object)){

@@ -66,13 +66,19 @@ abstract class TextFormat{
 	public const ITALIC = TextFormat::ESCAPE . "o";
 	public const RESET = TextFormat::ESCAPE . "r";
 
+	private static function makePcreError(string $info) : \InvalidArgumentException{
+		throw new \InvalidArgumentException("$info: Encountered PCRE error " . preg_last_error() . " during regex operation");
+	}
+
 	/**
 	 * Splits the string by Format tokens
 	 *
 	 * @return string[]
 	 */
 	public static function tokenize(string $string) : array{
-		return preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		if($result === false) throw self::makePcreError("Failed to tokenize string");
+		return $result;
 	}
 
 	/**
@@ -83,6 +89,7 @@ abstract class TextFormat{
 	public static function clean(string $string, bool $removeFormat = true) : string{
 		$string = mb_scrub($string, 'UTF-8');
 		$string = preg_replace("/[\x{E000}-\x{F8FF}]/u", "", $string); //remove unicode private-use-area characters (they might break the console)
+		if($string === null) throw self::makePcreError("Failed to strip private-area characters");
 		if($removeFormat){
 			$string = str_replace(TextFormat::ESCAPE, "", preg_replace("/" . TextFormat::ESCAPE . "[0-9a-fk-or]/u", "", $string));
 		}
@@ -281,7 +288,11 @@ abstract class TextFormat{
 			}
 		}
 
-		return json_encode($newString, JSON_UNESCAPED_SLASHES);
+		$result = json_encode($newString, JSON_UNESCAPED_SLASHES);
+		if($result === false){
+			throw new \InvalidArgumentException("Failed to encode result JSON: " . json_last_error_msg());
+		}
+		return $result;
 	}
 
 	/**

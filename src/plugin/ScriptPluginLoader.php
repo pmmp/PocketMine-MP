@@ -55,7 +55,10 @@ class ScriptPluginLoader implements PluginLoader{
 	 * Gets the PluginDescription from the file
 	 */
 	public function getPluginDescription(string $file) : ?PluginDescription{
-		$content = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		$content = @file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		if($content === false){
+			return null;
+		}
 
 		$data = [];
 

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
 use pocketmine\world\format\ChunkException;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
@@ -88,7 +89,9 @@ class RegionLoader{
 			throw new CorruptedRegionException("Region file should be padded to a multiple of 4KiB");
 		}
 
-		$this->filePointer = fopen($this->filePath, "r+b");
+		$filePointer = fopen($this->filePath, "r+b");
+		if($filePointer === false) throw new AssumptionFailedError("fopen() should not fail here");
+		$this->filePointer = $filePointer;
 		stream_set_read_buffer($this->filePointer, 1024 * 16); //16KB
 		stream_set_write_buffer($this->filePointer, 1024 * 16); //16KB
 		if(!$exists){

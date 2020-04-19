@@ -114,7 +114,12 @@ class Utils{
 			//non-class function
 			return $func->getName();
 		}
-		return "closure@" . Filesystem::cleanPath($func->getFileName()) . "#L" . $func->getStartLine();
+		$filename = $func->getFileName();
+
+		return "closure@" . ($filename !== false ?
+				Filesystem::cleanPath($filename) . "#L" . $func->getStartLine() :
+				"internal"
+			);
 	}
 
 	/**
@@ -125,7 +130,12 @@ class Utils{
 	public static function getNiceClassName(object $obj) : string{
 		$reflect = new \ReflectionClass($obj);
 		if($reflect->isAnonymous()){
-			return "anonymous@" . Filesystem::cleanPath($reflect->getFileName()) . "#L" . $reflect->getStartLine();
+			$filename = $reflect->getFileName();
+
+			return "anonymous@" . ($filename !== false ?
+					Filesystem::cleanPath($filename) . "#L" . $reflect->getStartLine() :
+					"internal"
+				);
 		}
 
 		return $reflect->getName();
@@ -169,14 +179,14 @@ class Utils{
 		}
 
 		$machine = php_uname("a");
-		$machine .= file_exists("/proc/cpuinfo") ? implode(preg_grep("/(model name|Processor|Serial)/", file("/proc/cpuinfo"))) : "";
+		$machine .= ($cpuinfo = @file("/proc/cpuinfo")) !== false ? implode(preg_grep("/(model name|Processor|Serial)/", $cpuinfo)) : "";
 		$machine .= sys_get_temp_dir();
 		$machine .= $extra;
 		$os = Utils::getOS();
 		if($os === "win"){
 			@exec("ipconfig /ALL", $mac);
 			$mac = implode("\n", $mac);
-			if(preg_match_all("#Physical Address[. ]{1,}: ([0-9A-F\\-]{17})#", $mac, $matches)){
+			if(preg_match_all("#Physical Address[. ]{1,}: ([0-9A-F\\-]{17})#", $mac, $matches) > 0){
 				foreach($matches[1] as $i => $v){
 					if($v == "00-00-00-00-00-00"){
 						unset($matches[1][$i]);
@@ -190,7 +200,7 @@ class Utils{
 			}else{
 				@exec("ifconfig 2>/dev/null", $mac);
 				$mac = implode("\n", $mac);
-				if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches)){
+				if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches) > 0){
 					foreach($matches[1] as $i => $v){
 						if($v == "00:00:00:00:00:00"){
 							unset($matches[1][$i]);
@@ -270,14 +280,14 @@ class Utils{
 		switch(Utils::getOS()){
 			case "linux":
 			case "android":
-				if(file_exists("/proc/cpuinfo")){
-					foreach(file("/proc/cpuinfo") as $l){
+				if(($cpuinfo = @file('/proc/cpuinfo')) !== false){
+					foreach($cpuinfo as $l){
 						if(preg_match('/^processor[ \t]*:[ \t]*[0-9]+$/m', $l) > 0){
 							++$processors;
 						}
 					}
-				}elseif(is_readable("/sys/devices/system/cpu/present")){
-					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim(file_get_contents("/sys/devices/system/cpu/present")), $matches) > 0){
+				}elseif(($cpuPresent = @file_get_contents("/sys/devices/system/cpu/present")) !== false){
+					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim($cpuPresent), $matches) > 0){
 						$processors = (int) ($matches[2] - $matches[1]);
 					}
 				}
@@ -382,7 +392,9 @@ class Utils{
 	public static function getReferenceCount($value, bool $includeCurrent = true) : int{
 		ob_start();
 		debug_zval_dump($value);
-		$ret = explode("\n", ob_get_contents());
+		$contents = ob_get_contents();
+		if($contents === false) throw new AssumptionFailedError("ob_get_contents() should never return false here");
+		$ret = explode("\n", $contents);
 		ob_end_clean();
 
 		if(count($ret) >= 1 and preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){
@@ -462,6 +474,10 @@ class Utils{
 		return array_combine($matches[1], $matches[2]);
 	}
 
+	/**
+	 * @phpstan-param class-string $className
+	 * @phpstan-param class-string $baseName
+	 */
 	public static function testValidInstance(string $className, string $baseName) : void{
 		try{
 			$base = new \ReflectionClass($baseName);

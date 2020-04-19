@@ -691,8 +691,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * Resets the player's cooldown time for the given item back to the maximum.
 	 */
-	public function resetItemCooldown(Item $item) : void{
-		$ticks = $item->getCooldownTicks();
+	public function resetItemCooldown(Item $item, ?int $ticks = null) : void{
+		$ticks = $ticks ?? $item->getCooldownTicks();
 		if($ticks > 0){
 			$this->usedItemsCooldown[$item->getId()] = $this->server->getTick() + $ticks;
 		}

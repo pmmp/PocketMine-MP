@@ -27,7 +27,6 @@ use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionParser;
 use function array_map;
 use function array_values;
-use function extension_loaded;
 use function is_array;
 use function phpversion;
 use function preg_match;
@@ -229,11 +228,11 @@ class PluginDescription{
 	 */
 	public function checkRequiredExtensions() : void{
 		foreach($this->extensions as $name => $versionConstrs){
-			if(!extension_loaded($name)){
+			$gotVersion = phpversion($name);
+			if($gotVersion === false){
 				throw new PluginException("Required extension $name not loaded");
 			}
 
-			$gotVersion = phpversion($name);
 			foreach($versionConstrs as $constr){ // versionConstrs_loop
 				if($constr === "*"){
 					continue;

@@ -48,7 +48,11 @@ use function trim;
 abstract class Timezone{
 
 	public static function get() : string{
-		return ini_get('date.timezone');
+		$tz = ini_get('date.timezone');
+		if($tz === false){
+			throw new AssumptionFailedError('date.timezone INI entry should always exist');
+		}
+		return $tz;
 	}
 
 	public static function init() : void{
@@ -138,19 +142,16 @@ abstract class Timezone{
 				return self::parseOffset($offset);
 			case 'linux':
 				// Ubuntu / Debian.
-				if(file_exists('/etc/timezone')){
-					$data = file_get_contents('/etc/timezone');
-					if($data){
-						return trim($data);
-					}
+				$data = @file_get_contents('/etc/timezone');
+				if($data !== false){
+					return trim($data);
 				}
 
+
 				// RHEL / CentOS
-				if(file_exists('/etc/sysconfig/clock')){
-					$data = parse_ini_file('/etc/sysconfig/clock');
-					if(isset($data['ZONE']) and is_string($data['ZONE'])){
-						return trim($data['ZONE']);
-					}
+				$data = @parse_ini_file('/etc/sysconfig/clock');
+				if($data !== false and isset($data['ZONE']) and is_string($data['ZONE'])){
+					return trim($data['ZONE']);
 				}
 
 				//Portable method for incompatible linux distributions.
@@ -163,12 +164,10 @@ abstract class Timezone{
 
 				return self::parseOffset($offset);
 			case 'mac':
-				if(is_link('/etc/localtime')){
-					$filename = readlink('/etc/localtime');
-					if(strpos($filename, '/usr/share/zoneinfo/') === 0){
-						$timezone = substr($filename, 20);
-						return trim($timezone);
-					}
+				$filename = @readlink('/etc/localtime');
+				if($filename !== false and strpos($filename, '/usr/share/zoneinfo/') === 0){
+					$timezone = substr($filename, 20);
+					return trim($timezone);
 				}
 
 				return false;
@@ -180,7 +179,7 @@ abstract class Timezone{
 	/**
 	 * @param string $offset In the format of +09:00, +02:00, -04:00 etc.
 	 *
-	 * @return string|bool
+	 * @return string|false
 	 */
 	private static function parseOffset($offset){
 		//Make signed offsets unsigned for date_parse

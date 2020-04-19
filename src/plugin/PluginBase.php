@@ -30,6 +30,7 @@ use pocketmine\command\PluginCommand;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use function count;
 use function dirname;
@@ -275,7 +276,10 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			return false;
 		}
 
-		$ret = stream_copy_to_stream($resource, $fp = fopen($out, "wb")) > 0;
+		$fp = fopen($out, "wb");
+		if($fp === false) throw new AssumptionFailedError("fopen() should not fail with wb flags");
+
+		$ret = stream_copy_to_stream($resource, $fp) > 0;
 		fclose($fp);
 		fclose($resource);
 		return $ret;

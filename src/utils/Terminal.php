@@ -91,6 +91,7 @@ abstract class Terminal{
 
 	private static function detectFormattingCodesSupport() : bool{
 		$stdout = fopen("php://stdout", "w");
+		if($stdout === false) throw new AssumptionFailedError("Opening php://stdout should never fail");
 		$result = (
 			stream_isatty($stdout) and //STDOUT isn't being piped
 			(
