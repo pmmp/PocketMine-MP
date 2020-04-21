@@ -137,6 +137,7 @@ class Bossbar extends Vector3{
 	protected function getHealthPacket() : UpdateAttributesPacket{
 		$attr = Attribute::getAttribute(Attribute::HEALTH);
 		$attr->setMaxValue(1.0);
+		$attr->setDefaultValue(1.0);
 		$attr->setValue($this->healthPercent);
 
 		$pk = new UpdateAttributesPacket();
