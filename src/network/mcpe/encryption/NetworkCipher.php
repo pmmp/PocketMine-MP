@@ -65,17 +65,17 @@ class NetworkCipher{
 	}
 
 	/**
-	 * @throws \UnexpectedValueException
+	 * @throws DecryptionException
 	 */
 	public function decrypt(string $encrypted) : string{
 		if(strlen($encrypted) < 9){
-			throw new \UnexpectedValueException("Payload is too short");
+			throw new DecryptionException("Payload is too short");
 		}
 		$decrypted = $this->decryptCipher->decryptUpdate($encrypted);
 		$payload = substr($decrypted, 0, -8);
 
 		if(($expected = $this->calculateChecksum($this->decryptCounter++, $payload)) !== ($actual = substr($decrypted, -8))){
-			throw new \UnexpectedValueException("Encrypted payload has invalid checksum (expected " . bin2hex($expected) . ", got " . bin2hex($actual) . ")");
+			throw new DecryptionException("Encrypted payload has invalid checksum (expected " . bin2hex($expected) . ", got " . bin2hex($actual) . ")");
 		}
 
 		return $payload;
