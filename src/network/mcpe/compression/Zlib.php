@@ -40,10 +40,14 @@ final class Zlib{
 	/**
 	 * @param int    $maxDecodedLength default 2MB
 	 *
-	 * @throws \ErrorException
+	 * @throws DecompressionException
 	 */
 	public static function decompress(string $payload, int $maxDecodedLength = 1024 * 1024 * 2) : string{
-		return zlib_decode($payload, $maxDecodedLength);
+		$result = @zlib_decode($payload, $maxDecodedLength);
+		if($result === false){
+			throw new DecompressionException("Failed to decompress data");
+		}
+		return $result;
 	}
 
 	/**

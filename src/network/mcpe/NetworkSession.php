@@ -35,6 +35,7 @@ use pocketmine\form\Form;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
+use pocketmine\network\mcpe\compression\DecompressionException;
 use pocketmine\network\mcpe\compression\Zlib;
 use pocketmine\network\mcpe\encryption\DecryptionException;
 use pocketmine\network\mcpe\encryption\NetworkCipher;
@@ -280,7 +281,7 @@ class NetworkSession{
 		Timings::$playerNetworkReceiveDecompressTimer->startTiming();
 		try{
 			$stream = new PacketBatch(Zlib::decompress($payload));
-		}catch(\ErrorException $e){
+		}catch(DecompressionException $e){
 			$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
 			//TODO: this isn't incompatible game version if we already established protocol version
 			throw BadPacketException::wrap($e, "Compressed packet batch decode error");
