@@ -163,11 +163,18 @@ class NetworkSession{
 
 		$this->connectTime = time();
 
-		$this->setHandler(new LoginPacketHandler($this->server, $this, function(PlayerInfo $info) : void{
-			$this->info = $info;
-			$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
-			$this->logger->setPrefix($this->getLogPrefix());
-		}));
+		$this->setHandler(new LoginPacketHandler(
+			$this->server,
+			$this,
+			function(PlayerInfo $info) : void{
+				$this->info = $info;
+				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
+				$this->logger->setPrefix($this->getLogPrefix());
+			},
+			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void{
+				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
+			}
+		));
 
 		$this->manager->add($this);
 		$this->logger->info("Session opened");

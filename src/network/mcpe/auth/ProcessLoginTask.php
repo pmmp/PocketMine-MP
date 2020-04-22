@@ -28,7 +28,6 @@ use Mdanter\Ecc\Crypto\Signature\Signature;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use Mdanter\Ecc\Serializer\PublicKey\PemPublicKeySerializer;
 use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\scheduler\AsyncTask;
 use function assert;
@@ -46,7 +45,7 @@ use function time;
 use const OPENSSL_ALGO_SHA384;
 
 class ProcessLoginTask extends AsyncTask{
-	private const TLS_KEY_SESSION = "session";
+	private const TLS_KEY_ON_COMPLETION = "completion";
 
 	public const MOJANG_ROOT_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V";
 
@@ -74,8 +73,11 @@ class ProcessLoginTask extends AsyncTask{
 	/** @var PublicKeyInterface|null */
 	private $clientPublicKey = null;
 
-	public function __construct(NetworkSession $session, LoginPacket $packet, bool $authRequired){
-		$this->storeLocal(self::TLS_KEY_SESSION, $session);
+	/**
+	 * @phpstan-var \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPublicKey) : void $onCompletion
+	 */
+	public function __construct(LoginPacket $packet, bool $authRequired, \Closure $onCompletion){
+		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);
 		$this->packet = $packet;
 		$this->authRequired = $authRequired;
 	}
@@ -169,8 +171,11 @@ class ProcessLoginTask extends AsyncTask{
 	}
 
 	public function onCompletion() : void{
-		/** @var NetworkSession $session */
-		$session = $this->fetchLocal(self::TLS_KEY_SESSION);
-		$session->setAuthenticationStatus($this->authenticated, $this->authRequired, $this->error, $this->clientPublicKey);
+		/**
+		 * @var \Closure $callback
+		 * @phpstan-var \Closure(bool, bool, ?string, ?PublicKeyInterface) : void $callback
+		 */
+		$callback = $this->fetchLocal(self::TLS_KEY_ON_COMPLETION);
+		$callback($this->authenticated, $this->authRequired, $this->error, $this->clientPublicKey);
 	}
 }
