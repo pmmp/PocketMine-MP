@@ -39,7 +39,7 @@ class CreateItemAction extends InventoryAction{
 	}
 
 	public function isValid(Player $source) : bool{
-		return !$source->hasFiniteResources() and CreativeInventory::contains($this->sourceItem);
+		return !$source->hasFiniteResources() and CreativeInventory::getInstance()->contains($this->sourceItem);
 	}
 
 	public function execute(Player $source) : void{

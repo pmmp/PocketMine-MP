@@ -25,22 +25,18 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
+use pocketmine\utils\SingletonTrait;
 use function file_get_contents;
 use function json_decode;
 use const DIRECTORY_SEPARATOR;
 
 final class CreativeInventory{
+	use SingletonTrait;
 
 	/** @var Item[] */
-	public static $creative = [];
+	private $creative = [];
 
 	private function __construct(){
-		//NOOP
-	}
-
-	public static function init() : void{
-		self::clear();
-
 		$creativeItems = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "creativeitems.json"), true);
 
 		foreach($creativeItems as $data){
@@ -48,7 +44,7 @@ final class CreativeInventory{
 			if($item->getName() === "Unknown"){
 				continue;
 			}
-			self::add($item);
+			$this->add($item);
 		}
 	}
 
@@ -56,23 +52,23 @@ final class CreativeInventory{
 	 * Removes all previously added items from the creative menu.
 	 * Note: Players who are already online when this is called will not see this change.
 	 */
-	public static function clear() : void{
-		self::$creative = [];
+	public function clear() : void{
+		$this->creative = [];
 	}
 
 	/**
 	 * @return Item[]
 	 */
-	public static function getAll() : array{
-		return self::$creative;
+	public function getAll() : array{
+		return $this->creative;
 	}
 
-	public static function getItem(int $index) : ?Item{
-		return self::$creative[$index] ?? null;
+	public function getItem(int $index) : ?Item{
+		return $this->creative[$index] ?? null;
 	}
 
-	public static function getItemIndex(Item $item) : int{
-		foreach(self::$creative as $i => $d){
+	public function getItemIndex(Item $item) : int{
+		foreach($this->creative as $i => $d){
 			if($item->equals($d, !($item instanceof Durable))){
 				return $i;
 			}
@@ -85,22 +81,22 @@ final class CreativeInventory{
 	 * Adds an item to the creative menu.
 	 * Note: Players who are already online when this is called will not see this change.
 	 */
-	public static function add(Item $item) : void{
-		self::$creative[] = clone $item;
+	public function add(Item $item) : void{
+		$this->creative[] = clone $item;
 	}
 
 	/**
 	 * Removes an item from the creative menu.
 	 * Note: Players who are already online when this is called will not see this change.
 	 */
-	public static function remove(Item $item) : void{
-		$index = self::getItemIndex($item);
+	public function remove(Item $item) : void{
+		$index = $this->getItemIndex($item);
 		if($index !== -1){
-			unset(self::$creative[$index]);
+			unset($this->creative[$index]);
 		}
 	}
 
-	public static function contains(Item $item) : bool{
-		return self::getItemIndex($item) !== -1;
+	public function contains(Item $item) : bool{
+		return $this->getItemIndex($item) !== -1;
 	}
 }

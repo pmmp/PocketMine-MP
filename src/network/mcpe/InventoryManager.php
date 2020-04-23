@@ -204,7 +204,7 @@ class InventoryManager{
 		$items = [];
 		$typeConverter = TypeConverter::getInstance();
 		if(!$this->player->isSpectator()){ //fill it for all gamemodes except spectator
-			foreach(CreativeInventory::getAll() as $i => $item){
+			foreach(CreativeInventory::getInstance()->getAll() as $i => $item){
 				$items[$i] = $typeConverter->coreItemStackToNet($item);
 			}
 		}
