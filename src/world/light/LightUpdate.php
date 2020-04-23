@@ -188,7 +188,7 @@ abstract class LightUpdate{
 
 	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel) : void{
 		$current = $this->currentLightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
-		$potentialLight = $newAdjacentLevel - BlockFactory::$lightFilter[$this->subChunkHandler->currentSubChunk->getFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f)];
+		$potentialLight = $newAdjacentLevel - BlockFactory::getInstance()->lightFilter[$this->subChunkHandler->currentSubChunk->getFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f)];
 
 		if($current < $potentialLight){
 			$this->currentLightArray->set($x & 0xf, $y & 0xf, $z & 0xf, $potentialLight);

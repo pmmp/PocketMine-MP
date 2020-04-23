@@ -29,7 +29,6 @@ use pocketmine\block\BlockFactory;
 class ItemFactoryTest extends TestCase{
 
 	public function setUp() : void{
-		BlockFactory::init();
 		ItemFactory::init();
 	}
 
@@ -38,7 +37,7 @@ class ItemFactoryTest extends TestCase{
 	 */
 	public function testItemBlockRegistered() : void{
 		for($id = 0; $id < 256; ++$id){
-			self::assertEquals(BlockFactory::isRegistered($id), ItemFactory::isRegistered($id));
+			self::assertEquals(BlockFactory::getInstance()->isRegistered($id), ItemFactory::isRegistered($id));
 		}
 	}
 

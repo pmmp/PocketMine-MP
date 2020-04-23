@@ -57,14 +57,12 @@ class LightPopulationTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		if(!BlockFactory::isInit()){
-			BlockFactory::init();
-		}
 		/** @var Chunk $chunk */
 		$chunk = FastChunkSerializer::deserialize($this->chunk);
 
-		$chunk->recalculateHeightMap(BlockFactory::$lightFilter, BlockFactory::$diffusesSkyLight);
-		$chunk->populateSkyLight(BlockFactory::$lightFilter);
+		$blockFactory = BlockFactory::getInstance();
+		$chunk->recalculateHeightMap($blockFactory->lightFilter, $blockFactory->diffusesSkyLight);
+		$chunk->populateSkyLight($blockFactory->lightFilter);
 		$chunk->setLightPopulated();
 
 		$this->resultHeightMap = igbinary_serialize($chunk->getHeightMapArray());

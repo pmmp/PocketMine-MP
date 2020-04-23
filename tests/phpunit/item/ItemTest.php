@@ -24,14 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use PHPUnit\Framework\TestCase;
-use pocketmine\block\BlockFactory;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 
 class ItemTest extends TestCase{
 
 	public static function setUpBeforeClass() : void{
-		BlockFactory::init();
 		ItemFactory::init();
 		Enchantment::init();
 	}

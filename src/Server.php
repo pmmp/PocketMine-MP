@@ -27,7 +27,6 @@ declare(strict_types=1);
  */
 namespace pocketmine;
 
-use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
@@ -985,7 +984,6 @@ class Server{
 			$this->commandMap = new SimpleCommandMap($this);
 
 			EntityFactory::init();
-			BlockFactory::init();
 			Enchantment::init();
 			ItemFactory::init();
 			CreativeInventory::init();

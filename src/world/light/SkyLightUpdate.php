@@ -51,7 +51,7 @@ class SkyLightUpdate extends LightUpdate{
 		$yPlusOne = $y + 1;
 
 		if($yPlusOne === $oldHeightMap){ //Block changed directly beneath the heightmap. Check if a block was removed or changed to a different light-filter.
-			$newHeightMap = $chunk->recalculateHeightMapColumn($x & 0x0f, $z & 0x0f, BlockFactory::$lightFilter, BlockFactory::$diffusesSkyLight);
+			$newHeightMap = $chunk->recalculateHeightMapColumn($x & 0x0f, $z & 0x0f, BlockFactory::getInstance()->lightFilter, BlockFactory::getInstance()->diffusesSkyLight);
 		}elseif($yPlusOne > $oldHeightMap){ //Block changed above the heightmap.
 			if($source->getLightFilter() > 0 or $source->diffusesSkyLight()){
 				$chunk->setHeightMap($x & 0xf, $z & 0xf, $yPlusOne);
@@ -72,7 +72,7 @@ class SkyLightUpdate extends LightUpdate{
 				$this->setAndUpdateLight($x, $i, $z, 15);
 			}
 		}else{ //No heightmap change, block changed "underground"
-			$this->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentLight($x, $y, $z) - BlockFactory::$lightFilter[$source->getFullId()]));
+			$this->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentLight($x, $y, $z) - BlockFactory::getInstance()->lightFilter[$source->getFullId()]));
 		}
 	}
 }

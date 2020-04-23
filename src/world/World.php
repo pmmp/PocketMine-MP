@@ -346,7 +346,7 @@ class World implements ChunkManager{
 
 		$dontTickBlocks = array_fill_keys($this->server->getProperty("chunk-ticking.disable-block-ticking", []), true);
 
-		foreach(BlockFactory::getAllKnownStates() as $state){
+		foreach(BlockFactory::getInstance()->getAllKnownStates() as $state){
 			if(!isset($dontTickBlocks[$state->getId()]) and $state->ticksRandomly()){
 				$this->randomTickBlocks[$state->getFullId()] = true;
 			}
@@ -945,7 +945,7 @@ class World implements ChunkManager{
 
 						if(isset($this->randomTickBlocks[$state])){
 							/** @var Block $block */
-							$block = BlockFactory::fromFullBlock($state);
+							$block = BlockFactory::getInstance()->fromFullBlock($state);
 							$block->position($this, $chunkX * 16 + $x, ($Y << 4) + $y, $chunkZ * 16 + $z);
 							$block->onRandomTick();
 						}
@@ -1303,7 +1303,7 @@ class World implements ChunkManager{
 			}
 		}
 
-		$block = BlockFactory::fromFullBlock($fullState);
+		$block = BlockFactory::getInstance()->fromFullBlock($fullState);
 		$block->position($this, $x, $y, $z);
 
 		static $dynamicStateRead = false;

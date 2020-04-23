@@ -93,6 +93,7 @@ class Explosion{
 		}
 
 		$vector = new Vector3(0, 0, 0);
+		$blockFactory = BlockFactory::getInstance();
 
 		$currentChunk = null;
 		$currentSubChunk = null;
@@ -127,10 +128,10 @@ class Explosion{
 							$state = $this->subChunkHandler->currentSubChunk->getFullBlock($vBlockX & 0x0f, $vBlockY & 0x0f, $vBlockZ & 0x0f);
 
 							if($state !== 0){
-								$blastForce -= (BlockFactory::$blastResistance[$state] / 5 + 0.3) * $this->stepLen;
+								$blastForce -= ($blockFactory->blastResistance[$state] / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[$index = World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
-										$_block = BlockFactory::fromFullBlock($state);
+										$_block = $blockFactory->fromFullBlock($state);
 										$_block->position($this->world, $vBlockX, $vBlockY, $vBlockZ);
 										$this->affectedBlocks[$index] = $_block;
 									}

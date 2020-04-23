@@ -71,7 +71,7 @@ class FallingBlock extends Entity{
 
 		$damage = $nbt->getByte("Data", 0);
 
-		$this->block = BlockFactory::get($blockId, $damage);
+		$this->block = BlockFactory::getInstance()->get($blockId, $damage);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{

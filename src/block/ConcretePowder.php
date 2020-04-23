@@ -54,7 +54,7 @@ class ConcretePowder extends Opaque implements Fallable{
 				continue;
 			}
 			if($this->getSide($i) instanceof Water){
-				return BlockFactory::get(BlockLegacyIds::CONCRETE, $this->idInfo->getVariant());
+				return BlockFactory::getInstance()->get(BlockLegacyIds::CONCRETE, $this->idInfo->getVariant());
 			}
 		}
 

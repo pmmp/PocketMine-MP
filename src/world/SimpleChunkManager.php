@@ -51,7 +51,7 @@ class SimpleChunkManager implements ChunkManager{
 
 	public function getBlockAt(int $x, int $y, int $z) : Block{
 		if($this->terrainPointer->moveTo($x, $y, $z, false)){
-			return BlockFactory::fromFullBlock($this->terrainPointer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf));
+			return BlockFactory::getInstance()->fromFullBlock($this->terrainPointer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf));
 		}
 		return VanillaBlocks::AIR();
 	}

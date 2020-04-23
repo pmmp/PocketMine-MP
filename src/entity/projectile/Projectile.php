@@ -100,7 +100,7 @@ abstract class Projectile extends Entity{
 				break;
 			}
 
-			$this->blockHit = BlockFactory::get($blockId, $blockData);
+			$this->blockHit = BlockFactory::getInstance()->get($blockId, $blockData);
 			$this->blockHit->position($this->getWorld(), $blockPos->getFloorX(), $blockPos->getFloorY(), $blockPos->getFloorZ());
 		}while(false);
 	}

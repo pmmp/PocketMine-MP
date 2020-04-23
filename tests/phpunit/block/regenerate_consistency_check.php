@@ -25,14 +25,14 @@ require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 /* This script needs to be re-run after any intentional blockfactory change (adding or removing a block state). */
 
-\pocketmine\block\BlockFactory::init();
+$factory = new \pocketmine\block\BlockFactory();
 
 $old = json_decode(file_get_contents(__DIR__ . '/block_factory_consistency_check.json'), true);
 $new = array_map(
 	function(\pocketmine\block\Block $block) : string{
 		return $block->getName();
 	},
-	\pocketmine\block\BlockFactory::getAllKnownStates()
+	$factory->getAllKnownStates()
 );
 foreach($old as $k => $name){
 	if(!isset($new[$k])){

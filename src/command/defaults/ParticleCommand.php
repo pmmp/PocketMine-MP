@@ -185,7 +185,7 @@ class ParticleCommand extends VanillaCommand{
 				break;
 			case "terrain":
 				if($data !== null and $data !== 0){
-					return new TerrainParticle(BlockFactory::get($data));
+					return new TerrainParticle(BlockFactory::getInstance()->get($data));
 				}
 				break;
 			case "heart":
@@ -213,7 +213,7 @@ class ParticleCommand extends VanillaCommand{
 		}elseif(strpos($name, "blockcrack_") === 0){
 			$d = explode("_", $name);
 			if(count($d) === 2){
-				return new TerrainParticle(BlockFactory::get(((int) $d[1]) & 0xff, ((int) $d[1]) >> 12));
+				return new TerrainParticle(BlockFactory::getInstance()->get(((int) $d[1]) & 0xff, ((int) $d[1]) >> 12));
 			}
 		}elseif(strpos($name, "blockdust_") === 0){
 			$d = explode("_", $name);

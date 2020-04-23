@@ -467,7 +467,7 @@ class ItemFactory{
 	 */
 	public static function isRegistered(int $id, int $variant = 0) : bool{
 		if($id < 256){
-			return BlockFactory::isRegistered($id);
+			return BlockFactory::getInstance()->isRegistered($id);
 		}
 
 		return isset(self::$list[self::getListOffset($id, $variant)]);

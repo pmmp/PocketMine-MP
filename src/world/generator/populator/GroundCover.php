@@ -36,6 +36,7 @@ class GroundCover extends Populator{
 
 	public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
 		$chunk = $world->getChunk($chunkX, $chunkZ);
+		$factory = BlockFactory::getInstance();
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 				$biome = Biome::getBiome($chunk->getBiomeId($x, $z));
@@ -48,7 +49,7 @@ class GroundCover extends Populator{
 
 					$startY = 127;
 					for(; $startY > 0; --$startY){
-						if(!BlockFactory::fromFullBlock($chunk->getFullBlock($x, $startY, $z))->isTransparent()){
+						if(!$factory->fromFullBlock($chunk->getFullBlock($x, $startY, $z))->isTransparent()){
 							break;
 						}
 					}
@@ -56,7 +57,7 @@ class GroundCover extends Populator{
 					$endY = $startY - count($cover);
 					for($y = $startY; $y > $endY and $y >= 0; --$y){
 						$b = $cover[$startY - $y];
-						$id = BlockFactory::fromFullBlock($chunk->getFullBlock($x, $y, $z));
+						$id = $factory->fromFullBlock($chunk->getFullBlock($x, $y, $z));
 						if($id->getId() === BlockLegacyIds::AIR and $b->isSolid()){
 							break;
 						}
