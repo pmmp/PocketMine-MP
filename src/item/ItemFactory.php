@@ -33,6 +33,7 @@ use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Living;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\utils\SingletonTrait;
 use function constant;
 use function defined;
 use function explode;
@@ -46,15 +47,7 @@ use function trim;
  * Manages Item instance creation and registration
  */
 class ItemFactory{
-	/** @var self|null */
-	private static $instance = null;
-
-	public static function getInstance() : self{
-		if(self::$instance === null){
-			self::$instance = new self;
-		}
-		return self::$instance;
-	}
+	use SingletonTrait;
 
 	/** @var Item[] */
 	private $list = [];

@@ -51,6 +51,7 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\item\ToolTier;
+use pocketmine\utils\SingletonTrait;
 use function array_fill;
 use function array_filter;
 use function get_class;
@@ -60,15 +61,7 @@ use function min;
  * Manages block registration and instance creation
  */
 class BlockFactory{
-	/** @var self|null */
-	private static $instance = null;
-
-	public static function getInstance() : self{
-		if(self::$instance === null){
-			self::$instance = new self;
-		}
-		return self::$instance;
-	}
+	use SingletonTrait;
 
 	/**
 	 * @var \SplFixedArray|Block[]
