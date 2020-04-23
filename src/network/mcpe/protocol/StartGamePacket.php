@@ -289,7 +289,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		if($this->blockTable === null){
 			if(self::$blockTableCache === null){
 				//this is a really nasty hack, but it'll do for now
-				self::$blockTableCache = (new NetworkNbtSerializer())->write(new TreeRoot(new ListTag(RuntimeBlockMapping::getBedrockKnownStates())));
+				self::$blockTableCache = (new NetworkNbtSerializer())->write(new TreeRoot(new ListTag(RuntimeBlockMapping::getInstance()->getBedrockKnownStates())));
 			}
 			$out->put(self::$blockTableCache);
 		}else{

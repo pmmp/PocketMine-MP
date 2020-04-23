@@ -39,19 +39,25 @@ use function shuffle;
  * @internal
  */
 final class RuntimeBlockMapping{
+	/** @var self|null */
+	private static $instance = null;
 
-	/** @var int[] */
-	private static $legacyToRuntimeMap = [];
-	/** @var int[] */
-	private static $runtimeToLegacyMap = [];
-	/** @var CompoundTag[]|null */
-	private static $bedrockKnownStates = null;
+	public static function getInstance() : self{
+		if(self::$instance === null){
+			self::$instance = new self;
+		}
 
-	private function __construct(){
-		//NOOP
+		return self::$instance;
 	}
 
-	public static function init() : void{
+	/** @var int[] */
+	private $legacyToRuntimeMap = [];
+	/** @var int[] */
+	private $runtimeToLegacyMap = [];
+	/** @var CompoundTag[]|null */
+	private $bedrockKnownStates = null;
+
+	private function __construct(){
 		$tag = (new NetworkNbtSerializer())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/required_block_states.nbt"))->getTag();
 		if(!($tag instanceof ListTag) or $tag->getTagType() !== NBT::TAG_Compound){ //this is a little redundant currently, but good for auto complete and makes phpstan happy
 			throw new \RuntimeException("Invalid blockstates table, expected TAG_List<TAG_Compound> root");
@@ -59,12 +65,12 @@ final class RuntimeBlockMapping{
 
 		/** @var CompoundTag[] $list */
 		$list = $tag->getValue();
-		self::$bedrockKnownStates = self::randomizeTable($list);
+		$this->bedrockKnownStates = self::randomizeTable($list);
 
-		self::setupLegacyMappings();
+		$this->setupLegacyMappings();
 	}
 
-	private static function setupLegacyMappings() : void{
+	private function setupLegacyMappings() : void{
 		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/block_id_map.json"), true);
 		$legacyStateMap = (new NetworkNbtSerializer())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/r12_to_current_block_map.nbt"))->getTag();
 		if(!($legacyStateMap instanceof ListTag) or $legacyStateMap->getTagType() !== NBT::TAG_Compound){
@@ -75,7 +81,7 @@ final class RuntimeBlockMapping{
 		 * @var int[][] $idToStatesMap string id -> int[] list of candidate state indices
 		 */
 		$idToStatesMap = [];
-		foreach(self::$bedrockKnownStates as $k => $state){
+		foreach($this->bedrockKnownStates as $k => $state){
 			$idToStatesMap[$state->getCompoundTag("block")->getString("name")][] = $k;
 		}
 		/** @var CompoundTag $pair */
@@ -93,19 +99,13 @@ final class RuntimeBlockMapping{
 				throw new \RuntimeException("Mapped new state does not appear in network table");
 			}
 			foreach($idToStatesMap[$mappedName] as $k){
-				$networkState = self::$bedrockKnownStates[$k];
+				$networkState = $this->bedrockKnownStates[$k];
 				if($mappedState->equals($networkState->getCompoundTag("block"))){
-					self::registerMapping($k, $id, $data);
+					$this->registerMapping($k, $id, $data);
 					continue 2;
 				}
 			}
 			throw new \RuntimeException("Mapped new state does not appear in network table");
-		}
-	}
-
-	private static function lazyInit() : void{
-		if(self::$bedrockKnownStates === null){
-			self::init();
 		}
 	}
 
@@ -126,35 +126,32 @@ final class RuntimeBlockMapping{
 		return $table;
 	}
 
-	public static function toStaticRuntimeId(int $id, int $meta = 0) : int{
-		self::lazyInit();
+	public function toStaticRuntimeId(int $id, int $meta = 0) : int{
 		/*
 		 * try id+meta first
 		 * if not found, try id+0 (strip meta)
 		 * if still not found, return update! block
 		 */
-		return self::$legacyToRuntimeMap[($id << 4) | $meta] ?? self::$legacyToRuntimeMap[$id << 4] ?? self::$legacyToRuntimeMap[BlockLegacyIds::INFO_UPDATE << 4];
+		return $this->legacyToRuntimeMap[($id << 4) | $meta] ?? $this->legacyToRuntimeMap[$id << 4] ?? $this->legacyToRuntimeMap[BlockLegacyIds::INFO_UPDATE << 4];
 	}
 
 	/**
 	 * @return int[] [id, meta]
 	 */
-	public static function fromStaticRuntimeId(int $runtimeId) : array{
-		self::lazyInit();
-		$v = self::$runtimeToLegacyMap[$runtimeId];
+	public function fromStaticRuntimeId(int $runtimeId) : array{
+		$v = $this->runtimeToLegacyMap[$runtimeId];
 		return [$v >> 4, $v & 0xf];
 	}
 
-	private static function registerMapping(int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{
-		self::$legacyToRuntimeMap[($legacyId << 4) | $legacyMeta] = $staticRuntimeId;
-		self::$runtimeToLegacyMap[$staticRuntimeId] = ($legacyId << 4) | $legacyMeta;
+	private function registerMapping(int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{
+		$this->legacyToRuntimeMap[($legacyId << 4) | $legacyMeta] = $staticRuntimeId;
+		$this->runtimeToLegacyMap[$staticRuntimeId] = ($legacyId << 4) | $legacyMeta;
 	}
 
 	/**
 	 * @return CompoundTag[]
 	 */
-	public static function getBedrockKnownStates() : array{
-		self::lazyInit();
-		return self::$bedrockKnownStates;
+	public function getBedrockKnownStates() : array{
+		return $this->bedrockKnownStates;
 	}
 }

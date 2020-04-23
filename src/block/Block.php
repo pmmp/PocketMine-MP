@@ -111,7 +111,7 @@ class Block{
 	 * @internal
 	 */
 	public function getRuntimeId() : int{
-		return RuntimeBlockMapping::toStaticRuntimeId($this->getId(), $this->getMeta());
+		return RuntimeBlockMapping::getInstance()->toStaticRuntimeId($this->getId(), $this->getMeta());
 	}
 
 	public function getMeta() : int{
