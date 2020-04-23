@@ -82,36 +82,11 @@ class PrepareEncryptionTask extends AsyncTask{
 
 	public function onRun() : void{
 		$serverPriv = $this->serverPrivateKey;
+		$sharedSecret = EncryptionUtils::generateSharedSecret($serverPriv, $this->clientPub);
+
 		$salt = random_bytes(16);
-		$sharedSecret = $serverPriv->createExchange($this->clientPub)->calculateSharedKey();
-
-		$this->aesKey = openssl_digest($salt . hex2bin(str_pad(gmp_strval($sharedSecret, 16), 96, "0", STR_PAD_LEFT)), 'sha256', true);
-		$this->handshakeJwt = $this->generateServerHandshakeJwt($serverPriv, $salt);
-	}
-
-	private function generateServerHandshakeJwt(PrivateKeyInterface $serverPriv, string $salt) : string{
-		$jwtBody = self::b64UrlEncode(json_encode([
-				"x5u" => base64_encode((new DerPublicKeySerializer())->serialize($serverPriv->getPublicKey())),
-				"alg" => "ES384"
-			])
-		) . "." . self::b64UrlEncode(json_encode([
-				"salt" => base64_encode($salt)
-			])
-		);
-
-		openssl_sign($jwtBody, $sig, (new PemPrivateKeySerializer(new DerPrivateKeySerializer()))->serialize($serverPriv), OPENSSL_ALGO_SHA384);
-
-		$decodedSig = (new DerSignatureSerializer())->parse($sig);
-		$jwtSig = self::b64UrlEncode(
-			hex2bin(str_pad(gmp_strval($decodedSig->getR(), 16), 96, "0", STR_PAD_LEFT)) .
-			hex2bin(str_pad(gmp_strval($decodedSig->getS(), 16), 96, "0", STR_PAD_LEFT))
-		);
-
-		return "$jwtBody.$jwtSig";
-	}
-
-	private static function b64UrlEncode(string $str) : string{
-		return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
+		$this->aesKey = EncryptionUtils::generateKey($sharedSecret, $salt);
+		$this->handshakeJwt = EncryptionUtils::generateServerHandshakeJwt($serverPriv, $salt);
 	}
 
 	public function onCompletion() : void{
