@@ -205,9 +205,10 @@ class InGamePacketHandler extends PacketHandler{
 
 		$isCrafting = false;
 		$isFinalCraftingPart = false;
+		$converter = TypeConverter::getInstance();
 		foreach($data->getActions() as $networkInventoryAction){
-			$old = TypeConverter::getInstance()->netItemStackToCore($networkInventoryAction->oldItem);
-			$new = TypeConverter::getInstance()->netItemStackToCore($networkInventoryAction->newItem);
+			$old = $converter->netItemStackToCore($networkInventoryAction->oldItem);
+			$new = $converter->netItemStackToCore($networkInventoryAction->newItem);
 			if(
 				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER and
 				$networkInventoryAction->windowId === ContainerIds::UI and
@@ -228,7 +229,7 @@ class InGamePacketHandler extends PacketHandler{
 			}
 
 			try{
-				$action = $networkInventoryAction->createInventoryAction($this->player);
+				$action = $converter->createInventoryAction($networkInventoryAction, $this->player);
 				if($action !== null){
 					$actions[] = $action;
 				}

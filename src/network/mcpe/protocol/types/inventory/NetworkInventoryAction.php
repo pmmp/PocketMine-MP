@@ -23,16 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
-use pocketmine\crafting\CraftingGrid;
-use pocketmine\inventory\transaction\action\CreateItemAction;
-use pocketmine\inventory\transaction\action\DestroyItemAction;
-use pocketmine\inventory\transaction\action\DropItemAction;
-use pocketmine\inventory\transaction\action\InventoryAction;
-use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
-use pocketmine\player\Player;
 use pocketmine\utils\BinaryDataException;
 
 class NetworkInventoryAction{
@@ -142,76 +134,5 @@ class NetworkInventoryAction{
 		$packet->putUnsignedVarInt($this->inventorySlot);
 		$packet->putSlot($this->oldItem);
 		$packet->putSlot($this->newItem);
-	}
-
-	/**
-	 * @throws \UnexpectedValueException
-	 */
-	public function createInventoryAction(Player $player) : ?InventoryAction{
-		$old = TypeConverter::getInstance()->netItemStackToCore($this->oldItem);
-		$new = TypeConverter::getInstance()->netItemStackToCore($this->newItem);
-		if($old->equalsExact($new)){
-			//filter out useless noise in 1.13
-			return null;
-		}
-		switch($this->sourceType){
-			case self::SOURCE_CONTAINER:
-				if($this->windowId === ContainerIds::UI and $this->inventorySlot > 0){
-					if($this->inventorySlot === 50){
-						return null; //useless noise
-					}
-					if($this->inventorySlot >= 28 and $this->inventorySlot <= 31){
-						$window = $player->getCraftingGrid();
-						if($window->getGridWidth() !== CraftingGrid::SIZE_SMALL){
-							throw new \UnexpectedValueException("Expected small crafting grid");
-						}
-						$slot = $this->inventorySlot - 28;
-					}elseif($this->inventorySlot >= 32 and $this->inventorySlot <= 40){
-						$window = $player->getCraftingGrid();
-						if($window->getGridWidth() !== CraftingGrid::SIZE_BIG){
-							throw new \UnexpectedValueException("Expected big crafting grid");
-						}
-						$slot = $this->inventorySlot - 32;
-					}else{
-						throw new \UnexpectedValueException("Unhandled magic UI slot offset $this->inventorySlot");
-					}
-				}else{
-					$window = $player->getNetworkSession()->getInvManager()->getWindow($this->windowId);
-					$slot = $this->inventorySlot;
-				}
-				if($window !== null){
-					return new SlotChangeAction($window, $slot, $old, $new);
-				}
-
-				throw new \UnexpectedValueException("No open container with window ID $this->windowId");
-			case self::SOURCE_WORLD:
-				if($this->inventorySlot !== self::ACTION_MAGIC_SLOT_DROP_ITEM){
-					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
-				}
-
-				return new DropItemAction($new);
-			case self::SOURCE_CREATIVE:
-				switch($this->inventorySlot){
-					case self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
-						return new DestroyItemAction($new);
-					case self::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
-						return new CreateItemAction($new);
-					default:
-						throw new \UnexpectedValueException("Unexpected creative action type $this->inventorySlot");
-
-				}
-			case self::SOURCE_TODO:
-				//These types need special handling.
-				switch($this->windowId){
-					case self::SOURCE_TYPE_CRAFTING_RESULT:
-					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
-						return null;
-				}
-
-				//TODO: more stuff
-				throw new \UnexpectedValueException("No open container with window ID $this->windowId");
-			default:
-				throw new \UnexpectedValueException("Unknown inventory source type $this->sourceType");
-		}
 	}
 }

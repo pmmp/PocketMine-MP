@@ -22,14 +22,24 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\crafting\CraftingGrid;
+use pocketmine\inventory\transaction\action\CreateItemAction;
+use pocketmine\inventory\transaction\action\DestroyItemAction;
+use pocketmine\inventory\transaction\action\DropItemAction;
+use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
+use pocketmine\player\Player;
 
 class TypeConverter{
 	private const DAMAGE_TAG = "Damage"; //TAG_Int
@@ -120,5 +130,76 @@ class TypeConverter{
 			$itemStack->getCount(),
 			$compound
 		);
+	}
+
+	/**
+	 * @throws \UnexpectedValueException
+	 */
+	public function createInventoryAction(NetworkInventoryAction $action, Player $player) : ?InventoryAction{
+		$old = TypeConverter::getInstance()->netItemStackToCore($action->oldItem);
+		$new = TypeConverter::getInstance()->netItemStackToCore($action->newItem);
+		if($old->equalsExact($new)){
+			//filter out useless noise in 1.13
+			return null;
+		}
+		switch($action->sourceType){
+			case NetworkInventoryAction::SOURCE_CONTAINER:
+				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){
+					if($action->inventorySlot === 50){
+						return null; //useless noise
+					}
+					if($action->inventorySlot >= 28 and $action->inventorySlot <= 31){
+						$window = $player->getCraftingGrid();
+						if($window->getGridWidth() !== CraftingGrid::SIZE_SMALL){
+							throw new \UnexpectedValueException("Expected small crafting grid");
+						}
+						$slot = $action->inventorySlot - 28;
+					}elseif($action->inventorySlot >= 32 and $action->inventorySlot <= 40){
+						$window = $player->getCraftingGrid();
+						if($window->getGridWidth() !== CraftingGrid::SIZE_BIG){
+							throw new \UnexpectedValueException("Expected big crafting grid");
+						}
+						$slot = $action->inventorySlot - 32;
+					}else{
+						throw new \UnexpectedValueException("Unhandled magic UI slot offset $action->inventorySlot");
+					}
+				}else{
+					$window = $player->getNetworkSession()->getInvManager()->getWindow($action->windowId);
+					$slot = $action->inventorySlot;
+				}
+				if($window !== null){
+					return new SlotChangeAction($window, $slot, $old, $new);
+				}
+
+				throw new \UnexpectedValueException("No open container with window ID $action->windowId");
+			case NetworkInventoryAction::SOURCE_WORLD:
+				if($action->inventorySlot !== NetworkInventoryAction::ACTION_MAGIC_SLOT_DROP_ITEM){
+					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
+				}
+
+				return new DropItemAction($new);
+			case NetworkInventoryAction::SOURCE_CREATIVE:
+				switch($action->inventorySlot){
+					case NetworkInventoryAction::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
+						return new DestroyItemAction($new);
+					case NetworkInventoryAction::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
+						return new CreateItemAction($new);
+					default:
+						throw new \UnexpectedValueException("Unexpected creative action type $action->inventorySlot");
+
+				}
+			case NetworkInventoryAction::SOURCE_TODO:
+				//These types need special handling.
+				switch($action->windowId){
+					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT:
+					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
+						return null;
+				}
+
+				//TODO: more stuff
+				throw new \UnexpectedValueException("No open container with window ID $action->windowId");
+			default:
+				throw new \UnexpectedValueException("Unknown inventory source type $action->sourceType");
+		}
 	}
 }
