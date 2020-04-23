@@ -28,7 +28,6 @@ namespace pocketmine\network;
 
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
-use pocketmine\network\mcpe\protocol\PacketPool;
 use function base64_encode;
 use function get_class;
 use function preg_match;
@@ -64,7 +63,6 @@ class Network{
 	private $logger;
 
 	public function __construct(\Logger $logger){
-		PacketPool::init();
 		$this->sessionManager = new NetworkSessionManager();
 		$this->logger = $logger;
 	}
