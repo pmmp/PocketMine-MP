@@ -30,7 +30,6 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 class ItemTest extends TestCase{
 
 	public static function setUpBeforeClass() : void{
-		ItemFactory::init();
 		Enchantment::init();
 	}
 
@@ -38,14 +37,14 @@ class ItemTest extends TestCase{
 	private $item;
 
 	public function setUp() : void{
-		$this->item = ItemFactory::get(ItemIds::DIAMOND_SWORD);
+		$this->item = ItemFactory::getInstance()->get(ItemIds::DIAMOND_SWORD);
 	}
 
 	/**
 	 * Test for issue #1145 (items aren't considered equal after NBT serializing and deserializing
 	 */
 	public function testItemEquals() : void{
-		$item = ItemFactory::get(ItemIds::STONE)->setCustomName("HI");
+		$item = ItemFactory::getInstance()->get(ItemIds::STONE)->setCustomName("HI");
 		$item2 = Item::nbtDeserialize($item->nbtSerialize());
 		self::assertTrue($item2->equals($item));
 		self::assertTrue($item->equals($item2));
@@ -55,7 +54,7 @@ class ItemTest extends TestCase{
 	 * Test that same items without NBT are considered equal
 	 */
 	public function testItemEqualsNoNbt() : void{
-		$item1 = ItemFactory::get(ItemIds::DIAMOND_SWORD);
+		$item1 = ItemFactory::getInstance()->get(ItemIds::DIAMOND_SWORD);
 		$item2 = clone $item1;
 		self::assertTrue($item1->equals($item2));
 	}
@@ -67,7 +66,7 @@ class ItemTest extends TestCase{
 	public function testItemPersistsDisplayProperties() : void{
 		$lore = ["Line A", "Line B"];
 		$name = "HI";
-		$item = ItemFactory::get(ItemIds::DIAMOND_SWORD);
+		$item = ItemFactory::getInstance()->get(ItemIds::DIAMOND_SWORD);
 		$item->setCustomName($name);
 		$item->setLore($lore);
 		$item = Item::nbtDeserialize($item->nbtSerialize());

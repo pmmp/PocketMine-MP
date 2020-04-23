@@ -70,7 +70,7 @@ class TypeConverter{
 
 	public function recipeIngredientToCoreItemStack(RecipeIngredient $ingredient) : Item{
 		$meta = $ingredient->getMeta();
-		return ItemFactory::get($ingredient->getId(), $meta === 0x7fff ? -1 : $meta, $ingredient->getCount());
+		return ItemFactory::getInstance()->get($ingredient->getId(), $meta === 0x7fff ? -1 : $meta, $ingredient->getCount());
 	}
 
 	public function coreItemStackToNet(Item $itemStack) : ItemStack{
@@ -124,7 +124,7 @@ class TypeConverter{
 		}
 
 		end:
-		return ItemFactory::get(
+		return ItemFactory::getInstance()->get(
 			$itemStack->getId(),
 			$meta !== 0x7fff ? $meta : -1,
 			$itemStack->getCount(),

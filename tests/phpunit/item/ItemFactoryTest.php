@@ -28,16 +28,12 @@ use pocketmine\block\BlockFactory;
 
 class ItemFactoryTest extends TestCase{
 
-	public function setUp() : void{
-		ItemFactory::init();
-	}
-
 	/**
 	 * Tests that blocks are considered to be valid registered items
 	 */
 	public function testItemBlockRegistered() : void{
 		for($id = 0; $id < 256; ++$id){
-			self::assertEquals(BlockFactory::getInstance()->isRegistered($id), ItemFactory::isRegistered($id));
+			self::assertEquals(BlockFactory::getInstance()->isRegistered($id), ItemFactory::getInstance()->isRegistered($id));
 		}
 	}
 
@@ -64,7 +60,7 @@ class ItemFactoryTest extends TestCase{
 	 * @param int    $meta
 	 */
 	public function testFromStringSingle(string $string, int $id, int $meta) : void{
-		$item = ItemFactory::fromString($string);
+		$item = ItemFactory::getInstance()->fromString($string);
 
 		self::assertEquals($id, $item->getId());
 		self::assertEquals($meta, $item->getMeta());
@@ -74,10 +70,10 @@ class ItemFactoryTest extends TestCase{
 	 * Test that durable items are correctly created by the item factory
 	 */
 	public function testGetDurableItem() : void{
-		self::assertInstanceOf(Sword::class, $i1 = ItemFactory::get(ItemIds::WOODEN_SWORD));
+		self::assertInstanceOf(Sword::class, $i1 = ItemFactory::getInstance()->get(ItemIds::WOODEN_SWORD));
 		/** @var Sword $i1 */
 		self::assertSame(0, $i1->getDamage());
-		self::assertInstanceOf(Sword::class, $i2 = ItemFactory::get(ItemIds::WOODEN_SWORD, 1));
+		self::assertInstanceOf(Sword::class, $i2 = ItemFactory::getInstance()->get(ItemIds::WOODEN_SWORD, 1));
 		/** @var Sword $i2 */
 		self::assertSame(1, $i2->getDamage());
 	}

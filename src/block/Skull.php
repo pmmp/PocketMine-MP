@@ -111,6 +111,6 @@ class Skull extends Flowable{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::get(ItemIds::SKULL, $this->skullType->getMagicNumber());
+		return ItemFactory::getInstance()->get(ItemIds::SKULL, $this->skullType->getMagicNumber());
 	}
 }

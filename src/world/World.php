@@ -1464,8 +1464,9 @@ class World implements ChunkManager{
 
 			if($player->isAdventure(true) and !$ev->isCancelled()){
 				$canBreak = false;
+				$itemFactory = ItemFactory::getInstance();
 				foreach($item->getCanDestroy() as $v){
-					$entry = ItemFactory::fromString($v);
+					$entry = $itemFactory->fromString($v);
 					if($entry->getBlock()->isSameType($target)){
 						$canBreak = true;
 						break;
@@ -1599,8 +1600,9 @@ class World implements ChunkManager{
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
 			if($player->isAdventure(true) and !$ev->isCancelled()){
 				$canPlace = false;
+				$itemFactory = ItemFactory::getInstance();
 				foreach($item->getCanPlaceOn() as $v){
-					$entry = ItemFactory::fromString($v);
+					$entry = $itemFactory->fromString($v);
 					if($entry->getBlock()->isSameType($blockClicked)){
 						$canPlace = true;
 						break;

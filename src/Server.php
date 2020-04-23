@@ -41,7 +41,6 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\ItemFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\TranslationContainer;
@@ -985,7 +984,6 @@ class Server{
 
 			EntityFactory::init();
 			Enchantment::init();
-			ItemFactory::init();
 			CreativeInventory::init();
 			Biome::init();
 

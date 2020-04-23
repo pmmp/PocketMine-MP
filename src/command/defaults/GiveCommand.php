@@ -62,7 +62,7 @@ class GiveCommand extends VanillaCommand{
 		}
 
 		try{
-			$item = ItemFactory::fromString($args[1]);
+			$item = ItemFactory::getInstance()->fromString($args[1]);
 		}catch(\InvalidArgumentException $e){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.give.item.notFound", [$args[1]]));
 			return true;

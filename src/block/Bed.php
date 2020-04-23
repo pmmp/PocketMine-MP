@@ -193,7 +193,7 @@ class Bed extends Transparent{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::get($this->idInfo->getItemId(), $this->color->getMagicNumber());
+		return ItemFactory::getInstance()->get($this->idInfo->getItemId(), $this->color->getMagicNumber());
 	}
 
 	public function getAffectedBlocks() : array{

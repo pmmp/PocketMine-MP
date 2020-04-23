@@ -104,7 +104,7 @@ class Block{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::get($this->idInfo->getItemId(), $this->idInfo->getVariant());
+		return ItemFactory::getInstance()->get($this->idInfo->getItemId(), $this->idInfo->getVariant());
 	}
 
 	/**

@@ -176,7 +176,7 @@ class Banner extends Transparent{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::get(ItemIds::BANNER, $this->baseColor->getInvertedMagicNumber());
+		return ItemFactory::getInstance()->get(ItemIds::BANNER, $this->baseColor->getInvertedMagicNumber());
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

@@ -624,7 +624,7 @@ class Item implements \JsonSerializable{
 		}elseif(isset($data["nbt_b64"])){
 			$nbt = base64_decode($data["nbt_b64"], true);
 		}
-		return ItemFactory::get(
+		return ItemFactory::getInstance()->get(
 			(int) $data["id"], (int) ($data["damage"] ?? 0), (int) ($data["count"] ?? 1), $nbt !== "" ? (new LittleEndianNbtSerializer())->read($nbt)->mustGetCompoundTag() : null
 		);
 	}
@@ -656,7 +656,7 @@ class Item implements \JsonSerializable{
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : Item{
 		if(!$tag->hasTag("id") or !$tag->hasTag("Count")){
-			return ItemFactory::get(0);
+			return ItemFactory::getInstance()->get(0);
 		}
 
 		$count = Binary::unsignByte($tag->getByte("Count"));
@@ -664,10 +664,10 @@ class Item implements \JsonSerializable{
 
 		$idTag = $tag->getTag("id");
 		if($idTag instanceof ShortTag){
-			$item = ItemFactory::get($idTag->getValue(), $meta, $count);
+			$item = ItemFactory::getInstance()->get($idTag->getValue(), $meta, $count);
 		}elseif($idTag instanceof StringTag){ //PC item save format
 			try{
-				$item = ItemFactory::fromString($idTag->getValue() . ":$meta");
+				$item = ItemFactory::getInstance()->fromString($idTag->getValue() . ":$meta");
 			}catch(\InvalidArgumentException $e){
 				//TODO: improve error handling
 				return ItemFactory::air();
