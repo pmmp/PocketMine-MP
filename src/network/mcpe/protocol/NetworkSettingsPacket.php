@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class NetworkSettingsPacket extends DataPacket implements ClientboundPacket{
@@ -55,7 +54,7 @@ class NetworkSettingsPacket extends DataPacket implements ClientboundPacket{
 		$out->putLShort($this->compressionThreshold);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleNetworkSettings($this);
 	}
 }

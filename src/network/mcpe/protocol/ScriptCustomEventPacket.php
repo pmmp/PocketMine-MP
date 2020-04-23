@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ScriptCustomEventPacket extends DataPacket{ //TODO: this doesn't have handlers in either client or server in the game as of 1.8
@@ -46,7 +45,7 @@ class ScriptCustomEventPacket extends DataPacket{ //TODO: this doesn't have hand
 		$out->putString($this->eventData);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleScriptCustomEvent($this);
 	}
 }

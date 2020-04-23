@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
@@ -62,7 +61,7 @@ class SetActorDataPacket extends DataPacket implements ClientboundPacket, Server
 		$out->putEntityMetadata($this->metadata);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleSetActorData($this);
 	}
 }

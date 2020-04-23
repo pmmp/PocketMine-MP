@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class BlockPickRequestPacket extends DataPacket implements ServerboundPacket{
@@ -54,7 +53,7 @@ class BlockPickRequestPacket extends DataPacket implements ServerboundPacket{
 		$out->putByte($this->hotbarSlot);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleBlockPickRequest($this);
 	}
 }

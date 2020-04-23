@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class BookEditPacket extends DataPacket implements ServerboundPacket{
@@ -115,7 +114,7 @@ class BookEditPacket extends DataPacket implements ServerboundPacket{
 		}
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleBookEdit($this);
 	}
 }

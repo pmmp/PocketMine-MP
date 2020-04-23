@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class SetSpawnPositionPacket extends DataPacket implements ClientboundPacket{
@@ -72,7 +71,7 @@ class SetSpawnPositionPacket extends DataPacket implements ClientboundPacket{
 		$out->putBool($this->spawnForced);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleSetSpawnPosition($this);
 	}
 }

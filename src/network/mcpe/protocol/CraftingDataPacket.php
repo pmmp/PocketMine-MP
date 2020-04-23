@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\PotionContainerChangeRecipe;
 use pocketmine\network\mcpe\protocol\types\PotionTypeRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe;
@@ -121,7 +120,7 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 		$out->putBool($this->cleanRecipes);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleCraftingData($this);
 	}
 }

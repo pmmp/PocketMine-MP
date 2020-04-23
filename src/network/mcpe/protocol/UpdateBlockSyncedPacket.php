@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class UpdateBlockSyncedPacket extends UpdateBlockPacket{
@@ -48,7 +47,7 @@ class UpdateBlockSyncedPacket extends UpdateBlockPacket{
 		$out->putUnsignedVarLong($this->uvarint64_2);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleUpdateBlockSynced($this);
 	}
 }

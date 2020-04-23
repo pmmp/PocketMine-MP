@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
@@ -178,7 +177,7 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 		$out->putString($this->platformChatId);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleText($this);
 	}
 }

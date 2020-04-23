@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ShowCreditsPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -49,7 +48,7 @@ class ShowCreditsPacket extends DataPacket implements ClientboundPacket, Serverb
 		$out->putVarInt($this->status);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleShowCredits($this);
 	}
 }

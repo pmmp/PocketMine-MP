@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
@@ -59,7 +58,7 @@ class PlayerHotbarPacket extends DataPacket implements ClientboundPacket, Server
 		$out->putBool($this->selectHotbarSlot);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handlePlayerHotbar($this);
 	}
 }

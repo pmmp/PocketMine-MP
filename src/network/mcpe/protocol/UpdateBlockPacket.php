@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class UpdateBlockPacket extends DataPacket implements ClientboundPacket{
@@ -73,7 +72,7 @@ class UpdateBlockPacket extends DataPacket implements ClientboundPacket{
 		$out->putUnsignedVarInt($this->dataLayerId);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleUpdateBlock($this);
 	}
 }

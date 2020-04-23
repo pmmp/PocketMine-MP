@@ -98,6 +98,7 @@ use pocketmine\network\mcpe\protocol\NetworkSettingsPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\NpcRequestPacket;
 use pocketmine\network\mcpe\protocol\OnScreenTextureAnimationPacket;
+use pocketmine\network\mcpe\protocol\PacketHandlerInterface;
 use pocketmine\network\mcpe\protocol\PhotoTransferPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
@@ -172,7 +173,7 @@ use pocketmine\network\mcpe\protocol\VideoStreamConnectPacket;
  *
  * This class is an automatically generated stub. Do not edit it manually.
  */
-abstract class PacketHandler{
+abstract class PacketHandler implements PacketHandlerInterface{
 
 	public function setUp() : void{
 

@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class TransferPacket extends DataPacket implements ClientboundPacket{
@@ -53,7 +52,7 @@ class TransferPacket extends DataPacket implements ClientboundPacket{
 		$out->putLShort($this->port);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleTransfer($this);
 	}
 }

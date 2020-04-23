@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
@@ -73,7 +72,7 @@ class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, S
 		$out->putSlot($this->feet);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleMobArmorEquipment($this);
 	}
 }

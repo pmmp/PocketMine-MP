@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ServerSettingsRequestPacket extends DataPacket implements ServerboundPacket{
@@ -39,7 +38,7 @@ class ServerSettingsRequestPacket extends DataPacket implements ServerboundPacke
 		//No payload
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleServerSettingsRequest($this);
 	}
 }

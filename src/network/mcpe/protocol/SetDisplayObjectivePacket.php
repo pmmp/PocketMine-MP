@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
@@ -58,7 +57,7 @@ class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
 		$out->putVarInt($this->sortOrder);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleSetDisplayObjective($this);
 	}
 }

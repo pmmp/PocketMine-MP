@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\UUID;
@@ -58,7 +57,7 @@ class PlayerSkinPacket extends DataPacket implements ClientboundPacket, Serverbo
 		$out->putBool($this->skin->isVerified());
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handlePlayerSkin($this);
 	}
 }

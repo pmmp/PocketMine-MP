@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\BadPacketException;
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 interface Packet{
@@ -54,8 +53,10 @@ interface Packet{
 	 * Typically this method returns the return value of the handler in the supplied PacketHandler. See other packets
 	 * for examples how to implement this.
 	 *
+	 * @param PacketHandlerInterface $handler
+	 *
 	 * @return bool true if the packet was handled successfully, false if not.
 	 * @throws BadPacketException if broken data was found in the packet
 	 */
-	public function handle(PacketHandler $handler) : bool;
+	public function handle(PacketHandlerInterface $handler) : bool;
 }

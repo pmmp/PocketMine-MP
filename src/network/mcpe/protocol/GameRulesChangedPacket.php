@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class GameRulesChangedPacket extends DataPacket implements ClientboundPacket{
@@ -45,7 +44,7 @@ class GameRulesChangedPacket extends DataPacket implements ClientboundPacket{
 		$out->putGameRules($this->gameRules);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleGameRulesChanged($this);
 	}
 }

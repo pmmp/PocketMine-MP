@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class ContainerSetDataPacket extends DataPacket implements ClientboundPacket{
@@ -68,7 +67,7 @@ class ContainerSetDataPacket extends DataPacket implements ClientboundPacket{
 		$out->putVarInt($this->value);
 	}
 
-	public function handle(PacketHandler $handler) : bool{
+	public function handle(PacketHandlerInterface $handler) : bool{
 		return $handler->handleContainerSetData($this);
 	}
 }
