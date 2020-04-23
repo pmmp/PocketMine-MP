@@ -26,7 +26,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format;
 
-use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
@@ -279,11 +278,16 @@ class Chunk{
 
 	/**
 	 * Recalculates the heightmap for the whole chunk.
+	 *
+	 * @param \SplFixedArray|int[]  $lightFilters
+	 * @param \SplFixedArray|bool[] $lightDiffusers
+	 * @phpstan-param \SplFixedArray<int>  $lightFilters
+	 * @phpstan-param \SplFixedArray<bool> $lightDiffusers
 	 */
-	public function recalculateHeightMap() : void{
+	public function recalculateHeightMap(\SplFixedArray $lightFilters, \SplFixedArray $lightDiffusers) : void{
 		for($z = 0; $z < 16; ++$z){
 			for($x = 0; $x < 16; ++$x){
-				$this->recalculateHeightMapColumn($x, $z);
+				$this->recalculateHeightMapColumn($x, $z, $lightFilters, $lightDiffusers);
 			}
 		}
 	}
@@ -293,13 +297,17 @@ class Chunk{
 	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
+	 * @param \SplFixedArray|int[]  $lightFilters
+	 * @param \SplFixedArray|bool[] $lightDiffusers
+	 * @phpstan-param \SplFixedArray<int>  $lightFilters
+	 * @phpstan-param \SplFixedArray<bool> $lightDiffusers
 	 *
 	 * @return int New calculated heightmap value (0-256 inclusive)
 	 */
-	public function recalculateHeightMapColumn(int $x, int $z) : int{
+	public function recalculateHeightMapColumn(int $x, int $z, \SplFixedArray $lightFilters, \SplFixedArray $lightDiffusers) : int{
 		$y = $this->getHighestBlockAt($x, $z);
 		for(; $y >= 0; --$y){
-			if(BlockFactory::$lightFilter[$state = $this->getFullBlock($x, $y, $z)] > 1 or BlockFactory::$diffusesSkyLight[$state]){
+			if($lightFilters[$state = $this->getFullBlock($x, $y, $z)] > 1 or $lightDiffusers[$state]){
 				break;
 			}
 		}
@@ -313,9 +321,12 @@ class Chunk{
 	 * This does not cater for adjacent sky light, this performs direct sky light population only. This may cause some strange visual artifacts
 	 * if the chunk is light-populated after being terrain-populated.
 	 *
+	 * @param \SplFixedArray|int[] $lightFilters
+	 * @phpstan-param \SplFixedArray<int> $lightFilters
+	 *
 	 * TODO: fast adjacent light spread
 	 */
-	public function populateSkyLight() : void{
+	public function populateSkyLight(\SplFixedArray $lightFilters) : void{
 		$this->setAllBlockSkyLight(0);
 
 		for($x = 0; $x < 16; ++$x){
@@ -329,7 +340,7 @@ class Chunk{
 
 				$light = 15;
 				for(; $y >= 0; --$y){
-					$light -= BlockFactory::$lightFilter[$this->getFullBlock($x, $y, $z)];
+					$light -= $lightFilters[$this->getFullBlock($x, $y, $z)];
 					if($light <= 0){
 						break;
 					}
