@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -37,22 +37,23 @@ class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, S
 
 	//this intentionally doesn't use an array because we don't want any implicit dependencies on internal order
 
-	/** @var Item */
+	/** @var ItemStack */
 	public $head;
-	/** @var Item */
+	/** @var ItemStack */
 	public $chest;
-	/** @var Item */
+	/** @var ItemStack */
 	public $legs;
-	/** @var Item */
+	/** @var ItemStack */
 	public $feet;
 
-	public static function create(int $entityRuntimeId, Item $head, Item $chest, Item $legs, Item $feet) : self{
+	public static function create(int $entityRuntimeId, ItemStack $head, ItemStack $chest, ItemStack $legs, ItemStack $feet) : self{
 		$result = new self;
 		$result->entityRuntimeId = $entityRuntimeId;
 		$result->head = $head;
 		$result->chest = $chest;
 		$result->legs = $legs;
 		$result->feet = $feet;
+
 		return $result;
 	}
 

@@ -31,8 +31,8 @@ use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
-use pocketmine\item\Item;
 use pocketmine\network\BadPacketException;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\player\Player;
 use pocketmine\utils\BinaryDataException;
@@ -82,9 +82,9 @@ class NetworkInventoryAction{
 	public $sourceFlags = 0;
 	/** @var int */
 	public $inventorySlot;
-	/** @var Item */
+	/** @var ItemStack */
 	public $oldItem;
-	/** @var Item */
+	/** @var ItemStack */
 	public $newItem;
 
 	/**
@@ -150,7 +150,9 @@ class NetworkInventoryAction{
 	 * @throws \UnexpectedValueException
 	 */
 	public function createInventoryAction(Player $player) : ?InventoryAction{
-		if($this->oldItem->equalsExact($this->newItem)){
+		$old = TypeConverter::getInstance()->netItemStackToCore($this->oldItem);
+		$new = TypeConverter::getInstance()->netItemStackToCore($this->newItem);
+		if($old->equalsExact($new)){
 			//filter out useless noise in 1.13
 			return null;
 		}
@@ -180,7 +182,7 @@ class NetworkInventoryAction{
 					$slot = $this->inventorySlot;
 				}
 				if($window !== null){
-					return new SlotChangeAction($window, $slot, $this->oldItem, $this->newItem);
+					return new SlotChangeAction($window, $slot, $old, $new);
 				}
 
 				throw new \UnexpectedValueException("No open container with window ID $this->windowId");
@@ -189,13 +191,13 @@ class NetworkInventoryAction{
 					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
 				}
 
-				return new DropItemAction($this->newItem);
+				return new DropItemAction($new);
 			case self::SOURCE_CREATIVE:
 				switch($this->inventorySlot){
 					case self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
-						return new DestroyItemAction($this->newItem);
+						return new DestroyItemAction($new);
 					case self::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
-						return new CreateItemAction($this->oldItem);
+						return new CreateItemAction($new);
 					default:
 						throw new \UnexpectedValueException("Unexpected creative action type $this->inventorySlot");
 

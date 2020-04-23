@@ -25,14 +25,10 @@ namespace pocketmine\network\mcpe\serializer;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Durable;
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
@@ -48,8 +44,10 @@ use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\ShortMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\Vec3MetadataProperty;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
+use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
@@ -62,9 +60,6 @@ use function count;
 use function strlen;
 
 class NetworkBinaryStream extends BinaryStream{
-
-	private const DAMAGE_TAG = "Damage"; //TAG_Int
-	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
 
 	/**
 	 * @throws BinaryDataException
@@ -209,15 +204,15 @@ class NetworkBinaryStream extends BinaryStream{
 	 * @throws BadPacketException
 	 * @throws BinaryDataException
 	 */
-	public function getSlot() : Item{
+	public function getSlot() : ItemStack{
 		$id = $this->getVarInt();
 		if($id === 0){
-			return ItemFactory::get(0, 0, 0);
+			return ItemStack::null();
 		}
 
 		$auxValue = $this->getVarInt();
-		$data = $auxValue >> 8;
-		$cnt = $auxValue & 0xff;
+		$meta = $auxValue >> 8;
+		$count = $auxValue & 0xff;
 
 		$nbtLen = $this->getLShort();
 
@@ -237,43 +232,25 @@ class NetworkBinaryStream extends BinaryStream{
 			throw new BadPacketException("Unexpected fake NBT length $nbtLen");
 		}
 
-		//TODO
-		for($i = 0, $canPlaceOn = $this->getVarInt(); $i < $canPlaceOn; ++$i){
-			$this->getString();
+		$canPlaceOn = [];
+		for($i = 0, $canPlaceOnCount = $this->getVarInt(); $i < $canPlaceOnCount; ++$i){
+			$canPlaceOn[] = $this->getString();
 		}
 
-		//TODO
-		for($i = 0, $canDestroy = $this->getVarInt(); $i < $canDestroy; ++$i){
-			$this->getString();
+		$canDestroy = [];
+		for($i = 0, $canDestroyCount = $this->getVarInt(); $i < $canDestroyCount; ++$i){
+			$canDestroy[] = $this->getString();
 		}
 
+		$shieldBlockingTick = null;
 		if($id === ItemIds::SHIELD){
-			$this->getVarLong(); //"blocking tick" (ffs mojang)
+			$shieldBlockingTick = $this->getVarLong();
 		}
 
-		if($compound !== null){
-			if($compound->hasTag(self::DAMAGE_TAG, IntTag::class)){
-				$data = $compound->getInt(self::DAMAGE_TAG);
-				$compound->removeTag(self::DAMAGE_TAG);
-				if($compound->count() === 0){
-					$compound = null;
-					goto end;
-				}
-			}
-			if(($conflicted = $compound->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
-				$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
-				$compound->setTag(self::DAMAGE_TAG, $conflicted);
-			}
-		}
-		end:
-		try{
-			return ItemFactory::get($id, $data, $cnt, $compound);
-		}catch(\InvalidArgumentException $e){
-			throw new BadPacketException($e->getMessage(), 0, $e);
-		}
+		return new ItemStack($id, $meta, $count, $compound, $canPlaceOn, $canDestroy, $shieldBlockingTick);
 	}
 
-	public function putSlot(Item $item) : void{
+	public function putSlot(ItemStack $item) : void{
 		if($item->getId() === 0){
 			$this->putVarInt(0);
 
@@ -284,22 +261,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$auxValue = (($item->getMeta() & 0x7fff) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 
-		$nbt = null;
-		if($item->hasNamedTag()){
-			$nbt = clone $item->getNamedTag();
-		}
-		if($item instanceof Durable and $item->getDamage() > 0){
-			if($nbt !== null){
-				if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
-					$nbt->removeTag(self::DAMAGE_TAG);
-					$nbt->setTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION, $existing);
-				}
-			}else{
-				$nbt = new CompoundTag();
-			}
-			$nbt->setInt(self::DAMAGE_TAG, $item->getDamage());
-		}
-
+		$nbt = $item->getNbt();
 		if($nbt !== null){
 			$this->putLShort(0xffff);
 			$this->putByte(1); //TODO: some kind of count field? always 1 as of 1.9.0
@@ -308,34 +270,39 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->putLShort(0);
 		}
 
-		$this->putVarInt(0); //CanPlaceOn entry count (TODO)
-		$this->putVarInt(0); //CanDestroy entry count (TODO)
+		$this->putVarInt(count($item->getCanPlaceOn()));
+		foreach($item->getCanPlaceOn() as $entry){
+			$this->putString($entry);
+		}
+		$this->putVarInt(count($item->getCanDestroy()));
+		foreach($item->getCanDestroy() as $entry){
+			$this->putString($entry);
+		}
 
-		if($item->getId() === ItemIds::SHIELD){
-			$this->putVarLong(0); //"blocking tick" (ffs mojang)
+		$blockingTick = $item->getShieldBlockingTick();
+		if($blockingTick !== null){
+			$this->putVarLong($blockingTick);
 		}
 	}
 
-	public function getRecipeIngredient() : Item{
+	public function getRecipeIngredient() : RecipeIngredient{
 		$id = $this->getVarInt();
 		if($id === 0){
-			return ItemFactory::get(ItemIds::AIR, 0, 0);
+			return new RecipeIngredient(0, 0, 0);
 		}
 		$meta = $this->getVarInt();
-		if($meta === 0x7fff){
-			$meta = -1;
-		}
 		$count = $this->getVarInt();
-		return ItemFactory::get($id, $meta, $count);
+
+		return new RecipeIngredient($id, $meta, $count);
 	}
 
-	public function putRecipeIngredient(Item $item) : void{
-		if($item->isNull()){
+	public function putRecipeIngredient(RecipeIngredient $ingredient) : void{
+		if($ingredient->getId() === 0){
 			$this->putVarInt(0);
 		}else{
-			$this->putVarInt($item->getId());
-			$this->putVarInt($item->getMeta() & 0x7fff);
-			$this->putVarInt($item->getCount());
+			$this->putVarInt($ingredient->getId());
+			$this->putVarInt($ingredient->getMeta());
+			$this->putVarInt($ingredient->getCount());
 		}
 	}
 

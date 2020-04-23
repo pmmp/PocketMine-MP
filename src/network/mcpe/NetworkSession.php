@@ -37,6 +37,7 @@ use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\DecompressionException;
 use pocketmine\network\mcpe\compression\Zlib;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\encryption\DecryptionException;
 use pocketmine\network\mcpe\encryption\NetworkCipher;
 use pocketmine\network\mcpe\encryption\PrepareEncryptionTask;
@@ -790,12 +791,19 @@ class NetworkSession{
 	public function onMobEquipmentChange(Human $mob) : void{
 		//TODO: we could send zero for slot here because remote players don't need to know which slot was selected
 		$inv = $mob->getInventory();
-		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), $inv->getItemInHand(), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
+		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand()), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
 	}
 
 	public function onMobArmorChange(Living $mob) : void{
 		$inv = $mob->getArmorInventory();
-		$this->sendDataPacket(MobArmorEquipmentPacket::create($mob->getId(), $inv->getHelmet(), $inv->getChestplate(), $inv->getLeggings(), $inv->getBoots()));
+		$converter = TypeConverter::getInstance();
+		$this->sendDataPacket(MobArmorEquipmentPacket::create(
+			$mob->getId(),
+			$converter->coreItemStackToNet($inv->getHelmet()),
+			$converter->coreItemStackToNet($inv->getChestplate()),
+			$converter->coreItemStackToNet($inv->getLeggings()),
+			$converter->coreItemStackToNet($inv->getBoots())
+		));
 	}
 
 	public function syncPlayerList() : void{

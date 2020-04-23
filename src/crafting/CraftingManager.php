@@ -26,13 +26,22 @@ namespace pocketmine\crafting;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Zlib;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\PacketBatch;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe as ProtocolFurnaceRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
+use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe as ProtocolShapedRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolShapelessRecipe;
 use pocketmine\timings\Timings;
+use pocketmine\utils\Binary;
+use pocketmine\utils\UUID;
 use function array_map;
 use function file_get_contents;
 use function json_decode;
 use function json_encode;
+use function str_repeat;
 use function usort;
 use const DIRECTORY_SEPARATOR;
 
@@ -101,19 +110,58 @@ class CraftingManager{
 		$pk = new CraftingDataPacket();
 		$pk->cleanRecipes = true;
 
+		$counter = 0;
+		$nullUUID = UUID::fromData(str_repeat("\x00", 16));
+		$converter = TypeConverter::getInstance();
 		foreach($this->shapelessRecipes as $list){
 			foreach($list as $recipe){
-				$pk->addShapelessRecipe($recipe);
+				$pk->entries[] = new ProtocolShapelessRecipe(
+					CraftingDataPacket::ENTRY_SHAPELESS,
+					Binary::writeInt($counter++),
+					array_map(function(Item $item) use ($converter) : RecipeIngredient{
+						return $converter->coreItemStackToRecipeIngredient($item);
+					}, $recipe->getIngredientList()),
+					array_map(function(Item $item) use ($converter) : ItemStack{
+						return $converter->coreItemStackToNet($item);
+					}, $recipe->getResults()),
+					$nullUUID,
+					"crafting_table",
+					50
+				);
 			}
 		}
 		foreach($this->shapedRecipes as $list){
 			foreach($list as $recipe){
-				$pk->addShapedRecipe($recipe);
+				$inputs = [];
+
+				for($row = 0, $height = $recipe->getHeight(); $row < $height; ++$row){
+					for($column = 0, $width = $recipe->getWidth(); $column < $width; ++$column){
+						$inputs[$row][$column] = $converter->coreItemStackToRecipeIngredient($recipe->getIngredient($column, $row));
+					}
+				}
+				$pk->entries[] = $r = new ProtocolShapedRecipe(
+					CraftingDataPacket::ENTRY_SHAPED,
+					Binary::writeInt($counter++),
+					$inputs,
+					array_map(function(Item $item) use ($converter) : ItemStack{
+						return $converter->coreItemStackToNet($item);
+					}, $recipe->getResults()),
+					$nullUUID,
+					"crafting_table",
+					50
+				);
 			}
 		}
 
 		foreach($this->furnaceRecipes as $recipe){
-			$pk->addFurnaceRecipe($recipe);
+			$input = $converter->coreItemStackToNet($recipe->getInput());
+			$pk->entries[] = new ProtocolFurnaceRecipe(
+				CraftingDataPacket::ENTRY_FURNACE_DATA,
+				$input->getId(),
+				$input->getMeta(),
+				$converter->coreItemStackToNet($recipe->getResult()),
+				"furnace"
+			);
 		}
 
 		$this->craftingDataCache = new CompressBatchPromise();

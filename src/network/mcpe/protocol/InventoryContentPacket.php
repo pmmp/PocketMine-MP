@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
@@ -35,11 +35,11 @@ class InventoryContentPacket extends DataPacket implements ClientboundPacket{
 
 	/** @var int */
 	public $windowId;
-	/** @var Item[] */
+	/** @var ItemStack[] */
 	public $items = [];
 
 	/**
-	 * @param Item[] $items
+	 * @param ItemStack[] $items
 	 *
 	 * @return InventoryContentPacket
 	 */

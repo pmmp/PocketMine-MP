@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class MobEquipmentPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -34,7 +34,7 @@ class MobEquipmentPacket extends DataPacket implements ClientboundPacket, Server
 
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var Item */
+	/** @var ItemStack */
 	public $item;
 	/** @var int */
 	public $inventorySlot;
@@ -43,7 +43,7 @@ class MobEquipmentPacket extends DataPacket implements ClientboundPacket, Server
 	/** @var int */
 	public $windowId = 0;
 
-	public static function create(int $entityRuntimeId, Item $item, int $inventorySlot, int $windowId) : self{
+	public static function create(int $entityRuntimeId, ItemStack $item, int $inventorySlot, int $windowId) : self{
 		$result = new self;
 		$result->entityRuntimeId = $entityRuntimeId;
 		$result->item = $item;

@@ -29,6 +29,7 @@ use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
@@ -210,7 +211,7 @@ class ItemEntity extends Entity{
 		$pk->entityRuntimeId = $this->getId();
 		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();
-		$pk->item = $this->getItem();
+		$pk->item = TypeConverter::getInstance()->coreItemStackToNet($this->getItem());
 		$pk->metadata = $this->getSyncedNetworkData(false);
 
 		$player->getNetworkSession()->sendDataPacket($pk);

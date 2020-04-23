@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
@@ -38,7 +37,7 @@ class UseItemOnEntityTransactionData extends TransactionData{
 	private $actionType;
 	/** @var int */
 	private $hotbarSlot;
-	/** @var Item */
+	/** @var ItemStack */
 	private $itemInHand;
 	/** @var Vector3 */
 	private $playerPos;
@@ -57,7 +56,7 @@ class UseItemOnEntityTransactionData extends TransactionData{
 		return $this->hotbarSlot;
 	}
 
-	public function getItemInHand() : Item{
+	public function getItemInHand() : ItemStack{
 		return $this->itemInHand;
 	}
 
@@ -94,7 +93,7 @@ class UseItemOnEntityTransactionData extends TransactionData{
 	/**
 	 * @param NetworkInventoryAction[] $actions
 	 */
-	public static function new(array $actions, int $entityRuntimeId, int $actionType, int $hotbarSlot, Item $itemInHand, Vector3 $playerPos, Vector3 $clickPos) : self{
+	public static function new(array $actions, int $entityRuntimeId, int $actionType, int $hotbarSlot, ItemStack $itemInHand, Vector3 $playerPos, Vector3 $clickPos) : self{
 		$result = new self;
 		$result->actions = $actions;
 		$result->entityRuntimeId = $entityRuntimeId;

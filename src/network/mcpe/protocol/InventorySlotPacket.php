@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class InventorySlotPacket extends DataPacket implements ClientboundPacket{
@@ -36,14 +36,15 @@ class InventorySlotPacket extends DataPacket implements ClientboundPacket{
 	public $windowId;
 	/** @var int */
 	public $inventorySlot;
-	/** @var Item */
+	/** @var ItemStack */
 	public $item;
 
-	public static function create(int $windowId, int $slot, Item $item) : self{
+	public static function create(int $windowId, int $slot, ItemStack $item) : self{
 		$result = new self;
 		$result->inventorySlot = $slot;
 		$result->item = $item;
 		$result->windowId = $windowId;
+
 		return $result;
 	}
 

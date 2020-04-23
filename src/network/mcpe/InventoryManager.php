@@ -34,6 +34,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
@@ -41,6 +42,7 @@ use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\player\Player;
 use function array_search;
@@ -159,7 +161,7 @@ class InventoryManager{
 			$currentItem = $inventory->getItem($slot);
 			$clientSideItem = $this->initiatedSlotChanges[$windowId][$slot] ?? null;
 			if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
-				$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, $currentItem));
+				$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, TypeConverter::getInstance()->coreItemStackToNet($currentItem)));
 			}
 			unset($this->initiatedSlotChanges[$windowId][$slot]);
 		}
@@ -169,7 +171,10 @@ class InventoryManager{
 		$windowId = $this->getWindowId($inventory);
 		if($windowId !== null){
 			unset($this->initiatedSlotChanges[$windowId]);
-			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $inventory->getContents(true)));
+			$typeConverter = TypeConverter::getInstance();
+			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStack{
+				return $typeConverter->coreItemStackToNet($itemStack);
+			}, $inventory->getContents(true))));
 		}
 	}
 
@@ -189,7 +194,7 @@ class InventoryManager{
 	public function syncSelectedHotbarSlot() : void{
 		$this->session->sendDataPacket(MobEquipmentPacket::create(
 			$this->player->getId(),
-			$this->player->getInventory()->getItemInHand(),
+			TypeConverter::getInstance()->coreItemStackToNet($this->player->getInventory()->getItemInHand()),
 			$this->player->getInventory()->getHeldItemIndex(),
 			ContainerIds::INVENTORY
 		));
@@ -197,9 +202,10 @@ class InventoryManager{
 
 	public function syncCreative() : void{
 		$items = [];
+		$typeConverter = TypeConverter::getInstance();
 		if(!$this->player->isSpectator()){ //fill it for all gamemodes except spectator
 			foreach(CreativeInventory::getAll() as $i => $item){
-				$items[$i] = clone $item;
+				$items[$i] = $typeConverter->coreItemStackToNet($item);
 			}
 		}
 

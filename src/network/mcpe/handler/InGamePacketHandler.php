@@ -38,6 +38,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\BadPacketException;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\ActorFallPacket;
@@ -205,14 +206,16 @@ class InGamePacketHandler extends PacketHandler{
 		$isCrafting = false;
 		$isFinalCraftingPart = false;
 		foreach($data->getActions() as $networkInventoryAction){
+			$old = TypeConverter::getInstance()->netItemStackToCore($networkInventoryAction->oldItem);
+			$new = TypeConverter::getInstance()->netItemStackToCore($networkInventoryAction->newItem);
 			if(
 				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER and
 				$networkInventoryAction->windowId === ContainerIds::UI and
 				$networkInventoryAction->inventorySlot === 50 and
-				!$networkInventoryAction->oldItem->equalsExact($networkInventoryAction->newItem)
+				!$old->equalsExact($new)
 			){
 				$isCrafting = true;
-				if(!$networkInventoryAction->oldItem->isNull() and $networkInventoryAction->newItem->isNull()){
+				if(!$old->isNull() and $new->isNull()){
 					$isFinalCraftingPart = true;
 				}
 			}elseif(

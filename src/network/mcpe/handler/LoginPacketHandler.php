@@ -43,6 +43,7 @@ use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\Server;
 use pocketmine\utils\UUID;
+use function array_map;
 use function base64_decode;
 
 /**
