@@ -54,8 +54,8 @@ class DiskResourceProvider implements ResourceProvider{
 	 */
 	public function getResource(string $filename){
 		$filename = rtrim(str_replace("\\", "/", $filename), "/");
-		if(file_exists($this->file . "resources/" . $filename)){
-			$resource = fopen($this->file . "resources/" . $filename, "rb");
+		if(file_exists($this->file . $filename)){
+			$resource = fopen($this->file . $filename, "rb");
 			if($resource === false) throw new AssumptionFailedError("fopen() should not fail on a file which exists");
 			return $resource;
 		}
