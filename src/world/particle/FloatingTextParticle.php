@@ -26,6 +26,7 @@ namespace pocketmine\world\particle;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Skin;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
@@ -35,7 +36,6 @@ use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
-use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\utils\UUID;
 use function str_repeat;
 

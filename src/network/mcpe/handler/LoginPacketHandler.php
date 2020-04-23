@@ -27,6 +27,7 @@ use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\auth\ProcessLoginTask;
+use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
@@ -35,7 +36,6 @@ use pocketmine\network\mcpe\protocol\types\login\ClientDataPersonaPieceTintColor
 use pocketmine\network\mcpe\protocol\types\login\ClientDataPersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
-use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;

@@ -21,9 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\entity\Skin;
+use pocketmine\network\mcpe\protocol\types\SkinData;
 
 /**
  * Used to convert new skin data to the skin entity or old skin entity to skin data.

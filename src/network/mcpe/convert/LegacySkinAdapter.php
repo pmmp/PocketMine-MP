@@ -21,10 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\entity\Skin;
 
+use pocketmine\network\mcpe\protocol\types\SkinData;
+use pocketmine\network\mcpe\protocol\types\SkinImage;
 use function is_string;
 use function json_decode;
 use function json_encode;
