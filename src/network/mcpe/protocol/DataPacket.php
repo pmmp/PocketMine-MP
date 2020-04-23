@@ -28,12 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\BinaryDataException;
-use pocketmine\utils\Utils;
-use function bin2hex;
 use function get_class;
-use function is_object;
-use function is_string;
-use function method_exists;
 
 abstract class DataPacket implements Packet{
 

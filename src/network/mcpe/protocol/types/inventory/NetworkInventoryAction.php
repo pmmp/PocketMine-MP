@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
 use pocketmine\crafting\CraftingGrid;
-use pocketmine\inventory\AnvilInventory;
-use pocketmine\inventory\EnchantInventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;

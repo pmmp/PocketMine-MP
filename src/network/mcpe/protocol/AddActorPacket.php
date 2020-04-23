@@ -31,7 +31,6 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
-use function array_search;
 use function count;
 
 class AddActorPacket extends DataPacket implements ClientboundPacket{
