@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\inventory\BrewingStandInventory;
-use pocketmine\inventory\CallbackInventoryChangeListener;
+use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -54,7 +54,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
 		$this->inventory = new BrewingStandInventory($this->pos);
-		$this->inventory->addChangeListeners(CallbackInventoryChangeListener::onAnyChange(function(Inventory $unused) : void{
+		$this->inventory->addListeners(CallbackInventoryListener::onAnyChange(function(Inventory $unused) : void{
 			$this->pos->getWorldNonNull()->scheduleDelayedBlockUpdate($this->pos, 1);
 		}));
 	}

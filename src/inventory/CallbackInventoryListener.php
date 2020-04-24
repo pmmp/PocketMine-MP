@@ -26,7 +26,7 @@ namespace pocketmine\inventory;
 use pocketmine\item\Item;
 use pocketmine\utils\Utils;
 
-class CallbackInventoryChangeListener implements InventoryChangeListener{
+class CallbackInventoryListener implements InventoryListener{
 
 	//TODO: turn the closure signatures into type aliases when PHPStan supports them
 

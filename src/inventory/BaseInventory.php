@@ -43,7 +43,7 @@ abstract class BaseInventory implements Inventory{
 	protected $slots;
 	/** @var Player[] */
 	protected $viewers = [];
-	/** @var InventoryChangeListener[] */
+	/** @var InventoryListener[] */
 	protected $listeners = [];
 
 	public function __construct(int $size){
@@ -105,7 +105,7 @@ abstract class BaseInventory implements Inventory{
 			}
 		}
 
-		$this->addChangeListeners(...$listeners); //don't directly write, in case listeners were added while operation was in progress
+		$this->addListeners(...$listeners); //don't directly write, in case listeners were added while operation was in progress
 		foreach($viewers as $id => $viewer){
 			$this->viewers[$id] = $viewer;
 		}
@@ -372,19 +372,19 @@ abstract class BaseInventory implements Inventory{
 		return $slot >= 0 and $slot < $this->slots->getSize();
 	}
 
-	public function addChangeListeners(InventoryChangeListener ...$listeners) : void{
+	public function addListeners(InventoryListener ...$listeners) : void{
 		foreach($listeners as $listener){
 			$this->listeners[spl_object_id($listener)] = $listener;
 		}
 	}
 
-	public function removeChangeListeners(InventoryChangeListener ...$listeners) : void{
+	public function removeListeners(InventoryListener ...$listeners) : void{
 		foreach($listeners as $listener){
 			unset($this->listeners[spl_object_id($listener)]);
 		}
 	}
 
-	public function getChangeListeners() : array{
+	public function getListeners() : array{
 		return $this->listeners;
 	}
 }

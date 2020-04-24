@@ -32,7 +32,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\inventory\ArmorInventory;
-use pocketmine\inventory\CallbackInventoryChangeListener;
+use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
@@ -104,7 +104,7 @@ abstract class Living extends Entity{
 
 		$this->armorInventory = new ArmorInventory($this);
 		//TODO: load/save armor inventory contents
-		$this->armorInventory->addChangeListeners(CallbackInventoryChangeListener::onAnyChange(
+		$this->armorInventory->addListeners(CallbackInventoryListener::onAnyChange(
 			function(Inventory $unused) : void{
 				foreach($this->getViewers() as $viewer){
 					$viewer->getNetworkSession()->onMobArmorChange($this);

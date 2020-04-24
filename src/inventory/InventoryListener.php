@@ -28,11 +28,11 @@ use pocketmine\item\Item;
 /**
  * Classes implementing this interface can be injected into inventories to receive notifications when content changes
  * occur.
- * @see CallbackInventoryChangeListener for a closure-based listener
- * @see Inventory::addChangeListeners()
- * @see Inventory::removeChangeListeners()
+ * @see CallbackInventoryListener for a closure-based listener
+ * @see Inventory::addListeners()
+ * @see Inventory::removeListeners()
  */
-interface InventoryChangeListener{
+interface InventoryListener{
 
 	public function onSlotChange(Inventory $inventory, int $slot, Item $oldItem) : void;
 

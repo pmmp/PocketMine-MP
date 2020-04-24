@@ -27,7 +27,7 @@ use pocketmine\block\Furnace as BlockFurnace;
 use pocketmine\crafting\FurnaceRecipe;
 use pocketmine\event\inventory\FurnaceBurnEvent;
 use pocketmine\event\inventory\FurnaceSmeltEvent;
-use pocketmine\inventory\CallbackInventoryChangeListener;
+use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
@@ -58,7 +58,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
 		$this->inventory = new FurnaceInventory($this->pos);
-		$this->inventory->addChangeListeners(CallbackInventoryChangeListener::onAnyChange(
+		$this->inventory->addListeners(CallbackInventoryListener::onAnyChange(
 			function(Inventory $unused) : void{
 				$this->pos->getWorldNonNull()->scheduleDelayedBlockUpdate($this->pos, 1);
 			})

@@ -155,17 +155,17 @@ interface Inventory{
 	public function slotExists(int $slot) : bool;
 
 	/**
-	 * @param InventoryChangeListener ...$listeners
+	 * @param InventoryListener ...$listeners
 	 */
-	public function addChangeListeners(InventoryChangeListener ...$listeners) : void;
+	public function addListeners(InventoryListener ...$listeners) : void;
 
 	/**
-	 * @param InventoryChangeListener ...$listeners
+	 * @param InventoryListener ...$listeners
 	 */
-	public function removeChangeListeners(InventoryChangeListener ...$listeners) : void;
+	public function removeListeners(InventoryListener ...$listeners) : void;
 
 	/**
-	 * @return InventoryChangeListener[]
+	 * @return InventoryListener[]
 	 */
-	public function getChangeListeners() : array;
+	public function getListeners() : array;
 }
