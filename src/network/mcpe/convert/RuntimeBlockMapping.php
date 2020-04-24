@@ -30,6 +30,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
+use pocketmine\utils\SingletonTrait;
 use function file_get_contents;
 use function getmypid;
 use function mt_rand;
@@ -40,16 +41,7 @@ use function shuffle;
  * @internal
  */
 final class RuntimeBlockMapping{
-	/** @var self|null */
-	private static $instance = null;
-
-	public static function getInstance() : self{
-		if(self::$instance === null){
-			self::$instance = new self;
-		}
-
-		return self::$instance;
-	}
+	use SingletonTrait;
 
 	/** @var int[] */
 	private $legacyToRuntimeMap = [];
