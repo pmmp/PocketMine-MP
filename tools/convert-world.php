@@ -31,8 +31,6 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 WorldProviderManager::init();
 GeneratorManager::registerDefaultGenerators();
-define('pocketmine\RESOURCE_PATH', dirname(__DIR__) . '/resources/');
-
 
 $writableFormats = array_filter(WorldProviderManager::getAvailableProviders(), function(string $class){
 	return is_a($class, WritableWorldProvider::class, true);
