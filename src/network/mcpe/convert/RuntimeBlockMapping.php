@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -31,7 +32,6 @@ use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 use function file_get_contents;
 use function getmypid;
-use function json_decode;
 use function mt_rand;
 use function mt_srand;
 use function shuffle;
@@ -77,7 +77,7 @@ final class RuntimeBlockMapping{
 	}
 
 	private function setupLegacyMappings() : void{
-		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/block_id_map.json"), true);
+		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		$legacyStateMap = (new NetworkNbtSerializer())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/r12_to_current_block_map.nbt"))->getTag();
 		if(!($legacyStateMap instanceof ListTag) or $legacyStateMap->getTagType() !== NBT::TAG_Compound){
 			throw new \RuntimeException("Invalid legacy states mapping table, expected TAG_List<TAG_Compound> root");
@@ -93,7 +93,10 @@ final class RuntimeBlockMapping{
 		/** @var CompoundTag $pair */
 		foreach($legacyStateMap as $pair){
 			$oldState = $pair->getCompoundTag("old");
-			$id = $legacyIdMap[$oldState->getString("name")];
+			$id = $legacyIdMap->stringToLegacy($oldState->getString("name"));
+			if($id === null){
+				throw new \RuntimeException("State does not have a legacy ID");
+			}
 			$data = $oldState->getShort("val");
 			if($data > 15){
 				//we can't handle metadata with more than 4 bits

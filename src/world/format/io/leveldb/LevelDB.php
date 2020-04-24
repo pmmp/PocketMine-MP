@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\leveldb;
 
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
@@ -45,7 +46,6 @@ use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\generator\Generator;
-use function array_flip;
 use function array_map;
 use function array_values;
 use function chr;
@@ -53,9 +53,7 @@ use function count;
 use function defined;
 use function extension_loaded;
 use function file_exists;
-use function file_get_contents;
 use function is_dir;
-use function json_decode;
 use function mkdir;
 use function ord;
 use function str_repeat;
@@ -153,11 +151,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	protected function deserializePaletted(BinaryStream $stream) : PalettedBlockArray{
-		static $stringToLegacyId = null;
-		if($stringToLegacyId === null){
-			$stringToLegacyId = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . 'vanilla/block_id_map.json'), true);
-		}
-
 		$bitsPerBlock = $stream->getByte() >> 1;
 
 		try{
@@ -167,12 +160,13 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}
 		$nbt = new LittleEndianNbtSerializer();
 		$palette = [];
+		$idMap = LegacyBlockIdToStringIdMap::getInstance();
 		for($i = 0, $paletteSize = $stream->getLInt(); $i < $paletteSize; ++$i){
 			$offset = $stream->getOffset();
 			$tag = $nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
 			$stream->setOffset($offset);
 
-			$id = $stringToLegacyId[$tag->getString("name")] ?? BlockLegacyIds::INFO_UPDATE;
+			$id = $idMap->stringToLegacy($tag->getString("name")) ?? BlockLegacyIds::INFO_UPDATE;
 			$data = $tag->getShort("val");
 			$palette[] = ($id << 4) | $data;
 		}
@@ -419,10 +413,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	protected function writeChunk(Chunk $chunk) : void{
-		static $idMap = null;
-		if($idMap === null){
-			$idMap = array_flip(json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . 'vanilla/block_id_map.json'), true));
-		}
+		$idMap = LegacyBlockIdToStringIdMap::getInstance();
 		$index = LevelDB::chunkIndex($chunk->getX(), $chunk->getZ());
 
 		$write = new \LevelDBWriteBatch();
@@ -449,7 +440,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 						$tags = [];
 						foreach($palette as $p){
 							$tags[] = new TreeRoot(CompoundTag::create()
-								->setString("name", $idMap[$p >> 4] ?? "minecraft:info_update")
+								->setString("name", $idMap->legacyToString($p >> 4) ?? "minecraft:info_update")
 								->setInt("oldid", $p >> 4) //PM only (debugging), vanilla doesn't have this
 								->setShort("val", $p & 0xf));
 						}
