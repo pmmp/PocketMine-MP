@@ -33,7 +33,6 @@ use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\crafting\CraftingManager;
-use pocketmine\entity\EntityFactory;
 use pocketmine\event\HandlerListManager;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
@@ -981,7 +980,6 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			EntityFactory::init();
 			Enchantment::init();
 			Biome::init();
 

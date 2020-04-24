@@ -43,6 +43,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\World;
 use function array_keys;
@@ -60,52 +61,47 @@ use function reset;
  *    create(MyEntity::class) instead of `new MyEntity()` if you want to allow this.
  */
 final class EntityFactory{
+	use SingletonTrait;
 
 	/** @var int */
 	private static $entityCount = 1;
+
 	/**
 	 * @var string[] base class => currently used class for construction
 	 * @phpstan-var array<class-string<Entity>, class-string<Entity>>
 	 */
-	private static $classMapping = [];
+	private $classMapping = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<int|string, class-string<Entity>>
 	 */
-	private static $knownEntities = [];
+	private $knownEntities = [];
 	/**
 	 * @var string[][]
 	 * @phpstan-var array<class-string<Entity>, list<string>>
 	 */
-	private static $saveNames = [];
+	private $saveNames = [];
 
-	private function __construct(){
-		//NOOP
-	}
-
-	/**
-	 * Called on server startup to register default entity types.
-	 */
-	public static function init() : void{
+	public function __construct(){
 		//define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC
 		//TODO: index them by version to allow proper multi-save compatibility
 
-		self::register(Arrow::class, ['Arrow', 'minecraft:arrow'], EntityLegacyIds::ARROW);
-		self::register(Egg::class, ['Egg', 'minecraft:egg'], EntityLegacyIds::EGG);
-		self::register(EnderPearl::class, ['ThrownEnderpearl', 'minecraft:ender_pearl'], EntityLegacyIds::ENDER_PEARL);
-		self::register(ExperienceBottle::class, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityLegacyIds::XP_BOTTLE);
-		self::register(ExperienceOrb::class, ['XPOrb', 'minecraft:xp_orb'], EntityLegacyIds::XP_ORB);
-		self::register(FallingBlock::class, ['FallingSand', 'minecraft:falling_block'], EntityLegacyIds::FALLING_BLOCK);
-		self::register(ItemEntity::class, ['Item', 'minecraft:item'], EntityLegacyIds::ITEM);
-		self::register(Painting::class, ['Painting', 'minecraft:painting'], EntityLegacyIds::PAINTING);
-		self::register(PrimedTNT::class, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt'], EntityLegacyIds::TNT);
-		self::register(Snowball::class, ['Snowball', 'minecraft:snowball'], EntityLegacyIds::SNOWBALL);
-		self::register(SplashPotion::class, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
-		self::register(Squid::class, ['Squid', 'minecraft:squid'], EntityLegacyIds::SQUID);
-		self::register(Villager::class, ['Villager', 'minecraft:villager'], EntityLegacyIds::VILLAGER);
-		self::register(Zombie::class, ['Zombie', 'minecraft:zombie'], EntityLegacyIds::ZOMBIE);
+		$this->register(Arrow::class, ['Arrow', 'minecraft:arrow'], EntityLegacyIds::ARROW);
+		$this->register(Egg::class, ['Egg', 'minecraft:egg'], EntityLegacyIds::EGG);
+		$this->register(EnderPearl::class, ['ThrownEnderpearl', 'minecraft:ender_pearl'], EntityLegacyIds::ENDER_PEARL);
+		$this->register(ExperienceBottle::class, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityLegacyIds::XP_BOTTLE);
+		$this->register(ExperienceOrb::class, ['XPOrb', 'minecraft:xp_orb'], EntityLegacyIds::XP_ORB);
+		$this->register(FallingBlock::class, ['FallingSand', 'minecraft:falling_block'], EntityLegacyIds::FALLING_BLOCK);
+		$this->register(ItemEntity::class, ['Item', 'minecraft:item'], EntityLegacyIds::ITEM);
+		$this->register(Painting::class, ['Painting', 'minecraft:painting'], EntityLegacyIds::PAINTING);
+		$this->register(PrimedTNT::class, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt'], EntityLegacyIds::TNT);
+		$this->register(Snowball::class, ['Snowball', 'minecraft:snowball'], EntityLegacyIds::SNOWBALL);
+		$this->register(SplashPotion::class, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
+		$this->register(Squid::class, ['Squid', 'minecraft:squid'], EntityLegacyIds::SQUID);
+		$this->register(Villager::class, ['Villager', 'minecraft:villager'], EntityLegacyIds::VILLAGER);
+		$this->register(Zombie::class, ['Zombie', 'minecraft:zombie'], EntityLegacyIds::ZOMBIE);
 
-		self::register(Human::class, ['Human']);
+		$this->register(Human::class, ['Human']);
 
 		Attribute::init();
 		PaintingMotive::init();
@@ -124,10 +120,10 @@ final class EntityFactory{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function register(string $className, array $saveNames, ?int $legacyMcpeSaveId = null) : void{
+	public function register(string $className, array $saveNames, ?int $legacyMcpeSaveId = null) : void{
 		Utils::testValidInstance($className, Entity::class);
 
-		self::$classMapping[$className] = $className;
+		$this->classMapping[$className] = $className;
 
 		$shortName = (new \ReflectionClass($className))->getShortName();
 		if(!in_array($shortName, $saveNames, true)){
@@ -135,13 +131,13 @@ final class EntityFactory{
 		}
 
 		foreach($saveNames as $name){
-			self::$knownEntities[$name] = $className;
+			$this->knownEntities[$name] = $className;
 		}
 		if($legacyMcpeSaveId !== null){
-			self::$knownEntities[$legacyMcpeSaveId] = $className;
+			$this->knownEntities[$legacyMcpeSaveId] = $className;
 		}
 
-		self::$saveNames[$className] = $saveNames;
+		$this->saveNames[$className] = $saveNames;
 	}
 
 	/**
@@ -157,13 +153,13 @@ final class EntityFactory{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function override(string $baseClass, string $newClass) : void{
-		if(!isset(self::$classMapping[$baseClass])){
+	public function override(string $baseClass, string $newClass) : void{
+		if(!isset($this->classMapping[$baseClass])){
 			throw new \InvalidArgumentException("Class $baseClass is not a registered entity");
 		}
 
 		Utils::testValidInstance($newClass, $baseClass);
-		self::$classMapping[$baseClass] = $newClass;
+		$this->classMapping[$baseClass] = $newClass;
 	}
 
 	/**
@@ -172,8 +168,8 @@ final class EntityFactory{
 	 * @return string[]
 	 * @return class-string<Entity>[]
 	 */
-	public static function getKnownTypes() : array{
-		return array_keys(self::$classMapping);
+	public function getKnownTypes() : array{
+		return array_keys($this->classMapping);
 	}
 
 	/**
@@ -199,9 +195,9 @@ final class EntityFactory{
 	 *
 	 * @throws \InvalidArgumentException if the class doesn't exist or is not registered
 	 */
-	public static function create(string $baseClass, World $world, CompoundTag $nbt, ...$args) : Entity{
-		if(isset(self::$classMapping[$baseClass])){
-			$class = self::$classMapping[$baseClass];
+	public function create(string $baseClass, World $world, CompoundTag $nbt, ...$args) : Entity{
+		if(isset($this->classMapping[$baseClass])){
+			$class = $this->classMapping[$baseClass];
 			assert(is_a($class, $baseClass, true));
 			/**
 			 * @var Entity $entity
@@ -222,18 +218,18 @@ final class EntityFactory{
 	 * @throws \RuntimeException
 	 * @internal
 	 */
-	public static function createFromData(World $world, CompoundTag $nbt) : ?Entity{
+	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{
 		$saveId = $nbt->getTag("id") ?? $nbt->getTag("identifier");
 		$baseClass = null;
 		if($saveId instanceof StringTag){
-			$baseClass = self::$knownEntities[$saveId->getValue()] ?? null;
+			$baseClass = $this->knownEntities[$saveId->getValue()] ?? null;
 		}elseif($saveId instanceof IntTag){ //legacy MCPE format
-			$baseClass = self::$knownEntities[$saveId->getValue() & 0xff] ?? null;
+			$baseClass = $this->knownEntities[$saveId->getValue() & 0xff] ?? null;
 		}
 		if($baseClass === null){
 			return null;
 		}
-		$class = self::$classMapping[$baseClass];
+		$class = $this->classMapping[$baseClass];
 		assert(is_a($class, $baseClass, true));
 		/**
 		 * @var Entity $entity
@@ -247,9 +243,9 @@ final class EntityFactory{
 	/**
 	 * @phpstan-param class-string<Entity> $class
 	 */
-	public static function getSaveId(string $class) : string{
-		if(isset(self::$saveNames[$class])){
-			return reset(self::$saveNames[$class]);
+	public function getSaveId(string $class) : string{
+		if(isset($this->saveNames[$class])){
+			return reset($this->saveNames[$class]);
 		}
 		throw new \InvalidArgumentException("Entity $class is not registered");
 	}

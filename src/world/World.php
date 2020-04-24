@@ -1397,7 +1397,7 @@ class World implements ChunkManager{
 		$nbt->setTag("Item", $item->nbtSerialize());
 
 		/** @var ItemEntity $itemEntity */
-		$itemEntity = EntityFactory::create(ItemEntity::class, $this, $nbt);
+		$itemEntity = EntityFactory::getInstance()->create(ItemEntity::class, $this, $nbt);
 		$itemEntity->spawnToAll();
 		return $itemEntity;
 
@@ -1422,7 +1422,7 @@ class World implements ChunkManager{
 			$nbt->setShort(ExperienceOrb::TAG_VALUE_PC, $split);
 
 			/** @var ExperienceOrb $orb */
-			$orb = EntityFactory::create(ExperienceOrb::class, $this, $nbt);
+			$orb = EntityFactory::getInstance()->create(ExperienceOrb::class, $this, $nbt);
 			$orb->spawnToAll();
 			$orbs[] = $orb;
 		}

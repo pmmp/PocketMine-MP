@@ -490,7 +490,7 @@ abstract class Entity{
 	public function saveNBT() : CompoundTag{
 		$nbt = new CompoundTag();
 		if(!($this instanceof Player)){
-			$nbt->setString("id", EntityFactory::getSaveId(get_class($this)));
+			$nbt->setString("id", EntityFactory::getInstance()->getSaveId(get_class($this)));
 
 			if($this->getNameTag() !== ""){
 				$nbt->setString("CustomName", $this->getNameTag());

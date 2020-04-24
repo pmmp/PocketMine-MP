@@ -97,7 +97,7 @@ class TNT extends Opaque{
 		$nbt->setShort("Fuse", $fuse);
 
 		/** @var PrimedTNT $tnt */
-		$tnt = EntityFactory::create(PrimedTNT::class, $this->pos->getWorldNonNull(), $nbt);
+		$tnt = EntityFactory::getInstance()->create(PrimedTNT::class, $this->pos->getWorldNonNull(), $nbt);
 		$tnt->spawnToAll();
 	}
 

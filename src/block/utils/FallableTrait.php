@@ -56,7 +56,7 @@ trait FallableTrait{
 			$nbt->setByte("Data", $this->getMeta());
 
 			/** @var FallingBlock $fall */
-			$fall = EntityFactory::create(FallingBlock::class, $pos->getWorldNonNull(), $nbt);
+			$fall = EntityFactory::getInstance()->create(FallingBlock::class, $pos->getWorldNonNull(), $nbt);
 			$fall->spawnToAll();
 		}
 	}

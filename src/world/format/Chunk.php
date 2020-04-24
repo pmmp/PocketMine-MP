@@ -507,9 +507,10 @@ class Chunk{
 		if($this->NBTentities !== null){
 			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
 			$world->timings->syncChunkLoadEntitiesTimer->startTiming();
+			$entityFactory = EntityFactory::getInstance();
 			foreach($this->NBTentities as $nbt){
 				try{
-					$entity = EntityFactory::createFromData($world, $nbt);
+					$entity = $entityFactory->createFromData($world, $nbt);
 					if(!($entity instanceof Entity)){
 						$saveIdTag = $nbt->getTag("id") ?? $nbt->getTag("identifier");
 						$saveId = "<unknown>";
