@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\inventory\BrewingStandInventory;
+use pocketmine\block\inventory\BrewingStandInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\math\Vector3;

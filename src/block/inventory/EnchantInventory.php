@@ -21,13 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory;
+namespace pocketmine\block\inventory;
 
+use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-class HopperInventory extends BlockInventory{
+class EnchantInventory extends BlockInventory{
 
-	public function __construct(Position $holder, int $size = 5){
-		parent::__construct($holder, $size);
+	public function __construct(Position $holder){
+		parent::__construct($holder, 2);
+	}
+
+	public function onClose(Player $who) : void{
+		parent::onClose($who);
+
+		foreach($this->getContents() as $item){
+			$who->dropItem($item);
+		}
+		$this->clearAll();
 	}
 }

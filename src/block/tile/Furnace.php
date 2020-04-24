@@ -24,11 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\Furnace as BlockFurnace;
+use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\crafting\FurnaceRecipe;
 use pocketmine\event\inventory\FurnaceBurnEvent;
 use pocketmine\event\inventory\FurnaceSmeltEvent;
 use pocketmine\inventory\CallbackInventoryListener;
-use pocketmine\inventory\FurnaceInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;

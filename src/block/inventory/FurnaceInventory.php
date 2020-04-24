@@ -21,23 +21,38 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory;
+namespace pocketmine\block\inventory;
 
+use pocketmine\item\Item;
 use pocketmine\world\Position;
 
-class BlockInventory extends BaseInventory{
-	/** @var Position */
-	protected $holder;
+class FurnaceInventory extends BlockInventory{
 
-	public function __construct(Position $holder, int $size){
-		$this->holder = $holder->asPosition();
-		parent::__construct($size);
+	public function __construct(Position $holder){
+		parent::__construct($holder, 3);
 	}
 
-	/**
-	 * @return Position
-	 */
-	public function getHolder(){
-		return $this->holder;
+	public function getResult() : Item{
+		return $this->getItem(2);
+	}
+
+	public function getFuel() : Item{
+		return $this->getItem(1);
+	}
+
+	public function getSmelting() : Item{
+		return $this->getItem(0);
+	}
+
+	public function setResult(Item $item) : void{
+		$this->setItem(2, $item);
+	}
+
+	public function setFuel(Item $item) : void{
+		$this->setItem(1, $item);
+	}
+
+	public function setSmelting(Item $item) : void{
+		$this->setItem(0, $item);
 	}
 }

@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\inventory\ChestInventory;
-use pocketmine\inventory\DoubleChestInventory;
+use pocketmine\block\inventory\ChestInventory;
+use pocketmine\block\inventory\DoubleChestInventory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;

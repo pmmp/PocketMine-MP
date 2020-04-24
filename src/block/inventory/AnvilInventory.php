@@ -21,28 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory;
+namespace pocketmine\block\inventory;
 
+use pocketmine\player\Player;
 use pocketmine\world\Position;
-use pocketmine\world\sound\EnderChestCloseSound;
-use pocketmine\world\sound\EnderChestOpenSound;
-use pocketmine\world\sound\Sound;
 
-class EnderChestInventory extends ChestInventory{
+class AnvilInventory extends BlockInventory{
 
-	public function __construct(){
-		parent::__construct(new Position(0, 0, 0, null));
+	public function __construct(Position $holder){
+		parent::__construct($holder, 2);
 	}
 
-	public function setHolderPosition(Position $pos) : void{
-		$this->holder = $pos->asPosition();
-	}
+	public function onClose(Player $who) : void{
+		parent::onClose($who);
 
-	protected function getOpenSound() : Sound{
-		return new EnderChestOpenSound();
-	}
-
-	protected function getCloseSound() : Sound{
-		return new EnderChestCloseSound();
+		foreach($this->getContents() as $item){
+			$who->dropItem($item);
+		}
+		$this->clearAll();
 	}
 }

@@ -23,13 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\inventory\AnvilInventory;
-use pocketmine\inventory\BlockInventory;
-use pocketmine\inventory\BrewingStandInventory;
+use pocketmine\block\inventory\AnvilInventory;
+use pocketmine\block\inventory\BlockInventory;
+use pocketmine\block\inventory\BrewingStandInventory;
+use pocketmine\block\inventory\EnchantInventory;
+use pocketmine\block\inventory\FurnaceInventory;
+use pocketmine\block\inventory\HopperInventory;
 use pocketmine\inventory\CreativeInventory;
-use pocketmine\inventory\EnchantInventory;
-use pocketmine\inventory\FurnaceInventory;
-use pocketmine\inventory\HopperInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;

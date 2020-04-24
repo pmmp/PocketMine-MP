@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\inventory\HopperInventory;
+use pocketmine\block\inventory\HopperInventory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
