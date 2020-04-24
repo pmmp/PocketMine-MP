@@ -29,7 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
-use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 use function count;

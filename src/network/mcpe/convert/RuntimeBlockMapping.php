@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\nbt\NBT;
