@@ -548,7 +548,9 @@ class NetworkSession{
 
 					$this->cipher = new NetworkCipher($encryptionKey);
 
-					$this->setHandler(new HandshakePacketHandler($this));
+					$this->setHandler(new HandshakePacketHandler(function() : void{
+						$this->onLoginSuccess();
+					}));
 					$this->logger->debug("Enabled encryption");
 				}));
 			}else{
@@ -557,7 +559,7 @@ class NetworkSession{
 		}
 	}
 
-	public function onLoginSuccess() : void{
+	private function onLoginSuccess() : void{
 		$this->loggedIn = true;
 
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::LOGIN_SUCCESS));

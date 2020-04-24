@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 
 /**
@@ -31,15 +30,21 @@ use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
  */
 class HandshakePacketHandler extends PacketHandler{
 
-	/** @var NetworkSession */
-	private $session;
+	/**
+	 * @var \Closure
+	 * @phpstan-var \Closure() : void
+	 */
+	private $onHandshakeCompleted;
 
-	public function __construct(NetworkSession $session){
-		$this->session = $session;
+	/**
+	 * @phpstan-param \Closure() : void $onHandshakeCompleted
+	 */
+	public function __construct(\Closure $onHandshakeCompleted){
+		$this->onHandshakeCompleted = $onHandshakeCompleted;
 	}
 
 	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool{
-		$this->session->onLoginSuccess();
+		($this->onHandshakeCompleted)();
 		return true;
 	}
 }
