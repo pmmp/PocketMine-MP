@@ -42,7 +42,7 @@ class PlayerUIInventory extends BaseInventory{
 
 	public function setItem(int $index, Item $item, bool $send = true) : bool{
 		if(parent::setItem($index, $item, $send)){
-			if($index !== UIInventoryOffsets::OFFSET_CURSOR and $index !== UIInventoryOffsets::OFFSET_RESULT){
+			if($index !== UIInventoryOffsets::OFFSET_CURSOR and $index !== UIInventoryOffsets::OFFSET_CREATED_ITEM_OUTPUT){
 				$window = $this->holder->findWindow(FakeInventory::class) ?? $this->holder->getCraftingGrid();
 				if($window instanceof FakeInventory){
 					if($window->slotExists($slot = $index - $window->getUIOffset())){
