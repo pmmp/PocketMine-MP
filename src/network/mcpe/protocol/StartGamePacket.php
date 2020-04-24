@@ -27,9 +27,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\TreeRoot;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 use function count;
@@ -40,8 +39,6 @@ use const pocketmine\RESOURCE_PATH;
 class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
 
-	/** @var string|null */
-	private static $blockTableCache = null;
 	/** @var string|null */
 	private static $itemTableCache = null;
 
@@ -153,8 +150,11 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $multiplayerCorrelationId = ""; //TODO: this should be filled with a UUID of some sort
 
-	/** @var ListTag|null */
-	public $blockTable = null;
+	/**
+	 * @var CacheableNbt
+	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\ListTag>
+	 */
+	public $blockTable;
 	/**
 	 * @var int[]|null string (name) => int16 (legacyID)
 	 * @phpstan-var array<string, int>|null
@@ -220,7 +220,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		if(!($blockTable instanceof ListTag)){
 			throw new \UnexpectedValueException("Wrong block table root NBT tag type");
 		}
-		$this->blockTable = $blockTable;
+		$this->blockTable = new CacheableNbt($blockTable);
 
 		$this->itemTable = [];
 		for($i = 0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
@@ -286,15 +286,8 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 
 		$out->putVarInt($this->enchantmentSeed);
 
-		if($this->blockTable === null){
-			if(self::$blockTableCache === null){
-				//this is a really nasty hack, but it'll do for now
-				self::$blockTableCache = (new NetworkNbtSerializer())->write(new TreeRoot(new ListTag(RuntimeBlockMapping::getInstance()->getBedrockKnownStates())));
-			}
-			$out->put(self::$blockTableCache);
-		}else{
-			$out->put((new NetworkNbtSerializer())->write(new TreeRoot($this->blockTable)));
-		}
+		$out->put($this->blockTable->getEncodedNbt());
+
 		if($this->itemTable === null){
 			if(self::$itemTableCache === null){
 				self::$itemTableCache = self::serializeItemTable(json_decode(file_get_contents(RESOURCE_PATH . '/vanilla/item_id_map.json'), true));

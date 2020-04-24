@@ -27,6 +27,7 @@ use pocketmine\block\BlockLegacyIds;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 use function file_get_contents;
 use function getmypid;
@@ -56,6 +57,11 @@ final class RuntimeBlockMapping{
 	private $runtimeToLegacyMap = [];
 	/** @var CompoundTag[]|null */
 	private $bedrockKnownStates = null;
+	/**
+	 * @var CacheableNbt|null
+	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\ListTag>|null
+	 */
+	private $startGamePaletteCache = null;
 
 	private function __construct(){
 		$tag = (new NetworkNbtSerializer())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/required_block_states.nbt"))->getTag();
@@ -146,6 +152,7 @@ final class RuntimeBlockMapping{
 	private function registerMapping(int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{
 		$this->legacyToRuntimeMap[($legacyId << 4) | $legacyMeta] = $staticRuntimeId;
 		$this->runtimeToLegacyMap[$staticRuntimeId] = ($legacyId << 4) | $legacyMeta;
+		$this->startGamePaletteCache = null;
 	}
 
 	/**
@@ -153,5 +160,12 @@ final class RuntimeBlockMapping{
 	 */
 	public function getBedrockKnownStates() : array{
 		return $this->bedrockKnownStates;
+	}
+
+	/**
+	 * @phpstan-return CacheableNbt<\pocketmine\nbt\tag\ListTag>
+	 */
+	public function getStartGamePaletteCache() : ?CacheableNbt{
+		return $this->startGamePaletteCache ?? new CacheableNbt(new ListTag($this->bedrockKnownStates));
 	}
 }

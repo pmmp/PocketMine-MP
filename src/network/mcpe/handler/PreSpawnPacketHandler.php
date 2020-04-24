@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
@@ -77,6 +78,8 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->commandsEnabled = true;
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
+		$pk->blockTable = RuntimeBlockMapping::getInstance()->getStartGamePaletteCache();
+
 		$this->session->sendDataPacket($pk);
 
 		$this->session->sendDataPacket(new AvailableActorIdentifiersPacket());
