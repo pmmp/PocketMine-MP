@@ -1,0 +1,792 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^pocketmine\\\\Player\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\entity\\\\Human\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot instantiate interface pocketmine\\\\level\\\\format\\\\io\\\\LevelProvider\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\scheduler\\\\AsyncPool and pocketmine\\\\scheduler\\\\AsyncPool will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\command\\\\CommandReader and pocketmine\\\\command\\\\CommandReader will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\network\\\\Network and pocketmine\\\\network\\\\Network will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Air\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Air.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Anvil\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Anvil.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\BaseRail\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BaseRail.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Bed\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Bed.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Bedrock\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Bedrock.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Beetroot\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Beetroot.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Block\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\level\\\\Position\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Block.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\BoneBlock\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BoneBlock.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Bookshelf\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Bookshelf.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\BrewingStand\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BrewingStand.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\BrickStairs\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BrickStairs.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Bricks\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Bricks.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\BurningFurnace\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BurningFurnace.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Button\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Button.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Cactus\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Cactus.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Cake\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Cake.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Carpet\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Carpet.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Carrot\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Carrot.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Chest\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Chest.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Clay\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Clay.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Coal\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Coal.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\CoalOre\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/CoalOre.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Cobblestone\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Cobblestone.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\CobblestoneStairs\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/CobblestoneStairs.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\CobblestoneWall\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/CobblestoneWall.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Cobweb\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Cobweb.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\CocoaBlock\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/CocoaBlock.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Concrete\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Concrete.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\ConcretePowder\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/ConcretePowder.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\CraftingTable\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/CraftingTable.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Dandelion\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Dandelion.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\DaylightSensor\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/DaylightSensor.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\DeadBush\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/DeadBush.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Diamond\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Diamond.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\DiamondOre\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/DiamondOre.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Dirt\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Dirt.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\DoublePlant\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/DoublePlant.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\DoubleSlab\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/DoubleSlab.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Emerald\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Emerald.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\EmeraldOre\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/EmeraldOre.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\EnchantingTable\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/EnchantingTable.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\EndPortalFrame\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/EndPortalFrame.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\EndRod\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/EndRod.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\EndStone\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/EndStone.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\EndStoneBricks\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/EndStoneBricks.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Farmland\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Farmland.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Fence\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Fence.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Fire\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Fire.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Flower\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Flower.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\FlowerPot\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/FlowerPot.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Glass\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Glass.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\GlassPane\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/GlassPane.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\GlowingObsidian\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/GlowingObsidian.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Glowstone\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Glowstone.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Gold\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Gold.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\GoldOre\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/GoldOre.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Grass\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Grass.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\GrassPath\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/GrassPath.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Gravel\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Gravel.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\HardenedClay\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/HardenedClay.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\HayBale\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/HayBale.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Ice\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Ice.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\InvisibleBedrock\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/InvisibleBedrock.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Iron\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Iron.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\IronBars\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/IronBars.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\IronDoor\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/IronDoor.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\IronOre\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/IronOre.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\ItemFrame\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/ItemFrame.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Ladder\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Ladder.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Lapis\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Lapis.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\LapisOre\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/LapisOre.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Lava\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Lava.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Leaves\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Leaves.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Lever\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Lever.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Magma\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Magma.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Melon\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Melon.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\MelonStem\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/MelonStem.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\MonsterSpawner\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/MonsterSpawner.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Mycelium\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Mycelium.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\NetherBrickStairs\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/NetherBrickStairs.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\NetherQuartzOre\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/NetherQuartzOre.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\NetherReactor\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/NetherReactor.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\NetherWartBlock\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/NetherWartBlock.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\NetherWartPlant\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/NetherWartPlant.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Netherrack\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Netherrack.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\NoteBlock\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/NoteBlock.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Obsidian\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Obsidian.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\PackedIce\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/PackedIce.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Planks\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Planks.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Podzol\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Podzol.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Potato\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Potato.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Prismarine\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Prismarine.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Pumpkin\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Pumpkin.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\PumpkinStem\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/PumpkinStem.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\PurpurStairs\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/PurpurStairs.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Quartz\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Quartz.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\QuartzStairs\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/QuartzStairs.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\RedMushroom\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/RedMushroom.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\RedMushroomBlock\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/RedMushroomBlock.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Redstone\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Redstone.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\RedstoneLamp\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/RedstoneLamp.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\RedstoneOre\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/RedstoneOre.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Sand\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Sand.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Sandstone\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Sandstone.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\SandstoneStairs\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/SandstoneStairs.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Sapling\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Sapling.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\SeaLantern\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/SeaLantern.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\SignPost\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/SignPost.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Skull\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Skull.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Slab\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Slab.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Snow\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Snow.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\SnowLayer\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/SnowLayer.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\SoulSand\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/SoulSand.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Sponge\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Sponge.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\StandingBanner\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/StandingBanner.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Stone\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Stone.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\StoneBrickStairs\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/StoneBrickStairs.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\StoneBricks\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/StoneBricks.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\StonePressurePlate\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/StonePressurePlate.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Stonecutter\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Stonecutter.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Sugarcane\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Sugarcane.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\TNT\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/TNT.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\TallGrass\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/TallGrass.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Torch\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Torch.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Trapdoor\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Trapdoor.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Tripwire\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Tripwire.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\TripwireHook\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/TripwireHook.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Vine\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Vine.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Water\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Water.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\WaterLily\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/WaterLily.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\WeightedPressurePlateLight\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/WeightedPressurePlateLight.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Wheat\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Wheat.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Wood\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Wood.php
+
+		-
+			message: "#^pocketmine\\\\block\\\\Wool\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Wool.php
+
+		-
+			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TeleportCommand.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\EntityDeathEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\Living but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/event/entity/EntityDeathEvent.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\EntityShootBowEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\Living but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/event/entity/EntityShootBowEvent.php
+
+		-
+			message: "#^Property pocketmine\\\\event\\\\entity\\\\EntityShootBowEvent\\:\\:\\$projectile \\(pocketmine\\\\entity\\\\projectile\\\\Projectile\\) does not accept pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/event/entity/EntityShootBowEvent.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\ItemDespawnEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\object\\\\ItemEntity but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/event/entity/ItemDespawnEvent.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\ItemSpawnEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\object\\\\ItemEntity but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/event/entity/ItemSpawnEvent.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\ProjectileHitEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\projectile\\\\Projectile but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/event/entity/ProjectileHitEvent.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\entity\\\\ProjectileLaunchEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\projectile\\\\Projectile but returns pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/event/entity/ProjectileLaunchEvent.php
+
+		-
+			message: "#^pocketmine\\\\inventory\\\\DoubleChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\inventory\\\\ChestInventory\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/inventory/DoubleChestInventory.php
+
+		-
+			message: "#^pocketmine\\\\inventory\\\\EnderChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\inventory\\\\ChestInventory\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/inventory/EnderChestInventory.php
+
+		-
+			message: "#^pocketmine\\\\item\\\\GoldenAppleEnchanted\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\item\\\\GoldenApple\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/GoldenAppleEnchanted.php
+
+		-
+			message: "#^pocketmine\\\\item\\\\WrittenBook\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\item\\\\WritableBook\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/WrittenBook.php
+
+		-
+			message: "#^Variable property access on \\$this\\(pocketmine\\\\level\\\\generator\\\\PopulationTask\\)\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Constructor of class pocketmine\\\\level\\\\generator\\\\hell\\\\Nether has an unused parameter \\$options\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/hell/Nether.php
+
+		-
+			message: "#^Constructor of class pocketmine\\\\level\\\\generator\\\\normal\\\\Normal has an unused parameter \\$options\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/normal/Normal.php
+
+		-
+			message: "#^Variable method call on pocketmine\\\\event\\\\Listener\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/MethodEventExecutor.php
+
+		-
+			message: "#^Constructor of class pocketmine\\\\scheduler\\\\TaskScheduler has an unused parameter \\$logger\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/scheduler/TaskScheduler.php
+

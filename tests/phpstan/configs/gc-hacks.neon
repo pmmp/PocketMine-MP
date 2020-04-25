@@ -1,6 +1,3 @@
-#cyclic refs in lots of objects prevent GC, causing increased memory pressure
-#the proper fix is to not have cycles, but in the meantime we have these hacks
-
 parameters:
 	ignoreErrors:
 		-
