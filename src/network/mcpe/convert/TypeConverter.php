@@ -183,7 +183,7 @@ class TypeConverter{
 					case NetworkInventoryAction::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
 						return new DestroyItemAction($new);
 					case NetworkInventoryAction::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
-						return new CreateItemAction($new);
+						return new CreateItemAction($old);
 					default:
 						throw new \UnexpectedValueException("Unexpected creative action type $action->inventorySlot");
 
