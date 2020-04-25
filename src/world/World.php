@@ -1550,15 +1550,13 @@ class World implements ChunkManager{
 			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, PlayerInteractEvent::RIGHT_CLICK_BLOCK);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if(!$player->isSneaking() and $blockClicked->onInteract($item, $face, $clickVector, $player)){
+				if((!$player->isSneaking() or $item->isNull()) and $blockClicked->onInteract($item, $face, $clickVector, $player)){
 					return true;
 				}
 
-				if(!$player->isSneaking()){
-					$result = $item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector);
-					if(!$result->equals(ItemUseResult::NONE())){
-						return $result->equals(ItemUseResult::SUCCESS());
-					}
+				$result = $item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector);
+				if(!$result->equals(ItemUseResult::NONE())){
+					return $result->equals(ItemUseResult::SUCCESS());
 				}
 			}else{
 				return false;
