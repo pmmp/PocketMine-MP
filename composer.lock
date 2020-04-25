@@ -722,11 +722,11 @@
     "packages-dev": [
         {
             "name": "irstea/phpunit-shim",
-            "version": "8.5.3",
+            "version": "8.5.4",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.irstea.fr/pole-is/tools/phpunit-shim.git",
-                "reference": "b55d058d7ad3cf516068f22138a5b8fb724605db"
+                "reference": "25b3ffe1502bfd35d5cd23dc37f2f2e70cdf0b54"
             },
             "require": {
                 "ext-dom": "*",
@@ -772,7 +772,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2020-04-01T02:21:12+00:00"
+            "time": "2020-04-24T02:20:21+00:00"
         },
         {
             "name": "phpstan/phpstan",
