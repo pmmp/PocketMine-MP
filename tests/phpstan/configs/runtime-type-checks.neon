@@ -36,7 +36,7 @@ parameters:
 			path: ../../../src/plugin/PluginBase.php
 
 		-
-			message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<TEvent of pocketmine\\\\event\\\\Event\\> and 'pocketmine\\\\\\\\event…' will always evaluate to true\\.$#"
+			message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<TEvent of pocketmine\\\\event\\\\Event\\> and 'pocketmine\\\\\\\\event\\\\\\\\Event' will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginManager.php
 
