@@ -140,19 +140,3 @@ parameters:
 			count: 2
 			path: src/world/format/io/FormatConverter.php
 
-		-
-			message: "#^Constant pocketmine\\\\COMPOSER_AUTOLOADER_PATH not found\\.$#"
-			path: src
-
-		-
-			message: "#^Constant pocketmine\\\\GIT_COMMIT not found\\.$#"
-			path: src
-
-		-
-			message: "#^Constant pocketmine\\\\PLUGIN_PATH not found\\.$#"
-			path: src
-
-		-
-			message: "#^Constant pocketmine\\\\VERSION not found\\.$#"
-			path: src
-

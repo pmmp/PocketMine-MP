@@ -182,17 +182,16 @@ namespace pocketmine {
 		}else{
 			$bootstrap = dirname(__FILE__, 2) . '/vendor/autoload.php';
 		}
-		define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
 
-		if(\pocketmine\COMPOSER_AUTOLOADER_PATH !== false and is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
-			require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
-			if(extension_loaded('parallel')){
-				\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
-			}
-		}else{
+		if($bootstrap === false or !is_file($bootstrap)){
 			critical_error("Composer autoloader not found at " . $bootstrap);
 			critical_error("Please install/update Composer dependencies or use provided builds.");
 			exit(1);
+		}
+		define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
+		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+		if(extension_loaded('parallel')){
+			\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
 		}
 
 		\ErrorUtils::setErrorExceptionHandler();
