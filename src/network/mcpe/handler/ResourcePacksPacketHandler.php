@@ -53,13 +53,22 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	private $session;
 	/** @var ResourcePackManager */
 	private $resourcePackManager;
+	/**
+	 * @var \Closure
+	 * @phpstan-var \Closure() : void
+	 */
+	private $completionCallback;
 
 	/** @var bool[][] uuid => [chunk index => hasSent] */
 	private $downloadedChunks = [];
 
-	public function __construct(NetworkSession $session, ResourcePackManager $resourcePackManager){
+	/**
+	 * @phpstan-param \Closure() : void $completionCallback
+	 */
+	public function __construct(NetworkSession $session, ResourcePackManager $resourcePackManager, \Closure $completionCallback){
 		$this->session = $session;
 		$this->resourcePackManager = $resourcePackManager;
+		$this->completionCallback = $completionCallback;
 	}
 
 	public function setUp() : void{
@@ -124,7 +133,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
 				$this->session->getLogger()->debug("Resource packs sequence completed");
-				$this->session->onResourcePacksDone();
+				($this->completionCallback)();
 				break;
 			default:
 				return false;
