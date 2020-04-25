@@ -4,22 +4,22 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Property pocketmine\\\\block\\\\tile\\\\BrewingStand\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\BrewingStandInventory\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\block\\\\tile\\\\BrewingStand\\:\\:\\$inventory \\(pocketmine\\\\block\\\\inventory\\\\BrewingStandInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/block/tile/BrewingStand.php
 
 		-
-			message: "#^Property pocketmine\\\\block\\\\tile\\\\Chest\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\ChestInventory\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\block\\\\tile\\\\Chest\\:\\:\\$inventory \\(pocketmine\\\\block\\\\inventory\\\\ChestInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Property pocketmine\\\\block\\\\tile\\\\Furnace\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\FurnaceInventory\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\block\\\\tile\\\\Furnace\\:\\:\\$inventory \\(pocketmine\\\\block\\\\inventory\\\\FurnaceInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/block/tile/Furnace.php
 
 		-
-			message: "#^Property pocketmine\\\\block\\\\tile\\\\Hopper\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\HopperInventory\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\block\\\\tile\\\\Hopper\\:\\:\\$inventory \\(pocketmine\\\\block\\\\inventory\\\\HopperInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/block/tile/Hopper.php
 
@@ -44,7 +44,7 @@ parameters:
 			path: ../../../src/entity/Human.php
 
 		-
-			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$enderChestInventory \\(pocketmine\\\\inventory\\\\EnderChestInventory\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$enderChestInventory \\(pocketmine\\\\block\\\\inventory\\\\EnderChestInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/entity/Human.php
 

@@ -116,9 +116,9 @@ parameters:
 			path: src/event/entity/ProjectileLaunchEvent.php
 
 		-
-			message: "#^pocketmine\\\\inventory\\\\DoubleChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\inventory\\\\ChestInventory\\.$#"
+			message: "#^pocketmine\\\\block\\\\inventory\\\\DoubleChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\inventory\\\\ChestInventory\\.$#"
 			count: 1
-			path: src/inventory/DoubleChestInventory.php
+			path: src/block/inventory/DoubleChestInventory.php
 
 		-
 			message: "#^Cannot instantiate interface pocketmine\\\\world\\\\format\\\\io\\\\WorldProvider\\.$#"
