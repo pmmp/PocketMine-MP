@@ -510,7 +510,7 @@ class NetworkSession{
 		}, $reason);
 	}
 
-	public function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void{
+	private function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void{
 		if(!$this->connected){
 			return;
 		}
