@@ -1,42 +1,39 @@
 parameters:
 	ignoreErrors:
-		- "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
-		-
-			message: "#^Default value of the parameter \\#\\d+ \\$[A-Za-z\\d_]+ \\(\\-?\\d+\\) of method .+\\(\\) is incompatible with type float\\.$#"
-			path: ../../../src
-
-		-
-			message: "#^Offset string does not exist on array\\(\\)\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/MemoryManager.php
-
-		-
-			message: "#^Offset \\(int\\|string\\) does not exist on array\\(\\)\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/MemoryManager.php
-
 		-
 			message: "#^Comparison operation \"\\>\\=\" between 0 and 2 is always false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Liquid.php
 
 		-
-			#adjacentSources comparison FP
 			message: "#^If condition is always false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Liquid.php
 
 		-
-			#readline() may return false
-			message: "#^Strict comparison using \\!\\=\\= between string and false will always evaluate to true\\.$#"
-			count: 1
+			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
+			count: 3
 			path: ../../../src/pocketmine/command/CommandReader.php
 
 		-
-			#generics corruption, this might show up in other forms too
-			message: "#^Parameter \\#1 \\$offset \\(int\\) of method pocketmine\\\\entity\\\\AttributeMap\\:\\:offsetGet\\(\\) should be contravariant with parameter \\$offset \\(mixed\\) of method ArrayAccess\\<int,float\\>\\:\\:offsetGet\\(\\)$#"
+			message: "#^Default value of the parameter \\#4 \\$min \\(\\-30000000\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getRelativeDouble\\(\\) is incompatible with type float\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/entity/AttributeMap.php
+			path: ../../../src/pocketmine/command/defaults/VanillaCommand.php
+
+		-
+			message: "#^Default value of the parameter \\#5 \\$max \\(30000000\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getRelativeDouble\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/VanillaCommand.php
+
+		-
+			message: "#^Default value of the parameter \\#3 \\$min \\(\\-30000000\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getDouble\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/VanillaCommand.php
+
+		-
+			message: "#^Default value of the parameter \\#4 \\$max \\(30000000\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getDouble\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/VanillaCommand.php
 
 		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
@@ -44,18 +41,102 @@ parameters:
 			path: ../../../src/pocketmine/entity/projectile/Projectile.php
 
 		-
+			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/region/RegionLoader.php
+
+		-
+			message: "#^Default value of the parameter \\#4 \\$expansion \\(1\\) of method pocketmine\\\\level\\\\generator\\\\noise\\\\Perlin\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/noise/Perlin.php
+
+		-
+			message: "#^Default value of the parameter \\#4 \\$expansion \\(1\\) of method pocketmine\\\\level\\\\generator\\\\noise\\\\Simplex\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/noise/Simplex.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\AnvilBreakSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/AnvilBreakSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\AnvilFallSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/AnvilFallSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\AnvilUseSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/AnvilUseSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\BlazeShootSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/BlazeShootSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\ClickSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/ClickSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\DoorBumpSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/DoorBumpSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\DoorCrashSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/DoorCrashSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\DoorSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/DoorSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\FizzSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/FizzSound.php
+
+		-
+			message: "#^Default value of the parameter \\#3 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\GenericSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/GenericSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\GhastShootSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/GhastShootSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\GhastSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/GhastSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\LaunchSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/LaunchSound.php
+
+		-
+			message: "#^Default value of the parameter \\#2 \\$pitch \\(0\\) of method pocketmine\\\\level\\\\sound\\\\PopSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/sound/PopSound.php
+
+		-
 			message: "#^Call to function method_exists\\(\\) with pocketmine\\\\network\\\\mcpe\\\\CachedEncapsulatedPacket and '__toString' will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/DataPacket.php
 
 		-
-			#readlink() can return false but phpstan doesn't know this
 			message: "#^Strict comparison using \\!\\=\\= between string and false will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/Timezone.php
 
 		-
-			#phpstan doesn't understand that SplFixedArray may contain null
 			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
 			count: 1
-			path: ../../../tests/phpunit/block/BlockTest.php
+			path: ../../phpunit/block/BlockTest.php
+

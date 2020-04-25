@@ -6,7 +6,6 @@ parameters:
 			path: ../../../src/pocketmine/Server.php
 
 		-
-			#::add() / ::remove() thread parameter
 			message: "#^If condition is always true\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/ThreadManager.php
@@ -22,25 +21,17 @@ parameters:
 			path: ../../../src/pocketmine/event/HandlerList.php
 
 		-
-			#jsonDeserialize(), not currently validated
 			message: "#^Casting to int something that's already int\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/item/Item.php
+
 		-
-			#::get() tags parameter
 			message: "#^If condition is always false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/ItemFactory.php
 
 		-
-			#::get() tags parameter
 			message: "#^Strict comparison using \\!\\=\\= between null and null will always evaluate to false\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/ItemFactory.php
-
-		-
-			#::get() tags parameter
-			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/ItemFactory.php
 
@@ -50,10 +41,9 @@ parameters:
 			path: ../../../src/pocketmine/item/ItemFactory.php
 
 		-
-			#->sendBlocks() blocks parameter
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/level/Level.php
+			count: 1
+			path: ../../../src/pocketmine/item/ItemFactory.php
 
 		-
 			message: "#^Instanceof between pocketmine\\\\math\\\\Vector3 and pocketmine\\\\math\\\\Vector3 will always evaluate to true\\.$#"
@@ -62,6 +52,11 @@ parameters:
 
 		-
 			message: "#^Call to function is_object\\(\\) with \\*NEVER\\* will always evaluate to true\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/level/Level.php
 
@@ -76,7 +71,6 @@ parameters:
 			path: ../../../src/pocketmine/level/generator/GeneratorManager.php
 
 		-
-			#commands plugin.yml not currently validated, can't be sure
 			message: "#^Call to function is_array\\(\\) with array\\<string, mixed\\> will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/plugin/PluginManager.php
@@ -85,3 +79,4 @@ parameters:
 			message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<pocketmine\\\\event\\\\Event\\> and 'pocketmine\\\\\\\\event…' will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/plugin/PluginManager.php
+
