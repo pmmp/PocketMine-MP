@@ -163,28 +163,3 @@ parameters:
 			message: "#^Constructor of class pocketmine\\\\scheduler\\\\TaskScheduler has an unused parameter \\$logger\\.$#"
 			count: 1
 			path: src/pocketmine/scheduler/TaskScheduler.php
-
-		-
-			message: "#^Constant pocketmine\\\\COMPOSER_AUTOLOADER_PATH not found\\.$#"
-			path: src
-
-		-
-			message: "#^Constant pocketmine\\\\DATA not found\\.$#"
-			path: src
-
-		-
-			message: "#^Constant pocketmine\\\\GIT_COMMIT not found\\.$#"
-			path: src
-
-		-
-			message: "#^Constant pocketmine\\\\PLUGIN_PATH not found\\.$#"
-			path: src
-
-		-
-			message: "#^Constant pocketmine\\\\START_TIME not found\\.$#"
-			path: src
-
-		-
-			message: "#^Constant pocketmine\\\\VERSION not found\\.$#"
-			path: src
-
