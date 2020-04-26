@@ -1724,6 +1724,14 @@ class Level implements ChunkManager, Metadatable{
 
 		return false;
 	}
+	
+	/**
+	 * @return Generator
+	*/
+	public function getGenerator() : Generator
+	{
+		return $this->generator;
+	}
 
 	/**
 	 * Tries to break a block using a item, including Player time checks if available
