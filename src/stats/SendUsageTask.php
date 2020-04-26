@@ -21,10 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\scheduler;
+namespace pocketmine\stats;
 
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\player\Player;
+use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Internet;
