@@ -43,7 +43,6 @@ use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\tile\Skull as TileSkull;
-use pocketmine\block\tile\TileFactory;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PillarRotationTrait;
@@ -86,8 +85,6 @@ class BlockFactory{
 	public $blastResistance;
 
 	public function __construct(){
-		TileFactory::init();
-
 		$this->fullList = new \SplFixedArray(8192);
 
 		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 8192, 1));

@@ -534,8 +534,9 @@ class Chunk{
 		if($this->NBTtiles !== null){
 			$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
 			$world->timings->syncChunkLoadTileEntitiesTimer->startTiming();
+			$tileFactory = TileFactory::getInstance();
 			foreach($this->NBTtiles as $nbt){
-				if(($tile = TileFactory::createFromData($world, $nbt)) !== null){
+				if(($tile = $tileFactory->createFromData($world, $nbt)) !== null){
 					$world->addTile($tile);
 				}else{
 					$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));

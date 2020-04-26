@@ -69,7 +69,7 @@ abstract class Tile{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = CompoundTag::create()
-			->setString(self::TAG_ID, TileFactory::getSaveId(get_class($this)))
+			->setString(self::TAG_ID, TileFactory::getInstance()->getSaveId(get_class($this)))
 			->setInt(self::TAG_X, $this->pos->getFloorX())
 			->setInt(self::TAG_Y, $this->pos->getFloorY())
 			->setInt(self::TAG_Z, $this->pos->getFloorZ());

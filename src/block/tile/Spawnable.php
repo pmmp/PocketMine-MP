@@ -71,7 +71,7 @@ abstract class Spawnable extends Tile{
 
 	final public function getSpawnCompound() : CompoundTag{
 		$nbt = CompoundTag::create()
-			->setString(self::TAG_ID, TileFactory::getSaveId(get_class($this))) //TODO: disassociate network ID from save ID
+			->setString(self::TAG_ID, TileFactory::getInstance()->getSaveId(get_class($this))) //TODO: disassociate network ID from save ID
 			->setInt(self::TAG_X, $this->pos->x)
 			->setInt(self::TAG_Y, $this->pos->y)
 			->setInt(self::TAG_Z, $this->pos->z);
