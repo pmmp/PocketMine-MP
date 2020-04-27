@@ -26,23 +26,8 @@ namespace pocketmine\network\mcpe\encryption;
 use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use Mdanter\Ecc\EccFactory;
-use Mdanter\Ecc\Serializer\PrivateKey\DerPrivateKeySerializer;
-use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
-use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
-use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
 use pocketmine\scheduler\AsyncTask;
-use function base64_encode;
-use function gmp_strval;
-use function hex2bin;
-use function json_encode;
-use function openssl_digest;
-use function openssl_sign;
 use function random_bytes;
-use function rtrim;
-use function str_pad;
-use function strtr;
-use const OPENSSL_ALGO_SHA384;
-use const STR_PAD_LEFT;
 
 class PrepareEncryptionTask extends AsyncTask{
 

@@ -29,6 +29,15 @@ use Mdanter\Ecc\Serializer\PrivateKey\DerPrivateKeySerializer;
 use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
+use function base64_encode;
+use function gmp_strval;
+use function hex2bin;
+use function json_encode;
+use function openssl_digest;
+use function openssl_sign;
+use function rtrim;
+use function str_pad;
+use function strtr;
 
 final class EncryptionUtils{
 

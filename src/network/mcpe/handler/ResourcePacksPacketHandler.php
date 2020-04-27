@@ -35,7 +35,6 @@ use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
 use function array_map;
-use function array_unshift;
 use function ceil;
 use function count;
 use function implode;
