@@ -220,7 +220,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function jump() : void{
 		parent::jump();
-		parent::jump();
 		if($this->isSprinting()){
 			$this->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
 		}else{
