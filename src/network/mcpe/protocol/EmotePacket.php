@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 
 class EmotePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::EMOTE_PACKET;

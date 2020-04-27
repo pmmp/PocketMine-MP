@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 
 class ActorPickRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ACTOR_PICK_REQUEST_PACKET;

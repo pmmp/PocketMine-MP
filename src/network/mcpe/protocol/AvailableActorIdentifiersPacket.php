@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use function file_get_contents;
 
 class AvailableActorIdentifiersPacket extends DataPacket implements ClientboundPacket{

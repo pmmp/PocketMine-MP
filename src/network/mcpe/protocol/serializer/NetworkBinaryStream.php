@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\serializer;
+namespace pocketmine\network\mcpe\protocol\serializer;
 
 #include <rules/DataPacket.h>
 

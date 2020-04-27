@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol\types\inventory;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 
 class UseItemTransactionData extends TransactionData{
 	public const ACTION_CLICK_BLOCK = 0;

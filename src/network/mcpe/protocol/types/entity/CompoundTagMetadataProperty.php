@@ -27,8 +27,8 @@ use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
-use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 
 final class CompoundTagMetadataProperty implements MetadataProperty{
 	/** @var CompoundTag */

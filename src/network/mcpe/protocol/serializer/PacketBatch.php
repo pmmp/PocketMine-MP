@@ -21,11 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\network\mcpe\protocol\serializer;
 
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketPool;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\BinaryDataException;
 
 class PacketBatch extends NetworkBinaryStream{

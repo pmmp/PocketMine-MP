@@ -25,13 +25,13 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\TransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 /**
  * This packet effectively crams multiple packets into one.

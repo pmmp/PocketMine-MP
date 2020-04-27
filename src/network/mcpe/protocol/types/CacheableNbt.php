@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
+use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 
 /**
  * @phpstan-template TTagType of Tag

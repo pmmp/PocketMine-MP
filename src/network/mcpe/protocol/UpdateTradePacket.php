@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_TRADE_PACKET;

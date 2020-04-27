@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Zlib;
 use pocketmine\network\mcpe\convert\TypeConverter;
-use pocketmine\network\mcpe\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe as ProtocolFurnaceRecipe;

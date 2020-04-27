@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\entity;
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 
 class Vec3MetadataProperty implements MetadataProperty{
 	/** @var Vector3 */

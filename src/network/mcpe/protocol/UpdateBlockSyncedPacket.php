@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 
 class UpdateBlockSyncedPacket extends UpdateBlockPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_SYNCED_PACKET;

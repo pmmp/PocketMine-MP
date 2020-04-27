@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol\types\inventory;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 
 class ReleaseItemTransactionData extends TransactionData{
 	public const ACTION_RELEASE = 0; //bow shoot

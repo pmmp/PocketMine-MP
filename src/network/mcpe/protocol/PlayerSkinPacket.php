@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\SkinData;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\UUID;
 
 class PlayerSkinPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{

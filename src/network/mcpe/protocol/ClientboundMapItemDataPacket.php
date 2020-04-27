@@ -25,10 +25,10 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\MapDecoration;
 use pocketmine\network\mcpe\protocol\types\MapTrackedObject;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\Color;
 use function count;
 #ifndef COMPILE

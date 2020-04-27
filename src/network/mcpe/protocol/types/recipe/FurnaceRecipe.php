@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\recipe;
 
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 final class FurnaceRecipe extends RecipeWithTypeId{
 

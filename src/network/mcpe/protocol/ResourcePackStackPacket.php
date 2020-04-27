@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function count;
 
 class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{

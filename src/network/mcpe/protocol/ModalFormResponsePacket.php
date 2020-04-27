@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 
 class ModalFormResponsePacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MODAL_FORM_RESPONSE_PACKET;

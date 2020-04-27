@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function array_values;
 
 class UpdateAttributesPacket extends DataPacket implements ClientboundPacket{

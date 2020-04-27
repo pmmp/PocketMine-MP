@@ -27,10 +27,10 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
-use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 use function count;
 use function file_get_contents;
 use function json_decode;

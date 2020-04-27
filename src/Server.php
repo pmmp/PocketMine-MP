@@ -51,7 +51,7 @@ use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Zlib as ZlibNetworkCompression;
 use pocketmine\network\mcpe\encryption\NetworkCipher;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\raklib\RakLibInterface;

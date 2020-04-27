@@ -26,9 +26,9 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\InputMode;
 use pocketmine\network\mcpe\protocol\types\PlayMode;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use function assert;
 
 class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{

@@ -27,8 +27,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
-use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 
 class UpdateBlockPropertiesPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_PROPERTIES_PACKET;

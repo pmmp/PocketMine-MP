@@ -27,8 +27,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
-use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 
 class LevelEventGenericPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LEVEL_EVENT_GENERIC_PACKET;

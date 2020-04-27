@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\serializer;
 
 use pocketmine\block\tile\Spawnable;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use function count;
