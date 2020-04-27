@@ -39,7 +39,13 @@ class LegacySkinAdapter implements SkinAdapter{
 			$skin->isPremium(),
 			$skin->isPersona(),
 			$skin->getCape()->isOnClassicSkin(),
-			$skin->getCape()->getId()
+			$skin->getCape()->getId(),
+			"",
+			$skin->getArmSize(),
+			$skin->getSkinColor(),
+			$skin->getPersonaPieces(),
+			$skin->getPieceTintColors(),
+			$skin->isVerified()
 		);
 	}
 
@@ -55,6 +61,11 @@ class LegacySkinAdapter implements SkinAdapter{
 			->setAnimations($data->getAnimations())
 			->setAnimationData($data->getAnimationData())
 			->setPremium($data->isPremium())
-			->setPersona($data->isPersona());
+			->setPersona($data->isPersona())
+			->setArmSize($data->getArmSize())
+			->setSkinColor($data->getSkinColor())
+			->setPersonaPieces($data->getPersonaPieces())
+			->setPieceTintColors($data->getPieceTintColors())
+			->setVerified($data->isVerified());
 	}
 }

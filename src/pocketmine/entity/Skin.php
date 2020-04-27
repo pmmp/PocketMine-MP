@@ -24,8 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
+use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
+use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\Cape;
+use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\utils\UUID;
 use function implode;
@@ -61,6 +64,16 @@ class Skin{
 	private $premium = false;
 	/** @var Cape */
 	private $cape;
+	/** @var string */
+	private $armSize = SkinData::ARM_SIZE_WIDE;
+	/** @var string */
+	private $skinColor = "";
+	/** @var PersonaSkinPiece[] */
+	private $personaPieces = [];
+	/** @var PersonaPieceTintColor[] */
+	private $pieceTintColors = [];
+	/** @var bool */
+	private $isVerified = false;
 
 	/** @var string */
 	private $geometryName = "";
@@ -228,6 +241,63 @@ class Skin{
 	
 	public function setCape(Cape $cape) : Skin{
 		$this->cape = $cape;
+		return $this;
+	}
+
+	public function getArmSize() : string{
+		return $this->armSize;
+	}
+
+	public function setArmSize(string $armSize) : Skin{
+		$this->armSize = $armSize;
+		return $this;
+	}
+
+	public function getSkinColor() : string{
+		return $this->skinColor;
+	}
+
+	public function setSkinColor(string $skinColor) : Skin{
+		$this->skinColor = $skinColor;
+		return $this;
+	}
+
+	/**
+	 * @return PersonaSkinPiece[]
+	 */
+	public function getPersonaPieces() : array{
+		return $this->personaPieces;
+	}
+
+	/**
+	 * @param PersonaSkinPiece[] $personaPieces
+	 */
+	public function setPersonaPieces(array $personaPieces) : Skin{
+		$this->personaPieces = $personaPieces;
+		return $this;
+	}
+
+	/**
+	 * @return PersonaPieceTintColor[]
+	 */
+	public function getPieceTintColors() : array{
+		return $this->pieceTintColors;
+	}
+
+	/**
+	 * @param PersonaPieceTintColor[] $pieceTintColors
+	 */
+	public function setPieceTintColors(array $pieceTintColors) : Skin{
+		$this->pieceTintColors = $pieceTintColors;
+		return $this;
+	}
+
+	public function isVerified() : bool{
+		return $this->isVerified;
+	}
+
+	public function setVerified(bool $isVerified) : Skin{
+		$this->isVerified = $isVerified;
 		return $this;
 	}
 }
