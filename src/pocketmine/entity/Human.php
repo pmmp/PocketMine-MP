@@ -158,8 +158,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$skinTag->getString("Name"),
 			"",
 			"",
-			$skinTag->hasTag("SkinResourcePatch", ByteArrayTag::class) ? $skinTag->getByteArray("SkinResourcePatch") : $skinTag->getString("GeometryName"),
-			$skinTag->getByteArray("GeometryData")
+			$skinTag->hasTag("SkinResourcePatch", ByteArrayTag::class) ? $skinTag->getByteArray("SkinResourcePatch") : $skinTag->getString("GeometryName", ""),
+			$skinTag->getByteArray("GeometryData", "")
 			))->setSkinImage($skinImage)
 			->setAnimations($animations)
 			->setAnimationData($skinTag->getByteArray("SkinAnimationData", ""))
@@ -219,6 +219,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	public function jump() : void{
+		parent::jump();
 		parent::jump();
 		if($this->isSprinting()){
 			$this->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
