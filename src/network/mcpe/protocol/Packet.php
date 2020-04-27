@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 interface Packet{
@@ -37,7 +36,7 @@ interface Packet{
 	public function canBeSentBeforeLogin() : bool;
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketDecodeException
 	 */
 	public function decode() : void;
 
@@ -56,7 +55,7 @@ interface Packet{
 	 * @param PacketHandlerInterface $handler
 	 *
 	 * @return bool true if the packet was handled successfully, false if not.
-	 * @throws BadPacketException if broken data was found in the packet
+	 * @throws PacketDecodeException if broken data was found in the packet
 	 */
 	public function handle(PacketHandlerInterface $handler) : bool;
 }

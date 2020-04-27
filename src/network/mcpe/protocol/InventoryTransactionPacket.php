@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
@@ -69,7 +68,7 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 				$this->trData = new ReleaseItemTransactionData();
 				break;
 			default:
-				throw new BadPacketException("Unknown transaction type $transactionType");
+				throw new PacketDecodeException("Unknown transaction type $transactionType");
 		}
 
 		$this->trData->decode($in);

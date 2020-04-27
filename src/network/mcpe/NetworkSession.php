@@ -63,6 +63,7 @@ use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
 use pocketmine\network\mcpe\protocol\Packet;
+use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
@@ -327,7 +328,11 @@ class NetworkSession{
 		$timings->startTiming();
 
 		try{
-			$packet->decode();
+			try{
+				$packet->decode();
+			}catch(PacketDecodeException $e){
+				throw BadPacketException::wrap($e);
+			}
 			$stream = $packet->getBinaryStream();
 			if(!$stream->feof()){
 				$remains = substr($stream->getBuffer(), $stream->getOffset());

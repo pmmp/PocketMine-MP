@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
 use pocketmine\network\mcpe\protocol\types\login\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\JwtChain;
@@ -71,7 +70,7 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 	}
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
 	protected function decodeConnectionRequest(NetworkBinaryStream $in) : void{
@@ -84,7 +83,7 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 		try{
 			$chainData = $mapper->map($chainDataJson, new JwtChain);
 		}catch(\JsonMapper_Exception $e){
-			throw BadPacketException::wrap($e);
+			throw PacketDecodeException::wrap($e);
 		}
 
 		$this->chainDataJwt = $chainData;
@@ -94,14 +93,14 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 			try{
 				$claims = Utils::getJwtClaims($chain);
 			}catch(\UnexpectedValueException $e){
-				throw new BadPacketException($e->getMessage(), 0, $e);
+				throw new PacketDecodeException($e->getMessage(), 0, $e);
 			}
 			if(isset($claims["extraData"])){
 				if(!is_array($claims["extraData"])){
-					throw new BadPacketException("'extraData' key should be an array");
+					throw new PacketDecodeException("'extraData' key should be an array");
 				}
 				if($this->extraData !== null){
-					throw new BadPacketException("Found 'extraData' more than once in chainData");
+					throw new PacketDecodeException("Found 'extraData' more than once in chainData");
 				}
 
 				$mapper = new \JsonMapper;
@@ -111,19 +110,19 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 				try{
 					$this->extraData = $mapper->map($claims['extraData'], new AuthenticationData);
 				}catch(\JsonMapper_Exception $e){
-					throw BadPacketException::wrap($e);
+					throw PacketDecodeException::wrap($e);
 				}
 			}
 		}
 		if($this->extraData === null){
-			throw new BadPacketException("'extraData' not found in chain data");
+			throw new PacketDecodeException("'extraData' not found in chain data");
 		}
 
 		$this->clientDataJwt = $buffer->get($buffer->getLInt());
 		try{
 			$clientData = Utils::getJwtClaims($this->clientDataJwt);
 		}catch(\UnexpectedValueException $e){
-			throw new BadPacketException($e->getMessage(), 0, $e);
+			throw new PacketDecodeException($e->getMessage(), 0, $e);
 		}
 
 		$mapper = new \JsonMapper;
@@ -133,7 +132,7 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 		try{
 			$this->clientData = $mapper->map($clientData, new ClientData);
 		}catch(\JsonMapper_Exception $e){
-			throw BadPacketException::wrap($e);
+			throw PacketDecodeException::wrap($e);
 		}
 	}
 

@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol\types\entity;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\BadPacketException;
+use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\serializer\NetworkNbtSerializer;
 
@@ -51,14 +51,14 @@ final class CompoundTagMetadataProperty implements MetadataProperty{
 	}
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketDecodeException
 	 */
 	public static function read(NetworkBinaryStream $in) : self{
 		$offset = $in->getOffset();
 		try{
 			$tag = (new NetworkNbtSerializer())->read($in->getBuffer(), $offset, 512)->mustGetCompoundTag();
 		}catch(NbtDataException $e){
-			throw new BadPacketException($e->getMessage(), 0, $e);
+			throw new PacketDecodeException($e->getMessage(), 0, $e);
 		}
 		$in->setOffset($offset);
 		return new self($tag);

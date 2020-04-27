@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 
 class BookEditPacket extends DataPacket implements ServerboundPacket{
@@ -82,7 +81,7 @@ class BookEditPacket extends DataPacket implements ServerboundPacket{
 				$this->xuid = $in->getString();
 				break;
 			default:
-				throw new BadPacketException("Unknown book edit type $this->type!");
+				throw new PacketDecodeException("Unknown book edit type $this->type!");
 		}
 	}
 

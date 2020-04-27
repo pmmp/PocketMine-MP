@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnumConstraint;
@@ -147,7 +146,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @param string[] $enumValueList
 	 *
-	 * @throws BadPacketException
+	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
 	protected function getEnum(array $enumValueList, NetworkBinaryStream $in) : CommandEnum{
@@ -159,7 +158,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 		for($i = 0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
 			$index = $this->getEnumValueIndex($listSize, $in);
 			if(!isset($enumValueList[$index])){
-				throw new BadPacketException("Invalid enum value index $index");
+				throw new PacketDecodeException("Invalid enum value index $index");
 			}
 			//Get the enum value from the initial pile of mess
 			$enumValues[] = $enumValueList[$index];
@@ -238,23 +237,23 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 * @param CommandEnum[] $enums
 	 * @param string[]      $enumValues
 	 *
-	 * @throws BadPacketException
+	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
 	protected function getEnumConstraint(array $enums, array $enumValues, NetworkBinaryStream $in) : CommandEnumConstraint{
 		//wtf, what was wrong with an offset inside the enum? :(
 		$valueIndex = $in->getLInt();
 		if(!isset($enumValues[$valueIndex])){
-			throw new BadPacketException("Enum constraint refers to unknown enum value index $valueIndex");
+			throw new PacketDecodeException("Enum constraint refers to unknown enum value index $valueIndex");
 		}
 		$enumIndex = $in->getLInt();
 		if(!isset($enums[$enumIndex])){
-			throw new BadPacketException("Enum constraint refers to unknown enum index $enumIndex");
+			throw new PacketDecodeException("Enum constraint refers to unknown enum index $enumIndex");
 		}
 		$enum = $enums[$enumIndex];
 		$valueOffset = array_search($enumValues[$valueIndex], $enum->getValues(), true);
 		if($valueOffset === false){
-			throw new BadPacketException("Value \"" . $enumValues[$valueIndex] . "\" does not belong to enum \"" . $enum->getName() . "\"");
+			throw new PacketDecodeException("Value \"" . $enumValues[$valueIndex] . "\" does not belong to enum \"" . $enum->getName() . "\"");
 		}
 
 		$constraintIds = [];
@@ -282,7 +281,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 * @param CommandEnum[] $enums
 	 * @param string[]      $postfixes
 	 *
-	 * @throws BadPacketException
+	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
 	protected function getCommandData(array $enums, array $postfixes, NetworkBinaryStream $in) : CommandData{
@@ -306,16 +305,16 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->enum = $enums[$index] ?? null;
 					if($parameter->enum === null){
-						throw new BadPacketException("deserializing $name parameter $parameter->paramName: expected enum at $index, but got none");
+						throw new PacketDecodeException("deserializing $name parameter $parameter->paramName: expected enum at $index, but got none");
 					}
 				}elseif(($parameter->paramType & self::ARG_FLAG_POSTFIX) !== 0){
 					$index = ($parameter->paramType & 0xffff);
 					$parameter->postfix = $postfixes[$index] ?? null;
 					if($parameter->postfix === null){
-						throw new BadPacketException("deserializing $name parameter $parameter->paramName: expected postfix at $index, but got none");
+						throw new PacketDecodeException("deserializing $name parameter $parameter->paramName: expected postfix at $index, but got none");
 					}
 				}elseif(($parameter->paramType & self::ARG_FLAG_VALID) === 0){
-					throw new BadPacketException("deserializing $name parameter $parameter->paramName: Invalid parameter type 0x" . dechex($parameter->paramType));
+					throw new PacketDecodeException("deserializing $name parameter $parameter->paramName: Invalid parameter type 0x" . dechex($parameter->paramType));
 				}
 
 				$overloads[$overloadIndex][$paramIndex] = $parameter;

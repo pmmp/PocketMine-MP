@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
-use pocketmine\network\BadPacketException;
+use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\serializer\NetworkBinaryStream;
 use pocketmine\utils\BinaryDataException;
 
@@ -81,7 +81,7 @@ class NetworkInventoryAction{
 	 * @return $this
 	 *
 	 * @throws BinaryDataException
-	 * @throws BadPacketException
+	 * @throws PacketDecodeException
 	 */
 	public function read(NetworkBinaryStream $packet) : NetworkInventoryAction{
 		$this->sourceType = $packet->getUnsignedVarInt();
@@ -99,7 +99,7 @@ class NetworkInventoryAction{
 				$this->windowId = $packet->getVarInt();
 				break;
 			default:
-				throw new BadPacketException("Unknown inventory action source type $this->sourceType");
+				throw new PacketDecodeException("Unknown inventory action source type $this->sourceType");
 		}
 
 		$this->inventorySlot = $packet->getUnsignedVarInt();
