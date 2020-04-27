@@ -100,7 +100,7 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 		if($this->closed){
 			return false;
 		}
-		
+
 		if($this->isOnTransferCooldown()){
 			$this->transferCooldown--;
 		}else{
@@ -110,8 +110,8 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 				$transfer = $this->transferItemOut();
 			}
 
-			if(!$this->isFull()){
-				$transfer = $this->pullItemFromTop() or $transfer;
+			if(!$transfer and !$this->isFull()){
+				$transfer = $this->pullItemFromTop();
 			}
 
 			if($transfer){
@@ -166,7 +166,6 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 		if($tile instanceof InventoryHolder){
 			$inv = $tile->getInventory();
 			foreach($inv->getContents() as $slot => $item){
-
 				if($inv instanceof FurnaceInventory){
 					//So only results of Furnaces go trough
 					if($slot !== 2) continue;
