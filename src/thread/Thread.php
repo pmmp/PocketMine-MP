@@ -22,6 +22,7 @@
 declare(strict_types=1);
 
 namespace pocketmine\thread;
+
 use const PTHREADS_INHERIT_ALL;
 
 /**

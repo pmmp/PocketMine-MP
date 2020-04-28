@@ -51,6 +51,7 @@ use function in_array;
 use function is_a;
 use function is_array;
 use function is_dir;
+use function is_string;
 use function is_subclass_of;
 use function iterator_to_array;
 use function mkdir;

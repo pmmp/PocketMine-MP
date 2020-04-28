@@ -25,6 +25,7 @@ namespace pocketmine\scheduler;
 
 use pocketmine\utils\AssumptionFailedError;
 use function is_scalar;
+use function is_string;
 use function serialize;
 use function spl_object_id;
 use function unserialize;

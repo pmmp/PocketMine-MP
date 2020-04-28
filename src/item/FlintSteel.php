@@ -29,7 +29,6 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\FlintSteelSound;
-use function assert;
 
 class FlintSteel extends Tool{
 

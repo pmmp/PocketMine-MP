@@ -28,6 +28,7 @@ use function fopen;
 use function function_exists;
 use function getenv;
 use function is_array;
+use function sapi_windows_vt100_support;
 use function stream_isatty;
 use const PHP_EOL;
 
