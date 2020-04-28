@@ -70,7 +70,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	private $syncFlush = false;
 
 	/** @var string */
-	private $format = TextFormat::AQUA . "%s " . TextFormat::RESET . "%s<%s/%s> %s" . TextFormat::RESET;
+	private $format = TextFormat::DARK_GRAY . "%s " . TextFormat::RESET . "%s%s|%s > %s" . TextFormat::RESET;
 
 	/** @var bool */
 	private $mainThreadHasFormattingCodes = false;
@@ -146,38 +146,38 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	public function emergency($message){
-		$this->send($message, \LogLevel::EMERGENCY, "Emergency", TextFormat::DARK_PURPLE);
+		$this->send($message, \LogLevel::EMERGENCY, "EMERGENCY", TextFormat::GOLD);
 	}
 
 	public function alert($message){
-		$this->send($message, \LogLevel::ALERT, "Alert", TextFormat::DARK_AQUA);
+		$this->send($message, \LogLevel::ALERT, "ALERT", TextFormat::DARK_PURPLE);
 	}
 
 	public function critical($message){
-		$this->send($message, \LogLevel::CRITICAL, "Critical", TextFormat::DARK_RED);
+		$this->send($message, \LogLevel::CRITICAL, "CRITICAL", TextFormat::DARK_RED);
 	}
 
 	public function error($message){
-		$this->send($message, \LogLevel::ERROR, "Error", TextFormat::RED);
+		$this->send($message, \LogLevel::ERROR, "ERROR", TextFormat::RED);
 	}
 
 	public function warning($message){
-		$this->send($message, \LogLevel::WARNING, "Warning", TextFormat::YELLOW);
+		$this->send($message, \LogLevel::WARNING, "WARNING", TextFormat::YELLOW);
 	}
 
 	public function notice($message){
-		$this->send($message, \LogLevel::NOTICE, "Notice", TextFormat::GOLD);
+		$this->send($message, \LogLevel::NOTICE, "NOTICE", TextFormat::LIGHT_PURPLE);
 	}
 
 	public function info($message){
-		$this->send($message, \LogLevel::INFO, "Info", TextFormat::WHITE);
+		$this->send($message, \LogLevel::INFO, "INFO", TextFormat::WHITE);
 	}
 
 	public function debug($message, bool $force = false){
 		if(!$this->logDebug and !$force){
 			return;
 		}
-		$this->send($message, \LogLevel::DEBUG, "Debug", TextFormat::DARK_PURPLE);
+		$this->send($message, \LogLevel::DEBUG, "DEBUG", TextFormat::GRAY);
 	}
 
 	/**
@@ -300,11 +300,11 @@ class MainLogger extends \AttachableThreadedLogger{
 
 		$thread = \Thread::getCurrentThread();
 		if($thread === null){
-			$threadName = "Server thread";
+			$threadName = "Server";
 		}elseif($thread instanceof Thread or $thread instanceof Worker){
-			$threadName = $thread->getThreadName() . " thread";
+			$threadName = $thread->getThreadName();
 		}else{
-			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
+			$threadName = (new \ReflectionClass($thread))->getShortName();
 		}
 
 		$message = sprintf($this->format, $time->format("H:i:s"), $color, $threadName, $prefix, TextFormat::clean($message, false));
