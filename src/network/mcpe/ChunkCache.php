@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
+use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\format\Chunk;
@@ -39,7 +40,7 @@ use function strlen;
  * TODO: this needs a hook for world unloading
  */
 class ChunkCache implements ChunkListener{
-	/** @var self[] */
+	/** @var self[][] */
 	private static $instances = [];
 
 	/**
@@ -47,12 +48,20 @@ class ChunkCache implements ChunkListener{
 	 *
 	 * @return ChunkCache
 	 */
-	public static function getInstance(World $world) : self{
-		return self::$instances[spl_object_id($world)] ?? (self::$instances[spl_object_id($world)] = new self($world));
+	public static function getInstance(World $world, Compressor $compressor) : self{
+		$worldId = spl_object_id($world);
+		$compressorId = spl_object_id($compressor);
+		if(!isset(self::$instances[$worldId][$compressorId])){
+			\GlobalLogger::get()->debug("Created new chunk packet cache (world#$worldId, compressor#$compressorId)");
+			self::$instances[$worldId][$compressorId] = new self($world, $compressor);
+		}
+		return self::$instances[$worldId][$compressorId];
 	}
 
 	/** @var World */
 	private $world;
+	/** @var Compressor */
+	private $compressor;
 
 	/** @var CompressBatchPromise[] */
 	private $caches = [];
@@ -62,8 +71,9 @@ class ChunkCache implements ChunkListener{
 	/** @var int */
 	private $misses = 0;
 
-	private function __construct(World $world){
+	private function __construct(World $world, Compressor $compressor){
 		$this->world = $world;
+		$this->compressor = $compressor;
 	}
 
 	/**
@@ -92,6 +102,7 @@ class ChunkCache implements ChunkListener{
 					$chunkZ,
 					$this->world->getChunk($chunkX, $chunkZ),
 					$this->caches[$chunkHash],
+					$this->compressor,
 					function() use ($chunkX, $chunkZ) : void{
 						$this->world->getLogger()->error("Failed preparing chunk $chunkX $chunkZ, retrying");
 

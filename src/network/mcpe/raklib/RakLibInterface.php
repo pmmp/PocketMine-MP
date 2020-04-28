@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\raklib;
 
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\BadPacketException;
+use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
@@ -152,7 +153,14 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function openSession(int $sessionId, string $address, int $port, int $clientID) : void{
-		$session = new NetworkSession($this->server, $this->network->getSessionManager(), new RakLibPacketSender($sessionId, $this), $address, $port);
+		$session = new NetworkSession(
+			$this->server,
+			$this->network->getSessionManager(),
+			new RakLibPacketSender($sessionId, $this),
+			ZlibCompressor::getInstance(), //TODO: this shouldn't be hardcoded, but we might need the RakNet protocol version to select it
+			$address,
+			$port
+		);
 		$this->sessions[$sessionId] = $session;
 	}
 

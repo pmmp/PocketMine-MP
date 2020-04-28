@@ -25,7 +25,7 @@ namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
-use pocketmine\network\mcpe\compression\ZlibCompressor;
+use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
@@ -41,6 +41,7 @@ use function array_map;
 use function file_get_contents;
 use function json_decode;
 use function json_encode;
+use function spl_object_id;
 use function str_repeat;
 use function usort;
 use const DIRECTORY_SEPARATOR;
@@ -53,8 +54,8 @@ class CraftingManager{
 	/** @var FurnaceRecipe[] */
 	protected $furnaceRecipes = [];
 
-	/** @var CompressBatchPromise|null */
-	private $craftingDataCache;
+	/** @var CompressBatchPromise[] */
+	private $craftingDataCaches = [];
 
 	public function __construct(){
 		$this->init();
@@ -98,14 +99,12 @@ class CraftingManager{
 					break;
 			}
 		}
-
-		$this->buildCraftingDataCache();
 	}
 
 	/**
 	 * Rebuilds the cached CraftingDataPacket.
 	 */
-	public function buildCraftingDataCache() : void{
+	private function buildCraftingDataCache(Compressor $compressor) : CompressBatchPromise{
 		Timings::$craftingDataCacheRebuildTimer->startTiming();
 		$pk = new CraftingDataPacket();
 		$pk->cleanRecipes = true;
@@ -164,21 +163,24 @@ class CraftingManager{
 			);
 		}
 
-		$this->craftingDataCache = new CompressBatchPromise();
-		$this->craftingDataCache->resolve(ZlibCompressor::getInstance()->compress(PacketBatch::fromPackets($pk)->getBuffer()));
+		$promise = new CompressBatchPromise();
+		$promise->resolve($compressor->compress(PacketBatch::fromPackets($pk)->getBuffer()));
 
 		Timings::$craftingDataCacheRebuildTimer->stopTiming();
+		return $promise;
 	}
 
 	/**
 	 * Returns a pre-compressed CraftingDataPacket for sending to players. Rebuilds the cache if it is not found.
 	 */
-	public function getCraftingDataPacket() : CompressBatchPromise{
-		if($this->craftingDataCache === null){
-			$this->buildCraftingDataCache();
+	public function getCraftingDataPacket(Compressor $compressor) : CompressBatchPromise{
+		$compressorId = spl_object_id($compressor);
+
+		if(!isset($this->craftingDataCaches[$compressorId])){
+			$this->craftingDataCaches[$compressorId] = $this->buildCraftingDataCache($compressor);
 		}
 
-		return $this->craftingDataCache;
+		return $this->craftingDataCaches[$compressorId];
 	}
 
 	/**
@@ -253,19 +255,19 @@ class CraftingManager{
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
-		$this->craftingDataCache = null;
+		$this->craftingDataCaches = [];
 	}
 
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
-		$this->craftingDataCache = null;
+		$this->craftingDataCaches = [];
 	}
 
 	public function registerFurnaceRecipe(FurnaceRecipe $recipe) : void{
 		$input = $recipe->getInput();
 		$this->furnaceRecipes[$input->getId() . ":" . ($input->hasAnyDamageValue() ? "?" : $input->getMeta())] = $recipe;
-		$this->craftingDataCache = null;
+		$this->craftingDataCaches = [];
 	}
 
 	/**

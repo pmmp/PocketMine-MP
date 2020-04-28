@@ -35,8 +35,8 @@ use pocketmine\form\Form;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
+use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\DecompressionException;
-use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\encryption\DecryptionException;
@@ -147,6 +147,8 @@ class NetworkSession{
 
 	/** @var \SplQueue|CompressBatchPromise[] */
 	private $compressedQueue;
+	/** @var Compressor */
+	private $compressor;
 
 	/** @var InventoryManager|null */
 	private $invManager = null;
@@ -154,7 +156,7 @@ class NetworkSession{
 	/** @var PacketSender */
 	private $sender;
 
-	public function __construct(Server $server, NetworkSessionManager $manager, PacketSender $sender, string $ip, int $port){
+	public function __construct(Server $server, NetworkSessionManager $manager, PacketSender $sender, Compressor $compressor, string $ip, int $port){
 		$this->server = $server;
 		$this->manager = $manager;
 		$this->sender = $sender;
@@ -164,6 +166,7 @@ class NetworkSession{
 		$this->logger = new \PrefixedLogger($this->server->getLogger(), $this->getLogPrefix());
 
 		$this->compressedQueue = new \SplQueue();
+		$this->compressor = $compressor;
 
 		$this->connectTime = time();
 
@@ -283,7 +286,7 @@ class NetworkSession{
 
 		Timings::$playerNetworkReceiveDecompressTimer->startTiming();
 		try{
-			$stream = new PacketBatch(ZlibCompressor::getInstance()->decompress($payload)); //TODO: make this dynamic
+			$stream = new PacketBatch($this->compressor->decompress($payload));
 		}catch(DecompressionException $e){
 			$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
 			//TODO: this isn't incompatible game version if we already established protocol version
@@ -395,10 +398,14 @@ class NetworkSession{
 
 	private function flushSendBuffer(bool $immediate = false) : void{
 		if($this->sendBuffer !== null){
-			$promise = $this->server->prepareBatch($this->sendBuffer, $immediate);
+			$promise = $this->server->prepareBatch($this->sendBuffer, $this->compressor, $immediate);
 			$this->sendBuffer = null;
 			$this->queueCompressed($promise, $immediate);
 		}
+	}
+
+	public function getCompressor() : Compressor{
+		return $this->compressor;
 	}
 
 	public function queueCompressed(CompressBatchPromise $payload, bool $immediate = false) : void{
@@ -757,7 +764,7 @@ class NetworkSession{
 
 		$world = $this->player->getLocation()->getWorld();
 		assert($world !== null);
-		ChunkCache::getInstance($world)->request($chunkX, $chunkZ)->onResolve(
+		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
 			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion) : void{

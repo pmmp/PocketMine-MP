@@ -48,7 +48,8 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\CompressBatchTask;
-use pocketmine\network\mcpe\compression\ZlibCompressor as ZlibNetworkCompression;
+use pocketmine\network\mcpe\compression\Compressor;
+use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\encryption\NetworkCipher;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
@@ -922,7 +923,7 @@ class Server{
 				$this->logger->warning("Invalid network compression level $netCompressionLevel set, setting to default 7");
 				$netCompressionLevel = 7;
 			}
-			ZlibNetworkCompression::setInstance(new ZlibNetworkCompression($netCompressionLevel, $netCompressionThreshold, ZlibNetworkCompression::DEFAULT_MAX_DECOMPRESSION_SIZE));
+			ZlibCompressor::setInstance(new ZlibCompressor($netCompressionLevel, $netCompressionThreshold, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE));
 
 			$this->networkCompressionAsync = (bool) $this->getProperty("network.async-compression", true);
 
@@ -1252,16 +1253,28 @@ class Server{
 
 		$stream = PacketBatch::fromPackets(...$ev->getPackets());
 
-		if(!ZlibNetworkCompression::getInstance()->willCompress($stream->getBuffer())){
-			foreach($recipients as $target){
-				foreach($ev->getPackets() as $pk){
-					$target->addToSendBuffer($pk);
+		$compressors = [];
+		$compressorTargets = [];
+		foreach($recipients as $recipient){
+			$compressor = $recipient->getCompressor();
+			$compressorId = spl_object_id($compressor);
+			//TODO: different compressors might be compatible, it might not be necessary to split them up by object
+			$compressors[$compressorId] = $compressor;
+			$compressorTargets[$compressorId][] = $recipient;
+		}
+
+		foreach($compressors as $compressorId => $compressor){
+			if(!$compressor->willCompress($stream->getBuffer())){
+				foreach($compressorTargets[$compressorId] as $target){
+					foreach($ev->getPackets() as $pk){
+						$target->addToSendBuffer($pk);
+					}
 				}
-			}
-		}else{
-			$promise = $this->prepareBatch($stream);
-			foreach($recipients as $target){
-				$target->queueCompressed($promise);
+			}else{
+				$promise = $this->prepareBatch($stream, $compressor);
+				foreach($compressorTargets[$compressorId] as $target){
+					$target->queueCompressed($promise);
+				}
 			}
 		}
 
@@ -1271,11 +1284,10 @@ class Server{
 	/**
 	 * Broadcasts a list of packets in a batch to a list of players
 	 */
-	public function prepareBatch(PacketBatch $stream, bool $forceSync = false) : CompressBatchPromise{
+	public function prepareBatch(PacketBatch $stream, Compressor $compressor, bool $forceSync = false) : CompressBatchPromise{
 		try{
 			Timings::$playerNetworkSendCompressTimer->startTiming();
 
-			$compressor = ZlibNetworkCompression::getInstance();
 			$buffer = $stream->getBuffer();
 			if(!$compressor->willCompress($buffer)){
 				$forceSync = true;

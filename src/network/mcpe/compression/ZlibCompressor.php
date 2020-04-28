@@ -29,7 +29,7 @@ use function zlib_decode;
 use function zlib_encode;
 use const ZLIB_ENCODING_DEFLATE;
 
-final class ZlibCompressor{
+final class ZlibCompressor implements Compressor{
 	use SingletonTrait;
 
 	public const DEFAULT_LEVEL = 7;
