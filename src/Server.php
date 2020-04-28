@@ -33,6 +33,7 @@ use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\crafting\CraftingManager;
+use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\event\HandlerListManager;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
@@ -984,7 +985,7 @@ class Server{
 			Enchantment::init();
 			Biome::init();
 
-			$this->craftingManager = new CraftingManager();
+			$this->craftingManager = CraftingManagerFromDataHelper::make(\pocketmine\RESOURCE_PATH . '/vanilla/recipes.json');
 
 			$this->resourceManager = new ResourcePackManager($this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR, $this->logger);
 

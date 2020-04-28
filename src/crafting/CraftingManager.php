@@ -38,13 +38,10 @@ use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
 use pocketmine\utils\UUID;
 use function array_map;
-use function file_get_contents;
-use function json_decode;
 use function json_encode;
 use function spl_object_id;
 use function str_repeat;
 use function usort;
-use const DIRECTORY_SEPARATOR;
 
 class CraftingManager{
 	/** @var ShapedRecipe[][] */
@@ -56,50 +53,6 @@ class CraftingManager{
 
 	/** @var CompressBatchPromise[] */
 	private $craftingDataCaches = [];
-
-	public function __construct(){
-		$this->init();
-	}
-
-	public function init() : void{
-		$recipes = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "recipes.json"), true);
-
-		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
-		foreach($recipes as $recipe){
-			switch($recipe["type"]){
-				case "shapeless":
-					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
-						break;
-					}
-					$this->registerShapelessRecipe(new ShapelessRecipe(
-						array_map($itemDeserializerFunc, $recipe["input"]),
-						array_map($itemDeserializerFunc, $recipe["output"])
-					));
-					break;
-				case "shaped":
-					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
-						break;
-					}
-					$this->registerShapedRecipe(new ShapedRecipe(
-						$recipe["shape"],
-						array_map($itemDeserializerFunc, $recipe["input"]),
-						array_map($itemDeserializerFunc, $recipe["output"])
-					));
-					break;
-				case "smelting":
-					if($recipe["block"] !== "furnace"){ //TODO: filter others out for now to avoid breaking economics
-						break;
-					}
-					$this->registerFurnaceRecipe(new FurnaceRecipe(
-						Item::jsonDeserialize($recipe["output"]),
-						Item::jsonDeserialize($recipe["input"]))
-					);
-					break;
-				default:
-					break;
-			}
-		}
-	}
 
 	/**
 	 * Rebuilds the cached CraftingDataPacket.
