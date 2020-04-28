@@ -38,6 +38,10 @@ trait SingletonTrait{
 		return self::$instance;
 	}
 
+	public static function setInstance(self $instance) : void{
+		self::$instance = $instance;
+	}
+
 	public static function reset() : void{
 		self::$instance = null;
 	}
