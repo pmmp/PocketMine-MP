@@ -29,19 +29,19 @@ class CompressBatchTask extends AsyncTask{
 
 	private const TLS_KEY_PROMISE = "promise";
 
-	/** @var int */
-	private $level;
 	/** @var string */
 	private $data;
+	/** @var ZlibCompressor */
+	private $compressor;
 
-	public function __construct(string $data, int $compressionLevel, CompressBatchPromise $promise){
+	public function __construct(string $data, CompressBatchPromise $promise, ZlibCompressor $compressor){
 		$this->data = $data;
-		$this->level = $compressionLevel;
+		$this->compressor = $compressor;
 		$this->storeLocal(self::TLS_KEY_PROMISE, $promise);
 	}
 
 	public function onRun() : void{
-		$this->setResult(Zlib::compress($this->data, $this->level));
+		$this->setResult($this->compressor->compress($this->data));
 	}
 
 	public function onCompletion() : void{

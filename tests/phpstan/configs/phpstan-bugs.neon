@@ -71,6 +71,11 @@ parameters:
 			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
 
 		-
+			message: "#^Class pocketmine\\\\network\\\\mcpe\\\\compression\\\\ZlibCompressor constructor invoked with 0 parameters, 3 required\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/compression/ZlibCompressor.php
+
+		-
 			message: "#^Strict comparison using \\!\\=\\= between string and false will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/utils/Timezone.php
