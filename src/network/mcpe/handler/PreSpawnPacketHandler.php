@@ -99,7 +99,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$this->session->getInvManager()->syncSelectedHotbarSlot();
 		$this->session->queueCompressed($this->server->getCraftingManager()->getCraftingDataPacket($this->session->getCompressor()));
 
-		$this->session->syncPlayerList();
+		$this->session->syncPlayerList($this->server->getOnlinePlayers());
 	}
 
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{

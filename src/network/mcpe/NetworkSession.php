@@ -835,10 +835,13 @@ class NetworkSession{
 		$this->sendDataPacket(TakeItemActorPacket::create($collector->getId(), $pickedUp->getId()));
 	}
 
-	public function syncPlayerList() : void{
+	/**
+	 * @param Player[] $players
+	 */
+	public function syncPlayerList(array $players) : void{
 		$this->sendDataPacket(PlayerListPacket::add(array_map(function(Player $player) : PlayerListEntry{
 			return PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), SkinAdapterSingleton::get()->toSkinData($player->getSkin()), $player->getXuid());
-		}, $this->server->getOnlinePlayers())));
+		}, $players)));
 	}
 
 	public function onPlayerAdded(Player $p) : void{
