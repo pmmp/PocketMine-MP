@@ -72,8 +72,10 @@ use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
+use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
+use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
@@ -815,8 +817,16 @@ class NetworkSession{
 
 	public function onEnterWorld() : void{
 		$world = $this->player->getWorld();
-		$world->sendTime($this->player);
-		$world->sendDifficulty($this->player);
+		$this->syncWorldTime($world->getTime());
+		$this->syncWorldDifficulty($world->getDifficulty());
+	}
+
+	public function syncWorldTime(int $worldTime) : void{
+		$this->sendDataPacket(SetTimePacket::create($worldTime));
+	}
+
+	public function syncWorldDifficulty(int $worldDifficulty) : void{
+		$this->sendDataPacket(SetDifficultyPacket::create($worldDifficulty));
 	}
 
 	public function getInvManager() : InventoryManager{
