@@ -61,6 +61,11 @@ parameters:
 			path: ../../../src/item/ItemFactory.php
 
 		-
+			message: "#^Class pocketmine\\\\network\\\\mcpe\\\\StaticPacketCache constructor invoked with 0 parameters, 2 required\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/StaticPacketCache.php
+
+		-
 			message: "#^If condition is always false\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
