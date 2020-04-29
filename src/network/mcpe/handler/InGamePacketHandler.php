@@ -257,6 +257,15 @@ class InGamePacketHandler extends PacketHandler{
 					$this->craftingTransaction->execute();
 				}catch(TransactionValidationException $e){
 					$this->session->getLogger()->debug("Failed to execute crafting transaction: " . $e->getMessage());
+
+					/*
+					 * TODO: HACK!
+					 * we can't resend the contents of the crafting window, so we force the client to close it instead.
+					 * So people don't whine about messy desync issues when someone cancels CraftItemEvent, or when a crafting
+					 * transaction goes wrong.
+					 */
+					$this->session->sendDataPacket(ContainerClosePacket::create(ContainerIds::NONE));
+
 					return false;
 				}finally{
 					$this->craftingTransaction = null;
