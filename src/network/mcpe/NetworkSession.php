@@ -67,6 +67,7 @@ use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
+use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
@@ -707,6 +708,10 @@ class NetworkSession{
 
 	public function onEntityEffectRemoved(Living $entity, EffectInstance $effect) : void{
 		$this->sendDataPacket(MobEffectPacket::remove($entity->getId(), $effect->getId()));
+	}
+
+	public function onEntityRemoved(Entity $entity) : void{
+		$this->sendDataPacket(RemoveActorPacket::create($entity->getId()));
 	}
 
 	public function syncAvailableCommands() : void{
