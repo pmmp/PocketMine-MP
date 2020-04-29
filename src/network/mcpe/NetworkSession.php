@@ -46,7 +46,6 @@ use pocketmine\network\mcpe\handler\DeathPacketHandler;
 use pocketmine\network\mcpe\handler\HandshakePacketHandler;
 use pocketmine\network\mcpe\handler\InGamePacketHandler;
 use pocketmine\network\mcpe\handler\LoginPacketHandler;
-use pocketmine\network\mcpe\handler\NullPacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
@@ -126,8 +125,8 @@ class NetworkSession{
 	/** @var int|null */
 	private $ping = null;
 
-	/** @var PacketHandler */
-	private $handler;
+	/** @var PacketHandler|null */
+	private $handler = null;
 
 	/** @var bool */
 	private $connected = true;
@@ -258,14 +257,16 @@ class NetworkSession{
 		$this->ping = $ping;
 	}
 
-	public function getHandler() : PacketHandler{
+	public function getHandler() : ?PacketHandler{
 		return $this->handler;
 	}
 
-	public function setHandler(PacketHandler $handler) : void{
+	public function setHandler(?PacketHandler $handler) : void{
 		if($this->connected){ //TODO: this is fine since we can't handle anything from a disconnected session, but it might produce surprises in some cases
 			$this->handler = $handler;
-			$this->handler->setUp();
+			if($this->handler !== null){
+				$this->handler->setUp();
+			}
 		}
 	}
 
@@ -350,7 +351,7 @@ class NetworkSession{
 
 			$ev = new DataPacketReceiveEvent($this, $packet);
 			$ev->call();
-			if(!$ev->isCancelled() and !$packet->handle($this->handler)){
+			if(!$ev->isCancelled() and ($this->handler === null or !$packet->handle($this->handler))){
 				$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
 			}
 		}finally{
@@ -459,7 +460,7 @@ class NetworkSession{
 			$this->disconnectGuard = true;
 			$func();
 			$this->disconnectGuard = false;
-			$this->setHandler(NullPacketHandler::getInstance());
+			$this->setHandler(null);
 			$this->connected = false;
 			$this->manager->remove($this);
 			$this->logger->info("Session closed due to $reason");

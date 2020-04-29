@@ -195,7 +195,7 @@ class LoginPacketHandler extends PacketHandler{
 	 */
 	protected function processLogin(LoginPacket $packet, bool $authRequired) : void{
 		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($packet, $authRequired, $this->authCallback));
-		$this->session->setHandler(NullPacketHandler::getInstance()); //drop packets received during login verification
+		$this->session->setHandler(null); //drop packets received during login verification
 	}
 
 	protected function isCompatibleProtocol(int $protocolVersion) : bool{
