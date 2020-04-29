@@ -363,7 +363,6 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Reads a list of Attributes from the stream.
 	 * @return Attribute[]
 	 *
-	 * @throws PacketDecodeException if reading an attribute with an unrecognized name
 	 * @throws BinaryDataException
 	 */
 	public function getAttributeList() : array{
