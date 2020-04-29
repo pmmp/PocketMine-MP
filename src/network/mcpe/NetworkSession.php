@@ -64,6 +64,7 @@ use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
+use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
@@ -150,13 +151,16 @@ class NetworkSession{
 	/** @var Compressor */
 	private $compressor;
 
+	/** @var PacketPool */
+	private $packetPool;
+
 	/** @var InventoryManager|null */
 	private $invManager = null;
 
 	/** @var PacketSender */
 	private $sender;
 
-	public function __construct(Server $server, NetworkSessionManager $manager, PacketSender $sender, Compressor $compressor, string $ip, int $port){
+	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, Compressor $compressor, string $ip, int $port){
 		$this->server = $server;
 		$this->manager = $manager;
 		$this->sender = $sender;
@@ -167,6 +171,7 @@ class NetworkSession{
 
 		$this->compressedQueue = new \SplQueue();
 		$this->compressor = $compressor;
+		$this->packetPool = $packetPool;
 
 		$this->connectTime = time();
 
@@ -301,7 +306,7 @@ class NetworkSession{
 				throw new BadPacketException("Too many packets in a single batch");
 			}
 			try{
-				$pk = $stream->getPacket();
+				$pk = $stream->getPacket($this->packetPool);
 			}catch(BinaryDataException $e){
 				$this->logger->debug("Packet batch: " . base64_encode($stream->getBuffer()));
 				throw BadPacketException::wrap($e, "Packet batch decode error");

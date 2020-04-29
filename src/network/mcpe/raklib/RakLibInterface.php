@@ -27,6 +27,7 @@ use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
 use pocketmine\Server;
@@ -156,6 +157,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$session = new NetworkSession(
 			$this->server,
 			$this->network->getSessionManager(),
+			PacketPool::getInstance(),
 			new RakLibPacketSender($sessionId, $this),
 			ZlibCompressor::getInstance(), //TODO: this shouldn't be hardcoded, but we might need the RakNet protocol version to select it
 			$address,

@@ -37,8 +37,8 @@ class PacketBatch extends NetworkBinaryStream{
 	/**
 	 * @throws BinaryDataException
 	 */
-	public function getPacket() : Packet{
-		return PacketPool::getInstance()->getPacket($this->getString());
+	public function getPacket(PacketPool $packetPool) : Packet{
+		return $packetPool->getPacket($this->getString());
 	}
 
 	/**
