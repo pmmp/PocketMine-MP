@@ -1292,6 +1292,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		//TODO: move this to network session ticking (this is specifically related to net sync)
 		$this->networkSession->syncAttributes($this);
+		foreach($this->attributeMap->getAll() as $attribute){
+			$attribute->markSynchronized();
+		}
 
 		if(!$this->isAlive() and $this->spawned){
 			$this->onDeathUpdate($tickDiff);

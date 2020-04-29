@@ -686,9 +686,6 @@ class NetworkSession{
 			$this->sendDataPacket(UpdateAttributesPacket::create($entity->getId(), array_map(function(Attribute $attr) : NetworkAttribute{
 				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
 			}, $entries)));
-			foreach($entries as $entry){
-				$entry->markSynchronized();
-			}
 		}
 	}
 
