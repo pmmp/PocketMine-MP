@@ -48,7 +48,6 @@ use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
-use pocketmine\network\mcpe\protocol\SetActorDataPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
@@ -1647,17 +1646,18 @@ abstract class Entity{
 			$player = [$player];
 		}
 
-		$pk = SetActorDataPacket::create($this->getId(), $data ?? $this->getSyncedNetworkData(false));
+		$data = $data ?? $this->getSyncedNetworkData(false);
 
 		foreach($player as $p){
 			if($p === $this){
 				continue;
 			}
-			$p->getNetworkSession()->sendDataPacket(clone $pk);
+			$p->getNetworkSession()->syncActorData($this, $data);
 		}
 
 		if($this instanceof Player){
-			$this->getNetworkSession()->sendDataPacket($pk);
+			//TODO: bad hack, remove
+			$this->getNetworkSession()->syncActorData($this, $data);
 		}
 	}
 
