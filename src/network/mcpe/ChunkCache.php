@@ -74,6 +74,12 @@ class ChunkCache implements ChunkListener{
 	private function __construct(World $world, Compressor $compressor){
 		$this->world = $world;
 		$this->compressor = $compressor;
+		$worldId = spl_object_id($world);
+		$this->world->addOnUnloadCallback(function() use ($worldId) : void{
+			$this->caches = [];
+			unset(self::$instances[$worldId]);
+			\GlobalLogger::get()->debug("Destroyed chunk packet caches for world#$worldId");
+		});
 	}
 
 	/**
