@@ -1291,8 +1291,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->lastUpdate = $currentTick;
 
 		//TODO: move this to network session ticking (this is specifically related to net sync)
-		$this->networkSession->syncAttributes($this);
-		foreach($this->attributeMap->getAll() as $attribute){
+		$dirtyAttributes = $this->attributeMap->needSend();
+		$this->networkSession->syncAttributes($this, $dirtyAttributes);
+		foreach($dirtyAttributes as $attribute){
 			$attribute->markSynchronized();
 		}
 

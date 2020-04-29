@@ -680,12 +680,14 @@ class NetworkSession{
 		$this->sendDataPacket($pk);
 	}
 
-	public function syncAttributes(Living $entity, bool $sendAll = false) : void{
-		$entries = $sendAll ? $entity->getAttributeMap()->getAll() : $entity->getAttributeMap()->needSend();
-		if(count($entries) > 0){
+	/**
+	 * @param Attribute[] $attributes
+	 */
+	public function syncAttributes(Living $entity, array $attributes) : void{
+		if(count($attributes) > 0){
 			$this->sendDataPacket(UpdateAttributesPacket::create($entity->getId(), array_map(function(Attribute $attr) : NetworkAttribute{
 				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
-			}, $entries)));
+			}, $attributes)));
 		}
 	}
 
