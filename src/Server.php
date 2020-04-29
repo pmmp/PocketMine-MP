@@ -1253,7 +1253,9 @@ class Server{
 
 		$stream = PacketBatch::fromPackets(...$ev->getPackets());
 
+		/** @var Compressor[] $compressors */
 		$compressors = [];
+		/** @var NetworkSession[][] $compressorTargets */
 		$compressorTargets = [];
 		foreach($recipients as $recipient){
 			$compressor = $recipient->getCompressor();
