@@ -31,7 +31,6 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
-use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\player\Player;
@@ -185,7 +184,9 @@ class Arrow extends Projectile{
 			return;
 		}
 
-		$this->server->broadcastPackets($this->getViewers(), [TakeItemActorPacket::create($player->getId(), $this->getId())]);
+		foreach($this->getViewers() as $viewer){
+			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
+		}
 
 		$playerInventory->addItem(clone $item);
 		$this->flagForDespawn();

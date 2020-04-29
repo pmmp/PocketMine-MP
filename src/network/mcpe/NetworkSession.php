@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerCreationEvent;
@@ -72,6 +73,7 @@ use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
+use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
@@ -827,6 +829,10 @@ class NetworkSession{
 			$converter->coreItemStackToNet($inv->getLeggings()),
 			$converter->coreItemStackToNet($inv->getBoots())
 		));
+	}
+
+	public function onPlayerPickUpItem(Player $collector, Entity $pickedUp) : void{
+		$this->sendDataPacket(TakeItemActorPacket::create($collector->getId(), $pickedUp->getId()));
 	}
 
 	public function syncPlayerList() : void{

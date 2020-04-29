@@ -31,7 +31,6 @@ use pocketmine\item\Item;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
-use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\player\Player;
 use function get_class;
@@ -235,7 +234,9 @@ class ItemEntity extends Entity{
 			return;
 		}
 
-		$this->server->broadcastPackets($this->getViewers(), [TakeItemActorPacket::create($player->getId(), $this->getId())]);
+		foreach($this->getViewers() as $viewer){
+			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
+		}
 
 		$playerInventory->addItem(clone $item);
 		$this->flagForDespawn();
