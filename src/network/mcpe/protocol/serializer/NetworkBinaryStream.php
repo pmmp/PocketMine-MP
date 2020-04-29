@@ -30,7 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\BadPacketException;
+use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute;
 use pocketmine\network\mcpe\protocol\types\entity\BlockPosMetadataProperty;
@@ -190,7 +190,7 @@ class NetworkBinaryStream extends BinaryStream{
 		try{
 			return new SkinImage($height, $width, $data);
 		}catch(\InvalidArgumentException $e){
-			throw new BadPacketException($e->getMessage(), 0, $e);
+			throw new PacketDecodeException($e->getMessage(), 0, $e);
 		}
 	}
 
@@ -201,7 +201,7 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
 	public function getSlot() : ItemStack{
@@ -221,15 +221,15 @@ class NetworkBinaryStream extends BinaryStream{
 		if($nbtLen === 0xffff){
 			$c = $this->getByte();
 			if($c !== 1){
-				throw new BadPacketException("Unexpected NBT count $c");
+				throw new PacketDecodeException("Unexpected NBT count $c");
 			}
 			try{
 				$compound = (new NetworkNbtSerializer())->read($this->buffer, $this->offset, 512)->mustGetCompoundTag();
 			}catch(NbtDataException $e){
-				throw new BadPacketException($e->getMessage(), 0, $e);
+				throw new PacketDecodeException($e->getMessage(), 0, $e);
 			}
 		}elseif($nbtLen !== 0){
-			throw new BadPacketException("Unexpected fake NBT length $nbtLen");
+			throw new PacketDecodeException("Unexpected fake NBT length $nbtLen");
 		}
 
 		$canPlaceOn = [];
@@ -312,7 +312,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>
 	 *
-	 * @throws BadPacketException
+	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
 	public function getEntityMetadata() : array{
@@ -340,7 +340,7 @@ class NetworkBinaryStream extends BinaryStream{
 			case LongMetadataProperty::id(): return LongMetadataProperty::read($this);
 			case Vec3MetadataProperty::id(): return Vec3MetadataProperty::read($this);
 			default:
-				throw new BadPacketException("Unknown entity metadata type " . $type);
+				throw new PacketDecodeException("Unknown entity metadata type " . $type);
 		}
 	}
 
@@ -363,7 +363,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Reads a list of Attributes from the stream.
 	 * @return Attribute[]
 	 *
-	 * @throws BadPacketException if reading an attribute with an unrecognized name
+	 * @throws PacketDecodeException if reading an attribute with an unrecognized name
 	 * @throws BinaryDataException
 	 */
 	public function getAttributeList() : array{
@@ -537,7 +537,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * @return mixed[][], members are in the structure [name => [type, value]]
 	 * @phpstan-return array<string, array{0: int, 1: bool|int|float}>
 	 *
-	 * @throws BadPacketException
+	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
 	public function getGameRules() : array{
@@ -558,7 +558,7 @@ class NetworkBinaryStream extends BinaryStream{
 					$value = $this->getLFloat();
 					break;
 				default:
-					throw new BadPacketException("Unknown gamerule type $type");
+					throw new PacketDecodeException("Unknown gamerule type $type");
 			}
 
 			$rules[$name] = [$type, $value];
