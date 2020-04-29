@@ -246,6 +246,11 @@ class World implements ChunkManager{
 
 	/** @var bool */
 	private $closed = false;
+	/**
+	 * @var \Closure[]
+	 * @phpstan-var array<int, \Closure() : void>
+	 */
+	private $unloadCallbacks = [];
 
 	/** @var BlockLightUpdate|null */
 	private $blockLightUpdate = null;
@@ -405,6 +410,11 @@ class World implements ChunkManager{
 			throw new \InvalidStateException("Tried to close a world which is already closed");
 		}
 
+		foreach($this->unloadCallbacks as $callback){
+			$callback();
+		}
+		$this->unloadCallbacks = [];
+
 		foreach($this->chunks as $chunk){
 			$this->unloadChunk($chunk->getX(), $chunk->getZ(), false);
 		}
@@ -419,6 +429,14 @@ class World implements ChunkManager{
 		$this->temporalPosition = null;
 
 		$this->closed = true;
+	}
+
+	public function addOnUnloadCallback(\Closure $callback) : void{
+		$this->unloadCallbacks[spl_object_id($callback)] = $callback;
+	}
+
+	public function removeOnUnloadCallback(\Closure $callback) : void{
+		unset($this->unloadCallbacks[spl_object_id($callback)]);
 	}
 
 	/**
