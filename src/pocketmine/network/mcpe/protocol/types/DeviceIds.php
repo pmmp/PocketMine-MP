@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-interface DeviceIds{
+final class DeviceIds{
 
 	public const UNKNOWN = -1;
 	public const ANDROID = 1;
