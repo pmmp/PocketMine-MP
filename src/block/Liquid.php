@@ -251,8 +251,9 @@ abstract class Liquid extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$this->checkForHarden();
-		$this->pos->getWorldNonNull()->scheduleDelayedBlockUpdate($this->pos, $this->tickRate());
+		if(!$this->checkForHarden()){
+			$this->pos->getWorldNonNull()->scheduleDelayedBlockUpdate($this->pos, $this->tickRate());
+		}
 	}
 
 	public function onScheduledUpdate() : void{
@@ -469,8 +470,8 @@ abstract class Liquid extends Transparent{
 		return ($decay >= 0 && $blockDecay >= $decay) ? $decay : $blockDecay;
 	}
 
-	protected function checkForHarden() : void{
-
+	protected function checkForHarden() : bool{
+		return false;
 	}
 
 	protected function liquidCollide(Block $cause, Block $result) : bool{

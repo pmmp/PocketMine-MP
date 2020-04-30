@@ -54,7 +54,7 @@ class Lava extends Liquid{
 		return 2; //TODO: this is 1 in the nether
 	}
 
-	protected function checkForHarden() : void{
+	protected function checkForHarden() : bool{
 		$colliding = null;
 		foreach(Facing::ALL as $side){
 			if($side === Facing::DOWN){
@@ -70,10 +70,13 @@ class Lava extends Liquid{
 		if($colliding !== null){
 			if($this->decay === 0){
 				$this->liquidCollide($colliding, VanillaBlocks::OBSIDIAN());
+				return true;
 			}elseif($this->decay <= 4){
 				$this->liquidCollide($colliding, VanillaBlocks::COBBLESTONE());
+				return true;
 			}
 		}
+		return false;
 	}
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling) : void{
