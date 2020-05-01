@@ -52,6 +52,9 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 		$this->newBook = $newBook;
 		$this->action = $action;
 		$this->modifiedPages = $modifiedPages;
+		if($newBook.getBookSize()>64){
+			this.setCancelled(true);
+		}
 	}
 
 	/**
