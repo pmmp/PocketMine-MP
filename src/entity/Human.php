@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\inventory\EnderChestInventory;
+use pocketmine\entity\animation\TotemUseAnimation;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\projectile\ProjectileSource;
@@ -43,7 +44,6 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
-use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
@@ -303,7 +303,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->effectManager->add(new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 40 * 20, 1));
 			$this->effectManager->add(new EffectInstance(VanillaEffects::ABSORPTION(), 5 * 20, 1));
 
-			$this->broadcastEntityEvent(ActorEventPacket::CONSUME_TOTEM);
+			$this->broadcastAnimation(new TotemUseAnimation($this));
 			$this->getWorld()->addSound($this->location->add(0, $this->eyeHeight, 0), new TotemUseSound());
 
 			$hand = $this->inventory->getItemInHand();

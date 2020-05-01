@@ -28,6 +28,7 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\Water;
+use pocketmine\entity\animation\Animation;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityMotionEvent;
@@ -43,9 +44,7 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
-use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
@@ -1692,17 +1691,10 @@ abstract class Entity{
 	}
 
 	/**
-	 * @param Player[]|null $players
+	 * @param Player[]|null $targets
 	 */
-	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
-		$this->server->broadcastPackets($players ?? $this->getViewers(), [ActorEventPacket::create($this->id, $eventId, $eventData ?? 0)]);
-	}
-
-	/**
-	 * @param Player[]|null $players
-	 */
-	public function broadcastAnimation(?array $players, int $animationId) : void{
-		$this->server->broadcastPackets($players ?? $this->getViewers(), [AnimatePacket::create($this->id, $animationId)]);
+	public function broadcastAnimation(Animation $animation, ?array $targets = null) : void{
+		$this->server->broadcastPackets($targets ?? $this->getViewers(), $animation->encode());
 	}
 
 	public function __destruct(){

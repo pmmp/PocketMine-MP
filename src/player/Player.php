@@ -29,10 +29,14 @@ use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
 use pocketmine\crafting\CraftingGrid;
+use pocketmine\entity\animation\Animation;
+use pocketmine\entity\animation\ArmSwingAnimation;
+use pocketmine\entity\animation\CriticalHitAnimation;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Human;
+use pocketmine\entity\Living;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
@@ -80,7 +84,6 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -995,7 +998,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 			$this->getWorld()->setSleepTicks(0);
 
-			$this->broadcastAnimation([$this], AnimatePacket::ACTION_STOP_SLEEP);
+			$this->networkSession->sendDataPacket(AnimatePacket::create($this->getId(), AnimatePacket::ACTION_STOP_SLEEP));
 		}
 	}
 
@@ -1559,7 +1562,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->broadcastEntityEvent(ActorEventPacket::ARM_SWING, null, $this->getViewers());
+		$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 		if($target->onAttack($this->inventory->getItemInHand(), $face, $this)){
 			return true;
 		}
@@ -1585,7 +1588,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$block = $this->getWorld()->getBlock($pos);
 		$this->getWorld()->addParticle($pos, new BlockPunchParticle($block, $face));
 		$this->getWorld()->addSound($pos, new BlockPunchSound($block));
-		$this->broadcastEntityEvent(ActorEventPacket::ARM_SWING, null, $this->getViewers());
+		$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 
 		//TODO: destroy-progress level event
 	}
@@ -1603,7 +1606,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->doCloseInventory();
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7) and !$this->isSpectator()){
-			$this->broadcastEntityEvent(ActorEventPacket::ARM_SWING, null, $this->getViewers());
+			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 			$item = $this->inventory->getItemInHand();
 			$oldItem = clone $item;
 			if($this->getWorld()->useBreakOn($pos, $item, $this, true)){
@@ -1627,7 +1630,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->setUsingItem(false);
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), 13) and !$this->isSpectator()){
-			$this->broadcastEntityEvent(ActorEventPacket::ARM_SWING, null, $this->getViewers());
+			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
 			if($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
@@ -1686,10 +1689,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->broadcastEntityEvent(ActorEventPacket::ARM_SWING, null, $this->getViewers());
+		$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 
-		if($ev->getModifier(EntityDamageEvent::MODIFIER_CRITICAL) > 0){
-			$entity->broadcastAnimation(null, AnimatePacket::ACTION_CRITICAL_HIT);
+		if($ev->getModifier(EntityDamageEvent::MODIFIER_CRITICAL) > 0 and $entity instanceof Living){
+			$entity->broadcastAnimation(new CriticalHitAnimation($entity));
 		}
 
 		foreach($meleeEnchantments as $enchantment){
@@ -1756,7 +1759,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * Drops an item on the ground in front of the player.
 	 */
 	public function dropItem(Item $item) : void{
-		$this->broadcastEntityEvent(ActorEventPacket::ARM_SWING, null, $this->getViewers());
+		$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 		$this->getWorld()->dropItem($this->location->add(0, 1.3, 0), $item, $this->getDirectionVector()->multiply(0.4), 40);
 	}
 
@@ -2172,20 +2175,12 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->networkProperties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping ?? new Vector3(0, 0, 0));
 	}
 
-	public function broadcastEntityEvent(int $eventId, ?int $eventData = null, ?array $players = null) : void{
-		if($this->spawned and $players === null){
-			$players = $this->getViewers();
-			$players[] = $this;
+	public function broadcastAnimation(Animation $animation, ?array $targets = null) : void{
+		if($this->spawned and $targets === null){
+			$targets = $this->getViewers();
+			$targets[] = $this;
 		}
-		parent::broadcastEntityEvent($eventId, $eventData, $players);
-	}
-
-	public function broadcastAnimation(?array $players, int $animationId) : void{
-		if($this->spawned and $players === null){
-			$players = $this->getViewers();
-			$players[] = $this;
-		}
-		parent::broadcastAnimation($players, $animationId);
+		parent::broadcastAnimation($animation, $targets);
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{

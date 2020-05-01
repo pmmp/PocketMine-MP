@@ -25,6 +25,9 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\entity\animation\DeathAnimation;
+use pocketmine\entity\animation\HurtAnimation;
+use pocketmine\entity\animation\RespawnAnimation;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\EffectManager;
 use pocketmine\entity\effect\VanillaEffects;
@@ -46,7 +49,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
@@ -164,7 +166,7 @@ abstract class Living extends Entity{
 		parent::setHealth($amount);
 		$this->attributeMap->get(Attribute::HEALTH)->setValue(ceil($this->getHealth()), true);
 		if($this->isAlive() and !$wasAlive){
-			$this->broadcastEntityEvent(ActorEventPacket::RESPAWN);
+			$this->broadcastAnimation(new RespawnAnimation($this));
 		}
 	}
 
@@ -451,7 +453,7 @@ abstract class Living extends Entity{
 	}
 
 	protected function doHitAnimation() : void{
-		$this->broadcastEntityEvent(ActorEventPacket::HURT_ANIMATION);
+		$this->broadcastAnimation(new HurtAnimation($this));
 	}
 
 	public function knockBack(float $x, float $z, float $base = 0.4) : void{
@@ -504,7 +506,7 @@ abstract class Living extends Entity{
 	}
 
 	protected function startDeathAnimation() : void{
-		$this->broadcastEntityEvent(ActorEventPacket::DEATH_ANIMATION);
+		$this->broadcastAnimation(new DeathAnimation($this));
 	}
 
 	protected function endDeathAnimation() : void{

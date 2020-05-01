@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Sign;
 use pocketmine\block\utils\SignText;
+use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
@@ -158,11 +159,11 @@ class InGamePacketHandler extends PacketHandler{
 
 		switch($packet->event){
 			case ActorEventPacket::EATING_ITEM: //TODO: ignore this and handle it server-side
-				if($packet->data === 0){
+				$item = $this->player->getInventory()->getItemInHand();
+				if($item->isNull()){
 					return false;
 				}
-
-				$this->player->broadcastEntityEvent(ActorEventPacket::EATING_ITEM, $packet->data);
+				$this->player->broadcastAnimation(new ConsumingItemAnimation($this->player, $this->player->getInventory()->getItemInHand()));
 				break;
 			default:
 				return false;
