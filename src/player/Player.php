@@ -100,6 +100,7 @@ use pocketmine\world\ChunkLoader;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\particle\PunchBlockParticle;
 use pocketmine\world\Position;
+use pocketmine\world\sound\BlockPunchSound;
 use pocketmine\world\World;
 use function abs;
 use function assert;
@@ -1583,6 +1584,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function continueBreakBlock(Vector3 $pos, int $face) : void{
 		$block = $this->getWorld()->getBlock($pos);
 		$this->getWorld()->addParticle($pos, new PunchBlockParticle($block, $face));
+		$this->getWorld()->addSound($pos, new BlockPunchSound($block));
 		$this->broadcastEntityEvent(ActorEventPacket::ARM_SWING, null, $this->getViewers());
 
 		//TODO: destroy-progress level event
