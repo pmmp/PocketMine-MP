@@ -30,7 +30,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 /**
  * This particle appears when a player is attacking a block face in survival mode attempting to break it.
  */
-class PunchBlockParticle implements Particle{
+class BlockPunchParticle implements Particle{
 
 	/** @var Block */
 	private $block;
