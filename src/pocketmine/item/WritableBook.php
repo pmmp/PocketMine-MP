@@ -170,6 +170,13 @@ class WritableBook extends Item{
 
 		return $pages;
 	}
+	
+	/**
+	 * Returns the amount of pages in this book
+	 */
+	public function getBookSize(): int{
+		return sizeof($this->getPagesTag()->getValue());	
+	}
 
 	protected function getPagesTag() : ListTag{
 		$pagesTag = $this->getNamedTag()->getListTag(self::TAG_PAGES);
