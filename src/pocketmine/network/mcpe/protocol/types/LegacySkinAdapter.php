@@ -40,7 +40,7 @@ class LegacySkinAdapter implements SkinAdapter{
 			$skin->isPersona(),
 			$skin->getCape()->isOnClassicSkin(),
 			$skin->getCape()->getId(),
-			"",
+			null,
 			$skin->getArmSize(),
 			$skin->getSkinColor(),
 			$skin->getPersonaPieces(),
