@@ -44,6 +44,7 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 	 * TODO: remove this on 4.0
 	 */
 	public const LEGACY_ID_MAP_BC = [
+		-1 => ":",
 		EntityLegacyIds::NPC => "minecraft:npc",
 		EntityLegacyIds::PLAYER => "minecraft:player",
 		EntityLegacyIds::WITHER_SKELETON => "minecraft:wither_skeleton",

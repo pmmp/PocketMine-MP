@@ -754,6 +754,14 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
+		//TODO: we want to block out this packet completely, but we don't yet know the full scope of sounds that the client sends us from here
+		switch($packet->sound){
+			case LevelSoundEventPacket::SOUND_LAND:
+			case LevelSoundEventPacket::SOUND_FALL:
+			case LevelSoundEventPacket::SOUND_FALL_SMALL:
+			case LevelSoundEventPacket::SOUND_FALL_BIG:
+				return true;
+		}
 		$this->player->getWorld()->broadcastPacketToViewers($this->player->getPosition(), $packet);
 		return true;
 	}

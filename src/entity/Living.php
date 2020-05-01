@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\EffectManager;
 use pocketmine\entity\effect\VanillaEffects;
@@ -51,6 +52,9 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
+use pocketmine\world\sound\EntityLandSound;
+use pocketmine\world\sound\EntityLongFallSound;
+use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
 use function array_shift;
 use function atan2;
@@ -248,6 +252,22 @@ abstract class Living extends Entity{
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
+
+			$this->getWorld()->addSound($this->location, $damage > 4 ?
+				new EntityLongFallSound($this) :
+				new EntityShortFallSound($this)
+			);
+		}else{
+			$fallBlockPos = $this->location->floor();
+			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+			for(
+			;
+				$fallBlock->getId() === BlockLegacyIds::AIR;
+				$fallBlockPos = $fallBlockPos->subtract(0, 1, 0), $fallBlock = $this->getWorld()->getBlock($fallBlockPos)
+			){
+				//this allows the correct sound to be played when landing in snow
+			}
+			$this->getWorld()->addSound($this->location, new EntityLandSound($this, $fallBlock));
 		}
 	}
 
