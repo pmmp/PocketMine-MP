@@ -105,7 +105,7 @@ class HorseInventory extends AbstractHorseInventory{
 	public function onOpen(Player $who) : void{
 		$pk = new UpdateEquipPacket();
 		$pk->entityUniqueId = $this->holder->getId();
-		$pk->unknownVarint = 0;
+		$pk->windowSlotCount = 0;
 		$pk->windowType = $this->getNetworkType();
 		$pk->windowId = $who->getWindowId($this);
 		$pk->namedtag = (new NetworkLittleEndianNBTStream())->write($this->getNamedtag());
