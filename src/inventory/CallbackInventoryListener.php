@@ -72,13 +72,17 @@ class CallbackInventoryListener implements InventoryListener{
 	}
 
 	public function onSlotChange(Inventory $inventory, int $slot, Item $oldItem) : void{
-		($this->onSlotChangeCallback)($inventory, $slot, $oldItem);
+		if($this->onSlotChangeCallback !== null){
+			($this->onSlotChangeCallback)($inventory, $slot, $oldItem);
+		}
 	}
 
 	/**
 	 * @param Item[] $oldContents
 	 */
 	public function onContentChange(Inventory $inventory, array $oldContents) : void{
-		($this->onContentChangeCallback)($inventory, $oldContents);
+		if($this->onContentChangeCallback !== null){
+			($this->onContentChangeCallback)($inventory, $oldContents);
+		}
 	}
 }
