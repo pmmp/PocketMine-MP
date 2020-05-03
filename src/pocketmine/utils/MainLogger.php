@@ -70,7 +70,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	private $syncFlush = false;
 
 	/** @var string */
-	private $format = TextFormat::DARK_GRAY . "%s " . TextFormat::RESET . "%s%s|%s > %s" . TextFormat::RESET;
+	private $format = TextFormat::DARK_AQUA . "%s " . TextFormat::RESET . "%s%s|%s > %s" . TextFormat::RESET;
 
 	/** @var bool */
 	private $mainThreadHasFormattingCodes = false;
