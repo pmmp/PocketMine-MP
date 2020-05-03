@@ -384,6 +384,10 @@ abstract class BaseInventory implements Inventory{
 		}
 	}
 
+	public function removeAllListeners() : void{
+		$this->listeners = [];
+	}
+
 	public function getListeners() : array{
 		return $this->listeners;
 	}

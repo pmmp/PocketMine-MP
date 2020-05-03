@@ -164,6 +164,8 @@ interface Inventory{
 	 */
 	public function removeListeners(InventoryListener ...$listeners) : void;
 
+	public function removeAllListeners() : void;
+
 	/**
 	 * @return InventoryListener[]
 	 */
