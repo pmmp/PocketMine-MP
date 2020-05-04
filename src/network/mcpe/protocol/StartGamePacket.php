@@ -28,7 +28,6 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use function count;
@@ -214,9 +213,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 
 		$this->enchantmentSeed = $in->getVarInt();
 
-		$offset = $in->getOffset();
-		$blockTable = (new NetworkNbtSerializer())->read($in->getBuffer(), $offset, 512)->getTag();
-		$in->setOffset($offset);
+		$blockTable = $in->getNbtRoot()->getTag();
 		if(!($blockTable instanceof ListTag)){
 			throw new \UnexpectedValueException("Wrong block table root NBT tag type");
 		}

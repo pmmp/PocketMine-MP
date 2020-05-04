@@ -223,11 +223,7 @@ class NetworkBinaryStream extends BinaryStream{
 			if($c !== 1){
 				throw new PacketDecodeException("Unexpected NBT count $c");
 			}
-			try{
-				$compound = (new NetworkNbtSerializer())->read($this->buffer, $this->offset, 512)->mustGetCompoundTag();
-			}catch(NbtDataException $e){
-				throw new PacketDecodeException($e->getMessage(), 0, $e);
-			}
+			$compound = $this->getNbtCompoundRoot();
 		}elseif($nbtLen !== 0){
 			throw new PacketDecodeException("Unexpected fake NBT length $nbtLen");
 		}
@@ -706,5 +702,24 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putVarInt($structureEditorData->structureBlockType);
 		$this->putStructureSettings($structureEditorData->structureSettings);
 		$this->putVarInt($structureEditorData->structureRedstoneSaveMove);
+	}
+
+	public function getNbtRoot() : TreeRoot{
+		$offset = $this->getOffset();
+		try{
+			return (new NetworkNbtSerializer())->read($this->getBuffer(), $offset, 512);
+		}catch(NbtDataException $e){
+			throw PacketDecodeException::wrap($e, "Failed decoding NBT root");
+		}finally{
+			$this->setOffset($offset);
+		}
+	}
+
+	public function getNbtCompoundRoot() : CompoundTag{
+		try{
+			return $this->getNbtRoot()->mustGetCompoundTag();
+		}catch(NbtDataException $e){
+			throw PacketDecodeException::wrap($e, "Expected TAG_Compound NBT root");
+		}
 	}
 }
