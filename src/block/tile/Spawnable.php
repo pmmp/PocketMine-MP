@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use function get_class;
 
@@ -36,9 +35,6 @@ abstract class Spawnable extends Tile{
 	private $spawnCompoundCache = null;
 	/** @var bool */
 	private $dirty = true; //default dirty, until it's been spawned appropriately on the world
-
-	/** @var NetworkNbtSerializer|null */
-	private static $nbtWriter = null;
 
 	/**
 	 * Returns whether the tile needs to be respawned to viewers.
