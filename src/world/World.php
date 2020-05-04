@@ -514,22 +514,14 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Queues a packet to be sent to all players using the chunk at the specified X/Z coordinates at the end of the
-	 * current tick.
+	 * Broadcasts a packet to every player who has the target position within their view distance.
 	 */
-	public function addChunkPacket(int $chunkX, int $chunkZ, ClientboundPacket $packet) : void{
-		if(!isset($this->chunkPackets[$index = World::chunkHash($chunkX, $chunkZ)])){
+	public function broadcastPacketToViewers(Vector3 $pos, ClientboundPacket $packet) : void{
+		if(!isset($this->chunkPackets[$index = World::chunkHash($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4)])){
 			$this->chunkPackets[$index] = [$packet];
 		}else{
 			$this->chunkPackets[$index][] = $packet;
 		}
-	}
-
-	/**
-	 * Broadcasts a packet to every player who has the target position within their view distance.
-	 */
-	public function broadcastPacketToViewers(Vector3 $pos, ClientboundPacket $packet) : void{
-		$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $packet);
 	}
 
 	public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true) : void{
