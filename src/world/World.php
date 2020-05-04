@@ -477,20 +477,6 @@ class World implements ChunkManager{
 		}
 	}
 
-	/**
-	 * Broadcasts a LevelEvent to players in the area. This could be sound, particles, weather changes, etc.
-	 *
-	 * @param Vector3|null $pos If null, broadcasts to every player in the World
-	 */
-	public function broadcastLevelEvent(?Vector3 $pos, int $evid, int $data = 0) : void{
-		$pk = LevelEventPacket::create($evid, $data, $pos);
-		if($pos !== null){
-			$this->broadcastPacketToViewers($pos, $pk);
-		}else{
-			$this->broadcastGlobalPacket($pk);
-		}
-	}
-
 	public function getAutoSave() : bool{
 		return $this->autoSave;
 	}

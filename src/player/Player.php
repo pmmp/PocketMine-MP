@@ -1577,7 +1577,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			//TODO: improve this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
 			$breakTime = ceil($target->getBreakInfo()->getBreakTime($this->inventory->getItemInHand()) * 20);
 			if($breakTime > 0){
-				$this->getWorld()->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 / $breakTime));
+				$this->getWorld()->broadcastPacketToViewers($pos, LevelEventPacket::create(LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 / $breakTime), $pos));
 			}
 		}
 
@@ -1594,7 +1594,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	public function stopBreakBlock(Vector3 $pos) : void{
-		$this->getWorld()->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
+		$this->getWorld()->broadcastPacketToViewers($pos, LevelEventPacket::create(LevelEventPacket::EVENT_BLOCK_STOP_BREAK, 0, $pos));
 	}
 
 	/**
