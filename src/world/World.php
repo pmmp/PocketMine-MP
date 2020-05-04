@@ -168,8 +168,6 @@ class World implements ChunkManager{
 
 	/** @var ClientboundPacket[][] */
 	private $chunkPackets = [];
-	/** @var ClientboundPacket[] */
-	private $globalPackets = [];
 
 	/** @var float[] */
 	private $unloadQueue = [];
@@ -534,13 +532,6 @@ class World implements ChunkManager{
 		$this->addChunkPacket($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $packet);
 	}
 
-	/**
-	 * Broadcasts a packet to every player in the world.
-	 */
-	public function broadcastGlobalPacket(ClientboundPacket $packet) : void{
-		$this->globalPackets[] = $packet;
-	}
-
 	public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true) : void{
 		$loaderId = spl_object_id($loader);
 
@@ -781,13 +772,6 @@ class World implements ChunkManager{
 
 		if($this->sleepTicks > 0 and --$this->sleepTicks <= 0){
 			$this->checkSleep();
-		}
-
-		if(count($this->globalPackets) > 0){
-			if(count($this->players) > 0){
-				$this->server->broadcastPackets($this->players, $this->globalPackets);
-			}
-			$this->globalPackets = [];
 		}
 
 		foreach($this->chunkPackets as $index => $entries){
