@@ -629,6 +629,9 @@ class World implements ChunkManager{
 	 * @param Player ...$targets If empty, will send to all players in the world.
 	 */
 	public function sendTime(Player ...$targets) : void{
+		if(count($targets) === 0){
+			$targets = $this->players;
+		}
 		foreach($targets as $player){
 			$player->getNetworkSession()->syncWorldTime($this->time);
 		}
