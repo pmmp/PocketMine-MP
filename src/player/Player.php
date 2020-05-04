@@ -104,6 +104,8 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\particle\BlockPunchParticle;
 use pocketmine\world\Position;
 use pocketmine\world\sound\BlockPunchSound;
+use pocketmine\world\sound\EntityAttackNoDamageSound;
+use pocketmine\world\sound\EntityAttackSound;
 use pocketmine\world\World;
 use function abs;
 use function assert;
@@ -1686,10 +1688,13 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$entity->attack($ev);
 
+		$soundPos = $entity->getPosition()->add(0, $entity->width / 2, 0);
 		if($ev->isCancelled()){
+			$this->getWorld()->addSound($soundPos, new EntityAttackNoDamageSound());
 			return false;
 		}
 		$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
+		$this->getWorld()->addSound($soundPos, new EntityAttackSound());
 
 		if($ev->getModifier(EntityDamageEvent::MODIFIER_CRITICAL) > 0 and $entity instanceof Living){
 			$entity->broadcastAnimation(new CriticalHitAnimation($entity));

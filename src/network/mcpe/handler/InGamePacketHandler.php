@@ -757,6 +757,9 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
 		//TODO: we want to block out this packet completely, but we don't yet know the full scope of sounds that the client sends us from here
 		switch($packet->sound){
+			case LevelSoundEventPacket::SOUND_ATTACK:
+			case LevelSoundEventPacket::SOUND_ATTACK_NODAMAGE:
+			case LevelSoundEventPacket::SOUND_ATTACK_STRONG: //TODO: reassess this, seems like the regular attack is never used ??
 			case LevelSoundEventPacket::SOUND_HIT: //block punch, maybe entity attack too?
 			case LevelSoundEventPacket::SOUND_LAND:
 			case LevelSoundEventPacket::SOUND_FALL:
