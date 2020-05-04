@@ -297,11 +297,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_FLAG_OVER_SCAFFOLDING = 69;
 	public const DATA_FLAG_FALL_THROUGH_SCAFFOLDING = 70;
 	public const DATA_FLAG_BLOCKING = 71; //shield
-	public const DATA_FLAG_DISABLE_BLOCKING = 72;
-	//73 is set when a player is attacked while using shield, unclear on purpose
-	//74 related to shield usage, needs further investigation
+	public const DATA_FLAG_TRANSITION_BLOCKING = 72;
+	public const DATA_FLAG_BLOCKED_USING_SHIELD = 73;
+	public const DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = 74;
 	public const DATA_FLAG_SLEEPING = 75;
-	//76 related to sleeping, unclear usage
+	public const DATA_FLAG_WANTS_TO_WAKE = 76;
 	public const DATA_FLAG_TRADE_INTEREST = 77;
 	public const DATA_FLAG_DOOR_BREAKER = 78; //...
 	public const DATA_FLAG_BREAKING_OBSTRUCTION = 79;
@@ -311,8 +311,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public const DATA_FLAG_ROARING = 83;
 	public const DATA_FLAG_DELAYED_ATTACKING = 84;
 	public const DATA_FLAG_AVOIDING_MOBS = 85;
-	//86 used by RangedAttackGoal
-	//87 used by NearestAttackableTargetGoal
+	public const DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = 86;
+	public const DATA_FLAG_HIDDEN_WHEN_INVISIBLE = 87; //??????????????????
+	public const DATA_FLAG_IS_IN_UI = 88;
+	public const DATA_FLAG_STALKING = 89;
+	public const DATA_FLAG_EMOTING = 90;
+	public const DATA_FLAG_CELEBRATING = 91;
 
 	public const DATA_PLAYER_FLAG_SLEEP = 1;
 	public const DATA_PLAYER_FLAG_DEAD = 2; //TODO: CHECK
