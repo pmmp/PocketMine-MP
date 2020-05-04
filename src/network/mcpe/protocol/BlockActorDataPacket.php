@@ -25,7 +25,10 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\nbt\NbtDataException;
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 
 class BlockActorDataPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::BLOCK_ACTOR_DATA_PACKET;
@@ -36,10 +39,16 @@ class BlockActorDataPacket extends DataPacket implements ClientboundPacket, Serv
 	public $y;
 	/** @var int */
 	public $z;
-	/** @var string */
+	/**
+	 * @var CacheableNbt
+	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
+	 */
 	public $namedtag;
 
-	public static function create(int $x, int $y, int $z, string $nbt) : self{
+	/**
+	 * @phpstan-param CacheableNbt<\pocketmine\nbt\tag\CompoundTag> $nbt
+	 */
+	public static function create(int $x, int $y, int $z, CacheableNbt $nbt) : self{
 		$result = new self;
 		[$result->x, $result->y, $result->z] = [$x, $y, $z];
 		$result->namedtag = $nbt;
@@ -48,12 +57,20 @@ class BlockActorDataPacket extends DataPacket implements ClientboundPacket, Serv
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$in->getBlockPosition($this->x, $this->y, $this->z);
-		$this->namedtag = $in->getRemaining();
+		try{
+			$offset = $in->getOffset();
+			$this->namedtag = new CacheableNbt(
+				(new NetworkNbtSerializer())->read($this->getBinaryStream()->getBuffer(), $offset, 512)->mustGetCompoundTag()
+			);
+			$in->setOffset($offset);
+		}catch(NbtDataException $e){
+			throw PacketDecodeException::wrap($e, "Failed decoding block actor NBT");
+		}
 	}
 
 	protected function encodePayload(NetworkBinaryStream $out) : void{
 		$out->putBlockPosition($this->x, $this->y, $this->z);
-		$out->put($this->namedtag);
+		$out->put($this->namedtag->getEncodedNbt());
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

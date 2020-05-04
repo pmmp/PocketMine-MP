@@ -36,7 +36,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
@@ -72,7 +72,6 @@ use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
@@ -87,6 +86,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use function array_push;
 use function base64_encode;
 use function count;
@@ -554,12 +554,8 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$block = $this->player->getLocation()->getWorldNonNull()->getBlock($pos);
-		try{
-			$offset = 0;
-			$nbt = (new NetworkNbtSerializer())->read($packet->namedtag, $offset, 512)->mustGetCompoundTag();
-		}catch(NbtDataException $e){
-			throw BadPacketException::wrap($e);
-		}
+		$nbt = $packet->namedtag->getRoot();
+		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 
 		if($block instanceof Sign){
 			if($nbt->hasTag("Text", StringTag::class)){
@@ -580,7 +576,7 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			}
 
-			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->namedtag));
+			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->namedtag->getEncodedNbt()));
 		}
 
 		return false;

@@ -90,7 +90,7 @@ final class ChunkSerializer{
 		$stream = new BinaryStream();
 		foreach($chunk->getTiles() as $tile){
 			if($tile instanceof Spawnable){
-				$stream->put($tile->getSerializedSpawnCompound());
+				$stream->put($tile->getSerializedSpawnCompound()->getEncodedNbt());
 			}
 		}
 
