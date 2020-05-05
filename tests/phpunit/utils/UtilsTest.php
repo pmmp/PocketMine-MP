@@ -84,6 +84,11 @@ class UtilsTest extends TestCase{
 		self::assertEquals("true dummy", $tags["ignoreCancelled"]);
 	}
 
+	public function testParseEmptyDocComment() : void{
+		$tags = Utils::parseDocComment("");
+		self::assertCount(0, $tags);
+	}
+
 	public function testNamespacedNiceClosureName() : void{
 		//be careful with this test. The closure has to be declared on the same line as the assertion.
 		self::assertSame('closure@' . Utils::cleanPath(__FILE__) . '#L' . __LINE__, Utils::getNiceClosureName(function() : void{}));
