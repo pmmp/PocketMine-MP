@@ -189,7 +189,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/** @var GameMode */
 	protected $gamemode;
 
-	/** @var bool[] chunkHash => bool (true = sent, false = needs sending) */
+	/**
+	 * @var UsedChunkStatus[] chunkHash => status
+	 * @phpstan-var array<int, UsedChunkStatus>
+	 */
 	protected $usedChunks = [];
 	/** @var bool[] chunkHash => dummy */
 	protected $loadQueue = [];
@@ -286,7 +289,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		//load the spawn chunk so we can see the terrain
 		$world->registerChunkLoader($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);
 		$world->registerChunkListener($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4);
-		$this->usedChunks[World::chunkHash($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4)] = false;
+		$this->usedChunks[World::chunkHash($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4)] = UsedChunkStatus::NEEDED();
 
 		if($namedtag === null){
 			$namedtag = EntityFactory::createBaseNBT($spawn);
@@ -717,7 +720,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$oldWorld = $this->location->getWorld();
 		if(parent::switchWorld($targetWorld)){
 			if($oldWorld !== null){
-				foreach($this->usedChunks as $index => $d){
+				foreach($this->usedChunks as $index => $status){
 					World::getXZ($index, $X, $Z);
 					$this->unloadChunk($X, $Z, $oldWorld);
 				}
@@ -778,7 +781,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 			++$count;
 
-			$this->usedChunks[$index] = false;
+			$this->usedChunks[$index] = UsedChunkStatus::NEEDED();
 			$this->getWorld()->registerChunkLoader($this, $X, $Z, true);
 			$this->getWorld()->registerChunkListener($this, $X, $Z);
 
@@ -787,20 +790,20 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			}
 
 			unset($this->loadQueue[$index]);
-			$this->usedChunks[$index] = true;
+			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
 
-			$this->networkSession->startUsingChunk($X, $Z, function(int $chunkX, int $chunkZ) : void{
+			$this->networkSession->startUsingChunk($X, $Z, function(int $chunkX, int $chunkZ) use ($index) : void{
+				$this->usedChunks[$index] = UsedChunkStatus::SENT();
 				if($this->spawned){
 					$this->spawnEntitiesOnChunk($chunkX, $chunkZ);
 				}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
 					$this->spawned = true;
 
-					foreach($this->usedChunks as $chunkHash => $hasSent){
-						if(!$hasSent){
-							continue;
+					foreach($this->usedChunks as $chunkHash => $status){
+						if($status->equals(UsedChunkStatus::SENT())){
+							World::getXZ($chunkHash, $_x, $_z);
+							$this->spawnEntitiesOnChunk($_x, $_z);
 						}
-						World::getXZ($chunkHash, $_x, $_z);
-						$this->spawnEntitiesOnChunk($_x, $_z);
 					}
 
 					$this->networkSession->onTerrainReady();
@@ -894,13 +897,13 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$unloadChunks = $this->usedChunks;
 
 		foreach($this->selectChunks() as $hash){
-			if(!isset($this->usedChunks[$hash]) or $this->usedChunks[$hash] === false){
+			if(!isset($this->usedChunks[$hash]) or $this->usedChunks[$hash]->equals(UsedChunkStatus::NEEDED())){
 				$newOrder[$hash] = true;
 			}
 			unset($unloadChunks[$hash]);
 		}
 
-		foreach($unloadChunks as $index => $bool){
+		foreach($unloadChunks as $index => $status){
 			World::getXZ($index, $X, $Z);
 			$this->unloadChunk($X, $Z);
 		}
@@ -915,6 +918,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	public function isUsingChunk(int $chunkX, int $chunkZ) : bool{
 		return isset($this->usedChunks[World::chunkHash($chunkX, $chunkZ)]);
+	}
+
+	public function hasReceivedChunk(int $chunkX, int $chunkZ) : bool{
+		$status = $this->usedChunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
+		return $status !== null and $status->equals(UsedChunkStatus::SENT());
 	}
 
 	public function doChunkRequests() : void{
@@ -1982,7 +1990,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->hiddenPlayers = [];
 
 		if($this->location->isValid()){
-			foreach($this->usedChunks as $index => $d){
+			foreach($this->usedChunks as $index => $status){
 				World::getXZ($index, $chunkX, $chunkZ);
 				$this->unloadChunk($chunkX, $chunkZ);
 			}
@@ -2342,7 +2350,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	public function onChunkChanged(Chunk $chunk) : void{
 		if(isset($this->usedChunks[$hash = World::chunkHash($chunk->getX(), $chunk->getZ())])){
-			$this->usedChunks[$hash] = false;
+			$this->usedChunks[$hash] = UsedChunkStatus::NEEDED();
 			$this->nextChunkOrderRun = 0;
 		}
 	}

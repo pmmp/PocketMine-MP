@@ -1528,7 +1528,10 @@ abstract class Entity{
 
 	public function spawnTo(Player $player) : void{
 		$id = spl_object_id($player);
-		if(!isset($this->hasSpawned[$id]) and $player->isUsingChunk($this->location->getFloorX() >> 4, $this->location->getFloorZ() >> 4)){
+		//TODO: this will cause some visible lag during chunk resends; if the player uses a spawn egg in a chunk, the
+		//created entity won't be visible until after the resend arrives. However, this is better than possibly crashing
+		//the player by sending them entities too early.
+		if(!isset($this->hasSpawned[$id]) and $player->hasReceivedChunk($this->location->getFloorX() >> 4, $this->location->getFloorZ() >> 4)){
 			$this->hasSpawned[$id] = $player;
 
 			$this->sendSpawnPacket($player);
