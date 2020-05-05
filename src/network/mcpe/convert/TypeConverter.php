@@ -39,28 +39,13 @@ use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
 use pocketmine\player\Player;
+use pocketmine\utils\SingletonTrait;
 
 class TypeConverter{
+	use SingletonTrait;
+
 	private const DAMAGE_TAG = "Damage"; //TAG_Int
 	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
-
-	/** @var self|null */
-	private static $instance;
-
-	private function __construct(){
-		//NOOP
-	}
-
-	public static function getInstance() : self{
-		if(self::$instance === null){
-			self::$instance = new self;
-		}
-		return self::$instance;
-	}
-
-	public static function setInstance(self $instance) : void{
-		self::$instance = $instance;
-	}
 
 	public function coreItemStackToRecipeIngredient(Item $itemStack) : RecipeIngredient{
 		$meta = $itemStack->getMeta();
