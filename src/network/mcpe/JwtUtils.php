@@ -36,12 +36,7 @@ final class JwtUtils{
 		if(count($v) !== 3){
 			throw new \UnexpectedValueException("Expected exactly 3 JWT parts, got " . count($v));
 		}
-		$payloadB64 = $v[1];
-		$payloadJSON = self::b64UrlDecode($payloadB64);
-		if($payloadJSON === false){
-			throw new \UnexpectedValueException("Invalid base64 JWT payload");
-		}
-		$result = json_decode($payloadJSON, true);
+		$result = json_decode(self::b64UrlDecode($v[1]), true);
 		if(!is_array($result)){
 			throw new \UnexpectedValueException("Failed to decode JWT payload JSON: " . json_last_error_msg());
 		}
