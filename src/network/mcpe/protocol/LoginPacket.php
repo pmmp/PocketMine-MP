@@ -33,7 +33,9 @@ use pocketmine\network\mcpe\protocol\types\login\JwtChain;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use function is_array;
+use function is_object;
 use function json_decode;
+use function json_last_error_msg;
 
 class LoginPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
@@ -69,6 +71,9 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 		$buffer = new BinaryStream($in->getString());
 
 		$chainDataJson = json_decode($buffer->get($buffer->getLInt()));
+		if(!is_object($chainDataJson)){
+			throw new PacketDecodeException("Failed decoding chain data JSON: " . json_last_error_msg());
+		}
 		$mapper = new \JsonMapper;
 		$mapper->bExceptionOnMissingData = true;
 		$mapper->bExceptionOnUndefinedProperty = true;
