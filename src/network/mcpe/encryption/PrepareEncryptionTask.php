@@ -45,11 +45,6 @@ class PrepareEncryptionTask extends AsyncTask{
 	private $handshakeJwt = null;
 	/** @var PublicKeyInterface */
 	private $clientPub;
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure(string $encryptionKey, string $handshakeJwt) : void
-	 */
-	private $onCompletion;
 
 	/**
 	 * @phpstan-param \Closure(string $encryptionKey, string $handshakeJwt) : void $onCompletion
@@ -62,7 +57,6 @@ class PrepareEncryptionTask extends AsyncTask{
 		$this->serverPrivateKey = self::$SERVER_PRIVATE_KEY;
 		$this->clientPub = $clientPub;
 		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);
-		$this->onCompletion = $onCompletion;
 	}
 
 	public function onRun() : void{
