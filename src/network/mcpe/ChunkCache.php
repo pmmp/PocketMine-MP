@@ -51,6 +51,16 @@ class ChunkCache implements ChunkListener{
 	public static function getInstance(World $world, Compressor $compressor) : self{
 		$worldId = spl_object_id($world);
 		$compressorId = spl_object_id($compressor);
+		if(!isset(self::$instances[$worldId])){
+			self::$instances[$worldId] = [];
+			$world->addOnUnloadCallback(static function() use ($worldId) : void{
+				foreach(self::$instances[$worldId] as $cache){
+					$cache->caches = [];
+				}
+				unset(self::$instances[$worldId]);
+				\GlobalLogger::get()->debug("Destroyed chunk packet caches for world#$worldId");
+			});
+		}
 		if(!isset(self::$instances[$worldId][$compressorId])){
 			\GlobalLogger::get()->debug("Created new chunk packet cache (world#$worldId, compressor#$compressorId)");
 			self::$instances[$worldId][$compressorId] = new self($world, $compressor);
@@ -74,12 +84,6 @@ class ChunkCache implements ChunkListener{
 	private function __construct(World $world, Compressor $compressor){
 		$this->world = $world;
 		$this->compressor = $compressor;
-		$worldId = spl_object_id($world);
-		$this->world->addOnUnloadCallback(function() use ($worldId) : void{
-			$this->caches = [];
-			unset(self::$instances[$worldId]);
-			\GlobalLogger::get()->debug("Destroyed chunk packet caches for world#$worldId");
-		});
 	}
 
 	/**
