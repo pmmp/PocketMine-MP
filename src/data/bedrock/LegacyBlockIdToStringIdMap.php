@@ -31,39 +31,10 @@ use function is_int;
 use function is_string;
 use function json_decode;
 
-final class LegacyBlockIdToStringIdMap{
+final class LegacyBlockIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
 	use SingletonTrait;
 
-	/**
-	 * @var string[]
-	 * @phpstan-var array<int, string>
-	 */
-	private $legacyToString = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
-	 */
-	private $stringToLegacy = [];
-
 	public function __construct(){
-		$stringToLegacyId = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . 'vanilla/block_id_map.json'), true);
-		if(!is_array($stringToLegacyId)){
-			throw new AssumptionFailedError("Invalid format of block_id_map");
-		}
-		foreach($stringToLegacyId as $stringId => $legacyId){
-			if(!is_string($stringId) or !is_int($legacyId)){
-				throw new AssumptionFailedError("Block ID map should have string keys and int values");
-			}
-			$this->legacyToString[$legacyId] = $stringId;
-			$this->stringToLegacy[$stringId] = $legacyId;
-		}
-	}
-
-	public function legacyToString(int $legacy) : ?string{
-		return $this->legacyToString[$legacy] ?? null;
-	}
-
-	public function stringToLegacy(string $string) : ?int{
-		return $this->stringToLegacy[$string] ?? null;
+		parent::__construct(\pocketmine\RESOURCE_PATH . 'vanilla/block_id_map.json');
 	}
 }

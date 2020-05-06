@@ -31,39 +31,10 @@ use function is_int;
 use function is_string;
 use function json_decode;
 
-final class LegacyEntityIdToStringIdMap{
+final class LegacyEntityIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
 	use SingletonTrait;
 
-	/**
-	 * @var string[]
-	 * @phpstan-var array<int, string>
-	 */
-	private $legacyToString = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
-	 */
-	private $stringToLegacy = [];
-
 	public function __construct(){
-		$rawJson = @file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/entity_id_map.json');
-		if($rawJson === false) throw new AssumptionFailedError("Missing required resource file");
-		$mapping = json_decode($rawJson, true);
-		if(!is_array($mapping)) throw new AssumptionFailedError("Entity ID map should be a JSON object");
-		foreach($mapping as $stringId => $legacyId){
-			if(!is_string($stringId) or !is_int($legacyId)){
-				throw new AssumptionFailedError("Block ID map should have string keys and int values");
-			}
-			$this->legacyToString[$legacyId] = $stringId;
-			$this->stringToLegacy[$stringId] = $legacyId;
-		}
-	}
-
-	public function legacyToString(int $legacy) : ?string{
-		return $this->legacyToString[$legacy] ?? null;
-	}
-
-	public function stringToLegacy(string $string) : ?int{
-		return $this->stringToLegacy[$string] ?? null;
+		parent::__construct(\pocketmine\RESOURCE_PATH . '/vanilla/entity_id_map.json');
 	}
 }
