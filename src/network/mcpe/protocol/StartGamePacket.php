@@ -31,9 +31,6 @@ use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use function count;
-use function file_get_contents;
-use function json_decode;
-use const pocketmine\RESOURCE_PATH;
 
 class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
