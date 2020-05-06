@@ -362,30 +362,6 @@ class Utils{
 	}
 
 	/**
-	 * @return mixed[] array of claims
-	 * @phpstan-return array<string, mixed>
-	 *
-	 * @throws \UnexpectedValueException
-	 */
-	public static function getJwtClaims(string $token) : array{
-		$v = explode(".", $token);
-		if(count($v) !== 3){
-			throw new \UnexpectedValueException("Expected exactly 3 JWT parts, got " . count($v));
-		}
-		$payloadB64 = $v[1];
-		$payloadJSON = base64_decode(strtr($payloadB64, '-_', '+/'), true);
-		if($payloadJSON === false){
-			throw new \UnexpectedValueException("Invalid base64 JWT payload");
-		}
-		$result = json_decode($payloadJSON, true);
-		if(!is_array($result)){
-			throw new \UnexpectedValueException("Failed to decode JWT payload JSON: " . json_last_error_msg());
-		}
-
-		return $result;
-	}
-
-	/**
 	 * @param object $value
 	 */
 	public static function getReferenceCount($value, bool $includeCurrent = true) : int{

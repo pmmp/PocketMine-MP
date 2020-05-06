@@ -25,13 +25,13 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
 use pocketmine\network\mcpe\protocol\types\login\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\JwtChain;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
-use pocketmine\utils\Utils;
 use function is_array;
 use function json_decode;
 
@@ -83,7 +83,7 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 		foreach($this->chainDataJwt->chain as $k => $chain){
 			//validate every chain element
 			try{
-				$claims = Utils::getJwtClaims($chain);
+				$claims = JwtUtils::getClaims($chain);
 			}catch(\UnexpectedValueException $e){
 				throw new PacketDecodeException($e->getMessage(), 0, $e);
 			}
@@ -112,7 +112,7 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 
 		$this->clientDataJwt = $buffer->get($buffer->getLInt());
 		try{
-			$clientData = Utils::getJwtClaims($this->clientDataJwt);
+			$clientData = JwtUtils::getClaims($this->clientDataJwt);
 		}catch(\UnexpectedValueException $e){
 			throw new PacketDecodeException($e->getMessage(), 0, $e);
 		}

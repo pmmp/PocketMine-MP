@@ -29,24 +29,19 @@ use Mdanter\Ecc\Serializer\PrivateKey\DerPrivateKeySerializer;
 use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
+use pocketmine\network\mcpe\JwtUtils;
 use function base64_encode;
 use function gmp_strval;
 use function hex2bin;
 use function json_encode;
 use function openssl_digest;
 use function openssl_sign;
-use function rtrim;
 use function str_pad;
-use function strtr;
 
 final class EncryptionUtils{
 
 	private function __construct(){
 		//NOOP
-	}
-
-	private static function b64UrlEncode(string $str) : string{
-		return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
 	}
 
 	public static function generateSharedSecret(PrivateKeyInterface $localPriv, PublicKeyInterface $remotePub) : \GMP{
@@ -58,11 +53,11 @@ final class EncryptionUtils{
 	}
 
 	public static function generateServerHandshakeJwt(PrivateKeyInterface $serverPriv, string $salt) : string{
-		$jwtBody = self::b64UrlEncode(json_encode([
+		$jwtBody = JwtUtils::b64UrlEncode(json_encode([
 					"x5u" => base64_encode((new DerPublicKeySerializer())->serialize($serverPriv->getPublicKey())),
 					"alg" => "ES384"
 				])
-			) . "." . self::b64UrlEncode(json_encode([
+			) . "." . JwtUtils::b64UrlEncode(json_encode([
 					"salt" => base64_encode($salt)
 				])
 			);
@@ -70,7 +65,7 @@ final class EncryptionUtils{
 		openssl_sign($jwtBody, $sig, (new PemPrivateKeySerializer(new DerPrivateKeySerializer()))->serialize($serverPriv), OPENSSL_ALGO_SHA384);
 
 		$decodedSig = (new DerSignatureSerializer())->parse($sig);
-		$jwtSig = self::b64UrlEncode(
+		$jwtSig = JwtUtils::b64UrlEncode(
 			hex2bin(str_pad(gmp_strval($decodedSig->getR(), 16), 96, "0", STR_PAD_LEFT)) .
 			hex2bin(str_pad(gmp_strval($decodedSig->getS(), 16), 96, "0", STR_PAD_LEFT))
 		);

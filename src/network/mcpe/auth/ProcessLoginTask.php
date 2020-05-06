@@ -28,6 +28,7 @@ use Mdanter\Ecc\Crypto\Signature\Signature;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use Mdanter\Ecc\Serializer\PublicKey\PemPublicKeySerializer;
 use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
+use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\scheduler\AsyncTask;
 use function assert;
@@ -124,11 +125,11 @@ class ProcessLoginTask extends AsyncTask{
 			}
 
 			//First link, check that it is self-signed
-			$headers = json_decode(self::b64UrlDecode($headB64), true);
+			$headers = json_decode(JwtUtils::b64UrlDecode($headB64), true);
 			$currentPublicKey = $headers["x5u"];
 		}
 
-		$plainSignature = self::b64UrlDecode($sigB64);
+		$plainSignature = JwtUtils::b64UrlDecode($sigB64);
 		assert(strlen($plainSignature) === 96);
 		[$rString, $sString] = str_split($plainSignature, 48);
 		$sig = new Signature(gmp_init(bin2hex($rString), 16), gmp_init(bin2hex($sString), 16));
@@ -149,7 +150,7 @@ class ProcessLoginTask extends AsyncTask{
 			$this->authenticated = true; //we're signed into xbox live
 		}
 
-		$claims = json_decode(self::b64UrlDecode($payloadB64), true);
+		$claims = json_decode(JwtUtils::b64UrlDecode($payloadB64), true);
 
 		$time = time();
 		if(isset($claims["nbf"]) and $claims["nbf"] > $time + self::CLOCK_DRIFT_MAX){
@@ -161,13 +162,6 @@ class ProcessLoginTask extends AsyncTask{
 		}
 
 		$currentPublicKey = $claims["identityPublicKey"] ?? null; //if there are further links, the next link should be signed with this
-	}
-
-	private static function b64UrlDecode(string $str) : string{
-		if(($len = strlen($str) % 4) !== 0){
-			$str .= str_repeat('=', 4 - $len);
-		}
-		return base64_decode(strtr($str, '-_', '+/'), true);
 	}
 
 	public function onCompletion() : void{
