@@ -38,9 +38,6 @@ use const pocketmine\RESOURCE_PATH;
 class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
 
-	/** @var string|null */
-	private static $itemTableCache = null;
-
 	/** @var int */
 	public $entityUniqueId;
 	/** @var int */
@@ -155,10 +152,10 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	 */
 	public $blockTable;
 	/**
-	 * @var int[]|null string (name) => int16 (legacyID)
-	 * @phpstan-var array<string, int>|null
+	 * @var int[] string (name) => int16 (legacyID)
+	 * @phpstan-var array<string, int>
 	 */
-	public $itemTable = null;
+	public $itemTable = [];
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->entityUniqueId = $in->getEntityUniqueId();
@@ -285,14 +282,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 
 		$out->put($this->blockTable->getEncodedNbt());
 
-		if($this->itemTable === null){
-			if(self::$itemTableCache === null){
-				self::$itemTableCache = self::serializeItemTable(json_decode(file_get_contents(RESOURCE_PATH . '/vanilla/item_id_map.json'), true));
-			}
-			$out->put(self::$itemTableCache);
-		}else{
-			$out->put(self::serializeItemTable($this->itemTable));
-		}
+		$out->put(self::serializeItemTable($this->itemTable));
 
 		$out->putString($this->multiplayerCorrelationId);
 	}

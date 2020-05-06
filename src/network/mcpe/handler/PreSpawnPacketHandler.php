@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\data\bedrock\LegacyItemIdToStringIdMap;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
@@ -78,7 +79,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
 		$pk->blockTable = RuntimeBlockMapping::getInstance()->getStartGamePaletteCache();
-
+		$pk->itemTable = LegacyItemIdToStringIdMap::getInstance()->getStringToLegacyMap(); //TODO: check if this is actually needed
 		$this->session->sendDataPacket($pk);
 
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());
