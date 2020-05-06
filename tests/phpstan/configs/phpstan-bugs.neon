@@ -26,22 +26,22 @@ parameters:
 			path: ../../../src/command/CommandReader.php
 
 		-
-			message: "#^Default value of the parameter \\#4 \\$min \\(\\-30000000\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getRelativeDouble\\(\\) is incompatible with type float\\.$#"
+			message: "#^Default value of the parameter \\#4 \\$min \\(int\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getRelativeDouble\\(\\) is incompatible with type float\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/VanillaCommand.php
 
 		-
-			message: "#^Default value of the parameter \\#5 \\$max \\(30000000\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getRelativeDouble\\(\\) is incompatible with type float\\.$#"
+			message: "#^Default value of the parameter \\#5 \\$max \\(int\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getRelativeDouble\\(\\) is incompatible with type float\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/VanillaCommand.php
 
 		-
-			message: "#^Default value of the parameter \\#3 \\$min \\(\\-30000000\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getDouble\\(\\) is incompatible with type float\\.$#"
+			message: "#^Default value of the parameter \\#3 \\$min \\(int\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getDouble\\(\\) is incompatible with type float\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/VanillaCommand.php
 
 		-
-			message: "#^Default value of the parameter \\#4 \\$max \\(30000000\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getDouble\\(\\) is incompatible with type float\\.$#"
+			message: "#^Default value of the parameter \\#4 \\$max \\(int\\) of method pocketmine\\\\command\\\\defaults\\\\VanillaCommand\\:\\:getDouble\\(\\) is incompatible with type float\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/VanillaCommand.php
 
@@ -61,11 +61,6 @@ parameters:
 			path: ../../../src/item/ItemFactory.php
 
 		-
-			message: "#^Class pocketmine\\\\network\\\\mcpe\\\\StaticPacketCache constructor invoked with 0 parameters, 2 required\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/StaticPacketCache.php
-
-		-
 			message: "#^If condition is always false\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
@@ -76,14 +71,19 @@ parameters:
 			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
 
 		-
+			message: "#^Class pocketmine\\\\network\\\\mcpe\\\\StaticPacketCache constructor invoked with 0 parameters, 2 required\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/StaticPacketCache.php
+
+		-
 			message: "#^Class pocketmine\\\\network\\\\mcpe\\\\compression\\\\ZlibCompressor constructor invoked with 0 parameters, 3 required\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/compression/ZlibCompressor.php
 
 		-
-			message: "#^Strict comparison using \\!\\=\\= between string and false will always evaluate to true\\.$#"
+			message: "#^Strict comparison using \\=\\=\\= between string and false will always evaluate to false\\.$#"
 			count: 1
-			path: ../../../src/utils/Timezone.php
+			path: ../../../src/utils/Utils.php
 
 		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
@@ -91,27 +91,27 @@ parameters:
 			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
-			message: "#^Default value of the parameter \\#1 \\$pitch \\(0\\) of method pocketmine\\\\world\\\\sound\\\\ClickSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			message: "#^Default value of the parameter \\#1 \\$pitch \\(int\\) of method pocketmine\\\\world\\\\sound\\\\ClickSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
 			count: 1
 			path: ../../../src/world/sound/ClickSound.php
 
 		-
-			message: "#^Default value of the parameter \\#1 \\$pitch \\(0\\) of method pocketmine\\\\world\\\\sound\\\\DoorSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			message: "#^Default value of the parameter \\#1 \\$pitch \\(int\\) of method pocketmine\\\\world\\\\sound\\\\DoorSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
 			count: 1
 			path: ../../../src/world/sound/DoorSound.php
 
 		-
-			message: "#^Default value of the parameter \\#1 \\$pitch \\(0\\) of method pocketmine\\\\world\\\\sound\\\\FizzSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			message: "#^Default value of the parameter \\#1 \\$pitch \\(int\\) of method pocketmine\\\\world\\\\sound\\\\FizzSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
 			count: 1
 			path: ../../../src/world/sound/FizzSound.php
 
 		-
-			message: "#^Default value of the parameter \\#1 \\$pitch \\(0\\) of method pocketmine\\\\world\\\\sound\\\\LaunchSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			message: "#^Default value of the parameter \\#1 \\$pitch \\(int\\) of method pocketmine\\\\world\\\\sound\\\\LaunchSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
 			count: 1
 			path: ../../../src/world/sound/LaunchSound.php
 
 		-
-			message: "#^Default value of the parameter \\#1 \\$pitch \\(0\\) of method pocketmine\\\\world\\\\sound\\\\PopSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
+			message: "#^Default value of the parameter \\#1 \\$pitch \\(int\\) of method pocketmine\\\\world\\\\sound\\\\PopSound\\:\\:__construct\\(\\) is incompatible with type float\\.$#"
 			count: 1
 			path: ../../../src/world/sound/PopSound.php
 

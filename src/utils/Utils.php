@@ -468,9 +468,15 @@ class Utils{
 	 * @return string[] an array of tagName => tag value. If the tag has no value, an empty string is used as the value.
 	 */
 	public static function parseDocComment(string $docComment) : array{
-		preg_match_all('/(*ANYCRLF)^[\t ]*\* @([a-zA-Z]+)(?:[\t ]+(.+))?[\t ]*$/m', $docComment, $matches);
+		$rawDocComment = substr($docComment, 3, -2); //remove the opening and closing markers
+		if($rawDocComment === false){ //usually empty doc comment, but this is safer and statically analysable
+			return [];
+		}
+		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
 
-		return array_combine($matches[1], $matches[2]);
+		$result = array_combine($matches[1], $matches[2]);
+		if($result === false) throw new AssumptionFailedError("array_combine() doesn't return false with two equal-sized arrays");
+		return $result;
 	}
 
 	/**

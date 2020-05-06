@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4c258478d7e0be37a3c1267c9382f37f",
+    "content-hash": "da1e60f0dfc0109a44d3a47b311ae8e5",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -581,12 +581,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "6b2234572b5d06a0532e3851e72bdc108e0c4387"
+                "reference": "8e42604a7a91d52578af0c9a8024635ed5985b97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/6b2234572b5d06a0532e3851e72bdc108e0c4387",
-                "reference": "6b2234572b5d06a0532e3851e72bdc108e0c4387",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/8e42604a7a91d52578af0c9a8024635ed5985b97",
+                "reference": "8e42604a7a91d52578af0c9a8024635ed5985b97",
                 "shasum": ""
             },
             "require": {
@@ -610,7 +610,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library for working with Named Binary Tags",
-            "time": "2020-04-15T11:29:45+00:00"
+            "time": "2020-04-19T12:18:01+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -776,16 +776,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.19",
+            "version": "0.12.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "054f6d76b12ba9a6c13a5a8d5fcdf51219615f4d"
+                "reference": "71e529efced79e055fa8318b692e7f7d03ea4e75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/054f6d76b12ba9a6c13a5a8d5fcdf51219615f4d",
-                "reference": "054f6d76b12ba9a6c13a5a8d5fcdf51219615f4d",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/71e529efced79e055fa8318b692e7f7d03ea4e75",
+                "reference": "71e529efced79e055fa8318b692e7f7d03ea4e75",
                 "shasum": ""
             },
             "require": {
@@ -828,7 +828,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-04-19T20:35:10+00:00"
+            "time": "2020-05-05T12:55:44+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
