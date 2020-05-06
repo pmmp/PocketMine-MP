@@ -36,8 +36,8 @@ class PrepareEncryptionTask extends AsyncTask{
 	/** @var PrivateKeyInterface|null */
 	private static $SERVER_PRIVATE_KEY = null;
 
-	/** @var PrivateKeyInterface|null */
-	private $serverPrivateKey = null;
+	/** @var PrivateKeyInterface */
+	private $serverPrivateKey;
 
 	/** @var string|null */
 	private $aesKey = null;
