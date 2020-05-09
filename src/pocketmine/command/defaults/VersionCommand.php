@@ -62,7 +62,6 @@ class VersionCommand extends VanillaCommand{
 			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
 
 			if($exactPlugin instanceof Plugin){
-				$this->describeToSender($exactPlugin, $sender);
 
 				return true;
 			}
@@ -71,7 +70,6 @@ class VersionCommand extends VanillaCommand{
 			$pluginName = strtolower($pluginName);
 			foreach($sender->getServer()->getPluginManager()->getPlugins() as $plugin){
 				if(stripos($plugin->getName(), $pluginName) !== false){
-					$this->describeToSender($plugin, $sender);
 					$found = true;
 				}
 			}
@@ -82,26 +80,5 @@ class VersionCommand extends VanillaCommand{
 		}
 
 		return true;
-	}
-
-	private function describeToSender(Plugin $plugin, CommandSender $sender) : void{
-		$desc = $plugin->getDescription();
-		$sender->sendMessage(TextFormat::DARK_GREEN . $desc->getName() . TextFormat::WHITE . " version " . TextFormat::DARK_GREEN . $desc->getVersion());
-
-		if($desc->getDescription() !== ""){
-			$sender->sendMessage($desc->getDescription());
-		}
-
-		if($desc->getWebsite() !== ""){
-			$sender->sendMessage("Website: " . $desc->getWebsite());
-		}
-
-		if(count($authors = $desc->getAuthors()) > 0){
-			if(count($authors) === 1){
-				$sender->sendMessage("Author: " . implode(", ", $authors));
-			}else{
-				$sender->sendMessage("Authors: " . implode(", ", $authors));
-			}
-		}
 	}
 }
