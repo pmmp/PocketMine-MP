@@ -1858,12 +1858,25 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$animations = [];
 		foreach($packet->clientData["AnimatedImageData"] as $animation){
-			$animations[] = new SkinAnimation(new SkinImage($animation["ImageHeight"], $animation["ImageWidth"], base64_decode($animation["Image"], true)), $animation["Type"], $animation["Frames"]);
+			$animations[] = new SkinAnimation(
+				new SkinImage(
+					$animation["ImageHeight"],
+					$animation["ImageWidth"],
+					base64_decode($animation["Image"], true)),
+				$animation["Type"],
+				$animation["Frames"]
+			);
 		}
 
 		$personaPieces = [];
 		foreach($packet->clientData["PersonaPieces"] as $piece){
-			$personaPieces[] = new PersonaSkinPiece($piece["PieceId"], $piece["PieceType"], $piece["PackId"], $piece["IsDefault"], $piece["ProductId"]);
+			$personaPieces[] = new PersonaSkinPiece(
+				$piece["PieceId"],
+				$piece["PieceType"],
+				$piece["PackId"],
+				$piece["IsDefault"],
+				$piece["ProductId"]
+			);
 		}
 
 		$pieceTintColors = [];
@@ -1874,9 +1887,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$skinData = new SkinData(
 			$packet->clientData["SkinId"],
 			base64_decode($packet->clientData["SkinResourcePatch"] ?? "", true),
-			new SkinImage($packet->clientData["SkinImageHeight"], $packet->clientData["SkinImageWidth"], base64_decode($packet->clientData["SkinData"], true)),
+			new SkinImage(
+				$packet->clientData["SkinImageHeight"],
+				$packet->clientData["SkinImageWidth"],
+				base64_decode($packet->clientData["SkinData"], true)
+			),
 			$animations,
-			new SkinImage($packet->clientData["CapeImageHeight"], $packet->clientData["CapeImageWidth"], base64_decode($packet->clientData["CapeData"] ?? "", true)),
+			new SkinImage(
+				$packet->clientData["CapeImageHeight"],
+				$packet->clientData["CapeImageWidth"],
+				base64_decode($packet->clientData["CapeData"] ?? "", true)
+			),
 			base64_decode($packet->clientData["SkinGeometryData"] ?? "", true),
 			base64_decode($packet->clientData["SkinAnimationData"] ?? "", true),
 			$packet->clientData["PremiumSkin"] ?? false,
