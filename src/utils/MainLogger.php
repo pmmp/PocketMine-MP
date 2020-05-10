@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use LogLevel;
+use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\thread\Thread;
 use pocketmine\thread\Worker;
 use function fclose;
@@ -170,7 +171,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 
 		$errno = $e->getCode();
 		try{
-			$errno = \ErrorUtils::errorTypeToString($errno);
+			$errno = ErrorTypeToStringMap::get($errno);
 		}catch(\InvalidArgumentException $e){
 			//pass
 		}

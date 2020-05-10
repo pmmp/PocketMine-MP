@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "da1e60f0dfc0109a44d3a47b311ae8e5",
+    "content-hash": "e5a2f9b7992a8ed0050a9745ec04e569",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -464,6 +464,40 @@
             ],
             "description": "Ad-hoc autoloading components used by PocketMine-MP",
             "time": "2020-01-31T14:26:22+00:00"
+        },
+        {
+            "name": "pocketmine/errorhandler",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/ErrorHandler.git",
+                "reference": "0503a1929a3934e754114814509ff9152f4908eb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/ErrorHandler/zipball/0503a1929a3934e754114814509ff9152f4908eb",
+                "reference": "0503a1929a3934e754114814509ff9152f4908eb",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.23",
+                "phpstan/phpstan-strict-rules": "^0.12.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\errorhandler\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Utilities to handle nasty PHP E_* errors in a usable way",
+            "time": "2020-05-10T11:45:02+00:00"
         },
         {
             "name": "pocketmine/log",

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\thread;
 
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\Server;
 use function error_reporting;
 
@@ -68,7 +69,7 @@ trait CommonThreadPartsTrait{
 		error_reporting(-1);
 		$this->registerClassLoader();
 		//set this after the autoloader is registered
-		\ErrorUtils::setErrorExceptionHandler();
+		ErrorToExceptionHandler::set();
 		$this->onRun();
 	}
 

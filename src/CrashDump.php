@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use PackageVersions\Versions;
+use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginManager;
@@ -220,7 +221,7 @@ class CrashDump{
 			$error["fullFile"] = $error["file"];
 			$error["file"] = Filesystem::cleanPath($error["file"]);
 			try{
-				$error["type"] = \ErrorUtils::errorTypeToString($error["type"]);
+				$error["type"] = ErrorTypeToStringMap::get($error["type"]);
 			}catch(\InvalidArgumentException $e){
 				//pass
 			}
