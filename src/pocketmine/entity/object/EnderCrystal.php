@@ -58,7 +58,7 @@ class EnderCrystal extends Entity{
 	public function attack(EntityDamageEvent $source) : void{
 		parent::attack($source);
 
-		if(!$source->isCancelled() and $source->getCause() !== EntityDamageEvent::CAUSE_FIRE and $source->getCause() !== EntityDamageEvent::CAUSE_FIRE_TICK){
+		if(!$this->isFlaggedForDespawn() and !$source->isCancelled() and $source->getCause() !== EntityDamageEvent::CAUSE_FIRE and $source->getCause() !== EntityDamageEvent::CAUSE_FIRE_TICK){
 			$this->flagForDespawn();
 
 			if($this->level->getGameRules()->getBool(GameRules::RULE_TNT_EXPLODES)){
