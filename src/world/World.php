@@ -125,6 +125,8 @@ class World implements ChunkManager{
 	public const DIFFICULTY_NORMAL = 2;
 	public const DIFFICULTY_HARD = 3;
 
+	public const DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK = 3;
+
 	/** @var Player[] */
 	private $players = [];
 
@@ -226,6 +228,8 @@ class World implements ChunkManager{
 	private $chunkTickRadius;
 	/** @var int */
 	private $chunksPerTick;
+	/** @var int */
+	private $tickedBlocksPerSubchunkPerTick = self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK;
 	/** @var bool[] */
 	private $randomTickBlocks = [];
 
@@ -342,6 +346,7 @@ class World implements ChunkManager{
 
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $this->server->getProperty("chunk-ticking.tick-radius", 4)));
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-ticking.per-tick", 40);
+		$this->tickedBlocksPerSubchunkPerTick = (int) $this->server->getProperty("chunk-ticking.blocks-per-subchunk-per-tick", self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
 		$this->chunkPopulationQueueSize = (int) $this->server->getProperty("chunk-generation.population-queue-size", 2);
 
 		$dontTickBlocks = array_fill_keys($this->server->getProperty("chunk-ticking.disable-block-ticking", []), true);
@@ -910,8 +915,12 @@ class World implements ChunkManager{
 
 			foreach($chunk->getSubChunks() as $Y => $subChunk){
 				if(!$subChunk->isEmptyFast()){
-					$k = mt_rand(0, 0xfffffffff); //36 bits
-					for($i = 0; $i < 3; ++$i){
+					$k = 0;
+					for($i = 0; $i < $this->tickedBlocksPerSubchunkPerTick; ++$i){
+						if(($i % 5) === 0){
+							//60 bits will be used by 5 blocks (12 bits each)
+							$k = mt_rand(0, (1 << 60) - 1);
+						}
 						$x = $k & 0x0f;
 						$y = ($k >> 4) & 0x0f;
 						$z = ($k >> 8) & 0x0f;
