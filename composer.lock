@@ -725,12 +725,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/SPL.git",
-                "reference": "9856cb78ebeeea40375a432a4f87aa47307b9351"
+                "reference": "98589af98ff5662f4f69a76bdbf3129c9e2e3614"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/9856cb78ebeeea40375a432a4f87aa47307b9351",
-                "reference": "9856cb78ebeeea40375a432a4f87aa47307b9351",
+                "url": "https://api.github.com/repos/pmmp/SPL/zipball/98589af98ff5662f4f69a76bdbf3129c9e2e3614",
+                "reference": "98589af98ff5662f4f69a76bdbf3129c9e2e3614",
                 "shasum": ""
             },
             "require": {
@@ -750,7 +750,7 @@
                 "LGPL-3.0"
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
-            "time": "2020-01-31T16:18:46+00:00"
+            "time": "2020-05-10T12:05:24+00:00"
         }
     ],
     "packages-dev": [
