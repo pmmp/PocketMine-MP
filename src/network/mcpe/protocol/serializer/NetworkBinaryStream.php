@@ -55,7 +55,7 @@ use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 use function count;
 use function strlen;
 

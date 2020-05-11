@@ -88,7 +88,7 @@ use pocketmine\utils\Process;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;

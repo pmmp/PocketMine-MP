@@ -36,7 +36,7 @@ use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe as ProtocolShaped
 use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolShapelessRecipe;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 use function array_map;
 use function json_encode;
 use function spl_object_id;

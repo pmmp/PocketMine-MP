@@ -96,7 +96,7 @@ use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\ChunkLoader;

@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol\types\recipe;
 
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 use function count;
 
 final class ShapelessRecipe extends RecipeWithTypeId{

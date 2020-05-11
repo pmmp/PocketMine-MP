@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e5a2f9b7992a8ed0050a9745ec04e569",
+    "content-hash": "a852a026a0a9f5ca2dbea5c06aab4856",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -751,6 +751,41 @@
             ],
             "description": "Standard library files required by PocketMine-MP and related projects",
             "time": "2020-05-10T12:05:24+00:00"
+        },
+        {
+            "name": "pocketmine/uuid",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/UUID.git",
+                "reference": "c45c995cb87eafee01a14a06a4b7b517cada03a5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/UUID/zipball/c45c995cb87eafee01a14a06a4b7b517cada03a5",
+                "reference": "c45c995cb87eafee01a14a06a4b7b517cada03a5",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3",
+                "pocketmine/binaryutils": "^0.1 || dev-master"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.23",
+                "phpstan/phpstan-strict-rules": "^0.12.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\uuid\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Basic UUID implementation used by PocketMine-MP and related projects",
+            "time": "2020-05-10T12:38:41+00:00"
         }
     ],
     "packages-dev": [

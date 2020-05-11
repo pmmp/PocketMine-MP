@@ -36,7 +36,7 @@ use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 use function str_repeat;
 
 class FloatingTextParticle implements Particle{

@@ -53,7 +53,7 @@ use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\player\Player;
 use pocketmine\utils\Limits;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 use pocketmine\world\sound\TotemUseSound;
 use pocketmine\world\World;
 use function array_filter;

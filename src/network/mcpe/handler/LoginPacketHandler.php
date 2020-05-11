@@ -42,7 +42,7 @@ use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\Server;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 use function array_map;
 use function base64_decode;
 
