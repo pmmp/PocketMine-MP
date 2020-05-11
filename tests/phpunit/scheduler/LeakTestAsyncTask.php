@@ -21,33 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pmmp\TesterPlugin\tests;
+namespace pocketmine\scheduler;
 
-use pmmp\TesterPlugin\Test;
-use pocketmine\scheduler\AsyncTask;
+use function usleep;
 
-class AsyncTaskMemoryLeakTest extends Test{
-
-	public function run(){
-		$this->getPlugin()->getServer()->getAsyncPool()->submitTask(new TestAsyncTask());
-	}
-
-	public function tick(){
-		if(TestAsyncTask::$destroyed === true){
-			$this->setResult(Test::RESULT_OK);
-		}
-	}
-
-	public function getName() : string{
-		return "AsyncTask memory leak after completion";
-	}
-
-	public function getDescription() : string{
-		return "Regression test for AsyncTasks objects not being destroyed after completion";
-	}
-}
-
-class TestAsyncTask extends AsyncTask{
+class LeakTestAsyncTask extends AsyncTask{
+	/** @var bool */
 	public static $destroyed = false;
 
 	public function onRun() : void{

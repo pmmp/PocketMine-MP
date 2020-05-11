@@ -42,10 +42,7 @@ class Main extends PluginBase implements Listener{
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 		$this->getScheduler()->scheduleRepeatingTask(new CheckTestCompletionTask($this), 10);
 
-		$this->waitingTests = [
-			new tests\AsyncTaskMemoryLeakTest($this),
-			new tests\AsyncTaskPublishProgressRaceTest($this)
-		];
+		$this->waitingTests = [];
 	}
 
 	public function onServerCommand(CommandEvent $event){
