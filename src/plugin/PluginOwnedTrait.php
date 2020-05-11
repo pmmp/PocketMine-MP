@@ -21,11 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\command;
+namespace pocketmine\plugin;
 
-use pocketmine\plugin\Plugin;
+/**
+ * @see PluginOwned
+ */
+trait PluginOwnedTrait{
+	/** @var Plugin */
+	private $owningPlugin;
 
-interface PluginIdentifiableCommand{
+	public function __construct(Plugin $owningPlugin){
+		$this->owningPlugin = $owningPlugin;
+	}
 
-	public function getPlugin() : Plugin;
+	public function getOwningPlugin() : Plugin{
+		return $this->owningPlugin;
+	}
 }

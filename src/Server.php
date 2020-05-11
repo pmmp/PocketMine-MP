@@ -27,10 +27,10 @@ declare(strict_types=1);
  */
 namespace pocketmine;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
-use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
@@ -71,6 +71,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginGraylist;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
+use pocketmine\plugin\PluginOwned;
 use pocketmine\plugin\ScriptPluginLoader;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
@@ -694,10 +695,11 @@ class Server{
 	}
 
 	/**
-	 * @return PluginIdentifiableCommand|null
+	 * @return Command|PluginOwned|null
+	 * @phpstan-return (Command&PluginOwned)|null
 	 */
 	public function getPluginCommand(string $name){
-		if(($command = $this->commandMap->getCommand($name)) instanceof PluginIdentifiableCommand){
+		if(($command = $this->commandMap->getCommand($name)) instanceof PluginOwned){
 			return $command;
 		}else{
 			return null;

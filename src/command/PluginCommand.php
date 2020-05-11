@@ -25,11 +25,11 @@ namespace pocketmine\command;
 
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginOwned;
+use pocketmine\plugin\PluginOwnedTrait;
 
-class PluginCommand extends Command implements PluginIdentifiableCommand{
-
-	/** @var Plugin */
-	private $owningPlugin;
+class PluginCommand extends Command implements PluginOwned{
+	use PluginOwnedTrait;
 
 	/** @var CommandExecutor */
 	private $executor;
@@ -66,9 +66,5 @@ class PluginCommand extends Command implements PluginIdentifiableCommand{
 
 	public function setExecutor(CommandExecutor $executor) : void{
 		$this->executor = $executor;
-	}
-
-	public function getPlugin() : Plugin{
-		return $this->owningPlugin;
 	}
 }

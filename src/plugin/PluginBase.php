@@ -27,7 +27,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
-use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
@@ -223,15 +222,16 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @return Command|PluginIdentifiableCommand|null
+	 * @return Command|PluginOwned|null
+	 * @phpstan-return (Command&PluginOwned)|null
 	 */
 	public function getCommand(string $name){
 		$command = $this->getServer()->getPluginCommand($name);
-		if($command === null or $command->getPlugin() !== $this){
+		if($command === null or $command->getOwningPlugin() !== $this){
 			$command = $this->getServer()->getPluginCommand(strtolower($this->description->getName()) . ":" . $name);
 		}
 
-		if($command instanceof PluginIdentifiableCommand and $command->getPlugin() === $this){
+		if($command instanceof PluginOwned and $command->getOwningPlugin() === $this){
 			return $command;
 		}else{
 			return null;
