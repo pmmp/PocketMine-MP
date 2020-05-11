@@ -1909,7 +1909,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
-			if($this->checkSpawnProtection($player, $blockClicked)){
+			if($this->checkSpawnProtection($player, $blockReplace)){
 				$ev->setCancelled();
 			}
 
