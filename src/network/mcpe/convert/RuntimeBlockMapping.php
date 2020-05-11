@@ -127,7 +127,7 @@ final class RuntimeBlockMapping{
 		return $table;
 	}
 
-	public function toStaticRuntimeId(int $id, int $meta = 0) : int{
+	public function toRuntimeId(int $id, int $meta = 0) : int{
 		/*
 		 * try id+meta first
 		 * if not found, try id+0 (strip meta)
@@ -139,7 +139,7 @@ final class RuntimeBlockMapping{
 	/**
 	 * @return int[] [id, meta]
 	 */
-	public function fromStaticRuntimeId(int $runtimeId) : array{
+	public function fromRuntimeId(int $runtimeId) : array{
 		$v = $this->runtimeToLegacyMap[$runtimeId];
 		return [$v >> 4, $v & 0xf];
 	}
