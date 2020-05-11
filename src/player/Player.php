@@ -85,7 +85,6 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -101,15 +100,12 @@ use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\ChunkLoader;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\particle\BlockPunchParticle;
 use pocketmine\world\Position;
-use pocketmine\world\sound\BlockPunchSound;
 use pocketmine\world\sound\EntityAttackNoDamageSound;
 use pocketmine\world\sound\EntityAttackSound;
 use pocketmine\world\World;
 use function abs;
 use function assert;
-use function ceil;
 use function count;
 use function explode;
 use function floor;
@@ -250,6 +246,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 	/** @var \Logger */
 	protected $logger;
+
+	/** @var SurvivalBlockBreakHandler|null */
+	protected $blockBreakHandler = null;
 
 	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated){
 		$username = TextFormat::clean($playerInfo->getUsername());
@@ -1336,6 +1335,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 				$this->checkNearEntities();
 				Timings::$playerCheckNearEntitiesTimer->stopTiming();
 			}
+
+			if($this->blockBreakHandler !== null and !$this->blockBreakHandler->update()){
+				$this->blockBreakHandler = null;
+			}
 		}
 
 		$this->timings->stopTiming();
@@ -1584,27 +1587,23 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		if(!$this->isCreative()){
-			//TODO: improve this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
-			$breakTime = ceil($target->getBreakInfo()->getBreakTime($this->inventory->getItemInHand()) * 20);
-			if($breakTime > 0){
-				$this->getWorld()->broadcastPacketToViewers($pos, LevelEventPacket::create(LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 / $breakTime), $pos));
-			}
+			$this->blockBreakHandler = new SurvivalBlockBreakHandler($this, $pos, $target, $face, 16);
 		}
 
 		return true;
 	}
 
 	public function continueBreakBlock(Vector3 $pos, int $face) : void{
-		$block = $this->getWorld()->getBlock($pos);
-		$this->getWorld()->addParticle($pos, new BlockPunchParticle($block, $face));
-		$this->getWorld()->addSound($pos, new BlockPunchSound($block));
-		$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
-
-		//TODO: destroy-progress level event
+		if($this->blockBreakHandler !== null and $this->blockBreakHandler->getBlockPos()->distanceSquared($pos) < 0.0001){
+			//TODO: check the targeted block matches the one we're told to target
+			$this->blockBreakHandler->setTargetedFace($face);
+		}
 	}
 
 	public function stopBreakBlock(Vector3 $pos) : void{
-		$this->getWorld()->broadcastPacketToViewers($pos, LevelEventPacket::create(LevelEventPacket::EVENT_BLOCK_STOP_BREAK, 0, $pos));
+		if($this->blockBreakHandler !== null and $this->blockBreakHandler->getBlockPos()->distanceSquared($pos) < 0.0001){
+			$this->blockBreakHandler = null;
+		}
 	}
 
 	/**
@@ -1617,6 +1616,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7) and !$this->isSpectator()){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
+			$this->stopBreakBlock($pos);
 			$item = $this->inventory->getItemInHand();
 			$oldItem = clone $item;
 			if($this->getWorld()->useBreakOn($pos, $item, $this, true)){
@@ -1978,6 +1978,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->spawned = false;
 
 		$this->stopSleep();
+		$this->blockBreakHandler = null;
 		$this->despawnFromAll();
 
 		$this->server->removeOnlinePlayer($this);
@@ -2019,6 +2020,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->craftingGrid = null;
 		$this->spawnPosition = null;
 		$this->perm = null;
+		$this->blockBreakHandler = null;
 		parent::destroyCycles();
 	}
 
@@ -2229,6 +2231,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->nextChunkOrderRun = 0;
 			$this->newPosition = null;
 			$this->stopSleep();
+			$this->blockBreakHandler = null;
 
 			$this->isTeleporting = true;
 
