@@ -409,7 +409,11 @@ class ItemFactory{
 			}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) and $this->list[$zero] instanceof Durable){
 				/** @var Durable $item */
 				$item = clone $this->list[$zero];
-				$item->setDamage($meta);
+				try{
+					$item->setDamage($meta);
+				}catch(\InvalidArgumentException $e){
+					$item = new Item($id, $meta);
+				}
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 				$item = new ItemBlock($id, $meta);
 			}
