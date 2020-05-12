@@ -23,6 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use function base64_decode;
+use function base64_encode;
+use function count;
+use function explode;
+use function is_array;
+use function json_decode;
+use function json_last_error_msg;
+use function rtrim;
+use function str_repeat;
+use function strlen;
+use function strtr;
+
 final class JwtUtils{
 
 	/**

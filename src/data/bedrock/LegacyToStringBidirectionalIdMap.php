@@ -24,6 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock;
 
 use pocketmine\utils\AssumptionFailedError;
+use function file_get_contents;
+use function is_array;
+use function is_int;
+use function is_string;
+use function json_decode;
 
 abstract class LegacyToStringBidirectionalIdMap{
 
