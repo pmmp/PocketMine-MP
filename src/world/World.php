@@ -49,6 +49,7 @@ use pocketmine\event\world\WorldSaveEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemUseResult;
+use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
@@ -1449,9 +1450,9 @@ class World implements ChunkManager{
 
 			if($player->isAdventure(true) and !$ev->isCancelled()){
 				$canBreak = false;
-				$itemFactory = ItemFactory::getInstance();
+				$itemParser = LegacyStringToItemParser::getInstance();
 				foreach($item->getCanDestroy() as $v){
-					$entry = $itemFactory->fromString($v);
+					$entry = $itemParser->parse($v);
 					if($entry->getBlock()->isSameType($target)){
 						$canBreak = true;
 						break;
@@ -1583,9 +1584,9 @@ class World implements ChunkManager{
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
 			if($player->isAdventure(true) and !$ev->isCancelled()){
 				$canPlace = false;
-				$itemFactory = ItemFactory::getInstance();
+				$itemParser = LegacyStringToItemParser::getInstance();
 				foreach($item->getCanPlaceOn() as $v){
-					$entry = $itemFactory->fromString($v);
+					$entry = $itemParser->parse($v);
 					if($entry->getBlock()->isSameType($blockClicked)){
 						$canPlace = true;
 						break;

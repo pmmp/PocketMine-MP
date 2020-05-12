@@ -24,28 +24,35 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use PHPUnit\Framework\TestCase;
-use pocketmine\block\BlockFactory;
 
-class ItemFactoryTest extends TestCase{
+class LegacyStringToItemParserTest extends TestCase{
 
 	/**
-	 * Tests that blocks are considered to be valid registered items
+	 * @return mixed[][]
+	 * @phpstan-return list<array{string,int,int}>
 	 */
-	public function testItemBlockRegistered() : void{
-		for($id = 0; $id < 256; ++$id){
-			self::assertEquals(BlockFactory::getInstance()->isRegistered($id), ItemFactory::getInstance()->isRegistered($id));
-		}
+	public function itemFromStringProvider() : array{
+		return [
+			["dye:4", ItemIds::DYE, 4],
+			["351", ItemIds::DYE, 0],
+			["351:4", ItemIds::DYE, 4],
+			["stone:3", ItemIds::STONE, 3],
+			["minecraft:string", ItemIds::STRING, 0],
+			["diamond_pickaxe", ItemIds::DIAMOND_PICKAXE, 0],
+			["diamond_pickaxe:5", ItemIds::DIAMOND_PICKAXE, 5]
+		];
 	}
 
 	/**
-	 * Test that durable items are correctly created by the item factory
+	 * @dataProvider itemFromStringProvider
+	 * @param string $string
+	 * @param int    $id
+	 * @param int    $meta
 	 */
-	public function testGetDurableItem() : void{
-		self::assertInstanceOf(Sword::class, $i1 = ItemFactory::getInstance()->get(ItemIds::WOODEN_SWORD));
-		/** @var Sword $i1 */
-		self::assertSame(0, $i1->getDamage());
-		self::assertInstanceOf(Sword::class, $i2 = ItemFactory::getInstance()->get(ItemIds::WOODEN_SWORD, 1));
-		/** @var Sword $i2 */
-		self::assertSame(1, $i2->getDamage());
+	public function testFromStringSingle(string $string, int $id, int $meta) : void{
+		$item = LegacyStringToItemParser::getInstance()->parse($string);
+
+		self::assertEquals($id, $item->getId());
+		self::assertEquals($meta, $item->getMeta());
 	}
 }
