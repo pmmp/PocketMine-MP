@@ -52,13 +52,13 @@ final class SurvivalBlockBreakHandler{
 	/** @var int */
 	private $maxPlayerDistance;
 
-	/** @var float|null */
+	/** @var float */
 	private $breakSpeed;
 
 	/** @var float */
 	private $breakProgress = 0;
 
-	public function __construct(Player $player, Vector3 $blockPos, Block $block, int $targetedFace, int $maxPlayerDistance, int $fxTickInterval = self::DEFAULT_FX_INTERVAL_TICKS){
+	private function __construct(Player $player, Vector3 $blockPos, Block $block, int $targetedFace, int $maxPlayerDistance, int $fxTickInterval = self::DEFAULT_FX_INTERVAL_TICKS){
 		$this->player = $player;
 		$this->blockPos = $blockPos;
 		$this->block = $block;
@@ -67,7 +67,7 @@ final class SurvivalBlockBreakHandler{
 		$this->maxPlayerDistance = $maxPlayerDistance;
 
 		$this->breakSpeed = $this->calculateBreakProgressPerTick();
-		if($this->breakSpeed !== null){
+		if($this->breakSpeed > 0){
 			$this->player->getWorld()->broadcastPacketToViewers(
 				$this->blockPos,
 				LevelEventPacket::create(LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 * $this->breakSpeed), $this->blockPos)
@@ -75,16 +75,28 @@ final class SurvivalBlockBreakHandler{
 		}
 	}
 
+	public static function createIfNecessary(Player $player, Vector3 $blockPos, Block $block, int $targetedFace, int $maxPlayerDistance, int $fxTickInterval = self::DEFAULT_FX_INTERVAL_TICKS) : ?self{
+		$breakInfo = $block->getBreakInfo();
+		if(!$breakInfo->breaksInstantly()){
+			return new self($player, $blockPos, $block, $targetedFace, $maxPlayerDistance, $fxTickInterval);
+		}
+		return null;
+	}
+
 	/**
 	 * Returns the calculated break speed as percentage progress per game tick.
 	 */
-	private function calculateBreakProgressPerTick() : ?float{
-		//TODO: improve this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
-		$breakTime = $this->block->getBreakInfo()->getBreakTime($this->player->getInventory()->getItemInHand()) * 20;
-		if($breakTime > 0){
-			return 1 / $breakTime;
+	private function calculateBreakProgressPerTick() : float{
+		if(!$this->block->getBreakInfo()->isBreakable()){
+			return 0.0;
 		}
-		return null;
+		//TODO: improve this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
+		$breakTimePerTick = $this->block->getBreakInfo()->getBreakTime($this->player->getInventory()->getItemInHand()) * 20;
+
+		if($breakTimePerTick > 0){
+			return 1 / $breakTimePerTick;
+		}
+		return 1;
 	}
 
 	public function update() : bool{
@@ -92,22 +104,22 @@ final class SurvivalBlockBreakHandler{
 			$this->player->getPosition()->distanceSquared($this->blockPos->add(0.5, 0.5, 0.5)) > $this->maxPlayerDistance){
 			return false;
 		}
-		if($this->breakSpeed !== null){
-			$newBreakSpeed = $this->calculateBreakProgressPerTick();
-			if(abs($newBreakSpeed - $this->breakSpeed) > 0.0001){
-				$this->breakSpeed = $newBreakSpeed;
-				//TODO: sync with client
-			}
 
-			$this->breakProgress += $this->breakSpeed;
-
-			if(($this->fxTicker++ % $this->fxTickInterval) === 0){
-				$this->player->getWorld()->addParticle($this->blockPos, new BlockPunchParticle($this->block, $this->targetedFace));
-				$this->player->getWorld()->addSound($this->blockPos, new BlockPunchSound($this->block));
-				$this->player->broadcastAnimation(new ArmSwingAnimation($this->player), $this->player->getViewers());
-			}
+		$newBreakSpeed = $this->calculateBreakProgressPerTick();
+		if(abs($newBreakSpeed - $this->breakSpeed) > 0.0001){
+			$this->breakSpeed = $newBreakSpeed;
+			//TODO: sync with client
 		}
-		return $this->breakSpeed !== null and $this->breakProgress < 1;
+
+		$this->breakProgress += $this->breakSpeed;
+
+		if(($this->fxTicker++ % $this->fxTickInterval) === 0 and $this->breakProgress < 1){
+			$this->player->getWorld()->addParticle($this->blockPos, new BlockPunchParticle($this->block, $this->targetedFace));
+			$this->player->getWorld()->addSound($this->blockPos, new BlockPunchSound($this->block));
+			$this->player->broadcastAnimation(new ArmSwingAnimation($this->player), $this->player->getViewers());
+		}
+
+		return $this->breakProgress < 1;
 	}
 
 	public function getBlockPos() : Vector3{
@@ -123,7 +135,7 @@ final class SurvivalBlockBreakHandler{
 		$this->targetedFace = $face;
 	}
 
-	public function getBreakSpeed() : ?float{
+	public function getBreakSpeed() : float{
 		return $this->breakSpeed;
 	}
 
@@ -132,7 +144,7 @@ final class SurvivalBlockBreakHandler{
 	}
 
 	public function __destruct(){
-		if($this->breakSpeed !== null and $this->player->getWorld()->isInLoadedTerrain($this->blockPos)){
+		if($this->player->getWorld()->isInLoadedTerrain($this->blockPos)){
 			$this->player->getWorld()->broadcastPacketToViewers(
 				$this->blockPos,
 				LevelEventPacket::create(LevelEventPacket::EVENT_BLOCK_STOP_BREAK, 0, $this->blockPos)
