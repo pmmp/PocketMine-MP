@@ -302,8 +302,6 @@ class MemoryManager{
 	 * Static memory dumper accessible from any thread.
 	 *
 	 * @param mixed   $startingObject
-	 *
-	 * @throws \ReflectionException
 	 */
 	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
 		$hardLimit = ini_get('memory_limit');
