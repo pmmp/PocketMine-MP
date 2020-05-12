@@ -71,6 +71,11 @@ parameters:
 			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
 
 		-
+			message: "#^Class pocketmine\\\\item\\\\LegacyStringToItemParser constructor invoked with 0 parameters, 1 required\\.$#"
+			count: 1
+			path: ../../../src/item/LegacyStringToItemParser.php
+
+		-
 			message: "#^Class pocketmine\\\\network\\\\mcpe\\\\StaticPacketCache constructor invoked with 0 parameters, 2 required\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/StaticPacketCache.php
