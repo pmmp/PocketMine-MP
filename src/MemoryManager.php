@@ -27,6 +27,7 @@ use pocketmine\event\server\LowMemoryEvent;
 use pocketmine\scheduler\DumpWorkerMemoryTask;
 use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
 use function arsort;
@@ -305,6 +306,7 @@ class MemoryManager{
 	 */
 	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
 		$hardLimit = ini_get('memory_limit');
+		if($hardLimit === false) throw new AssumptionFailedError("memory_limit INI directive should always exist");
 		ini_set('memory_limit', '-1');
 		gc_disable();
 
