@@ -88,7 +88,7 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 		foreach($this->chainDataJwt->chain as $k => $chain){
 			//validate every chain element
 			try{
-				$claims = JwtUtils::getClaims($chain);
+				[, $claims, ] = JwtUtils::parse($chain);
 			}catch(\UnexpectedValueException $e){
 				throw new PacketDecodeException($e->getMessage(), 0, $e);
 			}
@@ -117,7 +117,7 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 
 		$this->clientDataJwt = $buffer->get($buffer->getLInt());
 		try{
-			$clientData = JwtUtils::getClaims($this->clientDataJwt);
+			[, $clientData, ] = JwtUtils::parse($this->clientDataJwt);
 		}catch(\UnexpectedValueException $e){
 			throw new PacketDecodeException($e->getMessage(), 0, $e);
 		}

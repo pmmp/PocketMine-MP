@@ -36,7 +36,6 @@ use function base64_decode;
 use function bin2hex;
 use function explode;
 use function gmp_init;
-use function json_decode;
 use function openssl_verify;
 use function str_split;
 use function strlen;
@@ -115,7 +114,11 @@ class ProcessLoginTask extends AsyncTask{
 	 * @throws VerifyLoginException if errors are encountered
 	 */
 	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : void{
-		[$headB64, $payloadB64, $sigB64] = explode('.', $jwt);
+		try{
+			[$headers, $claims, $plainSignature] = JwtUtils::parse($jwt);
+		}catch(\UnexpectedValueException $e){
+			throw new VerifyLoginException("Failed to parse JWT: " . $e->getMessage(), 0, $e);
+		}
 
 		if($currentPublicKey === null){
 			if(!$first){
@@ -123,7 +126,6 @@ class ProcessLoginTask extends AsyncTask{
 			}
 
 			//First link, check that it is self-signed
-			$headers = json_decode(JwtUtils::b64UrlDecode($headB64), true);
 			$currentPublicKey = $headers["x5u"];
 		}
 
@@ -147,8 +149,6 @@ class ProcessLoginTask extends AsyncTask{
 		if($currentPublicKey === self::MOJANG_ROOT_PUBLIC_KEY){
 			$this->authenticated = true; //we're signed into xbox live
 		}
-
-		$claims = json_decode(JwtUtils::b64UrlDecode($payloadB64), true);
 
 		$time = time();
 		if(isset($claims["nbf"]) and $claims["nbf"] > $time + self::CLOCK_DRIFT_MAX){

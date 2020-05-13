@@ -38,22 +38,28 @@ use function strtr;
 final class JwtUtils{
 
 	/**
-	 * @return mixed[] array of claims
-	 * @phpstan-return array<string, mixed>
+	 * TODO: replace this result with an object
+	 *
+	 * @return mixed[]
+	 * @phpstan-return array{mixed[], mixed[], string}
 	 *
 	 * @throws \UnexpectedValueException
 	 */
-	public static function getClaims(string $token) : array{
+	public static function parse(string $token) : array{
 		$v = explode(".", $token);
 		if(count($v) !== 3){
 			throw new \UnexpectedValueException("Expected exactly 3 JWT parts, got " . count($v));
 		}
-		$result = json_decode(self::b64UrlDecode($v[1]), true);
-		if(!is_array($result)){
+		$header = json_decode(self::b64UrlDecode($v[0]), true);
+		if(!is_array($header)){
+			throw new \UnexpectedValueException("Failed to decode JWT header JSON: ". json_last_error_msg());
+		}
+		$body = json_decode(self::b64UrlDecode($v[1]), true);
+		if(!is_array($body)){
 			throw new \UnexpectedValueException("Failed to decode JWT payload JSON: " . json_last_error_msg());
 		}
-
-		return $result;
+		$signature = self::b64UrlDecode($v[2]);
+		return [$header, $body, $signature];
 	}
 
 	public static function b64UrlEncode(string $str) : string{
