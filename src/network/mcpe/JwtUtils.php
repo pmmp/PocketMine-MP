@@ -31,7 +31,6 @@ use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use Mdanter\Ecc\Serializer\PublicKey\PemPublicKeySerializer;
 use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
-use pocketmine\network\mcpe\auth\VerifyLoginException;
 use pocketmine\utils\AssumptionFailedError;
 use function base64_decode;
 use function base64_encode;
@@ -96,7 +95,7 @@ final class JwtUtils{
 
 		$plainSignature = self::b64UrlDecode($signature);
 		if(strlen($plainSignature) !== 96){
-			throw new VerifyLoginException("JWT signature has unexpected length, expected 96, got " . strlen($plainSignature));
+			throw new \UnexpectedValueException("JWT signature has unexpected length, expected 96, got " . strlen($plainSignature));
 		}
 
 		[$rString, $sString] = str_split($plainSignature, 48);
