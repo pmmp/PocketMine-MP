@@ -31,7 +31,7 @@ use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\scheduler\AsyncTask;
-use function assert;
+use pocketmine\utils\AssumptionFailedError;
 use function base64_decode;
 use function bin2hex;
 use function explode;
@@ -129,14 +129,18 @@ class ProcessLoginTask extends AsyncTask{
 			$currentPublicKey = $headers["x5u"];
 		}
 
-		$plainSignature = JwtUtils::b64UrlDecode($sigB64);
-		assert(strlen($plainSignature) === 96);
+		if(strlen($plainSignature) !== 96){
+			throw new VerifyLoginException("JWT signature has unexpected length, expected 96, got " . strlen($plainSignature));
+		}
+
 		[$rString, $sString] = str_split($plainSignature, 48);
 		$sig = new Signature(gmp_init(bin2hex($rString), 16), gmp_init(bin2hex($sString), 16));
 
+		$rawParts = explode('.', $jwt);
+		if(count($rawParts) !== 3) throw new AssumptionFailedError("Parts count should be 3 as verified by JwtUtils::parse()");
 		$derSerializer = new DerPublicKeySerializer();
 		$v = openssl_verify(
-			"$headB64.$payloadB64",
+			$rawParts[0] . '.' . $rawParts[1],
 			(new DerSignatureSerializer())->serialize($sig),
 			(new PemPublicKeySerializer($derSerializer))->serialize($derSerializer->parse(base64_decode($currentPublicKey, true))),
 			OPENSSL_ALGO_SHA384
