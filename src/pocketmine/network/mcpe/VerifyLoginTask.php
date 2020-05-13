@@ -27,7 +27,6 @@ use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\Player;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
-use function assert;
 use function base64_decode;
 use function chr;
 use function count;
@@ -116,7 +115,9 @@ class VerifyLoginTask extends AsyncTask{
 
 		//OpenSSL wants a DER-encoded signature, so we extract R and S from the plain signature and crudely serialize it.
 
-		assert(strlen($plainSignature) === 96);
+		if(strlen($plainSignature) !== 96){
+			throw new VerifyLoginException("Wrong signature length, expected 96, got " . strlen($plainSignature));
+		}
 
 		[$rString, $sString] = str_split($plainSignature, 48);
 
