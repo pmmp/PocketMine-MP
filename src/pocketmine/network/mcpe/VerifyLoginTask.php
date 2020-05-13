@@ -30,6 +30,7 @@ use pocketmine\Server;
 use function assert;
 use function base64_decode;
 use function chr;
+use function count;
 use function explode;
 use function json_decode;
 use function ltrim;
@@ -94,7 +95,11 @@ class VerifyLoginTask extends AsyncTask{
 	 * @throws VerifyLoginException if errors are encountered
 	 */
 	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : void{
-		[$headB64, $payloadB64, $sigB64] = explode('.', $jwt);
+		$rawParts = explode('.', $jwt);
+		if(count($rawParts) !== 3){
+			throw new VerifyLoginException("Wrong number of JWT parts, expected 3, got " . count($rawParts));
+		}
+		[$headB64, $payloadB64, $sigB64] = $rawParts;
 
 		$headers = json_decode(base64_decode(strtr($headB64, '-_', '+/'), true), true);
 
