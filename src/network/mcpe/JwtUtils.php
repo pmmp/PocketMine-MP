@@ -115,6 +115,10 @@ final class JwtUtils{
 		}
 	}
 
+	/**
+	 * @phpstan-param array<string, mixed> $header
+	 * @phpstan-param array<string, mixed> $claims
+	 */
 	public static function create(array $header, array $claims, PrivateKeyInterface $signingKey) : string{
 		$jwtBody = JwtUtils::b64UrlEncode(json_encode($header)) . "." . JwtUtils::b64UrlEncode(json_encode($claims));
 
