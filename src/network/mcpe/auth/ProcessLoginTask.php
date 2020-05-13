@@ -25,24 +25,12 @@ namespace pocketmine\network\mcpe\auth;
 
 use FG\ASN1\Exception\ParserException;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
-use Mdanter\Ecc\Crypto\Signature\Signature;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
-use Mdanter\Ecc\Serializer\PublicKey\PemPublicKeySerializer;
-use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\utils\AssumptionFailedError;
 use function base64_decode;
-use function bin2hex;
-use function count;
-use function explode;
-use function gmp_init;
-use function openssl_verify;
-use function str_split;
-use function strlen;
 use function time;
-use const OPENSSL_ALGO_SHA384;
 
 class ProcessLoginTask extends AsyncTask{
 	private const TLS_KEY_ON_COMPLETION = "completion";
@@ -117,7 +105,7 @@ class ProcessLoginTask extends AsyncTask{
 	 */
 	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : void{
 		try{
-			[$headers, $claims, $plainSignature] = JwtUtils::parse($jwt);
+			[$headers, $claims, ] = JwtUtils::parse($jwt);
 		}catch(\UnexpectedValueException $e){
 			throw new VerifyLoginException("Failed to parse JWT: " . $e->getMessage(), 0, $e);
 		}
@@ -131,13 +119,6 @@ class ProcessLoginTask extends AsyncTask{
 			$currentPublicKey = $headers["x5u"];
 		}
 
-		if(strlen($plainSignature) !== 96){
-			throw new VerifyLoginException("JWT signature has unexpected length, expected 96, got " . strlen($plainSignature));
-		}
-
-		[$rString, $sString] = str_split($plainSignature, 48);
-		$sig = new Signature(gmp_init(bin2hex($rString), 16), gmp_init(bin2hex($sString), 16));
-
 		$derPublicKeySerializer = new DerPublicKeySerializer();
 		$rawPublicKey = base64_decode($currentPublicKey, true);
 		if($rawPublicKey === false){
@@ -149,17 +130,12 @@ class ProcessLoginTask extends AsyncTask{
 			throw new VerifyLoginException("Failed to parse DER public key: " . $e->getMessage(), 0, $e);
 		}
 
-		$rawParts = explode('.', $jwt);
-		if(count($rawParts) !== 3) throw new AssumptionFailedError("Parts count should be 3 as verified by JwtUtils::parse()");
-		$v = openssl_verify(
-			$rawParts[0] . '.' . $rawParts[1],
-			(new DerSignatureSerializer())->serialize($sig),
-			(new PemPublicKeySerializer($derPublicKeySerializer))->serialize($signingKey),
-			OPENSSL_ALGO_SHA384
-		);
-
-		if($v !== 1){
-			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.badSignature");
+		try{
+			if(!JwtUtils::verify($jwt, $signingKey)){
+				throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.badSignature");
+			}
+		}catch(\UnexpectedValueException $e){
+			throw new VerifyLoginException($e->getMessage(), 0, $e);
 		}
 
 		if($currentPublicKey === self::MOJANG_ROOT_PUBLIC_KEY){

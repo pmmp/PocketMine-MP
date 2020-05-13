@@ -23,17 +23,39 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
+use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
+use Mdanter\Ecc\Crypto\Signature\Signature;
+use Mdanter\Ecc\Serializer\PrivateKey\DerPrivateKeySerializer;
+use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
+use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
+use Mdanter\Ecc\Serializer\PublicKey\PemPublicKeySerializer;
+use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
+use pocketmine\network\mcpe\auth\VerifyLoginException;
+use pocketmine\utils\AssumptionFailedError;
 use function base64_decode;
 use function base64_encode;
+use function bin2hex;
 use function count;
 use function explode;
+use function gmp_init;
+use function gmp_strval;
+use function hex2bin;
 use function is_array;
 use function json_decode;
+use function json_encode;
 use function json_last_error_msg;
+use function openssl_error_string;
+use function openssl_sign;
+use function openssl_verify;
 use function rtrim;
+use function str_pad;
 use function str_repeat;
+use function str_split;
 use function strlen;
 use function strtr;
+use const OPENSSL_ALGO_SHA384;
+use const STR_PAD_LEFT;
 
 final class JwtUtils{
 
@@ -60,6 +82,57 @@ final class JwtUtils{
 		}
 		$signature = self::b64UrlDecode($v[2]);
 		return [$header, $body, $signature];
+	}
+
+	/**
+	 * @throws \UnexpectedValueException
+	 */
+	public static function verify(string $jwt, PublicKeyInterface $signingKey) : bool{
+		$parts = explode('.', $jwt);
+		if(count($parts) !== 3){
+			throw new \UnexpectedValueException("Expected exactly 3 JWT parts, got " . count($parts));
+		}
+		[$header, $body, $signature] = $parts;
+
+		$plainSignature = self::b64UrlDecode($signature);
+		if(strlen($plainSignature) !== 96){
+			throw new VerifyLoginException("JWT signature has unexpected length, expected 96, got " . strlen($plainSignature));
+		}
+
+		[$rString, $sString] = str_split($plainSignature, 48);
+		$sig = new Signature(gmp_init(bin2hex($rString), 16), gmp_init(bin2hex($sString), 16));
+
+		$v = openssl_verify(
+			$header . '.' . $body,
+			(new DerSignatureSerializer())->serialize($sig),
+			(new PemPublicKeySerializer(new DerPublicKeySerializer()))->serialize($signingKey),
+			OPENSSL_ALGO_SHA384
+		);
+		switch($v){
+			case 0: return false;
+			case 1: return true;
+			case -1: throw new \UnexpectedValueException("Error verifying JWT signature: " . openssl_error_string());
+			default: throw new AssumptionFailedError("openssl_verify() should only return -1, 0 or 1");
+		}
+	}
+
+	public static function create(array $header, array $claims, PrivateKeyInterface $signingKey) : string{
+		$jwtBody = JwtUtils::b64UrlEncode(json_encode($header)) . "." . JwtUtils::b64UrlEncode(json_encode($claims));
+
+		openssl_sign(
+			$jwtBody,
+			$sig,
+			(new PemPrivateKeySerializer(new DerPrivateKeySerializer()))->serialize($signingKey),
+			OPENSSL_ALGO_SHA384
+		);
+
+		$decodedSig = (new DerSignatureSerializer())->parse($sig);
+		$jwtSig = JwtUtils::b64UrlEncode(
+			hex2bin(str_pad(gmp_strval($decodedSig->getR(), 16), 96, "0", STR_PAD_LEFT)) .
+			hex2bin(str_pad(gmp_strval($decodedSig->getS(), 16), 96, "0", STR_PAD_LEFT))
+		);
+
+		return "$jwtBody.$jwtSig";
 	}
 
 	public static function b64UrlEncode(string $str) : string{

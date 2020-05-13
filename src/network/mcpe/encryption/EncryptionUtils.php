@@ -25,17 +25,12 @@ namespace pocketmine\network\mcpe\encryption;
 
 use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
-use Mdanter\Ecc\Serializer\PrivateKey\DerPrivateKeySerializer;
-use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
-use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
 use pocketmine\network\mcpe\JwtUtils;
 use function base64_encode;
 use function gmp_strval;
 use function hex2bin;
-use function json_encode;
 use function openssl_digest;
-use function openssl_sign;
 use function str_pad;
 
 final class EncryptionUtils{
@@ -53,23 +48,15 @@ final class EncryptionUtils{
 	}
 
 	public static function generateServerHandshakeJwt(PrivateKeyInterface $serverPriv, string $salt) : string{
-		$jwtBody = JwtUtils::b64UrlEncode(json_encode([
-					"x5u" => base64_encode((new DerPublicKeySerializer())->serialize($serverPriv->getPublicKey())),
-					"alg" => "ES384"
-				])
-			) . "." . JwtUtils::b64UrlEncode(json_encode([
-					"salt" => base64_encode($salt)
-				])
-			);
-
-		openssl_sign($jwtBody, $sig, (new PemPrivateKeySerializer(new DerPrivateKeySerializer()))->serialize($serverPriv), OPENSSL_ALGO_SHA384);
-
-		$decodedSig = (new DerSignatureSerializer())->parse($sig);
-		$jwtSig = JwtUtils::b64UrlEncode(
-			hex2bin(str_pad(gmp_strval($decodedSig->getR(), 16), 96, "0", STR_PAD_LEFT)) .
-			hex2bin(str_pad(gmp_strval($decodedSig->getS(), 16), 96, "0", STR_PAD_LEFT))
+		return JwtUtils::create(
+			[
+				"x5u" => base64_encode((new DerPublicKeySerializer())->serialize($serverPriv->getPublicKey())),
+				"alg" => "ES384"
+			],
+			[
+				"salt" => base64_encode($salt)
+			],
+			$serverPriv
 		);
-
-		return "$jwtBody.$jwtSig";
 	}
 }
