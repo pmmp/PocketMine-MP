@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\auth;
 
+use FG\ASN1\Exception\ParserException;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use Mdanter\Ecc\Crypto\Signature\Signature;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
@@ -34,6 +35,7 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\AssumptionFailedError;
 use function base64_decode;
 use function bin2hex;
+use function count;
 use function explode;
 use function gmp_init;
 use function openssl_verify;
@@ -136,13 +138,23 @@ class ProcessLoginTask extends AsyncTask{
 		[$rString, $sString] = str_split($plainSignature, 48);
 		$sig = new Signature(gmp_init(bin2hex($rString), 16), gmp_init(bin2hex($sString), 16));
 
+		$derPublicKeySerializer = new DerPublicKeySerializer();
+		$rawPublicKey = base64_decode($currentPublicKey, true);
+		if($rawPublicKey === false){
+			throw new VerifyLoginException("Failed to decode base64'd public key");
+		}
+		try{
+			$signingKey = $derPublicKeySerializer->parse($rawPublicKey);
+		}catch(\RuntimeException | ParserException $e){
+			throw new VerifyLoginException("Failed to parse DER public key: " . $e->getMessage(), 0, $e);
+		}
+
 		$rawParts = explode('.', $jwt);
 		if(count($rawParts) !== 3) throw new AssumptionFailedError("Parts count should be 3 as verified by JwtUtils::parse()");
-		$derSerializer = new DerPublicKeySerializer();
 		$v = openssl_verify(
 			$rawParts[0] . '.' . $rawParts[1],
 			(new DerSignatureSerializer())->serialize($sig),
-			(new PemPublicKeySerializer($derSerializer))->serialize($derSerializer->parse(base64_decode($currentPublicKey, true))),
+			(new PemPublicKeySerializer($derPublicKeySerializer))->serialize($signingKey),
 			OPENSSL_ALGO_SHA384
 		);
 
