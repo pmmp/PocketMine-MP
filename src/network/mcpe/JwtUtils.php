@@ -64,38 +64,38 @@ final class JwtUtils{
 	 * @return mixed[]
 	 * @phpstan-return array{mixed[], mixed[], string}
 	 *
-	 * @throws \UnexpectedValueException
+	 * @throws JwtException
 	 */
 	public static function parse(string $token) : array{
 		$v = explode(".", $token);
 		if(count($v) !== 3){
-			throw new \UnexpectedValueException("Expected exactly 3 JWT parts, got " . count($v));
+			throw new JwtException("Expected exactly 3 JWT parts, got " . count($v));
 		}
 		$header = json_decode(self::b64UrlDecode($v[0]), true);
 		if(!is_array($header)){
-			throw new \UnexpectedValueException("Failed to decode JWT header JSON: " . json_last_error_msg());
+			throw new JwtException("Failed to decode JWT header JSON: " . json_last_error_msg());
 		}
 		$body = json_decode(self::b64UrlDecode($v[1]), true);
 		if(!is_array($body)){
-			throw new \UnexpectedValueException("Failed to decode JWT payload JSON: " . json_last_error_msg());
+			throw new JwtException("Failed to decode JWT payload JSON: " . json_last_error_msg());
 		}
 		$signature = self::b64UrlDecode($v[2]);
 		return [$header, $body, $signature];
 	}
 
 	/**
-	 * @throws \UnexpectedValueException
+	 * @throws JwtException
 	 */
 	public static function verify(string $jwt, PublicKeyInterface $signingKey) : bool{
 		$parts = explode('.', $jwt);
 		if(count($parts) !== 3){
-			throw new \UnexpectedValueException("Expected exactly 3 JWT parts, got " . count($parts));
+			throw new JwtException("Expected exactly 3 JWT parts, got " . count($parts));
 		}
 		[$header, $body, $signature] = $parts;
 
 		$plainSignature = self::b64UrlDecode($signature);
 		if(strlen($plainSignature) !== 96){
-			throw new \UnexpectedValueException("JWT signature has unexpected length, expected 96, got " . strlen($plainSignature));
+			throw new JwtException("JWT signature has unexpected length, expected 96, got " . strlen($plainSignature));
 		}
 
 		[$rString, $sString] = str_split($plainSignature, 48);
@@ -110,7 +110,7 @@ final class JwtUtils{
 		switch($v){
 			case 0: return false;
 			case 1: return true;
-			case -1: throw new \UnexpectedValueException("Error verifying JWT signature: " . openssl_error_string());
+			case -1: throw new JwtException("Error verifying JWT signature: " . openssl_error_string());
 			default: throw new AssumptionFailedError("openssl_verify() should only return -1, 0 or 1");
 		}
 	}
@@ -144,7 +144,7 @@ final class JwtUtils{
 		}
 		$decoded = base64_decode(strtr($str, '-_', '+/'), true);
 		if($decoded === false){
-			throw new \UnexpectedValueException("Malformed base64url encoded payload could not be decoded");
+			throw new JwtException("Malformed base64url encoded payload could not be decoded");
 		}
 		return $decoded;
 	}

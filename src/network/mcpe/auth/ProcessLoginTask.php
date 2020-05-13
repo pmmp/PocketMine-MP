@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\auth;
 use FG\ASN1\Exception\ParserException;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
+use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\scheduler\AsyncTask;
@@ -106,7 +107,7 @@ class ProcessLoginTask extends AsyncTask{
 	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : void{
 		try{
 			[$headers, $claims, ] = JwtUtils::parse($jwt);
-		}catch(\UnexpectedValueException $e){
+		}catch(JwtException $e){
 			throw new VerifyLoginException("Failed to parse JWT: " . $e->getMessage(), 0, $e);
 		}
 
@@ -134,7 +135,7 @@ class ProcessLoginTask extends AsyncTask{
 			if(!JwtUtils::verify($jwt, $signingKey)){
 				throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.badSignature");
 			}
-		}catch(\UnexpectedValueException $e){
+		}catch(JwtException $e){
 			throw new VerifyLoginException($e->getMessage(), 0, $e);
 		}
 
