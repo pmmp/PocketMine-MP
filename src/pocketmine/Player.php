@@ -262,6 +262,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public $loggedIn = false;
 
 	/** @var bool */
+	private $seenLoginPacket = false;
+	/** @var bool */
 	private $resourcePacksDone = false;
 
 	/** @var bool */
@@ -1816,9 +1818,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-		if($this->loggedIn){
+		if($this->seenLoginPacket){
 			return false;
 		}
+		$this->seenLoginPacket = true;
 
 		if($packet->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
 			if($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL){
