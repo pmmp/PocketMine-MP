@@ -27,9 +27,9 @@ use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\Player;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
-use function assert;
 use function base64_decode;
 use function chr;
+use function count;
 use function explode;
 use function json_decode;
 use function ltrim;
@@ -94,7 +94,11 @@ class VerifyLoginTask extends AsyncTask{
 	 * @throws VerifyLoginException if errors are encountered
 	 */
 	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : void{
-		[$headB64, $payloadB64, $sigB64] = explode('.', $jwt);
+		$rawParts = explode('.', $jwt);
+		if(count($rawParts) !== 3){
+			throw new VerifyLoginException("Wrong number of JWT parts, expected 3, got " . count($rawParts));
+		}
+		[$headB64, $payloadB64, $sigB64] = $rawParts;
 
 		$headers = json_decode(base64_decode(strtr($headB64, '-_', '+/'), true), true);
 
@@ -111,7 +115,9 @@ class VerifyLoginTask extends AsyncTask{
 
 		//OpenSSL wants a DER-encoded signature, so we extract R and S from the plain signature and crudely serialize it.
 
-		assert(strlen($plainSignature) === 96);
+		if(strlen($plainSignature) !== 96){
+			throw new VerifyLoginException("Wrong signature length, expected 96, got " . strlen($plainSignature));
+		}
 
 		[$rString, $sString] = str_split($plainSignature, 48);
 

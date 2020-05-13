@@ -32,7 +32,7 @@ use pocketmine\utils\Random;
 abstract class Populator{
 
 	/**
-	 * @return mixed
+	 * @return void
 	 */
 	abstract public function populate(ChunkManager $level, int $chunkX, int $chunkZ, Random $random);
 }
