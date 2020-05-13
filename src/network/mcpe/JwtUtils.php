@@ -73,7 +73,7 @@ final class JwtUtils{
 		}
 		$header = json_decode(self::b64UrlDecode($v[0]), true);
 		if(!is_array($header)){
-			throw new \UnexpectedValueException("Failed to decode JWT header JSON: ". json_last_error_msg());
+			throw new \UnexpectedValueException("Failed to decode JWT header JSON: " . json_last_error_msg());
 		}
 		$body = json_decode(self::b64UrlDecode($v[1]), true);
 		if(!is_array($body)){
