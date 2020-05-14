@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use Ds\Set;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\EffectInstance;
@@ -166,6 +167,12 @@ class NetworkSession{
 	/** @var PacketSender */
 	private $sender;
 
+	/**
+	 * @var \Closure[]|Set
+	 * @phpstan-var Set<\Closure() : void>
+	 */
+	private $disposeHooks;
+
 	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, Compressor $compressor, string $ip, int $port){
 		$this->server = $server;
 		$this->manager = $manager;
@@ -178,6 +185,8 @@ class NetworkSession{
 		$this->compressedQueue = new \SplQueue();
 		$this->compressor = $compressor;
 		$this->packetPool = $packetPool;
+
+		$this->disposeHooks = new Set();
 
 		$this->connectTime = time();
 
@@ -218,11 +227,17 @@ class NetworkSession{
 		$this->player = new $class($this->server, $this, $this->info, $this->authenticated);
 
 		$this->invManager = new InventoryManager($this->player, $this);
-		$this->player->getEffects()->onEffectAdd(function(EffectInstance $effect, bool $replacesOldEffect) : void{
+
+		$effectManager = $this->player->getEffects();
+		$effectManager->getEffectAddHooks()->add($effectAddHook = function(EffectInstance $effect, bool $replacesOldEffect) : void{
 			$this->onEntityEffectAdded($this->player, $effect, $replacesOldEffect);
 		});
-		$this->player->getEffects()->onEffectRemove(function(EffectInstance $effect) : void{
+		$effectManager->getEffectRemoveHooks()->add($effectRemoveHook = function(EffectInstance $effect) : void{
 			$this->onEntityEffectRemoved($this->player, $effect);
+		});
+		$this->disposeHooks->add(static function() use ($effectManager, $effectAddHook, $effectRemoveHook) : void{
+			$effectManager->getEffectAddHooks()->remove($effectAddHook);
+			$effectManager->getEffectRemoveHooks()->remove($effectRemoveHook);
 		});
 	}
 
@@ -467,6 +482,10 @@ class NetworkSession{
 			$this->disconnectGuard = true;
 			$func();
 			$this->disconnectGuard = false;
+			foreach($this->disposeHooks as $callback){
+				$callback();
+			}
+			$this->disposeHooks->clear();
 			$this->setHandler(null);
 			$this->connected = false;
 			$this->manager->remove($this);
