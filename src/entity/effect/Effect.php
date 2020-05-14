@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
+use pocketmine\color\Color;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
-use pocketmine\utils\Color;
 
 class Effect{
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "475fdc2cb5250b9813bc55fb87f7733c",
+    "content-hash": "4bd35ad045d13f81b88bef943137c79f",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -464,6 +464,40 @@
             ],
             "description": "Ad-hoc autoloading components used by PocketMine-MP",
             "time": "2020-01-31T14:26:22+00:00"
+        },
+        {
+            "name": "pocketmine/color",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/Color.git",
+                "reference": "10f3453d0eb3eccbccad5cf58a00e42cdaef1772"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/Color/zipball/10f3453d0eb3eccbccad5cf58a00e42cdaef1772",
+                "reference": "10f3453d0eb3eccbccad5cf58a00e42cdaef1772",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.25",
+                "phpstan/phpstan-strict-rules": "^0.12.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\color\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Color handling library used by PocketMine-MP and related projects",
+            "time": "2020-05-14T19:15:33+00:00"
         },
         {
             "name": "pocketmine/errorhandler",

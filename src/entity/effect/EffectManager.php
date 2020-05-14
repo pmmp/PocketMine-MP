@@ -24,10 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\entity\effect;
 
 use Ds\Set;
+use pocketmine\color\Color;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
-use pocketmine\utils\Color;
 use function abs;
 use function count;
 

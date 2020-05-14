@@ -43,6 +43,7 @@
       "pocketmine/callback-validator": "^1.0.1",
       "pocketmine/errorhandler": "^0.1.0",
       "pocketmine/uuid": "^0.1.0",
+      "pocketmine/color": "^0.1.0",
       "adhocore/json-comment": "^0.1.0",
       "particle/validator": "^2.3",
       "netresearch/jsonmapper": "^2.0",
