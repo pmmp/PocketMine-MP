@@ -110,7 +110,7 @@ abstract class Living extends Entity{
 
 		$this->armorInventory = new ArmorInventory($this);
 		//TODO: load/save armor inventory contents
-		$this->armorInventory->addListeners(CallbackInventoryListener::onAnyChange(
+		$this->armorInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(
 			function(Inventory $unused) : void{
 				foreach($this->getViewers() as $viewer){
 					$viewer->getNetworkSession()->onMobArmorChange($this);

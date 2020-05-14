@@ -29,8 +29,7 @@ use pocketmine\item\Item;
  * Classes implementing this interface can be injected into inventories to receive notifications when content changes
  * occur.
  * @see CallbackInventoryListener for a closure-based listener
- * @see Inventory::addListeners()
- * @see Inventory::removeListeners()
+ * @see Inventory::getListeners()
  */
 interface InventoryListener{
 

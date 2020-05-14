@@ -221,8 +221,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$inventoryTag = $nbt->getListTag("Inventory");
 		if($inventoryTag !== null){
-			$armorListeners = $this->armorInventory->getListeners();
-			$this->armorInventory->removeListeners(...$armorListeners);
+			$armorListeners = $this->armorInventory->getListeners()->toArray();
+			$this->armorInventory->getListeners()->clear();
 
 			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
@@ -236,7 +236,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 				}
 			}
 
-			$this->armorInventory->addListeners(...$armorListeners);
+			$this->armorInventory->getListeners()->add(...$armorListeners);
 		}
 
 		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");

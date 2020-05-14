@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use Ds\Set;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\player\Player;
@@ -43,11 +44,15 @@ abstract class BaseInventory implements Inventory{
 	protected $slots;
 	/** @var Player[] */
 	protected $viewers = [];
-	/** @var InventoryListener[] */
-	protected $listeners = [];
+	/**
+	 * @var InventoryListener[]|Set
+	 * @phpstan-var Set<InventoryListener>
+	 */
+	protected $listeners;
 
 	public function __construct(int $size){
 		$this->slots = new \SplFixedArray($size);
+		$this->listeners = new Set();
 	}
 
 	/**
@@ -92,8 +97,8 @@ abstract class BaseInventory implements Inventory{
 
 		$oldContents = $this->slots->toArray();
 
-		$listeners = $this->listeners;
-		$this->listeners = [];
+		$listeners = $this->listeners->toArray();
+		$this->listeners->clear();
 		$viewers = $this->viewers;
 		$this->viewers = [];
 
@@ -105,7 +110,7 @@ abstract class BaseInventory implements Inventory{
 			}
 		}
 
-		$this->addListeners(...$listeners); //don't directly write, in case listeners were added while operation was in progress
+		$this->listeners->add(...$listeners); //don't directly write, in case listeners were added while operation was in progress
 		foreach($viewers as $id => $viewer){
 			$this->viewers[$id] = $viewer;
 		}
@@ -372,23 +377,7 @@ abstract class BaseInventory implements Inventory{
 		return $slot >= 0 and $slot < $this->slots->getSize();
 	}
 
-	public function addListeners(InventoryListener ...$listeners) : void{
-		foreach($listeners as $listener){
-			$this->listeners[spl_object_id($listener)] = $listener;
-		}
-	}
-
-	public function removeListeners(InventoryListener ...$listeners) : void{
-		foreach($listeners as $listener){
-			unset($this->listeners[spl_object_id($listener)]);
-		}
-	}
-
-	public function removeAllListeners() : void{
-		$this->listeners = [];
-	}
-
-	public function getListeners() : array{
+	public function getListeners() : Set{
 		return $this->listeners;
 	}
 }

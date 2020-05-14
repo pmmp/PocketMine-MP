@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\inventory;
 
+use Ds\Set;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 
@@ -155,19 +156,8 @@ interface Inventory{
 	public function slotExists(int $slot) : bool;
 
 	/**
-	 * @param InventoryListener ...$listeners
+	 * @return InventoryListener[]|Set
+	 * @phpstan-return Set<InventoryListener>
 	 */
-	public function addListeners(InventoryListener ...$listeners) : void;
-
-	/**
-	 * @param InventoryListener ...$listeners
-	 */
-	public function removeListeners(InventoryListener ...$listeners) : void;
-
-	public function removeAllListeners() : void;
-
-	/**
-	 * @return InventoryListener[]
-	 */
-	public function getListeners() : array;
+	public function getListeners() : Set;
 }
