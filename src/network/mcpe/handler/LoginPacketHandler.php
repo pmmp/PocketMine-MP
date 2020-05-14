@@ -100,16 +100,23 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
+		$safeB64Decode = static function(string $base64, string $context) : string{
+			$result = base64_decode($base64, true);
+			if($result === false){
+				throw new \InvalidArgumentException("$context: Malformed base64, cannot be decoded");
+			}
+			return $result;
+		};
 		try{
 			$clientData = $packet->clientData; //this serves no purpose except readability
 			/** @var SkinAnimation[] $animations */
 			$animations = [];
-			foreach($clientData->AnimatedImageData as $animation){
+			foreach($clientData->AnimatedImageData as $k => $animation){
 				$animations[] = new SkinAnimation(
 					new SkinImage(
 						$animation->ImageHeight,
 						$animation->ImageWidth,
-						base64_decode($animation->Image, true)
+						$safeB64Decode($animation->Image, "AnimatedImageData.$k.Image")
 					),
 					$animation->Type,
 					$animation->Frames
@@ -117,12 +124,12 @@ class LoginPacketHandler extends PacketHandler{
 			}
 			$skinData = new SkinData(
 				$clientData->SkinId,
-				base64_decode($clientData->SkinResourcePatch, true),
-				new SkinImage($clientData->SkinImageHeight, $clientData->SkinImageWidth, base64_decode($clientData->SkinData, true)),
+				$safeB64Decode($clientData->SkinResourcePatch, "SkinResourcePatch"),
+				new SkinImage($clientData->SkinImageHeight, $clientData->SkinImageWidth, $safeB64Decode($clientData->SkinData, "SkinData")),
 				$animations,
-				new SkinImage($clientData->CapeImageHeight, $clientData->CapeImageWidth, base64_decode($clientData->CapeData, true)),
-				base64_decode($clientData->SkinGeometryData, true),
-				base64_decode($clientData->SkinAnimationData, true),
+				new SkinImage($clientData->CapeImageHeight, $clientData->CapeImageWidth, $safeB64Decode($clientData->CapeData, "CapeData")),
+				$safeB64Decode($clientData->SkinGeometryData, "SkinGeometryData"),
+				$safeB64Decode($clientData->SkinAnimationData, "SkinAnimationData"),
 				$clientData->PremiumSkin,
 				$clientData->PersonaSkin,
 				$clientData->CapeOnClassicSkin,
