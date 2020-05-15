@@ -208,10 +208,10 @@ class LoginPacketHandler extends PacketHandler{
 	protected function fetchAuthData(JwtChain $chain) : AuthenticationData{
 		/** @var AuthenticationData|null $extraData */
 		$extraData = null;
-		foreach($chain->chain as $k => $chain){
+		foreach($chain->chain as $k => $jwt){
 			//validate every chain element
 			try{
-				[, $claims, ] = JwtUtils::parse($chain);
+				[, $claims, ] = JwtUtils::parse($jwt);
 			}catch(JwtException $e){
 				throw BadPacketException::wrap($e);
 			}
