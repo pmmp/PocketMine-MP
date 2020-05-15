@@ -28,12 +28,17 @@ use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\auth\ProcessLoginTask;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
+use pocketmine\network\mcpe\JwtException;
+use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
+use pocketmine\network\mcpe\protocol\types\login\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\ClientDataPersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\login\ClientDataPersonaSkinPiece;
+use pocketmine\network\mcpe\protocol\types\login\JwtChain;
 use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
@@ -45,6 +50,7 @@ use pocketmine\Server;
 use pocketmine\uuid\UUID;
 use function array_map;
 use function base64_decode;
+use function is_array;
 
 /**
  * Handles the initial login phase of the session. This handler is used as the initial state.
@@ -94,12 +100,15 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
-		if(!Player::isValidUserName($packet->extraData->displayName)){
+		$extraData = $this->fetchAuthData($packet->chainDataJwt);
+
+		if(!Player::isValidUserName($extraData->displayName)){
 			$this->session->disconnect("disconnectionScreen.invalidName");
 
 			return true;
 		}
 
+		$clientData = $this->parseClientData($packet->clientDataJwt);
 		$safeB64Decode = static function(string $base64, string $context) : string{
 			$result = base64_decode($base64, true);
 			if($result === false){
@@ -108,7 +117,6 @@ class LoginPacketHandler extends PacketHandler{
 			return $result;
 		};
 		try{
-			$clientData = $packet->clientData; //this serves no purpose except readability
 			/** @var SkinAnimation[] $animations */
 			$animations = [];
 			foreach($clientData->AnimatedImageData as $k => $animation){
@@ -154,17 +162,17 @@ class LoginPacketHandler extends PacketHandler{
 		}
 
 		try{
-			$uuid = UUID::fromString($packet->extraData->identity);
+			$uuid = UUID::fromString($extraData->identity);
 		}catch(\InvalidArgumentException $e){
 			throw BadPacketException::wrap($e, "Failed to parse login UUID");
 		}
 		($this->playerInfoConsumer)(new PlayerInfo(
-			$packet->extraData->displayName,
+			$extraData->displayName,
 			$uuid,
 			$skin,
-			$packet->clientData->LanguageCode,
-			$packet->extraData->XUID,
-			(array) $packet->clientData
+			$clientData->LanguageCode,
+			$extraData->XUID,
+			(array) $clientData
 		));
 
 		$ev = new PlayerPreLoginEvent(
@@ -192,6 +200,67 @@ class LoginPacketHandler extends PacketHandler{
 		$this->processLogin($packet, $ev->isAuthRequired());
 
 		return true;
+	}
+
+	/**
+	 * @throws BadPacketException
+	 */
+	protected function fetchAuthData(JwtChain $chain) : AuthenticationData{
+		/** @var AuthenticationData|null $extraData */
+		$extraData = null;
+		foreach($chain->chain as $k => $chain){
+			//validate every chain element
+			try{
+				[, $claims, ] = JwtUtils::parse($chain);
+			}catch(JwtException $e){
+				throw BadPacketException::wrap($e);
+			}
+			if(isset($claims["extraData"])){
+				if($extraData !== null){
+					throw new BadPacketException("Found 'extraData' more than once in chainData");
+				}
+
+				if(!is_array($claims["extraData"])){
+					throw new BadPacketException("'extraData' key should be an array");
+				}
+				$mapper = new \JsonMapper;
+				$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
+				$mapper->bExceptionOnMissingData = true;
+				$mapper->bExceptionOnUndefinedProperty = true;
+				try{
+					/** @var AuthenticationData $extraData */
+					$extraData = $mapper->map($claims['extraData'], new AuthenticationData);
+				}catch(\JsonMapper_Exception $e){
+					throw BadPacketException::wrap($e);
+				}
+			}
+		}
+		if($extraData === null){
+			throw new BadPacketException("'extraData' not found in chain data");
+		}
+		return $extraData;
+	}
+
+	/**
+	 * @throws BadPacketException
+	 */
+	protected function parseClientData(string $clientDataJwt) : ClientData{
+		try{
+			[, $clientDataClaims, ] = JwtUtils::parse($clientDataJwt);
+		}catch(JwtException $e){
+			throw BadPacketException::wrap($e);
+		}
+
+		$mapper = new \JsonMapper;
+		$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
+		$mapper->bExceptionOnMissingData = true;
+		$mapper->bExceptionOnUndefinedProperty = true;
+		try{
+			$clientData = $mapper->map($clientDataClaims, new ClientData);
+		}catch(\JsonMapper_Exception $e){
+			throw BadPacketException::wrap($e);
+		}
+		return $clientData;
 	}
 
 	/**
