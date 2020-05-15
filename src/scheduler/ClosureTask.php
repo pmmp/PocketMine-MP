@@ -31,8 +31,8 @@ use pocketmine\utils\Utils;
  * Example usage:
  *
  * ```
- * TaskScheduler->scheduleTask(new ClosureTask(function(int $currentTick) : void{
- *     echo "HI on $currentTick\n";
+ * TaskScheduler->scheduleTask(new ClosureTask(function() : void{
+ *     echo "HI\n";
  * });
  * ```
  */
@@ -40,16 +40,16 @@ class ClosureTask extends Task{
 
 	/**
 	 * @var \Closure
-	 * @phpstan-var \Closure(int) : void
+	 * @phpstan-var \Closure() : void
 	 */
 	private $closure;
 
 	/**
-	 * @param \Closure $closure Must accept only ONE parameter, $currentTick
-	 * @phpstan-param \Closure(int) : void $closure
+	 * @param \Closure $closure Must accept zero parameters
+	 * @phpstan-param \Closure() : void $closure
 	 */
 	public function __construct(\Closure $closure){
-		Utils::validateCallableSignature(function(int $currentTick) : void{}, $closure);
+		Utils::validateCallableSignature(function() : void{}, $closure);
 		$this->closure = $closure;
 	}
 
@@ -57,7 +57,7 @@ class ClosureTask extends Task{
 		return Utils::getNiceClosureName($this->closure);
 	}
 
-	public function onRun(int $currentTick) : void{
-		($this->closure)($currentTick);
+	public function onRun() : void{
+		($this->closure)();
 	}
 }
