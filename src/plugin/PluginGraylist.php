@@ -23,11 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use Particle\Validator\Validator;
-use function array_filter;
+use Respect\Validation\Exceptions\NestedValidationException;
+use Respect\Validation\Rules\AllOf;
+use Respect\Validation\Rules\ArrayType;
+use Respect\Validation\Rules\Each;
+use Respect\Validation\Rules\In;
+use Respect\Validation\Rules\Key;
+use Respect\Validation\Rules\StringType;
+use Respect\Validation\Validator;
 use function array_flip;
-use function count;
-use function implode;
 
 class PluginGraylist{
 
@@ -66,17 +70,15 @@ class PluginGraylist{
 	 * @param mixed[] $array
 	 */
 	public static function fromArray(array $array) : PluginGraylist{
-		$v = new Validator();
-		$v->required("mode")->inArray(['whitelist', 'blacklist'], true);
-		$v->required("plugins")->isArray()->allowEmpty(true)->callback(function(array $elements) : bool{ return count(array_filter($elements, '\is_string')) === count($elements); });
-
-		$result = $v->validate($array);
-		if($result->isNotValid()){
-			$messages = [];
-			foreach($result->getFailures() as $f){
-				$messages[] = $f->format();
-			}
-			throw new \InvalidArgumentException("Invalid data: " . implode(", ", $messages));
+		$validator = new Validator(
+			new Key("mode", new In(['whitelist', 'blacklist'], true), false),
+			new Key("plugins", new AllOf(new ArrayType(), new Each(new StringType())), false)
+		);
+		$validator->setName('plugin_list.yml');
+		try{
+			$validator->assert($array);
+		}catch(NestedValidationException $e){
+			throw new \InvalidArgumentException($e->getFullMessage(), 0, $e);
 		}
 		return new PluginGraylist($array["plugins"], $array["mode"] === 'whitelist');
 	}
