@@ -28,7 +28,8 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use function mt_rand;
 
 class Zombie extends Living{
-	public const NETWORK_ID = EntityLegacyIds::ZOMBIE;
+
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::ZOMBIE; }
 
 	public $width = 0.6;
 	public $height = 1.8;

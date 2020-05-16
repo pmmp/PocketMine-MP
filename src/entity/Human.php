@@ -66,6 +66,10 @@ use function strlen;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
 
+	public static function getNetworkTypeId() : int{
+		return -1; //TODO: ideally we shouldn't have to specify this at all here ...
+	}
+
 	/** @var PlayerInventory */
 	protected $inventory;
 

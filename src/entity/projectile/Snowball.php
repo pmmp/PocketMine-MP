@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\world\particle\SnowballPoofParticle;
 
 class Snowball extends Throwable{
-	public const NETWORK_ID = EntityLegacyIds::SNOWBALL;
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::SNOWBALL; }
 
 	protected function onHit(ProjectileHitEvent $event) : void{
 		for($i = 0; $i < 6; ++$i){

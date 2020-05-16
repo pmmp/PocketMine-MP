@@ -36,7 +36,8 @@ use pocketmine\world\Position;
 use pocketmine\world\sound\IgniteSound;
 
 class PrimedTNT extends Entity implements Explosive{
-	public const NETWORK_ID = EntityLegacyIds::TNT;
+
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::TNT; }
 
 	public $width = 0.98;
 	public $height = 0.98;

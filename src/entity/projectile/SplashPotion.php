@@ -45,7 +45,7 @@ use function sqrt;
 
 class SplashPotion extends Throwable{
 
-	public const NETWORK_ID = EntityLegacyIds::SPLASH_POTION;
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::SPLASH_POTION; }
 
 	protected $gravity = 0.05;
 	protected $drag = 0.01;

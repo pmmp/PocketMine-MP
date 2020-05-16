@@ -38,7 +38,8 @@ use function abs;
 use function get_class;
 
 class FallingBlock extends Entity{
-	public const NETWORK_ID = EntityLegacyIds::FALLING_BLOCK;
+
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::FALLING_BLOCK; }
 
 	public $width = 0.98;
 	public $height = 0.98;

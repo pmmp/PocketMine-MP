@@ -40,7 +40,8 @@ use function mt_rand;
 use function sqrt;
 
 class Arrow extends Projectile{
-	public const NETWORK_ID = EntityLegacyIds::ARROW;
+
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::ARROW;	}
 
 	public const PICKUP_NONE = 0;
 	public const PICKUP_ANY = 1;

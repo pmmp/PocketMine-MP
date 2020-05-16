@@ -37,7 +37,8 @@ use function get_class;
 use function max;
 
 class ItemEntity extends Entity{
-	public const NETWORK_ID = EntityLegacyIds::ITEM;
+
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::ITEM; }
 
 	public const DEFAULT_DESPAWN_DELAY = 6000; //5 minutes
 	public const NEVER_DESPAWN = -1;

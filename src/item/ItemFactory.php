@@ -252,8 +252,8 @@ class ItemFactory{
 
 		foreach(EntityFactory::getInstance()->getKnownTypes() as $className){
 			/** @var Living|string $className */
-			if(is_a($className, Living::class, true) and $className::NETWORK_ID !== -1){
-				$this->register(new SpawnEgg(ItemIds::SPAWN_EGG, $className::NETWORK_ID, "Spawn Egg", $className));
+			if(is_a($className, Living::class, true) and $className::getNetworkTypeId() !== -1){
+				$this->register(new SpawnEgg(ItemIds::SPAWN_EGG, $className::getNetworkTypeId(), "Spawn Egg", $className));
 			}
 		}
 

@@ -80,8 +80,6 @@ abstract class Entity{
 
 	public const MOTION_THRESHOLD = 0.00001;
 
-	public const NETWORK_ID = -1;
-
 	/** @var Player[] */
 	protected $hasSpawned = [];
 
@@ -1506,13 +1504,15 @@ abstract class Entity{
 		return $this->hasSpawned;
 	}
 
+	abstract public static function getNetworkTypeId() : int;
+
 	/**
 	 * Called by spawnTo() to send whatever packets needed to spawn the entity to the client.
 	 */
 	protected function sendSpawnPacket(Player $player) : void{
 		$pk = new AddActorPacket();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->type = LegacyEntityIdToStringIdMap::getInstance()->legacyToString(static::NETWORK_ID);
+		$pk->type = LegacyEntityIdToStringIdMap::getInstance()->legacyToString(static::getNetworkTypeId());
 		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->yaw = $this->location->yaw;

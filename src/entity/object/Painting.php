@@ -40,7 +40,7 @@ use pocketmine\world\World;
 use function ceil;
 
 class Painting extends Entity{
-	public const NETWORK_ID = EntityLegacyIds::PAINTING;
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::PAINTING; }
 
 	private const DATA_TO_FACING = [
 		0 => Facing::SOUTH,

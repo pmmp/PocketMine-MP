@@ -50,7 +50,7 @@ class EntityLandSound implements Sound{
 			LevelSoundEventPacket::SOUND_LAND,
 			$pos,
 			$this->blockLandedOn->getRuntimeId(),
-			$this->entity instanceof Player ? "minecraft:player" : LegacyEntityIdToStringIdMap::getInstance()->legacyToString($this->entity::NETWORK_ID) //TODO: bad hack, stuff depends on players having a -1 network ID :(
+			$this->entity instanceof Player ? "minecraft:player" : LegacyEntityIdToStringIdMap::getInstance()->legacyToString($this->entity::getNetworkTypeId()) //TODO: bad hack, stuff depends on players having a -1 network ID :(
 			//TODO: does isBaby have any relevance here?
 		);
 	}

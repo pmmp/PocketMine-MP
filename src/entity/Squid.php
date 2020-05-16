@@ -36,7 +36,8 @@ use function sqrt;
 use const M_PI;
 
 class Squid extends WaterAnimal{
-	public const NETWORK_ID = EntityLegacyIds::SQUID;
+
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::SQUID; }
 
 	public $width = 0.95;
 	public $height = 0.95;

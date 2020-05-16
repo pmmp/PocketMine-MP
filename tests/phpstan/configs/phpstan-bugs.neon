@@ -33,16 +33,6 @@ parameters:
 		-
 			message: "#^If condition is always false\\.$#"
 			count: 1
-			path: ../../../src/item/ItemFactory.php
-
-		-
-			message: "#^Strict comparison using \\!\\=\\= between \\-1 and \\-1 will always evaluate to false\\.$#"
-			count: 1
-			path: ../../../src/item/ItemFactory.php
-
-		-
-			message: "#^If condition is always false\\.$#"
-			count: 1
 			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
 
 		-

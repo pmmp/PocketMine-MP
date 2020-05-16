@@ -35,7 +35,7 @@ class Villager extends Living implements Ageable{
 	public const PROFESSION_BLACKSMITH = 3;
 	public const PROFESSION_BUTCHER = 4;
 
-	public const NETWORK_ID = EntityLegacyIds::VILLAGER;
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::VILLAGER; }
 
 	public $width = 0.6;
 	public $height = 1.8;
