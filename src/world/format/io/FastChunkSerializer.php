@@ -27,6 +27,7 @@ use pocketmine\block\BlockLegacyIds;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\HeightArray;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
@@ -120,7 +121,7 @@ final class FastChunkSerializer{
 
 		$subChunks = [];
 		$biomeIds = null;
-		$heightMap = [];
+		$heightMap = null;
 		if($terrainGenerated){
 			$count = $stream->getByte();
 			for($subCount = 0; $subCount < $count; ++$subCount){
@@ -142,7 +143,7 @@ final class FastChunkSerializer{
 
 			$biomeIds = new BiomeArray($stream->get(256));
 			if($lightPopulated){
-				$heightMap = array_values(unpack("S*", $stream->get(512)));
+				$heightMap = new HeightArray(array_values(unpack("S*", $stream->get(512))));
 			}
 		}
 
