@@ -116,7 +116,7 @@ class TaskHandler{
 		$this->task->setHandler(null);
 	}
 
-	public function run(int $currentTick) : void{
+	public function run() : void{
 		$this->timings->startTiming();
 		try{
 			$this->task->onRun();
