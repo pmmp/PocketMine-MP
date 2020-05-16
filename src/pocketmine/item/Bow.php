@@ -93,7 +93,7 @@ class Bow extends Tool{
 			$entity = $ev->getProjectile(); //This might have been changed by plugins
 
 			if($ev->isCancelled()){
-				$entity->flagForDespawn();
+				$entity->close();
 				$player->getInventory()->sendContents($player);
 			}else{
 				$entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
