@@ -60,7 +60,7 @@ abstract class Task{
 	 *
 	 * @return void
 	 */
-	abstract public function onRun(int $currentTick);
+	abstract public function onRun();
 
 	/**
 	 * Actions to execute if the Task is cancelled
