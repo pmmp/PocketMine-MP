@@ -31,7 +31,6 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
-use function realpath;
 use function sqrt;
 
 class ExperienceOrb extends Entity{

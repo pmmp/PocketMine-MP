@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format;
 
+use function chr;
+use function ord;
 use function strlen;
 
 final class BiomeArray{
