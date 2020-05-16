@@ -87,7 +87,7 @@ class Chunk{
 	 */
 	protected $heightMap;
 
-	/** @var string */
+	/** @var BiomeArray */
 	protected $biomeIds;
 
 	/** @var CompoundTag[]|null */
@@ -102,7 +102,7 @@ class Chunk{
 	 * @param CompoundTag[] $tiles
 	 * @param int[]         $heightMap
 	 */
-	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], ?array $entities = null, ?array $tiles = null, string $biomeIds = "", array $heightMap = []){
+	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], ?array $entities = null, ?array $tiles = null, ?BiomeArray $biomeIds = null, array $heightMap = []){
 		$this->x = $chunkX;
 		$this->z = $chunkZ;
 
@@ -120,12 +120,7 @@ class Chunk{
 			$this->heightMap = \SplFixedArray::fromArray(array_fill(0, 256, $val));
 		}
 
-		if(strlen($biomeIds) === 256){
-			$this->biomeIds = $biomeIds;
-		}else{
-			assert($biomeIds === "", "Wrong BiomeIds value count, expected 256, got " . strlen($biomeIds));
-			$this->biomeIds = str_repeat("\x00", 256);
-		}
+		$this->biomeIds = $biomeIds ?? new BiomeArray(str_repeat("\x00", 256));
 
 		$this->NBTtiles = $tiles;
 		$this->NBTentities = $entities;
@@ -359,7 +354,7 @@ class Chunk{
 	 * @return int 0-255
 	 */
 	public function getBiomeId(int $x, int $z) : int{
-		return ord($this->biomeIds[($z << 4) | $x]);
+		return $this->biomeIds->get($x, $z);
 	}
 
 	/**
@@ -370,7 +365,7 @@ class Chunk{
 	 * @param int $biomeId 0-255
 	 */
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{
-		$this->biomeIds[($z << 4) | $x] = chr($biomeId & 0xff);
+		$this->biomeIds->set($x, $z, $biomeId);
 		$this->dirtyFlags |= self::DIRTY_FLAG_BIOMES;
 	}
 
@@ -550,7 +545,7 @@ class Chunk{
 	}
 
 	public function getBiomeIdArray() : string{
-		return $this->biomeIds;
+		return $this->biomeIds->getData();
 	}
 
 	/**

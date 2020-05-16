@@ -33,6 +33,7 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
 use pocketmine\world\format\io\ChunkUtils;
@@ -232,8 +233,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		/** @var SubChunk[] $subChunks */
 		$subChunks = [];
 
-		/** @var string $biomeIds */
-		$biomeIds = "";
+		/** @var BiomeArray|null $biomeArray */
+		$biomeArray = null;
 
 		$chunkVersion = ord($this->db->get($index . self::TAG_VERSION));
 		$hasBeenUpgraded = $chunkVersion < self::CURRENT_LEVEL_CHUNK_VERSION;
@@ -326,7 +327,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 					try{
 						$binaryStream->get(512); //heightmap, discard it
-						$biomeIds = $binaryStream->get(256);
+						$biomeArray = new BiomeArray($binaryStream->get(256)); //never throws
 					}catch(BinaryDataException $e){
 						throw new CorruptedChunkException($e->getMessage(), 0, $e);
 					}
@@ -360,7 +361,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 				try{
 					$binaryStream->get(256); //heightmap, discard it
-					$biomeIds = ChunkUtils::convertBiomeColors(array_values(unpack("N*", $binaryStream->get(1024))));
+					$biomeArray = new BiomeArray(ChunkUtils::convertBiomeColors(array_values(unpack("N*", $binaryStream->get(1024))))); //never throws
 				}catch(BinaryDataException $e){
 					throw new CorruptedChunkException($e->getMessage(), 0, $e);
 				}
@@ -398,7 +399,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$subChunks,
 			$entities,
 			$tiles,
-			$biomeIds
+			$biomeArray
 		);
 
 		//TODO: tile ticks, biome states (?)
