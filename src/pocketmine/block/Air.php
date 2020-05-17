@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 
-
 /**
  * Air block
  */

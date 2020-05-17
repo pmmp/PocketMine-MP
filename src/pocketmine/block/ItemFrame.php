@@ -47,6 +47,9 @@ class ItemFrame extends Flowable{
 		$tile = $this->level->getTile($this);
 		if(!($tile instanceof TileItemFrame)){
 			$tile = Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), TileItemFrame::createNBT($this));
+			if(!($tile instanceof TileItemFrame)){
+				return true;
+			}
 		}
 
 		if($tile->hasItem()){

@@ -33,7 +33,7 @@ use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class Bucket extends Item implements Consumable{
+class Bucket extends Item implements MaybeConsumable{
 	public function __construct(int $meta = 0){
 		parent::__construct(self::BUCKET, $meta, "Bucket");
 	}

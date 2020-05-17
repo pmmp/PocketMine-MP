@@ -46,14 +46,22 @@ class Attribute{
 	public const HORSE_JUMP_STRENGTH = 14;
 	public const ZOMBIE_SPAWN_REINFORCEMENTS = 15;
 
+	/** @var int */
 	private $id;
+	/** @var float */
 	protected $minValue;
+	/** @var float */
 	protected $maxValue;
+	/** @var float */
 	protected $defaultValue;
+	/** @var float */
 	protected $currentValue;
+	/** @var string */
 	protected $name;
+	/** @var bool */
 	protected $shouldSend;
 
+	/** @var bool */
 	protected $desynchronized = true;
 
 	/** @var Attribute[] */
@@ -79,15 +87,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param int    $id
-	 * @param string $name
-	 * @param float  $minValue
-	 * @param float  $maxValue
-	 * @param float  $defaultValue
-	 * @param bool   $shouldSend
-	 *
-	 * @return Attribute
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public static function addAttribute(int $id, string $name, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true) : Attribute{
@@ -98,20 +97,10 @@ class Attribute{
 		return self::$attributes[$id] = new Attribute($id, $name, $minValue, $maxValue, $defaultValue, $shouldSend);
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return Attribute|null
-	 */
 	public static function getAttribute(int $id) : ?Attribute{
 		return isset(self::$attributes[$id]) ? clone self::$attributes[$id] : null;
 	}
 
-	/**
-	 * @param string $name
-	 *
-	 * @return Attribute|null
-	 */
 	public static function getAttributeByName(string $name) : ?Attribute{
 		foreach(self::$attributes as $a){
 			if($a->getName() === $name){
@@ -137,6 +126,9 @@ class Attribute{
 		return $this->minValue;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function setMinValue(float $minValue){
 		if($minValue > ($max = $this->getMaxValue())){
 			throw new \InvalidArgumentException("Minimum $minValue is greater than the maximum $max");
@@ -153,6 +145,9 @@ class Attribute{
 		return $this->maxValue;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function setMaxValue(float $maxValue){
 		if($maxValue < ($min = $this->getMinValue())){
 			throw new \InvalidArgumentException("Maximum $maxValue is less than the minimum $min");
@@ -169,6 +164,9 @@ class Attribute{
 		return $this->defaultValue;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function setDefaultValue(float $defaultValue){
 		if($defaultValue > $this->getMaxValue() or $defaultValue < $this->getMinValue()){
 			throw new \InvalidArgumentException("Default $defaultValue is outside the range " . $this->getMinValue() . " - " . $this->getMaxValue());
@@ -190,10 +188,6 @@ class Attribute{
 	}
 
 	/**
-	 * @param float $value
-	 * @param bool  $fit
-	 * @param bool  $forceSend
-	 *
 	 * @return $this
 	 */
 	public function setValue(float $value, bool $fit = false, bool $forceSend = false){

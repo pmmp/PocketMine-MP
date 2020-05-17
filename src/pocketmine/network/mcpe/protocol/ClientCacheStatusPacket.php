@@ -39,9 +39,6 @@ class ClientCacheStatusPacket extends DataPacket/* implements ServerboundPacket*
 		return $result;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isEnabled() : bool{
 		return $this->enabled;
 	}

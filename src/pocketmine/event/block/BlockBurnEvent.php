@@ -40,7 +40,6 @@ class BlockBurnEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Returns the block (usually Fire) which caused the target block to be burned away.
-	 * @return Block
 	 */
 	public function getCausingBlock() : Block{
 		return $this->causingBlock;

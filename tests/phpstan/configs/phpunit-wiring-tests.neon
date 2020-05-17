@@ -1,0 +1,7 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#1 \\$class of static method pocketmine\\\\level\\\\format\\\\io\\\\LevelProviderManager\\:\\:addProvider\\(\\) expects class\\-string\\<pocketmine\\\\level\\\\format\\\\io\\\\LevelProvider\\>, string given\\.$#"
+			count: 2
+			path: ../../phpunit/level/format/io/LevelProviderManagerTest.php
+

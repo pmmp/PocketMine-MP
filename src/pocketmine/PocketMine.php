@@ -21,13 +21,9 @@
 
 declare(strict_types=1);
 
-namespace {
-	const INT32_MIN = -0x80000000;
-	const INT32_MAX = 0x7fffffff;
-}
-
 namespace pocketmine {
 
+	use pocketmine\utils\Git;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\ServerKiller;
 	use pocketmine\utils\Terminal;
@@ -40,6 +36,10 @@ namespace pocketmine {
 
 	const MIN_PHP_VERSION = "7.2.0";
 
+	/**
+	 * @param string $message
+	 * @return void
+	 */
 	function critical_error($message){
 		echo "[ERROR] $message" . PHP_EOL;
 	}
@@ -57,18 +57,18 @@ namespace pocketmine {
 		if(version_compare(MIN_PHP_VERSION, PHP_VERSION) > 0){
 			//If PHP version isn't high enough, anything below might break, so don't bother checking it.
 			return [
-				\pocketmine\NAME . " requires PHP >= " . MIN_PHP_VERSION . ", but you have PHP " . PHP_VERSION . "."
+				"PHP >= " . MIN_PHP_VERSION . " is required, but you have PHP " . PHP_VERSION . "."
 			];
 		}
 
 		$messages = [];
 
 		if(PHP_INT_SIZE < 8){
-			$messages[] = "Running " . \pocketmine\NAME . " with 32-bit systems/PHP is no longer supported. Please upgrade to a 64-bit system, or use a 64-bit PHP binary if this is a 64-bit system.";
+			$messages[] = "32-bit systems/PHP are no longer supported. Please upgrade to a 64-bit system, or use a 64-bit PHP binary if this is a 64-bit system.";
 		}
 
 		if(php_sapi_name() !== "cli"){
-			$messages[] = "You must run " . \pocketmine\NAME . " using the CLI.";
+			$messages[] = "Only PHP CLI is supported.";
 		}
 
 		$extensions = [
@@ -125,8 +125,41 @@ namespace pocketmine {
 		return $messages;
 	}
 
+	/**
+	 * @param \Logger $logger
+	 * @return void
+	 */
+	function emit_performance_warnings(\Logger $logger){
+		if(extension_loaded("xdebug")){
+			$logger->warning("Xdebug extension is enabled. This has a major impact on performance.");
+		}
+		if(!extension_loaded("pocketmine_chunkutils")){
+			$logger->warning("ChunkUtils extension is missing. Anvil-format worlds will experience degraded performance.");
+		}
+		if(((int) ini_get('zend.assertions')) !== -1){
+			$logger->warning("Debugging assertions are enabled. This may degrade performance. To disable them, set `zend.assertions = -1` in php.ini.");
+		}
+		if(\Phar::running(true) === ""){
+			$logger->warning("Non-packaged installation detected. This will degrade autoloading speed and make startup times longer.");
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	function set_ini_entries(){
+		ini_set("allow_url_fopen", '1');
+		ini_set("display_errors", '1');
+		ini_set("display_startup_errors", '1');
+		ini_set("default_charset", "utf-8");
+		ini_set('assert.exception', '1');
+	}
+
+	/**
+	 * @return void
+	 */
 	function server(){
-		if(!empty($messages = check_platform_dependencies())){
+		if(count($messages = check_platform_dependencies()) > 0){
 			echo PHP_EOL;
 			$binary = version_compare(PHP_VERSION, "5.4") >= 0 ? PHP_BINARY : "unknown";
 			critical_error("Selected PHP binary ($binary) does not satisfy some requirements.");
@@ -140,47 +173,41 @@ namespace pocketmine {
 		unset($messages);
 
 		error_reporting(-1);
-
-		if(\Phar::running(true) !== ""){
-			define('pocketmine\PATH', \Phar::running(true) . "/");
-		}else{
-			define('pocketmine\PATH', dirname(__FILE__, 3) . DIRECTORY_SEPARATOR);
-		}
+		set_ini_entries();
 
 		$opts = getopt("", ["bootstrap:"]);
 		if(isset($opts["bootstrap"])){
-			$bootstrap = realpath($opts["bootstrap"]) ?: $opts["bootstrap"];
+			$bootstrap = ($real = realpath($opts["bootstrap"])) !== false ? $real : $opts["bootstrap"];
 		}else{
-			$bootstrap = \pocketmine\PATH . 'vendor/autoload.php';
+			$bootstrap = dirname(__FILE__, 3) . '/vendor/autoload.php';
 		}
-		define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
 
-		if(\pocketmine\COMPOSER_AUTOLOADER_PATH !== false and is_file(\pocketmine\COMPOSER_AUTOLOADER_PATH)){
-			require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
-		}else{
+		if($bootstrap === false or !is_file($bootstrap)){
 			critical_error("Composer autoloader not found at " . $bootstrap);
 			critical_error("Please install/update Composer dependencies or use provided builds.");
 			exit(1);
 		}
+		define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
+		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
 
 		set_error_handler([Utils::class, 'errorExceptionHandler']);
 
-		/*
-		 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
-		 */
-		$autoloader = new \BaseClassLoader();
-		$autoloader->register(false);
+		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
+		define('pocketmine\VERSION', $version->getFullVersion(true));
 
-		set_time_limit(0); //Who set it to 30 seconds?!?!
+		$gitHash = str_repeat("00", 20);
 
-		ini_set("allow_url_fopen", '1');
-		ini_set("display_errors", '1');
-		ini_set("display_startup_errors", '1');
-		ini_set("default_charset", "utf-8");
+		if(\Phar::running(true) === ""){
+			$gitHash = Git::getRepositoryStatePretty(\pocketmine\PATH);
+		}else{
+			$phar = new \Phar(\Phar::running(false));
+			$meta = $phar->getMetadata();
+			if(isset($meta["git"])){
+				$gitHash = $meta["git"];
+			}
+		}
 
-		ini_set("memory_limit", '-1');
-
-		define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'pocketmine' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR);
+		define('pocketmine\GIT_COMMIT', $gitHash);
 
 		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
 
@@ -191,8 +218,7 @@ namespace pocketmine {
 			mkdir(\pocketmine\DATA, 0777, true);
 		}
 
-		define('pocketmine\LOCK_FILE_PATH', \pocketmine\DATA . 'server.lock');
-		define('pocketmine\LOCK_FILE', fopen(\pocketmine\LOCK_FILE_PATH, "a+b"));
+		define('pocketmine\LOCK_FILE', fopen(\pocketmine\DATA . 'server.lock', "a+b"));
 		if(!flock(\pocketmine\LOCK_FILE, LOCK_EX | LOCK_NB)){
 			//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
 			//other server wrote its PID and released exclusive lock before we get our lock
@@ -226,42 +252,7 @@ namespace pocketmine {
 		}
 		unset($tzError);
 
-		if(extension_loaded("xdebug")){
-			$logger->warning(PHP_EOL . PHP_EOL . PHP_EOL . "\tYou are running " . \pocketmine\NAME . " with xdebug enabled. This has a major impact on performance." . PHP_EOL . PHP_EOL);
-		}
-		if(!extension_loaded("pocketmine_chunkutils")){
-			$logger->warning("ChunkUtils extension is missing. Anvil-format worlds will experience degraded performance.");
-		}
-
-		if(\Phar::running(true) === ""){
-			$logger->warning("Non-packaged " . \pocketmine\NAME . " installation detected. Consider using a phar in production for better performance.");
-		}
-
-		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
-		define('pocketmine\VERSION', $version->getFullVersion(true));
-
-		$gitHash = str_repeat("00", 20);
-
-		if(\Phar::running(true) === ""){
-			if(Utils::execute("git rev-parse HEAD", $out) === 0 and $out !== false and strlen($out = trim($out)) === 40){
-				$gitHash = trim($out);
-				if(Utils::execute("git diff --quiet") === 1 or Utils::execute("git diff --cached --quiet") === 1){ //Locally-modified
-					$gitHash .= "-dirty";
-				}
-			}
-		}else{
-			$phar = new \Phar(\Phar::running(false));
-			$meta = $phar->getMetadata();
-			if(isset($meta["git"])){
-				$gitHash = $meta["git"];
-			}
-		}
-
-		define('pocketmine\GIT_COMMIT', $gitHash);
-
-
-		@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
-		@ini_set("opcache.mmap_base", bin2hex(random_bytes(8))); //Fix OPCache address errors
+		emit_performance_warnings($logger);
 
 		$exitCode = 0;
 		do{
@@ -275,7 +266,13 @@ namespace pocketmine {
 
 			//TODO: move this to a Server field
 			define('pocketmine\START_TIME', microtime(true));
-			ThreadManager::init();
+
+			/*
+			 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
+			 */
+			$autoloader = new \BaseClassLoader();
+			$autoloader->register(false);
+
 			new Server($autoloader, $logger, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
 
 			$logger->info("Stopping other threads");
@@ -285,9 +282,7 @@ namespace pocketmine {
 			usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 
 			if(ThreadManager::getInstance()->stopAll() > 0){
-				if(\pocketmine\DEBUG > 1){
-					echo "Some threads could not be stopped, performing a force-kill" . PHP_EOL . PHP_EOL;
-				}
+				$logger->debug("Some threads could not be stopped, performing a force-kill");
 				Utils::kill(getmypid());
 			}
 		}while(false);
@@ -300,5 +295,7 @@ namespace pocketmine {
 		exit($exitCode);
 	}
 
-	\pocketmine\server();
+	if(!defined('pocketmine\_PHPSTAN_ANALYSIS')){
+		\pocketmine\server();
+	}
 }

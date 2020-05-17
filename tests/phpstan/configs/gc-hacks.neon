@@ -1,0 +1,77 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Property pocketmine\\\\Player\\:\\:\\$sessionAdapter \\(pocketmine\\\\network\\\\mcpe\\\\PlayerNetworkSessionAdapter\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Property pocketmine\\\\Player\\:\\:\\$cursorInventory \\(pocketmine\\\\inventory\\\\PlayerCursorInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Property pocketmine\\\\Player\\:\\:\\$craftingGrid \\(pocketmine\\\\inventory\\\\CraftingGrid\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Property pocketmine\\\\Player\\:\\:\\$perm \\(pocketmine\\\\permission\\\\PermissibleBase\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Entity\\:\\:\\$namedtag \\(pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\PlayerInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$enderChestInventory \\(pocketmine\\\\inventory\\\\EnderChestInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Living\\:\\:\\$armorInventory \\(pocketmine\\\\inventory\\\\ArmorInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Property pocketmine\\\\inventory\\\\DoubleChestInventory\\:\\:\\$left \\(pocketmine\\\\inventory\\\\ChestInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/inventory/DoubleChestInventory.php
+
+		-
+			message: "#^Property pocketmine\\\\inventory\\\\DoubleChestInventory\\:\\:\\$right \\(pocketmine\\\\inventory\\\\ChestInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/inventory/DoubleChestInventory.php
+
+		-
+			message: "#^Property pocketmine\\\\level\\\\Level\\:\\:\\$provider \\(pocketmine\\\\level\\\\format\\\\io\\\\LevelProvider\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Property pocketmine\\\\level\\\\Level\\:\\:\\$blockMetadata \\(pocketmine\\\\metadata\\\\BlockMetadataStore\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Property pocketmine\\\\level\\\\Level\\:\\:\\$temporalPosition \\(pocketmine\\\\level\\\\Position\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Property pocketmine\\\\tile\\\\Chest\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\ChestInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Property pocketmine\\\\tile\\\\Furnace\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\FurnaceInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Furnace.php
+

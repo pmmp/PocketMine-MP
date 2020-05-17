@@ -39,13 +39,11 @@ class ClientCacheBlobStatusPacket extends DataPacket/* implements ServerboundPac
 	/**
 	 * @param int[] $hitHashes
 	 * @param int[] $missHashes
-	 *
-	 * @return self
 	 */
 	public static function create(array $hitHashes, array $missHashes) : self{
 		//type checks
-		(static function(int ...$hashes){})(...$hitHashes);
-		(static function(int ...$hashes){})(...$missHashes);
+		(static function(int ...$hashes) : void{})(...$hitHashes);
+		(static function(int ...$hashes) : void{})(...$missHashes);
 
 		$result = new self;
 		$result->hitHashes = $hitHashes;

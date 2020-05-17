@@ -46,8 +46,6 @@ class PharPluginLoader implements PluginLoader{
 
 	/**
 	 * Loads the plugin contained in $file
-	 *
-	 * @param string $file
 	 */
 	public function loadPlugin(string $file) : void{
 		$this->loader->addPath("$file/src");
@@ -55,18 +53,11 @@ class PharPluginLoader implements PluginLoader{
 
 	/**
 	 * Gets the PluginDescription from the file
-	 *
-	 * @param string $file
-	 *
-	 * @return null|PluginDescription
 	 */
 	public function getPluginDescription(string $file) : ?PluginDescription{
 		$phar = new \Phar($file);
 		if(isset($phar["plugin.yml"])){
-			$pluginYml = $phar["plugin.yml"];
-			if($pluginYml instanceof \PharFileInfo){
-				return new PluginDescription($pluginYml->getContent());
-			}
+			return new PluginDescription($phar["plugin.yml"]->getContent());
 		}
 
 		return null;

@@ -28,6 +28,7 @@ use pocketmine\scheduler\AsyncTask;
 
 class GeneratorUnregisterTask extends AsyncTask{
 
+	/** @var int */
 	public $levelId;
 
 	public function __construct(Level $level){

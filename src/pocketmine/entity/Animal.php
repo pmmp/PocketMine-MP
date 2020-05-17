@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-
 abstract class Animal extends Creature implements Ageable{
 
 	public function isBaby() : bool{

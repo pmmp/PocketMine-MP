@@ -26,13 +26,18 @@ namespace pocketmine\level\generator\noise;
 use pocketmine\utils\Random;
 
 class Perlin extends Noise{
+	/** @var int[][] */
 	public static $grad3 = [
 		[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
 		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
 		[0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
 	];
 
-
+	/**
+	 * @param int    $octaves
+	 * @param float  $persistence
+	 * @param float  $expansion
+	 */
 	public function __construct(Random $random, $octaves, $persistence, $expansion = 1){
 		$this->octaves = $octaves;
 		$this->persistence = $persistence;
@@ -144,6 +149,12 @@ class Perlin extends Noise{
 		*/
 	}
 
+	/**
+	 * @param float $x
+	 * @param float $y
+	 *
+	 * @return float
+	 */
 	public function getNoise2D($x, $y){
 		return $this->getNoise3D($x, $y, 0);
 	}

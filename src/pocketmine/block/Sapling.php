@@ -72,7 +72,7 @@ class Sapling extends Flowable{
 			//TODO: change log type
 			Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->getVariant());
 
-			$item->count--;
+			$item->pop();
 
 			return true;
 		}

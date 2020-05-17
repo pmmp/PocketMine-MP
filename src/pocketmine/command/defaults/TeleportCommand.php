@@ -52,7 +52,7 @@ class TeleportCommand extends VanillaCommand{
 			return true;
 		}
 
-		$args = array_values(array_filter($args, function($arg){
+		$args = array_values(array_filter($args, function(string $arg) : bool{
 			return $arg !== "";
 		}));
 		if(count($args) < 1 or count($args) > 6){

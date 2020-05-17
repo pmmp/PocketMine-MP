@@ -31,6 +31,10 @@ use function strtolower;
 use function trim;
 
 abstract class LevelProviderManager{
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, class-string<LevelProvider>>
+	 */
 	protected static $providers = [];
 
 	public static function init() : void{
@@ -41,8 +45,9 @@ abstract class LevelProviderManager{
 	}
 
 	/**
-	 * @param string $class
+	 * @phpstan-param class-string<LevelProvider> $class
 	 *
+	 * @return void
 	 * @throws \InvalidArgumentException
 	 */
 	public static function addProvider(string $class){
@@ -65,13 +70,12 @@ abstract class LevelProviderManager{
 	/**
 	 * Returns a LevelProvider class for this path, or null
 	 *
-	 * @param string $path
-	 *
 	 * @return string|null
+	 * @phpstan-return class-string<LevelProvider>|null
 	 */
 	public static function getProvider(string $path){
 		foreach(self::$providers as $provider){
-			/** @var $provider LevelProvider */
+			/** @phpstan-var class-string<LevelProvider> $provider */
 			if($provider::isValid($path)){
 				return $provider;
 			}
@@ -83,9 +87,8 @@ abstract class LevelProviderManager{
 	/**
 	 * Returns a LevelProvider by name, or null if not found
 	 *
-	 * @param string $name
-	 *
 	 * @return string|null
+	 * @phpstan-return class-string<LevelProvider>|null
 	 */
 	public static function getProviderByName(string $name){
 		return self::$providers[trim(strtolower($name))] ?? null;

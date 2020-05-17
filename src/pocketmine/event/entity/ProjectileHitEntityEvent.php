@@ -38,8 +38,6 @@ class ProjectileHitEntityEvent extends ProjectileHitEvent{
 
 	/**
 	 * Returns the Entity struck by the projectile.
-	 *
-	 * @return Entity
 	 */
 	public function getEntityHit() : Entity{
 		return $this->entityHit;

@@ -28,9 +28,13 @@ use function spl_object_hash;
 
 class ThreadManager extends \Volatile{
 
-	/** @var ThreadManager */
+	/** @var ThreadManager|null */
 	private static $instance = null;
 
+	/**
+	 * @deprecated
+	 * @return void
+	 */
 	public static function init(){
 		self::$instance = new ThreadManager();
 	}
@@ -39,24 +43,31 @@ class ThreadManager extends \Volatile{
 	 * @return ThreadManager
 	 */
 	public static function getInstance(){
+		if(self::$instance === null){
+			self::$instance = new ThreadManager();
+		}
 		return self::$instance;
 	}
 
 	/**
 	 * @param Worker|Thread $thread
+	 *
+	 * @return void
 	 */
 	public function add($thread){
 		if($thread instanceof Thread or $thread instanceof Worker){
-			$this->{spl_object_hash($thread)} = $thread;
+			$this[spl_object_hash($thread)] = $thread;
 		}
 	}
 
 	/**
 	 * @param Worker|Thread $thread
+	 *
+	 * @return void
 	 */
 	public function remove($thread){
 		if($thread instanceof Thread or $thread instanceof Worker){
-			unset($this->{spl_object_hash($thread)});
+			unset($this[spl_object_hash($thread)]);
 		}
 	}
 

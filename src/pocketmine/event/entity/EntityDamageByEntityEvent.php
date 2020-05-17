@@ -37,12 +37,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	private $knockBack;
 
 	/**
-	 * @param Entity  $damager
-	 * @param Entity  $entity
-	 * @param int     $cause
-	 * @param float   $damage
 	 * @param float[] $modifiers
-	 * @param float   $knockBack
 	 */
 	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], float $knockBack = 0.4){
 		$this->damagerEntityId = $damager->getId();
@@ -65,23 +60,15 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 
 	/**
 	 * Returns the attacking entity, or null if the attacker has been killed or closed.
-	 *
-	 * @return Entity|null
 	 */
 	public function getDamager() : ?Entity{
 		return $this->getEntity()->getLevel()->getServer()->findEntity($this->damagerEntityId);
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getKnockBack() : float{
 		return $this->knockBack;
 	}
 
-	/**
-	 * @param float $knockBack
-	 */
 	public function setKnockBack(float $knockBack) : void{
 		$this->knockBack = $knockBack;
 	}

@@ -70,8 +70,6 @@ class Potion extends Item implements Consumable{
 	/**
 	 * Returns a list of effects applied by potions with the specified ID.
 	 *
-	 * @param int $id
-	 *
 	 * @return EffectInstance[]
 	 */
 	public static function getPotionEffectsById(int $id) : array{

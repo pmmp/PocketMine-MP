@@ -43,9 +43,6 @@ class CraftItemEvent extends Event implements Cancellable{
 	private $outputs;
 
 	/**
-	 * @param CraftingTransaction $transaction
-	 * @param CraftingRecipe      $recipe
-	 * @param int                 $repetitions
 	 * @param Item[]              $inputs
 	 * @param Item[]              $outputs
 	 */
@@ -59,8 +56,6 @@ class CraftItemEvent extends Event implements Cancellable{
 
 	/**
 	 * Returns the inventory transaction involved in this crafting event.
-	 *
-	 * @return CraftingTransaction
 	 */
 	public function getTransaction() : CraftingTransaction{
 		return $this->transaction;
@@ -68,8 +63,6 @@ class CraftItemEvent extends Event implements Cancellable{
 
 	/**
 	 * Returns the recipe crafted.
-	 *
-	 * @return CraftingRecipe
 	 */
 	public function getRecipe() : CraftingRecipe{
 		return $this->recipe;
@@ -78,8 +71,6 @@ class CraftItemEvent extends Event implements Cancellable{
 	/**
 	 * Returns the number of times the recipe was crafted. This is usually 1, but might be more in the case of recipe
 	 * book shift-clicks (which craft lots of items in a batch).
-	 *
-	 * @return int
 	 */
 	public function getRepetitions() : int{
 		return $this->repetitions;
@@ -103,9 +94,6 @@ class CraftItemEvent extends Event implements Cancellable{
 		return $this->outputs;
 	}
 
-	/**
-	 * @return Player
-	 */
 	public function getPlayer() : Player{
 		return $this->transaction->getSource();
 	}

@@ -41,6 +41,9 @@ class RemoteConsoleCommandSender extends ConsoleCommandSender{
 		$this->messages .= trim($message, "\r\n") . "\n";
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getMessage(){
 		return $this->messages;
 	}

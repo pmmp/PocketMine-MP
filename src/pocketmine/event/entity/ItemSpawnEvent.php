@@ -27,9 +27,6 @@ use pocketmine\entity\object\ItemEntity;
 
 class ItemSpawnEvent extends EntityEvent{
 
-	/**
-	 * @param ItemEntity $item
-	 */
 	public function __construct(ItemEntity $item){
 		$this->entity = $item;
 

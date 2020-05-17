@@ -28,8 +28,8 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 
-class StructureTemplateDataExportRequestPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_REQUEST_PACKET;
+class StructureTemplateDataRequestPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_REQUEST_PACKET;
 
 	public const TYPE_ALWAYS_LOAD = 1;
 	public const TYPE_CREATE_AND_LOAD = 2;
@@ -62,6 +62,6 @@ class StructureTemplateDataExportRequestPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $handler) : bool{
-		return $handler->handleStructureTemplateDataExportRequest($this);
+		return $handler->handleStructureTemplateDataRequest($this);
 	}
 }

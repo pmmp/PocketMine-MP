@@ -33,6 +33,7 @@ use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
+use function zlib_decode;
 
 class Anvil extends McRegion{
 
@@ -51,7 +52,7 @@ class Anvil extends McRegion{
 
 		$subChunks = [];
 		foreach($chunk->getSubChunks() as $y => $subChunk){
-			if($subChunk->isEmpty()){
+			if(!($subChunk instanceof SubChunk) or $subChunk->isEmpty()){
 				continue;
 			}
 
@@ -96,8 +97,12 @@ class Anvil extends McRegion{
 	}
 
 	protected function nbtDeserialize(string $data) : Chunk{
+		$data = @zlib_decode($data);
+		if($data === false){
+			throw new CorruptedChunkException("Failed to decompress chunk data");
+		}
 		$nbt = new BigEndianNBTStream();
-		$chunk = $nbt->readCompressed($data);
+		$chunk = $nbt->read($data);
 		if(!($chunk instanceof CompoundTag) or !$chunk->hasTag("Level")){
 			throw new CorruptedChunkException("'Level' key is missing from chunk NBT");
 		}
@@ -122,8 +127,8 @@ class Anvil extends McRegion{
 			$chunk->getInt("xPos"),
 			$chunk->getInt("zPos"),
 			$subChunks,
-			$chunk->hasTag("Entities", ListTag::class) ? $chunk->getListTag("Entities")->getValue() : [],
-			$chunk->hasTag("TileEntities", ListTag::class) ? $chunk->getListTag("TileEntities")->getValue() : [],
+			$chunk->hasTag("Entities", ListTag::class) ? self::getCompoundList("Entities", $chunk->getListTag("Entities")) : [],
+			$chunk->hasTag("TileEntities", ListTag::class) ? self::getCompoundList("TileEntities", $chunk->getListTag("TileEntities")) : [],
 			$biomeIds,
 			$chunk->getIntArray("HeightMap", [])
 		);

@@ -21,11 +21,9 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
-
 
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
@@ -40,7 +38,7 @@ class UpdateTradePacket extends DataPacket{
 	/** @var int */
 	public $windowType = WindowTypes::TRADING; //Mojang hardcoded this -_-
 	/** @var int */
-	public $thisIsAlwaysZero = 0; //hardcoded to 0
+	public $windowSlotCount = 0; //useless, seems to be part of a standard container header
 	/** @var int */
 	public $tradeTier;
 	/** @var int */
@@ -50,35 +48,35 @@ class UpdateTradePacket extends DataPacket{
 	/** @var string */
 	public $displayName;
 	/** @var bool */
-	public $isWilling;
-	/** @var bool */
 	public $isV2Trading;
+	/** @var bool */
+	public $isWilling;
 	/** @var string */
 	public $offers;
 
 	protected function decodePayload(){
 		$this->windowId = $this->getByte();
 		$this->windowType = $this->getByte();
-		$this->thisIsAlwaysZero = $this->getVarInt();
+		$this->windowSlotCount = $this->getVarInt();
 		$this->tradeTier = $this->getVarInt();
 		$this->traderEid = $this->getEntityUniqueId();
 		$this->playerEid = $this->getEntityUniqueId();
 		$this->displayName = $this->getString();
-		$this->isWilling = $this->getBool();
 		$this->isV2Trading = $this->getBool();
+		$this->isWilling = $this->getBool();
 		$this->offers = $this->getRemaining();
 	}
 
 	protected function encodePayload(){
 		$this->putByte($this->windowId);
 		$this->putByte($this->windowType);
-		$this->putVarInt($this->thisIsAlwaysZero);
+		$this->putVarInt($this->windowSlotCount);
 		$this->putVarInt($this->tradeTier);
 		$this->putEntityUniqueId($this->traderEid);
 		$this->putEntityUniqueId($this->playerEid);
 		$this->putString($this->displayName);
-		$this->putBool($this->isWilling);
 		$this->putBool($this->isV2Trading);
+		$this->putBool($this->isWilling);
 		$this->put($this->offers);
 	}
 

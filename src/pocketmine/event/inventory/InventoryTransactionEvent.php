@@ -35,16 +35,10 @@ class InventoryTransactionEvent extends Event implements Cancellable{
 	/** @var InventoryTransaction */
 	private $transaction;
 
-	/**
-	 * @param InventoryTransaction $transaction
-	 */
 	public function __construct(InventoryTransaction $transaction){
 		$this->transaction = $transaction;
 	}
 
-	/**
-	 * @return InventoryTransaction
-	 */
 	public function getTransaction() : InventoryTransaction{
 		return $this->transaction;
 	}

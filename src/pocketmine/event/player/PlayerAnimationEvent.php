@@ -33,18 +33,11 @@ class PlayerAnimationEvent extends PlayerEvent implements Cancellable{
 	/** @var int */
 	private $animationType;
 
-	/**
-	 * @param Player $player
-	 * @param int    $animation
-	 */
 	public function __construct(Player $player, int $animation){
 		$this->player = $player;
 		$this->animationType = $animation;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getAnimationType() : int{
 		return $this->animationType;
 	}

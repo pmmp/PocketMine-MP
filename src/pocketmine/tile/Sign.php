@@ -42,6 +42,9 @@ class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";
 	public const TAG_TEXT_LINE = "Text%d"; //sprintf()able
 
+	/**
+	 * @return string[]
+	 */
 	private static function fixTextBlob(string $blob) : array{
 		return array_slice(array_pad(explode("\n", $blob), 4, ""), 0, 4);
 	}
@@ -77,11 +80,6 @@ class Sign extends Spawnable{
 	/**
 	 * Changes contents of the specific lines to the string provided.
 	 * Leaves contents of the specific lines as is if null is provided.
-	 *
-	 * @param null|string $line1
-	 * @param null|string $line2
-	 * @param null|string $line3
-	 * @param null|string $line4
 	 */
 	public function setText(?string $line1 = "", ?string $line2 = "", ?string $line3 = "", ?string $line4 = "") : void{
 		if($line1 !== null){
@@ -102,8 +100,6 @@ class Sign extends Spawnable{
 
 	/**
 	 * @param int    $index 0-3
-	 * @param string $line
-	 * @param bool   $update
 	 */
 	public function setLine(int $index, string $line, bool $update = true) : void{
 		if($index < 0 or $index > 3){
@@ -121,8 +117,6 @@ class Sign extends Spawnable{
 
 	/**
 	 * @param int $index 0-3
-	 *
-	 * @return string
 	 */
 	public function getLine(int $index) : string{
 		if($index < 0 or $index > 3){
@@ -163,7 +157,7 @@ class Sign extends Spawnable{
 
 		$removeFormat = $player->getRemoveFormat();
 
-		$ev = new SignChangeEvent($this->getBlock(), $player, array_map(function(string $line) use ($removeFormat){ return TextFormat::clean($line, $removeFormat); }, $lines));
+		$ev = new SignChangeEvent($this->getBlock(), $player, array_map(function(string $line) use ($removeFormat) : string{ return TextFormat::clean($line, $removeFormat); }, $lines));
 		$ev->call();
 
 		if(!$ev->isCancelled()){

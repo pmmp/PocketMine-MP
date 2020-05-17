@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-
 use function count;
 use function preg_match;
 
@@ -48,11 +47,6 @@ class VersionString{
 	/** @var bool */
 	private $development = false;
 
-	/**
-	 * @param string $baseVersion
-	 * @param bool   $isDevBuild
-	 * @param int    $buildNumber
-	 */
 	public function __construct(string $baseVersion, bool $isDevBuild = false, int $buildNumber = 0){
 		$this->baseVersion = $baseVersion;
 		$this->development = $isDevBuild;
@@ -117,12 +111,6 @@ class VersionString{
 		return $this->getFullVersion();
 	}
 
-	/**
-	 * @param VersionString $target
-	 * @param bool          $diff
-	 *
-	 * @return int
-	 */
 	public function compare(VersionString $target, bool $diff = false) : int{
 		$number = $this->getNumber();
 		$tNumber = $target->getNumber();

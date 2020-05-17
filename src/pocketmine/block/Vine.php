@@ -197,7 +197,7 @@ class Vine extends Flowable{
 	}
 
 	public function getDrops(Item $item) : array{
-		if($item->getBlockToolType() & BlockToolType::TYPE_SHEARS){
+		if(($item->getBlockToolType() & BlockToolType::TYPE_SHEARS) !== 0){
 			return $this->getDropsForCompatibleTool($item);
 		}
 

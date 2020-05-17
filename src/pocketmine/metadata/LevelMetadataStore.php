@@ -33,6 +33,9 @@ class LevelMetadataStore extends MetadataStore{
 		return strtolower($level->getName()) . ":" . $metadataKey;
 	}
 
+	/**
+	 * @return MetadataValue[]
+	 */
 	public function getMetadata(Level $subject, string $metadataKey){
 		return $this->getMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
@@ -41,10 +44,16 @@ class LevelMetadataStore extends MetadataStore{
 		return $this->hasMetadataInternal($this->disambiguate($subject, $metadataKey));
 	}
 
+	/**
+	 * @return void
+	 */
 	public function removeMetadata(Level $subject, string $metadataKey, Plugin $owningPlugin){
 		$this->removeMetadataInternal($this->disambiguate($subject, $metadataKey), $owningPlugin);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setMetadata(Level $subject, string $metadataKey, MetadataValue $newMetadataValue){
 		$this->setMetadataInternal($this->disambiguate($subject, $metadataKey), $newMetadataValue);
 	}

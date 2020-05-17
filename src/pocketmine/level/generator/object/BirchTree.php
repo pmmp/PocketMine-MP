@@ -30,6 +30,7 @@ use pocketmine\utils\Random;
 
 class BirchTree extends Tree{
 
+	/** @var bool */
 	protected $superBirch = false;
 
 	public function __construct(bool $superBirch = false){
@@ -39,6 +40,9 @@ class BirchTree extends Tree{
 		$this->superBirch = $superBirch;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function placeObject(ChunkManager $level, int $x, int $y, int $z, Random $random){
 		$this->treeHeight = $random->nextBoundedInt(3) + 5;
 		if($this->superBirch){

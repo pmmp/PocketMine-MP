@@ -31,6 +31,9 @@ use function count;
 
 class TallGrass{
 
+	/**
+	 * @return void
+	 */
 	public static function growGrass(ChunkManager $level, Vector3 $pos, Random $random, int $count = 15, int $radius = 10){
 		$arr = [
 			[Block::DANDELION, 0],

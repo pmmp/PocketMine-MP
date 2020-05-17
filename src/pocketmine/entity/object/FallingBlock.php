@@ -34,7 +34,6 @@ use pocketmine\level\Position;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use function abs;
-use function floor;
 use function get_class;
 
 class FallingBlock extends Entity{

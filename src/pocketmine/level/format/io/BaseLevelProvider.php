@@ -35,6 +35,7 @@ use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function mkdir;
+use function zlib_decode;
 
 abstract class BaseLevelProvider implements LevelProvider{
 	/** @var string */
@@ -53,8 +54,20 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	protected function loadLevelData() : void{
+		$compressedLevelData = @file_get_contents($this->getPath() . "level.dat");
+		if($compressedLevelData === false){
+			throw new LevelException("Failed to read level.dat (permission denied or doesn't exist)");
+		}
+		$rawLevelData = @zlib_decode($compressedLevelData);
+		if($rawLevelData === false){
+			throw new LevelException("Failed to decompress level.dat contents (probably corrupted)");
+		}
 		$nbt = new BigEndianNBTStream();
-		$levelData = $nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
+		try{
+			$levelData = $nbt->read($rawLevelData);
+		}catch(\UnexpectedValueException $e){
+			throw new LevelException("Failed to decode level.dat (" . $e->getMessage() . ")", 0, $e);
+		}
 
 		if(!($levelData instanceof CompoundTag) or !$levelData->hasTag("Data", CompoundTag::class)){
 			throw new LevelException("Invalid level.dat");
@@ -143,13 +156,13 @@ abstract class BaseLevelProvider implements LevelProvider{
 
 	}
 
-	/**
-	 * @return CompoundTag
-	 */
 	public function getLevelData() : CompoundTag{
 		return $this->levelData;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function saveLevelData(){
 		$nbt = new BigEndianNBTStream();
 		$buffer = $nbt->writeCompressed(new CompoundTag("", [
@@ -159,10 +172,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws CorruptedChunkException
 	 * @throws UnsupportedChunkFormatException
 	 */
@@ -178,10 +187,6 @@ abstract class BaseLevelProvider implements LevelProvider{
 	}
 
 	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
-	 *
-	 * @return Chunk|null
 	 * @throws UnsupportedChunkFormatException
 	 * @throws CorruptedChunkException
 	 */

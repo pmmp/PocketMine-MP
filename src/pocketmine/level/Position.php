@@ -29,28 +29,28 @@ use function assert;
 
 class Position extends Vector3{
 
-	/** @var Level */
+	/** @var Level|null */
 	public $level = null;
 
 	/**
-	 * @param int   $x
-	 * @param int   $y
-	 * @param int   $z
-	 * @param Level $level
+	 * @param float|int $x
+	 * @param float|int $y
+	 * @param float|int $z
 	 */
 	public function __construct($x = 0, $y = 0, $z = 0, Level $level = null){
 		parent::__construct($x, $y, $z);
 		$this->setLevel($level);
 	}
 
+	/**
+	 * @return Position
+	 */
 	public static function fromObject(Vector3 $pos, Level $level = null){
 		return new Position($pos->x, $pos->y, $pos->z, $level);
 	}
 
 	/**
 	 * Return a Position instance
-	 *
-	 * @return Position
 	 */
 	public function asPosition() : Position{
 		return new Position($this->x, $this->y, $this->z, $this->level);
@@ -74,8 +74,6 @@ class Position extends Vector3{
 	/**
 	 * Sets the target Level of the position.
 	 *
-	 * @param Level|null $level
-	 *
 	 * @return $this
 	 *
 	 * @throws \InvalidArgumentException if the specified Level has been closed
@@ -91,8 +89,6 @@ class Position extends Vector3{
 
 	/**
 	 * Checks if this object has a valid reference to a loaded Level
-	 *
-	 * @return bool
 	 */
 	public function isValid() : bool{
 		if($this->level !== null and $this->level->isClosed()){
@@ -106,9 +102,6 @@ class Position extends Vector3{
 
 	/**
 	 * Returns a side Vector
-	 *
-	 * @param int $side
-	 * @param int $step
 	 *
 	 * @return Position
 	 */

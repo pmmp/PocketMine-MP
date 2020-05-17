@@ -69,9 +69,7 @@ abstract class TextFormat{
 	/**
 	 * Splits the string by Format tokens
 	 *
-	 * @param string $string
-	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public static function tokenize(string $string) : array{
 		return preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
@@ -79,9 +77,6 @@ abstract class TextFormat{
 
 	/**
 	 * Cleans the string from Minecraft codes, ANSI Escape Codes and invalid UTF-8 characters
-	 *
-	 * @param string $string
-	 * @param bool   $removeFormat
 	 *
 	 * @return string valid clean UTF-8
 	 */
@@ -97,10 +92,7 @@ abstract class TextFormat{
 	/**
 	 * Replaces placeholders of § with the correct character. Only valid codes (as in the constants of the TextFormat class) will be converted.
 	 *
-	 * @param string $string
 	 * @param string $placeholder default "&"
-	 *
-	 * @return string
 	 */
 	public static function colorize(string $string, string $placeholder = "&") : string{
 		return preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
@@ -109,9 +101,7 @@ abstract class TextFormat{
 	/**
 	 * Returns an JSON-formatted string with colors/markup
 	 *
-	 * @param string|array $string
-	 *
-	 * @return string
+	 * @param string|string[] $string
 	 */
 	public static function toJSON($string) : string{
 		if(!is_array($string)){
@@ -297,9 +287,7 @@ abstract class TextFormat{
 	/**
 	 * Returns an HTML-formatted string with colors/markup
 	 *
-	 * @param string|array $string
-	 *
-	 * @return string
+	 * @param string|string[] $string
 	 */
 	public static function toHTML($string) : string{
 		if(!is_array($string)){

@@ -53,16 +53,10 @@ class ConcretePowder extends Fallable{
 		}
 	}
 
-	/**
-	 * @return null|Block
-	 */
 	public function tickFalling() : ?Block{
 		return $this->checkAdjacentWater();
 	}
 
-	/**
-	 * @return null|Block
-	 */
 	private function checkAdjacentWater() : ?Block{
 		for($i = 1; $i < 6; ++$i){ //Do not check underneath
 			if($this->getSide($i) instanceof Water){

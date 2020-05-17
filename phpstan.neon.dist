@@ -1,0 +1,36 @@
+includes:
+	- tests/phpstan/configs/actual-problems.neon
+	- tests/phpstan/configs/com-dotnet-magic.neon
+	- tests/phpstan/configs/custom-leveldb.neon
+	- tests/phpstan/configs/gc-hacks.neon
+	- tests/phpstan/configs/php-bugs.neon
+	- tests/phpstan/configs/phpstan-bugs.neon
+	- tests/phpstan/configs/phpunit-wiring-tests.neon
+	- tests/phpstan/configs/pthreads-bugs.neon
+	- tests/phpstan/configs/runtime-type-checks.neon
+	- vendor/phpstan/phpstan-phpunit/extension.neon
+	- vendor/phpstan/phpstan-phpunit/rules.neon
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+	level: 6
+	autoload_files:
+		- tests/phpstan/bootstrap.php
+		- src/pocketmine/PocketMine.php
+		- build/make-release.php
+		- build/server-phar.php
+		- vendor/irstea/phpunit-shim/phpunit
+	paths:
+		- src
+		- build/make-release.php
+		- build/server-phar.php
+		- tests/phpunit
+	dynamicConstantNames:
+		- pocketmine\IS_DEVELOPMENT_BUILD
+		- pocketmine\DEBUG
+	stubFiles:
+		- tests/phpstan/stubs/pthreads.stub
+		- tests/phpstan/stubs/chunkutils.stub
+	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
+	staticReflectionClassNamePatterns:
+		- "#^COM$#"
