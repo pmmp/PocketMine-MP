@@ -76,81 +76,63 @@ use const SOL_SOCKET;
 use const SO_RCVTIMEO;
 
 abstract class UPnP{
-	/** @var string */
+	/** @var string|null */
 	private static $serviceURL;
-
-	/**
-	 * Search the device node with given type.
-	 *
-	 * @param \SimpleXMLElement $device
-	 * @param string $deviceType
-	 * @param \SimpleXMLElement $foundDevice reference parameter
-	 *
-	 * @return bool
-	 */
-	private static function getChildDevice(\SimpleXMLElement $device, string $deviceType, &$foundDevice) : bool{
-		foreach($device->deviceList->device as $child){
-			if((string)$child->deviceType === $deviceType){
-				$foundDevice = $child;
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Search the service node with given type.
-	 *
-	 * @param \SimpleXMLElement $device
-	 * @param string $serviceType
-	 * @param \SimpleXMLElement $foundService reference parameter
-	 *
-	 * @return bool
-	 */
-	private static function getChildService(\SimpleXMLElement $device, string $serviceType, &$foundService) : bool{
-		foreach($device->serviceList->service as $child){
-			if((string)$child->serviceType === $serviceType){
-				$foundService = $child;
-				return true;
-			}
-		}
-		return false;
-	}
 	
-	public static function setup() : void{
-		$socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-		socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array("sec"=>3,"usec"=>0));
-		$contents =
-			"M-SEARCH * HTTP/1.1\r\n".
-			"MX: 2\r\n".
-			"HOST: 239.255.255.250:1900\r\n".
-			"MAN: \"ssdp:discover\"\r\n".
-			"ST: upnp:rootdevice\r\n\r\n";
-		socket_sendto($socket, $contents, strlen($contents), 0, "239.255.255.250", 1900);
-		socket_recvfrom($socket, $buffer, 1024, 0, $responseHost, $responsePort);
-
-		if(!$buffer || !preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches)){
+	public static function getControlUrl() : string{
+		try{
+			$socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+			socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ["sec" => 3, "usec" => 0]);
+			$contents =
+				"M-SEARCH * HTTP/1.1\r\n" .
+				"MX: 2\r\n" .
+				"HOST: 239.255.255.250:1900\r\n" .
+				"MAN: \"ssdp:discover\"\r\n" .
+				"ST: upnp:rootdevice\r\n\r\n";
+			socket_sendto($socket, $contents, strlen($contents), 0, "239.255.255.250", 1900);
+			socket_recvfrom($socket, $buffer, 1024, 0, $responseHost, $responsePort);
+			socket_close($socket);
+		}catch(\Exception $e){
+			throw new \RuntimeException("Socket error: " . $e->getMessage());
+		}
+		if($buffer === false || !preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches)){
 			throw new \RuntimeException("Unable to find the router. Ensure that network discovery is enabled in Control Panel.");
 		}
 		$location = trim($matches[1]);
 		$url = parse_url($location);
+		if($url === false){
+			throw new \RuntimeException("Failed to parse the router's url: {$location}");
+		}
 		$response = Internet::getURL($location, 3, [], $err, $headers, $httpCode);
-		if(!$response){
+		if($response === false){
 			throw new \RuntimeException("Unable to access XML: {$err}");
 		}
 		if($httpCode !== 200){
 			throw new \RuntimeException("Unable to access XML: {$response}");
 		}
-		$root = new \SimpleXMLElement($response);
-		$device = $root->device;
-		if(!((string)$device->deviceType === "urn:schemas-upnp-org:device:InternetGatewayDevice:1")
-		|| !self::getChildDevice($device, "urn:schemas-upnp-org:device:WANDevice:1", $device)
-		|| !self::getChildDevice($device, "urn:schemas-upnp-org:device:WANConnectionDevice:1", $device)
-		|| !self::getChildService($device, "urn:schemas-upnp-org:service:WANIPConnection:1", $service)){
+
+		$defaultInternalError = libxml_use_internal_errors(true);
+		try{
+			$root = new \SimpleXMLElement($response);
+		}catch(\Exception $e){
+			throw new \RuntimeException("Broken XML.");
+		}
+		libxml_use_internal_errors($defaultInternalError);
+		
+		$xpathResult = $root->xpath(
+			'//device[deviceType="urn:schemas-upnp-org:device:InternetGatewayDevice:1"]' .
+			'/deviceList/device[deviceType="urn:schemas-upnp-org:device:WANDevice:1"]' .
+			'/deviceList/device[deviceType="urn:schemas-upnp-org:device:WANConnectionDevice:1"]' .
+			'/serviceList/service[serviceType="urn:schemas-upnp-org:service:WANIPConnection:1"]' .
+			'/controlURL'
+		);
+		if($xpathResult === false || count($xpathResult) === 0){
+			// if result is false or [], i.e. error or notfound
 			throw new \RuntimeException("Your router does not support portforwarding");
 		}
-		$controlURL = (string)$service->controlURL;
-		self::$serviceURL = "{$url['host']}:{$url['port']}/{$controlURL}";
+		$controlURL = (string)($xpathResult[0]);
+		$serviceURL = "{$url['host']}:{$url['port']}/{$controlURL}";
+		return $serviceURL;
 	}
 
 	public static function PortForward(int $port) : void{
@@ -158,24 +140,24 @@ abstract class UPnP{
 			throw new \RuntimeException("Server is offline");
 		}
 
-		if(!isset(self::$controlURL)){
-			self::setup();
+		if(!isset(self::$serviceURL)){
+			self::$serviceURL = self::getControlUrl();
 		}
 		$body =
-			'<u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">'.
-				'<NewRemoteHost></NewRemoteHost>'.
-				'<NewExternalPort>' . $port . '</NewExternalPort>'.
-				'<NewProtocol>UDP</NewProtocol>'.
-				'<NewInternalPort>' . $port . '</NewInternalPort>'.
-				'<NewInternalClient>' . Internet::getInternalIP() . '</NewInternalClient>'.
-				'<NewEnabled>1</NewEnabled>'.
-				'<NewPortMappingDescription>PocketMine-MP</NewPortMappingDescription>'.
-				'<NewLeaseDuration>0</NewLeaseDuration>'.
+			'<u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">' .
+				'<NewRemoteHost></NewRemoteHost>' .
+				'<NewExternalPort>' . $port . '</NewExternalPort>' .
+				'<NewProtocol>UDP</NewProtocol>' .
+				'<NewInternalPort>' . $port . '</NewInternalPort>' .
+				'<NewInternalClient>' . Internet::getInternalIP() . '</NewInternalClient>' .
+				'<NewEnabled>1</NewEnabled>' .
+				'<NewPortMappingDescription>PocketMine-MP</NewPortMappingDescription>' .
+				'<NewLeaseDuration>0</NewLeaseDuration>' .
 			'</u:AddPortMapping>';
 
 		$contents =
-			'<?xml version="1.0"?>'.
-			'<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">'.
+			'<?xml version="1.0"?>' .
+			'<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">' .
 			'<s:Body>' . $body . '</s:Body></s:Envelope>';
 
 		$headers = [
@@ -197,15 +179,15 @@ abstract class UPnP{
 		}
 
 		$body =
-			'<u:DeletePortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">'.
-				'<NewRemoteHost></NewRemoteHost>'.
-				'<NewExternalPort>' . $port . '</NewExternalPort>'.
-				'<NewProtocol>UDP</NewProtocol>'.
+			'<u:DeletePortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">' .
+				'<NewRemoteHost></NewRemoteHost>' .
+				'<NewExternalPort>' . $port . '</NewExternalPort>' .
+				'<NewProtocol>UDP</NewProtocol>' .
 			'</u:DeletePortMapping>';
 
 		$contents =
-			'<?xml version="1.0"?>'.
-			'<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">'.
+			'<?xml version="1.0"?>' .
+			'<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">' .
 			'<s:Body>' . $body . '</s:Body></s:Envelope>';
 		
 		$headers = [
