@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\UUID;
 use function count;
@@ -84,7 +85,7 @@ class AddPlayerPacket extends DataPacket{
 	/** @var string */
 	public $deviceId = ""; //TODO: fill player's device ID (???)
 	/** @var int */
-	public $buildPlatform = -1;
+	public $buildPlatform = DeviceOS::UNKNOWN;
 
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();

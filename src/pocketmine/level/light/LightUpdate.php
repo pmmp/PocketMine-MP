@@ -34,17 +34,26 @@ abstract class LightUpdate{
 	/** @var ChunkManager */
 	protected $level;
 
-	/** @var int[][] blockhash => [x, y, z, new light level] */
+	/**
+	 * @var int[][] blockhash => [x, y, z, new light level]
+	 * @phpstan-var array<int, array{int, int, int, int}>
+	 */
 	protected $updateNodes = [];
 
 	/** @var \SplQueue */
 	protected $spreadQueue;
-	/** @var bool[] */
+	/**
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 */
 	protected $spreadVisited = [];
 
 	/** @var \SplQueue */
 	protected $removalQueue;
-	/** @var bool[] */
+	/**
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 */
 	protected $removalVisited = [];
 	/** @var SubChunkIteratorManager */
 	protected $subChunkHandler;
