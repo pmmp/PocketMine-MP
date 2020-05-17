@@ -56,10 +56,10 @@ class BanIpCommand extends VanillaCommand{
 		$value = array_shift($args);
 		$reason = implode(" ", $args);
 
-		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
-			$this->processIPBan($value, $sender, $reason);
+		if($ip = filter_var($value, FILTER_VALIDATE_IP)){
+			$this->processIPBan($ip, $sender, $reason);
 
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.banip.success", [$value]));
+			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.banip.success", [$ip]));
 		}else{
 			if(($player = $sender->getServer()->getPlayer($value)) instanceof Player){
 				$this->processIPBan($player->getAddress(), $sender, $reason);
