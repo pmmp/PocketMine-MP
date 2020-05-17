@@ -639,7 +639,7 @@ class Utils{
 	 * @return string
 	 */
 	public static function cleanPath($path){
-		$result = str_replace(["\\", ".php", "phar://"], ["/", "", ""], $path);
+		$result = str_replace([DIRECTORY_SEPARATOR, ".php", "phar://"], ["/", "", ""], $path);
 
 		//remove relative paths
 		//TODO: make these paths dynamic so they can be unit-tested against
@@ -648,7 +648,7 @@ class Utils{
 			\pocketmine\PATH => ""
 		];
 		foreach($cleanPaths as $cleanPath => $replacement){
-			$cleanPath = rtrim(str_replace(["\\", "phar://"], ["/", ""], $cleanPath), "/");
+			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
 			if(strpos($result, $cleanPath) === 0){
 				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
 			}
