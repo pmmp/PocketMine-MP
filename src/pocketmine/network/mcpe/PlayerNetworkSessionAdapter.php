@@ -395,11 +395,6 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
 	}
 
-	public function handleClientCacheStatus(ClientCacheStatusPacket $packet) : bool{
-		$this->player->sendDataPacket(ClientCacheStatusPacket::create(false));
-		return true;
-	}
-
 	public function handleSettingsCommand(SettingsCommandPacket $packet) : bool{
 		// TODO: add support to suppress command message
 		$this->player->chat($packet->getCommand());
