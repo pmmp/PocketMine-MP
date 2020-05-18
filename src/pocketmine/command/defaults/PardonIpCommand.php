@@ -51,10 +51,12 @@ class PardonIpCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		if($ip = filter_var($args[0], FILTER_VALIDATE_IP)){
-			$sender->getServer()->getIPBans()->remove($ip);
-			$sender->getServer()->getNetwork()->unblockAddress($ip);
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.unbanip.success", [$ip]));
+		$value = $args[0];
+
+		if(inet_pton($value)){
+			$sender->getServer()->getIPBans()->remove($value);
+			$sender->getServer()->getNetwork()->unblockAddress($value);
+			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.unbanip.success", [$value]));
 		}else{
 			$sender->sendMessage(new TranslationContainer("commands.unbanip.invalid"));
 		}
