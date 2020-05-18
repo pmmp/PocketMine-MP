@@ -72,7 +72,7 @@ abstract class Particle extends Vector3{
 	public const TYPE_CARROT = 42, TYPE_CARROT_BOOST = 42;
 	public const TYPE_MOB_APPEARANCE = 43;
 	public const TYPE_END_ROD = 44;
-	public const TYPE_DRAGONS_BREAK = 45, TYPE_DRAGON_BREATH = 45;
+	public const TYPE_DRAGONS_BREATH = 45, TYPE_DRAGON_BREATH = 45;
 	public const TYPE_SPIT = 46;
 	public const TYPE_TOTEM = 47;
 	public const TYPE_FOOD = 48;
