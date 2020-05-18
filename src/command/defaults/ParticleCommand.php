@@ -156,7 +156,7 @@ class ParticleCommand extends VanillaCommand{
 			case "smoke":
 				return new SmokeParticle($data ?? 0);
 			case "spell":
-				return new EnchantParticle();
+				return new EnchantParticle(new Color(0, 0, 0, 255)); //TODO: colour support
 			case "instantspell":
 				return new InstantEnchantParticle(new Color(0, 0, 0, 255)); //TODO: colour support
 			case "dripwater":
