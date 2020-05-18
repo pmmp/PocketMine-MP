@@ -5,11 +5,10 @@ php:
 
 before_script:
  - phpenv config-rm xdebug.ini
-# - pecl install channel://pecl.php.net/pthreads-3.1.6
- - echo | pecl install channel://pecl.php.net/yaml-2.0.4
+ - echo | pecl install channel://pecl.php.net/yaml-2.1.0
  - git clone https://github.com/pmmp/pthreads.git
  - cd pthreads
- - git checkout 1b7da492b944146fa9680f6399bd9c6c6c6095e0
+ - git checkout 646dac62ae0d48c1ada7b007e15575fb84f7d71d
  - phpize
  - ./configure
  - make
