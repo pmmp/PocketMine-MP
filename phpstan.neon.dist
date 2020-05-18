@@ -3,6 +3,8 @@ includes:
 	- tests/phpstan/configs/com-dotnet-magic.neon
 	- tests/phpstan/configs/custom-leveldb.neon
 	- tests/phpstan/configs/gc-hacks.neon
+	- tests/phpstan/configs/l7-baseline.neon
+	- tests/phpstan/configs/l8-baseline.neon
 	- tests/phpstan/configs/php-bugs.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
 	- tests/phpstan/configs/phpunit-wiring-tests.neon
@@ -13,7 +15,7 @@ includes:
 	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 parameters:
-	level: 6
+	level: 8
 	autoload_files:
 		- tests/phpstan/bootstrap.php
 		- src/pocketmine/PocketMine.php
