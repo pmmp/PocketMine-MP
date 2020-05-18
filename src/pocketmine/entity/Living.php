@@ -554,13 +554,6 @@ abstract class Living extends Entity implements Damageable{
 			$e = $source->getDamager();
 
 			if($e !== null){
-				if((
-					$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_ATTACK and
-					$e instanceof Zombie
-				) and $e->isOnFire()){
-					$this->setOnFire(2 * $this->level->getDifficulty());
-				}
-
 				$deltaX = $this->x - $e->x;
 				$deltaZ = $this->z - $e->z;
 				$this->knockBack($e, $source->getBaseDamage(), $deltaX, $deltaZ, $source->getKnockBack());
