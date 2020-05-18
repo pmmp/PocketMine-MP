@@ -114,9 +114,11 @@ class World implements ChunkManager{
 
 	public const HALF_Y_MAX = self::Y_MAX / 2;
 
-	public const TIME_DAY = 0;
+	public const TIME_DAY = 1000;
+	public const TIME_NOON = 6000;
 	public const TIME_SUNSET = 12000;
-	public const TIME_NIGHT = 14000;
+	public const TIME_NIGHT = 13000;
+	public const TIME_MIDNIGHT = 18000;
 	public const TIME_SUNRISE = 23000;
 
 	public const TIME_FULL = 24000;
