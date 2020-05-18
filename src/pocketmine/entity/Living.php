@@ -552,6 +552,9 @@ abstract class Living extends Entity implements Damageable{
 
 		if($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
+			if($source instanceof EntityDamageByChildEntityEvent){
+				$e = $source->getChild();
+			}
 
 			if($e !== null){
 				$deltaX = $this->x - $e->x;
