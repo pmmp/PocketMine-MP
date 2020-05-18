@@ -409,16 +409,10 @@ class Server{
 		return $this->getConfigInt("server-port", 19132);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getPortv6() : int{
 		return $this->getConfigInt("server-portv6", 19133);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getViewDistance() : int{
 		return max(2, $this->getConfigInt("view-distance", 8));
 	}
