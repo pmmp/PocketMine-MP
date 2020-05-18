@@ -60,11 +60,11 @@ class EnderChestInventory extends ChestInventory{
 	}
 
 	protected function getOpenSound() : int{
-		return LevelSoundEventPacket::SOUND_ENDERCHEST_OPEN;
+		return LevelSoundEventPacket::SOUND_ENDER_CHEST_OPEN;
 	}
 
 	protected function getCloseSound() : int{
-		return LevelSoundEventPacket::SOUND_ENDERCHEST_CLOSED;
+		return LevelSoundEventPacket::SOUND_ENDER_CHEST_CLOSED;
 	}
 
 	/**

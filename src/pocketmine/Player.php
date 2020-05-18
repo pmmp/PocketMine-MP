@@ -2789,7 +2789,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					//TODO: improve this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
 					$breakTime = ceil($target->getBreakTime($this->inventory->getItemInHand()) * 20);
 					if($breakTime > 0){
-						$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 / $breakTime));
+						$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_START_BLOCK_CRACKING, (int) (65535 / $breakTime));
 					}
 				}
 
@@ -2797,7 +2797,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			case PlayerActionPacket::ACTION_ABORT_BREAK:
 			case PlayerActionPacket::ACTION_STOP_BREAK:
-				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
+				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_STOP_BLOCK_CRACKING);
 				break;
 			case PlayerActionPacket::ACTION_START_SLEEPING:
 				//unused
@@ -2832,7 +2832,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				break; //TODO
 			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
 				$block = $this->level->getBlock($pos);
-				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $block->getRuntimeId() | ($packet->face << 24));
+				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLES_CRACK_BLOCK, $block->getRuntimeId() | ($packet->face << 24));
 				//TODO: destroy-progress level event
 				break;
 			case PlayerActionPacket::ACTION_START_SWIMMING:

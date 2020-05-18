@@ -28,6 +28,6 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class DoorCrashSound extends GenericSound{
 	public function __construct(Vector3 $pos, float $pitch = 0){
-		parent::__construct($pos, LevelEventPacket::EVENT_SOUND_DOOR_CRASH, $pitch);
+		parent::__construct($pos, LevelEventPacket::EVENT_SOUND_ZOMBIE_DOOR_CRASH, $pitch);
 	}
 }

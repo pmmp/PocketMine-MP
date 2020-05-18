@@ -411,7 +411,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
 					$this->playLevelUpSound($newLevel);
 				}elseif($this->getCurrentTotalXp() > $oldTotal){
-					$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ORB, mt_rand());
+					$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_EXPERIENCE_ORB_PICKUP, mt_rand());
 				}
 			}
 
@@ -423,7 +423,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	private function playLevelUpSound(int $newLevel) : void{
 		$volume = 0x10000000 * (min(30, $newLevel) / 5); //No idea why such odd numbers, but this works...
-		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEVELUP, (int) $volume);
+		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEVEL_UP, (int) $volume);
 	}
 
 	/**
@@ -704,7 +704,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$this->addEffect(new EffectInstance(Effect::getEffect(Effect::ABSORPTION), 5 * 20, 1));
 
 			$this->broadcastEntityEvent(ActorEventPacket::CONSUME_TOTEM);
-			$this->level->broadcastLevelEvent($this->add(0, $this->eyeHeight, 0), LevelEventPacket::EVENT_SOUND_TOTEM);
+			$this->level->broadcastLevelEvent($this->add(0, $this->eyeHeight, 0), LevelEventPacket::EVENT_SOUND_TOTEM_USED);
 
 			$hand = $this->inventory->getItemInHand();
 			if($hand instanceof Totem){

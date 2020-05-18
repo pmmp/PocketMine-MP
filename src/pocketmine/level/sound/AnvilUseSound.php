@@ -28,6 +28,6 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class AnvilUseSound extends GenericSound{
 	public function __construct(Vector3 $pos, float $pitch = 0){
-		parent::__construct($pos, LevelEventPacket::EVENT_SOUND_ANVIL_USE, $pitch);
+		parent::__construct($pos, LevelEventPacket::EVENT_SOUND_ANVIL_USED, $pitch);
 	}
 }
