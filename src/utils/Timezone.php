@@ -145,7 +145,6 @@ abstract class Timezone{
 					return trim($data);
 				}
 
-
 				// RHEL / CentOS
 				$data = @parse_ini_file('/etc/sysconfig/clock');
 				if($data !== false and isset($data['ZONE']) and is_string($data['ZONE'])){
