@@ -27,18 +27,25 @@ use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\utils\BinaryDataException;
 
-class PacketBatch extends NetworkBinaryStream{
+class PacketBatch{
+
+	/** @var NetworkBinaryStream */
+	private $binaryStream;
+
+	public function __construct(?string $buffer = null){
+		$this->binaryStream = new NetworkBinaryStream($buffer ?? "");
+	}
 
 	public function putPacket(Packet $packet) : void{
 		$packet->encode();
-		$this->putString($packet->getBinaryStream()->getBuffer());
+		$this->binaryStream->putString($packet->getBinaryStream()->getBuffer());
 	}
 
 	/**
 	 * @throws BinaryDataException
 	 */
 	public function getPacket(PacketPool $packetPool) : Packet{
-		return $packetPool->getPacket($this->getString());
+		return $packetPool->getPacket($this->binaryStream->getString());
 	}
 
 	/**
@@ -54,5 +61,13 @@ class PacketBatch extends NetworkBinaryStream{
 			$result->putPacket($packet);
 		}
 		return $result;
+	}
+
+	public function getBuffer() : string{
+		return $this->binaryStream->getBuffer();
+	}
+
+	public function feof() : bool{
+		return $this->binaryStream->feof();
 	}
 }
