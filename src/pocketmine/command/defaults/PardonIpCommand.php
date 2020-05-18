@@ -53,7 +53,7 @@ class PardonIpCommand extends VanillaCommand{
 
 		$value = $args[0];
 
-		if(inet_pton($value)){
+		if(inet_pton($value) !== false){
 			$sender->getServer()->getIPBans()->remove($value);
 			$sender->getServer()->getNetwork()->unblockAddress($value);
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.unbanip.success", [$value]));

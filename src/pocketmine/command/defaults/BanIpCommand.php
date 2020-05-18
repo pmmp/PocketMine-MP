@@ -56,7 +56,7 @@ class BanIpCommand extends VanillaCommand{
 		$value = array_shift($args);
 		$reason = implode(" ", $args);
 
-		if(inet_pton($value)){
+		if(inet_pton($value) !== false){
 			$this->processIPBan($value, $sender, $reason);
 
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.banip.success", [$value]));
