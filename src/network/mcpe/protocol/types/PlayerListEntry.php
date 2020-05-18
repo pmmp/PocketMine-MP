@@ -40,7 +40,7 @@ class PlayerListEntry{
 	/** @var string */
 	public $platformChatId = "";
 	/** @var int */
-	public $buildPlatform = -1;
+	public $buildPlatform = DeviceOS::UNKNOWN;
 	/** @var bool */
 	public $isTeacher = false;
 	/** @var bool */

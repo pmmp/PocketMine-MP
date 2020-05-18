@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
@@ -85,7 +86,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $deviceId = ""; //TODO: fill player's device ID (???)
 	/** @var int */
-	public $buildPlatform = -1;
+	public $buildPlatform = DeviceOS::UNKNOWN;
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->uuid = $in->getUUID();
