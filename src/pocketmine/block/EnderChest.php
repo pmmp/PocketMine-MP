@@ -84,6 +84,9 @@ class EnderChest extends Chest{
 				$enderChest = $t;
 			}else{
 				$enderChest = Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this));
+				if(!($enderChest instanceof TileEnderChest)){
+					return true;
+				}
 			}
 
 			if(!$this->getSide(Vector3::SIDE_UP)->isTransparent()){

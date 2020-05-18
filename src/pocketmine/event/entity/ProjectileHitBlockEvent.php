@@ -39,8 +39,6 @@ class ProjectileHitBlockEvent extends ProjectileHitEvent{
 	/**
 	 * Returns the Block struck by the projectile.
 	 * Hint: to get the block face hit, look at the RayTraceResult.
-	 *
-	 * @return Block
 	 */
 	public function getBlockHit() : Block{
 		return $this->blockHit;

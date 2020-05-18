@@ -29,7 +29,7 @@ use function defined;
 
 class UtilsTest extends TestCase{
 
-	public function setUp(){
+	public function setUp() : void{
 		if(!defined('pocketmine\PATH')){
 			define('pocketmine\PATH', 'dummy');
 		}
@@ -38,6 +38,10 @@ class UtilsTest extends TestCase{
 		}
 	}
 
+	/**
+	 * @return string[][]
+	 * @phpstan-return list<array{string}>
+	 */
 	public function parseDocCommentNewlineProvider() : array{
 		return [
 			["\t/**\r\n\t * @param PlayerJoinEvent \$event\r\n\t * @priority HIGHEST\r\n\t * @notHandler\r\n\t */"],
@@ -59,8 +63,34 @@ class UtilsTest extends TestCase{
 		self::assertEquals("HIGHEST", $tags["priority"]);
 	}
 
+	/**
+	 * @return string[][]
+	 * @phpstan-return list<array{string}>
+	 */
+	public function parseDocCommentOneLineProvider() : array{
+		return [
+			["/** @ignoreCancelled true dummy */"],
+			["/**@ignoreCancelled true dummy*/"],
+			["/** @ignoreCancelled    true dummy */"]
+		];
+	}
+
+	/**
+	 * @dataProvider parseDocCommentOneLineProvider
+	 */
+	public function testParseOneLineDocComment(string $comment) : void{
+		$tags = Utils::parseDocComment($comment);
+		self::assertArrayHasKey("ignoreCancelled", $tags);
+		self::assertEquals("true dummy", $tags["ignoreCancelled"]);
+	}
+
+	public function testParseEmptyDocComment() : void{
+		$tags = Utils::parseDocComment("");
+		self::assertCount(0, $tags);
+	}
+
 	public function testNamespacedNiceClosureName() : void{
 		//be careful with this test. The closure has to be declared on the same line as the assertion.
-		self::assertSame('closure@' . Utils::cleanPath(__FILE__) . '#L' . __LINE__, Utils::getNiceClosureName(function(){}));
+		self::assertSame('closure@' . Utils::cleanPath(__FILE__) . '#L' . __LINE__, Utils::getNiceClosureName(function() : void{}));
 	}
 }

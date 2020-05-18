@@ -13,10 +13,11 @@
 
 ## Discussion/Help
 - [Forums](https://forums.pmmp.io/)
-- [Community Discord](https://discord.gg/bmSAZBG)
+- [Discord](https://discord.gg/bmSAZBG)
 - [StackOverflow](https://stackoverflow.com/tags/pocketmine)
 
 ## For developers
+ * [Building and running from source](BUILDING.md)
  * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
  * [DevTools](https://github.com/pmmp/PocketMine-DevTools/) - Development tools plugin for creating plugins
  * [ExamplePlugin](https://github.com/pmmp/ExamplePlugin/) - Example plugin demonstrating some basic API features
@@ -25,6 +26,7 @@
 ## Donate
 - Bitcoin Cash (BCH): `qq3r46hn6ljnhnqnfwxt5pg3g447eq9jhvw5ddfear`
 - Bitcoin (BTC): `171u8K9e4FtU6j3e5sqNoxKUgEw9qWQdRV`
+- Stellar Lumens (XLM): `GAAC5WZ33HCTE3BFJFZJXONMEIBNHFLBXM2HJVAZHXXPYA3HP5XPPS7T`
 - [Patreon](https://www.patreon.com/pocketminemp)
 
 ## Licensing information

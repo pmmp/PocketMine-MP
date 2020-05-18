@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
@@ -36,7 +37,6 @@ class NetworkInventoryAction{
 
 	public const SOURCE_WORLD = 2; //drop/pickup item entity
 	public const SOURCE_CREATIVE = 3;
-	public const SOURCE_CRAFTING_GRID = 100;
 	public const SOURCE_TODO = 99999;
 
 	/**
@@ -48,18 +48,12 @@ class NetworkInventoryAction{
 	 *
 	 * Expect these to change in the future.
 	 */
-	public const SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = -2;
-	public const SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = -3;
 	public const SOURCE_TYPE_CRAFTING_RESULT = -4;
 	public const SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
 
-	public const SOURCE_TYPE_ANVIL_INPUT = -10;
-	public const SOURCE_TYPE_ANVIL_MATERIAL = -11;
 	public const SOURCE_TYPE_ANVIL_RESULT = -12;
 	public const SOURCE_TYPE_ANVIL_OUTPUT = -13;
 
-	public const SOURCE_TYPE_ENCHANT_INPUT = -15;
-	public const SOURCE_TYPE_ENCHANT_MATERIAL = -16;
 	public const SOURCE_TYPE_ENCHANT_OUTPUT = -17;
 
 	public const SOURCE_TYPE_TRADING_INPUT_1 = -20;
@@ -68,9 +62,6 @@ class NetworkInventoryAction{
 	public const SOURCE_TYPE_TRADING_OUTPUT = -23;
 
 	public const SOURCE_TYPE_BEACON = -24;
-
-	/** Any client-side window dropping its contents when the player closes it */
-	public const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
 
 	public const ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
 	public const ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
@@ -92,8 +83,6 @@ class NetworkInventoryAction{
 	public $newItem;
 
 	/**
-	 * @param InventoryTransactionPacket $packet
-	 *
 	 * @return $this
 	 */
 	public function read(InventoryTransactionPacket $packet){
@@ -108,17 +97,8 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
-			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				$this->windowId = $packet->getVarInt();
-				switch($this->windowId){
-					/** @noinspection PhpMissingBreakStatementInspection */
-					case self::SOURCE_TYPE_CRAFTING_RESULT:
-						$packet->isFinalCraftingPart = true;
-					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
-						$packet->isCraftingPart = true;
-						break;
-				}
 				break;
 			default:
 				throw new \UnexpectedValueException("Unknown inventory action source type $this->sourceType");
@@ -132,7 +112,7 @@ class NetworkInventoryAction{
 	}
 
 	/**
-	 * @param InventoryTransactionPacket $packet
+	 * @return void
 	 */
 	public function write(InventoryTransactionPacket $packet){
 		$packet->putUnsignedVarInt($this->sourceType);
@@ -146,7 +126,6 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
-			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				$packet->putVarInt($this->windowId);
 				break;
@@ -160,18 +139,42 @@ class NetworkInventoryAction{
 	}
 
 	/**
-	 * @param Player $player
-	 *
 	 * @return InventoryAction|null
 	 *
 	 * @throws \UnexpectedValueException
 	 */
 	public function createInventoryAction(Player $player){
+		if($this->oldItem->equalsExact($this->newItem)){
+			//filter out useless noise in 1.13
+			return null;
+		}
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
-				$window = $player->getWindow($this->windowId);
+				if($this->windowId === ContainerIds::UI and $this->inventorySlot > 0){
+					if($this->inventorySlot === 50){
+						return null; //useless noise
+					}
+					if($this->inventorySlot >= 28 and $this->inventorySlot <= 31){
+						$window = $player->getCraftingGrid();
+						if($window->getGridWidth() !== CraftingGrid::SIZE_SMALL){
+							throw new \UnexpectedValueException("Expected small crafting grid");
+						}
+						$slot = $this->inventorySlot - 28;
+					}elseif($this->inventorySlot >= 32 and $this->inventorySlot <= 40){
+						$window = $player->getCraftingGrid();
+						if($window->getGridWidth() !== CraftingGrid::SIZE_BIG){
+							throw new \UnexpectedValueException("Expected big crafting grid");
+						}
+						$slot = $this->inventorySlot - 32;
+					}else{
+						throw new \UnexpectedValueException("Unhandled magic UI slot offset $this->inventorySlot");
+					}
+				}else{
+					$window = $player->getWindow($this->windowId);
+					$slot = $this->inventorySlot;
+				}
 				if($window !== null){
-					return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+					return new SlotChangeAction($window, $slot, $this->oldItem, $this->newItem);
 				}
 
 				throw new \UnexpectedValueException("Player " . $player->getName() . " has no open container with window ID $this->windowId");
@@ -195,14 +198,9 @@ class NetworkInventoryAction{
 				}
 
 				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
-			case self::SOURCE_CRAFTING_GRID:
 			case self::SOURCE_TODO:
 				//These types need special handling.
 				switch($this->windowId){
-					case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
-					case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
-					case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS: //TODO: this type applies to all fake windows, not just crafting
-						return new SlotChangeAction($player->getCraftingGrid(), $this->inventorySlot, $this->oldItem, $this->newItem);
 					case self::SOURCE_TYPE_CRAFTING_RESULT:
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						return null;

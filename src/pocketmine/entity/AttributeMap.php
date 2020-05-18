@@ -25,6 +25,9 @@ namespace pocketmine\entity;
 
 use function array_filter;
 
+/**
+ * @phpstan-implements \ArrayAccess<int, float>
+ */
 class AttributeMap implements \ArrayAccess{
 	/** @var Attribute[] */
 	private $attributes = [];
@@ -33,11 +36,6 @@ class AttributeMap implements \ArrayAccess{
 		$this->attributes[$attribute->getId()] = $attribute;
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return Attribute|null
-	 */
 	public function getAttribute(int $id) : ?Attribute{
 		return $this->attributes[$id] ?? null;
 	}
@@ -53,32 +51,39 @@ class AttributeMap implements \ArrayAccess{
 	 * @return Attribute[]
 	 */
 	public function needSend() : array{
-		return array_filter($this->attributes, function(Attribute $attribute){
+		return array_filter($this->attributes, function(Attribute $attribute) : bool{
 			return $attribute->isSyncable() and $attribute->isDesynchronized();
 		});
 	}
 
+	/**
+	 * @param int $offset
+	 */
 	public function offsetExists($offset) : bool{
 		return isset($this->attributes[$offset]);
 	}
 
 	/**
 	 * @param int $offset
-	 *
-	 * @return float
 	 */
 	public function offsetGet($offset) : float{
 		return $this->attributes[$offset]->getValue();
 	}
 
 	/**
-	 * @param int   $offset
-	 * @param float $value
+	 * @param int|null $offset
+	 * @param float    $value
 	 */
 	public function offsetSet($offset, $value) : void{
+		if($offset === null){
+			throw new \InvalidArgumentException("Array push syntax is not supported");
+		}
 		$this->attributes[$offset]->setValue($value);
 	}
 
+	/**
+	 * @param int $offset
+	 */
 	public function offsetUnset($offset) : void{
 		throw new \RuntimeException("Could not unset an attribute from an attribute map");
 	}

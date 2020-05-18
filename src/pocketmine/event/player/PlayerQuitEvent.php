@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
+use pocketmine\lang\TextContainer;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\Player;
 
@@ -31,15 +32,13 @@ use pocketmine\Player;
  */
 class PlayerQuitEvent extends PlayerEvent{
 
-	/** @var TranslationContainer|string */
+	/** @var TextContainer|string */
 	protected $quitMessage;
 	/** @var string */
 	protected $quitReason;
 
 	/**
-	 * @param Player                      $player
-	 * @param TranslationContainer|string $quitMessage
-	 * @param string                      $quitReason
+	 * @param TextContainer|string $quitMessage
 	 */
 	public function __construct(Player $player, $quitMessage, string $quitReason){
 		$this->player = $player;
@@ -48,22 +47,19 @@ class PlayerQuitEvent extends PlayerEvent{
 	}
 
 	/**
-	 * @param TranslationContainer|string $quitMessage
+	 * @param TextContainer|string $quitMessage
 	 */
 	public function setQuitMessage($quitMessage) : void{
 		$this->quitMessage = $quitMessage;
 	}
 
 	/**
-	 * @return TranslationContainer|string
+	 * @return TextContainer|string
 	 */
 	public function getQuitMessage(){
 		return $this->quitMessage;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getQuitReason() : string{
 		return $this->quitReason;
 	}

@@ -32,10 +32,10 @@ use function strpos;
 use function substr;
 
 class FormattedCommandAlias extends Command{
+	/** @var string[] */
 	private $formatStrings = [];
 
 	/**
-	 * @param string   $alias
 	 * @param string[] $formatStrings
 	 */
 	public function __construct(string $alias, array $formatStrings){
@@ -65,10 +65,7 @@ class FormattedCommandAlias extends Command{
 	}
 
 	/**
-	 * @param string $formatString
-	 * @param array  $args
-	 *
-	 * @return string
+	 * @param string[] $args
 	 */
 	private function buildCommand(string $formatString, array $args) : string{
 		$index = strpos($formatString, '$');
@@ -143,13 +140,6 @@ class FormattedCommandAlias extends Command{
 		return $formatString;
 	}
 
-	/**
-	 * @param int $i
-	 * @param int $j
-	 * @param int $k
-	 *
-	 * @return bool
-	 */
 	private static function inRange(int $i, int $j, int $k) : bool{
 		return $i >= $j and $i <= $k;
 	}

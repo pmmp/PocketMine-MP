@@ -35,7 +35,7 @@ class UpdateEquipPacket extends DataPacket{
 	/** @var int */
 	public $windowType;
 	/** @var int */
-	public $unknownVarint; //TODO: find out what this is (vanilla always sends 0)
+	public $windowSlotCount; //useless, seems to be part of a standard container header
 	/** @var int */
 	public $entityUniqueId;
 	/** @var string */
@@ -44,7 +44,7 @@ class UpdateEquipPacket extends DataPacket{
 	protected function decodePayload(){
 		$this->windowId = $this->getByte();
 		$this->windowType = $this->getByte();
-		$this->unknownVarint = $this->getVarInt();
+		$this->windowSlotCount = $this->getVarInt();
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->namedtag = $this->getRemaining();
 	}
@@ -52,7 +52,7 @@ class UpdateEquipPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putByte($this->windowId);
 		$this->putByte($this->windowType);
-		$this->putVarInt($this->unknownVarint);
+		$this->putVarInt($this->windowSlotCount);
 		$this->putEntityUniqueId($this->entityUniqueId);
 		$this->put($this->namedtag);
 	}

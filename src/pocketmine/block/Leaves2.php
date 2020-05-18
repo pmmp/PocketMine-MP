@@ -29,6 +29,7 @@ use pocketmine\item\ItemFactory;
 class Leaves2 extends Leaves{
 
 	protected $id = self::LEAVES2;
+	/** @var int */
 	protected $woodType = self::WOOD2;
 
 	public function getName() : string{

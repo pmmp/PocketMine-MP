@@ -57,22 +57,22 @@ class HelpCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 0){
-			$command = "";
+			$commandName = "";
 			$pageNumber = 1;
 		}elseif(is_numeric($args[count($args) - 1])){
 			$pageNumber = (int) array_pop($args);
 			if($pageNumber <= 0){
 				$pageNumber = 1;
 			}
-			$command = implode(" ", $args);
+			$commandName = implode(" ", $args);
 		}else{
-			$command = implode(" ", $args);
+			$commandName = implode(" ", $args);
 			$pageNumber = 1;
 		}
 
 		$pageHeight = $sender->getScreenLineHeight();
 
-		if($command === ""){
+		if($commandName === ""){
 			/** @var Command[][] $commands */
 			$commands = [];
 			foreach($sender->getServer()->getCommandMap()->getCommands() as $command){
@@ -82,7 +82,7 @@ class HelpCommand extends VanillaCommand{
 			}
 			ksort($commands, SORT_NATURAL | SORT_FLAG_CASE);
 			$commands = array_chunk($commands, $pageHeight);
-			$pageNumber = (int) min(count($commands), $pageNumber);
+			$pageNumber = min(count($commands), $pageNumber);
 			if($pageNumber < 1){
 				$pageNumber = 1;
 			}
@@ -95,7 +95,7 @@ class HelpCommand extends VanillaCommand{
 
 			return true;
 		}else{
-			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(strtolower($command))) instanceof Command){
+			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(strtolower($commandName))) instanceof Command){
 				if($cmd->testPermissionSilent($sender)){
 					$message = TextFormat::YELLOW . "--------- " . TextFormat::WHITE . " Help: /" . $cmd->getName() . TextFormat::YELLOW . " ---------\n";
 					$message .= TextFormat::GOLD . "Description: " . TextFormat::WHITE . $cmd->getDescription() . "\n";
@@ -105,7 +105,7 @@ class HelpCommand extends VanillaCommand{
 					return true;
 				}
 			}
-			$sender->sendMessage(TextFormat::RED . "No help for " . strtolower($command));
+			$sender->sendMessage(TextFormat::RED . "No help for " . strtolower($commandName));
 
 			return true;
 		}

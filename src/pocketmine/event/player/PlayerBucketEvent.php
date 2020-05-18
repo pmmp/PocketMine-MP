@@ -41,13 +41,6 @@ abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable{
 	/** @var Item */
 	private $item;
 
-	/**
-	 * @param Player $who
-	 * @param Block  $blockClicked
-	 * @param int    $blockFace
-	 * @param Item   $bucket
-	 * @param Item   $itemInHand
-	 */
 	public function __construct(Player $who, Block $blockClicked, int $blockFace, Item $bucket, Item $itemInHand){
 		$this->player = $who;
 		$this->blockClicked = $blockClicked;
@@ -58,8 +51,6 @@ abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * Returns the bucket used in this event
-	 *
-	 * @return Item
 	 */
 	public function getBucket() : Item{
 		return $this->bucket;
@@ -67,30 +58,19 @@ abstract class PlayerBucketEvent extends PlayerEvent implements Cancellable{
 
 	/**
 	 * Returns the item in hand after the event
-	 *
-	 * @return Item
 	 */
 	public function getItem() : Item{
 		return $this->item;
 	}
 
-	/**
-	 * @param Item $item
-	 */
 	public function setItem(Item $item) : void{
 		$this->item = $item;
 	}
 
-	/**
-	 * @return Block
-	 */
 	public function getBlockClicked() : Block{
 		return $this->blockClicked;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBlockFace() : int{
 		return $this->blockFace;
 	}

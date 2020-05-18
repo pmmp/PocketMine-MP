@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\math\Vector3;
+
 class StructureSettings{
 	/** @var string */
 	public $paletteName;
@@ -52,4 +54,6 @@ class StructureSettings{
 	public $integrityValue;
 	/** @var int */
 	public $integritySeed;
+	/** @var Vector3 */
+	public $pivot;
 }

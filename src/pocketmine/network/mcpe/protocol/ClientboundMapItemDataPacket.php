@@ -21,17 +21,15 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\mcpe\protocol\types\MapDecoration;
 use pocketmine\network\mcpe\protocol\types\MapTrackedObject;
 use pocketmine\utils\Color;
-use function assert;
 use function count;
 
 class ClientboundMapItemDataPacket extends DataPacket{
@@ -56,7 +54,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 
 	/** @var MapTrackedObject[] */
 	public $trackedEntities = [];
-	/** @var array */
+	/** @var MapDecoration[] */
 	public $decorations = [];
 
 	/** @var int */
@@ -102,13 +100,13 @@ class ClientboundMapItemDataPacket extends DataPacket{
 			}
 
 			for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-				$this->decorations[$i]["img"] = $this->getByte();
-				$this->decorations[$i]["rot"] = $this->getByte();
-				$this->decorations[$i]["xOffset"] = $this->getByte();
-				$this->decorations[$i]["yOffset"] = $this->getByte();
-				$this->decorations[$i]["label"] = $this->getString();
-
-				$this->decorations[$i]["color"] = Color::fromABGR($this->getUnsignedVarInt());
+				$icon = $this->getByte();
+				$rotation = $this->getByte();
+				$xOffset = $this->getByte();
+				$yOffset = $this->getByte();
+				$label = $this->getString();
+				$color = Color::fromABGR($this->getUnsignedVarInt());
+				$this->decorations[] = new MapDecoration($icon, $rotation, $xOffset, $yOffset, $label, $color);
 			}
 		}
 
@@ -175,14 +173,12 @@ class ClientboundMapItemDataPacket extends DataPacket{
 
 			$this->putUnsignedVarInt($decorationCount);
 			foreach($this->decorations as $decoration){
-				$this->putByte($decoration["img"]);
-				$this->putByte($decoration["rot"]);
-				$this->putByte($decoration["xOffset"]);
-				$this->putByte($decoration["yOffset"]);
-				$this->putString($decoration["label"]);
-
-				assert($decoration["color"] instanceof Color);
-				$this->putUnsignedVarInt($decoration["color"]->toABGR());
+				$this->putByte($decoration->getIcon());
+				$this->putByte($decoration->getRotation());
+				$this->putByte($decoration->getXOffset());
+				$this->putByte($decoration->getYOffset());
+				$this->putString($decoration->getLabel());
+				$this->putUnsignedVarInt($decoration->getColor()->toABGR());
 			}
 		}
 

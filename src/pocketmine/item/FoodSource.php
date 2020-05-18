@@ -34,7 +34,6 @@ interface FoodSource extends Consumable{
 
 	/**
 	 * Returns whether a Human eating this FoodSource must have a non-full hunger bar.
-	 * @return bool
 	 */
 	public function requiresHunger() : bool;
 }

@@ -31,7 +31,6 @@ use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\Config;
 
-
 /**
  * It is recommended to use PluginBase for the actual plugin
  */
@@ -41,17 +40,18 @@ interface Plugin extends CommandExecutor{
 
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
+	 *
+	 * @return void
 	 */
 	public function onLoad();
 
 	/**
 	 * Called when the plugin is enabled
+	 *
+	 * @return void
 	 */
 	public function onEnable();
 
-	/**
-	 * @return bool
-	 */
 	public function isEnabled() : bool;
 
 	/**
@@ -60,39 +60,29 @@ interface Plugin extends CommandExecutor{
 	 * @internal This is intended for core use only and should not be used by plugins
 	 * @see PluginManager::enablePlugin()
 	 * @see PluginManager::disablePlugin()
-	 *
-	 * @param bool $enabled
 	 */
 	public function setEnabled(bool $enabled = true) : void;
 
 	/**
 	 * Called when the plugin is disabled
 	 * Use this to free open things and finish actions
+	 *
+	 * @return void
 	 */
 	public function onDisable();
 
-	/**
-	 * @return bool
-	 */
 	public function isDisabled() : bool;
 
 	/**
 	 * Gets the plugin's data folder to save files and configuration.
 	 * This directory name has a trailing slash.
-	 *
-	 * @return string
 	 */
 	public function getDataFolder() : string;
 
-	/**
-	 * @return PluginDescription
-	 */
 	public function getDescription() : PluginDescription;
 
 	/**
 	 * Gets an embedded resource in the plugin file.
-	 *
-	 * @param string $filename
 	 *
 	 * @return null|resource Resource data, or null
 	 */
@@ -100,11 +90,6 @@ interface Plugin extends CommandExecutor{
 
 	/**
 	 * Saves an embedded resource to its relative location in the data folder
-	 *
-	 * @param string $filename
-	 * @param bool   $replace
-	 *
-	 * @return bool
 	 */
 	public function saveResource(string $filename, bool $replace = false) : bool;
 
@@ -115,33 +100,24 @@ interface Plugin extends CommandExecutor{
 	 */
 	public function getResources() : array;
 
-	/**
-	 * @return Config
-	 */
 	public function getConfig() : Config;
 
+	/**
+	 * @return void
+	 */
 	public function saveConfig();
 
-	/**
-	 * @return bool
-	 */
 	public function saveDefaultConfig() : bool;
 
+	/**
+	 * @return void
+	 */
 	public function reloadConfig();
 
-	/**
-	 * @return Server
-	 */
 	public function getServer() : Server;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string;
 
-	/**
-	 * @return PluginLogger
-	 */
 	public function getLogger() : PluginLogger;
 
 	/**
@@ -149,9 +125,6 @@ interface Plugin extends CommandExecutor{
 	 */
 	public function getPluginLoader();
 
-	/**
-	 * @return TaskScheduler
-	 */
 	public function getScheduler() : TaskScheduler;
 
 }

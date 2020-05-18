@@ -40,8 +40,6 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * PlayerKickEvent constructor.
 	 *
-	 * @param Player               $player
-	 * @param string               $reason
 	 * @param TextContainer|string $quitMessage
 	 */
 	public function __construct(Player $player, string $reason, $quitMessage){
@@ -50,9 +48,6 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 		$this->reason = $reason;
 	}
 
-	/**
-	 * @param string $reason
-	 */
 	public function setReason(string $reason) : void{
 		$this->reason = $reason;
 	}

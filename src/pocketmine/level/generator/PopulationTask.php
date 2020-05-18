@@ -31,18 +31,31 @@ use pocketmine\Server;
 
 class PopulationTask extends AsyncTask{
 
+	/** @var bool */
 	public $state;
+	/** @var int */
 	public $levelId;
+	/** @var string */
 	public $chunk;
 
+	/** @var string */
 	public $chunk0;
+	/** @var string */
 	public $chunk1;
+	/** @var string */
 	public $chunk2;
+	/** @var string */
 	public $chunk3;
+
 	//center chunk
+
+	/** @var string */
 	public $chunk5;
+	/** @var string */
 	public $chunk6;
+	/** @var string */
 	public $chunk7;
+	/** @var string */
 	public $chunk8;
 
 	public function __construct(Level $level, Chunk $chunk){
@@ -56,11 +69,9 @@ class PopulationTask extends AsyncTask{
 	}
 
 	public function onRun(){
-		/** @var SimpleChunkManager $manager */
 		$manager = $this->getFromThreadStore("generation.level{$this->levelId}.manager");
-		/** @var Generator $generator */
 		$generator = $this->getFromThreadStore("generation.level{$this->levelId}.generator");
-		if($manager === null or $generator === null){
+		if(!($manager instanceof SimpleChunkManager) or !($generator instanceof Generator)){
 			$this->state = false;
 			return;
 		}
@@ -87,52 +98,34 @@ class PopulationTask extends AsyncTask{
 		$manager->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
 		if(!$chunk->isGenerated()){
 			$generator->generateChunk($chunk->getX(), $chunk->getZ());
+			$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
 			$chunk->setGenerated();
 		}
 
-		foreach($chunks as $c){
-			if($c !== null){
-				$manager->setChunk($c->getX(), $c->getZ(), $c);
-				if(!$c->isGenerated()){
-					$generator->generateChunk($c->getX(), $c->getZ());
-					$c = $manager->getChunk($c->getX(), $c->getZ());
-					$c->setGenerated();
-				}
+		foreach($chunks as $i => $c){
+			$manager->setChunk($c->getX(), $c->getZ(), $c);
+			if(!$c->isGenerated()){
+				$generator->generateChunk($c->getX(), $c->getZ());
+				$chunks[$i] = $manager->getChunk($c->getX(), $c->getZ());
+				$chunks[$i]->setGenerated();
 			}
 		}
 
 		$generator->populateChunk($chunk->getX(), $chunk->getZ());
-
 		$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
+		$chunk->setPopulated();
+
 		$chunk->recalculateHeightMap();
 		$chunk->populateSkyLight();
 		$chunk->setLightPopulated();
-		$chunk->setPopulated();
+
 		$this->chunk = $chunk->fastSerialize();
 
-		$manager->setChunk($chunk->getX(), $chunk->getZ(), null);
-
 		foreach($chunks as $i => $c){
-			if($c !== null){
-				$c = $chunks[$i] = $manager->getChunk($c->getX(), $c->getZ());
-				if(!$c->hasChanged()){
-					$chunks[$i] = null;
-				}
-			}else{
-				//This way non-changed chunks are not set
-				$chunks[$i] = null;
-			}
+			$this->{"chunk$i"} = $c->hasChanged() ? $c->fastSerialize() : null;
 		}
 
 		$manager->cleanChunks();
-
-		for($i = 0; $i < 9; ++$i){
-			if($i === 4){
-				continue;
-			}
-
-			$this->{"chunk$i"} = $chunks[$i] !== null ? $chunks[$i]->fastSerialize() : null;
-		}
 	}
 
 	public function onCompletion(Server $server){

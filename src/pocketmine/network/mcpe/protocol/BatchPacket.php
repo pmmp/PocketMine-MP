@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use function assert;
@@ -76,7 +75,7 @@ class BatchPacket extends DataPacket{
 	}
 
 	/**
-	 * @param DataPacket $packet
+	 * @return void
 	 */
 	public function addPacket(DataPacket $packet){
 		if(!$packet->canBeBatched()){
@@ -91,6 +90,7 @@ class BatchPacket extends DataPacket{
 
 	/**
 	 * @return \Generator
+	 * @phpstan-return \Generator<int, string, void, void>
 	 */
 	public function getPackets(){
 		$stream = new NetworkBinaryStream($this->payload);
@@ -107,6 +107,9 @@ class BatchPacket extends DataPacket{
 		return $this->compressionLevel;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function setCompressionLevel(int $level){
 		$this->compressionLevel = $level;
 	}

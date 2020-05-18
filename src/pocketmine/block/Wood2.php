@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-
 class Wood2 extends Wood{
 
 	public const ACACIA = 0;

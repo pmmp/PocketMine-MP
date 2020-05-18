@@ -27,8 +27,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class StructureTemplateDataExportResponsePacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_EXPORT_RESPONSE_PACKET;
+class StructureTemplateDataResponsePacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_RESPONSE_PACKET;
 
 	/** @var string */
 	public $structureTemplateName;
@@ -51,6 +51,6 @@ class StructureTemplateDataExportResponsePacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $handler) : bool{
-		return $handler->handleStructureTemplateDataExportResponse($this);
+		return $handler->handleStructureTemplateDataResponse($this);
 	}
 }

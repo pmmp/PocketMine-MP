@@ -31,7 +31,9 @@ use pocketmine\Server;
 
 class LightPopulationTask extends AsyncTask{
 
+	/** @var int */
 	public $levelId;
+	/** @var string */
 	public $chunk;
 
 	public function __construct(Level $level, Chunk $chunk){

@@ -36,21 +36,12 @@ trait NameableTrait{
 	/** @var string|null */
 	private $customName;
 
-	/**
-	 * @return string
-	 */
 	abstract public function getDefaultName() : string;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return $this->customName ?? $this->getDefaultName();
 	}
 
-	/**
-	 * @param string $name
-	 */
 	public function setName(string $name) : void{
 		if($name === ""){
 			$this->customName = null;
@@ -59,9 +50,6 @@ trait NameableTrait{
 		}
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasName() : bool{
 		return $this->customName !== null;
 	}

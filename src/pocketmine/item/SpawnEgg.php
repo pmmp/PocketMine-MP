@@ -44,7 +44,7 @@ class SpawnEgg extends Item{
 		$entity = Entity::createEntity($this->meta, $player->getLevel(), $nbt);
 
 		if($entity instanceof Entity){
-			--$this->count;
+			$this->pop();
 			$entity->spawnToAll();
 			return true;
 		}

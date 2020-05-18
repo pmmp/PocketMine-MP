@@ -62,7 +62,9 @@ use const SOCK_DGRAM;
 use const SOL_UDP;
 
 class Internet{
+	/** @var string|false */
 	public static $ip = false;
+	/** @var bool */
 	public static $online = true;
 
 	/**
@@ -111,7 +113,6 @@ class Internet{
 	 * Returns the machine's internal network IP address. If the machine is not behind a router, this may be the same
 	 * as the external IP.
 	 *
-	 * @return string
 	 * @throws InternetException
 	 */
 	public static function getInternalIP() : string{
@@ -133,14 +134,15 @@ class Internet{
 	 * GETs an URL using cURL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param string  $page
-	 * @param int     $timeout default 10
-	 * @param array   $extraHeaders
-	 * @param string  &$err Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param array[] &$headers
-	 * @param int     &$httpCode
+	 * @param int      $timeout default 10
+	 * @param string[] $extraHeaders
+	 * @param string   $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param string[] $headers reference parameter
+	 * @param int      $httpCode reference parameter
+	 * @phpstan-param list<string>          $extraHeaders
+	 * @phpstan-param array<string, string> $headers
 	 *
-	 * @return bool|mixed false if an error occurred, mixed data if successful.
+	 * @return string|false
 	 */
 	public static function getURL(string $page, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		try{
@@ -156,15 +158,16 @@ class Internet{
 	 * POSTs data to an URL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param string       $page
-	 * @param array|string $args
-	 * @param int          $timeout
-	 * @param array        $extraHeaders
-	 * @param string       &$err Will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param array[]      &$headers
-	 * @param int          &$httpCode
+	 * @param string[]|string $args
+	 * @param string[]        $extraHeaders
+	 * @param string          $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param string[]        $headers reference parameter
+	 * @param int             $httpCode reference parameter
+	 * @phpstan-param string|array<string, string> $args
+	 * @phpstan-param list<string>                 $extraHeaders
+	 * @phpstan-param array<string, string>        $headers
 	 *
-	 * @return bool|mixed false if an error occurred, mixed data if successful.
+	 * @return string|false
 	 */
 	public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
 		try{
@@ -183,13 +186,16 @@ class Internet{
 	 * General cURL shorthand function.
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param string        $page
 	 * @param float|int     $timeout      The maximum connect timeout and timeout in seconds, correct to ms.
 	 * @param string[]      $extraHeaders extra headers to send as a plain string array
 	 * @param array         $extraOpts    extra CURLOPT_* to set as an [opt => value] map
 	 * @param callable|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
+	 * @phpstan-param array<int, mixed>                $extraOpts
+	 * @phpstan-param list<string>                     $extraHeaders
+	 * @phpstan-param (callable(resource) : void)|null $onSuccess
 	 *
-	 * @return array a plain array of three [result body : string, headers : array[], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
+	 * @return array a plain array of three [result body : string, headers : string[][], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
+	 * @phpstan-return array{string, list<array<string, string>>, int}
 	 *
 	 * @throws InternetException if a cURL error occurs
 	 */

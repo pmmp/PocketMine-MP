@@ -68,7 +68,6 @@ class KickCommand extends VanillaCommand{
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
 		}
 
-
 		return true;
 	}
 }

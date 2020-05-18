@@ -39,6 +39,7 @@ class MultiRecipe{
 	public const TYPE_FIREWORKS = "00000000-0000-0000-0000-000000000002";
 	public const TYPE_MAP_LOCKING_CARTOGRAPHY = "602234E4-CAC1-4353-8BB7-B1EBFF70024B";
 
+	/** @var UUID */
 	private $uuid;
 
 	public function __construct(UUID $uuid){

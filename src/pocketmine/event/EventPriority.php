@@ -76,10 +76,6 @@ abstract class EventPriority{
 	public const MONITOR = 0;
 
 	/**
-	 * @param string $name
-	 *
-	 * @return int
-	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public static function fromString(string $name) : int{

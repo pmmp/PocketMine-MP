@@ -23,6 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
+use function mt_rand;
+
 class CocoaBlock extends Transparent{
 
 	protected $id = self::COCOA_BLOCK;
@@ -47,5 +52,15 @@ class CocoaBlock extends Transparent{
 
 	public function isAffectedBySilkTouch() : bool{
 		return false;
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			ItemFactory::get(ItemIds::DYE, 3, ($this->meta >> 2) === 2 ? mt_rand(2, 3) : 1)
+		];
+	}
+
+	public function getPickedItem() : Item{
+		return ItemFactory::get(ItemIds::DYE, 3);
 	}
 }

@@ -24,8 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\resourcepacks;
 
 class ResourcePackInfoEntry{
+	/** @var string */
 	protected $packId; //UUID
+	/** @var string */
 	protected $version;
+	/** @var int */
 	protected $packSize;
 
 	public function __construct(string $packId, string $version, int $packSize = 0){

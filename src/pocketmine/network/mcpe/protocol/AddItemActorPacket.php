@@ -42,7 +42,10 @@ class AddItemActorPacket extends DataPacket{
 	public $position;
 	/** @var Vector3|null */
 	public $motion;
-	/** @var array */
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<int, array{0: int, 1: mixed}>
+	 */
 	public $metadata = [];
 	/** @var bool */
 	public $isFromFishing = false;

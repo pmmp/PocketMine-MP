@@ -39,12 +39,6 @@ class SlotChangeAction extends InventoryAction{
 	/** @var int */
 	private $inventorySlot;
 
-	/**
-	 * @param Inventory $inventory
-	 * @param int       $inventorySlot
-	 * @param Item      $sourceItem
-	 * @param Item      $targetItem
-	 */
 	public function __construct(Inventory $inventory, int $inventorySlot, Item $sourceItem, Item $targetItem){
 		parent::__construct($sourceItem, $targetItem);
 		$this->inventory = $inventory;
@@ -53,8 +47,6 @@ class SlotChangeAction extends InventoryAction{
 
 	/**
 	 * Returns the inventory involved in this action.
-	 *
-	 * @return Inventory
 	 */
 	public function getInventory() : Inventory{
 		return $this->inventory;
@@ -62,7 +54,6 @@ class SlotChangeAction extends InventoryAction{
 
 	/**
 	 * Returns the slot in the inventory which this action modified.
-	 * @return int
 	 */
 	public function getSlot() : int{
 		return $this->inventorySlot;
@@ -70,10 +61,6 @@ class SlotChangeAction extends InventoryAction{
 
 	/**
 	 * Checks if the item in the inventory at the specified slot is the same as this action's source item.
-	 *
-	 * @param Player $source
-	 *
-	 * @return bool
 	 */
 	public function isValid(Player $source) : bool{
 		return (
@@ -84,9 +71,6 @@ class SlotChangeAction extends InventoryAction{
 
 	/**
 	 * Adds this action's target inventory to the transaction's inventory list.
-	 *
-	 * @param InventoryTransaction $transaction
-	 *
 	 */
 	public function onAddToTransaction(InventoryTransaction $transaction) : void{
 		$transaction->addInventory($this->inventory);
@@ -94,10 +78,6 @@ class SlotChangeAction extends InventoryAction{
 
 	/**
 	 * Sets the item into the target inventory.
-	 *
-	 * @param Player $source
-	 *
-	 * @return bool
 	 */
 	public function execute(Player $source) : bool{
 		return $this->inventory->setItem($this->inventorySlot, $this->targetItem, false);
@@ -105,8 +85,6 @@ class SlotChangeAction extends InventoryAction{
 
 	/**
 	 * Sends slot changes to other viewers of the inventory. This will not send any change back to the source Player.
-	 *
-	 * @param Player $source
 	 */
 	public function onExecuteSuccess(Player $source) : void{
 		$viewers = $this->inventory->getViewers();
@@ -116,8 +94,6 @@ class SlotChangeAction extends InventoryAction{
 
 	/**
 	 * Sends the original slot contents to the source player to revert the action.
-	 *
-	 * @param Player $source
 	 */
 	public function onExecuteFail(Player $source) : void{
 		$this->inventory->sendSlot($this->inventorySlot, $source);

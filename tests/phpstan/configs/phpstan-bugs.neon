@@ -1,0 +1,42 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Comparison operation \"\\>\\=\" between 0 and 2 is always false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^If condition is always false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/command/CommandReader.php
+
+		-
+			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/Projectile.php
+
+		-
+			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/region/RegionLoader.php
+
+		-
+			message: "#^Call to function method_exists\\(\\) with pocketmine\\\\network\\\\mcpe\\\\CachedEncapsulatedPacket and '__toString' will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/DataPacket.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and false will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Utils.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
+			count: 1
+			path: ../../phpunit/block/BlockTest.php
+

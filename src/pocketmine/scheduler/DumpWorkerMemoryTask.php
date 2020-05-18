@@ -37,11 +37,6 @@ class DumpWorkerMemoryTask extends AsyncTask{
 	/** @var int */
 	private $maxStringSize;
 
-	/**
-	 * @param string $outputFolder
-	 * @param int    $maxNesting
-	 * @param int    $maxStringSize
-	 */
 	public function __construct(string $outputFolder, int $maxNesting, int $maxStringSize){
 		$this->outputFolder = $outputFolder;
 		$this->maxNesting = $maxNesting;

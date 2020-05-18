@@ -40,7 +40,6 @@ class PlayerJoinEvent extends PlayerEvent{
 	/**
 	 * PlayerJoinEvent constructor.
 	 *
-	 * @param Player               $player
 	 * @param TextContainer|string $joinMessage
 	 */
 	public function __construct(Player $player, $joinMessage){

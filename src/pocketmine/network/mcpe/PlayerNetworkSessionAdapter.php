@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\ActorFallPacket;
@@ -59,12 +58,14 @@ use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
+use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -181,6 +182,10 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return $this->player->handleAnimate($packet);
 	}
 
+	public function handleRespawn(RespawnPacket $packet) : bool{
+		return $this->player->handleRespawn($packet);
+	}
+
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
 		return $this->player->handleContainerClose($packet);
 	}
@@ -248,7 +253,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
-		return $this->player->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
+		return $this->player->changeSkin(SkinAdapterSingleton::get()->fromSkinData($packet->skin), $packet->newSkinName, $packet->oldSkinName);
 	}
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
@@ -262,9 +267,6 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	/**
 	 * Hack to work around a stupid bug in Minecraft W10 which causes empty strings to be sent unquoted in form responses.
 	 *
-	 * @param string $json
-	 * @param bool   $assoc
-	 *
 	 * @return mixed
 	 */
 	private static function stupid_json_decode(string $json, bool $assoc = false){
@@ -272,9 +274,9 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 			$raw = $matches[1];
 			$lastComma = -1;
 			$newParts = [];
-			$quoteType = null;
+			$inQuotes = false;
 			for($i = 0, $len = strlen($raw); $i <= $len; ++$i){
-				if($i === $len or ($raw[$i] === "," and $quoteType === null)){
+				if($i === $len or ($raw[$i] === "," and !$inQuotes)){
 					$part = substr($raw, $lastComma + 1, $i - ($lastComma + 1));
 					if(trim($part) === ""){ //regular parts will have quotes or something else that makes them non-empty
 						$part = '""';
@@ -282,12 +284,13 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 					$newParts[] = $part;
 					$lastComma = $i;
 				}elseif($raw[$i] === '"'){
-					if($quoteType === null){
-						$quoteType = $raw[$i];
-					}elseif($raw[$i] === $quoteType){
-						for($backslashes = 0; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
+					if(!$inQuotes){
+						$inQuotes = true;
+					}else{
+						$backslashes = 0;
+						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
 						if(($backslashes % 2) === 0){ //unescaped quote
-							$quoteType = null;
+							$inQuotes = false;
 						}
 					}
 				}

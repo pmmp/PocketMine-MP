@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\UUID;
 use function count;
@@ -57,16 +58,25 @@ class AddPlayerPacket extends DataPacket{
 	public $headYaw = null; //TODO
 	/** @var Item */
 	public $item;
-	/** @var array */
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<int, array{0: int, 1: mixed}>
+	 */
 	public $metadata = [];
 
 	//TODO: adventure settings stuff
+	/** @var int */
 	public $uvarint1 = 0;
+	/** @var int */
 	public $uvarint2 = 0;
+	/** @var int */
 	public $uvarint3 = 0;
+	/** @var int */
 	public $uvarint4 = 0;
+	/** @var int */
 	public $uvarint5 = 0;
 
+	/** @var int */
 	public $long1 = 0;
 
 	/** @var EntityLink[] */
@@ -74,6 +84,8 @@ class AddPlayerPacket extends DataPacket{
 
 	/** @var string */
 	public $deviceId = ""; //TODO: fill player's device ID (???)
+	/** @var int */
+	public $buildPlatform = DeviceOS::UNKNOWN;
 
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
@@ -103,6 +115,7 @@ class AddPlayerPacket extends DataPacket{
 		}
 
 		$this->deviceId = $this->getString();
+		$this->buildPlatform = $this->getLInt();
 	}
 
 	protected function encodePayload(){
@@ -133,6 +146,7 @@ class AddPlayerPacket extends DataPacket{
 		}
 
 		$this->putString($this->deviceId);
+		$this->putLInt($this->buildPlatform);
 	}
 
 	public function handle(NetworkSession $session) : bool{

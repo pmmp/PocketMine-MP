@@ -78,7 +78,7 @@ class Anvil extends Fallable{
 	public function recalculateBoundingBox() : ?AxisAlignedBB{
 		$inset = 0.125;
 
-		if($this->meta & 0x01){ //east/west
+		if(($this->meta & 0x01) !== 0){ //east/west
 			return new AxisAlignedBB(
 				$this->x,
 				$this->y,

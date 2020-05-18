@@ -24,6 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types;
 
 class CommandParameter{
+	public const FLAG_FORCE_COLLAPSE_ENUM = 0x1;
+	public const FLAG_HAS_ENUM_CONSTRAINT = 0x2;
+
 	/** @var string */
 	public $paramName;
 	/** @var int */
@@ -31,7 +34,7 @@ class CommandParameter{
 	/** @var bool */
 	public $isOptional;
 	/** @var int */
-	public $byte1 = 0; //unknown, always zero except for in /gamerule command
+	public $flags = 0; //shows enum name if 1, always zero except for in /gamerule command
 	/** @var CommandEnum|null */
 	public $enum;
 	/** @var string|null */
