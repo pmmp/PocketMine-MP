@@ -37,7 +37,7 @@ class EnderPearl extends Throwable{
 			//TODO: check end gateways (when they are added)
 			//TODO: spawn endermites at origin
 
-			$this->level->broadcastLevelEvent($owner, LevelEventPacket::EVENT_PARTICLE_ENDERMAN_TELEPORT);
+			$this->level->broadcastLevelEvent($owner, LevelEventPacket::EVENT_PARTICLES_TELEPORT);
 			$this->level->addSound(new EndermanTeleportSound($owner));
 			$owner->teleport($event->getRayTraceResult()->getHitVector());
 			$this->level->addSound(new EndermanTeleportSound($owner));

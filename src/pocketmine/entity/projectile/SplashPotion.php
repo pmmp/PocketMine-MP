@@ -79,7 +79,7 @@ class SplashPotion extends Throwable{
 			}
 		}
 
-		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_PARTICLE_SPLASH, Color::mix(...$colors)->toARGB());
+		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_PARTICLES_POTION_SPLASH, Color::mix(...$colors)->toARGB());
 		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_GLASS);
 
 		if($hasEffects){

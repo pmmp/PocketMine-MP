@@ -40,7 +40,7 @@ class GenericParticle extends Particle{
 
 	public function encode(){
 		$pk = new LevelEventPacket;
-		$pk->evid = LevelEventPacket::EVENT_ADD_PARTICLE_MASK | $this->id;
+		$pk->evid = LevelEventPacket::EVENT_PARTICLE_LEGACY_EVENT | $this->id;
 		$pk->position = $this->asVector3();
 		$pk->data = $this->data;
 

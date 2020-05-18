@@ -66,7 +66,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$this->setGenericFlag(self::DATA_FLAG_IGNITED, true);
 		$this->propertyManager->setInt(self::DATA_FUSE_LENGTH, $this->fuse);
 
-		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_IGNITE);
+		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_FUSE);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{

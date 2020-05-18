@@ -39,7 +39,7 @@ class DestroyBlockParticle extends Particle{
 
 	public function encode(){
 		$pk = new LevelEventPacket;
-		$pk->evid = LevelEventPacket::EVENT_PARTICLE_DESTROY;
+		$pk->evid = LevelEventPacket::EVENT_PARTICLES_DESTROY_BLOCK;
 		$pk->position = $this->asVector3();
 		$pk->data = $this->data;
 
