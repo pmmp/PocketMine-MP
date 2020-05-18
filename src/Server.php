@@ -920,7 +920,7 @@ class Server{
 				$netCompressionThreshold = (int) $this->getProperty("network.batch-threshold", 256);
 			}
 
-			$netCompressionLevel = $this->getProperty("network.compression-level", 7);
+			$netCompressionLevel = (int) $this->getProperty("network.compression-level", 7);
 			if($netCompressionLevel < 1 or $netCompressionLevel > 9){
 				$this->logger->warning("Invalid network compression level $netCompressionLevel set, setting to default 7");
 				$netCompressionLevel = 7;
