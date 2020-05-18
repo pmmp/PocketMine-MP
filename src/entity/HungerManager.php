@@ -57,7 +57,7 @@ class HungerManager{
 	}
 
 	private static function fetchAttribute(Entity $entity, string $attributeId) : Attribute{
-		$entity->getAttributeMap()->add(Attribute::get($attributeId));
+		$entity->getAttributeMap()->add(AttributeFactory::getInstance()->get($attributeId));
 		return $entity->getAttributeMap()->get($attributeId);
 	}
 

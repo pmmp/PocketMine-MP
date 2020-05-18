@@ -153,12 +153,12 @@ abstract class Living extends Entity{
 	}
 
 	protected function addAttributes() : void{
-		$this->attributeMap->add(Attribute::get(Attribute::HEALTH));
-		$this->attributeMap->add(Attribute::get(Attribute::FOLLOW_RANGE));
-		$this->attributeMap->add(Attribute::get(Attribute::KNOCKBACK_RESISTANCE));
-		$this->attributeMap->add(Attribute::get(Attribute::MOVEMENT_SPEED));
-		$this->attributeMap->add(Attribute::get(Attribute::ATTACK_DAMAGE));
-		$this->attributeMap->add(Attribute::get(Attribute::ABSORPTION));
+		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::HEALTH));
+		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::FOLLOW_RANGE));
+		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::KNOCKBACK_RESISTANCE));
+		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::MOVEMENT_SPEED));
+		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::ATTACK_DAMAGE));
+		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::ABSORPTION));
 	}
 
 	public function setHealth(float $amount) : void{
