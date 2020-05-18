@@ -97,33 +97,26 @@ class TimeCommand extends VanillaCommand{
 			}
 
 			switch ($args[1]){
-				case "day":{
+				case "day":
 					$value = Level::TIME_DAY;
 					break;
-				}
-				case "noon":{
+				case "noon":
 					$value = Level::TIME_NOON;
 					break;
-				}
-				case "sunset":{
+				case "sunset":
 					$value = Level::TIME_SUNSET;
 					break;
-				}
-				case "night":{
+				case "night":
 					$value = Level::TIME_NIGHT;
 					break;
-				}
-				case "midnight":{
+				case "midnight":
 					$value = Level::TIME_MIDNIGHT;
 					break;
-				}
-				case "sunrise":{
+				case "sunrise":
 					$value = Level::TIME_SUNRISE;
 					break;
-				}
-				default:{
+				default:
 					$value = $this->getInteger($sender, $args[1], 0);
-				}
 			}
 
 			foreach($sender->getServer()->getLevels() as $level){
