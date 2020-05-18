@@ -47,8 +47,8 @@ final class RuntimeBlockMapping{
 	private $legacyToRuntimeMap = [];
 	/** @var int[] */
 	private $runtimeToLegacyMap = [];
-	/** @var CompoundTag[]|null */
-	private $bedrockKnownStates = null;
+	/** @var CompoundTag[] */
+	private $bedrockKnownStates;
 	/**
 	 * @var CacheableNbt|null
 	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\ListTag>|null
