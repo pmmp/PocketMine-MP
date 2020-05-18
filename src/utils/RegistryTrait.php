@@ -92,7 +92,7 @@ trait RegistryTrait{
 			throw new \ArgumentCountError("Expected exactly 0 arguments, " . count($arguments) . " passed");
 		}
 		try{
-			return self::fromString($name);
+			return self::_registryFromString($name);
 		}catch(\InvalidArgumentException $e){
 			throw new \Error($e->getMessage(), 0, $e);
 		}
