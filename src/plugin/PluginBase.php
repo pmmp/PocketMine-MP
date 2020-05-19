@@ -83,9 +83,9 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$this->loader = $loader;
 		$this->server = $server;
 		$this->description = $description;
-		$this->dataFolder = rtrim($dataFolder, "\\/") . "/";
+		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
 		//TODO: this is accessed externally via reflection, not unused
-		$this->file = rtrim($file, "\\/") . "/";
+		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
 		$this->configFile = $this->dataFolder . "config.yml";
 
 		$prefix = $this->getDescription()->getPrefix();

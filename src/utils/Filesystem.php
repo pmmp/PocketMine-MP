@@ -42,6 +42,7 @@ use function str_replace;
 use function stream_get_contents;
 use function strpos;
 use function unlink;
+use const DIRECTORY_SEPARATOR;
 use const LOCK_EX;
 use const LOCK_NB;
 use const LOCK_SH;
@@ -80,7 +81,7 @@ final class Filesystem{
 	 * @return string
 	 */
 	public static function cleanPath($path){
-		$result = str_replace(["\\", ".php", "phar://"], ["/", "", ""], $path);
+		$result = str_replace([DIRECTORY_SEPARATOR, ".php", "phar://"], ["/", "", ""], $path);
 
 		//remove relative paths
 		//TODO: make these paths dynamic so they can be unit-tested against
@@ -89,7 +90,7 @@ final class Filesystem{
 			\pocketmine\PATH => ""
 		];
 		foreach($cleanPaths as $cleanPath => $replacement){
-			$cleanPath = rtrim(str_replace(["\\", "phar://"], ["/", ""], $cleanPath), "/");
+			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
 			if(strpos($result, $cleanPath) === 0){
 				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
 			}
