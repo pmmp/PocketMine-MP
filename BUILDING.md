@@ -35,4 +35,4 @@ Run `build/server-phar.php` using your preferred PHP binary. It'll drop a `Pocke
 You can also use the `--out` option to change the output filename.
 
 ## Running PocketMine-MP from source code
-Run `src/pocketmine/PocketMine.php` using your preferred PHP binary.
+Run `src/PocketMine.php` using your preferred PHP binary.
