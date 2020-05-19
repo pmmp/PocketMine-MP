@@ -57,7 +57,6 @@ class Bow extends Tool{
 			($location->yaw > 180 ? 360 : 0) - $location->yaw,
 			-$location->pitch
 		);
-		$nbt->setShort("Fire", $player->isOnFire() ? 45 * 60 : 0);
 
 		$diff = $player->getItemUseDuration();
 		$p = $diff / 20;
