@@ -1337,7 +1337,7 @@ abstract class Entity{
 			return false;
 		}
 
-		if($pos instanceof Position and $pos->world !== null and $pos->world !== $this->getWorld()){
+		if($pos instanceof Position and $pos->isValid() and $pos->getWorldNonNull() !== $this->getWorld()){
 			if(!$this->switchWorld($pos->getWorldNonNull())){
 				return false;
 			}

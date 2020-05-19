@@ -66,17 +66,7 @@ parameters:
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Cannot call method dropItem\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/tile/Chest.php
-
-		-
 			message: "#^Argument of an invalid type pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/block/tile/BrewingStand.php
-
-		-
-			message: "#^Cannot call method dropItem\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/block/tile/BrewingStand.php
 
@@ -86,17 +76,7 @@ parameters:
 			path: ../../../src/block/tile/Furnace.php
 
 		-
-			message: "#^Cannot call method dropItem\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/tile/Furnace.php
-
-		-
 			message: "#^Argument of an invalid type pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/block/tile/Hopper.php
-
-		-
-			message: "#^Cannot call method dropItem\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/block/tile/Hopper.php
 
@@ -104,66 +84,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$nbt of method pocketmine\\\\block\\\\tile\\\\Tile\\:\\:readSaveData\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\CompoundTag, pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null given\\.$#"
 			count: 1
 			path: ../../../src/block/tile/Tile.php
-
-		-
-			message: "#^Cannot call method getBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/Anvil.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/Anvil.php
-
-		-
-			message: "#^Cannot call method getBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/ConcretePowder.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/ConcretePowder.php
-
-		-
-			message: "#^Cannot call method getBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/DragonEgg.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/DragonEgg.php
-
-		-
-			message: "#^Cannot call method getBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/Gravel.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/Gravel.php
-
-		-
-			message: "#^Cannot call method getBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/Sand.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/Sand.php
-
-		-
-			message: "#^Cannot call method getBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/SnowLayer.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/block/SnowLayer.php
 
 		-
 			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|null given\\.$#"

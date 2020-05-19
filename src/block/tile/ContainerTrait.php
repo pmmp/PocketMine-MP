@@ -96,7 +96,7 @@ trait ContainerTrait{
 		$pos = $this->getPos();
 
 		foreach($inv->getContents() as $k => $item){
-			$pos->world->dropItem($pos->add(0.5, 0.5, 0.5), $item);
+			$pos->getWorldNonNull()->dropItem($pos->add(0.5, 0.5, 0.5), $item);
 		}
 		$inv->clearAll();
 	}
