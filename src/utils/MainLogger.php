@@ -172,7 +172,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		$errno = $e->getCode();
 		try{
 			$errno = ErrorTypeToStringMap::get($errno);
-		}catch(\InvalidArgumentException $e){
+		}catch(\InvalidArgumentException $ex){
 			//pass
 		}
 
