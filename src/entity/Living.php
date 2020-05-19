@@ -433,13 +433,6 @@ abstract class Living extends Entity{
 			}
 
 			if($e !== null){
-				if((
-					$source->getCause() === EntityDamageEvent::CAUSE_PROJECTILE or
-					$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_ATTACK
-				) and $e->isOnFire()){
-					$this->setOnFire(2 * $this->getWorld()->getDifficulty());
-				}
-
 				$deltaX = $this->location->x - $e->location->x;
 				$deltaZ = $this->location->z - $e->location->z;
 				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack());
