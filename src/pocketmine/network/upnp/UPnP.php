@@ -136,7 +136,7 @@ abstract class UPnP{
 			// if result is false or [], i.e. error or notfound
 			throw new \RuntimeException("Your router does not support portforwarding");
 		}
-		$controlURL = (string)($xpathResult[0]);
+		$controlURL = (string) $xpathResult[0];
 		$serviceURL = sprintf("%s:%d/%s", $url['host'], $url['port'], $controlURL);
 		return $serviceURL;
 	}
