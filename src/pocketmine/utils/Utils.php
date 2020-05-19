@@ -86,6 +86,7 @@ use function sys_get_temp_dir;
 use function trim;
 use function unlink;
 use function xdebug_get_function_stack;
+use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
 use const PHP_INT_SIZE;
@@ -591,7 +592,7 @@ class Utils{
 	 * @return string
 	 */
 	public static function cleanPath($path){
-		$result = str_replace(["\\", ".php", "phar://"], ["/", "", ""], $path);
+		$result = str_replace([DIRECTORY_SEPARATOR, ".php", "phar://"], ["/", "", ""], $path);
 
 		//remove relative paths
 		//TODO: make these paths dynamic so they can be unit-tested against
@@ -600,7 +601,7 @@ class Utils{
 			\pocketmine\PATH => ""
 		];
 		foreach($cleanPaths as $cleanPath => $replacement){
-			$cleanPath = rtrim(str_replace(["\\", "phar://"], ["/", ""], $cleanPath), "/");
+			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
 			if(strpos($result, $cleanPath) === 0){
 				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
 			}
