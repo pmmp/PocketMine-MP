@@ -77,7 +77,7 @@ class TimeCommand extends VanillaCommand{
 				return true;
 			}
 			if($sender instanceof Player){
-				$level = $sender->getLevel();
+				$level = $sender->getLevelNonNull();
 			}else{
 				$level = $sender->getServer()->getDefaultLevel();
 			}

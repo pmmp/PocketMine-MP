@@ -597,18 +597,13 @@ parameters:
 
 		-
 			message: "#^Cannot call method getSeed\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
+			count: 1
 			path: ../../../src/pocketmine/command/defaults/SeedCommand.php
 
 		-
 			message: "#^Cannot call method setSpawnLocation\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/defaults/SetWorldSpawnCommand.php
-
-		-
-			message: "#^Cannot call method getSpawnLocation\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/SpawnpointCommand.php
 
 		-
 			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayer\\(\\) expects string, string\\|null given\\.$#"
@@ -846,11 +841,6 @@ parameters:
 			path: ../../../src/pocketmine/entity/Living.php
 
 		-
-			message: "#^Cannot call method getDifficulty\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/entity/Living.php
-
-		-
 			message: "#^Cannot call method dropExperience\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/entity/Living.php
@@ -1031,29 +1021,9 @@ parameters:
 			path: ../../../src/pocketmine/item/Banner.php
 
 		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\entity\\\\Entity\\:\\:createEntity\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/Bow.php
-
-		-
-			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/Bow.php
-
-		-
 			message: "#^Cannot call method spawnToAll\\(\\) on pocketmine\\\\entity\\\\Entity\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/Bow.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/item/Bucket.php
-
-		-
-			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/item/Bucket.php
 
 		-
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
@@ -1076,11 +1046,6 @@ parameters:
 			path: ../../../src/pocketmine/item/PaintingItem.php
 
 		-
-			message: "#^Cannot call method broadcastLevelEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/PaintingItem.php
-
-		-
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/PoisonousPotato.php
@@ -1089,16 +1054,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
 			count: 32
 			path: ../../../src/pocketmine/item/Potion.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\entity\\\\Entity\\:\\:createEntity\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/ProjectileItem.php
-
-		-
-			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/ProjectileItem.php
 
 		-
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
@@ -1114,11 +1069,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/RottenFlesh.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\entity\\\\Entity\\:\\:createEntity\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/SpawnEgg.php
 
 		-
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"

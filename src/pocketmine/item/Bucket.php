@@ -62,8 +62,8 @@ class Bucket extends Item implements MaybeConsumable{
 				$ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem);
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$player->getLevel()->setBlock($blockClicked, BlockFactory::get(Block::AIR), true, true);
-					$player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
+					$player->getLevelNonNull()->setBlock($blockClicked, BlockFactory::get(Block::AIR), true, true);
+					$player->getLevelNonNull()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
 					if($player->isSurvival()){
 						if($stack->getCount() === 0){
 							$player->getInventory()->setItemInHand($ev->getItem());
@@ -84,8 +84,8 @@ class Bucket extends Item implements MaybeConsumable{
 			$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, ItemFactory::get(Item::BUCKET));
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$player->getLevel()->setBlock($blockReplace, $resultBlock->getFlowingForm(), true, true);
-				$player->getLevel()->broadcastLevelSoundEvent($blockReplace->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
+				$player->getLevelNonNull()->setBlock($blockReplace, $resultBlock->getFlowingForm(), true, true);
+				$player->getLevelNonNull()->broadcastLevelSoundEvent($blockReplace->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
 
 				if($player->isSurvival()){
 					$player->getInventory()->setItemInHand($ev->getItem());

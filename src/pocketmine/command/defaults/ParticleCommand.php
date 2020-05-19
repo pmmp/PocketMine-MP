@@ -91,7 +91,7 @@ class ParticleCommand extends VanillaCommand{
 		}
 
 		if($sender instanceof Player){
-			$level = $sender->getLevel();
+			$level = $sender->getLevelNonNull();
 			$pos = new Vector3(
 				$this->getRelativeDouble($sender->getX(), $sender, $args[1]),
 				$this->getRelativeDouble($sender->getY(), $sender, $args[2], 0, Level::Y_MAX),

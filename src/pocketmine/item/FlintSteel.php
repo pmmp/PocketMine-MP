@@ -28,7 +28,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
-use function assert;
 
 class FlintSteel extends Tool{
 	public function __construct(int $meta = 0){
@@ -37,8 +36,7 @@ class FlintSteel extends Tool{
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
 		if($blockReplace->getId() === self::AIR){
-			$level = $player->getLevel();
-			assert($level !== null);
+			$level = $player->getLevelNonNull();
 			$level->setBlock($blockReplace, BlockFactory::get(Block::FIRE), true);
 			$level->broadcastLevelSoundEvent($blockReplace->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_IGNITE);
 

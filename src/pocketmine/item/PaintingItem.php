@@ -99,7 +99,7 @@ class PaintingItem extends Item{
 			$this->pop();
 			$entity->spawnToAll();
 
-			$player->getLevel()->broadcastLevelEvent($blockReplace->add(0.5, 0.5, 0.5), LevelEventPacket::EVENT_SOUND_ITEMFRAME_PLACE); //item frame and painting have the same sound
+			$player->getLevelNonNull()->broadcastLevelEvent($blockReplace->add(0.5, 0.5, 0.5), LevelEventPacket::EVENT_SOUND_ITEMFRAME_PLACE); //item frame and painting have the same sound
 			return true;
 		}
 
