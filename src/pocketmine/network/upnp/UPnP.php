@@ -65,6 +65,7 @@ use function trim;
 use function strlen;
 use function preg_match;
 use function parse_url;
+use function sprintf;
 use const AF_INET;
 use const SOCK_DGRAM;
 use const SOL_UDP;
@@ -77,24 +78,29 @@ use const SO_RCVTIMEO;
 
 abstract class UPnP{
 	/** @var string|null */
-	private static $serviceURL;
+	private static $serviceURL = null;
 	
-	public static function getControlUrl() : string{
-		try{
-			$socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-			socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ["sec" => 3, "usec" => 0]);
-			$contents =
-				"M-SEARCH * HTTP/1.1\r\n" .
-				"MX: 2\r\n" .
-				"HOST: 239.255.255.250:1900\r\n" .
-				"MAN: \"ssdp:discover\"\r\n" .
-				"ST: upnp:rootdevice\r\n\r\n";
-			socket_sendto($socket, $contents, strlen($contents), 0, "239.255.255.250", 1900);
-			socket_recvfrom($socket, $buffer, 1024, 0, $responseHost, $responsePort);
-			socket_close($socket);
-		}catch(\Exception $e){
-			throw new \RuntimeException("Socket error: " . $e->getMessage());
+	public static function getServiceUrl() : string{
+		$socket = @socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+		if($socket === false){
+			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error())));
 		}
+		if(!@socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ["sec" => 3, "usec" => 0])){
+			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+		}
+		$contents =
+			"M-SEARCH * HTTP/1.1\r\n" .
+			"MX: 2\r\n" .
+			"HOST: 239.255.255.250:1900\r\n" .
+			"MAN: \"ssdp:discover\"\r\n" .
+			"ST: upnp:rootdevice\r\n\r\n";
+		if(!@socket_sendto($socket, $contents, strlen($contents), 0, "239.255.255.250", 1900)){
+			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+		}
+		if(!@socket_recvfrom($socket, $buffer, 1024, 0, $responseHost, $responsePort)){
+			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+		}
+		socket_close($socket);
 		if($buffer === false || !preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches)){
 			throw new \RuntimeException("Unable to find the router. Ensure that network discovery is enabled in Control Panel.");
 		}
@@ -131,7 +137,7 @@ abstract class UPnP{
 			throw new \RuntimeException("Your router does not support portforwarding");
 		}
 		$controlURL = (string)($xpathResult[0]);
-		$serviceURL = "{$url['host']}:{$url['port']}/{$controlURL}";
+		$serviceURL = sprintf("%s:%d/%s", $url['host'], $url['port'], $controlURL);
 		return $serviceURL;
 	}
 
@@ -140,8 +146,8 @@ abstract class UPnP{
 			throw new \RuntimeException("Server is offline");
 		}
 
-		if(!isset(self::$serviceURL)){
-			self::$serviceURL = self::getControlUrl();
+		if(self::$serviceURL === null){
+			self::$serviceURL = self::getServiceUrl();
 		}
 		$body =
 			'<u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">' .
@@ -174,7 +180,7 @@ abstract class UPnP{
 		if(!Internet::$online){
 			return false;
 		}
-		if(!isset(self::$serviceURL)){
+		if(self::$serviceURL === null){
 			return false;
 		}
 
