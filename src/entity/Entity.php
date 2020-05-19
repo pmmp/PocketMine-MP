@@ -1486,7 +1486,14 @@ abstract class Entity{
 			$this->despawnFromAll();
 		}
 
-		$this->location->setWorld($targetWorld);
+		$this->location = new Location(
+			$this->location->x,
+			$this->location->y,
+			$this->location->z,
+			$this->location->yaw,
+			$this->location->pitch,
+			$targetWorld
+		);
 		$this->getWorld()->addEntity($this);
 		$this->chunk = null;
 
@@ -1634,7 +1641,7 @@ abstract class Entity{
 	 */
 	protected function destroyCycles() : void{
 		$this->chunk = null;
-		$this->location->setWorld(null);
+		$this->location = null;
 		$this->lastDamageCause = null;
 	}
 

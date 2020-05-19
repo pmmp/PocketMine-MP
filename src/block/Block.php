@@ -345,10 +345,7 @@ class Block{
 	 * @internal
 	 */
 	final public function position(World $world, int $x, int $y, int $z) : void{
-		$this->pos->x = $x;
-		$this->pos->y = $y;
-		$this->pos->z = $z;
-		$this->pos->world = $world;
+		$this->pos = new Position($x, $y, $z, $world);
 	}
 
 	/**
