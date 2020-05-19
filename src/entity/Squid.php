@@ -69,7 +69,7 @@ class Squid extends WaterAnimal{
 			$this->swimSpeed = mt_rand(150, 350) / 2000;
 			$e = $source->getDamager();
 			if($e !== null){
-				$this->swimDirection = $this->location->subtract($e->location)->normalize();
+				$this->swimDirection = $this->location->subtractVector($e->location)->normalize();
 			}
 
 			$this->broadcastAnimation(new SquidInkCloudAnimation($this));
