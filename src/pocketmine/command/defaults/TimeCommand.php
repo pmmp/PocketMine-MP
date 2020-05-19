@@ -96,7 +96,7 @@ class TimeCommand extends VanillaCommand{
 				return true;
 			}
 
-			switch ($args[1]){
+			switch($args[1]){
 				case "day":
 					$value = Level::TIME_DAY;
 					break;
@@ -117,6 +117,7 @@ class TimeCommand extends VanillaCommand{
 					break;
 				default:
 					$value = $this->getInteger($sender, $args[1], 0);
+					break;
 			}
 
 			foreach($sender->getServer()->getLevels() as $level){
