@@ -26,11 +26,6 @@ parameters:
 			path: ../../../src/block/Block.php
 
 		-
-			message: "#^Parameter \\#2 \\$world of method pocketmine\\\\block\\\\tile\\\\TileFactory\\:\\:create\\(\\) expects pocketmine\\\\world\\\\World, pocketmine\\\\world\\\\World\\|null given\\.$#"
-			count: 1
-			path: ../../../src/block/Block.php
-
-		-
 			message: "#^Parameter \\#2 \\$item of method pocketmine\\\\world\\\\World\\:\\:dropItem\\(\\) expects pocketmine\\\\item\\\\Item, pocketmine\\\\item\\\\Item\\|null given\\.$#"
 			count: 1
 			path: ../../../src/block/ItemFrame.php
@@ -182,11 +177,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method setValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
-			count: 1
-			path: ../../../src/entity/Entity.php
-
-		-
-			message: "#^Method pocketmine\\\\entity\\\\Entity\\:\\:getWorld\\(\\) should return pocketmine\\\\world\\\\World but returns pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/entity/Entity.php
 

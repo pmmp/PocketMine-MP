@@ -1329,7 +1329,7 @@ abstract class Entity{
 	}
 
 	public function getWorld() : World{
-		return $this->location->getWorld();
+		return $this->location->getWorldNonNull();
 	}
 
 	protected function setPosition(Vector3 $pos) : bool{
