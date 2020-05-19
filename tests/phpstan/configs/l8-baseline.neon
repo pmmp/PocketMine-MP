@@ -301,11 +301,6 @@ parameters:
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
 
 		-
-			message: "#^Parameter \\#2 \\$world of method pocketmine\\\\entity\\\\EntityFactory\\:\\:create\\(\\) expects pocketmine\\\\world\\\\World, pocketmine\\\\world\\\\World\\|null given\\.$#"
-			count: 1
-			path: ../../../src/item/Bow.php
-
-		-
 			message: "#^Method pocketmine\\\\item\\\\Item\\:\\:getNamedTag\\(\\) should return pocketmine\\\\nbt\\\\tag\\\\CompoundTag but returns pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
 			count: 1
 			path: ../../../src/item/Item.php
@@ -324,11 +319,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$object of function get_class expects object, pocketmine\\\\nbt\\\\tag\\\\Tag\\|null given\\.$#"
 			count: 1
 			path: ../../../src/item/Item.php
-
-		-
-			message: "#^Parameter \\#2 \\$world of method pocketmine\\\\entity\\\\EntityFactory\\:\\:create\\(\\) expects pocketmine\\\\world\\\\World, pocketmine\\\\world\\\\World\\|null given\\.$#"
-			count: 1
-			path: ../../../src/item/ProjectileItem.php
 
 		-
 			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:BLAST_PROTECTION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"

@@ -63,7 +63,7 @@ class Bow extends Tool{
 		$baseForce = min((($p ** 2) + $p * 2) / 3, 1);
 
 		/** @var ArrowEntity $entity */
-		$entity = EntityFactory::getInstance()->create(ArrowEntity::class, $location->getWorld(), $nbt, $player, $baseForce >= 1);
+		$entity = EntityFactory::getInstance()->create(ArrowEntity::class, $location->getWorldNonNull(), $nbt, $player, $baseForce >= 1);
 
 		$infinity = $this->hasEnchantment(Enchantment::INFINITY());
 		if($infinity){
