@@ -48,5 +48,5 @@ class CommandOriginData{
 	public $requestId;
 
 	/** @var int */
-	public $varlong1;
+	public $playerEntityUniqueId;
 }
