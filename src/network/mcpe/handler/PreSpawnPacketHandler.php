@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\data\bedrock\LegacyItemIdToStringIdMap;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
@@ -58,13 +59,13 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk = new StartGamePacket();
 		$pk->entityUniqueId = $this->player->getId();
 		$pk->entityRuntimeId = $this->player->getId();
-		$pk->playerGamemode = NetworkSession::getClientFriendlyGamemode($this->player->getGamemode());
+		$pk->playerGamemode = TypeConverter::getInstance()->getClientFriendlyGamemode($this->player->getGamemode());
 		$pk->playerPosition = $this->player->getOffsetPosition($location);
 		$pk->pitch = $location->pitch;
 		$pk->yaw = $location->yaw;
 		$pk->seed = -1;
 		$pk->dimension = DimensionIds::OVERWORLD; //TODO: implement this properly
-		$pk->worldGamemode = NetworkSession::getClientFriendlyGamemode($this->server->getGamemode());
+		$pk->worldGamemode = TypeConverter::getInstance()->getClientFriendlyGamemode($this->server->getGamemode());
 		$pk->difficulty = $location->getWorldNonNull()->getDifficulty();
 		$pk->spawnX = $spawnPosition->getFloorX();
 		$pk->spawnY = $spawnPosition->getFloorY();

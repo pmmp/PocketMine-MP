@@ -682,7 +682,7 @@ class NetworkSession{
 	}
 
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
-		$this->sendDataPacket(SetPlayerGameTypePacket::create(self::getClientFriendlyGamemode($mode)));
+		$this->sendDataPacket(SetPlayerGameTypePacket::create(TypeConverter::getInstance()->getClientFriendlyGamemode($mode)));
 		$this->syncAdventureSettings($this->player);
 		if(!$isRollback){
 			$this->invManager->syncCreative();
@@ -942,19 +942,5 @@ class NetworkSession{
 		}
 
 		return false;
-	}
-
-	/**
-	 * Returns a client-friendly gamemode of the specified real gamemode
-	 * This function takes care of handling gamemodes known to MCPE (as of 1.1.0.3, that includes Survival, Creative and Adventure)
-	 *
-	 * @internal
-	 */
-	public static function getClientFriendlyGamemode(GameMode $gamemode) : int{
-		if($gamemode->equals(GameMode::SPECTATOR())){
-			return GameMode::CREATIVE()->getMagicNumber();
-		}
-
-		return $gamemode->getMagicNumber();
 	}
 }
