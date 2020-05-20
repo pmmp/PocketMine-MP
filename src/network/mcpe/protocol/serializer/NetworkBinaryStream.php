@@ -44,6 +44,7 @@ use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\ShortMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\Vec3MetadataProperty;
+use pocketmine\network\mcpe\protocol\types\GameRuleType;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
@@ -543,13 +544,13 @@ class NetworkBinaryStream extends BinaryStream{
 			$type = $this->getUnsignedVarInt();
 			$value = null;
 			switch($type){
-				case 1:
+				case GameRuleType::BOOL:
 					$value = $this->getBool();
 					break;
-				case 2:
+				case GameRuleType::INT:
 					$value = $this->getUnsignedVarInt();
 					break;
-				case 3:
+				case GameRuleType::FLOAT:
 					$value = $this->getLFloat();
 					break;
 				default:
@@ -575,13 +576,13 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->putString($name);
 			$this->putUnsignedVarInt($rule[0]);
 			switch($rule[0]){
-				case 1:
+				case GameRuleType::BOOL:
 					$this->putBool($rule[1]);
 					break;
-				case 2:
+				case GameRuleType::INT:
 					$this->putUnsignedVarInt($rule[1]);
 					break;
-				case 3:
+				case GameRuleType::FLOAT:
 					$this->putLFloat($rule[1]);
 					break;
 				default:
