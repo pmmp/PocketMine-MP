@@ -29,6 +29,6 @@ final class UIProfile{
 		//NOOP
 	}
 
-	public const DESKTOP = 0;
-	public const MOBILE = 1;
+	public const CLASSIC = 0;
+	public const POCKET = 1;
 }
