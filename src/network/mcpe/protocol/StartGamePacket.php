@@ -89,9 +89,9 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $hasLANBroadcast = true;
 	/** @var int */
-	public $xboxLiveBroadcastMode = MultiplayerGameVisibility::FRIENDS_OF_FRIENDS;
+	public $xboxLiveBroadcastMode = MultiplayerGameVisibility::PUBLIC;
 	/** @var int */
-	public $platformBroadcastMode = MultiplayerGameVisibility::FRIENDS_OF_FRIENDS;
+	public $platformBroadcastMode = MultiplayerGameVisibility::PUBLIC;
 	/** @var bool */
 	public $commandsEnabled;
 	/** @var bool */
