@@ -29,6 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
+use pocketmine\network\mcpe\protocol\types\GeneratorType;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use function count;
 
@@ -55,7 +56,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $dimension;
 	/** @var int */
-	public $generator = 1; //default infinite - 0 old, 1 infinite, 2 flat
+	public $generator = GeneratorType::OVERWORLD;
 	/** @var int */
 	public $worldGamemode;
 	/** @var int */
