@@ -27,7 +27,6 @@ use pocketmine\data\bedrock\LegacyItemIdToStringIdMap;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
-use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\StaticPacketCache;
@@ -84,9 +83,6 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getBiomeDefs());
-
-		$this->player->setImmobile(); //HACK: fix client-side falling pre-spawn
-
 		$this->session->syncAttributes($this->player, $this->player->getAttributeMap()->getAll());
 		$this->session->syncAvailableCommands();
 		$this->session->syncAdventureSettings($this->player);
@@ -105,14 +101,6 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
 		$this->player->setViewDistance($packet->radius);
-
-		return true;
-	}
-
-	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
-		$this->player->setImmobile(false); //HACK: this is set to prevent client-side falling before spawn
-
-		$this->session->onSpawn();
 
 		return true;
 	}

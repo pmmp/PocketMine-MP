@@ -51,6 +51,7 @@ use pocketmine\network\mcpe\handler\LoginPacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
+use pocketmine\network\mcpe\handler\SpawnResponsePacketHandler;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
@@ -619,16 +620,22 @@ class NetworkSession{
 		$this->createPlayer();
 
 		$this->setHandler(new PreSpawnPacketHandler($this->server, $this->player, $this));
+		$this->player->setImmobile(); //TODO: HACK: fix client-side falling pre-spawn
+
 		$this->logger->debug("Waiting for spawn chunks");
 	}
 
 	public function onTerrainReady() : void{
 		$this->logger->debug("Sending spawn notification, waiting for spawn response");
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::PLAYER_SPAWN));
+		$this->setHandler(new SpawnResponsePacketHandler(function() : void{
+			$this->onSpawn();
+		}));
 	}
 
-	public function onSpawn() : void{
+	private function onSpawn() : void{
 		$this->logger->debug("Received spawn response, entering in-game phase");
+		$this->player->setImmobile(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
 		$this->player->doFirstSpawn();
 		$this->setHandler(new InGamePacketHandler($this->player, $this));
 	}
