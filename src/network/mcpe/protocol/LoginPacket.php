@@ -37,8 +37,6 @@ use function strlen;
 class LoginPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
 
-	public const EDITION_POCKET = 0;
-
 	/** @var int */
 	public $protocol;
 
