@@ -32,6 +32,7 @@ class SimpleEventPacket extends DataPacket{
 
 	public const TYPE_ENABLE_COMMANDS = 1;
 	public const TYPE_DISABLE_COMMANDS = 2;
+	public const TYPE_UNLOCK_WORLD_TEMPLATE_SETTINGS = 3;
 
 	/** @var int */
 	public $eventType;
