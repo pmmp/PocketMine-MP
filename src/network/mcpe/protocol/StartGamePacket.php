@@ -29,6 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
+use pocketmine\network\mcpe\protocol\types\EducationEditionOffer;
 use pocketmine\network\mcpe\protocol\types\GeneratorType;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use function count;
@@ -72,7 +73,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $time = -1;
 	/** @var int */
-	public $eduEditionOffer = 0;
+	public $eduEditionOffer = EducationEditionOffer::NONE;
 	/** @var bool */
 	public $hasEduFeaturesEnabled = false;
 	/** @var float */
