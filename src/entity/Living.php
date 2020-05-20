@@ -262,14 +262,13 @@ abstract class Living extends Entity{
 		}else{
 			$fallBlockPos = $this->location->floor();
 			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
-			for(
-			;
-				$fallBlock->getId() === BlockLegacyIds::AIR;
-				$fallBlockPos = $fallBlockPos->subtract(0, 1, 0), $fallBlock = $this->getWorld()->getBlock($fallBlockPos)
-			){
-				//this allows the correct sound to be played when landing in snow
+			if($fallBlock->getId() === BlockLegacyIds::AIR){
+				$fallBlockPos = $fallBlockPos->subtract(0, 1, 0);
+				$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
 			}
-			$this->getWorld()->addSound($this->location, new EntityLandSound($this, $fallBlock));
+			if($fallBlock->getId() !== BlockLegacyIds::AIR){
+				$this->getWorld()->addSound($this->location, new EntityLandSound($this, $fallBlock));
+			}
 		}
 	}
 
