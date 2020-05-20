@@ -31,6 +31,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\EducationEditionOffer;
+use pocketmine\network\mcpe\protocol\types\GameRuleType;
 use pocketmine\network\mcpe\protocol\types\GeneratorType;
 use pocketmine\network\mcpe\protocol\types\MultiplayerGameVisibility;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
@@ -110,7 +111,7 @@ class StartGamePacket extends DataPacket{
 	 * @phpstan-var array<string, array{0: int, 1: bool|int|float}>
 	 */
 	public $gameRules = [ //TODO: implement this
-		"naturalregeneration" => [1, false] //Hack for client side regeneration
+		"naturalregeneration" => [GameRuleType::BOOL, false] //Hack for client side regeneration
 	];
 	/** @var bool */
 	public $hasBonusChestEnabled = false;
