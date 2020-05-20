@@ -30,6 +30,7 @@ use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\GeneratorType;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\RuntimeBlockMapping;
 use function count;
@@ -65,7 +66,7 @@ class StartGamePacket extends DataPacket{
 	/** @var int */
 	public $dimension;
 	/** @var int */
-	public $generator = 1; //default infinite - 0 old, 1 infinite, 2 flat
+	public $generator = GeneratorType::OVERWORLD;
 	/** @var int */
 	public $worldGamemode;
 	/** @var int */
