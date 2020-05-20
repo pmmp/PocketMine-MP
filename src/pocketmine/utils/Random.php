@@ -94,8 +94,7 @@ class Random{
 		$this->x = $this->y;
 		$this->y = $this->z;
 		$this->z = $this->w;
-		$this->w = ($this->w ^ (($this->w >> 19) & 0x7fffffff)
-		                     ^ ($t ^ (($t >> 8) & 0x7fffffff))) & 0xffffffff;
+		$this->w = ($this->w ^ (($this->w >> 19) & 0x7fffffff) ^ ($t ^ (($t >> 8) & 0x7fffffff))) & 0xffffffff;
 
 		return $this->w;
 	}

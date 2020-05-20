@@ -30,21 +30,25 @@ use pocketmine\network\mcpe\NetworkSession;
 class UpdateBlockSyncedPacket extends UpdateBlockPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_SYNCED_PACKET;
 
+	public const TYPE_NONE = 0;
+	public const TYPE_CREATE = 1;
+	public const TYPE_DESTROY = 2;
+
 	/** @var int */
-	public $entityUniqueId = 0;
+	public $entityUniqueId;
 	/** @var int */
-	public $uvarint64_2 = 0;
+	public $updateType;
 
 	protected function decodePayload(){
 		parent::decodePayload();
 		$this->entityUniqueId = $this->getUnsignedVarLong();
-		$this->uvarint64_2 = $this->getUnsignedVarLong();
+		$this->updateType = $this->getUnsignedVarLong();
 	}
 
 	protected function encodePayload(){
 		parent::encodePayload();
 		$this->putUnsignedVarLong($this->entityUniqueId);
-		$this->putUnsignedVarLong($this->uvarint64_2);
+		$this->putUnsignedVarLong($this->updateType);
 	}
 
 	public function handle(NetworkSession $session) : bool{
