@@ -35,9 +35,9 @@ class UpdateBlockSyncedPacket extends UpdateBlockPacket{
 	public const TYPE_DESTROY = 2;
 
 	/** @var int */
-	public $entityUniqueId = 0;
+	public $entityUniqueId;
 	/** @var int */
-	public $updateType = 0;
+	public $updateType;
 
 	protected function decodePayload(){
 		parent::decodePayload();
