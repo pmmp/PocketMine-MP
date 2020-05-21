@@ -108,6 +108,11 @@ abstract class Living extends Entity{
 	/** @var Attribute */
 	protected $knockbackResistanceAttr;
 
+	/** @var bool */
+	protected $sprinting = false;
+	/** @var bool */
+	protected $sneaking = false;
+
 	abstract public function getName() : string;
 
 	protected function initEntity(CompoundTag $nbt) : void{
@@ -191,6 +196,26 @@ abstract class Living extends Entity{
 
 	public function setAbsorption(float $absorption) : void{
 		$this->absorptionAttr->setValue($absorption);
+	}
+
+	public function isSneaking() : bool{
+		return $this->sneaking;
+	}
+
+	public function setSneaking(bool $value = true) : void{
+		$this->sneaking = $value;
+	}
+
+	public function isSprinting() : bool{
+		return $this->sprinting;
+	}
+
+	public function setSprinting(bool $value = true) : void{
+		if($value !== $this->isSprinting()){
+			$this->sprinting = $value;
+			$attr = $this->attributeMap->get(Attribute::MOVEMENT_SPEED);
+			$attr->setValue($value ? ($attr->getValue() * 1.3) : ($attr->getValue() / 1.3), false, true);
+		}
 	}
 
 	public function saveNBT() : CompoundTag{
@@ -739,6 +764,7 @@ abstract class Living extends Entity{
 		$this->networkProperties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
 
 		$this->networkProperties->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);
 	}
 
 	protected function onDispose() : void{

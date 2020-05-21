@@ -209,10 +209,6 @@ abstract class Entity{
 	protected $immobile = false;
 	/** @var bool */
 	protected $invisible = false;
-	/** @var bool */
-	protected $sneaking = false;
-	/** @var bool */
-	protected $sprinting = false;
 
 	/** @var int|null */
 	protected $ownerId = null;
@@ -343,26 +339,6 @@ abstract class Entity{
 			$this->location->y + $this->height,
 			$this->location->z + $halfWidth
 		);
-	}
-
-	public function isSneaking() : bool{
-		return $this->sneaking;
-	}
-
-	public function setSneaking(bool $value = true) : void{
-		$this->sneaking = $value;
-	}
-
-	public function isSprinting() : bool{
-		return $this->sprinting;
-	}
-
-	public function setSprinting(bool $value = true) : void{
-		if($value !== $this->isSprinting()){
-			$this->sprinting = $value;
-			$attr = $this->attributeMap->get(Attribute::MOVEMENT_SPEED);
-			$attr->setValue($value ? ($attr->getValue() * 1.3) : ($attr->getValue() / 1.3), false, true);
-		}
 	}
 
 	public function isImmobile() : bool{
@@ -1697,7 +1673,6 @@ abstract class Entity{
 		$this->networkProperties->setGenericFlag(EntityMetadataFlags::IMMOBILE, $this->immobile);
 		$this->networkProperties->setGenericFlag(EntityMetadataFlags::INVISIBLE, $this->invisible);
 		$this->networkProperties->setGenericFlag(EntityMetadataFlags::ONFIRE, $this->isOnFire());
-		$this->networkProperties->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);
 		$this->networkProperties->setGenericFlag(EntityMetadataFlags::WALLCLIMBING, $this->canClimbWalls);
 	}
 
