@@ -39,11 +39,15 @@ final class TestCloningRegistry{
 	 * @return \stdClass[]
 	 */
 	public static function getAll() : array{
-		return self::_registryGetAll();
+		/** @var \stdClass[] $result */
+		$result = self::_registryGetAll();
+		return $result;
 	}
 
 	public static function fromString(string $s) : \stdClass{
-		return self::_registryFromString($s);
+		/** @var \stdClass $result */
+		$result = self::_registryFromString($s);
+		return $result;
 	}
 
 	protected static function setup() : void{

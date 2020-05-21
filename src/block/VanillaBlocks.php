@@ -685,7 +685,10 @@ final class VanillaBlocks{
 	 * @return Block[]
 	 */
 	public static function getAll() : array{
-		return self::_registryGetAll();
+		//phpstan doesn't support generic traits yet :(
+		/** @var Block[] $result */
+		$result = self::_registryGetAll();
+		return $result;
 	}
 
 	protected static function setup() : void{

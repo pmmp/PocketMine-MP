@@ -312,7 +312,10 @@ final class VanillaItems{
 	 * @return Item[]
 	 */
 	public static function getAll() : array{
-		return self::_registryGetAll();
+		//phpstan doesn't support generic traits yet :(
+		/** @var Item[] $result */
+		$result = self::_registryGetAll();
+		return $result;
 	}
 
 	protected static function setup() : void{

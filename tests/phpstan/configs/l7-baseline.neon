@@ -421,11 +421,6 @@ parameters:
 			path: ../../../src/block/Sugarcane.php
 
 		-
-			message: "#^Method pocketmine\\\\block\\\\VanillaBlocks\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\block\\\\Block\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/block/VanillaBlocks.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/tile/Chest.php
@@ -556,11 +551,6 @@ parameters:
 			path: ../../../src/entity/Skin.php
 
 		-
-			message: "#^Method pocketmine\\\\entity\\\\effect\\\\VanillaEffects\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\entity\\\\effect\\\\Effect\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/entity/effect/VanillaEffects.php
-
-		-
 			message: "#^Parameter \\#2 \\$x of method pocketmine\\\\block\\\\Block\\:\\:position\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/entity/object/FallingBlock.php
@@ -629,11 +619,6 @@ parameters:
 			message: "#^Parameter \\#4 \\$entityClass of class pocketmine\\\\item\\\\SpawnEgg constructor expects class\\-string\\<pocketmine\\\\entity\\\\Entity\\>, pocketmine\\\\entity\\\\Living\\|string given\\.$#"
 			count: 1
 			path: ../../../src/item/ItemFactory.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\VanillaItems\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\item\\\\Item\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/item/VanillaItems.php
 
 		-
 			message: "#^Parameter \\#2 \\$input1 of function array_map expects array, array\\|false given\\.$#"
@@ -794,126 +779,6 @@ parameters:
 			message: "#^Cannot call method dequeue\\(\\) on array\\<pocketmine\\\\scheduler\\\\AsyncTask\\>\\|SplQueue\\.$#"
 			count: 2
 			path: ../../../src/scheduler/AsyncPool.php
-
-		-
-			message: "#^Method pocketmine\\\\block\\\\utils\\\\DyeColor\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\block\\\\utils\\\\DyeColor\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/block/utils/DyeColor.php
-
-		-
-			message: "#^Method pocketmine\\\\block\\\\utils\\\\DyeColor\\:\\:fromString\\(\\) should return pocketmine\\\\block\\\\utils\\\\DyeColor but returns object\\.$#"
-			count: 1
-			path: ../../../src/block/utils/DyeColor.php
-
-		-
-			message: "#^Method pocketmine\\\\block\\\\utils\\\\SkullType\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\block\\\\utils\\\\SkullType\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/block/utils/SkullType.php
-
-		-
-			message: "#^Method pocketmine\\\\block\\\\utils\\\\SkullType\\:\\:fromString\\(\\) should return pocketmine\\\\block\\\\utils\\\\SkullType but returns object\\.$#"
-			count: 1
-			path: ../../../src/block/utils/SkullType.php
-
-		-
-			message: "#^Method pocketmine\\\\block\\\\utils\\\\SlabType\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\block\\\\utils\\\\SlabType\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/block/utils/SlabType.php
-
-		-
-			message: "#^Method pocketmine\\\\block\\\\utils\\\\SlabType\\:\\:fromString\\(\\) should return pocketmine\\\\block\\\\utils\\\\SlabType but returns object\\.$#"
-			count: 1
-			path: ../../../src/block/utils/SlabType.php
-
-		-
-			message: "#^Method pocketmine\\\\block\\\\utils\\\\StairShape\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\block\\\\utils\\\\StairShape\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/block/utils/StairShape.php
-
-		-
-			message: "#^Method pocketmine\\\\block\\\\utils\\\\StairShape\\:\\:fromString\\(\\) should return pocketmine\\\\block\\\\utils\\\\StairShape but returns object\\.$#"
-			count: 1
-			path: ../../../src/block/utils/StairShape.php
-
-		-
-			message: "#^Method pocketmine\\\\block\\\\utils\\\\TreeType\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\block\\\\utils\\\\TreeType\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/block/utils/TreeType.php
-
-		-
-			message: "#^Method pocketmine\\\\block\\\\utils\\\\TreeType\\:\\:fromString\\(\\) should return pocketmine\\\\block\\\\utils\\\\TreeType but returns object\\.$#"
-			count: 1
-			path: ../../../src/block/utils/TreeType.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\ItemUseResult\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\item\\\\ItemUseResult\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/item/ItemUseResult.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\ItemUseResult\\:\\:fromString\\(\\) should return pocketmine\\\\item\\\\ItemUseResult but returns object\\.$#"
-			count: 1
-			path: ../../../src/item/ItemUseResult.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\ToolTier\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\item\\\\ToolTier\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/item/ToolTier.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\ToolTier\\:\\:fromString\\(\\) should return pocketmine\\\\item\\\\ToolTier but returns object\\.$#"
-			count: 1
-			path: ../../../src/item/ToolTier.php
-
-		-
-			message: "#^Method pocketmine\\\\player\\\\GameMode\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\player\\\\GameMode\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/player/GameMode.php
-
-		-
-			message: "#^Method pocketmine\\\\player\\\\GameMode\\:\\:fromString\\(\\) should return pocketmine\\\\player\\\\GameMode but returns object\\.$#"
-			count: 1
-			path: ../../../src/player/GameMode.php
-
-		-
-			message: "#^Method pocketmine\\\\player\\\\UsedChunkStatus\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\player\\\\UsedChunkStatus\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/player/UsedChunkStatus.php
-
-		-
-			message: "#^Method pocketmine\\\\player\\\\UsedChunkStatus\\:\\:fromString\\(\\) should return pocketmine\\\\player\\\\UsedChunkStatus but returns object\\.$#"
-			count: 1
-			path: ../../../src/player/UsedChunkStatus.php
-
-		-
-			message: "#^Method pocketmine\\\\plugin\\\\PluginLoadOrder\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\plugin\\\\PluginLoadOrder\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginLoadOrder.php
-
-		-
-			message: "#^Method pocketmine\\\\plugin\\\\PluginLoadOrder\\:\\:fromString\\(\\) should return pocketmine\\\\plugin\\\\PluginLoadOrder but returns object\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginLoadOrder.php
-
-		-
-			message: "#^Method pocketmine\\\\utils\\\\TestEnum\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\utils\\\\TestEnum\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../phpunit/utils/TestEnum.php
-
-		-
-			message: "#^Method pocketmine\\\\utils\\\\TestEnum\\:\\:fromString\\(\\) should return pocketmine\\\\utils\\\\TestEnum but returns object\\.$#"
-			count: 1
-			path: ../../phpunit/utils/TestEnum.php
-
-		-
-			message: "#^Method pocketmine\\\\world\\\\sound\\\\NoteInstrument\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\world\\\\sound\\\\NoteInstrument\\> but returns array\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/world/sound/NoteInstrument.php
-
-		-
-			message: "#^Method pocketmine\\\\world\\\\sound\\\\NoteInstrument\\:\\:fromString\\(\\) should return pocketmine\\\\world\\\\sound\\\\NoteInstrument but returns object\\.$#"
-			count: 1
-			path: ../../../src/world/sound/NoteInstrument.php
 
 		-
 			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, string\\|false given\\.$#"

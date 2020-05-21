@@ -51,7 +51,10 @@ trait EnumTrait{
 	 * @return self[]
 	 */
 	public static function getAll() : array{
-		return self::_registryGetAll();
+		//phpstan doesn't support generic traits yet :(
+		/** @var self[] $result */
+		$result = self::_registryGetAll();
+		return $result;
 	}
 
 	/**
@@ -61,7 +64,10 @@ trait EnumTrait{
 	 * @throws \InvalidArgumentException if no member matches.
 	 */
 	public static function fromString(string $name) : self{
-		return self::_registryFromString($name);
+		//phpstan doesn't support generic traits yet :(
+		/** @var self $result */
+		$result = self::_registryFromString($name);
+		return $result;
 	}
 
 	/** @var int|null */

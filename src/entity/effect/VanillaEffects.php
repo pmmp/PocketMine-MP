@@ -112,7 +112,10 @@ final class VanillaEffects{
 	 * @return Effect[]
 	 */
 	public static function getAll() : array{
-		return self::_registryGetAll();
+		//phpstan doesn't support generic traits yet :(
+		/** @var Effect[] $result */
+		$result = self::_registryGetAll();
+		return $result;
 	}
 
 	public static function fromString(string $name) : Effect{
