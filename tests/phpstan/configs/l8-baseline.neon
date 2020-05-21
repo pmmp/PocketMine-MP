@@ -186,16 +186,6 @@ parameters:
 			path: ../../../src/entity/HungerManager.php
 
 		-
-			message: "#^Cannot call method getValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
-			count: 2
-			path: ../../../src/entity/Living.php
-
-		-
-			message: "#^Cannot call method setValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
-			count: 1
-			path: ../../../src/entity/Living.php
-
-		-
 			message: "#^Cannot call method getEffectLevel\\(\\) on pocketmine\\\\entity\\\\effect\\\\EffectInstance\\|null\\.$#"
 			count: 3
 			path: ../../../src/entity/Living.php
@@ -209,26 +199,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$entity of class pocketmine\\\\event\\\\entity\\\\EntityDamageByEntityEvent constructor expects pocketmine\\\\entity\\\\Entity, pocketmine\\\\entity\\\\Entity\\|null given\\.$#"
 			count: 1
 			path: ../../../src/entity/Living.php
-
-		-
-			message: "#^Cannot call method getValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
-			count: 2
-			path: ../../../src/entity/effect/SlownessEffect.php
-
-		-
-			message: "#^Cannot call method setValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
-			count: 2
-			path: ../../../src/entity/effect/SlownessEffect.php
-
-		-
-			message: "#^Cannot call method getValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
-			count: 2
-			path: ../../../src/entity/effect/SpeedEffect.php
-
-		-
-			message: "#^Cannot call method setValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
-			count: 2
-			path: ../../../src/entity/effect/SpeedEffect.php
 
 		-
 			message: "#^Method pocketmine\\\\entity\\\\object\\\\Painting\\:\\:getMotive\\(\\) should return pocketmine\\\\entity\\\\object\\\\PaintingMotive but returns pocketmine\\\\entity\\\\object\\\\PaintingMotive\\|null\\.$#"

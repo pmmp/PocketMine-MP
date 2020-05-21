@@ -107,6 +107,8 @@ abstract class Living extends Entity{
 	protected $absorptionAttr;
 	/** @var Attribute */
 	protected $knockbackResistanceAttr;
+	/** @var Attribute */
+	protected $moveSpeedAttr;
 
 	/** @var bool */
 	protected $sprinting = false;
@@ -168,7 +170,7 @@ abstract class Living extends Entity{
 		$this->attributeMap->add($this->healthAttr = AttributeFactory::getInstance()->mustGet(Attribute::HEALTH));
 		$this->attributeMap->add(AttributeFactory::getInstance()->mustGet(Attribute::FOLLOW_RANGE));
 		$this->attributeMap->add($this->knockbackResistanceAttr = AttributeFactory::getInstance()->mustGet(Attribute::KNOCKBACK_RESISTANCE));
-		$this->attributeMap->add(AttributeFactory::getInstance()->mustGet(Attribute::MOVEMENT_SPEED));
+		$this->attributeMap->add($this->moveSpeedAttr = AttributeFactory::getInstance()->mustGet(Attribute::MOVEMENT_SPEED));
 		$this->attributeMap->add(AttributeFactory::getInstance()->mustGet(Attribute::ATTACK_DAMAGE));
 		$this->attributeMap->add($this->absorptionAttr = AttributeFactory::getInstance()->mustGet(Attribute::ABSORPTION));
 	}
@@ -213,9 +215,18 @@ abstract class Living extends Entity{
 	public function setSprinting(bool $value = true) : void{
 		if($value !== $this->isSprinting()){
 			$this->sprinting = $value;
-			$attr = $this->attributeMap->get(Attribute::MOVEMENT_SPEED);
-			$attr->setValue($value ? ($attr->getValue() * 1.3) : ($attr->getValue() / 1.3), false, true);
+			$moveSpeed = $this->getMovementSpeed();
+			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
+			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
 		}
+	}
+
+	public function getMovementSpeed() : float{
+		return $this->moveSpeedAttr->getValue();
+	}
+
+	public function setMovementSpeed(float $v, bool $fit = false) : void{
+		$this->moveSpeedAttr->setValue($v, $fit);
 	}
 
 	public function saveNBT() : CompoundTag{
