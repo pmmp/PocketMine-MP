@@ -21,6 +21,16 @@ parameters:
 			path: ../../../src/command/CommandReader.php
 
 		-
+			message: "#^Closure invoked with 2 parameters, at least 3 required\\.$#"
+			count: 1
+			path: ../../../src/entity/EntityFactory.php
+
+		-
+			message: "#^Only iterables can be unpacked, mixed given in argument \\#3\\.$#"
+			count: 6
+			path: ../../../src/entity/EntityFactory.php
+
+		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php

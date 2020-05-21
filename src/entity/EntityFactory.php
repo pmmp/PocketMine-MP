@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use DaveRandom\CallbackValidator\CallbackType;
+use DaveRandom\CallbackValidator\ParameterType;
+use DaveRandom\CallbackValidator\ReturnType;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\ItemEntity;
@@ -47,9 +50,7 @@ use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\World;
 use function array_keys;
-use function assert;
 use function in_array;
-use function is_a;
 use function reset;
 
 /**
@@ -67,10 +68,10 @@ final class EntityFactory{
 	private static $entityCount = 1;
 
 	/**
-	 * @var string[] base class => currently used class for construction
-	 * @phpstan-var array<class-string<Entity>, class-string<Entity>>
+	 * @var \Closure[] base class => creator function
+	 * @phpstan-var array<class-string<Entity>, \Closure(World, CompoundTag, mixed...) : Entity>
 	 */
-	private $classMapping = [];
+	private $creationFuncs = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<int|string, class-string<Entity>>
@@ -86,42 +87,104 @@ final class EntityFactory{
 		//define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC
 		//TODO: index them by version to allow proper multi-save compatibility
 
-		$this->register(Arrow::class, ['Arrow', 'minecraft:arrow'], EntityLegacyIds::ARROW);
-		$this->register(Egg::class, ['Egg', 'minecraft:egg'], EntityLegacyIds::EGG);
-		$this->register(EnderPearl::class, ['ThrownEnderpearl', 'minecraft:ender_pearl'], EntityLegacyIds::ENDER_PEARL);
-		$this->register(ExperienceBottle::class, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityLegacyIds::XP_BOTTLE);
-		$this->register(ExperienceOrb::class, ['XPOrb', 'minecraft:xp_orb'], EntityLegacyIds::XP_ORB);
-		$this->register(FallingBlock::class, ['FallingSand', 'minecraft:falling_block'], EntityLegacyIds::FALLING_BLOCK);
-		$this->register(ItemEntity::class, ['Item', 'minecraft:item'], EntityLegacyIds::ITEM);
-		$this->register(Painting::class, ['Painting', 'minecraft:painting'], EntityLegacyIds::PAINTING);
-		$this->register(PrimedTNT::class, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt'], EntityLegacyIds::TNT);
-		$this->register(Snowball::class, ['Snowball', 'minecraft:snowball'], EntityLegacyIds::SNOWBALL);
-		$this->register(SplashPotion::class, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
-		$this->register(Squid::class, ['Squid', 'minecraft:squid'], EntityLegacyIds::SQUID);
-		$this->register(Villager::class, ['Villager', 'minecraft:villager'], EntityLegacyIds::VILLAGER);
-		$this->register(Zombie::class, ['Zombie', 'minecraft:zombie'], EntityLegacyIds::ZOMBIE);
+		$this->register(Arrow::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : Arrow{
+			return new Arrow($world, $nbt, ...$extraArgs);
+		}, ['Arrow', 'minecraft:arrow'], EntityLegacyIds::ARROW);
 
-		$this->register(Human::class, ['Human']);
+		$this->register(Egg::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : Egg{
+			return new Egg($world, $nbt, ...$extraArgs);
+		}, ['Egg', 'minecraft:egg'], EntityLegacyIds::EGG);
+
+		$this->register(EnderPearl::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : EnderPearl{
+			return new EnderPearl($world, $nbt, ...$extraArgs);
+		}, ['ThrownEnderpearl', 'minecraft:ender_pearl'], EntityLegacyIds::ENDER_PEARL);
+
+		$this->register(ExperienceBottle::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : ExperienceBottle{
+			return new ExperienceBottle($world, $nbt, ...$extraArgs);
+		}, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityLegacyIds::XP_BOTTLE);
+
+		$this->register(ExperienceOrb::class, function(World $world, CompoundTag $nbt) : ExperienceOrb{
+			return new ExperienceOrb($world, $nbt);
+		}, ['XPOrb', 'minecraft:xp_orb'], EntityLegacyIds::XP_ORB);
+
+		$this->register(FallingBlock::class, function(World $world, CompoundTag $nbt) : FallingBlock{
+			return new FallingBlock($world, $nbt);
+		}, ['FallingSand', 'minecraft:falling_block'], EntityLegacyIds::FALLING_BLOCK);
+
+		$this->register(ItemEntity::class, function(World $world, CompoundTag $nbt) : ItemEntity{
+			return new ItemEntity($world, $nbt);
+		}, ['Item', 'minecraft:item'], EntityLegacyIds::ITEM);
+
+		$this->register(Painting::class, function(World $world, CompoundTag $nbt) : Painting{
+			return new Painting($world, $nbt);
+		}, ['Painting', 'minecraft:painting'], EntityLegacyIds::PAINTING);
+
+		$this->register(PrimedTNT::class, function(World $world, CompoundTag $nbt) : PrimedTNT{
+			return new PrimedTNT($world, $nbt);
+		}, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt'], EntityLegacyIds::TNT);
+
+		$this->register(Snowball::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : Snowball{
+			return new Snowball($world, $nbt, ...$extraArgs);
+		}, ['Snowball', 'minecraft:snowball'], EntityLegacyIds::SNOWBALL);
+
+		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : SplashPotion{
+			return new SplashPotion($world, $nbt, ...$extraArgs);
+		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
+
+		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
+			return new Squid($world, $nbt);
+		}, ['Squid', 'minecraft:squid'], EntityLegacyIds::SQUID);
+
+		$this->register(Villager::class, function(World $world, CompoundTag $nbt) : Villager{
+			return new Villager($world, $nbt);
+		}, ['Villager', 'minecraft:villager'], EntityLegacyIds::VILLAGER);
+
+		$this->register(Zombie::class, function(World $world, CompoundTag $nbt) : Zombie{
+			return new Zombie($world, $nbt);
+		}, ['Zombie', 'minecraft:zombie'], EntityLegacyIds::ZOMBIE);
+
+		$this->register(Human::class, function(World $world, CompoundTag $nbt) : Human{
+			return new Human($world, $nbt);
+		}, ['Human']);
 
 		PaintingMotive::init();
+	}
+
+	/**
+	 * @phpstan-param class-string<Entity> $baseClass
+	 * @phpstan-param \Closure(World, CompoundTag, mixed...) : Entity $creationFunc
+	 */
+	private static function validateCreationFunc(string $baseClass, \Closure $creationFunc) : void{
+		$sig = new CallbackType(
+			new ReturnType($baseClass),
+			new ParameterType("world", World::class),
+			new ParameterType("nbt", CompoundTag::class),
+			new ParameterType("extraArgs", null, ParameterType::VARIADIC | ParameterType::CONTRAVARIANT | ParameterType::OPTIONAL)
+		);
+		if(!$sig->isSatisfiedBy($creationFunc)){
+			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($creationFunc) . "` must be compatible with `" . $sig . "`");
+		}
 	}
 
 	/**
 	 * Registers an entity type into the index.
 	 *
 	 * @param string   $className Class that extends Entity
+	 * @param \Closure $creationFunc
 	 * @param string[] $saveNames An array of save names which this entity might be saved under. Defaults to the short name of the class itself if empty.
 	 * @phpstan-param class-string<Entity> $className
+	 * @phpstan-param \Closure(World $world, CompoundTag $nbt, mixed ...$args) : Entity $creationFunc
 	 *
 	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
 	 * name of the class will be appended to the end and only used if no other save names are specified.
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function register(string $className, array $saveNames, ?int $legacyMcpeSaveId = null) : void{
+	public function register(string $className, \Closure $creationFunc, array $saveNames, ?int $legacyMcpeSaveId = null) : void{
 		Utils::testValidInstance($className, Entity::class);
 
-		$this->classMapping[$className] = $className;
+		self::validateCreationFunc($className, $creationFunc);
+		$this->creationFuncs[$className] = $creationFunc;
 
 		$shortName = (new \ReflectionClass($className))->getShortName();
 		if(!in_array($shortName, $saveNames, true)){
@@ -142,22 +205,21 @@ final class EntityFactory{
 	 * Registers a class override for the given class. When a new entity is constructed using the factory, the new class
 	 * will be used instead of the base class.
 	 *
-	 * @param string $baseClass Already-registered entity class to override
-	 * @param string $newClass Class which extends the base class
+	 * @param string   $baseClass Already-registered entity class to override
+	 * @param \Closure $newCreationFunc
 	 *
-	 * TODO: use an explicit template for param1
 	 * @phpstan-param class-string<Entity> $baseClass
-	 * @phpstan-param class-string<Entity> $newClass
+	 * @phpstan-param \Closure(World, CompoundTag, mixed...) : Entity $newCreationFunc
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function override(string $baseClass, string $newClass) : void{
-		if(!isset($this->classMapping[$baseClass])){
+	public function override(string $baseClass, \Closure $newCreationFunc) : void{
+		if(!isset($this->creationFuncs[$baseClass])){
 			throw new \InvalidArgumentException("Class $baseClass is not a registered entity");
 		}
 
-		Utils::testValidInstance($newClass, $baseClass);
-		$this->classMapping[$baseClass] = $newClass;
+		self::validateCreationFunc($baseClass, $newCreationFunc);
+		$this->creationFuncs[$baseClass] = $newCreationFunc;
 	}
 
 	/**
@@ -167,7 +229,7 @@ final class EntityFactory{
 	 * @return class-string<Entity>[]
 	 */
 	public function getKnownTypes() : array{
-		return array_keys($this->classMapping);
+		return array_keys($this->creationFuncs);
 	}
 
 	/**
@@ -194,16 +256,13 @@ final class EntityFactory{
 	 * @throws \InvalidArgumentException if the class doesn't exist or is not registered
 	 */
 	public function create(string $baseClass, World $world, CompoundTag $nbt, ...$args) : Entity{
-		if(isset($this->classMapping[$baseClass])){
-			$class = $this->classMapping[$baseClass];
-			assert(is_a($class, $baseClass, true));
+		if(isset($this->creationFuncs[$baseClass])){
+			$func = $this->creationFuncs[$baseClass];
 			/**
 			 * @var Entity $entity
 			 * @phpstan-var TEntity $entity
-			 * @see Entity::__construct()
 			 */
-			$entity = new $class($world, $nbt, ...$args);
-
+			$entity = $func($world, $nbt, ...$args);
 			return $entity;
 		}
 
@@ -227,13 +286,9 @@ final class EntityFactory{
 		if($baseClass === null){
 			return null;
 		}
-		$class = $this->classMapping[$baseClass];
-		assert(is_a($class, $baseClass, true));
-		/**
-		 * @var Entity $entity
-		 * @see Entity::__construct()
-		 */
-		$entity = new $class($world, $nbt);
+		$func = $this->creationFuncs[$baseClass];
+		/** @var Entity $entity */
+		$entity = $func($world, $nbt);
 
 		return $entity;
 	}
