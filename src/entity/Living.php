@@ -49,6 +49,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
@@ -766,17 +767,17 @@ abstract class Living extends Entity{
 		$player->getNetworkSession()->onMobArmorChange($this);
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
 
-		$this->networkProperties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
-		$this->networkProperties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectManager->getBubbleColor()->toARGB()));
-		$this->networkProperties->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
-		$this->networkProperties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
+		$properties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
+		$properties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectManager->getBubbleColor()->toARGB()));
+		$properties->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
+		$properties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
 
-		$this->networkProperties->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
-		$this->networkProperties->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);
-		$this->networkProperties->setGenericFlag(EntityMetadataFlags::SPRINTING, $this->sprinting);
+		$properties->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
+		$properties->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);
+		$properties->setGenericFlag(EntityMetadataFlags::SPRINTING, $this->sprinting);
 	}
 
 	protected function onDispose() : void{

@@ -35,6 +35,7 @@ use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\world\particle\PotionSplashParticle;
@@ -172,10 +173,10 @@ class SplashPotion extends Throwable{
 		return Potion::getPotionEffectsById($this->getPotionId());
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
 
-		$this->networkProperties->setShort(EntityMetadataProperties::POTION_AUX_VALUE, $this->potionId);
-		$this->networkProperties->setGenericFlag(EntityMetadataFlags::LINGER, $this->linger);
+		$properties->setShort(EntityMetadataProperties::POTION_AUX_VALUE, $this->potionId);
+		$properties->setGenericFlag(EntityMetadataFlags::LINGER, $this->linger);
 	}
 }

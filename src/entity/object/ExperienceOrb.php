@@ -29,6 +29,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
 use function sqrt;
@@ -220,9 +221,9 @@ class ExperienceOrb extends Entity{
 		return false;
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
 
-		$this->networkProperties->setInt(EntityMetadataProperties::EXPERIENCE_VALUE, $this->xpValue);
+		$properties->setInt(EntityMetadataProperties::EXPERIENCE_VALUE, $this->xpValue);
 	}
 }

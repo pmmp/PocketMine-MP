@@ -32,6 +32,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ArrowHitSound;
@@ -193,9 +194,9 @@ class Arrow extends Projectile{
 		$this->flagForDespawn();
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
 
-		$this->networkProperties->setGenericFlag(EntityMetadataFlags::CRITICAL, $this->critical);
+		$properties->setGenericFlag(EntityMetadataFlags::CRITICAL, $this->critical);
 	}
 }
