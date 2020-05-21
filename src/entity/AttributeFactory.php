@@ -54,6 +54,14 @@ final class AttributeFactory{
 		return isset($this->attributes[$id]) ? clone $this->attributes[$id] : null;
 	}
 
+	public function mustGet(string $id) : Attribute{
+		$result = $this->get($id);
+		if($result === null){
+			throw new \InvalidArgumentException("Attribute $id is not registered");
+		}
+		return $result;
+	}
+
 	/**
 	 * @throws \InvalidArgumentException
 	 */

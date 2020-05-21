@@ -101,6 +101,13 @@ abstract class Living extends Entity{
 	/** @var int */
 	protected $maxBreathTicks = self::DEFAULT_BREATH_TICKS;
 
+	/** @var Attribute */
+	protected $healthAttr;
+	/** @var Attribute */
+	protected $absorptionAttr;
+	/** @var Attribute */
+	protected $knockbackResistanceAttr;
+
 	abstract public function getName() : string;
 
 	protected function initEntity(CompoundTag $nbt) : void{
@@ -153,37 +160,37 @@ abstract class Living extends Entity{
 	}
 
 	protected function addAttributes() : void{
-		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::HEALTH));
-		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::FOLLOW_RANGE));
-		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::KNOCKBACK_RESISTANCE));
-		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::MOVEMENT_SPEED));
-		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::ATTACK_DAMAGE));
-		$this->attributeMap->add(AttributeFactory::getInstance()->get(Attribute::ABSORPTION));
+		$this->attributeMap->add($this->healthAttr = AttributeFactory::getInstance()->mustGet(Attribute::HEALTH));
+		$this->attributeMap->add(AttributeFactory::getInstance()->mustGet(Attribute::FOLLOW_RANGE));
+		$this->attributeMap->add($this->knockbackResistanceAttr = AttributeFactory::getInstance()->mustGet(Attribute::KNOCKBACK_RESISTANCE));
+		$this->attributeMap->add(AttributeFactory::getInstance()->mustGet(Attribute::MOVEMENT_SPEED));
+		$this->attributeMap->add(AttributeFactory::getInstance()->mustGet(Attribute::ATTACK_DAMAGE));
+		$this->attributeMap->add($this->absorptionAttr = AttributeFactory::getInstance()->mustGet(Attribute::ABSORPTION));
 	}
 
 	public function setHealth(float $amount) : void{
 		$wasAlive = $this->isAlive();
 		parent::setHealth($amount);
-		$this->attributeMap->get(Attribute::HEALTH)->setValue(ceil($this->getHealth()), true);
+		$this->healthAttr->setValue(ceil($this->getHealth()), true);
 		if($this->isAlive() and !$wasAlive){
 			$this->broadcastAnimation(new RespawnAnimation($this));
 		}
 	}
 
 	public function getMaxHealth() : int{
-		return (int) $this->attributeMap->get(Attribute::HEALTH)->getMaxValue();
+		return (int) $this->healthAttr->getMaxValue();
 	}
 
 	public function setMaxHealth(int $amount) : void{
-		$this->attributeMap->get(Attribute::HEALTH)->setMaxValue($amount)->setDefaultValue($amount);
+		$this->healthAttr->setMaxValue($amount)->setDefaultValue($amount);
 	}
 
 	public function getAbsorption() : float{
-		return $this->attributeMap->get(Attribute::ABSORPTION)->getValue();
+		return $this->absorptionAttr->getValue();
 	}
 
 	public function setAbsorption(float $absorption) : void{
-		$this->attributeMap->get(Attribute::ABSORPTION)->setValue($absorption);
+		$this->absorptionAttr->setValue($absorption);
 	}
 
 	public function saveNBT() : CompoundTag{
@@ -453,7 +460,7 @@ abstract class Living extends Entity{
 		if($f <= 0){
 			return;
 		}
-		if(mt_rand() / mt_getrandmax() > $this->getAttributeMap()->get(Attribute::KNOCKBACK_RESISTANCE)->getValue()){
+		if(mt_rand() / mt_getrandmax() > $this->knockbackResistanceAttr->getValue()){
 			$f = 1 / $f;
 
 			$motion = clone $this->motion;
