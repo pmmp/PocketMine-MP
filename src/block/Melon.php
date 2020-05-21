@@ -38,4 +38,8 @@ class Melon extends Transparent{
 			VanillaItems::MELON()->setCount(mt_rand(3, 7))
 		];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
 }

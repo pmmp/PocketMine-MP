@@ -38,6 +38,10 @@ class Bookshelf extends Opaque{
 		];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
 	public function getFuelTime() : int{
 		return 300;
 	}

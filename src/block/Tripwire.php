@@ -55,8 +55,4 @@ class Tripwire extends Flowable{
 	public function getStateBitmask() : int{
 		return 0b1111;
 	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return false;
-	}
 }

@@ -42,4 +42,8 @@ class Glowstone extends Transparent{
 			VanillaItems::GLOWSTONE_DUST()->setCount(mt_rand(2, 4))
 		];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
 }

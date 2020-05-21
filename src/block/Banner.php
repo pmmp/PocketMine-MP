@@ -195,8 +195,4 @@ class Banner extends Transparent{
 		}
 		return $result;
 	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return false;
-	}
 }

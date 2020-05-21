@@ -47,6 +47,10 @@ class Cobweb extends Flowable{
 		];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
 	public function diffusesSkyLight() : bool{
 		return true;
 	}

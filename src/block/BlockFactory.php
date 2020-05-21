@@ -325,6 +325,10 @@ class BlockFactory{
 			public function getDropsForCompatibleTool(Item $item) : array{
 				return [VanillaBlocks::COBBLESTONE()->asItem()];
 			}
+
+			public function isAffectedBySilkTouch() : bool{
+				return true;
+			}
 		});
 		$this->register(new Stair(new BID(Ids::NORMAL_STONE_STAIRS), "Stone Stairs", $stoneBreakInfo));
 		$this->register(new Opaque(new BID(Ids::SMOOTH_STONE), "Smooth Stone", $stoneBreakInfo));

@@ -402,11 +402,10 @@ class Block{
 	}
 
 	/**
-	 * Returns whether Silk Touch enchanted tools will cause this block to drop as itself. Since most blocks drop
-	 * themselves anyway, this is implicitly true.
+	 * Returns whether Silk Touch enchanted tools will cause this block to drop as itself.
 	 */
 	public function isAffectedBySilkTouch() : bool{
-		return true;
+		return false;
 	}
 
 	/**

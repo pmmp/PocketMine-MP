@@ -40,6 +40,10 @@ class CoalOre extends Opaque{
 		];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
 	protected function getXpDropAmount() : int{
 		return mt_rand(0, 2);
 	}

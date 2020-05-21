@@ -61,6 +61,10 @@ class DeadBush extends Flowable{
 		return parent::getDrops($item);
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
 	public function getFlameEncouragement() : int{
 		return 60;
 	}
