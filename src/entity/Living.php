@@ -765,6 +765,7 @@ abstract class Living extends Entity{
 
 		$this->networkProperties->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
 		$this->networkProperties->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);
+		$this->networkProperties->setGenericFlag(EntityMetadataFlags::SPRINTING, $this->sprinting);
 	}
 
 	protected function onDispose() : void{
