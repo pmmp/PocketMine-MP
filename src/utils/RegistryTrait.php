@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function array_map;
 use function count;
 use function get_class;
 use function implode;
@@ -77,7 +78,11 @@ trait RegistryTrait{
 		if(!isset(self::$members[$name])){
 			throw new \InvalidArgumentException("No such registry member: " . self::class . "::" . $name);
 		}
-		return self::$members[$name];
+		return self::preprocessMember(self::$members[$name]);
+	}
+
+	protected static function preprocessMember(object $member) : object{
+		return $member;
 	}
 
 	/**
@@ -103,7 +108,9 @@ trait RegistryTrait{
 	 */
 	private static function _registryGetAll() : array{
 		self::checkInit();
-		return self::$members;
+		return array_map(function(object $o) : object{
+			return self::preprocessMember($o);
+		}, self::$members);
 	}
 
 	/**

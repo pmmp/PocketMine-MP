@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\utils\RegistryTrait;
-use pocketmine\utils\Utils;
 use function assert;
 
 /**
@@ -292,7 +292,7 @@ use function assert;
  * @method static Skull ZOMBIE_HEAD()
  */
 final class VanillaItems{
-	use RegistryTrait;
+	use CloningRegistryTrait;
 
 	private function __construct(){
 		//NOOP
@@ -305,14 +305,14 @@ final class VanillaItems{
 	public static function fromString(string $name) : Item{
 		$result = self::_registryFromString($name);
 		assert($result instanceof Item);
-		return clone $result;
+		return $result;
 	}
 
 	/**
 	 * @return Item[]
 	 */
 	public static function getAll() : array{
-		return Utils::cloneObjectArray(self::_registryGetAll());
+		return self::_registryGetAll();
 	}
 
 	protected static function setup() : void{
