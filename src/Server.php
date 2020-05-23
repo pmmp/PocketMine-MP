@@ -59,6 +59,7 @@ use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\Network;
 use pocketmine\network\query\QueryHandler;
+use pocketmine\network\query\QueryInfo;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
@@ -271,8 +272,8 @@ class Server{
 	 */
 	private $uniquePlayers = [];
 
-	/** @var QueryRegenerateEvent */
-	private $queryRegenerateTask;
+	/** @var QueryInfo */
+	private $queryInfo;
 
 	/** @var Config */
 	private $properties;
@@ -1023,7 +1024,7 @@ class Server{
 
 			$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "update.pmmp.io"));
 
-			$this->queryRegenerateTask = new QueryRegenerateEvent($this);
+			$this->queryInfo = new QueryInfo($this);
 
 			register_shutdown_function([$this, "crashDump"]);
 
@@ -1424,10 +1425,10 @@ class Server{
 	}
 
 	/**
-	 * @return QueryRegenerateEvent
+	 * @return QueryInfo
 	 */
 	public function getQueryInformation(){
-		return $this->queryRegenerateTask;
+		return $this->queryInfo;
 	}
 
 	/**
@@ -1680,7 +1681,9 @@ class Server{
 			$this->currentTPS = 20;
 			$this->currentUse = 0;
 
-			($this->queryRegenerateTask = new QueryRegenerateEvent($this))->call();
+			$queryRegenerateEvent = new QueryRegenerateEvent(new QueryInfo($this));
+			$queryRegenerateEvent->call();
+			$this->queryInfo = $queryRegenerateEvent->getQueryInfo();
 
 			$this->network->updateName();
 			$this->network->resetStatistics();
