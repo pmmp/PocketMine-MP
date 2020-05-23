@@ -102,7 +102,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 			//Additional PocketMine-MP fields
 			->setTag("GameRules", new CompoundTag())
 			->setByte("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0)
-			->setString("generatorName", GeneratorManager::getGeneratorName($generator))
+			->setString("generatorName", GeneratorManager::getInstance()->getGeneratorName($generator))
 			->setString("generatorOptions", $options["preset"] ?? "");
 
 		$nbt = new LittleEndianNbtSerializer();

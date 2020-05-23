@@ -205,7 +205,7 @@ class WorldManager{
 			return false;
 		}
 		try{
-			GeneratorManager::getGenerator($provider->getWorldData()->getGenerator(), true);
+			GeneratorManager::getInstance()->getGenerator($provider->getWorldData()->getGenerator(), true);
 		}catch(\InvalidArgumentException $e){
 			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Unknown generator \"" . $provider->getWorldData()->getGenerator() . "\""]));
 			return false;

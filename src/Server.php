@@ -1017,7 +1017,6 @@ class Server{
 				$this->logger->warning($this->language->translateString("pocketmine.level.badDefaultFormat", [$formatName]));
 			}
 
-			GeneratorManager::registerDefaultGenerators();
 			$this->worldManager = new WorldManager($this, $this->dataPath . "/worlds");
 			$this->worldManager->setAutoSave($this->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
 			$this->worldManager->setAutoSaveInterval((int) $this->getProperty("ticks-per.autosave", 6000));
@@ -1040,7 +1039,7 @@ class Server{
 				if(!$this->worldManager->loadWorld($name, true)){
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
-						$generator = GeneratorManager::getGenerator(array_shift($generatorOptions));
+						$generator = GeneratorManager::getInstance()->getGenerator(array_shift($generatorOptions));
 						if(count($options) > 0){
 							$options["preset"] = implode(":", $generatorOptions);
 						}
@@ -1063,7 +1062,7 @@ class Server{
 					$this->worldManager->generateWorld(
 						$default,
 						Generator::convertSeed($this->getConfigString("level-seed")),
-						GeneratorManager::getGenerator($this->getConfigString("level-type")),
+						GeneratorManager::getInstance()->getGenerator($this->getConfigString("level-type")),
 						["preset" => $this->getConfigString("generator-settings")]
 					);
 				}

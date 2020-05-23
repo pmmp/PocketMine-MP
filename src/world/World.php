@@ -335,7 +335,7 @@ class World implements ChunkManager{
 		$this->worldHeight = $this->provider->getWorldHeight();
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->displayName]));
-		$this->generator = GeneratorManager::getGenerator($this->provider->getWorldData()->getGenerator(), true);
+		$this->generator = GeneratorManager::getInstance()->getGenerator($this->provider->getWorldData()->getGenerator(), true);
 		//TODO: validate generator options
 
 		$this->folderName = $name;

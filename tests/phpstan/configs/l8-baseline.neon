@@ -11,7 +11,7 @@ parameters:
 			path: ../../../build/server-phar.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of static method pocketmine\\\\world\\\\generator\\\\GeneratorManager\\:\\:getGenerator\\(\\) expects string, string\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\world\\\\generator\\\\GeneratorManager\\:\\:getGenerator\\(\\) expects string, string\\|null given\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 

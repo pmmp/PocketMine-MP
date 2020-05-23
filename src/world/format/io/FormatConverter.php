@@ -101,7 +101,7 @@ class FormatConverter{
 			$this->logger->info("Found previous conversion attempt, deleting...");
 			Filesystem::recursiveUnlink($convertedOutput);
 		}
-		$this->newProvider::generate($convertedOutput, $data->getName(), $data->getSeed(), GeneratorManager::getGenerator($data->getGenerator()), $data->getGeneratorOptions());
+		$this->newProvider::generate($convertedOutput, $data->getName(), $data->getSeed(), GeneratorManager::getInstance()->getGenerator($data->getGenerator()), $data->getGeneratorOptions());
 
 		/**
 		 * @see WritableWorldProvider::__construct()

@@ -64,7 +64,7 @@ class JavaWorldData extends BaseNbtWorldData{
 			->setLong("RandomSeed", $seed)
 			->setLong("SizeOnDisk", 0)
 			->setLong("Time", 0)
-			->setString("generatorName", GeneratorManager::getGeneratorName($generator))
+			->setString("generatorName", GeneratorManager::getInstance()->getGeneratorName($generator))
 			->setString("generatorOptions", $options["preset"] ?? "")
 			->setString("LevelName", $name)
 			->setTag("GameRules", new CompoundTag());

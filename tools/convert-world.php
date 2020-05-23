@@ -25,11 +25,8 @@ use pocketmine\world\format\io\FormatConverter;
 use pocketmine\world\format\io\WorldProvider;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
-use pocketmine\world\generator\GeneratorManager;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
-
-GeneratorManager::registerDefaultGenerators();
 
 $writableFormats = array_filter(WorldProviderManager::getInstance()->getAvailableProviders(), function(string $class){
 	return is_a($class, WritableWorldProvider::class, true);
