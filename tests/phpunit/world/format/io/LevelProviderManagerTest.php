@@ -27,27 +27,34 @@ use PHPUnit\Framework\TestCase;
 
 class LevelProviderManagerTest extends TestCase{
 
+	/** @var WorldProviderManager */
+	private $providerManager;
+
+	protected function setUp() : void{
+		$this->providerManager = new WorldProviderManager();
+	}
+
 	public function testAddNonClassProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		WorldProviderManager::addProvider("lol", "nope");
+		$this->providerManager->addProvider("lol", "nope");
 	}
 
 	public function testAddAbstractClassProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		WorldProviderManager::addProvider(AbstractWorldProvider::class, "abstract");
+		$this->providerManager->addProvider(AbstractWorldProvider::class, "abstract");
 	}
 
 	public function testAddInterfaceProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		WorldProviderManager::addProvider(InterfaceWorldProvider::class, "interface");
+		$this->providerManager->addProvider(InterfaceWorldProvider::class, "interface");
 	}
 
 	public function testAddWrongClassProvider() : void{
 		$this->expectException(\InvalidArgumentException::class);
 
-		WorldProviderManager::addProvider(LevelProviderManagerTest::class, "bad_class");
+		$this->providerManager->addProvider(LevelProviderManagerTest::class, "bad_class");
 	}
 }

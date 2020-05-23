@@ -179,7 +179,7 @@ class WorldManager{
 
 		$path = $this->getWorldPath($name);
 
-		$providers = WorldProviderManager::getMatchingProviders($path);
+		$providers = WorldProviderManager::getInstance()->getMatchingProviders($path);
 		if(count($providers) !== 1){
 			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [
 				$name,
@@ -216,7 +216,7 @@ class WorldManager{
 			}
 			$this->server->getLogger()->notice("Upgrading world \"$name\" to new format. This may take a while.");
 
-			$converter = new FormatConverter($provider, WorldProviderManager::getDefault(), $this->server->getDataPath() . "world_conversion_backups", $this->server->getLogger());
+			$converter = new FormatConverter($provider, WorldProviderManager::getInstance()->getDefault(), $this->server->getDataPath() . "world_conversion_backups", $this->server->getLogger());
 			$provider = $converter->execute();
 
 			$this->server->getLogger()->notice("Upgraded world \"$name\" to new format successfully. Backed up pre-conversion world at " . $converter->getBackupPath());
@@ -251,7 +251,7 @@ class WorldManager{
 
 		Utils::testValidInstance($generator, Generator::class);
 
-		$providerClass = WorldProviderManager::getDefault();
+		$providerClass = WorldProviderManager::getInstance()->getDefault();
 
 		$path = $this->getWorldPath($name);
 		/** @var WritableWorldProvider $providerClass */
@@ -307,7 +307,7 @@ class WorldManager{
 		}
 		$path = $this->getWorldPath($name);
 		if(!($this->getWorldByName($name) instanceof World)){
-			return count(WorldProviderManager::getMatchingProviders($path)) > 0;
+			return count(WorldProviderManager::getInstance()->getMatchingProviders($path)) > 0;
 		}
 
 		return true;

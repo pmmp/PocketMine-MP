@@ -1007,12 +1007,12 @@ class Server{
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
-			WorldProviderManager::init();
+			$providerManager = WorldProviderManager::getInstance();
 			if(
-				($format = WorldProviderManager::getProviderByName($formatName = (string) $this->getProperty("level-settings.default-format"))) !== null and
+				($format = $providerManager->getProviderByName($formatName = (string) $this->getProperty("level-settings.default-format"))) !== null and
 				is_a($format, WritableWorldProvider::class, true)
 			){
-				WorldProviderManager::setDefault($format);
+				$providerManager->setDefault($format);
 			}elseif($formatName !== ""){
 				$this->logger->warning($this->language->translateString("pocketmine.level.badDefaultFormat", [$formatName]));
 			}
