@@ -96,12 +96,28 @@ class TimeCommand extends VanillaCommand{
 				return true;
 			}
 
-			if($args[1] === "day"){
-				$value = World::TIME_DAY;
-			}elseif($args[1] === "night"){
-				$value = World::TIME_NIGHT;
-			}else{
-				$value = $this->getInteger($sender, $args[1], 0);
+			switch($args[1]){
+				case "day":
+					$value = World::TIME_DAY;
+					break;
+				case "noon":
+					$value = World::TIME_NOON;
+					break;
+				case "sunset":
+					$value = World::TIME_SUNSET;
+					break;
+				case "night":
+					$value = World::TIME_NIGHT;
+					break;
+				case "midnight":
+					$value = World::TIME_MIDNIGHT;
+					break;
+				case "sunrise":
+					$value = World::TIME_SUNRISE;
+					break;
+				default:
+					$value = $this->getInteger($sender, $args[1], 0);
+					break;
 			}
 
 			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
