@@ -75,9 +75,6 @@ class WorldManager{
 	public function __construct(Server $server, string $dataPath){
 		$this->server = $server;
 		$this->dataPath = $dataPath;
-
-		$this->autoSave = $this->server->getConfigBool("auto-save", $this->autoSave);
-		$this->autoSaveTicks = (int) $this->server->getProperty("ticks-per.autosave", 6000);
 	}
 
 	/**

@@ -1019,6 +1019,8 @@ class Server{
 
 			GeneratorManager::registerDefaultGenerators();
 			$this->worldManager = new WorldManager($this, $this->dataPath . "/worlds");
+			$this->worldManager->setAutoSave($this->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
+			$this->worldManager->setAutoSaveInterval((int) $this->getProperty("ticks-per.autosave", 6000));
 
 			$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "update.pmmp.io"));
 
