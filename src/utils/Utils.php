@@ -84,6 +84,14 @@ use const STR_PAD_RIGHT;
  * Big collection of functions
  */
 class Utils{
+	public const OS_WINDOWS = "win";
+	public const OS_IOS = "ios";
+	public const OS_MACOS = "mac";
+	public const OS_ANDROID = "android";
+	public const OS_LINUX = "linux";
+	public const OS_BSD = "bsd";
+	public const OS_UNKNOWN = "other";
+
 	/** @var string|null */
 	private static $os;
 	/** @var UUID|null */
@@ -180,7 +188,7 @@ class Utils{
 		$machine .= sys_get_temp_dir();
 		$machine .= $extra;
 		$os = Utils::getOS();
-		if($os === "win"){
+		if($os === Utils::OS_WINDOWS){
 			@exec("ipconfig /ALL", $mac);
 			$mac = implode("\n", $mac);
 			if(preg_match_all("#Physical Address[. ]{1,}: ([0-9A-F\\-]{17})#", $mac, $matches) > 0){
@@ -191,7 +199,7 @@ class Utils{
 				}
 				$machine .= implode(" ", $matches[1]); //Mac Addresses
 			}
-		}elseif($os === "linux"){
+		}elseif($os === Utils::OS_LINUX){
 			if(file_exists("/etc/machine-id")){
 				$machine .= file_get_contents("/etc/machine-id");
 			}else{
@@ -206,9 +214,9 @@ class Utils{
 					$machine .= implode(" ", $matches[1]); //Mac Addresses
 				}
 			}
-		}elseif($os === "android"){
+		}elseif($os === Utils::OS_ANDROID){
 			$machine .= @file_get_contents("/system/build.prop");
-		}elseif($os === "mac"){
+		}elseif($os === Utils::OS_MACOS){
 			$machine .= `system_profiler SPHardwareDataType | grep UUID`;
 		}
 		$data = $machine . PHP_MAXPATHLEN;
@@ -243,22 +251,22 @@ class Utils{
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
 				if(strpos(php_uname("m"), "iP") === 0){
-					self::$os = "ios";
+					self::$os = self::OS_IOS;
 				}else{
-					self::$os = "mac";
+					self::$os = self::OS_MACOS;
 				}
 			}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
-				self::$os = "win";
+				self::$os = self::OS_WINDOWS;
 			}elseif(stripos($uname, "Linux") !== false){
 				if(@file_exists("/system/build.prop")){
-					self::$os = "android";
+					self::$os = self::OS_ANDROID;
 				}else{
-					self::$os = "linux";
+					self::$os = self::OS_LINUX;
 				}
 			}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
-				self::$os = "bsd";
+				self::$os = self::OS_BSD;
 			}else{
-				self::$os = "other";
+				self::$os = self::OS_UNKNOWN;
 			}
 		}
 
@@ -275,8 +283,8 @@ class Utils{
 		}
 
 		switch(Utils::getOS()){
-			case "linux":
-			case "android":
+			case Utils::OS_LINUX:
+			case Utils::OS_ANDROID:
 				if(($cpuinfo = @file('/proc/cpuinfo')) !== false){
 					foreach($cpuinfo as $l){
 						if(preg_match('/^processor[ \t]*:[ \t]*[0-9]+$/m', $l) > 0){
@@ -289,11 +297,11 @@ class Utils{
 					}
 				}
 				break;
-			case "bsd":
-			case "mac":
+			case Utils::OS_BSD:
+			case Utils::OS_MACOS:
 				$processors = (int) `sysctl -n hw.ncpu`;
 				break;
-			case "win":
+			case Utils::OS_WINDOWS:
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
 				break;
 		}

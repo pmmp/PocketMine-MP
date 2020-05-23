@@ -177,14 +177,14 @@ abstract class Terminal{
 		}
 
 		switch(Utils::getOS()){
-			case "linux":
-			case "mac":
-			case "bsd":
+			case Utils::OS_LINUX:
+			case Utils::OS_MACOS:
+			case Utils::OS_BSD:
 				self::getEscapeCodes();
 				return;
 
-			case "win":
-			case "android":
+			case Utils::OS_WINDOWS:
+			case Utils::OS_ANDROID:
 				self::getFallbackEscapeCodes();
 				return;
 		}

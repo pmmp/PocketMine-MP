@@ -48,7 +48,7 @@ class UPnP implements NetworkInterface{
 		if(!Internet::$online){
 			throw new \RuntimeException("Server is offline");
 		}
-		if(Utils::getOS() !== "win"){
+		if(Utils::getOS() !== Utils::OS_WINDOWS){
 			throw new \RuntimeException("UPnP is only supported on Windows");
 		}
 		if(!class_exists("COM")){
