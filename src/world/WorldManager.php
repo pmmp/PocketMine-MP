@@ -53,6 +53,9 @@ use function sprintf;
 use function trim;
 
 class WorldManager{
+	/** @var string */
+	private $dataPath;
+
 	/** @var World[] */
 	private $worlds = [];
 	/** @var World|null */
@@ -69,8 +72,9 @@ class WorldManager{
 	/** @var int */
 	private $autoSaveTicker = 0;
 
-	public function __construct(Server $server){
+	public function __construct(Server $server, string $dataPath){
 		$this->server = $server;
+		$this->dataPath = $dataPath;
 
 		$this->autoSave = $this->server->getConfigBool("auto-save", $this->autoSave);
 		$this->autoSaveTicks = (int) $this->server->getProperty("ticks-per.autosave", 6000);
@@ -176,7 +180,7 @@ class WorldManager{
 			return false;
 		}
 
-		$path = $this->server->getDataPath() . "worlds/" . $name . "/";
+		$path = $this->dataPath . "/" . $name . "/";
 
 		$providers = WorldProviderManager::getMatchingProviders($path);
 		if(count($providers) !== 1){
@@ -252,7 +256,7 @@ class WorldManager{
 
 		$providerClass = WorldProviderManager::getDefault();
 
-		$path = $this->server->getDataPath() . "worlds/" . $name . "/";
+		$path = $this->dataPath . "/" . $name . "/";
 		/** @var WritableWorldProvider $providerClass */
 		$providerClass::generate($path, $name, $seed, $generator, $options);
 
@@ -300,7 +304,7 @@ class WorldManager{
 		if(trim($name) === ""){
 			return false;
 		}
-		$path = $this->server->getDataPath() . "worlds/" . $name . "/";
+		$path = $this->dataPath . "/" . $name . "/";
 		if(!($this->getWorldByName($name) instanceof World)){
 			return count(WorldProviderManager::getMatchingProviders($path)) > 0;
 		}

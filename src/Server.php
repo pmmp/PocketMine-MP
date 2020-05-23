@@ -1018,7 +1018,7 @@ class Server{
 			}
 
 			GeneratorManager::registerDefaultGenerators();
-			$this->worldManager = new WorldManager($this);
+			$this->worldManager = new WorldManager($this, $this->dataPath . "/worlds");
 
 			$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "update.pmmp.io"));
 
