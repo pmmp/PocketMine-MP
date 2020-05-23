@@ -177,7 +177,7 @@ class WorldManager{
 			return false;
 		}
 
-		$path = $this->dataPath . "/" . $name . "/";
+		$path = $this->getWorldPath($name);
 
 		$providers = WorldProviderManager::getMatchingProviders($path);
 		if(count($providers) !== 1){
@@ -253,7 +253,7 @@ class WorldManager{
 
 		$providerClass = WorldProviderManager::getDefault();
 
-		$path = $this->dataPath . "/" . $name . "/";
+		$path = $this->getWorldPath($name);
 		/** @var WritableWorldProvider $providerClass */
 		$providerClass::generate($path, $name, $seed, $generator, $options);
 
@@ -297,11 +297,15 @@ class WorldManager{
 		return true;
 	}
 
+	private function getWorldPath(string $name) : string{
+		return $this->dataPath . "/" . $name . "/";
+	}
+
 	public function isWorldGenerated(string $name) : bool{
 		if(trim($name) === ""){
 			return false;
 		}
-		$path = $this->dataPath . "/" . $name . "/";
+		$path = $this->getWorldPath($name);
 		if(!($this->getWorldByName($name) instanceof World)){
 			return count(WorldProviderManager::getMatchingProviders($path)) > 0;
 		}
