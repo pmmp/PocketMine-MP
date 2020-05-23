@@ -53,8 +53,8 @@ class QueryHandler implements RawPacketHandler{
 	public const HANDSHAKE = 9;
 	public const STATISTICS = 0;
 
-	public function __construct(){
-		$this->server = Server::getInstance();
+	public function __construct(Server $server){
+		$this->server = $server;
 		$this->logger = new \PrefixedLogger($this->server->getLogger(), "Query Handler");
 		$addr = $this->server->getIp();
 		$port = $this->server->getPort();

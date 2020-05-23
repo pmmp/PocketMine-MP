@@ -1084,7 +1084,7 @@ class Server{
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
 
 			if($this->getConfigBool("enable-query", true)){
-				$this->network->registerRawPacketHandler(new QueryHandler());
+				$this->network->registerRawPacketHandler(new QueryHandler($this));
 			}
 
 			foreach($this->getIPBans()->getEntries() as $entry){
