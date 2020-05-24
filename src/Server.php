@@ -105,7 +105,6 @@ use function base64_encode;
 use function cli_set_process_title;
 use function copy;
 use function count;
-use function define;
 use function explode;
 use function file_exists;
 use function file_get_contents;
@@ -125,7 +124,6 @@ use function min;
 use function mkdir;
 use function ob_end_flush;
 use function preg_replace;
-use function random_bytes;
 use function realpath;
 use function register_shutdown_function;
 use function rename;
@@ -891,7 +889,6 @@ class Server{
 
 			@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 
-			define("BOOTUP_RANDOM", random_bytes(16));
 			$this->serverID = Utils::getMachineUniqueId($this->getIp() . $this->getPort());
 
 			$this->getLogger()->debug("Server unique id: " . $this->getServerUniqueId());
