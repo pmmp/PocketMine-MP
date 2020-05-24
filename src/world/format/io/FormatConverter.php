@@ -96,7 +96,7 @@ class FormatConverter{
 		$this->logger->info("Generating new world");
 		$data = $this->oldProvider->getWorldData();
 
-		$convertedOutput = rtrim($this->oldProvider->getPath(), "/\\") . "_converted" . DIRECTORY_SEPARATOR;
+		$convertedOutput = rtrim($this->oldProvider->getPath(), "/" . DIRECTORY_SEPARATOR) . "_converted" . DIRECTORY_SEPARATOR;
 		if(file_exists($convertedOutput)){
 			$this->logger->info("Found previous conversion attempt, deleting...");
 			Filesystem::recursiveUnlink($convertedOutput);
