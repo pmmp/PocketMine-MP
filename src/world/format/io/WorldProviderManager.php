@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\leveldb\LevelDB;
 use pocketmine\world\format\io\region\Anvil;
@@ -33,8 +32,6 @@ use function strtolower;
 use function trim;
 
 final class WorldProviderManager{
-	use SingletonTrait;
-
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, class-string<WorldProvider>>

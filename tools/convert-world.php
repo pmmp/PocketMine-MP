@@ -28,7 +28,8 @@ use pocketmine\world\format\io\WritableWorldProvider;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-$writableFormats = array_filter(WorldProviderManager::getInstance()->getAvailableProviders(), function(string $class){
+$providerManager = new WorldProviderManager();
+$writableFormats = array_filter($providerManager->getAvailableProviders(), function(string $class){
 	return is_a($class, WritableWorldProvider::class, true);
 });
 $requiredOpts = [
@@ -59,7 +60,7 @@ if((!@mkdir($backupPath, 0777, true) and !is_dir($backupPath)) or !is_writable($
 	die("Backup file path " . $backupPath . " is not writable (permission error or doesn't exist), aborting");
 }
 
-$oldProviderClasses = WorldProviderManager::getInstance()->getMatchingProviders($inputPath);
+$oldProviderClasses = $providerManager->getMatchingProviders($inputPath);
 if(count($oldProviderClasses) === 0){
 	die("Unknown input world format");
 }

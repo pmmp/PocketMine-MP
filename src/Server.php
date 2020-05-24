@@ -932,7 +932,7 @@ class Server{
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
-			$providerManager = WorldProviderManager::getInstance();
+			$providerManager = new WorldProviderManager();
 			if(
 				($format = $providerManager->getProviderByName($formatName = (string) $this->configGroup->getProperty("level-settings.default-format"))) !== null and
 				is_a($format, WritableWorldProvider::class, true)
@@ -942,7 +942,7 @@ class Server{
 				$this->logger->warning($this->language->translateString("pocketmine.level.badDefaultFormat", [$formatName]));
 			}
 
-			$this->worldManager = new WorldManager($this, $this->dataPath . "/worlds");
+			$this->worldManager = new WorldManager($this, $this->dataPath . "/worlds", $providerManager);
 			$this->worldManager->setAutoSave($this->configGroup->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
 			$this->worldManager->setAutoSaveInterval((int) $this->configGroup->getProperty("ticks-per.autosave", 6000));
 
