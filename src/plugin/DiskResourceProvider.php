@@ -43,7 +43,7 @@ class DiskResourceProvider implements ResourceProvider{
 	private $file;
 
 	public function __construct(string $path){
-		$this->file = rtrim($path, "/\\") . "/";
+		$this->file = rtrim(str_replace(DIRECTORY_SEPARATOR, "/", $path), "/") . "/";
 	}
 
 	/**
