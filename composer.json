@@ -61,7 +61,6 @@
       },
       "files": [
          "src/CoreConstants.php",
-         "src/GlobalConstants.php",
          "src/VersionInfo.php"
       ]
    },
