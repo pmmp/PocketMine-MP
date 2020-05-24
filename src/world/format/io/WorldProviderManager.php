@@ -48,10 +48,10 @@ final class WorldProviderManager{
 	private $default = LevelDB::class;
 
 	public function __construct(){
-		self::addProvider(Anvil::class, "anvil");
-		self::addProvider(McRegion::class, "mcregion");
-		self::addProvider(PMAnvil::class, "pmanvil");
-		self::addProvider(LevelDB::class, "leveldb");
+		$this->addProvider(Anvil::class, "anvil");
+		$this->addProvider(McRegion::class, "mcregion");
+		$this->addProvider(PMAnvil::class, "pmanvil");
+		$this->addProvider(LevelDB::class, "leveldb");
 	}
 
 	/**
