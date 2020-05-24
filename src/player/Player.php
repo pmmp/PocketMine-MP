@@ -848,12 +848,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/**
 	 * @return \Generator<int, int, void, void>
 	 */
-	protected function selectChunks() : \Generator{
-		$radius = $this->server->getAllowedViewDistance($this->viewDistance);
+	protected function selectChunks(int $radius, int $centerX, int $centerZ) : \Generator{
 		$radiusSquared = $radius ** 2;
-
-		$centerX = $this->location->getFloorX() >> 4;
-		$centerZ = $this->location->getFloorZ() >> 4;
 
 		for($x = 0; $x < $radius; ++$x){
 			for($z = 0; $z <= $x; ++$z){
@@ -896,7 +892,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$newOrder = [];
 		$unloadChunks = $this->usedChunks;
 
-		foreach($this->selectChunks() as $hash){
+		foreach($this->selectChunks(
+			$this->server->getAllowedViewDistance($this->viewDistance),
+			$this->location->getFloorX() >> 4,
+			$this->location->getFloorZ() >> 4
+		) as $hash){
 			if(!isset($this->usedChunks[$hash]) or $this->usedChunks[$hash]->equals(UsedChunkStatus::NEEDED())){
 				$newOrder[$hash] = true;
 			}
