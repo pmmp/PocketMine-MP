@@ -51,11 +51,15 @@ class FormatConverter{
 	/** @var \Logger */
 	private $logger;
 
-	public function __construct(WorldProvider $oldProvider, string $newProvider, string $backupPath, \Logger $logger){
+	/** @var int */
+	private $chunksPerProgressUpdate;
+
+	public function __construct(WorldProvider $oldProvider, string $newProvider, string $backupPath, \Logger $logger, int $chunksPerProgressUpdate = 256){
 		$this->oldProvider = $oldProvider;
 		Utils::testValidInstance($newProvider, WritableWorldProvider::class);
 		$this->newProvider = $newProvider;
 		$this->logger = new \PrefixedLogger($logger, "World Converter: " . $this->oldProvider->getWorldData()->getName());
+		$this->chunksPerProgressUpdate = $chunksPerProgressUpdate;
 
 		if(!file_exists($backupPath)){
 			@mkdir($backupPath, 0777, true);
@@ -134,16 +138,15 @@ class FormatConverter{
 
 		$start = microtime(true);
 		$thisRound = $start;
-		static $reportInterval = 256;
 		foreach($this->oldProvider->getAllChunks(true, $this->logger) as $chunk){
 			$chunk->setDirty();
 			$new->saveChunk($chunk);
 			$counter++;
-			if(($counter % $reportInterval) === 0){
+			if(($counter % $this->chunksPerProgressUpdate) === 0){
 				$time = microtime(true);
 				$diff = $time - $thisRound;
 				$thisRound = $time;
-				$this->logger->info("Converted $counter / $count chunks (" . floor($reportInterval / $diff) . " chunks/sec)");
+				$this->logger->info("Converted $counter / $count chunks (" . floor($this->chunksPerProgressUpdate / $diff) . " chunks/sec)");
 			}
 		}
 		$total = microtime(true) - $start;
