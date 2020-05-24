@@ -60,7 +60,7 @@ class SendUsageTask extends AsyncTask{
 	 * @phpstan-param array<string, string> $playerList
 	 */
 	public function __construct(Server $server, int $type, array $playerList = []){
-		$endpoint = "http://" . $server->getProperty("anonymous-statistics.host", "stats.pocketmine.net") . "/";
+		$endpoint = "http://" . $server->getConfigGroup()->getProperty("anonymous-statistics.host", "stats.pocketmine.net") . "/";
 
 		$data = [];
 		$data["uniqueServerId"] = $server->getServerUniqueId()->toString();

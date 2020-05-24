@@ -66,16 +66,6 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to string\\.$#"
-			count: 1
-			path: ../../../src/Server.php
-
-		-
-			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to int\\.$#"
-			count: 1
-			path: ../../../src/Server.php
-
-		-
 			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/Server.php
@@ -89,6 +79,16 @@ parameters:
 			message: "#^Only numeric types are allowed in \\+, int\\|false given on the left side\\.$#"
 			count: 1
 			path: ../../../src/Server.php
+
+		-
+			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to string\\.$#"
+			count: 1
+			path: ../../../src/ServerConfigGroup.php
+
+		-
+			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to int\\.$#"
+			count: 1
+			path: ../../../src/ServerConfigGroup.php
 
 		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:setFullBlock\\(\\) expects int, float\\|int given\\.$#"

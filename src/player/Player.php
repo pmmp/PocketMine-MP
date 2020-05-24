@@ -269,8 +269,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->xuid = $this->playerInfo->getXuid();
 
 		$this->perm = new PermissibleBase($this);
-		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
-		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
+		$this->chunksPerTick = (int) $this->server->getConfigGroup()->getProperty("chunk-sending.per-tick", 4);
+		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
 
 		$namedtag = $this->server->getOfflinePlayerData($this->username); //TODO: make this async
 
@@ -556,7 +556,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function setViewDistance(int $distance) : void{
 		$this->viewDistance = $this->server->getAllowedViewDistance($distance);
 
-		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getProperty("chunk-sending.spawn-radius", 4)) ** 2 * M_PI);
+		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getConfigGroup()->getProperty("chunk-sending.spawn-radius", 4)) ** 2 * M_PI);
 
 		$this->nextChunkOrderRun = 0;
 
@@ -836,7 +836,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->spawnToAll();
 
-		if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE) and $this->server->getProperty("auto-updater.on-update.warn-ops", true)){
+		if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE) and $this->server->getConfigGroup()->getProperty("auto-updater.on-update.warn-ops", true)){
 			$this->server->getUpdater()->showPlayerUpdate($this);
 		}
 
@@ -1675,7 +1675,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$oldItem = clone $heldItem;
 
 		$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
-		if(!$this->canInteract($entity->getLocation(), 8) or ($entity instanceof Player and !$this->server->getConfigBool("pvp"))){
+		if(!$this->canInteract($entity->getLocation(), 8) or ($entity instanceof Player and !$this->server->getConfigGroup()->getConfigBool("pvp"))){
 			$ev->setCancelled();
 		}
 
