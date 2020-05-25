@@ -424,11 +424,11 @@
     "packages-dev": [
         {
             "name": "irstea/phpunit-shim",
-            "version": "8.5.4",
+            "version": "8.5.5",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.irstea.fr/pole-is/tools/phpunit-shim.git",
-                "reference": "25b3ffe1502bfd35d5cd23dc37f2f2e70cdf0b54"
+                "reference": "5b9425eb62f807517e8c96415b07fd35a65e8e7b"
             },
             "require": {
                 "ext-dom": "*",
@@ -474,7 +474,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2020-04-24T02:20:21+00:00"
+            "time": "2020-05-24T13:47:48+00:00"
         },
         {
             "name": "phpstan/phpstan",
@@ -516,20 +516,6 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "funding": [
-                {
-                    "url": "https://github.com/ondrejmirtes",
-                    "type": "github"
-                },
-                {
-                    "url": "https://www.patreon.com/phpstan",
-                    "type": "patreon"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
-                    "type": "tidelift"
-                }
-            ],
             "time": "2020-05-10T20:36:16+00:00"
         },
         {
@@ -666,6 +652,5 @@
         "ext-zip": "*",
         "ext-zlib": ">=1.2.11"
     },
-    "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "platform-dev": []
 }
